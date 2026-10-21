@@ -106,8 +106,8 @@ class CashbookActivity : BaseActivity() {
             val last = dao.lastDayClose()
             val now = System.currentTimeMillis()
             val from = last?.closedAt ?: 0L
-            val cbIn = dao.cashbookTotalBetween(true, from, now)
-            val cbOut = dao.cashbookTotalBetween(false, from, now)
+            val cbIn = dao.cashbookCashBetween(true, from, now)
+            val cbOut = dao.cashbookCashBetween(false, from, now)
             val kIn = dao.khataCashBetween(false, from, now)
             val kOut = dao.khataCashBetween(true, from, now)
             val cashIn = cbIn + kIn

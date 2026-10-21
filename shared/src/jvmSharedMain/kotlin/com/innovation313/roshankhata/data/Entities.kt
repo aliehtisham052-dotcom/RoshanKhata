@@ -253,7 +253,16 @@ data class LedgerEntry(
      * himself (v24). Null = read from the date, which is right for nearly
      * every entry; the owner changes it only for the odd one out.
      */
-    val season: String? = null
+    val season: String? = null,
+
+    /**
+     * The counter sale this entry was posted by (POS Phase 1, v32): the
+     * "I gave" for the ticket, or an "I got" for one of its payments. Null
+     * on every entry written by hand. No foreign key — a voided sale bins
+     * its entries, it never erases them — and it is how a void finds exactly
+     * the rows it must reverse.
+     */
+    val saleId: Long? = null
 )
 
 /**

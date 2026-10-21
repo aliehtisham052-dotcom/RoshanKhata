@@ -179,12 +179,7 @@ object InspectorReport {
      */
     suspend fun gather(context: Context, dao: KhataDao, windowDays: Int): ReportData {
         val products = dao.productsOnce()
-        val stock = Stock.combine(
-            products = products,
-            bought = dao.boughtPerProduct(),
-            sold = dao.soldPerProduct(),
-            returned = dao.returnedPerProduct()
-        ).sortedBy { it.name.lowercase() }
+        val stock = Stock.of(dao).sortedBy { it.name.lowercase() }
 
         // Sold-out batches are dropped: a register of stock should list what is
         // on the shelf. What was bought and sold over a period is a purchase

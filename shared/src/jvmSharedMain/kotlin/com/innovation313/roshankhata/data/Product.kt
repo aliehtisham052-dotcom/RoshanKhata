@@ -32,7 +32,8 @@ import com.innovation313.roshankhata.ui.NameSearch
     tableName = "products",
     indices = [
         Index(value = ["nameKey"], unique = true),
-        Index(value = ["normalisedName"])
+        Index(value = ["normalisedName"]),
+        Index(value = ["barcode"])
     ]
 )
 data class Product(
@@ -156,7 +157,29 @@ data class Product(
      * hard delete would leave them pointing at nothing.
      */
     val isDeleted: Boolean = false,
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
+
+    // ---- The counter (POS Phase 1, v32) ----
+
+    /**
+     * The barcode on the pack (EAN-13, UPC, a QR, the shop's own label) —
+     * what a scanner reads to ring the product up. Trimmed, as scanned. Unique
+     * among live products, checked by [KhataDao.productByBarcode] before a
+     * save rather than by the database, so a binned product's code can be
+     * reused. Null for everything not sold by scanning.
+     */
+    val barcode: String? = null,
+
+    /**
+     * What one [defaultUnit] costs the shop, as the owner keeps it — the
+     * figure a sale's profit is measured against. Null = unknown; the counter
+     * then falls back to the last purchase rate on a supplier bill, and to
+     * nothing if there is none. Never calculated here.
+     */
+    val costPrice: Double? = null,
+
+    /** Warn when stock falls to this or below. Null = never warn. */
+    val lowStockLevel: Double? = null
 )
 
 /**

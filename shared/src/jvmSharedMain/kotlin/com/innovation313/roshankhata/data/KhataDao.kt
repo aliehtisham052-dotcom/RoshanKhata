@@ -1031,6 +1031,12 @@ interface KhataDao {
                    JOIN transactions t ON t.id = ei.entryId
                    WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
                      AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
+               ), 0) + COALESCE((
+                   SELECT SUM(si.quantity) FROM sale_items si
+                   JOIN sales s ON s.id = si.saleId
+                   WHERE si.billItemId = i.id AND si.isDeleted = 0 AND s.isDeleted = 0
+                     AND s.status = 'done' AND s.ledgerEntryId IS NULL
+                     AND (si.unit = i.unit OR (si.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch
         FROM bill_items i
         JOIN supplier_bills b ON b.id = i.billId
@@ -1199,6 +1205,15 @@ interface KhataDao {
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND timestamp > :from AND timestamp <= :to")
     suspend fun cashbookTotalBetween(income: Boolean, from: Long, to: Long): Double
 
+    /**
+     * Cashbook money that moved in CASH, for the drawer count (v32): rows
+     * with no method (every row written before v32, and any the owner did
+     * not mark) count as cash, as they always have; a row marked bank, online
+     * or cheque (a walk-in's transfer at the counter) is not in the drawer.
+     */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND (paymentMethod IS NULL OR paymentMethod = 'cash') AND timestamp > :from AND timestamp <= :to")
+    suspend fun cashbookCashBetween(income: Boolean, from: Long, to: Long): Double
+
     /** Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' AND timestamp > :from AND timestamp <= :to")
     suspend fun khataCashBetween(given: Boolean, from: Long, to: Long): Double
@@ -1254,6 +1269,12 @@ interface KhataDao {
                    JOIN transactions t ON t.id = ei.entryId
                    WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
                      AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
+               ), 0) + COALESCE((
+                   SELECT SUM(si.quantity) FROM sale_items si
+                   JOIN sales s ON s.id = si.saleId
+                   WHERE si.billItemId = i.id AND si.isDeleted = 0 AND s.isDeleted = 0
+                     AND s.status = 'done' AND s.ledgerEntryId IS NULL
+                     AND (si.unit = i.unit OR (si.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch,
                p.name AS partyName, b.billNumber AS billNumber, b.billDate AS billDate
         FROM bill_items i
@@ -1879,8 +1900,18 @@ interface KhataDao {
         // Staff (v29). Additive.
         staff: List<Staff> = emptyList(),
         attendance: List<StaffAttendance> = emptyList(),
-        staffPayments: List<StaffPayment> = emptyList()
+        staffPayments: List<StaffPayment> = emptyList(),
+        // The counter (v32). Additive.
+        sales: List<Sale> = emptyList(),
+        saleItems: List<SaleItem> = emptyList(),
+        salePayments: List<SalePayment> = emptyList(),
+        audit: List<AuditLog> = emptyList()
     ) {
+        // Sale rows before the sale (cascade), the sale before its entries' saleId means anything.
+        wipeSalePayments()
+        wipeSaleItems()
+        wipeSales()
+        wipeAudit()
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
         // the cascade and delete the items mid-step for no gain.
@@ -1928,6 +1959,10 @@ interface KhataDao {
         restoreStaff(staff)
         restoreAttendance(attendance)
         restoreStaffPayments(staffPayments)
+        restoreSales(sales)
+        restoreSaleItems(saleItems)
+        restoreSalePayments(salePayments)
+        restoreAudit(audit)
     }
 
 
@@ -2422,4 +2457,318 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreDismissedDuplicates(items: List<DismissedDuplicate>)
+
+    // ---------- Counter sales (POS Phase 1, v32) ----------
+    //
+    // A sale is posted in ONE transaction: its document, its lines, its
+    // payments, and every khata or cashbook row they become. Either the whole
+    // ticket stands or none of it does — a receipt handed over must never
+    // describe money the book does not hold, nor the other way round.
+
+    @Insert
+    suspend fun insertSale(sale: Sale): Long
+
+    @Insert
+    suspend fun insertSaleItems(items: List<SaleItem>)
+
+    @Insert
+    suspend fun insertSalePayment(payment: SalePayment): Long
+
+    @Update
+    suspend fun updateSale(sale: Sale)
+
+    @Insert
+    suspend fun insertAudit(row: AuditLog): Long
+
+    @Query("SELECT * FROM sales WHERE id = :id")
+    suspend fun getSale(id: Long): Sale?
+
+    @Query("SELECT * FROM sale_items WHERE saleId = :saleId AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
+    suspend fun saleItems(saleId: Long): List<SaleItem>
+
+    @Query("SELECT * FROM sale_payments WHERE saleId = :saleId ORDER BY id ASC")
+    suspend fun salePayments(saleId: Long): List<SalePayment>
+
+    /** The whole ticket, for a receipt or a void. */
+    @Transaction
+    suspend fun saleWithLines(id: Long): SaleWithLines? {
+        val sale = getSale(id) ?: return null
+        return SaleWithLines(sale, saleItems(id), salePayments(id))
+    }
+
+    /**
+     * The largest S- number ever handed out, binned and voided tickets
+     * included: a number once printed is never printed again. Numbers are
+     * written with Latin digits, so the cast is exact.
+     */
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(saleNumber, 3) AS INTEGER)), 0) FROM sales WHERE saleNumber LIKE 'S-%'")
+    suspend fun highestSaleNumber(): Int
+
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status != 'held'
+        ORDER BY s.timestamp DESC, s.id DESC
+        """
+    )
+    fun observeSales(): Flow<List<SaleSummary>>
+
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status != 'held' AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.timestamp DESC, s.id DESC
+        """
+    )
+    suspend fun salesBetween(from: Long, to: Long): List<SaleSummary>
+
+    /** The tickets parked at the counter, oldest first. */
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status = 'held' ORDER BY s.timestamp ASC
+        """
+    )
+    fun observeHeldSales(): Flow<List<SaleSummary>>
+
+    @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'held'")
+    fun observeHeldCount(): Flow<Int>
+
+    /** Today's posted tickets: how many and what they came to, for the counter's head. */
+    @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
+    suspend fun doneSaleCount(from: Long, to: Long): Int
+
+    @Query("SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
+    suspend fun doneSaleTotal(from: Long, to: Long): Double
+
+    /** A live product by the code on its pack; null when none carries it. */
+    @Query("SELECT * FROM products WHERE barcode = :code AND isDeleted = 0 LIMIT 1")
+    suspend fun productByBarcode(code: String): Product?
+
+    /**
+     * The last rate the shop paid for this product, off its newest supplier
+     * bill line — the cost a sale's profit is measured against when the
+     * product carries no cost price of its own.
+     */
+    @Query(
+        "SELECT bi.rate FROM bill_items bi JOIN supplier_bills b ON b.id = bi.billId " +
+        "WHERE bi.productId = :productId AND bi.isDeleted = 0 AND b.isDeleted = 0 AND bi.rate IS NOT NULL " +
+        "ORDER BY b.billDate DESC, bi.id DESC LIMIT 1"
+    )
+    suspend fun lastPurchaseRate(productId: Long): Double?
+
+    /**
+     * Goods that left on WALK-IN counter sales, per product. A customer's
+     * sale is not here: its lines were copied onto its khata entry, which
+     * [soldPerProduct] already counts, and counting both would sell every
+     * bag twice. Held and voided tickets moved nothing.
+     */
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, MIN(i.unit) AS unit " +
+        "FROM sale_items i JOIN sales s ON s.id = i.saleId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' " +
+        "AND s.ledgerEntryId IS NULL GROUP BY i.productId"
+    )
+    suspend fun walkInSoldPerProduct(): List<Stock.ProductQty>
+
+    /**
+     * Ring a ticket up. [sale]'s figures are RECOMPUTED here from the lines
+     * (the screen's totals are shown, never trusted), the checks in
+     * [SaleMath.check] run again, and then, in this one transaction:
+     *
+     *  - the sale, its lines and its payments are written, numbered S-;
+     *  - a customer's sale becomes a khata "I gave" of the grand total with
+     *    the goods as its lines (so the ledger, the statement, the stock and
+     *    the season book all see it as they see any sale), and each payment
+     *    an "I got" paired to it, carrying its method;
+     *  - a walk-in's payments become cashbook income, each with its method;
+     *  - one audit row.
+     *
+     * Returns the sale's id. Throws [IllegalArgumentException] on a ticket
+     * that fails its checks — nothing is written, and the screen shows the
+     * problem it should already have caught.
+     */
+    @Transaction
+    suspend fun postSale(
+        sale: Sale,
+        items: List<SaleItem>,
+        payments: List<SalePayment>,
+        roundToWhole: Boolean = false
+    ): Long {
+        val lines = items.filter { !it.isDeleted }
+        val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
+        val hasParty = sale.partyId != null
+        SaleMath.check(lines, payments, totals.grandTotal, hasParty)?.let {
+            throw IllegalArgumentException("sale refused: $it")
+        }
+        val paid = SaleMath.paid(payments)
+        val number = SaleNumber.next(highestSaleNumber())
+        val gotIds = ArrayList<Long?>()
+        val cashIds = ArrayList<Long?>()
+
+        // Reserve the id first: the khata and cashbook rows point back at it.
+        val saleId = insertSale(
+            sale.copy(
+                id = 0, saleNumber = number, status = SaleStatus.DONE,
+                subtotal = totals.subtotal, discountAmount = totals.discount,
+                taxAmount = totals.tax, roundOff = totals.roundOff,
+                grandTotal = totals.grandTotal, paidTotal = paid,
+                ledgerEntryId = null, voidReason = null, voidedAt = null,
+                isDeleted = false, deletedAt = null
+            )
+        )
+        insertSaleItems(lines.mapIndexed { i, l -> l.copy(id = 0, saleId = saleId, lineNo = i, isDeleted = false) })
+
+        if (hasParty) {
+            val partyId = sale.partyId!!
+            val ledgerId = insertEntryWithItems(
+                LedgerEntry(
+                    partyId = partyId, amount = totals.grandTotal, isGiven = true,
+                    note = sale.note?.takeIf { it.isNotBlank() }, entryNumber = "",
+                    timestamp = sale.timestamp, createdBy = sale.createdBy, saleId = saleId
+                ),
+                lines.map { l ->
+                    EntryItem(
+                        entryId = 0, itemName = l.itemName, quantity = l.quantity, unit = l.unit,
+                        rate = l.rate, productId = l.productId, billItemId = l.billItemId
+                    )
+                }
+            )
+            payments.forEachIndexed { i, p ->
+                gotIds += insertEntryNumbered(
+                    LedgerEntry(
+                        partyId = partyId, amount = LineMath.round(p.amount), isGiven = false,
+                        note = p.reference?.takeIf { it.isNotBlank() }, entryNumber = "",
+                        timestamp = sale.timestamp + 1 + i, paymentMethod = p.method,
+                        pairedEntryId = ledgerId, createdBy = sale.createdBy, saleId = saleId
+                    )
+                )
+                cashIds += null
+            }
+            gotIds.firstOrNull { it != null }?.let { setPairedEntry(ledgerId, it) }
+            updateSale(getSale(saleId)!!.copy(ledgerEntryId = ledgerId))
+        } else {
+            payments.forEachIndexed { i, p ->
+                cashIds += insertCashEntry(
+                    CashEntry(
+                        amount = LineMath.round(p.amount), isIncome = true, category = CashCategory.SALE,
+                        note = p.reference?.takeIf { it.isNotBlank() } ?: number,
+                        timestamp = sale.timestamp + i, paymentMethod = p.method, saleId = saleId
+                    )
+                )
+                gotIds += null
+            }
+        }
+        payments.forEachIndexed { i, p ->
+            insertSalePayment(
+                p.copy(id = 0, saleId = saleId, amount = LineMath.round(p.amount),
+                    ledgerEntryId = gotIds[i], cashEntryId = cashIds[i])
+            )
+        }
+        insertAudit(
+            AuditLog(
+                user = sale.createdBy, action = AuditAction.SALE_POSTED, refTable = "sales", refId = saleId,
+                detail = "$number ${"%.2f".format(Digits.FIGURES, totals.grandTotal)}"
+            )
+        )
+        return saleId
+    }
+
+    /**
+     * A posted ticket taken back. The sale is marked void with the reason
+     * (required), and every row it posted — the khata "I gave", each "I
+     * got", each cashbook line — goes to the bin, where the owner can still
+     * see it. Stock follows: a binned entry's lines are not counted, and a
+     * void sale's lines are not either. Nothing is erased. False if the sale
+     * is not a posted one.
+     */
+    @Transaction
+    suspend fun voidSale(saleId: Long, reason: String, user: String? = null): Boolean {
+        val sale = getSale(saleId) ?: return false
+        if (sale.status != SaleStatus.DONE || sale.isDeleted) return false
+        require(reason.isNotBlank()) { "a void needs its reason" }
+        val now = System.currentTimeMillis()
+        sale.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        for (p in salePayments(saleId)) {
+            p.ledgerEntryId?.let { softDeleteEntry(it, now) }
+            p.cashEntryId?.let { softDeleteCashEntry(it, now) }
+        }
+        updateSale(sale.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        insertAudit(
+            AuditLog(
+                user = user, action = AuditAction.SALE_VOIDED, refTable = "sales", refId = saleId,
+                detail = "${sale.saleNumber} ${reason.trim()}"
+            )
+        )
+        return true
+    }
+
+    /**
+     * Park a ticket: the lines are kept, nothing is posted, no number is
+     * taken (a held ticket's number is given when it is rung up, so the S-
+     * series stays in the order sales were made). Returns the held row's id.
+     */
+    @Transaction
+    suspend fun holdSale(sale: Sale, items: List<SaleItem>): Long {
+        val lines = items.filter { !it.isDeleted && it.itemName.isNotBlank() }
+        val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent)
+        val id = insertSale(
+            sale.copy(
+                id = 0, saleNumber = "", status = SaleStatus.HELD,
+                subtotal = totals.subtotal, discountAmount = totals.discount, taxAmount = totals.tax,
+                roundOff = 0.0, grandTotal = totals.grandTotal, paidTotal = 0.0,
+                ledgerEntryId = null, isDeleted = false, deletedAt = null
+            )
+        )
+        insertSaleItems(lines.mapIndexed { i, l -> l.copy(id = 0, saleId = id, lineNo = i, isDeleted = false) })
+        insertAudit(AuditLog(user = sale.createdBy, action = AuditAction.SALE_HELD, refTable = "sales", refId = id))
+        return id
+    }
+
+    /** A held ticket taken off the hook (rung up, or dropped): it leaves the list for good. */
+    @Query("UPDATE sales SET isDeleted = 1, deletedAt = :now WHERE id = :id AND status = 'held'")
+    suspend fun dropHeldSale(id: Long, now: Long = System.currentTimeMillis())
+
+    // Backup: a sale and its rows, and the audit trail, are the owner's record.
+    @Query("SELECT * FROM sales ORDER BY id")
+    suspend fun allSalesForBackup(): List<Sale>
+
+    @Query("SELECT * FROM sale_items ORDER BY id")
+    suspend fun allSaleItemsForBackup(): List<SaleItem>
+
+    @Query("SELECT * FROM sale_payments ORDER BY id")
+    suspend fun allSalePaymentsForBackup(): List<SalePayment>
+
+    @Query("SELECT * FROM audit_log ORDER BY id")
+    suspend fun allAuditForBackup(): List<AuditLog>
+
+    @Query("SELECT * FROM audit_log ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    suspend fun latestAudit(limit: Int): List<AuditLog>
+
+    @Query("DELETE FROM sale_payments")
+    suspend fun wipeSalePayments()
+
+    @Query("DELETE FROM sale_items")
+    suspend fun wipeSaleItems()
+
+    @Query("DELETE FROM sales")
+    suspend fun wipeSales()
+
+    @Query("DELETE FROM audit_log")
+    suspend fun wipeAudit()
+
+    @Insert
+    suspend fun restoreSales(items: List<Sale>)
+
+    @Insert
+    suspend fun restoreSaleItems(items: List<SaleItem>)
+
+    @Insert
+    suspend fun restoreSalePayments(items: List<SalePayment>)
+
+    @Insert
+    suspend fun restoreAudit(items: List<AuditLog>)
 }
