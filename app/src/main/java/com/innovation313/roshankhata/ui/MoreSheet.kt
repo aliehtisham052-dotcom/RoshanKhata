@@ -168,7 +168,7 @@ object MoreSheet {
         // Each size shows itself: "Aa" in the tile at that size (10 Oct).
         val glyphSizes = floatArrayOf(12f, 15f, 18f, 21f)
         val choices = labels.mapIndexed { i, label ->
-            ChoiceSheet.Option(label, glyph = "Aa", glyphSp = glyphSizes[i.coerceAtMost(glyphSizes.size - 1)],
+            ChoiceSheet.Option(label, glyph = activity.getString(R.string.text_size_glyph), glyphSp = glyphSizes[i.coerceAtMost(glyphSizes.size - 1)],
                 iconTint = R.color.tile_invoice_fg, tile = R.color.tile_invoice_bg)
         }
         ChoiceSheet.show(activity, activity.getString(R.string.text_size), choices, current) { which ->

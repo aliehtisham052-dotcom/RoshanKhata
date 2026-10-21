@@ -96,4 +96,21 @@ class DateWordsTest {
             assertTrue("$tag: '$out'", out.contains("2026, "))
         }
     }
+
+    @Test
+    fun `each language names the weekday in its own words - 21 Oct`() {
+        // 4 October 2026 is a Sunday.
+        fun weekday(tag: String) = DateWords.format("EEEE", moment, Locale.forLanguageTag(tag))
+        assertEquals("Sunday", weekday("en"))
+        assertEquals("اتوار", weekday("ur"))
+        assertEquals("Itwar", weekday("ur-Latn"))
+        assertEquals("آچر", weekday("sd"))
+        assertEquals("الأحد", weekday("ar"))
+        assertEquals("یکشنبه", weekday("fa"))
+        assertEquals("रविवार", weekday("hi"))
+        assertEquals("রবিবার", weekday("bn"))
+        assertEquals("Minggu", weekday("id"))
+        // Roman Urdu's months stay English beside its own weekday.
+        assertEquals("Itwar, 4 Oct", DateWords.format("EEEE, d MMM", moment, Locale.forLanguageTag("ur-Latn")))
+    }
 }

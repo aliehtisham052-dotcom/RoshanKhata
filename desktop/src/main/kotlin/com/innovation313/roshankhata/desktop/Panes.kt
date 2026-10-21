@@ -353,3 +353,10 @@ fun DayPicker(initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () 
         else DatePicker(state, title = { Text(title, Modifier.padding(start = 24.dp, end = 12.dp, top = 16.dp)) })
     }
 }
+
+/**
+ * A failed save in the user's own language, the technical reason kept in brackets for support
+ * (21 Oct 2026, the nine-language review: "sale refused: ..." reached Hindi and Arabic screens raw).
+ */
+fun failText(words: com.innovation313.roshankhata.words.Words, e: Throwable): String =
+    words.text(W.action_failed_detail, e.message ?: e.javaClass.simpleName)

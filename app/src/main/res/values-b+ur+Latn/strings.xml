@@ -823,8 +823,8 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
 
     <string name="hide_balance">Balance chhupayen</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Innovation-313 ki pesh-kash</string>
+    <string name="lock_tagline">Innovation-313 ki pesh-kash</string>
     <string name="tap_to_start">Jari rakhne ke liye kahin bhi chhuyein</string>
 
     <string name="tap_to_continue">Jari rakhne ke liye chhuyein</string>
@@ -3394,4 +3394,24 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">Aap ko ada kiya</string>
     <string name="pdf_stmt_you_supplied">Aap ne maal diya</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">Naam</string>
+    <string name="csv_col_category">Category</string>
+    <string name="csv_col_company">Company</string>
+    <string name="csv_col_unit">Unit</string>
+    <string name="csv_col_sale">Bechne ki qeemat</string>
+    <string name="csv_col_credit">Udhar qeemat</string>
+    <string name="csv_col_cost">Laagat</string>
+    <string name="csv_col_barcode">Barcode</string>
+    <string name="csv_col_low">Kam stock had</string>
+    <string name="csv_col_type">Qisam</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">A–Z</string>
+    <string name="sort_glyph_za">Z–A</string>
+    <string name="text_size_glyph">Aa</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">Save nahi hua. Kuch bhi tabdeel nahi hua. (%1$s)</string>
 </resources>

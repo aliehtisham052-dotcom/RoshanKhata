@@ -710,7 +710,7 @@
     <string name="pick_invoice_date">انوائس جي تاريخ چونڊيو</string>
     <string name="invoice_date_set">تاريخ: %1$s</string>
     <string name="invoice_due_date_hint">ادائيگي جي تاريخ (اختياري)</string>
-    <string name="invoice_discount_hint">ڈسڪائونٽ % (اختياري)</string>
+    <string name="invoice_discount_hint">ڊسڪائونٽ % (اختياري)</string>
     <string name="invoice_tax_hint">ٽيڪس % (اختياري)</string>
     <string name="invoice_item_name_hint">شيءِ جو نالو</string>
     <string name="invoice_item_rate_hint">اگهه</string>
@@ -849,8 +849,8 @@
 
     <string name="hide_balance">بيلنس لڪايو</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Innovation-313 جي پيشڪش</string>
+    <string name="lock_tagline">Innovation-313 جي پيشڪش</string>
     <string name="tap_to_start">اڳتي وڌڻ لاءِ ڪٿي به ڇهو</string>
 
     <!-- Splash / branding -->
@@ -1407,7 +1407,7 @@
     </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">وڪرو ھ خریداري رجسٽر</string>
-    <string name="register_subtitle">ھڪ عرصي ھ ڈا آيو، ڈا ويو</string>
+    <string name="register_subtitle">هڪ عرصي ۾ ڇا آيو، ڇا ويو</string>
     <string name="register_period_title">عرصو</string>
     <string name="register_download">PDF ڊائون لوڊ ڪريو</string>
     <string name="register_share">PDF شيئر ڪريو</string>
@@ -3422,4 +3422,24 @@
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">توهان کي ادا ڪيو</string>
     <string name="pdf_stmt_you_supplied">توهان مال ڏنو</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">نالو</string>
+    <string name="csv_col_category">ڪيٽيگري</string>
+    <string name="csv_col_company">ڪمپني</string>
+    <string name="csv_col_unit">يونٽ</string>
+    <string name="csv_col_sale">وڪري قيمت</string>
+    <string name="csv_col_credit">اڌار قيمت</string>
+    <string name="csv_col_cost">لاڳت</string>
+    <string name="csv_col_barcode">بارڪوڊ</string>
+    <string name="csv_col_low">گهٽ اسٽاڪ حد</string>
+    <string name="csv_col_type">قسم</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">ا–ي</string>
+    <string name="sort_glyph_za">ي–ا</string>
+    <string name="text_size_glyph">اب</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">محفوظ نه ٿيو. ڪجهه به تبديل نه ٿيو. (%1$s)</string>
 </resources>

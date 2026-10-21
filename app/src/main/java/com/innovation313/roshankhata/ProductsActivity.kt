@@ -59,7 +59,8 @@ class ProductsActivity : BaseActivity() {
         lifecycleScope.launch {
             val ok = withContext(Dispatchers.IO) {
                 runCatching {
-                    val text = com.innovation313.roshankhata.data.ProductCsv.text(dao.productsOnce())
+                    val text = com.innovation313.roshankhata.data.ProductCsv.text(dao.productsOnce(),
+                        com.innovation313.roshankhata.data.ProductCsv.headers(com.innovation313.roshankhata.data.AndroidWords(this@ProductsActivity)))
                     contentResolver.openOutputStream(uri)!!.use { it.write(text.toByteArray(Charsets.UTF_8)) }
                 }.isSuccess
             }

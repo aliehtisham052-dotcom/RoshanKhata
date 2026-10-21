@@ -466,4 +466,33 @@ class VoiceEntryTest {
         direction("আমি রহিম কে 5000 দিলাম", "রহিম", true)
         direction("রহিম থেকে 5000 পেলাম", "রহিম", false)
     }
+
+    private fun amount(spoken: String, lang: String? = null) = VoiceEntry.parse(spoken, listOf("Ram"), lang).amount
+
+    @Test
+    fun `every language's scale word after digits - 21 Oct`() {
+        assertEquals(5000.0, amount("राम को 5 हज़ार दिए", "hi-IN")!!, 0.0)
+        // ज़ written as ज + nukta, the way some keyboards send it.
+        assertEquals(5000.0, amount("राम को 5 \u0939\u091C\u093C\u093E\u0930 दिए")!!, 0.0)
+        assertEquals(200000.0, amount("राम को 2 लाख दिए")!!, 0.0)
+        assertEquals(30000000.0, amount("3 करोड़")!!, 0.0)
+        assertEquals(5000.0, amount("রহিম কে ৫ হাজার দিলাম", "bn-BD")!!, 0.0)
+        assertEquals(200000.0, amount("2 লাখ")!!, 0.0)
+        assertEquals(5000.0, amount("kasih Budi 5 ribu", "id-ID")!!, 0.0)
+        assertEquals(1500000.0, amount("1,5 juta", "id-ID")!!, 0.0)
+        assertEquals(5000.0, amount("5 ألف", "ar")!!, 0.0)
+        assertEquals(5000.0, amount("5 हज़ार।")!!, 0.0)
+    }
+
+    @Test
+    fun `arabic and persian separators and indonesian dots - 21 Oct`() {
+        assertEquals(5000.0, amount("٥٬٠٠٠", "ar")!!, 0.0)
+        assertEquals(2.5, amount("۲٫۵", "fa")!!, 0.0)
+        assertEquals(5000.0, amount("terima dari Budi 5.000", "id-ID")!!, 0.0)
+        assertEquals(1250000.0, amount("1.250.000", "in-ID")!!, 0.0)
+        assertEquals(5000.0, amount("5000", "id-ID")!!, 0.0)
+        // Everyone else keeps the dot as the decimal point.
+        assertEquals(12.5, amount("12.5")!!, 0.0)
+        assertEquals(5000.0, amount("5,000")!!, 0.0)
+    }
 }

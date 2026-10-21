@@ -899,8 +899,8 @@
 
     <string name="hide_balance">إخفاء الرصيد</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">بدعم من Innovation-313</string>
+    <string name="lock_tagline">بدعم من Innovation-313</string>
     <string name="tap_to_start">المس أي مكان للمتابعة</string>
 
     <string name="tap_to_continue">المس للمتابعة</string>
@@ -3582,4 +3582,24 @@
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">دُفع لك</string>
     <string name="pdf_stmt_you_supplied">ورّدتَ</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">الاسم</string>
+    <string name="csv_col_category">الفئة</string>
+    <string name="csv_col_company">الشركة</string>
+    <string name="csv_col_unit">الوحدة</string>
+    <string name="csv_col_sale">سعر البيع</string>
+    <string name="csv_col_credit">سعر الآجل</string>
+    <string name="csv_col_cost">سعر التكلفة</string>
+    <string name="csv_col_barcode">الباركود</string>
+    <string name="csv_col_low">الحد الأدنى للمخزون</string>
+    <string name="csv_col_type">النوع</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">أ–ي</string>
+    <string name="sort_glyph_za">ي–أ</string>
+    <string name="text_size_glyph">أب</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">لم يُحفظ. لم يتغير شيء. (%1$s)</string>
 </resources>

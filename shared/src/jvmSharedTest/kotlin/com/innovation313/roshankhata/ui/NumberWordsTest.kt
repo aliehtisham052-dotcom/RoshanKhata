@@ -171,4 +171,21 @@ class NumberWordsTest {
         assertEquals("مائة ألف روبية", NumberWords.inWordsArabic(100000.0, "روبية"))
         assertEquals("مليونان وثلاثة آلاف روبية", NumberWords.inWordsArabic(2003000.0, "روبية"))
     }
+
+    @Test
+    fun `urdu hindi and bengali keep their own words for any currency - 21 Oct`() {
+        val before = com.innovation313.roshankhata.data.Currency.symbol
+        try {
+            com.innovation313.roshankhata.data.Currency.symbol = "AED"
+            assertEquals("پانچ ہزار دو سو AED", NumberWords.amountInWords("ur", 5200.0))
+            assertEquals("पाँच हज़ार दो सौ AED", NumberWords.amountInWords("hi", 5200.0))
+            assertEquals("Paanch Hazar Do Sou AED", NumberWords.amountInWords("ur-Latn", 5200.0))
+            // English keeps the Western groups for a Gulf currency.
+            assertEquals("Five Thousand Two Hundred AED", NumberWords.amountInWords("en", 5200.0))
+            com.innovation313.roshankhata.data.Currency.symbol = "Rs"
+            assertEquals("پانچ ہزار دو سو روپے", NumberWords.amountInWords("ur", 5200.0))
+        } finally {
+            com.innovation313.roshankhata.data.Currency.symbol = before
+        }
+    }
 }

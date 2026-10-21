@@ -255,7 +255,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         val name = dialog.file ?: return
         val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
         scope.launch {
-            told = runCatching { withContext(Dispatchers.IO) { file.writeText(com.innovation313.roshankhata.data.ProductCsv.text(products), Charsets.UTF_8) } }
+            told = runCatching { withContext(Dispatchers.IO) { file.writeText(com.innovation313.roshankhata.data.ProductCsv.text(products, com.innovation313.roshankhata.data.ProductCsv.headers(words)), Charsets.UTF_8) } }
                 .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
         }
     }

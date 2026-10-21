@@ -267,7 +267,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
                     }
                     busy = false
                     result.onSuccess { number -> onClose(); done(words.text(W.transfer_done, number, nameOf(target))) }
-                        .onFailure { problem = it.message ?: it.toString() }
+                        .onFailure { problem = failText(words, it) }
                 }
             }, kind = ButtonKind.ACCENT, enabled = ready)
         }) {
