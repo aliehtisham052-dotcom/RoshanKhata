@@ -12,9 +12,13 @@ Everything here is free to make and free of real customer data.
   (the HTML lives in the session scratchpad; re-render by hand if it changes).
 - `play-icon-512.png` — the store icon.
 - Screenshots: Actions → "Store screenshots" → Run workflow. The emulator
-  seeds a demo book (invented names), captures six screens in English and
-  Urdu, and `scripts/frame_screenshots.py` frames each with a caption. The
-  result is the `store-screenshots` artifact; nothing is committed.
+  seeds a demo book (invented names, one shop per market: a Saudi, Iranian,
+  Indian, Bangladeshi and Indonesian shop beside the Pakistani one, with
+  that country's currency and numbers), captures six screens in each of
+  the seven listing languages (en, ur, ar, fa, hi, bn, in), and
+  `scripts/frame_screenshots.py` frames each with a caption in that
+  language. The result is the `store-screenshots` release; nothing is
+  committed.
 - `fonts/` — the caption font for the images only, not shipped in the app.
 
 Real customer names and numbers must never appear in anything here.
