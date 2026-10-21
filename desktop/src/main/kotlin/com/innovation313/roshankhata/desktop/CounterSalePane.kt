@@ -87,10 +87,16 @@ fun CounterSalePane(
     currency: String,
     reload: Int,
     onChanged: () -> Unit,
-    onReceipt: (List<ThermalReceipt.Line>) -> Unit,
+    onReceipt: (ThermalReceipt.Job) -> Unit,
     keys: KeyActions,
     /** A sale's A4 invoice was made (or found): open it on the Invoices page. */
-    onInvoice: (Long) -> Unit = {}
+    onInvoice: (Long) -> Unit = {},
+    /** A cash sale rung up without a receipt: the drawer still opens (when it is set to). */
+    onDrawer: () -> Unit = {},
+    /** This computer's receipt printer (80 mm, logo, drawer), changed in the counter's settings. */
+    printer: ThermalReceipt.Settings = ThermalReceipt.Settings(),
+    hasLogo: Boolean = false,
+    onPrinter: (ThermalReceipt.Settings) -> Unit = {}
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -109,7 +115,20 @@ fun CounterSalePane(
             )
         }
     }
-    if (settingUp) CounterSettingsDialog(dao) { settingUp = false }
+    if (settingUp) CounterSettingsDialog(dao, printer, hasLogo, onPrinter) { settingUp = false }
+    // Shifts (21 Oct 2026): the person at the counter opens theirs with the float and closes it counted.
+    var shifting by remember { mutableStateOf(false) }
+    val openShifts by remember { dao.observeOpenShifts() }.collectAsState(emptyList())
+    val myShift = openShifts.firstOrNull { it.user == com.innovation313.roshankhata.data.Access.userName }
+    if (shifting) {
+        DialogWindow(onCloseRequest = { shifting = false }, onPreviewKeyEvent = escCloses { shifting = false }, title = word(W.shift_title), state = rememberDialogState(width = 560.dp, height = 720.dp)) {
+            DialogFrame(word(W.shift_title), onClose = { shifting = false }, scroll = false, footer = {
+                FluentButton(word(W.close), { shifting = false }, kind = ButtonKind.STANDARD)
+            }) {
+                com.innovation313.roshankhata.screens.ShiftScreen(dao, Modifier.fillMaxSize(), onChanged = { tick++ })
+            }
+        }
+    }
     val held by remember(tick) { dao.observeHeldSales() }.collectAsState(emptyList())
     val recent by remember(tick) { dao.observeSales() }.collectAsState(emptyList())
 
@@ -122,7 +141,7 @@ fun CounterSalePane(
     val returns by remember(tick) { dao.observeReturns() }.collectAsState(emptyList())
     var showHeld by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
-    if (reporting) ZReportDialog(dao, onReceipt = onReceipt) { reporting = false }
+    if (reporting) ZReportDialog(dao, onReceipt = { onReceipt(ThermalReceipt.Job(it)) }) { reporting = false }
     // Who is at the counter (POS Phase 5), and the manager's PIN for what a cashier may not do alone.
     var signingIn by remember { mutableStateOf(false) }
     if (signingIn) SignInDialog(dao) { signingIn = false }
@@ -201,7 +220,10 @@ fun CounterSalePane(
             }
             result.onSuccess { (sale, party) ->
                 told = words.text(W.pos_posted, sale.sale.saleNumber)
-                if (print) onReceipt(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party))
+                // Cash in the drawer: the drawer opens with the receipt, or alone when none is printed.
+                val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
+                if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party), cash))
+                else if (cash) onDrawer()
                 draft.clear()
                 tick++
                 onChanged()
@@ -248,6 +270,11 @@ fun CounterSalePane(
                 FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
                 if (held.isNotEmpty()) FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.SUBTLE)
+                // The shift on this counter: who has it open, or that none is (a counter in counter mode should have one).
+                FluentButton(
+                    if (myShift != null) word(W.shift_title) else word(W.shift_none), { shifting = true },
+                    kind = if (myShift == null && com.innovation313.roshankhata.data.Access.counterMode) ButtonKind.STANDARD else ButtonKind.SUBTLE
+                )
                 FluentButton(word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } }, kind = ButtonKind.SUBTLE)
             }
             Column(Modifier.fillMaxWidth()) {
@@ -467,7 +494,7 @@ fun CounterSalePane(
     returning?.let { draft ->
         var problem by remember { mutableStateOf<String?>(null) }
         DialogWindow(onCloseRequest = { returning = null }, onPreviewKeyEvent = escCloses { returning = null }, title = word(W.pos_return_title), state = rememberDialogState(width = 620.dp, height = 720.dp)) {
-            DialogFrame(word(W.pos_return_title), subtitle = draft.sale.sale.saleNumber, onClose = { returning = null }, footer = {}) {
+            DialogFrame(word(W.pos_return_title), subtitle = draft.sale.sale.saleNumber, onClose = { returning = null }, scroll = false, footer = {}) {
                 com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { returning = null }, message = problem, onPost = {
                     scope.launch {
                         val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }

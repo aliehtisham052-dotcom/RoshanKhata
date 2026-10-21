@@ -3288,4 +3288,28 @@
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">A4 انوائس</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">شفٽون</string>
+    <string name="shift_open">شفٽ شروع ڪريو</string>
+    <string name="shift_close">شفٽ بند ڪريو</string>
+    <string name="shift_float_help">پهرين وڪري کان اڳ دراز جي نقدي ڳڻيو. شفٽ جو حساب ان ئي ماڻهوءَ جي پنهنجي نقد وڪري ۽ نقد واپسين سان ملايو وڃي ٿو.</string>
+    <string name="shift_opened_at">شروع %1$s</string>
+    <string name="shift_none">ڪا به شفٽ کليل ناهي</string>
+    <string name="shift_already_open">هن ماڻهوءَ جي هڪ شفٽ اڳ ۾ ئي کليل آهي</string>
+    <string name="shift_open_now">هاڻي کليل</string>
+    <string name="shift_recent">تازيون شفٽون</string>
+    <string name="shift_hours">%1$s ڪلاڪ</string>
+    <string name="shift_week_hours">ڪلاڪ، پوئين 7 ڏينهن</string>
+    <string name="shift_closed">شفٽ بند ٿي وئي</string>
+    <string name="shift_of">شفٽ: %1$s</string>
+    <string name="shift_cash_sales">وڪري تي ورتل نقدي</string>
+    <string name="shift_cash_refunds">واپسي تي موٽايل نقدي</string>
+    <string name="audit_shift_opened">شفٽ شروع ٿي</string>
+    <string name="audit_shift_closed">شفٽ بند ٿي</string>
+    <string name="printer_section">هن ڊوائيس جو رسيد پرنٽر</string>
+    <string name="printer_width_80">80 ملي ميٽر رول</string>
+    <string name="printer_logo">مٿي دڪان جو لوگو</string>
+    <string name="printer_drawer">نقد وڪري تي ڪيش دراز کوليو</string>
+    <string name="printer_drawer_help">رسيد پرنٽر ۾ لڳل ڪيش دراز لاءِ. جنهن پرنٽر سان دراز نه هجي اهو ان کي نظرانداز ڪري ٿو.</string>
 </resources>

@@ -277,8 +277,13 @@ object Counter {
      * only expired stock could fill, and IllegalArgumentException with the
      * problem's name if the ticket fails its checks — the screen should have
      * shown [CounterDraft.problem] before offering the button.
+     *
+     * The ticket carries who rang it up — the signed-in name, the owner as
+     * null — so the sales report's cashier rows, the audit and a cashier's
+     * shift ([ShiftMath]) all read the same person (until 21 Oct 2026 this
+     * default was null and every ticket read as the owner's).
      */
-    suspend fun post(dao: KhataDao, draft: CounterDraft, createdBy: String? = null, now: Long = System.currentTimeMillis()): Long {
+    suspend fun post(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName, now: Long = System.currentTimeMillis()): Long {
         val products = dao.productsOnce().associateBy { it.id }
         val today = Fefo.today(now)
         val items = ArrayList<SaleItem>()
@@ -305,7 +310,7 @@ object Counter {
     }
 
     /** Park the draft; returns the held row's id. */
-    suspend fun hold(dao: KhataDao, draft: CounterDraft, createdBy: String? = null): Long {
+    suspend fun hold(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName): Long {
         val id = dao.holdSale(draft.toSale(createdBy), draft.toItems())
         draft.heldId?.let { dao.dropHeldSale(it) }
         return id

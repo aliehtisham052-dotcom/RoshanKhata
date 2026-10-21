@@ -225,4 +225,53 @@ class ScreenProofTest {
             home.deleteRecursively()
         }
     }
+
+    /**
+     * The shared forms in their Windows dialogs (21 Oct 2026): a return, a stock
+     * count and the shift screen each scroll themselves, so the dialog's frame
+     * must not scroll around them — a scroll inside a scroll is measured with no
+     * height limit, which throws for a verticalScroll and leaves a weighted list
+     * with no height. Drawing them is the test: a throw fails it.
+     */
+    @Test
+    fun `the shared forms draw inside a dialog frame`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val home = java.nio.file.Files.createTempDirectory("rk-proof-forms").toFile()
+        val db = com.innovation313.roshankhata.data.DesktopDatabase.open(home.resolve("khata.db"))
+        val dao = db.khataDao()
+        val (sale, stock) = kotlinx.coroutines.runBlocking {
+            val a = dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Muhammad Aslam", phone = "03000000001", isCustomer = true))
+            val dap = dao.insertProduct(com.innovation313.roshankhata.data.Product(name = "DAP", nameKey = "dap", normalisedName = "dap", defaultUnit = "bag", salePrice = 3500.0))
+            val id = dao.postSale(
+                com.innovation313.roshankhata.data.Sale(partyId = a, customerName = "Muhammad Aslam", subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+                listOf(com.innovation313.roshankhata.data.SaleItem(saleId = 0, productId = dap, itemName = "DAP", quantity = 3.0, unit = "bag", rate = 3500.0)),
+                listOf(com.innovation313.roshankhata.data.SalePayment(saleId = 0, method = com.innovation313.roshankhata.data.PaymentMethod.CASH, amount = 10500.0))
+            )
+            dao.openShift(com.innovation313.roshankhata.data.Shift(user = null, openingFloat = 5000.0, openedAt = now - 3 * 60 * 60 * 1000))
+            dao.saleWithLines(id)!! to com.innovation313.roshankhata.data.Stock.of(dao)
+        }
+        val words = desktopWords(Locale.ENGLISH)
+        fun frame(name: String, scroll: Boolean = false, body: @androidx.compose.runtime.Composable () -> Unit): File {
+            val scene = ImageComposeScene(width = 620, height = 720, density = Density(1f)) {
+                RoshanTheme(dark = false) { ProvideWords(words) { DialogFrame(name, onClose = {}, scroll = scroll, footer = {}) { body() } } }
+            }
+            try {
+                scene.render(0); scene.render(16_000_000)
+                val png = scene.render(1_000_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                return File(dir, "$name.png").also { it.writeBytes(png) }
+            } finally { scene.close() }
+        }
+        try {
+            val shots = listOf(
+                frame("dialog-return-en") { com.innovation313.roshankhata.screens.ReturnForm(com.innovation313.roshankhata.screens.ReturnDraft(sale, emptyMap()), onPost = {}, onCancel = {}) },
+                frame("dialog-count-en") { com.innovation313.roshankhata.screens.StockCountForm(com.innovation313.roshankhata.screens.CountDraft(stock), onSave = {}, onCancel = {}, modifier = Modifier.fillMaxSize()) },
+                frame("dialog-shift-en") { com.innovation313.roshankhata.screens.ShiftScreen(dao, Modifier.fillMaxSize()) }
+            )
+            for (f in shots) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 6_000)
+        } finally {
+            db.close()
+            home.deleteRecursively()
+        }
+    }
 }

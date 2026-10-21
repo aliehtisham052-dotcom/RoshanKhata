@@ -3448,4 +3448,28 @@
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">فاتورة A4</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">الورديات</string>
+    <string name="shift_open">فتح وردية</string>
+    <string name="shift_close">إغلاق الوردية</string>
+    <string name="shift_float_help">عُدّ النقد في الدرج قبل أول عملية بيع. تُطابق الوردية مع مبيعات هذا الشخص النقدية ومرتجعاته النقدية فقط.</string>
+    <string name="shift_opened_at">فُتحت %1$s</string>
+    <string name="shift_none">لا توجد وردية مفتوحة</string>
+    <string name="shift_already_open">لهذا الشخص وردية مفتوحة بالفعل</string>
+    <string name="shift_open_now">مفتوحة الآن</string>
+    <string name="shift_recent">الورديات الأخيرة</string>
+    <string name="shift_hours">%1$s س</string>
+    <string name="shift_week_hours">الساعات، آخر 7 أيام</string>
+    <string name="shift_closed">أُغلقت الوردية</string>
+    <string name="shift_of">الوردية: %1$s</string>
+    <string name="shift_cash_sales">النقد المستلم من المبيعات</string>
+    <string name="shift_cash_refunds">النقد المُعاد عن المرتجعات</string>
+    <string name="audit_shift_opened">فُتحت وردية</string>
+    <string name="audit_shift_closed">أُغلقت وردية</string>
+    <string name="printer_section">طابعة الإيصالات على هذا الجهاز</string>
+    <string name="printer_width_80">لفة 80 مم</string>
+    <string name="printer_logo">شعار المتجر في الأعلى</string>
+    <string name="printer_drawer">افتح درج النقود عند البيع النقدي</string>
+    <string name="printer_drawer_help">لدرج نقود موصول بطابعة الإيصالات. الطابعة التي لا درج لها تتجاهل ذلك.</string>
 </resources>

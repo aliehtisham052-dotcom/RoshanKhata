@@ -94,6 +94,20 @@ class AppPrefs(private val file: File) {
         }
     }
 
+    /** This computer's receipt printer: 80 mm, the logo, the cash drawer (21 Oct 2026). */
+    fun receipt(): ThermalReceipt.Settings = ThermalReceipt.Settings(
+        wide = props.getProperty(KEY_RECEIPT_WIDE) == "true",
+        logo = props.getProperty(KEY_RECEIPT_LOGO) == "true",
+        drawer = props.getProperty(KEY_RECEIPT_DRAWER) == "true"
+    )
+
+    fun setReceipt(r: ThermalReceipt.Settings) {
+        props.setProperty(KEY_RECEIPT_WIDE, r.wide.toString())
+        props.setProperty(KEY_RECEIPT_LOGO, r.logo.toString())
+        props.setProperty(KEY_RECEIPT_DRAWER, r.drawer.toString())
+        save()
+    }
+
     /** True when the owner has set an App Lock PIN on this computer. */
     fun hasPin(): Boolean = !props.getProperty(KEY_PIN_HASH).isNullOrBlank() && !props.getProperty(KEY_PIN_SALT).isNullOrBlank()
 
@@ -155,6 +169,9 @@ class AppPrefs(private val file: File) {
         const val KEY_REMINDED = "reminded_day"
         const val KEY_UPDATE_LATEST = "update_latest"
         const val KEY_UPDATE_AT = "update_checked_at"
+        const val KEY_RECEIPT_WIDE = "receipt_80mm"
+        const val KEY_RECEIPT_LOGO = "receipt_logo"
+        const val KEY_RECEIPT_DRAWER = "receipt_drawer"
     }
 }
 

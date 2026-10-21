@@ -3257,4 +3257,28 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">Faktur A4</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">Shift</string>
+    <string name="shift_open">Buka shift</string>
+    <string name="shift_close">Tutup shift</string>
+    <string name="shift_float_help">Hitung uang tunai di laci sebelum penjualan pertama. Shift dicocokkan dengan penjualan tunai dan pengembalian tunai orang ini sendiri.</string>
+    <string name="shift_opened_at">Dibuka %1$s</string>
+    <string name="shift_none">Tidak ada shift yang terbuka</string>
+    <string name="shift_already_open">Orang ini sudah punya shift yang terbuka</string>
+    <string name="shift_open_now">Terbuka sekarang</string>
+    <string name="shift_recent">Shift terakhir</string>
+    <string name="shift_hours">%1$s jam</string>
+    <string name="shift_week_hours">Jam, 7 hari terakhir</string>
+    <string name="shift_closed">Shift ditutup</string>
+    <string name="shift_of">Shift: %1$s</string>
+    <string name="shift_cash_sales">Tunai dari penjualan</string>
+    <string name="shift_cash_refunds">Tunai dikembalikan untuk retur</string>
+    <string name="audit_shift_opened">Shift dibuka</string>
+    <string name="audit_shift_closed">Shift ditutup</string>
+    <string name="printer_section">Printer struk di perangkat ini</string>
+    <string name="printer_width_80">Gulungan 80 mm</string>
+    <string name="printer_logo">Logo toko di atas</string>
+    <string name="printer_drawer">Buka laci kas pada penjualan tunai</string>
+    <string name="printer_drawer_help">Untuk laci kas yang tersambung ke printer struk. Printer tanpa laci akan mengabaikannya.</string>
 </resources>

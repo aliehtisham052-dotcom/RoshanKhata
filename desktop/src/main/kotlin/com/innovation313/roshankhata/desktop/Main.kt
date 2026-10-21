@@ -327,8 +327,14 @@ private fun Book(
     var choosingLanguage by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<LedgerEntry?>(null) }
     var deleting by remember { mutableStateOf<LedgerEntry?>(null) }
-    // A receipt waiting for the owner to pick the thermal printer (Phase 9e).
-    var receipt by remember { mutableStateOf<List<ThermalReceipt.Line>?>(null) }
+    // A receipt waiting for the owner to pick the thermal printer (Phase 9e); a counter sale's
+    // says whether it was paid in cash, for the drawer (21 Oct 2026).
+    var receipt by remember { mutableStateOf<ThermalReceipt.Job?>(null) }
+    var printer by remember { mutableStateOf(appPrefs.receipt()) }
+    // The shop's logo for the receipt's top, read from this business's pictures when it is printed.
+    fun receiptLogo(): java.awt.image.BufferedImage? = runCatching {
+        images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { javax.imageio.ImageIO.read(it) }
+    }.getOrNull()
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
     var bin by remember { mutableStateOf(false) }
     // The phone's book over WiFi (Backup → Send to computer on the phone): the QR window is open.
@@ -545,7 +551,14 @@ private fun Book(
                         CounterSalePane(
                             dao, parties, words, rtl, shop, com.innovation313.roshankhata.data.Currency.symbol, reload,
                             onChanged = { reload++ }, onReceipt = { receipt = it }, keys = keys,
-                            onInvoice = { id -> invoiceToOpen = id; section = Section.INVOICES }
+                            onInvoice = { id -> invoiceToOpen = id; section = Section.INVOICES },
+                            // A cash sale rung up without a receipt still opens the drawer, through the printer used last.
+                            onDrawer = {
+                                val last = ThermalReceipt.lastPrinter
+                                if (printer.drawer && last != null) scope.launch(Dispatchers.IO) { ThermalReceipt.openDrawer(last) }
+                            },
+                            printer = printer, hasLogo = images.has(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO),
+                            onPrinter = { r -> appPrefs.setReceipt(r); printer = r }
                         )
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
@@ -1032,7 +1045,7 @@ private fun Book(
                     onDelete = { Gates.edit { deleting = e; editing = null } },
                     onPrint = {
                         val item = loaded.firstOrNull()
-                        receipt = listOfNotNull(
+                        receipt = ThermalReceipt.Job(listOfNotNull(
                             ThermalReceipt.Line(shopName() ?: words.text(W.app_name), 26f, bold = true, centre = true),
                             ThermalReceipt.Line(Format.dateTime(e.timestamp) + "  " + e.entryNumber, 18f, centre = true),
                             ThermalReceipt.Line(""),
@@ -1050,7 +1063,7 @@ private fun Book(
                             ThermalReceipt.Line(""),
                             forParty?.let { p -> ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(p.balance), 22f, bold = true) },
                             ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
-                        )
+                        ))
                     }
                 )
             }
@@ -1269,7 +1282,8 @@ private fun Book(
         }
     }
     if (reporting) ReportProblemDialog(words, home) { reporting = false }
-    receipt?.let { lines ->
+    receipt?.let { job ->
+        val lines = job.lines
         // The receipt as a picture too (the phone's EntryDetail share), for WhatsApp or a folder.
         val savePicture = {
             receipt = null
@@ -1281,16 +1295,18 @@ private fun Book(
             if (name != null) {
                 val file = File(dialog.directory, if (name.endsWith(".png", true)) name else "$name.png")
                 scope.launch {
-                    val ok = withContext(Dispatchers.IO) { runCatching { javax.imageio.ImageIO.write(ThermalReceipt.image(lines, rtl), "png", file) }.isSuccess }
+                    val ok = withContext(Dispatchers.IO) {
+                        runCatching { javax.imageio.ImageIO.write(ThermalReceipt.image(lines, rtl, printer.width, receiptLogo().takeIf { printer.logo }), "png", file) }.isSuccess
+                    }
                     told = words.text(W.print_receipt) to (if (ok) words.text(W.report_saved_to, file.absolutePath) else words.text(W.backup_failed))
                 }
             }
         }
-        PrinterChoiceDialog(remember { ThermalReceipt.printers() }, onCancel = { receipt = null }, onSavePicture = savePicture) { printer ->
+        PrinterChoiceDialog(remember { ThermalReceipt.printers() }, onCancel = { receipt = null }, onSavePicture = savePicture) { name ->
             receipt = null
             scope.launch {
-                val ok = withContext(Dispatchers.IO) { ThermalReceipt.send(printer, ThermalReceipt.bytes(lines, rtl)) }
-                if (ok) ThermalReceipt.lastPrinter = printer
+                val ok = withContext(Dispatchers.IO) { ThermalReceipt.send(name, ThermalReceipt.bytes(lines, rtl, printer, receiptLogo(), cash = job.cash)) }
+                if (ok) ThermalReceipt.lastPrinter = name
                 told = words.text(W.print_receipt) to words.text(if (ok) W.print_done else W.print_failed)
             }
         }

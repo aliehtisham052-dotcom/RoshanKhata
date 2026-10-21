@@ -70,7 +70,7 @@ fun InventoryPane(dao: KhataDao, words: Words, reload: Int, onChanged: () -> Uni
 
     counting?.let { draft ->
         DialogWindow(onCloseRequest = { counting = null }, onPreviewKeyEvent = escCloses { counting = null }, title = word(W.stock_count_title), state = rememberDialogState(width = 640.dp, height = 760.dp)) {
-            DialogFrame(word(W.stock_count_title), onClose = { counting = null }, footer = {}) {
+            DialogFrame(word(W.stock_count_title), onClose = { counting = null }, scroll = false, footer = {}) {
                 StockCountForm(draft, onCancel = { counting = null }, onSave = {
                     scope.launch {
                         val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }) }.getOrDefault(0) }

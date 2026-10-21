@@ -3260,4 +3260,28 @@
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">اے4 انوائس</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">شفٹیں</string>
+    <string name="shift_open">شفٹ شروع کریں</string>
+    <string name="shift_close">شفٹ بند کریں</string>
+    <string name="shift_float_help">پہلی فروخت سے پہلے دراز کی نقدی گنیں۔ شفٹ کا حساب اسی شخص کی اپنی نقد فروخت اور نقد واپسیوں سے ملایا جاتا ہے۔</string>
+    <string name="shift_opened_at">شروع %1$s</string>
+    <string name="shift_none">کوئی شفٹ کھلی نہیں</string>
+    <string name="shift_already_open">اس شخص کی ایک شفٹ پہلے سے کھلی ہے</string>
+    <string name="shift_open_now">ابھی کھلی</string>
+    <string name="shift_recent">حالیہ شفٹیں</string>
+    <string name="shift_hours">%1$s گھنٹے</string>
+    <string name="shift_week_hours">گھنٹے، پچھلے 7 دن</string>
+    <string name="shift_closed">شفٹ بند ہو گئی</string>
+    <string name="shift_of">شفٹ: %1$s</string>
+    <string name="shift_cash_sales">فروخت پر لی گئی نقدی</string>
+    <string name="shift_cash_refunds">واپسی پر لوٹائی گئی نقدی</string>
+    <string name="audit_shift_opened">شفٹ شروع ہوئی</string>
+    <string name="audit_shift_closed">شفٹ بند ہوئی</string>
+    <string name="printer_section">اس ڈیوائس کا رسید پرنٹر</string>
+    <string name="printer_width_80">80 ملی میٹر رول</string>
+    <string name="printer_logo">اوپر دکان کا لوگو</string>
+    <string name="printer_drawer">نقد فروخت پر کیش دراز کھولیں</string>
+    <string name="printer_drawer_help">رسید پرنٹر میں لگی کیش دراز کے لیے۔ جس پرنٹر کے ساتھ دراز نہ ہو وہ اسے نظر انداز کر دیتا ہے۔</string>
 </resources>

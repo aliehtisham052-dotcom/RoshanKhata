@@ -414,4 +414,6 @@ object AuditAction {
     /** Five wrong PINs in a row: the device waits. */
     const val PIN_WAIT = "pin_wait"
     const val SIGN_OUT = "sign_out"
+    const val SHIFT_OPENED = "shift_opened"
+    const val SHIFT_CLOSED = "shift_closed"
 }

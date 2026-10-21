@@ -289,6 +289,12 @@
             android:parentActivityName=".StaffActivity" />
 
         <activity
+            android:name=".ShiftActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".CounterSaleActivity" />
+
+        <activity
             android:name=".CounterSaleActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"

@@ -95,5 +95,7 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.COUNTER_OFF -> word(W.audit_counter_off)
     AuditAction.PIN_WAIT -> word(W.audit_pin_wait)
     AuditAction.SIGN_OUT -> word(W.audit_sign_out)
+    AuditAction.SHIFT_OPENED -> word(W.audit_shift_opened)
+    AuditAction.SHIFT_CLOSED -> word(W.audit_shift_closed)
     else -> a.action
 }

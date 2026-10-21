@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.data
 
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** Every byte the printer receives, for pictures small enough to check by hand. */
@@ -67,5 +68,26 @@ class EscPosTest {
         val second = 2 + 8 + 256
         assertArrayEquals(u(0x1D, 0x76, 0x30, 0x00, 1, 0, 44, 0), out.copyOfRange(second, second + 8))
         assertEquals(2 + 8 + 256 + 8 + 44 + 3 + 4, out.size)
+    }
+
+    @Test
+    fun `a grey logo dithers to about half ink, black stays black and paper stays paper`() {
+        val grey = 0xFF808080.toInt()
+        val out = EscPos.dither(IntArray(64 * 64) { grey }, 64, 64)
+        val ink = out.count { it == black }
+        assertTrue("about half: $ink", ink in 64 * 64 * 2 / 5..64 * 64 * 3 / 5)
+        assertTrue(out.all { it == black || it == white })
+        assertTrue(EscPos.dither(IntArray(16) { black }, 4, 4).all { it == black })
+        assertTrue(EscPos.dither(IntArray(16) { 0x00000000 }, 4, 4).all { it == white })
+    }
+
+    @Test
+    fun `the drawer's pulse goes first, only when asked`() {
+        val receipt = EscPos.raster(IntArray(8) { white }, 8, 1)
+        assertArrayEquals(receipt, EscPos.withDrawer(receipt, false))
+        val kicked = EscPos.withDrawer(receipt, true)
+        assertArrayEquals(u(0x1B, 0x70, 0x00, 0x19, 0xFA), kicked.copyOfRange(0, 5))
+        assertArrayEquals(receipt, kicked.copyOfRange(5, kicked.size))
+        assertEquals(576, EscPos.WIDTH_80MM)
     }
 }

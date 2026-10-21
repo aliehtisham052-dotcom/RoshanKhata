@@ -3260,4 +3260,28 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">A4 invoice</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">Shiftein</string>
+    <string name="shift_open">Shift shuru karein</string>
+    <string name="shift_close">Shift band karein</string>
+    <string name="shift_float_help">Pehli sale se pehle daraz ki naqdi ginein. Shift ka hisaab isi shakhs ki apni naqd sale aur naqd wapsiyon se milaya jata hai.</string>
+    <string name="shift_opened_at">Shuru %1$s</string>
+    <string name="shift_none">Koi shift khuli nahi</string>
+    <string name="shift_already_open">Is shakhs ki ek shift pehle se khuli hai</string>
+    <string name="shift_open_now">Abhi khuli</string>
+    <string name="shift_recent">Haaliya shiftein</string>
+    <string name="shift_hours">%1$s ghante</string>
+    <string name="shift_week_hours">Ghante, pichhle 7 din</string>
+    <string name="shift_closed">Shift band ho gayi</string>
+    <string name="shift_of">Shift: %1$s</string>
+    <string name="shift_cash_sales">Sale par li gayi naqdi</string>
+    <string name="shift_cash_refunds">Wapsi par lautayi gayi naqdi</string>
+    <string name="audit_shift_opened">Shift shuru hui</string>
+    <string name="audit_shift_closed">Shift band hui</string>
+    <string name="printer_section">Is device ka raseed printer</string>
+    <string name="printer_width_80">80 mm roll</string>
+    <string name="printer_logo">Upar dukaan ka logo</string>
+    <string name="printer_drawer">Naqd sale par cash daraz kholein</string>
+    <string name="printer_drawer_help">Raseed printer mein lagi cash daraz ke liye. Jis printer ke saath daraz na ho woh ise nazar andaz kar deta hai.</string>
 </resources>

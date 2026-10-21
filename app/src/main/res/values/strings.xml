@@ -3474,4 +3474,28 @@ You can change this any time from this screen.</string>
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">A4 invoice</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">Shifts</string>
+    <string name="shift_open">Open shift</string>
+    <string name="shift_close">Close shift</string>
+    <string name="shift_float_help">Count the cash in the drawer before the first sale. The shift is checked against this person\'s own cash sales and cash refunds.</string>
+    <string name="shift_opened_at">Opened %1$s</string>
+    <string name="shift_none">No shift open</string>
+    <string name="shift_already_open">A shift is already open for this person</string>
+    <string name="shift_open_now">Open now</string>
+    <string name="shift_recent">Recent shifts</string>
+    <string name="shift_hours">%1$s h</string>
+    <string name="shift_week_hours">Hours, last 7 days</string>
+    <string name="shift_closed">Shift closed</string>
+    <string name="shift_of">Shift: %1$s</string>
+    <string name="shift_cash_sales">Cash taken on sales</string>
+    <string name="shift_cash_refunds">Cash given back on returns</string>
+    <string name="audit_shift_opened">Shift opened</string>
+    <string name="audit_shift_closed">Shift closed</string>
+    <string name="printer_section">Receipt printer on this device</string>
+    <string name="printer_width_80">80 mm roll</string>
+    <string name="printer_logo">Shop logo at the top</string>
+    <string name="printer_drawer">Open the cash drawer on cash sales</string>
+    <string name="printer_drawer_help">For a cash drawer plugged into the receipt printer. A printer without one ignores it.</string>
 </resources>
