@@ -3455,6 +3455,49 @@ interface KhataDao {
     )
     suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
 
+    /** Cash taken on [user]'s counter sales (null = the owner's) in [from, to): a shift's drawer ([ShiftMath]). */
+    @Query(
+        "SELECT COALESCE(SUM(p.amount), 0) FROM sale_payments p JOIN sales s ON s.id = p.saleId " +
+        "WHERE s.isDeleted = 0 AND s.status = 'done' AND p.method = 'cash' AND s.timestamp >= :from AND s.timestamp < :to " +
+        "AND ((:user IS NULL AND s.createdBy IS NULL) OR s.createdBy = :user)"
+    )
+    suspend fun cashTakenBy(user: String?, from: Long, to: Long): Double
+
+    /** Cash handed back on [user]'s counter returns in [from, to). */
+    @Query(
+        "SELECT COALESCE(SUM(refundAmount), 0) FROM sale_returns WHERE isDeleted = 0 AND status = 'done' AND refundMethod = 'cash' " +
+        "AND timestamp >= :from AND timestamp < :to AND ((:user IS NULL AND createdBy IS NULL) OR createdBy = :user)"
+    )
+    suspend fun cashRefundedBy(user: String?, from: Long, to: Long): Double
+
+    /** A shift opened at the counter, with its audit row; refused when this person already has one open. */
+    @Transaction
+    suspend fun openShift(shift: Shift): Long {
+        require(openShiftOf(shift.user) == null) { "a shift is already open" }
+        val id = insertShift(shift.copy(id = 0, closedAt = null, counted = null, expected = null))
+        insertAudit(AuditLog(user = shift.user ?: Access.OWNER, action = AuditAction.SHIFT_OPENED, refTable = "shifts", refId = id,
+            detail = "%.2f".format(Digits.FIGURES, shift.openingFloat)))
+        return id
+    }
+
+    /**
+     * A shift closed with the cash counted: what the drawer should hold is
+     * worked out now ([ShiftMath.expected]) and kept beside the count; a
+     * difference needs its [note]. One audit row with the difference.
+     */
+    @Transaction
+    suspend fun closeShift(id: Long, counted: Double, note: String?, now: Long = System.currentTimeMillis()): Shift {
+        val shift = getShift(id) ?: throw IllegalArgumentException("no such shift")
+        require(shift.isOpen) { "already closed" }
+        val expected = ShiftMath.expected(this, shift, now)
+        require(!ShiftMath.needsReason(expected, counted, note)) { "a difference needs its reason" }
+        val closed = shift.copy(closedAt = now, counted = LineMath.round(counted), expected = expected, note = note?.trim()?.ifBlank { null })
+        updateShift(closed)
+        insertAudit(AuditLog(user = shift.user ?: Access.OWNER, action = AuditAction.SHIFT_CLOSED, refTable = "shifts", refId = id,
+            detail = "%.2f".format(Digits.FIGURES, closed.difference ?: 0.0)))
+        return closed
+    }
+
     /** A sale's invoice ([SaleInvoice]) saved and remembered on the sale, in one transaction. */
     @Transaction
     suspend fun linkSaleInvoice(saleId: Long, invoice: Invoice, items: List<InvoiceItem>): Long {

@@ -760,8 +760,9 @@ class EntryDetailActivity : BaseActivity() {
         lifecycleScope.launch {
             val ok = withContext(kotlinx.coroutines.Dispatchers.IO) {
                 try {
+                    // The roll's width from the counter's printer settings (58 or 80 mm).
                     com.innovation313.roshankhata.ui.ReceiptPrinter.send(
-                        device, com.innovation313.roshankhata.ui.ReceiptPrinter.bytes(picture))
+                        device, com.innovation313.roshankhata.ui.ReceiptPrinter.bytes(picture, com.innovation313.roshankhata.ui.TextReceipt.settings(this@EntryDetailActivity).width))
                     true
                 } catch (e: Exception) {
                     false

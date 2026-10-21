@@ -426,6 +426,14 @@ fun DialogFrame(
     subtitle: String? = null,
     onClose: () -> Unit,
     footerStart: (@Composable () -> Unit)? = null,
+    /**
+     * False for a body that scrolls itself — the shared forms (ReturnForm,
+     * StockCountForm, ShiftScreen) and anything with a LazyColumn. A scrolling
+     * body inside this frame's own scroll is measured with no height limit:
+     * a nested verticalScroll throws, and a weighted LazyColumn gets no
+     * height at all (21 Oct 2026, found reading the return dialog).
+     */
+    scroll: Boolean = true,
     footer: @Composable () -> Unit,
     body: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
@@ -439,7 +447,8 @@ fun DialogFrame(
             Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = onClose), contentAlignment = Alignment.Center) { Glyph("ic_close", c.inkSoft, 14) }
         }
         Column(
-            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 20.dp),
+            Modifier.weight(1f).fillMaxWidth().then(if (scroll) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+                .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = if (scroll) 20.dp else 8.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
             content = body
         )

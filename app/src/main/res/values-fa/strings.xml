@@ -3288,4 +3288,28 @@
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">فاکتور A4</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">شیفت‌ها</string>
+    <string name="shift_open">باز کردن شیفت</string>
+    <string name="shift_close">بستن شیفت</string>
+    <string name="shift_float_help">پیش از اولین فروش، پول نقد داخل کشو را بشمارید. شیفت با فروش نقدی و بازپرداخت نقدی خود همین شخص سنجیده می‌شود.</string>
+    <string name="shift_opened_at">باز شده %1$s</string>
+    <string name="shift_none">هیچ شیفتی باز نیست</string>
+    <string name="shift_already_open">این شخص از قبل یک شیفت باز دارد</string>
+    <string name="shift_open_now">اکنون باز</string>
+    <string name="shift_recent">شیفت‌های اخیر</string>
+    <string name="shift_hours">%1$s ساعت</string>
+    <string name="shift_week_hours">ساعت‌ها، ۷ روز گذشته</string>
+    <string name="shift_closed">شیفت بسته شد</string>
+    <string name="shift_of">شیفت: %1$s</string>
+    <string name="shift_cash_sales">نقد دریافتی از فروش</string>
+    <string name="shift_cash_refunds">نقد پس‌داده برای مرجوعی</string>
+    <string name="audit_shift_opened">شیفت باز شد</string>
+    <string name="audit_shift_closed">شیفت بسته شد</string>
+    <string name="printer_section">چاپگر رسید روی این دستگاه</string>
+    <string name="printer_width_80">رول ۸۰ میلی‌متری</string>
+    <string name="printer_logo">لوگوی فروشگاه در بالا</string>
+    <string name="printer_drawer">باز کردن کشوی پول در فروش نقدی</string>
+    <string name="printer_drawer_help">برای کشوی پولی که به چاپگر رسید وصل است. چاپگری که کشو ندارد آن را نادیده می‌گیرد.</string>
 </resources>

@@ -61,6 +61,8 @@ class CounterSaleActivity : BaseActivity() {
                     getString(R.string.counter_settings)) { counterSettings() }
                 true
             }
+            // Shifts (21 Oct 2026): the float in, the cash counted out, per person.
+            menu.add(R.string.shift_title).setOnMenuItemClickListener { startActivity(Intent(this@CounterSaleActivity, ShiftActivity::class.java)); true }
             // Who is at the counter (POS Phase 5).
             menu.add(R.string.access_who).setOnMenuItemClickListener {
                 com.innovation313.roshankhata.ui.AccessUi.signIn(this@CounterSaleActivity, dao) { message = com.innovation313.roshankhata.data.Access.userName ?: getString(R.string.access_owner) }
@@ -104,22 +106,43 @@ class CounterSaleActivity : BaseActivity() {
         }
     }
 
-    /** Prices with their tax inside or not (the book's setting, so the computer's counter follows it too). */
+    /**
+     * The counter's settings, two kinds said apart: the book's (prices with
+     * their tax inside or not — the computer's counter follows it too) and
+     * this phone's receipt printer (an 80 mm roll, the shop's logo at the top,
+     * the cash drawer opened on a cash sale; TextReceipt reads them).
+     */
     private fun counterSettings() {
         lifecycleScope.launch {
             val on = withContext(Dispatchers.IO) {
                 com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX))
             }
+            val printer = com.innovation313.roshankhata.ui.TextReceipt.settings(this@CounterSaleActivity)
+            val hasLogo = com.innovation313.roshankhata.data.BusinessProfile.hasLogo(this@CounterSaleActivity)
             val box = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax); isChecked = on }
             val help = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax_help); textSize = 13f }
+            val head = android.widget.TextView(this@CounterSaleActivity).apply {
+                setText(R.string.printer_section); textSize = 15f; setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setPadding(0, (16 * resources.displayMetrics.density).toInt(), 0, 0)
+            }
+            val wide = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.printer_width_80); isChecked = printer.wide }
+            val logo = android.widget.CheckBox(this@CounterSaleActivity).apply {
+                setText(if (hasLogo) R.string.printer_logo else R.string.biz_card_logo_none); isChecked = printer.logo && hasLogo; isEnabled = hasLogo
+            }
+            val drawer = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.printer_drawer); isChecked = printer.drawer }
+            val drawerHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.printer_drawer_help); textSize = 13f }
             val pad = (20 * resources.displayMetrics.density).toInt()
             val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
-                orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, 0); addView(box); addView(help)
+                orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, 0)
+                listOf(box, help, head, wide, logo, drawer, drawerHelp).forEach { addView(it) }
             }
+            val scroll = android.widget.ScrollView(this@CounterSaleActivity).apply { addView(view) }
             MaterialAlertDialogBuilder(this@CounterSaleActivity)
                 .setTitle(R.string.counter_settings)
-                .setView(view)
+                .setView(scroll)
                 .setPositiveButton(R.string.save) { _, _ ->
+                    com.innovation313.roshankhata.ui.TextReceipt.setSettings(this@CounterSaleActivity,
+                        com.innovation313.roshankhata.ui.TextReceipt.Settings(wide.isChecked, logo.isChecked, drawer.isChecked))
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX, if (box.isChecked) "1" else null)
@@ -197,7 +220,11 @@ class CounterSaleActivity : BaseActivity() {
                         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
                     }
                     // The paired Bluetooth receipt printer (POS Phase 8), the ticket as a picture the roll's width.
-                    .setNeutralButton(R.string.print_receipt) { _, _ -> com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text) }
+                    .setNeutralButton(R.string.print_receipt) { _, _ ->
+                        // Paid at least partly in cash: the drawer opens as the ticket prints (when it is set to).
+                        val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
+                        com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash)
+                    }
                     .setNegativeButton(R.string.close, null)
                     .show()
             }.onFailure { e ->

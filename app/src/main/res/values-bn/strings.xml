@@ -3304,4 +3304,28 @@
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">A4 ইনভয়েস</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">শিফট</string>
+    <string name="shift_open">শিফট শুরু করুন</string>
+    <string name="shift_close">শিফট বন্ধ করুন</string>
+    <string name="shift_float_help">প্রথম বিক্রির আগে ড্রয়ারের নগদ গুনে নিন। শিফটটি এই ব্যক্তির নিজের নগদ বিক্রি ও নগদ ফেরতের সাথে মেলানো হয়।</string>
+    <string name="shift_opened_at">শুরু %1$s</string>
+    <string name="shift_none">কোনো শিফট খোলা নেই</string>
+    <string name="shift_already_open">এই ব্যক্তির একটি শিফট আগে থেকেই খোলা</string>
+    <string name="shift_open_now">এখন খোলা</string>
+    <string name="shift_recent">সাম্প্রতিক শিফট</string>
+    <string name="shift_hours">%1$s ঘণ্টা</string>
+    <string name="shift_week_hours">ঘণ্টা, গত ৭ দিন</string>
+    <string name="shift_closed">শিফট বন্ধ হয়েছে</string>
+    <string name="shift_of">শিফট: %1$s</string>
+    <string name="shift_cash_sales">বিক্রিতে নেওয়া নগদ</string>
+    <string name="shift_cash_refunds">ফেরতে দেওয়া নগদ</string>
+    <string name="audit_shift_opened">শিফট শুরু হয়েছে</string>
+    <string name="audit_shift_closed">শিফট বন্ধ হয়েছে</string>
+    <string name="printer_section">এই ডিভাইসের রসিদ প্রিন্টার</string>
+    <string name="printer_width_80">৮০ মিমি রোল</string>
+    <string name="printer_logo">ওপরে দোকানের লোগো</string>
+    <string name="printer_drawer">নগদ বিক্রিতে ক্যাশ ড্রয়ার খুলুন</string>
+    <string name="printer_drawer_help">রসিদ প্রিন্টারে লাগানো ক্যাশ ড্রয়ারের জন্য। যে প্রিন্টারে ড্রয়ার নেই সেটি এটি উপেক্ষা করে।</string>
 </resources>
