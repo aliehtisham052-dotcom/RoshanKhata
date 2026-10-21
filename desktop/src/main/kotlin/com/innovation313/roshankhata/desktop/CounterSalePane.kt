@@ -226,18 +226,20 @@ fun CounterSalePane(
         }
     }
 
-    Row(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+    val narrow = maxWidth < 1000.dp
+    Row(Modifier.fillMaxSize().padding(horizontal = if (narrow) 16.dp else 24.dp, vertical = 18.dp), horizontalArrangement = Arrangement.spacedBy(if (narrow) 12.dp else 16.dp)) {
         // ---- The start side: the item box and the ticket ----
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             PageHeader(word(W.pos_title), word(W.pos_keys_help), actions = {
-                FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
-                if (held.isNotEmpty()) {
-                    FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
-                }
-                FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.SUBTLE)
                 FluentButton(word(W.pos_hold), { hold() }, kind = ButtonKind.STANDARD, enabled = draft.lines.isNotEmpty())
                 FluentButton(word(W.pos_clear), { draft.clear(); told = null }, kind = ButtonKind.SUBTLE, enabled = !draft.isEmpty)
             })
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
+                if (held.isNotEmpty()) FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.SUBTLE)
+            }
             Column(Modifier.fillMaxWidth()) {
                 FluentField(
                     query, { query = it }, Modifier.fillMaxWidth().focusRequester(searchFocus)
@@ -274,7 +276,7 @@ fun CounterSalePane(
                 }
             }
             ListCard(Modifier.fillMaxWidth().weight(1f)) {
-                TableHead(listOf(word(W.pos_col_item) to 5, word(W.pos_col_qty) to 2, word(W.pos_col_rate) to 2, word(W.pos_discount) to 2, word(W.pos_col_total) to 2, "" to 1), endAligned = setOf(2, 4))
+                WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.pos_col_qty) to 2f, word(W.pos_col_rate) to 2f, word(W.pos_discount) to 2f, word(W.pos_col_total) to 2f, "" to 1f), endAligned = setOf(4))
                 if (draft.lines.isEmpty()) {
                     Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                         Text(word(W.pos_lines_empty), color = c.textMuted, fontSize = 14.sp)
@@ -320,7 +322,7 @@ fun CounterSalePane(
         }
 
         // ---- The end side: who, how much, how paid, the button ----
-        Column(Modifier.width(360.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.width(if (narrow) 300.dp else 360.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             FluentCard { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 CardTitle(word(W.customer), end = { KeyCap("F8") })
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -388,6 +390,7 @@ fun CounterSalePane(
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { KeyCap("F12") }
         }
+    }
     }
 
     if (choosingParty) {
@@ -518,8 +521,8 @@ private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSumm
                     else -> Tag(word(W.pos_status_done), Look.accent, Look.accentTint)
                 }
                 if (s.status == SaleStatus.DONE) {
-                    FluentButton(word(W.pos_return), { onReturn(s) }, kind = ButtonKind.SUBTLE)
-                    FluentButton(word(W.pos_void), { onVoid(s) }, kind = ButtonKind.SUBTLE)
+                    IconAction("ic_arrow_got", word(W.pos_return), { onReturn(s) })
+                    IconAction("ic_close", word(W.pos_void), { onVoid(s) })
                 } else Spacer(Modifier.width(8.dp))
             }
             if (i < rows.lastIndex) Rule()
