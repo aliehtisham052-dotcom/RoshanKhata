@@ -43,7 +43,13 @@ object Stock {
         /** The unit stock arrived in, where the bills agree on one. */
         val boughtUnit: String?,
         /** The unit stock left in, where the entries agree on one. */
-        val soldUnit: String?
+        val soldUnit: String?,
+        /**
+         * One side was counted in two units the app cannot convert (bills in
+         * bag and in kg, with no pack saying how many kg a bag is): its sum
+         * means nothing, so there is no figure on hand.
+         */
+        val mixedUnits: Boolean = false
     ) {
 
         /**
@@ -67,6 +73,7 @@ object Stock {
          */
         val unitsAgree: Boolean
             get() {
+                if (mixedUnits) return false
                 val a = boughtUnit?.trim()?.lowercase()?.takeIf { it.isNotEmpty() }
                 val b = soldUnit?.trim()?.lowercase()?.takeIf { it.isNotEmpty() }
                 return a == null || b == null || a == b
@@ -107,21 +114,13 @@ object Stock {
         /** Corrections to the shelf (POS Phase 6), signed; added to the bought side so a count sets the figure. */
         adjusted: List<ProductQty> = emptyList()
     ): List<ProductStock> {
-        val boughtBy = HashMap(bought.associateBy { it.productId })
-        for (a in adjusted) {
-            val b = boughtBy[a.productId]
-            boughtBy[a.productId] = if (b == null) a else ProductQty(a.productId, b.qty + a.qty, b.unit ?: a.unit)
-        }
-        val soldBy = HashMap(sold.associateBy { it.productId })
-        for (w in walkIn) {
-            val s = soldBy[w.productId]
-            soldBy[w.productId] = if (s == null) w else ProductQty(w.productId, s.qty + w.qty, s.unit ?: w.unit)
-        }
-        val returnedBy = HashMap(returned.associateBy { it.productId })
-        for (w in walkInReturned) {
-            val r = returnedBy[w.productId]
-            returnedBy[w.productId] = if (r == null) w else ProductQty(w.productId, r.qty + w.qty, r.unit ?: w.unit)
-        }
+        val byId = products.associateBy { it.id }
+        // Each side may hold a product more than once, one row per unit it was
+        // written in (schema 36). Its pack rows become its own unit (carton x 12
+        // = bottles); what is left must be one unit, or the side is mixed.
+        val boughtBy = side(byId, bought, adjusted)
+        val soldBy = side(byId, sold, walkIn)
+        val returnedBy = side(byId, returned, walkInReturned)
 
         return products.map { p ->
             val b = boughtBy[p.id]
@@ -134,8 +133,39 @@ object Stock {
                 soldQty = s?.qty ?: 0.0,
                 returnedQty = r?.qty ?: 0.0,
                 boughtUnit = b?.unit ?: p.defaultUnit,
-                soldUnit = s?.unit
+                soldUnit = s?.unit,
+                mixedUnits = (b?.mixed ?: false) || (s?.mixed ?: false) || (r?.mixed ?: false) ||
+                    returnsDisagree(r?.unit, s?.unit ?: b?.unit)
             )
+        }
+    }
+
+    private class Side(val qty: Double, val unit: String?, val mixed: Boolean)
+
+    /** Goods back counted in a unit the rest of the product was not (both written, and different). */
+    private fun returnsDisagree(returned: String?, other: String?): Boolean {
+        val a = Units.norm(returned) ?: return false
+        val b = Units.norm(other) ?: return false
+        return a != b
+    }
+
+    /** One side's rows, per product: packs turned into the product's own unit, summed, mixed when two units remain. */
+    private fun side(byId: Map<Long, Product>, vararg lists: List<ProductQty>): Map<Long, Side> {
+        val rows = lists.flatMap { it }.groupBy { it.productId }
+        return rows.mapValues { (id, list) ->
+            val p = byId[id]
+            var qty = 0.0
+            var unit: String? = null
+            var mixed = false
+            for (row in list) {
+                val (q, u) = Units.toBase(p, row.qty, row.unit)
+                qty += q
+                val n = Units.norm(u)
+                if (n != null) {
+                    if (unit == null) unit = u else if (Units.norm(unit) != n) mixed = true
+                }
+            }
+            Side(qty, unit, mixed)
         }
     }
 
@@ -159,11 +189,12 @@ object Stock {
      */
     suspend fun of(dao: KhataDao): List<ProductStock> = combine(
         products = dao.productsOnce(),
-        bought = dao.boughtPerProduct(),
-        sold = dao.soldPerProduct(),
-        returned = dao.returnedPerProduct(),
-        walkIn = dao.walkInSoldPerProduct(),
-        walkInReturned = dao.walkInReturnedPerProduct(),
-        adjusted = dao.adjustedPerProduct()
+        // One row per product AND unit (schema 36), so a pack converts and a stray unit shows.
+        bought = dao.boughtPerProductUnit(),
+        sold = dao.soldPerProductUnit(),
+        returned = dao.returnedPerProductUnit(),
+        walkIn = dao.walkInSoldPerProductUnit(),
+        walkInReturned = dao.walkInReturnedPerProductUnit(),
+        adjusted = dao.adjustedPerProductUnit()
     )
 }

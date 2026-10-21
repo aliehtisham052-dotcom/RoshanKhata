@@ -53,7 +53,8 @@ data class ZReport(
             for (s in done) {
                 val full = dao.saleWithLines(s.id) ?: continue
                 discounts += full.sale.discountAmount + full.items.sumOf { it.discount }
-                tax += full.sale.taxAmount
+                // Tax added on top, and tax inside prices that hold it (schema 36): both are the government's.
+                tax += full.sale.taxAmount + full.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
                 onAccount += full.sale.creditAmount
                 for (p in full.payments) byMethod[p.method] = (byMethod[p.method] ?: 0.0) + p.amount
                 for (i in full.items) {

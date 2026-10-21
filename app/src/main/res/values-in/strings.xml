@@ -3236,4 +3236,22 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="restore_loss_agree">Saya paham semua ini akan hilang</string>
     <string name="restore_loss_counting">Memeriksa apa yang ada di buku ini dan tidak ada di salinan…</string>
     <string name="snapshot_before_restore">Disimpan sebelum pemulihan · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">Pajak di dalam harga</string>
+    <string name="pos_sell_by">Jual per %1$s</string>
+    <string name="pos_expired_stock">Hanya stok kedaluwarsa yang tersisa dari %1$s (masih baik: %2$s). Hapus batch lama di Kedaluwarsa, atau jual lebih sedikit.</string>
+    <string name="counter_settings">Pengaturan kasir</string>
+    <string name="counter_prices_include_tax">Harga sudah termasuk pajak</string>
+    <string name="counter_prices_include_tax_help">Nyala: pajak produk ada di dalam harganya, dan struk menyebut berapa. Mati: pajak ditambahkan di kasir. Persen pajak tiap produk diatur di produknya.</string>
+    <string name="expiry_write_off">Hapus dari stok</string>
+    <string name="expiry_write_off_confirm">Hapus %1$s dari %2$s sebagai kedaluwarsa? Stok berkurang sebanyak itu, dan log mencatat siapa yang melakukannya.</string>
+    <string name="expiry_written_off">Sudah dihapus</string>
+    <string name="expiry_nothing_left">Batch ini sudah habis</string>
+    <string name="expiry_left">Sisa: %1$s</string>
+    <string name="product_pack_help">Kemasan (karton, karung…) tempat produk juga dibeli atau dijual, dan berapa satuannya sendiri dalam satu kemasan. Stok dihitung dalam satuannya sendiri.</string>
+    <string name="product_pack_unit">Nama kemasan</string>
+    <string name="product_pack_size">Isi per kemasan</string>
+    <string name="product_pack_price">Harga kemasan</string>
+    <string name="product_tax_rate">Pajak %</string>
 </resources>

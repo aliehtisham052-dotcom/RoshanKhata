@@ -50,9 +50,22 @@ object Schema36 {
 
     val newTables = listOf("book_settings", "loyalty", "shifts")
 
-    val newColumns: Map<String, List<String>> = mapOf(
+    val newColumns: Map<String, List<String>> = uidTables.associateWith { listOf("uid") } + mapOf(
         "products" to listOf("packUnit", "packSize", "packPrice", "taxRate", "parentId", "variant"),
         "sale_items" to listOf("taxRate", "taxAmount", "taxIncluded"),
         "audit_log" to listOf("hash")
-    ) + uidTables.associateWith { listOf("uid") }
+    )
+}
+
+/**
+ * What version 37 adds (21 Oct 2026, the same night): the batch a stock
+ * adjustment is of, so an expired lot written off leaves that batch's own
+ * count ([Fefo]) as well as the shelf's. Its own version because 36 had
+ * already gone out in a test build: a version, once given, never changes.
+ */
+object Schema37 {
+    val statements: List<String> = listOf(
+        "ALTER TABLE stock_adjustments ADD COLUMN billItemId INTEGER"
+    )
+    val newColumns: Map<String, List<String>> = mapOf("stock_adjustments" to listOf("billItemId"))
 }

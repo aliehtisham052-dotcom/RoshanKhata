@@ -143,6 +143,13 @@ fun CounterSaleScreen(
                                     Column(Modifier.weight(1f)) {
                                         Text(line.name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                         line.shortBy?.let { Text(word(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)), color = c.owedToMe, fontSize = 12.sp) }
+                                        line.taxRate?.takeIf { it > 0.0 }?.let { Text(word(W.pos_tax) + " " + Calc.trim(it) + "%", color = c.textMuted, fontSize = 12.sp) }
+                                        // A product also sold by the pack (schema 36): the line switches between the two.
+                                        if (line.canSwitchUnit) {
+                                            TextButton(onClick = { line.product?.let { line.switchUnit(draft.unitRate(it)) } }) {
+                                                Text(word(W.pos_sell_by, line.otherUnit.orEmpty()), color = c.brandGreenText, fontSize = 13.sp)
+                                            }
+                                        }
                                     }
                                 }
                                 Text(Format.money(line.total), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -201,6 +208,7 @@ fun CounterSaleScreen(
                     Figure(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
                     if (draft.totals.discount > 0.0) Figure(word(W.pos_discount), "−" + Format.money(draft.totals.discount))
                     if (draft.totals.tax > 0.0) Figure(word(W.pos_tax), Format.money(draft.totals.tax))
+                    if (draft.totals.taxIncluded > 0.0) Figure(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                     HorizontalDivider(color = c.pageBg)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)

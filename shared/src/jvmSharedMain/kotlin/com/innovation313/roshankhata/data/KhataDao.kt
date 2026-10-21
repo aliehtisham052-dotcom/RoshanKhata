@@ -2650,7 +2650,13 @@ interface KhataDao {
         sale: Sale,
         items: List<SaleItem>,
         payments: List<SalePayment>,
-        roundToWhole: Boolean = false
+        roundToWhole: Boolean = false,
+        /**
+         * Per line of [items], the batches it comes from ([Fefo]; null = as
+         * it is). The totals are worked out on the lines as rung up, then
+         * each line is written once per batch, its money split to the paisa.
+         */
+        batches: List<List<Fefo.Take>?>? = null
     ): Long {
         val lines = items.filter { !it.isDeleted }
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
@@ -2674,7 +2680,15 @@ interface KhataDao {
                 isDeleted = false, deletedAt = null
             )
         )
-        insertSaleItems(lines.mapIndexed { i, l -> l.copy(id = 0, saleId = saleId, lineNo = i, isDeleted = false) })
+        // Each line keeps its own tax (schema 36), worked out once, as the totals were;
+        // then each is written once per batch it comes from (FEFO), its money split exactly.
+        val lineTax = SaleMath.lineTaxes(lines, totals.discount, sale.taxPercent)
+        val written = lines.flatMapIndexed { i, l ->
+            val tax = lineTax[i].takeIf { it > 0.0 }
+            val takes = batches?.getOrNull(i)
+            if (takes == null) listOf(l.copy(taxAmount = tax)) else Fefo.split(l, takes, tax)
+        }
+        insertSaleItems(written.mapIndexed { i, l -> l.copy(id = 0, saleId = saleId, lineNo = i, isDeleted = false) })
 
         if (hasParty) {
             val partyId = sale.partyId!!
@@ -2684,7 +2698,7 @@ interface KhataDao {
                     note = sale.note?.takeIf { it.isNotBlank() }, entryNumber = "",
                     timestamp = sale.timestamp, createdBy = sale.createdBy, saleId = saleId
                 ),
-                lines.map { l ->
+                written.map { l ->
                     EntryItem(
                         entryId = 0, itemName = l.itemName, quantity = l.quantity, unit = l.unit,
                         rate = l.rate, productId = l.productId, billItemId = l.billItemId
@@ -3086,13 +3100,18 @@ interface KhataDao {
         return n
     }
 
-    /** One correction with its reason (damage, expired, theft…), logged. */
+    /**
+     * One correction with its reason (damage, expired, theft…), logged. With
+     * [billItemId] it is that batch's (an expired lot written off), in the
+     * batch's own [unit]; otherwise the product's, in its own unit.
+     */
     @Transaction
-    suspend fun adjustStock(productId: Long, quantity: Double, reason: String, note: String?, user: String? = Access.userName): Long {
+    suspend fun adjustStock(productId: Long, quantity: Double, reason: String, note: String?, user: String? = Access.userName,
+                            billItemId: Long? = null, unit: String? = null): Long {
         require(reason in AdjustReason.ALL) { "unknown reason" }
         require(quantity != 0.0 && !quantity.isNaN()) { "nothing to adjust" }
-        val unit = productById(productId)?.defaultUnit
-        val id = insertAdjustment(StockAdjustment(productId = productId, quantity = quantity, unit = unit, reason = reason, note = note, createdBy = user))
+        val u = unit ?: productById(productId)?.defaultUnit
+        val id = insertAdjustment(StockAdjustment(productId = productId, quantity = quantity, unit = u, reason = reason, note = note, createdBy = user, billItemId = billItemId))
         insertAudit(AuditLog(user = user, action = AuditAction.STOCK_ADJUSTED, refTable = "stock_adjustments", refId = id,
             detail = "$reason ${"%.2f".format(Digits.FIGURES, quantity)}"))
         return id
@@ -3214,7 +3233,8 @@ interface KhataDao {
         """
         SELECT s.id AS saleId, s.timestamp AS timestamp, s.customerName AS customerName, s.createdBy AS createdBy,
                s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
-               i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
+               i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded
         FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
         WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.timestamp >= :from AND s.timestamp < :to
         ORDER BY s.timestamp ASC, i.lineNo ASC
@@ -3335,6 +3355,105 @@ interface KhataDao {
         putSetting(BookSetting(BookSettings.OWNER_RECOVERY_SALT, codeSalt))
         insertAudit(AuditLog(user = user ?: Access.OWNER, action = AuditAction.OWNER_PIN_SET))
     }
+
+    // ---------- Stock per unit, batches and costs (schema 36) ----------
+    //
+    // The same sums as boughtPerProduct & co., one row per product AND unit as
+    // written, so Stock.combine can turn a product's pack into its own unit and
+    // see a unit it cannot convert, instead of SQL adding bags to kilos.
+
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, i.unit AS unit " +
+        "FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND b.isDeleted = 0 " +
+        "GROUP BY i.productId, i.unit"
+    )
+    suspend fun boughtPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, ei.unit AS unit " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY ei.productId, ei.unit"
+    )
+    suspend fun soldPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, ei.unit AS unit " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY ei.productId, ei.unit"
+    )
+    suspend fun returnedPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, i.unit AS unit " +
+        "FROM sale_items i JOIN sales s ON s.id = i.saleId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' " +
+        "AND s.ledgerEntryId IS NULL GROUP BY i.productId, i.unit"
+    )
+    suspend fun walkInSoldPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, i.unit AS unit " +
+        "FROM sale_return_items i JOIN sale_returns r ON r.id = i.returnId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' " +
+        "AND r.ledgerEntryId IS NULL GROUP BY i.productId, i.unit"
+    )
+    suspend fun walkInReturnedPerProductUnit(): List<Stock.ProductQty>
+
+    @Query("SELECT productId AS productId, SUM(quantity) AS qty, unit AS unit FROM stock_adjustments WHERE isDeleted = 0 GROUP BY productId, unit")
+    suspend fun adjustedPerProductUnit(): List<Stock.ProductQty>
+
+    /** A product's live batches (supplier bill lines), for [Fefo]: what came, in what unit, expiring when. */
+    @Query(
+        "SELECT i.id AS id, i.batchNumber AS batchNumber, i.expiryDate AS expiryDate, i.quantity AS quantity, i.unit AS unit, " +
+        "0.0 AS soldFromBatch FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0"
+    )
+    suspend fun batchesOfProduct(productId: Long): List<BatchOption>
+
+    /**
+     * Everything that moved against one of a product's batches, per batch and
+     * unit, signed as the shelf sees it: + went out (a khata sale, a walk-in's
+     * ticket), − came back (a khata return, a walk-in's return) or was written
+     * off (an adjustment of that batch, stored signed the other way round).
+     */
+    @Query(
+        """
+        SELECT ei.billItemId AS billItemId, SUM(CASE WHEN t.isGiven = 1 THEN ei.quantity ELSE -ei.quantity END) AS qty, ei.unit AS unit
+        FROM entry_items ei JOIN transactions t ON t.id = ei.entryId JOIN bill_items b ON b.id = ei.billItemId
+        WHERE b.productId = :productId AND t.isDeleted = 0 AND ei.quantity IS NOT NULL
+        GROUP BY ei.billItemId, ei.unit
+        UNION ALL
+        SELECT si.billItemId AS billItemId, SUM(si.quantity) AS qty, si.unit AS unit
+        FROM sale_items si JOIN sales s ON s.id = si.saleId JOIN bill_items b ON b.id = si.billItemId
+        WHERE b.productId = :productId AND si.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL
+        GROUP BY si.billItemId, si.unit
+        UNION ALL
+        SELECT ri.billItemId AS billItemId, -SUM(ri.quantity) AS qty, ri.unit AS unit
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN bill_items b ON b.id = ri.billItemId
+        WHERE b.productId = :productId AND ri.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' AND r.ledgerEntryId IS NULL
+        GROUP BY ri.billItemId, ri.unit
+        UNION ALL
+        SELECT a.billItemId AS billItemId, -SUM(a.quantity) AS qty, a.unit AS unit
+        FROM stock_adjustments a
+        WHERE a.productId = :productId AND a.billItemId IS NOT NULL AND a.isDeleted = 0
+        GROUP BY a.billItemId, a.unit
+        """
+    )
+    suspend fun batchMovesOfProduct(productId: Long): List<Fefo.Move>
+
+    /** Every purchase of a product with a rate (supplier bill lines), for its average cost. */
+    @Query(
+        "SELECT i.quantity AS qty, i.unit AS unit, i.rate AS rate FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NOT NULL AND i.quantity > 0"
+    )
+    suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
 
     /** Every row of the log in the order it was written, for [AuditChain.verify]. */
     @Query("SELECT * FROM audit_log ORDER BY id")

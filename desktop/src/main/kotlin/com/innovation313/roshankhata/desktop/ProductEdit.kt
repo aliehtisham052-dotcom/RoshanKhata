@@ -61,6 +61,10 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     var barcode by remember { mutableStateOf(product.barcode.orEmpty()) }
     var cost by remember { mutableStateOf(product.costPrice?.let { Calc.trim(it) }.orEmpty()) }
     var lowStock by remember { mutableStateOf(product.lowStockLevel?.let { Calc.trim(it) }.orEmpty()) }
+    var packUnit by remember { mutableStateOf(product.packUnit.orEmpty()) }
+    var packSize by remember { mutableStateOf(product.packSize?.let { Calc.trim(it) }.orEmpty()) }
+    var packPrice by remember { mutableStateOf(product.packPrice?.let { Calc.trim(it) }.orEmpty()) }
+    var taxRate by remember { mutableStateOf(product.taxRate?.let { Calc.trim(it) }.orEmpty()) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needName = word(W.enter_name)
     val words = com.innovation313.roshankhata.words.LocalWords.current
@@ -88,6 +92,16 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
                 Outlined(lowStock, { lowStock = it }, label = { Text(word(W.product_low_stock_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            }
+            // Packs and tax (schema 36): a bigger unit stock may come or go in, and this product's tax.
+            Text(word(W.product_pack_help), Modifier.padding(top = 4.dp), color = c.textMuted, fontSize = 12.sp)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Outlined(packUnit, { packUnit = it }, label = { Text(word(W.product_pack_unit)) }, singleLine = true, modifier = Modifier.weight(1f))
+                Outlined(packSize, { packSize = it }, label = { Text(word(W.product_pack_size)) }, singleLine = true, modifier = Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Outlined(packPrice, { packPrice = it }, label = { Text(word(W.product_pack_price)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
+                Outlined(taxRate, { taxRate = it }, label = { Text(word(W.product_tax_rate)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice)
             }
             Field(word(W.product_type_hint), type) { type = it }
             SuggestionRow(trade.types(), type) { type = it }
@@ -123,7 +137,12 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                         creditPrice = typed(credit)?.let { Calc.evalPad(it) },
                         barcode = typed(barcode),
                         costPrice = typed(cost)?.let { Calc.evalPad(it) },
-                        lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) }
+                        lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) },
+                        // A pack needs both its name and how many are in it; half of one is no pack.
+                        packUnit = typed(packUnit)?.takeIf { (typed(packSize)?.let { Calc.evalPad(it) } ?: 0.0) > 0.0 },
+                        packSize = typed(packSize)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 && typed(packUnit) != null },
+                        packPrice = typed(packPrice)?.let { Calc.evalPad(it) }?.takeIf { typed(packUnit) != null },
+                        taxRate = typed(taxRate)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 }
                     )
                     scope.launch {
                         val clash = withContext(Dispatchers.IO) { dao.productByKey(updated.nameKey) }

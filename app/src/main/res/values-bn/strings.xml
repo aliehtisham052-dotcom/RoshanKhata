@@ -3283,4 +3283,22 @@
     <string name="restore_loss_agree">আমি বুঝেছি যে এগুলো মুছে যাবে</string>
     <string name="restore_loss_counting">এই খাতায় কী আছে যা কপিতে নেই, দেখা হচ্ছে…</string>
     <string name="snapshot_before_restore">রিস্টোরের আগে রাখা · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">দামের ভেতরে থাকা কর</string>
+    <string name="pos_sell_by">%1$s হিসেবে বিক্রি</string>
+    <string name="pos_expired_stock">%1$s-এর শুধু মেয়াদোত্তীর্ণ স্টক বাকি (ভালো: %2$s)। পুরোনো ব্যাচটি মেয়াদ পাতায় বাদ দিন, বা কম বিক্রি করুন।</string>
+    <string name="counter_settings">কাউন্টার সেটিংস</string>
+    <string name="counter_prices_include_tax">দামে কর আগে থেকেই ধরা</string>
+    <string name="counter_prices_include_tax_help">চালু: পণ্যের কর তার দামের ভেতরে, আর রসিদ বলে কত। বন্ধ: কাউন্টারে ওপরে যোগ হয়। প্রতিটি পণ্যের কর % পণ্যেই লেখা হয়।</string>
+    <string name="expiry_write_off">বাদ দিন</string>
+    <string name="expiry_write_off_confirm">%2$s-এর %1$s মেয়াদোত্তীর্ণ হিসেবে বাদ দেবেন? স্টক ততটা কমবে, আর লগে থাকবে কে করেছে।</string>
+    <string name="expiry_written_off">বাদ দেওয়া হয়েছে</string>
+    <string name="expiry_nothing_left">এই ব্যাচের কিছুই বাকি নেই</string>
+    <string name="expiry_left">বাকি: %1$s</string>
+    <string name="product_pack_help">যে প্যাকে (কার্টন, বস্তা…) পণ্যটি কেনা বা বিক্রিও হয়, আর এক প্যাকে তার নিজের এককের কয়টি থাকে। স্টক তার নিজের এককে গোনা হয়।</string>
+    <string name="product_pack_unit">প্যাকের নাম</string>
+    <string name="product_pack_size">এক প্যাকে কয়টি</string>
+    <string name="product_pack_price">প্যাকের দাম</string>
+    <string name="product_tax_rate">কর %</string>
 </resources>

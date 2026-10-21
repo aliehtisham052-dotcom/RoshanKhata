@@ -19,9 +19,14 @@ data class SoldLine(
     val unit: String?,
     val rate: Double,
     val discount: Double,
-    val costRate: Double?
+    val costRate: Double?,
+    /** The line's own tax (schema 36): rate, money, and whether the price held it. Null on older lines. */
+    val taxRate: Double? = null,
+    val taxAmount: Double? = null,
+    val taxIncluded: Boolean? = null
 ) {
-    val revenue: Double get() = SaleMath.lineTotal(quantity, rate, discount)
+    /** What the line brought in, less any tax that was inside its price (that money is the government's). */
+    val revenue: Double get() = LineMath.round(SaleMath.lineTotal(quantity, rate, discount) - (if (taxIncluded == true) taxAmount ?: 0.0 else 0.0))
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
 }
 
@@ -55,9 +60,12 @@ class SalesReport(val from: Long, val to: Long, val lines: List<SoldLine>, val e
 
     /** The tax given, rate by rate: the taxable revenue and the tax on it. */
     val tax: List<Triple<Double, Double, Double>>
-        get() = lines.filter { (it.taxPercent ?: 0.0) > 0.0 }.groupBy { it.taxPercent!! }.map { (rate, ls) ->
-            val base = LineMath.round(ls.sumOf { it.revenue })
-            Triple(rate, base, LineMath.round(base * rate / 100.0))
+        get() = lines.mapNotNull { l ->
+            // A line's own rate first (schema 36), else its ticket's tax %; its own figure where it kept one.
+            val rate = l.taxRate?.takeIf { it > 0.0 } ?: l.taxPercent?.takeIf { it > 0.0 } ?: return@mapNotNull null
+            Triple(rate, l.revenue, l.taxAmount ?: (l.revenue * rate / 100.0))
+        }.groupBy { it.first }.map { (rate, ls) ->
+            Triple(rate, LineMath.round(ls.sumOf { it.second }), LineMath.round(ls.sumOf { it.third }))
         }.sortedBy { it.first }
 
     val revenue: Double get() = LineMath.round(lines.sumOf { it.revenue })

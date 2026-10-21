@@ -23,15 +23,22 @@ class CounterDraft {
         val productId: Long?,
         name: String,
         qty: String,
-        val unit: String?,
+        unit: String?,
         rate: String,
         discount: String = "",
         val billItemId: Long? = null,
-        /** What the shelf holds, where the book knows; null = unknown. */
-        val onHand: Double? = null
+        /** What the shelf holds, where the book knows; null = unknown. In the product's own unit. */
+        val onHand: Double? = null,
+        /** The product rung up (schema 36): its pack and its tax. Null for a line typed free. */
+        val product: Product? = null,
+        /** The line's tax rate in percent, from its product; null = none of its own. */
+        val taxRate: Double? = null,
+        /** Whether the line's price already holds its tax (the book's setting when it was rung up). */
+        val taxIncluded: Boolean = false
     ) {
         var name by mutableStateOf(name)
         var qty by mutableStateOf(qty)
+        var unit by mutableStateOf(unit)
         var rate by mutableStateOf(rate)
         var discount by mutableStateOf(discount)
 
@@ -40,12 +47,39 @@ class CounterDraft {
         val discountValue: Double get() = Calc.evalAmount(discount) ?: 0.0
         val total: Double get() = SaleMath.lineTotal(qtyValue, rateValue, discountValue)
 
-        /** More than the shelf holds, where the shelf is known. */
-        val shortBy: Double? get() = onHand?.let { if (qtyValue > it) qtyValue - it else null }
+        /** The quantity in the product's own unit (a carton of 12 is 12). */
+        val baseQty: Double get() = qtyValue * Units.factor(product, unit)
+
+        /** More than the shelf holds, where the shelf is known (in the product's own unit). */
+        val shortBy: Double? get() = onHand?.let { if (baseQty > it + 1e-9) baseQty - it else null }
+
+        /** The product is also sold in a pack: the line can switch between its own unit and the pack. */
+        val canSwitchUnit: Boolean get() = Units.hasPack(product)
+
+        /** The other unit, for the switch's label. */
+        val otherUnit: String? get() = product?.let { p -> if (Units.isPack(p, unit)) p.defaultUnit else p.packUnit }
+
+        /**
+         * Between the product's own unit and its pack (schema 36). The rate
+         * follows: the pack's price (or the unit rate × the pack size), or
+         * back to one unit's. The quantity stays as typed.
+         */
+        fun switchUnit(unitRate: Double) {
+            val p = product ?: return
+            if (!Units.hasPack(p)) return
+            if (Units.isPack(p, unit)) {
+                unit = p.defaultUnit
+                rate = Calc.trim(unitRate)
+            } else {
+                unit = p.packUnit
+                rate = Calc.trim(Units.rateFor(p, p.packUnit, unitRate))
+            }
+        }
 
         fun toItem() = SaleItem(
             saleId = 0, productId = productId, itemName = name.trim(), quantity = qtyValue,
-            unit = unit, rate = rateValue, discount = discountValue, billItemId = billItemId
+            unit = unit, rate = rateValue, discount = discountValue, billItemId = billItemId,
+            taxRate = taxRate?.takeIf { it > 0.0 }, taxIncluded = if ((taxRate ?: 0.0) > 0.0) taxIncluded else null
         )
     }
 
@@ -69,6 +103,8 @@ class CounterDraft {
     var roundToWhole by mutableStateOf(false)
     /** The held ticket this draft came off, to drop once it is rung up. */
     var heldId by mutableStateOf<Long?>(null)
+    /** The book's setting (schema 36): products' prices already hold their tax. Read by the screen when it opens. */
+    var pricesIncludeTax by mutableStateOf(false)
 
     val hasParty: Boolean get() = partyId != null
     val isEmpty: Boolean get() = lines.isEmpty() && payments.isEmpty() && !hasParty
@@ -118,11 +154,18 @@ class CounterDraft {
             it.qty = Calc.trim(it.qtyValue + qty)
             return it
         }
-        val rate = (if (hasParty) product.creditPrice ?: product.salePrice else product.salePrice ?: product.creditPrice) ?: 0.0
-        val line = Line(product.id, product.name, Calc.trim(qty), product.defaultUnit, if (rate == 0.0) "" else Calc.trim(rate), onHand = onHand)
+        val rate = unitRate(product)
+        val line = Line(
+            product.id, product.name, Calc.trim(qty), product.defaultUnit, if (rate == 0.0) "" else Calc.trim(rate), onHand = onHand,
+            product = product, taxRate = product.taxRate, taxIncluded = pricesIncludeTax
+        )
         lines += line
         return line
     }
+
+    /** One of [product]'s own unit at this ticket's price: the counter price, or the credit price on an account. */
+    fun unitRate(product: Product): Double =
+        (if (hasParty) product.creditPrice ?: product.salePrice else product.salePrice ?: product.creditPrice) ?: 0.0
 
     /** A line typed free, for a thing not in the products list. */
     fun addFree(name: String, unit: String? = null): Line {
@@ -157,7 +200,7 @@ class CounterDraft {
     }
 
     /** A held ticket back on the counter. */
-    fun load(held: SaleWithLines, onHandOf: (Long) -> Double? = { null }) {
+    fun load(held: SaleWithLines, onHandOf: (Long) -> Double? = { null }, productOf: (Long) -> Product? = { null }) {
         clear()
         heldId = held.sale.id
         partyId = held.sale.partyId
@@ -169,7 +212,8 @@ class CounterDraft {
             lines += Line(
                 i.productId, i.itemName, Calc.trim(i.quantity), i.unit, Calc.trim(i.rate),
                 if (i.discount > 0.0) Calc.trim(i.discount) else "", i.billItemId,
-                onHand = i.productId?.let(onHandOf)
+                onHand = i.productId?.let(onHandOf), product = i.productId?.let(productOf),
+                taxRate = i.taxRate, taxIncluded = i.taxIncluded == true
             )
         }
     }
@@ -214,23 +258,48 @@ object Counter {
     suspend fun onHand(dao: KhataDao): Map<Long, Double?> =
         Stock.of(dao).associate { it.productId to it.onHand }
 
-    /** The cost a line's profit is measured against: the product's own, else its last purchase rate. */
-    suspend fun costOf(dao: KhataDao, product: Product?): Double? =
-        product?.costPrice ?: product?.id?.let { dao.lastPurchaseRate(it) }
+    /**
+     * The cost a line's profit is measured against, per one of the line's
+     * [unit]: the product's own cost, else its weighted average purchase
+     * cost, else its last purchase rate ([Cost]) — times the pack size for a pack.
+     */
+    suspend fun costOf(dao: KhataDao, product: Product?, unit: String? = product?.defaultUnit): Double? =
+        Cost.perUnit(dao, product)?.let { LineMath.round(it * Units.factor(product, unit)) }
+
+    /** A line the shelf cannot sell: only expired stock is left of [item] ([fresh] may still go, in its unit). */
+    class ExpiredStock(val item: String, val fresh: Double) : IllegalArgumentException("sale refused: expired stock of $item")
 
     /**
-     * Ring the draft up: cost rates filled in per line, the sale posted in
-     * one transaction, the held ticket it came off dropped. Returns the
-     * sale's id. Throws IllegalArgumentException with the problem's name if
-     * the ticket fails its checks — the screen should have shown
-     * [CounterDraft.problem] before offering the button.
+     * Ring the draft up: cost rates filled in per line, each product line's
+     * batches chosen first-expiry-first-out ([Fefo]) and an expired batch
+     * never sold, the sale posted in one transaction, the held ticket it came
+     * off dropped. Returns the sale's id. Throws [ExpiredStock] for a line
+     * only expired stock could fill, and IllegalArgumentException with the
+     * problem's name if the ticket fails its checks — the screen should have
+     * shown [CounterDraft.problem] before offering the button.
      */
-    suspend fun post(dao: KhataDao, draft: CounterDraft, createdBy: String? = null): Long {
+    suspend fun post(dao: KhataDao, draft: CounterDraft, createdBy: String? = null, now: Long = System.currentTimeMillis()): Long {
         val products = dao.productsOnce().associateBy { it.id }
-        val items = draft.toItems().map { item ->
-            item.copy(costRate = item.productId?.let { costOf(dao, products[it]) })
+        val today = Fefo.today(now)
+        val items = ArrayList<SaleItem>()
+        val takes = ArrayList<List<Fefo.Take>?>()
+        for (item in draft.toItems()) {
+            val p = item.productId?.let { products[it] }
+            items += item.copy(costRate = p?.let { costOf(dao, it, item.unit) })
+            if (p == null) { takes += null; continue }
+            val lots = Fefo.lots(dao, p)
+            if (item.billItemId != null) {
+                // A batch chosen already (a held ticket): never an expired one.
+                if (lots.firstOrNull { it.billItemId == item.billItemId }?.expired(today) == true) throw ExpiredStock(item.itemName, 0.0)
+                takes += null
+                continue
+            }
+            when (val a = Fefo.allocate(lots, item.quantity, Units.factor(p, item.unit), today)) {
+                is Fefo.Allocation.ExpiredOnly -> throw ExpiredStock(item.itemName, a.fresh)
+                is Fefo.Allocation.Ok -> takes += a.takes
+            }
         }
-        val id = dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole)
+        val id = dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole, takes)
         draft.heldId?.let { dao.dropHeldSale(it) }
         return id
     }

@@ -31,7 +31,8 @@ object BackupCodec {
      * the PIN's hash on each staff row — never the PIN); 11 stock adjustments
      * and purchase orders; 12 (schema 36) the book's settings (the owner's PIN
      * as its hash), loyalty points, shifts, every counter row's uid, product
-     * packs/tax/variants, a sale line's tax and the audit log's seal.
+     * packs/tax/variants, a sale line's tax and the audit log's seal; 13
+     * (schema 37) the batch a stock adjustment is of.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -40,7 +41,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 12
+    const val FORMAT_VERSION = 13
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -551,6 +552,7 @@ object BackupCodec {
                 orderItems.count { it.orderId !in orderIds } +
                 orders.count { it.partyId !in partyIds } +
                 adjustments.count { it.productId !in productIds } +
+                adjustments.count { it.billItemId != null && it.billItemId !in billItemIds } +
                 returnItems.count { it.returnId !in returnIds } +
                 saleItems.count { it.saleId !in saleIds } +
                 salePayments.count { it.saleId !in saleIds } + entries.count { it.productId != null && it.productId !in productIds } +
@@ -1397,14 +1399,15 @@ object BackupCodec {
         put("unit", a.unit ?: JSONObject.NULL); put("reason", a.reason); put("note", a.note ?: JSONObject.NULL)
         put("bookQty", a.bookQty ?: JSONObject.NULL); put("countedQty", a.countedQty ?: JSONObject.NULL)
         put("createdBy", a.createdBy ?: JSONObject.NULL); put("isDeleted", a.isDeleted)
-        put("uid", a.uid ?: JSONObject.NULL)
+        put("uid", a.uid ?: JSONObject.NULL); put("billItemId", a.billItemId ?: JSONObject.NULL)
     }
 
     private fun jsonToAdjustment(o: JSONObject) = StockAdjustment(
         id = o.getLong("id"), productId = o.getLong("productId"), timestamp = o.getLong("timestamp"), quantity = o.getDouble("quantity"),
         unit = o.optNullableString("unit"), reason = o.optString("reason", AdjustReason.OTHER), note = o.optNullableString("note"),
         bookQty = o.optNullableDouble("bookQty"), countedQty = o.optNullableDouble("countedQty"),
-        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false), uid = o.uid()
+        createdBy = o.optNullableString("createdBy"), isDeleted = o.optBoolean("isDeleted", false), uid = o.uid(),
+        billItemId = o.optNullableLong("billItemId")
     )
 
     private fun orderToJson(p: PurchaseOrder) = JSONObject().apply {

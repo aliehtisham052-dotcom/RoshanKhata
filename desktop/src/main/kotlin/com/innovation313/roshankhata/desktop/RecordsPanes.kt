@@ -636,6 +636,35 @@ fun ExpiryPane(dao: KhataDao) {
     val batches by remember { dao.observeExpiringBatches(cutoff) }.collectAsState(emptyList())
     var buyersOf by remember { mutableStateOf<Long?>(null) }
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
+    // What is left of each batch (Fefo: sold over the counter and the khata, back, written off),
+    // and the write-off of an expired one (21 Oct 2026): the counter never sells it.
+    val scope = rememberCoroutineScope()
+    var tick by remember { mutableStateOf(0) }
+    var lots by remember { mutableStateOf<Map<Long, Pair<com.innovation313.roshankhata.data.Product, com.innovation313.roshankhata.data.Fefo.Lot>>>(emptyMap()) }
+    LaunchedEffect(batches, tick) {
+        lots = withContext(Dispatchers.IO) {
+            batches.mapNotNull { b -> com.innovation313.roshankhata.data.Fefo.lotOf(dao, b.itemId)?.let { b.itemId to it } }.toMap()
+        }
+    }
+    var writingOff by remember { mutableStateOf<com.innovation313.roshankhata.data.ExpiringBatch?>(null) }
+    writingOff?.let { b ->
+        val found = lots[b.itemId]
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { writingOff = null },
+            title = { Text(word(W.expiry_write_off)) },
+            text = {
+                Text(found?.let { (p, lot) -> word(W.expiry_write_off_confirm, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (p.defaultUnit?.let { " $it" } ?: ""), lot.batchNumber ?: p.name) }
+                    ?: word(W.expiry_nothing_left))
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton({
+                    writingOff = null
+                    scope.launch { withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Fefo.writeOff(dao, b.itemId, b.batchNumber) }; tick++ }
+                }, enabled = (found?.second?.left ?: 0.0) > 0.0) { Text(word(W.expiry_write_off), color = c.owedToMe) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ writingOff = null }) { Text(word(W.cancel)) } }
+        )
+    }
     RecordList(word(W.expiring_stock), word(W.expiring_subtitle), false, word(W.no_expiring), emptyIcon = "ic_tile_expiring") {
         item(key = "trace") { BatchTraceCard(dao) { buyersOf = it } }
         if (batches.isEmpty()) item(key = "none") { Text(word(W.no_expiring), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp) }
@@ -664,6 +693,17 @@ fun ExpiryPane(dao: KhataDao) {
                         color = if (b.daysLeft <= 0) c.owedToMe else c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold
                     )
                     Text(Format.dateOnly(b.expiryDate), color = c.textMuted, fontSize = 12.sp)
+                    lots[b.itemId]?.let { (p, lot) ->
+                        Text(
+                            if (lot.left > 0.0) word(W.expiry_left, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (p.defaultUnit?.let { " $it" } ?: "")) else word(W.expiry_nothing_left),
+                            color = c.textMuted, fontSize = 12.sp
+                        )
+                        if (b.hasExpired && lot.left > 0.0) {
+                            FluentButton(word(W.expiry_write_off), {
+                                Gates.need(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST) { writingOff = b }
+                            }, kind = ButtonKind.DANGER)
+                        }
+                    }
                 }
             }
             Rule()

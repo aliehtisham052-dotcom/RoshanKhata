@@ -3239,4 +3239,22 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="restore_loss_agree">Main samajhta hoon ke yeh khatam ho jayenge</string>
     <string name="restore_loss_counting">Dekha ja raha hai ke is khate mein kya hai jo copy mein nahi…</string>
     <string name="snapshot_before_restore">Restore se pehle mehfooz · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">Qeematon mein shamil tax</string>
+    <string name="pos_sell_by">%1$s ke hisaab se bechein</string>
+    <string name="pos_expired_stock">%1$s ka sirf expire stock bacha hai (theek: %2$s). Purana batch Expiry mein khatam karein, ya kam bechein.</string>
+    <string name="counter_settings">Counter settings</string>
+    <string name="counter_prices_include_tax">Qeematon mein tax pehle se shamil hai</string>
+    <string name="counter_prices_include_tax_help">Chalu: product ka tax us ki qeemat ke andar hai, aur raseed batati hai kitna. Band: counter par upar se joda jata hai. Har product ka tax % product par likha jata hai.</string>
+    <string name="expiry_write_off">Khatam karein</string>
+    <string name="expiry_write_off_confirm">%2$s ka %1$s expire ke taur par khatam karein? Stock utna kam ho jayega, aur log mein likha rahega kis ne kiya.</string>
+    <string name="expiry_written_off">Khatam kar diya</string>
+    <string name="expiry_nothing_left">Is batch mein kuch nahi bacha</string>
+    <string name="expiry_left">Bacha: %1$s</string>
+    <string name="product_pack_help">Woh pack (carton, bori…) jis mein yeh product khareedi ya bechi bhi jati hai, aur ek pack mein us ki apni unit kitni hain. Stock apni unit mein gina jata hai.</string>
+    <string name="product_pack_unit">Pack ka naam</string>
+    <string name="product_pack_size">Ek pack mein kitne</string>
+    <string name="product_pack_price">Pack ki qeemat</string>
+    <string name="product_tax_rate">Tax %</string>
 </resources>

@@ -55,6 +55,12 @@ class CounterSaleActivity : BaseActivity() {
             setNavigationOnClickListener { finish() }
             // Recent tickets: a return against one, or its void (POS Phase 3).
             menu.add(R.string.pos_recent_sales).setOnMenuItemClickListener { showRecent(); true }
+            // The counter's own settings (schema 36): prices with tax. The owner's to change.
+            menu.add(R.string.counter_settings).setOnMenuItemClickListener {
+                com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.SETTINGS,
+                    getString(R.string.counter_settings)) { counterSettings() }
+                true
+            }
             // Who is at the counter (POS Phase 5).
             menu.add(R.string.access_who).setOnMenuItemClickListener {
                 com.innovation313.roshankhata.ui.AccessUi.signIn(this@CounterSaleActivity, dao) { message = com.innovation313.roshankhata.data.Access.userName ?: getString(R.string.access_owner) }
@@ -89,14 +95,44 @@ class CounterSaleActivity : BaseActivity() {
                 Loaded(
                     dao.productsOnce(), dao.partiesWithBalanceOnce(),
                     runCatching { Counter.onHand(dao) }.getOrDefault(emptyMap()),
-                    dao.heldSalesOnce().size
+                    dao.heldSalesOnce().size,
+                    com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX))
                 )
             }
             products = loaded.products; parties = loaded.parties; onHand = loaded.onHand; heldCount = loaded.held
+            draft.pricesIncludeTax = loaded.taxInside
         }
     }
 
-    private class Loaded(val products: List<Product>, val parties: List<PartyWithBalance>, val onHand: Map<Long, Double?>, val held: Int)
+    /** Prices with their tax inside or not (the book's setting, so the computer's counter follows it too). */
+    private fun counterSettings() {
+        lifecycleScope.launch {
+            val on = withContext(Dispatchers.IO) {
+                com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX))
+            }
+            val box = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax); isChecked = on }
+            val help = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax_help); textSize = 13f }
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
+                orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, 0); addView(box); addView(help)
+            }
+            MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                .setTitle(R.string.counter_settings)
+                .setView(view)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX, if (box.isChecked) "1" else null)
+                        }
+                        reload()
+                    }
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
+
+    private class Loaded(val products: List<Product>, val parties: List<PartyWithBalance>, val onHand: Map<Long, Double?>, val held: Int, val taxInside: Boolean)
 
     /** The camera as a scanner: a pack's barcode rings its product up; an unknown code says so. */
     private fun scan() {
@@ -164,7 +200,10 @@ class CounterSaleActivity : BaseActivity() {
                     .setNeutralButton(R.string.print_receipt) { _, _ -> com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text) }
                     .setNegativeButton(R.string.close, null)
                     .show()
-            }.onFailure { message = it.message ?: getString(R.string.backup_failed) }
+            }.onFailure { e ->
+                message = if (e is Counter.ExpiredStock) getString(R.string.pos_expired_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.fresh))
+                    else e.message ?: getString(R.string.backup_failed)
+            }
         }
     }
 
@@ -186,7 +225,7 @@ class CounterSaleActivity : BaseActivity() {
                 .setItems(labels) { _, i ->
                     lifecycleScope.launch {
                         val full = withContext(Dispatchers.IO) { dao.saleWithLines(held[i].id) } ?: return@launch
-                        draft.load(full) { onHand[it] }
+                        draft.load(full, onHandOf = { onHand[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
                     }
                 }
                 .setNegativeButton(R.string.cancel, null)

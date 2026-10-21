@@ -52,12 +52,20 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
+    /** Undo version 37: the batch on a stock adjustment. */
+    fun undo37(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for ((table, cols) in Schema37.newColumns) stripColumns(raw, table, cols)
+    }
+
     /**
      * Undo version 36: its three tables (book settings, loyalty, shifts), the
      * products' packs/tax/variants, the sale lines' tax, the audit seal and
-     * every uid.
+     * every uid. Undoes 37 first.
      */
     fun undo36(raw: SQLiteDatabase) {
+        undo37(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         raw.execSQL("PRAGMA legacy_alter_table = ON")
         for (t in Schema36.newTables) raw.execSQL("DROP TABLE IF EXISTS $t")

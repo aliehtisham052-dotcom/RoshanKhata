@@ -78,7 +78,7 @@ class RestoreCheckTest {
 
     @Test
     fun anOlderCopyWithoutUidsIsMatchedByWhatItsRowsSay() = runBlocking {
-        val old = copy().replace(Regex("\"uid\": ?\"[0-9a-f]{32}\""), "\"uid\": null").replace("\"version\": 12", "\"version\": 11")
+        val old = copy().replace(Regex("\"uid\": ?\"[0-9a-f]{32}\""), "\"uid\": null").replace("\"version\": ${BackupCodec.FORMAT_VERSION}", "\"version\": 11")
         val (_, parsed) = BackupCodec.parseText(old)
         assertEquals(11, parsed!!.version)
         assertTrue("the same rows, matched by content", RestoreCheck.of(dao, parsed).none)

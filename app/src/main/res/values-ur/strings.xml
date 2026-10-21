@@ -3239,4 +3239,22 @@
     <string name="restore_loss_agree">میں سمجھتا ہوں کہ یہ ختم ہو جائیں گے</string>
     <string name="restore_loss_counting">دیکھا جا رہا ہے کہ اس کھاتے میں کیا ہے جو کاپی میں نہیں…</string>
     <string name="snapshot_before_restore">ریسٹور سے پہلے محفوظ · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">قیمتوں میں شامل ٹیکس</string>
+    <string name="pos_sell_by">%1$s کے حساب سے بیچیں</string>
+    <string name="pos_expired_stock">%1$s کا صرف ایکسپائر اسٹاک بچا ہے (ٹھیک: %2$s)۔ پرانا بیچ ایکسپائری میں ختم کریں، یا کم بیچیں۔</string>
+    <string name="counter_settings">کاؤنٹر سیٹنگز</string>
+    <string name="counter_prices_include_tax">قیمتوں میں ٹیکس پہلے سے شامل ہے</string>
+    <string name="counter_prices_include_tax_help">چالو: پروڈکٹ کا ٹیکس اس کی قیمت کے اندر ہے، اور رسید بتاتی ہے کتنا۔ بند: کاؤنٹر پر اوپر سے جوڑا جاتا ہے۔ ہر پروڈکٹ کا ٹیکس % پروڈکٹ پر لکھا جاتا ہے۔</string>
+    <string name="expiry_write_off">ختم کریں</string>
+    <string name="expiry_write_off_confirm">%2$s کا %1$s ایکسپائر کے طور پر ختم کریں؟ اسٹاک اتنا کم ہو جائے گا، اور لاگ میں لکھا رہے گا کس نے کیا۔</string>
+    <string name="expiry_written_off">ختم کر دیا</string>
+    <string name="expiry_nothing_left">اس بیچ میں کچھ نہیں بچا</string>
+    <string name="expiry_left">بچا: %1$s</string>
+    <string name="product_pack_help">وہ پیک (کارٹن، بوری…) جس میں یہ پروڈکٹ خریدی یا بیچی بھی جاتی ہے، اور ایک پیک میں اس کی اپنی اکائی کتنی ہیں۔ اسٹاک اپنی اکائی میں گنا جاتا ہے۔</string>
+    <string name="product_pack_unit">پیک کا نام</string>
+    <string name="product_pack_size">ایک پیک میں کتنے</string>
+    <string name="product_pack_price">پیک کی قیمت</string>
+    <string name="product_tax_rate">ٹیکس %</string>
 </resources>

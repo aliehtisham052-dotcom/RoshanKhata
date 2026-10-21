@@ -3283,4 +3283,22 @@
     <string name="restore_loss_agree">मैं समझता हूँ कि ये मिट जाएँगे</string>
     <string name="restore_loss_counting">जाँचा जा रहा है कि इस खाते में क्या है जो कॉपी में नहीं…</string>
     <string name="snapshot_before_restore">रीस्टोर से पहले रखी गई · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">कीमतों में शामिल टैक्स</string>
+    <string name="pos_sell_by">%1$s के हिसाब से बेचें</string>
+    <string name="pos_expired_stock">%1$s का सिर्फ़ एक्सपायर स्टॉक बचा है (ठीक: %2$s)। पुराना बैच एक्सपायरी में हटाएँ, या कम बेचें।</string>
+    <string name="counter_settings">काउंटर सेटिंग्स</string>
+    <string name="counter_prices_include_tax">कीमतों में टैक्स पहले से शामिल है</string>
+    <string name="counter_prices_include_tax_help">चालू: प्रोडक्ट का टैक्स उसकी कीमत के अंदर है, और रसीद बताती है कितना। बंद: काउंटर पर ऊपर से जोड़ा जाता है। हर प्रोडक्ट का टैक्स % प्रोडक्ट पर लिखा जाता है।</string>
+    <string name="expiry_write_off">हटाएँ</string>
+    <string name="expiry_write_off_confirm">%2$s का %1$s एक्सपायर मानकर हटाएँ? स्टॉक उतना कम हो जाएगा, और लॉग में लिखा रहेगा किसने किया।</string>
+    <string name="expiry_written_off">हटा दिया</string>
+    <string name="expiry_nothing_left">इस बैच में कुछ नहीं बचा</string>
+    <string name="expiry_left">बचा: %1$s</string>
+    <string name="product_pack_help">वह पैक (कार्टन, बोरी…) जिसमें यह प्रोडक्ट ख़रीदा या बेचा भी जाता है, और एक पैक में उसकी अपनी इकाई कितनी हैं। स्टॉक अपनी इकाई में गिना जाता है।</string>
+    <string name="product_pack_unit">पैक का नाम</string>
+    <string name="product_pack_size">एक पैक में कितने</string>
+    <string name="product_pack_price">पैक की कीमत</string>
+    <string name="product_tax_rate">टैक्स %</string>
 </resources>
