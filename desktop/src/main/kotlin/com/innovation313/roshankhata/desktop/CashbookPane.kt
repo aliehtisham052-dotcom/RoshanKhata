@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -324,7 +325,8 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
     DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         DialogFrame(title, subtitle = dateLine, onClose = onClose, footerStart = {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                IconAction("ic_chevron_right", "‹", { day -= 1 })
+                // The earlier day: the chevron turned to point back (and mirrored again in RTL, as the next one is).
+                IconAction("ic_chevron_right", "‹", { day -= 1 }, modifier = Modifier.scale(-1f, 1f))
                 IconAction("ic_chevron_right", "›", { if (day < com.innovation313.roshankhata.data.DayCloseMath.dayOf(System.currentTimeMillis())) day += 1 })
             }
         }, footer = {

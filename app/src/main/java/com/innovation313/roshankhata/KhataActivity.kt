@@ -755,7 +755,7 @@ class KhataActivity : BaseActivity() {
         selectionBack.isEnabled = picking
         selectionBar.visibility = if (picking) View.VISIBLE else View.GONE
         if (picking) {
-            tvSelectedCount.text = Digits.string(resources, R.string.selected_count, selectedIds.size)
+            tvSelectedCount.text = Digits.quantity(resources, R.plurals.n_selected, selectedIds.size, selectedIds.size)
             val visible = shownParties.map { it.id }
             btnSelectAll.setText(
                 if (visible.isNotEmpty() && selectedIds.containsAll(visible)) R.string.clear_all
@@ -939,8 +939,8 @@ class KhataActivity : BaseActivity() {
                 }.thenBy { keys[it.id]?.lower ?: it.name.lowercase() }
             )
         } else when (sortMode) {
-            SortMode.NAME_AZ -> byType.sortedBy { it.name.lowercase() }
-            SortMode.NAME_ZA -> byType.sortedByDescending { it.name.lowercase() }
+            SortMode.NAME_AZ -> com.innovation313.roshankhata.data.NameOrder.sortedBy(byType) { it.name }
+            SortMode.NAME_ZA -> com.innovation313.roshankhata.data.NameOrder.sortedByDescending(byType) { it.name }
             // "Owes me most" means the largest positive balance at the top.
             SortMode.OWES_MOST -> byType.sortedByDescending { it.balance }
             // "I owe most" is the mirror: the most negative balance first.

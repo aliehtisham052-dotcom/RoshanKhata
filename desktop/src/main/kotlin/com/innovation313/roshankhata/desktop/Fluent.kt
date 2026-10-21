@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import com.innovation313.roshankhata.screens.calcKeys
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -332,7 +333,10 @@ fun GlyphChip(icon: String, color: Color, tint: Color, size: Int = 32) {
 /** The phone's tile picture painted in one colour, [size] across (the rail's and the chips' glyphs). */
 @Composable
 fun MonoTile(icon: String, tint: Color, size: Int) {
-    tileIcon(icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(size.dp), colorFilter = ColorFilter.tint(tint)) }
+    val flip = iconFlipped(icon)
+    tileIcon(icon)?.let {
+        Image(it, contentDescription = null, modifier = Modifier.size(size.dp).then(if (flip) Modifier.scale(-1f, 1f) else Modifier), colorFilter = ColorFilter.tint(tint))
+    }
 }
 
 /** The words of an icon-only control as its hover tip. */

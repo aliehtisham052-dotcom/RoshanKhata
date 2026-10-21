@@ -52,7 +52,9 @@ object HomeSlides {
             h.itemView.findViewById<ImageView>(R.id.ivSlideIcon).setImageResource(s.icon)
             h.itemView.findViewById<TextView>(R.id.tvSlideSub).setText(s.sub)
             h.itemView.findViewById<TextView>(R.id.tvSlideTitle).apply {
-                text = ctx.getString(s.title) + "  \u2192"
+                // The arrow points along the reading direction (21 Oct 2026): → in English, ← in Urdu or Arabic.
+                val onward = if (h.itemView.layoutDirection == View.LAYOUT_DIRECTION_RTL) "\u2190" else "\u2192"
+                text = ctx.getString(s.title) + "  " + onward
                 // The pill's label is the feature's own deep tone by day and
                 // its light tone by night (fi_*_b) — but the pill itself is
                 // white in both, so by night the light tone would vanish on

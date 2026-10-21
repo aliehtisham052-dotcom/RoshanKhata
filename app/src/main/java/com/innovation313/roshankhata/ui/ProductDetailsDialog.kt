@@ -270,7 +270,8 @@ object ProductDetailsDialog {
                     dao.updateProduct(updated)
                     if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
                         dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
-                            updated.name + ": " + listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " → " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/"))
+                            // Each figure sealed left-to-right, so the audit line's "old → new" keeps its order in an RTL language (21 Oct 2026).
+                            updated.name + ": " + com.innovation313.roshankhata.ui.Format.ltr(listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " \u2192 " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/")))
                     }
                     activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
                 }

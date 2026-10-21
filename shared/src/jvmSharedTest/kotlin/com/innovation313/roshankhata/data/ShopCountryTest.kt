@@ -22,7 +22,7 @@ class ShopCountryTest {
     @Test
     fun `a book from before the setting is a Pakistani shop`() {
         assertEquals(ShopCountry.PAKISTAN, ShopCountry.of(null))
-        assertEquals(ShopCountry.PAKISTAN, ShopCountry.of(""))
+        assertEquals(ShopCountry.PAKISTAN, ShopCountry.of("PK"))
         assertEquals(ShopCountry.BANGLADESH, ShopCountry.of("bd"))
         // A code the table does not know is not "other": it is a book whose key was never written.
         assertEquals(ShopCountry.PAKISTAN, ShopCountry.of("XX"))

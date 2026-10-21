@@ -14,6 +14,7 @@ import com.innovation313.roshankhata.data.Access
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.AuditAction
 import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PinHash
@@ -75,7 +76,7 @@ object AccessUi {
             activity.runOnUiThread {
                 if (activity.isFinishing) return@runOnUiThread
                 when (result) {
-                    null -> { toast(activity, Digits.string(activity.resources, R.string.lock_pin_wait, Access.waitSeconds(account = account))); failed() }
+                    null -> { toast(activity, Access.waitSeconds(account = account).let { Digits.quantity(activity.resources, R.plurals.n_wait_seconds, it, it) }); failed() }
                     false -> { toast(activity, activity.getString(R.string.access_wrong_pin)); failed() }
                     true -> ok()
                 }
@@ -322,7 +323,7 @@ object AccessUi {
                     if (!waitFirst && Access.pinTried(right, account = Access.OWNER)) log(dao, AuditAction.PIN_WAIT, Access.userName, Access.OWNER)
                     activity.runOnUiThread {
                         when {
-                            waitFirst -> { toast(activity, Digits.string(activity.resources, R.string.lock_pin_wait, Access.waitSeconds(account = Access.OWNER))); cancelled() }
+                            waitFirst -> { toast(activity, Access.waitSeconds(account = Access.OWNER).let { Digits.quantity(activity.resources, R.plurals.n_wait_seconds, it, it) }); cancelled() }
                             !right -> { toast(activity, activity.getString(R.string.access_recovery_wrong)); cancelled() }
                             else -> newOwnerPin(activity, dao, cancelled = cancelled) { then() }
                         }

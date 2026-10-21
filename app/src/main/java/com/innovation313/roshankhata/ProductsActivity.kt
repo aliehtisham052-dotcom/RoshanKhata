@@ -215,7 +215,7 @@ class ProductsActivity : BaseActivity() {
     /** One correction to the shelf (POS Phase 6): the product, the signed quantity, the reason, a note. */
     private fun adjustStock() {
         lifecycleScope.launch {
-            val products = withContext(Dispatchers.IO) { dao.productsOnce() }.sortedBy { it.name.lowercase() }
+            val products = com.innovation313.roshankhata.data.NameOrder.sortedBy(withContext(Dispatchers.IO) { dao.productsOnce() }) { it.name }
             if (products.isEmpty()) { Toast.makeText(this@ProductsActivity, R.string.no_products, Toast.LENGTH_LONG).show(); return@launch }
             MaterialAlertDialogBuilder(this@ProductsActivity)
                 .setTitle(R.string.stock_adjust)
@@ -269,7 +269,7 @@ class ProductsActivity : BaseActivity() {
 
     private fun refresh() {
         lifecycleScope.launch {
-            val stock = Stock.of(dao).sortedBy { it.name.lowercase() }
+            val stock = com.innovation313.roshankhata.data.NameOrder.sortedBy(Stock.of(dao)) { it.name }
 
             allStock = stock
             show()

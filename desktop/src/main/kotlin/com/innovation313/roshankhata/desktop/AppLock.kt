@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.delay
 
@@ -112,7 +113,7 @@ fun LockScreen(prefs: AppPrefs, onUnlocked: () -> Unit) {
             Spacer(Modifier.height(4.dp))
             PinField(pin, word(W.lock_pin_label), { pin = it; wrong = false }, ::tryPin)
             when {
-                waiting -> Text(word(W.lock_pin_wait, ((waitUntil - now) / 1000 + 1).toInt()), color = c.owedToMe, fontSize = 13.sp)
+                waiting -> Text(((waitUntil - now) / 1000 + 1).toInt().let { com.innovation313.roshankhata.words.plural(WP.n_wait_seconds, it, it) }, color = c.owedToMe, fontSize = 13.sp)
                 wrong -> Text(word(W.lock_pin_wrong), color = c.owedToMe, fontSize = 13.sp)
             }
             FillButton(word(W.lock_unlock), c.brandGreen, enabled = !waiting && pin.isNotEmpty()) { tryPin() }

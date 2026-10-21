@@ -239,7 +239,7 @@ class BillsActivity : BaseActivity() {
                 findViewById<TextView>(R.id.tvStatExpiring).text = "%,d".format(Digits.FIGURES, count)
                 if (count > 0) {
                     btnExpiring.visibility = View.VISIBLE
-                    btnExpiring.text = Digits.string(resources, R.string.expiring_badge, count)
+                    btnExpiring.text = Digits.quantity(resources, R.plurals.n_expiring, count, count)
                 } else {
                     btnExpiring.visibility = View.GONE
                 }

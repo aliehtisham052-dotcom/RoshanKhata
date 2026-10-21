@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 
 /**
  * Making an invoice as a three-step walkthrough, in the owner's own order:
@@ -864,7 +865,7 @@ class InvoiceEditorActivity : BaseActivity() {
         designStrip = findViewById(R.id.designStrip)
         designStripScroll = findViewById(R.id.designStripScroll)
         findViewById<TextView>(R.id.tvDesignsCount).text =
-            Digits.string(resources, R.string.invoice_designs_count, templateIds.size)
+            Digits.quantity(resources, R.plurals.n_designs, templateIds.size, templateIds.size)
         val dp = resources.displayMetrics.density
         designStrip.removeAllViews()
         templateIds.forEachIndexed { index, _ ->

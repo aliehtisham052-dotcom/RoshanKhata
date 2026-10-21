@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.ShopCountry
 
 /**
  * The occasions a shop posts on its WhatsApp Status, each with its own

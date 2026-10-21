@@ -3617,4 +3617,54 @@
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">رقم المحفظة الإلكترونية (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="zero">لم يبقَ أي يوم</item>
+        <item quantity="one">بقي يوم واحد</item>
+        <item quantity="two">بقي يومان</item>
+        <item quantity="few">بقيت %d أيام</item>
+        <item quantity="many">بقي %d يومًا</item>
+        <item quantity="other">بقي %d يوم</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="zero">لا شيء محدد</item>
+        <item quantity="one">واحد محدد</item>
+        <item quantity="two">اثنان محددان</item>
+        <item quantity="few">%d محددة</item>
+        <item quantity="many">%d محددًا</item>
+        <item quantity="other">%d محدد</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="zero">لا شيء يقارب الانتهاء</item>
+        <item quantity="one">واحد يقارب الانتهاء</item>
+        <item quantity="two">اثنان يقاربان الانتهاء</item>
+        <item quantity="few">%d تقارب الانتهاء</item>
+        <item quantity="many">%d يقارب الانتهاء</item>
+        <item quantity="other">%d يقارب الانتهاء</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="zero">لا مبيعات اليوم</item>
+        <item quantity="one">عملية بيع واحدة اليوم</item>
+        <item quantity="two">عمليتا بيع اليوم</item>
+        <item quantity="few">%d عمليات بيع اليوم</item>
+        <item quantity="many">%d عملية بيع اليوم</item>
+        <item quantity="other">%d عملية بيع اليوم</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="zero">لا تصاميم</item>
+        <item quantity="one">تصميم واحد</item>
+        <item quantity="two">تصميمان</item>
+        <item quantity="few">%d تصاميم</item>
+        <item quantity="many">%d تصميمًا</item>
+        <item quantity="other">%d تصميم</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="zero">محاولات كثيرة. انتظر لحظة.</item>
+        <item quantity="one">محاولات كثيرة. انتظر ثانية واحدة.</item>
+        <item quantity="two">محاولات كثيرة. انتظر ثانيتين.</item>
+        <item quantity="few">محاولات كثيرة. انتظر %d ثوانٍ.</item>
+        <item quantity="many">محاولات كثيرة. انتظر %d ثانية.</item>
+        <item quantity="other">محاولات كثيرة. انتظر %d ثانية.</item>
+    </plurals>
 </resources>

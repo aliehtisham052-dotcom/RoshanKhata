@@ -888,7 +888,7 @@ private fun Book(
                                 }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
                                 TextButton({ Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) {
                                     scope.launch {
-                                        val owing = parties.filter { kotlin.math.abs(it.balance) >= 0.005 }.sortedBy { it.name.lowercase() }
+                                        val owing = com.innovation313.roshankhata.data.NameOrder.sortedBy(parties.filter { kotlin.math.abs(it.balance) >= 0.005 }) { it.name }
                                         val sheets = withContext(Dispatchers.IO) {
                                             owing.map { p ->
                                                 StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), p.name, p.phone,
