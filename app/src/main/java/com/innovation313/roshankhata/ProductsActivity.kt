@@ -142,11 +142,13 @@ class ProductsActivity : BaseActivity() {
                 menu.add(0, 2, 1, R.string.products_import)
                 menu.add(0, 3, 2, R.string.stock_count_title)
                 menu.add(0, 4, 3, R.string.stock_valuation)
+                menu.add(0, 5, 4, R.string.stock_adjust)
+                menu.add(0, 6, 5, R.string.po_title)
                 setOnMenuItemClickListener { item ->
                     val ok = when (item.itemId) {
                         1 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)
-                        3 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST)
-                        4 -> true
+                        3, 5 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST)
+                        4, 6 -> true
                         else -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
                     }
                     if (!ok) { Toast.makeText(this@ProductsActivity, R.string.access_denied, Toast.LENGTH_LONG).show(); return@setOnMenuItemClickListener true }
@@ -155,6 +157,8 @@ class ProductsActivity : BaseActivity() {
                         2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
                         3 -> countStock()
                         4 -> showValuation()
+                        5 -> adjustStock()
+                        6 -> startActivity(Intent(this@ProductsActivity, OrdersActivity::class.java))
                     }
                     true
                 }
@@ -204,6 +208,44 @@ class ProductsActivity : BaseActivity() {
                 }
             }
             dialog.show()
+        }
+    }
+
+    /** One correction to the shelf (POS Phase 6): the product, the signed quantity, the reason, a note. */
+    private fun adjustStock() {
+        lifecycleScope.launch {
+            val products = withContext(Dispatchers.IO) { dao.productsOnce() }.sortedBy { it.name.lowercase() }
+            if (products.isEmpty()) { Toast.makeText(this@ProductsActivity, R.string.no_products, Toast.LENGTH_LONG).show(); return@launch }
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(R.string.stock_adjust)
+                .setItems(products.map { it.name }.toTypedArray()) { _, i ->
+                    val p = products[i]
+                    val qty = android.widget.EditText(this@ProductsActivity).apply { hint = getString(R.string.adjust_qty_hint); inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL or android.text.InputType.TYPE_NUMBER_FLAG_SIGNED }
+                    val reasons = listOf(com.innovation313.roshankhata.data.AdjustReason.DAMAGE, com.innovation313.roshankhata.data.AdjustReason.EXPIRED, com.innovation313.roshankhata.data.AdjustReason.THEFT, com.innovation313.roshankhata.data.AdjustReason.OTHER)
+                    val labels = listOf(R.string.adjust_reason_damage, R.string.adjust_reason_expired, R.string.adjust_reason_theft, R.string.adjust_reason_other).map { getString(it) }
+                    val reason = android.widget.Spinner(this@ProductsActivity).apply { adapter = android.widget.ArrayAdapter(this@ProductsActivity, android.R.layout.simple_spinner_dropdown_item, labels) }
+                    val note = android.widget.EditText(this@ProductsActivity).apply { hint = getString(R.string.note_optional) }
+                    val box = android.widget.LinearLayout(this@ProductsActivity).apply {
+                        orientation = android.widget.LinearLayout.VERTICAL
+                        val pad = (20 * resources.displayMetrics.density).toInt(); setPadding(pad, pad / 2, pad, 0)
+                        addView(qty); addView(reason); addView(note)
+                    }
+                    MaterialAlertDialogBuilder(this@ProductsActivity)
+                        .setTitle(p.name)
+                        .setView(box)
+                        .setPositiveButton(R.string.save) { _, _ ->
+                            val q = com.innovation313.roshankhata.ui.Calc.evalAmount(qty.text.toString()) ?: 0.0
+                            if (q == 0.0) { Toast.makeText(this@ProductsActivity, R.string.pos_err_quantity, Toast.LENGTH_LONG).show(); return@setPositiveButton }
+                            lifecycleScope.launch {
+                                withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasons[reason.selectedItemPosition], note.text.toString().trim().ifBlank { null }) } }
+                                refresh()
+                            }
+                        }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
     }
 
