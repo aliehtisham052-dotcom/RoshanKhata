@@ -514,6 +514,19 @@ Each of these cost a build or a bug.
     applied only at the one text call each sheet uses (`Digits.forPrint` in
     PdfRtl.drawText, the print helpers, receipts) so a sheet never mixes
     two digit sets. Indonesian money is `Rp 1.250,50` (`Format.money`).
+29. **The shop has a country, never inferred from its language**
+    (`ShopCountry`, kept with the profile and in backups; Pakistan for old
+    books; asked once with the shop's name). Anything that differs by
+    region reads it: WhatsApp calling code, currency and decimals, tax ID
+    name, week start and weekly off, calendar, 24-hour clock, wallet
+    hints, Rabi/Kharif, 14 August. Never key a region rule on `Currency ==
+    "Rs"` again.
+30. **Names sort in the reader's alphabet** (`NameOrder`), never by
+    `lowercase()`: the JDK's Collator has no Urdu/Sindhi/Persian
+    tailoring on Windows, so the order is the app's own. Counts are
+    `<plurals>`; direction icons on Windows go through `Glyph`/`MonoTile`
+    (flipped in RTL); names and figures in a sentence are
+    `Format.isolate`/`Format.ltr`.
 
 ---
 
