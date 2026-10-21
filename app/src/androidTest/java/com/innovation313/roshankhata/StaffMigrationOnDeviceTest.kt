@@ -8,6 +8,7 @@ import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.core.app.ApplicationProvider
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.MIGRATION_28_29
+import com.innovation313.roshankhata.data.MIGRATION_33_34
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -38,6 +39,8 @@ class StaffMigrationOnDeviceTest {
                 .build()
         ).writableDatabase
         MIGRATION_28_29.migrate(migrated)
+        // The counter logins (v34) added role and the PIN hash to staff; the migrated table must carry them too.
+        MIGRATION_33_34.migrate(migrated)
 
         val room = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()
         val fresh = room.openHelper.writableDatabase
