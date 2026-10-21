@@ -68,4 +68,12 @@ class ProductCsvTest {
         assertFalse(Barcodes.isValidEan("4006381333932"))
         assertTrue(Barcodes.internalEan13(42) != Barcodes.internalEan13(43))
     }
+
+    @Test
+    fun `a barcode keeps its digits through Excel, and a code Excel already spoiled is not taken`() {
+        assertEquals("=\"8901234567890\"", ProductCsv.asText("8901234567890"))
+        assertEquals("8901234567890", ProductCsv.barcodeOf("=\"8901234567890\""))
+        assertEquals("123", ProductCsv.barcodeOf("123"))
+        assertNull(ProductCsv.barcodeOf("8.90123E+12"))
+    }
 }

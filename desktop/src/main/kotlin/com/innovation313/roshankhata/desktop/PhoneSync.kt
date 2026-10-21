@@ -91,7 +91,9 @@ object PhoneSync {
         val file = File(dir, name)
         val tmp = File(dir, "$name.tmp")
         tmp.writeBytes(book)
-        if (!tmp.renameTo(file)) { file.delete(); tmp.renameTo(file) }
+        // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
+        // the old one first — a power cut in between left neither.
+        replaceAtomically(tmp, file)
         // The last five are kept; older ones go, so the folder does not fill with whole books.
         dir.listFiles { f -> f.name.startsWith("RoshanKhata_FromPhone_") && f.name.endsWith(".txt") }
             ?.sortedByDescending { it.name }?.drop(5)?.forEach { it.delete() }

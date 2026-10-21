@@ -37,6 +37,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -482,14 +483,16 @@ class BackupActivity : BaseActivity() {
 
     private fun doMerge(data: BackupCodec.ParsedBackup, shop: String?) {
         lifecycleScope.launch {
-            val result = withContext(Dispatchers.IO) {
+            // On the app's own scope (21 Oct 2026): turning the phone mid-merge cancelled the screen's
+            // scope and rolled the merge back with nothing said. Only the message waits for the screen.
+            val result = com.innovation313.roshankhata.data.AppScope.async {
                 runCatching {
                     // This book as it stands, kept first (Daily copies), so the merge can be undone;
                     // nothing is merged unless it was.
                     if (!com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)) error(getString(R.string.restore_keep_failed))
                     dao.mergeBook(data, shop)
                 }
-            }
+            }.await()
             if (isFinishing) return@launch
             result.onSuccess { done ->
                 Toast.makeText(this@BackupActivity, Digits.string(resources, R.string.merge_done, done.rows, done.renumbered), Toast.LENGTH_LONG).show()
@@ -503,12 +506,15 @@ class BackupActivity : BaseActivity() {
         Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            val kept = withContext(Dispatchers.IO) {
+            // The restore itself on the app's own scope (21 Oct 2026): a screen turned mid-restore no
+            // longer cancels it half way.
+            val appContext = applicationContext
+            val kept = com.innovation313.roshankhata.data.AppScope.async {
                 // This book as it stands, kept first (Daily copies), so the restore can be undone.
                 // No copy, no restore (21 Oct 2026).
-                com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
-                    .also { if (it) Backup.restore(this@BackupActivity, dao, data) }
-            }
+                com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
+                    .also { if (it) Backup.restore(appContext, dao, data) }
+            }.await()
             if (!kept) {
                 if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
                     .setTitle(R.string.restore_warning_title)
@@ -1129,8 +1135,16 @@ class BackupActivity : BaseActivity() {
             for (biz in businesses) {
                 val label = biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id)
 
-                Businesses.ensure(this@BackupActivity, biz.id, biz.name)
-                Businesses.switchTo(this@BackupActivity, biz.id)
+                // A shop of this number already here under ANOTHER name is a different shop (21 Oct 2026,
+                // the critical review: it was replaced by the Drive copy without a word). The Drive copy
+                // then comes in as a shop of its own, beside it.
+                val here = Businesses.list(this@BackupActivity).firstOrNull { it.id == biz.id }
+                val hereName = here?.let { Businesses.displayName(this@BackupActivity, it) }
+                val otherShop = here != null && here.id != 1L && !biz.name.isNullOrBlank() && !hereName.isNullOrBlank() &&
+                    !hereName.trim().equals(biz.name.trim(), ignoreCase = true)
+                val target = if (otherShop) Businesses.create(this@BackupActivity, biz.name.orEmpty())
+                    else Businesses.ensure(this@BackupActivity, biz.id, biz.name)
+                Businesses.switchTo(this@BackupActivity, target.id)
 
                 val file = DriveBackup.restoreByIdToFile(this@BackupActivity, account, biz.backupFileId)
                     .getOrNull()

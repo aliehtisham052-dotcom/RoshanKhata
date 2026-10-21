@@ -52,6 +52,9 @@ class CsvImportTest {
         assertEquals(1200.0, CsvImport.amount("1,200")!!, 0.0)
         assertEquals(-75.25, CsvImport.amount("-75.25")!!, 0.0)
         assertEquals(-300.0, CsvImport.amount("300-")!!, 0.0)
+        // The rupee's closing "/-" is not a minus.
+        assertEquals(1200.0, CsvImport.amount("Rs. 1,200/-")!!, 0.0)
+        assertEquals(-1200.0, CsvImport.amount("(Rs 1,200/-)")!!, 0.0)
         assertNull(CsvImport.amount("Ali"))
         assertNull(CsvImport.amount(""))
     }

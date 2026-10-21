@@ -149,16 +149,16 @@ class StatementPrint(
         g.color = navy
         g.fillRect(0, 0, pageW.toInt(), 78)
         g.color = Color.WHITE
-        g.font = Font(Font.DIALOG, Font.BOLD, 18)
+        g.font = Font(PrintFonts.family, Font.BOLD, 18)
         g.text(shopName, margin, 32.0)
-        g.font = Font(Font.DIALOG, Font.PLAIN, 11)
+        g.font = Font(PrintFonts.family, Font.PLAIN, 11)
         val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
         g.text(words.text(W.pdf_stmt_title, partyName) + (phone?.let { "  ·  " + Format.ltr(it) } ?: ""), margin, 54.0)
 
         var y = 96.0
         if (first) {
             g.color = muted
-            g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 10)
             val period = if (rows.isNotEmpty()) {
                 words.text(
                     W.pdf_stmt_period,
@@ -180,9 +180,9 @@ class StatementPrint(
                 g.color = ink
                 g.stroke = BasicStroke(1f)
                 g.drawRoundRect(left.toInt(), y.toInt(), boxW.toInt(), 42, 10, 10)
-                g.font = Font(Font.DIALOG, Font.PLAIN, 9)
+                g.font = Font(PrintFonts.family, Font.PLAIN, 9)
                 g.text(label, start + 10, y + 15)
-                g.font = Font(Font.DIALOG, Font.BOLD, 14)
+                g.font = Font(PrintFonts.family, Font.BOLD, 14)
                 g.text(value, start + 10, y + 34)
             }
             box(0, words.text(W.pdf_stmt_you_owe), Format.money(totalGave), Color(0xFD, 0xEC, 0xEA), red)
@@ -190,7 +190,7 @@ class StatementPrint(
             y += 60.0
         } else {
             g.color = muted
-            g.font = Font(Font.DIALOG, Font.PLAIN, 9)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 9)
             g.text(words.text(W.pdf_stmt_page, pageIndex + 1, pageCount()), pageW - margin, y, end = true)
             y += 14.0
         }
@@ -201,7 +201,7 @@ class StatementPrint(
         val xGot = margin + 330
         val xBal = pageW - margin
         g.color = Color.BLACK
-        g.font = Font(Font.DIALOG, Font.BOLD, 10)
+        g.font = Font(PrintFonts.family, Font.BOLD, 10)
         g.text(words.text(W.pdf_label_date), xDate, y)
         g.text(words.text(W.pdf_stmt_you_owe), xGave, y)
         g.text(words.text(W.pdf_stmt_you_paid), xGot, y)
@@ -213,11 +213,11 @@ class StatementPrint(
 
         // The balance carried in, as the period's first line.
         if (first && periodFrom != null) {
-            g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 10)
             g.color = muted
             g.text(words.text(W.pdf_stmt_opening_before, Format.dateOnly(periodFrom)), xDate, y)
             g.color = Color.BLACK
-            g.font = Font(Font.DIALOG, Font.BOLD, 10)
+            g.font = Font(PrintFonts.family, Font.BOLD, 10)
             g.text(Format.money(opening), xBal, y, end = true)
             y += 8
             g.color = line
@@ -227,13 +227,13 @@ class StatementPrint(
         val range = pages[pageIndex]
         for (row in rows.subList(range.first.coerceAtMost(rows.size), (range.last + 1).coerceIn(0, rows.size))) {
             val e = row.e.entry
-            g.font = Font(Font.DIALOG, Font.PLAIN, 10)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 10)
             g.color = Color.BLACK
             g.text(Format.statementStamp(e.timestamp), xDate, y)
             g.color = if (e.isGiven) red else green
             g.text(Format.money(e.amount), if (e.isGiven) xGave else xGot, y)
             g.color = Color.BLACK
-            g.font = Font(Font.DIALOG, Font.BOLD, 10)
+            g.font = Font(PrintFonts.family, Font.BOLD, 10)
             g.text(Format.money(row.running), xBal, y, end = true)
             y += 12
             val detail = buildList {
@@ -243,7 +243,7 @@ class StatementPrint(
                 if (e.isQarzeHasna) add(words.text(W.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
             g.color = muted
-            g.font = Font(Font.DIALOG, Font.PLAIN, 8)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 8)
             g.text(detail, xDate, y)
             y += 8
             g.color = line
@@ -263,10 +263,10 @@ class StatementPrint(
                 Money.isNegative(closing) -> words.text(W.pdf_stmt_you_will_receive)
                 else -> words.text(W.pdf_stmt_settled)
             }
-            g.font = Font(Font.DIALOG, Font.PLAIN, 11)
+            g.font = Font(PrintFonts.family, Font.PLAIN, 11)
             g.text(label, margin + 16, y + 20)
             g.color = Color.WHITE
-            g.font = Font(Font.DIALOG, Font.BOLD, 18)
+            g.font = Font(PrintFonts.family, Font.BOLD, 18)
             g.text(Format.money(closing), margin + 16, y + 43)
         }
         return Printable.PAGE_EXISTS

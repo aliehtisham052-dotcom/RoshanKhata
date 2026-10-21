@@ -25,7 +25,7 @@ object ProductCsv {
                 listOf(
                     p.name, p.category.orEmpty(), p.company.orEmpty(), p.defaultUnit.orEmpty(),
                     p.salePrice?.let(LedgerCsv::plain).orEmpty(), p.creditPrice?.let(LedgerCsv::plain).orEmpty(),
-                    p.costPrice?.let(LedgerCsv::plain).orEmpty(), p.barcode.orEmpty(),
+                    p.costPrice?.let(LedgerCsv::plain).orEmpty(), p.barcode?.let(::asText).orEmpty(),
                     p.lowStockLevel?.let(LedgerCsv::plain).orEmpty(), p.productType.orEmpty()
                 )
             )
@@ -72,7 +72,7 @@ object ProductCsv {
             Row(
                 name = name, category = cell(r, "category"), company = cell(r, "company"), unit = cell(r, "unit"),
                 salePrice = cell(r, "sale")?.let(CsvImport::amount), creditPrice = cell(r, "credit")?.let(CsvImport::amount),
-                costPrice = cell(r, "cost")?.let(CsvImport::amount), barcode = cell(r, "barcode"),
+                costPrice = cell(r, "cost")?.let(CsvImport::amount), barcode = cell(r, "barcode")?.let(::barcodeOf),
                 lowStock = cell(r, "low")?.let(CsvImport::amount), type = cell(r, "type")
             )
         }
@@ -91,6 +91,21 @@ object ProductCsv {
         "type" to listOf("type")
     )
     private val EXCLUDE = mapOf("sale" to listOf("cost", "credit", "purchase"), "name" to listOf("company", "brand"), "unit" to listOf("price"))
+    /**
+     * A barcode written so Excel keeps it as text (21 Oct 2026, the critical
+     * review): a bare 13-digit code opened in Excel became 8.96E+12, and saved
+     * back it WAS 8.96E+12. ="8964000000123" shows as the code and stays one.
+     */
+    fun asText(code: String): String = if (code.all(Char::isDigit) && code.length > 11) "=\"$code\"" else code
+
+    /** A barcode read back: Excel's ="..." undone; a code Excel already turned into 8.96E+12 is lost, so nothing. */
+    fun barcodeOf(cell: String): String? {
+        val t = cell.trim().removePrefix("=").trim('"').trim()
+        if (t.isEmpty()) return null
+        if (Regex("^\\d+(\\.\\d+)?[eE][+-]?\\d+$").matches(t)) return null
+        return t
+    }
+
     private val DEFAULT_COLS = mapOf("name" to 0, "sale" to 1, "barcode" to 2)
 
     /** What an import would do, for the owner to confirm. */
