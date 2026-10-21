@@ -35,7 +35,7 @@ class SalesDaoTest {
     private var confidor = 0L
 
     @Before
-    fun open() = runBlocking {
+    fun open(): Unit = runBlocking {
         db = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()
         dao = db.khataDao()
         bilal = dao.insertParty(Party(name = "Bilal"))

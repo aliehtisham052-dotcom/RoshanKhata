@@ -26,7 +26,7 @@ class InventoryDaoTest {
     private var urea = 0L
 
     @Before
-    fun open() = runBlocking {
+    fun open(): Unit = runBlocking {
         db = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()
         dao = db.khataDao()
         engro = dao.insertParty(Party(name = "Engro", isCustomer = false))
