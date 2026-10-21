@@ -2823,7 +2823,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">زبان کارت</string>
-    <string name="biz_card_language_note">کارت اردو یکسره اردو است و از راست به چپ خوانده می‌شود. هر زبان نام، مالک و نشانی خودش را دارد؛ شماره‌ها، ایمیل و وب‌سایت در هر دو یکی است.</string>
+    <string name="biz_card_language_note">هر زبان کارت خودش را دارد. کارت‌های اردو، سندی، عربی و فارسی از راست به چپ خوانده می‌شوند. نام، مالک و نشانی هر زبان جداست؛ شماره‌ها، ایمیل و وب‌سایت روی همه کارت‌ها یکی است.</string>
     <string name="poster_step_design">طرح</string>
     <string name="poster_step_words">متن</string>
     <string name="poster_step_send">ارسال</string>

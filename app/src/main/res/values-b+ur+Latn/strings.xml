@@ -2795,7 +2795,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">Card ki zabaan</string>
-    <string name="biz_card_language_note">Urdu card poora Urdu mein aur daayen se baayen hota hai. Har zabaan ka naam, maalik aur pata alag rehta hai; number, email aur website dono par aik hi hain.</string>
+    <string name="biz_card_language_note">Har zuban ka apna card banta hai. Urdu, Sindhi, Arabi aur Farsi card daayen se baayen hote hain. Har zuban ka naam, maalik aur pata alag rehta hai; number, email aur website har card par ek hi hain.</string>
     <string name="poster_step_design">Design</string>
     <string name="poster_step_words">Likhai</string>
     <string name="poster_step_send">Bhejein</string>

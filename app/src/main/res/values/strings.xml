@@ -3009,7 +3009,7 @@ You can change this any time from this screen.</string>
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">Card language</string>
-    <string name="biz_card_language_note">An Urdu card is wholly Urdu and reads right to left. Each language keeps its own name, owner and address; the numbers, email and website are the same on both.</string>
+    <string name="biz_card_language_note">Each language makes its own card. Urdu, Sindhi, Arabic and Farsi cards read right to left. Each language keeps its own name, owner and address; the numbers, email and website are the same on every card.</string>
     <string name="poster_step_design">Design</string>
     <string name="poster_step_words">Words</string>
     <string name="poster_step_send">Send</string>
