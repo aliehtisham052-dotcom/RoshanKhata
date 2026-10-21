@@ -3586,4 +3586,14 @@ You can change this any time from this screen.</string>
     <string name="audit_cash_deleted">Cashbook row deleted</string>
     <string name="audit_party_deleted">Customer deleted</string>
     <string name="audit_day_closed">Day closed</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">Change next payment day</string>
+    <string name="plan_next_ask">Next payment day for %1$s</string>
+    <string name="plan_next_clear">Remove the date</string>
+    <string name="plan_next_saved">Next payment: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">Digits after the decimal point in the label\'s price</string>
+    <string name="scale_price_example">A label showing 01250 is read as %1$s</string>
 </resources>

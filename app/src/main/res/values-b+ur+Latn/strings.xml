@@ -3372,4 +3372,14 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="audit_cash_deleted">Cashbook ka indiraaj mitaya</string>
     <string name="audit_party_deleted">Gahak mitaya gaya</string>
     <string name="audit_day_closed">Din band kiya gaya</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">Agli adaigi ki tareekh badlen</string>
+    <string name="plan_next_ask">%1$s ki agli adaigi ki tareekh</string>
+    <string name="plan_next_clear">Tareekh hatayen</string>
+    <string name="plan_next_saved">Agli adaigi: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">Label ki qeemat mein ashariya ke baad ke hindse</string>
+    <string name="scale_price_example">01250 wala label %1$s parha jayega</string>
 </resources>

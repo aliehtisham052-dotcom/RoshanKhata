@@ -3372,4 +3372,14 @@
     <string name="audit_cash_deleted">کیش بک کا اندراج مٹایا</string>
     <string name="audit_party_deleted">گاہک مٹایا گیا</string>
     <string name="audit_day_closed">دن بند کیا گیا</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">اگلی ادائیگی کی تاریخ بدلیں</string>
+    <string name="plan_next_ask">%1$s کی اگلی ادائیگی کی تاریخ</string>
+    <string name="plan_next_clear">تاریخ ہٹائیں</string>
+    <string name="plan_next_saved">اگلی ادائیگی: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">لیبل کی قیمت میں اعشاریہ کے بعد کے ہندسے</string>
+    <string name="scale_price_example">01250 والا لیبل %1$s پڑھا جائے گا</string>
 </resources>

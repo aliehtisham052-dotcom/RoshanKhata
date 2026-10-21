@@ -3416,4 +3416,14 @@
     <string name="audit_cash_deleted">ক্যাশবুকের এন্ট্রি মোছা হয়েছে</string>
     <string name="audit_party_deleted">গ্রাহক মোছা হয়েছে</string>
     <string name="audit_day_closed">দিন বন্ধ করা হয়েছে</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">পরের কিস্তির তারিখ বদলান</string>
+    <string name="plan_next_ask">%1$s-এর পরের কিস্তির তারিখ</string>
+    <string name="plan_next_clear">তারিখ সরান</string>
+    <string name="plan_next_saved">পরের কিস্তি: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">লেবেলের দামে দশমিকের পরের অঙ্ক</string>
+    <string name="scale_price_example">01250 লেখা লেবেল %1$s পড়া হবে</string>
 </resources>

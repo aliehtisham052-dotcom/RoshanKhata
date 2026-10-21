@@ -3560,4 +3560,14 @@
     <string name="audit_cash_deleted">تم حذف قيد من دفتر النقد</string>
     <string name="audit_party_deleted">تم حذف عميل</string>
     <string name="audit_day_closed">تم إغلاق اليوم</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">تغيير موعد الدفعة التالية</string>
+    <string name="plan_next_ask">موعد الدفعة التالية لـ %1$s</string>
+    <string name="plan_next_clear">إزالة الموعد</string>
+    <string name="plan_next_saved">الدفعة التالية: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">الأرقام بعد الفاصلة في سعر الملصق</string>
+    <string name="scale_price_example">الملصق الذي يظهر 01250 يُقرأ %1$s</string>
 </resources>

@@ -3369,4 +3369,14 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="audit_cash_deleted">Baris buku kas dihapus</string>
     <string name="audit_party_deleted">Pelanggan dihapus</string>
     <string name="audit_day_closed">Hari ditutup</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">Ubah tanggal pembayaran berikutnya</string>
+    <string name="plan_next_ask">Tanggal pembayaran berikutnya untuk %1$s</string>
+    <string name="plan_next_clear">Hapus tanggal</string>
+    <string name="plan_next_saved">Pembayaran berikutnya: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">Digit setelah koma pada harga label</string>
+    <string name="scale_price_example">Label bertuliskan 01250 dibaca %1$s</string>
 </resources>

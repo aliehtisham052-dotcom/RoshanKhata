@@ -3416,4 +3416,14 @@
     <string name="audit_cash_deleted">कैशबुक की एंट्री मिटाई</string>
     <string name="audit_party_deleted">ग्राहक मिटाया गया</string>
     <string name="audit_day_closed">दिन बंद किया गया</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">अगली अदायगी की तारीख बदलें</string>
+    <string name="plan_next_ask">%1$s की अगली अदायगी की तारीख</string>
+    <string name="plan_next_clear">तारीख हटाएँ</string>
+    <string name="plan_next_saved">अगली अदायगी: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">लेबल की कीमत में दशमलव के बाद के अंक</string>
+    <string name="scale_price_example">01250 वाला लेबल %1$s पढ़ा जाएगा</string>
 </resources>

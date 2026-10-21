@@ -98,7 +98,8 @@ fun EntryEditor(
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var qarz by remember { mutableStateOf(existing?.isQarzeHasna ?: false) }
     var doubtful by remember { mutableStateOf(existing?.recovery == Recovery.DOUBTFUL) }
-    var method by remember { mutableStateOf(existing?.paymentMethod) }
+    // A new "I got" starts as Cash, as on the phone (21 Oct 2026); an edited entry keeps its own.
+    var method by remember { mutableStateOf(if (existing == null) PaymentMethod.CASH else existing.paymentMethod) }
     var picking by remember { mutableStateOf(false) }
     val isSale = isGiven && isCustomer
     var cashRate by remember { mutableStateOf(existing?.rateType == RateType.CASH) }
@@ -256,7 +257,8 @@ fun EntryEditor(
                             note = note.trim().ifEmpty { null },
                             isQarzeHasna = isGiven && qarz,
                             recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN,
-                            paymentMethod = if (isGiven) base.paymentMethod else method,
+                            // Goods coming back are not money in any way (the phone's rule): no method.
+                            paymentMethod = if (isGiven) base.paymentMethod else if (goods != null) null else method,
                             rateType = rateType
                         ),
                         goods,

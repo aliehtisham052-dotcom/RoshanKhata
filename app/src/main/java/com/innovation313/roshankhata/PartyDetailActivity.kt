@@ -1577,6 +1577,10 @@ class PartyDetailActivity : BaseActivity() {
         val cgPaymentMethod: ChipGroup = view.findViewById(R.id.cgPaymentMethod)
         if (!isGiven) {
             view.findViewById<View>(R.id.paymentMethodSection).visibility = View.VISIBLE
+            // Money received is marked Cash unless the owner taps another way (21 Oct 2026, the owner:
+            // "the professional way"): an unmarked "I got" was left out of the drawer's count, and
+            // most money over a counter is cash. An entry being edited keeps what it had.
+            if (editing == null) cgPaymentMethod.check(R.id.chipCash)
         }
 
         // "Scan payment slip" (1 Oct): a JazzCash/Easypaisa screenshot or a

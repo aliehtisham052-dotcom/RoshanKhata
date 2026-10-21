@@ -560,7 +560,9 @@ interface KhataDao {
                 isGiven = !cheque.isReceived,
                 note = note,
                 entryNumber = "",
-                timestamp = now
+                timestamp = now,
+                // Marked as a cheque, so it is never counted as cash in the drawer (21 Oct 2026).
+                paymentMethod = PaymentMethod.CHEQUE
             )
         )
         updateCheque(cheque.copy(status = ChequeStatus.CLEARED, settledAt = now, ledgerEntryId = entryId))
@@ -759,6 +761,10 @@ interface KhataDao {
      * payment reaches its total — the phone's PlansActivity.recordPayment,
      * which wrote these one after another. Returns the entry's id.
      */
+    /** A plan's next payment day changed by the owner, or cleared with null (21 Oct 2026). */
+    @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
+    suspend fun setPlanNextDue(id: Long, due: Long?)
+
     @Transaction
     suspend fun recordPlanPayment(
         planId: Long,
@@ -767,10 +773,12 @@ interface KhataDao {
         paidBefore: Double,
         entryNote: String,
         note: String?,
-        now: Long = System.currentTimeMillis()
+        now: Long = System.currentTimeMillis(),
+        /** How the instalment came: Cash unless the owner says otherwise, as every "I got" (21 Oct 2026). */
+        method: String? = PaymentMethod.CASH
     ): Long {
         val entryId = insertEntryNumbered(
-            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now)
+            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now, paymentMethod = method)
         )
         insertInstallment(Installment(planId = planId, amount = amount, ledgerEntryId = entryId, paidAt = now, note = note))
         getPlan(planId)?.let { plan ->

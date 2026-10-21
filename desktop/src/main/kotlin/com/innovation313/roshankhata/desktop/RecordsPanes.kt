@@ -723,6 +723,15 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
     var acting by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
     var paying by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
     var deleting by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
+    // The next payment day being picked (21 Oct 2026): from the plan's actions, or after a payment
+    // with the suggested day already chosen. The plan and the day the picker opens on.
+    var dating by remember { mutableStateOf<Pair<com.innovation313.roshankhata.data.PlanProgress, Long>?>(null) }
+    dating?.let { (p, start) ->
+        DayPicker(start, onPick = { day ->
+            dating = null
+            scope.launch { withContext(Dispatchers.IO) { dao.setPlanNextDue(p.id, day) } }
+        }, onDismiss = { dating = null }, title = word(W.plan_next_ask, Format.name(p.partyName)))
+    }
     if (adding) PlanAddDialog(parties, onSave = { plan ->
         adding = false
         scope.launch { withContext(Dispatchers.IO) { dao.insertPlan(plan) } }
@@ -736,6 +745,10 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                     val actions = buildList<Pair<String, () -> Unit>> {
                         if (!p.isClosed) {
                             add(word(W.record_payment) to { paying = p })
+                            add(word(W.plan_next_change) to { dating = p to (p.nextDueDate ?: com.innovation313.roshankhata.data.PlanSchedule.suggestNext(null)) })
+                            if (p.nextDueDate != null) add(word(W.plan_next_clear) to {
+                                scope.launch { withContext(Dispatchers.IO) { dao.setPlanNextDue(p.id, null) } }
+                            })
                             add(word(W.close_plan) to {
                                 scope.launch { withContext(Dispatchers.IO) { dao.getPlan(p.id)?.let { dao.updatePlan(it.copy(isClosed = true, closedAt = System.currentTimeMillis())) } } }
                             })
@@ -778,6 +791,8 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                             dao.recordPlanPayment(p.id, p.partyId, a, p.paidSoFar, entryNote, note.trim().ifEmpty { null })
                         }
                         onLedgerChanged()
+                        // Still open: the next payment day, the suggestion already chosen (the phone's way).
+                        if (p.paidSoFar + a < p.totalAmount) dating = p to com.innovation313.roshankhata.data.PlanSchedule.suggestNext(p.nextDueDate)
                     }
                 }) { Text(word(if (over) W.proceed_anyway else W.save)) }
             },

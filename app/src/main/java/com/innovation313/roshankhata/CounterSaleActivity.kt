@@ -127,7 +127,8 @@ class CounterSaleActivity : BaseActivity() {
             val book = withContext(Dispatchers.IO) {
                 listOf(
                     com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100, com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINT_VALUE,
-                    com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE
+                    com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE,
+                    com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE_DECIMALS
                 ).associateWith { dao.settingValue(it) }
             }
             val printer = com.innovation313.roshankhata.ui.TextReceipt.settings(this@CounterSaleActivity)
@@ -163,13 +164,31 @@ class CounterSaleActivity : BaseActivity() {
             val pricedLabel = android.widget.CheckBox(this@CounterSaleActivity).apply {
                 setText(R.string.scale_price); isChecked = com.innovation313.roshankhata.data.BookSettings.isOn(book[com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE])
             }
+            // The label's price in the shop's own currency digits (21 Oct 2026): 0 to 3 after the point.
+            var decimals = com.innovation313.roshankhata.data.ScaleCode.decimalsOf(book[com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE_DECIMALS])
+            val decimalsLabel = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.scale_price_decimals); textSize = 14f }
+            val example = android.widget.TextView(this@CounterSaleActivity).apply { textSize = 13f }
+            fun showExample() { example.text = getString(R.string.scale_price_example, com.innovation313.roshankhata.ui.Format.money(com.innovation313.roshankhata.data.ScaleCode.example(decimals))) }
+            val decimalsGroup = android.widget.RadioGroup(this@CounterSaleActivity).apply {
+                orientation = android.widget.RadioGroup.HORIZONTAL
+                (0..3).forEach { d ->
+                    addView(android.widget.RadioButton(this@CounterSaleActivity).apply {
+                        id = android.view.View.generateViewId(); text = d.toString(); tag = d; isChecked = d == decimals
+                    })
+                }
+                setOnCheckedChangeListener { g, checked -> decimals = g.findViewById<android.view.View>(checked)?.tag as? Int ?: decimals; showExample() }
+            }
+            showExample()
+            fun showDecimals() { listOf(decimalsLabel, decimalsGroup, example).forEach { it.visibility = if (pricedLabel.isChecked) android.view.View.VISIBLE else android.view.View.GONE } }
+            showDecimals()
+            pricedLabel.setOnCheckedChangeListener { _, _ -> showDecimals() }
             val scaleHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.scale_help); textSize = 13f }
             val pad = (20 * resources.displayMetrics.density).toInt()
             val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
                 orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, pad / 2)
                 listOf(box, help, head, wide, logo, drawer, drawerHelp,
                     heading(R.string.loyalty_section), perHundred, pointValue, loyaltyHelp,
-                    heading(R.string.scale_section), prefix, pricedLabel, scaleHelp).forEach { addView(it) }
+                    heading(R.string.scale_section), prefix, pricedLabel, decimalsLabel, decimalsGroup, example, scaleHelp).forEach { addView(it) }
             }
             val scroll = android.widget.ScrollView(this@CounterSaleActivity).apply { addView(view) }
             MaterialAlertDialogBuilder(this@CounterSaleActivity)
@@ -187,6 +206,8 @@ class CounterSaleActivity : BaseActivity() {
                             val p = com.innovation313.roshankhata.data.Digits.toLatin(prefix.text.toString().trim())
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) })
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE, if (pricedLabel.isChecked) "1" else null)
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE_DECIMALS,
+                                decimals.takeIf { it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_DECIMALS }?.toString())
                         }
                         reload()
                     }
