@@ -98,7 +98,7 @@ object CsvImport {
         s = s.replace(Regex("(?i)rs\\.?|pkr|inr|rp|₹|৳|﷼"), "").replace(",", "").replace(" ", "").replace(" ", "")
         // The rupee's "/-" ("1,200/-") closes a figure; it is not a minus (21 Oct 2026: such a balance
         // was read as nothing, or as owed the other way).
-        s = s.removeSuffix("/-").removeSuffix("/=")
+        s = s.replace("/-", "").replace("/=", "")
         var negative = false
         if (s.startsWith("(") && s.endsWith(")")) { negative = true; s = s.substring(1, s.length - 1) }
         if (s.endsWith("-")) { negative = true; s = s.dropLast(1) }
