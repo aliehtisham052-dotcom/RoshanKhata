@@ -625,3 +625,19 @@ fun Outlined(
         )
     )
 }
+
+/**
+ * A dialog window's size, no larger than the screen it opens on (21 Oct 2026,
+ * the critical review): 29 of the 46 dialogs were taller than a 1366x768
+ * laptop at 125% shows, and their Save buttons sat under the taskbar. Java's
+ * usable screen (taskbar left out) is in the same units as a window's dp.
+ */
+fun fitH(h: androidx.compose.ui.unit.Dp): androidx.compose.ui.unit.Dp =
+    minOf(h, (usableScreen().height - 24).coerceAtLeast(320).dp)
+
+fun fitW(w: androidx.compose.ui.unit.Dp): androidx.compose.ui.unit.Dp =
+    minOf(w, (usableScreen().width - 24).coerceAtLeast(360).dp)
+
+private fun usableScreen(): java.awt.Rectangle =
+    runCatching { java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds }
+        .getOrDefault(java.awt.Rectangle(0, 0, 1366, 728))

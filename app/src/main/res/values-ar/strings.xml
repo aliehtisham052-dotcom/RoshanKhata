@@ -3551,4 +3551,13 @@
     <string name="pos_err_payment_unread">تعذّرت قراءة مبلغ دفعة.</string>
     <string name="pos_err_discount_unread">تعذّرت قراءة خصم.</string>
     <string name="pos_price_needs_pin">البيع بسعر غير سعر القائمة</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">تم تغيير قيد</string>
+    <string name="audit_entry_deleted">تم حذف قيد</string>
+    <string name="audit_cash_added">قيد في دفتر النقد</string>
+    <string name="audit_cash_edited">تم تغيير قيد في دفتر النقد</string>
+    <string name="audit_cash_deleted">تم حذف قيد من دفتر النقد</string>
+    <string name="audit_party_deleted">تم حذف عميل</string>
+    <string name="audit_day_closed">تم إغلاق اليوم</string>
 </resources>

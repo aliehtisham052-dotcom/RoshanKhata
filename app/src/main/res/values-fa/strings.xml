@@ -3391,4 +3391,13 @@
     <string name="pos_err_payment_unread">مبلغ یک پرداخت خوانده نشد.</string>
     <string name="pos_err_discount_unread">یک تخفیف خوانده نشد.</string>
     <string name="pos_price_needs_pin">فروش با نرخی جز نرخ فهرست</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">ثبت تغییر کرد</string>
+    <string name="audit_entry_deleted">ثبت حذف شد</string>
+    <string name="audit_cash_added">ردیف دفتر نقدی افزوده شد</string>
+    <string name="audit_cash_edited">ردیف دفتر نقدی تغییر کرد</string>
+    <string name="audit_cash_deleted">ردیف دفتر نقدی حذف شد</string>
+    <string name="audit_party_deleted">مشتری حذف شد</string>
+    <string name="audit_day_closed">روز بسته شد</string>
 </resources>

@@ -82,7 +82,11 @@ fun RoshanTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -
             onSurfaceVariant = colors.textMuted,
             outline = colors.textMuted,
             surfaceContainerHigh = colors.surface,
-            surfaceContainerHighest = colors.surface
+            surfaceContainerHighest = colors.surface,
+            // A chosen chip (the counter's payment ways, the return's refund way) in the shop's green,
+            // not Material's default lilac (21 Oct 2026, the critical review).
+            secondaryContainer = Color(0xFF1F4D36),
+            onSecondaryContainer = Color(0xFFD7F5E4)
         )
     } else {
         lightColorScheme(
@@ -95,7 +99,9 @@ fun RoshanTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -
             onSurfaceVariant = colors.textMuted,
             outline = colors.textMuted,
             surfaceContainerHigh = colors.surface,
-            surfaceContainerHighest = colors.surface
+            surfaceContainerHighest = colors.surface,
+            secondaryContainer = Color(0xFFD7F0E2),
+            onSecondaryContainer = Color(0xFF0B3A22)
         )
     }
     MaterialTheme(colorScheme = scheme) {

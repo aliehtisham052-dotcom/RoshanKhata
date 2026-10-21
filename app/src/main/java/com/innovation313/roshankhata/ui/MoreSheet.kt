@@ -225,12 +225,29 @@ object MoreSheet {
             .setMessage(status + "\n\n" + activity.getString(R.string.app_lock_explain))
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on) { _, _ ->
-                AppLock.setEnabled(activity, !enabled)
-                Toast.makeText(
-                    activity,
-                    if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
-                    Toast.LENGTH_SHORT
-                ).show()
+                val flip = {
+                    AppLock.setEnabled(activity, !enabled)
+                    Toast.makeText(
+                        activity,
+                        if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                // Turning the lock OFF takes the phone's own fingerprint or screen lock first
+                // (21 Oct 2026): anyone holding the open app could switch it off in two taps.
+                val host = activity as? androidx.fragment.app.FragmentActivity
+                if (!enabled || host == null) { if (!enabled) flip(); return@setPositiveButton }
+                val prompt = androidx.biometric.BiometricPrompt(host, androidx.core.content.ContextCompat.getMainExecutor(host),
+                    object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) { flip() }
+                    })
+                prompt.authenticate(
+                    androidx.biometric.BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(activity.getString(R.string.app_lock_turn_off))
+                        .setSubtitle(activity.getString(R.string.lock_subtitle))
+                        .setAllowedAuthenticators(AppLock.AUTHENTICATORS)
+                        .build()
+                )
             }
             .show()
     }

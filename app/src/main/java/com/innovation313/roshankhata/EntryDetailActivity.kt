@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import com.innovation313.roshankhata.data.choices
 
 import com.innovation313.roshankhata.data.get
@@ -590,6 +594,7 @@ class EntryDetailActivity : BaseActivity() {
                 val sig = sigRow.current
                 AppScope.launch {
                     dao.updateEntryWithItems(updated, newItems)
+                    dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount))
                     if (sigChanged) runCatching {
                         if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(applicationContext, updated.id, sig)
                         else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
@@ -657,6 +662,8 @@ class EntryDetailActivity : BaseActivity() {
                                 lifecycleScope.launch {
                                     dao.softDeleteEntry(entryId)
                                     dao.softDeleteEntry(pair.id)
+                                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", entryId)
+                                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id)
                                     entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
                                         com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId, pair.id)) }
                                     finish()
@@ -665,6 +672,7 @@ class EntryDetailActivity : BaseActivity() {
                             .setNegativeButton(R.string.delete_pair_one) { _, _ ->
                                 lifecycleScope.launch {
                                     dao.softDeleteEntry(entryId)
+                                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", entryId)
                                     entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
                                         com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId)) }
                                     finish()
@@ -674,6 +682,7 @@ class EntryDetailActivity : BaseActivity() {
                         return@launch
                     }
                     dao.softDeleteEntry(entryId)
+                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", entryId)
                     entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
                         com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId)) }
                     finish()

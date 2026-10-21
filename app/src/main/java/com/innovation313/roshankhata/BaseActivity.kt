@@ -91,9 +91,39 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    /**
+     * App Lock asks again when the app comes back after [RELOCK_MS] away
+     * (21 Oct 2026, the critical review): it was asked once when the app
+     * started, and a phone left unlocked on the counter showed the book to
+     * whoever picked it up hours later. Counted across every screen, so
+     * moving between the app's own screens is not "away".
+     */
+    override fun onStart() {
+        super.onStart()
+        if (startedScreens++ == 0) {
+            val away = stoppedAt
+            stoppedAt = 0L
+            if (away > 0L && System.currentTimeMillis() - away > RELOCK_MS &&
+                javaClass.simpleName !in BEFORE_THE_BOOK &&
+                com.innovation313.roshankhata.data.AppLock.isEnabled(this)
+            ) {
+                startActivity(android.content.Intent(this, LockActivity::class.java).putExtra(LockActivity.EXTRA_RELOCK, true))
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (--startedScreens <= 0) { startedScreens = 0; stoppedAt = System.currentTimeMillis() }
+    }
+
     private companion object {
         /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
         val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity")
+        /** Away this long, App Lock asks again. */
+        const val RELOCK_MS = 5 * 60_000L
+        var startedScreens = 0
+        var stoppedAt = 0L
     }
 
     /** After setContentView: let fixed-height buttons grow if the text did. */

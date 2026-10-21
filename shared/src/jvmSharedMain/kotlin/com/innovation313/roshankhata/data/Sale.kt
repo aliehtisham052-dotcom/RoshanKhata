@@ -431,4 +431,13 @@ object AuditAction {
     const val TRANSFER_OUT = "transfer_out"
     const val TRANSFER_IN = "transfer_in"
     const val BOOK_MERGED = "book_merged"
+    // What is already written, changed or removed, and the cashbook (21 Oct 2026, the critical review):
+    // until then an edit or a delete left no trace of who did it.
+    const val ENTRY_EDITED = "entry_edited"
+    const val ENTRY_DELETED = "entry_deleted"
+    const val CASH_ADDED = "cash_added"
+    const val CASH_EDITED = "cash_edited"
+    const val CASH_DELETED = "cash_deleted"
+    const val PARTY_DELETED = "party_deleted"
+    const val DAY_CLOSED = "day_closed"
 }

@@ -3363,4 +3363,13 @@
     <string name="pos_err_payment_unread">ایک ادائیگی کی رقم پڑھی نہیں جا سکی۔</string>
     <string name="pos_err_discount_unread">ایک رعایت پڑھی نہیں جا سکی۔</string>
     <string name="pos_price_needs_pin">ریٹ لسٹ سے ہٹ کر ریٹ پر بیچنا</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">اندراج بدلا گیا</string>
+    <string name="audit_entry_deleted">اندراج مٹایا گیا</string>
+    <string name="audit_cash_added">کیش بک میں اندراج</string>
+    <string name="audit_cash_edited">کیش بک کا اندراج بدلا</string>
+    <string name="audit_cash_deleted">کیش بک کا اندراج مٹایا</string>
+    <string name="audit_party_deleted">گاہک مٹایا گیا</string>
+    <string name="audit_day_closed">دن بند کیا گیا</string>
 </resources>

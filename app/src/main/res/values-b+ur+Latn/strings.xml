@@ -3363,4 +3363,13 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pos_err_payment_unread">Ek adaigi ki raqam parhi nahin ja saki.</string>
     <string name="pos_err_discount_unread">Ek riayat parhi nahin ja saki.</string>
     <string name="pos_price_needs_pin">Rate list se hat kar rate par bechna</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">Indiraaj badla gaya</string>
+    <string name="audit_entry_deleted">Indiraaj mitaya gaya</string>
+    <string name="audit_cash_added">Cashbook mein indiraaj</string>
+    <string name="audit_cash_edited">Cashbook ka indiraaj badla</string>
+    <string name="audit_cash_deleted">Cashbook ka indiraaj mitaya</string>
+    <string name="audit_party_deleted">Gahak mitaya gaya</string>
+    <string name="audit_day_closed">Din band kiya gaya</string>
 </resources>

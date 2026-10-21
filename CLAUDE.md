@@ -484,6 +484,23 @@ Each of these cost a build or a bug.
 21. **Defaults that name "who" must be the signed-in user.** `Counter.post`
     had `createdBy = null`, so every ticket read as the owner's; reports and
     shifts silently lied. Default to `Access.userName`, and test it.
+22. **No safety copy, no replace.** A restore or merge runs only after the
+    book is on disk as a copy (`DailyCopies.makeToday` returns the file or
+    null; the phone's `Snapshots.keepNow` returns Boolean). A copy is named so
+    it can never overwrite the copy being restored.
+23. **Only damage is damage.** `BookHealth.classify`: SQLite codes 11/26 (or
+    "malformed"/"not a database") replace a book; a locked, busy or missing
+    library leaves it untouched (`CannotOpen`).
+24. **Wrong-PIN counts are per account** (`Access.account`, `tryPin(account=)`).
+    One shared count let a cashier's own right PIN clear the misses made
+    guessing the owner's.
+25. **Money boxes are calc boxes.** Shared screens use `CalcField`
+    (screens/CalcBox.kt); Windows passes `calc = CalcKind.X` to FluentField /
+    Outlined. A percent box is read with `Calc.evalPercent`, a discount with
+    `Calc.evalDiscount`; a lone "10%" is never settled into 0.1.
+26. **Counter mode is the book's word too** (`counter_used`,
+    `owner_devices`, `Access.applyBook` on the computer): app.properties is a
+    file anyone at the till can edit.
 
 ---
 

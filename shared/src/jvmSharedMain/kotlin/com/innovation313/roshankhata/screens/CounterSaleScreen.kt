@@ -265,8 +265,10 @@ fun CounterSaleScreen(
                     }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = { draft.payRestInCash() }, enabled = draft.remaining > 0.005, modifier = Modifier.testTag("posAllCash")) { Text(word(W.pos_pay_full_cash), color = c.ink) }
-                    OutlinedButton(onClick = { draft.addPayment(PaymentMethod.CASH) }) { Text(word(W.pos_add_payment), color = c.ink) }
+                    // Half the row each, the words allowed two lines: in Urdu or Sindhi on a small phone the
+                    // second button was pushed off the edge (21 Oct 2026).
+                    OutlinedButton(onClick = { draft.payRestInCash() }, enabled = draft.remaining > 0.005, modifier = Modifier.weight(1f).testTag("posAllCash")) { Text(word(W.pos_pay_full_cash), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+                    OutlinedButton(onClick = { draft.addPayment(PaymentMethod.CASH) }, modifier = Modifier.weight(1f)) { Text(word(W.pos_add_payment), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
                 }
                 val rest = draft.remaining
                 when {

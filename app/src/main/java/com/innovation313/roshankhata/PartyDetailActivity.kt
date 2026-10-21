@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import com.innovation313.roshankhata.data.choices
 
 import com.innovation313.roshankhata.data.get
@@ -1865,7 +1869,7 @@ class PartyDetailActivity : BaseActivity() {
                     paymentMethod = entry.paymentMethod,
                     rateType = rateType
                 )
-                AppScope.launch { dao.updateEntryWithItems(updated, items) }
+                AppScope.launch { dao.updateEntryWithItems(updated, items); dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount)) }
                 if (sigRow.changed) {
                     val sig = sigRow.current
                     val ctx = applicationContext
@@ -2116,7 +2120,8 @@ class PartyDetailActivity : BaseActivity() {
                     val alsoPair = if (pair == null) false else askDeletePair(pair.entryNumber)
                     AppScope.launch {
                         dao.softDeleteEntry(entry.id)
-                        if (alsoPair && pair != null) dao.softDeleteEntry(pair.id)
+                        dao.audit(AuditActs.ENTRY_DELETED, "transactions", entry.id, auditAmount(entry.amount))
+                        if (alsoPair && pair != null) { dao.softDeleteEntry(pair.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id) }
                     }.join()
                     offerUndo(listOfNotNull(entry.id, pair?.id?.takeIf { alsoPair }))
                 }

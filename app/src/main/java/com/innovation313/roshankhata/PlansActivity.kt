@@ -328,39 +328,19 @@ class PlansActivity : BaseActivity() {
     private fun recordPayment(plan: PlanProgress, amount: Double, note: String) {
         val noteText = note.ifEmpty { getString(R.string.plan_note_prefix) }
         AppScope.launch {
-            val entryId = dao.insertEntryNumbered(
-                LedgerEntry(
-                    partyId = plan.partyId,
-                    amount = amount,
-                    // Money coming IN from the customer: it reduces what they owe.
-                    isGiven = false,
-                    note = noteText,
-                    entryNumber = ""
-                )
+            // The entry, the instalment and the plan's closing in ONE transaction (21 Oct 2026, the
+            // critical review): written one after another, a failure half way left a payment in the
+            // khata with no instalment, or an instalment that closed nothing. The computer's own call.
+            // Money coming IN from the customer: it reduces what they owe; once the agreed total is
+            // met the plan closes rather than staying open with a full progress bar.
+            dao.recordPlanPayment(
+                planId = plan.id,
+                partyId = plan.partyId,
+                amount = amount,
+                paidBefore = plan.paidSoFar,
+                entryNote = noteText,
+                note = note.ifEmpty { null }
             )
-
-            dao.insertInstallment(
-                Installment(
-                    planId = plan.id,
-                    amount = amount,
-                    ledgerEntryId = entryId,
-                    note = note.ifEmpty { null }
-                )
-            )
-
-            // Once the agreed total is met, close the plan rather than leaving
-            // it open forever with a full progress bar.
-            val paid = plan.paidSoFar + amount
-            if (paid >= plan.totalAmount) {
-                dao.getPlan(plan.id)?.let { existing ->
-                    dao.updatePlan(
-                        existing.copy(
-                            isClosed = true,
-                            closedAt = System.currentTimeMillis()
-                        )
-                    )
-                }
-            }
 
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {

@@ -70,7 +70,7 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
     var dueDate by remember(b.id) { mutableStateOf(b.dueDate) }
     var picking by remember { mutableStateOf<Int?>(null) }
     val amount = Calc.evalAmount(total)
-    DialogWindow(onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone), title = word(W.edit_bill), state = rememberDialogState(width = 520.dp, height = 640.dp)) {
+    DialogWindow(onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone), title = word(W.edit_bill), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         Column(
             Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -117,7 +117,7 @@ fun BillLineDialog(dao: KhataDao, billId: Long, existing: BillItem?, onDone: () 
     DialogWindow(
         onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone),
         title = word(if (existing == null) W.add_item else W.edit_item),
-        state = rememberDialogState(width = 560.dp, height = 560.dp)
+        state = rememberDialogState(width = fitW(560.dp), height = fitH(560.dp))
     ) {
         Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp)) {
             ItemForm(existing) { line ->

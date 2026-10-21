@@ -30,7 +30,8 @@ class LockActivity : BaseActivity() {
 
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                openLedger()
+                // Asked again on coming back: the screen underneath is the owner's again.
+                if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
             }
 
             override fun onAuthenticationError(code: Int, message: CharSequence) {
@@ -59,6 +60,17 @@ class LockActivity : BaseActivity() {
             .build()
 
         BiometricPrompt(this, executor, callback).authenticate(info)
+    }
+
+    @Deprecated("Back on the lock must not reveal the screen underneath")
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finishAffinity() else super.onBackPressed()
+    }
+
+    companion object {
+        /** Started over an open screen after time away: on success it only closes itself. */
+        const val EXTRA_RELOCK = "relock"
     }
 
     private fun openLedger() {

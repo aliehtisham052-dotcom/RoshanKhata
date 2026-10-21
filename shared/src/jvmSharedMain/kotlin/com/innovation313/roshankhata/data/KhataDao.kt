@@ -205,6 +205,8 @@ interface KhataDao {
         for (id in ids) {
             softDeleteEntriesOfParty(id, now)
             softDeleteParty(id, now)
+            // Who sent a customer to the bin (21 Oct 2026, the critical review).
+            log(AuditAction.PARTY_DELETED, Access.userName, "parties", id)
         }
     }
 

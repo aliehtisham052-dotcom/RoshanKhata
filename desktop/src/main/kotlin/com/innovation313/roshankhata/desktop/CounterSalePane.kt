@@ -135,7 +135,7 @@ fun CounterSalePane(
     val openShifts by remember { dao.observeOpenShifts() }.collectAsState(emptyList())
     val myShift = openShifts.firstOrNull { it.user == com.innovation313.roshankhata.data.Access.userName }
     if (shifting) {
-        DialogWindow(onCloseRequest = { shifting = false }, onPreviewKeyEvent = escCloses { shifting = false }, title = word(W.shift_title), state = rememberDialogState(width = 560.dp, height = 720.dp)) {
+        DialogWindow(onCloseRequest = { shifting = false }, onPreviewKeyEvent = escCloses { shifting = false }, title = word(W.shift_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(720.dp))) {
             DialogFrame(word(W.shift_title), onClose = { shifting = false }, scroll = false, footer = {
                 FluentButton(word(W.close), { shifting = false }, kind = ButtonKind.STANDARD)
             }) {
@@ -304,6 +304,13 @@ fun CounterSalePane(
                 draft.posting = false
             }
         }
+    }
+
+    // The item box takes the keys as soon as the counter opens, and again after each ticket
+    // (21 Oct 2026): a barcode scanner types into whatever has focus, and on opening nothing had it.
+    LaunchedEffect(tick) {
+        kotlinx.coroutines.delay(150)
+        runCatching { searchFocus.requestFocus() }
     }
 
     // The page's keys, handed over by the window while it is open.
@@ -531,7 +538,7 @@ fun CounterSalePane(
     }
 
     if (choosingParty) {
-        DialogWindow(onCloseRequest = { choosingParty = false }, onPreviewKeyEvent = escCloses { choosingParty = false }, title = word(W.pos_choose_customer), state = rememberDialogState(width = 520.dp, height = 480.dp)) {
+        DialogWindow(onCloseRequest = { choosingParty = false }, onPreviewKeyEvent = escCloses { choosingParty = false }, title = word(W.pos_choose_customer), state = rememberDialogState(width = fitW(520.dp), height = fitH(480.dp))) {
             DialogFrame(word(W.pos_choose_customer), onClose = { choosingParty = false }, footer = {
                 FluentButton(word(W.pos_walk_in), { draft.setParty(null, null); choosingParty = false }, kind = ButtonKind.STANDARD)
             }) {
@@ -543,7 +550,7 @@ fun CounterSalePane(
         }
     }
     if (showHeld) {
-        DialogWindow(onCloseRequest = { showHeld = false }, onPreviewKeyEvent = escCloses { showHeld = false }, title = words.text(W.pos_held_tickets, held.size), state = rememberDialogState(width = 560.dp, height = 480.dp)) {
+        DialogWindow(onCloseRequest = { showHeld = false }, onPreviewKeyEvent = escCloses { showHeld = false }, title = words.text(W.pos_held_tickets, held.size), state = rememberDialogState(width = fitW(560.dp), height = fitH(480.dp))) {
             DialogFrame(words.text(W.pos_held_tickets, held.size), onClose = { showHeld = false }, footer = {
                 FluentButton(word(W.cancel), { showHeld = false }, kind = ButtonKind.STANDARD)
             }) {
@@ -570,7 +577,7 @@ fun CounterSalePane(
     }
     returning?.let { draft ->
         var problem by remember { mutableStateOf<String?>(null) }
-        DialogWindow(onCloseRequest = { returning = null }, onPreviewKeyEvent = escCloses { returning = null }, title = word(W.pos_return_title), state = rememberDialogState(width = 620.dp, height = 720.dp)) {
+        DialogWindow(onCloseRequest = { returning = null }, onPreviewKeyEvent = escCloses { returning = null }, title = word(W.pos_return_title), state = rememberDialogState(width = fitW(620.dp), height = fitH(720.dp))) {
             DialogFrame(word(W.pos_return_title), subtitle = draft.sale.sale.saleNumber, onClose = { returning = null }, scroll = false, footer = {}) {
                 com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { returning = null }, message = problem, onPost = {
                     // The form calls this only while nothing is being posted (ReturnDraft.posting).
@@ -591,7 +598,7 @@ fun CounterSalePane(
     }
     voidingReturn?.let { r ->
         var reason by remember(r.id) { mutableStateOf("") }
-        DialogWindow(onCloseRequest = { voidingReturn = null }, onPreviewKeyEvent = escCloses { voidingReturn = null }, title = word(W.pos_void_return), state = rememberDialogState(width = 480.dp, height = 300.dp)) {
+        DialogWindow(onCloseRequest = { voidingReturn = null }, onPreviewKeyEvent = escCloses { voidingReturn = null }, title = word(W.pos_void_return), state = rememberDialogState(width = fitW(480.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.pos_void_return), subtitle = r.returnNumber, onClose = { voidingReturn = null }, footer = {
                 FluentButton(word(W.cancel), { voidingReturn = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.pos_void_return), {
@@ -609,7 +616,7 @@ fun CounterSalePane(
     }
     voiding?.let { s ->
         var reason by remember(s.id) { mutableStateOf("") }
-        DialogWindow(onCloseRequest = { voiding = null }, onPreviewKeyEvent = escCloses { voiding = null }, title = word(W.pos_void), state = rememberDialogState(width = 480.dp, height = 300.dp)) {
+        DialogWindow(onCloseRequest = { voiding = null }, onPreviewKeyEvent = escCloses { voiding = null }, title = word(W.pos_void), state = rememberDialogState(width = fitW(480.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.pos_void), subtitle = words.text(W.pos_void_confirm, s.saleNumber), onClose = { voiding = null }, footer = {
                 FluentButton(word(W.cancel), { voiding = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.pos_void), {

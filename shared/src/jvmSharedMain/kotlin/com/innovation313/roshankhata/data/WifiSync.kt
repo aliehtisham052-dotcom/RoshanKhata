@@ -191,8 +191,7 @@ object WifiSync {
                 val input = DataInputStream(s.getInputStream().buffered())
                 val n = try { input.readInt() } catch (e: IOException) { return Pulled.Refused }
                 if (n <= 0 || n > MAX_BYTES + NONCE + TAG_BITS / 8) return Pulled.Refused
-                val sealed = ByteArray(n)
-                try { input.readFully(sealed) } catch (e: IOException) { return Pulled.Refused }
+                val sealed = try { readUpTo(input, n) } catch (e: IOException) { return Pulled.Refused }
                 return open(p.secret, sealed)?.let { Pulled.Got(it) } ?: Pulled.Refused
             }
         }
@@ -210,6 +209,9 @@ object WifiSync {
      */
     fun receive(server: ServerSocket, secret: String, stop: () -> Boolean = { false }, give: (() -> ByteArray?)? = null): ByteArray? {
         server.soTimeout = 1000
+        // The book is given once per code shown (21 Oct 2026): a phone that saw the code could
+        // otherwise come back for the whole book again, as often as it liked, while the window stayed open.
+        var given = false
         while (!stop()) {
             val s = try { server.accept() } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return null }
             s.use {
@@ -217,11 +219,12 @@ object WifiSync {
                 val frame = runCatching { readOne(it, secret) }.getOrNull()
                 when (frame) {
                     is Frame.Ask -> {
-                        val book = give?.invoke()
+                        val book = if (given) null else give?.invoke()
                         val out = DataOutputStream(it.getOutputStream().buffered())
                         runCatching {
                             if (book == null) out.writeInt(0) else { val sealed = seal(secret, book); out.writeInt(sealed.size); out.write(sealed) }
                             out.flush()
+                            if (book != null) given = true
                         }
                     }
                     is Frame.Book -> {
@@ -234,6 +237,24 @@ object WifiSync {
             }
         }
         return null
+    }
+
+    /**
+     * [n] bytes, read as they arrive rather than reserved first (21 Oct 2026):
+     * a stranger on the shop's network could announce the largest size and
+     * make the computer set aside 256 MB before a single byte was checked.
+     */
+    private fun readUpTo(input: DataInputStream, n: Int): ByteArray {
+        val out = java.io.ByteArrayOutputStream(minOf(n, 1 shl 16))
+        val chunk = ByteArray(1 shl 16)
+        var left = n
+        while (left > 0) {
+            val got = input.read(chunk, 0, minOf(chunk.size, left))
+            if (got < 0) throw java.io.EOFException()
+            out.write(chunk, 0, got)
+            left -= got
+        }
+        return out.toByteArray()
     }
 
     private sealed interface Frame {
@@ -252,8 +273,7 @@ object WifiSync {
         val n = input.readInt()
         if (n <= 0) return null
         if (n > MAX_BYTES + NONCE + TAG_BITS / 8) return Frame.TooBig
-        val sealed = ByteArray(n)
-        input.readFully(sealed)
+        val sealed = readUpTo(input, n)
         val plain = open(secret, sealed) ?: return null
         return if (ask) (if (plain.contentEquals(PULL)) Frame.Ask else null) else Frame.Book(plain)
     }

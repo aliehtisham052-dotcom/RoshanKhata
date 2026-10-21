@@ -359,33 +359,20 @@ class ChequesActivity : BaseActivity() {
             // A cheque received from a customer is money coming IN — it reduces
             // what they owe, so it is an "I Got". A cheque we issued is money
             // going OUT. Getting this backwards would invert the balance.
-            val entryId = dao.insertEntryNumbered(
-                LedgerEntry(
-                    partyId = cheque.partyId,
-                    amount = cheque.amount,
-                    isGiven = !cheque.isReceived,
-                    note = buildString {
-                        append(
-                            getString(
-                                R.string.cheque_note_prefix,
-                                cheque.chequeNumber?.let { "#$it" }.orEmpty()
-                            ).trim()
-                        )
-                        cheque.bankName?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
-                    },
-                    entryNumber = ""
+            val note = buildString {
+                append(
+                    getString(
+                        R.string.cheque_note_prefix,
+                        cheque.chequeNumber?.let { "#$it" }.orEmpty()
+                    ).trim()
                 )
-            )
-
-            dao.getCheque(cheque.id)?.let { existing ->
-                dao.updateCheque(
-                    existing.copy(
-                        status = ChequeStatus.CLEARED,
-                        settledAt = System.currentTimeMillis(),
-                        ledgerEntryId = entryId
-                    )
-                )
+                cheque.bankName?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
             }
+            // The entry and the cheque's new status in ONE transaction, and only while it is still
+            // pending (21 Oct 2026): two quick taps, or a tap after the computer's copy cleared it,
+            // posted the money twice. Null: nothing was posted.
+            val posted = dao.clearCheque(cheque.id, note)
+            if (posted == null) return@launch
 
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {

@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
@@ -198,7 +202,7 @@ class CashbookActivity : BaseActivity() {
                         note = etNote.text.toString().trim().ifEmpty { null },
                         closedAt = now
                     )
-                    AppScope.launch { dao.saveDayClose(close) }
+                    AppScope.launch { dao.saveDayClose(close); dao.audit(AuditActs.DAY_CLOSED, "day_close", null, auditAmount(close.counted)) }
                 }
                 .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
@@ -362,7 +366,7 @@ class CashbookActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    AppScope.launch { dao.softDeleteCashEntry(entry.id) }.join()
+                    AppScope.launch { dao.softDeleteCashEntry(entry.id); dao.audit(AuditActs.CASH_DELETED, "cashbook", entry.id, auditAmount(entry.amount)) }.join()
                     Toast.makeText(
                         this@CashbookActivity,
                         R.string.moved_to_bin,
