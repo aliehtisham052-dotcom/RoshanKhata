@@ -3172,4 +3172,35 @@
     <string name="po_from_low">سفارش موجودی کم</string>
     <string name="po_book">دفتر</string>
     <string name="inventory_title">موجودی فعلی</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">گزارش فروش</string>
+    <string name="srep_by_day">بر اساس روز</string>
+    <string name="srep_by_item">بر اساس کالا</string>
+    <string name="srep_by_category">بر اساس دسته</string>
+    <string name="srep_by_customer">بر اساس مشتری</string>
+    <string name="srep_by_cashier">بر اساس صندوقدار</string>
+    <string name="srep_by_hour">بر اساس ساعت</string>
+    <string name="srep_tax">مالیات</string>
+    <string name="srep_profit">سود و زیان</string>
+    <string name="srep_dead">فروش نمی‌رود</string>
+    <string name="srep_dead_help">در قفسه است، %1$s روز فروخته نشده</string>
+    <string name="srep_col_count">فروش‌ها</string>
+    <string name="srep_col_revenue">درآمد</string>
+    <string name="srep_col_profit">سود</string>
+    <string name="srep_revenue">درآمد</string>
+    <string name="srep_returns">مرجوعی‌ها</string>
+    <string name="srep_cost">بهای کالای فروخته‌شده</string>
+    <string name="srep_cost_known">هزینه %1$s از درآمد مشخص است</string>
+    <string name="srep_gross">سود ناخالص</string>
+    <string name="srep_expenses">هزینه‌ها (صندوق)</string>
+    <string name="srep_net">سود خالص</string>
+    <string name="srep_tax_rate">نرخ</string>
+    <string name="srep_tax_base">مشمول مالیات</string>
+    <string name="srep_tax_amount">مالیات</string>
+    <string name="srep_period_today">امروز</string>
+    <string name="srep_period_week">این هفته</string>
+    <string name="srep_period_month">این ماه</string>
+    <string name="srep_none">در این بازه فروشی نیست</string>
+    <string name="srep_no_category">بدون دسته</string>
 </resources>

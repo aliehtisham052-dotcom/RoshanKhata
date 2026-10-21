@@ -3144,4 +3144,35 @@
     <string name="po_from_low">کم اسٹاک کا آرڈر</string>
     <string name="po_book">کتاب</string>
     <string name="inventory_title">موجودہ اسٹاک</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">سیلز رپورٹ</string>
+    <string name="srep_by_day">دن کے لحاظ سے</string>
+    <string name="srep_by_item">آئٹم کے لحاظ سے</string>
+    <string name="srep_by_category">کیٹیگری کے لحاظ سے</string>
+    <string name="srep_by_customer">گاہک کے لحاظ سے</string>
+    <string name="srep_by_cashier">کیشیئر کے لحاظ سے</string>
+    <string name="srep_by_hour">گھنٹے کے لحاظ سے</string>
+    <string name="srep_tax">ٹیکس</string>
+    <string name="srep_profit">نفع و نقصان</string>
+    <string name="srep_dead">نہیں بک رہا</string>
+    <string name="srep_dead_help">شیلف پر ہے، %1$s دن سے نہیں بکا</string>
+    <string name="srep_col_count">سیلز</string>
+    <string name="srep_col_revenue">آمدن</string>
+    <string name="srep_col_profit">منافع</string>
+    <string name="srep_revenue">آمدن</string>
+    <string name="srep_returns">واپسیاں</string>
+    <string name="srep_cost">بکے مال کی لاگت</string>
+    <string name="srep_cost_known">آمدن کے %1$s کی لاگت معلوم</string>
+    <string name="srep_gross">مجموعی منافع</string>
+    <string name="srep_expenses">اخراجات (کیش بک)</string>
+    <string name="srep_net">خالص منافع</string>
+    <string name="srep_tax_rate">شرح</string>
+    <string name="srep_tax_base">قابلِ ٹیکس</string>
+    <string name="srep_tax_amount">ٹیکس</string>
+    <string name="srep_period_today">آج</string>
+    <string name="srep_period_week">اس ہفتے</string>
+    <string name="srep_period_month">اس مہینے</string>
+    <string name="srep_none">اس مدت میں کوئی سیل نہیں</string>
+    <string name="srep_no_category">بغیر کیٹیگری</string>
 </resources>

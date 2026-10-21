@@ -273,6 +273,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".SalesReportActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".AuditActivity"
             android:exported="false"
             android:parentActivityName=".StaffActivity" />

@@ -3188,4 +3188,35 @@
     <string name="po_from_low">কম স্টকের অর্ডার</string>
     <string name="po_book">খাতা</string>
     <string name="inventory_title">বর্তমান স্টক</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">বিক্রয় রিপোর্ট</string>
+    <string name="srep_by_day">দিন অনুযায়ী</string>
+    <string name="srep_by_item">আইটেম অনুযায়ী</string>
+    <string name="srep_by_category">বিভাগ অনুযায়ী</string>
+    <string name="srep_by_customer">ক্রেতা অনুযায়ী</string>
+    <string name="srep_by_cashier">ক্যাশিয়ার অনুযায়ী</string>
+    <string name="srep_by_hour">ঘণ্টা অনুযায়ী</string>
+    <string name="srep_tax">কর</string>
+    <string name="srep_profit">লাভ-ক্ষতি</string>
+    <string name="srep_dead">বিক্রি হচ্ছে না</string>
+    <string name="srep_dead_help">তাকে আছে, %1$s দিন বিক্রি হয়নি</string>
+    <string name="srep_col_count">বিক্রি</string>
+    <string name="srep_col_revenue">আয়</string>
+    <string name="srep_col_profit">লাভ</string>
+    <string name="srep_revenue">আয়</string>
+    <string name="srep_returns">ফেরত</string>
+    <string name="srep_cost">বিক্রিত পণ্যের খরচ</string>
+    <string name="srep_cost_known">আয়ের %1$s-এর খরচ জানা</string>
+    <string name="srep_gross">মোট লাভ</string>
+    <string name="srep_expenses">ব্যয় (ক্যাশবুক)</string>
+    <string name="srep_net">নিট লাভ</string>
+    <string name="srep_tax_rate">হার</string>
+    <string name="srep_tax_base">করযোগ্য</string>
+    <string name="srep_tax_amount">কর</string>
+    <string name="srep_period_today">আজ</string>
+    <string name="srep_period_week">এই সপ্তাহ</string>
+    <string name="srep_period_month">এই মাস</string>
+    <string name="srep_none">এই সময়ে কোনো বিক্রি নেই</string>
+    <string name="srep_no_category">বিভাগ নেই</string>
 </resources>

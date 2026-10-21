@@ -3358,4 +3358,35 @@ You can change this any time from this screen.</string>
     <string name="po_from_low">Order the low stock</string>
     <string name="po_book">Book</string>
     <string name="inventory_title">Stock on hand</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">Sales report</string>
+    <string name="srep_by_day">By day</string>
+    <string name="srep_by_item">By item</string>
+    <string name="srep_by_category">By category</string>
+    <string name="srep_by_customer">By customer</string>
+    <string name="srep_by_cashier">By cashier</string>
+    <string name="srep_by_hour">By hour</string>
+    <string name="srep_tax">Tax</string>
+    <string name="srep_profit">Profit &amp; loss</string>
+    <string name="srep_dead">Not selling</string>
+    <string name="srep_dead_help">On the shelf, not sold in %1$s days</string>
+    <string name="srep_col_count">Sales</string>
+    <string name="srep_col_revenue">Revenue</string>
+    <string name="srep_col_profit">Profit</string>
+    <string name="srep_revenue">Revenue</string>
+    <string name="srep_returns">Returns</string>
+    <string name="srep_cost">Cost of goods sold</string>
+    <string name="srep_cost_known">cost known for %1$s of revenue</string>
+    <string name="srep_gross">Gross profit</string>
+    <string name="srep_expenses">Expenses (cashbook)</string>
+    <string name="srep_net">Net profit</string>
+    <string name="srep_tax_rate">Rate</string>
+    <string name="srep_tax_base">Taxable</string>
+    <string name="srep_tax_amount">Tax</string>
+    <string name="srep_period_today">Today</string>
+    <string name="srep_period_week">This week</string>
+    <string name="srep_period_month">This month</string>
+    <string name="srep_none">No sales in this period</string>
+    <string name="srep_no_category">No category</string>
 </resources>

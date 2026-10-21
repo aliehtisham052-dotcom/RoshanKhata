@@ -3141,4 +3141,35 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="po_from_low">Pesan stok yang menipis</string>
     <string name="po_book">Buku</string>
     <string name="inventory_title">Stok saat ini</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">Laporan penjualan</string>
+    <string name="srep_by_day">Per hari</string>
+    <string name="srep_by_item">Per barang</string>
+    <string name="srep_by_category">Per kategori</string>
+    <string name="srep_by_customer">Per pelanggan</string>
+    <string name="srep_by_cashier">Per kasir</string>
+    <string name="srep_by_hour">Per jam</string>
+    <string name="srep_tax">Pajak</string>
+    <string name="srep_profit">Laba rugi</string>
+    <string name="srep_dead">Tidak laku</string>
+    <string name="srep_dead_help">Ada di rak, tidak terjual %1$s hari</string>
+    <string name="srep_col_count">Penjualan</string>
+    <string name="srep_col_revenue">Pendapatan</string>
+    <string name="srep_col_profit">Laba</string>
+    <string name="srep_revenue">Pendapatan</string>
+    <string name="srep_returns">Retur</string>
+    <string name="srep_cost">Harga pokok penjualan</string>
+    <string name="srep_cost_known">biaya diketahui untuk %1$s pendapatan</string>
+    <string name="srep_gross">Laba kotor</string>
+    <string name="srep_expenses">Pengeluaran (buku kas)</string>
+    <string name="srep_net">Laba bersih</string>
+    <string name="srep_tax_rate">Tarif</string>
+    <string name="srep_tax_base">Kena pajak</string>
+    <string name="srep_tax_amount">Pajak</string>
+    <string name="srep_period_today">Hari ini</string>
+    <string name="srep_period_week">Minggu ini</string>
+    <string name="srep_period_month">Bulan ini</string>
+    <string name="srep_none">Tidak ada penjualan pada periode ini</string>
+    <string name="srep_no_category">Tanpa kategori</string>
 </resources>
