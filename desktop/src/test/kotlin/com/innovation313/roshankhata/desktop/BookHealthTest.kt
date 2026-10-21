@@ -35,7 +35,7 @@ class BookHealthTest {
         val file = dir.resolve("khata.db")
         val daily = dir.resolve("daily")
         val settings = FileShopSettings(dir.resolve("shop.properties"))
-        settings.setBusinessName("Bhatti Traders")
+        settings.setBusinessName("Al-Noor Seeds")
         // A book with one customer, and today's copy of it.
         val db = BookHealth.open(file, settings, listOf(daily)).db
         runBlocking {
@@ -62,6 +62,17 @@ class BookHealthTest {
             assertEquals("Bilal", parties.single().name)
             assertEquals(1550.0, parties.single().balance, 0.001)
         } finally { opened.db.close(); dir.deleteRecursively() }
+    }
+
+    @Test
+    fun `only damage counts as damage - a busy or blocked file is left alone`() {
+        // The bundled driver's words for each (21 Oct 2026: any error at all used to replace the book).
+        assertEquals(BookHealth.Verdict.DAMAGED, BookHealth.classify(RuntimeException("Error code: 11, message: database disk image is malformed")))
+        assertEquals(BookHealth.Verdict.DAMAGED, BookHealth.classify(RuntimeException("Error code: 26, message: file is not a database")))
+        assertEquals(BookHealth.Verdict.DAMAGED, BookHealth.classify(RuntimeException("Error code: 267, message: corrupt vtab")))
+        assertEquals(BookHealth.Verdict.UNREADABLE, BookHealth.classify(RuntimeException("Error code: 5, message: database is locked")))
+        assertEquals(BookHealth.Verdict.UNREADABLE, BookHealth.classify(RuntimeException("Error code: 14, message: unable to open database file")))
+        assertEquals(BookHealth.Verdict.UNREADABLE, BookHealth.classify(UnsatisfiedLinkError("no sqliteJni in java.library.path")))
     }
 
     @Test

@@ -177,7 +177,9 @@ private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done:
     var reason by remember { mutableStateOf(AdjustReason.DAMAGE) }
     var note by remember { mutableStateOf("") }
     val title = word(W.stock_adjust)
-    val amount = Calc.evalAmount(qty)
+    // Signed (21 Oct 2026): "+ in, − out", as the box says. Read as an amount, "−5" for damaged
+    // goods came out as +5 and the shelf went UP. evalPad keeps the sign; zero is nothing to adjust.
+    val amount = Calc.evalPad(qty)?.takeIf { it != 0.0 }
     DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = 520.dp, height = 560.dp)) {
         DialogFrame(title, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)

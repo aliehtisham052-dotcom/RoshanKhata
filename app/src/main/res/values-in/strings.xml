@@ -3344,4 +3344,20 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="merge_unrelated">Salinan ini tidak berbagi apa pun dengan buku ini — ini buku lain. Hanya dapat menggantikannya.</string>
     <string name="merge_not_carried">Tidak digabung: rencana cicilan, musim, skema, kehadiran dan tutup hari.</string>
     <string name="audit_book_merged">Salinan digabungkan</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">Membuka buku…</string>
+    <string name="book_cannot_open">Buku tidak dapat dibuka, dan tidak ada yang diubah di dalamnya. Tutup program lain yang mungkin memakainya (atau nyalakan ulang komputer), lalu buka Roshan Khata lagi.</string>
+    <string name="book_set_aside_note">Buku yang rusak disisihkan di sini, tidak dihapus: %1$s</string>
+    <string name="restore_keep_failed">Buku ini tidak dapat disimpan dulu, jadi tidak ada yang diganti. Pastikan disk masih punya ruang, lalu coba lagi.</string>
+    <string name="restore_loss_unknown">Apa yang akan hilang tidak dapat dihitung. Ganti hanya jika Anda yakin salinan inilah yang Anda inginkan.</string>
+    <string name="clock_behind_title">Tanggal komputer tampaknya salah</string>
+    <string name="clock_behind_body">Salinan harian terbaru untuk %1$s, tetapi komputer ini menyebut hari ini %2$s. Atur tanggal dan waktu yang benar di Windows. Sampai saat itu tidak ada salinan lama yang dihapus.</string>
+    <string name="pos_void_has_returns">Barang dari penjualan ini sudah dikembalikan. Penjualan yang punya retur tidak bisa dibatalkan; buat retur untuk sisanya.</string>
+    <string name="pos_void_day_closed">Hari penjualan ini sudah ditutup. Buat retur alih-alih membatalkannya.</string>
+    <string name="pos_err_rate_missing">Ada baris tanpa harga.</string>
+    <string name="pos_err_tax">Pajak tidak dapat dibaca.</string>
+    <string name="pos_err_payment_unread">Jumlah pembayaran tidak dapat dibaca.</string>
+    <string name="pos_err_discount_unread">Diskon tidak dapat dibaca.</string>
+    <string name="pos_price_needs_pin">Menjual dengan harga selain daftar harga</string>
 </resources>

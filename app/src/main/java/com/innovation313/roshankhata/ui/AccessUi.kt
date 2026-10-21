@@ -221,7 +221,9 @@ object AccessUi {
         "ReportActivity" to Access.Permission.REPORTS,
         "SupplierRatesActivity" to Access.Permission.REPORTS,
         "AuditActivity" to Access.Permission.REPORTS,
-        "AgingActivity" to Access.Permission.REPORTS
+        "AgingActivity" to Access.Permission.REPORTS,
+        // The helper's-phone screen loads another book and sends this one away whole (21 Oct 2026).
+        "ViewerActivity" to Access.Permission.BACKUP
     )
 
     /** What [screen] needs, or null when anyone signed in may open it. */

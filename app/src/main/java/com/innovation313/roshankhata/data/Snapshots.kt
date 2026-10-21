@@ -117,17 +117,24 @@ object Snapshots {
             val live = context.getDatabasePath(business.file)
             val dir = File(context.filesDir, "snapshots").apply { mkdirs() }
             val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
-            val today = android.text.format.DateFormat
-                .format("yyyyMMdd", java.util.Date()).toString()
+            // Kept under its own name, with the minute (21 Oct 2026, the critical review): it was
+            // written as "today's" copy — the very file the owner may have just chosen to go back
+            // to — so restoring today's copy wrote the broken book over it and then restored that.
+            val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.ENGLISH).format(java.util.Date())
 
+            // Closing folds the write-ahead log into the file, so the copy below is the whole book.
             KhataDatabase.closeActive()
 
-            // Today's ledger, kept before it is replaced.
+            // The ledger as it stands, kept before it is replaced. No copy, no restore.
             if (live.exists()) {
-                val keep = File(dir, "$prefix$today.db")
-                val keepTmp = File(dir, "$prefix$today.db.tmp")
+                val keep = File(dir, "$prefix$stamp.db")
+                if (keep.path == snapshot.file.path) return RestoreResult.Failed
+                val keepTmp = File(dir, "$prefix$stamp.db.tmp")
                 live.inputStream().use { i -> keepTmp.outputStream().use { o -> i.copyTo(o) } }
-                if (!keepTmp.renameTo(keep)) keepTmp.delete()
+                if (!keepTmp.renameTo(keep)) { keepTmp.delete(); return RestoreResult.Failed }
+                // A log the close could not fold in goes with it, so the kept copy opens whole.
+                val wal = File(live.parentFile, live.name + "-wal")
+                if (wal.isFile && wal.length() > 0) wal.inputStream().use { i -> File(keep.path + "-wal").outputStream().use { o -> i.copyTo(o) } }
             }
 
             // The old write-ahead log must not survive its database.
@@ -156,11 +163,16 @@ object Snapshots {
      * (21 Oct 2026, the critical review): a restore of the wrong copy is then
      * undone from this screen like any day's copy. Named with the minute
      * ("khata-20261021-1432.db") so two restores in a day keep both; the last
-     * three are kept. Checked as the daily copy is: a sick book is not copied
-     * over good ones. Never throws — a restore is not stopped by its insurance.
+     * three are kept. Never throws. Returns whether the copy is on disk: the
+     * restore or merge that asked stops when it is not (21 Oct 2026 — a failed
+     * copy was passed over in silence and the book replaced anyway).
+     *
+     * A book SQLite finds damaged is still copied, under its own name, never
+     * over a good one: the restore that follows is how the owner gets out of
+     * it, and refusing to keep it would either block that or lose it.
      */
-    fun keepNow(context: Context) {
-        try {
+    fun keepNow(context: Context): Boolean {
+        return try {
             val business = Businesses.active(context)
             val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
             val database = KhataDatabase.get(context)
@@ -169,21 +181,26 @@ object Snapshots {
             val healthy = db.query("PRAGMA integrity_check").use {
                 it.moveToFirst() && it.getString(0).equals("ok", ignoreCase = true)
             }
-            if (!healthy) return
             val source = context.getDatabasePath(database.openHelper.databaseName ?: business.file)
-            if (!source.exists()) return
+            // A new, empty book has nothing to keep and nothing to lose.
+            if (!source.exists()) return true
             val dir = File(context.filesDir, "snapshots").apply { mkdirs() }
             val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.ENGLISH).format(java.util.Date())
             val target = File(dir, "$prefix$stamp.db")
             val tmp = File(dir, "$prefix$stamp.db.tmp")
             source.inputStream().use { input -> tmp.outputStream().use { output -> input.copyTo(output) } }
-            if (!tmp.renameTo(target)) { tmp.delete(); return }
-            val mine = Regex("^" + Regex.escape(prefix) + "\\d{8}-\\d{4}\\.db$")
-            dir.listFiles { f -> mine.matches(f.name) }
-                ?.sortedByDescending { it.name }
-                ?.drop(KEEP_BEFORE_RESTORE)
-                ?.forEach { it.delete() }
+            if (!tmp.renameTo(target)) { tmp.delete(); return false }
+            // The sick copy does not push a good one out of the three kept.
+            if (healthy) {
+                val mine = Regex("^" + Regex.escape(prefix) + "\\d{8}-\\d{4}\\.db$")
+                dir.listFiles { f -> mine.matches(f.name) }
+                    ?.sortedByDescending { it.name }
+                    ?.drop(KEEP_BEFORE_RESTORE)
+                    ?.forEach { it.delete(); File(it.path + "-wal").delete() }
+            }
+            true
         } catch (_: Exception) {
+            false
         }
     }
 

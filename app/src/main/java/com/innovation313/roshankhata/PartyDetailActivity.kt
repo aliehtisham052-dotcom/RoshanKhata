@@ -2805,6 +2805,10 @@ class PartyDetailActivity : BaseActivity() {
         val signature = pendingSignature
         pendingSignature = null
         val appContext = applicationContext
+        // The balance before this entry, read here and now (21 Oct 2026): read after the insert,
+        // the screen's own balance had sometimes already taken the entry in, and "balance after"
+        // counted it twice — a due date or a harvest promise then went by the wrong figure.
+        val before = currentBalance
         AppScope.launch {
             // Numbering, the entry and its goods lines all happen inside the
             // DAO's own transaction — see insertEntryNumbered for why the count
@@ -2819,7 +2823,6 @@ class PartyDetailActivity : BaseActivity() {
             val gotId = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)
                 dao.recordCashForSale(id) else null
             // Balance as it stands once this entry counts (positive = owed to me).
-            val before = currentBalance
             val after = if (gotId != null) before
                 else before + if (entry.isGiven) entry.amount else -entry.amount
             // Paid up: the harvest promise has been kept, so it goes (v28).

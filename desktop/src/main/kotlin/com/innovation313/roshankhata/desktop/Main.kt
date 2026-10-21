@@ -104,7 +104,38 @@ fun main() {
     val home = DesktopDatabase.home()
     // Any crash is written down before anything else runs (Report a problem shows it).
     CrashLog.install(home)
-    application { app(home) }
+    // One Roshan Khata at a time on this computer (21 Oct 2026, SingleInstance).
+    val lock = SingleInstance.acquire(home)
+    if (lock == null) { SingleInstance.tellAlreadyOpen(); return }
+    try { application { app(home) } } finally { lock.release() }
+}
+
+/** A small window while the book is checked and opened, or why it could not be (21 Oct 2026). */
+@Composable
+private fun OpeningWindow(words: Words, failed: Boolean, onClose: () -> Unit) {
+    Window(
+        onCloseRequest = onClose,
+        title = words.text(W.app_name),
+        icon = painterResource("roshan_khata_icon.png"),
+        state = rememberWindowState(width = 460.dp, height = if (failed) 300.dp else 180.dp, position = androidx.compose.ui.window.WindowPosition(Alignment.Center))
+    ) {
+        RoshanTheme(dark = false) {
+            val c = LocalRoshanColors.current
+            Column(
+                Modifier.fillMaxSize().background(c.surface).padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (!failed) {
+                    androidx.compose.material3.CircularProgressIndicator(color = c.brandGreen)
+                    Text(words.text(W.book_opening), color = c.ink, fontSize = 15.sp)
+                } else {
+                    Text(words.text(W.book_cannot_open), color = c.ink, fontSize = 15.sp)
+                    TextButton(onClose) { Text(words.text(W.close)) }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -119,18 +150,40 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // The app's language: the owner's choice (app.properties), else the computer's.
     // Counter mode and the wrong-PIN count belong to this computer: read before anything is shown.
     val appPrefs = remember { AppPrefs(File(home, "app.properties")).also { com.innovation313.roshankhata.data.Access.store = it.accessStore } }
-    // The book, checked first (BookHealth): a damaged file is set aside and the newest good daily copy comes back.
-    val opened = remember(active) {
+    var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
+    val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
+    val words = remember(locale) { desktopWords(locale) }
+    val rtl = BidiPort.isRtlLocale(locale)
+    // The book, checked first (BookHealth) — on a worker thread, with a window up (21 Oct 2026).
+    // The check reads the whole file; while it ran on the window's own thread no window appeared
+    // for seconds and owners clicked the shortcut again. A book that cannot be read is left
+    // exactly as it is, and the window says so.
+    var opened by remember(active) { mutableStateOf<BookHealth.Opened?>(null) }
+    var openFailed by remember(active) { mutableStateOf(false) }
+    var emptyButSetAside by remember(active) { mutableStateOf(false) }
+    LaunchedEffect(active) {
         val outside = appPrefs.backupFolder()?.let { DailyCopies.outside(it, active) }
-        BookHealth.open(businesses.dbFile(active), settings, listOfNotNull(dailyDir, outside))
+        val result = withContext(Dispatchers.IO) {
+            runCatching {
+                val o = BookHealth.open(businesses.dbFile(active), settings, listOfNotNull(dailyDir, outside))
+                // An empty book beside one set aside earlier: said once, so no work goes into the wrong one.
+                val empty = o.corruptKept == null && o.setAside.isNotEmpty() && o.db.khataDao().partiesWithBalanceOnce().isEmpty()
+                o to empty
+            }
+        }
+        result.onSuccess { (o, empty) -> emptyButSetAside = empty; opened = o }.onFailure { openFailed = true }
     }
-    val db = opened.db
-    var recoveryTold by remember(active) { mutableStateOf(opened.corruptKept == null) }
+    val book = opened
+    if (book == null) {
+        OpeningWindow(words, failed = openFailed, onClose = { exitApplication() })
+        return
+    }
+    val db = book.db
+    var recoveryTold by remember(active) { mutableStateOf(book.corruptKept == null && !emptyButSetAside) }
     DisposableEffect(db) { onDispose { db.close() } }
     // The shop's logo, signature, stamp and payment QR for its invoices, one set per business.
     val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
-    var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
@@ -147,7 +200,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     var outsideFolder by remember { mutableStateOf(appPrefs.backupFolder()) }
     val outsideDir = outsideFolder?.let { DailyCopies.outside(it, active) }
     LaunchedEffect(db, outsideDir) {
-        if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
+        // Not when the book was just rebuilt from an older copy: the outside one may be the newer.
+        if (outsideDir != null && book.corruptKept == null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
     }
     // Auto backup (20 Oct): today's copy, here and in the outside folder, rewritten every hour the
     // app stays open, so a day's work is never more than an hour behind in the copies.
@@ -158,19 +212,26 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
         }
     }
-    val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
-    val words = remember(locale) { desktopWords(locale) }
-    val rtl = BidiPort.isRtlLocale(locale)
     // Keyboard shortcuts for the counter (Phase 9a): the open page fills these in.
     val keys = remember { KeyActions() }
-    val closeApp = {
+    // Closing (21 Oct 2026): the window goes at once and the day's last copies are written after it,
+    // here and in the outside folder. The closing copy used to run on the window's own thread, so a
+    // slow USB stick left a frozen "Not responding" window — and this computer's own copy was not
+    // refreshed on closing at all.
+    var closing by remember { mutableStateOf(false) }
+    val closeApp: () -> Unit = { closing = true }
+    if (closing) LaunchedEffect(Unit) {
         Reminders.remove()
-        outsideDir?.let { dir ->
-            runCatching { kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(20_000) { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } } }
+        withContext(Dispatchers.IO) {
+            kotlinx.coroutines.withTimeoutOrNull(90_000) {
+                runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
+                outsideDir?.let { dir -> runCatching { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } }
+            }
         }
         db.close(); exitApplication()
     }
     Window(
+        visible = !closing,
         onCloseRequest = closeApp,
         onPreviewKeyEvent = { keys.handle(it) },
         title = words.text(W.app_name),
@@ -221,14 +282,16 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                     ) } } }
                     if (!recoveryTold) {
                         // The book was damaged and rebuilt (or could not be): said once, before any work.
-                        val from = opened.recoveredFrom
+                        // Or it is empty while a book set aside earlier still sits beside it (21 Oct 2026).
+                        val from = book.recoveredFrom
                         AlertDialog(
                             onDismissRequest = { recoveryTold = true },
                             title = { Text(word(W.book_recovered_title)) },
                             text = {
                                 Text(
-                                    (if (from != null) words.text(W.book_recovered_from, Format.dateTime(from.lastModified()))
-                                    else words.text(W.book_recovered_none)) + "\n\n" + words.text(W.book_corrupt_kept, opened.corruptKept?.absolutePath.orEmpty())
+                                    if (book.corruptKept == null && emptyButSetAside) words.text(W.book_set_aside_note, book.setAside.first().absolutePath)
+                                    else (if (from != null) words.text(W.book_recovered_from, Format.dateTime(from.lastModified()))
+                                    else words.text(W.book_recovered_none)) + "\n\n" + words.text(W.book_corrupt_kept, book.corruptKept?.absolutePath.orEmpty())
                                 )
                             },
                             confirmButton = { TextButton({ recoveryTold = true }) { Text(word(W.ok)) } }
@@ -376,11 +439,35 @@ private fun Book(
     var editingParty by remember { mutableStateOf<Party?>(null) }
     var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
     // The bin keeps things for the days its note promises, then lets them go, as on the phone.
+    // Counted from the book's own newest work when the clock reads later than that (21 Oct 2026):
+    // a clock that jumped years ahead emptied the whole bin at the next start.
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val cutoff = System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000
+            val now = System.currentTimeMillis()
+            val newest = runCatching { dao.lastEntryActivity() }.getOrDefault(0L)
+            val anchor = if (newest > 0L) minOf(now, newest + 24L * 60 * 60 * 1000) else now
+            val cutoff = anchor - 30L * 24 * 60 * 60 * 1000
             runCatching { dao.purgeOldEntries(cutoff); dao.purgeOldParties(cutoff) }
         }
+    }
+    // The computer's clock behind the copies it made itself (21 Oct 2026): a dead CMOS battery puts
+    // a laptop back years, new work lands on the wrong days and old copies stop being cleared.
+    // Said once each time the app opens, with both dates, until the clock is right.
+    var clockBehind by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) {
+        clockBehind = withContext(Dispatchers.IO) {
+            runCatching {
+                if (DailyCopies.clockBehind(dailyDir)) DailyCopies.list(dailyDir).map { DailyCopies.dayOf(it) }.filter { it.isNotEmpty() }.maxOrNull() else null
+            }.getOrNull()
+        }
+    }
+    clockBehind?.let { newestDay ->
+        AlertDialog(
+            onDismissRequest = { clockBehind = null },
+            title = { Text(word(W.clock_behind_title)) },
+            text = { Text(words.text(W.clock_behind_body, newestDay, Format.dateOnly(System.currentTimeMillis()))) },
+            confirmButton = { TextButton({ clockBehind = null }) { Text(word(W.ok)) } }
+        )
     }
     var choosingBusiness by remember { mutableStateOf(false) }
     // An invoice just made from a counter sale, opened on the Invoices page.
@@ -895,7 +982,9 @@ private fun Book(
     merging?.let { data ->
         MergeDialog(
             dao, data, shopName(),
-            keepFirst = { runCatching { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-merge-" + System.currentTimeMillis()) } },
+            // The book is kept first, and nothing is merged unless it was (21 Oct 2026: a copy that
+            // failed to write was passed over and the merge went ahead regardless).
+            keepFirst = { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-merge-" + System.currentTimeMillis()) ?: error(words.text(W.restore_keep_failed)) },
             onDone = { said -> told = words.text(W.merge_title) to said; reload++ },
             onClose = { merging = null }
         )
@@ -933,14 +1022,25 @@ private fun Book(
                     onClick = {
                         busy = true
                         scope.launch {
-                            // This book as it stands, kept first: the restore can be undone from Daily copies.
-                            runCatching { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-restore-" + System.currentTimeMillis()) }
-                            restore(p.data)
-                            busy = false
-                            picked = null
-                            done = true
-                            shop = shopName()
-                            reload++
+                            try {
+                                // This book as it stands, kept first: the restore can be undone from Daily copies.
+                                // No copy, no restore (21 Oct 2026: a failed copy was passed over in silence and
+                                // the book replaced anyway, while the screen promised it could be undone).
+                                val kept = runCatching { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-restore-" + System.currentTimeMillis()) }.getOrNull()
+                                if (kept == null) {
+                                    told = words.text(W.restore_warning_title) to words.text(W.restore_keep_failed)
+                                } else {
+                                    restore(p.data)
+                                    done = true
+                                    shop = shopName()
+                                    reload++
+                                }
+                            } catch (e: Exception) {
+                                told = words.text(W.restore_warning_title) to (e.message ?: words.text(W.backup_failed))
+                            } finally {
+                                busy = false
+                                picked = null
+                            }
                         }
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)

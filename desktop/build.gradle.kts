@@ -72,8 +72,10 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
-            // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.13.0"
+            // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0. The BUILD number is
+            // stamped by CI (desktop.yml, the run number) so every MSI the owner downloads
+            // installs over the last one: an MSI of the same version does not (21 Oct 2026).
+            packageVersion = "1.14.0"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
@@ -84,7 +86,9 @@ compose.desktop {
                 menuGroup = "Innovation 313"
                 shortcut = true
                 perUserInstall = true
-                dirChooser = true
+                // No folder question (21 Oct 2026): a per-user install into a folder of the
+                // owner's choosing was the one way the update could land beside the old copy.
+                dirChooser = false
                 // Fixed for ever: Windows recognises a newer MSI as an upgrade of this app by it.
                 upgradeUuid = "01886a20-ce3b-43ee-936c-7ee93f78839e"
                 // The book icon (the phone's launcher icon, 18 Oct).

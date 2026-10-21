@@ -3347,4 +3347,20 @@
     <string name="merge_unrelated">اس کاپی میں اس کھاتے سے کچھ مشترک نہیں — یہ کوئی اور کھاتہ ہے۔ یہ صرف اس کی جگہ لے سکتی ہے۔</string>
     <string name="merge_not_carried">شامل نہیں ہوتے: قسط پلان، سیزن، اسکیمیں، حاضری اور دن کی بندش۔</string>
     <string name="audit_book_merged">کاپی شامل کی گئی</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">کھاتہ کھل رہا ہے…</string>
+    <string name="book_cannot_open">کھاتہ نہیں کھل سکا، اور اس میں کچھ نہیں بدلا گیا۔ جو دوسرا پروگرام اسے استعمال کر رہا ہو اسے بند کریں (یا کمپیوٹر دوبارہ چلائیں)، پھر روشن کھاتہ دوبارہ کھولیں۔</string>
+    <string name="book_set_aside_note">خراب کھاتہ یہاں الگ رکھا گیا ہے، مٹایا نہیں گیا: %1$s</string>
+    <string name="restore_keep_failed">یہ کھاتہ پہلے محفوظ نہیں ہو سکا، اس لیے کچھ نہیں بدلا گیا۔ دیکھیں کہ ڈسک میں جگہ ہے، پھر دوبارہ کوشش کریں۔</string>
+    <string name="restore_loss_unknown">کیا ضائع ہوگا یہ گنا نہیں جا سکا۔ تبھی بدلیں جب آپ کو یقین ہو کہ یہی کاپی چاہیے۔</string>
+    <string name="clock_behind_title">کمپیوٹر کی تاریخ غلط لگتی ہے</string>
+    <string name="clock_behind_body">سب سے نئی روزانہ کاپی %1$s کی ہے، مگر یہ کمپیوٹر آج کی تاریخ %2$s بتا رہا ہے۔ ونڈوز میں صحیح تاریخ اور وقت لگائیں۔ تب تک کوئی پرانی کاپی نہیں مٹائی جائے گی۔</string>
+    <string name="pos_void_has_returns">اس بِکری کا مال پہلے ہی واپس ہو چکا ہے۔ واپسی والی بِکری منسوخ نہیں ہو سکتی؛ باقی مال کی واپسی کریں۔</string>
+    <string name="pos_void_day_closed">اس بِکری کا دن بند ہو چکا ہے۔ منسوخ کرنے کے بجائے واپسی کریں۔</string>
+    <string name="pos_err_rate_missing">ایک لائن کا ریٹ نہیں لکھا۔</string>
+    <string name="pos_err_tax">ٹیکس پڑھا نہیں جا سکا۔</string>
+    <string name="pos_err_payment_unread">ایک ادائیگی کی رقم پڑھی نہیں جا سکی۔</string>
+    <string name="pos_err_discount_unread">ایک رعایت پڑھی نہیں جا سکی۔</string>
+    <string name="pos_price_needs_pin">ریٹ لسٹ سے ہٹ کر ریٹ پر بیچنا</string>
 </resources>

@@ -3375,4 +3375,20 @@
     <string name="merge_unrelated">هن ڪاپي ۾ هن کاتي سان ڪجهه به گڏيل ناهي — هي ڪو ٻيو کاتو آهي. هي رڳو ان جي جاءِ وٺي سگهي ٿي.</string>
     <string name="merge_not_carried">شامل نٿا ٿين: قسط پلان، سيزن، اسڪيمون، حاضري ۽ ڏينهن جي بندش.</string>
     <string name="audit_book_merged">ڪاپي شامل ڪئي وئي</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">کاتو کلي رهيو آهي…</string>
+    <string name="book_cannot_open">کاتو کلي نه سگهيو، ۽ ان ۾ ڪجهه به نه بدليو ويو. جيڪو ٻيو پروگرام ان کي استعمال ڪري رهيو هجي ان کي بند ڪريو (يا ڪمپيوٽر ٻيهر هلايو)، پوءِ روشن کاتو ٻيهر کوليو.</string>
+    <string name="book_set_aside_note">خراب کاتو هتي الڳ رکيو ويو آهي، ميٽيو نه ويو: %1$s</string>
+    <string name="restore_keep_failed">هي کاتو پهريان محفوظ نه ٿي سگهيو، تنهن ڪري ڪجهه به نه بدليو ويو. ڏسو ته ڊسڪ ۾ جاءِ آهي، پوءِ ٻيهر ڪوشش ڪريو.</string>
+    <string name="restore_loss_unknown">ڇا وڃائبو اهو ڳڻي نه سگهيو. تڏهن ئي بدلايو جڏهن توهان کي پڪ هجي ته اها ئي ڪاپي گهرجي.</string>
+    <string name="clock_behind_title">ڪمپيوٽر جي تاريخ غلط لڳي ٿي</string>
+    <string name="clock_behind_body">سڀ کان نئين روزاني ڪاپي %1$s جي آهي، پر هي ڪمپيوٽر اڄ جي تاريخ %2$s ٻڌائي ٿو. ونڊوز ۾ صحيح تاريخ ۽ وقت لڳايو. تيستائين ڪا به پراڻي ڪاپي نه ميٽبي.</string>
+    <string name="pos_void_has_returns">هن وڪري جو مال اڳ ئي موٽي چڪو آهي. موٽ واري وڪري منسوخ نٿي ٿي سگهي؛ باقي مال جي واپسي ڪريو.</string>
+    <string name="pos_void_day_closed">هن وڪري جو ڏينهن بند ٿي چڪو آهي. منسوخ ڪرڻ بدران واپسي ڪريو.</string>
+    <string name="pos_err_rate_missing">هڪ لائين جو ريٽ ناهي لکيل.</string>
+    <string name="pos_err_tax">ٽيڪس پڙهي نه سگهيو.</string>
+    <string name="pos_err_payment_unread">هڪ ادائگي جي رقم پڙهي نه سگهي.</string>
+    <string name="pos_err_discount_unread">هڪ رعايت پڙهي نه سگهي.</string>
+    <string name="pos_price_needs_pin">ريٽ لسٽ کان هٽي ريٽ تي وڪڻڻ</string>
 </resources>

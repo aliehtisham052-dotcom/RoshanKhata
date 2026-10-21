@@ -53,9 +53,45 @@ object Calc {
     /**
      * The pad prints × ÷ − for looks; the evaluator wants * / -. Digits from
      * an Arabic or Persian keyboard (٢٧٦, ۲۷۶) become 0-9 first, see [Digits].
+     *
+     * And the ways a shopkeeper writes a figure by hand (21 Oct 2026), which
+     * were refused or misread until then: thousands commas ("1,500",
+     * "1,50,000" — the app prints amounts that way itself), "x" for times
+     * ("12x450"), a sum finished with "=" ("500+300="), the rupee's "/-"
+     * ("500/-") and a leading "Rs".
      */
-    fun normalize(text: String): String =
-        Digits.toLatin(text).replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
+    fun normalize(text: String): String {
+        var s = Digits.toLatin(text).replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
+            .replace('x', '*').replace('X', '*').replace(" ", "")
+        s = s.replace(Regex("^(?i)(rs\\.?|\u20a8)"), "")
+        s = s.replace(Regex("/-(?=$|[-+*/%=])"), "")
+        s = s.replace(Regex("(?<=\\d),(?=\\d)"), "")
+        return s.trimEnd('=')
+    }
+
+    /**
+     * A box that holds a PERCENT — a tax rate, a discount in percent — where
+     * "17" and "17%" both mean seventeen. In an amount box a lone "17%" is a
+     * hundredth, as on a calculator, so these boxes are read here instead
+     * (21 Oct 2026: "17%" in the counter's Tax % box gave 0.17% tax).
+     */
+    fun evalPercent(input: String): Double? = evalPad(normalize(input).removeSuffix("%"))
+
+    /**
+     * A rupee discount that may also be written as a share of [base]
+     * (21 Oct 2026): "10%" off a 2,500 line is 250, "250" is 250. Until then
+     * "10%" in a discount box came to Rs 0.10. A magnitude; null when the box
+     * does not hold a figure.
+     */
+    fun evalDiscount(input: String, base: Double): Double? {
+        val t = normalize(input)
+        val bare = t.removeSuffix("%")
+        if (t.endsWith("%") && bare.isNotEmpty() && bare.all { it.isDigit() || it == '.' }) {
+            val p = bare.toDoubleOrNull() ?: return null
+            return kotlin.math.round(base * p) / 100.0
+        }
+        return evalPad(input)?.let { kotlin.math.abs(it) }
+    }
 
     /**
      * Rewrite percentages into plain arithmetic.

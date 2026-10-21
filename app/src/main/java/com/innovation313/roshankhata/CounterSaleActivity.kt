@@ -227,70 +227,107 @@ class CounterSaleActivity : BaseActivity() {
             .addOnFailureListener { toast(R.string.qr_scan_failed) }
     }
 
-    private fun complete(allowedBy: String? = null) {
+    /**
+     * Ring the ticket up. Each check a cashier may not pass alone waits for its
+     * own manager's PIN (21 Oct 2026: one PIN given for a discount also let the
+     * ticket past the credit limit): a price changed on the ticket or an item
+     * typed in by hand, a discount past the cap (on the goods before any
+     * discount), the credit limit. A second tap while the ticket is being
+     * written does nothing.
+     */
+    private fun complete(priceBy: String? = null, discountBy: String? = null, creditBy: String? = null) {
+        if (draft.posting) return
         draft.problem?.let { message = getString(com.innovation313.roshankhata.data.WordIds.string(problemWord(it))); return }
+        val access = com.innovation313.roshankhata.data.Access
+        val repriced = draft.repriced
+        if (priceBy == null && repriced.isNotEmpty() && !access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) {
+            message = getString(R.string.pos_price_needs_pin)
+            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT, getString(R.string.pos_price_needs_pin)) { by -> complete(by ?: com.innovation313.roshankhata.data.Access.OWNER, discountBy, creditBy) }
+            return
+        }
         // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
-        val lineDiscounts = draft.lines.sumOf { it.discountValue }
-        if (allowedBy == null && com.innovation313.roshankhata.data.Access.discountNeedsOverride(draft.handDiscount + lineDiscounts, draft.totals.subtotal)) {
-            message = getString(R.string.access_discount_cap, com.innovation313.roshankhata.ui.Format.money(draft.totals.subtotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
-            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.DISCOUNT_ANY, getString(R.string.pos_discount)) { by -> complete(by) }
+        val discounts = draft.allDiscounts
+        if (discountBy == null && access.discountNeedsOverride(discounts, draft.grossTotal)) {
+            message = getString(R.string.access_discount_cap, com.innovation313.roshankhata.ui.Format.money(draft.grossTotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
+            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.DISCOUNT_ANY, getString(R.string.pos_discount)) { by -> complete(priceBy, by ?: com.innovation313.roshankhata.data.Access.OWNER, creditBy) }
             return
         }
         // Past the customer's credit limit (POS Phase 9): a manager's PIN.
         val party = parties.firstOrNull { it.id == draft.partyId }
         val over = draft.creditOver(party?.balance, party?.creditLimit)
-        if (over != null && allowedBy == null && !com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
+        if (over != null && creditBy == null && !access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
             val what = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
             message = what
-            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER, what) { by -> complete(by) }
+            com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER, what) { by -> complete(priceBy, discountBy, by ?: com.innovation313.roshankhata.data.Access.OWNER) }
             return
         }
-        if (over != null && allowedBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
+        if (over != null && creditBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
+        val change = draft.change
+        val priceDetail = if (repriced.isNotEmpty()) draft.repricedDetail() else null
+        draft.posting = true
         lifecycleScope.launch {
-            if (allowedBy != null) withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, allowedBy, detail = com.innovation313.roshankhata.ui.Format.money(draft.handDiscount + lineDiscounts)) }
-            val result = withContext(Dispatchers.IO) {
-                runCatching {
-                    val id = Counter.post(dao, draft)
-                    val sale = dao.saleWithLines(id)!!
-                    Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
-                        com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
+            try {
+                withContext(Dispatchers.IO) {
+                    if (discountBy != null) dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, discountBy, detail = com.innovation313.roshankhata.ui.Format.money(discounts))
+                    // Every price that is not the product's own is written down, with who allowed it.
+                    if (priceDetail != null) dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, priceBy ?: access.userName, detail = priceDetail)
                 }
-            }
-            result.onSuccess { (sale, party, points) ->
-                // Today's copy of the book follows the sales (a minute after the last one).
-                com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
-                val words = AndroidWords(this@CounterSaleActivity)
-                val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
-                val text = SaleReceiptText.build(words, shop, sale, party?.balance, points)
-                draft.clear()
-                message = null
-                reload()
-                MaterialAlertDialogBuilder(this@CounterSaleActivity)
-                    .setTitle(getString(R.string.pos_posted, sale.sale.saleNumber))
-                    .setMessage(text)
-                    .setPositiveButton(R.string.share) { _, _ ->
-                        startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
+                val result = withContext(Dispatchers.IO) {
+                    runCatching {
+                        val id = Counter.post(dao, draft)
+                        val sale = dao.saleWithLines(id)!!
+                        Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                            com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
                     }
-                    // The paired Bluetooth receipt printer (POS Phase 8), the ticket as a picture the roll's width.
-                    .setNeutralButton(R.string.print_receipt) { _, _ ->
-                        // Paid at least partly in cash: the drawer opens as the ticket prints (when it is set to).
-                        val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
-                        com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash)
-                    }
-                    .setNegativeButton(R.string.close, null)
-                    .show()
-            }.onFailure { e ->
-                message = if (e is Counter.ExpiredStock) getString(R.string.pos_expired_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.fresh))
-                    else e.message ?: getString(R.string.backup_failed)
+                }
+                result.onSuccess { (sale, party, points) ->
+                    // Today's copy of the book follows the sales (a minute after the last one).
+                    com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
+                    val words = AndroidWords(this@CounterSaleActivity)
+                    val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
+                    val text = SaleReceiptText.build(words, shop, sale, party?.balance, points)
+                    draft.clear()
+                    message = null
+                    reload()
+                    // The change to hand back, in the title (21 Oct 2026).
+                    val title = getString(R.string.pos_posted, sale.sale.saleNumber) +
+                        (if (change > 0.005) "  ·  " + getString(R.string.pos_change) + " " + com.innovation313.roshankhata.ui.Format.money(change) else "")
+                    MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                        .setTitle(title)
+                        .setMessage(text)
+                        .setPositiveButton(R.string.share) { _, _ ->
+                            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
+                        }
+                        // The paired Bluetooth receipt printer (POS Phase 8), the ticket as a picture the roll's width.
+                        .setNeutralButton(R.string.print_receipt) { _, _ ->
+                            // Paid at least partly in cash: the drawer opens as the ticket prints (when it is set to).
+                            val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
+                            com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash)
+                        }
+                        .setNegativeButton(R.string.close, null)
+                        .show()
+                }.onFailure { e ->
+                    message = if (e is Counter.ExpiredStock) getString(R.string.pos_expired_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.fresh))
+                        else e.message ?: getString(R.string.backup_failed)
+                }
+            } finally {
+                draft.posting = false
             }
         }
     }
 
+    /** Park the ticket; cleared only once it is safely held (21 Oct 2026: a failed hold lost it). */
     private fun hold() {
+        if (draft.posting || draft.lines.isEmpty()) return
+        draft.posting = true
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
-            draft.clear()
-            reload()
+            try {
+                val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
+                held.onSuccess { draft.clear(); reload() }
+                    .onFailure { e -> message = e.message ?: getString(R.string.backup_failed) }
+            } finally {
+                draft.posting = false
+            }
         }
     }
 
@@ -365,9 +402,17 @@ class CounterSaleActivity : BaseActivity() {
                 val reason = input.text.toString().trim()
                 if (reason.isEmpty()) { toast(R.string.pos_err_reason); return@setPositiveButton }
                 lifecycleScope.launch {
-                    withContext(Dispatchers.IO) { runCatching { dao.voidSale(saleId, reason) } }
-                    com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
-                    message = getString(R.string.pos_voided) + " " + number
+                    // A ticket with goods already back, or from a day that is closed, is not voided:
+                    // a return is the way (21 Oct 2026), and the screen says which.
+                    val refusal = withContext(Dispatchers.IO) { runCatching { dao.voidRefusal(saleId) }.getOrNull() }
+                    val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(saleId, reason) }.getOrDefault(false) }
+                    if (ok) com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
+                    message = when {
+                        ok -> getString(R.string.pos_voided) + " " + number
+                        refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.HAS_RETURNS -> getString(R.string.pos_void_has_returns)
+                        refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.DAY_CLOSED -> getString(R.string.pos_void_day_closed)
+                        else -> getString(R.string.backup_failed)
+                    }
                     reload()
                 }
             }
@@ -391,14 +436,18 @@ class CounterSaleActivity : BaseActivity() {
                 RoshanTheme(dark = dark) {
                     ProvideWords(words) {
                         com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { dialog.dismiss() }, message = problem, onPost = {
+                            // The form calls this only while nothing is being posted (ReturnDraft.posting).
+                            draft.posting = true
                             lifecycleScope.launch {
-                                val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
-                                com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
-                                r.onSuccess { id ->
-                                    val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
-                                    message = getString(R.string.pos_return_posted, number)
-                                    dialog.dismiss(); reload()
-                                }.onFailure { problem = it.message }
+                                try {
+                                    val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                                    com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
+                                    r.onSuccess { id ->
+                                        val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
+                                        message = getString(R.string.pos_return_posted, number)
+                                        dialog.dismiss(); reload()
+                                    }.onFailure { problem = it.message }
+                                } finally { draft.posting = false }
                             }
                         })
                     }

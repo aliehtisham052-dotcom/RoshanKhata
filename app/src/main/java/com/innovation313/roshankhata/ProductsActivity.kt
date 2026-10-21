@@ -234,7 +234,9 @@ class ProductsActivity : BaseActivity() {
                         .setTitle(p.name)
                         .setView(box)
                         .setPositiveButton(R.string.save) { _, _ ->
-                            val q = com.innovation313.roshankhata.ui.Calc.evalAmount(qty.text.toString()) ?: 0.0
+                            // Signed (21 Oct 2026): "+ in, − out", as the box says. Read as an amount, "−5"
+                            // for damaged goods came out as +5 and the shelf went UP.
+                            val q = com.innovation313.roshankhata.ui.Calc.evalPad(qty.text.toString()) ?: 0.0
                             if (q == 0.0) { Toast.makeText(this@ProductsActivity, R.string.pos_err_quantity, Toast.LENGTH_LONG).show(); return@setPositiveButton }
                             lifecycleScope.launch {
                                 withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasons[reason.selectedItemPosition], note.text.toString().trim().ifBlank { null }) } }

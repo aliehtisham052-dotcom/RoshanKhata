@@ -44,6 +44,15 @@ jobs:
           cache-disabled: true
           gradle-version: 8.14.3
 
+      # Every MSI its own version (MAJOR.MINOR.<run number>), so Windows upgrades
+      # the one already installed instead of refusing "another version is installed".
+      - name: Stamp the build number
+        shell: bash
+        run: |
+          n=$(( GITHUB_RUN_NUMBER % 65535 ))
+          sed -i -E "s/packageVersion = \"([0-9]+)\.([0-9]+)\.[0-9]+\"/packageVersion = \"\1.\2.$n\"/" desktop/build.gradle.kts
+          grep -n 'packageVersion = ' desktop/build.gradle.kts
+
       - name: Computer-side tests, then the MSI
         shell: bash
         run: |

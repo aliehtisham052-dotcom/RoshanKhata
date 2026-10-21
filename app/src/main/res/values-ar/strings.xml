@@ -3535,4 +3535,20 @@
     <string name="merge_unrelated">لا تشترك هذه النسخة مع هذا الدفتر في شيء — إنها دفتر آخر. يمكنها أن تحل محله فقط.</string>
     <string name="merge_not_carried">لا تُدمج: خطط الأقساط والمواسم والعروض والحضور وإغلاقات الأيام.</string>
     <string name="audit_book_merged">دُمجت نسخة</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">جارٍ فتح الدفتر…</string>
+    <string name="book_cannot_open">تعذّر فتح الدفتر، ولم يتغيّر فيه شيء. أغلق أي برنامج آخر قد يستخدمه (أو أعد تشغيل الحاسوب)، ثم افتح روشن كهاتا مرة أخرى.</string>
+    <string name="book_set_aside_note">نُحّي دفتر تالف جانبًا هنا ولم يُحذف: %1$s</string>
+    <string name="restore_keep_failed">تعذّر حفظ هذا الدفتر أولًا، لذا لم يُستبدل شيء. تأكد من وجود مساحة على القرص ثم حاول مرة أخرى.</string>
+    <string name="restore_loss_unknown">تعذّر حساب ما سيضيع. لا تستبدل إلا إذا كنت متأكدًا أن هذه النسخة هي المطلوبة.</string>
+    <string name="clock_behind_title">يبدو أن تاريخ الحاسوب خاطئ</string>
+    <string name="clock_behind_body">أحدث نسخة يومية بتاريخ %1$s، لكن هذا الحاسوب يقول إن اليوم %2$s. اضبط التاريخ والوقت الصحيحين في ويندوز. وحتى ذلك الحين لن تُحذف أي نسخة قديمة.</string>
+    <string name="pos_void_has_returns">أُرجعت بضائع من هذا البيع بالفعل. لا يمكن إلغاء بيع له مرتجعات؛ سجّل مرتجعًا لما تبقى بدلًا من ذلك.</string>
+    <string name="pos_void_day_closed">أُغلق يوم هذا البيع. سجّل مرتجعًا بدلًا من إلغائه.</string>
+    <string name="pos_err_rate_missing">سطر بلا سعر.</string>
+    <string name="pos_err_tax">تعذّرت قراءة الضريبة.</string>
+    <string name="pos_err_payment_unread">تعذّرت قراءة مبلغ دفعة.</string>
+    <string name="pos_err_discount_unread">تعذّرت قراءة خصم.</string>
+    <string name="pos_price_needs_pin">البيع بسعر غير سعر القائمة</string>
 </resources>

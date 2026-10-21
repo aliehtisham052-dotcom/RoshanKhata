@@ -115,7 +115,8 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FigureCard(word(W.srep_revenue), r?.let { Format.money(it.revenue) } ?: "…", c.ink, Modifier.weight(1f))
             FigureCard(word(W.srep_col_count), r?.saleCount?.toString() ?: "…", c.inkSoft, Modifier.weight(1f))
-            FigureCard(word(W.srep_net), r?.let { Format.money(it.netProfit) } ?: "…", if ((r?.netProfit ?: 0.0) < 0) c.owedToMe else Look.accent, Modifier.weight(1f),
+            // A loss carries its minus (21 Oct 2026: it printed as a red positive figure).
+            FigureCard(word(W.srep_net), r?.let { Format.signedIfNegative(it.netProfit) } ?: "…", if ((r?.netProfit ?: 0.0) < 0) c.owedToMe else Look.accent, Modifier.weight(1f),
                 under = r?.let { words.text(W.srep_cost_known, Format.money(it.costKnownRevenue)) })
         }
         // The chart (21 Oct 2026): a bar per hour, day or month of the window, from the same lines.

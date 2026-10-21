@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
@@ -48,9 +49,25 @@ import java.util.Locale
  * open business's book copied once a day, the last seven kept, each copy
  * read back and checked before it counts. Written in the backup format
  * (BackupCodec), so a copy is also a file the phone can restore.
+ *
+ * Which copies are kept is decided by the DAY IN THEIR NAME, not by the
+ * file's time (21 Oct 2026). A laptop whose clock fell back to 2015 (a dead
+ * CMOS battery) gave every new copy a 2015 file time, so the rotation took
+ * the copy it had just written for the oldest and deleted it at once — the
+ * backups stopped and nothing said so. Now the copy just written is never
+ * the one deleted, and while the clock reads earlier than the newest copy's
+ * day nothing is deleted at all ([clockBehind]). The day copies and the
+ * safety copies taken before a restore or a merge are kept apart, so a busy
+ * day of restores cannot push the week's copies out.
  */
 object DailyCopies {
     private const val KEEP = 7
+    /** Copies with a label (before-restore, before-merge): the newest few. */
+    private const val KEEP_LABELLED = 5
+    private const val DAY_MS = 24L * 60 * 60 * 1000
+
+    /** One copy at a time in this app (the hourly one, the after-sale one, the closing one). */
+    private val writing = kotlinx.coroutines.sync.Mutex()
 
     fun dir(home: File, businessId: Long) = File(home, "daily/b$businessId")
 
@@ -63,31 +80,81 @@ object DailyCopies {
      */
     fun outside(folder: File, businessId: Long) = File(folder, "RoshanKhata-Backup/Business-$businessId")
 
+    /** The day a copy is of, from its name (yyyy-MM-dd…), or "" for a name that has none. */
+    fun dayOf(f: File): String = f.name.take(10).takeIf { Regex("""\d{4}-\d{2}-\d{2}""").matches(it) }.orEmpty()
+
+    private fun isLabelled(f: File) = f.name.length > "yyyy-MM-dd.txt".length
+
+    private val byNewest: Comparator<File> =
+        compareByDescending<File> { dayOf(it) }.thenByDescending { it.lastModified() }
+
+    /** The copies in [dir], newest day first (by name, then by file time within a day). */
     fun list(dir: File): List<File> =
-        dir.listFiles { f -> f.isFile && f.name.endsWith(".txt") }?.sortedByDescending { it.lastModified() } ?: emptyList()
+        dir.listFiles { f -> f.isFile && f.name.endsWith(".txt") }?.sortedWith(byNewest) ?: emptyList()
+
+    /** The newest copy across [dirs] — what a rebuilt book is taken from first. */
+    fun newestFirst(dirs: List<File>): List<File> = dirs.flatMap { list(it) }.sortedWith(byNewest)
+
+    private fun dayText(now: Long) = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(now))
 
     /**
-     * Today's copy, when there is none yet: written to a temporary file,
-     * read back whole, and only then given its name. A copy that does not
-     * read back is thrown away, never kept as if it were good.
+     * True when this computer's clock reads a day earlier than the newest copy
+     * in [dir] was made for: the clock went back. Copies are still written,
+     * but none is deleted until the clock is right again.
      */
-    suspend fun makeToday(dao: KhataDao, settings: FileShopSettings, dir: File, label: String? = null, refresh: Boolean = false) = withContext(Dispatchers.IO) {
-        dir.mkdirs()
-        val day = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date())
-        val name = if (label == null) "$day.txt" else "$day-$label.txt"
-        val target = File(dir, name)
-        if (label == null && target.isFile && !refresh) return@withContext
-        val tmp = File(dir, "$name.tmp")
-        tmp.bufferedWriter(Charsets.UTF_8).use {
-            BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
+    fun clockBehind(dir: File, now: Long = System.currentTimeMillis()): Boolean {
+        val newest = list(dir).map { dayOf(it) }.filter { it.isNotEmpty() }.maxOrNull() ?: return false
+        return newest > dayText(now)
+    }
+
+    /**
+     * Today's copy (or a labelled one): written to a temporary file, read back
+     * whole, and only then given its name. A copy that does not read back is
+     * thrown away, never kept as if it were good. Returns the copy that is now
+     * on disk — or null when none could be made, which a restore or a merge
+     * takes as "stop" (the book is only replaced once it is safely kept).
+     * Without [refresh], an existing copy of today is left as it is and returned.
+     */
+    suspend fun makeToday(
+        dao: KhataDao,
+        settings: FileShopSettings,
+        dir: File,
+        label: String? = null,
+        refresh: Boolean = false,
+        now: Long = System.currentTimeMillis()
+    ): File? = withContext(Dispatchers.IO) {
+        writing.withLock {
+            dir.mkdirs()
+            val day = dayText(now)
+            val name = if (label == null) "$day.txt" else "$day-$label.txt"
+            val target = File(dir, name)
+            if (label == null && target.isFile && !refresh) return@withLock target
+            // Leftovers of a copy cut short (a power cut) go first; a fresh name for this one.
+            dir.listFiles { f -> f.name.endsWith(".tmp") && now - f.lastModified() > DAY_MS }?.forEach { it.delete() }
+            val tmp = File(dir, "$name.${System.nanoTime()}.tmp")
+            val written = runCatching {
+                tmp.bufferedWriter(Charsets.UTF_8).use {
+                    BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
+                }
+                BackupCodec.parseFile(tmp).first is BackupCodec.ImportResult.Ok &&
+                    runCatching {
+                        java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+                        true
+                    }.getOrDefault(false)
+            }.getOrDefault(false)
+            if (!written) {
+                tmp.delete()
+                return@withLock null
+            }
+            // The week's copies, and a few safety copies: the newest by their day. Never the
+            // copy just written, and nothing at all while the clock reads behind the copies.
+            if (!clockBehind(dir, now)) {
+                val (labelled, days) = list(dir).filter { it != target }.partition { isLabelled(it) }
+                days.drop(KEEP - (if (label == null) 1 else 0)).forEach { it.delete() }
+                labelled.drop(KEEP_LABELLED - (if (label != null) 1 else 0)).forEach { it.delete() }
+            }
+            target
         }
-        if (BackupCodec.parseFile(tmp).first is BackupCodec.ImportResult.Ok) {
-            target.delete()
-            tmp.renameTo(target)
-        } else {
-            tmp.delete()
-        }
-        list(dir).drop(KEEP).forEach { it.delete() }
     }
 }
 
@@ -112,6 +179,7 @@ fun DailyCopiesPane(
     val damagedTitle = word(W.snapshot_unhealthy_title)
     val damagedBody = word(W.snapshot_unhealthy_body)
     val failed = word(W.snapshot_restore_failed)
+    val keepFailed = word(W.restore_keep_failed)
 
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.snapshots_title), word(W.snapshots_subtitle))
@@ -162,15 +230,17 @@ fun DailyCopiesPane(
                             notice = if (result !is BackupCodec.ImportResult.Ok || data == null) {
                                 damagedTitle to damagedBody
                             } else runCatching {
-                                // Today's book is copied and kept first, so going back can be undone.
+                                // Today's book is copied and kept first, so going back can be undone; no copy,
+                                // no restore (21 Oct 2026: a failed copy was passed over in silence).
                                 DailyCopies.makeToday(dao, settings, dir, label = "before-restore-" + System.currentTimeMillis())
+                                    ?: error(keepFailed)
                                 withContext(Dispatchers.IO) {
                                     BackupCodec.restoreLedger(dao, data)
                                     data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
                                 }
                                 onRestored()
                                 restoredTitle to ""
-                            }.getOrElse { damagedTitle to failed }
+                            }.getOrElse { e -> damagedTitle to (if (e is IllegalStateException) e.message ?: failed else failed) }
                             version++
                         }
                     },

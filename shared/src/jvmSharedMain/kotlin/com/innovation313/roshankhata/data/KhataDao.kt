@@ -291,13 +291,34 @@ interface KhataDao {
     @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff")
     suspend fun purgeOldEntries(cutoff: Long)
 
-    @Query("DELETE FROM parties WHERE isDeleted = 1 AND deletedAt < :cutoff")
+    /*
+     * A party is never purged while it still has cheques, payment plans or
+     * supplier bills (21 Oct 2026): those tables are deleted along with the
+     * party (ON DELETE CASCADE), and binning a party bins only its entries, so
+     * purging a supplier deleted his bills — and the stock they brought in —
+     * with no word. Such a party stays in the bin until those are dealt with.
+     */
+    @Query(
+        """
+        DELETE FROM parties WHERE isDeleted = 1 AND deletedAt < :cutoff
+        AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        """
+    )
     suspend fun purgeOldParties(cutoff: Long)
 
     @Query("DELETE FROM transactions WHERE isDeleted = 1")
     suspend fun purgeAllEntries()
 
-    @Query("DELETE FROM parties WHERE isDeleted = 1")
+    @Query(
+        """
+        DELETE FROM parties WHERE isDeleted = 1
+        AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        """
+    )
     suspend fun purgeAllParties()
 
     /**
@@ -311,7 +332,14 @@ interface KhataDao {
      * declares onDelete = CASCADE on partyId — so no orphaned entries are
      * left behind, and no second call is needed.
      */
-    @Query("DELETE FROM parties WHERE id = :id AND isDeleted = 1")
+    @Query(
+        """
+        DELETE FROM parties WHERE id = :id AND isDeleted = 1
+        AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        """
+    )
     suspend fun purgeParty(id: Long)
 
     @Query("DELETE FROM transactions WHERE id = :id AND isDeleted = 1")
@@ -2777,6 +2805,7 @@ interface KhataDao {
     suspend fun voidSale(saleId: Long, reason: String, user: String? = Access.userName): Boolean {
         val sale = getSale(saleId) ?: return false
         if (sale.status != SaleStatus.DONE || sale.isDeleted) return false
+        if (voidRefusal(saleId) != null) return false
         require(reason.isNotBlank()) { "a void needs its reason" }
         val now = System.currentTimeMillis()
         sale.ledgerEntryId?.let { softDeleteEntry(it, now) }
@@ -2795,6 +2824,27 @@ interface KhataDao {
         )
         return true
     }
+
+    /**
+     * Why [saleId] may not be voided, or null when it may (21 Oct 2026). A
+     * ticket with goods already back would give them back twice (the void
+     * bins the sale's own rows, the return's stay); a ticket from a day that
+     * has been closed would change that day's counted figures and leave
+     * today's drawer short — a return, dated today, is the way for both.
+     */
+    suspend fun voidRefusal(saleId: Long): SaleMath.VoidRefusal? {
+        val sale = getSale(saleId) ?: return SaleMath.VoidRefusal.NOT_DONE
+        if (sale.status != SaleStatus.DONE || sale.isDeleted) return SaleMath.VoidRefusal.NOT_DONE
+        if (liveReturnsOfSale(saleId) > 0) return SaleMath.VoidRefusal.HAS_RETURNS
+        if (dayClosesSince(sale.timestamp) > 0) return SaleMath.VoidRefusal.DAY_CLOSED
+        return null
+    }
+
+    @Query("SELECT COUNT(*) FROM sale_returns WHERE saleId = :saleId AND isDeleted = 0 AND status = 'done'")
+    suspend fun liveReturnsOfSale(saleId: Long): Int
+
+    @Query("SELECT COUNT(*) FROM day_close WHERE closedAt >= :at")
+    suspend fun dayClosesSince(at: Long): Int
 
     /**
      * Park a ticket: the lines are kept, nothing is posted, no number is
@@ -3048,11 +3098,19 @@ interface KhataDao {
             )
         }
         updateReturn(getReturn(id)!!.copy(ledgerEntryId = ledgerId, refundEntryId = refundEntryId, refundCashId = refundCashId))
-        // Loyalty (21 Oct 2026): what the returned goods had earned is taken back — never below nothing.
+        // Loyalty (21 Oct 2026): the returned part's share of what the ticket earned is taken back —
+        // never below nothing — and its share of the points spent on it comes back to the customer
+        // (until then a ticket paid partly in points refunded only the cash, and the points were lost).
         ret.partyId?.let { partyId ->
-            Loyalty.rule(this)?.earned(total)?.takeIf { it > 0.0 }?.let { earned ->
-                val back = LineMath.round(minOf(earned, loyaltyBalance(partyId)))
+            val sale = ret.saleId?.let { getSale(it) }
+            if (sale != null && sale.grandTotal > 0.0) {
+                val own = loyaltyOfSale(sale.id).filter { it.note == sale.saleNumber }
+                val part = (total / sale.grandTotal).coerceIn(0.0, 1.0)
+                val earned = LineMath.round(own.filter { it.points > 0.0 }.sumOf { it.points } * part)
+                val spent = LineMath.round(-own.filter { it.points < 0.0 }.sumOf { it.points } * part)
+                val back = LineMath.round(minOf(earned, loyaltyBalance(partyId) + spent))
                 if (back > 0.0) insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = ret.saleId, points = -back, timestamp = ret.timestamp, note = number))
+                if (spent > 0.0) insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = ret.saleId, points = spent, timestamp = ret.timestamp + 1, note = number))
             }
         }
         insertAudit(AuditLog(user = ret.createdBy, action = AuditAction.RETURN_POSTED, refTable = "sale_returns", refId = id,
@@ -3365,8 +3423,8 @@ interface KhataDao {
     @Query("UPDATE loyalty SET isDeleted = 1 WHERE saleId = :saleId")
     suspend fun dropLoyaltyOfSale(saleId: Long)
 
-    /** A return's points row, by the return's number (a voided return gives its points back). */
-    @Query("UPDATE loyalty SET isDeleted = 1 WHERE partyId = :partyId AND note = :note AND points < 0")
+    /** A return's points rows, by the return's number: a voided return undoes both what it took back and what it gave. */
+    @Query("UPDATE loyalty SET isDeleted = 1 WHERE partyId = :partyId AND note = :note")
     suspend fun dropLoyaltyNoted(partyId: Long, note: String)
 
     /** The points a ticket wrote (spent and earned), for its receipt. */

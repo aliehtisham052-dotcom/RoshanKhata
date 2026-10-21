@@ -724,7 +724,9 @@ class MainActivity : BaseActivity() {
             // each on its own figure, never a net across different people.
             // The two halves (to get / to give) and their change chips moved
             // to the Khata screen with the cards (7 Oct); Home shows the net.
-            tvNetBalance.text = Format.money(netBalance)
+            // The net carries its sign (21 Oct 2026): it was shown without one, so a shop that owes
+            // its suppliers more than its customers owe it read as being owed that much.
+            tvNetBalance.text = if (Money.isNegative(netBalance)) Format.signedIfNegative(netBalance) else Format.money(netBalance)
             shownNet = netBalance; shownGet = totalGet; shownGive = totalGive
         }
         ivEye.setImageResource(
