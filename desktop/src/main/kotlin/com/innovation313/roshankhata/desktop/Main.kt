@@ -535,6 +535,7 @@ private fun Book(
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
                     Section.INVENTORY -> Box(Modifier.fillMaxSize()) { InventoryPane(dao, words, reload) { reload++ } }
+                    Section.SALES -> Box(Modifier.fillMaxSize()) { SalesReportPane(dao, words, rtl, shop, reload) }
                     Section.ORDERS -> Box(Modifier.fillMaxSize()) { OrdersPane(dao, parties, words, rtl, shop) { reload++ } }
                     Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }
                     Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words) { reload++ } }

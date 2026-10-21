@@ -3172,4 +3172,35 @@
     <string name="po_from_low">گهٽ اسٽاڪ جو آرڊر</string>
     <string name="po_book">ڪتاب</string>
     <string name="inventory_title">موجود اسٽاڪ</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">وڪري جي رپورٽ</string>
+    <string name="srep_by_day">ڏينهن موجب</string>
+    <string name="srep_by_item">شيءِ موجب</string>
+    <string name="srep_by_category">قسم موجب</string>
+    <string name="srep_by_customer">گراهڪ موجب</string>
+    <string name="srep_by_cashier">ڪيشيئر موجب</string>
+    <string name="srep_by_hour">ڪلاڪ موجب</string>
+    <string name="srep_tax">ٽيڪس</string>
+    <string name="srep_profit">نفعو ۽ نقصان</string>
+    <string name="srep_dead">نٿو وڪامي</string>
+    <string name="srep_dead_help">شيلف تي آهي، %1$s ڏينهن کان نه وڪاميو</string>
+    <string name="srep_col_count">وڪرا</string>
+    <string name="srep_col_revenue">آمدني</string>
+    <string name="srep_col_profit">نفعو</string>
+    <string name="srep_revenue">آمدني</string>
+    <string name="srep_returns">واپسيون</string>
+    <string name="srep_cost">وڪريل مال جي لاڳت</string>
+    <string name="srep_cost_known">آمدني جي %1$s جي لاڳت معلوم</string>
+    <string name="srep_gross">مجموعي نفعو</string>
+    <string name="srep_expenses">خرچ (ڪيش بڪ)</string>
+    <string name="srep_net">خالص نفعو</string>
+    <string name="srep_tax_rate">شرح</string>
+    <string name="srep_tax_base">قابلِ ٽيڪس</string>
+    <string name="srep_tax_amount">ٽيڪس</string>
+    <string name="srep_period_today">اڄ</string>
+    <string name="srep_period_week">هن هفتي</string>
+    <string name="srep_period_month">هن مهيني</string>
+    <string name="srep_none">هن عرصي ۾ ڪو وڪرو ناهي</string>
+    <string name="srep_no_category">بنا قسم</string>
 </resources>

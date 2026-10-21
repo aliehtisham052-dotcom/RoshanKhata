@@ -3332,4 +3332,35 @@
     <string name="po_from_low">اطلب المخزون المنخفض</string>
     <string name="po_book">الدفتر</string>
     <string name="inventory_title">المخزون الحالي</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">تقرير المبيعات</string>
+    <string name="srep_by_day">حسب اليوم</string>
+    <string name="srep_by_item">حسب الصنف</string>
+    <string name="srep_by_category">حسب الفئة</string>
+    <string name="srep_by_customer">حسب الزبون</string>
+    <string name="srep_by_cashier">حسب الكاشير</string>
+    <string name="srep_by_hour">حسب الساعة</string>
+    <string name="srep_tax">الضريبة</string>
+    <string name="srep_profit">الربح والخسارة</string>
+    <string name="srep_dead">لا يُباع</string>
+    <string name="srep_dead_help">على الرف، لم يُبع منذ %1$s يومًا</string>
+    <string name="srep_col_count">المبيعات</string>
+    <string name="srep_col_revenue">الإيراد</string>
+    <string name="srep_col_profit">الربح</string>
+    <string name="srep_revenue">الإيراد</string>
+    <string name="srep_returns">المرتجعات</string>
+    <string name="srep_cost">تكلفة البضاعة المباعة</string>
+    <string name="srep_cost_known">التكلفة معروفة لـ %1$s من الإيراد</string>
+    <string name="srep_gross">إجمالي الربح</string>
+    <string name="srep_expenses">المصروفات (الصندوق)</string>
+    <string name="srep_net">صافي الربح</string>
+    <string name="srep_tax_rate">النسبة</string>
+    <string name="srep_tax_base">الخاضع للضريبة</string>
+    <string name="srep_tax_amount">الضريبة</string>
+    <string name="srep_period_today">اليوم</string>
+    <string name="srep_period_week">هذا الأسبوع</string>
+    <string name="srep_period_month">هذا الشهر</string>
+    <string name="srep_none">لا مبيعات في هذه الفترة</string>
+    <string name="srep_no_category">بلا فئة</string>
 </resources>

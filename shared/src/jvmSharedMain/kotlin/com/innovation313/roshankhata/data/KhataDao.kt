@@ -3181,4 +3181,37 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreOrderItems(items: List<PurchaseOrderItem>)
+
+    // ---------- The sales report (POS Phase 7) ----------
+
+    /** Every line of every posted ticket in [from, to), with its ticket's facts and the product's category. */
+    @Query(
+        """
+        SELECT s.id AS saleId, s.timestamp AS timestamp, s.customerName AS customerName, s.createdBy AS createdBy,
+               s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate
+        FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.timestamp ASC, i.lineNo ASC
+        """
+    )
+    suspend fun soldLinesBetween(from: Long, to: Long): List<SoldLine>
+
+    /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND category != 'Return' AND timestamp > :from AND timestamp <= :to")
+    suspend fun cashbookExpensesBetween(from: Long, to: Long): Double
+
+    /** Products that left the shop since [since], over the counter or on the khata. */
+    @Query(
+        """
+        SELECT DISTINCT productId FROM (
+            SELECT i.productId AS productId FROM sale_items i JOIN sales s ON s.id = i.saleId
+            WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND i.productId IS NOT NULL AND s.timestamp >= :since
+            UNION
+            SELECT ei.productId AS productId FROM entry_items ei JOIN transactions t ON t.id = ei.entryId
+            WHERE t.isDeleted = 0 AND t.isGiven = 1 AND ei.productId IS NOT NULL AND t.timestamp >= :since
+        )
+        """
+    )
+    suspend fun productsSoldSince(since: Long): List<Long>
 }

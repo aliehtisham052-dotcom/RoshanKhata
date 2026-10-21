@@ -3144,4 +3144,35 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="po_from_low">Kam stock ka order</string>
     <string name="po_book">Kitab</string>
     <string name="inventory_title">Maujooda stock</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">Sales report</string>
+    <string name="srep_by_day">Din ke lihaz se</string>
+    <string name="srep_by_item">Item ke lihaz se</string>
+    <string name="srep_by_category">Category ke lihaz se</string>
+    <string name="srep_by_customer">Gahak ke lihaz se</string>
+    <string name="srep_by_cashier">Cashier ke lihaz se</string>
+    <string name="srep_by_hour">Ghante ke lihaz se</string>
+    <string name="srep_tax">Tax</string>
+    <string name="srep_profit">Nafa o nuqsan</string>
+    <string name="srep_dead">Nahi bik raha</string>
+    <string name="srep_dead_help">Shelf par hai, %1$s din se nahi bika</string>
+    <string name="srep_col_count">Sales</string>
+    <string name="srep_col_revenue">Aamdan</string>
+    <string name="srep_col_profit">Munafa</string>
+    <string name="srep_revenue">Aamdan</string>
+    <string name="srep_returns">Wapsiyan</string>
+    <string name="srep_cost">Bike maal ki lagat</string>
+    <string name="srep_cost_known">aamdan ke %1$s ki lagat maloom</string>
+    <string name="srep_gross">Majmui munafa</string>
+    <string name="srep_expenses">Akhrajat (cashbook)</string>
+    <string name="srep_net">Khalis munafa</string>
+    <string name="srep_tax_rate">Sharah</string>
+    <string name="srep_tax_base">Qabil-e-tax</string>
+    <string name="srep_tax_amount">Tax</string>
+    <string name="srep_period_today">Aaj</string>
+    <string name="srep_period_week">Is hafte</string>
+    <string name="srep_period_month">Is mahine</string>
+    <string name="srep_none">Is muddat mein koi sale nahi</string>
+    <string name="srep_no_category">Baghair category</string>
 </resources>
