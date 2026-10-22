@@ -14,7 +14,7 @@ import java.util.Calendar
  */
 object LedgerAlerts {
 
-    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, DRAWER, CASHFLOW }
+    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, DRAWER, CASHFLOW, SYNC }
 
     /** One row of the bell: what kind, a title, a quieter line under it, and an optional short tag ("Today", "Late"). */
     data class Alert(val kind: Kind, val title: String, val sub: String, val tag: String? = null)
@@ -26,8 +26,14 @@ object LedgerAlerts {
     }.timeInMillis
 
     /** In the phone's order: cheques, plans, bills, expiring stock, then the cash-flow gap last. */
-    suspend fun compute(words: Words, dao: KhataDao, money: (Double) -> String): List<Alert> {
+    /**
+     * [syncConflicts]: rows carrying money that both devices changed at once (LiveSync.moneyConflicts) — said
+     * here, not only in the Live sync window, because the amount kept may not be the one the owner meant
+     * (22 Oct 2026, the review).
+     */
+    suspend fun compute(words: Words, dao: KhataDao, money: (Double) -> String, syncConflicts: Int = 0): List<Alert> {
         val out = ArrayList<Alert>()
+        if (syncConflicts > 0) out += Alert(Kind.SYNC, words.text(W.na_sync_conflict, syncConflicts.toString()), words.text(W.na_sync_conflict_sub))
         val t0 = today()
         val t1 = t0 + DAY
         val parties = dao.partiesWithBalanceOnce()

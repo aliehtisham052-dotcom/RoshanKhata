@@ -35,6 +35,9 @@ class LiveCloudTest {
         var calls = 0
         /** Each device's wake-up address, as the worker's devices.fcm column. */
         val wakes = HashMap<String, String?>()
+        /** A relay uploaded before "round" existed: it answers 404 to it, and the app falls back to three calls. */
+        var noRound = false
+        var rounds = 0
 
         override fun call(method: String, url: String, headers: Map<String, String>, body: ByteArray?): Pair<Int, ByteArray> {
             if (down) throw java.io.IOException("no internet")
@@ -66,6 +69,27 @@ class LiveCloudTest {
                     devices[dev] = maxOf(devices[dev]!!, JSONObject(String(body!!)).getLong("upTo"))
                     parcels.removeAll { p -> devices.filterKeys { it != p.second }.values.all { it >= p.first } }
                     ok(JSONObject())
+                }
+                "round" -> {
+                    if (noRound) return no(404, "no-such-path")
+                    rounds++
+                    val o = JSONObject(String(body!!))
+                    if (!o.isNull("upTo")) {
+                        devices[dev] = maxOf(devices[dev]!!, o.getLong("upTo"))
+                        parcels.removeAll { p -> devices.filterKeys { it != p.second }.values.all { it >= p.first } }
+                    }
+                    var sent: Long? = null
+                    if (!o.isNull("parcel")) {
+                        seq++
+                        if (loseNext) loseNext = false else parcels.add(Triple(seq, dev, B64.decode(o.getString("parcel"))))
+                        sent = seq
+                    }
+                    val after = o.getLong("after")
+                    val arr = JSONArray()
+                    parcels.filter { it.first > after && it.second != dev }.forEach {
+                        arr.put(JSONObject().put("seq", it.first).put("from", it.second).put("body", Base64.getEncoder().encodeToString(it.third)))
+                    }
+                    ok(JSONObject().put("seq", sent ?: JSONObject.NULL).put("parcels", arr).put("more", false))
                 }
                 "wake" -> {
                     val o = JSONObject(String(body!!))
@@ -174,6 +198,63 @@ class LiveCloudTest {
         both(1)
         assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
         assertEquals("token-one-0123456789", relay.wakes[dev])
+    }
+
+    @Test
+    fun `a quiet round is one request, and a relay without round is spoken to the old way`() = runBlocking {
+        phone.khataDao().insertParty(Party(name = "One call"))
+        both()
+        assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "One call" })
+        val calls = relay.calls
+        val rounds = relay.rounds
+        both(1)
+        // Two quiet rounds (phone and computer): two requests, both "round".
+        assertEquals(2, relay.calls - calls)
+        assertEquals(2, relay.rounds - rounds)
+        // The old relay: the same book meets through take/ack/send.
+        val old = FakeRelay().also { it.noRound = true }
+        pc.khataDao().insertParty(Party(name = "Old relay"))
+        repeat(3) {
+            clock += 1000
+            assertTrue(LiveCloud.round(phone.syncSql(), old, "https://old.test", clock) { false } is LiveCloud.Result.Done)
+            assertTrue(LiveCloud.round(pc.syncSql(), old, "https://old.test", clock) { false } is LiveCloud.Result.Done)
+        }
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Old relay" })
+        assertEquals(0, old.rounds)
+    }
+
+    @Test
+    fun `a parcel nobody acknowledges is sent again after a growing wait, not every round`() = runBlocking {
+        // The computer never comes: the phone's parcel waits at the relay.
+        phone.khataDao().insertParty(Party(name = "Waiting"))
+        clock += 1000
+        assertTrue(LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false } is LiveCloud.Result.Done)
+        val first = relay.seq
+        // Every 15 s for an hour: a resend after 2 min, then 4, 8, 16, 32 min — five, not two hundred.
+        repeat(240) {
+            clock += 15_000
+            LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false }
+        }
+        val resent = relay.seq - first
+        assertTrue("resent $resent times", resent in 4..6)
+    }
+
+    @Test
+    fun `a computer whose pointer went back is caught up, not asked for ever`() = runBlocking {
+        phone.khataDao().insertParty(Party(name = "Before"))
+        both(2)
+        assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "Before" })
+        // The computer's book went back (rebuilt from an older copy): it has read nothing of the phone's log.
+        val phoneDev = LiveSync.identity(phone.syncSql())!!.device
+        LiveSync.putPeer(pc.syncSql(), phoneDev, recv = 0L)
+        phone.khataDao().insertParty(Party(name = "After the gap"))
+        // The phone's parcel starts past 0: a gap at the computer, said back as "need"; the phone starts again at 0.
+        both(4)
+        assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "After the gap" })
+        assertEquals(1, pc.khataDao().allPartiesForBackup().count { it.name == "Before" })
+        assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
+        // And a conflict in a money table is counted for the bell, one not in it is not.
+        assertEquals(0, LiveSync.moneyConflicts(pc.syncSql()))
     }
 
     @Test
@@ -299,6 +380,22 @@ class LiveCloudTest {
         assertEquals(LiveCloud.Result.Halted, LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { true }))
         assertEquals(before, second.calls)
         assertEquals(LiveCloud.Result.Off, LiveCloud.roundAll(phone.syncSql(), phoneWay, emptyList(), clock, { false }))
+    }
+
+    @Test
+    fun `each relay gets its own pass from the key, and cloudflare keeps the first`() = runBlocking {
+        val id = LiveSync.identity(phone.syncSql())!!
+        val cf = LiveCloud.token(id.key, id.book, LiveCloud.RELAY)
+        assertEquals(LiveCloud.token(id.key, id.book), cf)
+        val host = LiveCloud.token(id.key, id.book, LiveCloud.HOSTING)
+        val sb = LiveCloud.token(id.key, id.book, LiveCloud.SUPABASE)
+        assertTrue(cf != host && host != sb && cf != sb)
+        assertEquals(64, host.length)
+        // The same on the other device: the pass is the key's and the host's, nothing of the device.
+        assertEquals(host, LiveCloud.token(LiveSync.identity(pc.syncSql())!!.key, id.book, LiveCloud.HOSTING + "/"))
+        // Two relays met in one session: each saw its own pass.
+        allRoads(1)
+        assertTrue(relay.pass != null && second.pass != null && relay.pass != second.pass)
     }
 
     @Test

@@ -489,6 +489,47 @@ devices, a printer or a second monitor.
   unauthenticated inside a book (insider only); the kill switch fails open by
   design; a lone Indonesian "1.125" stays one and an eighth.
 
+### The live-sync review (22 Oct 2026, kmp-desktop-15 — the owner: "in tamam recommendations ko fix karo")
+
+Three reviewers read the whole live-sync system (engine, WiFi, three relays,
+wake-up); every point was read in the code first. CI only — nothing on two
+real devices.
+
+- **Keys.** The book's key at rest is sealed for the device (`KeyVault`,
+  expect/actual: Android Keystore AES-GCM; Windows DPAPI through JNA 5.17,
+  `KeyAtRest` "w1:" in sync_meta; plain where there is no lock — Linux
+  tests). A key sealed elsewhere turns live sync off on opening
+  (`OFF_RESTORED`); a plain key from an older build is sealed on the next
+  open. Each road seals with its own HKDF-SHA256 subkey and names itself in
+  the AAD (`LiveWire.Road`: wifi-request, wifi-reply, relay; "RKL2"); a
+  request played back as a reply, or a relay parcel on the WiFi, does not
+  open; a device's own words are refused (`echo`). **A build before this
+  cannot open this build's rounds — update both devices.** Each relay has its
+  own pass (`LiveCloud.token(relay)`: v1 for Cloudflare, v2 with the host's
+  name for the rest). The owner's PIN hash and the access keys
+  (`BookSettings.ACCESS_KEYS`) no longer travel in sync.
+- **Honesty on screen.** The phone's Status has `RelayDown(why)` and backs
+  off doubling to 6 × ROUND_MS × 64; the computer's window shows the relay's
+  last answer or why it is down (`LiveDesk.relayState`). A bell row
+  (`Kind.SYNC`) counts conflicts in money tables (`LiveSync.MONEY_TABLES`,
+  `moneyConflicts`) on both platforms; pairing a second phone warns that the
+  first is replaced (`live_pair_other_phone`). A relay stop says goodbye
+  (`leave`); relay-health.yml opens/closes a `relay-down` issue hourly.
+- **Engine.** A Gap's `need` lowers the sender's pointer (`lowerSent`) on
+  both roads, so a book put back from an older copy catches up instead of
+  resending for ever; resends back off 2 min doubling to 1 h.
+- **Capacity.** One `round` call does hello + send + take + ack (all three
+  relays; a 404 falls back to the old three); a quiet round writes nothing
+  at the relay (Cloudflare counts rows written: 100k/day free). Caps:
+  NEW_BOOKS_DAY 300, MAX_BOOKS (CF 20,000 via a "!ledger" DO, Supabase 5,000,
+  PHP 2,000); Supabase's health sweep needs `X-RK-Keep` (secret
+  `RK_KEEP_SECRET`, both deploys). Supabase stays deployed but is out of the
+  default road list (`others`: the hosting only) — three roads with FCM only
+  from Cloudflare was more surface than reach; add it back in one line when
+  the hosting goes.
+- **Not done:** sharding books across relays (Cloudflare stays first for
+  FCM); the audit chain across devices; E8 line-set versions.
+
 ### The shared module (KMP)
 
 ```
@@ -739,6 +780,16 @@ Each of these cost a build or a bug.
     Node.js, on demand); Upstash was planned before anyone checked that a phone
     cannot hold its key. Search first, give one decision, and say what changed
     if a verified fact changes it.
+45. **Tell before doing** (the owner, 22 Oct): every build, push, deploy or
+    new file is said first, in one line, then done. A tool call made in
+    silence was refused.
+46. **A key is a key for one use.** The book's key is the root only; each road
+    gets an HKDF subkey and an AAD naming the road (`LiveWire.Road`), and the
+    key never sits in plain in a file that is copied whole (`KeyAtRest`).
+47. **A relay that counts writes is spent by quiet rounds.** A round with
+    nothing to say must write nothing (no `seen` on every take): Cloudflare's
+    free DO counts rows written, 100k a day, and 20 devices polling every 4 s
+    would have spent it by noon.
 
 ---
 

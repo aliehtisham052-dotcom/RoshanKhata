@@ -30,4 +30,12 @@ once every other device took them, or after 7 days; a book nobody touched for
 30 days goes.
 
 `scripts/test_relay.py` holds this relay, the Supabase one and Cloudflare's to
-the same 32 checks (relays.yml, cloud-worker.yml).
+the same checks (relays.yml, cloud-worker.yml).
+
+## Updating it
+
+Upload the new `relay-upload.zip` and extract it over `public_html` the same
+way; the books' files are kept. Until the new `index.php` is up, an app of the
+22 Oct 2026 build (one-call `round`) gets 404 from it and falls back to the
+older three calls on its own — nothing is lost, only three calls instead of one.
+

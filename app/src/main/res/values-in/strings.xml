@@ -3469,6 +3469,12 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_status_waiting">Buku sudah sampai di komputer. Tekan ya di sana untuk menyelesaikan.</string>
     <string name="live_status_live">Langsung dengan %1$s. Pembaruan terakhir: %2$s</string>
     <string name="live_status_unreachable">Komputer tidak menjawab. Apakah keduanya di WiFi yang sama, dan Roshan Khata terbuka di sana?</string>
+    <string name="live_status_relay_down">Jauh dari WiFi toko, dan relai di internet tidak menjawab (%1$s). Ponsel terus mencoba; di toko, WiFi bekerja tanpanya.</string>
+    <string name="live_pc_relay_ok">Relai di internet: bekerja (putaran terakhir %1$s).</string>
+    <string name="live_pc_relay_down">Relai di internet: tidak menjawab (%1$s). Di toko, WiFi bekerja tanpanya.</string>
+    <string name="live_pair_other_phone">Buku ini sudah berjalan dengan ponsel “%1$s”. Mengganti akan menghentikan ponsel itu. Satu buku = satu ponsel dan satu komputer: untuk menyimpan kedua ponsel, gabungkan ponsel ini sebagai usaha baru.</string>
+    <string name="na_sync_conflict">%1$s catatan diubah di kedua perangkat sekaligus</string>
+    <string name="na_sync_conflict_sub">Jumlah yang disimpan mungkin bukan yang Anda maksud. Lihat Sinkron langsung → Apa yang berubah.</string>
     <string name="live_status_halted">Sinkron langsung dijeda untuk sementara. Buku Anda aman dan tetap berjalan seperti biasa.</string>
     <string name="live_status_failed">Sinkron langsung berhenti: %1$s</string>
     <string name="live_mismatch">Kedua buku tidak cocok. Hubungkan lagi untuk membuat salinan baru.</string>

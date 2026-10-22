@@ -15,7 +15,9 @@ import java.net.URLEncoder
 import java.security.SecureRandom
 import java.util.zip.Deflater
 import java.util.zip.Inflater
+import java.util.concurrent.ConcurrentHashMap
 import javax.crypto.Cipher
+import javax.crypto.Mac
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
@@ -33,9 +35,10 @@ import javax.crypto.spec.SecretKeySpec
  *    [BAD], and shows the owner its usual restore confirmation: nothing is
  *    replaced without the owner's yes.
  *  - "RKL1", a round, every few seconds after: a request sealed with the
- *    book's own key (AES-256-GCM, deflated first), answered by a reply sealed
- *    the same way, or a length of 0 when the computer does not hold this
- *    book's key (not confirmed yet, or another book).
+ *    book's own key (AES-256-GCM, deflated first; since 22 Oct 2026 with a
+ *    key derived for that road, [Road]), answered by a reply sealed the same
+ *    way for its own road, or a length of 0 when the computer does not hold
+ *    this book's key (not confirmed yet, or another book).
  *
  * A stranger on the shop's network can neither read nor write a book: a
  * frame that does not open is answered and forgotten.
@@ -82,11 +85,48 @@ object LiveWire {
 
     // ------------------------------------------------------------ sealing
 
-    private fun keyOf(hex: String): SecretKeySpec {
-        require(hex.length == 64) { "a book key is 32 bytes" }
-        val b = ByteArray(32) { i -> hex.substring(i * 2, i * 2 + 2).toInt(16).toByte() }
-        return SecretKeySpec(b, "AES")
+    /**
+     * Which way a sealed message goes (22 Oct 2026, the live-sync review).
+     * Every road seals with its own key, derived from the book's key by HKDF
+     * (RFC 5869, SHA-256), and names itself in the authenticated data: a
+     * phone's request played back to it as the computer's reply, or a relay
+     * parcel pushed down the WiFi, does not open. The book's key itself is
+     * never used as a cipher key; the relay pass and the seek tag are HMACs
+     * of it with their own labels, which keeps them apart the same way.
+     */
+    enum class Road(val label: String) {
+        /** The phone's request, over the shop's WiFi. */
+        REQUEST("wifi-request"),
+        /** The computer's answer to it. */
+        REPLY("wifi-reply"),
+        /** A parcel left at a relay for the book's other devices. */
+        RELAY("relay")
     }
+
+    private const val SEAL_V = "RKL2"
+    private val HKDF_SALT = "rk-live-keys-v2".toByteArray(Charsets.US_ASCII)
+    private val subkeys = ConcurrentHashMap<String, SecretKeySpec>()
+
+    private fun bookKeyBytes(hex: String): ByteArray {
+        require(hex.length == 64) { "a book key is 32 bytes" }
+        return ByteArray(32) { i -> hex.substring(i * 2, i * 2 + 2).toInt(16).toByte() }
+    }
+
+    /** HKDF-SHA256: extract with [HKDF_SALT], expand one 32-byte block with [info]. */
+    fun hkdf(ikm: ByteArray, info: ByteArray, salt: ByteArray = HKDF_SALT): ByteArray {
+        val extract = Mac.getInstance("HmacSHA256").apply { init(SecretKeySpec(salt, "HmacSHA256")) }
+        val prk = extract.doFinal(ikm)
+        val expand = Mac.getInstance("HmacSHA256").apply { init(SecretKeySpec(prk, "HmacSHA256")) }
+        expand.update(info)
+        expand.update(1.toByte())
+        return expand.doFinal()
+    }
+
+    /** The road's own AES key for this book, derived once and kept (a few books, three roads). */
+    private fun keyOf(hex: String, road: Road): SecretKeySpec =
+        subkeys.getOrPut("$road:$hex") { SecretKeySpec(hkdf(bookKeyBytes(hex), "$SEAL_V:${road.label}".toByteArray(Charsets.US_ASCII)), "AES") }
+
+    private fun aad(road: Road): ByteArray = "$SEAL_V|${road.label}".toByteArray(Charsets.US_ASCII)
 
     private fun deflate(b: ByteArray): ByteArray {
         val d = Deflater(Deflater.BEST_SPEED)
@@ -113,22 +153,22 @@ object LiveWire {
         return out.toByteArray()
     }
 
-    /** [plain] deflated and sealed with the book's key. */
-    fun seal(keyHex: String, plain: ByteArray): ByteArray {
+    /** [plain] deflated and sealed with the book's key for [road]. */
+    fun seal(keyHex: String, plain: ByteArray, road: Road): ByteArray {
         val nonce = ByteArray(NONCE).also { SecureRandom().nextBytes(it) }
         val c = Cipher.getInstance("AES/GCM/NoPadding")
-        c.init(Cipher.ENCRYPT_MODE, keyOf(keyHex), GCMParameterSpec(TAG_BITS, nonce))
-        c.updateAAD(LIVE)
+        c.init(Cipher.ENCRYPT_MODE, keyOf(keyHex, road), GCMParameterSpec(TAG_BITS, nonce))
+        c.updateAAD(aad(road))
         return nonce + c.doFinal(deflate(plain))
     }
 
-    /** What [sealed] says, or null when it was not sealed with this book's key, or was changed on the way. */
-    fun open(keyHex: String, sealed: ByteArray): ByteArray? {
+    /** What [sealed] says, or null when it was not sealed with this book's key for [road], or was changed on the way. */
+    fun open(keyHex: String, sealed: ByteArray, road: Road): ByteArray? {
         if (sealed.size < NONCE + TAG_BITS / 8) return null
         return runCatching {
             val c = Cipher.getInstance("AES/GCM/NoPadding")
-            c.init(Cipher.DECRYPT_MODE, keyOf(keyHex), GCMParameterSpec(TAG_BITS, sealed, 0, NONCE))
-            c.updateAAD(LIVE)
+            c.init(Cipher.DECRYPT_MODE, keyOf(keyHex, road), GCMParameterSpec(TAG_BITS, sealed, 0, NONCE))
+            c.updateAAD(aad(road))
             inflate(c.doFinal(sealed, NONCE, sealed.size - NONCE))
         }.getOrNull()
     }
@@ -244,7 +284,7 @@ object LiveWire {
 
     /** Phone side: [request] to the computer, first of [hosts] that answers; its reply. Blocking. */
     fun round(hosts: List<String>, port: Int, keyHex: String, request: JSONObject, connectMs: Int = 1500, readMs: Int = 60_000): Answer {
-        val sealed = seal(keyHex, request.toString().toByteArray(Charsets.UTF_8))
+        val sealed = seal(keyHex, request.toString().toByteArray(Charsets.UTF_8), Road.REQUEST)
         for (host in hosts) {
             val socket = Socket()
             try { socket.connect(InetSocketAddress(host, port), connectMs) } catch (e: IOException) { runCatching { socket.close() }; continue }
@@ -256,7 +296,7 @@ object LiveWire {
                 val n = try { input.readInt() } catch (e: IOException) { return Answer.NotHere }
                 if (n <= 0 || n > MAX_ROUND_BYTES) return Answer.NotHere
                 val bytes = try { readUpTo(input, n) } catch (e: IOException) { return Answer.NotHere }
-                val plain = open(keyHex, bytes) ?: return Answer.NotHere
+                val plain = open(keyHex, bytes, Road.REPLY) ?: return Answer.NotHere
                 return runCatching { Answer.Got(JSONObject(String(plain, Charsets.UTF_8)), host) }.getOrElse { Answer.NotHere }
             }
         }
@@ -325,10 +365,10 @@ object LiveWire {
                     if (key == null || n <= 0 || n > MAX_ROUND_BYTES) { out.writeInt(0); out.flush(); return@runCatching }
                     it.soTimeout = 60_000
                     val sealed = readUpTo(input, n)
-                    val request = open(key, sealed)?.let { b -> runCatching { JSONObject(String(b, Charsets.UTF_8)) }.getOrNull() }
+                    val request = open(key, sealed, Road.REQUEST)?.let { b -> runCatching { JSONObject(String(b, Charsets.UTF_8)) }.getOrNull() }
                     val reply = request?.let { r -> runCatching { onRound(r) }.getOrNull() }
                     if (reply == null) out.writeInt(0)
-                    else { val b = seal(key, reply.toString().toByteArray(Charsets.UTF_8)); out.writeInt(b.size); out.write(b) }
+                    else { val b = seal(key, reply.toString().toByteArray(Charsets.UTF_8), Road.REPLY); out.writeInt(b.size); out.write(b) }
                     out.flush()
                 }
                 else -> { out.write(BAD); out.flush(); return@runCatching }

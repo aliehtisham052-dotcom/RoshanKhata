@@ -32,3 +32,4 @@ new_sqlite_classes = ["Daakiya"]
 
 # Secrets (wrangler secret put, never in this file):
 #   FCM_SERVICE_ACCOUNT  the Firebase service account JSON, for a wake-up push (optional)
+#   KEEP_SECRET          sent as X-RK-Keep with the daily keep-alive call (the Supabase relay checks it)

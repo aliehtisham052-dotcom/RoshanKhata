@@ -76,6 +76,7 @@ class AlertsActivity : BaseActivity() {
                     HomeAlerts.Kind.BACKUP_OTHER_PHONE -> Triple(R.drawable.ic_alert_backup, R.color.tile_backup_bg, BackupActivity::class.java)
                     HomeAlerts.Kind.CASHFLOW -> Triple(R.drawable.ic_tile_insights, R.color.tile_insights_bg, CashFlowActivity::class.java)
                     HomeAlerts.Kind.UPDATED -> Triple(R.drawable.ic_alert_update, R.color.tile_bills_bg, AboutActivity::class.java)
+                    HomeAlerts.Kind.SYNC -> Triple(R.drawable.ic_alert_backup, R.color.tile_bin_bg, BackupActivity::class.java)
                 }
                 v.findViewById<ImageView>(R.id.ivAlertIcon).setImageResource(icon)
                 v.findViewById<FrameLayout>(R.id.alertIconDisc).backgroundTintList =

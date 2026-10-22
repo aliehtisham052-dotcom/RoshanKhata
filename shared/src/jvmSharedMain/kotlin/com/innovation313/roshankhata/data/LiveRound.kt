@@ -169,6 +169,8 @@ object LiveRound {
     suspend fun answer(sql: SyncSql, request: JSONObject, now: Long = System.currentTimeMillis()): JSONObject? {
         val id = LiveSync.identity(sql) ?: return null
         val dev = request.getString("dev")
+        // This device's own words, played back to it: not a peer's.
+        if (dev == id.device) return null
         if (LiveSync.state(sql).peers.none { it.device == dev }) return null
         // Only the pairing this computer said yes to: a phone joining again (or a request of an older pairing)
         // is not answered as this one until the owner says yes here.
@@ -205,6 +207,8 @@ object LiveRound {
     suspend fun take(sql: SyncSql, request: JSONObject, reply: JSONObject, host: String, now: Long = System.currentTimeMillis()): Took {
         reply.optString("refused").takeIf { it.isNotBlank() }?.let { return Took(false, 0, null, it) }
         val dev = reply.getString("dev")
+        val me = LiveSync.identity(sql)?.device
+        if (me == null || dev == me) return Took(false, 0, null, "echo")
         val name = reply.optString("name").takeIf { it.isNotBlank() }
         val pending = pending(sql)
         val asked = request.optString("pair").takeIf { it.isNotBlank() }
@@ -230,6 +234,8 @@ object LiveRound {
             is LiveSync.Applied.Gap -> {}
             is LiveSync.Applied.Refused -> refused = r.why
         }
+        // The computer never got lines after "need": the next request starts there (LiveSync.lowerSent).
+        if (reply.has("need")) LiveSync.lowerSent(sql, dev, reply.getLong("need"))
         LiveSync.settleMark(sql, dev, reply.optString("mark").takeIf { it.isNotBlank() })
         val sentParcelMore = request.optJSONObject("parcel")?.optBoolean("more", false) == true
         // The two fingerprints say the same moment only when nothing was still on its way: the phone's was

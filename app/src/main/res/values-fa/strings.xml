@@ -3506,6 +3506,12 @@
     <string name="live_status_waiting">دفتر به رایانه رسید. برای تمام شدن اتصال، آنجا «بله» را بزنید.</string>
     <string name="live_status_live">زنده با %1$s. آخرین به‌روزرسانی: %2$s</string>
     <string name="live_status_unreachable">رایانه پاسخ نمی‌دهد. آیا هر دو روی یک وای‌فای هستند و روشن کهاته روی آن باز است؟</string>
+    <string name="live_status_relay_down">از وای‌فای مغازه دور هستید و رله‌ی اینترنتی پاسخ نداد (%1$s). گوشی به تلاش ادامه می‌دهد؛ در مغازه وای‌فای بدون آن کار می‌کند.</string>
+    <string name="live_pc_relay_ok">رله‌ی اینترنتی: کار می‌کند (آخرین دور %1$s).</string>
+    <string name="live_pc_relay_down">رله‌ی اینترنتی: پاسخ نمی‌دهد (%1$s). در مغازه وای‌فای بدون آن کار می‌کند.</string>
+    <string name="live_pair_other_phone">این دفتر هم‌اکنون با گوشی «%1$s» کار می‌کند. جایگزینی، آن گوشی را متوقف می‌کند. یک دفتر = یک گوشی و یک رایانه: برای نگه داشتن هر دو گوشی، این گوشی را به‌عنوان کسب‌وکار جدید اضافه کنید.</string>
+    <string name="na_sync_conflict">%1$s ثبت هم‌زمان در هر دو دستگاه تغییر کرد</string>
+    <string name="na_sync_conflict_sub">مبلغ نگه‌داشته‌شده شاید آن نباشد که می‌خواستید. همگام‌سازی زنده ← چه چیزی تغییر کرد را ببینید.</string>
     <string name="live_status_halted">همگام‌سازی زنده فعلاً متوقف است. دفتر شما امن است و مثل همیشه کار می‌کند.</string>
     <string name="live_status_failed">همگام‌سازی زنده متوقف شد: %1$s</string>
     <string name="live_mismatch">دو دفتر با هم نمی‌خوانند. برای یک نسخهٔ تازه دوباره وصل کنید.</string>

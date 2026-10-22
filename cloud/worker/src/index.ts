@@ -29,6 +29,8 @@ export interface Env {
   DAY_LIMIT: string;
   /** Other relays' health addresses, called once a day (KEEP_ALIVE in wrangler.toml); comma-separated. */
   KEEP_ALIVE?: string;
+  /** Sent with the keep-alive call as X-RK-Keep, so a relay's health is not an open door. */
+  KEEP_SECRET?: string;
   FCM_SERVICE_ACCOUNT?: string;
   FCM_PROJECT_ID?: string;
 }
@@ -46,6 +48,11 @@ const HEX32 = /^[0-9a-f]{32}$/;
 const HEX64 = /^[0-9a-f]{64}$/;
 const DEVICE = /^[0-9a-f]{16}$/;
 const WAKE_GAP_MS = 30_000;
+/** A quiet call does not write the device's "seen" more often than this: the free plan counts rows written. */
+const SEEN_EVERY_MS = 3_600_000;
+/** New books one Worker takes in a UTC day, and books it holds at most (22 Oct 2026: anyone may open a book). */
+const NEW_BOOKS_DAY = 300;
+const MAX_BOOKS = 20_000;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -63,7 +70,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/v1/health") return json({ ok: true, live: env.LIVE !== "0" });
     if (env.LIVE === "0") return refuse(503, "halted");
-    const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave)$/);
+    const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round)$/);
     if (!m) return refuse(404, "no-such-path");
     const [, book, action] = m;
     const token = passOf(request);
@@ -72,6 +79,13 @@ export default {
     if (!DEVICE.test(device)) return refuse(400, "no-device");
     const want = action === "take" ? "GET" : "POST";
     if (request.method !== want) return refuse(405, "method");
+    if (action === "hello") {
+      // One box for the whole Worker counts the books: a stranger opening boxes at will meets a limit
+      // before the plan's does (one extra request per hello only).
+      const ledger = env.BOOKS.get(env.BOOKS.idFromName("!ledger"));
+      const ok = await ledger.fetch(new Request("https://ledger/" + book, { method: "POST" }));
+      if (ok.status !== 200) return ok;
+    }
     const stub = env.BOOKS.get(env.BOOKS.idFromName(book));
     return stub.fetch(request);
   },
@@ -82,7 +96,9 @@ export default {
    */
   async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     const urls = (env.KEEP_ALIVE ?? "").split(",").map((s) => s.trim()).filter((s) => s.startsWith("https://"));
-    ctx.waitUntil(Promise.all(urls.map((u) => fetch(u, { headers: { "user-agent": "rk-keepalive" } }).catch(() => null))));
+    const headers: Record<string, string> = { "user-agent": "rk-keepalive" };
+    if (env.KEEP_SECRET) headers["x-rk-keep"] = env.KEEP_SECRET;
+    ctx.waitUntil(Promise.all(urls.map((u) => fetch(u, { headers }).catch(() => null))));
   },
 } satisfies ExportedHandler<Env>;
 
@@ -145,6 +161,7 @@ export class Daakiya extends DurableObject<Env> {
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
+    if (url.hostname === "ledger") return this.ledger(url.pathname.slice(1));
     const action = url.pathname.split("/").pop()!;
     const token = passOf(request);
     const device = request.headers.get("x-device")!;
@@ -172,8 +189,23 @@ export class Daakiya extends DurableObject<Env> {
       case "ack": return this.ack(request, device, now);
       case "wake": return this.wake(request, device, now);
       case "leave": return this.leave(device);
+      case "round": return this.round(request, url, device, now);
     }
     return refuse(404, "no-such-path");
+  }
+
+  /** The Worker's one count of books (the "!ledger" object): a book is counted on its first hello. */
+  private ledger(book: string): Response {
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS books (book TEXT PRIMARY KEY, at INTEGER NOT NULL)`);
+    const known = this.sql.exec(`SELECT 1 FROM books WHERE book = ?`, book).toArray().length > 0;
+    if (known) return json({ ok: true });
+    const now = Date.now();
+    const total = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books`).one().n;
+    if (total >= MAX_BOOKS) return refuse(507, "full");
+    const today = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books WHERE at > ?`, now - 86_400_000).one().n;
+    if (today >= NEW_BOOKS_DAY) return refuse(429, "new-books");
+    this.sql.exec(`INSERT INTO books (book, at) VALUES (?, ?)`, book, now);
+    return json({ ok: true });
   }
 
   private hello(device: string, now: number): Response {
@@ -195,6 +227,13 @@ export class Daakiya extends DurableObject<Env> {
 
   private async send(request: Request, device: string, now: number): Promise<Response> {
     const body = new Uint8Array(await request.arrayBuffer());
+    const r = this.put(body, device, now);
+    if (r instanceof Response) return r;
+    return json({ ok: true, seq: r });
+  }
+
+  /** One parcel in: its number, or the refusal. */
+  private put(body: Uint8Array, device: string, now: number): number | Response {
     if (body.length === 0) return refuse(400, "empty");
     if (body.length > MAX_PARCEL) return refuse(413, "too-big");
     const day = utcDay(now);
@@ -206,18 +245,28 @@ export class Daakiya extends DurableObject<Env> {
     const seq = this.sql.exec<{ seq: number }>(
       `INSERT INTO parcels (sender, at, body) VALUES (?, ?, ?) RETURNING seq`, device, now, body,
     ).one().seq;
-    this.sql.exec(`UPDATE devices SET seen = ? WHERE device = ?`, now, device);
+    this.touch(device, now, true);
     this.ctx.waitUntil(this.wakeOthers(device, now));
-    return json({ ok: true, seq });
+    return seq;
   }
 
   private take(url: URL, device: string, now: number): Response {
     const after = Math.max(0, Number(url.searchParams.get("after") ?? "0") || 0);
+    return json({ ok: true, ...this.takePage(after, device, now) });
+  }
+
+  /** A quiet call (nothing to take) writes "seen" at most once an hour: the free plan counts rows written. */
+  private touch(device: string, now: number, always: boolean): void {
+    if (always) { this.sql.exec(`UPDATE devices SET seen = ? WHERE device = ?`, now, device); return; }
+    this.sql.exec(`UPDATE devices SET seen = ? WHERE device = ? AND seen < ?`, now, device, now - SEEN_EVERY_MS);
+  }
+
+  private takePage(after: number, device: string, now: number): { parcels: { seq: number; from: string; at: number; body: string }[]; more: boolean; gap: boolean } {
     const rows = this.sql.exec<{ seq: number; sender: string; at: number; body: ArrayBuffer }>(
       `SELECT seq, sender, at, body FROM parcels WHERE seq > ? AND sender != ? ORDER BY seq LIMIT ?`,
       after, device, TAKE_PAGE + 1,
     ).toArray();
-    this.sql.exec(`UPDATE devices SET seen = ? WHERE device = ?`, now, device);
+    this.touch(device, now, rows.length > 0);
     const page: { seq: number; from: string; at: number; body: string }[] = [];
     let bytes = 0;
     for (const r of rows.slice(0, TAKE_PAGE)) {
@@ -230,14 +279,42 @@ export class Daakiya extends DurableObject<Env> {
     // Parcels older than KEEP_DAYS were forgotten: a device asking from before them has missed some (it must pair again).
     const prunedPast = Number(this.meta("pruned_past") ?? "0");
     const gap = after < prunedPast;
-    return json({ ok: true, parcels: page, more, gap });
+    return { parcels: page, more, gap };
+  }
+
+  /**
+   * One request for a whole round (22 Oct 2026): the acknowledgement, this
+   * device's parcel and the others' page, in that order — one request where
+   * there were three, so a free plan carries three times the shops.
+   * Body: {"after": n, "upTo": n | null, "parcel": base64 | null}.
+   */
+  private async round(request: Request, url: URL, device: string, now: number): Promise<Response> {
+    const o = (await request.json().catch(() => null)) as { after?: number; upTo?: number | null; parcel?: string | null } | null;
+    if (!o) return refuse(400, "bad-round");
+    const after = Math.max(0, Number(o.after ?? 0) || 0);
+    if (o.upTo != null) {
+      const upTo = Number(o.upTo);
+      if (!Number.isFinite(upTo) || upTo < 0) return refuse(400, "bad-ack");
+      this.sql.exec(`UPDATE devices SET acked = MAX(acked, ?) WHERE device = ?`, upTo, device);
+      this.pruneTaken();
+    }
+    let seq: number | null = null;
+    if (typeof o.parcel === "string" && o.parcel.length > 0) {
+      let body: Uint8Array;
+      try { body = Uint8Array.from(atob(o.parcel), (c) => c.charCodeAt(0)); } catch { return refuse(400, "bad-parcel"); }
+      const r = this.put(body, device, now);
+      if (r instanceof Response) return r;
+      seq = r;
+    }
+    return json({ ok: true, seq, ...this.takePage(after, device, now) });
   }
 
   private async ack(request: Request, device: string, now: number): Promise<Response> {
     const o = (await request.json().catch(() => null)) as { upTo?: number } | null;
     const upTo = Number(o?.upTo ?? NaN);
     if (!Number.isFinite(upTo) || upTo < 0) return refuse(400, "bad-ack");
-    this.sql.exec(`UPDATE devices SET acked = MAX(acked, ?), seen = ? WHERE device = ?`, upTo, now, device);
+    this.sql.exec(`UPDATE devices SET acked = MAX(acked, ?) WHERE device = ?`, upTo, device);
+    this.touch(device, now, false);
     this.pruneTaken();
     return json({ ok: true });
   }

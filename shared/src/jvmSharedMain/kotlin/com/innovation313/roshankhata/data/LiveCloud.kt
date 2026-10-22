@@ -52,8 +52,12 @@ object LiveCloud {
      */
     data class Road(val base: String, val tag: String)
 
-    /** The relays after Cloudflare's, in the order they are tried (22 Oct 2026: the owner's second and third). */
-    @Volatile var others: List<Road> = listOf(Road(SUPABASE, "sb"), Road(HOSTING, "hs"))
+    /**
+     * The relays after Cloudflare's, in the order they are tried. The owner's hosting is the second (22 Oct
+     * 2026, the review: Supabase's free project pauses after seven quiet days and has a sixth of Cloudflare's
+     * budget — it stays built and deployed, out of the list until it is needed: add Road(SUPABASE, "sb")).
+     */
+    @Volatile var others: List<Road> = listOf(Road(HOSTING, "hs"))
 
     /** Every relay in order; none while [base] is null (the whole relay road closed). */
     fun roads(): List<Road> {
@@ -61,13 +65,16 @@ object LiveCloud {
         return listOf(Road(first, "")) + others.filter { it.base.trimEnd('/') != first }
     }
 
-    /** A relay a parcel was taken from this recently is one another device leaves its parcels at: this device sends there too. */
-    const val USED_MS = 24 * 3_600_000L
 
     const val RESEND_MS = 2 * 60_000L
+    /** A parcel nobody acknowledged is sent again after RESEND_MS, then twice as long each time, up to this. */
+    const val RESEND_MAX_MS = 60 * 60_000L
 
     /** The relay takes a parcel of at most 1 MB (cloud/worker MAX_PARCEL); a message is kept under it. */
     const val MAX_SEND = 900 * 1024
+
+    /** Relays that do not know the one-request "round" yet (answered 404): the three requests of before are used. */
+    private val legacy = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
 
     /** The way out to the relay; a test passes its own. */
     fun interface Http {
@@ -102,11 +109,19 @@ object LiveCloud {
         }
     }
 
-    /** The book's pass at the relay: only a holder of the book's key can make it. */
-    fun token(keyHex: String, book: String): String {
+    /**
+     * The book's pass at a relay: only a holder of the book's key can make it.
+     * Each relay gets its own (22 Oct 2026, the review: one pass for all, and
+     * whoever ran one relay held the book's pass at the others) — the name of
+     * the relay's host is in it; Cloudflare's, the first, keeps the v1 pass
+     * its boxes were opened with.
+     */
+    fun token(keyHex: String, book: String, relay: String? = null): String {
         val key = ByteArray(32) { i -> keyHex.substring(i * 2, i * 2 + 2).toInt(16).toByte() }
         val mac = Mac.getInstance("HmacSHA256").apply { init(SecretKeySpec(key, "HmacSHA256")) }
-        return mac.doFinal(("rk-relay-v1:$book").toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
+        val host = relay?.let { runCatching { URL(it).host.lowercase() }.getOrNull() }
+        val what = if (host == null || relay?.trimEnd('/') == RELAY) "rk-relay-v1:$book" else "rk-relay-v2:$host:$book"
+        return mac.doFinal(what.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
     }
 
     /** How a cloud round went. */
@@ -143,9 +158,16 @@ object LiveCloud {
         val id = LiveSync.identity(sql) ?: return null
         val acks = JSONObject()
         LiveSync.state(sql).peers.forEach { acks.put(it.device, it.recv) }
+        // What this device could not take from each other device (a gap): said back, so that device starts again there.
+        val need = JSONObject()
+        LiveSync.state(sql).peers.forEach { p ->
+            val n = getMeta(sql, k("need_" + p.device, id.book))?.toLongOrNull()
+            if (n != null) need.put(p.device, p.recv)
+        }
         return JSONObject().apply {
             put("dev", id.device); put("name", id.name)
             put("acks", acks)
+            if (need.length() > 0) put("need", need)
             put("parcel", LiveSync.export(sql, after, page).toJson())
         }
     }
@@ -163,9 +185,16 @@ object LiveCloud {
         val parcel = LiveSync.Parcel.of(msg.getJSONObject("parcel"))
         // Written, and the pointers moved, in one transaction with the WiFi rounds' (LiveSync.applyFrom).
         // A gap: what came before is on its way again (the sender resends what is not acknowledged).
+        // The other device's "need" (it never got lines after it) moves this one's pointer back, as a WiFi
+        // round's answer does (LiveSync.lowerSent); without it a pointer behind stayed a gap for ever.
+        msg.optJSONObject("need")?.optLong(id.device, -1L)?.takeIf { it >= 0 }?.let {
+            LiveSync.lowerSent(sql, dev, it)
+            setMeta(sql, k("lowered", id.book), "1")
+        }
         return when (LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })) {
             is LiveSync.Applied.Refused -> false
-            else -> true
+            is LiveSync.Applied.Gap -> { setMeta(sql, k("need_" + dev, id.book), parcel.from.toString()); true }
+            else -> { setMeta(sql, k("need_" + dev, id.book), ""); true }
         }
     }
 
@@ -188,10 +217,11 @@ object LiveCloud {
         val peers = LiveSync.state(sql).peers
         if (peers.isEmpty()) return Result.NotPaired
         val url = "$root/v1/b/${id.book}/"
+        val pass = token(id.key, id.book, root)
         val headers = mapOf(
-            "authorization" to "RK " + token(id.key, id.book),
+            "authorization" to "RK $pass",
             // The same pass again: some hostings drop Authorization before PHP sees it (web/relay).
-            "x-rk-pass" to token(id.key, id.book),
+            "x-rk-pass" to pass,
             // The relay's device id is 16 hex: this device's own sync id is already that shape.
             "x-device" to id.device.take(16).padEnd(16, '0')
         )
@@ -214,68 +244,117 @@ object LiveCloud {
             }
             if (getMeta(sql, k("hello", id.book, tag)) != id.device) hello()?.let { return it }
 
-            // 1. The others' messages, in order, from where this device last read.
-            var after = getMeta(sql, k("after", id.book, tag))?.toLongOrNull() ?: 0L
-            var took = 0
-            var (code, o) = call("GET", "take?after=$after")
-            if (code == 403 && o?.optString("why") == "say-hello-first") {
-                // The relay no longer knows this device (its box emptied after a month unused, or made again):
-                // hello again instead of asking for ever (22 Oct 2026, the review).
-                hello()?.let { return it }
-                after = 0L
-                val again = call("GET", "take?after=0")
-                code = again.first
-                o = again.second
-            }
-            if (code == 503) return Result.Halted
-            val got = o
-            if (code != 200 || got == null) return Result.Refused(got?.optString("why") ?: "take $code")
-            val list = got.getJSONArray("parcels")
-            for (i in 0 until list.length()) {
-                val p = list.getJSONObject(i)
-                val sealed = B64.decode(p.getString("body"))
-                val plainBytes = LiveWire.open(id.key, sealed)
-                if (plainBytes != null) {
-                    val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()
-                    if (msg != null && absorb(sql, msg, now)) took++
-                }
-                after = maxOf(after, p.getLong("seq"))
-                setMeta(sql, k("after", id.book, tag), after.toString())
-            }
-            if (list.length() > 0) call("POST", "ack", JSONObject().put("upTo", after).toString().toByteArray(), "application/json")
-            if (took > 0) setMeta(sql, k("took_at", id.book, tag), now.toString())
-
-            // 2. This device's own: what nobody acknowledged yet, or only the acknowledgements when they moved.
+            // What this device has to say: its changes after what the others acknowledged (resent after a wait),
+            // or only the acknowledgements when they moved; nothing when there is nothing new.
             val state = LiveSync.state(sql)
             val acked = state.peers.minOfOrNull { it.sent } ?: 0L
             var posted = getMeta(sql, k("sent", id.book, tag))?.toLongOrNull() ?: acked
             val postedAt = getMeta(sql, k("sent_at", id.book, tag))?.toLongOrNull() ?: 0L
-            if (posted > acked && now - postedAt > RESEND_MS) posted = acked
-            if (posted < acked) posted = acked
+            // Not acknowledged in time: sent again, each time after twice the wait (2 min … 1 h), so a peer that is
+            // away a week does not cost the book its daily limit at the relay (22 Oct 2026, the review).
+            var resends = getMeta(sql, k("resends", id.book, tag))?.toIntOrNull() ?: 0
+            val resendWait = minOf(RESEND_MS shl minOf(resends, 10), RESEND_MAX_MS)
+            var resending = false
+            // A peer said it never got what was sent (absorb lowered the pointer): sent again at once.
+            if (getMeta(sql, k("lowered", id.book)) == "1") { setMeta(sql, k("lowered", id.book), ""); resends = 0; posted = acked }
+            if (posted > acked && now - postedAt > resendWait) { posted = acked; resending = true }
+            if (posted < acked) { posted = acked; resends = 0; setMeta(sql, k("resends", id.book, tag), "0") }
             val acksNow = state.peers.joinToString(",") { it.device + ":" + it.recv }
             val acksTold = getMeta(sql, k("acks", id.book, tag))
             val last = LiveSync.lastSeq(sql)
-            var sent = false
-            var more = got.optBoolean("more", false)
+            var sealed: ByteArray? = null
+            var parcelTo = 0L
+            var parcelMore = false
             if (send && (last > posted || acksNow != acksTold)) {
                 // Kept under the relay's own limit: a page of long rows goes as several smaller ones
                 // (22 Oct 2026, the review: a page over 1 MB was refused and sent again, unchanged, for ever).
                 var page = LiveSync.PAGE
                 var msg = message(sql, posted, page) ?: return Result.Off
-                var sealed = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8))
-                while (sealed.size > MAX_SEND && page > 1) {
+                var s = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8), LiveWire.Road.RELAY)
+                while (s.size > MAX_SEND && page > 1) {
                     page /= 2
                     msg = message(sql, posted, page) ?: return Result.Off
-                    sealed = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8))
+                    s = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8), LiveWire.Road.RELAY)
                 }
+                sealed = s
                 val parcel = msg.getJSONObject("parcel")
+                parcelTo = parcel.getLong("to")
+                parcelMore = parcel.optBoolean("more", false)
+            }
+
+            // The round itself: one request (ack + parcel + page) where the relay knows "round" (22 Oct 2026);
+            // the three requests of before where it does not yet (a hand-uploaded relay).
+            var after = getMeta(sql, k("after", id.book, tag))?.toLongOrNull() ?: 0L
+            val ackDue = getMeta(sql, k("ack_due", id.book, tag))?.toLongOrNull()
+            fun roundBody(a: Long): ByteArray = JSONObject().apply {
+                put("after", a)
+                put("upTo", ackDue ?: JSONObject.NULL)
+                put("parcel", sealed?.let { B64.encode(it) } ?: JSONObject.NULL)
+            }.toString().toByteArray(Charsets.UTF_8)
+            var oneCall = legacy[root] != true
+            var (code, o) = if (oneCall) call("POST", "round", roundBody(after), "application/json") else (0 to null)
+            if (oneCall && code == 404 && o?.optString("why") == "no-such-path") { legacy[root] = true; oneCall = false }
+            if (!oneCall) {
+                // The old way: take, then ack, then send.
+                val r = call("GET", "take?after=$after")
+                code = r.first; o = r.second
+            }
+            if (code == 403 && o?.optString("why") == "say-hello-first") {
+                // The relay no longer knows this device (its box emptied after a month unused, or made again):
+                // hello again instead of asking for ever (22 Oct 2026, the review).
+                hello()?.let { return it }
+                after = 0L
+                val again = if (oneCall) call("POST", "round", roundBody(0L), "application/json") else call("GET", "take?after=0")
+                code = again.first
+                o = again.second
+            }
+            if (code == 503) return Result.Halted
+            val got = o
+            if (code != 200 || got == null) return Result.Refused(got?.optString("why") ?: (if (oneCall) "round $code" else "take $code"))
+            var sent = false
+            if (oneCall) {
+                if (ackDue != null) setMeta(sql, k("ack_due", id.book, tag), "")
+                if (sealed != null) {
+                    if (got.isNull("seq")) return Result.Refused("round no seq")
+                    setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcelTo).toString())
+                    setMeta(sql, k("sent_at", id.book, tag), now.toString())
+                    setMeta(sql, k("acks", id.book, tag), acksNow)
+                    if (resending) setMeta(sql, k("resends", id.book, tag), (resends + 1).toString())
+                    sent = true
+                }
+            }
+
+            // The others' messages, in order, from where this device last read.
+            var took = 0
+            val list = got.getJSONArray("parcels")
+            for (i in 0 until list.length()) {
+                val p = list.getJSONObject(i)
+                val sealedIn = B64.decode(p.getString("body"))
+                val plainBytes = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY)
+                if (plainBytes != null) {
+                    val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()
+                    if (msg != null && absorb(sql, msg, now)) {
+                        took++
+                        // Which relay that device's parcels come by: this device sends there too (roundAll).
+                        setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
+                    }
+                }
+                after = maxOf(after, p.getLong("seq"))
+                setMeta(sql, k("after", id.book, tag), after.toString())
+            }
+            var more = got.optBoolean("more", false) || parcelMore
+            if (list.length() > 0) {
+                if (oneCall) setMeta(sql, k("ack_due", id.book, tag), after.toString())
+                else call("POST", "ack", JSONObject().put("upTo", after).toString().toByteArray(), "application/json")
+            }
+            if (!oneCall && sealed != null) {
                 val (sc, so) = call("POST", "send", sealed, "application/octet-stream")
                 if (sc != 200) return Result.Refused(so?.optString("why") ?: "send $sc")
-                setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcel.getLong("to")).toString())
+                setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcelTo).toString())
                 setMeta(sql, k("sent_at", id.book, tag), now.toString())
                 setMeta(sql, k("acks", id.book, tag), acksNow)
+                if (resending) setMeta(sql, k("resends", id.book, tag), (resends + 1).toString())
                 sent = true
-                more = more || parcel.optBoolean("more", false)
             }
             return Result.Done(took, sent, more)
         } catch (e: java.io.IOException) {
@@ -288,8 +367,8 @@ object LiveCloud {
      *
      * The first relay that answers is this round's own: this device's changes go there and the others'
      * come from there. A relay after it is also read when [readOthers] (the callers do it every few
-     * rounds), and sent to as well while a parcel was taken from it within [USED_MS]: another device
-     * that cannot reach the first relay leaves its parcels there and reads them there, so this device's
+     * rounds), and sent to as well while some peer's parcels last came by it: another device that
+     * cannot reach the first relay leaves its parcels there and reads them there, so this device's
      * changes must reach it there too. A parcel read twice, from two relays, changes nothing the second
      * time (every write lands by uid and each device's log line).
      *
@@ -316,15 +395,32 @@ object LiveCloud {
                 }
                 continue
             }
-            // Never taken from there: not used (a missing mark is not "long ago", it is "never").
-            val tookAt = id?.let { getMeta(sql, k("took_at", it.book, road.tag))?.toLongOrNull() }
-            val used = tookAt != null && tookAt > now - USED_MS
+            // A relay some peer's parcels last came by is one that peer reads: this device's changes go there too
+            // (per peer, not by time — 22 Oct 2026, the review: a 24 h mark went stale while the peer was quiet).
+            val used = id != null && LiveSync.state(sql).peers.any { getMeta(sql, k("via_" + it.device, id.book)) == road.tag }
             if (!readOthers && !used) continue
             val r = round(sql, http, road.base, now, road.tag, send = used, halted = { false })
             if (r is Result.Done) { took += r.took; more = more || r.more }
         }
         val first = mine ?: return failed ?: Result.Unreachable
         return first.copy(took = first.took + took, more = first.more || more)
+    }
+
+    /**
+     * Tells every relay this device is done with the book (live sync stopped,
+     * or the book left): its parcels there go, and with no device left the
+     * relay forgets the book. Best effort; a relay not reached forgets the
+     * device itself after a month unused.
+     */
+    suspend fun leaveAll(sql: SyncSql, http: Http = plain, roads: List<Road> = roads()) {
+        val id = LiveSync.identity(sql) ?: return
+        for (road in roads) {
+            if (getMeta(sql, k("hello", id.book, road.tag)) != id.device) continue
+            val pass = token(id.key, id.book, road.base.trimEnd('/'))
+            val headers = mapOf("authorization" to "RK $pass", "x-rk-pass" to pass, "x-device" to id.device.take(16).padEnd(16, '0'))
+            runCatching { http.call("POST", road.base.trimEnd('/') + "/v1/b/${id.book}/leave", headers, null) }
+            setMeta(sql, k("hello", id.book, road.tag), "")
+        }
     }
 
     /**
@@ -346,11 +442,8 @@ object LiveCloud {
         val told = getMeta(sql, k("wake", id.book))
         if ((told ?: "") == (address ?: "")) return true
         val url = "$root/v1/b/${id.book}/"
-        val headers = mapOf(
-            "authorization" to "RK " + token(id.key, id.book),
-            "x-rk-pass" to token(id.key, id.book),
-            "x-device" to id.device.take(16).padEnd(16, '0')
-        )
+        val pass = token(id.key, id.book, root)
+        val headers = mapOf("authorization" to "RK $pass", "x-rk-pass" to pass, "x-device" to id.device.take(16).padEnd(16, '0'))
         return try {
             if (getMeta(sql, k("hello", id.book)) != id.device) {
                 val (code, _) = http.call("POST", url + "hello", headers, null)

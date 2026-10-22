@@ -306,4 +306,41 @@ class SecurityReviewTest {
         BackupCodec.restoreLedger(other, copy)
         assertEquals("/data/files/bills/bill_1.jpg", other.allEntriesForBackup().single().billPhotoPath)
     }
+
+    /**
+     * The sync key at rest (22 Oct 2026, the live-sync review): on Windows it is
+     * sealed by DPAPI for the signed-in user and reads back; where there is no
+     * lock (this test on Linux) it is kept as it is. A sealed key from another
+     * device, or a torn one, reads as nothing — never as a wrong key.
+     */
+    @Test
+    fun `sync key at rest seals where it can and reads back`() {
+        val key = "0123456789abcdef".repeat(4)
+        val stored = KeyAtRest.store(key)
+        assertEquals(key, KeyAtRest.read(stored))
+        val windows = System.getProperty("os.name").orEmpty().lowercase().startsWith("windows")
+        assertEquals(windows, KeyAtRest.isWrapped(stored))
+        if (windows) {
+            assertFalse(stored.contains(key))
+            // Sealed twice, two different ciphertexts; both open.
+            assertEquals(key, KeyAtRest.read(KeyAtRest.store(key)))
+        }
+        assertNull(KeyAtRest.read(null))
+        assertNull(KeyAtRest.read("w1:not-base64!"))
+        assertNull(KeyAtRest.read("w1:" + B64.encode(ByteArray(40) { 7 })))
+        assertNull(KeyAtRest.read("abc"))   // a plain key that is not a key
+    }
+
+    /** A book whose key is sealed for another device turns live sync off on opening, telling why. */
+    @Test
+    fun `a key sealed elsewhere turns live sync off`() = runBlocking {
+        val db = DesktopDatabase.open(dir.resolve("sealed-elsewhere.db")).also { books += it }
+        val sql = db.syncSql()
+        LiveSync.enable(sql, install = "inst-1", name = "A")
+        assertNotNull(LiveSync.identity(sql))
+        sql.write { exec("UPDATE sync_meta SET v = ? WHERE k = 'key'", listOf("w1:" + B64.encode(ByteArray(48) { 1 }))) }
+        assertFalse(LiveSync.check(sql, "inst-1"))
+        assertNull(LiveSync.identity(sql))
+        assertEquals(LiveSync.OFF_RESTORED, LiveSync.offReason(sql))
+    }
 }

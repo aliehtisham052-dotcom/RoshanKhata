@@ -350,6 +350,7 @@ class BackupActivity : BaseActivity() {
                 bidi.unicodeWrap(Digits.toLatin(java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(s.at))))
             )
             LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
+            is LiveRunner.Status.RelayDown -> getString(R.string.live_status_relay_down, bidi.unicodeWrap(s.why))
             LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
             LiveRunner.Status.NotAccepted -> getString(R.string.live_status_not_accepted)
             LiveRunner.Status.Rejoin -> getString(R.string.live_status_rejoin)
@@ -483,6 +484,8 @@ class BackupActivity : BaseActivity() {
                     withContext(Dispatchers.IO) {
                         runCatching {
                             val sql = KhataDatabase.get(this@BackupActivity).syncSql()
+                            // The relays forget this phone first (its parcels there go), then the book's conversation ends.
+                            runCatching { com.innovation313.roshankhata.data.LiveCloud.leaveAll(sql) }
                             LiveRound.setTarget(sql, null)
                             LiveSync.disable(sql)
                             com.innovation313.roshankhata.data.NumberMark.mark = null

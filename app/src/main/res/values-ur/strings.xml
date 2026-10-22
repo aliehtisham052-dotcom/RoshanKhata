@@ -3478,6 +3478,12 @@
     <string name="live_status_waiting">کھاتہ کمپیوٹر تک پہنچ گیا۔ جوڑ مکمل کرنے کے لیے وہاں ہاں دبائیں۔</string>
     <string name="live_status_live">%1$s کے ساتھ لائیو۔ آخری اپڈیٹ: %2$s</string>
     <string name="live_status_unreachable">کمپیوٹر جواب نہیں دے رہا۔ کیا دونوں ایک ہی وائی فائی پر ہیں، اور کیا اس پر روشن کھاتہ کھلا ہے؟</string>
+    <string name="live_status_relay_down">دکان کے وائی فائی سے دور ہیں، اور انٹرنیٹ والے ریلے نے جواب نہیں دیا (%1$s)۔ فون کوشش کرتا رہے گا؛ دکان پر وائی فائی اس کے بغیر چلتا ہے۔</string>
+    <string name="live_pc_relay_ok">انٹرنیٹ والا ریلے: چل رہا ہے (آخری دور %1$s)۔</string>
+    <string name="live_pc_relay_down">انٹرنیٹ والا ریلے: جواب نہیں دے رہا (%1$s)۔ دکان پر وائی فائی اس کے بغیر چلتا ہے۔</string>
+    <string name="live_pair_other_phone">یہ کھاتہ پہلے ہی فون «%1$s» کے ساتھ چل رہا ہے۔ سب بدلنے سے وہ فون رک جائے گا۔ ایک کھاتہ = ایک فون اور ایک کمپیوٹر: دونوں فون رکھنے ہوں تو اس فون کو نئے کاروبار کے طور پر جوڑیں۔</string>
+    <string name="na_sync_conflict">%1$s اندراج دونوں آلات پر ایک ساتھ بدلے گئے</string>
+    <string name="na_sync_conflict_sub">رکھی گئی رقم شاید وہ نہ ہو جو آپ چاہتے تھے۔ لائیو سنک ← کیا بدلا دیکھیں۔</string>
     <string name="live_status_halted">لائیو سنک فی الحال رکا ہوا ہے۔ آپ کا کھاتہ محفوظ ہے اور ہمیشہ کی طرح چلتا ہے۔</string>
     <string name="live_status_failed">لائیو سنک رک گیا: %1$s</string>
     <string name="live_mismatch">دونوں کھاتے آپس میں نہیں ملتے۔ نئی کاپی کے لیے دوبارہ جوڑیں۔</string>

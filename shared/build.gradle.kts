@@ -76,6 +76,8 @@ kotlin {
                 implementation("com.google.code.gson:gson:2.11.0")
                 // The computer's SQLite, packed with the app (Room KMP's bundled driver).
                 api("androidx.sqlite:sqlite-bundled:2.5.1")
+                // Windows' DPAPI for the book's sync key at rest (KeyVault, 22 Oct 2026): Crypt32 through JNA.
+                implementation("net.java.dev.jna:jna:5.17.0")
             }
         }
 

@@ -16,7 +16,7 @@ import com.innovation313.roshankhata.R
  */
 object HomeAlerts {
 
-    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, DRAWER, BACKUP, BACKUP_FAILED, BACKUP_OTHER_PHONE, CASHFLOW, UPDATED }
+    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, DRAWER, BACKUP, BACKUP_FAILED, BACKUP_OTHER_PHONE, CASHFLOW, UPDATED, SYNC }
 
     /** One row of the bell: what kind, a title, a quieter line under it, and an optional short tag ("Today", "Late", "Failed"). */
     data class Alert(val kind: Kind, val title: String, val sub: String, val tag: String? = null)
@@ -27,7 +27,8 @@ object HomeAlerts {
         val out = ArrayList<Alert>()
         // The ledger's own alerts come from :shared (LedgerAlerts, 20 Oct), so the
         // computer's bell says the same; the cash-flow gap still comes after backup.
-        val ledger = LedgerAlerts.compute(AndroidWords(context), dao, money)
+        val conflicts = runCatching { LiveSync.moneyConflicts(KhataDatabase.get(context).syncSql()) }.getOrDefault(0)
+        val ledger = LedgerAlerts.compute(AndroidWords(context), dao, money, conflicts)
             .map { a ->
                 val kind = when (a.kind) {
                     LedgerAlerts.Kind.CHEQUE -> Kind.CHEQUE
@@ -37,6 +38,7 @@ object HomeAlerts {
                     LedgerAlerts.Kind.STOCK -> Kind.STOCK
                     LedgerAlerts.Kind.DRAWER -> Kind.DRAWER
                     LedgerAlerts.Kind.CASHFLOW -> Kind.CASHFLOW
+                    LedgerAlerts.Kind.SYNC -> Kind.SYNC
                 }
                 Alert(kind, a.title, a.sub, a.tag)
             }

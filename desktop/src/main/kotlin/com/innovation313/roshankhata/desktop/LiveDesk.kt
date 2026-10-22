@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -220,16 +221,29 @@ object LiveDesk {
                 else when (val r = runCatching { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = ++rounds % OTHERS_EVERY == 0) } }.getOrNull()) {
                     is LiveCloud.Result.Done -> {
                         noteRound(d)
+                        relayState.value = RelayState.Live(now, r.took)
                         if (r.took > 0 || r.more) CLOUD_MS else minOf(wait * 2, CLOUD_QUIET_MAX_MS)
                     }
-                    LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> CLOUD_OFF_MS
-                    else -> minOf(wait * 2, CLOUD_QUIET_MAX_MS)
+                    LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { relayState.value = RelayState.Off; CLOUD_OFF_MS }
+                    LiveCloud.Result.Halted -> { relayState.value = RelayState.Down("halted"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
+                    is LiveCloud.Result.Refused -> { relayState.value = RelayState.Down(r.why); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
+                    // Unreachable, or the round threw: the window says so instead of nothing (22 Oct 2026, the review).
+                    else -> { relayState.value = RelayState.Down("unreachable"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
                 }
                 try { Thread.sleep(wait) } catch (e: InterruptedException) { break }
             }
         }
         return sock.localPort
     }
+
+    /** How the relay road stands, for the Live sync window: never silent about a relay that is down. */
+    sealed interface RelayState {
+        object Unknown : RelayState
+        object Off : RelayState
+        data class Live(val at: Long, val took: Int) : RelayState
+        data class Down(val why: String) : RelayState
+    }
+    val relayState = MutableStateFlow<RelayState>(RelayState.Unknown)
 
     private const val CLOUD_MS = 15_000L
     /** The relays after the first are read every this many relay rounds (each costs a call on a free plan). */
@@ -426,6 +440,13 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                 )
                 else if (peers.isEmpty()) Text(word(W.live_pc_none), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 else {
+                    // The relay road, as it stands: live, off, or down with the relay's own word.
+                    val rs by LiveDesk.relayState.collectAsState()
+                    if (relay) when (val r = rs) {
+                        is LiveDesk.RelayState.Live -> Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = c.brandGreenText, fontSize = 13.sp)
+                        is LiveDesk.RelayState.Down -> Text(word(W.live_pc_relay_down, r.why), color = c.owedToMe, fontSize = 13.sp)
+                        else -> {}
+                    }
                     Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                     peers.forEach { p ->
                         val name = p.name?.takeIf { it.isNotBlank() } ?: "—"
@@ -490,7 +511,10 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (s?.on == true) FluentButton(word(W.live_stop), {
                         scope.launch {
-                            withContext(Dispatchers.IO) { runCatching { LiveSync.disable(book.syncSql()) } }
+                            withContext(Dispatchers.IO) {
+                                runCatching { LiveCloud.leaveAll(book.syncSql()) }
+                                runCatching { LiveSync.disable(book.syncSql()) }
+                            }
                             NumberMark.mark = null
                             LiveDesk.stop()
                             onClose()

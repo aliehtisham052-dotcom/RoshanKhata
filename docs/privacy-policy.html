@@ -243,8 +243,10 @@
   book's own key (AES-256-GCM). If you also turn on "Also through the internet",
   changes made while the phone is away from the shop's Wi-Fi pass through
   Innovation 313's relay in that sealed form (on Cloudflare; when it cannot be
-  reached, on Supabase or on Innovation 313's own web hosting): no relay can
-  read them, and each keeps them for at most 7 days. While the app is closed, the
+  reached, on Innovation 313's own web hosting): no relay can read them, and
+  each keeps them for at most 7 days. The book's key stays on your devices,
+  sealed by the phone's own key store and, on the computer, by Windows for
+  your user account; it is never sent to a relay. While the app is closed, the
   relay may ask Google's Firebase Cloud Messaging to deliver one word
   ("rk-wake") to your phone, so it can pick up what is waiting. For this,
   Firebase gives the phone a token, and Google receives a Firebase installation
