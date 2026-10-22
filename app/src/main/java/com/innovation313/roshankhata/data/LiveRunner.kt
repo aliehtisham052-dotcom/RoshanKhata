@@ -104,8 +104,12 @@ object LiveRunner {
             is LiveWire.Answer.Got -> {
                 val took = LiveRound.take(sql, request, a.reply, a.host)
                 took.refused?.let { why -> state.value = Status.Failed(why); return 60_000L }
-                if (check) lastFingerprint = now
-                took.fingerprintMatches?.let { fingerprintBad.value = !it }
+                // Only a check made while nothing was on its way counts; a busy round asks again in the next.
+                took.fingerprintMatches?.let { same ->
+                    fingerprintBad.value = !same
+                    // A difference is looked at again in five minutes, not thirty.
+                    lastFingerprint = if (same) now else now - FINGERPRINT_EVERY_MS + 5 * 60_000L
+                }
                 state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer)
                 if (took.more) 200L else ROUND_MS
             }
