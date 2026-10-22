@@ -283,11 +283,12 @@ class BackupActivity : BaseActivity() {
         Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
         lifecycleScope.launch {
             val outcome = withContext(Dispatchers.IO) {
-                // The same streamed backup file every other path uses (P6), then its bytes.
+                // The same streamed backup file every other path uses (P6), sent as it is read:
+                // never held whole (22 Oct 2026, the review).
                 val file = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
                     ?: return@withContext null
                 if (file.length() > WifiSync.MAX_BYTES) return@withContext WifiSync.Outcome.Refused(WifiSync.TOO_BIG)
-                try { WifiSync.send(pairing, file.readBytes()) } catch (e: Exception) { WifiSync.Outcome.Unreachable }
+                try { WifiSync.sendFile(pairing, file) } catch (e: Exception) { WifiSync.Outcome.Unreachable }
             }
             if (isFinishing || isDestroyed) return@launch
             val message = when (outcome) {
@@ -448,7 +449,8 @@ class BackupActivity : BaseActivity() {
             if (file.length() > LiveWire.MAX_BYTES) LiveWire.Sent.Refused
             else {
                 val pair = LiveSync.newHex(8)
-                val outcome = LiveWire.sendOffer(invite, LiveWire.Offer(id.book, id.key, id.device, id.name, seq, file.readBytes(), joinerMark, pair))
+                // The book read from its file as it goes out, never held whole (22 Oct 2026, the review).
+                val outcome = LiveWire.sendOfferFile(invite, LiveWire.Offer(id.book, id.key, id.device, id.name, seq, ByteArray(0), joinerMark, pair), file)
                 if (outcome is LiveWire.Sent.Taken) {
                     // The computer has the book; its owner has not said yes yet. The first round it answers
                     // makes it this phone's computer (LiveRound.take); until then any earlier one stays.

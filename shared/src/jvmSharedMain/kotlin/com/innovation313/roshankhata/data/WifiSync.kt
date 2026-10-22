@@ -139,6 +139,63 @@ object WifiSync {
     }
 
     /**
+     * [head] then [file], sealed under [secret] and written to [out] as the
+     * frame [send] writes — [magic], the length, the nonce, the ciphertext
+     * with its tag — without ever holding the whole payload (22 Oct 2026, the
+     * review: a big book was held in memory three times over on the phone, and
+     * ran a small phone out of it). GCM's ciphertext is as long as its
+     * plaintext, so the length is known before a byte is read. The computer
+     * reads it as before.
+     */
+    fun writeSealed(out: DataOutputStream, magic: ByteArray, secret: String, head: ByteArray, file: java.io.File) {
+        val length = file.length()
+        val total = NONCE.toLong() + head.size + length + TAG_BITS / 8
+        if (total > Int.MAX_VALUE) throw IOException("too big")
+        val nonce = ByteArray(NONCE).also { SecureRandom().nextBytes(it) }
+        val c = Cipher.getInstance("AES/GCM/NoPadding")
+        c.init(Cipher.ENCRYPT_MODE, key(secret), GCMParameterSpec(TAG_BITS, nonce))
+        c.updateAAD(MAGIC)
+        out.write(magic)
+        out.writeInt(total.toInt())
+        out.write(nonce)
+        if (head.isNotEmpty()) c.update(head)?.let { out.write(it) }
+        var read = 0L
+        file.inputStream().buffered().use { input ->
+            val buf = ByteArray(1 shl 16)
+            while (read < length) {
+                val n = input.read(buf, 0, minOf(buf.size.toLong(), length - read).toInt())
+                if (n < 0) break
+                read += n
+                c.update(buf, 0, n)?.let { out.write(it) }
+            }
+        }
+        // A file that changed size meanwhile would not match the length already said.
+        if (read != length) throw IOException("the file changed while it was sent")
+        out.write(c.doFinal())
+        out.flush()
+    }
+
+    /** Phone side: [file] sent as [send] sends a payload, streamed ([writeSealed]). Blocking; call off the main thread. */
+    fun sendFile(p: Pairing, file: java.io.File, connectMs: Int = 3000, readMs: Int = 60_000): Outcome {
+        for (host in p.hosts) {
+            val socket = Socket()
+            try {
+                socket.connect(InetSocketAddress(host, p.port), connectMs)
+            } catch (e: IOException) {
+                runCatching { socket.close() }
+                continue
+            }
+            socket.use { s ->
+                s.soTimeout = readMs
+                writeSealed(DataOutputStream(s.getOutputStream().buffered(1 shl 16)), MAGIC, p.secret, ByteArray(0), file)
+                val answer = s.getInputStream().read()
+                return if (answer == OK) Outcome.Sent(host) else Outcome.Refused(answer)
+            }
+        }
+        return Outcome.Unreachable
+    }
+
+    /**
      * Phone side: [payload] sealed and sent to the first of the computer's
      * addresses that answers within [connectMs]. Blocking; call off the main thread.
      */

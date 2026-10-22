@@ -80,6 +80,45 @@ class LiveWireTest {
     }
 
     @Test
+    fun `a book sent from its file arrives whole, by WiFi and in a pairing, as the old frames did`() {
+        val dir = Files.createTempDirectory("rk-stream").toFile()
+        try {
+            // A book bigger than one read, with every byte value in it.
+            val book = ByteArray(300_000) { (it * 31 + 7).toByte() }
+            val file = dir.resolve("book.txt").apply { writeBytes(book) }
+            val secret = WifiSync.newSecret()
+
+            val wifi = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
+            val got = java.util.concurrent.atomic.AtomicReference<ByteArray?>(null)
+            val receiver = thread { got.set(WifiSync.receive(wifi, secret)) }
+            try {
+                val sent = WifiSync.sendFile(WifiSync.Pairing(listOf("127.0.0.1"), wifi.localPort, secret), file)
+                assertTrue("$sent", sent is WifiSync.Outcome.Sent)
+                receiver.join(10_000)
+                assertArrayEquals(book, got.get())
+            } finally { runCatching { wifi.close() } }
+
+            val pairServer = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
+            val stop = java.util.concurrent.atomic.AtomicBoolean(false)
+            val offered = java.util.concurrent.atomic.AtomicReference<LiveWire.Offer?>(null)
+            val worker = thread { LiveWire.serve(pairServer, { stop.get() }, { secret }, { o -> offered.set(o); true }, { null }) { null } }
+            try {
+                val o = LiveWire.Offer("b".repeat(32), LiveSync.newHex(32), "d1", "Phone", 7, ByteArray(0), "B", "aa11bb22")
+                val sent = LiveWire.sendOfferFile(LiveWire.Invite(listOf("127.0.0.1"), pairServer.localPort, secret), o, file)
+                assertTrue("$sent", sent is LiveWire.Sent.Taken)
+                val back = offered.get()!!
+                assertEquals(o.book, back.book); assertEquals(o.key, back.key); assertEquals(7L, back.seq)
+                assertEquals("B", back.mark); assertEquals("aa11bb22", back.pair)
+                assertArrayEquals(book, back.backup)
+            } finally {
+                stop.set(true); runCatching { pairServer.close() }; worker.join(5000)
+            }
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `the invite and the offer read back as written`() {
         val i = LiveWire.Invite(listOf("192.168.1.5"), LiveWire.PORT, LiveSync.newHex(32), "SHOP-PC")
         assertEquals(i, LiveWire.parseInvite(LiveWire.inviteText(i)))

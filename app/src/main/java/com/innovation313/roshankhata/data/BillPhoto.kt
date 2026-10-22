@@ -69,20 +69,45 @@ object BillPhoto {
     /**
      * Run a permanent delete, then remove the bill photos it left with no
      * row pointing at them (1 Oct). Compared by the exact paths THIS
-     * business's rows referenced before and after, so a photo belonging to
-     * another shop (the bills folder is shared) is never touched, and a
-     * cascade (a party taking its entries and bills with it) is covered
-     * without listing each case.
+     * business's rows referenced before and after, so a cascade (a party
+     * taking its entries and bills with it) is covered without listing each
+     * case.
+     *
+     * The bills folder is every shop's on this phone, and since backups carry
+     * an entry's photo path (format 15, 22 Oct 2026) a shop restored into
+     * another points at the same files: a photo another shop's book still
+     * points at stays. Nothing is removed when another shop's book cannot be
+     * read — a photo kept too long costs space, one removed too soon is gone.
      */
-    suspend fun <T> purgingOrphans(dao: KhataDao, block: suspend () -> T): T {
-        suspend fun referenced(): Set<String> =
-            (dao.entriesWithBillPhoto().map { it.billPhotoPath } +
-                dao.supplierBillsWithPhoto().map { it.photoPath })
-                .filterNotNull().filter { it.isNotBlank() }.toSet()
-        val before = referenced()
+    suspend fun <T> purgingOrphans(context: Context, dao: KhataDao, block: suspend () -> T): T {
+        val before = referenced(dao)
         val result = block()
-        (before - referenced()).forEach { delete(it) }
+        val gone = before - referenced(dao)
+        if (gone.isNotEmpty()) {
+            val elsewhere = runCatching { referencedByOtherShops(context, gone) }.getOrNull() ?: return result
+            (gone - elsewhere).forEach { delete(it) }
+        }
         return result
+    }
+
+    private suspend fun referenced(dao: KhataDao): Set<String> =
+        (dao.entriesWithBillPhoto().map { it.billPhotoPath } +
+            dao.supplierBillsWithPhoto().map { it.photoPath })
+            .filterNotNull().filter { it.isNotBlank() }.toSet()
+
+    /** Which of [paths] another shop's book on this phone still points at. */
+    private suspend fun referencedByOtherShops(context: Context, paths: Set<String>): Set<String> {
+        val out = HashSet<String>()
+        for (b in Businesses.list(context)) {
+            // Null for the shop that is open (its rows were read above) and for one never opened.
+            val other = KhataDatabase.openOther(context, b) ?: continue
+            try {
+                referenced(other.khataDao()).filterTo(out) { it in paths }
+            } finally {
+                other.close()
+            }
+        }
+        return out
     }
 
     /** Remove a photo's file. Safe to call when it has already gone. */

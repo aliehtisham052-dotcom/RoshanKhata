@@ -64,4 +64,32 @@ class DailyCopiesTest {
             home.deleteRecursively()
         }
     }
+
+    @Test
+    fun `each computer keeps its own folder in the outside place, and a copy there reads back whole`() {
+        val home = Files.createTempDirectory("rk-daily").toFile()
+        val stick = Files.createTempDirectory("rk-stick").toFile()
+        val db = DesktopDatabase.open(home.resolve("khata.db"))
+        try {
+            // A shop computer and a home computer on one Google Drive folder (22 Oct 2026, the review).
+            val shop = DailyCopies.outside(stick, 1, "SHOP-PC")
+            val house = DailyCopies.outside(stick, 1, "HOME-PC")
+            assertEquals("Business-1 (SHOP-PC)", shop.name)
+            assertTrue(shop != house && shop.parentFile == house.parentFile)
+            val name = DailyCopies.computerName()
+            assertTrue(name, name.isNotBlank() && name.none { it == '/' || it == '\\' || it == ':' })
+            val settings = FileShopSettings(home.resolve("shop.properties"))
+            val made = runBlocking {
+                db.khataDao().insertParty(Party(name = "Bilal", phone = null, isCustomer = true))
+                DailyCopies.makeToday(db.khataDao(), settings, shop)
+            }
+            assertTrue(made != null && made.parentFile == shop)
+            assertTrue(BackupCodec.parseFile(made!!).first is BackupCodec.ImportResult.Ok)
+            assertTrue("nothing half-written is left beside it", shop.listFiles()!!.none { it.name.endsWith(".tmp") })
+        } finally {
+            db.close()
+            home.deleteRecursively()
+            stick.deleteRecursively()
+        }
+    }
 }

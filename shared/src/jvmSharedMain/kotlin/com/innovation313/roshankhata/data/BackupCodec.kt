@@ -34,7 +34,10 @@ object BackupCodec {
      * packs/tax/variants, a sale line's tax and the audit log's seal; 13
      * (schema 37) the batch a stock adjustment is of; 14 (schema 38, live
      * sync) a uid on every remaining row a sync can carry — parties,
-     * products, every line table, plans, staff, schemes and day closes.
+     * products, every line table, plans, staff, schemes and day closes; 15
+     * (22 Oct 2026, the review) the photo path of an entry's bill, the one
+     * column no backup carried — after any restore every credit bill's photo
+     * was unlinked, the files back on disk with nothing pointing at them.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -43,7 +46,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 14
+    const val FORMAT_VERSION = 15
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -56,11 +59,11 @@ object BackupCodec {
      * book. The document is the same the owner's old backups are: an object
      * whose keys are the tables, restore reads it with the same parser.
      */
-    suspend fun exportTo(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer) =
-        dao.readAsOne { exportInside(dao, businessName, profile, out) }
+    suspend fun exportTo(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer, secrets: Boolean = true) =
+        dao.readAsOne { exportInside(dao, businessName, profile, out, secrets) }
 
-    private suspend fun exportInside(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer) {
-        val small = exportSmall(dao, businessName, profile).toString(2)
+    private suspend fun exportInside(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer, secrets: Boolean) {
+        val small = exportSmall(dao, businessName, profile, secrets).toString(2)
         // The small document ends in "\n}" — drop that brace and add the
         // three streamed tables before closing the object ourselves.
         out.write(small.trimEnd().removeSuffix("}").trimEnd())
@@ -89,7 +92,14 @@ object BackupCodec {
     }
 
 
-    private suspend fun exportSmall(dao: KhataDao, businessName: String?, profile: JSONObject): JSONObject {
+    /**
+     * [secrets] false for a copy that leaves the owner's hands — the helper's
+     * phone (22 Oct 2026, the review): the owner's PIN and recovery code and
+     * each staff member's PIN are left out, as their hashes. A four-digit PIN
+     * falls to a guessing program in minutes once its hash is in a file; a
+     * read-only phone needs none of them.
+     */
+    private suspend fun exportSmall(dao: KhataDao, businessName: String?, profile: JSONObject, secrets: Boolean = true): JSONObject {
         val root = JSONObject()
         root.put("format", "RoshanKhata")
         root.put("version", FORMAT_VERSION)
@@ -119,7 +129,8 @@ object BackupCodec {
                 put(JSONObject().apply {
                     put("id", st.id); put("name", st.name); put("phone", st.phone ?: JSONObject.NULL)
                     put("monthlySalary", st.monthlySalary); put("isActive", st.isActive); put("createdAt", st.createdAt)
-                    put("role", st.role ?: JSONObject.NULL); put("pinHash", st.pinHash ?: JSONObject.NULL); put("pinSalt", st.pinSalt ?: JSONObject.NULL)
+                    put("role", st.role ?: JSONObject.NULL)
+                    put("pinHash", st.pinHash?.takeIf { secrets } ?: JSONObject.NULL); put("pinSalt", st.pinSalt?.takeIf { secrets } ?: JSONObject.NULL)
                     put("uid", st.uid ?: JSONObject.NULL)
                 })
             }
@@ -203,7 +214,8 @@ object BackupCodec {
         root.put("purchaseOrderItems", JSONArray().apply { dao.allOrderItemsForBackup().forEach { put(orderItemToJson(it)) } })
         // Format 12: the book's own settings, loyalty points and shifts.
         root.put("bookSettings", JSONArray().apply {
-            dao.allSettingsForBackup().forEach { put(JSONObject().apply { put("key", it.key); put("value", it.value ?: JSONObject.NULL) }) }
+            dao.allSettingsForBackup().filter { secrets || it.key !in BookSettings.OWNER_PIN_KEYS }
+                .forEach { put(JSONObject().apply { put("key", it.key); put("value", it.value ?: JSONObject.NULL) }) }
         })
         root.put("loyalty", JSONArray().apply { dao.allLoyaltyForBackup().forEach { put(loyaltyToJson(it)) } })
         root.put("shifts", JSONArray().apply { dao.allShiftsForBackup().forEach { put(shiftToJson(it)) } })
@@ -817,6 +829,10 @@ object BackupCodec {
         put("pairedEntryId", e.pairedEntryId ?: JSONObject.NULL)
         put("season", e.season ?: JSONObject.NULL)
         put("saleId", e.saleId ?: JSONObject.NULL)
+        // Format 15: where this phone keeps the bill's photo. An absolute path, right for the phone
+        // that wrote it; a restore of the photos re-points it by file name (BackupImages), and a path
+        // with no file behind it shows no photo.
+        put("billPhotoPath", e.billPhotoPath ?: JSONObject.NULL)
         put("isDeleted", e.isDeleted)
         put("deletedAt", e.deletedAt ?: JSONObject.NULL)
         put("uid", e.uid ?: JSONObject.NULL)
@@ -852,6 +868,8 @@ object BackupCodec {
         season = o.optNullableString("season"),
         // Absent before format 8: written by hand.
         saleId = o.optNullableLong("saleId"),
+        // Absent before format 15: no photo is linked (as every restore before it did).
+        billPhotoPath = o.optNullableString("billPhotoPath")?.takeIf { it.isNotBlank() },
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt"),
         // Absent before format 12: a new identity, given once here.

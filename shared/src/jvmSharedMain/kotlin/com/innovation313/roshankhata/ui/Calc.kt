@@ -74,16 +74,19 @@ object Calc {
      * 125 and "1.250,50" as 1.2505): a comma between digits marks the
      * fraction, and then every dot before three digits groups thousands; two
      * or more dot groups ("1.250.000") can only be thousands. A lone dot is
-     * left a decimal point ("1.125" is one and a eighth), because the app's
-     * own figures in these boxes are written that way — so "50.000" alone
-     * still reads as fifty, and is shown back as 50 for the owner to see.
+     * left a decimal point ("1.125" is one and an eighth), because the app's
+     * own figures in these boxes are written that way — except before three
+     * digits that end in 0 ("50.000", "2.250"): the app never ends a fraction
+     * with a 0 ([Format.plain]), so only a person typing thousands writes
+     * that. What is read is shown back under the box for the owner to see.
      */
     private fun indonesian(text: String): String {
         var t = text
         if (Regex("\\d,\\d").containsMatchIn(t)) {
             t = t.replace(Regex("(?<=\\d)\\.(?=\\d{3})"), "").replace(Regex("(?<=\\d),(?=\\d)"), ".")
         }
-        return t.replace(Regex("\\d{1,3}(?:\\.\\d{3}){2,}(?![\\d.])")) { it.value.replace(".", "") }
+        t = t.replace(Regex("\\d{1,3}(?:\\.\\d{3}){2,}(?![\\d.])")) { it.value.replace(".", "") }
+        return t.replace(Regex("(?<![\\d.])([1-9]\\d{0,2})\\.(\\d\\d0)(?![\\d.])")) { it.groupValues[1] + it.groupValues[2] }
     }
 
     /** The reader's language groups thousands with a dot ([Format.money] prints it so). */

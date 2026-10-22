@@ -69,7 +69,7 @@ class RecycleBinActivity : BaseActivity() {
         AppScope.launch {
             val cutoff = System.currentTimeMillis() - (RETENTION_DAYS * DAY_MS)
             // Photos of what is purged go too (BillPhoto.purgingOrphans).
-            BillPhoto.purgingOrphans(dao) {
+            BillPhoto.purgingOrphans(applicationContext, dao) {
                 dao.purgeOldEntries(cutoff)
                 dao.purgeOldParties(cutoff)
             }
@@ -206,7 +206,7 @@ class RecycleBinActivity : BaseActivity() {
                 AppScope.launch {
                     // A customer with supplier bills, cheques, plans or counter tickets is kept, and
                     // said so (22 Oct 2026, the review: the screen said "deleted forever" either way).
-                    val gone = BillPhoto.purgingOrphans(dao) {
+                    val gone = BillPhoto.purgingOrphans(applicationContext, dao) {
                         when (item) {
                             is BinItem.DeletedParty -> dao.purgeParty(item.id) > 0
                             is BinItem.DeletedEntry -> { dao.purgeEntry(item.id); true }
@@ -247,7 +247,7 @@ class RecycleBinActivity : BaseActivity() {
                 // cheques, plans or counter tickets — keeps them too, and
                 // comes back whole (22 Oct 2026, the review).
                 AppScope.launch {
-                    val kept = BillPhoto.purgingOrphans(dao) {
+                    val kept = BillPhoto.purgingOrphans(applicationContext, dao) {
                         dao.purgeAllEntries()
                         dao.purgeAllParties()
                         dao.binnedPartyCount()

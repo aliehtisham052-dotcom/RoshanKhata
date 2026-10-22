@@ -66,14 +66,18 @@ object Backup {
      * The backup, written straight to [out] by the shared format
      * ([BackupCodec.exportTo]), with this shop's name and Profile.
      */
-    suspend fun exportTo(context: Context, dao: KhataDao, out: java.io.Writer) =
-        BackupCodec.exportTo(dao, BusinessProfile.businessName(context), businessProfileToJson(context), out)
+    suspend fun exportTo(context: Context, dao: KhataDao, out: java.io.Writer, secrets: Boolean = true) =
+        BackupCodec.exportTo(dao, BusinessProfile.businessName(context), businessProfileToJson(context), out, secrets)
 
-    /** The backup to a file, buffered, for the paths that hand a file on (Downloads, Drive, the helper's copy). */
-    suspend fun exportToFile(context: Context, dao: KhataDao, file: File): File {
+    /**
+     * The backup to a file, buffered, for the paths that hand a file on
+     * (Downloads, Drive, the helper's copy). [secrets] false leaves the PINs'
+     * hashes out (the helper's copy, BackupCodec.exportTo).
+     */
+    suspend fun exportToFile(context: Context, dao: KhataDao, file: File, secrets: Boolean = true): File {
         file.parentFile?.mkdirs()
         java.io.BufferedWriter(java.io.OutputStreamWriter(java.io.FileOutputStream(file), Charsets.UTF_8), 64 * 1024)
-            .use { exportTo(context, dao, it) }
+            .use { exportTo(context, dao, it, secrets) }
         return file
     }
 
@@ -150,9 +154,9 @@ object Backup {
      * the system does not clear it behind the owner's back.
      */
     /** The streamed backup's cache file (P6): the one copy every other path copies from. */
-    suspend fun exportToCache(context: Context, dao: KhataDao): File {
+    suspend fun exportToCache(context: Context, dao: KhataDao, secrets: Boolean = true): File {
         val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-        return exportToFile(context, dao, File(dir, suggestedFileName()))
+        return exportToFile(context, dao, File(dir, suggestedFileName()), secrets)
     }
 
     /** [saveToDownloads], from a file — streamed, never held as one string. */
