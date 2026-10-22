@@ -316,7 +316,9 @@ object LiveCloud {
                 }
                 continue
             }
-            val used = id != null && (getMeta(sql, k("took_at", id.book, road.tag))?.toLongOrNull() ?: 0L) > now - USED_MS
+            // Never taken from there: not used (a missing mark is not "long ago", it is "never").
+            val tookAt = id?.let { getMeta(sql, k("took_at", it.book, road.tag))?.toLongOrNull() }
+            val used = tookAt != null && tookAt > now - USED_MS
             if (!readOthers && !used) continue
             val r = round(sql, http, road.base, now, road.tag, send = used, halted = { false })
             if (r is Result.Done) { took += r.took; more = more || r.more }
