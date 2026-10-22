@@ -3261,6 +3261,7 @@
     <string name="audit_stock_adjusted">স্টক ঠিক করা হয়েছে</string>
     <string name="audit_order_received">অর্ডার পাওয়া গেছে</string>
     <string name="audit_owner_pin_set">মালিকের PIN সেট হয়েছে</string>
+    <string name="audit_owner_pin_adopted">মালিকের PIN এই কাউন্টার থেকে নেওয়া হয়েছে</string>
     <string name="audit_counter_on">কাউন্টার মোড চালু</string>
     <string name="audit_counter_off">কাউন্টার মোড বন্ধ</string>
     <string name="audit_pin_wait">অনেক বেশি ভুল PIN</string>
@@ -3417,6 +3418,9 @@
     <string name="audit_cash_deleted">ক্যাশবুকের এন্ট্রি মোছা হয়েছে</string>
     <string name="audit_party_deleted">গ্রাহক মোছা হয়েছে</string>
     <string name="audit_day_closed">দিন বন্ধ করা হয়েছে</string>
+    <string name="audit_import">আমদানি</string>
+    <string name="audit_bill_deleted">বিল মোছা হয়েছে</string>
+    <string name="audit_bill_edited">বিল বদলানো হয়েছে</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">পরের কিস্তির তারিখ বদলান</string>

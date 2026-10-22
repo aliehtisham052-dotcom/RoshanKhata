@@ -710,8 +710,9 @@ object BackupCodec {
      * fails, the whole thing rolls back and the existing ledger is left
      * untouched. The shop Profile is the caller's (Backup.restore on the phone).
      */
-    suspend fun restoreLedger(dao: KhataDao, data: ParsedBackup) {
+    suspend fun restoreLedger(dao: KhataDao, data: ParsedBackup, keepAccess: Boolean = true) {
         dao.restoreAll(
+            keepAccess = keepAccess,
             parties = data.parties,
             entries = data.entries,
             cheques = data.cheques,

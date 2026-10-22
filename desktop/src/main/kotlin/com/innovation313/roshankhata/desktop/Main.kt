@@ -225,7 +225,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             LiveDesk.takePending()?.let { (offer, data) ->
                 runCatching {
                     LiveSync.disable(db.syncSql())
-                    restore(data, db, settings)
+                    restore(data, db, settings, keepAccess = false)
                     LiveDesk.join(db, home, file, offer)
                 }.onFailure { e ->
                     // Said, never passed over (22 Oct 2026, the review): the phone waits for a yes that is not coming.
@@ -247,7 +247,12 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // Java's own event hook sees the dialog windows too, so typing in a long form keeps it open.
     val lastInput = remember { java.util.concurrent.atomic.AtomicLong(System.currentTimeMillis()) }
     DisposableEffect(Unit) {
-        val listener = java.awt.event.AWTEventListener { lastInput.set(System.currentTimeMillis()) }
+        val listener = java.awt.event.AWTEventListener {
+            val at = System.currentTimeMillis()
+            lastInput.set(at)
+            // A manager's or the owner's session on a counter ends after five idle minutes (22 Oct 2026, the review).
+            com.innovation313.roshankhata.data.Access.touch(at)
+        }
         val toolkit = java.awt.Toolkit.getDefaultToolkit()
         toolkit.addAWTEventListener(listener, java.awt.AWTEvent.KEY_EVENT_MASK or java.awt.AWTEvent.MOUSE_EVENT_MASK or java.awt.AWTEvent.MOUSE_WHEEL_EVENT_MASK)
         onDispose { toolkit.removeAWTEventListener(listener) }
@@ -257,6 +262,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             kotlinx.coroutines.delay(30_000)
             val idle = System.currentTimeMillis() - lastInput.get()
             if (unlocked && appPrefs.hasPin() && !com.innovation313.roshankhata.data.Access.counterMode && idle > APP_LOCK_IDLE_MS) unlocked = false
+            com.innovation313.roshankhata.data.Access.expireIfIdle()
         }
     }
     // The shop's trade (its words, units and which pages show), re-read when the owner changes it.
@@ -326,7 +332,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         load = { db.khataDao().partiesWithBalanceOnce() },
                         shopName = { settings.businessName() },
                         settings = settings,
-                        restore = { data -> restore(data, db, settings) },
+                        restore = { data, keepAccess -> restore(data, db, settings, keepAccess) },
                         backup = { file -> backup(file, db, settings) },
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
                         theme = theme,
@@ -339,7 +345,9 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         words = words,
                         businesses = businesses,
                         activeBusiness = active,
-                        onSwitch = { id -> businesses.switchTo(id); active = id },
+                        // Another shop's book: whoever was signed in here is not signed in there (22 Oct 2026, the review:
+                        // shop A's manager stayed a manager in shop B, and B's sales carried A's staff name).
+                        onSwitch = { id -> if (id != active) com.innovation313.roshankhata.data.Access.signOut(); businesses.switchTo(id); active = id },
                         dailyDir = dailyDir,
                         images = images,
                         home = home,
@@ -408,9 +416,11 @@ private suspend fun backup(
 private suspend fun restore(
     data: BackupCodec.ParsedBackup,
     db: com.innovation313.roshankhata.data.KhataDatabase,
-    settings: FileShopSettings
+    settings: FileShopSettings,
+    /** False for a live pairing: the phone's book exactly, its PINs and counter keys too. */
+    keepAccess: Boolean = true
 ) = withContext(Dispatchers.IO) {
-    BackupCodec.restoreLedger(db.khataDao(), data)
+    BackupCodec.restoreLedger(db.khataDao(), data, keepAccess)
     data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
 }
 
@@ -435,7 +445,7 @@ private fun Book(
     load: suspend () -> List<PartyWithBalance>,
     shopName: () -> String?,
     settings: FileShopSettings,
-    restore: suspend (BackupCodec.ParsedBackup) -> Unit,
+    restore: suspend (BackupCodec.ParsedBackup, Boolean) -> Unit,
     backup: suspend (File) -> Long,
     onLanguage: (String) -> Unit,
     theme: ThemeChoice,
@@ -943,11 +953,13 @@ private fun Book(
                                         }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
                                     }
                                 } }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
-                                TextButton({
+                                // Bringing customers and their balances in changes the book: a cashier waits for a
+                                // manager's PIN, as for any change (22 Oct 2026, the review: it asked nobody).
+                                TextButton({ Gates.need(com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK) importCsv@{
                                     val dialog = FileDialog(null as Frame?, words.text(W.import_csv), FileDialog.LOAD)
                                     startIn(dialog, "Downloads")
                                     dialog.isVisible = true
-                                    val name = dialog.file ?: return@TextButton
+                                    val name = dialog.file ?: return@importCsv
                                     val file = File(dialog.directory, name)
                                     scope.launch {
                                         val rows = withContext(Dispatchers.IO) {
@@ -966,7 +978,7 @@ private fun Book(
                                             importing = fresh to (rows.size - fresh.size)
                                         }
                                     }
-                                }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
+                                } }, contentPadding = compactButton) { Text(word(W.import_csv), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
                                 TextButton({ Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) {
                                     scope.launch {
                                         val owing = com.innovation313.roshankhata.data.NameOrder.sortedBy(parties.filter { kotlin.math.abs(it.balance) >= 0.005 }) { it.name }
@@ -1213,7 +1225,7 @@ private fun Book(
                                         val sql = db.syncSql()
                                         val wasLive = runCatching { LiveSync.pause(sql) }.getOrDefault(false)
                                         try {
-                                            restore(p.data)
+                                            restore(p.data, p.live == null)
                                         } catch (e: Exception) {
                                             if (wasLive) runCatching { LiveSync.resume(sql) }
                                             return@withContext e

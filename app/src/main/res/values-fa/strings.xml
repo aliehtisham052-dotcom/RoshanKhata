@@ -3245,6 +3245,7 @@
     <string name="audit_stock_adjusted">اصلاح موجودی</string>
     <string name="audit_order_received">دریافت سفارش</string>
     <string name="audit_owner_pin_set">تعیین رمز مالک</string>
+    <string name="audit_owner_pin_adopted">رمز مالک از این صندوق گرفته شد</string>
     <string name="audit_counter_on">روشن شدن حالت صندوق</string>
     <string name="audit_counter_off">خاموش شدن حالت صندوق</string>
     <string name="audit_pin_wait">رمزهای اشتباه زیاد</string>
@@ -3401,6 +3402,9 @@
     <string name="audit_cash_deleted">ردیف دفتر نقدی حذف شد</string>
     <string name="audit_party_deleted">مشتری حذف شد</string>
     <string name="audit_day_closed">روز بسته شد</string>
+    <string name="audit_import">ورودی</string>
+    <string name="audit_bill_deleted">صورت‌حساب حذف شد</string>
+    <string name="audit_bill_edited">صورت‌حساب تغییر کرد</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">تغییر روز پرداخت بعدی</string>

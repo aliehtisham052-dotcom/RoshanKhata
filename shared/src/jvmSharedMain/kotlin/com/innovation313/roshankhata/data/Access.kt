@@ -14,8 +14,9 @@ import java.security.SecureRandom
  *
  *  - The owner's own phone or computer (counter mode off, the default): the
  *    owner is at it, and nothing is withheld. A staff member may sign in here
- *    so their name goes on what they do, but signing back in as the owner
- *    takes the owner's PIN once one is set.
+ *    so their name goes on what they do — for names only: signing out is the
+ *    owner again, as the device is the owner's (22 Oct 2026, the review: this
+ *    said it took the owner's PIN, and it never did).
  *  - A counter that staff use ([counterMode] on, a setting of this device
  *    alone): it opens [locked] — nobody is anybody until they sign in with
  *    their own PIN — and only the owner's PIN turns counter mode off again.
@@ -30,10 +31,16 @@ import java.security.SecureRandom
  *
  * The owner's PIN lives in the book ([BookSettings.OWNER_PIN_HASH], a salted
  * PBKDF2 hash — never the PIN), so it travels with every copy of the book;
- * counter mode and the count of wrong PINs belong to the device ([store]).
+ * counter mode and the count of wrong PINs belong to the device ([store]),
+ * and so does a copy of the owner's last right PIN's hash, which a book on a
+ * counter without an owner PIN of its own takes ([rememberOwner], [ownerPin]).
  * Five wrong PINs in a row wait 30 seconds, and every five more wait twice as
  * long, up to 15 minutes — kept on the device, so closing the app does not
- * clear it.
+ * clear it, and never longer than 15 minutes whatever the clock said.
+ *
+ * On a counter, an owner's or a manager's session ends after
+ * [ELEVATED_IDLE_MS] with nothing done ([touch], [expireIfIdle]); a cashier's
+ * stays, as the till is theirs all day.
  *
  * The signed-in user is kept in memory only: a restart is a sign-out, as a
  * till's is. Every sale, return and void carries the name of whoever was
@@ -100,8 +107,32 @@ object Access {
     /** The name written on what is done now: the staff member's, or null for the owner (as every entry before). */
     val userName: String? get() = current?.name
 
-    fun signIn(staff: Staff) { current = staff; ownerIn = false }
-    fun signInOwner() { current = null; ownerIn = true }
+    fun signIn(staff: Staff) { current = staff; ownerIn = false; lastTouch = System.currentTimeMillis() }
+    fun signInOwner() { current = null; ownerIn = true; lastTouch = System.currentTimeMillis() }
+
+    /**
+     * How long an owner's or a manager's session on a counter lasts with
+     * nothing done (22 Oct 2026, the review: one sign-in to change a price
+     * left the cashier with owner rights — staff, restore, export — all day).
+     */
+    const val ELEVATED_IDLE_MS = 5 * 60_000L
+
+    @Volatile private var lastTouch: Long = System.currentTimeMillis()
+
+    /** Something was done at the device (a key, a click, a tap). A session idle too long ends first. */
+    fun touch(now: Long = System.currentTimeMillis()) {
+        expireIfIdle(now)
+        lastTouch = now
+    }
+
+    /** Ends an owner's or a manager's session on a counter idle for [ELEVATED_IDLE_MS]; true when it did. */
+    fun expireIfIdle(now: Long = System.currentTimeMillis()): Boolean {
+        if (!counterMode) return false
+        val elevated = ownerIn || current?.role == Role.MANAGER
+        if (!elevated || now - lastTouch < ELEVATED_IDLE_MS) return false
+        signOut()
+        return true
+    }
 
     /** Back to the start: on the owner's device that is the owner; on a counter, locked. */
     fun signOut() { current = null; ownerIn = false }
@@ -118,14 +149,15 @@ object Access {
     /**
      * Counter mode on or off for this device. The screens ask for the owner's
      * PIN first (and refuse to turn it on while the book has none). Turning it
-     * on leaves the owner signed in — they just typed the PIN; turning it off
-     * makes this the owner's device again.
+     * on locks the counter at once (22 Oct 2026, the review: it left the owner
+     * signed in, and the device was handed over with the owner's rights);
+     * turning it off makes this the owner's device again.
      */
     fun switchCounterMode(on: Boolean) {
         store?.put(KEY_COUNTER, if (on) "1" else null)
         counterMode = on
         current = null
-        ownerIn = on
+        ownerIn = false
     }
 
     /** This device's own id, made once and kept in the device's settings; "" in tests without a store. */
@@ -194,12 +226,59 @@ object Access {
         fun matches(pin: String): Boolean = runCatching { PinHash.matches(pin, salt, hash) }.getOrDefault(false)
     }
 
-    /** The book's owner PIN, or null when none has been set. */
+    /**
+     * The book's owner PIN, or null when none has been set. On a counter, a
+     * book without one first takes the one this device keeps
+     * ([rememberOwner]), so a counter is never locked against its owner;
+     * elsewhere a book without one stays without.
+     */
     suspend fun ownerPin(dao: KhataDao): OwnerPin? {
+        bookOwnerPin(dao)?.let { return it }
+        if (!counterMode) return null
+        val s = store ?: return null
+        val kept = OWNER_KEYS.map { (_, k) -> s.get(k) }
+        if (kept.any { it.isNullOrEmpty() }) return null
+        // A book that cannot be written (a helper's read-only copy) stays as it is.
+        runCatching { dao.adoptOwnerPin(kept[0]!!, kept[1]!!, kept[2]!!, kept[3]!!) }
+        return bookOwnerPin(dao)
+    }
+
+    private suspend fun bookOwnerPin(dao: KhataDao): OwnerPin? {
         val hash = dao.settingValue(BookSettings.OWNER_PIN_HASH) ?: return null
         val salt = dao.settingValue(BookSettings.OWNER_PIN_SALT) ?: return null
         return OwnerPin(hash, salt)
     }
+
+    // The owner's PIN this device keeps (22 Oct 2026, the review). A counter
+    // is a device the owner made one with the owner's PIN; a book opened on it
+    // without an owner PIN of its own — a shop added on the counter, a phone's
+    // book paired in, a shop never set up for it — left the owner no way back
+    // in: the counter opened locked, its owner row asked for a PIN the book
+    // did not have, and the device stayed so after every restart. So each time
+    // the owner's PIN is typed right on a device (or set on it), the device
+    // keeps the book's four owner keys — hashes and salts, never a PIN — and on
+    // a counter a book without them takes them, with an audit row.
+    private val OWNER_KEYS = listOf(
+        BookSettings.OWNER_PIN_HASH to KEY_OWNER_HASH,
+        BookSettings.OWNER_PIN_SALT to KEY_OWNER_SALT,
+        BookSettings.OWNER_RECOVERY_HASH to KEY_OWNER_RECOVERY_HASH,
+        BookSettings.OWNER_RECOVERY_SALT to KEY_OWNER_RECOVERY_SALT
+    )
+
+    /**
+     * The owner's PIN was just typed right on this device, or set on it: the
+     * device keeps this book's owner keys for a book on this counter that has
+     * none ([ownerPin]). Nothing is kept from a book without all four.
+     */
+    suspend fun rememberOwner(dao: KhataDao) {
+        val s = store ?: return
+        val values = OWNER_KEYS.map { (book, _) -> dao.settingValue(book) }
+        if (values.any { it.isNullOrEmpty() }) return
+        OWNER_KEYS.forEachIndexed { i, (_, device) -> s.put(device, values[i]) }
+    }
+
+    /** True when this device keeps an owner's PIN ([rememberOwner]). */
+    fun remembersOwner(): Boolean = store?.let { s -> OWNER_KEYS.all { (_, k) -> !s.get(k).isNullOrEmpty() } } == true
 
     /**
      * Sets (or replaces) the owner's PIN, and returns a new recovery code —
@@ -213,6 +292,7 @@ object Access {
         val code = RecoveryCode.next()
         val codeSalt = PinHash.salt()
         dao.saveOwnerPin(PinHash.hash(pin, salt), salt, PinHash.hash(RecoveryCode.normal(code), codeSalt), codeSalt, userName)
+        rememberOwner(dao)
         return code
     }
 
@@ -269,9 +349,14 @@ object Access {
     private fun misses(account: String): Int = store?.get(key(KEY_MISSES, account))?.toIntOrNull() ?: memMisses[account] ?: 0
     private fun waitUntil(account: String): Long = store?.get(key(KEY_WAIT_UNTIL, account))?.toLongOrNull() ?: memWaitUntil[account] ?: 0L
 
-    /** Milliseconds still to wait before another PIN of [account] may be tried; 0 when one may. */
+    /**
+     * Milliseconds still to wait before another PIN of [account] may be tried;
+     * 0 when one may. Never more than the longest wait (22 Oct 2026, the
+     * review: a wait set while the clock read years ahead lasted until then,
+     * and blocked the recovery code too).
+     */
     fun waitMillis(now: Long = System.currentTimeMillis(), account: String = ANY): Long =
-        (maxOf(waitUntil(account), waitUntil(ANY)) - now).coerceAtLeast(0L)
+        (maxOf(waitUntil(account), waitUntil(ANY)) - now).coerceIn(0L, LONGEST_WAIT_MS)
 
     /** The same, in whole seconds rounded up, for the screen. */
     fun waitSeconds(now: Long = System.currentTimeMillis(), account: String = ANY): Int = ((waitMillis(now, account) + 999) / 1000).toInt()
@@ -325,6 +410,10 @@ object Access {
     private const val KEY_DEVICE = "access_device_id"
     private const val KEY_MISSES = "access_pin_misses"
     private const val KEY_WAIT_UNTIL = "access_pin_wait_until"
+    private const val KEY_OWNER_HASH = "access_owner_hash"
+    private const val KEY_OWNER_SALT = "access_owner_salt"
+    private const val KEY_OWNER_RECOVERY_HASH = "access_owner_recovery_hash"
+    private const val KEY_OWNER_RECOVERY_SALT = "access_owner_recovery_salt"
 }
 
 /**

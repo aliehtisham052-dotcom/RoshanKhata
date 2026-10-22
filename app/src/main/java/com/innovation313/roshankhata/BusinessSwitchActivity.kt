@@ -228,6 +228,10 @@ class BusinessSwitchActivity : BaseActivity() {
          * switch, then rebuild every screen against the new shop's book.
          */
         fun switchAndRestart(activity: android.app.Activity, id: Long) {
+            // Another shop's book: whoever was signed in here is not signed in there (22 Oct 2026, the
+            // review: shop A's cashier stayed signed in to shop B, and B's sales carried A's staff name).
+            // On a counter that is the sign-in again; a shop without an owner PIN takes the counter's.
+            if (id != Businesses.active(activity).id) com.innovation313.roshankhata.data.Access.signOut()
             Businesses.switchTo(activity, id)
             val fresh = Intent(activity, KhataActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

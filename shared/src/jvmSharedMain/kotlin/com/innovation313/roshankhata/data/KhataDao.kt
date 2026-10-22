@@ -936,15 +936,18 @@ interface KhataDao {
      * Returns how many parties were added.
      */
     @Transaction
-    suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis()): Int {
+    suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis(), user: String? = Access.userName): Int {
         rows.forEach { r ->
             val id = insertParty(Party(name = r.name, phone = r.phone, isCustomer = true))
             if (kotlin.math.abs(r.balance) >= 0.005) {
+                // Who brought them in, on each entry and in the log (22 Oct 2026, the review: they read as the owner's).
                 insertEntryNumbered(
-                    LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "", timestamp = now)
+                    LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "",
+                        timestamp = now, createdBy = user)
                 )
             }
         }
+        log(AuditAction.IMPORT, user, "parties", detail = rows.size.toString())
         return rows.size
     }
 
@@ -960,6 +963,8 @@ interface KhataDao {
         bill.ledgerEntryId?.let { id ->
             getEntry(id)?.let { e -> updateEntry(e.copy(amount = bill.totalAmount, note = entryNote)) }
         }
+        // Who changed a bill, and to what (22 Oct 2026, the review: bills changed with nothing written down).
+        log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", bill.id, "%.2f".format(Digits.FIGURES, bill.totalAmount))
     }
 
     /**
@@ -971,7 +976,9 @@ interface KhataDao {
     suspend fun saveBillLine(billId: Long, item: BillItem): Long {
         val product = findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
         val line = item.copy(billId = billId, productId = product.id)
-        return if (item.id == 0L) insertBillItem(line) else { updateBillItem(line); item.id }
+        val id = if (item.id == 0L) insertBillItem(line) else { updateBillItem(line); item.id }
+        log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", billId, "${item.productName} ${"%.2f".format(Digits.FIGURES, item.quantity)}")
+        return id
     }
 
     @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
@@ -1017,8 +1024,10 @@ interface KhataDao {
      */
     @Transaction
     suspend fun deleteSupplierBill(id: Long, now: Long = System.currentTimeMillis()) {
-        getBill(id)?.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        val bill = getBill(id)
+        bill?.ledgerEntryId?.let { softDeleteEntry(it, now) }
         softDeleteBill(id, now)
+        log(AuditAction.BILL_DELETED, Access.userName, "supplier_bills", id, bill?.let { "%.2f".format(Digits.FIGURES, it.totalAmount) })
     }
 
     // ---------- Bill items (batch + expiry) ----------
@@ -2133,8 +2142,17 @@ interface KhataDao {
         // Book settings, loyalty and shifts (v36). Additive.
         settings: List<BookSetting> = emptyList(),
         loyalty: List<LoyaltyEntry> = emptyList(),
-        shifts: List<Shift> = emptyList()
+        shifts: List<Shift> = emptyList(),
+        /**
+         * Keep this book's owner PIN, recovery code and counter keys where the
+         * copy has none (22 Oct 2026, the review: a copy made before the owner
+         * had a PIN, restored on a counter, wiped the PIN and left nobody able
+         * to sign in as the owner). False for a live pairing, which must be
+         * the other device's book exactly.
+         */
+        keepAccess: Boolean = true
     ) {
+        val access = if (!keepAccess) emptyList() else BookSettings.ACCESS_KEYS.mapNotNull { k -> settingValue(k)?.let { BookSetting(k, it) } }
         wipeSettings()
         wipeLoyalty()
         wipeShifts()
@@ -2205,6 +2223,13 @@ interface KhataDao {
         restoreOrders(orders)
         restoreOrderItems(orderItems)
         restoreSettings(settings)
+        if (access.isNotEmpty()) {
+            val copyHasPin = settings.any { it.key == BookSettings.OWNER_PIN_HASH && it.value != null }
+            val keep = access.filter { k ->
+                if (k.key in BookSettings.OWNER_PIN_KEYS) !copyHasPin else settings.none { it.key == k.key }
+            }
+            if (keep.isNotEmpty()) restoreSettings(keep)
+        }
         restoreLoyalty(loyalty)
         restoreShifts(shifts)
     }
@@ -3834,6 +3859,22 @@ interface KhataDao {
         putSetting(BookSetting(BookSettings.OWNER_RECOVERY_HASH, codeHash))
         putSetting(BookSetting(BookSettings.OWNER_RECOVERY_SALT, codeSalt))
         insertAudit(AuditLog(user = user ?: Access.OWNER, action = AuditAction.OWNER_PIN_SET))
+    }
+
+    /**
+     * A book on a counter with no owner PIN takes the one the counter keeps
+     * ([Access.ownerPin], 22 Oct 2026, the review): written only while the
+     * book still has none, with its audit row. True when it was written.
+     */
+    @Transaction
+    suspend fun adoptOwnerPin(pinHash: String, pinSalt: String, codeHash: String, codeSalt: String): Boolean {
+        if (settingValue(BookSettings.OWNER_PIN_HASH) != null) return false
+        putSetting(BookSetting(BookSettings.OWNER_PIN_HASH, pinHash))
+        putSetting(BookSetting(BookSettings.OWNER_PIN_SALT, pinSalt))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_HASH, codeHash))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_SALT, codeSalt))
+        insertAudit(AuditLog(user = Access.OWNER, action = AuditAction.OWNER_PIN_ADOPTED))
+        return true
     }
 
     // ---------- Stock per unit, batches and costs (schema 36) ----------

@@ -82,7 +82,9 @@ private fun pinProblem(words: com.innovation313.roshankhata.words.Words, result:
 
 /**
  * [pin] checked away from the window's thread (PBKDF2 takes a moment), the
- * wait after wrong PINs in force; a miss that starts a wait is logged.
+ * wait after wrong PINs in force; a miss that starts a wait is logged. The
+ * owner's PIN typed right is kept by this computer for a shop on this
+ * counter that has none ([Access.rememberOwner]).
  */
 private suspend fun checkPin(dao: KhataDao, pin: String, account: String, matches: (String) -> Boolean): Boolean? =
     withContext(Dispatchers.Default) {
@@ -90,6 +92,7 @@ private suspend fun checkPin(dao: KhataDao, pin: String, account: String, matche
         // Each account its own count (21 Oct 2026): another's right PIN no longer clears this one's misses.
         val r = Access.tryPin(pin, onWait = { waited = true }, account = account, check = matches)
         if (waited) withContext(Dispatchers.IO) { dao.log(AuditAction.PIN_WAIT, Access.userName, detail = account) }
+        if (r == true && account == Access.OWNER) withContext(Dispatchers.IO) { runCatching { Access.rememberOwner(dao) } }
         r
     }
 
@@ -128,7 +131,8 @@ private fun SignInFrame(dao: KhataDao, gate: Boolean, onDone: () -> Unit, onClos
         val s = chosen
         val o = owner
         if (s == null && o == null) {
-            // A counter is never without an owner PIN (it is refused until one is set).
+            // A counter's book takes the owner PIN the counter keeps (Access.ownerPin); only a counter
+            // the owner's PIN was never typed on since this version can still be without one.
             if (Access.counterMode) { problem = words.text(W.access_owner_pin_needed); return }
             Access.signOut(); onDone(); return
         }

@@ -66,13 +66,16 @@ object AccessUi {
     /**
      * [pin] checked off the main thread (PBKDF2 takes a moment), with the
      * wait after wrong PINs in force. [ok] on the main thread when it is
-     * right; [failed] when it is wrong or the phone is waiting.
+     * right; [failed] when it is wrong or the phone is waiting. The owner's
+     * PIN typed right is kept by this phone for a shop on this counter that
+     * has none ([Access.rememberOwner], 22 Oct 2026).
      */
     private fun check(activity: Activity, dao: KhataDao, pin: String, account: String, matches: (String) -> Boolean, failed: () -> Unit = {}, ok: () -> Unit) {
         AppScope.launch {
             val result = withContext(Dispatchers.Default) {
                 Access.tryPin(pin, onWait = { log(dao, AuditAction.PIN_WAIT, Access.userName, account) }, account = account, check = matches)
             }
+            if (result == true && account == Access.OWNER) withContext(Dispatchers.IO) { runCatching { Access.rememberOwner(dao) } }
             activity.runOnUiThread {
                 if (activity.isFinishing) return@runOnUiThread
                 when (result) {
@@ -102,8 +105,9 @@ object AccessUi {
                     .setItems(labels) { _, i ->
                         if (i == 0) {
                             if (owner == null) {
-                                // No owner PIN in this book: only the owner's own device lets the owner in without one,
-                                // and a counter cannot exist without it (counter mode is refused until it is set).
+                                // No owner PIN in this book: only the owner's own device lets the owner in without one.
+                                // A counter's book takes the PIN the counter keeps (Access.ownerPin); only a counter the
+                                // owner's PIN was never typed on since this version can still be without one.
                                 if (Access.counterMode) { again(); return@setItems }
                                 Access.signOut(); done(); return@setItems
                             }

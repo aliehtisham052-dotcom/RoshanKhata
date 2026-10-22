@@ -3214,6 +3214,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="audit_stock_adjusted">Stok disesuaikan</string>
     <string name="audit_order_received">Pesanan diterima</string>
     <string name="audit_owner_pin_set">PIN pemilik dibuat</string>
+    <string name="audit_owner_pin_adopted">PIN pemilik diambil dari kasir ini</string>
     <string name="audit_counter_on">Mode kasir menyala</string>
     <string name="audit_counter_off">Mode kasir mati</string>
     <string name="audit_pin_wait">Terlalu banyak PIN salah</string>
@@ -3370,6 +3371,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="audit_cash_deleted">Baris buku kas dihapus</string>
     <string name="audit_party_deleted">Pelanggan dihapus</string>
     <string name="audit_day_closed">Hari ditutup</string>
+    <string name="audit_import">Diimpor</string>
+    <string name="audit_bill_deleted">Tagihan dihapus</string>
+    <string name="audit_bill_edited">Tagihan diubah</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">Ubah tanggal pembayaran berikutnya</string>

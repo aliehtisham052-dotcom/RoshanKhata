@@ -91,6 +91,7 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.STOCK_ADJUSTED -> word(W.audit_stock_adjusted)
     AuditAction.ORDER_RECEIVED -> word(W.audit_order_received)
     AuditAction.OWNER_PIN_SET -> word(W.audit_owner_pin_set)
+    AuditAction.OWNER_PIN_ADOPTED -> word(W.audit_owner_pin_adopted)
     AuditAction.COUNTER_ON -> word(W.audit_counter_on)
     AuditAction.COUNTER_OFF -> word(W.audit_counter_off)
     AuditAction.PIN_WAIT -> word(W.audit_pin_wait)
@@ -107,5 +108,8 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.CASH_DELETED -> word(W.audit_cash_deleted)
     AuditAction.PARTY_DELETED -> word(W.audit_party_deleted)
     AuditAction.DAY_CLOSED -> word(W.audit_day_closed)
+    AuditAction.IMPORT -> word(W.audit_import)
+    AuditAction.BILL_DELETED -> word(W.audit_bill_deleted)
+    AuditAction.BILL_EDITED -> word(W.audit_bill_edited)
     else -> a.action
 }

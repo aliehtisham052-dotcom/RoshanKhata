@@ -426,6 +426,8 @@ object AuditAction {
     const val ORDER_RECEIVED = "order_received"
     // The owner's PIN and counter mode (21 Oct 2026, the critical review).
     const val OWNER_PIN_SET = "owner_pin_set"
+    /** A book on a counter without an owner PIN took the one the counter keeps (22 Oct 2026, the review). */
+    const val OWNER_PIN_ADOPTED = "owner_pin_adopted"
     const val COUNTER_ON = "counter_on"
     const val COUNTER_OFF = "counter_off"
     /** Five wrong PINs in a row: the device waits. */
@@ -445,4 +447,8 @@ object AuditAction {
     const val CASH_DELETED = "cash_deleted"
     const val PARTY_DELETED = "party_deleted"
     const val DAY_CLOSED = "day_closed"
+    /** Customers brought in from another app's file (22 Oct 2026, the review: it wrote nothing down). */
+    const val IMPORT = "import"
+    const val BILL_DELETED = "bill_deleted"
+    const val BILL_EDITED = "bill_edited"
 }

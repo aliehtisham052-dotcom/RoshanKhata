@@ -3217,6 +3217,7 @@
     <string name="audit_stock_adjusted">اسٹاک درست کیا گیا</string>
     <string name="audit_order_received">آرڈر وصول ہوا</string>
     <string name="audit_owner_pin_set">مالک کا PIN بنایا گیا</string>
+    <string name="audit_owner_pin_adopted">مالک کا PIN اس کاؤنٹر سے لیا گیا</string>
     <string name="audit_counter_on">کاؤنٹر موڈ چالو</string>
     <string name="audit_counter_off">کاؤنٹر موڈ بند</string>
     <string name="audit_pin_wait">بہت زیادہ غلط PIN</string>
@@ -3373,6 +3374,9 @@
     <string name="audit_cash_deleted">کیش بک کا اندراج مٹایا</string>
     <string name="audit_party_deleted">گاہک مٹایا گیا</string>
     <string name="audit_day_closed">دن بند کیا گیا</string>
+    <string name="audit_import">امپورٹ</string>
+    <string name="audit_bill_deleted">بل مٹایا گیا</string>
+    <string name="audit_bill_edited">بل بدلا گیا</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">اگلی ادائیگی کی تاریخ بدلیں</string>

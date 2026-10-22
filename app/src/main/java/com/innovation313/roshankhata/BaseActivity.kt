@@ -27,10 +27,33 @@ abstract class BaseActivity : AppCompatActivity() {
     /** The last finger-down, for the paper plane's starting point (ui/Motion, 5 Oct). */
     override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
         if (ev.actionMasked == android.view.MotionEvent.ACTION_DOWN) {
+            // A tap that finds a counter session ended goes no further: the sign-in sheet comes instead.
+            if (sessionEnded()) return true
             com.innovation313.roshankhata.ui.Motion.lastTap = ev.rawX to ev.rawY
             com.innovation313.roshankhata.ui.Motion.lastTapAt = System.currentTimeMillis()
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
+        if (event.action == android.view.KeyEvent.ACTION_DOWN && sessionEnded()) return true
+        return super.dispatchKeyEvent(event)
+    }
+
+    /**
+     * Something was done on this screen (a tap, a key). On a counter, a
+     * manager's or the owner's session idle for five minutes ends here and
+     * the sign-in sheet comes back; true when it did, so the tap that found it
+     * ended does nothing else (22 Oct 2026, the review: one sign-in to change
+     * a price left the cashier with the owner's rights all day).
+     */
+    private fun sessionEnded(): Boolean {
+        val access = com.innovation313.roshankhata.data.Access
+        val wasIn = access.ownerIn || access.current != null
+        access.touch()
+        if (!wasIn || !access.locked || javaClass.simpleName in BEFORE_THE_BOOK) return false
+        com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
+        return true
     }
 
     /** The text size this screen was built at; see onResume. */
@@ -73,6 +96,8 @@ abstract class BaseActivity : AppCompatActivity() {
         }
         // A counter phone with nobody signed in shows nothing but the sign-in
         // sheet (21 Oct 2026). The doors before the book are left alone.
+        // A manager's or the owner's session idle too long has ended first (22 Oct 2026, the review).
+        com.innovation313.roshankhata.data.Access.expireIfIdle()
         if (javaClass.simpleName !in BEFORE_THE_BOOK) com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
     }
 
