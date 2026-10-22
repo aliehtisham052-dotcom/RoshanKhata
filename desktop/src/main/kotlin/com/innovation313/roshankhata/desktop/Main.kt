@@ -109,6 +109,9 @@ import java.util.Locale
  * database, the backup format, the money format, the words.
  */
 fun main() {
+    // Live sync's port must be free again right after a restart (22 Oct 2026): Windows' JDK binds exclusively by
+    // default, and then every connection still in TIME_WAIT (four minutes) keeps port 47313 from being opened.
+    System.setProperty("sun.net.useExclusiveBind", "false")
     val home = DesktopDatabase.home()
     // Any crash is written down before anything else runs (Report a problem shows it).
     CrashLog.install(home)
