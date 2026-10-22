@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.data
 
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.util.Base64
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
@@ -14,12 +13,12 @@ import javax.crypto.spec.PBEKeySpec
 object PinHash {
     private const val ITERATIONS = 120_000
 
-    fun salt(): String = ByteArray(16).also { SecureRandom().nextBytes(it) }.let { Base64.getEncoder().encodeToString(it) }
+    fun salt(): String = ByteArray(16).also { SecureRandom().nextBytes(it) }.let { B64.encode(it) }
 
     fun hash(pin: String, salt: String): String {
-        val spec = PBEKeySpec(pin.toCharArray(), Base64.getDecoder().decode(salt), ITERATIONS, 256)
+        val spec = PBEKeySpec(pin.toCharArray(), B64.decode(salt), ITERATIONS, 256)
         return try {
-            Base64.getEncoder().encodeToString(SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded)
+            B64.encode(SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded)
         } finally {
             spec.clearPassword()
         }
