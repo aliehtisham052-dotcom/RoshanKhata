@@ -66,6 +66,15 @@ class Businesses(private val home: File) {
         return (listOf(1L) + ids.filter { it != 1L }).distinct().map { Business(it, props.getProperty("name.$it")?.takeIf { n -> n.isNotBlank() }) }
     }
 
+    /** The device a business's book syncs with live, or null; kept here so the list can say so without opening each book. */
+    fun live(id: Long): String? = props.getProperty("live.$id")?.takeIf { it.isNotBlank() }
+
+    fun setLive(id: Long, with: String?) {
+        if (live(id) == with) return
+        if (with == null) props.remove("live.$id") else props.setProperty("live.$id", with)
+        save()
+    }
+
     fun activeId(): Long = props.getProperty(KEY_ACTIVE)?.toLongOrNull()?.takeIf { id -> list().any { it.id == id } } ?: 1L
 
     @Synchronized
@@ -150,6 +159,8 @@ fun BusinessesDialog(businesses: Businesses, active: Long, onSwitch: (Long) -> U
                 ) {
                     Text(shown(b), Modifier.weight(1f), color = c.ink,
                         fontWeight = FontWeight.Bold)
+                    // The book that syncs live with a phone, told apart from the computer's own at a glance (22 Oct 2026).
+                    businesses.live(b.id)?.let { with -> LiveBadge(with) }
                     if (!on) FluentButton(word(W.business_switch_open), { onSwitch(b.id) }, kind = ButtonKind.SUBTLE)
                     TextButton({ renaming = b }) {
                         Text(word(W.business_rename), color = c.ink)

@@ -488,6 +488,17 @@ private fun Book(
     // Live sync with the phone (22 Oct 2026): its window is open.
     var liveSync by remember { mutableStateOf(false) }
     var liveAsk by remember { mutableStateOf(false) }
+    // The device this book syncs with live (null when it does not): the header's badge and the Businesses list.
+    var liveWith by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(db) {
+        while (true) {
+            val st = withContext(Dispatchers.IO) { runCatching { LiveSync.state(db.syncSql()) }.getOrNull() }
+            val with = if (st?.on == true) st.peers.firstOrNull()?.let { p -> p.name?.takeIf { it.isNotBlank() } ?: p.device.take(6) } else null
+            liveWith = with
+            runCatching { businesses.setLive(activeBusiness, with) }
+            kotlinx.coroutines.delay(3000)
+        }
+    }
     // The phone's rows written in by a live round: every page reads again.
     LaunchedEffect(Unit) { LiveSync.changes.drop(1).collect { reload++ } }
     // A phone that scanned the live code: its book goes to the usual restore confirmation.
@@ -689,6 +700,7 @@ private fun Book(
         }
         // The phone's Home header, made wide: the shop, then backup, phone, bell, More, Add Party.
         AppHeader(
+            live = liveWith,
             shopName = shop ?: word(W.app_name),
             logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
             onShop = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
@@ -1153,7 +1165,9 @@ private fun Book(
                 // Nothing here is removed: the phone's book becomes a business of its own and that business joins.
                 p.live?.let { offer ->
                     TextButton(enabled = !busy, onClick = {
-                        val name = p.data.businessName?.takeIf { it.isNotBlank() } ?: offer.name.ifBlank { words.text(W.live_title) }
+                        // Its own name, with the phone's after it, so the two books never read alike in the list.
+                        val name = (p.data.businessName?.takeIf { it.isNotBlank() } ?: words.text(W.live_title)) +
+                            offer.name.takeIf { it.isNotBlank() }?.let { " ($it)" }.orEmpty()
                         val b = businesses.create(name)
                         LiveDesk.keepPending(offer, p.data)
                         picked = null

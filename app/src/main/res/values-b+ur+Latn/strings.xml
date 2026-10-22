@@ -3480,4 +3480,5 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_remove">Hatayein</string>
     <string name="live_remove_confirm">%1$s ko hatayein? Yeh is computer ke saath sync karna band kar dega. Us ka apna khata waisa hi rahega.</string>
     <string name="live_needs_owner">Kisi device ko live sync se jorne ke liye owner ka PIN chahiye.</string>
+    <string name="live_badge">Live · %1$s</string>
 </resources>
