@@ -53,7 +53,8 @@ class LivePairingTest {
             d.insertEntryWithItems(LedgerEntry(partyId = bilal, amount = 250.5, isGiven = false, entryNumber = ""), emptyList())
             d.insertCashEntry(CashEntry(amount = 1200.0, isIncome = false, category = "Rent"))
             d.insertCheque(Cheque(partyId = ali, amount = 5000.0, isReceived = true, dueDate = 1_790_000_000_000L))
-            d.insertProduct(Product(name = "Urea", nameKey = "urea", normalisedName = "urea"))
+            // As the app writes a product: its key and search name from ProductName, as a restore makes them again.
+            d.insertProduct(Product(name = "Urea", nameKey = ProductName.key("Urea"), normalisedName = ProductName.normalised("Urea")))
             d.insertStaff(Staff(name = "Munshi", monthlySalary = 25000.0))
 
             val phoneSql = phone.syncSql()
