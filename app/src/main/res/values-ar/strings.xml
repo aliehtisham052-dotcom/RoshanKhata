@@ -3405,6 +3405,7 @@
     <string name="audit_stock_adjusted">تعديل المخزون</string>
     <string name="audit_order_received">استلام طلبية</string>
     <string name="audit_owner_pin_set">تعيين رمز المالك</string>
+    <string name="audit_owner_pin_adopted">تم أخذ رمز المالك من هذا الكاشير</string>
     <string name="audit_counter_on">تشغيل وضع الكاشير</string>
     <string name="audit_counter_off">إيقاف وضع الكاشير</string>
     <string name="audit_pin_wait">رموز خاطئة كثيرة</string>
@@ -3561,6 +3562,9 @@
     <string name="audit_cash_deleted">تم حذف قيد من دفتر النقد</string>
     <string name="audit_party_deleted">تم حذف عميل</string>
     <string name="audit_day_closed">تم إغلاق اليوم</string>
+    <string name="audit_import">استيراد</string>
+    <string name="audit_bill_deleted">تم حذف فاتورة</string>
+    <string name="audit_bill_edited">تم تغيير فاتورة</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">تغيير موعد الدفعة التالية</string>

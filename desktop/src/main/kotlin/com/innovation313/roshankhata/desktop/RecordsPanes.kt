@@ -174,8 +174,10 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
                 if (open == b.id) {
                     Row {
                         FluentButton(word(W.edit_bill), { Gates.edit { editingBill = b } }, kind = ButtonKind.SUBTLE)
-                        FluentButton(word(W.add_item), { lineFor = b.id to null }, kind = ButtonKind.SUBTLE)
-                        FluentButton(word(W.delete_bill), { deletingBill = b }, kind = ButtonKind.DANGER)
+                        // A bill's lines and the bill itself change the book: a cashier waits for a manager's PIN,
+                        // as on the phone (22 Oct 2026, the review: these asked nobody).
+                        FluentButton(word(W.add_item), { Gates.edit { lineFor = b.id to null } }, kind = ButtonKind.SUBTLE)
+                        FluentButton(word(W.delete_bill), { Gates.edit { deletingBill = b } }, kind = ButtonKind.DANGER)
                     }
                     var path by remember(b.id, photoVersion) { mutableStateOf<String?>(null) }
                     androidx.compose.runtime.LaunchedEffect(b.id, photoVersion) { path = billPhoto(b.id) }
@@ -198,7 +200,7 @@ fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home
                                     Text(detail, color = c.inkSoft, fontSize = 12.sp)
                                 }
                                 FluentButton(word(W.batch_buyers_action), { buyersOf = l.id }, kind = ButtonKind.SUBTLE)
-                                FluentButton(word(W.edit), { lineFor = b.id to l }, kind = ButtonKind.SUBTLE)
+                                FluentButton(word(W.edit), { Gates.edit { lineFor = b.id to l } }, kind = ButtonKind.SUBTLE)
                                 FluentButton(word(W.delete), { Gates.edit { deletingLine = l } }, kind = ButtonKind.DANGER)
                             }
                         }

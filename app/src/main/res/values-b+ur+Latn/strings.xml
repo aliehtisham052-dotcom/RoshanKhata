@@ -3217,6 +3217,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="audit_stock_adjusted">Stock durust kiya gaya</string>
     <string name="audit_order_received">Order wusool hua</string>
     <string name="audit_owner_pin_set">Malik ka PIN banaya gaya</string>
+    <string name="audit_owner_pin_adopted">Malik ka PIN is counter se liya gaya</string>
     <string name="audit_counter_on">Counter mode chalu</string>
     <string name="audit_counter_off">Counter mode band</string>
     <string name="audit_pin_wait">Bohat zyada ghalat PIN</string>
@@ -3373,6 +3374,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="audit_cash_deleted">Cashbook ka indiraaj mitaya</string>
     <string name="audit_party_deleted">Gahak mitaya gaya</string>
     <string name="audit_day_closed">Din band kiya gaya</string>
+    <string name="audit_import">Import</string>
+    <string name="audit_bill_deleted">Bill mitaya gaya</string>
+    <string name="audit_bill_edited">Bill badla gaya</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">Agli adaigi ki tareekh badlen</string>

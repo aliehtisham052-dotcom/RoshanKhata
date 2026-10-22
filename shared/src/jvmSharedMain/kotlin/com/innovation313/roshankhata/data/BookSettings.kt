@@ -57,6 +57,12 @@ object BookSettings {
     const val COUNTER_USED = "counter_used"
     const val OWNER_DEVICES = "owner_devices"
 
+    /** The owner's PIN and recovery code: kept together, or not at all. */
+    val OWNER_PIN_KEYS = setOf(OWNER_PIN_HASH, OWNER_PIN_SALT, OWNER_RECOVERY_HASH, OWNER_RECOVERY_SALT)
+
+    /** Who may do what on this book's devices: kept by a restore whose copy says nothing of them ([KhataDao.restoreAll]). */
+    val ACCESS_KEYS = OWNER_PIN_KEYS + setOf(COUNTER_USED, OWNER_DEVICES)
+
     /**
      * "1" when live sync may also go through Innovation 313's relay on the
      * internet (LiveCloud) while the two devices are not on one WiFi (22 Oct

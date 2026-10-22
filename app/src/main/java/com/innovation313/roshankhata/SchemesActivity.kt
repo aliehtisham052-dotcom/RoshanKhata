@@ -148,8 +148,9 @@ class SchemesActivity : BaseActivity() {
                     .setNegativeButton(R.string.cancel, null)
                     // A scheme's delete is for whoever may change the book (21 Oct 2026, the critical review).
                     .setPositiveButton(R.string.scheme_delete) { _, _ ->
-                        val gone = { AppScope.launch { dao.deleteScheme(s.id) }; Unit }
-                        if (com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { gone() }) gone()
+                        // edit(), not may(): may's retry must call may again, and gone() did not, so the
+                        // manager's one approval stayed for the next change anywhere (22 Oct 2026, the review).
+                        com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { AppScope.launch { dao.deleteScheme(s.id) } }
                     }
                     .show()
             }

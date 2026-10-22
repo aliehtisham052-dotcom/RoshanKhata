@@ -68,8 +68,8 @@ class AccessTest {
         Access.store = prefs
         assertTrue("the owner's own device: the owner", Access.isOwner)
         Access.switchCounterMode(true)
-        assertTrue("turning it on leaves the owner in", Access.isOwner)
-        Access.signOut()
+        // Turning it on locks it at once (22 Oct 2026, the review): the device is handed over without the owner's rights.
+        assertFalse(Access.isOwner)
         assertTrue(Access.locked)
         Access.Permission.values().forEach { assertFalse("locked: ${it.name}", Access.can(it)) }
         // The next start of the app on this device: still a counter, still locked.
