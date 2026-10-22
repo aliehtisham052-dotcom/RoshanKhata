@@ -63,4 +63,13 @@ jobs:
             exit 1
           fi
       - run: npm ci
-      - run: npx wrangler deploy
+      - name: Deploy (Cloudflare's own error is published if it fails; the token is never printed)
+        run: |
+          set +e
+          npx wrangler deploy > deploy.log 2>&1
+          code=$?
+          # The repository is public: only Wrangler's error lines go out, never whoami or an e-mail.
+          grep -vE "@[A-Za-z0-9.-]+\.[a-z]{2,}" deploy.log | grep -E "ERROR|✘|\[code|code:|error|Error|https://|Uploaded|Deployed|workers.dev" | head -40 | while IFS= read -r line; do
+            if [ $code -ne 0 ]; then echo "::error::$line"; else echo "::notice::$line"; fi
+          done
+          exit $code
