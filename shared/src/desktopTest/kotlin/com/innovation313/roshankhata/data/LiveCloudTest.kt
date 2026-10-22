@@ -224,4 +224,89 @@ class LiveCloudTest {
         both()
         assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "After the relay forgot" })
     }
+
+    // ---- Several relays (22 Oct 2026: Cloudflare, then Supabase, then the owner's hosting) ----
+
+    private val second = FakeRelay()
+    private val roads = listOf(LiveCloud.Road("https://one.test", ""), LiveCloud.Road("https://two.test", "two"))
+
+    /** Calls to "one.test" go to [relay], to "two.test" to [second]; [cutOne] cuts this caller off the first. */
+    private fun router(cutOne: () -> Boolean) = LiveCloud.Http { m, url, h, b ->
+        if (url.startsWith("https://one.test")) {
+            if (cutOne()) throw java.io.IOException("cannot reach the first relay")
+            relay.call(m, url, h, b)
+        } else second.call(m, url, h, b)
+    }
+
+    private var phoneCut = false
+    private var pcCut = false
+    private val phoneWay = router { phoneCut }
+    private val pcWay = router { pcCut }
+
+    private suspend fun allRoads(times: Int = 2, readOthers: Boolean = true) = repeat(times) {
+        clock += 1000
+        val a = LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { false }, readOthers)
+        val b = LiveCloud.roundAll(pc.syncSql(), pcWay, roads, clock, { false }, readOthers)
+        assertTrue("$a", a is LiveCloud.Result.Done)
+        assertTrue("$b", b is LiveCloud.Result.Done)
+    }
+
+    @Test
+    fun `when the first relay is down for both, the second carries the book`() = runBlocking {
+        relay.down = true
+        phone.khataDao().insertParty(Party(name = "Through the second"))
+        pc.khataDao().insertParty(Party(name = "Back through the second"))
+        allRoads()
+        assertEquals(setOf("Through the second", "Back through the second"), phone.khataDao().allPartiesForBackup().map { it.name }.toSet())
+        assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
+        assertTrue(second.parcels.isNotEmpty() || second.seq > 0)
+        assertEquals(null, relay.pass)
+    }
+
+    @Test
+    fun `a phone that cannot reach the first relay still meets a computer that can`() = runBlocking {
+        phoneCut = true
+        phone.khataDao().insertParty(Party(name = "Phone, cut off the first"))
+        pc.khataDao().insertParty(Party(name = "Computer, on the first"))
+        allRoads(3)
+        val names = setOf("Phone, cut off the first", "Computer, on the first")
+        assertEquals(names, phone.khataDao().allPartiesForBackup().map { it.name }.toSet())
+        assertEquals(names, pc.khataDao().allPartiesForBackup().map { it.name }.toSet())
+        assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
+        // Later changes still go both ways while the phone stays cut off.
+        pc.khataDao().insertParty(Party(name = "Later, from the computer"))
+        allRoads(2, readOthers = false)
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Later, from the computer" })
+    }
+
+    @Test
+    fun `the later relays are not asked while the first answers and nobody uses them`() = runBlocking {
+        phone.khataDao().insertParty(Party(name = "Only the first"))
+        allRoads(2, readOthers = false)
+        assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "Only the first" })
+        assertEquals(0, second.calls)
+        assertEquals(null, second.pass)
+    }
+
+    @Test
+    fun `a relay that is down or halted is passed over, and with none left the round says unreachable`() = runBlocking {
+        relay.down = true
+        second.down = true
+        assertEquals(LiveCloud.Result.Unreachable, LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { false }))
+        // The kill switch is the book's own state: no relay is asked at all.
+        second.down = false
+        val before = second.calls
+        assertEquals(LiveCloud.Result.Halted, LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { true }))
+        assertEquals(before, second.calls)
+        assertEquals(LiveCloud.Result.Off, LiveCloud.roundAll(phone.syncSql(), phoneWay, emptyList(), clock, { false }))
+    }
+
+    @Test
+    fun `cloudflare keeps the cursors it had before there were several relays`() = runBlocking {
+        both()
+        val id = LiveSync.identity(phone.syncSql())!!
+        val keys = phone.syncSql().read { rows("SELECT k FROM sync_meta WHERE k LIKE 'cloud%'", emptyList(), "T").map { it[0] as String } }
+        assertTrue(keys.toString(), keys.contains("cloud_after:" + id.book))
+        assertTrue(keys.none { it.startsWith("cloud__") })
+    }
 }

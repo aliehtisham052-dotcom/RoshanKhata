@@ -389,8 +389,31 @@ of it was tried on two real devices yet — CI only.
   version and device basics — declare "Device or other IDs" (app
   functionality), not shared; the privacy policy says so (section 17).
   Not tried on a real phone yet. Only the open business's book is woken.
+- **Three relays (22 Oct 2026, the owner's plan: never rely on one):**
+  Cloudflare (`cloud/worker`), Supabase (`supabase/functions/daakiya`, project
+  `tcztkeyliletxshhkhnz`, Deno + Postgres in schema `rk_relay` with RLS on and
+  no policy, JWT check off — the book's pass is the check) and the owner's
+  hosting (`web/relay`, PHP + one SQLite per book in `rk-relay-data` beside
+  public_html, uploaded by hand to `public_html/r`). All three speak the same
+  paths and answers; `scripts/test_relay.py` holds each to the same 32 checks
+  (relays.yml for PHP and Supabase, cloud-worker.yml for the Worker). The
+  token goes as `Authorization: RK` and `X-RK-Pass` (hostings drop the first).
+  `LiveCloud.roundAll`: the first relay that answers takes this device's
+  changes and gives the others'; later relays are read every 8th round
+  (`OTHERS_EVERY`) and also sent to while a parcel came from them within 24 h
+  (`USED_MS`) — a phone that cannot reach Cloudflare still meets a computer
+  that can. Cursors per relay in sync_meta (`cloud_<tag>_after:<book>`;
+  Cloudflare's tag is "" so old books keep their place). A relay answering
+  503 is passed over; the kill switch still stops all. Supabase pauses a free
+  project after 7 quiet days: the Worker's daily cron (`KEEP_ALIVE`, 04:23
+  UTC) calls its health, which runs a query and lets idle books go. Deploy
+  Supabase with relays.yml (deploy = true, `SUPABASE_ACCESS_TOKEN`: Edge
+  Functions read-write on that one project, expires 21 Oct 2027). Upstash was
+  dropped (22 Oct): a phone could only use it with its master key or another
+  server to mint per-book keys, so it could never be an independent road.
 - Not yet: the audit chain stays per device; the wake-up for a business that
-  is not the open one.
+  is not the open one; the wake-up through Supabase or the hosting (only
+  Cloudflare sends FCM).
 
 ### The review (22 Oct 2026, kmp-desktop-15 — the owner: "critical analysis karo, drawbacks fix karo")
 
@@ -708,6 +731,14 @@ Each of these cost a build or a bug.
 42. **A backup is written on the computer's own disk, then copied out.**
     Exported straight to a USB stick or Drive folder, it held the book's
     transaction for as long as the stick took, and the counter waited.
+43. **One conversation, many relays.** A relay is added only when it passes
+    `scripts/test_relay.py` like the others; a change to the protocol goes to
+    all three in the same commit.
+44. **Research before deciding, then decide once** (the owner, 22 Oct): "PHP
+    only on Hostinger" was said from memory and was wrong (Business has
+    Node.js, on demand); Upstash was planned before anyone checked that a phone
+    cannot hold its key. Search first, give one decision, and say what changed
+    if a verified fact changes it.
 
 ---
 

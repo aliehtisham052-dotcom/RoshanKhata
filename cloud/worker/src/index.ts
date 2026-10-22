@@ -27,6 +27,8 @@ export interface Env {
   LIVE: string;
   KEEP_DAYS: string;
   DAY_LIMIT: string;
+  /** Other relays' health addresses, called once a day (KEEP_ALIVE in wrangler.toml); comma-separated. */
+  KEEP_ALIVE?: string;
   FCM_SERVICE_ACCOUNT?: string;
   FCM_PROJECT_ID?: string;
 }
@@ -64,8 +66,7 @@ export default {
     const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave)$/);
     if (!m) return refuse(404, "no-such-path");
     const [, book, action] = m;
-    const auth = request.headers.get("authorization") ?? "";
-    const token = auth.startsWith("RK ") ? auth.slice(3).trim() : "";
+    const token = passOf(request);
     if (!HEX64.test(token)) return refuse(401, "no-pass");
     const device = request.headers.get("x-device") ?? "";
     if (!DEVICE.test(device)) return refuse(400, "no-device");
@@ -74,7 +75,27 @@ export default {
     const stub = env.BOOKS.get(env.BOOKS.idFromName(book));
     return stub.fetch(request);
   },
+
+  /**
+   * Once a day (wrangler.toml's cron): the other relays' health addresses are called, so a free
+   * Supabase project is never paused for want of use (it pauses after 7 quiet days) and its idle books go.
+   */
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    const urls = (env.KEEP_ALIVE ?? "").split(",").map((s) => s.trim()).filter((s) => s.startsWith("https://"));
+    ctx.waitUntil(Promise.all(urls.map((u) => fetch(u, { headers: { "user-agent": "rk-keepalive" } }).catch(() => null))));
+  },
 } satisfies ExportedHandler<Env>;
+
+/**
+ * The book's token: "Authorization: RK <hex>", or "X-RK-Pass: <hex>" (22 Oct 2026: the owner's PHP
+ * hosting may drop Authorization before the script sees it, so the app sends both to every relay).
+ */
+function passOf(request: Request): string {
+  const x = (request.headers.get("x-rk-pass") ?? "").trim();
+  if (x) return x;
+  const auth = request.headers.get("authorization") ?? "";
+  return auth.startsWith("RK ") ? auth.slice(3).trim() : "";
+}
 
 async function sha256Hex(text: string): Promise<string> {
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -125,7 +146,7 @@ export class Daakiya extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const action = url.pathname.split("/").pop()!;
-    const token = (request.headers.get("authorization") ?? "").slice(3).trim();
+    const token = passOf(request);
     const device = request.headers.get("x-device")!;
     const now = Date.now();
 

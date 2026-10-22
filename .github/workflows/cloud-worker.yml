@@ -5,7 +5,7 @@ name: Cloud relay
 # Cloudflare secrets exist. Without them the deploy step says so and stops.
 on:
   push:
-    paths: ["cloud/worker/**", ".github/workflows/cloud-worker.yml"]
+    paths: ["cloud/worker/**", ".github/workflows/cloud-worker.yml", "scripts/test_relay.py"]
   workflow_dispatch:
     inputs:
       deploy:
@@ -43,6 +43,8 @@ jobs:
           call POST $T bbbbbbbbbbbbbbbb ack '{"upTo":1}' | grep -q '"ok":true'
           call GET  $T bbbbbbbbbbbbbbbb "take?after=0" | grep -q '"parcels":\[\]'
           echo "relay smoke test passed"
+          # The whole conversation, as the PHP and Supabase relays are held to (relays.yml).
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8787
 
   deploy:
     needs: check
