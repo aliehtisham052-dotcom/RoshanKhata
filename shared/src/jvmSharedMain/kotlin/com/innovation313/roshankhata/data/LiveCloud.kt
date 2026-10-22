@@ -177,7 +177,9 @@ object LiveCloud {
      */
     suspend fun round(
         sql: SyncSql, http: Http = plain, relay: String? = base, now: Long = System.currentTimeMillis(),
-        halted: () -> Boolean = { LiveControl.halted() }, tag: String = "", send: Boolean = true
+        tag: String = "", send: Boolean = true,
+        // Last, so a caller's trailing { } is this (22 Oct 2026: put before tag and send, the tests' { false } became send).
+        halted: () -> Boolean = { LiveControl.halted() }
     ): Result {
         val root = relay?.trimEnd('/') ?: return Result.Off
         val id = LiveSync.identity(sql) ?: return Result.Off
@@ -307,7 +309,7 @@ object LiveCloud {
         var more = false
         for (road in roads) {
             if (mine == null) {
-                when (val r = round(sql, http, road.base, now, { false }, road.tag, send = true)) {
+                when (val r = round(sql, http, road.base, now, road.tag, send = true, halted = { false })) {
                     is Result.Done -> mine = r
                     Result.Off, Result.NotPaired -> return r
                     else -> if (failed == null) failed = r
@@ -316,7 +318,7 @@ object LiveCloud {
             }
             val used = id != null && (getMeta(sql, k("took_at", id.book, road.tag))?.toLongOrNull() ?: 0L) > now - USED_MS
             if (!readOthers && !used) continue
-            val r = round(sql, http, road.base, now, { false }, road.tag, send = used)
+            val r = round(sql, http, road.base, now, road.tag, send = used, halted = { false })
             if (r is Result.Done) { took += r.took; more = more || r.more }
         }
         val first = mine ?: return failed ?: Result.Unreachable
