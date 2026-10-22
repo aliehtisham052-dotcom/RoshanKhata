@@ -3685,7 +3685,7 @@ You can change this any time from this screen.</string>
     <string name="live_mismatch">The two books do not match. Join again to make a fresh copy.</string>
     <string name="live_sent">Sent. On the computer, say yes to replace its book with this phone’s.</string>
     <string name="live_not_live_code">This is not a live sync code. On the computer, open Live sync and scan the code it shows.</string>
-    <string name="live_pc_steps">On the phone open Backup → Live sync with the computer → Join the computer, and scan this code. After your yes, the computer’s book is replaced with the phone’s, and from then on both stay the same.</string>
+    <string name="live_pc_steps">On the phone open Backup → Live sync with the computer → Join the computer, and scan this code. After your yes, the phone’s book opens here as a new business (this computer’s own book stays as it is), and from then on the two stay the same.</string>
     <string name="live_pc_none">No phone has joined yet.</string>
     <string name="live_conflicts">Changed on both at once (one was kept, the other saved): %1$d</string>
     <string name="live_pair_warning">This is the phone’s book. To keep this computer’s own book exactly as it is, join as a new business: the phone’s book opens beside it and nothing here is removed. Replace everything only if this computer’s book is not needed.</string>

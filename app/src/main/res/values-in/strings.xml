@@ -3462,7 +3462,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_mismatch">Kedua buku tidak cocok. Hubungkan lagi untuk membuat salinan baru.</string>
     <string name="live_sent">Terkirim. Di komputer, tekan ya agar bukunya diganti dengan buku ponsel ini.</string>
     <string name="live_not_live_code">Ini bukan kode sinkron langsung. Di komputer, buka Sinkron langsung dan pindai kode yang ditampilkan.</string>
-    <string name="live_pc_steps">Di ponsel buka Cadangan → Sinkron langsung dengan komputer → Hubungkan ke komputer, lalu pindai kode ini. Setelah Anda setuju, buku komputer diganti dengan buku ponsel, dan sejak itu keduanya tetap sama.</string>
+    <string name="live_pc_steps">Di ponsel buka Cadangan → Sinkron langsung dengan komputer → Hubungkan ke komputer, lalu pindai kode ini. Setelah Anda setuju, buku ponsel dibuka di sini sebagai usaha baru (buku komputer ini sendiri tetap seperti apa adanya), dan sejak itu keduanya tetap sama.</string>
     <string name="live_pc_none">Belum ada ponsel yang terhubung.</string>
     <string name="live_conflicts">Diubah di keduanya bersamaan (satu dipakai, yang lain disimpan): %1$d</string>
     <string name="live_pair_warning">Ini buku dari ponsel. Agar buku komputer ini tetap persis seperti sekarang, gabungkan sebagai usaha baru: buku ponsel dibuka di sampingnya dan tidak ada yang dihapus di sini. Pilih “Ganti semuanya” hanya jika buku komputer ini tidak diperlukan.</string>
