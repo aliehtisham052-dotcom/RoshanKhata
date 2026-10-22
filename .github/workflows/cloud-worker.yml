@@ -1,0 +1,66 @@
+name: Cloud relay
+
+# The live sync relay (cloud/worker). Every push that touches it is type-checked;
+# it is deployed ONLY when the owner runs this workflow by hand and the two
+# Cloudflare secrets exist. Without them the deploy step says so and stops.
+on:
+  push:
+    paths: ["cloud/worker/**", ".github/workflows/cloud-worker.yml"]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy the relay to Cloudflare"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: cloud/worker } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - name: Smoke test on a local Worker (no account, nothing leaves the runner)
+        run: |
+          npx wrangler dev --port 8787 --ip 127.0.0.1 > wr.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8787/v1/health && break; sleep 1; done
+          B=$(openssl rand -hex 16); T=$(openssl rand -hex 32); W=$(openssl rand -hex 32)
+          U=http://127.0.0.1:8787/v1/b/$B
+          call() { curl -s -X "$1" -H "authorization: RK $2" -H "x-device: $3" ${5:+--data-binary "$5"} "$U/$4"; }
+          call POST $T aaaaaaaaaaaaaaaa send x | grep -q say-hello-first
+          call POST $T aaaaaaaaaaaaaaaa hello | grep -q '"ok":true'
+          call POST $W bbbbbbbbbbbbbbbb hello | grep -q wrong-pass
+          call POST $T bbbbbbbbbbbbbbbb hello | grep -q '"ok":true'
+          call POST $T aaaaaaaaaaaaaaaa send sealed | grep -q '"seq":1'
+          call GET  $T bbbbbbbbbbbbbbbb "take?after=0" | grep -q c2VhbGVk
+          call GET  $T aaaaaaaaaaaaaaaa "take?after=0" | grep -q '"parcels":\[\]'
+          call POST $T bbbbbbbbbbbbbbbb ack '{"upTo":1}' | grep -q '"ok":true'
+          call GET  $T bbbbbbbbbbbbbbbb "take?after=0" | grep -q '"parcels":\[\]'
+          echo "relay smoke test passed"
+
+  deploy:
+    needs: check
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: cloud/worker } }
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Secrets present?
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are not set; nothing deployed."
+            exit 1
+          fi
+      - run: npm ci
+      - run: npx wrangler deploy
