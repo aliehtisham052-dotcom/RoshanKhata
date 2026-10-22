@@ -12,6 +12,8 @@ LIVE = "1"
 KEEP_DAYS = "7"
 # Parcels one book may leave in a UTC day (a busy counter is a few hundred).
 DAY_LIMIT = "3000"
+# The Firebase project whose messaging wakes a phone (not a secret: a project's name).
+FCM_PROJECT_ID = "roshan-khata"
 
 [[durable_objects.bindings]]
 name = "BOOKS"
@@ -24,4 +26,3 @@ new_sqlite_classes = ["Daakiya"]
 
 # Secrets (wrangler secret put, never in this file):
 #   FCM_SERVICE_ACCOUNT  the Firebase service account JSON, for a wake-up push (optional)
-#   FCM_PROJECT_ID       the Firebase project id (optional)
