@@ -118,7 +118,10 @@ class BackupActivity : BaseActivity() {
         findViewById<MaterialButton>(R.id.btnTakeFromComputer).setOnClickListener { scanComputer(take = true) }
 
         // Live sync with the computer (22 Oct 2026): join once, then the same book on both.
-        findViewById<MaterialButton>(R.id.btnLiveJoin).setOnClickListener { scanLive() }
+        // Joining gives a device the whole book: the owner's PIN first, whoever is signed in (22 Oct 2026).
+        findViewById<MaterialButton>(R.id.btnLiveJoin).setOnClickListener {
+            com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_needs_owner)) { scanLive() }
+        }
         findViewById<MaterialButton>(R.id.btnLiveStop).setOnClickListener { confirmLiveStop() }
         lifecycleScope.launch { LiveRunner.status.collect { showLive(it) } }
 

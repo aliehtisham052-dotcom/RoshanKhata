@@ -3502,4 +3502,10 @@
     <string name="live_pc_steps">فون تي بيڪ اپ ← ڪمپيوٽر سان لائيو سنڪ ← ڪمپيوٽر سان ڳنڍيو کوليو ۽ هي ڪوڊ اسڪين ڪريو. توهان جي ها کان پوءِ ڪمپيوٽر جو کاتو فون جي کاتي سان بدلجي ويندو، ۽ پوءِ ٻئي هڪجهڙا رهندا.</string>
     <string name="live_pc_none">اڃا ڪو فون نه ڳنڍيو ويو آهي.</string>
     <string name="live_conflicts">ٻنهي تي گڏ تبديلي (هڪ رکي وئي، ٻي محفوظ ڪئي وئي): %1$d</string>
+    <string name="live_pair_warning">هي فون جو کاتو آهي. هن ڪمپيوٽر جو پنهنجو کاتو بلڪل ساڳيو رکڻ لاءِ نئين ڪاروبار طور ڳنڍيو: فون جو کاتو ان سان گڏ الڳ کلندو ۽ هتان ڪجهه به نه مٽبو. ”سڀ ڪجهه مٽايو“ تڏهن ئي دٻايو جڏهن هن ڪمپيوٽر جو کاتو ضروري نه هجي.</string>
+    <string name="live_join_new_business">نئين ڪاروبار طور ڳنڍيو</string>
+    <string name="live_devices">ڳنڍيل ڊوائيس</string>
+    <string name="live_remove">هٽايو</string>
+    <string name="live_remove_confirm">%1$s کي هٽايو؟ اهو هن ڪمپيوٽر سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو.</string>
+    <string name="live_needs_owner">ڪنهن ڊوائيس کي لائيو سنڪ سان ڳنڍڻ لاءِ مالڪ جو PIN گهرجي.</string>
 </resources>

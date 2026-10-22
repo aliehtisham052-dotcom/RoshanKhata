@@ -214,7 +214,19 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
     // Live sync with the phone (22 Oct 2026): listening while this book syncs.
-    LaunchedEffect(db) { withContext(Dispatchers.IO) { runCatching { LiveDesk.attach(db, home) } } }
+    LaunchedEffect(db) {
+        withContext(Dispatchers.IO) {
+            // A phone's book the owner chose to keep as a new business: this (new, empty) book takes it and joins.
+            LiveDesk.takePending()?.let { (offer, data) ->
+                runCatching {
+                    LiveSync.disable(db.syncSql())
+                    restore(data, db, settings)
+                    LiveDesk.join(db, home, offer)
+                }
+            }
+            runCatching { LiveDesk.attach(db, home) }
+        }
+    }
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
@@ -475,6 +487,7 @@ private fun Book(
     var phoneSync by remember { mutableStateOf(false) }
     // Live sync with the phone (22 Oct 2026): its window is open.
     var liveSync by remember { mutableStateOf(false) }
+    var liveAsk by remember { mutableStateOf(false) }
     // The phone's rows written in by a live round: every page reads again.
     LaunchedEffect(Unit) { LiveSync.changes.drop(1).collect { reload++ } }
     // A phone that scanned the live code: its book goes to the usual restore confirmation.
@@ -688,7 +701,15 @@ private fun Book(
             menu = listOf(
                 MenuLine(word(W.settings_group_data), null),
                 MenuLine(word(W.restore_from_file)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { restoreFromFile() } },
-                MenuLine(word(W.live_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { liveSync = true } },
+                // Joining a device hands it the whole book: the owner's own PIN, whoever is signed in (22 Oct 2026).
+                MenuLine(word(W.live_title)) {
+                    Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) {
+                        scope.launch {
+                            val pin = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Access.ownerPin(dao) }.getOrNull() }
+                            if (pin == null) liveSync = true else liveAsk = true
+                        }
+                    }
+                },
                 MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
                 MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
                 MenuLine(word(W.snapshots_title)) { section = Section.DAILY },
@@ -1113,6 +1134,8 @@ private fun Book(
             title = { Text(word(W.restore_warning_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    // A live pairing (22 Oct 2026): keeping this book and opening the phone's beside it comes first.
+                    if (p.live != null) Text(word(W.live_pair_warning), color = c.ink, fontWeight = FontWeight.Medium)
                     LossNote(loss, agreed) { agreed = it }
                     Text(
                         word(
@@ -1127,6 +1150,16 @@ private fun Book(
                 // Or keep this book and add only what the copy has that it lacks.
                 // Not for a live pairing: the two devices must start from the very same book.
                 if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
+                // Nothing here is removed: the phone's book becomes a business of its own and that business joins.
+                p.live?.let { offer ->
+                    TextButton(enabled = !busy, onClick = {
+                        val name = p.data.businessName?.takeIf { it.isNotBlank() } ?: offer.name.ifBlank { words.text(W.live_title) }
+                        val b = businesses.create(name)
+                        LiveDesk.keepPending(offer, p.data)
+                        picked = null
+                        onSwitch(b.id)
+                    }) { Text(word(W.live_join_new_business)) }
+                }
                 TextButton(
                     enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
@@ -1435,7 +1468,10 @@ private fun Book(
             dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
         )
     }
+    if (liveAsk) OverrideDialog(dao, word(W.live_needs_owner), ownerOnly = true, onClose = { liveAsk = false }) { liveSync = true }
     if (liveSync) LiveSyncDialog(db, onClose = { liveSync = false })
+    // A live pairing just finished in this book (here or as a new business): every page reads again.
+    LaunchedEffect(Unit) { LiveDesk.joined.drop(1).collect { shop = shopName(); reload++ } }
     if (phoneSync) {
         // The phone may also take this computer's book (Backup → Take the computer's book): the
         // same text a backup file holds, made fresh when asked.
