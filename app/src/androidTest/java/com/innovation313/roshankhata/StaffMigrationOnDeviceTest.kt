@@ -10,6 +10,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.MIGRATION_28_29
 import com.innovation313.roshankhata.data.MIGRATION_33_34
 import com.innovation313.roshankhata.data.Schema36
+import com.innovation313.roshankhata.data.Schema38
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -44,6 +45,8 @@ class StaffMigrationOnDeviceTest {
         MIGRATION_33_34.migrate(migrated)
         // Schema 36 gave staff_payments a uid; only its own lines of the list apply to these three tables.
         for (sql in Schema36.statements.filter { it.contains("staff_payments") }) migrated.execSQL(sql)
+        // Schema 38 gave staff and staff_attendance a uid, and all three an index on it (live sync, 22 Oct 2026).
+        for (sql in Schema38.statements.filter { it.contains("`staff") }) migrated.execSQL(sql)
 
         val room = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()
         val fresh = room.openHelper.writableDatabase
