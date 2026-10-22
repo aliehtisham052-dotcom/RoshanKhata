@@ -1,2 +1,2 @@
-# The shops' passes: never served.
+# The shops' passes, when the hosting keeps them here (api.php prefers a folder beside the web root): never served.
 Require all denied

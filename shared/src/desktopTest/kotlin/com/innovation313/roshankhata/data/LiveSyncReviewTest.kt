@@ -248,10 +248,13 @@ class LiveSyncReviewTest {
     fun `two devices on one letter move one of them, never to A`() = runBlocking {
         phoneSql.write { exec("UPDATE sync_meta SET v = 'K' WHERE k = 'mark'") }
         pcSql.write { exec("UPDATE sync_meta SET v = 'K' WHERE k = 'mark'") }
-        val smaller = if (phoneId.device < pcId.device) phoneSql else pcSql
-        val larger = if (smaller === phoneSql) pcSql else phoneSql
-        val smallerOther = if (smaller === phoneSql) pcId.device else phoneId.device
-        val largerOther = if (smaller === phoneSql) phoneId.device else pcId.device
+        // Decided once, by the ids (22 Oct 2026): phoneSql makes a new door at every read, so "smaller === phoneSql"
+        // was never true, and the test passed only when the phone's id happened to be the larger.
+        val phoneSmaller = phoneId.device < pcId.device
+        val smaller = if (phoneSmaller) phoneSql else pcSql
+        val larger = if (phoneSmaller) pcSql else phoneSql
+        val smallerOther = if (phoneSmaller) pcId.device else phoneId.device
+        val largerOther = if (phoneSmaller) phoneId.device else pcId.device
         assertNull(LiveSync.settleMark(larger, largerOther, "K"))
         val moved = LiveSync.settleMark(smaller, smallerOther, "K")
         assertNotNull(moved)

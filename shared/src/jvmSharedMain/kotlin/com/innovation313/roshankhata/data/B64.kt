@@ -26,23 +26,37 @@ object B64 {
         return out.toString()
     }
 
-    /** The bytes of [text]; spaces and line breaks are skipped. Throws on a character outside the alphabet. */
+    /**
+     * The bytes of [text], read as the JDK's own decoder reads it (22 Oct
+     * 2026, the review: this took anything after the first "=" and a lone
+     * last character): the alphabet only; "=" only at the end, and only as
+     * much as the last group needs, or none; never one character left over.
+     * Spaces and line breaks are skipped. Throws IllegalArgumentException
+     * otherwise. B64Test holds it to the JDK on random text.
+     */
     fun decode(text: String): ByteArray {
         val out = java.io.ByteArrayOutputStream(text.length * 3 / 4)
         var buffer = 0
         var bits = 0
+        var count = 0
+        var pad = 0
         for (c in text) {
-            if (c == '=' ) break
             if (c == ' ' || c == '\n' || c == '\r' || c == '\t') continue
+            if (c == '=') { pad++; continue }
+            require(pad == 0) { "not Base64: data after padding" }
             val v = if (c.code < 128) VALUES[c.code] else -1
             require(v >= 0) { "not Base64: $c" }
             buffer = (buffer shl 6) or v
             bits += 6
+            count++
             if (bits >= 8) {
                 bits -= 8
                 out.write((buffer shr bits) and 0xFF)
             }
         }
+        val rest = count % 4
+        require(rest != 1) { "not Base64: one character left over" }
+        if (pad > 0) require((rest == 2 && pad == 2) || (rest == 3 && pad == 1)) { "not Base64: wrong padding" }
         return out.toByteArray()
     }
 }

@@ -4,4 +4,10 @@ Options -Indexes
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "no-referrer"
   Header set X-Frame-Options "DENY"
+  Header set X-Robots-Tag "noindex, nofollow"
+  # The page runs only its own script, talks only to this site, and is never framed.
+  Header set Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 </IfModule>
+<FilesMatch "\.(md|json|log|tmp)$">
+  Require all denied
+</FilesMatch>

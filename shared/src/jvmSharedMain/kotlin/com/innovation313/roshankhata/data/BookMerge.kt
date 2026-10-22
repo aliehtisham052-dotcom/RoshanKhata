@@ -211,6 +211,10 @@ object BookMerge {
         // A copy's card QR is kept unless this book already uses it (the same customer renamed here): then a new
         // one, as the token is unique in the book and a clash would stop the whole merge (22 Oct 2026).
         val tokensHere = partiesHere.mapNotNull { it.qrToken }.toMutableSet()
+        // The same for the uid (22 Oct 2026, the review): a customer renamed here is not matched by name, and
+        // came in a second time under the uid he already has here — two customers, one uid, which the
+        // customer page and live sync both read as one.
+        val partyUidsHere = partiesHere.mapNotNull { it.uid }.toMutableSet()
         for (p in there.parties) {
             val found = matchParty(p, partiesHere)
             when {
@@ -218,7 +222,9 @@ object BookMerge {
                 p.id in wantedParties -> {
                     val token = p.qrToken?.takeIf { it !in tokensHere } ?: QrTag.newToken()
                     tokensHere += token
-                    partyMap[p.id] = dao.insertParty(p.copy(id = 0, photoPath = null, qrToken = token))
+                    val uid = p.uid?.takeIf { it !in partyUidsHere } ?: Uid.next()
+                    partyUidsHere += uid
+                    partyMap[p.id] = dao.insertParty(p.copy(id = 0, photoPath = null, qrToken = token, uid = uid))
                 }
             }
         }
@@ -227,6 +233,7 @@ object BookMerge {
         val wantedProducts = productsWanted(n, there)
         val productMap = HashMap<Long, Long>()
         val addedProducts = ArrayList<Pair<Product, Long>>()
+        val productUidsHere = dao.allProductsForBackup().mapNotNull { it.uid }.toMutableSet()
         for (p in there.products) {
             if (p.id !in wantedProducts) continue
             val found = dao.productByKey(p.nameKey)
@@ -234,7 +241,9 @@ object BookMerge {
                 if (found.isDeleted) dao.restoreProduct(found.id)
                 productMap[p.id] = found.id
             } else {
-                val id = dao.insertProduct(p.copy(id = 0, parentId = null, barcode = p.barcode?.takeIf { dao.productByBarcode(it) == null }))
+                val uid = p.uid?.takeIf { it !in productUidsHere } ?: Uid.next()
+                productUidsHere += uid
+                val id = dao.insertProduct(p.copy(id = 0, parentId = null, barcode = p.barcode?.takeIf { dao.productByBarcode(it) == null }, uid = uid))
                 productMap[p.id] = id
                 addedProducts += p to id
             }
@@ -246,11 +255,17 @@ object BookMerge {
         val staffHere = dao.allStaffForBackup()
         val staffMap = HashMap<Long, Long>()
         val wantedStaff = n.staffPayments.map { it.staffId }.toSet()
+        val staffUidsHere = staffHere.mapNotNull { it.uid }.toMutableSet()
         for (s in there.staff) {
             val found = staffHere.firstOrNull { norm(it.name) == norm(s.name) }
             when {
                 found != null -> staffMap[s.id] = found.id
-                s.id in wantedStaff -> staffMap[s.id] = dao.insertStaff(s.copy(id = 0))
+                s.id in wantedStaff -> {
+                    val uid = s.uid?.takeIf { it !in staffUidsHere } ?: Uid.next()
+                    staffUidsHere += uid
+                    // On the payroll only: a login comes from this book's owner, never with another book's PIN.
+                    staffMap[s.id] = dao.insertStaff(s.copy(id = 0, uid = uid, role = null, pinHash = null, pinSalt = null))
+                }
             }
         }
 
