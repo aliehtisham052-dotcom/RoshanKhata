@@ -3480,4 +3480,5 @@
     <string name="live_remove">ہٹائیں</string>
     <string name="live_remove_confirm">%1$s کو ہٹائیں؟ یہ اس کمپیوٹر کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا۔</string>
     <string name="live_needs_owner">کسی آلے کو لائیو سنک سے جوڑنے کے لیے مالک کا PIN چاہیے۔</string>
+    <string name="live_badge">لائیو · %1$s</string>
 </resources>

@@ -70,7 +70,9 @@ fun AppHeader(
     alerts: Int,
     onAlerts: () -> Unit,
     menu: List<MenuLine>,
-    onAddParty: () -> Unit
+    onAddParty: () -> Unit,
+    /** The device this book syncs with live, or null: said beside the shop's name. */
+    live: String? = null
 ) {
     val c = LocalRoshanColors.current
     // On a laptop's own screen at a big text size the labels did not fit ("From pho…",
@@ -100,6 +102,7 @@ fun AppHeader(
                     Text(shopName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(word(W.shop_sub_switch), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
+                if (live != null) { Spacer(Modifier.width(8.dp)); LiveBadge(live) }
                 Spacer(Modifier.width(8.dp))
                 Glyph("ic_chevron_down", c.inkSoft, 14)
             }
@@ -197,4 +200,17 @@ fun escCloses(close: () -> Unit): (androidx.compose.ui.input.key.KeyEvent) -> Bo
     if (e.type == androidx.compose.ui.input.key.KeyEventType.KeyDown && e.key == androidx.compose.ui.input.key.Key.Escape) {
         close(); true
     } else false
+}
+
+/** "● Live · <device>": the book on the screen is the one kept live with that device (22 Oct 2026). */
+@Composable
+fun LiveBadge(with: String) {
+    Row(
+        Modifier.clip(RoundedCornerShape(10.dp)).background(Look.accent).padding(horizontal = 8.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(Modifier.size(7.dp).clip(RoundedCornerShape(4.dp)).background(Look.onAccent))
+        Spacer(Modifier.width(6.dp))
+        Text(word(W.live_badge, with), color = Look.onAccent, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+    }
 }
