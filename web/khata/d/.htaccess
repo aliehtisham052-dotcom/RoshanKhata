@@ -1,0 +1,10 @@
+# Sealed pages: served as plain files, kept by the browser for a minute (a refresh costs the server nothing).
+Options -Indexes
+<FilesMatch "\.txt$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=60"
+  </IfModule>
+</FilesMatch>
+<FilesMatch "\.(php|tmp)$">
+  Require all denied
+</FilesMatch>
