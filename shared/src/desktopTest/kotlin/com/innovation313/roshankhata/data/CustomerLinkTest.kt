@@ -211,7 +211,7 @@ class CustomerLinkTest {
     }
 
     @Test
-    fun `a page the server will not take is not marked sent: gone or taken costs the link, full waits`() = book { d, _ ->
+    fun `a page the server will not take is not marked sent - gone or taken costs the link, full waits`() = book { d, _ ->
         val ali = d.insertParty(Party(name = "Ali"))
         val uid = d.getParty(ali)!!.uid!!
         val server = Server()
