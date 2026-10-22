@@ -3372,7 +3372,9 @@
     <string name="access_recovery_ask">اكتب رمز الاسترداد الذي ظهر عند تعيين رمز المالك، ثم اختر رمزًا جديدًا.</string>
     <string name="access_recovery_wrong">رمز الاسترداد هذا غير صحيح.</string>
     <string name="access_owner_pin">رمز المالك</string>
-    <string name="access_owner_pin_help">رمز المالك الخاص، من 4 إلى 8 أرقام. به يدخل المالك عند الكاشير، ويسمح بما لا يستطيع الكاشير فعله وحده، ويوقف وضع الكاشير. لا تُحفظ إلا تجزئته، ولا يُحفظ الرمز نفسه أبدًا.</string>
+    <string name="access_owner_pin_help">رمز المالك الخاص، من 6 إلى 8 أرقام. به يدخل المالك عند الكاشير، ويسمح بما لا يستطيع الكاشير فعله وحده، ويوقف وضع الكاشير. لا تُحفظ إلا تجزئته، ولا يُحفظ الرمز نفسه أبدًا.</string>
+    <string name="access_owner_pin_invalid">رمز المالك من 6 إلى 8 أرقام</string>
+    <string name="access_owner_pin_short">رمز المالك لديك قصير. غيّره إلى 6 حتى 8 أرقام: الرمز القصير يمكن تخمينه من ملف النسخة الاحتياطية في دقائق.</string>
     <string name="access_recovery_title">رمز الاسترداد الخاص بك</string>
     <string name="access_recovery_help">اكتب هذا الرمز واحفظه بعيدًا عن الكاشير. إذا نُسي رمز المالك يومًا، فهذا الرمز يعيّن رمزًا جديدًا. يظهر الآن فقط؛ والرمز الجديد يعطي رمز استرداد جديدًا.</string>
     <string name="access_recovery_written">لقد كتبته</string>

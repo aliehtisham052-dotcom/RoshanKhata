@@ -359,6 +359,21 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         onTradeChanged = { tradeTick++ },
                         appPrefs = appPrefs
                     ) } } }
+                    // An owner's PIN from before six digits were asked: a longer one, once the owner is in (22 Oct 2026).
+                    var changingOwnerPin by remember { mutableStateOf(false) }
+                    if (com.innovation313.roshankhata.data.Access.ownerPinShort && !com.innovation313.roshankhata.data.Access.locked && !changingOwnerPin) {
+                        AlertDialog(
+                            onDismissRequest = { com.innovation313.roshankhata.data.Access.ownerPinShort = false },
+                            title = { Text(word(W.access_owner_pin)) },
+                            text = { Text(word(W.access_owner_pin_short)) },
+                            confirmButton = { TextButton({ changingOwnerPin = true }) { Text(word(W.access_owner_pin_change)) } },
+                            dismissButton = { TextButton({ com.innovation313.roshankhata.data.Access.ownerPinShort = false }) { Text(word(W.cancel)) } }
+                        )
+                    }
+                    if (changingOwnerPin) OwnerPinDialog(db.khataDao(), hasPin = true) {
+                        changingOwnerPin = false
+                        com.innovation313.roshankhata.data.Access.ownerPinShort = false
+                    }
                     liveFailed?.let { why ->
                         AlertDialog(
                             onDismissRequest = { liveFailed = null },

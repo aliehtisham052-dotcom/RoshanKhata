@@ -3228,7 +3228,9 @@
     <string name="access_recovery_ask">মালিকের PIN সেট করার সময় যে রিকভারি কোড দেখানো হয়েছিল তা লিখুন। তারপর নতুন PIN বেছে নিন।</string>
     <string name="access_recovery_wrong">এই রিকভারি কোড সঠিক নয়।</string>
     <string name="access_owner_pin">মালিকের PIN</string>
-    <string name="access_owner_pin_help">মালিকের নিজের PIN, ৪ থেকে ৮ অঙ্ক। এটি দিয়ে মালিক কাউন্টারে সাইন ইন করেন, ক্যাশিয়ার একা যা করতে পারেন না তার অনুমতি দেন, এবং কাউন্টার মোড বন্ধ করেন। শুধু এর হ্যাশ রাখা হয়, PIN কখনো নয়।</string>
+    <string name="access_owner_pin_help">মালিকের নিজের PIN, ৬ থেকে ৮ অঙ্ক। এটি দিয়ে মালিক কাউন্টারে সাইন ইন করেন, ক্যাশিয়ার একা যা করতে পারেন না তার অনুমতি দেন, এবং কাউন্টার মোড বন্ধ করেন। শুধু এর হ্যাশ রাখা হয়, PIN কখনো নয়।</string>
+    <string name="access_owner_pin_invalid">মালিকের PIN ৬ থেকে ৮ অঙ্কের</string>
+    <string name="access_owner_pin_short">আপনার মালিকের PIN ছোট। এটি ৬ থেকে ৮ অঙ্কের করুন: ছোট PIN ব্যাকআপ ফাইল থেকে কয়েক মিনিটে অনুমান করা যায়।</string>
     <string name="access_recovery_title">আপনার রিকভারি কোড</string>
     <string name="access_recovery_help">এই কোডটি লিখে কাউন্টার থেকে দূরে রাখুন। মালিকের PIN কখনো ভুলে গেলে এই কোড নতুন PIN সেট করে। এটি শুধু এখনই দেখানো হচ্ছে; নতুন PIN নতুন কোড দেয়।</string>
     <string name="access_recovery_written">আমি লিখে রেখেছি</string>

@@ -92,7 +92,11 @@ private suspend fun checkPin(dao: KhataDao, pin: String, account: String, matche
         // Each account its own count (21 Oct 2026): another's right PIN no longer clears this one's misses.
         val r = Access.tryPin(pin, onWait = { waited = true }, account = account, check = matches)
         if (waited) withContext(Dispatchers.IO) { dao.log(AuditAction.PIN_WAIT, Access.userName, detail = account) }
-        if (r == true && account == Access.OWNER) withContext(Dispatchers.IO) { runCatching { Access.rememberOwner(dao) } }
+        if (r == true && account == Access.OWNER) {
+            withContext(Dispatchers.IO) { runCatching { Access.rememberOwner(dao) } }
+            // An owner's PIN set before it had to be six digits: the window asks for a longer one (Main).
+            Access.ownerPinTyped(pin)
+        }
         r
     }
 
@@ -330,7 +334,7 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
     fun save() {
         if (busy) return
         when {
-            !PinHash.valid(first) -> { problem = words.text(W.staff_pin_invalid); return }
+            !PinHash.validOwner(first) -> { problem = words.text(W.access_owner_pin_invalid); return }
             first != second -> { problem = words.text(W.lock_pin_mismatch); second = ""; return }
         }
         busy = true

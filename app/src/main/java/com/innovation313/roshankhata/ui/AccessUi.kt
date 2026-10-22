@@ -75,7 +75,12 @@ object AccessUi {
             val result = withContext(Dispatchers.Default) {
                 Access.tryPin(pin, onWait = { log(dao, AuditAction.PIN_WAIT, Access.userName, account) }, account = account, check = matches)
             }
-            if (result == true && account == Access.OWNER) withContext(Dispatchers.IO) { runCatching { Access.rememberOwner(dao) } }
+            if (result == true && account == Access.OWNER) {
+                withContext(Dispatchers.IO) { runCatching { Access.rememberOwner(dao) } }
+                // An owner's PIN set before it had to be six digits: asked to be changed, each time it is typed.
+                Access.ownerPinTyped(pin)
+                if (Access.ownerPinShort) activity.runOnUiThread { toast(activity, activity.getString(R.string.access_owner_pin_short)) }
+            }
             activity.runOnUiThread {
                 if (activity.isFinishing) return@runOnUiThread
                 when (result) {
@@ -371,7 +376,7 @@ object AccessUi {
                 val a = first.text.toString()
                 val b = second.text.toString()
                 when {
-                    !PinHash.valid(a) -> { toast(activity, activity.getString(R.string.staff_pin_invalid)); cancelled() }
+                    !PinHash.validOwner(a) -> { toast(activity, activity.getString(R.string.access_owner_pin_invalid)); cancelled() }
                     a != b -> { toast(activity, activity.getString(R.string.lock_pin_mismatch)); cancelled() }
                     else -> AppScope.launch {
                         val code = withContext(Dispatchers.IO) { Access.setOwnerPin(dao, a) }

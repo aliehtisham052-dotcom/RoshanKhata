@@ -83,10 +83,10 @@ class Schema36Test {
         dao.insertLoyalty(LoyaltyEntry(partyId = ali, points = 12.5))
         dao.insertShift(Shift(user = "Imran", openingFloat = 1_000.0))
         dao.log(AuditAction.SIGN_IN, "Imran")
-        val code = Access.setOwnerPin(dao, "2468")
+        val code = Access.setOwnerPin(dao, "246813")
         assertTrue(code.length == 9)
-        assertNotEquals("2468", dao.settingValue(BookSettings.OWNER_PIN_HASH))
-        assertTrue(Access.ownerPin(dao)!!.matches("2468"))
+        assertNotEquals("246813", dao.settingValue(BookSettings.OWNER_PIN_HASH))
+        assertTrue(Access.ownerPin(dao)!!.matches("246813"))
         assertTrue(Access.recoveryMatches(dao, code.lowercase()))
         assertFalse(Access.recoveryMatches(dao, "AAAA-AAAA"))
 
@@ -111,7 +111,7 @@ class Schema36Test {
             assertEquals(12.5, o.loyaltyBalance(ali), 0.0)
             assertEquals("Imran", o.openShiftOf("Imran")!!.user)
             assertEquals("1", o.settingValue(BookSettings.PRICES_INCLUDE_TAX))
-            assertTrue(Access.ownerPin(o)!!.matches("2468"))
+            assertTrue(Access.ownerPin(o)!!.matches("246813"))
             val seal = AuditChain.verify(o.auditInOrder())
             assertTrue("the restored log still holds, the restore row sealed onto it", seal.intact)
         } finally { other.close() }

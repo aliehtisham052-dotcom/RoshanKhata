@@ -62,21 +62,21 @@ class SecurityReviewTest {
     fun `a restore keeps the owner's PIN a copy says nothing of, and takes a copy's own whole`() = runBlocking {
         val here = book("here")
         val old = copyOf(here)
-        val code = Access.setOwnerPin(here, "2468")
+        val code = Access.setOwnerPin(here, "246813")
         here.setSetting(BookSettings.COUNTER_USED, "1")
 
         // A copy made before the owner had a PIN: the PIN, its recovery code and the counter's word stay.
         BackupCodec.restoreLedger(here, old)
-        assertTrue(Access.ownerPin(here)!!.matches("2468"))
+        assertTrue(Access.ownerPin(here)!!.matches("246813"))
         assertTrue(Access.recoveryMatches(here, code))
         assertEquals("1", here.settingValue(BookSettings.COUNTER_USED))
 
         // A copy with an owner PIN of its own: that one, with its own recovery code.
         val other = book("other")
-        val otherCode = Access.setOwnerPin(other, "1357")
+        val otherCode = Access.setOwnerPin(other, "135792")
         BackupCodec.restoreLedger(here, copyOf(other))
-        assertTrue(Access.ownerPin(here)!!.matches("1357"))
-        assertFalse(Access.ownerPin(here)!!.matches("2468"))
+        assertTrue(Access.ownerPin(here)!!.matches("135792"))
+        assertFalse(Access.ownerPin(here)!!.matches("246813"))
         assertTrue(Access.recoveryMatches(here, otherCode))
         assertFalse("the old code went with the old PIN", Access.recoveryMatches(here, code))
 
@@ -166,7 +166,7 @@ class SecurityReviewTest {
     fun `a book on a counter without an owner PIN takes the one the counter keeps`() = runBlocking {
         Access.store = Prefs()
         val shopA = book("a")
-        val code = Access.setOwnerPin(shopA, "2468")
+        val code = Access.setOwnerPin(shopA, "246813")
         assertTrue("set here, kept here", Access.remembersOwner())
         Access.switchCounterMode(true)
 
@@ -174,7 +174,7 @@ class SecurityReviewTest {
         val shopB = book("b")
         val pin = Access.ownerPin(shopB)
         assertNotNull("the counter's owner can still sign in", pin)
-        assertTrue(pin!!.matches("2468"))
+        assertTrue(pin!!.matches("246813"))
         assertTrue("and the recovery code works there too", Access.recoveryMatches(shopB, code))
         assertEquals(listOf(AuditAction.OWNER_PIN_ADOPTED), shopB.auditInOrder().map { it.action })
         Access.ownerPin(shopB)
@@ -184,9 +184,9 @@ class SecurityReviewTest {
         val shopC = book("c")
         val salt = PinHash.salt()
         val codeSalt = PinHash.salt()
-        shopC.saveOwnerPin(PinHash.hash("1357", salt), salt, PinHash.hash("ABCDEFGH", codeSalt), codeSalt, null)
-        assertTrue(Access.ownerPin(shopC)!!.matches("1357"))
-        assertFalse(Access.ownerPin(shopC)!!.matches("2468"))
+        shopC.saveOwnerPin(PinHash.hash("135792", salt), salt, PinHash.hash("ABCDEFGH", codeSalt), codeSalt, null)
+        assertTrue(Access.ownerPin(shopC)!!.matches("135792"))
+        assertFalse(Access.ownerPin(shopC)!!.matches("246813"))
 
         // On the owner's own device a book without one stays without.
         Access.switchCounterMode(false)
@@ -200,6 +200,21 @@ class SecurityReviewTest {
         assertFalse(Access.remembersOwner())
         assertNull(Access.ownerPin(book("f")))
         assertEquals(setOf("access_counter_mode"), bare.map.keys)
+    }
+
+    @Test
+    fun `an owner's PIN is 6 to 8 digits, and a short one typed right is asked to be changed`() = runBlocking {
+        val dao = book("short")
+        assertFalse(PinHash.validOwner("2468"))
+        assertTrue(PinHash.validOwner("246813"))
+        assertTrue(PinHash.valid("2468"))
+        assertTrue("a short PIN is refused when set", runCatching { Access.setOwnerPin(dao, "2468") }.isFailure)
+        Access.ownerPinTyped("2468")
+        assertTrue(Access.ownerPinShort)
+        Access.setOwnerPin(dao, "246813")
+        assertFalse("a new PIN clears the ask", Access.ownerPinShort)
+        Access.ownerPinTyped("246813")
+        assertFalse(Access.ownerPinShort)
     }
 
     @Test
@@ -230,7 +245,7 @@ class SecurityReviewTest {
     @Test
     fun `the helper's copy leaves the PINs out, the owner's own backup keeps them`() = runBlocking {
         val dao = book("helper")
-        Access.setOwnerPin(dao, "2468")
+        Access.setOwnerPin(dao, "246813")
         val salt = PinHash.salt()
         dao.insertStaff(Staff(name = "Imran", monthlySalary = 1.0, role = Role.CASHIER, pinHash = PinHash.hash("5678", salt), pinSalt = salt))
         val own = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()

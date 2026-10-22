@@ -3212,7 +3212,9 @@
     <string name="access_recovery_ask">کد بازیابی‌ای را که هنگام تعیین رمز مالک نشان داده شد بنویسید، سپس رمز تازه‌ای انتخاب کنید.</string>
     <string name="access_recovery_wrong">این کد بازیابی درست نیست.</string>
     <string name="access_owner_pin">رمز مالک</string>
-    <string name="access_owner_pin_help">رمز خود مالک، ۴ تا ۸ رقم. مالک با آن پشت صندوق وارد می‌شود، کارهایی را که صندوقدار به‌تنهایی نمی‌تواند مجاز می‌کند، و حالت صندوق را خاموش می‌کند. فقط هش آن نگه داشته می‌شود، هرگز خود رمز.</string>
+    <string name="access_owner_pin_help">رمز خود مالک، ۶ تا ۸ رقم. مالک با آن پشت صندوق وارد می‌شود، کارهایی را که صندوقدار به‌تنهایی نمی‌تواند مجاز می‌کند، و حالت صندوق را خاموش می‌کند. فقط هش آن نگه داشته می‌شود، هرگز خود رمز.</string>
+    <string name="access_owner_pin_invalid">رمز مالک ۶ تا ۸ رقم است</string>
+    <string name="access_owner_pin_short">رمز مالک شما کوتاه است. آن را ۶ تا ۸ رقم کنید: رمز کوتاه را می‌توان از فایل پشتیبان در چند دقیقه حدس زد.</string>
     <string name="access_recovery_title">کد بازیابی شما</string>
     <string name="access_recovery_help">این کد را یادداشت کنید و دور از صندوق نگه دارید. اگر رمز مالک روزی فراموش شود، این کد رمز تازه‌ای می‌سازد. فقط همین حالا نشان داده می‌شود؛ رمز تازه کد تازه‌ای می‌دهد.</string>
     <string name="access_recovery_written">یادداشتش کردم</string>

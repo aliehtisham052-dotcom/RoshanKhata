@@ -62,4 +62,14 @@ object PinHash {
 
     /** 4 to 8 digits, as the form asks. */
     fun valid(pin: String): Boolean = pin.length in 4..8 && pin.all { it in '0'..'9' }
+
+    /**
+     * The owner's PIN: 6 to 8 digits (22 Oct 2026, the owner's choice after
+     * the review). Its hash travels in every backup of the book, and four
+     * digits fall to a guessing program in minutes once a file is in other
+     * hands; six take days, eight months. Staff PINs stay 4 to 8.
+     */
+    fun validOwner(pin: String): Boolean = pin.length in OWNER_MIN..8 && pin.all { it in '0'..'9' }
+
+    const val OWNER_MIN = 6
 }
