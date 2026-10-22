@@ -1,7 +1,9 @@
 package com.innovation313.roshankhata.data
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,7 +22,9 @@ import kotlinx.coroutines.launch
  *
  * The book's own sync state lives in the book file (LiveSync); this device's
  * install id lives here, in the phone's preferences, so a book file copied
- * to another phone is never taken for this phone's.
+ * to another phone is never taken for this phone's. So does how far each
+ * book's log had come ([marks]): a daily copy put back with an older log is
+ * caught before its lines are reused.
  */
 object LiveRunner {
 
@@ -29,12 +33,19 @@ object LiveRunner {
         object Off : Status
         /** On, but no computer joined yet. */
         object NotPaired : Status
-        /** The computer has the book but the owner has not said yes on it yet. */
+        /** The book reached the computer; the owner has not said yes on it yet. */
         object Waiting : Status
-        data class Live(val at: Long, val computer: String?) : Status
+        /** The computer answered, but it is not keeping this book right now (another business open there). */
+        object NotHere : Status
+        /** [relay]: through Innovation 313's relay on the internet, not the shop's WiFi. */
+        data class Live(val at: Long, val computer: String?, val relay: Boolean = false) : Status
         object Unreachable : Status
         /** Turned off for everyone by Innovation 313 ([LiveControl]); the book is untouched. */
         object Halted : Status
+        /** The computer did not say yes in time: the pairing was given up. */
+        object NotAccepted : Status
+        /** The book was replaced by a restore or went back to an older copy: the devices must be joined again. */
+        object Rejoin : Status
         data class Failed(val why: String) : Status
     }
 
@@ -42,8 +53,10 @@ object LiveRunner {
     private const val INSTALL = "install"
     private const val ROUND_MS = 4_000L
     private const val FINGERPRINT_EVERY_MS = 30 * 60_000L
-    /** Through the relay a round is slower and counted against a daily limit: every 15 s. */
+    /** Through the relay a round is slower and counted against a daily limit: every 15 s, longer while quiet. */
     private const val CLOUD_MS = 15_000L
+    /** A pairing the computer's owner has not said yes to within this time is given up. */
+    private const val PENDING_MS = 15 * 60_000L
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var job: Job? = null
@@ -51,6 +64,7 @@ object LiveRunner {
     val status: StateFlow<Status> get() = state
     private var lastFingerprint = 0L
     private var lastSeek = 0L
+    private var quietCloud = 0
     private const val SEEK_EVERY_MS = 30_000L
     private val fingerprintBad = MutableStateFlow(false)
     /** The last check of the whole book found the two devices different. */
@@ -65,6 +79,16 @@ object LiveRunner {
         return id
     }
 
+    /** How far the log of the book in [file] had come, per book id, kept in this phone's preferences. */
+    fun marks(context: Context, file: String = Businesses.activeDbFile(context)): LiveSync.LogMarks =
+        PrefsMarks(context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE), file)
+
+    private class PrefsMarks(private val p: SharedPreferences, private val file: String) : LiveSync.LogMarks {
+        private fun k(book: String) = "mark|$file|$book"
+        override fun get(book: String): Long? = if (p.contains(k(book))) p.getLong(k(book), 0L) else null
+        override fun put(book: String, seq: Long) { p.edit().putLong(k(book), seq).apply() }
+    }
+
     fun deviceName(): String = listOfNotNull(Build.MANUFACTURER, Build.MODEL).joinToString(" ").trim().ifBlank { "Phone" }.take(40)
 
     @Synchronized
@@ -74,16 +98,22 @@ object LiveRunner {
         job = scope.launch {
             var checked: KhataDatabase? = null
             while (isActive) {
-                val wait = runCatching {
+                val wait = try {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
                     if (checked !== db) {
-                        LiveSync.check(sql, install(app))
+                        LiveSync.check(sql, install(app), marks(app))
                         NumberMark.mark = LiveSync.mark(sql)
                         checked = db
                     }
-                    once(sql)
-                }.getOrElse { e -> state.value = Status.Failed(e.message ?: e.javaClass.simpleName); ROUND_MS * 3 }
+                    once(app, sql)
+                } catch (e: CancellationException) {
+                    // The app left the screen: that is not a failure to show (22 Oct 2026, the review).
+                    throw e
+                } catch (e: Exception) {
+                    state.value = Status.Failed(e.message ?: e.javaClass.simpleName)
+                    ROUND_MS * 3
+                }
                 delay(wait)
             }
         }
@@ -96,45 +126,87 @@ object LiveRunner {
     }
 
     /** One round; how long to wait before the next. */
-    private suspend fun once(sql: SyncSql): Long {
-        if (LiveSync.identity(sql) == null) { state.value = Status.Off; return ROUND_MS * 3 }
-        val target = LiveRound.target(sql) ?: run { state.value = Status.NotPaired; return ROUND_MS * 3 }
+    private suspend fun once(app: Context, sql: SyncSql): Long {
+        if (LiveSync.identity(sql) == null) {
+            state.value = if (LiveSync.offReason(sql) == LiveSync.OFF_RESTORED) Status.Rejoin else Status.Off
+            return ROUND_MS * 3
+        }
+        val now = System.currentTimeMillis()
+        val pending = LiveRound.pending(sql)
+        if (pending != null && now - (pending.since ?: now) > PENDING_MS) {
+            // Not said yes to in time (cancelled there, or never seen): given up; off again if it was off before.
+            if (LiveRound.dropPending(sql)) {
+                LiveSync.disable(sql)
+                NumberMark.mark = null
+            }
+            state.value = Status.NotAccepted
+            return ROUND_MS * 3
+        }
+        val target = pending ?: LiveRound.target(sql) ?: run { state.value = Status.NotPaired; return ROUND_MS * 3 }
         if (LiveControl.halted()) { state.value = Status.Halted; return 60_000L }
         val key = LiveSync.identity(sql)?.key ?: return ROUND_MS
-        val now = System.currentTimeMillis()
-        val check = now - lastFingerprint > FINGERPRINT_EVERY_MS
+        val check = pending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS
         val request = LiveRound.request(sql, fingerprint = check) ?: return ROUND_MS
-        val peer = LiveSync.state(sql).peers.firstOrNull()
+        // While a pairing waits, only the computer that took it is asked (not the one this phone knew before).
+        val peer = if (pending != null) null else LiveSync.state(sql).peers.let { ps ->
+            target.device?.let { d -> ps.firstOrNull { it.device == d } } ?: ps.firstOrNull()
+        }
         val hosts = (listOfNotNull(peer?.host) + target.hosts).distinct()
         return when (val a = LiveWire.round(hosts, target.port, key, request)) {
             is LiveWire.Answer.Got -> {
                 val took = LiveRound.take(sql, request, a.reply, a.host)
-                took.refused?.let { why -> state.value = Status.Failed(why); return 60_000L }
+                took.refused?.let { why ->
+                    if (why == LiveRound.LOST) {
+                        // The computer no longer has what this phone asks for: this book went back to an older copy.
+                        LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+                        NumberMark.mark = null
+                        state.value = Status.Rejoin
+                        return ROUND_MS * 3
+                    }
+                    state.value = Status.Failed(why)
+                    return 60_000L
+                }
+                LiveSync.noteMark(sql, marks(app))
+                NumberMark.mark = LiveSync.mark(sql)
                 // Only a check made while nothing was on its way counts; a busy round asks again in the next.
                 took.fingerprintMatches?.let { same ->
                     fingerprintBad.value = !same
                     // A difference is looked at again in five minutes, not thirty.
                     lastFingerprint = if (same) now else now - FINGERPRINT_EVERY_MS + 5 * 60_000L
                 }
+                if (took.joined) fingerprintBad.value = false
+                quietCloud = 0
                 state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer)
                 if (took.more) 200L else ROUND_MS
             }
-            LiveWire.Answer.NotHere -> { state.value = Status.Waiting; ROUND_MS * 2 }
+            LiveWire.Answer.NotHere -> {
+                state.value = if (pending != null) Status.Waiting else Status.NotHere
+                ROUND_MS * 2
+            }
             LiveWire.Answer.Unreachable -> {
+                if (pending != null) { state.value = Status.Unreachable; return ROUND_MS * 2 }
                 // The computer may have a new address on the same WiFi (a day off, a router restart): it is
-                // called for by the book's own tag, at most twice a minute, and kept once it answers.
+                // called for, at most twice a minute, and kept once it proves it holds this book's key.
                 if (now - lastSeek > SEEK_EVERY_MS) {
                     lastSeek = now
                     val found = LiveWire.seek(key)
-                    if (found != null && found !in hosts) {
-                        LiveRound.setTarget(sql, target.copy(hosts = (listOf(found) + target.hosts).distinct().take(4)))
-                        peer?.let { LiveSync.putPeer(sql, it.device, host = found) }
+                    if (found != null && (found.host !in hosts || found.port != target.port)) {
+                        LiveRound.setTarget(sql, target.copy(hosts = (listOf(found.host) + target.hosts).distinct().take(4), port = found.port))
+                        peer?.let { LiveSync.putPeer(sql, it.device, host = found.host, port = found.port) }
                         return 200L
                     }
                 }
-                // Not on the shop's WiFi: the relay, once it has an address (Marhala 2; closed until then).
-                when (LiveCloud.round(sql)) {
-                    is LiveCloud.Result.Done -> { state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer); CLOUD_MS }
+                // Not on the shop's WiFi: the relay, when the owner turned it on for this book (Marhala 2).
+                when (val r = LiveCloud.round(sql)) {
+                    is LiveCloud.Result.Done -> {
+                        LiveSync.noteMark(sql, marks(app))
+                        NumberMark.mark = LiveSync.mark(sql)
+                        state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer, relay = true)
+                        // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
+                        quietCloud = if (r.took > 0 || r.more) 0 else minOf(quietCloud + 1, 2)
+                        if (r.more) 1000L else CLOUD_MS shl quietCloud
+                    }
+                    LiveCloud.Result.Halted -> { state.value = Status.Halted; 60_000L }
                     else -> { state.value = Status.Unreachable; ROUND_MS * 3 }
                 }
             }

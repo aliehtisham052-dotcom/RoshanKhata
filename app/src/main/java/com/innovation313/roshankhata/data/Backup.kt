@@ -285,17 +285,37 @@ object Backup {
      * shop's real name would be a silent loss, not a restore.
      */
     suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup) {
+        // A book replaced by a copy is no longer the book the computer keeps (22 Oct 2026, the review):
+        // live sync pauses first, so the restore's own deletes and inserts are not sent there as changes
+        // (they would have removed the computer's newer work); once the restore went through it stops,
+        // and the owner joins again. A restore that fails changes nothing, live sync included.
+        val sql = KhataDatabase.get(context).syncSql()
+        val live = LiveSync.pause(sql)
         // One transaction, all-or-nothing. If any step fails, the whole thing
         // rolls back and the existing ledger is left untouched — rather than the
         // old behaviour, where a failure partway through wiped data and restored
         // nothing, losing the customer the owner was trying to bring back.
         // The pictures kept by row id follow their rows to the copy's ids (ImageReattach).
         val before = ImageReattach.before(dao)
-        BackupCodec.restoreLedger(dao, data)
+        try {
+            BackupCodec.restoreLedger(dao, data)
+        } catch (e: Exception) {
+            if (live) LiveSync.resume(sql)
+            throw e
+        }
+        if (live) {
+            LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+            NumberMark.mark = null
+        }
         before?.let { ImageReattach.after(context, dao, it) }
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }
     }
+
+    /** Whether this book syncs live with the computer now (a restore would stop it: said in its confirmation). */
+    suspend fun liveOn(context: Context): Boolean = runCatching {
+        LiveSync.identity(KhataDatabase.get(context).syncSql()) != null
+    }.getOrDefault(false)
 
     // ---------- Business Profile (SharedPreferences, not Room) ----------
 

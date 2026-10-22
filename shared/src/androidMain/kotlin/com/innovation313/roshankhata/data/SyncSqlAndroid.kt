@@ -27,6 +27,8 @@ private class AndroidSyncSql(private val db: KhataDatabase) : SyncSql {
             val w = db.openHelper.writableDatabase
             return w.query(SimpleSQLiteQuery(sql, args.map(::syncBindable).toTypedArray())).use { c -> read(c, types) }
         }
+
+        override fun isConstraint(e: Throwable): Boolean = e is android.database.sqlite.SQLiteConstraintException
     }
 
     private fun read(c: Cursor, types: String): List<Array<Any?>> {

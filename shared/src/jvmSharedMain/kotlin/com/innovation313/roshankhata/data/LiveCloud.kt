@@ -25,6 +25,9 @@ import javax.crypto.spec.SecretKeySpec
  * message read twice changes nothing the second time.
  *
  * Open since the relay was deployed (22 Oct 2026); [base] = null closes it again.
+ * A book uses it only when its owner turned it on ([BookSettings.LIVE_RELAY],
+ * one switch for both devices, off until then): the WiFi road never needs
+ * the internet, and the screens say plainly what the relay carries.
  */
 object LiveCloud {
 
@@ -38,6 +41,9 @@ object LiveCloud {
     const val RELAY = "https://roshan-khata-daakiya.innovation313.workers.dev"
 
     const val RESEND_MS = 2 * 60_000L
+
+    /** The relay takes a parcel of at most 1 MB (cloud/worker MAX_PARCEL); a message is kept under it. */
+    const val MAX_SEND = 900 * 1024
 
     /** The way out to the relay; a test passes its own. */
     fun interface Http {
@@ -63,7 +69,7 @@ object LiveCloud {
             val bytes = stream?.use { s ->
                 val out = ByteArrayOutputStream()
                 val buf = ByteArray(1 shl 14)
-                while (true) { val n = s.read(buf); if (n < 0) break; out.write(buf, 0, n); if (out.size() > 64 shl 20) error("too big") }
+                while (true) { val n = s.read(buf); if (n < 0) break; out.write(buf, 0, n); if (out.size() > 32 shl 20) throw java.io.IOException("too big") }
                 out.toByteArray()
             } ?: ByteArray(0)
             code to bytes
@@ -85,6 +91,8 @@ object LiveCloud {
         data class Done(val took: Int, val sent: Boolean, val more: Boolean) : Result
         object Off : Result
         object NotPaired : Result
+        /** Live sync is stopped for everyone ([LiveControl]); the relay is not asked. */
+        object Halted : Result
         object Unreachable : Result
         data class Refused(val why: String) : Result
     }
@@ -100,15 +108,20 @@ object LiveCloud {
         exec("INSERT OR REPLACE INTO sync_meta (k, v) VALUES (?, ?)", listOf(key, value))
     }
 
-    /** The message this device leaves: its changes after [after] and how far it has read every other device. */
-    suspend fun message(sql: SyncSql, after: Long): JSONObject? {
+    /** Whether this book's owner turned the relay on ([BookSettings.LIVE_RELAY]). */
+    suspend fun allowed(sql: SyncSql): Boolean = sql.read {
+        rows("SELECT value FROM book_settings WHERE `key` = ?", listOf(BookSettings.LIVE_RELAY), "T").firstOrNull()?.get(0) == "1"
+    }
+
+    /** The message this device leaves: its changes after [after] (at most [page] lines) and how far it has read every other device. */
+    suspend fun message(sql: SyncSql, after: Long, page: Int = LiveSync.PAGE): JSONObject? {
         val id = LiveSync.identity(sql) ?: return null
         val acks = JSONObject()
         LiveSync.state(sql).peers.forEach { acks.put(it.device, it.recv) }
         return JSONObject().apply {
             put("dev", id.device); put("name", id.name)
             put("acks", acks)
-            put("parcel", LiveSync.export(sql, after).toJson())
+            put("parcel", LiveSync.export(sql, after, page).toJson())
         }
     }
 
@@ -120,27 +133,31 @@ object LiveCloud {
         val id = LiveSync.identity(sql) ?: return false
         val dev = msg.optString("dev")
         if (dev.isBlank() || dev == id.device) return false
-        val peer = LiveSync.state(sql).peers.firstOrNull { it.device == dev } ?: return false
-        val theirAck = msg.optJSONObject("acks")?.optLong(id.device, -1L)?.takeIf { it >= 0 } ?: peer.sent
+        if (LiveSync.state(sql).peers.none { it.device == dev }) return false
+        val theirAck = msg.optJSONObject("acks")?.optLong(id.device, -1L)?.takeIf { it >= 0 }
         val parcel = LiveSync.Parcel.of(msg.getJSONObject("parcel"))
-        var recv = peer.recv
-        when (val r = LiveSync.apply(sql, parcel, recv = peer.recv, sentToThem = theirAck, now = now)) {
-            is LiveSync.Applied.Done -> recv = r.to
-            is LiveSync.Applied.Gap -> {} // what came before is on its way again (the sender resends what is not acknowledged)
-            is LiveSync.Applied.Refused -> return false
+        // Written, and the pointers moved, in one transaction with the WiFi rounds' (LiveSync.applyFrom).
+        // A gap: what came before is on its way again (the sender resends what is not acknowledged).
+        return when (LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })) {
+            is LiveSync.Applied.Refused -> false
+            else -> true
         }
-        LiveSync.putPeer(
-            sql, dev, name = msg.optString("name").takeIf { it.isNotBlank() },
-            sent = maxOf(peer.sent, minOf(theirAck, LiveSync.lastSeq(sql))), recv = recv, seen = now
-        )
-        LiveSync.prune(sql)
-        return true
     }
 
-    /** One cloud round: say hello once, pick up the others' messages, acknowledge them, leave this device's own. */
-    suspend fun round(sql: SyncSql, http: Http = plain, relay: String? = base, now: Long = System.currentTimeMillis()): Result {
+    /**
+     * One cloud round: say hello once, pick up the others' messages,
+     * acknowledge them, leave this device's own. Nothing at all unless the
+     * book's owner turned the relay on, and nothing while live sync is
+     * stopped for everyone ([halted]).
+     */
+    suspend fun round(
+        sql: SyncSql, http: Http = plain, relay: String? = base, now: Long = System.currentTimeMillis(),
+        halted: () -> Boolean = { LiveControl.halted() }
+    ): Result {
         val root = relay?.trimEnd('/') ?: return Result.Off
         val id = LiveSync.identity(sql) ?: return Result.Off
+        if (!allowed(sql)) return Result.Off
+        if (halted()) return Result.Halted
         val peers = LiveSync.state(sql).peers
         if (peers.isEmpty()) return Result.NotPaired
         val url = "$root/v1/b/${id.book}/"
@@ -155,22 +172,34 @@ object LiveCloud {
             return code to runCatching { JSONObject(String(bytes, Charsets.UTF_8)) }.getOrNull()
         }
         try {
-            if (getMeta(sql, k("hello", id.book)) != id.device) {
+            suspend fun hello(): Result? {
                 val (code, o) = call("POST", "hello")
                 if (code != 200) return Result.Refused(o?.optString("why") ?: "hello $code")
                 // A device new at the relay reads all that is there: a message read twice changes nothing,
                 // a message skipped would be a change lost.
                 setMeta(sql, k("after", id.book), "0")
                 setMeta(sql, k("hello", id.book), id.device)
+                return null
             }
+            if (getMeta(sql, k("hello", id.book)) != id.device) hello()?.let { return it }
 
             // 1. The others' messages, in order, from where this device last read.
             var after = getMeta(sql, k("after", id.book))?.toLongOrNull() ?: 0L
             var took = 0
-            val (code, o) = call("GET", "take?after=$after")
-            if (code == 503) return Result.Refused("halted")
-            if (code != 200 || o == null) return Result.Refused(o?.optString("why") ?: "take $code")
-            val list = o.getJSONArray("parcels")
+            var (code, o) = call("GET", "take?after=$after")
+            if (code == 403 && o?.optString("why") == "say-hello-first") {
+                // The relay no longer knows this device (its box emptied after a month unused, or made again):
+                // hello again instead of asking for ever (22 Oct 2026, the review).
+                hello()?.let { return it }
+                after = 0L
+                val again = call("GET", "take?after=0")
+                code = again.first
+                o = again.second
+            }
+            if (code == 503) return Result.Halted
+            val got = o
+            if (code != 200 || got == null) return Result.Refused(got?.optString("why") ?: "take $code")
+            val list = got.getJSONArray("parcels")
             for (i in 0 until list.length()) {
                 val p = list.getJSONObject(i)
                 val sealed = B64.decode(p.getString("body"))
@@ -195,11 +224,19 @@ object LiveCloud {
             val acksTold = getMeta(sql, k("acks", id.book))
             val last = LiveSync.lastSeq(sql)
             var sent = false
-            var more = o.optBoolean("more", false)
+            var more = got.optBoolean("more", false)
             if (last > posted || acksNow != acksTold) {
-                val msg = message(sql, posted) ?: return Result.Off
+                // Kept under the relay's own limit: a page of long rows goes as several smaller ones
+                // (22 Oct 2026, the review: a page over 1 MB was refused and sent again, unchanged, for ever).
+                var page = LiveSync.PAGE
+                var msg = message(sql, posted, page) ?: return Result.Off
+                var sealed = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8))
+                while (sealed.size > MAX_SEND && page > 1) {
+                    page /= 2
+                    msg = message(sql, posted, page) ?: return Result.Off
+                    sealed = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8))
+                }
                 val parcel = msg.getJSONObject("parcel")
-                val sealed = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8))
                 val (sc, so) = call("POST", "send", sealed, "application/octet-stream")
                 if (sc != 200) return Result.Refused(so?.optString("why") ?: "send $sc")
                 setMeta(sql, k("sent", id.book), maxOf(posted, parcel.getLong("to")).toString())

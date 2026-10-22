@@ -28,17 +28,54 @@ class LiveWireTest {
     }
 
     @Test
-    fun `the phone finds its computer again by the book's tag, and no other`() {
+    fun `the phone finds its computer again by proof of the book's key, with the port it serves on`() {
         val key = LiveSync.newHex(32)
         val socket = java.net.DatagramSocket(0, InetAddress.getLoopbackAddress())
         val stop = java.util.concurrent.atomic.AtomicBoolean(false)
-        val worker = thread { LiveWire.answerSeeks(socket, { stop.get() }, { key }) }
+        val worker = thread { LiveWire.answerSeeks(socket, { stop.get() }, { key }, { 51234 }) }
         try {
             val here = listOf(InetAddress.getLoopbackAddress())
-            assertEquals("127.0.0.1", LiveWire.seek(key, socket.localPort, here, 2000))
+            assertEquals(LiveWire.Found("127.0.0.1", 51234), LiveWire.seek(key, socket.localPort, here, 2000))
+            // A phone of another book is not answered as this one's: the proof is made with the key.
             assertNull(LiveWire.seek(LiveSync.newHex(32), socket.localPort, here, 500))
         } finally {
             stop.set(true); socket.close(); worker.join(3000)
+        }
+    }
+
+    @Test
+    fun `the computer's answer is good for one call only, and nothing on the wire repeats`() {
+        val key = LiveSync.newHex(32)
+        val a = LiveWire.hereTag(key, ByteArray(16) { 1 }, 47313)
+        val b = LiveWire.hereTag(key, ByteArray(16) { 2 }, 47313)
+        val c = LiveWire.hereTag(key, ByteArray(16) { 1 }, 47314)
+        assertTrue(!a.contentEquals(b) && !a.contentEquals(c))
+        assertTrue(a.contentEquals(LiveWire.hereTag(key, ByteArray(16) { 1 }, 47313)))
+    }
+
+    @Test
+    fun `a round frame longer than any round is let go before anything is read`() {
+        val server = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
+        val stop = java.util.concurrent.atomic.AtomicBoolean(false)
+        val key = LiveSync.newHex(32)
+        val worker = thread { LiveWire.serve(server, { stop.get() }, { null }, { false }, { key }) { null } }
+        try {
+            java.net.Socket("127.0.0.1", server.localPort).use { s ->
+                s.soTimeout = 5000
+                val out = java.io.DataOutputStream(s.getOutputStream())
+                out.write("RKL1".toByteArray()); out.writeInt(Int.MAX_VALUE); out.flush()
+                // Answered with nothing at once, not after reading two gigabytes.
+                assertEquals(0, java.io.DataInputStream(s.getInputStream()).readInt())
+            }
+            // A pairing frame while no code is on the screen is refused without being read.
+            java.net.Socket("127.0.0.1", server.localPort).use { s ->
+                s.soTimeout = 5000
+                val out = java.io.DataOutputStream(s.getOutputStream())
+                out.write("RKA1".toByteArray()); out.writeInt(100 * 1024 * 1024); out.flush()
+                assertEquals(LiveWire.BAD, s.getInputStream().read())
+            }
+        } finally {
+            stop.set(true); runCatching { server.close() }; worker.join(5000)
         }
     }
 
@@ -91,6 +128,58 @@ class LiveWireTest {
             }
             stop.set(true)
             worker.join(5000)
+        } finally {
+            stop.set(true)
+            runCatching { server.close() }
+            phone.close(); pc.close()
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `a pairing waits for the computer's yes, and an older pairing of the book is not answered as the new one`() {
+        val dir = Files.createTempDirectory("rk-wire-pair").toFile()
+        val phone = DesktopDatabase.open(dir.resolve("phone.db"))
+        val pc = DesktopDatabase.open(dir.resolve("pc.db"))
+        val server = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
+        val stop = java.util.concurrent.atomic.AtomicBoolean(false)
+        val pcKey = java.util.concurrent.atomic.AtomicReference<String?>(null)
+        try {
+            val phoneSql = phone.syncSql()
+            val pcSql = pc.syncSql()
+            val id = runBlocking { LiveSync.enable(phoneSql, "install-phone", "Phone") }
+            runBlocking {
+                phone.khataDao().insertParty(Party(name = "Ali"))
+                LiveRound.setPending(phoneSql, LiveRound.Target(listOf("127.0.0.1"), server.localPort, LiveSync.lastSeq(phoneSql), "PC", pair = "aa11bb22"), wasOff = true)
+            }
+            val worker = thread {
+                LiveWire.serve(server, { stop.get() }, { null }, { false }, { pcKey.get() }) { r -> runBlocking { LiveRound.answer(pcSql, r) } }
+            }
+            runBlocking {
+                // Not said yes to yet: the computer does not hold the book, and answers nothing.
+                val early = LiveWire.round(listOf("127.0.0.1"), server.localPort, id.key, LiveRound.request(phoneSql)!!)
+                assertEquals(LiveWire.Answer.NotHere, early)
+                assertNull(LiveRound.target(phoneSql))
+                // The owner says yes on the computer: it joins this pairing (LiveDesk.join's steps).
+                LiveSync.enable(pcSql, "install-pc", "PC", adopt = id.book to id.key, mark = "B")
+                LiveSync.putPeer(pcSql, id.device, name = "Phone", sent = 0, recv = LiveRound.pending(phoneSql)!!.from)
+                LiveSync.setPeerPair(pcSql, id.device, "aa11bb22")
+                pcKey.set(id.key)
+                pc.khataDao().insertParty(Party(name = "Bilal"))
+                val req = LiveRound.request(phoneSql)!!
+                val a = LiveWire.round(listOf("127.0.0.1"), server.localPort, id.key, req)
+                assertTrue("$a", a is LiveWire.Answer.Got)
+                val took = LiveRound.take(phoneSql, req, (a as LiveWire.Answer.Got).reply, a.host)
+                assertTrue(took.joined)
+                assertNull(LiveRound.pending(phoneSql))
+                val t = LiveRound.target(phoneSql)!!
+                assertEquals("aa11bb22", t.pair)
+                assertEquals(LiveSync.identity(pcSql)!!.device, t.device)
+                assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Bilal" })
+                // A request of another pairing of the same book (an older one, or another phone's) is not answered.
+                val other = LiveRound.request(phoneSql)!!.put("pair", "cc33dd44")
+                assertEquals(LiveWire.Answer.NotHere, LiveWire.round(listOf("127.0.0.1"), server.localPort, id.key, other))
+            }
         } finally {
             stop.set(true)
             runCatching { server.close() }

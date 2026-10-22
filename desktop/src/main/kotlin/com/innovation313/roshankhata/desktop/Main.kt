@@ -217,17 +217,22 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
     // Live sync with the phone (22 Oct 2026): listening while this book syncs.
+    var liveFailed by remember(active) { mutableStateOf<String?>(null) }
     LaunchedEffect(db) {
         withContext(Dispatchers.IO) {
+            val file = businesses.dbFile(active).name
             // A phone's book the owner chose to keep as a new business: this (new, empty) book takes it and joins.
             LiveDesk.takePending()?.let { (offer, data) ->
                 runCatching {
                     LiveSync.disable(db.syncSql())
                     restore(data, db, settings)
-                    LiveDesk.join(db, home, offer)
+                    LiveDesk.join(db, home, file, offer)
+                }.onFailure { e ->
+                    // Said, never passed over (22 Oct 2026, the review): the phone waits for a yes that is not coming.
+                    liveFailed = e.message ?: e.javaClass.simpleName
                 }
             }
-            runCatching { LiveDesk.attach(db, home) }
+            runCatching { LiveDesk.attach(db, home, file) }
         }
     }
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
@@ -344,6 +349,14 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         onTradeChanged = { tradeTick++ },
                         appPrefs = appPrefs
                     ) } } }
+                    liveFailed?.let { why ->
+                        AlertDialog(
+                            onDismissRequest = { liveFailed = null },
+                            title = { Text(word(W.live_title)) },
+                            text = { Text(word(W.live_join_failed, why)) },
+                            confirmButton = { TextButton({ liveFailed = null }) { Text(word(W.ok)) } }
+                        )
+                    }
                     if (!recoveryTold) {
                         // The book was damaged and rebuilt (or could not be): said once, before any work.
                         // Or it is empty while a book set aside earlier still sits beside it (21 Oct 2026).
@@ -504,23 +517,18 @@ private fun Book(
     }
     // The phone's rows written in by a live round: every page reads again.
     LaunchedEffect(Unit) { LiveSync.changes.drop(1).collect { reload++ } }
-    // A phone that scanned the live code: its book goes to the usual restore confirmation.
+    // A phone that scanned the live code: its book (already read whole by LiveDesk) goes to the usual restore
+    // confirmation, and stays there until the owner answers it (a lock or a sign-out in between shows it again).
     LaunchedEffect(Unit) {
-        LiveDesk.offers.filterNotNull().collect { offer ->
-            LiveDesk.offers.value = null
+        LiveDesk.offers.filterNotNull().collect { incoming ->
             liveSync = false
-            val read = withContext(Dispatchers.IO) {
-                runCatching { val file = PhoneSync.saveIncoming(home, offer.backup); val (r, d) = BackupCodec.parseFile(file); Triple(file, r, d) }.getOrNull()
-            }
-            val result = read?.second
-            val data = read?.third
-            picked = when {
-                read != null && result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(read.first, data, result, live = offer)
-                result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
-                else -> Picked.Refused(words.text(W.backup_err_unreadable))
-            }
+            picked = Picked.Ready(incoming.file, incoming.data, incoming.ok, live = incoming.offer)
         }
     }
+    // This book's own sync id: a phone offering this very book is offered only Replace (22 Oct 2026, the review:
+    // "join as a new business" made a second business with the same book, and both answered the phone).
+    var thisBook by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(db, reload) { thisBook = withContext(Dispatchers.IO) { runCatching { LiveSync.identity(db.syncSql())?.book }.getOrNull() } }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     // Home first, as the phone opens on its Home.
     var section by remember { mutableStateOf(Section.HOME) }
@@ -820,7 +828,7 @@ private fun Book(
                     Section.HELP -> Box(Modifier.fillMaxSize()) { HelpPane(words) }
                     Section.REGISTER -> Box(Modifier.fillMaxSize()) { RegisterPane(dao, words, rtl, shop, reload) }
                     Section.STOCK -> Box(Modifier.fillMaxSize()) { StockPane(dao, words, rtl, shop, reload) }
-                    Section.DAILY -> Box(Modifier.fillMaxSize()) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder) { shop = shopName(); reload++ } }
+                    Section.DAILY -> Box(Modifier.fillMaxSize()) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder, sync = db.syncSql()) { shop = shopName(); reload++ } }
                     Section.REPORT -> Box(Modifier.fillMaxSize()) { ReportPane(dao, words, rtl, shop, reload) }
                     Section.SHOP -> Box(Modifier.fillMaxSize()) { ShopDetailsPane(settings, images) { shop = shopName() } }
                     Section.CARD -> Box(Modifier.fillMaxSize()) { BusinessCardPane(settings, images, home, activeBusiness, words) }
@@ -1151,6 +1159,8 @@ private fun Book(
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // A live pairing (22 Oct 2026): keeping this book and opening the phone's beside it comes first.
                     if (p.live != null) Text(word(W.live_pair_warning), color = c.ink, fontWeight = FontWeight.Medium)
+                    // A book that syncs with a phone stops syncing once it is replaced (22 Oct 2026, the review).
+                    else if (thisBook != null) Text(word(W.restore_stops_live), color = c.ink, fontWeight = FontWeight.Medium)
                     LossNote(loss, agreed) { agreed = it }
                     Text(
                         word(
@@ -1166,13 +1176,15 @@ private fun Book(
                 // Not for a live pairing: the two devices must start from the very same book.
                 if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
                 // Nothing here is removed: the phone's book becomes a business of its own and that business joins.
-                p.live?.let { offer ->
+                // Not when this computer already keeps this very book: then it is Replace (this copy made the phone's again).
+                p.live?.takeIf { it.book != thisBook }?.let { offer ->
                     TextButton(enabled = !busy, onClick = {
                         // Its own name, with the phone's after it, so the two books never read alike in the list.
                         val name = (p.data.businessName?.takeIf { it.isNotBlank() } ?: words.text(W.live_title)) +
                             offer.name.takeIf { it.isNotBlank() }?.let { " ($it)" }.orEmpty()
                         val b = businesses.create(name)
                         LiveDesk.keepPending(offer, p.data)
+                        LiveDesk.offers.value = null
                         picked = null
                         onSwitch(b.id)
                     }) { Text(word(W.live_join_new_business)) }
@@ -1190,16 +1202,40 @@ private fun Book(
                                 if (kept == null) {
                                     told = words.text(W.restore_warning_title) to words.text(W.restore_keep_failed)
                                 } else {
-                                    // A replaced book is no longer the one any phone was syncing: live sync stops
-                                    // first (so the restore's own writes are not sent), and a live pairing then joins anew.
-                                    withContext(Dispatchers.IO) { LiveSync.disable(db.syncSql()) }
-                                    com.innovation313.roshankhata.data.NumberMark.mark = null
-                                    if (p.live == null) LiveDesk.stop()
-                                    restore(p.data)
-                                    p.live?.let { offer -> withContext(Dispatchers.IO) { LiveDesk.join(db, home, offer) } }
-                                    done = true
-                                    shop = shopName()
-                                    reload++
+                                    // A replaced book is no longer the one any phone was syncing: live sync pauses
+                                    // first (so the restore's own writes are not sent), stops once the restore went
+                                    // through, and a live pairing then joins anew. Run whole even when the screen
+                                    // goes (22 Oct 2026, the review: a counter's sign-out after the restore cancelled
+                                    // the join, and the phone waited for ever); a failure changes nothing.
+                                    val dbFile = businesses.dbFile(activeBusiness).name
+                                    val failure = withContext(kotlinx.coroutines.NonCancellable + Dispatchers.IO) {
+                                        val sql = db.syncSql()
+                                        val wasLive = runCatching { LiveSync.pause(sql) }.getOrDefault(false)
+                                        try {
+                                            restore(p.data)
+                                        } catch (e: Exception) {
+                                            if (wasLive) runCatching { LiveSync.resume(sql) }
+                                            return@withContext e
+                                        }
+                                        if (wasLive) LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+                                        else if (p.live != null) runCatching { LiveSync.disable(sql) }
+                                        com.innovation313.roshankhata.data.NumberMark.mark = null
+                                        p.live?.let { offer ->
+                                            runCatching { LiveDesk.join(db, home, dbFile, offer) }.exceptionOrNull()?.let { return@withContext it }
+                                        }
+                                        null
+                                    }
+                                    if (p.live != null) LiveDesk.offers.value = null
+                                    if (failure != null) {
+                                        told = words.text(W.restore_warning_title) to
+                                            if (p.live != null) words.text(W.live_join_failed, failure.message ?: failure.javaClass.simpleName)
+                                            else (failure.message ?: words.text(W.backup_failed))
+                                    } else {
+                                        if (p.live == null && !LiveDesk.windowOpen()) LiveDesk.stop()
+                                        done = true
+                                        shop = shopName()
+                                        reload++
+                                    }
                                 }
                             } catch (e: Exception) {
                                 told = words.text(W.restore_warning_title) to (e.message ?: words.text(W.backup_failed))
@@ -1213,7 +1249,13 @@ private fun Book(
                 ) { Text(word(W.restore_replace)) }
               }
             },
-            dismissButton = { TextButton(enabled = !busy, onClick = { picked = null }) { Text(word(W.cancel)) } }
+            dismissButton = {
+                TextButton(enabled = !busy, onClick = {
+                    // A live pairing said no to: let go here (the phone gives up waiting on its own).
+                    if (p.live != null) LiveDesk.offers.value = null
+                    picked = null
+                }) { Text(word(W.cancel)) }
+            }
           )
         }
         null -> {}

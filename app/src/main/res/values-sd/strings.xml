@@ -3485,7 +3485,7 @@
     </plurals>
     <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
     <string name="live_title">ڪمپيوٽر سان لائيو سنڪ</string>
-    <string name="live_explain">فون ۽ ڪمپيوٽر هڪ ئي کاتو رکن ٿا، جيڪو هر ڪجهه سيڪنڊن ۾ تازو ٿئي ٿو جڏهن ٻئي دڪان جي وائي فائي تي هجن ۽ روشن کاتو کليل هجي. ڪجهه به انٽرنيٽ تي نٿو وڃي.</string>
+    <string name="live_explain">فون ۽ ڪمپيوٽر هڪ ئي کاتو رکن ٿا، جيڪو هر ڪجهه سيڪنڊن ۾ تازو ٿئي ٿو جڏهن ٻئي دڪان جي وائي فائي تي هجن ۽ روشن کاتو کليل هجي. جيستائين «انٽرنيٽ ذريعي به» آن نه هجي، ڪجهه به انٽرنيٽ تي نٿو وڃي.</string>
     <string name="live_join">ڪمپيوٽر سان ڳنڍيو</string>
     <string name="live_stop">لائيو سنڪ بند ڪريو</string>
     <string name="live_stop_confirm">هن ڊوائيس تي لائيو سنڪ بند ڪجي؟ کاتو بلڪل ائين ئي رهندو.</string>
@@ -3513,4 +3513,13 @@
     <string name="live_conflict_now">هاڻي: %1$s</string>
     <string name="live_conflict_saved">محفوظ رکيو: %1$s</string>
     <string name="live_conflict_clear">ڏٺو، هٽايو</string>
+    <string name="live_join_failed">فون جو ڳنڍڻ پورو نه ٿيو: %1$s. فون تي بيڪ اپ ← ڪمپيوٽر سان لائيو سنڪ ← ڪمپيوٽر سان ڳنڍيو کوليو ۽ ڪوڊ ٻيهر اسڪين ڪريو.</string>
+    <string name="restore_stops_live">هي کاتو ٻئي ڊوائيس سان لائيو سنڪ ٿئي ٿو. ان کي بدلائڻ سان لائيو سنڪ رڪجي ويندو؛ پوءِ ٻنهي کي ٻيهر ڳنڍيو.</string>
+    <string name="live_held">ٻئي ڊوائيس جون تبديليون جيڪي پنهنجي شيءِ جو انتظار ڪري رهيون آهن (ڪو گراهڪ يا شيءِ جيڪا اڃا هتي ناهي): %1$d</string>
+    <string name="live_status_rejoin">لائيو سنڪ رڪجي ويو ڇو ته هي کاتو ريسٽور سان بدلايو ويو يا ڪنهن پراڻي ڪاپي ڏانهن موٽيو. ٻيهر سنڪ لاءِ ڪمپيوٽر سان ٻيهر ڳنڍيو.</string>
+    <string name="live_status_not_accepted">ڪمپيوٽر وقت تي ها نه ڪئي. ڳنڍڻ لاءِ ان جو لائيو سنڪ ڪوڊ ٻيهر اسڪين ڪريو.</string>
+    <string name="live_status_not_here">ڪمپيوٽر جواب ڏنو، پر هن وقت هي کاتو ان تي ناهي. ڪمپيوٽر تي هن کاتي جو ڪاروبار کوليو.</string>
+    <string name="live_status_relay">%1$s سان انٽرنيٽ ذريعي لائيو. آخري تازگي: %2$s</string>
+    <string name="live_relay_help">جڏهن فون دڪان جي وائي فائي کان پري هجي ته ان جون تبديليون Innovation 313 جي ريلي ذريعي وڃن ٿيون، هن کاتي جي پنهنجي چاٻي سان بند: ريلي انهن کي پڙهي نٿي سگهي، ۽ وڌ ۾ وڌ 7 ڏينهن رکي ٿي. ٻنهي ڊوائيسن لاءِ هڪ ئي سوئچ.</string>
+    <string name="live_relay">انٽرنيٽ ذريعي به</string>
 </resources>

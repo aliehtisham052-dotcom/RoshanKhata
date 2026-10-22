@@ -57,6 +57,15 @@ object BookSettings {
     const val COUNTER_USED = "counter_used"
     const val OWNER_DEVICES = "owner_devices"
 
+    /**
+     * "1" when live sync may also go through Innovation 313's relay on the
+     * internet (LiveCloud) while the two devices are not on one WiFi (22 Oct
+     * 2026, the review: it was on for everyone while the screens said nothing
+     * went to the internet). One switch for the book, so both devices agree;
+     * off until the owner turns it on.
+     */
+    const val LIVE_RELAY = "live_relay"
+
     fun isOn(v: String?): Boolean = v == "1"
 }
 

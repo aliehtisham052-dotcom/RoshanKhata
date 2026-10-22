@@ -70,7 +70,7 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
                     UnitWords.normalizeStored(db)
                     // This book's letter in document numbers while it syncs live (NumberMark), read as it opens:
                     // a business switch never keeps the last book's letter.
-                    NumberMark.mark = liveMarkOf(db, LiveRunner.install(context))
+                    NumberMark.mark = liveMarkOf(db, LiveRunner.install(context.applicationContext))
                 }
             })
             .build()
@@ -122,6 +122,25 @@ fun KhataDatabase.Companion.closeActive() {
     // Another book is about to be opened (a business switch, a restore, the viewer's copy):
     // a sign-in belongs to the book it was made in.
     Access.signOut()
+}
+
+/**
+ * [swap] with the book closed and nobody able to open it until [swap] is
+ * done: a file put back, or every file erased (22 Oct 2026, the review). The
+ * live sync loop opens the book every few seconds; landing between the close
+ * and the swap, it held the old file open, and every screen after the restore
+ * read and wrote a file that was no longer there. [get] waits on the same
+ * lock. [swap] must not call [get] itself.
+ */
+fun <T> KhataDatabase.Companion.whileClosed(swap: () -> T): T {
+    val result = synchronized(KhataDatabaseHolder) {
+        KhataDatabaseHolder.instance?.close()
+        KhataDatabaseHolder.instance = null
+        KhataDatabaseHolder.instanceFile = null
+        swap()
+    }
+    Access.signOut()
+    return result
 }
 
 /**

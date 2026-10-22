@@ -1157,7 +1157,22 @@ interface KhataDao {
     fun observeSchemes(): Flow<List<Scheme>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveScheme(s: Scheme): Long
+    suspend fun saveSchemeRow(s: Scheme): Long
+
+    @Query("SELECT uid FROM schemes WHERE id = :id")
+    suspend fun schemeUid(id: Long): String?
+
+    /**
+     * A scheme saved, new or edited. An edit keeps the row's own uid (22 Oct
+     * 2026, the review): the forms built the scheme afresh, and REPLACE gave
+     * the edited row a new identity, so a book kept live on two devices got
+     * a second copy of the scheme on the other one with every edit.
+     */
+    @Transaction
+    suspend fun saveScheme(s: Scheme): Long {
+        val keep = if (s.id != 0L) schemeUid(s.id) else null
+        return saveSchemeRow(if (keep != null) s.copy(uid = keep) else s)
+    }
 
     @Query("UPDATE schemes SET isDeleted = 1 WHERE id = :id")
     suspend fun deleteScheme(id: Long)
@@ -1226,7 +1241,17 @@ interface KhataDao {
     fun observeAttendanceBetween(from: Long, to: Long): Flow<List<StaffAttendance>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun markAttendance(mark: StaffAttendance)
+    suspend fun saveAttendanceRow(mark: StaffAttendance)
+
+    @Query("SELECT * FROM staff_attendance WHERE staffId = :staffId AND day = :day LIMIT 1")
+    suspend fun attendanceOn(staffId: Long, day: Long): StaffAttendance?
+
+    /** A day marked; marking the same day again changes that row, keeping its id and uid (as [saveScheme]). */
+    @Transaction
+    suspend fun markAttendance(mark: StaffAttendance) {
+        val here = attendanceOn(mark.staffId, mark.day)
+        saveAttendanceRow(if (here != null) mark.copy(id = here.id, uid = here.uid) else mark)
+    }
 
     @Query("DELETE FROM staff_attendance WHERE staffId = :staffId AND day = :day")
     suspend fun clearAttendance(staffId: Long, day: Long)
@@ -1276,7 +1301,14 @@ interface KhataDao {
     fun observeLastDayClose(): Flow<DayClose?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveDayClose(close: DayClose)
+    suspend fun saveDayCloseRow(close: DayClose)
+
+    /** A day closed; closing the same day again changes that row, keeping its id and uid (as [saveScheme]). */
+    @Transaction
+    suspend fun saveDayClose(close: DayClose) {
+        val here = dayCloseFor(close.day)
+        saveDayCloseRow(if (here != null) close.copy(id = here.id, uid = here.uid) else close)
+    }
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND timestamp > :from AND timestamp <= :to")
     suspend fun cashbookTotalBetween(income: Boolean, from: Long, to: Long): Double
