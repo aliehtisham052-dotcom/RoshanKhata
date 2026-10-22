@@ -86,7 +86,9 @@ class Schema38Test {
             val (res, parsed) = BackupCodec.parseText(out.toString())
             assertTrue(res is BackupCodec.ImportResult.Ok)
             parsed!!
-            assertEquals(14, parsed.version)
+            // Written at the format of the day (14 brought these uids; 15, 22 Oct 2026, the bill photo path).
+            assertEquals(BackupCodec.FORMAT_VERSION, parsed.version)
+            assertTrue(parsed.version >= 14)
             val o = other.khataDao()
             BackupCodec.restoreLedger(o, parsed)
             assertEquals(dao.allPartiesForBackup().single().uid, o.allPartiesForBackup().single().uid)
