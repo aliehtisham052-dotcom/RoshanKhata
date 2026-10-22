@@ -218,6 +218,44 @@ class SecurityReviewTest {
     }
 
     @Test
+    fun `a day closed twice keeps what the first close counted in the log`() = runBlocking {
+        val dao = book("close")
+        Access.signIn(staff(3, "Asad", Role.MANAGER))
+        dao.saveDayClose(DayClose(day = 20_000L, opening = 0.0, cashIn = 1000.0, cashOut = 0.0, counted = 990.0))
+        dao.saveDayClose(DayClose(day = 20_000L, opening = 0.0, cashIn = 1000.0, cashOut = 0.0, counted = 1000.0))
+        assertEquals(1, dao.allDayClosesForBackup().size)
+        val rows = dao.auditInOrder().filter { it.action == AuditAction.DAY_CLOSED }
+        assertEquals(2, rows.size)
+        assertTrue(rows.all { it.user == "Asad" })
+        assertEquals("990.00", rows[0].detail)
+        assertEquals("1,000.00 (990.00 / -10.00)", rows[1].detail)
+    }
+
+    @Test
+    fun `the cashbook and the counter's tables go out and come back a page at a time, every row`() = runBlocking {
+        val dao = book("big")
+        // More rows than one page (2,000) of the cashbook, and a ticket with its line and payment.
+        repeat(2_345) { i -> dao.insertCashEntry(CashEntry(amount = 10.0 + i, isIncome = i % 2 == 0, category = "Test")) }
+        val p = dao.insertProduct(Product(name = "Urea", nameKey = ProductName.key("Urea"), normalisedName = ProductName.normalised("Urea")))
+        dao.postSale(
+            Sale(timestamp = System.currentTimeMillis(), subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+            listOf(SaleItem(saleId = 0, productId = p, itemName = "Urea", quantity = 1.0, unit = "bag", rate = 4500.0)),
+            listOf(SalePayment(saleId = 0, method = PaymentMethod.CASH, amount = 4500.0))
+        )
+        val copy = copyOf(dao)
+        assertEquals(dao.allCashForBackup().size, copy.cash.size)
+        assertEquals(dao.allCashForBackup().map { it.uid }, copy.cash.map { it.uid })
+        assertEquals(1, copy.sales.size)
+        assertEquals(1, copy.saleItems.size)
+        assertEquals(1, copy.salePayments.size)
+        assertEquals(dao.allAuditForBackup().map { it.hash }, copy.audit.map { it.hash })
+        val back = book("big-restored")
+        BackupCodec.restoreLedger(back, copy)
+        assertEquals(dao.allCashForBackup().size, back.allCashForBackup().size)
+        assertEquals(1, back.allSalesForBackup().size)
+    }
+
+    @Test
     fun `a device id copied into the settings file does not make a counter the owner's`() = runBlocking {
         val dao = book("counter")
         val phone = "0123456789abcdef0123456789abcdef"

@@ -3699,6 +3699,8 @@
     <string name="live_pc_none">لم يُربط أي هاتف بعد.</string>
     <string name="live_conflicts">تغيّر على الجهازين معًا (أُبقي أحدهما وحُفظ الآخر): %1$d</string>
     <string name="live_pair_warning">هذا دفتر الهاتف. لإبقاء دفتر هذا الحاسوب كما هو تمامًا، انضمّ كنشاط تجاري جديد: يُفتح دفتر الهاتف بجانبه ولا يُحذف شيء هنا. اختر «استبدال كل شيء» فقط إذا لم تكن بحاجة إلى دفتر هذا الحاسوب.</string>
+    <string name="live_pair_code">رمز الاقتران: %1$s. يعرض الكمبيوتر الرمز نفسه بجانب موافقته؛ وافق هناك فقط إذا تطابق الرمزان.</string>
+    <string name="live_pair_code_check">يعرض الهاتف الرمز %1$s. وافق فقط إذا كان الهاتف يعرض هذا الرمز نفسه.</string>
     <string name="live_join_new_business">الانضمام كنشاط تجاري جديد</string>
     <string name="live_devices">الأجهزة المتصلة</string>
     <string name="live_remove">إزالة</string>

@@ -141,8 +141,25 @@ object LiveWire {
         /** The letter the joining device takes in document numbers ([NumberMark]); null from an older phone. */
         val mark: String? = null,
         /** This pairing's own id: every round names it, so only the computer that said yes to it answers. */
-        val pair: String? = null
-    )
+        val pair: String? = null,
+        /** On the computer: the code the phone shows for this pairing ([pairCode]), set as the offer is read. */
+        val code: String? = null
+    ) {
+        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c)
+    }
+
+    /**
+     * Four digits both screens show for one pairing (22 Oct 2026, the review:
+     * a pairing had no code to compare, so a book sent by whoever else had
+     * photographed the computer's QR looked like the owner's own). Made from
+     * the code's secret and the pairing's id, which only the phone that sent
+     * it and this computer hold.
+     */
+    fun pairCode(secret: String, pair: String): String {
+        val d = java.security.MessageDigest.getInstance("SHA-256").digest(("rk-pair-code:" + secret + ":" + pair).toByteArray(Charsets.UTF_8))
+        val n = (((d[0].toInt() and 0xff) shl 16) or ((d[1].toInt() and 0xff) shl 8) or (d[2].toInt() and 0xff)) % 10000
+        return n.toString().padStart(4, '0')
+    }
 
     fun encodeOffer(o: Offer): ByteArray = offerHead(o) + o.backup
 
@@ -171,7 +188,8 @@ object LiveWire {
 
     /** How a pairing went from the phone's side. */
     sealed interface Sent {
-        data class Taken(val host: String) : Sent
+        /** [code]: the pairing's code, for the owner to see on both screens ([pairCode]); null without a pair id. */
+        data class Taken(val host: String, val code: String? = null) : Sent
         object Refused : Sent
         object Unreachable : Sent
     }
@@ -191,7 +209,7 @@ object LiveWire {
                 s.soTimeout = readMs
                 WifiSync.writeSealed(DataOutputStream(s.getOutputStream().buffered(1 shl 16)), PAIR, invite.secret, head, backup)
                 val answer = s.getInputStream().read()
-                return if (answer == OK) Sent.Taken(host) else Sent.Refused
+                return if (answer == OK) Sent.Taken(host, offer.pair?.let { pairCode(invite.secret, it) }) else Sent.Refused
             }
         }
         return Sent.Unreachable
@@ -208,7 +226,7 @@ object LiveWire {
                 val out = DataOutputStream(s.getOutputStream().buffered())
                 out.write(PAIR); out.writeInt(sealed.size); out.write(sealed); out.flush()
                 val answer = s.getInputStream().read()
-                return if (answer == OK) Sent.Taken(host) else Sent.Refused
+                return if (answer == OK) Sent.Taken(host, offer.pair?.let { pairCode(invite.secret, it) }) else Sent.Refused
             }
         }
         return Sent.Unreachable
@@ -299,7 +317,7 @@ object LiveWire {
                     if (secret == null || n <= 0 || n > MAX_BYTES + NONCE + TAG_BITS / 8) { out.write(BAD); out.flush(); return@runCatching }
                     it.soTimeout = 60_000
                     val sealed = readUpTo(input, n)
-                    val offer = WifiSync.open(secret, sealed)?.let { b -> decodeOffer(b) }
+                    val offer = WifiSync.open(secret, sealed)?.let { b -> decodeOffer(b) }?.let { o -> o.withCode(o.pair?.let { pairCode(secret, it) }) }
                     out.write(if (offer != null && onOffer(offer)) OK else BAD); out.flush()
                 }
                 magic.contentEquals(LIVE) -> {

@@ -3487,6 +3487,8 @@
     <string name="live_pc_none">ابھی کوئی فون نہیں جڑا۔</string>
     <string name="live_conflicts">دونوں پر ایک ساتھ تبدیلی (ایک رکھی گئی، دوسری محفوظ کی گئی): %1$d</string>
     <string name="live_pair_warning">یہ فون کا کھاتہ ہے۔ اس کمپیوٹر کا اپنا کھاتہ بالکل ویسا رکھنے کے لیے نئے کاروبار کے طور پر جوڑیں: فون کا کھاتہ اس کے ساتھ الگ کھلے گا اور یہاں سے کچھ نہیں مٹے گا۔ ”سب کچھ بدل دیں“ صرف تب دبائیں جب اس کمپیوٹر کا کھاتہ ضروری نہ ہو۔</string>
+    <string name="live_pair_code">جوڑنے کا کوڈ: %1$s۔ کمپیوٹر اپنی ہاں کے ساتھ یہی کوڈ دکھاتا ہے؛ وہاں ہاں صرف تب کہیں جب دونوں ایک جیسے ہوں۔</string>
+    <string name="live_pair_code_check">فون یہ کوڈ دکھا رہا ہے: %1$s۔ ہاں صرف تب کہیں جب فون پر بھی یہی کوڈ ہو۔</string>
     <string name="live_join_new_business">نئے کاروبار کے طور پر جوڑیں</string>
     <string name="live_devices">جڑے ہوئے آلات</string>
     <string name="live_remove">ہٹائیں</string>

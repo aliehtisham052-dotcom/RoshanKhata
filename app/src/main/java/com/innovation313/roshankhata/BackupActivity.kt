@@ -423,7 +423,8 @@ class BackupActivity : BaseActivity() {
             if (isFinishing || isDestroyed) return@launch
             val message = when (sent) {
                 null -> getString(R.string.backup_failed)
-                is LiveWire.Sent.Taken -> getString(R.string.live_sent)
+                // The pairing's code too: the computer shows the same four digits beside its yes (22 Oct 2026).
+                is LiveWire.Sent.Taken -> getString(R.string.live_sent) + (sent.code?.let { "\n\n" + getString(R.string.live_pair_code, it) } ?: "")
                 LiveWire.Sent.Refused -> getString(R.string.wifi_send_refused)
                 LiveWire.Sent.Unreachable -> getString(R.string.wifi_send_unreachable)
             }

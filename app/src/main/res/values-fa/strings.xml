@@ -3515,6 +3515,8 @@
     <string name="live_pc_none">هنوز هیچ گوشی‌ای وصل نشده.</string>
     <string name="live_conflicts">تغییر هم‌زمان روی هر دو (یکی نگه داشته شد، دیگری ذخیره شد): %1$d</string>
     <string name="live_pair_warning">این دفتر تلفن است. برای اینکه دفتر خود این رایانه دقیقاً همان‌طور بماند، به‌عنوان کسب‌وکار جدید بپیوندید: دفتر تلفن کنار آن باز می‌شود و چیزی از اینجا پاک نمی‌شود. «همه‌چیز جایگزین شود» را فقط وقتی بزنید که دفتر این رایانه لازم نیست.</string>
+    <string name="live_pair_code">کد جفت شدن: %1$s. رایانه همین کد را کنار تأییدش نشان می‌دهد؛ فقط وقتی هر دو یکی است آنجا تأیید کنید.</string>
+    <string name="live_pair_code_check">تلفن کد %1$s را نشان می‌دهد. فقط وقتی تأیید کنید که تلفن همین کد را نشان دهد.</string>
     <string name="live_join_new_business">پیوستن به‌عنوان کسب‌وکار جدید</string>
     <string name="live_devices">دستگاه‌های متصل</string>
     <string name="live_remove">حذف</string>

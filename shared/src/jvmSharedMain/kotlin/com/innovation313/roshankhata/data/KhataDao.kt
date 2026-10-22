@@ -1421,11 +1421,19 @@ interface KhataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveDayCloseRow(close: DayClose)
 
-    /** A day closed; closing the same day again changes that row, keeping its id and uid (as [saveScheme]). */
+    /**
+     * A day closed; closing the same day again changes that row, keeping its
+     * id and uid (as [saveScheme]). Its audit row is written here, in the same
+     * transaction, and a second close of a day says what the first one counted
+     * (22 Oct 2026, the review: the first close's figures were gone with
+     * nothing but its count left anywhere).
+     */
     @Transaction
-    suspend fun saveDayClose(close: DayClose) {
+    suspend fun saveDayClose(close: DayClose, user: String? = Access.userName) {
         val here = dayCloseFor(close.day)
         saveDayCloseRow(if (here != null) close.copy(id = here.id, uid = here.uid) else close)
+        val said = auditAmount(close.counted) + (here?.let { " (" + auditAmount(it.counted) + " / " + auditAmount(it.difference) + ")" } ?: "")
+        log(AuditAction.DAY_CLOSED, user, "day_close", here?.id, said)
     }
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND timestamp > :from AND timestamp <= :to")
@@ -3250,6 +3258,23 @@ interface KhataDao {
 
     @Query("SELECT * FROM audit_log ORDER BY id")
     suspend fun allAuditForBackup(): List<AuditLog>
+
+    // A page at a time for the backup (22 Oct 2026, the review): the counter's tables grow with every
+    // ticket, and were built whole in memory on export and on restore.
+    @Query("SELECT * FROM sales WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun salesPageForBackup(after: Long, limit: Int): List<Sale>
+
+    @Query("SELECT * FROM sale_items WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun saleItemsPageForBackup(after: Long, limit: Int): List<SaleItem>
+
+    @Query("SELECT * FROM sale_payments WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun salePaymentsPageForBackup(after: Long, limit: Int): List<SalePayment>
+
+    @Query("SELECT * FROM audit_log WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun auditPageForBackup(after: Long, limit: Int): List<AuditLog>
+
+    @Query("SELECT * FROM cashbook WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun cashPageForBackup(after: Long, limit: Int): List<CashEntry>
 
     @Query("SELECT * FROM audit_log ORDER BY timestamp DESC, id DESC LIMIT :limit")
     suspend fun latestAudit(limit: Int): List<AuditLog>

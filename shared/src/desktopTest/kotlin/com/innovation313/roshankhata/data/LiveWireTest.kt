@@ -110,6 +110,12 @@ class LiveWireTest {
                 assertEquals(o.book, back.book); assertEquals(o.key, back.key); assertEquals(7L, back.seq)
                 assertEquals("B", back.mark); assertEquals("aa11bb22", back.pair)
                 assertArrayEquals(book, back.backup)
+                // Both screens show the same four digits for this pairing, and another pairing gets another code.
+                val code = (sent as LiveWire.Sent.Taken).code
+                assertTrue("$code", code != null && Regex("\\d{4}").matches(code))
+                assertEquals(code, back.code)
+                assertEquals(code, LiveWire.pairCode(secret, "aa11bb22"))
+                assertTrue(LiveWire.pairCode(secret, "aa11bb23") != code || LiveWire.pairCode(WifiSync.newSecret(), "aa11bb22") != code)
             } finally {
                 stop.set(true); runCatching { pairServer.close() }; worker.join(5000)
             }
