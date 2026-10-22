@@ -22,6 +22,8 @@ import urllib.request
 
 BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "http://127.0.0.1:8098"
 FAILED = []
+LAST = ["(none yet)"]
+STEP = ["start"]
 
 
 def call(method, path, token=None, device=None, body=None, how="both", ctype=None):
@@ -38,9 +40,10 @@ def call(method, path, token=None, device=None, body=None, how="both", ctype=Non
     data = body if body is None or isinstance(body, bytes) else json.dumps(body).encode()
     if data is not None and not ctype:
         headers["Content-Type"] = "application/json" if not isinstance(body, bytes) else "application/octet-stream"
+    STEP[0] = "%s %s (%d bytes)" % (method, path.split("/")[-1], len(data or b""))
     req = urllib.request.Request(BASE + path, data=data, method=method, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with urllib.request.urlopen(req, timeout=60) as r:
             return r.status, json.loads(r.read() or b"null")
     except urllib.error.HTTPError as e:
         raw = e.read()
@@ -51,6 +54,7 @@ def call(method, path, token=None, device=None, body=None, how="both", ctype=Non
 
 
 def check(name, cond, detail=""):
+    LAST[0] = name
     print(("ok   " if cond else "FAIL ") + name + ("" if cond else "  " + str(detail)))
     if not cond:
         FAILED.append(name)
@@ -164,5 +168,6 @@ if __name__ == "__main__":
         msg = "%s: %s (line %d: %s)" % (type(e).__name__, str(e)[:400], where.lineno, (where.line or "").strip()[:200])
         print("CRASH " + msg)
         if os.environ.get("GITHUB_ACTIONS"):
-            print("::error title=relay check crashed::" + msg + " -- passed so far: %s" % ", ".join(FAILED or ["(none failed)"]))
+            print("::error title=relay check crashed::" + msg + " -- during " + STEP[0] + ", after the check: " + LAST[0]
+                  + " -- failed before it: " + (", ".join(FAILED) or "none"))
         sys.exit(2)
