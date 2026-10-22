@@ -20,10 +20,13 @@ OUT = os.path.join("app", "google-services.json")
 
 
 def main() -> int:
-    raw = os.environ.get("GOOGLE_SERVICES_JSON", "").strip()
+    raw = os.environ.get("GOOGLE_SERVICES_JSON", "").strip().lstrip("\ufeff")
     if not raw:
         print("::notice::No GOOGLE_SERVICES_JSON secret: the app is built without the Firebase wake-up.")
         return 0
+    # What the secret looks like, without showing it: a pasted file starts with "{" and runs
+    # to about 600-1500 characters; anything else was pasted wrongly (22 Oct 2026).
+    shape = f"{len(raw)} characters, starts with {raw[0]!r}, ends with {raw[-1]!r}"
     try:
         data = json.loads(raw)
         packages = {
@@ -32,7 +35,7 @@ def main() -> int:
         }
         project = data["project_info"]["project_id"]
     except (ValueError, KeyError, TypeError) as e:
-        print(f"::warning::GOOGLE_SERVICES_JSON is not a google-services.json ({type(e).__name__}): built without the wake-up.")
+        print(f"::warning::GOOGLE_SERVICES_JSON is not a google-services.json ({type(e).__name__}; {shape}): built without the wake-up.")
         return 0
     missing = [p for p in NEEDED if p not in packages]
     if missing:
