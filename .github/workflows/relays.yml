@@ -19,6 +19,10 @@ on:
         description: "Deploy the relay to Supabase"
         type: boolean
         default: false
+      check_hosting:
+        description: "Run the 32 checks against the relay on the owner's hosting (https://ehtisham.shop/r)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -130,4 +134,19 @@ jobs:
           done
           echo "::notice::health: $out"
           echo "$out" | grep -q '"ok":true'
+          python3 scripts/test_relay.py "$U"
+
+  hosting:
+    if: github.event_name == 'workflow_dispatch' && inputs.check_hosting
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: The relay on the owner's hosting answers as the others do
+        run: |
+          U=https://ehtisham.shop/r
+          out=$(curl -s "$U/v1/health"); echo "::notice::health: $out"
+          echo "$out" | grep -q '"ok":true'
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$U/data/")
+          echo "::notice::r/data/ answers $code (must not be 200)"
+          test "$code" != 200
           python3 scripts/test_relay.py "$U"
