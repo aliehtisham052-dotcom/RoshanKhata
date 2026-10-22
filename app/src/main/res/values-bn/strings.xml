@@ -3525,4 +3525,8 @@
     <string name="live_remove_confirm">%1$s সরাবেন? এটি এই কম্পিউটারের সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে।</string>
     <string name="live_needs_owner">কোনো ডিভাইসকে লাইভ সিঙ্কে যুক্ত করতে মালিকের PIN লাগবে।</string>
     <string name="live_badge">লাইভ · %1$s</string>
+    <string name="live_conflicts_show">কী বদলেছে দেখুন</string>
+    <string name="live_conflict_now">এখন: %1$s</string>
+    <string name="live_conflict_saved">আলাদা রাখা: %1$s</string>
+    <string name="live_conflict_clear">দেখেছি, সরান</string>
 </resources>

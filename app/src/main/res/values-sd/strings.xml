@@ -3509,4 +3509,8 @@
     <string name="live_remove_confirm">%1$s کي هٽايو؟ اهو هن ڪمپيوٽر سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو.</string>
     <string name="live_needs_owner">ڪنهن ڊوائيس کي لائيو سنڪ سان ڳنڍڻ لاءِ مالڪ جو PIN گهرجي.</string>
     <string name="live_badge">لائيو · %1$s</string>
+    <string name="live_conflicts_show">ڏسو ڇا بدليو</string>
+    <string name="live_conflict_now">هاڻي: %1$s</string>
+    <string name="live_conflict_saved">محفوظ رکيو: %1$s</string>
+    <string name="live_conflict_clear">ڏٺو، هٽايو</string>
 </resources>

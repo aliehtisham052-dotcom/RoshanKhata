@@ -3472,4 +3472,8 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_remove_confirm">Hapus %1$s? Perangkat itu berhenti sinkron dengan komputer ini. Bukunya sendiri tetap seperti apa adanya.</string>
     <string name="live_needs_owner">Menggabungkan perangkat ke sinkron langsung memerlukan PIN pemilik.</string>
     <string name="live_badge">Langsung · %1$s</string>
+    <string name="live_conflicts_show">Lihat yang berubah</string>
+    <string name="live_conflict_now">Sekarang: %1$s</string>
+    <string name="live_conflict_saved">Disimpan terpisah: %1$s</string>
+    <string name="live_conflict_clear">Sudah dilihat, hapus</string>
 </resources>

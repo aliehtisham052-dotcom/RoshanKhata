@@ -646,6 +646,36 @@ object LiveSync {
         }
     }
 
+    /**
+     * A conflict as the owner reads it: which kind of row, when, and each
+     * field that differs — as it stands now, and as the other version (kept
+     * aside) had it. A setting's other version is its value alone.
+     */
+    data class ConflictView(val id: Long, val table: String, val at: Long, val fields: List<Triple<String, String?, String?>>)
+
+    suspend fun conflictViews(sql: SyncSql, limit: Int = 50): List<ConflictView> = sql.read {
+        if (!hasTables()) return@read emptyList()
+        val cache = HashMap<String, List<Col>>()
+        rows("SELECT id, tbl, uid, at, lost FROM sync_conflict ORDER BY id DESC LIMIT ?", listOf(limit.toLong()), "ITTIT").map { r ->
+            val table = r[1] as String
+            val uid = r[2] as String
+            val lostText = r[4] as String?
+            val lost = lostText?.let { runCatching { JSONObject(it) }.getOrNull() }
+            val now = SyncSchema.table(table)?.let { t -> rowOut(t, uid, cache) }
+            fun text(o: JSONObject?, k: String): String? = o?.let { if (!it.has(k) || it.isNull(k)) null else it.get(k).toString() }
+            val fields = if (lost != null && now != null) {
+                (lost.keySet() + now.keySet()).filter { it != "uid" }.sorted().mapNotNull { k ->
+                    val a = text(now, k); val b = text(lost, k)
+                    if (a == b || (a?.toDoubleOrNull() != null && a.toDoubleOrNull() == b?.toDoubleOrNull())) null else Triple(k, a, b)
+                }
+            } else listOf(Triple(if (lost == null && lostText != null) "value" else "row", text(now, "name"), lostText?.take(200)))
+            ConflictView(r[0] as Long, table, r[3] as Long, fields)
+        }
+    }
+
+    /** The owner has seen it: the other version is let go. */
+    suspend fun clearConflict(sql: SyncSql, id: Long) = sql.write { exec("DELETE FROM sync_conflict WHERE id = ?", listOf(id)) }
+
     /** The conflicts kept for the owner, newest first. */
     data class Conflict(val id: Long, val table: String, val uid: String, val at: Long, val device: String?, val kept: String?, val lost: String?)
 

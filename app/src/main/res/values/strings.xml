@@ -3695,4 +3695,8 @@ You can change this any time from this screen.</string>
     <string name="live_remove_confirm">Remove %1$s? It stops syncing with this computer. Its own book stays as it is.</string>
     <string name="live_needs_owner">Joining a device to live sync needs the owner’s PIN.</string>
     <string name="live_badge">Live · %1$s</string>
+    <string name="live_conflicts_show">See what changed</string>
+    <string name="live_conflict_now">Now: %1$s</string>
+    <string name="live_conflict_saved">Saved aside: %1$s</string>
+    <string name="live_conflict_clear">Seen, clear it</string>
 </resources>

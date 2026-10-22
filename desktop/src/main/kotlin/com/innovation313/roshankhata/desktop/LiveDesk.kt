@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -219,6 +220,8 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
     val hosts = remember { PhoneSync.lanAddresses() }
     val port = remember { LiveDesk.start() }
     var state by remember { mutableStateOf<LiveSync.State?>(null) }
+    // The conflicts opened for reading (empty until "See what changed").
+    var views by remember { mutableStateOf<List<LiveSync.ConflictView>>(emptyList()) }
     // A joined device the owner is about to remove: (device id, its name).
     var removing by remember { mutableStateOf<Pair<String, String>?>(null) }
     val qr: ImageBitmap? = remember {
@@ -293,7 +296,33 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                         }
                     }
                 }
-                if ((s?.conflicts ?: 0) > 0) Text(word(W.live_conflicts, s!!.conflicts), color = c.textMuted, fontSize = 13.sp)
+                if ((s?.conflicts ?: 0) > 0) {
+                    Text(word(W.live_conflicts, s!!.conflicts), color = c.textMuted, fontSize = 13.sp)
+                    FluentButton(word(W.live_conflicts_show), {
+                        scope.launch { views = withContext(Dispatchers.IO) { runCatching { LiveSync.conflictViews(book.syncSql()) }.getOrDefault(emptyList()) } }
+                    }, kind = ButtonKind.STANDARD)
+                }
+                // What changed on both at once: each field as it is now and as the other version had it.
+                views.forEach { v ->
+                    Column(
+                        Modifier.fillMaxWidth().background(c.pageBg, androidx.compose.foundation.shape.RoundedCornerShape(8.dp)).padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(tableWord(v.table) + "  ·  " + Format.dateTime(v.at), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                        v.fields.take(8).forEach { (field, now, saved) ->
+                            Text(field, color = c.textMuted, fontSize = 12.sp)
+                            Text(word(W.live_conflict_now, now ?: "—"), color = c.ink, fontSize = 13.sp)
+                            Text(word(W.live_conflict_saved, saved ?: "—"), color = c.owedToMe, fontSize = 13.sp)
+                        }
+                        FluentButton(word(W.live_conflict_clear), {
+                            scope.launch {
+                                withContext(Dispatchers.IO) { runCatching { LiveSync.clearConflict(book.syncSql(), v.id) } }
+                                views = views.filter { it.id != v.id }
+                                state = withContext(Dispatchers.IO) { runCatching { LiveSync.state(book.syncSql()) }.getOrNull() }
+                            }
+                        }, kind = ButtonKind.SUBTLE)
+                    }
+                }
                 Text(word(W.wifi_pc_firewall), color = c.textMuted, fontSize = 12.sp)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (s?.on == true) FluentButton(word(W.live_stop), {
@@ -308,4 +337,18 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
             }
         }
     }
+}
+
+/** A synced table in the owner's words where the app has them; otherwise its own name. */
+@Composable
+private fun tableWord(table: String): String = when (table) {
+    "parties" -> word(W.customer)
+    "transactions" -> word(W.nav_khata)
+    "cashbook" -> word(W.cashbook)
+    "cheques" -> word(W.cheques)
+    "invoices" -> word(W.invoices)
+    "supplier_bills" -> word(W.supplier_bills)
+    "products" -> word(W.tile_products)
+    "staff" -> word(W.staff_title)
+    else -> table
 }
