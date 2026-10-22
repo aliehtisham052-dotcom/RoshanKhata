@@ -3398,7 +3398,9 @@ You can change this any time from this screen.</string>
     <string name="access_recovery_ask">Type the recovery code shown when the owner PIN was set. Then choose a new PIN.</string>
     <string name="access_recovery_wrong">That recovery code is not right.</string>
     <string name="access_owner_pin">Owner PIN</string>
-    <string name="access_owner_pin_help">The owner\'s own PIN, 4 to 8 digits. It signs the owner in at a counter, allows what a cashier may not do alone, and turns Counter mode off. Only its hash is kept, never the PIN.</string>
+    <string name="access_owner_pin_help">The owner\'s own PIN, 6 to 8 digits. It signs the owner in at a counter, allows what a cashier may not do alone, and turns Counter mode off. Only its hash is kept, never the PIN.</string>
+    <string name="access_owner_pin_invalid">The owner\'s PIN is 6 to 8 digits</string>
+    <string name="access_owner_pin_short">Your owner PIN is short. Change it to 6 to 8 digits: a short PIN can be guessed from a backup file in minutes.</string>
     <string name="access_recovery_title">Your recovery code</string>
     <string name="access_recovery_help">Write this code down and keep it away from the counter. If the owner PIN is ever forgotten, this code sets a new one. It is shown only now; a new PIN gives a new code.</string>
     <string name="access_recovery_written">I have written it down</string>

@@ -3228,7 +3228,9 @@
     <string name="access_recovery_ask">मालिक का PIN बनाते समय जो रिकवरी कोड दिखाया गया था वह लिखें। फिर नया PIN चुनें।</string>
     <string name="access_recovery_wrong">यह रिकवरी कोड सही नहीं है।</string>
     <string name="access_owner_pin">मालिक का PIN</string>
-    <string name="access_owner_pin_help">मालिक का अपना PIN, 4 से 8 अंक। इससे मालिक काउंटर पर साइन इन करता है, वे काम मंज़ूर करता है जो कैशियर अकेले नहीं कर सकता, और काउंटर मोड बंद करता है। सिर्फ़ इसका हैश रखा जाता है, PIN कभी नहीं।</string>
+    <string name="access_owner_pin_help">मालिक का अपना PIN, 6 से 8 अंक। इससे मालिक काउंटर पर साइन इन करता है, वे काम मंज़ूर करता है जो कैशियर अकेले नहीं कर सकता, और काउंटर मोड बंद करता है। सिर्फ़ इसका हैश रखा जाता है, PIN कभी नहीं।</string>
+    <string name="access_owner_pin_invalid">मालिक का PIN 6 से 8 अंकों का होता है</string>
+    <string name="access_owner_pin_short">आपका मालिक PIN छोटा है। इसे 6 से 8 अंकों का कर दें: छोटा PIN बैकअप फ़ाइल से कुछ मिनटों में पता लगाया जा सकता है।</string>
     <string name="access_recovery_title">आपका रिकवरी कोड</string>
     <string name="access_recovery_help">यह कोड लिख लें और काउंटर से दूर रखें। अगर मालिक का PIN कभी भूल जाएँ तो यह कोड नया PIN बना देता है। यह सिर्फ़ अभी दिखाया जा रहा है; नया PIN नया कोड देता है।</string>
     <string name="access_recovery_written">मैंने लिख लिया है</string>

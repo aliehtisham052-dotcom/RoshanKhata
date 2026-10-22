@@ -3181,7 +3181,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="access_recovery_ask">Ketik kode pemulihan yang ditampilkan saat PIN pemilik dibuat, lalu pilih PIN baru.</string>
     <string name="access_recovery_wrong">Kode pemulihan itu salah.</string>
     <string name="access_owner_pin">PIN pemilik</string>
-    <string name="access_owner_pin_help">PIN milik pemilik sendiri, 4 sampai 8 angka. Dengan ini pemilik masuk di kasir, mengizinkan hal yang tidak boleh dilakukan kasir sendirian, dan mematikan Mode kasir. Hanya hash-nya yang disimpan, tidak pernah PIN-nya.</string>
+    <string name="access_owner_pin_help">PIN milik pemilik sendiri, 6 sampai 8 angka. Dengan ini pemilik masuk di kasir, mengizinkan hal yang tidak boleh dilakukan kasir sendirian, dan mematikan Mode kasir. Hanya hash-nya yang disimpan, tidak pernah PIN-nya.</string>
+    <string name="access_owner_pin_invalid">PIN pemilik 6 sampai 8 angka</string>
+    <string name="access_owner_pin_short">PIN pemilik Anda pendek. Ubah menjadi 6 sampai 8 angka: PIN pendek dapat ditebak dari file cadangan dalam beberapa menit.</string>
     <string name="access_recovery_title">Kode pemulihan Anda</string>
     <string name="access_recovery_help">Catat kode ini dan simpan jauh dari kasir. Jika PIN pemilik terlupa, kode ini membuat PIN baru. Kode hanya ditampilkan sekarang; PIN baru memberi kode baru.</string>
     <string name="access_recovery_written">Sudah saya catat</string>

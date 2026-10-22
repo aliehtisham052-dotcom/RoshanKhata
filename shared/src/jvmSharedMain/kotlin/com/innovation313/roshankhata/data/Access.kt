@@ -309,12 +309,13 @@ object Access {
      * recovery code, before replacing one. One audit row.
      */
     suspend fun setOwnerPin(dao: KhataDao, pin: String): String {
-        require(PinHash.valid(pin)) { "a PIN is 4 to 8 digits" }
+        require(PinHash.validOwner(pin)) { "the owner's PIN is 6 to 8 digits" }
         val salt = PinHash.salt()
         val code = RecoveryCode.next()
         val codeSalt = PinHash.salt()
         dao.saveOwnerPin(PinHash.hash(pin, salt), salt, PinHash.hash(RecoveryCode.normal(code), codeSalt), codeSalt, userName)
         rememberOwner(dao)
+        ownerPinShort = false
         return code
     }
 
@@ -338,6 +339,15 @@ object Access {
         val salt = s.pinSalt ?: return null
         return if (PinHash.matches(pin, salt, hash)) s.name else null
     }
+
+    /**
+     * The owner's PIN just typed right is shorter than an owner's PIN may now
+     * be (one set before 22 Oct 2026): the screens ask the owner to change it.
+     */
+    var ownerPinShort: Boolean by mutableStateOf(false)
+
+    /** Called with a PIN the owner just typed right. */
+    fun ownerPinTyped(pin: String) { ownerPinShort = pin.length < PinHash.OWNER_MIN }
 
     /** True when [pin] is this staff member's. */
     fun pinMatches(s: Staff, pin: String): Boolean {
@@ -427,6 +437,7 @@ object Access {
         memMisses.clear(); memWaitUntil.clear()
         counterMode = false
         current = null; ownerIn = false
+        ownerPinShort = false
     }
 
     private const val KEY_COUNTER = "access_counter_mode"

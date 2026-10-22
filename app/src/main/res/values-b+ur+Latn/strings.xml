@@ -3184,7 +3184,9 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="access_recovery_ask">Malik ka PIN banate waqt jo recovery code dikhaya gaya tha woh likhein. Phir naya PIN chunein.</string>
     <string name="access_recovery_wrong">Yeh recovery code durust nahi.</string>
     <string name="access_owner_pin">Malik ka PIN</string>
-    <string name="access_owner_pin_help">Malik ka apna PIN, 4 se 8 hindse. Is se malik counter par sign in karta hai, woh kaam ijazat deta hai jo cashier akela nahi kar sakta, aur counter mode band karta hai. Sirf iska hash mehfooz hota hai, PIN kabhi nahi.</string>
+    <string name="access_owner_pin_help">Malik ka apna PIN, 6 se 8 hindse. Is se malik counter par sign in karta hai, woh kaam ijazat deta hai jo cashier akela nahi kar sakta, aur counter mode band karta hai. Sirf iska hash mehfooz hota hai, PIN kabhi nahi.</string>
+    <string name="access_owner_pin_invalid">Malik ka PIN 6 se 8 hindson ka hota hai</string>
+    <string name="access_owner_pin_short">Aap ka malik PIN chhota hai. Ise 6 se 8 hindson ka kar dein: chhota PIN backup file se chand minute mein maloom kiya ja sakta hai.</string>
     <string name="access_recovery_title">Aap ka recovery code</string>
     <string name="access_recovery_help">Yeh code likh lein aur counter se door rakhein. Agar malik ka PIN kabhi bhool jaye to yeh code naya PIN bana deta hai. Yeh sirf abhi dikhaya ja raha hai; naya PIN naya code deta hai.</string>
     <string name="access_recovery_written">Maine likh liya hai</string>

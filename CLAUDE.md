@@ -434,17 +434,19 @@ devices, a printer or a second monitor.
   are written on its own disk, then copied out; the outside folder is per
   computer ("Business-1 (SHOP-PC)"); the phone's safety copies are taken
   under a write transaction with the log, then checked (`copyWhole`).
-- **Left, with the reason:** the owner's own backups still carry PIN hashes
-  (a 4-digit PIN falls offline in minutes: longer PINs, leaving them out or
-  encrypting backups is the owner's call); counter tables are not streamed
+- **After the review (the owner's yes, 22 Oct):** the owner's PIN is 6 to 8
+  digits (`PinHash.validOwner`; staff PINs stay 4 to 8) — its hash is in
+  every backup, and four digits fall offline in minutes; an older short one
+  still opens and is asked to be changed each time it is typed
+  (`Access.ownerPinShort`). The relay Worker with the review's fixes is
+  deployed (cloud-worker.yml, deploy = true).
+- **Left, with the reason:** counter tables are not streamed
   in backups (fine to tens of thousands of tickets); goods lines edited on
   both devices at once can double (E8); the relay's device identity is
   unauthenticated inside a book (insider only); pairing has no confirmation
   code; the kill switch fails open by design; re-closing a day replaces the
   first close (the audit keeps both); a lone Indonesian "1.125" stays one and
-  an eighth. The Worker's fixes (8 MB take pages, a wake token dropped only
-  when FCM says so) are in cloud/worker but deployed only with the owner's
-  yes; until then `LiveCloud.plain`'s 32 MB cap can refuse a 40-parcel page.
+  an eighth.
 
 ### The shared module (KMP)
 

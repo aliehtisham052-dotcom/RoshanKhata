@@ -3212,7 +3212,9 @@
     <string name="access_recovery_ask">مالڪ جو PIN ٺاهڻ وقت جيڪو رڪوري ڪوڊ ڏيکاريو ويو هو اهو لکو. پوءِ نئون PIN چونڊيو.</string>
     <string name="access_recovery_wrong">هي رڪوري ڪوڊ صحيح ناهي.</string>
     <string name="access_owner_pin">مالڪ جو PIN</string>
-    <string name="access_owner_pin_help">مالڪ جو پنهنجو PIN، 4 کان 8 انگ. ان سان مالڪ ڪائونٽر تي سائن ان ٿئي ٿو، اهو ڪم اجازت ڏئي ٿو جيڪو ڪيشيئر اڪيلو نٿو ڪري سگهي، ۽ ڪائونٽر موڊ بند ڪري ٿو. رڳو ان جو هيش محفوظ ٿئي ٿو، PIN ڪڏهن به نه.</string>
+    <string name="access_owner_pin_help">مالڪ جو پنهنجو PIN، 6 کان 8 انگ. ان سان مالڪ ڪائونٽر تي سائن ان ٿئي ٿو، اهو ڪم اجازت ڏئي ٿو جيڪو ڪيشيئر اڪيلو نٿو ڪري سگهي، ۽ ڪائونٽر موڊ بند ڪري ٿو. رڳو ان جو هيش محفوظ ٿئي ٿو، PIN ڪڏهن به نه.</string>
+    <string name="access_owner_pin_invalid">مالڪ جو PIN 6 کان 8 انگن جو ٿئي ٿو</string>
+    <string name="access_owner_pin_short">توهان جو مالڪ PIN ننڍو آهي. ان کي 6 کان 8 انگن جو ڪريو: ننڍو PIN بيڪ اپ فائل مان ڪجهه منٽن ۾ ڳولي سگهجي ٿو.</string>
     <string name="access_recovery_title">توهان جو رڪوري ڪوڊ</string>
     <string name="access_recovery_help">هي ڪوڊ لکي رکو ۽ ڪائونٽر کان پري رکو. جيڪڏهن مالڪ جو PIN ڪڏهن وسري وڃي ته هي ڪوڊ نئون PIN ٺاهي ٿو. هي رڳو هاڻي ڏيکاريو پيو وڃي؛ نئون PIN نئون ڪوڊ ڏئي ٿو.</string>
     <string name="access_recovery_written">مون لکي ورتو آهي</string>

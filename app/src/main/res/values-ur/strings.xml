@@ -3184,7 +3184,9 @@
     <string name="access_recovery_ask">مالک کا PIN بناتے وقت جو ریکوری کوڈ دکھایا گیا تھا وہ لکھیں۔ پھر نیا PIN چنیں۔</string>
     <string name="access_recovery_wrong">یہ ریکوری کوڈ درست نہیں۔</string>
     <string name="access_owner_pin">مالک کا PIN</string>
-    <string name="access_owner_pin_help">مالک کا اپنا PIN، 4 سے 8 ہندسے۔ اس سے مالک کاؤنٹر پر سائن اِن کرتا ہے، وہ کام اجازت دیتا ہے جو کیشیئر اکیلا نہیں کر سکتا، اور کاؤنٹر موڈ بند کرتا ہے۔ صرف اس کا ہیش محفوظ ہوتا ہے، PIN کبھی نہیں۔</string>
+    <string name="access_owner_pin_help">مالک کا اپنا PIN، 6 سے 8 ہندسے۔ اس سے مالک کاؤنٹر پر سائن اِن کرتا ہے، وہ کام اجازت دیتا ہے جو کیشیئر اکیلا نہیں کر سکتا، اور کاؤنٹر موڈ بند کرتا ہے۔ صرف اس کا ہیش محفوظ ہوتا ہے، PIN کبھی نہیں۔</string>
+    <string name="access_owner_pin_invalid">مالک کا PIN 6 سے 8 ہندسوں کا ہوتا ہے</string>
+    <string name="access_owner_pin_short">آپ کا مالک PIN چھوٹا ہے۔ اسے 6 سے 8 ہندسوں کا کر دیں: چھوٹا PIN بیک اپ فائل سے چند منٹ میں معلوم کیا جا سکتا ہے۔</string>
     <string name="access_recovery_title">آپ کا ریکوری کوڈ</string>
     <string name="access_recovery_help">یہ کوڈ لکھ لیں اور کاؤنٹر سے دور رکھیں۔ اگر مالک کا PIN کبھی بھول جائے تو یہ کوڈ نیا PIN بنا دیتا ہے۔ یہ صرف ابھی دکھایا جا رہا ہے؛ نیا PIN نیا کوڈ دیتا ہے۔</string>
     <string name="access_recovery_written">میں نے لکھ لیا ہے</string>
