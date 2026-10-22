@@ -3418,6 +3418,11 @@
     <string name="entry_linked_cheque">این ثبت را چکی که وصول شده نوشته است. آن را از صفحهٔ چک‌ها تغییر دهید.</string>
     <string name="entry_linked_sale">این ثبت را یک فروش صندوق نوشته است. فروش را باطل کنید یا برگشت ثبت کنید.</string>
     <string name="entry_linked_return">این ثبت را یک برگشت نوشته است. به جای آن برگشت را باطل کنید.</string>
+    <string name="pos_return_void_day_closed">روزِ این برگشت بسته شده است، پس باطل نمی‌شود. به جای آن، کالا را در یک فروش تازه ثبت کنید.</string>
+    <string name="entries_linked_kept">همان‌طور ماندند، چون یک صورت‌حساب، طرح، چک، فروش صندوق یا برگشت آن‌ها را نوشته است (از همان‌جا تغییرشان دهید): %1$d</string>
+    <string name="party_has_tickets">حذف نشد: فروش صندوق یا برگشت به نام %1$s ثبت شده است. اول آن‌ها را باطل کنید، یا مشتری را نگه دارید.</string>
+    <string name="bin_emptied_kept">سطل خالی شد. این مشتریان ماندند، چون هنوز فاکتور تأمین‌کننده، چک، برنامهٔ پرداخت یا فروش پیشخوان دارند: %1$d</string>
+    <string name="bin_party_kept">در سطل ماند: این مشتری هنوز فاکتور تأمین‌کننده، چک، برنامهٔ پرداخت یا فروش پیشخوان دارد. برای رسیدگی به آن‌ها مشتری را بازگردانی کنید.</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">به شما پرداخت شد</string>

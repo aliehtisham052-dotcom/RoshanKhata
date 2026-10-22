@@ -833,10 +833,21 @@ class KhataActivity : BaseActivity() {
                     // All-or-nothing inside one transaction, under one
                     // timestamp: a crash partway leaves the ledger untouched,
                     // and a restore brings back exactly what one delete took.
-                    AppScope.launch { dao.softDeleteParties(picked.map { it.id }) }.join()
+                    // A customer with posted counter tickets stays (22 Oct 2026, the review): said by name.
+                    var kept: List<Long> = emptyList()
+                    AppScope.launch { kept = dao.softDeleteParties(picked.map { it.id }) }.join()
                     clearSelection()
-                    Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
-                        .show()
+                    if (kept.isNotEmpty()) {
+                        val names = picked.filter { it.id in kept }.joinToString(", ") { androidx.core.text.BidiFormatter.getInstance().unicodeWrap(it.name) }
+                        MaterialAlertDialogBuilder(this@KhataActivity)
+                            .setTitle(R.string.entry_linked_title)
+                            .setMessage(getString(R.string.party_has_tickets, names))
+                            .setPositiveButton(R.string.ok, null)
+                            .show()
+                    } else {
+                        Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
             .show()

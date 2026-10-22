@@ -3390,6 +3390,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_linked_cheque">Yeh indiraaj clear hone wale cheque ne likha hai. Isay cheque wale safhe se badlen.</string>
     <string name="entry_linked_sale">Yeh indiraaj counter ki sale ne likha hai. Sale mansookh karen ya wapsi karen.</string>
     <string name="entry_linked_return">Yeh indiraaj wapsi ne likha hai. Is ke bajaye wapsi mansookh karen.</string>
+    <string name="pos_return_void_day_closed">Is wapsi ka din band ho chuka hai, is liye yeh mansookh nahi ho sakti. Is ki jagah samaan nayi bikri mein likhein.</string>
+    <string name="entries_linked_kept">Yeh waise hi rahe kyunke inhein kisi bill, plan, cheque, counter bikri ya wapsi ne likha hai (wahin se badlein): %1$d</string>
+    <string name="party_has_tickets">Delete nahi hua: %1$s ke naam counter bikri ya wapsi likhi hai. Pehle unhein mansookh karen, ya customer ko rehne dein.</string>
+    <string name="bin_emptied_kept">Bin khali kar diya gaya. Yeh customer rakhe gaye kyunke in ke abhi supplier bill, cheque, adaigi mansoobay ya counter sale maujood hain: %1$d</string>
+    <string name="bin_party_kept">Bin mein hi rakha gaya: is customer ke abhi supplier bill, cheque, adaigi mansoobay ya counter sale maujood hain. In ke liye customer ko wapas layen.</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">Aap ko ada kiya</string>

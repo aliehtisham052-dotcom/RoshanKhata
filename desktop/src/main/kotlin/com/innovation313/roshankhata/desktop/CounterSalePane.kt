@@ -607,10 +607,16 @@ fun CounterSalePane(
                 FluentButton(word(W.cancel), { voidingReturn = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.pos_void_return), {
                     scope.launch {
-                        val ok = withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason) }.getOrDefault(false) }
+                        val refusal = withContext(Dispatchers.IO) { runCatching { dao.returnVoidRefusal(r.id) }.getOrNull() }
+                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason) }.getOrDefault(false) }
                         voidingReturn = null; tick++; onChanged()
-                        // Said only when it happened (21 Oct 2026: the screen said "voided" either way).
-                        told = if (ok) words.text(W.pos_voided) + " " + r.returnNumber else words.text(W.backup_failed)
+                        // Said only when it happened (21 Oct 2026: the screen said "voided" either way), and why not
+                        // when it did not (22 Oct 2026: a closed day's return is not voided).
+                        told = when {
+                            ok -> words.text(W.pos_voided) + " " + r.returnNumber
+                            refusal == SaleMath.VoidRefusal.DAY_CLOSED -> words.text(W.pos_return_void_day_closed)
+                            else -> words.text(W.backup_failed)
+                        }
                     }
                 }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
             }) {

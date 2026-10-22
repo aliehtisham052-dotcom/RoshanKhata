@@ -201,13 +201,47 @@ interface KhataDao {
      * back together rather than a scattering of parts.
      */
     @Transaction
-    suspend fun softDeleteParties(ids: List<Long>, now: Long = System.currentTimeMillis()) {
+    suspend fun softDeleteParties(ids: List<Long>, now: Long = System.currentTimeMillis()): List<Long> {
+        val kept = ArrayList<Long>()
         for (id in ids) {
+            // A customer with posted counter tickets or returns stays (22 Oct 2026, the review): binning him
+            // binned the tickets' khata rows, so their goods came back on the shelf while the tickets stayed
+            // sold in every report, and the 30-day purge then erased the rows. The tickets are voided first.
+            if (postedTicketsOf(id) > 0) { kept += id; continue }
             softDeleteEntriesOfParty(id, now)
             softDeleteParty(id, now)
             // Who sent a customer to the bin (21 Oct 2026, the critical review).
             log(AuditAction.PARTY_DELETED, Access.userName, "parties", id)
         }
+        return kept
+    }
+
+    /** Posted (not voided) counter tickets and returns of [partyId]. */
+    @Query(
+        """
+        SELECT (SELECT COUNT(*) FROM sales WHERE partyId = :partyId AND status = 'done' AND isDeleted = 0)
+             + (SELECT COUNT(*) FROM sale_returns WHERE partyId = :partyId AND status = 'done' AND isDeleted = 0)
+        """
+    )
+    suspend fun postedTicketsOf(partyId: Long): Int
+
+    /**
+     * The entries the owner picked, to the bin — all but those a bill, a
+     * plan, a cheque, a counter sale or a return wrote (22 Oct 2026, the
+     * review: the select-and-delete binned a ticket's own rows, and the
+     * purge then erased them while the ticket stayed sold). Those are left
+     * and counted; each one binned leaves an audit row. Returns how many
+     * were left.
+     */
+    @Transaction
+    suspend fun softDeleteOwnEntries(ids: List<Long>, now: Long = System.currentTimeMillis()): Int {
+        var left = 0
+        for (id in ids) {
+            if (entryOwner(id) != null) { left++; continue }
+            softDeleteEntry(id, now)
+            log(AuditAction.ENTRY_DELETED, Access.userName, "transactions", id)
+        }
+        return left
     }
 
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id = :id")
@@ -232,10 +266,30 @@ interface KhataDao {
     suspend fun restoreParty(id: Long)
 
     /** Restores only entries that were binned together with the party (same deletedAt window). */
-    @Query("UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE partyId = :partyId AND deletedAt = :deletedAt")
+    /*
+     * A row a voided ticket or return took back never comes back on its own
+     * (22 Oct 2026, the review): the bin offered it, and restoring the "I
+     * gave" of a voided sale charged the customer again and took its goods
+     * off the shelf a second time, while the ticket still read as void.
+     */
+    @Query(
+        """
+        UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE partyId = :partyId AND deletedAt = :deletedAt
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
     suspend fun restoreEntriesOfParty(partyId: Long, deletedAt: Long)
 
-    @Query("UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
+    @Query(
+        """
+        UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE id = :id
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
     suspend fun restoreEntry(id: Long)
 
     /** An entry cannot live in an active ledger if its party is still in the bin. */
@@ -257,6 +311,9 @@ interface KhataDao {
         SELECT t.* FROM transactions t
         JOIN parties p ON p.id = t.partyId
         WHERE t.isDeleted = 1 AND p.isDeleted = 0
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = t.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = t.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = t.id OR r.refundEntryId = t.id))
         ORDER BY t.deletedAt DESC
         """
     )
@@ -290,7 +347,15 @@ interface KhataDao {
 
     // ---------- Recycle Bin: permanent purge ----------
 
-    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff")
+    /*
+     * Only entries binned on their own — their customer still in the book —
+     * are purged here (22 Oct 2026, the review). A customer's entries swept
+     * into the bin with him go when he goes (the cascade on partyId), never
+     * before: a customer the purge keeps (his bills, cheques, plans or
+     * counter tickets) lost every entry and kept his name, and came back
+     * from the bin with nothing owed.
+     */
+    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)")
     suspend fun purgeOldEntries(cutoff: Long)
 
     /*
@@ -306,12 +371,20 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
         AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
         AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns sr WHERE sr.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM purchase_orders po WHERE po.partyId = parties.id)
         """
     )
     suspend fun purgeOldParties(cutoff: Long)
 
-    @Query("DELETE FROM transactions WHERE isDeleted = 1")
+    /** Every entry binned on its own; a binned customer's go with him ([purgeOldEntries]). */
+    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)")
     suspend fun purgeAllEntries()
+
+    /** Customers in the bin: after emptying it, the ones kept by their bills, cheques, plans or counter tickets. */
+    @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 1")
+    suspend fun binnedPartyCount(): Int
 
     @Query(
         """
@@ -319,6 +392,9 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
         AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
         AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns sr WHERE sr.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM purchase_orders po WHERE po.partyId = parties.id)
         """
     )
     suspend fun purgeAllParties()
@@ -333,6 +409,10 @@ interface KhataDao {
      * takes its transactions with it automatically — the transactions table
      * declares onDelete = CASCADE on partyId — so no orphaned entries are
      * left behind, and no second call is needed.
+     *
+     * Returns how many went: 0 when the customer is kept (his bills,
+     * cheques, plans or counter tickets), so the screen says so rather
+     * than "deleted forever" (22 Oct 2026, the review).
      */
     @Query(
         """
@@ -340,9 +420,12 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
         AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
         AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns sr WHERE sr.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM purchase_orders po WHERE po.partyId = parties.id)
         """
     )
-    suspend fun purgeParty(id: Long)
+    suspend fun purgeParty(id: Long): Int
 
     @Query("DELETE FROM transactions WHERE id = :id AND isDeleted = 1")
     suspend fun purgeEntry(id: Long)
@@ -793,6 +876,32 @@ interface KhataDao {
         """
     )
     suspend fun entryOwner(entryId: Long): String?
+
+    /**
+     * The record that wrote a cashbook line ("sale" or "return"), or null
+     * when it is the owner's own (22 Oct 2026, the review: a counter
+     * ticket's cash line could be deleted from the cashbook, and the drawer
+     * then expected that much less while the ticket still read as paid).
+     */
+    @Query(
+        """
+        SELECT CASE
+          WHEN EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundCashId = :id AND r.isDeleted = 0 AND r.status = 'done') THEN 'return'
+          WHEN EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.cashEntryId = :id AND s.isDeleted = 0 AND s.status = 'done') THEN 'sale'
+          WHEN EXISTS (SELECT 1 FROM cashbook c WHERE c.id = :id AND c.saleId IS NOT NULL) THEN 'sale'
+          ELSE NULL END
+        """
+    )
+    suspend fun cashOwner(id: Long): String?
+
+    /** A cashbook line the owner wrote, to the bin with its audit row; false (nothing done) for one a ticket or a return wrote. */
+    @Transaction
+    suspend fun softDeleteOwnCashEntry(id: Long, amount: String? = null, now: Long = System.currentTimeMillis()): Boolean {
+        if (cashOwner(id) != null) return false
+        softDeleteCashEntry(id, now)
+        log(AuditAction.CASH_DELETED, Access.userName, "cashbook", id, amount)
+        return true
+    }
 
     /** A plan's next payment day changed by the owner, or cleared with null (21 Oct 2026). */
     @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
@@ -2532,6 +2641,21 @@ interface KhataDao {
     @Query("UPDATE payment_plans SET partyId = :survivorId WHERE partyId = :loserId")
     suspend fun reassignPlansToParty(loserId: Long, survivorId: Long)
 
+    @Query("UPDATE sales SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignSalesToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE sale_returns SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignReturnsToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE loyalty SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignLoyaltyToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE purchase_orders SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignOrdersToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE schemes SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignSchemesToParty(loserId: Long, survivorId: Long)
+
     /**
      * A customer entered twice, folded into one.
      *
@@ -2557,6 +2681,14 @@ interface KhataDao {
         reassignBillsToParty(loserId, survivorId)
         reassignChequesToParty(loserId, survivorId)
         reassignPlansToParty(loserId, survivorId)
+        // The counter's own rows follow too (22 Oct 2026, the review): tickets, returns, points, orders and
+        // schemes stayed on the binned duplicate, so a return went to a customer in the bin and the points
+        // were gone from the one kept.
+        reassignSalesToParty(loserId, survivorId)
+        reassignReturnsToParty(loserId, survivorId)
+        reassignLoyaltyToParty(loserId, survivorId)
+        reassignOrdersToParty(loserId, survivorId)
+        reassignSchemesToParty(loserId, survivorId)
         softDeleteParty(loserId, now)
     }
 
@@ -2779,11 +2911,19 @@ interface KhataDao {
          * their worth is already inside [Sale.discountAmount]. Checked here
          * against the customer's points and the book's rule.
          */
-        pointsUsed: Double = 0.0
+        pointsUsed: Double = 0.0,
+        /**
+         * The held ticket this sale was rung up from: taken off the hook in
+         * the same transaction (22 Oct 2026, the review: a crash between the
+         * two left it on the list, to be rung up a second time).
+         */
+        heldId: Long? = null
     ): Long {
         val lines = items.filter { !it.isDeleted }
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
         val hasParty = sale.partyId != null
+        // Not to a customer in the recycle bin (22 Oct 2026, the review): his rows would count nowhere.
+        if (hasParty) require(getParty(sale.partyId!!)?.isDeleted == false) { "sale refused: the customer is in the recycle bin" }
         SaleMath.check(lines, payments, totals.grandTotal, hasParty)?.let {
             throw IllegalArgumentException("sale refused: $it")
         }
@@ -2879,6 +3019,7 @@ interface KhataDao {
                 detail = "$number ${"%.2f".format(Digits.FIGURES, totals.grandTotal)}"
             )
         )
+        heldId?.let { dropHeldSale(it) }
         return saleId
     }
 
@@ -3138,6 +3279,13 @@ interface KhataDao {
         val lines = items.filter { !it.isDeleted }
         val total = ReturnMath.total(lines)
         val hasParty = ret.partyId != null
+        // Only against a ticket still posted, read inside this transaction (22 Oct 2026, the review: a ticket
+        // voided meanwhile — on the other device, or another window — was refunded a second time).
+        ret.saleId?.let { sid ->
+            val sale = getSale(sid)
+            require(sale != null && sale.status == SaleStatus.DONE && !sale.isDeleted) { "return refused: the ticket is not a posted one" }
+        }
+        if (hasParty) require(getParty(ret.partyId!!)?.isDeleted == false) { "return refused: the customer is in the recycle bin" }
         val refund = LineMath.round(ret.refundAmount)
         val soldLeft: Map<Long, Double> = ret.saleId?.let { sid ->
             val back = returnedOfSale(sid).associate { it.saleItemId to it.qty }
@@ -3207,11 +3355,23 @@ interface KhataDao {
         return id
     }
 
-    /** A posted return taken back: its rows binned, its number kept. False unless it is a posted one. */
+    /**
+     * Why a return may not be voided, or null when it may: it is not a posted
+     * one, or its day has been closed (22 Oct 2026, the review — as a sale's
+     * void: the closed day's refund would vanish and today's drawer be over).
+     */
+    suspend fun returnVoidRefusal(id: Long): SaleMath.VoidRefusal? {
+        val r = getReturn(id) ?: return SaleMath.VoidRefusal.NOT_DONE
+        if (r.status != SaleStatus.DONE || r.isDeleted) return SaleMath.VoidRefusal.NOT_DONE
+        if (dayClosesSince(r.timestamp) > 0) return SaleMath.VoidRefusal.DAY_CLOSED
+        return null
+    }
+
+    /** A posted return taken back: its rows binned, its number kept. False unless it is a posted one whose day is open. */
     @Transaction
     suspend fun voidReturn(id: Long, reason: String, user: String? = Access.userName): Boolean {
         val r = getReturn(id) ?: return false
-        if (r.status != SaleStatus.DONE || r.isDeleted) return false
+        if (returnVoidRefusal(id) != null) return false
         require(reason.isNotBlank()) { "a void needs its reason" }
         val now = System.currentTimeMillis()
         r.ledgerEntryId?.let { softDeleteEntry(it, now) }

@@ -3418,6 +3418,11 @@
     <string name="entry_linked_cheque">هي داخلا ڪليئر ٿيل چيڪ لکي آهي. ان کي چيڪ واري صفحي مان بدلايو.</string>
     <string name="entry_linked_sale">هي داخلا ڪائونٽر جي وڪري لکي آهي. وڪرو منسوخ ڪريو يا واپسي ڪريو.</string>
     <string name="entry_linked_return">هي داخلا واپسي لکي آهي. ان بدران واپسي منسوخ ڪريو.</string>
+    <string name="pos_return_void_day_closed">هن واپسي جو ڏينهن بند ٿي چڪو آهي، تنهن ڪري اها منسوخ نٿي ٿي سگهي. ان جي جاءِ تي سامان نئين وڪري ۾ لکو.</string>
+    <string name="entries_linked_kept">هي جيئن هئا تيئن رهيا ڇو ته انهن کي ڪنهن بل، پلان، چيڪ، ڪائونٽر وڪري يا واپسي لکيو آهي (اتان ئي بدلايو): %1$d</string>
+    <string name="party_has_tickets">ختم نه ٿيو: %1$s جي نالي ڪائونٽر وڪري يا واپسي لکيل آهي. پهريان انهن کي منسوخ ڪريو، يا گراهڪ کي رهڻ ڏيو.</string>
+    <string name="bin_emptied_kept">ٽوڪري خالي ٿي وئي. هي گراهڪ رکيا ويا ڇو ته انهن جا اڃا سپلائر بل، چيڪ، ادائيگي رٿائون يا ڪائونٽر وڪرو موجود آهن: %1$d</string>
+    <string name="bin_party_kept">ٽوڪري ۾ ئي رکيو ويو: هن گراهڪ جا اڃا سپلائر بل، چيڪ، ادائيگي رٿائون يا ڪائونٽر وڪرو موجود آهن. انهن لاءِ گراهڪ کي بحال ڪريو.</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">توهان کي ادا ڪيو</string>

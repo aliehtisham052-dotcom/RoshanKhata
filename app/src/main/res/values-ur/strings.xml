@@ -3390,6 +3390,11 @@
     <string name="entry_linked_cheque">یہ اندراج کلیئر ہونے والے چیک نے لکھا ہے۔ اسے چیک والے صفحے سے بدلیں۔</string>
     <string name="entry_linked_sale">یہ اندراج کاؤنٹر کی سیل نے لکھا ہے۔ سیل منسوخ کریں یا واپسی کریں۔</string>
     <string name="entry_linked_return">یہ اندراج واپسی نے لکھا ہے۔ اس کے بجائے واپسی منسوخ کریں۔</string>
+    <string name="pos_return_void_day_closed">اس واپسی کا دن بند ہو چکا ہے، اس لیے یہ منسوخ نہیں ہو سکتی۔ اس کی جگہ سامان نئی بِکری میں لکھیں۔</string>
+    <string name="entries_linked_kept">یہ ویسے ہی رہے کیونکہ انہیں کسی بل، پلان، چیک، کاؤنٹر بِکری یا واپسی نے لکھا ہے (وہیں سے بدلیں): %1$d</string>
+    <string name="party_has_tickets">حذف نہیں ہوا: %1$s کے نام کاؤنٹر بِکری یا واپسی لکھی ہے۔ پہلے انہیں منسوخ کریں، یا گاہک کو رہنے دیں۔</string>
+    <string name="bin_emptied_kept">بن خالی کر دیا گیا۔ یہ گاہک رکھے گئے کیونکہ ان کے ابھی سپلائر بل، چیک، ادائیگی منصوبے یا کاؤنٹر سیل موجود ہیں: %1$d</string>
+    <string name="bin_party_kept">بن میں ہی رکھا گیا: اس گاہک کے ابھی سپلائر بل، چیک، ادائیگی منصوبے یا کاؤنٹر سیل موجود ہیں۔ ان کے لیے گاہک کو واپس لائیں۔</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">آپ کو ادا کیا</string>
