@@ -73,6 +73,15 @@ jobs:
             if [ $code -ne 0 ]; then echo "::error::$line"; else echo "::notice::$line"; fi
           done
           exit $code
+      - name: Firebase key as a Worker secret (only when the owner put FCM_SERVICE_ACCOUNT in GitHub's secrets)
+        env:
+          FCM_SA: ${{ secrets.FCM_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FCM_SA" ]; then echo "::notice::No FCM_SERVICE_ACCOUNT: wake-up pushes stay off."; exit 0; fi
+          # After the deploy above: a plain-text variable of the same name set by hand on the dashboard is gone by
+          # now (a deploy keeps only wrangler.toml's variables), so the name is free for the secret.
+          printf '%s' "$FCM_SA" | npx wrangler secret put FCM_SERVICE_ACCOUNT > secret.log 2>&1 && echo "::notice::FCM_SERVICE_ACCOUNT stored as a secret" || {
+            grep -E "ERROR|code" secret.log | head -5 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
       - name: Health check (the deployed relay answers on its public address)
         run: |
           url="https://roshan-khata-daakiya.innovation313.workers.dev/v1/health"
