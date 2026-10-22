@@ -47,6 +47,10 @@ private class ConnectionTx(private val c: PooledConnection) : SyncTx {
             out
         }
 
+    /** The bundled driver throws its own SQLite exception, worded "Error code: N, message: …" (as BookHealth reads it). */
+    override fun isConstraint(e: Throwable): Boolean =
+        e.javaClass.name.contains("SQLite", ignoreCase = true) && sqliteCodeIsConstraint(e.message)
+
     private fun bind(st: SQLiteStatement, args: List<Any?>) {
         args.forEachIndexed { i, raw ->
             val n = i + 1

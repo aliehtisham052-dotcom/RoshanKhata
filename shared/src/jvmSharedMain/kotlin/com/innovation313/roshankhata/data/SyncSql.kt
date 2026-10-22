@@ -34,6 +34,22 @@ interface SyncTx {
      * Double, 'T' a String; an SQL NULL is null whatever the type.
      */
     suspend fun rows(sql: String, args: List<Any?> = emptyList(), types: String): List<Array<Any?>>
+
+    /**
+     * [e] is SQLite refusing one statement for a rule of the book (a unique
+     * key, a value that may not be empty, a pointer to nothing): that
+     * statement alone was undone and the transaction goes on. Any other
+     * error (the disk, the file) is not this, and ends the transaction.
+     */
+    fun isConstraint(e: Throwable): Boolean
+}
+
+/** SQLite's own number for a broken rule (SQLITE_CONSTRAINT), as the computer's driver words its errors. */
+internal fun sqliteCodeIsConstraint(message: String?): Boolean {
+    val text = message.orEmpty()
+    val code = Regex("""(?i)error code:\s*(\d+)""").find(text)?.groupValues?.get(1)?.toIntOrNull()
+    if (code != null) return (code and 0xFF) == 19
+    return text.contains("constraint failed", ignoreCase = true)
 }
 
 /** This book's door, as the platform opens it. */

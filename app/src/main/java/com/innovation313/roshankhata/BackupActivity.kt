@@ -123,6 +123,15 @@ class BackupActivity : BaseActivity() {
             com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_needs_owner)) { scanLive() }
         }
         findViewById<MaterialButton>(R.id.btnLiveStop).setOnClickListener { confirmLiveStop() }
+        // The relay on the internet: the owner's choice for the book (one switch for both devices), off until then.
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchLiveRelay).setOnCheckedChangeListener { b, on ->
+            if (showingRelay) return@setOnCheckedChangeListener
+            if (on) {
+                // Not on until the owner says so (the book's data would leave the shop's WiFi, sealed).
+                showingRelay = true; b.isChecked = false; showingRelay = false
+                com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_relay)) { setRelay(true) }
+            } else setRelay(false)
+        }
         lifecycleScope.launch { LiveRunner.status.collect { showLive(it) } }
 
         if (DriveFeature.ENABLED) {
@@ -323,23 +332,55 @@ class BackupActivity : BaseActivity() {
 
     /** What live sync is doing, in a line; and whether it may be turned off. */
     private fun showLive(s: LiveRunner.Status) {
+        val bidi = androidx.core.text.BidiFormatter.getInstance()
         val text = when (s) {
             LiveRunner.Status.Off -> getString(R.string.live_status_off)
             LiveRunner.Status.NotPaired -> getString(R.string.live_status_not_paired)
             LiveRunner.Status.Waiting -> getString(R.string.live_status_waiting)
+            LiveRunner.Status.NotHere -> getString(R.string.live_status_not_here)
             is LiveRunner.Status.Live -> getString(
-                R.string.live_status_live,
-                s.computer?.takeIf { it.isNotBlank() } ?: getString(R.string.live_title),
-                Digits.toLatin(java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(s.at)))
+                if (s.relay) R.string.live_status_relay else R.string.live_status_live,
+                // The computer's name and the time kept whole in a right-to-left sentence (lesson 30).
+                bidi.unicodeWrap(s.computer?.takeIf { it.isNotBlank() } ?: getString(R.string.live_title)),
+                bidi.unicodeWrap(Digits.toLatin(java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(s.at))))
             )
             LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
             LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
-            is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, s.why)
+            LiveRunner.Status.NotAccepted -> getString(R.string.live_status_not_accepted)
+            LiveRunner.Status.Rejoin -> getString(R.string.live_status_rejoin)
+            is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, bidi.unicodeWrap(s.why))
         }
         findViewById<android.widget.TextView>(R.id.tvLiveStatus).text =
             if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
-        findViewById<MaterialButton>(R.id.btnLiveStop).visibility =
-            if (s == LiveRunner.Status.Off) android.view.View.GONE else android.view.View.VISIBLE
+        val off = s == LiveRunner.Status.Off || s == LiveRunner.Status.Rejoin || s == LiveRunner.Status.NotAccepted
+        findViewById<MaterialButton>(R.id.btnLiveStop).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
+        val relay = if (off) android.view.View.GONE else android.view.View.VISIBLE
+        findViewById<android.view.View>(R.id.switchLiveRelay).visibility = relay
+        findViewById<android.view.View>(R.id.tvLiveRelayHint).visibility = relay
+        if (!off) lifecycleScope.launch {
+            val on = withContext(Dispatchers.IO) { runCatching { dao.settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) == "1" }.getOrDefault(false) }
+            showRelay(on)
+        }
+    }
+
+    /** The relay switch set from the book, without asking again. */
+    private var showingRelay = false
+
+    private fun showRelay(on: Boolean) {
+        val sw = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchLiveRelay)
+        if (sw.isChecked == on) return
+        showingRelay = true
+        sw.isChecked = on
+        showingRelay = false
+    }
+
+    private fun setRelay(on: Boolean) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                runCatching { dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, if (on) "1" else null) }
+            }
+            showRelay(on)
+        }
     }
 
     /** The computer's live code (More → Live sync on Windows), then this book sent there to join. */
@@ -366,33 +407,18 @@ class BackupActivity : BaseActivity() {
      * Turns live sync on for this book (if it was not), and sends the book
      * with its sync identity to the computer. The computer shows its usual
      * restore confirmation; once the owner says yes there, the rounds begin.
+     *
+     * Until that yes, nothing this phone knew changes (22 Oct 2026, the
+     * review): a computer it already synced with keeps its place, a book
+     * that did not sync before goes back to not syncing when the book never
+     * reached the computer, and the whole pairing runs on the app's own
+     * scope, so turning the phone or pressing Back cannot leave it half made.
      */
     private fun joinComputer(invite: LiveWire.Invite) {
         Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
+        val appContext = applicationContext
         lifecycleScope.launch {
-            val sent = withContext(Dispatchers.IO) {
-                runCatching {
-                    val sql = KhataDatabase.get(this@BackupActivity).syncSql()
-                    val id = LiveSync.enable(sql, LiveRunner.install(this@BackupActivity), LiveRunner.deviceName())
-                    // From now on this phone's numbers carry its letter; the computer gets the next one.
-                    com.innovation313.roshankhata.data.NumberMark.mark = LiveSync.mark(sql)
-                    val joinerMark = LiveSync.nextJoinerMark(sql)
-                    // The book is taken after this line: whatever changes after it is sent again
-                    // in the first rounds, and a row that lands twice lands as one.
-                    val seq = LiveSync.lastSeq(sql)
-                    val file = Backup.exportToCache(this@BackupActivity, dao)
-                    if (file.length() > LiveWire.MAX_BYTES) return@runCatching LiveWire.Sent.Refused
-                    val offer = LiveWire.Offer(id.book, id.key, id.device, id.name, seq, file.readBytes(), joinerMark)
-                    val outcome = LiveWire.sendOffer(invite, offer)
-                    if (outcome is LiveWire.Sent.Taken) {
-                        // A new copy on the computer: what this phone knew of an earlier one no longer holds.
-                        for (p in LiveSync.state(sql).peers) LiveSync.removePeer(sql, p.device)
-                        val hosts = listOf(outcome.host) + invite.hosts.filter { it != outcome.host }
-                        LiveRound.setTarget(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer))
-                    }
-                    outcome
-                }.getOrNull()
-            }
+            val sent = com.innovation313.roshankhata.data.AppScope.async { pairWith(appContext, invite) }.await()
             if (isFinishing || isDestroyed) return@launch
             val message = when (sent) {
                 null -> getString(R.string.backup_failed)
@@ -406,6 +432,38 @@ class BackupActivity : BaseActivity() {
                 .setPositiveButton(R.string.ok, null)
                 .show()
         }
+    }
+
+    /** The pairing itself; null when the book could not be made into a copy to send. */
+    private suspend fun pairWith(context: android.content.Context, invite: LiveWire.Invite): LiveWire.Sent? {
+        val sql = KhataDatabase.get(context).syncSql()
+        val wasOn = LiveSync.identity(sql) != null
+        val sent: LiveWire.Sent? = try {
+            val id = LiveSync.enable(sql, LiveRunner.install(context), LiveRunner.deviceName(), marks = LiveRunner.marks(context))
+            val joinerMark = LiveSync.nextJoinerMark(sql)
+            // The book is taken after this line: whatever changes after it is sent again
+            // in the first rounds, and a row that lands twice lands as one.
+            val seq = LiveSync.lastSeq(sql)
+            val file = Backup.exportToCache(context, KhataDatabase.get(context).khataDao())
+            if (file.length() > LiveWire.MAX_BYTES) LiveWire.Sent.Refused
+            else {
+                val pair = LiveSync.newHex(8)
+                val outcome = LiveWire.sendOffer(invite, LiveWire.Offer(id.book, id.key, id.device, id.name, seq, file.readBytes(), joinerMark, pair))
+                if (outcome is LiveWire.Sent.Taken) {
+                    // The computer has the book; its owner has not said yes yet. The first round it answers
+                    // makes it this phone's computer (LiveRound.take); until then any earlier one stays.
+                    val hosts = listOf(outcome.host) + invite.hosts.filter { it != outcome.host }
+                    LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair), wasOff = !wasOn)
+                }
+                outcome
+            }
+        } catch (e: Exception) {
+            null
+        }
+        // Nothing reached the computer, and this phone did not sync before: as it was.
+        if (sent !is LiveWire.Sent.Taken && !wasOn) runCatching { LiveSync.disable(sql) }
+        com.innovation313.roshankhata.data.NumberMark.mark = runCatching { LiveSync.mark(sql) }.getOrNull()
+        return sent
     }
 
     private fun confirmLiveStop() {
@@ -511,7 +569,8 @@ class BackupActivity : BaseActivity() {
             val loss = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull()
                 // A count that could not be made is said, and ticked, never read as "nothing lost".
                 ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN }
-            if (!isFinishing) askRestore(counts, data, driveAccount, loss)
+            val live = withContext(Dispatchers.IO) { Backup.liveOn(this@BackupActivity) }
+            if (!isFinishing) askRestore(counts, data, driveAccount, loss, live)
         }
     }
 
@@ -519,7 +578,8 @@ class BackupActivity : BaseActivity() {
         counts: BackupCodec.ImportResult.Ok,
         data: BackupCodec.ParsedBackup,
         driveAccount: String?,
-        loss: com.innovation313.roshankhata.data.RestoreCheck.Loss?
+        loss: com.innovation313.roshankhata.data.RestoreCheck.Loss?,
+        live: Boolean = false
     ) {
         val body = Digits.string(resources, R.string.restore_warning_message,
             counts.parties,
@@ -549,6 +609,8 @@ class BackupActivity : BaseActivity() {
         val message = listOfNotNull(
             lost,
             if (mismatch) getString(R.string.restore_business_mismatch, data.businessName, openShop) else null,
+            // A replaced book is no longer the computer's: live sync stops with it (22 Oct 2026, the review).
+            if (live) getString(R.string.restore_stops_live) else null,
             body
         ).joinToString("\n\n")
 
@@ -630,12 +692,24 @@ class BackupActivity : BaseActivity() {
             // The restore itself on the app's own scope (21 Oct 2026): a screen turned mid-restore no
             // longer cancels it half way.
             val appContext = applicationContext
-            val kept = com.innovation313.roshankhata.data.AppScope.async {
-                // This book as it stands, kept first (Daily copies), so the restore can be undone.
-                // No copy, no restore (21 Oct 2026).
-                com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
-                    .also { if (it) Backup.restore(appContext, dao, data) }
+            val outcome = com.innovation313.roshankhata.data.AppScope.async {
+                runCatching {
+                    // This book as it stands, kept first (Daily copies), so the restore can be undone.
+                    // No copy, no restore (21 Oct 2026).
+                    com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
+                        .also { if (it) Backup.restore(appContext, dao, data) }
+                }
             }.await()
+            // A restore that failed rolled back whole (22 Oct 2026, the review: it crashed the app and said nothing).
+            if (outcome.isFailure) {
+                if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
+                    .setTitle(R.string.restore_warning_title)
+                    .setMessage(R.string.snapshot_restore_failed)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
+            }
+            val kept = outcome.getOrDefault(false)
             if (!kept) {
                 if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
                     .setTitle(R.string.restore_warning_title)
@@ -1277,8 +1351,11 @@ class BackupActivity : BaseActivity() {
                 val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
                 val kept = withContext(Dispatchers.IO) {
                     // Each shop's own book kept first, as a single restore does; not replaced unless kept.
-                    com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
-                        .also { if (it) Backup.restore(this@BackupActivity, liveDao, data) }
+                    // A restore that fails rolls back whole and is counted as failed, never a crash (22 Oct 2026).
+                    runCatching {
+                        com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
+                            .also { if (it) Backup.restore(this@BackupActivity, liveDao, data) }
+                    }.getOrDefault(false)
                 }
                 if (!kept) { failed += label; continue }
 

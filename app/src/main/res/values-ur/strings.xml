@@ -3457,7 +3457,7 @@
     </plurals>
     <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
     <string name="live_title">کمپیوٹر کے ساتھ لائیو سنک</string>
-    <string name="live_explain">فون اور کمپیوٹر ایک ہی کھاتہ رکھتے ہیں، جو ہر چند سیکنڈ میں تازہ ہوتا ہے جب دونوں دکان کے وائی فائی پر ہوں اور روشن کھاتہ کھلا ہو۔ کچھ بھی انٹرنیٹ پر نہیں جاتا۔</string>
+    <string name="live_explain">فون اور کمپیوٹر ایک ہی کھاتہ رکھتے ہیں، جو ہر چند سیکنڈ میں تازہ ہوتا ہے جب دونوں دکان کے وائی فائی پر ہوں اور روشن کھاتہ کھلا ہو۔ جب تک «انٹرنیٹ سے بھی» آن نہ ہو، کچھ بھی انٹرنیٹ پر نہیں جاتا۔</string>
     <string name="live_join">کمپیوٹر سے جوڑیں</string>
     <string name="live_stop">لائیو سنک بند کریں</string>
     <string name="live_stop_confirm">اس ڈیوائس پر لائیو سنک بند کریں؟ کھاتہ بالکل ویسا ہی رہے گا۔</string>
@@ -3485,4 +3485,13 @@
     <string name="live_conflict_now">اب: %1$s</string>
     <string name="live_conflict_saved">محفوظ رکھا: %1$s</string>
     <string name="live_conflict_clear">دیکھ لیا، ہٹا دیں</string>
+    <string name="live_join_failed">فون کا جوڑ مکمل نہیں ہوا: %1$s۔ فون پر بیک اپ ← کمپیوٹر کے ساتھ لائیو سنک ← کمپیوٹر سے جوڑیں کھولیں اور کوڈ دوبارہ اسکین کریں۔</string>
+    <string name="restore_stops_live">یہ کھاتہ دوسرے آلے کے ساتھ لائیو سنک ہوتا ہے۔ اسے بدلنے سے لائیو سنک رک جائے گا؛ بعد میں دونوں کو دوبارہ جوڑیں۔</string>
+    <string name="live_held">دوسرے آلے کی تبدیلیاں جو اپنی چیز کا انتظار کر رہی ہیں (کوئی گاہک یا آئٹم جو ابھی یہاں نہیں): %1$d</string>
+    <string name="live_status_rejoin">لائیو سنک رک گیا کیونکہ یہ کھاتہ ریسٹور سے بدلا گیا یا کسی پرانی کاپی پر واپس گیا۔ دوبارہ سنک کے لیے کمپیوٹر سے پھر جوڑیں۔</string>
+    <string name="live_status_not_accepted">کمپیوٹر نے وقت پر ہاں نہیں کی۔ جوڑنے کے لیے اس کا لائیو سنک کوڈ دوبارہ اسکین کریں۔</string>
+    <string name="live_status_not_here">کمپیوٹر نے جواب دیا، مگر اس وقت یہ کھاتہ اس پر نہیں رکھا ہوا۔ کمپیوٹر پر اس کھاتے کا کاروبار کھولیں۔</string>
+    <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
+    <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation 313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔</string>
+    <string name="live_relay">انٹرنیٹ سے بھی</string>
 </resources>

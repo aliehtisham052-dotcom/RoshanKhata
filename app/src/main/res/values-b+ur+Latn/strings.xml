@@ -3457,7 +3457,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     </plurals>
     <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
     <string name="live_title">Computer ke saath live sync</string>
-    <string name="live_explain">Phone aur computer ek hi khata rakhte hain, jo har chand second mein taaza hota hai jab dono dukan ke WiFi par hon aur Roshan Khata khula ho. Kuch bhi internet par nahi jaata.</string>
+    <string name="live_explain">Phone aur computer ek hi khata rakhte hain, jo har chand second mein taaza hota hai jab dono dukan ke WiFi par hon aur Roshan Khata khula ho. Jab tak “Internet se bhi” on na ho, kuch bhi internet par nahi jaata.</string>
     <string name="live_join">Computer se jorein</string>
     <string name="live_stop">Live sync band karein</string>
     <string name="live_stop_confirm">Is device par live sync band karein? Khata bilkul waisa hi rahega.</string>
@@ -3485,4 +3485,13 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_conflict_now">Ab: %1$s</string>
     <string name="live_conflict_saved">Mehfooz rakha: %1$s</string>
     <string name="live_conflict_clear">Dekh liya, hata dein</string>
+    <string name="live_join_failed">Phone ka jorr mukammal nahi hua: %1$s. Phone par Backup → Computer ke saath live sync → Computer se jorein kholein aur code dobara scan karein.</string>
+    <string name="restore_stops_live">Yeh khata doosre device ke saath live sync hota hai. Ise badalne se live sync ruk jayega; baad mein dono ko dobara jorein.</string>
+    <string name="live_held">Doosre device ki tabdeeliyan jo apni cheez ka intezar kar rahi hain (koi customer ya item jo abhi yahan nahi): %1$d</string>
+    <string name="live_status_rejoin">Live sync ruk gaya kyunke yeh khata restore se badla gaya ya kisi purani copy par wapas gaya. Dobara sync ke liye computer se phir jorein.</string>
+    <string name="live_status_not_accepted">Computer ne waqt par haan nahi ki. Jorne ke liye us ka live sync code dobara scan karein.</string>
+    <string name="live_status_not_here">Computer ne jawab diya, magar is waqt yeh khata us par nahi rakha hua. Computer par is khate ka business kholein.</string>
+    <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
+    <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch.</string>
+    <string name="live_relay">Internet se bhi</string>
 </resources>

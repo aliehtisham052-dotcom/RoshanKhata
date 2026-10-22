@@ -166,6 +166,8 @@ fun DailyCopiesPane(
     outsideFolder: File?,
     outsideDir: File?,
     onFolder: (File?) -> Unit,
+    /** The open book's sync door: a restore pauses its live sync, and ends it once the restore went through. */
+    sync: com.innovation313.roshankhata.data.SyncSql? = null,
     onRestored: () -> Unit
 ) {
     val c = LocalRoshanColors.current
@@ -210,12 +212,17 @@ fun DailyCopiesPane(
         val data = parsed
         val loss = if (data != null) rememberLoss(dao, data) else null
         var agreed by remember(f) { mutableStateOf(false) }
+        var live by remember(f) { mutableStateOf(false) }
+        LaunchedEffect(f) {
+            live = withContext(Dispatchers.IO) { sync?.let { runCatching { com.innovation313.roshankhata.data.LiveSync.identity(it) != null }.getOrNull() } ?: false }
+        }
         AlertDialog(
             onDismissRequest = { asking = null },
             title = { Text(word(W.snapshot_restore_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     if (data != null) LossNote(loss, agreed) { agreed = it }
+                    if (live) Text(word(W.restore_stops_live), color = c.ink, fontWeight = FontWeight.Medium)
                     Text(word(W.snapshot_restore_warning, Format.dateTime(f.lastModified())))
                 }
             },
@@ -235,7 +242,21 @@ fun DailyCopiesPane(
                                 DailyCopies.makeToday(dao, settings, dir, label = "before-restore-" + System.currentTimeMillis())
                                     ?: error(keepFailed)
                                 withContext(Dispatchers.IO) {
-                                    BackupCodec.restoreLedger(dao, data)
+                                    // Live sync pauses first, so the restore's own writes are not sent to the phone as
+                                    // changes (22 Oct 2026, the review: they removed the phone's newer work); it stops once
+                                    // the restore went through (the two must be joined again), and a failure changes nothing.
+                                    val door = sync
+                                    val wasLive = door != null && runCatching { com.innovation313.roshankhata.data.LiveSync.pause(door) }.getOrDefault(false)
+                                    try {
+                                        BackupCodec.restoreLedger(dao, data)
+                                    } catch (e: Exception) {
+                                        if (wasLive && door != null) runCatching { com.innovation313.roshankhata.data.LiveSync.resume(door) }
+                                        throw e
+                                    }
+                                    if (wasLive && door != null) {
+                                        com.innovation313.roshankhata.data.LiveSync.disable(door, com.innovation313.roshankhata.data.LiveSync.OFF_RESTORED)
+                                        com.innovation313.roshankhata.data.NumberMark.mark = null
+                                    }
                                     data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
                                 }
                                 onRestored()

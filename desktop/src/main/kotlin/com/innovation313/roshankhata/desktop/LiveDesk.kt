@@ -30,8 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
+import com.innovation313.roshankhata.data.BookSettings
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LiveCloud
+import com.innovation313.roshankhata.data.LiveControl
 import com.innovation313.roshankhata.data.LiveRound
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
@@ -65,16 +67,36 @@ import kotlin.concurrent.thread
 object LiveDesk {
 
     @Volatile private var db: KhataDatabase? = null
+    /** The open book's file name and the settings folder: where its log's high line is kept ([marks]). */
+    @Volatile private var file: String? = null
+    @Volatile private var home: File? = null
     @Volatile private var server: ServerSocket? = null
     @Volatile private var stopped = false
     /** Each start's own number: a relay loop from an earlier start ends when it sees a newer one. */
     @Volatile private var generation = 0
+    /** When a phone last did a round over the WiFi: the relay waits while the WiFi works. */
+    @Volatile private var lastWifi = 0L
 
     /** The secret of the code on the screen right now; null when no Live sync window is open. */
     @Volatile var pairSecret: String? = null
 
-    /** A pairing that arrived and waits for the owner's confirmation. */
-    val offers = MutableStateFlow<LiveWire.Offer?>(null)
+    /** The Live sync window is open (its code on the screen). */
+    fun windowOpen(): Boolean = pairSecret != null
+
+    /** A pairing that arrived with its book read whole, waiting for the owner's answer. */
+    class Incoming(
+        val offer: LiveWire.Offer,
+        val file: File,
+        val data: com.innovation313.roshankhata.data.BackupCodec.ParsedBackup,
+        val ok: com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok
+    )
+
+    /**
+     * The pairing waiting for the owner's answer. It stays until the owner
+     * answers (22 Oct 2026, the review: it was taken off at once, and a lock
+     * or a sign-out in between lost the question while the phone waited).
+     */
+    val offers = MutableStateFlow<Incoming?>(null)
 
     /** Counts the pairings finished on this computer, so the open book reads itself again. */
     val joined = MutableStateFlow(0L)
@@ -98,17 +120,48 @@ object LiveDesk {
 
     fun name(): String = PhoneSync.computerName().ifBlank { "Computer" }
 
+    /**
+     * How far the log of the book in [file] had come, per book id, kept in
+     * [home] (live.marks): a book file put back from an older copy (File
+     * History, a USB copy) is caught when it opens and stops syncing instead
+     * of handing out line numbers the phone has already passed.
+     */
+    fun marks(home: File, file: String): LiveSync.LogMarks = FileMarks(File(home, "live.marks"), file)
+
+    private val MARKS_LOCK = Any()
+
+    private class FileMarks(private val store: File, private val file: String) : LiveSync.LogMarks {
+        private fun k(book: String) = "$file|$book"
+        private fun load() = java.util.Properties().also { p -> runCatching { store.inputStream().use { p.load(it) } } }
+        override fun get(book: String): Long? = synchronized(MARKS_LOCK) { load().getProperty(k(book))?.toLongOrNull() }
+        override fun put(book: String, seq: Long) {
+            synchronized(MARKS_LOCK) {
+                val p = load()
+                if (p.getProperty(k(book)) == seq.toString()) return
+                p.setProperty(k(book), seq.toString())
+                runCatching {
+                    store.parentFile?.mkdirs()
+                    val tmp = File(store.path + ".tmp")
+                    tmp.outputStream().use { p.store(it, null) }
+                    replaceAtomically(tmp, store)
+                }
+            }
+        }
+    }
+
     /** The book now open: its live sync checked, and the computer listening when it syncs. */
-    suspend fun attach(book: KhataDatabase, home: File) {
+    suspend fun attach(book: KhataDatabase, home: File, file: String) {
         db = book
+        this.home = home
+        this.file = file
         // The last book's letter never numbers this one's documents (NumberMark).
         NumberMark.mark = null
-        val on = runCatching { LiveSync.check(book.syncSql(), install(home)) }.getOrDefault(false)
+        val on = runCatching { LiveSync.check(book.syncSql(), install(home), marks(home, file)) }.getOrDefault(false)
         if (on) NumberMark.mark = runCatching { LiveSync.mark(book.syncSql()) }.getOrNull()
         if (on) start() else if (pairSecret == null) stop()
     }
 
-    /** Listens (on [LiveWire.PORT] when it is free); the port, or null when nothing could be opened. */
+    /** Listens (on [LiveWire.PORT] when it is free); the port, or null when nothing could be opened. Blocking for up to two seconds. */
     @Synchronized
     fun start(): Int? {
         server?.let { if (!it.isClosed) return it.localPort }
@@ -126,14 +179,15 @@ object LiveDesk {
         server = sock
         stopped = false
         serveOn(sock)
-        // A phone that lost this computer's address calls for it on the same port (UDP): answered here.
+        // A phone that lost this computer's address calls for it on the same port (UDP): answered here, with
+        // proof of the book's key and the port the rounds are served on.
         runCatching {
             java.net.DatagramSocket(null as java.net.SocketAddress?).apply {
                 reuseAddress = true; broadcast = true; bind(java.net.InetSocketAddress(LiveWire.PORT))
             }
         }.getOrNull()?.let { u ->
             seeker = u
-            thread(isDaemon = true, name = "live-seek") { LiveWire.answerSeeks(u, { stopped }, { key() }) }
+            thread(isDaemon = true, name = "live-seek") { LiveWire.answerSeeks(u, { stopped }, { key() }, { servedPort() }) }
         }
         // Not on LiveWire.PORT: a phone already joined will not find this port, so the right one is asked
         // for again every ten seconds and served as well once it is free.
@@ -150,24 +204,46 @@ object LiveDesk {
                 }
             }
         }
-        // The relay, for a phone away from the shop's WiFi (Marhala 2): nothing at all until it has an address.
+        // The relay, for a phone away from the shop's WiFi (Marhala 2): only when the owner turned it on for
+        // this book, never while live sync is stopped for everyone, and only while the phone has not been seen
+        // on the WiFi for a while; quiet rounds wait longer and longer (22 Oct 2026, the review: every computer
+        // asked every 15 s, all day, against one daily limit shared by every book).
         val mine = ++generation
         thread(isDaemon = true, name = "live-cloud") {
+            var wait = CLOUD_MS
             while (!stopped && generation == mine) {
                 val d = db
-                if (d != null && LiveCloud.base != null) runCatching { runBlocking { LiveCloud.round(d.syncSql()) } }
-                try { Thread.sleep(CLOUD_MS) } catch (e: InterruptedException) { break }
+                val now = System.currentTimeMillis()
+                wait = if (d == null || LiveCloud.base == null || now - lastWifi < WIFI_QUIET_MS) CLOUD_MS
+                else when (val r = runCatching { runBlocking { LiveCloud.round(d.syncSql()) } }.getOrNull()) {
+                    is LiveCloud.Result.Done -> {
+                        noteRound(d)
+                        if (r.took > 0 || r.more) CLOUD_MS else minOf(wait * 2, CLOUD_QUIET_MAX_MS)
+                    }
+                    LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> CLOUD_OFF_MS
+                    else -> minOf(wait * 2, CLOUD_QUIET_MAX_MS)
+                }
+                try { Thread.sleep(wait) } catch (e: InterruptedException) { break }
             }
         }
         return sock.localPort
     }
 
     private const val CLOUD_MS = 15_000L
+    /** A quiet relay is asked at most every five minutes. */
+    private const val CLOUD_QUIET_MAX_MS = 5 * 60_000L
+    /** The relay not turned on for this book: looked at again every minute. */
+    private const val CLOUD_OFF_MS = 60_000L
+    /** The phone did a WiFi round this recently: the relay is not needed. */
+    private const val WIFI_QUIET_MS = 2 * 60_000L
 
     /** The port the phone knows, opened late after another was taken first. */
     @Volatile private var extra: ServerSocket? = null
     /** Where phones' calls for this computer are answered. */
     @Volatile private var seeker: java.net.DatagramSocket? = null
+
+    /** The port rounds are served on: the phone's own when it is open, else the one taken instead. */
+    private fun servedPort(): Int = extra?.takeIf { !it.isClosed }?.localPort ?: server?.localPort ?: LiveWire.PORT
 
     private fun serveOn(sock: ServerSocket) {
         thread(isDaemon = true, name = "live-sync") {
@@ -175,11 +251,29 @@ object LiveDesk {
                 sock,
                 stop = { stopped },
                 pairSecret = { pairSecret },
-                onOffer = { o -> pairSecret = null; offers.value = o; true },
+                onOffer = { o -> takeOffer(o) },
                 bookKey = { key() },
                 onRound = { r -> answer(r) }
             )
         }
+    }
+
+    /**
+     * A phone's pairing: its book saved and read whole before the phone is
+     * told it was taken (22 Oct 2026, the review: "taken" was said before
+     * the book was even read, and a book that did not read left the phone
+     * waiting for ever). One pairing per code on the screen.
+     */
+    private fun takeOffer(o: LiveWire.Offer): Boolean {
+        val h = home ?: return false
+        val read = runCatching {
+            val f = PhoneSync.saveIncoming(h, o.backup)
+            val (r, d) = com.innovation313.roshankhata.data.BackupCodec.parseFile(f)
+            if (r is com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok && d != null) Incoming(o, f, d, r) else null
+        }.getOrNull() ?: return false
+        pairSecret = null
+        offers.value = read
+        return true
     }
 
     @Synchronized
@@ -195,19 +289,43 @@ object LiveDesk {
 
     private fun key(): String? = db?.let { d -> runCatching { runBlocking { LiveSync.identity(d.syncSql())?.key } }.getOrNull() }
 
-    private fun answer(r: JSONObject): JSONObject? = db?.let { d -> runBlocking { LiveRound.answer(d.syncSql(), r) } }
+    private fun answer(r: JSONObject): JSONObject? {
+        val d = db ?: return null
+        // Stopped for everyone (LiveControl): the computer answers nothing, as the phone asks nothing.
+        if (LiveControl.halted()) return null
+        val reply = runBlocking { LiveRound.answer(d.syncSql(), r) } ?: return null
+        lastWifi = System.currentTimeMillis()
+        noteRound(d)
+        return reply
+    }
+
+    /** After a round: this book's letter (it may have moved, LiveSync.settleMark) and its log's high line. */
+    private fun noteRound(d: KhataDatabase) {
+        runCatching {
+            runBlocking {
+                val sql = d.syncSql()
+                NumberMark.mark = LiveSync.mark(sql)
+                val f = file
+                val h = home
+                if (f != null && h != null) LiveSync.noteMark(sql, marks(h, f))
+            }
+        }
+    }
 
     /**
      * After the owner said yes to the phone's book (it is restored): this
      * computer joins that book's live sync, having read the phone's log up
-     * to the line the book was taken at.
+     * to the line the book was taken at, for that pairing only.
      */
-    suspend fun join(book: KhataDatabase, home: File, offer: LiveWire.Offer) {
+    suspend fun join(book: KhataDatabase, home: File, file: String, offer: LiveWire.Offer) {
         val sql = book.syncSql()
-        LiveSync.enable(sql, install(home), name(), adopt = offer.book to offer.key, mark = offer.mark)
+        LiveSync.enable(sql, install(home), name(), adopt = offer.book to offer.key, mark = offer.mark, marks = marks(home, file))
         NumberMark.mark = LiveSync.mark(sql)
         LiveSync.putPeer(sql, offer.device, name = offer.name, sent = 0, recv = offer.seq, seen = System.currentTimeMillis())
+        LiveSync.setPeerPair(sql, offer.device, offer.pair)
         db = book
+        this.home = home
+        this.file = file
         start()
         joined.value = joined.value + 1
     }
@@ -223,16 +341,29 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
     val scope = rememberCoroutineScope()
     val secret = remember { WifiSync.newSecret() }
     val hosts = remember { PhoneSync.lanAddresses() }
-    val port = remember { LiveDesk.start() }
+    // The port is opened away from the window's thread (it may wait up to two seconds for Windows to let go
+    // of it, 22 Oct 2026, the review: the window froze while it did).
+    var port by remember { mutableStateOf<Int?>(null) }
+    var opening by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        port = withContext(Dispatchers.IO) { LiveDesk.start() }
+        opening = false
+    }
     var state by remember { mutableStateOf<LiveSync.State?>(null) }
+    // The relay on the internet: one switch for the book (BookSettings.LIVE_RELAY), off until the owner turns it on.
+    var relay by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        relay = withContext(Dispatchers.IO) { runCatching { book.khataDao().settingValue(BookSettings.LIVE_RELAY) == "1" }.getOrDefault(false) }
+    }
     // The conflicts opened for reading (empty until "See what changed").
     var views by remember { mutableStateOf<List<LiveSync.ConflictView>>(emptyList()) }
     // A joined device the owner is about to remove: (device id, its name).
     var removing by remember { mutableStateOf<Pair<String, String>?>(null) }
-    val qr: ImageBitmap? = remember {
-        if (port == null || hosts.isEmpty()) null
+    val qr: ImageBitmap? = remember(port) {
+        val p = port
+        if (p == null || hosts.isEmpty()) null
         else runCatching {
-            PhoneSync.qr(LiveWire.inviteText(LiveWire.Invite(hosts, port, secret, PhoneSync.computerName()))).toComposeImageBitmap()
+            PhoneSync.qr(LiveWire.inviteText(LiveWire.Invite(hosts, p, secret, PhoneSync.computerName()))).toComposeImageBitmap()
         }.getOrNull()
     }
     DisposableEffect(Unit) {
@@ -281,11 +412,14 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                 Text(word(W.live_explain), color = c.textMuted, fontSize = 13.sp)
                 Text(word(W.live_pc_steps), color = c.ink, fontSize = 14.sp)
                 qr?.let { Image(it, contentDescription = word(W.live_title), modifier = Modifier.size(300.dp)) }
-                if (port == null || hosts.isEmpty()) Text(word(W.wifi_pc_no_network), color = c.owedToMe, fontSize = 14.sp)
-                else Text(hosts.joinToString("  ·  ") + "  :" + port, color = c.textMuted, fontSize = 12.sp)
+                if (!opening && (port == null || hosts.isEmpty())) Text(word(W.wifi_pc_no_network), color = c.owedToMe, fontSize = 14.sp)
+                else if (port != null) Text(hosts.joinToString("  ·  ") + "  :" + port, color = c.textMuted, fontSize = 12.sp)
                 val s = state
                 val peers = s?.peers.orEmpty()
-                if (s == null || !s.on) Text(word(W.live_status_off), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                if (s == null || !s.on) Text(
+                    word(if (s?.offWhy == LiveSync.OFF_RESTORED) W.live_status_rejoin else W.live_status_off),
+                    color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium
+                )
                 else if (peers.isEmpty()) Text(word(W.live_pc_none), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 else {
                     Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
@@ -300,6 +434,26 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                             FluentButton(word(W.live_remove), { removing = p.device to name }, kind = ButtonKind.SUBTLE)
                         }
                     }
+                }
+                if (s != null && s.on) {
+                    // Also through the internet: the owner's choice, said plainly (22 Oct 2026, the review).
+                    Row(
+                        Modifier.fillMaxWidth().press {
+                            val next = !relay
+                            relay = next
+                            scope.launch {
+                                withContext(Dispatchers.IO) {
+                                    runCatching { book.khataDao().setSetting(BookSettings.LIVE_RELAY, if (next) "1" else null) }
+                                }
+                            }
+                        },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        androidx.compose.material3.Checkbox(relay, onCheckedChange = null)
+                        Text(word(W.live_relay), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                    Text(word(W.live_relay_help), color = c.textMuted, fontSize = 12.sp)
+                    if (s.held > 0) Text(word(W.live_held, s.held), color = c.owedToMe, fontSize = 13.sp)
                 }
                 if ((s?.conflicts ?: 0) > 0) {
                     Text(word(W.live_conflicts, s!!.conflicts), color = c.textMuted, fontSize = 13.sp)

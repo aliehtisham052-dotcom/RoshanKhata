@@ -403,6 +403,28 @@
                     android:textColor="@color/ink"
                     android:textSize="14sp" />
 
+                <!-- The relay on the internet, off until the owner turns it on (22 Oct 2026, the review). -->
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchLiveRelay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/live_relay"
+                    android:textColor="@color/ink"
+                    android:textSize="15sp"
+                    android:visibility="gone"
+                    android:checked="false" />
+
+                <TextView
+                    android:id="@+id/tvLiveRelayHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/live_relay_help"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLiveJoin"
                     style="@style/BackupOutlineButton"

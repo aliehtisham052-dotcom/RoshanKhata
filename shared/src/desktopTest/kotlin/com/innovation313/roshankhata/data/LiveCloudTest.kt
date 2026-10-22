@@ -31,6 +31,8 @@ class LiveCloudTest {
         var down = false
         /** The next sent parcel is lost (the relay forgot it). */
         var loseNext = false
+        /** Calls answered past the pass and the hello check. */
+        var calls = 0
 
         override fun call(method: String, url: String, headers: Map<String, String>, body: ByteArray?): Pair<Int, ByteArray> {
             if (down) throw java.io.IOException("no internet")
@@ -42,6 +44,7 @@ class LiveCloudTest {
             if (pass == null) { if (action != "hello") return no(403, "say-hello-first"); pass = token }
             else if (pass != token) return no(403, "wrong-pass")
             if (dev !in devices && action != "hello") return no(403, "say-hello-first")
+            calls++
             return when (action) {
                 "hello" -> { devices.putIfAbsent(dev, 0L); ok(JSONObject().put("top", seq)) }
                 "send" -> {
@@ -79,6 +82,9 @@ class LiveCloudTest {
         phone = DesktopDatabase.open(dir.resolve("phone.db"))
         pc = DesktopDatabase.open(dir.resolve("pc.db"))
         runBlocking {
+            // The owner turned the relay on for this book (off until then, 22 Oct 2026): on both, as sync carries it.
+            phone.khataDao().setSetting(BookSettings.LIVE_RELAY, "1")
+            pc.khataDao().setSetting(BookSettings.LIVE_RELAY, "1")
             // Paired as over WiFi: the same book, each knowing the other.
             val id = LiveSync.enable(phone.syncSql(), "install-phone", "Phone")
             val pcId = LiveSync.enable(pc.syncSql(), "install-pc", "PC", adopt = id.book to id.key)
@@ -95,8 +101,8 @@ class LiveCloudTest {
 
     private suspend fun both(times: Int = 2) = repeat(times) {
         clock += 1000
-        val a = LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock)
-        val b = LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock)
+        val a = LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false }
+        val b = LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false }
         assertTrue("$a", a is LiveCloud.Result.Done)
         assertTrue("$b", b is LiveCloud.Result.Done)
     }
@@ -133,17 +139,37 @@ class LiveCloudTest {
     @Test
     fun `no internet is said as such and changes nothing`() = runBlocking {
         relay.down = true
-        assertEquals(LiveCloud.Result.Unreachable, LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock))
+        assertEquals(LiveCloud.Result.Unreachable, LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false })
         relay.down = false
         both()
     }
 
     @Test
     fun `closed until the relay has an address, and the pass needs the key`() = runBlocking {
-        assertEquals(LiveCloud.Result.Off, LiveCloud.round(phone.syncSql(), relay, null, clock))
+        assertEquals(LiveCloud.Result.Off, LiveCloud.round(phone.syncSql(), relay, null, clock) { false })
         val id = LiveSync.identity(phone.syncSql())!!
         assertEquals(LiveCloud.token(id.key, id.book), LiveCloud.token(id.key, id.book))
         assertFalse(LiveCloud.token(LiveSync.newHex(32), id.book) == LiveCloud.token(id.key, id.book))
         assertEquals(64, LiveCloud.token(id.key, id.book).length)
+    }
+
+    @Test
+    fun `nothing goes to the relay until the owner turns it on, nor while live sync is stopped for everyone`() = runBlocking {
+        phone.khataDao().setSetting(BookSettings.LIVE_RELAY, null)
+        assertEquals(LiveCloud.Result.Off, LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false })
+        assertEquals(LiveCloud.Result.Halted, LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { true })
+        assertEquals(0, relay.calls)
+        assertTrue(relay.pass == null)
+    }
+
+    @Test
+    fun `a relay that forgot this device is greeted again, not asked for ever`() = runBlocking {
+        both()
+        // The relay's box for the book was emptied (a month unused, or made again).
+        relay.devices.clear()
+        relay.parcels.clear()
+        phone.khataDao().insertParty(Party(name = "After the relay forgot"))
+        both()
+        assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "After the relay forgot" })
     }
 }
