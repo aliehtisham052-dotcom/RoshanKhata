@@ -3478,6 +3478,8 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_pc_none">Belum ada ponsel yang terhubung.</string>
     <string name="live_conflicts">Diubah di keduanya bersamaan (satu dipakai, yang lain disimpan): %1$d</string>
     <string name="live_pair_warning">Ini buku dari ponsel. Agar buku komputer ini tetap persis seperti sekarang, gabungkan sebagai usaha baru: buku ponsel dibuka di sampingnya dan tidak ada yang dihapus di sini. Pilih “Ganti semuanya” hanya jika buku komputer ini tidak diperlukan.</string>
+    <string name="live_pair_code">Kode pasangan: %1$s. Komputer menampilkan kode yang sama di samping persetujuannya; setujui di sana hanya jika keduanya sama.</string>
+    <string name="live_pair_code_check">Ponsel menampilkan kode %1$s. Setujui hanya jika ponsel menampilkan kode yang sama ini.</string>
     <string name="live_join_new_business">Gabung sebagai usaha baru</string>
     <string name="live_devices">Perangkat yang tergabung</string>
     <string name="live_remove">Hapus</string>

@@ -108,7 +108,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun restoreAttendance(items: List<StaffAttendance>): Unit = refused()
     override suspend fun restoreStaffPayments(items: List<StaffPayment>): Unit = refused()
     override suspend fun saveDayCloseRow(close: DayClose): Unit = refused()
-    override suspend fun saveDayClose(close: DayClose): Unit = refused()
+    override suspend fun saveDayClose(close: DayClose, user: String?): Unit = refused()
     override suspend fun wipeDayCloses(): Unit = refused()
     override suspend fun restoreDayCloses(items: List<DayClose>): Unit = refused()
     override suspend fun setLineAdvice(id: Long, crop: String?, pest: String?, dose: String?): Unit = refused()

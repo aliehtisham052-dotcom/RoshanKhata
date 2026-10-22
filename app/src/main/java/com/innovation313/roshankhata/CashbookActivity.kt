@@ -203,7 +203,7 @@ class CashbookActivity : BaseActivity() {
                         note = etNote.text.toString().trim().ifEmpty { null },
                         closedAt = now
                     )
-                    AppScope.launch { dao.saveDayClose(close); dao.audit(AuditActs.DAY_CLOSED, "day_close", null, auditAmount(close.counted)) }
+                    AppScope.launch { dao.saveDayClose(close) }
                 }
                 .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }

@@ -440,13 +440,15 @@ devices, a printer or a second monitor.
   still opens and is asked to be changed each time it is typed
   (`Access.ownerPinShort`). The relay Worker with the review's fixes is
   deployed (cloud-worker.yml, deploy = true).
-- **Left, with the reason:** counter tables are not streamed
-  in backups (fine to tens of thousands of tickets); goods lines edited on
-  both devices at once can double (E8); the relay's device identity is
-  unauthenticated inside a book (insider only); pairing has no confirmation
-  code; the kill switch fails open by design; re-closing a day replaces the
-  first close (the audit keeps both); a lone Indonesian "1.125" stays one and
-  an eighth.
+  Then: a pairing shows four digits on both screens (`LiveWire.pairCode`,
+  from the code's secret and the pair id); the cashbook and the counter's
+  tables go out and come back a page at a time (`*PageForBackup`,
+  `BackupCodec.Streamed`); a day closed again writes its audit row inside
+  `saveDayClose`, with what the first close counted.
+- **Left, with the reason:** goods lines edited on both devices at once can
+  double (E8: needs line-set versions); the relay's device identity is
+  unauthenticated inside a book (insider only); the kill switch fails open by
+  design; a lone Indonesian "1.125" stays one and an eighth.
 
 ### The shared module (KMP)
 

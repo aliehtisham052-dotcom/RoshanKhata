@@ -1201,6 +1201,8 @@ private fun Book(
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // A live pairing (22 Oct 2026): keeping this book and opening the phone's beside it comes first.
                     if (p.live != null) Text(word(W.live_pair_warning), color = c.ink, fontWeight = FontWeight.Medium)
+                    // The four digits the phone shows for this pairing: yes only when they are the same (22 Oct 2026).
+                    p.live?.code?.let { code -> Text(word(W.live_pair_code_check, code), color = c.ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp) }
                     // A book that syncs with a phone stops syncing once it is replaced (22 Oct 2026, the review).
                     else if (thisBook != null) Text(word(W.restore_stops_live), color = c.ink, fontWeight = FontWeight.Medium)
                     LossNote(loss, agreed) { agreed = it }

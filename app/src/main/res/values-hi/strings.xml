@@ -3531,6 +3531,8 @@
     <string name="live_pc_none">अभी कोई फ़ोन नहीं जुड़ा।</string>
     <string name="live_conflicts">दोनों पर एक साथ बदलाव (एक रखा गया, दूसरा सहेजा गया): %1$d</string>
     <string name="live_pair_warning">यह फ़ोन का खाता है। इस कंप्यूटर का अपना खाता बिल्कुल वैसा रखने के लिए नए व्यवसाय के रूप में जोड़ें: फ़ोन का खाता उसके साथ अलग खुलेगा और यहाँ से कुछ नहीं मिटेगा। “सब कुछ बदल दें” तभी दबाएँ जब इस कंप्यूटर का खाता ज़रूरी न हो।</string>
+    <string name="live_pair_code">जोड़ने का कोड: %1$s. कंप्यूटर अपनी हाँ के साथ यही कोड दिखाता है; वहाँ हाँ तभी कहें जब दोनों एक जैसे हों।</string>
+    <string name="live_pair_code_check">फ़ोन यह कोड दिखा रहा है: %1$s. हाँ तभी कहें जब फ़ोन पर भी यही कोड हो।</string>
     <string name="live_join_new_business">नए व्यवसाय के रूप में जोड़ें</string>
     <string name="live_devices">जुड़े हुए डिवाइस</string>
     <string name="live_remove">हटाएँ</string>

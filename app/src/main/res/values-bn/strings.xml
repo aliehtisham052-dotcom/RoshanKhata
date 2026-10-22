@@ -3531,6 +3531,8 @@
     <string name="live_pc_none">এখনও কোনো ফোন যুক্ত হয়নি।</string>
     <string name="live_conflicts">দুটোতে একসাথে বদল (একটি রাখা হয়েছে, অন্যটি সংরক্ষিত): %1$d</string>
     <string name="live_pair_warning">এটি ফোনের খাতা। এই কম্পিউটারের নিজের খাতা ঠিক যেমন আছে তেমন রাখতে নতুন ব্যবসা হিসেবে যুক্ত করুন: ফোনের খাতা এর পাশে আলাদা খুলবে এবং এখান থেকে কিছুই মুছবে না। এই কম্পিউটারের খাতা দরকার না হলে তবেই “সবকিছু বদলে দিন” চাপুন।</string>
+    <string name="live_pair_code">জোড়ার কোড: %1$s। কম্পিউটার তার হ্যাঁ-এর পাশে একই কোড দেখায়; দুটো এক হলে তবেই সেখানে হ্যাঁ বলুন।</string>
+    <string name="live_pair_code_check">ফোন এই কোড দেখাচ্ছে: %1$s। ফোনেও ঠিক এই কোড থাকলে তবেই হ্যাঁ বলুন।</string>
     <string name="live_join_new_business">নতুন ব্যবসা হিসেবে যুক্ত করুন</string>
     <string name="live_devices">যুক্ত ডিভাইস</string>
     <string name="live_remove">সরান</string>

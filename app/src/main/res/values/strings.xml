@@ -3701,6 +3701,8 @@ You can change this any time from this screen.</string>
     <string name="live_pc_none">No phone has joined yet.</string>
     <string name="live_conflicts">Changed on both at once (one was kept, the other saved): %1$d</string>
     <string name="live_pair_warning">This is the phone’s book. To keep this computer’s own book exactly as it is, join as a new business: the phone’s book opens beside it and nothing here is removed. Replace everything only if this computer’s book is not needed.</string>
+    <string name="live_pair_code">Pairing code: %1$s. The computer shows the same code beside its yes; say yes there only if the two are the same.</string>
+    <string name="live_pair_code_check">The phone shows the code %1$s. Say yes only if the phone shows this same code.</string>
     <string name="live_join_new_business">Join as a new business</string>
     <string name="live_devices">Joined devices</string>
     <string name="live_remove">Remove</string>

@@ -316,7 +316,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                     note = note.trim().ifEmpty { null },
                     closedAt = f.now
                 )
-                scope.launch { withContext(Dispatchers.IO) { dao.saveDayClose(close); dao.audit(AuditActs.DAY_CLOSED, "day_close", null, auditAmount(close.counted)) } }
+                scope.launch { withContext(Dispatchers.IO) { dao.saveDayClose(close) } }
                 onClose()
             }) { Text(word(W.save)) }
         },

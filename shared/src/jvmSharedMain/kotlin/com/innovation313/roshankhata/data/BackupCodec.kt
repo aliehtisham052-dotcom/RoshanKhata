@@ -87,6 +87,12 @@ object BackupCodec {
         table("parties", dao::partiesPageForBackup, { it.id }, ::partyToJson)
         table("entries", dao::entriesPageForBackup, { it.id }, ::entryToJson)
         table("entryItems", dao::entryItemsPageForBackup, { it.id }, ::entryItemToJson)
+        // The counter's tables and the cashbook grow with every ticket: a page at a time too (22 Oct 2026, the review).
+        table("cashbook", dao::cashPageForBackup, { it.id }, ::cashToJson)
+        table("sales", dao::salesPageForBackup, { it.id }, ::saleToJson)
+        table("saleItems", dao::saleItemsPageForBackup, { it.id }, ::saleItemToJson)
+        table("salePayments", dao::salePaymentsPageForBackup, { it.id }, ::salePaymentToJson)
+        table("auditLog", dao::auditPageForBackup, { it.id }, ::auditToJson)
         out.write("\n}")
         out.flush()
     }
@@ -175,9 +181,6 @@ object BackupCodec {
                 })
             }
         })
-        root.put("cashbook", JSONArray().apply {
-            dao.allCashForBackup().forEach { put(cashToJson(it)) }
-        })
         root.put("plans", JSONArray().apply {
             dao.allPlansForBackup().forEach { put(planToJson(it)) }
         })
@@ -203,10 +206,7 @@ object BackupCodec {
             dao.allDismissedDuplicatesForBackup().forEach { put(dismissedDuplicateToJson(it)) }
         })
         // The counter (format 8): every ticket, its lines and payments, and the audit trail.
-        root.put("sales", JSONArray().apply { dao.allSalesForBackup().forEach { put(saleToJson(it)) } })
-        root.put("saleItems", JSONArray().apply { dao.allSaleItemsForBackup().forEach { put(saleItemToJson(it)) } })
-        root.put("salePayments", JSONArray().apply { dao.allSalePaymentsForBackup().forEach { put(salePaymentToJson(it)) } })
-        root.put("auditLog", JSONArray().apply { dao.allAuditForBackup().forEach { put(auditToJson(it)) } })
+        // cashbook, sales, saleItems, salePayments and auditLog are streamed by exportInside (22 Oct 2026).
         root.put("saleReturns", JSONArray().apply { dao.allReturnsForBackup().forEach { put(returnToJson(it)) } })
         root.put("saleReturnItems", JSONArray().apply { dao.allReturnItemsForBackup().forEach { put(returnItemToJson(it)) } })
         root.put("stockAdjustments", JSONArray().apply { dao.allAdjustmentsForBackup().forEach { put(adjustmentToJson(it)) } })
@@ -310,6 +310,7 @@ object BackupCodec {
             val entries = ArrayList<LedgerEntry>()
             val entryItems = ArrayList<EntryItem>()
             var hadEntryItems = false
+            val streamed = Streamed()
             openJsonStream(java.io.InputStreamReader(input, Charsets.UTF_8)).use { r ->
                 r.beginObject()
                 while (r.hasNext()) {
@@ -317,12 +318,18 @@ object BackupCodec {
                         "parties" -> readRows(r) { parties += jsonToParty(it) }
                         "entries" -> readRows(r) { entries += jsonToEntry(it) }
                         "entryItems" -> { hadEntryItems = true; readRows(r) { entryItems += jsonToEntryItem(it) } }
+                        // Row by row, not gathered as a tree first (22 Oct 2026, the review).
+                        "cashbook" -> readRows(r) { streamed.cash += jsonToCash(it) }
+                        "sales" -> readRows(r) { streamed.sales += jsonToSale(it) }
+                        "saleItems" -> readRows(r) { streamed.saleItems += jsonToSaleItem(it) }
+                        "salePayments" -> readRows(r) { streamed.salePayments += jsonToSalePayment(it) }
+                        "auditLog" -> readRows(r) { streamed.audit += jsonToAudit(it) }
                         else -> rest.put(key, readValue(r))
                     }
                 }
                 r.endObject()
             }
-            parseRoot(rest, parties, entries, if (hadEntryItems) entryItems else null)
+            parseRoot(rest, parties, entries, if (hadEntryItems) entryItems else null, streamed)
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
         }
@@ -363,11 +370,21 @@ object BackupCodec {
     }
 
     /** The old parser, given the three big tables already read. [entryItems] null = the key was absent (a backup from before goods lines). */
+    /** The tables read row by row off the stream ([parseStream]); a file without one reads it as empty, as before. */
+    private class Streamed {
+        val cash = ArrayList<CashEntry>()
+        val sales = ArrayList<Sale>()
+        val saleItems = ArrayList<SaleItem>()
+        val salePayments = ArrayList<SalePayment>()
+        val audit = ArrayList<AuditLog>()
+    }
+
     private fun parseRoot(
         root: JSONObject,
         parties: List<Party>,
         entries: List<LedgerEntry>,
-        entryItems: List<EntryItem>?
+        entryItems: List<EntryItem>?,
+        streamed: Streamed = Streamed()
     ): Pair<ImportResult, ParsedBackup?> {
         return try {
 
@@ -389,9 +406,7 @@ object BackupCodec {
                 (0 until arr.length()).map { jsonToCheque(arr.getJSONObject(it)) }
             } ?: emptyList()
 
-            val cash = root.optJSONArray("cashbook")?.let { arr ->
-                (0 until arr.length()).map { jsonToCash(arr.getJSONObject(it)) }
-            } ?: emptyList()
+            val cash = streamed.cash
 
             // Absent before v29: no staff.
             val staff = root.optJSONArray("staff")?.let { arr ->
@@ -497,18 +512,10 @@ object BackupCodec {
             } ?: emptyList()
 
             // The counter (format 8). Absent before: no tickets.
-            val sales = root.optJSONArray("sales")?.let { arr ->
-                (0 until arr.length()).map { jsonToSale(arr.getJSONObject(it)) }
-            } ?: emptyList()
-            val saleItems = root.optJSONArray("saleItems")?.let { arr ->
-                (0 until arr.length()).map { jsonToSaleItem(arr.getJSONObject(it)) }
-            } ?: emptyList()
-            val salePayments = root.optJSONArray("salePayments")?.let { arr ->
-                (0 until arr.length()).map { jsonToSalePayment(arr.getJSONObject(it)) }
-            } ?: emptyList()
-            val audit = root.optJSONArray("auditLog")?.let { arr ->
-                (0 until arr.length()).map { jsonToAudit(arr.getJSONObject(it)) }
-            } ?: emptyList()
+            val sales: List<Sale> = streamed.sales
+            val saleItems: List<SaleItem> = streamed.saleItems
+            val salePayments: List<SalePayment> = streamed.salePayments
+            val audit: List<AuditLog> = streamed.audit
             val returns = root.optJSONArray("saleReturns")?.let { arr ->
                 (0 until arr.length()).map { jsonToReturn(arr.getJSONObject(it)) }
             } ?: emptyList()

@@ -3515,6 +3515,8 @@
     <string name="live_pc_none">اڃا ڪو فون نه ڳنڍيو ويو آهي.</string>
     <string name="live_conflicts">ٻنهي تي گڏ تبديلي (هڪ رکي وئي، ٻي محفوظ ڪئي وئي): %1$d</string>
     <string name="live_pair_warning">هي فون جو کاتو آهي. هن ڪمپيوٽر جو پنهنجو کاتو بلڪل ساڳيو رکڻ لاءِ نئين ڪاروبار طور ڳنڍيو: فون جو کاتو ان سان گڏ الڳ کلندو ۽ هتان ڪجهه به نه مٽبو. ”سڀ ڪجهه مٽايو“ تڏهن ئي دٻايو جڏهن هن ڪمپيوٽر جو کاتو ضروري نه هجي.</string>
+    <string name="live_pair_code">ڳنڍڻ جو ڪوڊ: %1$s. ڪمپيوٽر پنهنجي ها سان ساڳيو ڪوڊ ڏيکاري ٿو؛ اتي ها تڏهن ئي چئو جڏهن ٻئي ساڳيا هجن.</string>
+    <string name="live_pair_code_check">فون هي ڪوڊ ڏيکاري رهيو آهي: %1$s. ها تڏهن ئي چئو جڏهن فون تي به ساڳيو ڪوڊ هجي.</string>
     <string name="live_join_new_business">نئين ڪاروبار طور ڳنڍيو</string>
     <string name="live_devices">ڳنڍيل ڊوائيس</string>
     <string name="live_remove">هٽايو</string>
