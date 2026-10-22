@@ -242,8 +242,9 @@ class CustomerLinkTest {
         d.setSetting(CustomerLink.MODE, CustomerLink.Mode.BALANCE.key)
         assertEquals(CustomerLink.Result.NotHere, d.flushWith(server, newPhone))
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, newPhone, claim = true))
-        // The old phone is now the other copy: it does not take the pages back by itself.
-        d.setSetting(CustomerLink.MODE, CustomerLink.Mode.LAST3.key)
+        // The old phone is now the other copy: it does not take the pages back by itself. (A new entry, so its
+        // page is not the one its own notes say it sent already.)
+        d.insertEntryNumbered(LedgerEntry(partyId = ali, amount = 50.0, isGiven = true, entryNumber = ""))
         assertEquals(CustomerLink.Result.NotHere, d.flushWith(server, phone))
         // A book that starts to sync writes with the shared writer, and takes over by itself.
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, newPhone, bookKey = key))

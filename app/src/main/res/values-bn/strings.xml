@@ -1589,7 +1589,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">সময়: %1$s</string>
     <string name="pdf_reg_note_1">এটি দোকানের নিজস্ব রেকর্ড, যা তাকে জানানো হয়েছে, ওপরের সময়ের জন্য ছাপা।</string>
-    <string name="pdf_reg_note_2">বিক্রি হলো সেই বাকি/পণ্যের এন্ট্রি যাতে পণ্য গেছে \u2014 শুধু নগদ ও কর্জে হাসানা গোনা হয় না।</string>
+    <string name="pdf_reg_note_2">বিক্রি হলো সেই বাকি/পণ্যের এন্ট্রি যাতে পণ্য গেছে, অথবা কাউন্টার বিক্রির পণ্য \u2014 শুধু নগদ ও কর্জে হাসানা গোনা হয় না।</string>
     <string name="pdf_reg_sales_lines">এই সময়ে বিক্রির লাইন</string>
     <string name="pdf_reg_total_sales">মোট বিক্রি</string>
     <string name="pdf_reg_purchase_lines">এই সময়ে কেনার লাইন</string>
@@ -3278,6 +3278,7 @@
     <string name="restore_loss_bills">সাপ্লায়ার বিল: %1$d</string>
     <string name="restore_loss_invoices">ইনভয়েস: %1$d</string>
     <string name="restore_loss_parties">ক্রেতা ও সাপ্লায়ার: %1$d</string>
+    <string name="restore_loss_other">কপির পর এখানে করা স্টক গণনা, দিন বন্ধ, শিফট, পয়েন্ট, অর্ডার ও বাতিল: %1$d</string>
     <string name="restore_loss_newest">এখানে সবচেয়ে নতুন: %1$s · কপিতে সবচেয়ে নতুন: %2$s</string>
     <string name="restore_loss_kept">কিছু বদলানোর আগে এই খাতাটি দৈনিক কপিতে রাখা হয়, তাই রিস্টোর ফেরানো যায়।</string>
     <string name="restore_loss_agree">আমি বুঝেছি যে এগুলো মুছে যাবে</string>

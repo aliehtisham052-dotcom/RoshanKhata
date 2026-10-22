@@ -47,7 +47,10 @@ class CountDraft(stock: List<Stock.ProductStock>) {
         var counted by mutableStateOf("")
         // A shelf found empty is counted as 0 (21 Oct 2026: evalAmount turns 0 into "nothing typed",
         // so an empty shelf was skipped and the book kept its old figure). Never below zero.
-        val value: Double? get() = counted.takeIf { it.isNotBlank() }?.let { Calc.evalPad(it) }?.takeIf { it >= 0.0 }
+        // Not where the book cannot say what it holds (units that do not convert, 22 Oct 2026, the review):
+        // a count there was written as if the book held 0.
+        val value: Double? get() = if (stock.onHand == null) null
+            else counted.takeIf { it.isNotBlank() }?.let { Calc.evalPad(it) }?.takeIf { it >= 0.0 && it.isFinite() }
     }
     val lines = com.innovation313.roshankhata.data.NameOrder.sortedBy(stock) { it.name }.map { Line(it) }
     var note by mutableStateOf("")
@@ -70,7 +73,8 @@ fun StockCountForm(draft: CountDraft, onSave: () -> Unit, onCancel: () -> Unit, 
                         Text(l.stock.name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text(word(W.po_book) + ": " + (l.stock.onHand?.let { Calc.trim(it) } ?: "?") + (l.stock.unit?.let { " $it" } ?: ""), color = c.textMuted, fontSize = 12.sp)
                     }
-                    CalcField(l.counted, { l.counted = it }, Modifier.width(124.dp), kind = CalcKind.QUANTITY, label = word(W.stock_counted_hint))
+                    if (l.stock.onHand == null) Text(word(W.stock_units_differ), Modifier.width(124.dp), color = c.textMuted, fontSize = 12.sp)
+                    else CalcField(l.counted, { l.counted = it }, Modifier.width(124.dp), kind = CalcKind.QUANTITY, label = word(W.stock_counted_hint))
                 }
                 HorizontalDivider(color = c.pageBg)
             }

@@ -36,7 +36,9 @@ class CounterDraft {
         /** Whether the line's price already holds its tax (the book's setting when it was rung up). */
         val taxIncluded: Boolean = false,
         /** A weighed item off the scale's label: its own line, never added to by a scan. */
-        val weighed: Boolean = false
+        val weighed: Boolean = false,
+        /** The shelf's rate the label was read at ([ScaleCode.Line.shelf]); for a weighed line only. */
+        val labelShelf: Double? = null
     ) {
         var name by mutableStateOf(name)
         var qty by mutableStateOf(qty)
@@ -242,10 +244,20 @@ class CounterDraft {
      * ticket, or an item typed in by hand. Until then anyone at the counter
      * could sell a 3,500 bag for 0 with nothing written down; now these need
      * the price permission (or a manager's PIN), and each is logged. A weighed
-     * line's price comes off the scale's label.
+     * line's price comes off the scale's label: it is a price change only when
+     * its money is not the shelf's for its weight, beyond half a gram's worth
+     * (22 Oct 2026, the review: a price label typed by hand sold any item for
+     * Rs 0.10, with no permission asked and nothing logged).
      */
     val repriced: List<Line>
-        get() = lines.filter { l -> !l.weighed && (listRate(l)?.let { kotlin.math.abs(l.rateValue - it) > 0.005 } ?: true) }
+        get() = lines.filter { l ->
+            if (l.weighed) {
+                val shelf = l.labelShelf ?: listRate(l) ?: return@filter true
+                kotlin.math.abs(l.qtyValue * (l.rateValue - shelf)) > shelf * 0.0005 + 0.01
+            } else {
+                listRate(l)?.let { kotlin.math.abs(l.rateValue - it) > 0.005 } ?: true
+            }
+        }
 
     /** What the repriced lines were and became, for the audit log. */
     fun repricedDetail(): String = repriced.joinToString("; ") { l ->
@@ -287,7 +299,7 @@ class CounterDraft {
     fun addWeighed(w: ScaleCode.Line, onHand: Double? = null): Line {
         val line = Line(
             w.product.id, w.product.name, Calc.trim(w.quantity), w.product.defaultUnit, Calc.trim(w.rate), onHand = onHand,
-            product = w.product, taxRate = w.product.taxRate, taxIncluded = pricesIncludeTax, weighed = true
+            product = w.product, taxRate = w.product.taxRate, taxIncluded = pricesIncludeTax, weighed = true, labelShelf = w.shelf
         )
         lines += line
         return line
@@ -328,6 +340,26 @@ class CounterDraft {
         lines.clear(); payments.clear()
         discount = ""; taxPercent = ""; note = ""; heldId = null
         pointsUsed = 0.0; pointsBalance = 0.0
+    }
+
+    /**
+     * The ticket as it stands, taken once on the screen's own thread before
+     * anything is written (22 Oct 2026, the review: posting read the lines,
+     * then the money a moment later, so an item scanned for the next customer
+     * in between made the first one's ticket "overpaid", or was paid by him).
+     * [notes] are audit rows written with the sale, in its transaction.
+     */
+    fun snapshot(createdBy: String? = Access.userName, now: Long = System.currentTimeMillis(), notes: List<AuditLog> = emptyList()): Counter.Ticket =
+        Counter.Ticket(
+            sale = toSale(createdBy, now), items = toItems(), payments = toPayments(), roundToWhole = roundToWhole,
+            pointsUsed = if (hasParty) pointsUsed else 0.0, heldId = heldId, lines = lines.toList(), notes = notes, now = now
+        )
+
+    /** After a ticket is posted: cleared, but for the lines rung up while it was being written — the next customer's. */
+    fun clearAfter(posted: Counter.Ticket) {
+        val next = lines.filter { l -> posted.lines.none { it === l } }
+        clear()
+        lines += next
     }
 
     /** A held ticket back on the counter. */
@@ -432,7 +464,25 @@ object Counter {
      * shift ([ShiftMath]) all read the same person (until 21 Oct 2026 this
      * default was null and every ticket read as the owner's).
      */
-    suspend fun post(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName, now: Long = System.currentTimeMillis()): Long {
+    suspend fun post(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName, now: Long = System.currentTimeMillis()): Long =
+        post(dao, draft.snapshot(createdBy, now))
+
+    /** One ticket as the screen took it ([CounterDraft.snapshot]): everything below reads only this. */
+    class Ticket(
+        val sale: Sale,
+        val items: List<SaleItem>,
+        val payments: List<SalePayment>,
+        val roundToWhole: Boolean,
+        val pointsUsed: Double,
+        val heldId: Long?,
+        val lines: List<CounterDraft.Line>,
+        val notes: List<AuditLog> = emptyList(),
+        val now: Long = System.currentTimeMillis()
+    )
+
+    /** [post] for a ticket already taken from its draft. */
+    suspend fun post(dao: KhataDao, ticket: Ticket): Long {
+        val now = ticket.now
         val products = dao.productsOnce().associateBy { it.id }
         val today = Fefo.today(now)
         val items = ArrayList<SaleItem>()
@@ -441,7 +491,7 @@ object Counter {
         // (a carton and loose bottles, two scale labels) were each given the whole of the same batch, so it
         // went below nothing and an expired batch behind it was never refused.
         val lotsOf = HashMap<Long, MutableList<Fefo.Lot>>()
-        for (item in draft.toItems()) {
+        for (item in ticket.items) {
             val p = item.productId?.let { products[it] }
             items += item.copy(costRate = p?.let { costOf(dao, it, item.unit) })
             if (p == null) { takes += null; continue }
@@ -466,9 +516,9 @@ object Counter {
                 }
             }
         }
-        // The held ticket comes off the hook in the sale's own transaction.
-        return dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole, takes,
-            pointsUsed = if (draft.hasParty) draft.pointsUsed else 0.0, heldId = draft.heldId)
+        // The held ticket comes off the hook in the sale's own transaction, and its audit notes go with it.
+        return dao.postSale(ticket.sale, items, ticket.payments, ticket.roundToWhole, takes,
+            pointsUsed = ticket.pointsUsed, heldId = ticket.heldId, notes = ticket.notes)
     }
 
     /** Park the draft; returns the held row's id. */

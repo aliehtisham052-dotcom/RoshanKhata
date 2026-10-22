@@ -1575,7 +1575,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">عرصو: %1$s</string>
     <string name="pdf_reg_note_1">هي دڪان جو پنهنجو رڪارڊ آهي جيڪو کيس ٻڌايو ويو، مٿي ڏنل عرصي لاءِ.</string>
-    <string name="pdf_reg_note_2">سيل اها اوڌر/مال واري داخلا آهي جنهن ۾ مال ويو \u2014 رڳو نقد ۽ قرض حسنه شمار نه ٿيندا.</string>
+    <string name="pdf_reg_note_2">سيل اها اوڌر/مال واري داخلا آهي جنهن ۾ مال ويو، يا ڪائونٽر وڪري جو مال \u2014 رڳو نقد ۽ قرض حسنه شمار نه ٿيندا.</string>
     <string name="pdf_reg_sales_lines">هن عرصي جون سيل لائينون</string>
     <string name="pdf_reg_total_sales">ڪل سيل</string>
     <string name="pdf_reg_purchase_lines">هن عرصي جون خريد لائينون</string>
@@ -3262,6 +3262,7 @@
     <string name="restore_loss_bills">سپلائر بل: %1$d</string>
     <string name="restore_loss_invoices">انوائس: %1$d</string>
     <string name="restore_loss_parties">گراهڪ ۽ سپلائر: %1$d</string>
+    <string name="restore_loss_other">ڪاپي کان پوءِ هتي ڪيل اسٽاڪ ڳڻپ، ڏينهن بندي، شفٽون، پوائنٽس، آرڊر ۽ منسوخيون: %1$d</string>
     <string name="restore_loss_newest">هتي سڀ کان نئون: %1$s · ڪاپي ۾ سڀ کان نئون: %2$s</string>
     <string name="restore_loss_kept">ڪجهه بدلائڻ کان اڳ هي کاتو روزاني ڪاپين ۾ محفوظ ٿئي ٿو، ان ڪري ريسٽور واپس ٿي سگهي ٿو.</string>
     <string name="restore_loss_agree">مان سمجهان ٿو ته اهي ختم ٿي ويندا</string>

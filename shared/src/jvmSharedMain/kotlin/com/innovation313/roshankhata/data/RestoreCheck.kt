@@ -43,9 +43,15 @@ object RestoreCheck {
          * lost" and the replace went ahead unticked; now it is said, and the
          * owner ticks that they accept not knowing.
          */
-        val unknown: Boolean = false
+        val unknown: Boolean = false,
+        /**
+         * Everything else made here since the copy (22 Oct 2026, the review):
+         * stock counts and corrections, day closes, shifts, points, purchase
+         * orders, and tickets or returns voided here that the copy holds posted.
+         */
+        val others: Int = 0
     ) {
-        val total: Int get() = entries + changed + cash + sales + returns + cheques + bills + invoices + parties
+        val total: Int get() = entries + changed + cash + sales + returns + cheques + bills + invoices + parties + others
         val none: Boolean get() = !unknown && total == 0
     }
 
@@ -86,7 +92,11 @@ object RestoreCheck {
         while (true) {
             val page = dao.entriesPageForBackup(after, PAGE)
             for (e in page) {
-                if (e.isDeleted) continue
+                if (e.isDeleted) {
+                    // Binned here since the copy, live there: a restore brings it back (22 Oct 2026, the review).
+                    if (byUid && e.uid != null && thereEntries[e.uid]?.isDeleted == false) changed++
+                    continue
+                }
                 if (newestHere == null || e.timestamp > newestHere) newestHere = e.timestamp
                 val t = thereEntries[entryKey(e, nameHere)]
                 when {
@@ -125,6 +135,26 @@ object RestoreCheck {
         val invoiceKeys = there.invoices.map { i -> if (byUid && i.uid != null) i.uid else i.invoiceNumber }.toHashSet()
         val lostInvoices = dao.allInvoicesForBackup().count { i -> !i.isDeleted && (if (byUid && i.uid != null) i.uid else i.invoiceNumber) !in invoiceKeys }
 
+        // What else the copy lacks or holds older (22 Oct 2026, the review: a 10:00 copy said "nothing lost",
+        // then silently un-voided an 11:00 void and dropped an 11:00 stock count).
+        var others = 0
+        if (byUid) {
+            fun <T> missing(here: List<T>, copy: List<T>, uid: (T) -> String?, live: (T) -> Boolean): Int {
+                val keys = copy.mapNotNull(uid).toHashSet()
+                return here.count { r -> live(r) && uid(r).let { u -> u != null && u !in keys } }
+            }
+            others += missing(dao.allAdjustmentsForBackup(), there.adjustments, { it.uid }, { !it.isDeleted })
+            others += missing(dao.allOrdersForBackup(), there.orders, { it.uid }, { !it.isDeleted })
+            others += missing(dao.allLoyaltyForBackup(), there.loyalty, { it.uid }, { !it.isDeleted })
+            others += missing(dao.allShiftsForBackup(), there.shifts, { it.uid }, { true })
+            val salesThere = there.sales.filter { it.uid != null }.associateBy { it.uid!! }
+            others += salesHere.count { s -> s.uid?.let { salesThere[it] }?.let { t -> t.status != s.status } == true }
+            val returnsThere = there.returns.filter { it.uid != null }.associateBy { it.uid!! }
+            others += dao.allReturnsForBackup().count { r -> !r.isDeleted && r.uid?.let { returnsThere[it] }?.let { t -> t.status != r.status } == true }
+        }
+        val closesThere = there.dayCloses.associateBy { it.day }
+        others += dao.allDayClosesForBackup().count { c -> closesThere[c.day]?.let { t -> t.closedAt != c.closedAt } ?: true }
+
         val partyNamesThere = there.parties.filter { !it.isDeleted }.map { nameKey(it.name) }.toHashSet()
         val lostParties = partiesHere.count { !it.isDeleted && nameKey(it.name) !in partyNamesThere }
 
@@ -137,7 +167,7 @@ object RestoreCheck {
         return Loss(
             entries = lostEntries, changed = changed, cash = lostCash, sales = lostSales, returns = lostReturns,
             cheques = lostCheques, bills = lostBills, invoices = lostInvoices, parties = lostParties,
-            newestHere = newestHere, newestThere = newestThere
+            newestHere = newestHere, newestThere = newestThere, others = others
         )
     }
 
@@ -157,6 +187,7 @@ object RestoreCheck {
         if (loss.bills > 0) add(words.text(W.restore_loss_bills, loss.bills))
         if (loss.invoices > 0) add(words.text(W.restore_loss_invoices, loss.invoices))
         if (loss.parties > 0) add(words.text(W.restore_loss_parties, loss.parties))
+        if (loss.others > 0) add(words.text(W.restore_loss_other, loss.others))
         loss.newestHere?.let { here ->
             add(words.text(W.restore_loss_newest, date(here), loss.newestThere?.let(date) ?: "—"))
         }

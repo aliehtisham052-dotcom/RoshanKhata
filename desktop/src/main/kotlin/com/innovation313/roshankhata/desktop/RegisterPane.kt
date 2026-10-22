@@ -57,10 +57,11 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
     var purchases by remember { mutableStateOf<List<PurchaseRegisterRow>>(emptyList()) }
     val to = till + 24L * 60 * 60 * 1000 - 1
     val adjustment = word(W.register_adjustment)
+    val walkIn = word(W.pos_walk_in)
     LaunchedEffect(from, till, reload) {
         withContext(Dispatchers.IO) {
-            sales = (dao.salesRegister(from, to) + dao.salesAdjustments(from, to).map { it.copy(itemName = adjustment) })
-                .sortedWith(compareBy({ it.date }, { it.refNumber }))
+            // Walk-in counter tickets too (22 Oct 2026, the review), each with its batch.
+            sales = dao.registerSales(from, to, adjustment, walkIn)
             purchases = dao.purchaseRegister(from, to)
         }
     }

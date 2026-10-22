@@ -73,6 +73,9 @@ data class ZReport(
             val refunds = LinkedHashMap<String, Double>()
             for (r in doneReturns) if (r.refundAmount > 0.0) refunds[r.refundMethod] = (refunds[r.refundMethod] ?: 0.0) + r.refundAmount
             val salesTotal = LineMath.round(done.sumOf { it.grandTotal })
+            // The day's returns come off the profit as the sales report takes them (22 Oct 2026, the review).
+            val returned = dao.returnedLinesBetween(from, to)
+            val returnedMargin = returned.sumOf { it.revenue - (it.cost ?: 0.0) }
             val returnsTotal = LineMath.round(doneReturns.sumOf { it.total })
             // The day's close, if one was made for this window's day.
             val close = dao.dayCloseFor(DayCloseMath.dayOf(from))
@@ -86,7 +89,7 @@ data class ZReport(
                 khataCashIn = dao.khataCashBetween(false, from - 1, to - 1), khataCashOut = dao.khataCashBetween(true, from - 1, to - 1),
                 cashbookIn = dao.cashbookCashBetween(true, from - 1, to - 1), cashbookOut = dao.cashbookCashBetween(false, from - 1, to - 1),
                 opening = close?.opening, counted = close?.counted,
-                profit = if (costKnown && done.isNotEmpty()) LineMath.round(salesTotal - tax - cost) else null,
+                profit = if (costKnown && returned.all { it.cost != null } && done.isNotEmpty()) LineMath.round(salesTotal - tax - cost - returnedMargin) else null,
                 closeExpected = close?.expected?.let { LineMath.round(it) }
             )
         }
