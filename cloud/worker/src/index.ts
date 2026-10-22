@@ -152,12 +152,12 @@ export class Daakiya extends DurableObject<Env> {
     const devices = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM devices`).one().n;
     const isKnown = this.sql.exec(`SELECT 1 FROM devices WHERE device = ?`, device).toArray().length > 0;
     if (!isKnown && devices >= 8) return refuse(409, "too-many-devices");
-    // A new device starts after what is already here: it took the whole book another way (pairing).
+    // A new device reads all that is here (a message read twice changes nothing; one skipped is a change lost).
     const top = this.sql.exec<{ s: number | null }>(`SELECT MAX(seq) AS s FROM parcels`).one().s ?? 0;
     this.sql.exec(
-      `INSERT INTO devices (device, acked, seen) VALUES (?, ?, ?)
+      `INSERT INTO devices (device, acked, seen) VALUES (?, 0, ?)
        ON CONFLICT(device) DO UPDATE SET seen = excluded.seen`,
-      device, top, now,
+      device, now,
     );
     const others = this.sql.exec<{ device: string; seen: number }>(
       `SELECT device, seen FROM devices WHERE device != ?`, device,

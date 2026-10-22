@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.LiveCloud
 import com.innovation313.roshankhata.data.LiveRound
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
@@ -64,6 +65,8 @@ object LiveDesk {
     @Volatile private var db: KhataDatabase? = null
     @Volatile private var server: ServerSocket? = null
     @Volatile private var stopped = false
+    /** Each start's own number: a relay loop from an earlier start ends when it sees a newer one. */
+    @Volatile private var generation = 0
 
     /** The secret of the code on the screen right now; null when no Live sync window is open. */
     @Volatile var pairSecret: String? = null
@@ -106,8 +109,19 @@ object LiveDesk {
                 onRound = { r -> answer(r) }
             )
         }
+        // The relay, for a phone away from the shop's WiFi (Marhala 2): nothing at all until it has an address.
+        val mine = ++generation
+        thread(isDaemon = true, name = "live-cloud") {
+            while (!stopped && generation == mine) {
+                val d = db
+                if (d != null && LiveCloud.base != null) runCatching { runBlocking { LiveCloud.round(d.syncSql()) } }
+                try { Thread.sleep(CLOUD_MS) } catch (e: InterruptedException) { break }
+            }
+        }
         return s.localPort
     }
+
+    private const val CLOUD_MS = 15_000L
 
     @Synchronized
     fun stop() {
