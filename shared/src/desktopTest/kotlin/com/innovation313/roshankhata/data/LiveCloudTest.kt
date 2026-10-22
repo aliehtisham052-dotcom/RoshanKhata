@@ -245,20 +245,41 @@ class LiveCloudTest {
 
     @Test
     fun `a computer whose pointer went back is caught up, not asked for ever`() = runBlocking {
+        // The phone's line reaches the computer, but the computer's word that it read it has not come back yet,
+        // so the phone still keeps the line.
         phone.khataDao().insertParty(Party(name = "Before"))
-        both(2)
+        clock += 1000
+        assertTrue(LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false } is LiveCloud.Result.Done)
+        assertTrue(LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false } is LiveCloud.Result.Done)
         assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "Before" })
         // The computer's book went back (rebuilt from an older copy): it has read nothing of the phone's log.
         val phoneDev = LiveSync.identity(phone.syncSql())!!.device
         LiveSync.putPeer(pc.syncSql(), phoneDev, recv = 0L)
         phone.khataDao().insertParty(Party(name = "After the gap"))
-        // The phone's parcel starts past 0: a gap at the computer, said back as "need"; the phone starts again at 0.
+        // The phone's next parcel starts past 0: a gap at the computer, said back as "need"; the phone starts again at 0.
         both(6)
         assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "After the gap" })
         assertEquals(1, pc.khataDao().allPartiesForBackup().count { it.name == "Before" })
         assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
-        // And a conflict in a money table is counted for the bell, one not in it is not.
+        // And no conflict in a money table for the bell.
         assertEquals(0, LiveSync.moneyConflicts(pc.syncSql()))
+    }
+
+    @Test
+    fun `a computer that went back past what the phone still keeps is told to join again, the round does not throw`() = runBlocking {
+        phone.khataDao().insertParty(Party(name = "Long ago"))
+        // Read and acknowledged on both sides: the phone lets the line go.
+        both(4)
+        val phoneDev = LiveSync.identity(phone.syncSql())!!.device
+        LiveSync.putPeer(pc.syncSql(), phoneDev, recv = 0L)
+        phone.khataDao().insertParty(Party(name = "Later"))
+        val seen = ArrayList<LiveCloud.Result>()
+        repeat(8) {
+            clock += 1000
+            seen += LiveCloud.round(phone.syncSql(), relay, "https://relay.test", clock) { false }
+            seen += LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false }
+        }
+        assertTrue("$seen", seen.any { it is LiveCloud.Result.Refused && it.why == LiveRound.LOST })
     }
 
     @Test

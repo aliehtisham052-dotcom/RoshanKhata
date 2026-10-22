@@ -226,7 +226,13 @@ object LiveDesk {
                     }
                     LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { relayState.value = RelayState.Off; CLOUD_OFF_MS }
                     LiveCloud.Result.Halted -> { relayState.value = RelayState.Down("halted"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
-                    is LiveCloud.Result.Refused -> { relayState.value = RelayState.Down(r.why); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
+                    is LiveCloud.Result.Refused -> if (r.why == LiveRound.LOST) {
+                        // The phone asks for lines this book let go of (its book went back to an older copy): only
+                        // joining again mends it — the window then says so (OFF_RESTORED), as the WiFi road does.
+                        runCatching { runBlocking { LiveSync.disable(d!!.syncSql(), LiveSync.OFF_RESTORED) } }
+                        relayState.value = RelayState.Off
+                        CLOUD_OFF_MS
+                    } else { relayState.value = RelayState.Down(r.why); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
                     // Unreachable, or the round threw: the window says so instead of nothing (22 Oct 2026, the review).
                     else -> { relayState.value = RelayState.Down("unreachable"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
                 }

@@ -278,11 +278,15 @@ object LiveCloud {
                 // Kept under the relay's own limit: a page of long rows goes as several smaller ones
                 // (22 Oct 2026, the review: a page over 1 MB was refused and sent again, unchanged, for ever).
                 var page = LiveSync.PAGE
-                var msg = message(sql, posted, page) ?: return Result.Off
+                // A peer asks for lines this device already let go of (its book went back to a copy older than
+                // what both had acknowledged): it cannot be caught up, only joined again — said as the WiFi road
+                // says it (LiveRound.LOST), never thrown out of the round (23 Oct 2026).
+                fun lost(e: LiveSync.Lost) = Result.Refused(LiveRound.LOST)
+                var msg = try { message(sql, posted, page) } catch (e: LiveSync.Lost) { return lost(e) } ?: return Result.Off
                 var s = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8), LiveWire.Road.RELAY)
                 while (s.size > MAX_SEND && page > 1) {
                     page /= 2
-                    msg = message(sql, posted, page) ?: return Result.Off
+                    msg = try { message(sql, posted, page) } catch (e: LiveSync.Lost) { return lost(e) } ?: return Result.Off
                     s = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8), LiveWire.Road.RELAY)
                 }
                 sealed = s
@@ -410,6 +414,8 @@ object LiveCloud {
                 when (val r = round(sql, http, road.base, now, road.tag, send = true, halted = { false })) {
                     is Result.Done -> mine = r
                     Result.Off, Result.NotPaired -> return r
+                    // The book's state, not the relay's: another relay would say the same.
+                    is Result.Refused -> if (r.why == LiveRound.LOST) return r else if (failed == null) failed = r
                     else -> if (failed == null) failed = r
                 }
                 continue
