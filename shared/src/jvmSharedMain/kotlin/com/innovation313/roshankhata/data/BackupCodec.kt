@@ -768,6 +768,9 @@ object BackupCodec {
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
         put("deletedAt", p.deletedAt ?: JSONObject.NULL)
+        // The customer's card QR (22 Oct 2026): kept by a restore, so a printed card still opens its customer
+        // and a live pairing gives the computer the very same book. Older files had none: a new one is made.
+        put("qrToken", p.qrToken ?: JSONObject.NULL)
     }
 
     private fun jsonToParty(o: JSONObject) = Party(
@@ -786,7 +789,8 @@ object BackupCodec {
         harvestPromise = o.optNullableLong("harvestPromise"),
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt")
+        deletedAt = o.optNullableLong("deletedAt"),
+        qrToken = o.optNullableString("qrToken")?.takeIf { it.isNotBlank() } ?: QrTag.newToken()
     )
 
     private fun entryToJson(e: LedgerEntry) = JSONObject().apply {

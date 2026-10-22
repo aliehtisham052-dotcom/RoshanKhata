@@ -208,11 +208,18 @@ object BookMerge {
         val partiesHere = partiesHere(dao)
         val wantedParties = partiesWanted(n, there)
         val partyMap = HashMap<Long, Long>()
+        // A copy's card QR is kept unless this book already uses it (the same customer renamed here): then a new
+        // one, as the token is unique in the book and a clash would stop the whole merge (22 Oct 2026).
+        val tokensHere = partiesHere.mapNotNull { it.qrToken }.toMutableSet()
         for (p in there.parties) {
             val found = matchParty(p, partiesHere)
             when {
                 found != null -> partyMap[p.id] = found.id
-                p.id in wantedParties -> partyMap[p.id] = dao.insertParty(p.copy(id = 0, photoPath = null))
+                p.id in wantedParties -> {
+                    val token = p.qrToken?.takeIf { it !in tokensHere } ?: QrTag.newToken()
+                    tokensHere += token
+                    partyMap[p.id] = dao.insertParty(p.copy(id = 0, photoPath = null, qrToken = token))
+                }
             }
         }
 
