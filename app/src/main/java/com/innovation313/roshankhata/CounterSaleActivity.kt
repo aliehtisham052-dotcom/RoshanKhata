@@ -288,17 +288,20 @@ class CounterSaleActivity : BaseActivity() {
         if (over != null && creditBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
         val change = draft.change
         val priceDetail = if (repriced.isNotEmpty()) draft.repricedDetail() else null
+        // A manager's discount and every price that is not the product's own are written down with the sale,
+        // in its transaction (22 Oct 2026, the review: written before, they named no sale and stayed when the
+        // ticket was then refused). The ticket is taken here, once: what is scanned meanwhile is the next one's.
+        val notes = listOfNotNull(
+            discountBy?.let { com.innovation313.roshankhata.data.AuditLog(user = it, action = com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, detail = com.innovation313.roshankhata.ui.Format.money(discounts)) },
+            priceDetail?.let { com.innovation313.roshankhata.data.AuditLog(user = priceBy ?: access.userName, action = com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, detail = it) }
+        )
+        val ticket = draft.snapshot(notes = notes)
         draft.posting = true
         lifecycleScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    if (discountBy != null) dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, discountBy, detail = com.innovation313.roshankhata.ui.Format.money(discounts))
-                    // Every price that is not the product's own is written down, with who allowed it.
-                    if (priceDetail != null) dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, priceBy ?: access.userName, detail = priceDetail)
-                }
                 val result = withContext(Dispatchers.IO) {
                     runCatching {
-                        val id = Counter.post(dao, draft)
+                        val id = Counter.post(dao, ticket)
                         val sale = dao.saleWithLines(id)!!
                         Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
                             com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
@@ -310,7 +313,7 @@ class CounterSaleActivity : BaseActivity() {
                     val words = AndroidWords(this@CounterSaleActivity)
                     val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
                     val text = SaleReceiptText.build(words, shop, sale, party?.balance, points)
-                    draft.clear()
+                    draft.clearAfter(ticket)
                     message = null
                     reload()
                     // The change to hand back, in the title (21 Oct 2026).

@@ -1600,7 +1600,7 @@ You can change this any time from this screen.</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">Period: %1$s</string>
     <string name="pdf_reg_note_1">This is the shop\'s own record of what it was told, printed for the period above.</string>
-    <string name="pdf_reg_note_2">A sale is a credit/goods entry that carried goods \u2014 cash-only and qarz-e-hasna are not counted.</string>
+    <string name="pdf_reg_note_2">A sale is a credit/goods entry that carried goods, or the goods of a counter sale \u2014 cash-only and qarz-e-hasna are not counted.</string>
     <string name="pdf_reg_sales_lines">Sales lines in period</string>
     <string name="pdf_reg_total_sales">Total sales</string>
     <string name="pdf_reg_purchase_lines">Purchase lines in period</string>
@@ -3448,6 +3448,7 @@ You can change this any time from this screen.</string>
     <string name="restore_loss_bills">Supplier bills: %1$d</string>
     <string name="restore_loss_invoices">Invoices: %1$d</string>
     <string name="restore_loss_parties">Customers and suppliers: %1$d</string>
+    <string name="restore_loss_other">Stock counts, day closes, shifts, points, orders and voids made here since the copy: %1$d</string>
     <string name="restore_loss_newest">Newest here: %1$s · newest in the copy: %2$s</string>
     <string name="restore_loss_kept">This book is copied to Daily copies before anything is replaced, so the restore can be undone.</string>
     <string name="restore_loss_agree">I understand that these will be gone</string>

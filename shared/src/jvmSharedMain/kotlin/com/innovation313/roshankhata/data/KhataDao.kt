@@ -2450,6 +2450,58 @@ interface KhataDao {
     suspend fun salesAdjustments(from: Long, to: Long): List<SaleRegisterRow>
 
     /**
+     * A walk-in counter ticket's lines, for the sales register (22 Oct 2026,
+     * the review: the register read only the khata, so a day of forty walk-in
+     * pesticide tickets printed three for an inspection). Each line with its
+     * batch, at its own money; [walkIn] names a ticket that carries no name.
+     */
+    @Query(
+        """
+        SELECT s.timestamp AS date, s.saleNumber AS refNumber,
+               COALESCE(NULLIF(TRIM(s.customerName), ''), :walkIn) AS partyName,
+               COALESCE(pr.name, si.itemName) AS itemName, bi.batchNumber AS batchNumber,
+               si.quantity AS quantity, si.unit AS unit, ROUND(si.quantity * si.rate - si.discount, 2) AS amount,
+               pr.company AS company, pr.registrationNumber AS registrationNumber
+        FROM sale_items si
+        JOIN sales s ON s.id = si.saleId
+        LEFT JOIN products pr ON pr.id = si.productId
+        LEFT JOIN bill_items bi ON bi.id = si.billItemId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL AND si.isDeleted = 0
+          AND s.timestamp >= :from AND s.timestamp <= :to
+        ORDER BY s.timestamp ASC, s.id ASC, si.lineNo ASC
+        """
+    )
+    suspend fun walkInSalesRegister(from: Long, to: Long, walkIn: String): List<SaleRegisterRow>
+
+    /** A walk-in ticket whose money differs from its lines (its discount, tax, round-off): one row with the difference. */
+    @Query(
+        """
+        SELECT s.timestamp AS date, s.saleNumber AS refNumber,
+               COALESCE(NULLIF(TRIM(s.customerName), ''), :walkIn) AS partyName,
+               NULL AS itemName, NULL AS batchNumber, NULL AS quantity, NULL AS unit,
+               ROUND(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, 2)), 2) AS amount,
+               NULL AS company, NULL AS registrationNumber
+        FROM sale_items si JOIN sales s ON s.id = si.saleId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL AND si.isDeleted = 0
+          AND s.timestamp >= :from AND s.timestamp <= :to
+        GROUP BY s.id
+        HAVING ABS(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, 2))) >= 0.005
+        ORDER BY s.timestamp ASC, s.id ASC
+        """
+    )
+    suspend fun walkInSalesAdjustments(from: Long, to: Long, walkIn: String): List<SaleRegisterRow>
+
+    /**
+     * The sales register's rows: the khata's sales and the walk-in tickets,
+     * each followed by its difference row ([adjustment] names it), in time order.
+     * The one call the phone's register and the computer's both make.
+     */
+    suspend fun registerSales(from: Long, to: Long, adjustment: String, walkIn: String): List<SaleRegisterRow> =
+        (salesRegister(from, to) + salesAdjustments(from, to).map { it.copy(itemName = adjustment) } +
+            walkInSalesRegister(from, to, walkIn) + walkInSalesAdjustments(from, to, walkIn).map { it.copy(itemName = adjustment) })
+            .sortedWith(compareBy({ it.date }, { it.refNumber }))
+
+    /**
      * The rate this customer was last charged for this product, and the unit
      * it was per — for a return, which goes back at the price it went out at.
      * Only real sales count: a free (bonus) line has no price, and a line
@@ -2917,7 +2969,14 @@ interface KhataDao {
          * the same transaction (22 Oct 2026, the review: a crash between the
          * two left it on the list, to be rung up a second time).
          */
-        heldId: Long? = null
+        heldId: Long? = null,
+        /**
+         * Audit rows the screen asked for (a manager's discount, a changed
+         * price): written here, against this sale, inside its transaction
+         * (22 Oct 2026, the review: written before, they named no sale and
+         * stayed when the ticket was then refused).
+         */
+        notes: List<AuditLog> = emptyList()
     ): Long {
         val lines = items.filter { !it.isDeleted }
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
@@ -3019,6 +3078,7 @@ interface KhataDao {
                 detail = "$number ${"%.2f".format(Digits.FIGURES, totals.grandTotal)}"
             )
         )
+        for (n in notes) insertAudit(n.copy(id = 0, refTable = "sales", refId = saleId, detail = listOfNotNull(number, n.detail).joinToString(" ")))
         heldId?.let { dropHeldSale(it) }
         return saleId
     }
@@ -3044,8 +3104,15 @@ interface KhataDao {
             p.cashEntryId?.let { softDeleteCashEntry(it, now) }
         }
         updateSale(sale.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
-        // The points it earned and spent go with it (21 Oct 2026).
+        // The points it earned and spent go with it (21 Oct 2026) — never below nothing (22 Oct 2026, the review:
+        // points earned here and already spent on another ticket left the customer at minus that much).
+        val before = sale.partyId?.let { loyaltyBalance(it) }
+        val net = loyaltyOfSale(saleId).sumOf { it.points }
         dropLoyaltyOfSale(saleId)
+        if (sale.partyId != null && before != null) {
+            val after = LineMath.round(before - net)
+            if (after < 0.0) insertLoyalty(LoyaltyEntry(partyId = sale.partyId, points = -after, timestamp = now, note = sale.saleNumber))
+        }
         insertAudit(
             AuditLog(
                 user = user, action = AuditAction.SALE_VOIDED, refTable = "sales", refId = saleId,
@@ -3427,7 +3494,10 @@ interface KhataDao {
         val now = System.currentTimeMillis()
         for ((productId, counted) in counts) {
             val s = stock[productId] ?: continue
-            val book = s.onHand ?: 0.0
+            // Where the book cannot say what it holds (units that do not convert) nothing is written: a count
+            // there was taken against 0, and the shelf went that far wrong once a pack was set (22 Oct 2026).
+            val book = s.onHand ?: continue
+            if (!counted.isFinite() || counted < 0.0) continue
             val diff = LineMath.round(counted - book)
             if (kotlin.math.abs(diff) < 0.0005) continue
             insertAdjustment(StockAdjustment(productId = productId, timestamp = now, quantity = diff, unit = s.unit,
@@ -3627,6 +3697,18 @@ interface KhataDao {
         """
     )
     suspend fun returnedCostBetween(from: Long, to: Long): Double
+
+    /** Each line returned in [from, to) with the sold line it came back from ([ReturnedLine]; 22 Oct 2026, the review). */
+    @Query(
+        """
+        SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
+               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
+             JOIN sales s ON s.id = si.saleId
+        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to
+        """
+    )
+    suspend fun returnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
 
     /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND category != 'Return' AND timestamp > :from AND timestamp <= :to")
@@ -3845,6 +3927,13 @@ interface KhataDao {
         """
     )
     suspend fun batchMovesOfProduct(productId: Long): List<Fefo.Move>
+
+    /** Every rate a product was bought at, newest first, with its unit ([Cost.lastInOwnUnit]). */
+    @Query(
+        "SELECT i.quantity AS qty, i.unit AS unit, i.rate AS rate FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NOT NULL ORDER BY b.billDate DESC, i.id DESC"
+    )
+    suspend fun purchaseRatesNewestFirst(productId: Long): List<Cost.Purchase>
 
     /** Every purchase of a product with a rate (supplier bill lines), for its average cost. */
     @Query(

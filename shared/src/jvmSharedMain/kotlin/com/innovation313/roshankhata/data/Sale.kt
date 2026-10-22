@@ -280,7 +280,8 @@ object SaleMath {
             LineMath.round(added) to LineMath.round(inside)
         }
         val exact = LineMath.round(taxable + tax)
-        val grand = if (roundToWhole) Math.rint(exact) else exact
+        // Half up, as counters round (22 Oct 2026, the review: Math.rint rounds half to even — 100.50 to 100, 101.50 to 102).
+        val grand = if (roundToWhole) java.math.BigDecimal.valueOf(exact).setScale(0, java.math.RoundingMode.HALF_UP).toDouble() else exact
         return Totals(subtotal, disc, taxable, tax, LineMath.round(grand - exact), LineMath.round(grand), included)
     }
 

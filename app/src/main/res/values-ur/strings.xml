@@ -1547,7 +1547,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">مدت: %1$s</string>
     <string name="pdf_reg_note_1">یہ دکان کا اپنا ریکارڈ ہے جو اسے بتایا گیا، اوپر دی گئی مدت کے لیے۔</string>
-    <string name="pdf_reg_note_2">سیل وہ ادھار/مال والا اندراج ہے جس میں مال گیا \u2014 صرف نقد اور قرضِ حسنہ شمار نہیں ہوتے۔</string>
+    <string name="pdf_reg_note_2">سیل وہ ادھار/مال والا اندراج ہے جس میں مال گیا، یا کاؤنٹر سیل کا مال \u2014 صرف نقد اور قرضِ حسنہ شمار نہیں ہوتے۔</string>
     <string name="pdf_reg_sales_lines">اس مدت کی سیل لائنیں</string>
     <string name="pdf_reg_total_sales">کل سیل</string>
     <string name="pdf_reg_purchase_lines">اس مدت کی خرید لائنیں</string>
@@ -3234,6 +3234,7 @@
     <string name="restore_loss_bills">سپلائر بل: %1$d</string>
     <string name="restore_loss_invoices">انوائس: %1$d</string>
     <string name="restore_loss_parties">گاہک اور سپلائر: %1$d</string>
+    <string name="restore_loss_other">کاپی کے بعد یہاں کی گئی اسٹاک گنتی، دن بندی، شفٹیں، پوائنٹس، آرڈر اور منسوخیاں: %1$d</string>
     <string name="restore_loss_newest">یہاں سب سے نیا: %1$s · کاپی میں سب سے نیا: %2$s</string>
     <string name="restore_loss_kept">کچھ بدلنے سے پہلے یہ کھاتا روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور واپس ہو سکتا ہے۔</string>
     <string name="restore_loss_agree">میں سمجھتا ہوں کہ یہ ختم ہو جائیں گے</string>

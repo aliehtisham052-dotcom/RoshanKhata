@@ -58,16 +58,36 @@ object Calc {
      * were refused or misread until then: thousands commas ("1,500",
      * "1,50,000" — the app prints amounts that way itself), "x" for times
      * ("12x450"), a sum finished with "=" ("500+300="), the rupee's "/-"
-     * ("500/-") and a leading "Rs".
+     * ("500/-") and a leading "Rs" (or "Rp").
      */
     fun normalize(text: String): String {
         var s = Digits.toLatin(text).replace('\u00d7', '*').replace('\u00f7', '/').replace('\u2212', '-')
             .replace('x', '*').replace('X', '*').replace(" ", "")
-        s = s.replace(Regex("^(?i)(rs\\.?|\u20a8)"), "")
+        s = s.replace(Regex("^(?i)(rs\\.?|rp\\.?|\u20a8)"), "")
         s = s.replace(Regex("/-(?=$|[-+*/%=])"), "")
-        s = s.replace(Regex("(?<=\\d),(?=\\d)"), "")
+        s = if (dotGroups()) indonesian(s) else s.replace(Regex("(?<=\\d),(?=\\d)"), "")
         return s.trimEnd('=')
     }
+
+    /**
+     * Indonesian writes 1.250,50 (22 Oct 2026, the review: "12,5" was read as
+     * 125 and "1.250,50" as 1.2505): a comma between digits marks the
+     * fraction, and then every dot before three digits groups thousands; two
+     * or more dot groups ("1.250.000") can only be thousands. A lone dot is
+     * left a decimal point ("1.125" is one and a eighth), because the app's
+     * own figures in these boxes are written that way — so "50.000" alone
+     * still reads as fifty, and is shown back as 50 for the owner to see.
+     */
+    private fun indonesian(text: String): String {
+        var t = text
+        if (Regex("\\d,\\d").containsMatchIn(t)) {
+            t = t.replace(Regex("(?<=\\d)\\.(?=\\d{3})"), "").replace(Regex("(?<=\\d),(?=\\d)"), ".")
+        }
+        return t.replace(Regex("\\d{1,3}(?:\\.\\d{3}){2,}(?![\\d.])")) { it.value.replace(".", "") }
+    }
+
+    /** The reader's language groups thousands with a dot ([Format.money] prints it so). */
+    private fun dotGroups(): Boolean = java.util.Locale.getDefault().language.let { it == "in" || it == "id" }
 
     /**
      * A box that holds a PERCENT — a tax rate, a discount in percent — where
@@ -75,7 +95,7 @@ object Calc {
      * hundredth, as on a calculator, so these boxes are read here instead
      * (21 Oct 2026: "17%" in the counter's Tax % box gave 0.17% tax).
      */
-    fun evalPercent(input: String): Double? = evalPad(normalize(input).removeSuffix("%"))
+    fun evalPercent(input: String): Double? = eval(resolvePercent(normalize(input).removeSuffix("%")))
 
     /**
      * A rupee discount that may also be written as a share of [base]
@@ -143,8 +163,9 @@ object Calc {
         val text = Digits.toLatin(input).trim().replace(" ", "")
         if (text.isEmpty()) return null
 
-        // Fast path: a plain number (possibly decimal). No math to do.
-        text.toDoubleOrNull()?.let { return it }
+        // Fast path: a plain number (possibly decimal). No math to do. Never "NaN", "Infinity" or a figure
+        // too large to hold (22 Oct 2026, the review: they passed here and crashed the counter's sums).
+        text.toDoubleOrNull()?.let { return it.takeIf { v -> v.isFinite() } }
 
         // Only digits, decimal points and the four operators are allowed.
         if (!text.all { it.isDigit() || it == '.' || it in "+-*/" }) return null

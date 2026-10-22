@@ -29,17 +29,49 @@ data class SoldLine(
     val saleDiscount: Double? = null
 ) {
     /**
-     * What the line brought in: less any tax that was inside its price (that
-     * money is the government's), and less its share of the ticket's own
-     * discount — a Rs 100 off a Rs 1,000 ticket is Rs 10 off each Rs 100 of
-     * goods (21 Oct 2026: the report counted the goods at full price).
+     * What the line brought in: its share of the ticket's own discount taken
+     * off — a Rs 100 off a Rs 1,000 ticket is Rs 10 off each Rs 100 of goods
+     * (21 Oct 2026: the report counted the goods at full price) — then any
+     * tax that was inside its price (that money is the government's). The
+     * tax comes off after the discount, as it was worked out on the
+     * discounted line (SaleMath.lineTaxes; 22 Oct 2026, the review: taken
+     * off before, a 1,180 line with 18% inside and 118 off read 916.20, not 900).
      */
     val revenue: Double get() {
-        val gross = SaleMath.lineTotal(quantity, rate, discount) - (if (taxIncluded == true) taxAmount ?: 0.0 else 0.0)
         val sub = saleSubtotal ?: 0.0
         val off = (saleDiscount ?: 0.0).coerceAtLeast(0.0)
         val share = if (sub > 0.0 && off > 0.0) (1.0 - off / sub).coerceIn(0.0, 1.0) else 1.0
-        return LineMath.round(gross * share)
+        val inside = if (taxIncluded == true) taxAmount ?: 0.0 else 0.0
+        return LineMath.round(SaleMath.lineTotal(quantity, rate, discount) * share - inside)
+    }
+    val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
+}
+
+/**
+ * A line that came back, with the sold line it came back from (22 Oct 2026,
+ * the review): the share of what that line brought in, and what it had cost
+ * — so profit takes off a return exactly as the sale was counted (its tax and
+ * the ticket's discount out), and only where its cost is known.
+ */
+data class ReturnedLine(
+    val quantity: Double,
+    val soldQuantity: Double,
+    val rate: Double,
+    val discount: Double,
+    val costRate: Double?,
+    val taxAmount: Double?,
+    val taxIncluded: Boolean?,
+    val saleSubtotal: Double?,
+    val saleDiscount: Double?
+) {
+    val revenue: Double get() {
+        if (soldQuantity <= 0.0) return 0.0
+        val sold = SoldLine(
+            saleId = 0, timestamp = 0, customerName = null, createdBy = null, taxPercent = null, productId = null, itemName = "",
+            category = null, quantity = soldQuantity, unit = null, rate = rate, discount = discount, costRate = costRate,
+            taxAmount = taxAmount, taxIncluded = taxIncluded, saleSubtotal = saleSubtotal, saleDiscount = saleDiscount
+        )
+        return LineMath.round(sold.revenue * (quantity / soldQuantity).coerceIn(0.0, 1.0))
     }
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
 }
@@ -55,7 +87,9 @@ data class SoldLine(
 class SalesReport(
     val from: Long, val to: Long, val lines: List<SoldLine>, val expenses: Double, val returnsTotal: Double, val deadStock: List<String>,
     /** What the returned goods had cost (where known): they are back on the shelf. */
-    val returnedCost: Double = 0.0
+    val returnedCost: Double = 0.0,
+    /** What those same goods (the ones whose cost is known) had brought in when sold ([ReturnedLine.revenue]). */
+    val returnedRevenue: Double = 0.0
 ) {
 
     data class Row(val key: String, val count: Int, val quantity: Double, val revenue: Double, val cost: Double?) {
@@ -91,12 +125,15 @@ class SalesReport(
     val costKnownRevenue: Double get() = LineMath.round(lines.filter { it.cost != null }.sumOf { it.revenue })
     val cost: Double get() = LineMath.round(lines.sumOf { it.cost ?: 0.0 })
     /**
-     * The revenue whose cost is known, less that cost, less returns (21 Oct 2026:
-     * a line with no cost counted as costing nothing, so its whole price read as
-     * profit). The report says how much of the revenue this covers
-     * ([costKnownRevenue]); nothing is guessed for the rest.
+     * The revenue whose cost is known, less that cost, less the margin of the
+     * goods that came back (21 Oct 2026: a line with no cost counted as costing
+     * nothing, so its whole price read as profit). A return is taken off as
+     * its sale was counted, and only where its cost is known (22 Oct 2026, the
+     * review: the whole refund, tax and unknown-cost goods included, came off
+     * a revenue that held none of them). The report says how much of the
+     * revenue this covers ([costKnownRevenue]); nothing is guessed for the rest.
      */
-    val grossProfit: Double get() = LineMath.round(costKnownRevenue - cost - (returnsTotal - returnedCost))
+    val grossProfit: Double get() = LineMath.round(costKnownRevenue - cost - (returnedRevenue - returnedCost))
     /** Gross profit less the cashbook's expenses in the window (the walk-ins' refunds are not expenses — they are the returns). */
     val netProfit: Double get() = LineMath.round(grossProfit - expenses)
 
@@ -153,8 +190,12 @@ class SalesReport(
             val since = to - DEAD_DAYS * 24L * 60 * 60 * 1000
             val recent = dao.productsSoldSince(since).toSet()
             val dead = Stock.of(dao).filter { (it.onHand ?: 0.0) > 0.0 && it.productId !in recent }.map { it.name }.sorted()
-            val returnedCost = dao.returnedCostBetween(from, to)
-            return SalesReport(from, to, lines, LineMath.round(expenses), LineMath.round(returns), dead, LineMath.round(returnedCost))
+            val returned = dao.returnedLinesBetween(from, to).filter { it.cost != null }
+            return SalesReport(
+                from, to, lines, LineMath.round(expenses), LineMath.round(returns), dead,
+                returnedCost = LineMath.round(returned.sumOf { it.cost!! }),
+                returnedRevenue = LineMath.round(returned.sumOf { it.revenue })
+            )
         }
     }
 }

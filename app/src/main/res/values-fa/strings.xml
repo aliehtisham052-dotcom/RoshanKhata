@@ -1575,7 +1575,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">بازه: %1$s</string>
     <string name="pdf_reg_note_1">این سابقه خودِ مغازه از آنچه به آن اعلام شده است، برای بازه بالا.</string>
-    <string name="pdf_reg_note_2">فروش یعنی ثبت نسیه/کالایی که کالا در آن جابه‌جا شده \u2014 نقدی و قرض‌الحسنه شمرده نمی‌شوند.</string>
+    <string name="pdf_reg_note_2">فروش یعنی ثبت نسیه/کالایی که کالا در آن جابه‌جا شده، یا کالای فروش پیشخوان \u2014 نقدی و قرض‌الحسنه شمرده نمی‌شوند.</string>
     <string name="pdf_reg_sales_lines">سطرهای فروش در بازه</string>
     <string name="pdf_reg_total_sales">جمع فروش</string>
     <string name="pdf_reg_purchase_lines">سطرهای خرید در بازه</string>
@@ -3262,6 +3262,7 @@
     <string name="restore_loss_bills">فاکتورهای تأمین‌کننده: %1$d</string>
     <string name="restore_loss_invoices">فاکتورها: %1$d</string>
     <string name="restore_loss_parties">مشتریان و تأمین‌کنندگان: %1$d</string>
+    <string name="restore_loss_other">شمارش موجودی، بستن روز، شیفت‌ها، امتیازها، سفارش‌ها و ابطال‌هایی که پس از نسخه اینجا انجام شده: %1$d</string>
     <string name="restore_loss_newest">جدیدترین اینجا: %1$s · جدیدترین در نسخه: %2$s</string>
     <string name="restore_loss_kept">پیش از جایگزینی، این دفتر در نسخه‌های روزانه نگه داشته می‌شود، پس بازگردانی قابل برگشت است.</string>
     <string name="restore_loss_agree">می‌دانم که این‌ها از بین می‌روند</string>

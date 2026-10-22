@@ -1687,7 +1687,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">الفترة: %1$s</string>
     <string name="pdf_reg_note_1">هذا سجل المحل نفسه لما أُبلغ به، مطبوع عن الفترة أعلاه.</string>
-    <string name="pdf_reg_note_2">البيع قيد آجل/بضاعة انتقلت فيه البضاعة \u2014 النقد فقط والقرض الحسن غير محسوبين.</string>
+    <string name="pdf_reg_note_2">البيع قيد آجل/بضاعة انتقلت فيه البضاعة، أو بضاعة بيع على الكاونتر \u2014 النقد فقط والقرض الحسن غير محسوبين.</string>
     <string name="pdf_reg_sales_lines">سطور البيع في الفترة</string>
     <string name="pdf_reg_total_sales">إجمالي المبيعات</string>
     <string name="pdf_reg_purchase_lines">سطور الشراء في الفترة</string>
@@ -3422,6 +3422,7 @@
     <string name="restore_loss_bills">فواتير الموردين: %1$d</string>
     <string name="restore_loss_invoices">الفواتير: %1$d</string>
     <string name="restore_loss_parties">العملاء والموردون: %1$d</string>
+    <string name="restore_loss_other">جرد المخزون وإقفال الأيام والورديات والنقاط والطلبات والإلغاءات التي تمت هنا بعد النسخة: %1$d</string>
     <string name="restore_loss_newest">الأحدث هنا: %1$s · الأحدث في النسخة: %2$s</string>
     <string name="restore_loss_kept">يُحفظ هذا الدفتر في النسخ اليومية قبل استبدال أي شيء، فيمكن التراجع عن الاستعادة.</string>
     <string name="restore_loss_agree">أفهم أن هذه ستزول</string>

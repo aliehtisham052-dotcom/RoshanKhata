@@ -22,7 +22,12 @@ object StockTransfer {
         require(live.isNotEmpty()) { "nothing to transfer" }
         val number = number(now)
         val there = to.productsForTransfer(live.map { it.product })
-        val inbound = there.zip(live.map { it.quantity })
+        // In the receiving product's own unit (22 Oct 2026, the review: 2 cartons sent to a shop that counts
+        // bottles arrived as 2 bottles). Units that do not convert stop the transfer before anything is written.
+        val inbound = there.zip(live).map { (id, line) ->
+            val here = to.productById(id) ?: throw IllegalArgumentException("no such product")
+            id to (inUnitOf(line.product, line.quantity, here) ?: throw IllegalArgumentException("units differ: " + line.product.name))
+        }
         to.transferStock(number, inbound, fromShop, out = false, user = user, now = now)
         try {
             from.transferStock(number, live.map { it.product.id to it.quantity }, toShop, out = true, user = user, now = now)
@@ -32,5 +37,19 @@ object StockTransfer {
             throw e
         }
         return number
+    }
+
+    /**
+     * [qty] of [from]'s own unit in [to]'s own unit: the same unit (or one
+     * not set), or across one of the two products' packs; null when it
+     * cannot be said.
+     */
+    fun inUnitOf(from: Product, qty: Double, to: Product): Double? {
+        val a = Units.norm(from.defaultUnit)
+        val b = Units.norm(to.defaultUnit)
+        if (a == null || b == null || a == b) return qty
+        if (Units.hasPack(to) && Units.norm(to.packUnit) == a) return qty * to.packSize!!
+        if (Units.hasPack(from) && Units.norm(from.packUnit) == b) return qty / from.packSize!!
+        return null
     }
 }

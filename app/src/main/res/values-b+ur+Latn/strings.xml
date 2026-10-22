@@ -1547,7 +1547,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">Muddat: %1$s</string>
     <string name="pdf_reg_note_1">Ye dukaan ka apna record hai jo usay bataya gaya, upar wali muddat ke liye.</string>
-    <string name="pdf_reg_note_2">Sale wo credit/goods entry hai jis mein maal gaya \u2014 sirf cash aur qarz-e-hasna shumar nahi hote.</string>
+    <string name="pdf_reg_note_2">Sale wo credit/goods entry hai jis mein maal gaya, ya counter sale ka maal \u2014 sirf cash aur qarz-e-hasna shumar nahi hote.</string>
     <string name="pdf_reg_sales_lines">Is muddat ki sale lines</string>
     <string name="pdf_reg_total_sales">Kul sale</string>
     <string name="pdf_reg_purchase_lines">Is muddat ki purchase lines</string>
@@ -3234,6 +3234,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="restore_loss_bills">Supplier bill: %1$d</string>
     <string name="restore_loss_invoices">Invoice: %1$d</string>
     <string name="restore_loss_parties">Gahak aur supplier: %1$d</string>
+    <string name="restore_loss_other">Copy ke baad yahan ki gayi stock ginti, din bandi, shifts, points, order aur mansookhiyan: %1$d</string>
     <string name="restore_loss_newest">Yahan sab se naya: %1$s · copy mein sab se naya: %2$s</string>
     <string name="restore_loss_kept">Kuch badalne se pehle yeh khata rozana copies mein mehfooz ho jata hai, is liye restore wapas ho sakta hai.</string>
     <string name="restore_loss_agree">Main samajhta hoon ke yeh khatam ho jayenge</string>

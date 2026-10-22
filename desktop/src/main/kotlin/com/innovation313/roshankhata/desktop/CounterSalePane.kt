@@ -254,17 +254,20 @@ fun CounterSalePane(
         if (over != null && creditBy == null) told = words.text(W.pos_credit_limit, Format.money(over.first), Format.money(over.second))
         val change = draft.change
         val priceDetail = if (repriced.isNotEmpty()) draft.repricedDetail() else null
+        // A manager's discount and every price that is not the product's own are written down with the sale,
+        // in its transaction (22 Oct 2026, the review: written before, they named no sale and stayed when the
+        // ticket was then refused). The ticket is taken here, once: what is scanned meanwhile is the next one's.
+        val notes = listOfNotNull(
+            discountBy?.let { com.innovation313.roshankhata.data.AuditLog(user = it, action = com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, detail = Format.money(discounts)) },
+            priceDetail?.let { com.innovation313.roshankhata.data.AuditLog(user = priceBy ?: access.userName, action = com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, detail = it) }
+        )
+        val ticket = draft.snapshot(notes = notes)
         draft.posting = true
         scope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    if (discountBy != null) dao.log(com.innovation313.roshankhata.data.AuditAction.DISCOUNT_OVERRIDE, discountBy, detail = Format.money(discounts))
-                    // Every price that is not the product's own is written down, with who allowed it.
-                    if (priceDetail != null) dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, priceBy ?: access.userName, detail = priceDetail)
-                }
                 val result = withContext(Dispatchers.IO) {
                     runCatching {
-                        val id = Counter.post(dao, draft)
+                        val id = Counter.post(dao, ticket)
                         val sale = dao.saleWithLines(id)!!
                         Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
                             com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
@@ -278,7 +281,7 @@ fun CounterSalePane(
                     val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
                     if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party, points), cash))
                     else if (cash) onDrawer()
-                    draft.clear()
+                    draft.clearAfter(ticket)
                     tick++
                     onChanged()
                 }.onFailure { e ->

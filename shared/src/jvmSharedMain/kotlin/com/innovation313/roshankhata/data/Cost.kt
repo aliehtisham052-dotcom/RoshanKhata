@@ -39,6 +39,23 @@ object Cost {
         if (product == null) return null
         product.costPrice?.let { return it }
         average(product, dao.purchasesOfProduct(product.id))?.let { return it }
-        return dao.lastPurchaseRate(product.id)
+        return lastInOwnUnit(product, dao.purchaseRatesNewestFirst(product.id))
+    }
+
+    /**
+     * The newest purchase rate that can be said per one of [product]'s own
+     * unit: as written in that unit, or a pack's rate over its size (22 Oct
+     * 2026, the review: the rate of a 50 kg bag was taken as the rate of a
+     * kilo, and a 50 kg sale showed a loss of 220,250 on its line for good).
+     * Null when every rate is in a unit the app cannot convert.
+     */
+    fun lastInOwnUnit(product: Product, newestFirst: List<Purchase>): Double? {
+        val own = Units.norm(product.defaultUnit)
+        for (p in newestFirst) {
+            if (p.rate < 0.0) continue
+            if (Units.isPack(product, p.unit)) return p.rate / product.packSize!!
+            if (own == null || Units.norm(p.unit) == null || Units.norm(p.unit) == own) return p.rate
+        }
+        return null
     }
 }

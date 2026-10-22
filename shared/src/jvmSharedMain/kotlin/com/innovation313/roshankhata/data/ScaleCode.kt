@@ -27,8 +27,12 @@ object ScaleCode {
     /** What a label says: the item's scale code, and its weight in kilograms or its price. */
     data class Label(val code: String, val kilograms: Double?, val price: Double?)
 
-    /** One weighed line: how much, at what rate (the shelf's, or the label's price spread over the weight). */
-    data class Line(val product: Product, val quantity: Double, val rate: Double)
+    /**
+     * One weighed line: how much, at what rate (the shelf's, or the label's
+     * price spread over the weight), and the shelf's rate it was read at — so
+     * a label whose money is not the shelf's is a price change ([CounterDraft.repriced]).
+     */
+    data class Line(val product: Product, val quantity: Double, val rate: Double, val shelf: Double = rate)
 
     const val DEFAULT_PREFIX = "21"
     const val DEFAULT_DECIMALS = 2
@@ -71,11 +75,11 @@ object ScaleCode {
         val label = read(code, rule) ?: return null
         val product = productOf(products, label.code) ?: return null
         val shelf = rateOf(product)
-        label.kilograms?.let { kg -> return if (kg > 0.0) Line(product, kg, shelf) else null }
+        label.kilograms?.let { kg -> return if (kg > 0.0) Line(product, kg, shelf, shelf) else null }
         val price = label.price ?: return null
         if (price <= 0.0) return null
-        if (shelf <= 0.0) return Line(product, 1.0, price)
+        if (shelf <= 0.0) return Line(product, 1.0, price, shelf)
         val kg = BigDecimal.valueOf(price / shelf).setScale(3, RoundingMode.HALF_UP).toDouble().coerceAtLeast(0.001)
-        return Line(product, kg, BigDecimal.valueOf(price / kg).setScale(2, RoundingMode.HALF_UP).toDouble())
+        return Line(product, kg, BigDecimal.valueOf(price / kg).setScale(2, RoundingMode.HALF_UP).toDouble(), shelf)
     }
 }

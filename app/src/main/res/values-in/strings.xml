@@ -1554,7 +1554,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pdf_reg_ntn">NPWP: %1$s</string>
     <string name="pdf_reg_period">Periode: %1$s</string>
     <string name="pdf_reg_note_1">Ini catatan toko sendiri atas apa yang diberitahukan kepadanya, dicetak untuk periode di atas.</string>
-    <string name="pdf_reg_note_2">Penjualan adalah catatan kredit/barang yang memuat barang \u2014 uang saja dan qardhul hasan tidak dihitung.</string>
+    <string name="pdf_reg_note_2">Penjualan adalah catatan kredit/barang yang memuat barang, atau barang penjualan kasir \u2014 uang saja dan qardhul hasan tidak dihitung.</string>
     <string name="pdf_reg_sales_lines">Baris penjualan pada periode</string>
     <string name="pdf_reg_total_sales">Total penjualan</string>
     <string name="pdf_reg_purchase_lines">Baris pembelian pada periode</string>
@@ -3231,6 +3231,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="restore_loss_bills">Tagihan pemasok: %1$d</string>
     <string name="restore_loss_invoices">Faktur: %1$d</string>
     <string name="restore_loss_parties">Pelanggan dan pemasok: %1$d</string>
+    <string name="restore_loss_other">Hitung stok, tutup hari, shift, poin, pesanan, dan pembatalan yang dibuat di sini sejak salinan: %1$d</string>
     <string name="restore_loss_newest">Terbaru di sini: %1$s · terbaru di salinan: %2$s</string>
     <string name="restore_loss_kept">Buku ini disalin ke Salinan harian sebelum apa pun diganti, jadi pemulihan bisa dibatalkan.</string>
     <string name="restore_loss_agree">Saya paham semua ini akan hilang</string>

@@ -1589,7 +1589,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">अवधि: %1$s</string>
     <string name="pdf_reg_note_1">यह दुकान का अपना रिकॉर्ड है, जैसा उसे बताया गया, ऊपर की अवधि के लिए छापा गया।</string>
-    <string name="pdf_reg_note_2">बिक्री वह उधार/माल एंट्री है जिसमें माल गया \u2014 सिर्फ़ नकद और क़र्ज़-ए-हसना नहीं गिने जाते।</string>
+    <string name="pdf_reg_note_2">बिक्री वह उधार/माल एंट्री है जिसमें माल गया, या काउंटर बिक्री का माल \u2014 सिर्फ़ नकद और क़र्ज़-ए-हसना नहीं गिने जाते।</string>
     <string name="pdf_reg_sales_lines">अवधि में बिक्री की लाइनें</string>
     <string name="pdf_reg_total_sales">कुल बिक्री</string>
     <string name="pdf_reg_purchase_lines">अवधि में खरीद की लाइनें</string>
@@ -3278,6 +3278,7 @@
     <string name="restore_loss_bills">सप्लायर बिल: %1$d</string>
     <string name="restore_loss_invoices">इनवॉइस: %1$d</string>
     <string name="restore_loss_parties">ग्राहक और सप्लायर: %1$d</string>
+    <string name="restore_loss_other">कॉपी के बाद यहाँ की गई स्टॉक गिनती, दिन बंदी, शिफ़्टें, पॉइंट्स, ऑर्डर और रद्दीकरण: %1$d</string>
     <string name="restore_loss_newest">यहाँ सबसे नया: %1$s · कॉपी में सबसे नया: %2$s</string>
     <string name="restore_loss_kept">कुछ भी बदलने से पहले यह खाता रोज़ की कॉपियों में रख लिया जाता है, इसलिए रीस्टोर वापस हो सकता है।</string>
     <string name="restore_loss_agree">मैं समझता हूँ कि ये मिट जाएँगे</string>

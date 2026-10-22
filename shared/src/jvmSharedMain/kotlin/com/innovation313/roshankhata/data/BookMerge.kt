@@ -101,7 +101,13 @@ object BookMerge {
         val cheques = fresh(there.cheques, { it.uid }, { !it.isDeleted }, here.cheques)
         val bills = fresh(there.bills, { it.uid }, { !it.isDeleted }, here.bills)
         val invoices = fresh(there.invoices, { it.uid }, { !it.isDeleted }, here.invoices)
-        val sales = fresh(there.sales, { it.uid }, { !it.isDeleted && it.status != SaleStatus.HELD }, here.sales)
+        // A posted customer ticket comes only with its khata row (22 Oct 2026, the review: one whose row was in the
+        // copy's bin arrived with none, was counted as a walk-in's — its goods out of stock — and its credit nowhere).
+        private val liveEntries = there.entries.filter { !it.isDeleted }.map { it.id }.toHashSet()
+        val sales = fresh(there.sales, { it.uid }, { s ->
+            !s.isDeleted && s.status != SaleStatus.HELD &&
+                (s.status != SaleStatus.DONE || s.partyId == null || s.ledgerEntryId == null || s.ledgerEntryId in liveEntries)
+        }, here.sales)
         val returns = fresh(there.returns, { it.uid }, { !it.isDeleted }, here.returns)
         val adjustments = fresh(there.adjustments, { it.uid }, { !it.isDeleted }, here.adjustments)
         val orders = fresh(there.orders, { it.uid }, { !it.isDeleted }, here.orders)
