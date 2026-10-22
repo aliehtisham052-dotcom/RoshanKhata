@@ -1,0 +1,7 @@
+# Roshan Khata customer pages. No folder listings anywhere.
+Options -Indexes
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer"
+  Header set X-Frame-Options "DENY"
+</IfModule>
