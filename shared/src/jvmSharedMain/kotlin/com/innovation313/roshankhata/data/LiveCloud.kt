@@ -333,7 +333,11 @@ object LiveCloud {
                 val plainBytes = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY)
                 if (plainBytes != null) {
                     val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()
-                    if (msg != null && absorb(sql, msg, now)) {
+                    // The relay's word on who sent it must be the sealed message's own: a parcel the relay
+                    // filed under another device (a bug or a lie there) is not taken as that device's.
+                    val from = p.optString("from")
+                    val same = msg != null && (from.isBlank() || from == msg.optString("dev"))
+                    if (msg != null && same && absorb(sql, msg, now)) {
                         took++
                         // Which relay that device's parcels come by: this device sends there too (roundAll).
                         setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
