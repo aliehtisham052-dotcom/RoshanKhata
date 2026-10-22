@@ -398,6 +398,24 @@
             android:name=".InsightsActivity"
             android:exported="false" />
 
+        <!--
+          Live sync's wake-up (PushWake, 22 Oct 2026): Firebase Cloud Messaging
+          delivers the relay's one word "rk-wake" while the app is closed. Only
+          in a build that had the owner's google-services file. Auto-init stays
+          OFF: no token is made, and Google is not contacted, until a book's
+          owner turns the relay on (PushWake.address switches it on).
+        -->
+        <service
+            android:name=".data.WakeService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+
     </application>
 
 </manifest>

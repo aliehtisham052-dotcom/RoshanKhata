@@ -66,6 +66,9 @@ object LiveRunner {
     private var lastSeek = 0L
     private var quietCloud = 0
     private const val SEEK_EVERY_MS = 30_000L
+    /** How often a round looks whether the relay must be told this phone's wake-up address (a cheap check). */
+    private const val WAKE_TELL_MS = 60_000L
+    private var lastWakeTell = 0L
     private val fingerprintBad = MutableStateFlow(false)
     /** The last check of the whole book found the two devices different. */
     val mismatch: StateFlow<Boolean> get() = fingerprintBad
@@ -119,6 +122,9 @@ object LiveRunner {
         }
     }
 
+    /** Whether rounds are running (the app is on screen); a wake-up then does nothing ([PushWake.roundNow]). */
+    val running: Boolean get() = job?.isActive == true
+
     @Synchronized
     fun stop() {
         job?.cancel()
@@ -144,6 +150,11 @@ object LiveRunner {
         }
         val target = pending ?: LiveRound.target(sql) ?: run { state.value = Status.NotPaired; return ROUND_MS * 3 }
         if (LiveControl.halted()) { state.value = Status.Halted; return 60_000L }
+        // The relay is told where to ring this phone while the app is closed (Firebase, when the build has it).
+        if (pending == null && now - lastWakeTell > WAKE_TELL_MS) {
+            lastWakeTell = now
+            runCatching { PushWake.tell(app, sql) }
+        }
         val key = LiveSync.identity(sql)?.key ?: return ROUND_MS
         val check = pending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS
         val request = LiveRound.request(sql, fingerprint = check) ?: return ROUND_MS

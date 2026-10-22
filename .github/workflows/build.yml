@@ -52,6 +52,13 @@ jobs:
           echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/roshankhata-release.jks"
           echo "RELEASE_STORE_FILE=$RUNNER_TEMP/roshankhata-release.jks" >> $GITHUB_ENV
 
+      # Firebase config for live sync's wake-up (PushWake), from the owner's
+      # secret; never committed (public repo). Without it: the app without the wake-up.
+      - name: Firebase config (wake-up)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: python3 scripts/google_services.py
+
       # Correctness before packaging. The build step below only proves the
       # code compiles; these prove VoiceEntry still decides whose page an
       # amount lands on. A green APK containing a matcher that hands the

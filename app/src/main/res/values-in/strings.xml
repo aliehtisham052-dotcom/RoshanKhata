@@ -3497,6 +3497,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_status_not_accepted">Komputer tidak menyetujui tepat waktu. Untuk menghubungkan, pindai lagi kode sinkron langsungnya.</string>
     <string name="live_status_not_here">Komputer menjawab, tetapi saat ini tidak memegang buku ini. Buka usaha buku ini di komputer.</string>
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
-    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat.</string>
+    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
     <string name="live_relay">Juga lewat internet</string>
 </resources>

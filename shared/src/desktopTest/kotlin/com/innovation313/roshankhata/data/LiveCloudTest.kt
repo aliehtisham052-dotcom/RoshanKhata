@@ -33,6 +33,8 @@ class LiveCloudTest {
         var loseNext = false
         /** Calls answered past the pass and the hello check. */
         var calls = 0
+        /** Each device's wake-up address, as the worker's devices.fcm column. */
+        val wakes = HashMap<String, String?>()
 
         override fun call(method: String, url: String, headers: Map<String, String>, body: ByteArray?): Pair<Int, ByteArray> {
             if (down) throw java.io.IOException("no internet")
@@ -64,6 +66,11 @@ class LiveCloudTest {
                     devices[dev] = maxOf(devices[dev]!!, JSONObject(String(body!!)).getLong("upTo"))
                     parcels.removeAll { p -> devices.filterKeys { it != p.second }.values.all { it >= p.first } }
                     ok(JSONObject())
+                }
+                "wake" -> {
+                    val o = JSONObject(String(body!!))
+                    wakes[dev] = if (o.isNull("token")) null else o.getString("token")
+                    ok(JSONObject().put("wake", wakes[dev] != null))
                 }
                 else -> no(404, "no-such-path")
             }
@@ -122,6 +129,51 @@ class LiveCloudTest {
         both(3)
         assertEquals(before, relay.seq)
         assertTrue(relay.parcels.isEmpty())
+    }
+
+    @Test
+    fun `the phone's wake-up address is told once, changed and taken away`() = runBlocking {
+        val sql = phone.syncSql()
+        val dev = LiveSync.identity(sql)!!.device.take(16).padEnd(16, '0')
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        assertEquals("token-one-0123456789", relay.wakes[dev])
+        // Said once: the same address again does not call the relay.
+        val calls = relay.calls
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        assertEquals(calls, relay.calls)
+        // A new token (Firebase made another) is told; null takes it away.
+        assertTrue(LiveCloud.tellWake(sql, "token-two-0123456789", relay, "https://relay.test") { false })
+        assertEquals("token-two-0123456789", relay.wakes[dev])
+        assertTrue(LiveCloud.tellWake(sql, null, relay, "https://relay.test") { false })
+        assertEquals(null, relay.wakes[dev])
+        // The phone's rounds still meet the computer's after it said hello this way.
+        pc.khataDao().insertParty(Party(name = "Woken"))
+        both()
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Woken" })
+    }
+
+    @Test
+    fun `no wake-up address leaves the phone while the relay is off or stopped`() = runBlocking {
+        phone.khataDao().setSetting(BookSettings.LIVE_RELAY, null)
+        assertFalse(LiveCloud.tellWake(phone.syncSql(), "token-one-0123456789", relay, "https://relay.test") { false })
+        phone.khataDao().setSetting(BookSettings.LIVE_RELAY, "1")
+        assertFalse(LiveCloud.tellWake(phone.syncSql(), "token-one-0123456789", relay, "https://relay.test") { true })
+        assertFalse(LiveCloud.tellWake(phone.syncSql(), "token-one-0123456789", relay, null) { false })
+        assertEquals(0, relay.calls)
+        assertTrue(relay.wakes.isEmpty())
+    }
+
+    @Test
+    fun `a relay that forgot the phone is told its address again`() = runBlocking {
+        val sql = phone.syncSql()
+        val dev = LiveSync.identity(sql)!!.device.take(16).padEnd(16, '0')
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        both(1)
+        // The relay's box emptied (a month unused): it knows neither device nor address.
+        relay.devices.clear(); relay.wakes.clear(); relay.parcels.clear()
+        both(1)
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        assertEquals("token-one-0123456789", relay.wakes[dev])
     }
 
     @Test

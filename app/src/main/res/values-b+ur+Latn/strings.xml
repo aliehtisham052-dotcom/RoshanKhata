@@ -3506,6 +3506,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_status_not_accepted">Computer ne waqt par haan nahi ki. Jorne ke liye us ka live sync code dobara scan karein.</string>
     <string name="live_status_not_here">Computer ne jawab diya, magar is waqt yeh khata us par nahi rakha hua. Computer par is khate ka business kholein.</string>
     <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
-    <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch.</string>
+    <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
 </resources>

@@ -32,6 +32,13 @@ jobs:
           cache-disabled: true
           gradle-version: 8.14.3
 
+      # Firebase config for live sync's wake-up (PushWake), from the owner's
+      # secret; never committed (public repo). Without it: the app without the wake-up.
+      - name: Firebase config (wake-up)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: python3 scripts/google_services.py
+
       # The keystore exists as a file only for the length of this run, in the
       # runner's own temp directory, and is never written into the workspace.
       - name: Decode keystore
