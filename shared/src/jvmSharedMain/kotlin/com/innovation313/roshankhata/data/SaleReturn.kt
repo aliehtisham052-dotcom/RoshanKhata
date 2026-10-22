@@ -124,7 +124,7 @@ data class ReturnedQty(val saleItemId: Long, val qty: Double)
 
 object ReturnNumber {
     const val PREFIX = "R-"
-    fun next(highest: Int): String = PREFIX + "%06d".format(Digits.FIGURES, highest + 1)
+    fun next(highest: Int): String = PREFIX + "%06d".format(Digits.FIGURES, highest + 1) + NumberMark.suffix()
 }
 
 /** The checks a return must pass before anything is written. */

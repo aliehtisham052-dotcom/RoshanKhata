@@ -1193,6 +1193,7 @@ private fun Book(
                                     // A replaced book is no longer the one any phone was syncing: live sync stops
                                     // first (so the restore's own writes are not sent), and a live pairing then joins anew.
                                     withContext(Dispatchers.IO) { LiveSync.disable(db.syncSql()) }
+                                    com.innovation313.roshankhata.data.NumberMark.mark = null
                                     if (p.live == null) LiveDesk.stop()
                                     restore(p.data)
                                     p.live?.let { offer -> withContext(Dispatchers.IO) { LiveDesk.join(db, home, offer) } }

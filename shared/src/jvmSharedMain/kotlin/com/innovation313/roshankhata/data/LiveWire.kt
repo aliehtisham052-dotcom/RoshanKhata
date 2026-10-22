@@ -124,11 +124,16 @@ object LiveWire {
     // ------------------------------------------------------------ pairing
 
     /** This book's sync identity and its whole book, from the phone. [seq] is the phone's log line the book was taken at. */
-    class Offer(val book: String, val key: String, val device: String, val name: String, val seq: Long, val backup: ByteArray)
+    class Offer(
+        val book: String, val key: String, val device: String, val name: String, val seq: Long, val backup: ByteArray,
+        /** The letter the joining device takes in document numbers ([NumberMark]); null from an older phone. */
+        val mark: String? = null
+    )
 
     fun encodeOffer(o: Offer): ByteArray {
         val head = JSONObject().apply {
             put("book", o.book); put("key", o.key); put("dev", o.device); put("name", o.name); put("seq", o.seq)
+            if (o.mark != null) put("mark", o.mark)
         }.toString().toByteArray(Charsets.UTF_8)
         return head + byteArrayOf('\n'.code.toByte()) + o.backup
     }
@@ -139,7 +144,10 @@ object LiveWire {
         val o = JSONObject(String(bytes, 0, nl, Charsets.UTF_8))
         val key = o.getString("key")
         require(key.length == 64 && key.all { it in '0'..'9' || it in 'a'..'f' })
-        Offer(o.getString("book"), key, o.getString("dev"), o.optString("name"), o.getLong("seq"), bytes.copyOfRange(nl + 1, bytes.size))
+        Offer(
+            o.getString("book"), key, o.getString("dev"), o.optString("name"), o.getLong("seq"), bytes.copyOfRange(nl + 1, bytes.size),
+            o.optString("mark").takeIf { LiveSync.validMark(it) }
+        )
     }.getOrNull()
 
     /** How a pairing went from the phone's side. */

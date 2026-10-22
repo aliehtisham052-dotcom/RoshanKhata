@@ -68,6 +68,9 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     UnitWords.normalizeStored(db)
+                    // This book's letter in document numbers while it syncs live (NumberMark), read as it opens:
+                    // a business switch never keeps the last book's letter.
+                    NumberMark.mark = liveMarkOf(db, LiveRunner.install(context))
                 }
             })
             .build()
@@ -120,3 +123,17 @@ fun KhataDatabase.Companion.closeActive() {
     // a sign-in belongs to the book it was made in.
     Access.signOut()
 }
+
+/**
+ * The open book's letter in document numbers ([NumberMark]): its sync_meta's
+ * mark while live sync is on and the book is this phone's own (not a file from
+ * another device), else null. Read straight from the file as it opens.
+ */
+internal fun liveMarkOf(db: SupportSQLiteDatabase, install: String): String? = runCatching {
+    val hasMeta = db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sync_meta'").use { it.moveToFirst() }
+    if (!hasMeta) return@runCatching null
+    fun meta(k: String): String? = db.query("SELECT v FROM sync_meta WHERE k = ?", arrayOf<Any?>(k)).use { c ->
+        if (c.moveToFirst() && !c.isNull(0)) c.getString(0) else null
+    }
+    if (meta("on") == "1" && meta("install") == install) meta("mark") else null
+}.getOrNull()

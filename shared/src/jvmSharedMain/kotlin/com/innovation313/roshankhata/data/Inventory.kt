@@ -125,7 +125,7 @@ data class OrderSummary(
 )
 
 object OrderNumber {
-    fun next(highest: Int): String = "PO-%06d".format(Digits.FIGURES, highest + 1)
+    fun next(highest: Int): String = "PO-%06d".format(Digits.FIGURES, highest + 1) + NumberMark.suffix()
 }
 
 /**

@@ -156,20 +156,38 @@ object LiveSync {
      * starts its conversation over: the log, the peers and the aliases of
      * the other install are not this device's.
      */
-    suspend fun enable(sql: SyncSql, install: String, name: String, adopt: Pair<String, String>? = null): Identity = sql.write {
+    suspend fun enable(
+        sql: SyncSql, install: String, name: String, adopt: Pair<String, String>? = null, mark: String? = null
+    ): Identity = sql.write {
         for (s in CREATE) exec(s)
+        // A book file that came from another device (copied whole) is not that device's: new device, new letter.
+        val copied = meta("install") != null && meta("install") != install
         if (meta("install") != install) {
             for (t in listOf("sync_log", "sync_peers", "sync_alias", "sync_pending", "sync_conflict", "sync_mute")) exec("DELETE FROM $t")
             setMeta("install", install)
             setMeta("device", newHex(8))
+            setMeta("mark", null)
+            setMeta("next_mark", null)
         }
-        if (adopt != null && adopt.first != meta("book")) {
+        val sameBook = adopt != null && adopt.first == meta("book")
+        if (adopt != null && !sameBook) {
             // Another book from now on: what was said about the old one no longer applies.
             for (t in listOf("sync_log", "sync_peers", "sync_alias", "sync_pending", "sync_conflict")) exec("DELETE FROM $t")
         }
+        val fresh = meta("book") == null || meta("key") == null
         when {
             adopt != null -> { setMeta("book", adopt.first); setMeta("key", adopt.second) }
-            meta("book") == null || meta("key") == null -> { setMeta("book", newHex(16)); setMeta("key", newHex(32)) }
+            fresh -> { setMeta("book", newHex(16)); setMeta("key", newHex(32)) }
+        }
+        // This device's letter in document numbers (NumberMark): A for the device that made the book, the
+        // letter the offering device chose for one that joins, else one from this device's own id.
+        val device = meta("device")!!
+        when {
+            adopt == null && meta("mark") == null -> setMeta("mark", if (fresh && !copied) "A" else markFromDevice(device))
+            adopt != null -> setMeta(
+                "mark",
+                mark?.takeIf { validMark(it) } ?: meta("mark")?.takeIf { sameBook && it != "A" } ?: markFromDevice(device)
+            )
         }
         setMeta("name", name)
         ensureUids()
@@ -199,8 +217,33 @@ object LiveSync {
         if (!hasTables()) return@write false
         val on = meta("on") == "1" && meta("install") == install
         if (on) installTriggers() else { dropTriggers(); setMeta("on", "0") }
+        // A book paired before letters existed (22 Oct 2026) gets one now.
+        if (on && meta("mark") == null) meta("device")?.let { setMeta("mark", markFromDevice(it)) }
         on
     }
+
+    // ---------------------------------------------------------- number marks
+
+    /** This device's letter in this book's document numbers, or null while it does not sync the book. */
+    suspend fun mark(sql: SyncSql): String? = sql.read {
+        if (!hasTables() || meta("on") != "1") null else meta("mark")
+    }
+
+    /** The letter for the next device that joins this book from here: one no device has had from it. */
+    suspend fun nextJoinerMark(sql: SyncSql): String = sql.write {
+        val n = meta("next_mark")?.toIntOrNull() ?: 1
+        setMeta("next_mark", (n + 1).toString())
+        markAt(n)
+    }
+
+    /** 0 → A, 1 → B … 25 → Z, then Z1, Z2 …. */
+    fun markAt(n: Int): String = if (n < 26) ('A' + n).toString() else "Z${n - 25}"
+
+    /** A letter as it may stand in a number: A–Z, then up to three more letters or digits. */
+    fun validMark(m: String?): Boolean = m != null && Regex("[A-Z][A-Z0-9]{0,3}").matches(m)
+
+    /** B to Z from a device id, for a device nobody gave a letter: never the book-maker's A. */
+    private fun markFromDevice(device: String): String = markAt(1 + Math.floorMod(device.hashCode(), 25))
 
     suspend fun identity(sql: SyncSql): Identity? = sql.read {
         if (!hasTables() || meta("on") != "1") return@read null

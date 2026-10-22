@@ -374,12 +374,15 @@ class BackupActivity : BaseActivity() {
                 runCatching {
                     val sql = KhataDatabase.get(this@BackupActivity).syncSql()
                     val id = LiveSync.enable(sql, LiveRunner.install(this@BackupActivity), LiveRunner.deviceName())
+                    // From now on this phone's numbers carry its letter; the computer gets the next one.
+                    com.innovation313.roshankhata.data.NumberMark.mark = LiveSync.mark(sql)
+                    val joinerMark = LiveSync.nextJoinerMark(sql)
                     // The book is taken after this line: whatever changes after it is sent again
                     // in the first rounds, and a row that lands twice lands as one.
                     val seq = LiveSync.lastSeq(sql)
                     val file = Backup.exportToCache(this@BackupActivity, dao)
                     if (file.length() > LiveWire.MAX_BYTES) return@runCatching LiveWire.Sent.Refused
-                    val offer = LiveWire.Offer(id.book, id.key, id.device, id.name, seq, file.readBytes())
+                    val offer = LiveWire.Offer(id.book, id.key, id.device, id.name, seq, file.readBytes(), joinerMark)
                     val outcome = LiveWire.sendOffer(invite, offer)
                     if (outcome is LiveWire.Sent.Taken) {
                         // A new copy on the computer: what this phone knew of an earlier one no longer holds.
@@ -417,6 +420,7 @@ class BackupActivity : BaseActivity() {
                             val sql = KhataDatabase.get(this@BackupActivity).syncSql()
                             LiveRound.setTarget(sql, null)
                             LiveSync.disable(sql)
+                            com.innovation313.roshankhata.data.NumberMark.mark = null
                         }
                     }
                     showLive(LiveRunner.Status.Off)
