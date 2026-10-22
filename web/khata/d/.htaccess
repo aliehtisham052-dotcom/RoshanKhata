@@ -1,8 +1,9 @@
-# Sealed pages: served as plain files, kept by the browser for a minute (a refresh costs the server nothing).
+# Sealed pages: served as plain files. Asked again each time (a page taken back must stop at once), kept by no
+# shared cache; an unchanged page answers 304, which costs the server nothing.
 Options -Indexes
 <FilesMatch "\.txt$">
   <IfModule mod_headers.c>
-    Header set Cache-Control "public, max-age=60"
+    Header set Cache-Control "private, no-cache"
   </IfModule>
 </FilesMatch>
 <FilesMatch "\.(php|tmp)$">

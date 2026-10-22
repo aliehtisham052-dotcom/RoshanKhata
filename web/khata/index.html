@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="ur">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<title>Roshan Khata · Mera hisaab</title>
+<title>Roshan Khata</title>
 <style>
   :root {
     --bg: #f4f6f4; --card: #ffffff; --ink: #18211c; --muted: #5d6b63; --line: #e2e8e4;
@@ -15,101 +15,33 @@
     :root { --bg: #101412; --card: #1a201d; --ink: #e8efea; --muted: #a3b2a9; --line: #2c3631; --green: #5fd9a3; --red: #ff8a80; --chip: #22302a; }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", sans-serif; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body.nastaliq { font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", system-ui, sans-serif; line-height: 1.9; }
   main { max-width: 480px; margin: 0 auto; padding: 20px 16px 40px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
   .shop { font-size: 14px; color: var(--muted); margin: 0 0 4px; }
   h1 { font-size: 22px; margin: 0 0 16px; }
   .label { font-size: 14px; color: var(--muted); margin: 0; }
-  .amount { font-size: 34px; font-weight: 700; margin: 2px 0 2px; direction: ltr; unicode-bidi: isolate; }
+  .amount { font-size: 34px; font-weight: 700; margin: 2px 0 2px; }
   .owe { color: var(--red); } .clear { color: var(--green); }
-  .ur { font-size: 15px; direction: rtl; text-align: right; color: var(--muted); margin: 0; }
   ul { list-style: none; padding: 0; margin: 18px 0 0; border-top: 1px solid var(--line); }
   li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
   .when { font-size: 13px; color: var(--muted); }
-  .what { font-size: 14px; }
-  .sum { font-weight: 600; direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+  .what { font-size: 14px; unicode-bidi: plaintext; }
+  .sum { font-weight: 600; white-space: nowrap; }
   .tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--chip); margin-top: 2px; }
   .foot { text-align: center; font-size: 12px; color: var(--muted); margin-top: 18px; }
-  .msg { text-align: center; color: var(--muted); padding: 40px 0; }
+  .foot .brand { direction: ltr; unicode-bidi: isolate; }
+  .msg { text-align: center; color: var(--muted); padding: 24px 0 0; margin: 0; }
+  .msg.en { padding-top: 8px; font-size: 14px; }
+  #page > .msg:last-child { padding-bottom: 24px; }
 </style>
 </head>
 <body>
 <main>
-  <div class="card" id="page"><p class="msg" id="msg">Loading… · لوڈ ہو رہا ہے…</p></div>
-  <p class="foot">Roshan Khata · Innovation 313<br>Only you and your shop can read this page. · یہ صفحہ صرف آپ اور آپ کی دکان پڑھ سکتی ہے۔</p>
+  <div class="card" id="page"><p class="msg">Loading…</p></div>
+  <p class="foot" id="foot">Roshan Khata · Innovation 313</p>
 </main>
-<script>
-(function () {
-  "use strict";
-  var page = document.getElementById("page");
-  function say(text) {
-    page.textContent = "";
-    var p = document.createElement("p"); p.className = "msg"; p.textContent = text; page.appendChild(p);
-  }
-  function el(tag, cls, text) {
-    var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e;
-  }
-  function unb64url(s) {
-    s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
-    var bin = atob(s), out = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-    return out;
-  }
-  function money(c, n) {
-    var v = Math.abs(n);
-    return c + " " + v.toLocaleString("en-US", { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
-  }
-  function day(ms) {
-    if (!ms) return "";
-    return new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-  }
-
-  // The link: …/#<page id>.<key>. The part after # never reaches any server.
-  var m = /^#([0-9a-f]{32})\.([A-Za-z0-9_-]{16,32})$/.exec(location.hash);
-  if (!m) { say("This link is not complete. Ask your shop to send it again. · یہ لنک مکمل نہیں۔ دکان سے دوبارہ بھیجنے کو کہیں۔"); return; }
-  if (!window.crypto || !crypto.subtle) { say("Please open this link in Chrome. · یہ لنک کروم میں کھولیں۔"); return; }
-
-  fetch("d/" + m[1] + ".txt", { cache: "no-cache" }).then(function (r) {
-    if (r.status === 404) throw "gone";
-    if (!r.ok) throw "net";
-    return r.text();
-  }).then(function (text) {
-    var sealed = unb64url(text.slice(text.indexOf("\n") + 1).trim());
-    return crypto.subtle.importKey("raw", unb64url(m[2]), "AES-GCM", false, ["decrypt"]).then(function (key) {
-      return crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: sealed.slice(0, 12), additionalData: new TextEncoder().encode("rk-clink-v1"), tagLength: 128 },
-        key, sealed.slice(12));
-    });
-  }).then(function (plain) {
-    var d = JSON.parse(new TextDecoder().decode(plain));
-    page.textContent = "";
-    page.appendChild(el("p", "shop", d.s || ""));
-    page.appendChild(el("h1", null, d.n || ""));
-    var owes = d.b > 0.005, owed = d.b < -0.005;
-    page.appendChild(el("p", "label", owes ? "You owe the shop" : owed ? "The shop owes you" : "All settled"));
-    page.appendChild(el("p", "amount " + (owes ? "owe" : "clear"), money(d.c || "Rs", d.b || 0)));
-    page.appendChild(el("p", "ur", owes ? "آپ کے ذمے" : owed ? "دکان کے ذمے" : "حساب برابر"));
-    if (d.t) page.appendChild(el("p", "label", "Updated " + day(d.t)));
-    if (d.e && d.e.length) {
-      var ul = el("ul");
-      d.e.forEach(function (x) {
-        var li = el("li"), left = el("div");
-        left.appendChild(el("div", "when", day(x.d)));
-        if (x.x) left.appendChild(el("div", "what", x.x));
-        left.appendChild(el("span", "tag", x.g ? "Taken on credit · ادھار" : "Paid · ادا کیا"));
-        li.appendChild(left);
-        li.appendChild(el("div", "sum", money(d.c || "Rs", x.a)));
-        ul.appendChild(li);
-      });
-      page.appendChild(ul);
-    }
-  }).catch(function (e) {
-    if (e === "gone") say("This page is no longer shared. · یہ صفحہ اب شیئر نہیں ہے۔");
-    else if (e === "net") say("Could not load. Check your internet and try again. · لوڈ نہیں ہو سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔");
-    else say("This link does not open this page. Ask your shop to send it again. · یہ لنک اس صفحے کو نہیں کھولتا۔ دکان سے دوبارہ بھیجنے کو کہیں۔");
-  });
-})();
-</script>
+<script src="view.js"></script>
 </body>
 </html>
