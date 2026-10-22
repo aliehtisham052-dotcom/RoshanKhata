@@ -20,11 +20,30 @@ class LiveWireTest {
     @Test
     fun `a sealed round trip opens only with the book's key`() {
         val key = LiveSync.newHex(32)
-        val sealed = LiveWire.seal(key, "Rs 5,000".toByteArray())
-        assertEquals("Rs 5,000", String(LiveWire.open(key, sealed)!!))
-        assertNull(LiveWire.open(LiveSync.newHex(32), sealed))
+        val sealed = LiveWire.seal(key, "Rs 5,000".toByteArray(), LiveWire.Road.REQUEST)
+        assertEquals("Rs 5,000", String(LiveWire.open(key, sealed, LiveWire.Road.REQUEST)!!))
+        assertNull(LiveWire.open(LiveSync.newHex(32), sealed, LiveWire.Road.REQUEST))
         val changed = sealed.copyOf().also { it[it.size - 1] = (it[it.size - 1] + 1).toByte() }
-        assertNull(LiveWire.open(key, changed))
+        assertNull(LiveWire.open(key, changed, LiveWire.Road.REQUEST))
+        // A request played back as the reply, or pushed through the relay, does not open: each road its own key.
+        assertNull(LiveWire.open(key, sealed, LiveWire.Road.REPLY))
+        assertNull(LiveWire.open(key, sealed, LiveWire.Road.RELAY))
+    }
+
+    /** The road keys' HKDF-SHA256 is RFC 5869's: its test case A.1, the first block of OKM. */
+    @Test
+    fun `the road keys come from RFC 5869's HKDF`() {
+        val ikm = ByteArray(22) { 0x0b }
+        val salt = ByteArray(13) { it.toByte() }
+        val info = ByteArray(10) { (0xf0 + it).toByte() }
+        assertEquals(
+            "3cb25f25faacd57a90434f64d0362f2a2d2d0a90cf1a5a4c5db02d56ecc4c5bf",
+            LiveWire.hkdf(ikm, info, salt).joinToString("") { "%02x".format(it) }
+        )
+        // With the app's own salt: the same in, the same out; another label, another key.
+        val a = LiveWire.hkdf(ikm, "x".toByteArray()); val b = LiveWire.hkdf(ikm, "y".toByteArray())
+        assertArrayEquals(a, LiveWire.hkdf(ikm, "x".toByteArray()))
+        assertTrue(!a.contentEquals(b))
     }
 
     @Test

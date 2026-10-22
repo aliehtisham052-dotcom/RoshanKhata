@@ -3478,6 +3478,12 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_status_waiting">Khata computer tak pohanch gaya. Jorr mukammal karne ke liye wahan haan dabayein.</string>
     <string name="live_status_live">%1$s ke saath live. Aakhri update: %2$s</string>
     <string name="live_status_unreachable">Computer jawab nahi de raha. Kya dono ek hi WiFi par hain, aur kya us par Roshan Khata khula hai?</string>
+    <string name="live_status_relay_down">Dukan ke WiFi se door hain, aur internet wale relay ne jawab nahi diya (%1$s). Phone koshish karta rahega; dukan par WiFi is ke baghair chalta hai.</string>
+    <string name="live_pc_relay_ok">Internet wala relay: chal raha hai (aakhri round %1$s).</string>
+    <string name="live_pc_relay_down">Internet wala relay: jawab nahi de raha (%1$s). Dukan par WiFi is ke baghair chalta hai.</string>
+    <string name="live_pair_other_phone">Ye khata pehle hi phone “%1$s” ke saath chal raha hai. Sab badalne se wo phone ruk jayega. Ek khata = ek phone aur ek computer: dono phone rakhne hon to is phone ko naye karobar ke taur par jorein.</string>
+    <string name="na_sync_conflict">%1$s indraj dono devices par ek saath badle gaye</string>
+    <string name="na_sync_conflict_sub">Rakhi gayi raqam shayad wo na ho jo aap chahte the. Live sync → Kya badla dekhein.</string>
     <string name="live_status_halted">Live sync filhaal ruka hua hai. Aap ka khata mehfooz hai aur hamesha ki tarah chalta hai.</string>
     <string name="live_status_failed">Live sync ruk gaya: %1$s</string>
     <string name="live_mismatch">Dono khate aapas mein nahi milte. Nayi copy ke liye dobara jorein.</string>

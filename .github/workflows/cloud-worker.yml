@@ -84,6 +84,13 @@ jobs:
           # now (a deploy keeps only wrangler.toml's variables), so the name is free for the secret.
           printf '%s' "$FCM_SA" | npx wrangler secret put FCM_SERVICE_ACCOUNT > secret.log 2>&1 && echo "::notice::FCM_SERVICE_ACCOUNT stored as a secret" || {
             grep -E "ERROR|code" secret.log | head -5 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
+      - name: Keep-alive secret as a Worker secret (RK_KEEP_SECRET in GitHub's secrets; the Supabase relay holds the same)
+        env:
+          KEEP: ${{ secrets.RK_KEEP_SECRET }}
+        run: |
+          if [ -z "$KEEP" ]; then echo "::notice::No RK_KEEP_SECRET: the keep-alive call goes without a pass (the Supabase health is then open)."; exit 0; fi
+          printf '%s' "$KEEP" | npx wrangler secret put KEEP_SECRET > keep.log 2>&1 && echo "::notice::KEEP_SECRET stored as a secret" || {
+            grep -E "ERROR|code" keep.log | head -5 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
       - name: Health check (the deployed relay answers on its public address)
         run: |
           url="https://roshan-khata-daakiya.innovation313.workers.dev/v1/health"

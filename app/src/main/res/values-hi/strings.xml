@@ -3522,6 +3522,12 @@
     <string name="live_status_waiting">खाता कंप्यूटर तक पहुँच गया। जोड़ पूरा करने के लिए वहाँ हाँ दबाएँ।</string>
     <string name="live_status_live">%1$s के साथ लाइव। आख़िरी अपडेट: %2$s</string>
     <string name="live_status_unreachable">कंप्यूटर जवाब नहीं दे रहा। क्या दोनों एक ही वाई-फ़ाई पर हैं, और क्या उस पर रोशन खाता खुला है?</string>
+    <string name="live_status_relay_down">दुकान के वाई-फ़ाई से दूर हैं, और इंटरनेट वाले रिले ने जवाब नहीं दिया (%1$s)। फ़ोन कोशिश करता रहेगा; दुकान पर वाई-फ़ाई इसके बिना चलता है।</string>
+    <string name="live_pc_relay_ok">इंटरनेट वाला रिले: चल रहा है (आख़िरी राउंड %1$s)।</string>
+    <string name="live_pc_relay_down">इंटरनेट वाला रिले: जवाब नहीं दे रहा (%1$s)। दुकान पर वाई-फ़ाई इसके बिना चलता है।</string>
+    <string name="live_pair_other_phone">यह खाता पहले से फ़ोन “%1$s” के साथ चल रहा है। सब बदलने से वह फ़ोन रुक जाएगा। एक खाता = एक फ़ोन और एक कंप्यूटर: दोनों फ़ोन रखने हों तो इस फ़ोन को नए कारोबार के रूप में जोड़ें।</string>
+    <string name="na_sync_conflict">%1$s प्रविष्टियाँ दोनों डिवाइस पर एक साथ बदली गईं</string>
+    <string name="na_sync_conflict_sub">रखी गई रक़म शायद वह न हो जो आप चाहते थे। लाइव सिंक → क्या बदला देखें।</string>
     <string name="live_status_halted">लाइव सिंक अभी रुका हुआ है। आपका खाता सुरक्षित है और हमेशा की तरह चलता है।</string>
     <string name="live_status_failed">लाइव सिंक रुक गया: %1$s</string>
     <string name="live_mismatch">दोनों खाते आपस में नहीं मिलते। नई कॉपी के लिए फिर से जोड़ें।</string>

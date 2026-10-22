@@ -259,10 +259,12 @@ object LiveSync {
                 for (t in listOf("sync_log", "sync_peers", "sync_alias", "sync_pending", "sync_conflict", "sync_held")) exec("DELETE FROM $t")
                 exec("DELETE FROM sync_meta WHERE k LIKE 'pair:%' OR k = 'floor'")
             }
-            val fresh = meta("book") == null || meta("key") == null
+            val fresh = meta("book") == null || keyHere() == null
+            // The key at rest is sealed for this device alone where the device can (KeyAtRest, 22 Oct 2026).
             when {
-                adopt != null -> { setMeta("book", adopt.first); setMeta("key", adopt.second) }
-                fresh -> { setMeta("book", newHex(16)); setMeta("key", newHex(32)) }
+                adopt != null -> { setMeta("book", adopt.first); setMeta("key", KeyAtRest.store(adopt.second)) }
+                fresh -> { setMeta("book", newHex(16)); setMeta("key", KeyAtRest.store(newHex(32))) }
+                !KeyAtRest.isWrapped(meta("key")) -> setMeta("key", KeyAtRest.store(keyHere()!!))
             }
             // This device's letter in document numbers (NumberMark): A for the device that made the book, the
             // letter the offering device chose for one that joins, else one from this device's own id.
@@ -280,7 +282,7 @@ object LiveSync {
             ensureUids()
             installTriggers()
             setMeta("on", "1")
-            Identity(meta("book")!!, meta("key")!!, meta("device")!!, name) to logCounter()
+            Identity(meta("book")!!, keyHere()!!, meta("device")!!, name) to logCounter()
         }
         // From here on this file's log only grows: a copy that comes back with less is caught by [check].
         marks?.put(id.book, counter)
@@ -341,6 +343,10 @@ object LiveSync {
             // book may have been replaced, so the conversation cannot go on.
             if (meta("paused") == "1") turnOffIn(OFF_RESTORED)
             var on = meta("on") == "1" && meta("install") == install
+            // A key sealed for another device (the file came from it, or another Windows user opened it): not this device's.
+            if (on && meta("key") != null && keyHere() == null) { turnOffIn(OFF_RESTORED); on = false }
+            // A key still in plain from before the lock existed is sealed now.
+            if (on && !KeyAtRest.isWrapped(meta("key"))) keyHere()?.let { setMeta("key", KeyAtRest.store(it)) }
             if (on && kept != null && kept > logCounter()) {
                 turnOffIn(OFF_RESTORED)
                 on = false
@@ -410,10 +416,13 @@ object LiveSync {
         next
     }
 
+    /** The book's key as this device can read it: null when it is sealed for another device (a copied file). */
+    private suspend fun SyncTx.keyHere(): String? = KeyAtRest.read(meta("key"))
+
     suspend fun identity(sql: SyncSql): Identity? = sql.read {
         if (!hasTables() || meta("on") != "1") return@read null
         val book = meta("book") ?: return@read null
-        val key = meta("key") ?: return@read null
+        val key = keyHere() ?: return@read null
         val device = meta("device") ?: return@read null
         Identity(book, key, device, meta("name").orEmpty())
     }
@@ -422,7 +431,7 @@ object LiveSync {
         if (!hasTables()) return@read State(false, null, emptyList(), 0, 0)
         val on = meta("on") == "1"
         val id = run {
-            val b = meta("book"); val k = meta("key"); val d = meta("device")
+            val b = meta("book"); val k = keyHere(); val d = meta("device")
             if (on && b != null && k != null && d != null) Identity(b, k, d, meta("name").orEmpty()) else null
         }
         val peers = rows("SELECT device, name, sent, recv, host, port, seen FROM sync_peers ORDER BY seen DESC", types = "TTIITII").map {
@@ -467,6 +476,31 @@ object LiveSync {
             exec("DELETE FROM sync_log")
             setMeta("floor", top.toString())
         }
+    }
+
+    /**
+     * The other device says it never got lines after [need] of this one's log
+     * (a Gap): what this device believed it had read is let go of, so the next
+     * parcel starts there again (22 Oct 2026, the review: a computer rebuilt
+     * from an older copy had its pointer behind, and the phone asked at
+     * 200 ms for ever, every parcel a gap). A pointer only moves back on the
+     * other device's own word, sealed with the book's key.
+     */
+    suspend fun lowerSent(sql: SyncSql, device: String, need: Long) = sql.write {
+        if (!hasTables()) return@write
+        exec("UPDATE sync_peers SET sent = MIN(sent, ?) WHERE device = ?", listOf(need, device))
+    }
+
+    /** Tables whose rows carry money: a conflict there is said in the bell, not only in the Live sync window. */
+    val MONEY_TABLES = setOf("transactions", "cashbook", "cheques", "payment_plans", "installments", "sales", "sale_items",
+        "sale_payments", "sale_returns", "sale_return_items", "supplier_bills", "bill_items", "entry_items", "invoices", "invoice_items",
+        "staff_payments", "stock_adjustments")
+
+    /** Conflicts the owner has not looked at yet in a table that carries money (both devices changed the same row). */
+    suspend fun moneyConflicts(sql: SyncSql): Int = sql.read {
+        if (!hasTables()) return@read 0
+        val marks = MONEY_TABLES.joinToString(",") { "?" }
+        (rows("SELECT COUNT(*) FROM sync_conflict WHERE tbl IN ($marks)", MONEY_TABLES.toList(), "I").first()[0] as Long).toInt()
     }
 
     /** The pairing [device] joined this book with (its offer's id), or null for a pairing made before there were any. */
@@ -631,6 +665,7 @@ object LiveSync {
         val changes = ArrayList<Change>()
         for ((key, tu) in order) {
             val t = SyncSchema.table(tu.first) ?: continue
+            if (t.keyed && tu.second in BookSettings.ACCESS_KEYS) continue
             val seq = lastSeq[key]
             if (ops[key] == "D") {
                 // Still here after all (removed, then made again with the same uid): it travels as it stands.
@@ -662,6 +697,7 @@ object LiveSync {
             val keys = rows("SELECT `${t.idColumn}` FROM `${t.name}` WHERE `${t.idColumn}` IS NOT NULL ORDER BY rowid", types = "T")
             for (k in keys) {
                 val u = k[0] as String
+                if (t.keyed && u in BookSettings.ACCESS_KEYS) continue
                 rowOut(t, u, cache)?.let { changes.add(Change(t.name, u, "U", it)) }
             }
         }
@@ -973,6 +1009,9 @@ object LiveSync {
 
     private suspend fun SyncTx.applySetting(c: Change, from: String, mine: String, sentToThem: Long, now: Long): One {
         val n = SyncSchema.SETTINGS
+        // Who may open the counter is each device's own matter (22 Oct 2026, the review: with the book's key, a
+        // stranger could have pushed a new owner PIN hash into the live book). These keys never travel.
+        if (c.uid in BookSettings.ACCESS_KEYS) return One.Skipped
         if (c.op == "D") {
             exec("DELETE FROM `$n` WHERE `key` = ?", listOf(c.uid))
             return One.Wrote(false)

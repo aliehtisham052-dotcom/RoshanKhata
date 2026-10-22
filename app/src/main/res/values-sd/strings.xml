@@ -3506,6 +3506,12 @@
     <string name="live_status_waiting">کاتو ڪمپيوٽر تائين پهچي ويو. ڳنڍڻ پورو ڪرڻ لاءِ اتي ها دٻايو.</string>
     <string name="live_status_live">%1$s سان لائيو. آخري تازگي: %2$s</string>
     <string name="live_status_unreachable">ڪمپيوٽر جواب نٿو ڏئي. ڇا ٻئي هڪ ئي وائي فائي تي آهن، ۽ ڇا ان تي روشن کاتو کليل آهي؟</string>
+    <string name="live_status_relay_down">دڪان جي وائي فائي کان پري آهيو، ۽ انٽرنيٽ واري ريلي جواب نه ڏنو (%1$s)۔ فون ڪوشش ڪندو رهندو؛ دڪان تي وائي فائي ان کان سواءِ هلي ٿي.</string>
+    <string name="live_pc_relay_ok">انٽرنيٽ واري ريلي: هلي رهي آهي (آخري دور %1$s)۔</string>
+    <string name="live_pc_relay_down">انٽرنيٽ واري ريلي: جواب نٿي ڏئي (%1$s)۔ دڪان تي وائي فائي ان کان سواءِ هلي ٿي.</string>
+    <string name="live_pair_other_phone">هي کاتو اڳ ۾ ئي فون «%1$s» سان هلي رهيو آهي. سڀ بدلائڻ سان اهو فون بيهي ويندو. هڪ کاتو = هڪ فون ۽ هڪ ڪمپيوٽر: ٻئي فون رکڻا هجن ته هن فون کي نئين ڪاروبار طور ڳنڍيو.</string>
+    <string name="na_sync_conflict">%1$s داخلائون ٻنهي ڊوائيسن تي هڪ ئي وقت بدليون ويون</string>
+    <string name="na_sync_conflict_sub">رکيل رقم شايد اها نه هجي جيڪا توهان چاهيو ٿي. لائيو سنڪ ← ڇا بدليو ڏسو.</string>
     <string name="live_status_halted">لائيو سنڪ في الحال رڪيل آهي. توهان جو کاتو محفوظ آهي ۽ هميشه وانگر هلي ٿو.</string>
     <string name="live_status_failed">لائيو سنڪ رڪجي ويو: %1$s</string>
     <string name="live_mismatch">ٻئي کاتا پاڻ ۾ نٿا ملن. نئين ڪاپي لاءِ ٻيهر ڳنڍيو.</string>

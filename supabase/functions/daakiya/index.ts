@@ -33,6 +33,11 @@ const KEEP_DAYS = Number(Deno.env.get("RK_KEEP_DAYS") ?? "7");
 const DAY_LIMIT = Number(Deno.env.get("RK_DAY_LIMIT") ?? "3000");
 const MAX_DEVICES = 8;
 const IDLE_DAYS = 30;
+/** Books this relay holds at most, and new ones it takes in a UTC day (anyone may open a book: a limit before the plan's). */
+const MAX_BOOKS = Number(Deno.env.get("RK_MAX_BOOKS") ?? "5000");
+const NEW_BOOKS_DAY = Number(Deno.env.get("RK_NEW_BOOKS_DAY") ?? "300");
+/** A quiet call writes "seen" at most this often. */
+const SEEN_EVERY_MS = 3_600_000;
 const HEX32 = /^[0-9a-f]{32}$/;
 const HEX64 = /^[0-9a-f]{64}$/;
 const DEVICE = /^[0-9a-f]{16}$/;
@@ -111,12 +116,16 @@ async function handle(request: Request): Promise<Response> {
   await setup();
   if (/\/v1\/health$/.test(url.pathname)) {
     // The daily call (Cloudflare's cron): a real query, so the project is never "inactive", and idle books go.
-    const now = Date.now();
-    await sql`DELETE FROM rk_relay.books WHERE seen < ${now - IDLE_DAYS * 86_400_000}`;
+    // The sweep runs only with the keep-alive pass (RK_KEEP_SECRET), so the open health is a plain answer.
+    const keep = Deno.env.get("RK_KEEP_SECRET");
+    if (keep && request.headers.get("x-rk-keep") === keep) {
+      const now = Date.now();
+      await sql`DELETE FROM rk_relay.books WHERE seen < ${now - IDLE_DAYS * 86_400_000}`;
+    }
     return json({ ok: true, live });
   }
   if (!live) return refuse(503, "halted");
-  const m = url.pathname.match(/\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave)$/);
+  const m = url.pathname.match(/\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round)$/);
   if (!m) return refuse(404, "no-such-path");
   const [, book, action] = m;
   let token = (request.headers.get("x-rk-pass") ?? "").trim();
@@ -140,8 +149,15 @@ async function handle(request: Request): Promise<Response> {
     body = new Uint8Array(await request.arrayBuffer());
     if (body.length === 0) return refuse(400, "empty");
     if (body.length > MAX_PARCEL) return refuse(413, "too-big");
-  } else if (action === "ack" || action === "wake") {
+  } else if (action === "ack" || action === "wake" || action === "round") {
     o = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+    if (action === "round") {
+      if (!o) return refuse(400, "bad-round");
+      if (typeof o.parcel === "string" && o.parcel.length > 0) {
+        try { body = Uint8Array.from(atob(o.parcel), (c) => c.charCodeAt(0)); } catch { return refuse(400, "bad-parcel"); }
+        if (body.length > MAX_PARCEL) return refuse(413, "too-big");
+      }
+    }
   }
 
   const pass = await sha256Hex(token);
@@ -153,6 +169,9 @@ async function handle(request: Request): Promise<Response> {
     if (!b) {
       // The book's first device sets the pass, and only by a hello (never by a stray parcel).
       if (action !== "hello") throw new Answer(refuse(403, "say-hello-first"));
+      const counts = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d FROM rk_relay.books`)[0];
+      if (Number(counts.n) >= MAX_BOOKS) throw new Answer(refuse(507, "full"));
+      if (Number(counts.d) >= NEW_BOOKS_DAY) throw new Answer(refuse(429, "new-books"));
       await tx`INSERT INTO rk_relay.books (book, pass, created, seen) VALUES (${book}, ${pass}, ${now}, ${now})
                ON CONFLICT (book) DO NOTHING`;
       const again = await tx`SELECT pass, pruned_past, day, day_count FROM rk_relay.books WHERE book = ${book} FOR UPDATE`;
@@ -169,7 +188,12 @@ async function handle(request: Request): Promise<Response> {
       await tx`DELETE FROM rk_relay.parcels WHERE book = ${book} AND seq <= ${cut}`;
       prunedPast = Math.max(prunedPast, Number(cut));
     }
-    await tx`UPDATE rk_relay.books SET seen = ${now}, pruned_past = ${prunedPast} WHERE book = ${book}`;
+    // The book's "seen" (its idle sweep) is written when something happened, else at most once an hour:
+    // a quiet round costs no row.
+    if (cut != null) await tx`UPDATE rk_relay.books SET seen = ${now}, pruned_past = ${prunedPast} WHERE book = ${book}`;
+    else if (action === "hello" || action === "send" || action === "leave" || (action === "round" && body))
+      await tx`UPDATE rk_relay.books SET seen = ${now} WHERE book = ${book}`;
+    else await tx`UPDATE rk_relay.books SET seen = ${now} WHERE book = ${book} AND seen < ${now - SEEN_EVERY_MS}`;
 
     switch (action) {
       case "hello": {
@@ -182,38 +206,31 @@ async function handle(request: Request): Promise<Response> {
         return json({ ok: true, top, others: others.map((r) => ({ device: r.device, seen: Number(r.seen) })) });
       }
       case "send": {
-        const day = new Date(now).toISOString().slice(0, 10);
-        const count = b.day === day ? Number(b.day_count) : 0;
-        if (count >= DAY_LIMIT) throw new Answer(refuse(429, "day-limit"));
-        await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1} WHERE book = ${book}`;
-        const seq = Number((await tx`INSERT INTO rk_relay.parcels (book, sender, at, body)
-                                     VALUES (${book}, ${device}, ${now}, ${body!}) RETURNING seq`)[0].seq);
-        await tx`UPDATE rk_relay.devices SET seen = ${now} WHERE book = ${book} AND device = ${device}`;
+        const seq = await put(tx, book, device, now, body!, b);
         return json({ ok: true, seq });
       }
       case "take": {
         const after = Math.max(0, Number(url.searchParams.get("after") ?? "0") || 0);
-        const list = await tx`SELECT seq, sender, at, body FROM rk_relay.parcels
-                              WHERE book = ${book} AND seq > ${after} AND sender != ${device}
-                              ORDER BY seq LIMIT ${TAKE_PAGE + 1}`;
-        await tx`UPDATE rk_relay.devices SET seen = ${now} WHERE book = ${book} AND device = ${device}`;
-        const page: { seq: number; from: string; at: number; body: string }[] = [];
-        let bytes = 0;
-        for (const r of list.slice(0, TAKE_PAGE)) {
-          const b64 = toBase64(new Uint8Array(r.body as Uint8Array));
-          if (page.length > 0 && bytes + b64.length > TAKE_BYTES) break;
-          page.push({ seq: Number(r.seq), from: r.sender as string, at: Number(r.at), body: b64 });
-          bytes += b64.length;
-        }
-        return json({ ok: true, parcels: page, more: list.length > page.length, gap: after < prunedPast });
+        return json({ ok: true, ...(await takePage(tx, book, device, now, after, prunedPast)) });
       }
       case "ack": {
         const upTo = Number(o?.upTo ?? NaN);
         if (!Number.isFinite(upTo) || upTo < 0) throw new Answer(refuse(400, "bad-ack"));
-        await tx`UPDATE rk_relay.devices SET acked = GREATEST(acked, ${Math.floor(upTo)}), seen = ${now}
-                 WHERE book = ${book} AND device = ${device}`;
+        await tx`UPDATE rk_relay.devices SET acked = GREATEST(acked, ${Math.floor(upTo)}) WHERE book = ${book} AND device = ${device}`;
         await pruneTaken(tx, book);
         return json({ ok: true });
+      }
+      case "round": {
+        // One request for a whole round (22 Oct 2026): the acknowledgement, this device's parcel, the others' page.
+        const after = Math.max(0, Number(o?.after ?? 0) || 0);
+        if (o?.upTo != null) {
+          const upTo = Number(o.upTo);
+          if (!Number.isFinite(upTo) || upTo < 0) throw new Answer(refuse(400, "bad-ack"));
+          await tx`UPDATE rk_relay.devices SET acked = GREATEST(acked, ${Math.floor(upTo)}) WHERE book = ${book} AND device = ${device}`;
+          await pruneTaken(tx, book);
+        }
+        const seq = body ? await put(tx, book, device, now, body, b) : null;
+        return json({ ok: true, seq, ...(await takePage(tx, book, device, now, after, prunedPast)) });
       }
       case "wake": {
         const t = typeof o?.token === "string" && o.token.length > 20 && o.token.length < 4096 ? o.token : null;
@@ -231,6 +248,40 @@ async function handle(request: Request): Promise<Response> {
     }
     throw new Answer(refuse(404, "no-such-path"));
   });
+}
+
+/** One parcel in: its number. Throws the refusal. */
+// deno-lint-ignore no-explicit-any
+async function put(tx: any, book: string, device: string, now: number, body: Uint8Array, b: { day: string; day_count: number }): Promise<number> {
+  if (body.length === 0) throw new Answer(refuse(400, "empty"));
+  const day = new Date(now).toISOString().slice(0, 10);
+  const count = b.day === day ? Number(b.day_count) : 0;
+  if (count >= DAY_LIMIT) throw new Answer(refuse(429, "day-limit"));
+  await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1} WHERE book = ${book}`;
+  b.day = day; b.day_count = count + 1;
+  const seq = Number((await tx`INSERT INTO rk_relay.parcels (book, sender, at, body)
+                               VALUES (${book}, ${device}, ${now}, ${body}) RETURNING seq`)[0].seq);
+  await tx`UPDATE rk_relay.devices SET seen = ${now} WHERE book = ${book} AND device = ${device}`;
+  return seq;
+}
+
+/** The others' parcels after [after]; a quiet page writes "seen" at most once an hour. */
+// deno-lint-ignore no-explicit-any
+async function takePage(tx: any, book: string, device: string, now: number, after: number, prunedPast: number) {
+  const list = await tx`SELECT seq, sender, at, body FROM rk_relay.parcels
+                        WHERE book = ${book} AND seq > ${after} AND sender != ${device}
+                        ORDER BY seq LIMIT ${TAKE_PAGE + 1}`;
+  if (list.length > 0) await tx`UPDATE rk_relay.devices SET seen = ${now} WHERE book = ${book} AND device = ${device}`;
+  else await tx`UPDATE rk_relay.devices SET seen = ${now} WHERE book = ${book} AND device = ${device} AND seen < ${now - SEEN_EVERY_MS}`;
+  const page: { seq: number; from: string; at: number; body: string }[] = [];
+  let bytes = 0;
+  for (const r of list.slice(0, TAKE_PAGE)) {
+    const b64 = toBase64(new Uint8Array(r.body as Uint8Array));
+    if (page.length > 0 && bytes + b64.length > TAKE_BYTES) break;
+    page.push({ seq: Number(r.seq), from: r.sender as string, at: Number(r.at), body: b64 });
+    bytes += b64.length;
+  }
+  return { parcels: page, more: list.length > page.length, gap: after < prunedPast };
 }
 
 /** Parcels every other device of the book has taken are gone (as cloud/worker's pruneTaken). */

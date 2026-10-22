@@ -323,6 +323,7 @@ fun alertSection(kind: LedgerAlerts.Kind): Section = when (kind) {
     LedgerAlerts.Kind.STOCK -> Section.PRODUCTS
     LedgerAlerts.Kind.DRAWER -> Section.CASHBOOK
     LedgerAlerts.Kind.CASHFLOW -> Section.CASHFLOW
+    LedgerAlerts.Kind.SYNC -> Section.DAILY
 }
 
 /** A bell row the computer adds itself (the backup's age, a newer version): its tile, words and what a click does. */

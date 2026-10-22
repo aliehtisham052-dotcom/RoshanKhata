@@ -488,7 +488,8 @@ class MainActivity : BaseActivity() {
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP to Chip(R.string.today_backup, R.color.tile_backup_bg, R.color.fi_teal_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_FAILED to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_OTHER_PHONE to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
-            com.innovation313.roshankhata.data.HomeAlerts.Kind.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b)
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.SYNC to Chip(R.string.live_title, R.color.tile_bin_bg, R.color.fi_red_b)
         )
         val d = resources.displayMetrics.density
         alerts.groupBy { it.kind }.forEach { (kind, list) ->

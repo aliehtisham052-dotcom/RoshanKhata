@@ -3692,6 +3692,12 @@ You can change this any time from this screen.</string>
     <string name="live_status_waiting">The book reached the computer. Say yes there to finish joining.</string>
     <string name="live_status_live">Live with %1$s. Last update: %2$s</string>
     <string name="live_status_unreachable">The computer is not answering. Are both on the same WiFi, and is Roshan Khata open on it?</string>
+    <string name="live_status_relay_down">Away from the shop’s WiFi, and the relay on the internet did not answer (%1$s). The phone keeps trying; at the shop, WiFi works without it.</string>
+    <string name="live_pc_relay_ok">Relay on the internet: working (last round %1$s).</string>
+    <string name="live_pc_relay_down">Relay on the internet: not answering (%1$s). At the shop, WiFi works without it.</string>
+    <string name="live_pair_other_phone">This book already keeps its ledger with the phone “%1$s”. Replace stops that phone. One book is one phone and one computer: to keep both phones, join this one as a new business.</string>
+    <string name="na_sync_conflict">%1$s entries were changed on both devices at once</string>
+    <string name="na_sync_conflict_sub">The amount kept may not be the one you meant. See Live sync → What changed.</string>
     <string name="live_status_halted">Live sync is paused for now. Your book is safe and works as always.</string>
     <string name="live_status_failed">Live sync stopped: %1$s</string>
     <string name="live_mismatch">The two books do not match. Join again to make a fresh copy.</string>

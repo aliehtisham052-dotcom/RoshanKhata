@@ -3690,6 +3690,12 @@
     <string name="live_status_waiting">وصل الدفتر إلى الحاسوب. اضغط نعم هناك لإتمام الربط.</string>
     <string name="live_status_live">مباشر مع %1$s. آخر تحديث: %2$s</string>
     <string name="live_status_unreachable">الحاسوب لا يجيب. هل الجهازان على شبكة الواي فاي نفسها، وهل روشن كهاتا مفتوح عليه؟</string>
+    <string name="live_status_relay_down">بعيد عن واي فاي المتجر، ولم يُجب المُرحِّل على الإنترنت (%1$s). يواصل الهاتف المحاولة؛ في المتجر يعمل واي فاي بدونه.</string>
+    <string name="live_pc_relay_ok">المُرحِّل على الإنترنت: يعمل (آخر جولة %1$s).</string>
+    <string name="live_pc_relay_down">المُرحِّل على الإنترنت: لا يُجيب (%1$s). في المتجر يعمل واي فاي بدونه.</string>
+    <string name="live_pair_other_phone">هذا الدفتر يعمل بالفعل مع الهاتف «%1$s». الاستبدال يوقف ذلك الهاتف. دفتر واحد = هاتف واحد وحاسوب واحد: للاحتفاظ بالهاتفين، أضف هذا الهاتف كنشاط تجاري جديد.</string>
+    <string name="na_sync_conflict">%1$s قيود تغيّرت على الجهازين في الوقت نفسه</string>
+    <string name="na_sync_conflict_sub">قد لا يكون المبلغ المحفوظ هو ما قصدته. انظر المزامنة الحية ← ما الذي تغيّر.</string>
     <string name="live_status_halted">المزامنة المباشرة متوقفة مؤقتًا. دفترك آمن ويعمل كالمعتاد.</string>
     <string name="live_status_failed">توقفت المزامنة المباشرة: %1$s</string>
     <string name="live_mismatch">الدفتران غير متطابقين. اربط من جديد لعمل نسخة جديدة.</string>

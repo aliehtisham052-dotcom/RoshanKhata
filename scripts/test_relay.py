@@ -138,6 +138,26 @@ def main():
     s, o = call("GET", p + "take?after=" + str(last), token, b)
     check("the next page holds the rest", len(o["parcels"]) == 5 and o["more"] is False, (len(o["parcels"]), o.get("more")))
 
+    # One request for a whole round (22 Oct 2026): ack + parcel + page.
+    s, o = call("POST", p + "round", token, a, {"after": 0, "upTo": None, "parcel": None})
+    check("an empty round answers a page and no seq", s == 200 and o.get("seq") is None and o.get("parcels") == [] and o.get("more") is False, (s, o))
+    s, o = call("POST", p + "round", token, a, {"after": 0, "parcel": base64.b64encode(b"via round").decode()})
+    rseq = o.get("seq")
+    check("a round leaves a parcel and says its number", s == 200 and isinstance(rseq, int) and rseq > 0, (s, o))
+    s, o = call("POST", p + "round", token, b, {"after": seqs[-1], "upTo": seqs[-1]})
+    got = [base64.b64decode(x["body"]) for x in o.get("parcels", [])]
+    check("the other device's round acks and takes it", s == 200 and got == [b"via round"] and o["parcels"][0]["seq"] == rseq, (s, o))
+    s, o = call("POST", p + "round", token, b, {"after": rseq, "upTo": rseq})
+    check("acked in a round, the parcel is gone once the others took it", s == 200 and o["parcels"] == [], (s, o))
+    s, o = call("GET", p + "take?after=" + str(seqs[-1]), token, d)
+    check("a third device still sees nothing it was not meant to", s == 200 and o["parcels"] == [] or len(o["parcels"]) == 1, (s, o))
+    s, o = call("POST", p + "round", token, a, {"after": 0, "parcel": "%%%not-base64"})
+    check("a round with a bad parcel is refused", s == 400, (s, o))
+    s, o = call("POST", p + "round", token, a, {"after": 0, "upTo": -5})
+    check("a round with a bad ack is refused", s == 400, (s, o))
+    s, o = call("POST", p + "round", token, a, b"not json")
+    check("a round that is not JSON is refused", s == 400, (s, o))
+
     s, o = call("POST", p + "wake", token, b, {"token": "f" * 40})
     check("a wake-up address is kept", s == 200 and o.get("wake") is True, (s, o))
     s, o = call("POST", p + "wake", token, b, {"token": None})

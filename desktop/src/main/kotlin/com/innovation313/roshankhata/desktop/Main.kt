@@ -567,7 +567,11 @@ private fun Book(
     // This book's own sync id: a phone offering this very book is offered only Replace (22 Oct 2026, the review:
     // "join as a new business" made a second business with the same book, and both answered the phone).
     var thisBook by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(db, reload) { thisBook = withContext(Dispatchers.IO) { runCatching { LiveSync.identity(db.syncSql())?.book }.getOrNull() } }
+    var livePeers by remember { mutableStateOf<List<LiveSync.Peer>>(emptyList()) }
+    LaunchedEffect(db, reload) {
+        thisBook = withContext(Dispatchers.IO) { runCatching { LiveSync.identity(db.syncSql())?.book }.getOrNull() }
+        livePeers = withContext(Dispatchers.IO) { runCatching { LiveSync.state(db.syncSql()).takeIf { it.on }?.peers }.getOrNull().orEmpty() }
+    }
     var deletingParty by remember { mutableStateOf<PartyWithBalance?>(null) }
     // Home first, as the phone opens on its Home.
     var section by remember { mutableStateOf(Section.HOME) }
@@ -673,7 +677,10 @@ private fun Book(
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
     LaunchedEffect(reload, section) {
         alerts = withContext(Dispatchers.IO) {
-            runCatching { com.innovation313.roshankhata.data.LedgerAlerts.compute(words, dao) { Format.money(it) } }.getOrDefault(emptyList())
+            runCatching {
+                val conflicts = runCatching { LiveSync.moneyConflicts(db.syncSql()) }.getOrDefault(0)
+                com.innovation313.roshankhata.data.LedgerAlerts.compute(words, dao, { Format.money(it) }, conflicts)
+            }.getOrDefault(emptyList())
         }
     }
     LaunchedEffect(reload, outsideDir) {
@@ -1201,6 +1208,14 @@ private fun Book(
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // A live pairing (22 Oct 2026): keeping this book and opening the phone's beside it comes first.
                     if (p.live != null) Text(word(W.live_pair_warning), color = c.ink, fontWeight = FontWeight.Medium)
+                    // This book already keeps its ledger with another phone (22 Oct 2026, the review: a second phone
+                    // replaced the first in silence; one book is one phone and one computer — a second phone joins
+                    // as its own business).
+                    val other = p.live?.let { o -> livePeers.firstOrNull { it.device != o.device } }
+                    if (other != null) Text(
+                        word(W.live_pair_other_phone, other.name?.takeIf { it.isNotBlank() } ?: words.text(W.live_title)),
+                        color = c.owedToMe, fontWeight = FontWeight.SemiBold
+                    )
                     // A book that syncs with a phone stops syncing once it is replaced (22 Oct 2026, the review).
                     else if (thisBook != null) Text(word(W.restore_stops_live), color = c.ink, fontWeight = FontWeight.Medium)
                     // The four digits the phone shows for this pairing: yes only when they are the same (22 Oct 2026).

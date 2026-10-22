@@ -40,6 +40,8 @@ object LiveRunner {
         /** [relay]: through Innovation 313's relay on the internet, not the shop's WiFi. */
         data class Live(val at: Long, val computer: String?, val relay: Boolean = false) : Status
         object Unreachable : Status
+        /** Away from the shop's WiFi, and no relay on the internet answered: [why] is the relay's own word (22 Oct 2026). */
+        data class RelayDown(val why: String) : Status
         /** Turned off for everyone by Innovation 313 ([LiveControl]); the book is untouched. */
         object Halted : Status
         /** The computer did not say yes in time: the pairing was given up. */
@@ -66,6 +68,8 @@ object LiveRunner {
     private var lastSeek = 0L
     private var quietCloud = 0
     private var cloudRounds = 0
+    /** Relay rounds that failed in a row: each waits twice as long, up to about 13 minutes. */
+    private var relayMisses = 0
     /** The relays after the first are read every this many relay rounds (each costs a call on a free plan). */
     private const val OTHERS_EVERY = 8
     private const val SEEK_EVERY_MS = 30_000L
@@ -215,6 +219,7 @@ object LiveRunner {
                 cloudRounds++
                 when (val r = LiveCloud.roundAll(sql, readOthers = cloudRounds % OTHERS_EVERY == 0)) {
                     is LiveCloud.Result.Done -> {
+                        relayMisses = 0
                         LiveSync.noteMark(sql, marks(app))
                         NumberMark.mark = LiveSync.mark(sql)
                         state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer, relay = true)
@@ -223,7 +228,14 @@ object LiveRunner {
                         if (r.more) 1000L else CLOUD_MS shl quietCloud
                     }
                     LiveCloud.Result.Halted -> { state.value = Status.Halted; 60_000L }
-                    else -> { state.value = Status.Unreachable; ROUND_MS * 3 }
+                    LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { state.value = Status.Unreachable; ROUND_MS * 3 }
+                    else -> {
+                        // The relay is the trouble, not the WiFi: said as such, and asked again after a growing wait
+                        // (12 s doubling to 10 min — 22 Oct 2026, the review: every phone hammered every relay at 12 s).
+                        state.value = Status.RelayDown(if (r is LiveCloud.Result.Refused) r.why else "unreachable")
+                        relayMisses = minOf(relayMisses + 1, 6)
+                        (ROUND_MS * 3) shl relayMisses
+                    }
                 }
             }
         }

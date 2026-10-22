@@ -3522,6 +3522,12 @@
     <string name="live_status_waiting">খাতা কম্পিউটারে পৌঁছেছে। যুক্ত করা শেষ করতে সেখানে হ্যাঁ চাপুন।</string>
     <string name="live_status_live">%1$s এর সাথে লাইভ। শেষ হালনাগাদ: %2$s</string>
     <string name="live_status_unreachable">কম্পিউটার সাড়া দিচ্ছে না। দুটো কি একই ওয়াই-ফাইতে আছে, আর সেখানে কি রোশন খাতা খোলা?</string>
+    <string name="live_status_relay_down">দোকানের ওয়াই-ফাই থেকে দূরে আছেন, আর ইন্টারনেটের রিলে উত্তর দেয়নি (%1$s)। ফোন চেষ্টা চালিয়ে যাবে; দোকানে ওয়াই-ফাই এটি ছাড়াই চলে।</string>
+    <string name="live_pc_relay_ok">ইন্টারনেটের রিলে: চলছে (শেষ রাউন্ড %1$s)।</string>
+    <string name="live_pc_relay_down">ইন্টারনেটের রিলে: উত্তর দিচ্ছে না (%1$s)। দোকানে ওয়াই-ফাই এটি ছাড়াই চলে।</string>
+    <string name="live_pair_other_phone">এই খাতা ইতিমধ্যে ফোন “%1$s”-এর সাথে চলছে। সব বদলালে সেই ফোন থেমে যাবে। এক খাতা = এক ফোন ও এক কম্পিউটার: দুটো ফোনই রাখতে চাইলে এই ফোনটিকে নতুন ব্যবসা হিসেবে যোগ করুন।</string>
+    <string name="na_sync_conflict">%1$sটি এন্ট্রি দুটো ডিভাইসে একই সাথে বদলানো হয়েছে</string>
+    <string name="na_sync_conflict_sub">রাখা অঙ্কটি হয়তো আপনার চাওয়াটি নয়। লাইভ সিঙ্ক → কী বদলেছে দেখুন।</string>
     <string name="live_status_halted">লাইভ সিঙ্ক আপাতত থামানো। আপনার খাতা নিরাপদ এবং সবসময়ের মতো চলে।</string>
     <string name="live_status_failed">লাইভ সিঙ্ক থেমে গেছে: %1$s</string>
     <string name="live_mismatch">দুটো খাতা মিলছে না। নতুন কপির জন্য আবার যুক্ত করুন।</string>

@@ -1,0 +1,53 @@
+name: Relay health
+
+# Every hour: the three relays' health addresses are asked (22 Oct 2026, the
+# review: nothing told the owner when a relay was down, a quota spent or
+# Supabase paused). A relay that does not answer opens one issue labelled
+# "relay-down" (or adds a line to the open one); when every relay answers
+# again the issue is closed. GitHub mails the owner the issue: no cost,
+# nothing to install.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Ask each relay
+        id: ask
+        run: |
+          down=""
+          check() {  # name url
+            out=$(curl -s -m 20 "$2" || true)
+            if echo "$out" | grep -q '"ok":true'; then echo "$1: $out"; else echo "$1: DOWN ($(echo "$out" | head -c 120))"; down="$down $1"; fi
+          }
+          check cloudflare "https://roshan-khata-daakiya.innovation313.workers.dev/v1/health"
+          check hosting    "https://ehtisham.shop/r/v1/health"
+          check supabase   "https://tcztkeyliletxshhkhnz.supabase.co/functions/v1/daakiya/v1/health"
+          echo "down=${down# }" >> "$GITHUB_OUTPUT"
+      - name: Open, update or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DOWN: ${{ steps.ask.outputs.down }}
+        run: |
+          open=$(gh issue list -R "$GITHUB_REPOSITORY" --label relay-down --state open --json number -q '.[0].number')
+          when=$(date -u +"%Y-%m-%d %H:%M UTC")
+          if [ -n "$DOWN" ]; then
+            if [ -z "$open" ]; then
+              gh label create relay-down -R "$GITHUB_REPOSITORY" --color B60205 --description "A live sync relay is not answering" 2>/dev/null || true
+              gh issue create -R "$GITHUB_REPOSITORY" --label relay-down --title "Relay down: $DOWN" \
+                --body "Since $when the relay(s) **$DOWN** do not answer their health address. The app uses the others meanwhile. Check the provider's dashboard (quota, pause, token); this issue closes itself when every relay answers again."
+            else
+              gh issue comment "$open" -R "$GITHUB_REPOSITORY" --body "$when: still down: $DOWN"
+            fi
+            echo "::error::relay down: $DOWN"
+            exit 1
+          elif [ -n "$open" ]; then
+            gh issue close "$open" -R "$GITHUB_REPOSITORY" --comment "$when: every relay answers again."
+          fi
