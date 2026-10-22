@@ -263,7 +263,12 @@ object LiveCloud {
             val acksTold = getMeta(sql, k("acks", id.book, tag))
             // A gap found in the last round's take is said in this round's parcel (the parcel is composed before
             // the take, so a "need" not yet told is a reason to send on its own).
-            val needNow = state.peers.joinToString(",") { it.device + ":" + getMeta(sql, k("need_" + it.device, id.book)).orEmpty() }
+            val needNow = buildString {
+                for (p in state.peers) {
+                    if (isNotEmpty()) append(',')
+                    append(p.device).append(':').append(getMeta(sql, k("need_" + p.device, id.book)).orEmpty())
+                }
+            }
             val needTold = getMeta(sql, k("need_told", id.book, tag))
             val last = LiveSync.lastSeq(sql)
             var sealed: ByteArray? = null
