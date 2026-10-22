@@ -1,0 +1,132 @@
+name: Relays
+
+# Live sync's second and third relays (22 Oct 2026), beside Cloudflare's (cloud-worker.yml):
+#  - web/relay: the owner's own hosting (PHP + SQLite), uploaded by hand like web/khata;
+#  - supabase/functions/daakiya: Supabase (Deno + Postgres), deployed from here.
+# Every push that touches them runs scripts/test_relay.py against each, on this runner only.
+# The Supabase function is deployed when the owner runs this workflow with "deploy" ticked;
+# the token (SUPABASE_ACCESS_TOKEN, Edge Functions read-write on one project) is never printed.
+on:
+  push:
+    paths:
+      - "web/relay/**"
+      - "supabase/**"
+      - "scripts/test_relay.py"
+      - ".github/workflows/relays.yml"
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy the relay to Supabase"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  SUPABASE_PROJECT: tcztkeyliletxshhkhnz
+
+jobs:
+  php:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_sqlite
+      - name: The PHP relay answers as the others do
+        run: |
+          php -l web/relay/index.php
+          S=$(mktemp -d)
+          RK_RELAY_DATA=$S php -S 127.0.0.1:8098 web/relay/index.php > php.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf 127.0.0.1:8098/r/v1/health && break; sleep 0.3; done
+          python3 scripts/test_relay.py http://127.0.0.1:8098/r
+          # The owner's switch: an empty "halt" file stops every call but health.
+          touch $S/halt
+          curl -s 127.0.0.1:8098/r/v1/health | grep -q '"live":false'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST 127.0.0.1:8098/r/v1/b/0123456789abcdef0123456789abcdef/hello)" = 503
+          echo "halt switch works"
+      - name: The upload for the hosting
+        run: |
+          mkdir -p out/r/data
+          cp web/relay/index.php web/relay/.htaccess out/r/
+          cp web/relay/data/.htaccess out/r/data/
+          (cd out && zip -r ../relay-upload.zip r)
+          unzip -l relay-upload.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relay-upload
+          path: relay-upload.zip
+
+  supabase:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 2s --health-timeout 5s --health-retries 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type check
+        run: deno check supabase/functions/daakiya/index.ts
+      - name: The Supabase relay answers as the others do (a real Postgres on this runner)
+        env:
+          SUPABASE_DB_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+        run: |
+          deno run --allow-net --allow-env --allow-read supabase/functions/daakiya/index.ts > deno.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8000/daakiya/v1/health && break; sleep 1; done
+          python3 scripts/test_relay.py http://127.0.0.1:8000/daakiya
+          # Nothing of the relay is reachable through the public schema Supabase's REST API serves.
+          psql postgres://postgres:postgres@127.0.0.1:5432/postgres -tAc \
+            "select count(*) from information_schema.tables where table_schema='public' and table_name in ('books','devices','parcels')" | grep -qx 0
+          psql postgres://postgres:postgres@127.0.0.1:5432/postgres -tAc \
+            "select bool_and(relrowsecurity) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='rk_relay' and relkind='r'" | grep -qx t
+          echo "tables are in rk_relay, with row level security on"
+
+  deploy-supabase:
+    needs: supabase
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    runs-on: ubuntu-24.04
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Token present?
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN is not set; nothing deployed."
+            exit 1
+          fi
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Deploy (the book's pass is the check, so Supabase's JWT check is off)
+        run: |
+          set +e
+          supabase functions deploy daakiya --project-ref "$SUPABASE_PROJECT" --no-verify-jwt --use-api > deploy.log 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            # The older way (Docker, which this runner has), if the API bundler is refused.
+            supabase functions deploy daakiya --project-ref "$SUPABASE_PROJECT" --no-verify-jwt >> deploy.log 2>&1
+            code=$?
+          fi
+          grep -vE "@[A-Za-z0-9.-]+\.[a-z]{2,}|sbp_" deploy.log | tail -25 | while IFS= read -r line; do
+            if [ $code -ne 0 ]; then echo "::error::$line"; else echo "::notice::$line"; fi
+          done
+          exit $code
+      - name: The deployed relay answers
+        run: |
+          U="https://$SUPABASE_PROJECT.supabase.co/functions/v1/daakiya"
+          for i in $(seq 1 20); do
+            out=$(curl -s "$U/v1/health"); echo "$out" | grep -q '"ok":true' && break; sleep 3
+          done
+          echo "::notice::health: $out"
+          echo "$out" | grep -q '"ok":true'
+          python3 scripts/test_relay.py "$U"

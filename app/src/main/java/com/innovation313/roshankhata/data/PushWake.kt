@@ -104,7 +104,7 @@ object PushWake {
                     LiveSync.check(sql, LiveRunner.install(app), LiveRunner.marks(app))
                     NumberMark.mark = LiveSync.mark(sql)
                     repeat(5) {
-                        val r = LiveCloud.round(sql)
+                        val r = LiveCloud.roundAll(sql)
                         if (r !is LiveCloud.Result.Done) return@withTimeoutOrNull
                         LiveSync.noteMark(sql, LiveRunner.marks(app))
                         NumberMark.mark = LiveSync.mark(sql)

@@ -211,11 +211,13 @@ object LiveDesk {
         val mine = ++generation
         thread(isDaemon = true, name = "live-cloud") {
             var wait = CLOUD_MS
+            var rounds = 0
             while (!stopped && generation == mine) {
                 val d = db
                 val now = System.currentTimeMillis()
                 wait = if (d == null || LiveCloud.base == null || now - lastWifi < WIFI_QUIET_MS) CLOUD_MS
-                else when (val r = runCatching { runBlocking { LiveCloud.round(d.syncSql()) } }.getOrNull()) {
+                // Cloudflare first, then Supabase, then the owner's hosting (22 Oct 2026); the later ones read every few rounds.
+                else when (val r = runCatching { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = ++rounds % OTHERS_EVERY == 0) } }.getOrNull()) {
                     is LiveCloud.Result.Done -> {
                         noteRound(d)
                         if (r.took > 0 || r.more) CLOUD_MS else minOf(wait * 2, CLOUD_QUIET_MAX_MS)
@@ -230,6 +232,8 @@ object LiveDesk {
     }
 
     private const val CLOUD_MS = 15_000L
+    /** The relays after the first are read every this many relay rounds (each costs a call on a free plan). */
+    private const val OTHERS_EVERY = 8
     /** A quiet relay is asked at most every five minutes. */
     private const val CLOUD_QUIET_MAX_MS = 5 * 60_000L
     /** The relay not turned on for this book: looked at again every minute. */

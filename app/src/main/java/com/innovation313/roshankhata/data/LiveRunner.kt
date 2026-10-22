@@ -65,6 +65,9 @@ object LiveRunner {
     private var lastFingerprint = 0L
     private var lastSeek = 0L
     private var quietCloud = 0
+    private var cloudRounds = 0
+    /** The relays after the first are read every this many relay rounds (each costs a call on a free plan). */
+    private const val OTHERS_EVERY = 8
     private const val SEEK_EVERY_MS = 30_000L
     /** How often a round looks whether the relay must be told this phone's wake-up address (a cheap check). */
     private const val WAKE_TELL_MS = 60_000L
@@ -208,7 +211,9 @@ object LiveRunner {
                     }
                 }
                 // Not on the shop's WiFi: the relay, when the owner turned it on for this book (Marhala 2).
-                when (val r = LiveCloud.round(sql)) {
+                // Cloudflare first, then Supabase, then the owner's hosting; the later ones read every few rounds.
+                cloudRounds++
+                when (val r = LiveCloud.roundAll(sql, readOthers = cloudRounds % OTHERS_EVERY == 0)) {
                     is LiveCloud.Result.Done -> {
                         LiveSync.noteMark(sql, marks(app))
                         NumberMark.mark = LiveSync.mark(sql)

@@ -1,0 +1,17 @@
+# Roshan Khata relay (web/relay/index.php). No folder listings; every path goes to index.php.
+Options -Indexes
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Some hostings drop the Authorization header before PHP (the app also sends X-RK-Pass).
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+  RewriteRule ^data(/|$) - [F,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L]
+</IfModule>
+<FilesMatch "\.(md|sqlite|sqlite-wal|sqlite-shm|log)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
