@@ -31,6 +31,8 @@ class LiveCloudTest {
         var down = false
         /** The next sent parcel is lost (the relay forgot it). */
         var loseNext = false
+        /** The relay files every parcel under this device, whoever sent it (a bug or a lie there). */
+        var misfileAs: String? = null
         /** Calls answered past the pass and the hello check. */
         var calls = 0
         /** Each device's wake-up address, as the worker's devices.fcm column. */
@@ -54,7 +56,7 @@ class LiveCloudTest {
                 "hello" -> { devices.putIfAbsent(dev, 0L); ok(JSONObject().put("top", seq)) }
                 "send" -> {
                     seq++
-                    if (loseNext) loseNext = false else parcels.add(Triple(seq, dev, body!!))
+                    if (loseNext) loseNext = false else parcels.add(Triple(seq, misfileAs ?: dev, body!!))
                     ok(JSONObject().put("seq", seq))
                 }
                 "take" -> {
@@ -81,7 +83,7 @@ class LiveCloudTest {
                     var sent: Long? = null
                     if (!o.isNull("parcel")) {
                         seq++
-                        if (loseNext) loseNext = false else parcels.add(Triple(seq, dev, B64.decode(o.getString("parcel"))))
+                        if (loseNext) loseNext = false else parcels.add(Triple(seq, misfileAs ?: dev, B64.decode(o.getString("parcel"))))
                         sent = seq
                     }
                     val after = o.getLong("after")
@@ -255,6 +257,20 @@ class LiveCloudTest {
         assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
         // And a conflict in a money table is counted for the bell, one not in it is not.
         assertEquals(0, LiveSync.moneyConflicts(pc.syncSql()))
+    }
+
+    @Test
+    fun `a parcel the relay files under another device is not taken as that device's`() = runBlocking {
+        both(1)
+        relay.misfileAs = "someone-else"
+        phone.khataDao().insertParty(Party(name = "Misfiled"))
+        both(2)
+        assertTrue(pc.khataDao().allPartiesForBackup().none { it.name == "Misfiled" })
+        // Filed right again, it arrives (the sender resends what was never acknowledged).
+        relay.misfileAs = null
+        clock += LiveCloud.RESEND_MS + 1
+        both(2)
+        assertEquals(1, pc.khataDao().allPartiesForBackup().count { it.name == "Misfiled" })
     }
 
     @Test

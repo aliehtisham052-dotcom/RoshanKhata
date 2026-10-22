@@ -485,8 +485,9 @@ devices, a printer or a second monitor.
   `BackupCodec.Streamed`); a day closed again writes its audit row inside
   `saveDayClose`, with what the first close counted.
 - **Left, with the reason:** goods lines edited on both devices at once can
-  double (E8: needs line-set versions); the relay's device identity is
-  unauthenticated inside a book (insider only); the kill switch fails open by
+  double (E8: needs line-set versions); a device with the book's key can
+  name itself as any device of the book (insider only; the relay's own
+  filing of "from" is held to the sealed message since 22 Oct); the kill switch fails open by
   design; a lone Indonesian "1.125" stays one and an eighth.
 
 ### The live-sync review (22 Oct 2026, kmp-desktop-15 — the owner: "in tamam recommendations ko fix karo")
