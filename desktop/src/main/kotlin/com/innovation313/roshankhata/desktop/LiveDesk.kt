@@ -35,6 +35,7 @@ import com.innovation313.roshankhata.data.LiveCloud
 import com.innovation313.roshankhata.data.LiveRound
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
+import com.innovation313.roshankhata.data.NumberMark
 import com.innovation313.roshankhata.data.WifiSync
 import com.innovation313.roshankhata.data.syncSql
 import com.innovation313.roshankhata.screens.LocalRoshanColors
@@ -100,7 +101,10 @@ object LiveDesk {
     /** The book now open: its live sync checked, and the computer listening when it syncs. */
     suspend fun attach(book: KhataDatabase, home: File) {
         db = book
+        // The last book's letter never numbers this one's documents (NumberMark).
+        NumberMark.mark = null
         val on = runCatching { LiveSync.check(book.syncSql(), install(home)) }.getOrDefault(false)
+        if (on) NumberMark.mark = runCatching { LiveSync.mark(book.syncSql()) }.getOrNull()
         if (on) start() else if (pairSecret == null) stop()
     }
 
@@ -200,7 +204,8 @@ object LiveDesk {
      */
     suspend fun join(book: KhataDatabase, home: File, offer: LiveWire.Offer) {
         val sql = book.syncSql()
-        LiveSync.enable(sql, install(home), name(), adopt = offer.book to offer.key)
+        LiveSync.enable(sql, install(home), name(), adopt = offer.book to offer.key, mark = offer.mark)
+        NumberMark.mark = LiveSync.mark(sql)
         LiveSync.putPeer(sql, offer.device, name = offer.name, sent = 0, recv = offer.seq, seen = System.currentTimeMillis())
         db = book
         start()
@@ -328,6 +333,7 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                     if (s?.on == true) FluentButton(word(W.live_stop), {
                         scope.launch {
                             withContext(Dispatchers.IO) { runCatching { LiveSync.disable(book.syncSql()) } }
+                            NumberMark.mark = null
                             LiveDesk.stop()
                             onClose()
                         }

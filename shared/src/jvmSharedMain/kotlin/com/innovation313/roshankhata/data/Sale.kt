@@ -376,7 +376,7 @@ object SaleMath {
  */
 object SaleNumber {
     const val PREFIX = "S-"
-    fun next(highest: Int): String = PREFIX + "%06d".format(Digits.FIGURES, highest + 1)
+    fun next(highest: Int): String = PREFIX + "%06d".format(Digits.FIGURES, highest + 1) + NumberMark.suffix()
 }
 
 /**

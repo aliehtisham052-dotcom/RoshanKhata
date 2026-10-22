@@ -359,9 +359,22 @@ of it was tried on two real devices yet — CI only.
   deploys only by hand with `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`.
 - **Kill switch** (`LiveControl`): `live.json` on the `live-control`
   release, `{"live":false}` halts everyone; a 404 means live. Read every 6 h.
-- Not yet: device-own number series (two devices can both make S-12), the
-  audit chain stays per device, FCM on the phone (needs the owner's
-  google-services file, never in this public repo).
+- **Document numbers per device** (`NumberMark`): while a book syncs, each
+  device's numbers carry its letter after the number — the book's maker A,
+  a joiner the letter the phone gave it in the offer (else one from its id,
+  never A): RK-000013-B, S-000013-A, INV-, R-, PO- alike. After, not before:
+  every "highest" query casts the digits after the prefix and SQLite stops
+  at the "-", so the series runs on across devices and older versions.
+  Off: numbers exactly as before. Set when a book opens (the phone's
+  onOpen callback, the computer's LiveDesk.attach) and on join/stop.
+- Pairing copies are the same book: the backup carries each customer's card
+  QR (`qrToken`); LivePairingTest compares a restored copy row by row.
+- The phone finds a computer whose address changed (UDP call on 47313 with a
+  tag from the book key); the computer keeps 47313 across restarts
+  (exclusive bind off, the phone closes first); the window lists conflicts.
+- Not yet: the audit chain stays per device; FCM on the phone (needs the
+  owner's google-services file, never in this public repo); sync only while
+  the phone's app is on screen.
 
 ### The shared module (KMP)
 

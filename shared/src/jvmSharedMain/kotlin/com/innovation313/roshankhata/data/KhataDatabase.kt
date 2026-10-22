@@ -103,5 +103,5 @@ const val KHATA_DB_VERSION = 38
 
 object EntryNumber {
     fun next(existingCount: Int): String =
-        "RK-%06d".format(Digits.FIGURES, existingCount + 1)
+        "RK-%06d".format(Digits.FIGURES, existingCount + 1) + NumberMark.suffix()
 }

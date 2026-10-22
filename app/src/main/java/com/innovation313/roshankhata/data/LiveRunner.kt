@@ -77,7 +77,11 @@ object LiveRunner {
                 val wait = runCatching {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
-                    if (checked !== db) { LiveSync.check(sql, install(app)); checked = db }
+                    if (checked !== db) {
+                        LiveSync.check(sql, install(app))
+                        NumberMark.mark = LiveSync.mark(sql)
+                        checked = db
+                    }
                     once(sql)
                 }.getOrElse { e -> state.value = Status.Failed(e.message ?: e.javaClass.simpleName); ROUND_MS * 3 }
                 delay(wait)
