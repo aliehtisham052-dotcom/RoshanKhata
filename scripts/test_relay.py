@@ -54,6 +54,9 @@ def check(name, cond, detail=""):
     print(("ok   " if cond else "FAIL ") + name + ("" if cond else "  " + str(detail)))
     if not cond:
         FAILED.append(name)
+        # In CI the failure is also an annotation: the job's log is often out of reach, annotations are not.
+        if os.environ.get("GITHUB_ACTIONS"):
+            print("::error title=relay check::" + name + " -- " + str(detail)[:600].replace("\n", " "))
 
 
 def main():
