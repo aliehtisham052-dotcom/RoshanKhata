@@ -229,7 +229,13 @@ object LiveRunner {
                     }
                     LiveCloud.Result.Halted -> { state.value = Status.Halted; 60_000L }
                     LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { state.value = Status.Unreachable; ROUND_MS * 3 }
-                    else -> {
+                    else -> if (r is LiveCloud.Result.Refused && r.why == LiveRound.LOST) {
+                        // The other device asks for lines this book let go of: only joining again mends it (as on WiFi).
+                        LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+                        NumberMark.mark = null
+                        state.value = Status.Rejoin
+                        ROUND_MS * 3
+                    } else {
                         // The relay is the trouble, not the WiFi: said as such, and asked again after a growing wait
                         // (12 s doubling to 10 min — 22 Oct 2026, the review: every phone hammered every relay at 12 s).
                         state.value = Status.RelayDown(if (r is LiveCloud.Result.Refused) r.why else "unreachable")
