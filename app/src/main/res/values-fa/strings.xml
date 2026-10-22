@@ -3509,4 +3509,8 @@
     <string name="live_remove_confirm">%1$s حذف شود؟ همگام‌سازی آن با این رایانه متوقف می‌شود. دفتر خودش همان‌طور می‌ماند.</string>
     <string name="live_needs_owner">وصل کردن یک دستگاه به همگام‌سازی زنده به PIN مالک نیاز دارد.</string>
     <string name="live_badge">زنده · %1$s</string>
+    <string name="live_conflicts_show">ببینید چه تغییر کرد</string>
+    <string name="live_conflict_now">اکنون: %1$s</string>
+    <string name="live_conflict_saved">کنار گذاشته شد: %1$s</string>
+    <string name="live_conflict_clear">دیدم، پاک شود</string>
 </resources>

@@ -3525,4 +3525,8 @@
     <string name="live_remove_confirm">%1$s को हटाएँ? यह इस कंप्यूटर के साथ सिंक करना बंद कर देगा। उसका अपना खाता वैसा ही रहेगा।</string>
     <string name="live_needs_owner">किसी डिवाइस को लाइव सिंक से जोड़ने के लिए मालिक का PIN चाहिए।</string>
     <string name="live_badge">लाइव · %1$s</string>
+    <string name="live_conflicts_show">देखें क्या बदला</string>
+    <string name="live_conflict_now">अब: %1$s</string>
+    <string name="live_conflict_saved">सुरक्षित रखा: %1$s</string>
+    <string name="live_conflict_clear">देख लिया, हटा दें</string>
 </resources>
