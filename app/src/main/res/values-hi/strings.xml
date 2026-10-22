@@ -3434,6 +3434,11 @@
     <string name="entry_linked_cheque">यह एंट्री क्लियर हुए चेक ने लिखी है। इसे चेक वाले पेज से बदलें।</string>
     <string name="entry_linked_sale">यह एंट्री काउंटर की बिक्री ने लिखी है। बिक्री रद्द करें या वापसी करें।</string>
     <string name="entry_linked_return">यह एंट्री वापसी ने लिखी है। इसकी जगह वापसी रद्द करें।</string>
+    <string name="pos_return_void_day_closed">इस वापसी का दिन बंद हो चुका है, इसलिए यह रद्द नहीं हो सकती। इसकी जगह सामान नई बिक्री में लिखें।</string>
+    <string name="entries_linked_kept">ये वैसे ही रहीं क्योंकि इन्हें किसी बिल, योजना, चेक, काउंटर बिक्री या वापसी ने लिखा है (वहीं से बदलें): %1$d</string>
+    <string name="party_has_tickets">हटाया नहीं गया: %1$s के नाम काउंटर बिक्री या वापसी लिखी है। पहले उन्हें रद्द करें, या ग्राहक को रहने दें।</string>
+    <string name="bin_emptied_kept">बिन खाली हो गया। ये ग्राहक रखे गए क्योंकि इनके अभी सप्लायर बिल, चेक, भुगतान प्लान या काउंटर बिक्री मौजूद हैं: %1$d</string>
+    <string name="bin_party_kept">बिन में ही रखा गया: इस ग्राहक के अभी सप्लायर बिल, चेक, भुगतान प्लान या काउंटर बिक्री मौजूद हैं। उनके लिए ग्राहक को वापस लाएँ।</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">आपको अदा किया</string>

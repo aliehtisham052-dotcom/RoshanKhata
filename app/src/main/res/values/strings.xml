@@ -3604,6 +3604,11 @@ You can change this any time from this screen.</string>
     <string name="entry_linked_cheque">A cleared cheque wrote this entry. Change it from Cheques.</string>
     <string name="entry_linked_sale">A counter sale wrote this entry. Void the sale, or make a return.</string>
     <string name="entry_linked_return">A return wrote this entry. Void the return instead.</string>
+    <string name="pos_return_void_day_closed">This return’s day has been closed, so it cannot be voided. Ring the goods up as a new sale instead.</string>
+    <string name="entries_linked_kept">Left as they were, because a bill, plan, cheque, counter sale or return wrote them (change them there): %1$d</string>
+    <string name="party_has_tickets">Not deleted: counter tickets or returns are written to %1$s. Void those first, or keep the customer.</string>
+    <string name="bin_emptied_kept">Bin emptied. Customers kept, because they still have supplier bills, cheques, payment plans or counter sales: %1$d</string>
+    <string name="bin_party_kept">Kept in the bin: this customer still has supplier bills, cheques, payment plans or counter sales. Restore the customer to deal with them.</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">Paid to you</string>

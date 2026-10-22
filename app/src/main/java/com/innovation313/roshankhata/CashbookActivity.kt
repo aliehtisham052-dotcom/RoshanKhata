@@ -38,6 +38,7 @@ import com.innovation313.roshankhata.ui.signedTotalColourOnDark
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -360,20 +361,35 @@ class CashbookActivity : BaseActivity() {
 
     private fun confirmDelete(entry: CashEntry) {
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDelete(entry) }) return
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_cash_entry)
-            .setMessage(R.string.delete_cash_confirm)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.delete) { _, _ ->
-                lifecycleScope.launch {
-                    AppScope.launch { dao.softDeleteCashEntry(entry.id); dao.audit(AuditActs.CASH_DELETED, "cashbook", entry.id, auditAmount(entry.amount)) }.join()
-                    Toast.makeText(
-                        this@CashbookActivity,
-                        R.string.moved_to_bin,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        lifecycleScope.launch {
+            // A line a counter ticket or a return wrote is changed from there (22 Oct 2026, the review: deleting
+            // it here left the drawer expecting less while the ticket still read as paid).
+            val owner = withContext(Dispatchers.IO) { runCatching { dao.cashOwner(entry.id) }.getOrNull() }
+            if (isFinishing || isDestroyed) return@launch
+            if (owner != null) {
+                MaterialAlertDialogBuilder(this@CashbookActivity)
+                    .setTitle(R.string.entry_linked_title)
+                    .setMessage(if (owner == "return") R.string.entry_linked_return else R.string.entry_linked_sale)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
             }
-            .show()
+            MaterialAlertDialogBuilder(this@CashbookActivity)
+                .setTitle(R.string.delete_cash_entry)
+                .setMessage(R.string.delete_cash_confirm)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete) { _, _ ->
+                    lifecycleScope.launch {
+                        // Checked again inside the delete's own transaction, with its audit row.
+                        val done = AppScope.async { runCatching { dao.softDeleteOwnCashEntry(entry.id, auditAmount(entry.amount)) }.getOrDefault(false) }.await()
+                        Toast.makeText(
+                            this@CashbookActivity,
+                            if (done) R.string.moved_to_bin else R.string.entry_linked_sale,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                .show()
+        }
     }
 }

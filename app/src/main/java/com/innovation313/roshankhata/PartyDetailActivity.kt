@@ -9,6 +9,7 @@ import com.innovation313.roshankhata.data.choices
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.data.quantity
+import com.innovation313.roshankhata.data.string
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
@@ -2224,9 +2225,19 @@ class PartyDetailActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    AppScope.launch { dao.softDeleteEntries(ids) }.join()
-                    Toast.makeText(this@PartyDetailActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
+                    // Entries a bill, plan, cheque, counter sale or return wrote are left, and said (22 Oct 2026, the review).
+                    var left = 0
+                    AppScope.launch { left = dao.softDeleteOwnEntries(ids) }.join()
                     exitSelectionMode()
+                    if (left > 0) {
+                        MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                            .setTitle(R.string.entry_linked_title)
+                            .setMessage(Digits.string(resources, R.string.entries_linked_kept, left))
+                            .setPositiveButton(R.string.ok, null)
+                            .show()
+                    } else {
+                        Toast.makeText(this@PartyDetailActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             .show()

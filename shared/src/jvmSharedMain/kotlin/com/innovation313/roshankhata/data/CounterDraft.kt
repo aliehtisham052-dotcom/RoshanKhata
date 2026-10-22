@@ -437,26 +437,38 @@ object Counter {
         val today = Fefo.today(now)
         val items = ArrayList<SaleItem>()
         val takes = ArrayList<List<Fefo.Take>?>()
+        // Each product's batches as this ticket leaves them (22 Oct 2026, the review): two lines of one product
+        // (a carton and loose bottles, two scale labels) were each given the whole of the same batch, so it
+        // went below nothing and an expired batch behind it was never refused.
+        val lotsOf = HashMap<Long, MutableList<Fefo.Lot>>()
         for (item in draft.toItems()) {
             val p = item.productId?.let { products[it] }
             items += item.copy(costRate = p?.let { costOf(dao, it, item.unit) })
             if (p == null) { takes += null; continue }
-            val lots = Fefo.lots(dao, p)
+            val lots = lotsOf.getOrPut(p.id) { Fefo.lots(dao, p).toMutableList() }
+            val factor = Units.factor(p, item.unit)
             if (item.billItemId != null) {
                 // A batch chosen already (a held ticket): never an expired one.
-                if (lots.firstOrNull { it.billItemId == item.billItemId }?.expired(today) == true) throw ExpiredStock(item.itemName, 0.0)
+                val at = lots.indexOfFirst { it.billItemId == item.billItemId }
+                if (at >= 0 && lots[at].expired(today)) throw ExpiredStock(item.itemName, 0.0)
+                if (at >= 0 && !factor.isNaN()) lots[at] = lots[at].copy(left = lots[at].left - item.quantity * factor)
                 takes += null
                 continue
             }
-            when (val a = Fefo.allocate(lots, item.quantity, Units.factor(p, item.unit), today)) {
+            when (val a = Fefo.allocate(lots, item.quantity, factor, today)) {
                 is Fefo.Allocation.ExpiredOnly -> throw ExpiredStock(item.itemName, a.fresh)
-                is Fefo.Allocation.Ok -> takes += a.takes
+                is Fefo.Allocation.Ok -> {
+                    takes += a.takes
+                    for (t in a.takes) {
+                        val at = lots.indexOfFirst { it.billItemId == t.billItemId }
+                        if (t.billItemId != null && at >= 0) lots[at] = lots[at].copy(left = lots[at].left - t.qty * factor)
+                    }
+                }
             }
         }
-        val id = dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole, takes,
-            pointsUsed = if (draft.hasParty) draft.pointsUsed else 0.0)
-        draft.heldId?.let { dao.dropHeldSale(it) }
-        return id
+        // The held ticket comes off the hook in the sale's own transaction.
+        return dao.postSale(draft.toSale(createdBy), items, draft.toPayments(), draft.roundToWhole, takes,
+            pointsUsed = if (draft.hasParty) draft.pointsUsed else 0.0, heldId = draft.heldId)
     }
 
     /** Park the draft; returns the held row's id. */

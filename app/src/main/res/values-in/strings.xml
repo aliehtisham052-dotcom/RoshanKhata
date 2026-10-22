@@ -3387,6 +3387,11 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="entry_linked_cheque">Cek yang sudah cair menulis catatan ini. Ubah dari halaman Cek.</string>
     <string name="entry_linked_sale">Penjualan kasir menulis catatan ini. Batalkan penjualan, atau buat retur.</string>
     <string name="entry_linked_return">Retur menulis catatan ini. Batalkan returnya saja.</string>
+    <string name="pos_return_void_day_closed">Hari retur ini sudah ditutup, jadi tidak bisa dibatalkan. Catat barangnya sebagai penjualan baru saja.</string>
+    <string name="entries_linked_kept">Dibiarkan seperti semula karena tagihan, rencana, cek, penjualan kasir, atau retur yang menulisnya (ubah dari sana): %1$d</string>
+    <string name="party_has_tickets">Tidak dihapus: penjualan kasir atau retur tercatat atas nama %1$s. Batalkan dulu, atau biarkan pelanggannya.</string>
+    <string name="bin_emptied_kept">Tempat sampah dikosongkan. Pelanggan yang tetap disimpan karena masih punya tagihan pemasok, cek, rencana cicilan, atau penjualan kasir: %1$d</string>
+    <string name="bin_party_kept">Tetap di tempat sampah: pelanggan ini masih punya tagihan pemasok, cek, rencana cicilan, atau penjualan kasir. Pulihkan pelanggannya untuk mengurusnya.</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">Dibayar kepada Anda</string>

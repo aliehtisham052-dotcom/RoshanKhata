@@ -3578,6 +3578,11 @@
     <string name="entry_linked_cheque">كتب شيكٌ تمت تصفيته هذا القيد. غيّره من صفحة الشيكات.</string>
     <string name="entry_linked_sale">كتب بيعٌ في نقطة البيع هذا القيد. ألغِ البيع أو سجّل مرتجعًا.</string>
     <string name="entry_linked_return">كتب مرتجعٌ هذا القيد. ألغِ المرتجع بدلًا من ذلك.</string>
+    <string name="pos_return_void_day_closed">أُغلق يوم هذا المرتجع، فلا يمكن إلغاؤه. سجّل البضاعة في بيع جديد بدلًا من ذلك.</string>
+    <string name="entries_linked_kept">بقيت كما هي لأن فاتورة أو خطة أو شيكًا أو بيعًا أو مرتجعًا كتبها (غيّرها من هناك): %1$d</string>
+    <string name="party_has_tickets">لم يُحذف: سُجّلت مبيعات نقطة البيع أو مرتجعات باسم %1$s. ألغِها أولًا، أو أبقِ العميل.</string>
+    <string name="bin_emptied_kept">أُفرغت السلة. بقي هؤلاء العملاء لأن لهم فواتير مورّدين أو شيكات أو خطط سداد أو مبيعات على الكاونتر: %1$d</string>
+    <string name="bin_party_kept">بقي في السلة: لا تزال لهذا العميل فواتير مورّدين أو شيكات أو خطط سداد أو مبيعات على الكاونتر. استعِد العميل للتعامل معها.</string>
 
     <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
     <string name="pdf_stmt_paid_to_you">دُفع لك</string>

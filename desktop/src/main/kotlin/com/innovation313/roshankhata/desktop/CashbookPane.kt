@@ -66,6 +66,8 @@ fun CashbookPane(dao: KhataDao) {
     val expense by remember { dao.observeCashExpense() }.collectAsState(0.0)
     var adding by remember { mutableStateOf<Boolean?>(null) }
     var deleting by remember { mutableStateOf<CashEntry?>(null) }
+    // A line a counter ticket or a return wrote: said where to change it (22 Oct 2026, the review).
+    var ownedBy by remember { mutableStateOf<String?>(null) }
     var closing by remember { mutableStateOf(false) }
     if (closing) DayCloseDialog(dao) { closing = false }
     var reporting by remember { mutableStateOf(false) }
@@ -115,7 +117,14 @@ fun CashbookPane(dao: KhataDao) {
                             color = if (e.isIncome) Look.accent else c.owedToMe,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                         )
-                        IconAction("ic_close", word(W.delete), { Gates.edit { deleting = e } }, Modifier.width(32.dp))
+                        IconAction("ic_close", word(W.delete), {
+                            Gates.edit {
+                                scope.launch {
+                                    val owner = withContext(Dispatchers.IO) { runCatching { dao.cashOwner(e.id) }.getOrNull() }
+                                    if (owner != null) ownedBy = owner else deleting = e
+                                }
+                            }
+                        }, Modifier.width(32.dp))
                     }
                     Rule()
                 }
@@ -154,12 +163,24 @@ fun CashbookPane(dao: KhataDao) {
                 TextButton(
                     onClick = {
                         deleting = null
-                        scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCashEntry(e.id); dao.audit(AuditActs.CASH_DELETED, "cashbook", e.id, auditAmount(e.amount)) } }
+                        scope.launch {
+                            // Checked again inside the delete's own transaction, with its audit row.
+                            val done = withContext(Dispatchers.IO) { runCatching { dao.softDeleteOwnCashEntry(e.id, auditAmount(e.amount)) }.getOrDefault(false) }
+                            if (!done) ownedBy = "sale"
+                        }
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
                 ) { Text(word(W.delete)) }
             },
             dismissButton = { TextButton({ deleting = null }) { Text(word(W.cancel)) } }
+        )
+    }
+    ownedBy?.let { owner ->
+        AlertDialog(
+            onDismissRequest = { ownedBy = null },
+            title = { Text(word(W.entry_linked_title)) },
+            text = { Text(word(if (owner == "return") W.entry_linked_return else W.entry_linked_sale)) },
+            confirmButton = { TextButton({ ownedBy = null }) { Text(word(W.ok)) } }
         )
     }
 }

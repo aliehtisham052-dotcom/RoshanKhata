@@ -554,7 +554,8 @@ private fun Book(
     var searchTick by remember { mutableIntStateOf(0) }
     val searchFocus = remember { androidx.compose.ui.focus.FocusRequester() }
     var editingParty by remember { mutableStateOf<Party?>(null) }
-    var purging by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
+    // What to say after (null: nothing): a customer the bin keeps is said, not "deleted forever" (22 Oct 2026).
+    var purging by remember { mutableStateOf<Pair<String, suspend () -> String?>?>(null) }
     // Whether this computer is a counter is the book's word as well as the settings file's
     // (21 Oct 2026): read each time the book opens or comes back from a copy.
     LaunchedEffect(reload) { withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Access.applyBook(dao) } } }
@@ -1494,9 +1495,12 @@ private fun Book(
                         deletingMany = false
                         scope.launch {
                             // The phone's bulk delete: every one and their entries, one timestamp, one transaction.
-                            withContext(Dispatchers.IO) { dao.softDeleteParties(gone.map { it.id }) }
-                            if (selected?.let { it in chosenIds } == true) selected = null
+                            // A customer with posted counter tickets stays, and is named (22 Oct 2026, the review).
+                            val kept = withContext(Dispatchers.IO) { dao.softDeleteParties(gone.map { it.id }) }
+                            if (selected?.let { it in chosenIds && it !in kept } == true) selected = null
                             chosenIds = emptySet(); selecting = false
+                            if (kept.isNotEmpty()) told = words.text(W.entry_linked_title) to
+                                words.text(W.party_has_tickets, gone.filter { it.id in kept }.joinToString(", ") { com.innovation313.roshankhata.ui.Format.isolate(it.name) })
                             reload++
                         }
                     },
@@ -1517,8 +1521,10 @@ private fun Book(
                         deletingParty = null
                         scope.launch {
                             // The phone's delete: the customer and their entries, one timestamp, one transaction.
-                            withContext(Dispatchers.IO) { dao.softDeleteParties(listOf(p.id)) }
-                            selected = null
+                            val kept = withContext(Dispatchers.IO) { dao.softDeleteParties(listOf(p.id)) }
+                            if (kept.isNotEmpty()) told = words.text(W.entry_linked_title) to
+                                words.text(W.party_has_tickets, com.innovation313.roshankhata.ui.Format.isolate(p.name))
+                            else selected = null
                             reload++
                         }
                     },
@@ -1584,9 +1590,19 @@ private fun Book(
                         reload++
                     }
                 },
-                onPurgeParty = { p -> purging = Pair(words.text(W.delete_party_forever_confirm, p.name), suspend { dao.purgeParty(p.id) }) },
-                onPurgeEntry = { e -> purging = Pair(words.text(W.delete_entry_forever_confirm, e.entryNumber), suspend { dao.purgeEntry(e.id) }) },
-                onEmpty = { purging = Pair(words.text(W.empty_bin_confirm), suspend { dao.purgeAllEntries(); dao.purgeAllParties() }) }
+                onPurgeParty = { p ->
+                    purging = Pair(words.text(W.delete_party_forever_confirm, p.name), suspend {
+                        if (dao.purgeParty(p.id) > 0) null else words.text(W.bin_party_kept)
+                    })
+                },
+                onPurgeEntry = { e -> purging = Pair(words.text(W.delete_entry_forever_confirm, e.entryNumber), suspend { dao.purgeEntry(e.id); null }) },
+                onEmpty = {
+                    purging = Pair(words.text(W.empty_bin_confirm), suspend {
+                        // Entries binned on their own first; a binned customer's go with him (the cascade).
+                        dao.purgeAllEntries(); dao.purgeAllParties()
+                        dao.binnedPartyCount().takeIf { it > 0 }?.let { words.text(W.bin_emptied_kept, it) }
+                    })
+                }
             )
             purging?.let { (text, go) ->
                 AlertDialog(
@@ -1597,7 +1613,11 @@ private fun Book(
                         TextButton(
                             onClick = {
                                 purging = null
-                                scope.launch { withContext(Dispatchers.IO) { go() }; reload++ }
+                                scope.launch {
+                                    val said = withContext(Dispatchers.IO) { runCatching { go() }.getOrElse { words.text(W.backup_failed) } }
+                                    reload++
+                                    if (said != null) told = words.text(W.delete_forever) to said
+                                }
                             },
                             colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
                         ) { Text(word(W.delete_forever)) }
