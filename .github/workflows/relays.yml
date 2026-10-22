@@ -104,9 +104,10 @@ jobs:
             echo "::error::SUPABASE_ACCESS_TOKEN is not set; nothing deployed."
             exit 1
           fi
+      # Pinned: "latest" asks GitHub's API for the newest release and was refused for the rate limit (22 Oct 2026).
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.120.0
       - name: Deploy (the book's pass is the check, so Supabase's JWT check is off)
         run: |
           set +e
