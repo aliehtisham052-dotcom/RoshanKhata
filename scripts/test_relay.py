@@ -154,4 +154,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit:
+        raise
+    except BaseException as e:  # a crash is said as plainly as a failed check
+        import traceback
+        where = traceback.extract_tb(e.__traceback__)[-1]
+        msg = "%s: %s (line %d: %s)" % (type(e).__name__, str(e)[:400], where.lineno, (where.line or "").strip()[:200])
+        print("CRASH " + msg)
+        if os.environ.get("GITHUB_ACTIONS"):
+            print("::error title=relay check crashed::" + msg + " -- passed so far: %s" % ", ".join(FAILED or ["(none failed)"]))
+        sys.exit(2)
