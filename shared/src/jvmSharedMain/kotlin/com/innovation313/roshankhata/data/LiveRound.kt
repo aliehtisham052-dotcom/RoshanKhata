@@ -114,8 +114,12 @@ object LiveRound {
             host = host, port = t?.port, seen = now
         )
         LiveSync.prune(sql)
-        val fp = if (request.has("fp") && reply.has("fp")) request.getString("fp") == reply.getString("fp") else null
         val sentParcelMore = request.optJSONObject("parcel")?.optBoolean("more", false) == true
+        // The two fingerprints say the same moment only when nothing was still on its way: the phone's was
+        // taken before the computer's changes reached it (22 Oct 2026: a round that carried the computer's
+        // own changes was read as two different books). Otherwise: not known yet, asked again next round.
+        val quiet = parcel.changes.isEmpty() && !parcel.more && !sentParcelMore && !reply.has("need") && refused == null
+        val fp = if (quiet && request.has("fp") && reply.has("fp")) request.getString("fp") == reply.getString("fp") else null
         return Took(parcel.more || sentParcelMore || reply.has("need"), wrote, fp, refused)
     }
 }
