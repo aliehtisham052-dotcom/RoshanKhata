@@ -21,8 +21,8 @@ No account, no server, no ads. Everything stays on the phone.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
 - About 2,450 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 37 (schema JSON checked in up to 31; CI writes the rest);
-  backup format 13
+- Room database, version 38 (schema JSON checked in up to 31; CI writes the rest);
+  backup format 14
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -312,12 +312,56 @@ leaves an **audit row** with the signed-in name.
   hours / days ≤ 62 / months; time runs from the reading side in RTL);
   dues by age (`Aging`: 0–30/31–60/61–90/90+, payments clear the oldest
   first) — phone `AgingActivity` (Follow-up, report menu), Windows page.
-- **Not built:** live multi-device sync (merge is by copy, not live),
+- **Not built (as of 21 Oct):** live multi-device sync (built 22 Oct, below),
   country tax packs (FBR/ZATCA e-invoicing), a dynamic payment QR with the
   amount (needs the bank's merchant service), device-own number series
   (merge renumbers instead), customer display and stock transfer on the
   phone. Nothing above was tested on a real device, printer, drawer, scale
   or second monitor — CI only.
+
+### Live sync (22 Oct 2026, branch kmp-desktop-15 — the owner: "implement karna hai")
+
+The phone and the computer keep one book together, change by change. Nothing
+of it was tried on two real devices yet — CI only.
+
+- **Schema 38, backup format 14** (`Schema38`): a `uid` on the 15 tables that
+  had none (parties, products, plans, instalments, bill/invoice/entry items,
+  day_close, schemes, staff, attendance, sale lines and payments, return and
+  order lines) and an index on every uid table (27). Frozen once pushed.
+- **The door to SQLite** (`SyncSql`, expect/actual): the phone through
+  `runInTransaction` + the open helper, the computer through
+  `useWriterConnection { immediateTransaction }`. Raw SQL, types 'I'/'R'/'T'.
+- **The engine** (`LiveSync`, `SyncSchema`): triggers (`rksync_ins/upd/del_<t>`)
+  write `sync_log` in the same transaction; `sync_mute` stops echoes while a
+  parcel is written. Rows travel by uid with their links as uids; photo paths
+  never travel; natural keys (product nameKey, party qrToken, day_close day,
+  attendance staff+day) meet by the lower uid and an alias. A row both sides
+  changed is decided alike on both (higher device id wins, the other kept in
+  `sync_conflict`, a delete wins). A gap asks again; `fingerprint` (SHA-256 of
+  canonical rows) says whether the two books are the same. `SyncSchema` must
+  list every uid table (LiveSyncTest holds it to Schema38).
+- **WiFi road** (`LiveWire`, `LiveRound`): port 47313, QR `rklive:1?`.
+  Pairing (RKA1, sealed with the code's secret): the phone sends its sync
+  identity and whole book; the computer shows the usual restore
+  confirmation (no merge for a live pairing), and on yes disables, restores,
+  `LiveDesk.join` (enable(adopt) + the phone as peer at its seq). Rounds
+  (RKL1, sealed with the book key, AES-256-GCM): request → answer → take.
+  Phone: `LiveRunner` (a round every 4 s while the app is on screen, a
+  fingerprint every 30 min), a card on Backup. Computer: `LiveDesk`
+  (listens while the book syncs), More → Live sync window; a replace
+  restore of a syncing book turns live sync off first.
+- **Relay road** (`LiveCloud`, `cloud/worker`): a Cloudflare Worker with one
+  SQLite Durable Object per book; it carries the same sealed messages and can
+  open none. Pass = HMAC-SHA256(book key, "rk-relay-v1:" + book), set by the
+  first hello. Parcels go once the others acked them, or after 7 days.
+  Optional FCM wake-up (data only). **Closed until `LiveCloud.base` is set**;
+  `cloud-worker.yml` type-checks and smoke tests it on every push and
+  deploys only by hand with `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`.
+- **Kill switch** (`LiveControl`): `live.json` on the `live-control`
+  release, `{"live":false}` halts everyone; a 404 means live. Read every 6 h.
+- Not yet: device-own number series (two devices can both make S-12), the
+  audit chain stays per device, FCM on the phone (needs the owner's
+  google-services file, never in this public repo).
 
 ### The shared module (KMP)
 
@@ -527,6 +571,13 @@ Each of these cost a build or a bug.
     `<plurals>`; direction icons on Windows go through `Glyph`/`MonoTile`
     (flipped in RTL); names and figures in a sentence are
     `Format.isolate`/`Format.ltr`.
+31. **A row with a random uid never equals its copy.** Tests that compare
+    entities read back from a backup or another book compare
+    `copy(uid = null)` (BackupCodecDesktopTest failed on schema 38).
+32. **The on-device migration test runs the newest Schema's lines too.**
+    `StaffMigrationOnDeviceTest` compares migrated tables with Room's own;
+    any new column or index on those tables goes into its list of
+    statements, or the on-device run fails (55e79c5).
 
 ---
 
