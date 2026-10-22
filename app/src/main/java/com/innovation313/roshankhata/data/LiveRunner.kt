@@ -42,6 +42,8 @@ object LiveRunner {
     private const val INSTALL = "install"
     private const val ROUND_MS = 4_000L
     private const val FINGERPRINT_EVERY_MS = 30 * 60_000L
+    /** Through the relay a round is slower and counted against a daily limit: every 15 s. */
+    private const val CLOUD_MS = 15_000L
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var job: Job? = null
@@ -108,7 +110,13 @@ object LiveRunner {
                 if (took.more) 200L else ROUND_MS
             }
             LiveWire.Answer.NotHere -> { state.value = Status.Waiting; ROUND_MS * 2 }
-            LiveWire.Answer.Unreachable -> { state.value = Status.Unreachable; ROUND_MS * 3 }
+            LiveWire.Answer.Unreachable -> {
+                // Not on the shop's WiFi: the relay, once it has an address (Marhala 2; closed until then).
+                when (LiveCloud.round(sql)) {
+                    is LiveCloud.Result.Done -> { state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer); CLOUD_MS }
+                    else -> { state.value = Status.Unreachable; ROUND_MS * 3 }
+                }
+            }
         }
     }
 }
