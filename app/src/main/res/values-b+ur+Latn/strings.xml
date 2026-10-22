@@ -3471,7 +3471,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_mismatch">Dono khate aapas mein nahi milte. Nayi copy ke liye dobara jorein.</string>
     <string name="live_sent">Bhej diya. Computer par haan dabayein taake us ka khata is phone ke khate se badal jaye.</string>
     <string name="live_not_live_code">Yeh live sync ka code nahi. Computer par Live sync kholein aur wahan dikhne wala code scan karein.</string>
-    <string name="live_pc_steps">Phone par Backup → Computer ke saath live sync → Computer se jorein kholein aur yeh code scan karein. Aap ki haan ke baad computer ka khata phone ke khate se badal jayega, aur phir dono ek jaise rahenge.</string>
+    <string name="live_pc_steps">Phone par Backup → Computer ke saath live sync → Computer se jorein kholein aur yeh code scan karein. Aap ki haan ke baad phone ka khata yahan naye business ke taur par khulega (is computer ka apna khata waisa hi rahega), aur phir dono ek jaise rahenge.</string>
     <string name="live_pc_none">Abhi koi phone nahi jura.</string>
     <string name="live_conflicts">Dono par ek saath tabdeeli (ek rakhi gayi, doosri mehfooz ki gayi): %1$d</string>
     <string name="live_pair_warning">Yeh phone ka khata hai. Is computer ka apna khata bilkul waisa rakhne ke liye naye business ke taur par jorein: phone ka khata us ke saath alag khulega aur yahan se kuch nahi mitega. “Sab Kuch Badal Dein” sirf tab dabayein jab is computer ka khata zaroori na ho.</string>
