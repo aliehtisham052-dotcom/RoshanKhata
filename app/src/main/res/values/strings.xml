@@ -3688,4 +3688,10 @@ You can change this any time from this screen.</string>
     <string name="live_pc_steps">On the phone open Backup → Live sync with the computer → Join the computer, and scan this code. After your yes, the computer’s book is replaced with the phone’s, and from then on both stay the same.</string>
     <string name="live_pc_none">No phone has joined yet.</string>
     <string name="live_conflicts">Changed on both at once (one was kept, the other saved): %1$d</string>
+    <string name="live_pair_warning">This is the phone’s book. To keep this computer’s own book exactly as it is, join as a new business: the phone’s book opens beside it and nothing here is removed. Replace everything only if this computer’s book is not needed.</string>
+    <string name="live_join_new_business">Join as a new business</string>
+    <string name="live_devices">Joined devices</string>
+    <string name="live_remove">Remove</string>
+    <string name="live_remove_confirm">Remove %1$s? It stops syncing with this computer. Its own book stays as it is.</string>
+    <string name="live_needs_owner">Joining a device to live sync needs the owner’s PIN.</string>
 </resources>

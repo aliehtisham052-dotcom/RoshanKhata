@@ -74,6 +74,17 @@ object LiveDesk {
     /** A pairing that arrived and waits for the owner's confirmation. */
     val offers = MutableStateFlow<LiveWire.Offer?>(null)
 
+    /** Counts the pairings finished on this computer, so the open book reads itself again. */
+    val joined = MutableStateFlow(0L)
+
+    /** A phone's book the owner chose to keep as a new business: taken by that business's book when it opens. */
+    @Volatile private var pending: Pair<LiveWire.Offer, com.innovation313.roshankhata.data.BackupCodec.ParsedBackup>? = null
+
+    fun keepPending(offer: LiveWire.Offer, data: com.innovation313.roshankhata.data.BackupCodec.ParsedBackup) { pending = offer to data }
+
+    @Synchronized
+    fun takePending(): Pair<LiveWire.Offer, com.innovation313.roshankhata.data.BackupCodec.ParsedBackup>? = pending.also { pending = null }
+
     /** This computer's own install id, made once and kept beside the books. */
     fun install(home: File): String {
         val f = File(home, "live.install")
@@ -143,7 +154,9 @@ object LiveDesk {
         val sql = book.syncSql()
         LiveSync.enable(sql, install(home), name(), adopt = offer.book to offer.key)
         LiveSync.putPeer(sql, offer.device, name = offer.name, sent = 0, recv = offer.seq, seen = System.currentTimeMillis())
+        db = book
         start()
+        joined.value = joined.value + 1
     }
 }
 
@@ -159,6 +172,8 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
     val hosts = remember { PhoneSync.lanAddresses() }
     val port = remember { LiveDesk.start() }
     var state by remember { mutableStateOf<LiveSync.State?>(null) }
+    // A joined device the owner is about to remove: (device id, its name).
+    var removing by remember { mutableStateOf<Pair<String, String>?>(null) }
     val qr: ImageBitmap? = remember {
         if (port == null || hosts.isEmpty()) null
         else runCatching {
@@ -182,6 +197,24 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
         }
     }
 
+    removing?.let { (device, name) ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { removing = null },
+            text = { Text(word(W.live_remove_confirm, name)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton({
+                    removing = null
+                    scope.launch {
+                        state = withContext(Dispatchers.IO) {
+                            runCatching { LiveSync.removePeer(book.syncSql(), device); LiveSync.state(book.syncSql()) }.getOrNull()
+                        }
+                    }
+                }) { Text(word(W.live_remove), color = c.owedToMe) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ removing = null }) { Text(word(W.cancel)) } }
+        )
+    }
+
     DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.live_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(860.dp))) {
         Box(Modifier.fillMaxSize().background(c.surface)) {
             Column(
@@ -199,11 +232,19 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                 val peers = s?.peers.orEmpty()
                 if (s == null || !s.on) Text(word(W.live_status_off), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 else if (peers.isEmpty()) Text(word(W.live_pc_none), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                else peers.forEach { p ->
-                    Text(
-                        word(W.live_status_live, p.name?.takeIf { it.isNotBlank() } ?: "—", p.seen?.let { Format.dateTime(it) } ?: "—"),
-                        color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Medium
-                    )
+                else {
+                    Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    peers.forEach { p ->
+                        val name = p.name?.takeIf { it.isNotBlank() } ?: "—"
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                word(W.live_status_live, name, p.seen?.let { Format.dateTime(it) } ?: "—"),
+                                color = c.brandGreenText, fontSize = 14.sp, fontWeight = FontWeight.Medium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            FluentButton(word(W.live_remove), { removing = p.device to name }, kind = ButtonKind.SUBTLE)
+                        }
+                    }
                 }
                 if ((s?.conflicts ?: 0) > 0) Text(word(W.live_conflicts, s!!.conflicts), color = c.textMuted, fontSize = 13.sp)
                 Text(word(W.wifi_pc_firewall), color = c.textMuted, fontSize = 12.sp)

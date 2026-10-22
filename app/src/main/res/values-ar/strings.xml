@@ -3686,4 +3686,10 @@
     <string name="live_pc_steps">على الهاتف افتح النسخ الاحتياطي ← مزامنة مباشرة مع الحاسوب ← الربط بالحاسوب، وامسح هذا الرمز. بعد موافقتك يُستبدل دفتر الحاسوب بدفتر الهاتف، ومن بعدها يبقى الاثنان متطابقين.</string>
     <string name="live_pc_none">لم يُربط أي هاتف بعد.</string>
     <string name="live_conflicts">تغيّر على الجهازين معًا (أُبقي أحدهما وحُفظ الآخر): %1$d</string>
+    <string name="live_pair_warning">هذا دفتر الهاتف. لإبقاء دفتر هذا الحاسوب كما هو تمامًا، انضمّ كنشاط تجاري جديد: يُفتح دفتر الهاتف بجانبه ولا يُحذف شيء هنا. اختر «استبدال كل شيء» فقط إذا لم تكن بحاجة إلى دفتر هذا الحاسوب.</string>
+    <string name="live_join_new_business">الانضمام كنشاط تجاري جديد</string>
+    <string name="live_devices">الأجهزة المتصلة</string>
+    <string name="live_remove">إزالة</string>
+    <string name="live_remove_confirm">إزالة %1$s؟ سيتوقف عن المزامنة مع هذا الحاسوب. يبقى دفتره كما هو.</string>
+    <string name="live_needs_owner">ربط جهاز بالمزامنة المباشرة يتطلب رمز PIN الخاص بالمالك.</string>
 </resources>

@@ -183,6 +183,27 @@ object AccessUi {
         }
     }
 
+    /**
+     * [then] only after the owner's own PIN, even when the owner is signed in
+     * (22 Oct 2026: joining a device to live sync hands it the whole book).
+     * A book with no owner PIN yet goes straight on — there is no PIN to ask.
+     */
+    fun ownerFirst(activity: Activity, dao: KhataDao, what: String, then: () -> Unit) {
+        AppScope.launch {
+            val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
+            activity.runOnUiThread {
+                if (activity.isFinishing) return@runOnUiThread
+                if (owner == null) { then(); return@runOnUiThread }
+                askPin(activity, activity.getString(R.string.access_owner) + " · " + what) { pin ->
+                    check(activity, dao, pin, Access.OWNER, { typed -> owner.matches(typed) }) {
+                        log(dao, AuditAction.MANAGER_OVERRIDE, Access.OWNER, what)
+                        then()
+                    }
+                }
+            }
+        }
+    }
+
     /** One allowance a manager or the owner just gave, taken by the call it was given for. */
     @Volatile private var granted: Access.Permission? = null
 
