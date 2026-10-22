@@ -121,6 +121,15 @@ object LiveDesk {
         server = sock
         stopped = false
         serveOn(sock)
+        // A phone that lost this computer's address calls for it on the same port (UDP): answered here.
+        runCatching {
+            java.net.DatagramSocket(null as java.net.SocketAddress?).apply {
+                reuseAddress = true; broadcast = true; bind(java.net.InetSocketAddress(LiveWire.PORT))
+            }
+        }.getOrNull()?.let { u ->
+            seeker = u
+            thread(isDaemon = true, name = "live-seek") { LiveWire.answerSeeks(u, { stopped }, { key() }) }
+        }
         // Not on LiveWire.PORT: a phone already joined will not find this port, so the right one is asked
         // for again every ten seconds and served as well once it is free.
         if (sock.localPort != LiveWire.PORT) {
@@ -152,6 +161,8 @@ object LiveDesk {
 
     /** The port the phone knows, opened late after another was taken first. */
     @Volatile private var extra: ServerSocket? = null
+    /** Where phones' calls for this computer are answered. */
+    @Volatile private var seeker: java.net.DatagramSocket? = null
 
     private fun serveOn(sock: ServerSocket) {
         thread(isDaemon = true, name = "live-sync") {
@@ -171,8 +182,10 @@ object LiveDesk {
         stopped = true
         runCatching { server?.close() }
         runCatching { extra?.close() }
+        runCatching { seeker?.close() }
         server = null
         extra = null
+        seeker = null
     }
 
     private fun key(): String? = db?.let { d -> runCatching { runBlocking { LiveSync.identity(d.syncSql())?.key } }.getOrNull() }

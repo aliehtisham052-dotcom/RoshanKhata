@@ -50,6 +50,8 @@ object LiveRunner {
     private val state = MutableStateFlow<Status>(Status.Off)
     val status: StateFlow<Status> get() = state
     private var lastFingerprint = 0L
+    private var lastSeek = 0L
+    private const val SEEK_EVERY_MS = 30_000L
     private val fingerprintBad = MutableStateFlow(false)
     /** The last check of the whole book found the two devices different. */
     val mismatch: StateFlow<Boolean> get() = fingerprintBad
@@ -115,6 +117,17 @@ object LiveRunner {
             }
             LiveWire.Answer.NotHere -> { state.value = Status.Waiting; ROUND_MS * 2 }
             LiveWire.Answer.Unreachable -> {
+                // The computer may have a new address on the same WiFi (a day off, a router restart): it is
+                // called for by the book's own tag, at most twice a minute, and kept once it answers.
+                if (now - lastSeek > SEEK_EVERY_MS) {
+                    lastSeek = now
+                    val found = LiveWire.seek(key)
+                    if (found != null && found !in hosts) {
+                        LiveRound.setTarget(sql, target.copy(hosts = (listOf(found) + target.hosts).distinct().take(4)))
+                        peer?.let { LiveSync.putPeer(sql, it.device, host = found) }
+                        return 200L
+                    }
+                }
                 // Not on the shop's WiFi: the relay, once it has an address (Marhala 2; closed until then).
                 when (LiveCloud.round(sql)) {
                     is LiveCloud.Result.Done -> { state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer); CLOUD_MS }
