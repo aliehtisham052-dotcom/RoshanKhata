@@ -73,3 +73,12 @@ jobs:
             if [ $code -ne 0 ]; then echo "::error::$line"; else echo "::notice::$line"; fi
           done
           exit $code
+      - name: Health check (the deployed relay answers on its public address)
+        run: |
+          url="https://roshan-khata-daakiya.innovation313.workers.dev/v1/health"
+          for i in $(seq 1 12); do
+            body=$(curl -s -m 10 "$url" || true)
+            if echo "$body" | grep -q '"ok":true'; then echo "::notice::relay health: $body"; exit 0; fi
+            sleep 15
+          done
+          echo "::error::relay did not answer at $url (last: $body)"; exit 1
