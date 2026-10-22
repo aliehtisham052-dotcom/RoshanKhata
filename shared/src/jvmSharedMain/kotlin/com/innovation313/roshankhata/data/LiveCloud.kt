@@ -4,7 +4,6 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -168,7 +167,7 @@ object LiveCloud {
             val list = o.getJSONArray("parcels")
             for (i in 0 until list.length()) {
                 val p = list.getJSONObject(i)
-                val sealed = Base64.getDecoder().decode(p.getString("body"))
+                val sealed = B64.decode(p.getString("body"))
                 val plainBytes = LiveWire.open(id.key, sealed)
                 if (plainBytes != null) {
                     val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()

@@ -243,7 +243,7 @@ object LiveSync {
     fun validMark(m: String?): Boolean = m != null && Regex("[A-Z][A-Z0-9]{0,3}").matches(m)
 
     /** B to Z from a device id, for a device nobody gave a letter: never the book-maker's A. */
-    private fun markFromDevice(device: String): String = markAt(1 + Math.floorMod(device.hashCode(), 25))
+    private fun markFromDevice(device: String): String = markAt(1 + device.hashCode().mod(25))
 
     suspend fun identity(sql: SyncSql): Identity? = sql.read {
         if (!hasTables() || meta("on") != "1") return@read null
@@ -707,7 +707,8 @@ object LiveSync {
             val now = SyncSchema.table(table)?.let { t -> rowOut(t, uid, cache) }
             fun text(o: JSONObject?, k: String): String? = o?.let { if (!it.has(k) || it.isNull(k)) null else it.get(k).toString() }
             val fields = if (lost != null && now != null) {
-                (lost.keySet() + now.keySet()).filter { it != "uid" }.sorted().mapNotNull { k ->
+                // keys(), not keySet(): Android's JSONObject has no keySet (22 Oct 2026, the phone's build).
+                (lost.keys().asSequence().toSet() + now.keys().asSequence().toSet()).filter { it != "uid" }.sorted().mapNotNull { k: String ->
                     val a = text(now, k); val b = text(lost, k)
                     if (a == b || (a?.toDoubleOrNull() != null && a.toDoubleOrNull() == b?.toDoubleOrNull())) null else Triple(k, a, b)
                 }
