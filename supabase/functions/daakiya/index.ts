@@ -135,8 +135,8 @@ async function handle(request: Request): Promise<Response> {
   let body: Uint8Array | null = null;
   let o: Record<string, unknown> | null = null;
   if (action === "send") {
-    const len = Number(request.headers.get("content-length") ?? "-1");
-    if (len > MAX_PARCEL) return refuse(413, "too-big");
+    // Read whole before answering, even when too big: Supabase's gateway holds an answer given before the
+    // body was read until the upload ends, and the caller timed out (22 Oct 2026, the deployed check).
     body = new Uint8Array(await request.arrayBuffer());
     if (body.length === 0) return refuse(400, "empty");
     if (body.length > MAX_PARCEL) return refuse(413, "too-big");
