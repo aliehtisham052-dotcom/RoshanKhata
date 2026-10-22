@@ -261,11 +261,15 @@ object LiveCloud {
             if (posted < acked) { posted = acked; resends = 0; setMeta(sql, k("resends", id.book, tag), "0") }
             val acksNow = state.peers.joinToString(",") { it.device + ":" + it.recv }
             val acksTold = getMeta(sql, k("acks", id.book, tag))
+            // A gap found in the last round's take is said in this round's parcel (the parcel is composed before
+            // the take, so a "need" not yet told is a reason to send on its own).
+            val needNow = state.peers.joinToString(",") { it.device + ":" + getMeta(sql, k("need_" + it.device, id.book)).orEmpty() }
+            val needTold = getMeta(sql, k("need_told", id.book, tag))
             val last = LiveSync.lastSeq(sql)
             var sealed: ByteArray? = null
             var parcelTo = 0L
             var parcelMore = false
-            if (send && (last > posted || acksNow != acksTold)) {
+            if (send && (last > posted || acksNow != acksTold || needNow != needTold)) {
                 // Kept under the relay's own limit: a page of long rows goes as several smaller ones
                 // (22 Oct 2026, the review: a page over 1 MB was refused and sent again, unchanged, for ever).
                 var page = LiveSync.PAGE
@@ -291,23 +295,27 @@ object LiveCloud {
                 put("upTo", ackDue ?: JSONObject.NULL)
                 put("parcel", sealed?.let { B64.encode(it) } ?: JSONObject.NULL)
             }.toString().toByteArray(Charsets.UTF_8)
-            var oneCall = legacy[root] != true
-            var (code, o) = if (oneCall) call("POST", "round", roundBody(after), "application/json") else (0 to null)
-            if (oneCall && code == 404 && o?.optString("why") == "no-such-path") { legacy[root] = true; oneCall = false }
-            if (!oneCall) {
-                // The old way: take, then ack, then send.
-                val r = call("GET", "take?after=$after")
-                code = r.first; o = r.second
+            // "round" where the relay has it; a relay that answers "no such path" (uploaded before it existed) is
+            // asked the old way, take first, from then on — also when the path is only found after a hello.
+            fun ask(a: Long): Pair<Int, JSONObject?> {
+                if (legacy[root] != true) {
+                    val r = call("POST", "round", roundBody(a), "application/json")
+                    if (!(r.first == 404 && r.second?.optString("why") == "no-such-path")) return r
+                    legacy[root] = true
+                }
+                return call("GET", "take?after=$a")
             }
+            var (code, o) = ask(after)
             if (code == 403 && o?.optString("why") == "say-hello-first") {
                 // The relay no longer knows this device (its box emptied after a month unused, or made again):
                 // hello again instead of asking for ever (22 Oct 2026, the review).
                 hello()?.let { return it }
                 after = 0L
-                val again = if (oneCall) call("POST", "round", roundBody(0L), "application/json") else call("GET", "take?after=0")
+                val again = ask(0L)
                 code = again.first
                 o = again.second
             }
+            val oneCall = legacy[root] != true
             if (code == 503) return Result.Halted
             val got = o
             if (code != 200 || got == null) return Result.Refused(got?.optString("why") ?: (if (oneCall) "round $code" else "take $code"))
@@ -319,6 +327,7 @@ object LiveCloud {
                     setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcelTo).toString())
                     setMeta(sql, k("sent_at", id.book, tag), now.toString())
                     setMeta(sql, k("acks", id.book, tag), acksNow)
+                    setMeta(sql, k("need_told", id.book, tag), needNow)
                     if (resending) setMeta(sql, k("resends", id.book, tag), (resends + 1).toString())
                     sent = true
                 }
@@ -357,6 +366,7 @@ object LiveCloud {
                 setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcelTo).toString())
                 setMeta(sql, k("sent_at", id.book, tag), now.toString())
                 setMeta(sql, k("acks", id.book, tag), acksNow)
+                setMeta(sql, k("need_told", id.book, tag), needNow)
                 if (resending) setMeta(sql, k("resends", id.book, tag), (resends + 1).toString())
                 sent = true
             }

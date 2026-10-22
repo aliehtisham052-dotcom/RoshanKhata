@@ -144,7 +144,9 @@ class LiveCloudTest {
     fun `entries made on each side meet through the relay alone`() = runBlocking {
         phone.khataDao().insertParty(Party(name = "Ali"))
         pc.khataDao().insertParty(Party(name = "Bilal"))
-        both()
+        // Three rounds: the rows, then each side's word on how far it read (a round's parcel is composed
+        // before its take, so the acknowledgements go a round later).
+        both(3)
         assertEquals(setOf("Ali", "Bilal"), phone.khataDao().allPartiesForBackup().map { it.name }.toSet())
         assertEquals(setOf("Ali", "Bilal"), pc.khataDao().allPartiesForBackup().map { it.name }.toSet())
         assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
@@ -251,7 +253,7 @@ class LiveCloudTest {
         LiveSync.putPeer(pc.syncSql(), phoneDev, recv = 0L)
         phone.khataDao().insertParty(Party(name = "After the gap"))
         // The phone's parcel starts past 0: a gap at the computer, said back as "need"; the phone starts again at 0.
-        both(4)
+        both(6)
         assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "After the gap" })
         assertEquals(1, pc.khataDao().allPartiesForBackup().count { it.name == "Before" })
         assertEquals(LiveSync.fingerprint(phone.syncSql()), LiveSync.fingerprint(pc.syncSql()))
