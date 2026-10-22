@@ -179,6 +179,8 @@ object LiveCloud {
                 // a message skipped would be a change lost.
                 setMeta(sql, k("after", id.book), "0")
                 setMeta(sql, k("hello", id.book), id.device)
+                // A device the relay meets anew has no wake-up address there: it is told again.
+                setMeta(sql, k("wake", id.book), "")
                 return null
             }
             if (getMeta(sql, k("hello", id.book)) != id.device) hello()?.let { return it }
@@ -248,6 +250,46 @@ object LiveCloud {
             return Result.Done(took, sent, more)
         } catch (e: java.io.IOException) {
             return Result.Unreachable
+        }
+    }
+
+    /**
+     * Leaves this phone's wake-up address (a Firebase token, [address]) at the
+     * relay, so a parcel left for it rings the phone while the app is closed;
+     * a null [address] takes it away. Said once per address and book (kept in sync_meta),
+     * and only while the owner keeps the relay on. The token says nothing of
+     * the book: the relay only asks Google to deliver "rk-wake" to it.
+     * True when the relay knows it now (or there was nothing to say).
+     */
+    suspend fun tellWake(
+        sql: SyncSql, address: String?, http: Http = plain, relay: String? = base,
+        halted: () -> Boolean = { LiveControl.halted() }
+    ): Boolean {
+        val root = relay?.trimEnd('/') ?: return false
+        val id = LiveSync.identity(sql) ?: return false
+        if (!allowed(sql)) return false
+        if (halted()) return false
+        val told = getMeta(sql, k("wake", id.book))
+        if ((told ?: "") == (address ?: "")) return true
+        val url = "$root/v1/b/${id.book}/"
+        val headers = mapOf(
+            "authorization" to "RK " + token(id.key, id.book),
+            "x-device" to id.device.take(16).padEnd(16, '0')
+        )
+        return try {
+            if (getMeta(sql, k("hello", id.book)) != id.device) {
+                val (code, _) = http.call("POST", url + "hello", headers, null)
+                if (code != 200) return false
+                setMeta(sql, k("after", id.book), "0")
+                setMeta(sql, k("hello", id.book), id.device)
+            }
+            val body = JSONObject().put("token", address ?: JSONObject.NULL).toString().toByteArray(Charsets.UTF_8)
+            val (code, _) = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
+            if (code != 200) return false
+            setMeta(sql, k("wake", id.book), address ?: "")
+            true
+        } catch (e: java.io.IOException) {
+            false
         }
     }
 }

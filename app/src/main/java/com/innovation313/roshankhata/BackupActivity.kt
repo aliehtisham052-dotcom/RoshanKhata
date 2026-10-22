@@ -130,7 +130,11 @@ class BackupActivity : BaseActivity() {
                 // Not on until the owner says so (the book's data would leave the shop's WiFi, sealed).
                 showingRelay = true; b.isChecked = false; showingRelay = false
                 com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_relay)) { setRelay(true) }
-            } else setRelay(false)
+            } else {
+                setRelay(false)
+                // Google forgets this phone's wake-up address too (PushWake).
+                com.innovation313.roshankhata.data.PushWake.off(this)
+            }
         }
         lifecycleScope.launch { LiveRunner.status.collect { showLive(it) } }
 

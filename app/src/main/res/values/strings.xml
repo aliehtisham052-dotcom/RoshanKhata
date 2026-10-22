@@ -3720,6 +3720,6 @@ You can change this any time from this screen.</string>
     <string name="live_status_not_accepted">The computer did not say yes in time. To join, scan its live sync code again.</string>
     <string name="live_status_not_here">The computer answered, but it is not keeping this book right now. Open this book’s business on the computer.</string>
     <string name="live_status_relay">Live with %1$s through the internet. Last update: %2$s</string>
-    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices.</string>
+    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
     <string name="live_relay">Also through the internet</string>
 </resources>

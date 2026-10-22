@@ -372,9 +372,25 @@ of it was tried on two real devices yet — CI only.
 - The phone finds a computer whose address changed (UDP call on 47313 with a
   tag from the book key); the computer keeps 47313 across restarts
   (exclusive bind off, the phone closes first); the window lists conflicts.
-- Not yet: the audit chain stays per device; FCM on the phone (needs the
-  owner's google-services file, never in this public repo); sync only while
-  the phone's app is on screen.
+- **Wake-up (FCM, 22 Oct 2026):** the owner registered both packages in the
+  Firebase project `roshan-khata` (Spark, free) and keeps google-services.json
+  as the secret `GOOGLE_SERVICES_JSON`; `scripts/google_services.py` writes it
+  in build.yml, instrumented.yml and aab.yml only when it names both packages,
+  and `app/build.gradle.kts` applies the google-services plugin (4.5.0) only
+  when the file is there — without it the app builds as before, no wake-up.
+  Firebase BoM 35.0.2 (messaging only, no Analytics). Messaging's auto-init is
+  off in the manifest: `PushWake.address` asks for a token only from a round
+  that found the relay on, `LiveCloud.tellWake` leaves it at the relay once per
+  token and book (sync_meta "cloud_wake", reset by every hello), and turning
+  the relay off on the phone deletes the token (`PushWake.off`). `WakeService`
+  takes "rk-wake" and runs up to five relay rounds within 15 s for the open
+  book (`PushWake.roundNow`; nothing while `LiveRunner.running`). **Data
+  safety:** Firebase Installations sends Google an installation ID, the app's
+  version and device basics — declare "Device or other IDs" (app
+  functionality), not shared; the privacy policy says so (section 17).
+  Not tried on a real phone yet. Only the open business's book is woken.
+- Not yet: the audit chain stays per device; the wake-up for a business that
+  is not the open one.
 
 ### The review (22 Oct 2026, kmp-desktop-15 — the owner: "critical analysis karo, drawbacks fix karo")
 
@@ -716,8 +732,9 @@ Each of these cost a build or a bug.
 ## Where the project stands
 
 **Play Store publishing is the blocker.** Nothing else matters as much.
-Screenshots, bilingual listing, content rating, data safety form (easy and
-strong — no data is collected), feature graphic, signed AAB.
+Screenshots, bilingual listing, content rating, data safety form (no data
+collected until live sync's wake-up reaches Play: then "Device or other IDs"
+for app functionality, see Live sync), feature graphic, signed AAB.
 
 Use dummy data for store screenshots. Real customer names and numbers must not
 appear in a public listing.
