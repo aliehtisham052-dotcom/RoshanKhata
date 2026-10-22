@@ -144,13 +144,16 @@ object LiveWire {
         val pair: String? = null
     )
 
-    fun encodeOffer(o: Offer): ByteArray {
+    fun encodeOffer(o: Offer): ByteArray = offerHead(o) + o.backup
+
+    /** What comes before the book in an offer: its identity as one line of JSON, and the line's end. */
+    fun offerHead(o: Offer): ByteArray {
         val head = JSONObject().apply {
             put("book", o.book); put("key", o.key); put("dev", o.device); put("name", o.name); put("seq", o.seq)
             if (o.mark != null) put("mark", o.mark)
             if (o.pair != null) put("pair", o.pair)
         }.toString().toByteArray(Charsets.UTF_8)
-        return head + byteArrayOf('\n'.code.toByte()) + o.backup
+        return head + byteArrayOf('\n'.code.toByte())
     }
 
     fun decodeOffer(bytes: ByteArray): Offer? = runCatching {
@@ -171,6 +174,27 @@ object LiveWire {
         data class Taken(val host: String) : Sent
         object Refused : Sent
         object Unreachable : Sent
+    }
+
+    /**
+     * Phone side: the offer with the book read from [backup] as it goes out
+     * (WifiSync.writeSealed), never held whole (22 Oct 2026, the review); the
+     * computer reads the same frame [sendOffer] sends. [offer]'s own backup
+     * bytes are not sent. Blocking.
+     */
+    fun sendOfferFile(invite: Invite, offer: Offer, backup: java.io.File, connectMs: Int = 3000, readMs: Int = 120_000): Sent {
+        val head = offerHead(offer)
+        for (host in invite.hosts) {
+            val socket = Socket()
+            try { socket.connect(InetSocketAddress(host, invite.port), connectMs) } catch (e: IOException) { runCatching { socket.close() }; continue }
+            socket.use { s ->
+                s.soTimeout = readMs
+                WifiSync.writeSealed(DataOutputStream(s.getOutputStream().buffered(1 shl 16)), PAIR, invite.secret, head, backup)
+                val answer = s.getInputStream().read()
+                return if (answer == OK) Sent.Taken(host) else Sent.Refused
+            }
+        }
+        return Sent.Unreachable
     }
 
     /** Phone side: the offer sealed with the code's secret, to the first address that answers. Blocking. */

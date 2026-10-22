@@ -33,6 +33,13 @@ export interface Env {
 
 const MAX_PARCEL = 1024 * 1024;
 const TAKE_PAGE = 40;
+/**
+ * A page of parcels stays under this much base64, however many fit (22 Oct
+ * 2026, the review: forty parcels of a megabyte came to some 54 MB, held whole
+ * by a phone in one answer). The first parcel always goes, so a page is never
+ * empty while parcels wait; `more` says to ask again.
+ */
+const TAKE_BYTES = 8 * 1024 * 1024;
 const HEX32 = /^[0-9a-f]{32}$/;
 const HEX64 = /^[0-9a-f]{64}$/;
 const DEVICE = /^[0-9a-f]{16}$/;
@@ -190,10 +197,15 @@ export class Daakiya extends DurableObject<Env> {
       after, device, TAKE_PAGE + 1,
     ).toArray();
     this.sql.exec(`UPDATE devices SET seen = ? WHERE device = ?`, now, device);
-    const more = rows.length > TAKE_PAGE;
-    const page = rows.slice(0, TAKE_PAGE).map((r) => ({
-      seq: r.seq, from: r.sender, at: r.at, body: toBase64(new Uint8Array(r.body)),
-    }));
+    const page: { seq: number; from: string; at: number; body: string }[] = [];
+    let bytes = 0;
+    for (const r of rows.slice(0, TAKE_PAGE)) {
+      const body = toBase64(new Uint8Array(r.body));
+      if (page.length > 0 && bytes + body.length > TAKE_BYTES) break;
+      page.push({ seq: r.seq, from: r.sender, at: r.at, body });
+      bytes += body.length;
+    }
+    const more = rows.length > page.length;
     // Parcels older than KEEP_DAYS were forgotten: a device asking from before them has missed some (it must pair again).
     const prunedPast = Number(this.meta("pruned_past") ?? "0");
     const gap = after < prunedPast;
@@ -313,6 +325,13 @@ async function sendWake(env: Env, fcmToken: string): Promise<boolean | "gone"> {
     headers: { authorization: "Bearer " + (await accessToken(env)), "content-type": "application/json" },
     body: JSON.stringify({ message: { token: fcmToken, data: { t: "rk-wake" }, android: { priority: "high", ttl: "600s" } } }),
   });
-  if (res.status === 404 || res.status === 400) return "gone";
+  // Only a token FCM no longer knows is let go (22 Oct 2026, the review: any 400 dropped it, and the
+  // device was never woken again until it registered anew). 404 is UNREGISTERED; a 400 is let go
+  // only when FCM says the registration token itself is not valid.
+  if (res.status === 404) return "gone";
+  if (res.status === 400) {
+    const text = await res.text().catch(() => "");
+    return /registration token/i.test(text) ? "gone" : false;
+  }
   return res.ok;
 }

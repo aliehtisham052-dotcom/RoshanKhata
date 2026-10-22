@@ -73,12 +73,23 @@ object DailyCopies {
 
     /**
      * The owner's second place (Phase 9c): a USB stick or the Google Drive
-     * folder. Each business gets its own folder there, named so a person
-     * browsing the stick knows what it is. Today's copy there is rewritten
-     * when the app opens and when it closes, so the day's last work leaves
-     * the computer too.
+     * folder. Each business gets its own folder there, and each computer its
+     * own, named so a person browsing the stick knows what it is:
+     * "Business-1 (SHOP-PC)". Today's copy there is rewritten when the app
+     * opens and when it closes, so the day's last work leaves the computer too.
+     *
+     * The computer's name since 22 Oct 2026 (the review): a shop computer and
+     * a home computer sharing one Google Drive folder both wrote
+     * Business-1/<day>.txt, each over the other's, and a damaged book could be
+     * rebuilt from the other computer's book. Copies an older version left in
+     * "Business-1" stay there, for a restore by hand.
      */
-    fun outside(folder: File, businessId: Long) = File(folder, "RoshanKhata-Backup/Business-$businessId")
+    fun outside(folder: File, businessId: Long, computer: String = computerName()) =
+        File(folder, "RoshanKhata-Backup/Business-$businessId ($computer)")
+
+    /** This computer's name as Windows gives it (letters, digits, - and _ only); "computer" where there is none. */
+    fun computerName(): String =
+        System.getenv("COMPUTERNAME").orEmpty().filter { it.isLetterOrDigit() || it == '-' || it == '_' }.take(40).ifEmpty { "computer" }
 
     /** The day a copy is of, from its name (yyyy-MM-dd…), or "" for a name that has none. */
     fun dayOf(f: File): String = f.name.take(10).takeIf { Regex("""\d{4}-\d{2}-\d{2}""").matches(it) }.orEmpty()
@@ -132,16 +143,27 @@ object DailyCopies {
             // Leftovers of a copy cut short (a power cut) go first; a fresh name for this one.
             dir.listFiles { f -> f.name.endsWith(".tmp") && now - f.lastModified() > DAY_MS }?.forEach { it.delete() }
             val tmp = File(dir, "$name.${System.nanoTime()}.tmp")
-            val written = runCatching {
-                tmp.bufferedWriter(Charsets.UTF_8).use {
-                    BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
-                }
-                BackupCodec.parseFile(tmp).first is BackupCodec.ImportResult.Ok &&
-                    runCatching {
+            // Written and read back on this computer's own disk first, and only then copied out
+            // (22 Oct 2026, the review): written straight to a USB stick or the Google Drive folder,
+            // the copy held the book's transaction for as long as the stick took, and a sale at
+            // the counter waited for it. What reaches the folder is read back too.
+            val local = runCatching { File.createTempFile("rk-copy-", ".tmp") }.getOrNull() ?: return@withLock null
+            val written = try {
+                runCatching {
+                    local.bufferedWriter(Charsets.UTF_8).use {
+                        BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
+                    }
+                    BackupCodec.parseFile(local).first is BackupCodec.ImportResult.Ok && run {
+                        java.nio.file.Files.copy(local.toPath(), tmp.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+                        tmp.length() == local.length() && BackupCodec.parseFile(tmp).first is BackupCodec.ImportResult.Ok
+                    } && runCatching {
                         java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
                         true
                     }.getOrDefault(false)
-            }.getOrDefault(false)
+                }.getOrDefault(false)
+            } finally {
+                local.delete()
+            }
             if (!written) {
                 tmp.delete()
                 return@withLock null

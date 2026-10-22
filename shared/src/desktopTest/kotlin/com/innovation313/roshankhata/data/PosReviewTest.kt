@@ -118,6 +118,12 @@ class PosReviewTest {
             assertEquals(1250.5, Calc.evalPad("1.250,50")!!, 1e-9)
             assertEquals(1_250_000.0, Calc.evalPad("1.250.000")!!, 1e-9)
             assertEquals(1.125, Calc.evalPad("1.125")!!, 1e-9)
+            // Three digits ending in 0 after a lone dot are thousands: the app never writes a fraction so.
+            assertEquals(50_000.0, Calc.evalPad("50.000")!!, 1e-9)
+            assertEquals(2250.0, Calc.evalPad("2.250")!!, 1e-9)
+            assertEquals(3750.0, Calc.evalPad("1.500+2.250")!!, 1e-9)
+            assertEquals(0.25, Calc.evalPad("0.250")!!, 1e-9)
+            assertEquals(0.25, Calc.evalPad("0,25")!!, 1e-9)
             assertEquals(0.75, Calc.evalPad("0,5+0,25")!!, 1e-9)
             assertEquals(12.5, Calc.evalPercent("12,5%")!!, 1e-9)
             Locale.setDefault(Locale.ENGLISH)

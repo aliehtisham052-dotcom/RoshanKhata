@@ -201,4 +201,56 @@ class SecurityReviewTest {
         assertNull(Access.ownerPin(book("f")))
         assertEquals(setOf("access_counter_mode"), bare.map.keys)
     }
+
+    @Test
+    fun `a device id copied into the settings file does not make a counter the owner's`() = runBlocking {
+        val dao = book("counter")
+        val phone = "0123456789abcdef0123456789abcdef"
+        // A counter was used for this book, and the owner's phone is one of the owner's devices.
+        dao.setSetting(BookSettings.COUNTER_USED, "1")
+        dao.setSetting(BookSettings.OWNER_DEVICES, phone)
+        // On the counter computer someone copies the phone's id out of a daily copy into the
+        // settings file and clears counter mode there.
+        val prefs = Prefs()
+        prefs.put("access_device_id", phone)
+        Access.machineId = { "w0000000000000000000000000000001" }
+        Access.store = prefs
+        assertFalse(Access.counterMode)
+        assertEquals("which computer this is comes from the machine", "w0000000000000000000000000000001", Access.deviceId())
+        assertTrue("the book makes it a counter again", Access.applyBook(dao))
+        assertTrue(Access.locked)
+        // The owner turning counter mode off here (with the PIN) makes this machine theirs.
+        Access.switchCounterMode(false)
+        Access.recordCounterMode(dao, false)
+        Access.store = prefs
+        assertFalse(Access.applyBook(dao))
+        assertTrue(Access.isOwner)
+    }
+
+    @Test
+    fun `the helper's copy leaves the PINs out, the owner's own backup keeps them`() = runBlocking {
+        val dao = book("helper")
+        Access.setOwnerPin(dao, "2468")
+        val salt = PinHash.salt()
+        dao.insertStaff(Staff(name = "Imran", monthlySalary = 1.0, role = Role.CASHIER, pinHash = PinHash.hash("5678", salt), pinSalt = salt))
+        val own = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()
+        val helper = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it, secrets = false) }.toString()
+        assertTrue(own.contains(BookSettings.OWNER_PIN_HASH) && own.contains(BookSettings.OWNER_RECOVERY_HASH))
+        BookSettings.OWNER_PIN_KEYS.forEach { assertFalse(it, helper.contains(it)) }
+        val copy = BackupCodec.parseText(helper).second!!
+        assertEquals("Imran", copy.staff.single().name)
+        assertNull(copy.staff.single().pinHash)
+        assertNull(copy.staff.single().pinSalt)
+    }
+
+    @Test
+    fun `an entry's bill photo is still linked after a restore`() = runBlocking {
+        val dao = book("photo")
+        val ali = dao.insertParty(Party(name = "Ali"))
+        dao.insertEntryNumbered(LedgerEntry(partyId = ali, amount = 900.0, isGiven = true, entryNumber = "", billPhotoPath = "/data/files/bills/bill_1.jpg"))
+        val copy = copyOf(dao)
+        val other = book("photo-restored")
+        BackupCodec.restoreLedger(other, copy)
+        assertEquals("/data/files/bills/bill_1.jpg", other.allEntriesForBackup().single().billPhotoPath)
+    }
 }

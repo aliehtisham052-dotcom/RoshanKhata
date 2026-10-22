@@ -160,8 +160,30 @@ object Access {
         ownerIn = false
     }
 
-    /** This device's own id, made once and kept in the device's settings; "" in tests without a store. */
+    /**
+     * Where this device's id comes from when its settings are a file anyone
+     * at the till can edit — the computer's app.properties (22 Oct 2026, the
+     * review: a device id copied out of a daily copy's owner_devices into it
+     * made a counter the owner's computer, no PIN asked). The computer sets
+     * it to its Windows machine id (as a hash); null on the phone, whose own
+     * settings only the app can read. Asked once, on a worker thread.
+     */
+    @Volatile
+    var machineId: (() -> String?)? = null
+        set(value) { field = value; machineIdKept = null }
+
+    @Volatile private var machineIdKept: String? = null
+
+    /**
+     * This device's own id: the machine's on a computer that has one
+     * ([machineId]), else made once and kept in the device's settings; "" in
+     * tests without either.
+     */
     fun deviceId(): String {
+        machineIdKept?.let { return it }
+        machineId?.let { source ->
+            runCatching { source() }.getOrNull()?.takeIf { it.isNotBlank() }?.let { machineIdKept = it; return it }
+        }
         val s = store ?: return ""
         s.get(KEY_DEVICE)?.takeIf { it.isNotBlank() }?.let { return it }
         val id = Uid.next()
@@ -401,6 +423,7 @@ object Access {
     /** For tests: forget the device and every count. */
     fun resetForTest() {
         store = null
+        machineId = null
         memMisses.clear(); memWaitUntil.clear()
         counterMode = false
         current = null; ownerIn = false

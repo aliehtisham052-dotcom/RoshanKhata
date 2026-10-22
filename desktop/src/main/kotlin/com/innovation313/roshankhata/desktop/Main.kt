@@ -179,6 +179,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     val appPrefs = remember {
         AppPrefs(File(home, "app.properties")).also {
             com.innovation313.roshankhata.data.Access.store = it.accessStore
+            // Which computer this is comes from Windows, not from a file anyone can edit (22 Oct 2026, the review).
+            com.innovation313.roshankhata.data.Access.machineId = { MachineId.read() }
             com.innovation313.roshankhata.data.Digits.nativeOnPrint = it.nativeDigits()
         }
     }
@@ -400,14 +402,26 @@ private sealed interface Picked {
     data class Refused(val why: String) : Picked
 }
 
-/** The whole book to [file] in the phone's format, streamed; returns the file's size. */
+/**
+ * The whole book to [file] in the phone's format, streamed; returns the file's
+ * size. Written on this computer's own disk first and then copied to where the
+ * owner chose (22 Oct 2026, the review: straight to a USB stick, the export
+ * held the book's transaction for as long as the stick took, and the counter
+ * waited).
+ */
 private suspend fun backup(
     file: File,
     db: com.innovation313.roshankhata.data.KhataDatabase,
     settings: FileShopSettings
 ): Long = withContext(Dispatchers.IO) {
-    file.bufferedWriter(Charsets.UTF_8).use {
-        BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it)
+    val local = File.createTempFile("rk-backup-", ".tmp")
+    try {
+        local.bufferedWriter(Charsets.UTF_8).use {
+            BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it)
+        }
+        java.nio.file.Files.copy(local.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+    } finally {
+        local.delete()
     }
     file.length()
 }

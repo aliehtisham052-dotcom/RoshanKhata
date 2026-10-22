@@ -168,7 +168,8 @@ class ViewerActivity : BaseActivity() {
             val file = withContext(Dispatchers.IO) {
                 runCatching {
                     val dao = KhataDatabase.get(this@ViewerActivity).khataDao()
-                    val json = Backup.exportToCache(this@ViewerActivity, dao)
+                    // Without the PINs' hashes: the copy leaves the owner's hands (22 Oct 2026, the review).
+                    val json = Backup.exportToCache(this@ViewerActivity, dao, secrets = false)
                     if (withPhotos) BackupImages.packCopy(this@ViewerActivity, dao, json)
                     else json
                 }.getOrNull()

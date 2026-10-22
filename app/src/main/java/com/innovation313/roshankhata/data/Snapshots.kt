@@ -24,8 +24,11 @@ import java.io.File
  *   PRAGMA integrity_check gates the snapshot: anything short of "ok" and
  *   today's snapshot simply does not happen, leaving yesterday's good ones
  *   untouched.
- * - The WAL is folded in first (wal_checkpoint TRUNCATE), so the copied file
- *   is the complete ledger and not the ledger minus its most recent writes.
+ * - The copy is the whole ledger ([copyWhole]): the WAL folded in as far as
+ *   it goes, then the file and whatever log is left copied together while no
+ *   write can happen, and the copy opened on its own and checked before it
+ *   is given its name — never the ledger minus its newest writes, or a file
+ *   torn by a write in the middle of the copy (22 Oct 2026, the review).
  *
  * Restoring is wired up: see [list] and [restore]. The files existing was
  * never the whole job — insurance nobody can claim is not insurance, and for
@@ -187,7 +190,6 @@ object Snapshots {
             val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
             val database = KhataDatabase.get(context)
             val db = database.openHelper.writableDatabase
-            db.query("PRAGMA wal_checkpoint(TRUNCATE)").use { it.moveToFirst() }
             val healthy = db.query("PRAGMA integrity_check").use {
                 it.moveToFirst() && it.getString(0).equals("ok", ignoreCase = true)
             }
@@ -201,9 +203,17 @@ object Snapshots {
             var target = File(dir, "$prefix$stamp.db")
             var n = 2
             while (target.exists()) { target = File(dir, "$prefix$stamp-$n.db"); n++ }
-            val tmp = File(target.path + ".tmp")
-            source.inputStream().use { input -> tmp.outputStream().use { output -> input.copyTo(output) } }
-            if (!tmp.renameTo(target)) { tmp.delete(); return false }
+            if (healthy) {
+                if (!copyWhole(database, source, target)) return false
+            } else {
+                // A damaged book is kept as it lies, its log beside it: nothing can check it, and the
+                // restore that follows is how the owner gets out of it.
+                val tmp = File(target.path + ".tmp")
+                source.inputStream().use { input -> tmp.outputStream().use { output -> input.copyTo(output) } }
+                if (!tmp.renameTo(target)) { tmp.delete(); return false }
+                val wal = File(source.path + "-wal")
+                if (wal.isFile && wal.length() > 0) wal.inputStream().use { i -> File(target.path + "-wal").outputStream().use { o -> i.copyTo(o) } }
+            }
             // The sick copy does not push a good one out of the three kept.
             if (healthy) {
                 val mine = Regex("^" + Regex.escape(prefix) + "\\d{8}-\\d{4}(\\d{2})?(-\\d+)?\\.db$")
@@ -214,6 +224,48 @@ object Snapshots {
             }
             true
         } catch (_: Exception) {
+            false
+        }
+    }
+
+    /**
+     * The open book copied to [target], whole (22 Oct 2026, the review). The
+     * log is folded in as far as it goes; then the file and whatever log is
+     * left are copied together inside a write transaction — no other write,
+     * and so no fold, can move them meanwhile; then the copy is opened on its
+     * own, which folds its log into it, and checked. Only then does it get its
+     * name. Before, the file was copied as it lay: without the newest writes
+     * when the fold could not finish, torn when a write folded in mid-copy.
+     */
+    private fun copyWhole(database: KhataDatabase, source: File, target: File): Boolean {
+        val tmp = File(target.path + ".tmp")
+        val tmpWal = File(tmp.path + "-wal")
+        val tmpShm = File(tmp.path + "-shm")
+        fun clear() { tmpWal.delete(); tmpShm.delete() }
+        return try {
+            tmp.delete(); clear()
+            val db = database.openHelper.writableDatabase
+            db.query("PRAGMA wal_checkpoint(TRUNCATE)").use { it.moveToFirst() }
+            db.beginTransactionNonExclusive()
+            try {
+                source.inputStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
+                val wal = File(source.path + "-wal")
+                if (wal.isFile && wal.length() > 0) wal.inputStream().use { i -> tmpWal.outputStream().use { o -> i.copyTo(o) } }
+            } finally {
+                db.endTransaction()
+            }
+            val good = android.database.sqlite.SQLiteDatabase.openDatabase(
+                tmp.absolutePath, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE
+            ).use { copy ->
+                copy.rawQuery("PRAGMA quick_check", null).use { c -> c.moveToFirst() && c.getString(0).equals("ok", ignoreCase = true) }
+            }
+            // Closed, the copy's log is folded into it and gone; one left with frames in it was not.
+            val folded = !tmpWal.exists() || tmpWal.length() == 0L
+            clear()
+            if (!good || !folded || !tmp.renameTo(target)) { tmp.delete(); return false }
+            true
+        } catch (_: Exception) {
+            tmp.delete(); clear()
             false
         }
     }
@@ -277,10 +329,6 @@ object Snapshots {
             val database = KhataDatabase.get(context)
             val db = database.openHelper.writableDatabase
 
-            // Fold the write-ahead log into the main file, so the file on disk
-            // is the whole ledger.
-            db.query("PRAGMA wal_checkpoint(TRUNCATE)").use { it.moveToFirst() }
-
             // Health gate. "ok" or no snapshot today.
             val healthy = db.query("PRAGMA integrity_check").use {
                 it.moveToFirst() && it.getString(0).equals("ok", ignoreCase = true)
@@ -297,15 +345,9 @@ object Snapshots {
 
             val dir = File(context.filesDir, "snapshots").apply { mkdirs() }
             val target = File(dir, "$prefix$today.db")
-            val tmp = File(dir, "$prefix$today.db.tmp")
-            source.inputStream().use { input ->
-                tmp.outputStream().use { output -> input.copyTo(output) }
-            }
-            // Written whole, then renamed — a crash mid-copy leaves a .tmp to
+            // Written whole and checked, then renamed — a crash mid-copy leaves a .tmp to
             // ignore, never a half-file that looks like a snapshot.
-            if (!tmp.renameTo(target)) {
-                tmp.delete(); return
-            }
+            if (!copyWhole(database, source, target)) return
 
             // Seven stay, the rest go — per business. Each business's
             // snapshots rotate among themselves only: Business 1's filter

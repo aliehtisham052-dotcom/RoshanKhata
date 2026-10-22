@@ -22,7 +22,7 @@ No account, no server, no ads. Everything stays on the phone.
 - About 2,450 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
 - Room database, version 38 (schema JSON checked in up to 31; CI writes the rest);
-  backup format 14
+  backup format 15 (an entry's bill photo path, 22 Oct 2026)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -376,6 +376,76 @@ of it was tried on two real devices yet — CI only.
   owner's google-services file, never in this public repo); sync only while
   the phone's app is on screen.
 
+### The review (22 Oct 2026, kmp-desktop-15 — the owner: "critical analysis karo, drawbacks fix karo")
+
+Two days' work (the counter, live sync, the customer page) read by six
+reviewers and fixed in six parts, each point read in the code first, each
+part with its test class (LiveSyncReviewTest, CounterReviewTest,
+CustomerLinkTest + scripts/test_khata_web.sh, PosReviewTest,
+SecurityReviewTest, SnapshotsOnDeviceTest). CI only — nothing on two real
+devices, a printer or a second monitor.
+
+- **Live sync (part 1):** every replace-restore pauses sync
+  (`LiveSync.pause`/`resume`) and ends it once through; a book file put back
+  from an older copy is caught on opening (`LogMarks`, outside the file);
+  each change carries its log line and pointers move in the parcel's own
+  transaction (`applyFrom`); a change the book cannot take waits in its own
+  savepoint (`sync_held`); removals win; photo-path-only updates are no
+  change; REPLACE upserts keep the uid; a pairing waits for the computer's
+  yes (pair id, given up after 15 min); WiFi frames capped at 16 MB, a thread
+  per connection, a 5 s hello; discovery is a challenge (RKS2); the relay is
+  off until the owner turns it on (`BookSettings.LIVE_RELAY`); the computer
+  honours the kill switch.
+- **Counter (parts 2, 4):** merging a customer moves his tickets, returns,
+  points, orders and schemes; rows a void took back stay out of the bin;
+  FEFO shares batches across a ticket's lines; ticket/return cashbook rows
+  change only from their owner (`cashOwner`); a customer with posted tickets
+  is not binned or purged, and the bin's purges keep a kept customer's
+  entries; a count of stock the book cannot state is not written; profit
+  takes returns off as their sale was counted (`ReturnedLine`); inside tax
+  comes off after the discount; a cost is never a rate in another unit;
+  Indonesian figures read as written ("1.250,50", "50.000"); walk-in tickets
+  are in the register; a scale label off the shelf price is a price change;
+  audit notes are written inside `postSale`; a ticket is a snapshot
+  (`Counter.Ticket`, `clearAfter`).
+- **Customer page (part 3, `web/khata`, `CustomerLink`) — built, NOT deployed,
+  NOT on any screen yet.** api.php keeps who owns which page beside the web
+  root (`RK_KHATA_DATA`, else `../rk-khata-data`), one lock, whole writes,
+  global and per-shop caps, one writer per shop (another copy claims),
+  tombstones, 180-day expiry; `view.js` speaks the nine languages under a
+  strict CSP; the page text is the same on both devices; what a device sent
+  is its own note (`Place`, outside the book and backups); while the book
+  syncs, the shop pass and links come from the book key. Deploy: README in
+  web/khata, then check `/khata/data/` and the store answer 403.
+- **Security (parts 5, 6):** a restore keeps this book's owner PIN, recovery
+  code and counter keys where the copy has none (`restoreAll(keepAccess)`,
+  false only for a live pairing); a device keeps the owner's PIN keys each
+  time the PIN is typed right on it (`Access.rememberOwner`) and a book on a
+  counter without an owner PIN takes them (`Access.ownerPin` →
+  `adoptOwnerPin`) — a counter can no longer lock out its owner; an owner's
+  or manager's counter session ends after 5 idle minutes (`touch`,
+  `expireIfIdle`); a shop switch signs out (the phone in `closeActive`);
+  counter mode on locks at once; PIN waits never pass 15 minutes; CSV
+  import, bill lines and bill deletes are gated and audited; the computer's
+  device id is Windows' MachineGuid as a hash (`MachineId`,
+  `Access.machineId`), never app.properties; the helper's copy carries no
+  PIN hashes (`exportTo(secrets = false)`); the phone's bin keeps a bill
+  photo another shop's book points at; the computer's copies and backups
+  are written on its own disk, then copied out; the outside folder is per
+  computer ("Business-1 (SHOP-PC)"); the phone's safety copies are taken
+  under a write transaction with the log, then checked (`copyWhole`).
+- **Left, with the reason:** the owner's own backups still carry PIN hashes
+  (a 4-digit PIN falls offline in minutes: longer PINs, leaving them out or
+  encrypting backups is the owner's call); counter tables are not streamed
+  in backups (fine to tens of thousands of tickets); goods lines edited on
+  both devices at once can double (E8); the relay's device identity is
+  unauthenticated inside a book (insider only); pairing has no confirmation
+  code; the kill switch fails open by design; re-closing a day replaces the
+  first close (the audit keeps both); a lone Indonesian "1.125" stays one and
+  an eighth. The Worker's fixes (8 MB take pages, a wake token dropped only
+  when FCM says so) are in cloud/worker but deployed only with the owner's
+  yes; until then `LiveCloud.plain`'s 32 MB cap can refuse a 40-parcel page.
+
 ### The shared module (KMP)
 
 ```
@@ -591,6 +661,33 @@ Each of these cost a build or a bug.
     `StaffMigrationOnDeviceTest` compares migrated tables with Room's own;
     any new column or index on those tables goes into its list of
     statements, or the on-device run fails (55e79c5).
+33. **On Android a statement starting "ROLLBACK" ends Android's own
+    transaction.** A savepoint is rolled back with `";ROLLBACK TO x"`
+    (LiveSync.tryOne), never `"ROLLBACK TO x"`.
+34. **A replace-restore of a syncing book pauses live sync first** and ends it
+    once through (resumes it if the restore failed): with the triggers live,
+    the restore reached the other device as deletions.
+35. **`INSERT OR REPLACE` gives a row a new uid.** Saving a row again keeps
+    its uid (upsert by key), or the other device gets a duplicate.
+36. **Any change to a DAO write's signature re-runs `scripts/gen_viewer_dao.py`**,
+    a new parameter included, or ViewerDaoTest fails.
+37. **A getter that builds a new object is never `===` to itself.** A test
+    that compared one (LiveSyncReviewTest) passed only by chance.
+38. **No `: . ; [ ] / < > \` in a backtick test name.** The JVM refuses them
+    in a method name and the build fails at compile time.
+39. **What a device sent is its own note, outside the book** (CustomerLink's
+    `Place`): kept in the book, a restore or a second device believed pages
+    were sent that never were.
+40. **A counter never stays without the owner's PIN.** A book opened on a
+    counter without one takes the PIN keys the device kept when the owner's
+    PIN was last typed right there (`Access.ownerPin`); a restore keeps the
+    access keys a copy says nothing of.
+41. **Nothing that decides who someone is comes from a file anyone can edit.**
+    The computer's device id is its MachineGuid (hashed); counter mode is
+    the book's word too (lesson 26).
+42. **A backup is written on the computer's own disk, then copied out.**
+    Exported straight to a USB stick or Drive folder, it held the book's
+    transaction for as long as the stick took, and the counter waited.
 
 ---
 
