@@ -120,15 +120,21 @@ object LiveDesk {
         val sock: ServerSocket = s ?: runCatching { ServerSocket(0) }.getOrNull() ?: return null
         server = sock
         stopped = false
-        thread(isDaemon = true, name = "live-sync") {
-            LiveWire.serve(
-                sock,
-                stop = { stopped },
-                pairSecret = { pairSecret },
-                onOffer = { o -> pairSecret = null; offers.value = o; true },
-                bookKey = { key() },
-                onRound = { r -> answer(r) }
-            )
+        serveOn(sock)
+        // Not on LiveWire.PORT: a phone already joined will not find this port, so the right one is asked
+        // for again every ten seconds and served as well once it is free.
+        if (sock.localPort != LiveWire.PORT) {
+            val mineNow = generation + 1
+            thread(isDaemon = true, name = "live-port") {
+                while (!stopped && generation == mineNow) {
+                    try { Thread.sleep(10_000) } catch (e: InterruptedException) { break }
+                    val p = runCatching { ServerSocket().apply { reuseAddress = true; bind(java.net.InetSocketAddress(LiveWire.PORT)) } }.getOrNull()
+                    if (p != null) {
+                        synchronized(this) { if (stopped) runCatching { p.close() } else { extra = p; serveOn(p) } }
+                        break
+                    }
+                }
+            }
         }
         // The relay, for a phone away from the shop's WiFi (Marhala 2): nothing at all until it has an address.
         val mine = ++generation
@@ -144,11 +150,29 @@ object LiveDesk {
 
     private const val CLOUD_MS = 15_000L
 
+    /** The port the phone knows, opened late after another was taken first. */
+    @Volatile private var extra: ServerSocket? = null
+
+    private fun serveOn(sock: ServerSocket) {
+        thread(isDaemon = true, name = "live-sync") {
+            LiveWire.serve(
+                sock,
+                stop = { stopped },
+                pairSecret = { pairSecret },
+                onOffer = { o -> pairSecret = null; offers.value = o; true },
+                bookKey = { key() },
+                onRound = { r -> answer(r) }
+            )
+        }
+    }
+
     @Synchronized
     fun stop() {
         stopped = true
         runCatching { server?.close() }
+        runCatching { extra?.close() }
         server = null
+        extra = null
     }
 
     private fun key(): String? = db?.let { d -> runCatching { runBlocking { LiveSync.identity(d.syncSql())?.key } }.getOrNull() }

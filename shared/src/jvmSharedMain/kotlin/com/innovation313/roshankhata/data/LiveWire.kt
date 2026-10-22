@@ -241,6 +241,11 @@ object LiveWire {
                         }
                         else -> { out.write(BAD); out.flush() }
                     }
+                    // The phone closes first, so the wait that follows a closed connection (TIME_WAIT, four
+                    // minutes on Windows) is the phone's, not the computer's: a restarted computer then finds
+                    // its port free (22 Oct 2026). A phone that never closes is let go after three seconds.
+                    it.soTimeout = 3000
+                    try { while (it.getInputStream().read() >= 0) { /* nothing more is expected */ } } catch (e: IOException) {}
                 }
             }
         }
