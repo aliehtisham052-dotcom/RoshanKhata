@@ -107,12 +107,22 @@ object LiveDesk {
     @Synchronized
     fun start(): Int? {
         server?.let { if (!it.isClosed) return it.localPort }
-        val s = runCatching { ServerSocket(LiveWire.PORT) }.getOrNull() ?: runCatching { ServerSocket(0) }.getOrNull() ?: return null
-        server = s
+        // The phone looks for the computer on LiveWire.PORT only: a moment after the app was closed Windows may
+        // still hold it, so it is asked for a few times (reusing the address) before any other port is taken.
+        var s: ServerSocket? = null
+        for (attempt in 0 until 5) {
+            s = runCatching {
+                ServerSocket().apply { reuseAddress = true; bind(java.net.InetSocketAddress(LiveWire.PORT)) }
+            }.getOrNull()
+            if (s != null) break
+            try { Thread.sleep(400) } catch (e: InterruptedException) { break }
+        }
+        val sock: ServerSocket = s ?: runCatching { ServerSocket(0) }.getOrNull() ?: return null
+        server = sock
         stopped = false
         thread(isDaemon = true, name = "live-sync") {
             LiveWire.serve(
-                s,
+                sock,
                 stop = { stopped },
                 pairSecret = { pairSecret },
                 onOffer = { o -> pairSecret = null; offers.value = o; true },
@@ -129,7 +139,7 @@ object LiveDesk {
                 try { Thread.sleep(CLOUD_MS) } catch (e: InterruptedException) { break }
             }
         }
-        return s.localPort
+        return sock.localPort
     }
 
     private const val CLOUD_MS = 15_000L
