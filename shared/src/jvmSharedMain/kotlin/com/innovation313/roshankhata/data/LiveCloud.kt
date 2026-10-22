@@ -24,12 +24,18 @@ import javax.crypto.spec.SecretKeySpec
  * from the line the others last acknowledged. Every write lands by uid, so a
  * message read twice changes nothing the second time.
  *
- * Inert until [base] is set (after the owner deploys the relay).
+ * Open since the relay was deployed (22 Oct 2026); [base] = null closes it again.
  */
 object LiveCloud {
 
-    /** The relay's address, e.g. "https://roshan-khata-daakiya.<account>.workers.dev"; null keeps this road closed. */
-    @Volatile var base: String? = null
+    /**
+     * The relay's address; null keeps this road closed. Deployed 22 Oct 2026 by cloud-worker.yml on the
+     * owner's Cloudflare account (free plan, subdomain "innovation313" — never the owner's e-mail).
+     * Only this kmp-* test line opens it: decide before main whether Play users get it (free-plan limits).
+     */
+    @Volatile var base: String? = RELAY
+
+    const val RELAY = "https://roshan-khata-daakiya.innovation313.workers.dev"
 
     const val RESEND_MS = 2 * 60_000L
 
