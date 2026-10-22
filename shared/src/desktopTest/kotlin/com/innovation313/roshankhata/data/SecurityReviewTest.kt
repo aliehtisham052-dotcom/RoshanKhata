@@ -90,7 +90,7 @@ class SecurityReviewTest {
     fun `customers brought in from a file carry who brought them, and the log says so`() = runBlocking {
         val dao = book("import")
         Access.signIn(staff(7, "Imran", Role.MANAGER))
-        val rows = listOf(CsvImport.Row("Ali", null, 1500.0), CsvImport.Row("Bilal", "03001234567", -200.0))
+        val rows = listOf(CsvImport.Row("Ali", null, 1500.0), CsvImport.Row("Bilal", "0000 0000000", -200.0))
         assertEquals(2, dao.importOpeningBalances(rows, "Opening balance"))
         val entries = dao.allEntriesForBackup()
         assertEquals(2, entries.size)
