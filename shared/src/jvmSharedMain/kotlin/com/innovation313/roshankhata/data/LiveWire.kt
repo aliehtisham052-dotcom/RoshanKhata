@@ -251,6 +251,78 @@ object LiveWire {
         }
     }
 
+    // ------------------------------------------------- finding the computer again
+
+    private val SEEK = "RKS1".toByteArray(Charsets.US_ASCII)
+    private val HERE = "RKH1".toByteArray(Charsets.US_ASCII)
+    private const val TAG = 16
+
+    /**
+     * What the phone calls out on the shop's WiFi to find its computer when
+     * the computer's address changed (22 Oct 2026: the router gives a laptop
+     * a new address after a day off). Made from the book's key, so only the
+     * computer that keeps this book answers; it says nothing of the book.
+     */
+    fun seekTag(keyHex: String): ByteArray =
+        java.security.MessageDigest.getInstance("SHA-256").digest(("rk-seek:" + keyHex).toByteArray(Charsets.UTF_8)).copyOf(TAG)
+
+    /** Every address a call to the whole WiFi can go to: the general one and each network's own. */
+    fun broadcastTargets(): List<java.net.InetAddress> {
+        val out = ArrayList<java.net.InetAddress>()
+        runCatching {
+            java.net.NetworkInterface.getNetworkInterfaces().toList()
+                .filter { it.isUp && !it.isLoopback }
+                .flatMap { it.interfaceAddresses }
+                .mapNotNull { it.broadcast }
+                .forEach { out += it }
+        }
+        runCatching { out += java.net.InetAddress.getByName("255.255.255.255") }
+        return out.distinct()
+    }
+
+    /** Phone side: the computer's address on this WiFi, or null when no computer of this book answered. Blocking. */
+    fun seek(keyHex: String, port: Int = PORT, targets: List<java.net.InetAddress> = broadcastTargets(), waitMs: Int = 1500): String? {
+        val tag = seekTag(keyHex)
+        val call = SEEK + tag
+        return runCatching {
+            java.net.DatagramSocket().use { s ->
+                s.broadcast = true
+                for (t in targets) runCatching { s.send(java.net.DatagramPacket(call, call.size, t, port)) }
+                val until = System.currentTimeMillis() + waitMs
+                val buf = ByteArray(64)
+                var found: String? = null
+                while (found == null) {
+                    val left = (until - System.currentTimeMillis()).toInt()
+                    if (left <= 0) break
+                    s.soTimeout = left
+                    val p = java.net.DatagramPacket(buf, buf.size)
+                    try { s.receive(p) } catch (e: SocketTimeoutException) { break }
+                    if (p.length == HERE.size + TAG &&
+                        buf.copyOfRange(0, HERE.size).contentEquals(HERE) &&
+                        buf.copyOfRange(HERE.size, HERE.size + TAG).contentEquals(tag)
+                    ) found = p.address.hostAddress
+                }
+                found
+            }
+        }.getOrNull()
+    }
+
+    /** Computer side: answers the calls of phones that keep this book ([bookKey]), until [stop]. Blocking. */
+    fun answerSeeks(socket: java.net.DatagramSocket, stop: () -> Boolean, bookKey: () -> String?) {
+        socket.soTimeout = 1000
+        val buf = ByteArray(64)
+        while (!stop()) {
+            val p = java.net.DatagramPacket(buf, buf.size)
+            try { socket.receive(p) } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return }
+            if (p.length != SEEK.size + TAG || !buf.copyOfRange(0, SEEK.size).contentEquals(SEEK)) continue
+            val key = bookKey() ?: continue
+            val tag = seekTag(key)
+            if (!buf.copyOfRange(SEEK.size, SEEK.size + TAG).contentEquals(tag)) continue
+            val reply = HERE + tag
+            runCatching { socket.send(java.net.DatagramPacket(reply, reply.size, p.socketAddress)) }
+        }
+    }
+
     /** [n] bytes read as they arrive, never reserved up front (a stranger could announce the largest size). */
     private fun readUpTo(input: DataInputStream, n: Int): ByteArray {
         val out = ByteArrayOutputStream(minOf(n, 1 shl 16))

@@ -28,6 +28,21 @@ class LiveWireTest {
     }
 
     @Test
+    fun `the phone finds its computer again by the book's tag, and no other`() {
+        val key = LiveSync.newHex(32)
+        val socket = java.net.DatagramSocket(0, InetAddress.getLoopbackAddress())
+        val stop = java.util.concurrent.atomic.AtomicBoolean(false)
+        val worker = thread { LiveWire.answerSeeks(socket, { stop.get() }, { key }) }
+        try {
+            val here = listOf(InetAddress.getLoopbackAddress())
+            assertEquals("127.0.0.1", LiveWire.seek(key, socket.localPort, here, 2000))
+            assertNull(LiveWire.seek(LiveSync.newHex(32), socket.localPort, here, 500))
+        } finally {
+            stop.set(true); socket.close(); worker.join(3000)
+        }
+    }
+
+    @Test
     fun `the invite and the offer read back as written`() {
         val i = LiveWire.Invite(listOf("192.168.1.5"), LiveWire.PORT, LiveSync.newHex(32), "SHOP-PC")
         assertEquals(i, LiveWire.parseInvite(LiveWire.inviteText(i)))
