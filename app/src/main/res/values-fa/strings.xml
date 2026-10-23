@@ -3556,4 +3556,17 @@
     <string name="live_status_relay">زنده با %1$s از راه اینترنت. آخرین به‌روزرسانی: %2$s</string>
     <string name="live_relay_help">وقتی گوشی از وای‌فای مغازه دور است، تغییراتش از رله‌ی Innovation 313 می‌گذرد، قفل‌شده با کلید خود این دفتر: رله نمی‌تواند آن‌ها را بخواند و حداکثر ۷ روز نگهشان می‌دارد. یک کلید برای هر دو دستگاه. وقتی برنامه بسته است، Firebase از Google فقط به گوشی خبر می‌دهد که چیزی منتظر است؛ چیزی از دفتر را با خود نمی‌برد.</string>
     <string name="live_relay">از راه اینترنت هم</string>
+    <string name="live_devices_open">دستگاه‌ها و تغییرات هم‌زمان</string>
+    <string name="live_devices_none">هنوز هیچ دستگاه دیگری به این دفتر وصل نشده.</string>
+    <string name="live_device_seen">آخرین بار دیده شد: %1$s</string>
+    <string name="live_device_never">هنوز خبری از آن نرسیده</string>
+    <string name="live_remove_confirm_phone">%1$s از این دفتر حذف شود؟ این گوشی دیگر با آن همگام نمی‌شود. دفتر خودش همان‌طور می‌ماند؛ برای همگام‌سازی دوباره، آن را دوباره وصل کنید.</string>
+    <string name="live_conflicts_none">هیچ چیزی هم‌زمان روی دو دستگاه تغییر نکرده است.</string>
+    <string name="live_why_other_computer">رایانهٔ دیگری پاسخ داد، نه رایانه‌ای که این گوشی به آن وصل است. رایانه را دوباره وصل کنید</string>
+    <string name="live_why_other_book">دستگاه دیگر دفتر دیگری دارد. آن را دوباره وصل کنید</string>
+    <string name="live_why_unknown_device">تغییراتی از دستگاهی رسید که این دفتر آن را نمی‌شناسد. آن را دوباره وصل کنید</string>
+    <string name="live_why_unreachable">پاسخی نیامد</string>
+    <string name="live_why_error">روی این گوشی خطایی رخ داد. کمی بعد دوباره امتحان می‌شود</string>
+    <string name="live_why_day_limit">سقف امروزِ رله پر شد</string>
+    <string name="live_why_relay_full">رله الان پر است</string>
 </resources>

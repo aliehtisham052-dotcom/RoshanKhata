@@ -3519,4 +3519,17 @@ Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyim
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
     <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
     <string name="live_relay">Juga lewat internet</string>
+    <string name="live_devices_open">Perangkat dan perubahan bersamaan</string>
+    <string name="live_devices_none">Belum ada perangkat lain yang tergabung dengan buku ini.</string>
+    <string name="live_device_seen">Terakhir terlihat: %1$s</string>
+    <string name="live_device_never">Belum ada kabar</string>
+    <string name="live_remove_confirm_phone">Hapus %1$s dari buku ini? Ponsel ini berhenti sinkron dengannya. Bukunya sendiri tetap seperti apa adanya; untuk sinkron lagi, gabungkan lagi.</string>
+    <string name="live_conflicts_none">Tidak ada yang diubah di dua perangkat bersamaan.</string>
+    <string name="live_why_other_computer">komputer lain yang menjawab, bukan yang tergabung dengan ponsel ini. Gabungkan komputer lagi</string>
+    <string name="live_why_other_book">perangkat lain menyimpan buku yang berbeda. Gabungkan lagi</string>
+    <string name="live_why_unknown_device">perubahan datang dari perangkat yang tidak dikenal buku ini. Gabungkan lagi</string>
+    <string name="live_why_unreachable">tidak ada jawaban</string>
+    <string name="live_why_error">terjadi kesalahan di ponsel ini. Dicoba lagi sebentar lagi</string>
+    <string name="live_why_day_limit">batas hari ini di relai sudah tercapai</string>
+    <string name="live_why_relay_full">relai sedang penuh</string>
 </resources>
