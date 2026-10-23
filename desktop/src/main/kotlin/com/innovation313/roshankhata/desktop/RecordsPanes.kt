@@ -366,7 +366,12 @@ fun InvoicesPane(
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
-    val invoices by remember { dao.observeInvoices() }.collectAsState(emptyList())
+    // The newest page of invoices, more as the owner scrolls (23 Oct 2026, the review: every invoice was
+    // read, three subqueries each, after any change); the count and this month's figure have their own reads.
+    var invoiceLimit by remember { mutableStateOf(com.innovation313.roshankhata.data.ListWindow.PAGE) }
+    var invoices by remember { mutableStateOf(emptyList<com.innovation313.roshankhata.data.InvoiceSummary>()) }
+    LaunchedEffect(invoiceLimit) { dao.observeInvoicePage(invoiceLimit).collect { invoices = it } }
+    val invoiceCount by remember { dao.observeInvoiceCount() }.collectAsState(0)
     var settingFields by remember { mutableStateOf(false) }
     if (settingFields) {
         AppDialog(onCloseRequest = { settingFields = false },onPreviewKeyEvent = escCloses { settingFields = false }, title = word(W.invoice_settings_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
@@ -455,12 +460,18 @@ fun InvoicesPane(
             set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
         }.timeInMillis
     }
-    val thisMonth = invoices.filter { it.invoiceDate >= monthStart }
+    val thisMonth by remember(monthStart) { dao.observeInvoicesFrom(monthStart) }.collectAsState(emptyList())
     val shown = if (monthOnly) thisMonth else invoices
+    val invoiceListState = androidx.compose.foundation.lazy.rememberLazyListState()
+    LaunchedEffect(invoiceListState, invoices.size, monthOnly) {
+        if (monthOnly) return@LaunchedEffect
+        androidx.compose.runtime.snapshotFlow { invoiceListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }
+            .collect { last -> invoiceLimit = com.innovation313.roshankhata.data.ListWindow.grown(invoiceLimit, invoices.size, last) }
+    }
     val open = shown.firstOrNull { it.id == chosen } ?: shown.firstOrNull()
     FluentPage(
         word(W.nav_invoice),
-        word(W.range_this_month) + " " + Format.money(thisMonth.sumOf { it.grandTotal }) + " · " + thisMonth.size + "  ·  " + word(W.range_all) + " " + invoices.size,
+        word(W.range_this_month) + " " + Format.money(thisMonth.sumOf { it.grandTotal }) + " · " + thisMonth.size + "  ·  " + word(W.range_all) + " " + invoiceCount,
         scroll = false,
         actions = {
             FluentButton(word(W.invoice_settings_title), { settingFields = true }, icon = "ic_tile_settings")
@@ -476,11 +487,11 @@ fun InvoicesPane(
         Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             ListCard(Modifier.weight(0.46f).fillMaxSize()) {
                 Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Chip(word(W.range_all) + " \u00b7 " + invoices.size, !monthOnly) { monthOnly = false }
+                    Chip(word(W.range_all) + " \u00b7 " + invoiceCount, !monthOnly) { monthOnly = false }
                     Chip(word(W.range_this_month) + " \u00b7 " + thisMonth.size, monthOnly) { monthOnly = true }
                 }
                 Rule()
-                LazyColumn(Modifier.fillMaxSize()) {
+                LazyColumn(Modifier.fillMaxSize(), state = invoiceListState) {
                     itemsIndexed(shown, key = { _, it -> it.id }) { idx, i ->
                         val on = i.id == open?.id
                         Row(
@@ -650,7 +661,10 @@ fun ExpiryPane(dao: KhataDao) {
     var lots by remember { mutableStateOf<Map<Long, Pair<com.innovation313.roshankhata.data.Product, com.innovation313.roshankhata.data.Fefo.Lot>>>(emptyMap()) }
     LaunchedEffect(batches, tick) {
         lots = withContext(Dispatchers.IO) {
-            batches.mapNotNull { b -> com.innovation313.roshankhata.data.Fefo.lotOf(dao, b.itemId)?.let { b.itemId to it } }.toMap()
+            // The book's stock once for the page, not once per batch (23 Oct 2026, the review); a failed read
+            // leaves each batch to read its own shelf, as before.
+            val shelf = if (batches.isEmpty()) null else runCatching { com.innovation313.roshankhata.data.Counter.onHand(dao) }.getOrNull()
+            batches.mapNotNull { b -> com.innovation313.roshankhata.data.Fefo.lotOf(dao, b.itemId, shelf)?.let { b.itemId to it } }.toMap()
         }
     }
     var writingOff by remember { mutableStateOf<com.innovation313.roshankhata.data.ExpiringBatch?>(null) }

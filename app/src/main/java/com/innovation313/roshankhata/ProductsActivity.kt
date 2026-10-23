@@ -146,20 +146,17 @@ class ProductsActivity : BaseActivity() {
                 menu.add(0, 5, 4, R.string.stock_adjust)
                 menu.add(0, 6, 5, R.string.po_title)
                 setOnMenuItemClickListener { item ->
-                    val ok = when (item.itemId) {
-                        1 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)
-                        3, 5 -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST)
-                        4, 6 -> true
-                        else -> com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
+                    val perm = when (item.itemId) {
+                        1 -> com.innovation313.roshankhata.data.Access.Permission.EXPORT
+                        3, 5 -> com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST
+                        4, 6 -> null
+                        else -> com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT
                     }
-                    if (!ok) { Toast.makeText(this@ProductsActivity, R.string.access_denied, Toast.LENGTH_LONG).show(); return@setOnMenuItemClickListener true }
-                    when (item.itemId) {
-                        1 -> saveCsv.launch("RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv")
-                        2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
-                        3 -> countStock()
-                        4 -> showValuation()
-                        5 -> adjustStock()
-                        6 -> startActivity(Intent(this@ProductsActivity, OrdersActivity::class.java))
+                    // What a cashier may not do alone waits for a manager's PIN, as the counter's other
+                    // actions do (23 Oct 2026, the review: it was refused with a toast).
+                    if (perm == null || com.innovation313.roshankhata.data.Access.can(perm)) productsAction(item.itemId, null)
+                    else com.innovation313.roshankhata.ui.AccessUi.allowed(this@ProductsActivity, dao, perm, com.innovation313.roshankhata.ui.AccessUi.what(this@ProductsActivity, perm)) { by ->
+                        productsAction(item.itemId, by)
                     }
                     true
                 }
@@ -187,8 +184,20 @@ class ProductsActivity : BaseActivity() {
         refresh()
     }
 
+    /** One of the more menu's actions; [by] is who gave their PIN for it (null: the user's own right). */
+    private fun productsAction(id: Int, by: String?) {
+        when (id) {
+            1 -> saveCsv.launch("RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv")
+            2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
+            3 -> countStock(by)
+            4 -> showValuation()
+            5 -> adjustStock(by)
+            6 -> startActivity(Intent(this, OrdersActivity::class.java))
+        }
+    }
+
     /** A stock count (POS Phase 6): the shared form in a dialog; only the differences are written. */
-    private fun countStock() {
+    private fun countStock(allowedBy: String?) {
         lifecycleScope.launch {
             val draft = com.innovation313.roshankhata.screens.CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) })
             val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -200,7 +209,7 @@ class ProductsActivity : BaseActivity() {
                     com.innovation313.roshankhata.words.ProvideWords(words) {
                         com.innovation313.roshankhata.screens.StockCountForm(draft, onCancel = { dialog.dismiss() }, onSave = {
                             lifecycleScope.launch {
-                                val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }) }.getOrDefault(0) }
+                                val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }, allowedBy = allowedBy) }.getOrDefault(0) }
                                 Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.quantity(resources, R.plurals.stock_count_saved, n, n), Toast.LENGTH_LONG).show()
                                 dialog.dismiss(); refresh()
                             }
@@ -213,7 +222,7 @@ class ProductsActivity : BaseActivity() {
     }
 
     /** One correction to the shelf (POS Phase 6): the product, the signed quantity, the reason, a note. */
-    private fun adjustStock() {
+    private fun adjustStock(allowedBy: String?) {
         lifecycleScope.launch {
             val products = com.innovation313.roshankhata.data.NameOrder.sortedBy(withContext(Dispatchers.IO) { dao.productsOnce() }) { it.name }
             if (products.isEmpty()) { Toast.makeText(this@ProductsActivity, R.string.no_products, Toast.LENGTH_LONG).show(); return@launch }
@@ -240,7 +249,7 @@ class ProductsActivity : BaseActivity() {
                             val q = com.innovation313.roshankhata.ui.Calc.evalPad(qty.text.toString()) ?: 0.0
                             if (q == 0.0) { Toast.makeText(this@ProductsActivity, R.string.pos_err_quantity, Toast.LENGTH_LONG).show(); return@setPositiveButton }
                             lifecycleScope.launch {
-                                withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasons[reason.selectedItemPosition], note.text.toString().trim().ifBlank { null }) } }
+                                withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasons[reason.selectedItemPosition], note.text.toString().trim().ifBlank { null }, allowedBy = allowedBy) } }
                                 refresh()
                             }
                         }

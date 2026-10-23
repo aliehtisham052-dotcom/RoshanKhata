@@ -36,6 +36,7 @@ import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.customerBalanceColour
 import com.innovation313.roshankhata.ui.signedTotalColourOnDark
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -82,6 +83,8 @@ class CashbookActivity : BaseActivity() {
         val rv: RecyclerView = findViewById(R.id.rvCash)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+        // The newest page first, more as the owner scrolls (23 Oct 2026, the review: every row was read).
+        com.innovation313.roshankhata.ui.GrowingList.attach(rv, listLimit) { listShown }
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddCash).setOnClickListener {
             showDirectionChoice()
@@ -212,6 +215,9 @@ class CashbookActivity : BaseActivity() {
 
     /** The Z report for today: every figure summed from the rows, shown and shareable. */
     private fun showDayReport() {
+        // The day's profit, expected cash and the till's difference are the shop's figures (23 Oct 2026, the
+        // review): a cashier needs a manager's PIN, as for every other report.
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.REPORTS) { showDayReport() }) return
         lifecycleScope.launch {
             val now = System.currentTimeMillis()
             val day = DayCloseMath.dayOf(now)
@@ -235,9 +241,14 @@ class CashbookActivity : BaseActivity() {
         }
     }
 
+    private val listLimit = kotlinx.coroutines.flow.MutableStateFlow(com.innovation313.roshankhata.data.ListWindow.PAGE)
+    private var listShown = 0
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun observe() {
         lifecycleScope.launch {
-            dao.observeCashEntries().collectLatest { list ->
+            listLimit.flatMapLatest { dao.observeCashPage(it) }.collectLatest { list ->
+                listShown = list.size
                 adapter.submit(list)
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             }

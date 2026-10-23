@@ -701,6 +701,17 @@ interface KhataDao {
     @Query("SELECT * FROM cashbook WHERE isDeleted = 0 ORDER BY timestamp DESC")
     fun observeCashEntries(): Flow<List<CashEntry>>
 
+    /**
+     * The newest [limit] lines (23 Oct 2026, the review): the screens read a
+     * window that grows as the owner scrolls ([ListWindow]), not every line
+     * ever written; the in/out figures stay the whole table's sums.
+     */
+    @Query("SELECT * FROM cashbook WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun observeCashPage(limit: Int): Flow<List<CashEntry>>
+
+    @Query("SELECT COUNT(*) FROM cashbook WHERE isDeleted = 0")
+    fun observeCashCount(): Flow<Int>
+
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 1")
     fun observeCashIncome(): Flow<Double>
 
@@ -1222,6 +1233,74 @@ interface KhataDao {
     )
     fun observeInvoices(): Flow<List<InvoiceSummary>>
 
+    /**
+     * The newest [limit] invoices for the list screens (23 Oct 2026, the
+     * review): the window grows as the owner scrolls ([ListWindow]). Each
+     * invoice's lines are summed once (the gross) and the total is the same
+     * arithmetic as [observeInvoices]; PerfReviewTest holds the two equal.
+     */
+    @Query(
+        """
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount,
+               (
+                 (CASE WHEN s.discountAmount IS NOT NULL THEN
+                    MAX(0, s.gross - MAX(0, s.discountAmount))
+                  ELSE
+                    s.gross * (1 - COALESCE(s.discountPercent, 0) / 100.0)
+                  END)
+                 * (1 + COALESCE(s.taxPercent, 0) / 100.0)
+                 + COALESCE(s.additionalChargeAmount, 0)
+               ) AS grandTotal
+        FROM (
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+                 i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
+                 (SELECT COUNT(*) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
+                 (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS gross
+          FROM invoices i
+          WHERE i.isDeleted = 0
+          ORDER BY i.invoiceDate DESC, i.id DESC
+          LIMIT :limit
+        ) s
+        ORDER BY s.invoiceDate DESC, s.id DESC
+        """
+    )
+    fun observeInvoicePage(limit: Int): Flow<List<InvoiceSummary>>
+
+    /** Every invoice dated on or after [from], summed the same way — this month's figure on Windows. */
+    @Query(
+        """
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount,
+               (
+                 (CASE WHEN s.discountAmount IS NOT NULL THEN
+                    MAX(0, s.gross - MAX(0, s.discountAmount))
+                  ELSE
+                    s.gross * (1 - COALESCE(s.discountPercent, 0) / 100.0)
+                  END)
+                 * (1 + COALESCE(s.taxPercent, 0) / 100.0)
+                 + COALESCE(s.additionalChargeAmount, 0)
+               ) AS grandTotal
+        FROM (
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+                 i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
+                 (SELECT COUNT(*) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
+                 (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS gross
+          FROM invoices i
+          WHERE i.isDeleted = 0
+            AND i.invoiceDate >= :from
+          ORDER BY i.invoiceDate DESC, i.id DESC
+        ) s
+        ORDER BY s.invoiceDate DESC, s.id DESC
+        """
+    )
+    fun observeInvoicesFrom(from: Long): Flow<List<InvoiceSummary>>
+
+    @Query("SELECT COUNT(*) FROM invoices WHERE isDeleted = 0")
+    fun observeInvoiceCount(): Flow<Int>
+
     @Query("UPDATE invoices SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteInvoice(id: Long, now: Long = System.currentTimeMillis())
 
@@ -1423,6 +1502,14 @@ interface KhataDao {
 
     @Query("SELECT * FROM staff ORDER BY id")
     suspend fun allStaffForBackup(): List<Staff>
+
+    /**
+     * Another staff member, removed ones included, already has [name] (case
+     * and edge spaces aside; 23 Oct 2026, the review): shifts, cashier rows
+     * and audit rows are kept by name, so two of one name would share a drawer.
+     */
+    @Query("SELECT EXISTS(SELECT 1 FROM staff WHERE LOWER(TRIM(name)) = LOWER(TRIM(:name)) AND id != :exceptId)")
+    suspend fun staffNameTaken(name: String, exceptId: Long = 0): Boolean
 
     @Query("SELECT * FROM staff_attendance ORDER BY id")
     suspend fun allAttendanceForBackup(): List<StaffAttendance>
@@ -2960,6 +3047,24 @@ interface KhataDao {
     )
     fun observeSales(): Flow<List<SaleSummary>>
 
+    /**
+     * The newest [limit] tickets (23 Oct 2026, the review: the Windows counter
+     * read every ticket ever made, a COUNT per row, to show eight). The lines
+     * are counted only for the tickets shown.
+     */
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM (
+          SELECT * FROM sales WHERE isDeleted = 0 AND status != 'held'
+          ORDER BY timestamp DESC, id DESC LIMIT :limit
+        ) s
+        ORDER BY s.timestamp DESC, s.id DESC
+        """
+    )
+    fun observeRecentSales(limit: Int): Flow<List<SaleSummary>>
+
     @Query(
         """
         SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
@@ -3263,9 +3368,12 @@ interface KhataDao {
      * Park a ticket: the lines are kept, nothing is posted, no number is
      * taken (a held ticket's number is given when it is rung up, so the S-
      * series stays in the order sales were made). Returns the held row's id.
+     * [dropId] is the held ticket this one was resumed from: it comes off the
+     * hook in the same transaction (23 Oct 2026, the review: dropped after the
+     * insert, a failure between left two held tickets with the same goods).
      */
     @Transaction
-    suspend fun holdSale(sale: Sale, items: List<SaleItem>): Long {
+    suspend fun holdSale(sale: Sale, items: List<SaleItem>, dropId: Long? = null): Long {
         val lines = items.filter { !it.isDeleted && it.itemName.isNotBlank() }
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent)
         val id = insertSale(
@@ -3278,6 +3386,7 @@ interface KhataDao {
         )
         insertSaleItems(lines.mapIndexed { i, l -> l.copy(id = 0, saleId = id, lineNo = i, isDeleted = false) })
         insertAudit(AuditLog(user = sale.createdBy, action = AuditAction.SALE_HELD, refTable = "sales", refId = id))
+        if (dropId != null && dropId != id) dropHeldSale(dropId)
         return id
     }
 
@@ -3440,6 +3549,16 @@ interface KhataDao {
         """
     )
     fun observeReturns(): Flow<List<ReturnSummary>>
+
+    /** The newest [limit] returns, as [observeReturns] orders them. */
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.isDeleted = 0 ORDER BY r.timestamp DESC, r.id DESC LIMIT :limit
+        """
+    )
+    fun observeRecentReturns(limit: Int): Flow<List<ReturnSummary>>
 
     @Query(
         """

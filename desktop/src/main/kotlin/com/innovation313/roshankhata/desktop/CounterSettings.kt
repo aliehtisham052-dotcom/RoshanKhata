@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,6 +61,9 @@ fun CounterSettingsDialog(
     var wide by remember { mutableStateOf(printer.wide) }
     var logo by remember { mutableStateOf(printer.logo) }
     var drawer by remember { mutableStateOf(printer.drawer) }
+    // The receipt printer a ticket goes to without asking (23 Oct 2026, the review); Windows' list is read once.
+    val printerNames = remember { runCatching { ThermalReceipt.printers() }.getOrDefault(emptyList()) }
+    var receiptPrinter by remember { mutableStateOf(ThermalReceipt.lastPrinter) }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             taxInside = BookSettings.isOn(dao.settingValue(BookSettings.PRICES_INCLUDE_TAX))
@@ -87,6 +93,7 @@ fun CounterSettingsDialog(
                         dao.setSetting(BookSettings.SCALE_PRICE_DECIMALS, decimals.takeIf { it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_DECIMALS }?.toString())
                     }
                     onPrinter(ThermalReceipt.Settings(wide = wide, logo = logo, drawer = drawer))
+                    ThermalReceipt.lastPrinter = receiptPrinter
                     onClose()
                 }
             }, kind = ButtonKind.ACCENT, enabled = loaded)
@@ -102,6 +109,15 @@ fun CounterSettingsDialog(
                 Tick(logo, word(if (hasLogo) W.printer_logo else W.biz_card_logo_none), enabled = hasLogo) { logo = it }
                 Tick(drawer, word(W.printer_drawer)) { drawer = it }
                 Text(word(W.printer_drawer_help), Modifier.padding(start = 12.dp), color = c.textMuted, fontSize = 12.sp)
+                if (printerNames.isNotEmpty()) {
+                    Text(word(W.print_choose), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    androidx.compose.foundation.layout.Row(
+                        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        printerNames.forEach { n -> FluentPill(n, receiptPrinter == n) { receiptPrinter = n } }
+                    }
+                }
             }
             Rule()
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

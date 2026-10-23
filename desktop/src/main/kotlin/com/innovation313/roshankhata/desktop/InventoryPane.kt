@@ -74,14 +74,16 @@ fun InventoryPane(
     var adjusting by remember { mutableStateOf(false) }
     var told by remember { mutableStateOf<String?>(null) }
     var lowOnly by remember { mutableStateOf(false) }
-    val may = Access.can(Access.Permission.STOCK_ADJUST)
+    // A cashier's count, correction or transfer waits for a manager's PIN, as the rest of the counter does
+    // (23 Oct 2026, the review: they were refused flatly); who gave it goes to the DAO as allowedBy.
+    var stockBy by remember { mutableStateOf<String?>(null) }
 
     counting?.let { draft ->
         AppDialog(onCloseRequest = { counting = null }, onPreviewKeyEvent = escCloses { counting = null }, title = word(W.stock_count_title), state = rememberDialogState(width = fitW(640.dp), height = fitH(760.dp))) {
             DialogFrame(word(W.stock_count_title), onClose = { counting = null }, scroll = false, footer = {}) {
                 StockCountForm(draft, onCancel = { counting = null }, onSave = {
                     scope.launch {
-                        val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }) }.getOrDefault(0) }
+                        val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }, allowedBy = stockBy) }.getOrDefault(0) }
                         told = words.plural(com.innovation313.roshankhata.words.WP.stock_count_saved, n, n)
                         counting = null; tick++; onChanged()
                     }
@@ -89,21 +91,20 @@ fun InventoryPane(
             }
         }
     }
-    if (adjusting) AdjustDialog(dao, words, onClose = { adjusting = false }) { told = it; tick++; onChanged() }
-    if (sending && businesses != null) TransferDialog(dao, words, businesses, activeBusiness, onClose = { sending = false }) { told = it; tick++; onChanged() }
+    if (adjusting) AdjustDialog(dao, words, stockBy, onClose = { adjusting = false }) { told = it; tick++; onChanged() }
+    if (sending && businesses != null) TransferDialog(dao, words, businesses, activeBusiness, stockBy, onClose = { sending = false }) { told = it; tick++; onChanged() }
 
     FluentPage(word(W.inventory_title), told ?: word(W.products_subtitle), scroll = false, actions = {
         FluentButton(word(W.stock_count_title), {
-            if (!may) { told = words.text(W.access_denied); return@FluentButton }
-            scope.launch { counting = CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) }) }
-        }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
-        FluentButton(word(W.stock_adjust), { if (!may) told = words.text(W.access_denied) else adjusting = true }, kind = ButtonKind.STANDARD, icon = "ic_edit")
-        if (businesses != null) FluentButton(word(W.transfer_title), {
-            when {
-                !may -> told = words.text(W.access_denied)
-                businesses.list().none { it.id != activeBusiness } -> told = words.text(W.transfer_none)
-                else -> sending = true
+            Gates.needBy(Access.Permission.STOCK_ADJUST) { by ->
+                stockBy = by
+                scope.launch { counting = CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) }) }
             }
+        }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+        FluentButton(word(W.stock_adjust), { Gates.needBy(Access.Permission.STOCK_ADJUST) { by -> stockBy = by; adjusting = true } }, kind = ButtonKind.STANDARD, icon = "ic_edit")
+        if (businesses != null) FluentButton(word(W.transfer_title), {
+            if (businesses.list().none { it.id != activeBusiness }) told = words.text(W.transfer_none)
+            else Gates.needBy(Access.Permission.STOCK_ADJUST) { by -> stockBy = by; sending = true }
         }, kind = ButtonKind.STANDARD)
     }) {
         val v = valuation
@@ -166,7 +167,7 @@ fun reasonWord(r: String): String = word(
 
 /** One correction: the product, the signed quantity, the reason, a note. */
 @Composable
-private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done: (String) -> Unit) {
+private fun AdjustDialog(dao: KhataDao, words: Words, allowedBy: String?, onClose: () -> Unit, done: (String) -> Unit) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var products by remember { mutableStateOf<List<Product>>(emptyList()) }
@@ -187,7 +188,7 @@ private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done:
                 val p = chosen ?: return@FluentButton
                 val a = amount ?: return@FluentButton
                 scope.launch {
-                    withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, a, reason, note.trim().ifBlank { null }) } }
+                    withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, a, reason, note.trim().ifBlank { null }, allowedBy = allowedBy) } }
                     onClose(); done(p.name + " " + (if (a > 0) "+" else "") + Calc.trim(a))
                 }
             }, kind = ButtonKind.ACCENT, enabled = chosen != null && amount != null && amount != 0.0)
@@ -225,7 +226,7 @@ private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done:
  * the other one opened for the moment and closed again.
  */
 @Composable
-private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, activeBusiness: Long, onClose: () -> Unit, done: (String) -> Unit) {
+private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, activeBusiness: Long, allowedBy: String?, onClose: () -> Unit, done: (String) -> Unit) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val others = remember { businesses.list().filter { it.id != activeBusiness } }
@@ -260,7 +261,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
                                 com.innovation313.roshankhata.data.StockTransfer.send(
                                     dao, other.khataDao(),
                                     lines.map { com.innovation313.roshankhata.data.StockTransfer.Line(it.first, Calc.evalAmount(it.second.value) ?: 0.0) },
-                                    fromShop = shopHere, toShop = nameOf(target)
+                                    fromShop = shopHere, toShop = nameOf(target), allowedBy = allowedBy
                                 )
                             } finally { other.close() }
                         }
