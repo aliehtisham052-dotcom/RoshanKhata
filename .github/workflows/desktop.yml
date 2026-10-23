@@ -70,6 +70,31 @@ jobs:
           [ -n "$why" ] && echo "::error title=What went wrong::$why"
           true
 
+      # R36 (23 Oct 2026): the tests above run on the runner's full JDK, so a module missing
+      # from desktop/build.gradle.kts's modules(...) was only ever found on the owner's laptop
+      # (java.logging, jdk.localedata, jdk.crypto.ec). This runs RuntimeSelfCheck with the app
+      # image's OWN trimmed Java (the runtime the MSI installs) and one real HTTPS handshake.
+      - name: Packaged runtime check
+        if: success()
+        shell: bash
+        run: |
+          app=$(find desktop/build/compose/binaries/main/app -mindepth 1 -maxdepth 1 -type d | head -1)
+          [ -n "$app" ] || { echo "::error::No app folder from createDistributable"; exit 1; }
+          java="$app/runtime/bin/java.exe"
+          [ -x "$java" ] || java="$app/runtime/bin/java"
+          [ -x "$java" ] || { echo "::error::No java in the app image's runtime"; exit 1; }
+          "$java" --list-modules | tr -d '\r'
+          set +e
+          "$java" -cp "$app/app/*" com.innovation313.roshankhata.desktop.RuntimeSelfCheck \
+            --net https://github.com 2>&1 | tr -d '\r' | tee /tmp/runtime_check.txt
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -ne 0 ] || grep -q '^FAIL' /tmp/runtime_check.txt; then
+            fails=$(grep -E '^FAIL|RUNTIME CHECK' /tmp/runtime_check.txt | head -20 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=The MSI's own Java cannot do what the app needs::$fails"
+            exit 1
+          fi
+
       # The Store's package (MSIX), from the same app folder the MSI installs.
       # Identity values come from Partner Center once the name is reserved
       # (repository variables MSIX_IDENTITY_NAME, MSIX_PUBLISHER,

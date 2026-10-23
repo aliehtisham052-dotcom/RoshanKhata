@@ -179,14 +179,15 @@ object CsvImport {
                 } else cell.append(ch)
             } else when (ch) {
                 '"' -> inQuotes = true
-                sep -> { row.add(cell.toString()); cell.clear() }
+                sep -> { row.add(CsvCell.unguard(cell.toString())); cell.clear() }
                 '\r' -> {}
-                '\n' -> { row.add(cell.toString()); cell.clear(); rows.add(row); row = mutableListOf() }
+                '\n' -> { row.add(CsvCell.unguard(cell.toString())); cell.clear(); rows.add(row); row = mutableListOf() }
                 else -> cell.append(ch)
             }
             i++
         }
-        if (cell.isNotEmpty() || row.isNotEmpty()) { row.add(cell.toString()); rows.add(row) }
+        // A cell this app's own export marked as text (CsvCell.guard) reads back as it was written (R153).
+        if (cell.isNotEmpty() || row.isNotEmpty()) { row.add(CsvCell.unguard(cell.toString())); rows.add(row) }
         return rows
     }
 

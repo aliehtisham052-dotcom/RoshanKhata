@@ -95,17 +95,46 @@ object PhoneSync {
 
     private fun saveIncoming(home: File, write: (File) -> Unit): File {
         val dir = File(home, "from-phone").apply { mkdirs() }
-        val name = "RoshanKhata_FromPhone_" + SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.ENGLISH).format(Date()) + ".txt"
+        val name = INCOMING_PREFIX + SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.ENGLISH).format(Date()) + ".txt"
         val file = File(dir, name)
         val tmp = File(dir, "$name.tmp")
         write(tmp)
         // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
         // the old one first — a power cut in between left neither.
         replaceAtomically(tmp, file)
-        // The last five are kept; older ones go, so the folder does not fill with whole books.
-        dir.listFiles { f -> f.name.startsWith("RoshanKhata_FromPhone_") && f.name.endsWith(".txt") }
-            ?.sortedByDescending { it.name }?.drop(5)?.forEach { it.delete() }
+        // Only the newest is kept (R41, 23 Oct 2026: five whole books, PIN hashes included, stayed for
+        // ever); it goes too once the owner has answered its question (forgetIncoming).
+        dir.listFiles { f -> f.name.startsWith(INCOMING_PREFIX) && f.name.endsWith(".txt") }
+            ?.sortedByDescending { it.name }?.drop(1)?.forEach { it.delete() }
         return file
+    }
+
+    private const val INCOMING_PREFIX = "RoshanKhata_FromPhone_"
+
+    /**
+     * A book that arrived from a phone is removed once its question is answered (Replace, Add what is
+     * new, a new business, Cancel) or found unreadable: it is the whole book in plain text with the
+     * owner's and staff PIN hashes (R41, 23 Oct 2026). Only a file in this computer's own from-phone
+     * folder is ever removed — never a backup the owner chose from disk. The answer was already read
+     * into memory (Picked.Ready.data), so nothing needs the file afterwards.
+     */
+    fun forgetIncoming(home: File, file: File) {
+        runCatching {
+            val dir = File(home, "from-phone").canonicalFile
+            if (file.canonicalFile.parentFile == dir && file.name.startsWith(INCOMING_PREFIX)) file.delete()
+        }
+    }
+
+    /**
+     * On opening: nothing waits for an answer yet (the question lives in memory), so every book left
+     * in from-phone by a crash or a closed window goes, with any half-written copy (R41).
+     */
+    fun clearIncoming(home: File) {
+        runCatching {
+            File(home, "from-phone").listFiles { f ->
+                f.isFile && f.name.startsWith(INCOMING_PREFIX) && (f.name.endsWith(".txt") || f.name.endsWith(".txt.tmp"))
+            }?.forEach { runCatching { it.delete() } }
+        }
     }
 }
 

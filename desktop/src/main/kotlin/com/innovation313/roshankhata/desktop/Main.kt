@@ -121,6 +121,8 @@ fun main() {
     val lock = SingleInstance.acquire(home)
     if (lock == null) { SingleInstance.tellAlreadyOpen(); return }
     clearOldNativeCopies()
+    // Books from a phone that were never answered (a crash, a closed window) do not stay on disk (R41).
+    PhoneSync.clearIncoming(home)
     try { application { app(home) } } finally { lock.release() }
 }
 
@@ -806,10 +808,12 @@ private fun Book(
         val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
         val expiring by remember { dao.observeExpiringCount(now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
         val late by remember(reload) { lateCount(dao) }.collectAsState(0)
-        // The whole book out is an export wherever it is asked for — the header, Home's quick action,
+        // The whole book out is gated wherever it is asked for — the header, Home's quick action,
         // the bell's row (21 Oct 2026: only the header's button asked a cashier for the PIN) — and
-        // the audit log says who took it.
-        fun backupNow() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) backup@{
+        // the audit log says who took it. Owner-only BACKUP, as the phone's BackupActivity (R33,
+        // 23 Oct 2026): the file carries the owner's and staff PIN hashes, and EXPORT let a manager
+        // (or a cashier with a manager's PIN) carry them off. The CSV exports stay on EXPORT.
+        fun backupNow() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) backup@{
             val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
             // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
             // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
@@ -1288,6 +1292,9 @@ private fun Book(
             text = { Text(word(W.restore_failed, p.why)) }
         )
         is Picked.Ready -> {
+          // Whatever the answer, a book that came from a phone is not left on disk (R41, 23 Oct 2026);
+          // a backup file the owner chose himself is never touched (forgetIncoming checks the folder).
+          val letGo = { PhoneSync.forgetIncoming(home, p.file) }
           // What this restore would take away, in figures, and a tick before Replace (21 Oct 2026).
           val loss = rememberLoss(dao, p.data)
           var agreed by remember(p) { mutableStateOf(false) }
@@ -1295,7 +1302,7 @@ private fun Book(
           AlertDialog(
             // A live pairing's question is not lost to a click outside it: it comes back at once (23 Oct 2026,
             // the second review: the phone waited 15 minutes for an answer nobody could give).
-            onDismissRequest = { if (!busy && p.live == null) picked = null },
+            onDismissRequest = { if (!busy && p.live == null) { picked = null; letGo() } },
             title = { Text(word(W.restore_warning_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -1338,11 +1345,12 @@ private fun Book(
               Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 // Or keep this book and add only what the copy has that it lacks.
                 // Not for a live pairing: the two devices must start from the very same book.
-                if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
+                if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null; letGo() }) { Text(word(W.merge_button)) }
                 // The business that already keeps this book, opened (R29); nothing here is joined or replaced.
                 if (heldBy != null) TextButton(enabled = !busy, onClick = {
                     LiveDesk.offers.value = null
                     picked = null
+                    letGo()
                     onSwitch(heldBy)
                 }) { Text(word(W.business_switch_open)) }
                 // Nothing here is removed: the phone's book becomes a business of its own and that business joins.
@@ -1356,6 +1364,7 @@ private fun Book(
                         LiveDesk.keepPending(offer, p.data)
                         LiveDesk.offers.value = null
                         picked = null
+                        letGo()
                         onSwitch(b.id)
                     }) { Text(word(W.live_join_new_business)) }
                 }
@@ -1412,6 +1421,7 @@ private fun Book(
                             } finally {
                                 busy = false
                                 picked = null
+                                letGo()
                             }
                         }
                     },
@@ -1424,6 +1434,7 @@ private fun Book(
                     // A live pairing said no to: let go here (the phone gives up waiting on its own).
                     if (p.live != null) LiveDesk.offers.value = null
                     picked = null
+                    letGo()
                 }) { Text(word(W.cancel)) }
             }
           )
@@ -1732,6 +1743,8 @@ private fun Book(
                     result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
                     else -> Picked.Refused(words.text(W.backup_err_unreadable))
                 }
+                // A book that could not be read has no question to wait for (R41).
+                if (picked !is Picked.Ready) PhoneSync.forgetIncoming(home, file)
             }
         }
     }
@@ -1941,6 +1954,19 @@ private fun Book(
         }
     }
     var namingShop by remember { mutableStateOf(shop.isNullOrBlank()) }
+    // No shortcut while a question in this window waits (R156, 23 Oct 2026): F2 or Ctrl+N stacked a form
+    // over "Delete these customers?". Every AlertDialog of this window is named here; the dialog windows
+    // (AppDialog) take their own keys and never reach this window's handler.
+    // One lambda for this book's life: it reads the states themselves, so it always sees the current answer.
+    val questionOpen: () -> Boolean = remember {
+        {
+            picked != null || done || confirming != null || editing != null || deleting != null || halves != null ||
+                deletingMany || deletingParty != null || told != null || backedUp != null || clockBehind != null || namingShop
+        }
+    }
+    keys.busy = questionOpen
+    // A book that leaves (a switch, the lock) does not keep the keys shut; a newer book's gate is left alone.
+    DisposableEffect(Unit) { onDispose { if (keys.busy === questionOpen) keys.busy = { false } } }
     if (namingShop && !choosingTrade) {
         var typed by remember { mutableStateOf("") }
         // The shop's country, asked with its name (21 Oct 2026): the computer's own region when it is
@@ -2200,9 +2226,12 @@ class KeyActions {
     var search: () -> Unit = {}
     /** The open page's own keys (the counter's F-keys), asked first; null when the page has none. */
     var page: ((androidx.compose.ui.input.key.KeyEvent) -> Boolean)? = null
+    /** True while a question of the window is open (R156): no shortcut then, the counter's included. */
+    var busy: () -> Boolean = { false }
 
     fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean {
         if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
+        if (busy()) return false
         if (page?.invoke(e) == true) return true
         val k = e.key
         val ctrl = e.isCtrlPressed
