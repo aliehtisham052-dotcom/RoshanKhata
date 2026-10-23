@@ -57,8 +57,11 @@ object SealedChunks {
     /**
      * [head] as record 0, then [body] to its end, sealed under [key] for [label]
      * and written to [out]. Neither is held whole: [body] is read a record at a time.
+     * [afterHead], when set and there is a body, runs once record 0 is flushed and
+     * before the body goes (the phone's send waits there for the computer's go,
+     * 23 Oct 2026); what it throws ends the write.
      */
-    fun write(out: DataOutputStream, key: SecretKeySpec, label: ByteArray, head: ByteArray, body: InputStream?) {
+    fun write(out: DataOutputStream, key: SecretKeySpec, label: ByteArray, head: ByteArray, body: InputStream?, afterHead: (() -> Unit)? = null) {
         require(head.size <= MAX_HEAD) { "head too long" }
         val prefix = ByteArray(PREFIX).also { SecureRandom().nextBytes(it) }
         out.write(prefix)
@@ -81,6 +84,7 @@ object SealedChunks {
             var next = ByteArray(CHUNK)
             var curLen = fill(body, cur)
             record(head, head.size, curLen == 0)
+            if (afterHead != null) { out.flush(); afterHead() }
             while (curLen > 0) {
                 // A short record is the end of the body: nothing more is read after it.
                 val nextLen = if (curLen < CHUNK) 0 else fill(body, next)

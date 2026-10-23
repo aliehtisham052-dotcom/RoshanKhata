@@ -392,17 +392,10 @@ class BackupActivity : BaseActivity() {
     /**
      * A refusal's reason code in the owner's language (23 Oct 2026, the review's R48: "another computer" stood in
      * English inside an Urdu sentence). A code not known here (a relay's new word, "schema 39") is shown as it is.
+     * The table is shared with the computer's Live sync window (`LiveWhy`).
      */
-    private fun liveWhy(why: String): String = when {
-        why == LiveRunner.WHY_ERROR -> getString(R.string.live_why_error)
-        why == "another computer" -> getString(R.string.live_why_other_computer)
-        why == "another book" -> getString(R.string.live_why_other_book)
-        why == "unknown device" -> getString(R.string.live_why_unknown_device)
-        why == "unreachable" -> getString(R.string.live_why_unreachable)
-        why == "day-limit" -> getString(R.string.live_why_day_limit)
-        why == "full" || why == "new-books" || why == "too-many-devices" -> getString(R.string.live_why_relay_full)
-        else -> why
-    }
+    private fun liveWhy(why: String): String =
+        com.innovation313.roshankhata.data.LiveWhy.text(com.innovation313.roshankhata.data.AndroidWords(this), why)
 
     /** The relay switch set from the book, without asking again. */
     private var showingRelay = false

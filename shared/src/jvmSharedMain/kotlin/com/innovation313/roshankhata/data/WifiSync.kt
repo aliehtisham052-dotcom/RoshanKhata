@@ -32,8 +32,15 @@ import javax.crypto.spec.SecretKeySpec
  * address it was not configured for, and the computer's runtime then needs
  * no extra module. Shared by both sides, so the two cannot drift apart.
  *
- * The frame: "RKS1", a 12-byte nonce, the sealed bytes' length (4 bytes),
- * the sealed bytes. The answer: one byte, [OK], [BAD] or [TOO_BIG].
+ * The send (since 23 Oct 2026, the review report): "RKB2", then the book as
+ * [SealedChunks] under [chunkKey] — a small head (the book's length) the
+ * computer opens first, a byte back ([GO], or [BAD] / [TOO_BIG]), then the
+ * book a record at a time, which the computer writes to a file as it comes.
+ * The answer: one byte, [OK], [BAD] or [TOO_BIG]. A stranger without the
+ * secret gets no further than the head's few bytes, and nothing of the book
+ * is ever held whole on either side. "RKS1" (one sealed frame, gathered whole
+ * in memory before it was opened) is refused unread: update the phone and the
+ * computer together.
  *
  * The other way (20 Oct, later the same day): the phone may ASK the computer
  * for its book with a "RKG1" frame carrying the sealed word "pull". The
@@ -50,8 +57,19 @@ object WifiSync {
     const val OK: Int = 1
     const val BAD: Int = 2
     const val TOO_BIG: Int = 3
+    /** The computer opened the head of a send: the book may follow (23 Oct 2026). */
+    const val GO: Int = 4
 
+    /** The one-frame seal's AAD ([seal], [open]): still the pull's question and a computer of before's answer. */
     private val MAGIC = "RKS1".toByteArray(Charsets.US_ASCII)
+    /** A book sent as [SealedChunks] (23 Oct 2026); also the records' label, so no other stream opens as one. */
+    private val MAGIC_SEND = "RKB2".toByteArray(Charsets.US_ASCII)
+    /** A send's head: the book's length, 8 bytes. */
+    private const val SEND_HEAD = 8
+    /** How long a connection may take to show it is ours (its magic and the head), as LiveWire's hello. */
+    private const val HELLO_MS = 5_000
+    /** The pull's question is one short sealed word: nothing longer is read from a "RKG1" frame. */
+    private const val MAX_ASK = 256
     private val MAGIC_GET = "RKG1".toByteArray(Charsets.US_ASCII)
     private val PULL = "pull".toByteArray(Charsets.US_ASCII)
     private const val NONCE = 12
@@ -168,69 +186,28 @@ object WifiSync {
         }.getOrNull()
     }
 
-    /**
-     * [head] then [file], sealed under [secret] and written to [out] as the
-     * frame [send] writes — [magic], the length, the nonce, the ciphertext
-     * with its tag — without ever holding the whole payload (22 Oct 2026, the
-     * review: a big book was held in memory three times over on the phone, and
-     * ran a small phone out of it). GCM's ciphertext is as long as its
-     * plaintext, so the length is known before a byte is read. The computer
-     * reads it as before.
-     */
-    fun writeSealed(out: DataOutputStream, magic: ByteArray, secret: String, head: ByteArray, file: java.io.File) {
-        val length = file.length()
-        val total = NONCE.toLong() + head.size + length + TAG_BITS / 8
-        if (total > Int.MAX_VALUE) throw IOException("too big")
-        val nonce = ByteArray(NONCE).also { SecureRandom().nextBytes(it) }
-        val c = Cipher.getInstance("AES/GCM/NoPadding")
-        c.init(Cipher.ENCRYPT_MODE, key(secret), GCMParameterSpec(TAG_BITS, nonce))
-        c.updateAAD(MAGIC)
-        out.write(magic)
-        out.writeInt(total.toInt())
-        out.write(nonce)
-        if (head.isNotEmpty()) c.update(head)?.let { out.write(it) }
-        var read = 0L
-        file.inputStream().buffered().use { input ->
-            val buf = ByteArray(1 shl 16)
-            while (read < length) {
-                val n = input.read(buf, 0, minOf(buf.size.toLong(), length - read).toInt())
-                if (n < 0) break
-                read += n
-                c.update(buf, 0, n)?.let { out.write(it) }
-            }
-        }
-        // A file that changed size meanwhile would not match the length already said.
-        if (read != length) throw IOException("the file changed while it was sent")
-        out.write(c.doFinal())
-        out.flush()
-    }
+    /** The computer's answer before the book went: [BAD] or [TOO_BIG]. */
+    private class NoGo(val why: Int) : IOException("refused before the book")
 
-    /** Phone side: [file] sent as [send] sends a payload, streamed ([writeSealed]). Blocking; call off the main thread. */
+    /**
+     * Phone side: [file] sent to the first of the computer's addresses that
+     * answers within [connectMs], streamed as it is read ([SealedChunks]),
+     * never held whole. Blocking; call off the main thread.
+     */
     fun sendFile(p: Pairing, file: java.io.File, connectMs: Int = 3000, readMs: Int = 60_000): Outcome {
-        for (host in p.hosts) {
-            val socket = Socket()
-            try {
-                socket.connect(InetSocketAddress(host, p.port), connectMs)
-            } catch (e: IOException) {
-                runCatching { socket.close() }
-                continue
-            }
-            socket.use { s ->
-                s.soTimeout = readMs
-                writeSealed(DataOutputStream(s.getOutputStream().buffered(1 shl 16)), MAGIC, p.secret, ByteArray(0), file)
-                val answer = s.getInputStream().read()
-                return if (answer == OK) Outcome.Sent(host) else Outcome.Refused(answer)
-            }
-        }
-        return Outcome.Unreachable
+        val length = file.length()
+        if (length <= 0L || length > MAX_BYTES) return Outcome.Refused(TOO_BIG)
+        return sendStream(p, length, connectMs, readMs) { file.inputStream().buffered(1 shl 16) }
     }
 
-    /**
-     * Phone side: [payload] sealed and sent to the first of the computer's
-     * addresses that answers within [connectMs]. Blocking; call off the main thread.
-     */
+    /** Phone side: [payload] sent as [sendFile] sends a file. Blocking; call off the main thread. */
     fun send(p: Pairing, payload: ByteArray, connectMs: Int = 3000, readMs: Int = 60_000): Outcome {
-        val sealed = seal(p.secret, payload)
+        if (payload.isEmpty() || payload.size > MAX_BYTES) return Outcome.Refused(TOO_BIG)
+        return sendStream(p, payload.size.toLong(), connectMs, readMs) { java.io.ByteArrayInputStream(payload) }
+    }
+
+    private fun sendStream(p: Pairing, length: Long, connectMs: Int, readMs: Int, body: () -> java.io.InputStream): Outcome {
+        val head = java.nio.ByteBuffer.allocate(SEND_HEAD).putLong(length).array()
         for (host in p.hosts) {
             val socket = Socket()
             try {
@@ -241,12 +218,23 @@ object WifiSync {
             }
             socket.use { s ->
                 s.soTimeout = readMs
-                val out = DataOutputStream(s.getOutputStream().buffered())
-                out.write(MAGIC)
-                out.writeInt(sealed.size)
-                out.write(sealed)
-                out.flush()
-                val answer = s.getInputStream().read()
+                val out = DataOutputStream(s.getOutputStream().buffered(1 shl 16))
+                val input = s.getInputStream()
+                out.write(MAGIC_SEND)
+                try {
+                    body().use { b ->
+                        // The head goes first and the computer says whether the book may follow: a computer
+                        // that will not take it is not sent a byte of it.
+                        SealedChunks.write(out, chunkKey(p.secret), MAGIC_SEND, head, b) {
+                            val go = input.read()
+                            if (go != GO) throw NoGo(go)
+                        }
+                    }
+                } catch (e: NoGo) {
+                    // A computer of before reads "RKB2" as a stranger's and answers BAD: the same words for the owner.
+                    return Outcome.Refused(if (e.why == TOO_BIG) TOO_BIG else BAD)
+                }
+                val answer = input.read()
                 return if (answer == OK) Outcome.Sent(host) else Outcome.Refused(answer)
             }
         }
@@ -313,14 +301,24 @@ object WifiSync {
 
     /**
      * Computer side: waits on [server] until a phone sends a book that opens
-     * with [secret], and returns it. A connection that is not ours, or not
-     * sealed with this secret, is answered [BAD] and the wait goes on.
+     * with [secret], and returns it as a file in [spool] (the system's
+     * temporary folder when null), written as it arrived; the caller owns it.
+     * A connection that is not ours, or not sealed with this secret, is
+     * answered [BAD] and the wait goes on: only the small head is read before
+     * the secret is checked (23 Oct 2026, the review report), so a stranger
+     * cannot make this computer hold or write anything of size.
      * A phone asking for the computer's book ("RKG1") is given [give]'s
      * bytes, sealed, when [give] is set, and the wait goes on; with no
      * [give] it is answered with a length of 0.
      * Returns null when [stop] says so (checked every second) or the socket closes.
      */
-    fun receive(server: ServerSocket, secret: String, stop: () -> Boolean = { false }, give: (() -> ByteArray?)? = null): ByteArray? {
+    fun receive(
+        server: ServerSocket,
+        secret: String,
+        stop: () -> Boolean = { false },
+        spool: java.io.File? = null,
+        give: (() -> ByteArray?)? = null
+    ): java.io.File? {
         server.soTimeout = 1000
         // The book is given once per code shown (21 Oct 2026): a phone that saw the code could
         // otherwise come back for the whole book again, as often as it liked, while the window stayed open.
@@ -328,15 +326,24 @@ object WifiSync {
         while (!stop()) {
             val s = try { server.accept() } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return null }
             s.use {
-                it.soTimeout = 60_000
-                val frame = runCatching { readOne(it, secret) }.getOrNull()
-                when (frame) {
-                    is Frame.Ask -> {
+                it.soTimeout = HELLO_MS
+                val input = DataInputStream(it.getInputStream().buffered(1 shl 16))
+                val out = DataOutputStream(it.getOutputStream().buffered())
+                val magic = ByteArray(MAGIC.size)
+                if (runCatching { input.readFully(magic) }.isFailure) return@use
+                when {
+                    magic.contentEquals(MAGIC_SEND) -> {
+                        val file = runCatching { takeBook(it, input, out, secret, spool) }.getOrNull()
+                        if (file != null) return file
+                    }
+                    magic.contentEquals(MAGIC_GET) -> {
+                        val asked = runCatching { readAsk(input, secret) }.getOrDefault(false)
+                        if (!asked) { refuse(it, out, BAD); return@use }
                         val book = if (given) null else give?.invoke()
-                        val out = DataOutputStream(it.getOutputStream().buffered())
                         runCatching {
                             if (book == null) out.writeInt(0)
                             else {
+                                it.soTimeout = 60_000
                                 // A record at a time (SealedChunks), its length first: the phone never holds it whole.
                                 out.writeInt(CHUNKED)
                                 val head = java.nio.ByteBuffer.allocate(8).putLong(book.size.toLong()).array()
@@ -346,16 +353,80 @@ object WifiSync {
                             if (book != null) given = true
                         }
                     }
-                    is Frame.Book -> {
-                        runCatching { it.getOutputStream().apply { write(OK); flush() } }
-                        return frame.bytes
-                    }
-                    Frame.TooBig -> runCatching { it.getOutputStream().apply { write(TOO_BIG); flush() } }
-                    null -> runCatching { it.getOutputStream().apply { write(BAD); flush() } }
+                    // "RKS1" (a phone of before 23 Oct 2026, one frame gathered whole) and anything else: refused unread.
+                    else -> refuse(it, out, BAD)
                 }
             }
         }
         return null
+    }
+
+    /**
+     * One send after its magic: the head opened with [secret] before anything more is read, [GO], then the book
+     * onto a file in [spool]. The file when it came whole and is answered [OK]; null otherwise (answered, and the
+     * file deleted). Throws when the connection fails (the file is deleted first).
+     */
+    private fun takeBook(s: Socket, input: DataInputStream, out: DataOutputStream, secret: String, spool: java.io.File?): java.io.File? {
+        val r = SealedChunks.Reader(input, chunkKey(secret), MAGIC_SEND)
+        val head = r.next(SEND_HEAD)
+        if (head == null || head.size != SEND_HEAD) { refuse(s, out, BAD); return null }
+        val length = java.nio.ByteBuffer.wrap(head).long
+        if (length <= 0L) { refuse(s, out, BAD); return null }
+        val dir = spool?.apply { mkdirs() }
+        if (length > MAX_BYTES || !diskRoomFor(length, dir)) { refuse(s, out, TOO_BIG); return null }
+        // The sender holds the code's secret: its book is read now, a record at a time, onto the disk.
+        out.write(GO); out.flush()
+        s.soTimeout = 60_000
+        val f = java.io.File.createTempFile("rk-phone-", ".part", dir)
+        var kept = false
+        try {
+            if (r.readTo(f, length) && f.length() == length) {
+                out.write(OK); out.flush()
+                kept = true
+                return f
+            }
+            refuse(s, out, BAD)
+            return null
+        } finally {
+            if (!kept) f.delete()
+        }
+    }
+
+    /** Whether [folder] (the system's temporary folder when null) has room for a book of [bytes], and a megabyte over. */
+    private fun diskRoomFor(bytes: Long, folder: java.io.File?): Boolean {
+        val space = (folder ?: java.io.File(System.getProperty("java.io.tmpdir") ?: ".")).usableSpace
+        // 0 is "not known" (a folder the runtime cannot ask about): the write itself will say.
+        return space == 0L || space >= bytes + (1L shl 20)
+    }
+
+    /** A pull's question: a short sealed frame that says "pull" under [secret]. */
+    private fun readAsk(input: DataInputStream, secret: String): Boolean {
+        val n = input.readInt()
+        if (n <= 0 || n > MAX_ASK) return false
+        val sealed = ByteArray(n)
+        input.readFully(sealed)
+        return open(secret, sealed)?.contentEquals(PULL) == true
+    }
+
+    /**
+     * [why], then a moment for the other side to read it and close first: a little of what it still sends is read
+     * into a small buffer and dropped (closing with bytes unread resets the connection, and the answer could be
+     * lost with it). Nothing is kept.
+     */
+    private fun refuse(s: Socket, out: DataOutputStream, why: Int) {
+        try {
+            out.write(why); out.flush()
+            s.soTimeout = 1000
+            val input = s.getInputStream()
+            val buf = ByteArray(4096)
+            var left = 64 * 1024
+            val until = System.currentTimeMillis() + 3000
+            while (left > 0 && System.currentTimeMillis() < until) {
+                val n = input.read(buf, 0, minOf(buf.size, left))
+                if (n < 0) break
+                left -= n
+            }
+        } catch (e: IOException) {}
     }
 
     /**
@@ -374,26 +445,5 @@ object WifiSync {
             left -= got
         }
         return out.toByteArray()
-    }
-
-    private sealed interface Frame {
-        class Book(val bytes: ByteArray) : Frame
-        object Ask : Frame
-        object TooBig : Frame
-    }
-
-    /** One frame: null when it is not ours or will not open. */
-    private fun readOne(s: Socket, secret: String): Frame? {
-        val input = DataInputStream(s.getInputStream().buffered())
-        val magic = ByteArray(MAGIC.size)
-        input.readFully(magic)
-        val ask = magic.contentEquals(MAGIC_GET)
-        if (!ask && !magic.contentEquals(MAGIC)) return null
-        val n = input.readInt()
-        if (n <= 0) return null
-        if (n > MAX_BYTES + NONCE + TAG_BITS / 8) return Frame.TooBig
-        val sealed = readUpTo(input, n)
-        val plain = open(secret, sealed) ?: return null
-        return if (ask) (if (plain.contentEquals(PULL)) Frame.Ask else null) else Frame.Book(plain)
     }
 }

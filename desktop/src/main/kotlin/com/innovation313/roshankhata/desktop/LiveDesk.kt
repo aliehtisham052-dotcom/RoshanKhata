@@ -346,7 +346,7 @@ object LiveDesk {
                         }
                     }
                     LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { relayState.value = RelayState.Off; CLOUD_OFF_MS }
-                    LiveCloud.Result.Halted -> { relayState.value = RelayState.Down("halted"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
+                    LiveCloud.Result.Halted -> { relayState.value = RelayState.Down(HALTED); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
                     is LiveCloud.Result.Refused -> if (r.why == LiveRound.LOST) {
                         // The phone asks for lines this book let go of (its book went back to an older copy): only
                         // joining again mends it — the window and the bell then say so (OFF_RESTORED), as on the phone.
@@ -379,6 +379,8 @@ object LiveDesk {
         data class Down(val why: String) : RelayState
     }
     val relayState = MutableStateFlow<RelayState>(RelayState.Unknown)
+    /** [RelayState.Down]'s word for the kill switch: the window says live sync is paused, not that a relay is down. */
+    const val HALTED = "halted"
 
     private const val CLOUD_MS = 15_000L
     /** A quiet relay is asked at most every five minutes. */
@@ -643,7 +645,12 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                     val rs by LiveDesk.relayState.collectAsState()
                     if (relay) when (val r = rs) {
                         is LiveDesk.RelayState.Live -> Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = c.brandGreenText, fontSize = 13.sp)
-                        is LiveDesk.RelayState.Down -> Text(word(W.live_pc_relay_down, r.why), color = c.owedToMe, fontSize = 13.sp)
+                        // The kill switch is its own sentence; a reason code in the owner's language (LiveWhy, as the phone).
+                        is LiveDesk.RelayState.Down -> Text(
+                            if (r.why == LiveDesk.HALTED) word(W.live_status_halted)
+                            else word(W.live_pc_relay_down, Format.isolate(com.innovation313.roshankhata.data.LiveWhy.text(com.innovation313.roshankhata.words.LocalWords.current, r.why))),
+                            color = c.owedToMe, fontSize = 13.sp
+                        )
                         else -> {}
                     }
                     Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
