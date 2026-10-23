@@ -38,6 +38,7 @@ import com.innovation313.roshankhata.data.LiveControl
 import com.innovation313.roshankhata.data.LiveRound
 import com.innovation313.roshankhata.data.LiveCrew
 import com.innovation313.roshankhata.data.LiveForget
+import com.innovation313.roshankhata.data.LiveGive
 import com.innovation313.roshankhata.data.LiveLines
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
@@ -86,6 +87,74 @@ object LiveDesk {
 
     /** The Live sync window is open (its code on the screen). */
     fun windowOpen(): Boolean = pairSecret != null
+
+    // ------------------------------------------------------------ giving the book to a phone (LiveGive)
+
+    /** The give code's secret on the screen; taken (one use) the moment a phone asks with it. */
+    private val giveSecret = java.util.concurrent.atomic.AtomicReference<String?>(null)
+    /** Writes the open book to a file as a backup does, with the shop's name and profile (given by the window). */
+    @Volatile private var exporter: (suspend (File) -> Unit)? = null
+
+    /** How giving the book stands, for the Live sync window. */
+    sealed interface Giving {
+        object Idle : Giving
+        /** The give code is on the screen. */
+        data class Waiting(val secret: String) : Giving
+        /** A phone asked with the code: the book is being made ready and sent. */
+        data class Sending(val name: String) : Giving
+        /** The phone has the book; it joins once its owner says yes there, the same [code] on both screens. */
+        data class Sent(val name: String, val code: String) : Giving
+        object Failed : Giving
+    }
+    val giving = MutableStateFlow<Giving>(Giving.Idle)
+
+    /** A new give code: its secret, good for one phone. [export] writes the book for it. */
+    fun openGive(export: suspend (File) -> Unit): String {
+        val s = WifiSync.newSecret()
+        exporter = export
+        giveSecret.set(s)
+        giving.value = Giving.Waiting(s)
+        return s
+    }
+
+    /** The give code leaves the screen (the window closed): no phone can ask with it any more. */
+    fun closeGive() {
+        giveSecret.set(null)
+        exporter = null
+        giving.value = Giving.Idle
+    }
+
+    /**
+     * A phone asked with the give code on the screen: the code is spent, and the book made ready as a phone
+     * sender makes it ([LiveGive.prepare]); null refuses (another code, one already used, no book open).
+     */
+    private fun give(ask: LiveWire.Ask): LiveWire.Gift? {
+        if (!giveSecret.compareAndSet(ask.secret, null)) return null
+        val d = db
+        val h = home
+        val f = file
+        val export = exporter
+        if (d == null || h == null || f == null || export == null) { giving.value = Giving.Failed; return null }
+        giving.value = Giving.Sending(ask.name)
+        val sql = d.syncSql()
+        val prepared = try {
+            runBlocking { LiveGive.prepare(sql, d.khataDao(), install(h), name(), marks(h, f), ask.name, ask.host, File(h, "to-phone"), export) }
+        } catch (e: Exception) {
+            trouble("giving the book", e)
+            NumberMark.mark = logged("the book's letter", null) { runBlocking { LiveSync.mark(sql) } }
+            giving.value = Giving.Failed
+            return null
+        }
+        // The book syncs from now on (if it did not): its letter numbers this computer's documents.
+        NumberMark.mark = logged("the book's letter", null) { runBlocking { LiveSync.mark(sql) } }
+        val code = LiveWire.pairCode(ask.secret, prepared.offer.pair!!)
+        return LiveWire.Gift(prepared.offer, prepared.file) { kept ->
+            logged("giving the book", Unit) { runBlocking { LiveGive.settle(sql, prepared, kept) } }
+            if (!kept) NumberMark.mark = logged("the book's letter", null) { runBlocking { LiveSync.mark(sql) } }
+            // Said only while the window still shows this give (closed, or a new code made: left as it is).
+            if (giving.value is Giving.Sending) giving.value = if (kept) Giving.Sent(ask.name, code) else Giving.Failed
+        }
+    }
 
     /** A pairing that arrived with its book read whole, waiting for the owner's answer. */
     class Incoming(
@@ -246,6 +315,13 @@ object LiveDesk {
                 // The kill switch is read here (every 6 h, on this thread) even while the phone is on the WiFi and the
                 // relay is not needed: the connection threads only read the cached word (23 Oct 2026).
                 logged("the kill switch", false) { LiveControl.halted(now) }
+                // A book given to a phone whose word never came in 15 minutes: given up, as the phone gives up its own.
+                if (d != null) {
+                    val off = logged("a given book's wait", false) {
+                        runBlocking { LiveGive.expire(d.syncSql(), now) { LiveCloud.leaveAll(d.syncSql()) } }
+                    }
+                    if (off) NumberMark.mark = null
+                }
                 // The phone on this WiFi talks to the computer directly — unless the book has other devices too (another
                 // phone away from the shop): each device sends only its own changes, so this one keeps the relay going.
                 val alone = d == null || logged("live state", 0) { runBlocking { LiveSync.state(d.syncSql()).peers.size } } <= 1
@@ -330,6 +406,9 @@ object LiveDesk {
                 bookKey = { key() },
                 // A pairing's book arrives onto this computer's own folder, never into memory (23 Oct 2026).
                 spool = home?.let { File(it, "from-phone") },
+                // A phone that scanned the give code asks for this book (LiveGive).
+                giveSecret = { giveSecret.get() },
+                onGive = { a -> give(a) },
                 onRound = { r -> answer(r) }
             )
         }
@@ -358,6 +437,8 @@ object LiveDesk {
     @Synchronized
     fun detach(book: KhataDatabase) {
         if (db !== book) return
+        // A give code shown for this book gives nothing once it closed.
+        giveSecret.set(null)
         stop()
         db = null
         relayState.value = RelayState.Unknown
@@ -423,10 +504,12 @@ object LiveDesk {
 
 /**
  * The Live sync window: the code a phone scans to join (Backup → Live sync
- * with the computer → Join the computer), and how live sync stands.
+ * with the computer → Join the computer), and how live sync stands. With
+ * [export] (the book written as a backup is), it can also show a give code:
+ * a new phone takes this computer's book (LiveGive, 23 Oct 2026).
  */
 @Composable
-fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
+fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (File) -> Unit)? = null) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val secret = remember { WifiSync.newSecret() }
@@ -456,9 +539,22 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
             PhoneSync.qr(LiveWire.inviteText(LiveWire.Invite(hosts, p, secret, PhoneSync.computerName()))).toComposeImageBitmap()
         }.getOrNull()
     }
+    // Giving this computer's book to a phone: the give code in place of the join code while it is shown.
+    val giving by LiveDesk.giving.collectAsState()
+    val giveQr: ImageBitmap? = remember(port, giving) {
+        val p = port
+        val g = giving
+        if (p == null || hosts.isEmpty() || g !is LiveDesk.Giving.Waiting) null
+        else runCatching {
+            PhoneSync.qr(LiveWire.inviteText(LiveWire.Invite(hosts, p, g.secret, PhoneSync.computerName(), give = true))).toComposeImageBitmap()
+        }.getOrNull()
+    }
+    // The book given: the relay was turned on for it before the copy (LiveGive.prepare).
+    LaunchedEffect(giving) { if (giving is LiveDesk.Giving.Sent) relay = true }
     DisposableEffect(Unit) {
         LiveDesk.pairSecret = secret
         onDispose {
+            LiveDesk.closeGive()
             if (LiveDesk.pairSecret == secret) LiveDesk.pairSecret = null
             // Not syncing a book: no reason to keep a port open once the window is gone.
             CoroutineScope(Dispatchers.IO).launch {
@@ -500,8 +596,35 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
             ) {
                 Text(word(W.live_title), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(word(W.live_explain), color = c.textMuted, fontSize = 13.sp)
-                Text(word(W.live_pc_steps), color = c.ink, fontSize = 14.sp)
-                qr?.let { Image(it, contentDescription = word(W.live_title), modifier = Modifier.size(300.dp)) }
+                val g = giving
+                if (g is LiveDesk.Giving.Idle) {
+                    Text(word(W.live_pc_steps), color = c.ink, fontSize = 14.sp)
+                    qr?.let { Image(it, contentDescription = word(W.live_title), modifier = Modifier.size(300.dp)) }
+                    if (export != null && port != null && hosts.isNotEmpty()) {
+                        FluentButton(word(W.live_give), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
+                    }
+                } else {
+                    Text(word(W.live_give), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Text(word(W.live_give_steps), color = c.ink, fontSize = 14.sp)
+                    giveQr?.let { Image(it, contentDescription = word(W.live_give), modifier = Modifier.size(300.dp)) }
+                    when (g) {
+                        is LiveDesk.Giving.Sending -> Text(
+                            word(W.live_give_sending, Format.isolate(g.name.ifBlank { "—" })), color = c.ink, fontSize = 14.sp
+                        )
+                        is LiveDesk.Giving.Sent -> Text(
+                            word(W.live_give_sent, Format.isolate(g.name.ifBlank { "—" }), g.code),
+                            color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Medium
+                        )
+                        LiveDesk.Giving.Failed -> Text(word(W.live_give_failed), color = c.owedToMe, fontSize = 14.sp)
+                        else -> {}
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if ((g is LiveDesk.Giving.Sent || g == LiveDesk.Giving.Failed) && export != null) {
+                            FluentButton(word(W.live_give_new_code), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
+                        }
+                        if (g !is LiveDesk.Giving.Sending) FluentButton(word(W.back), { LiveDesk.closeGive() }, kind = ButtonKind.SUBTLE)
+                    }
+                }
                 if (!opening && (port == null || hosts.isEmpty())) Text(word(W.wifi_pc_no_network), color = c.owedToMe, fontSize = 14.sp)
                 else if (port != null) Text(hosts.joinToString("  ·  ") + "  :" + port, color = c.textMuted, fontSize = 12.sp)
                 val s = state

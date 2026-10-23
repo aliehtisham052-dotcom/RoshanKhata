@@ -708,6 +708,19 @@ real devices yet.
   text, native digits, wrong-script letters and a misspelt app name in the
   RTL files (privacy strings exempt), and warns on Roman Urdu glossary
   variants (dukaan, maujood, ek, gahak, wapas…).
+- **The computer as a sender (LiveGive, phase 2):** More → Live sync → "Give this book to a phone" shows a
+  give code (`rklive:1?…&t=give`, a one-time secret, the computer's addresses and port; `phone`+`give` together
+  is refused). The phone (Backup → Take a shop's book → "Scan the computer's code", `LiveReceive.pull`) asks
+  with "RKT2": one ≤1 KB `SealedChunks` record under the code's secret, opened before anything is made (a
+  stranger gets BAD, nothing buffered); the computer (`LiveDesk.give`, the code spent at once) runs
+  `LiveGive.prepare` — the phone sender's steps: enable, `nextJoinerMark`, LIVE_RELAY on before the copy,
+  `offerPeers` + `holdForCopy`, the book to `to-phone/`, `setPending(phone = true)` — and streams the offer
+  ("RKT2|offer"); the phone answers OK/BAD once it parsed, BAD undoes it (`LiveGive.settle/undo`). Same
+  confirmation and take path (`live_receive_offer_pc`); the phone keeps the computer as its WiFi target. The
+  computer adds the joiner on its first WiFi round (`LiveRound.answer` → `confirmFromRelay`) or its relay
+  "pair"; `confirmFromRelay` now also sets `pair:<joiner>` (WiFi rounds name it); `LiveCloud.round` runs with
+  no peers while a phone pairing waits (a sender that synced with nobody never heard its phone's yes). A give
+  not answered in 15 min is given up (`LiveGive.expire`, the computer's relay loop). Tests: LiveGiveTest. CI only.
 
 ### The shared module (KMP)
 

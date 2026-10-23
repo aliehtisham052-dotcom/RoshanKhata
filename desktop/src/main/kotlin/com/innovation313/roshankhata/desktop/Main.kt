@@ -1680,7 +1680,12 @@ private fun Book(
         )
     }
     if (liveAsk) OverrideDialog(dao, word(W.live_needs_owner), ownerOnly = true, onClose = { liveAsk = false }) { liveSync = true }
-    if (liveSync) LiveSyncDialog(db, onClose = { liveSync = false })
+    // The window can also give this book to a new phone: written as a backup is, on this computer's own disk (LiveGive).
+    if (liveSync) LiveSyncDialog(db, onClose = { liveSync = false }, export = { f ->
+        withContext(Dispatchers.IO) {
+            f.bufferedWriter(Charsets.UTF_8).use { BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it) }
+        }
+    })
     // A live pairing just finished in this book (here or as a new business): every page reads again.
     LaunchedEffect(Unit) { LiveDesk.joined.drop(1).collect { shop = shopName(); reload++ } }
     if (phoneSync) {

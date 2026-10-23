@@ -38,6 +38,15 @@ import javax.crypto.spec.SecretKeySpec
  *    256 MB). The computer answers one byte, [OK] or [BAD], and shows the
  *    owner its usual restore confirmation: nothing is replaced without the
  *    owner's yes. "RKA1" is refused unread: update both devices.
+ *  - "RKT2", a book given (23 Oct 2026): the other way round, for a computer,
+ *    which has no camera to scan a phone's code. The computer shows a "give"
+ *    code (`t=give`: its addresses, its port, a one-time secret); the phone
+ *    that scans it asks with one small record sealed under the code's
+ *    secret ([SealedChunks], opened before anything more is read), and is
+ *    answered [OK] and the same offer a phone sender sends ([takeGift],
+ *    [Gift]), then says [OK] or [BAD] itself once it has read the book. A
+ *    stranger without the secret is answered [BAD] after at most a few
+ *    hundred bytes, and nothing is prepared or written for it.
  *  - "RKL1", a round, every few seconds after: a request sealed with the
  *    book's own key (AES-256-GCM, deflated first; since 22 Oct 2026 with a
  *    key derived for that road, [Road]), answered by a reply sealed the same
@@ -71,6 +80,12 @@ object LiveWire {
     /** Pairing since 23 Oct 2026 ([SealedChunks]); "RKA1", one sealed frame, is refused without being read. */
     private val PAIR = "RKA2".toByteArray(Charsets.US_ASCII)
     private val LIVE = "RKL1".toByteArray(Charsets.US_ASCII)
+    /** A book given by the device that shows the code ([takeGift]); the two records' labels keep ask and offer apart. */
+    private val GIVE = "RKT2".toByteArray(Charsets.US_ASCII)
+    private val GIVE_ASK = "RKT2|ask".toByteArray(Charsets.US_ASCII)
+    private val GIVE_OFFER = "RKT2|offer".toByteArray(Charsets.US_ASCII)
+    /** A give request's one record, at most: who asks, nothing more. */
+    private const val ASK_MAX = 1024
     private const val NONCE = 12
     private const val TAG_BITS = 128
 
@@ -79,19 +94,30 @@ object LiveWire {
      * it is a phone (23 Oct 2026: a phone may take a book too; it serves no WiFi rounds after, so the two meet
      * through the relay, and the sender learns the phone's yes from there).
      */
-    data class Invite(val hosts: List<String>, val port: Int, val secret: String, val computer: String = "", val phone: Boolean = false)
+    data class Invite(
+        val hosts: List<String>, val port: Int, val secret: String, val computer: String = "", val phone: Boolean = false,
+        /**
+         * A "give" code (23 Oct 2026): the device showing it gives its book to the one that scans it ([takeGift]),
+         * instead of taking that device's. Shown by the computer, which cannot scan a phone's code.
+         */
+        val give: Boolean = false
+    )
 
     fun inviteText(i: Invite): String =
         PREFIX + "h=" + i.hosts.joinToString(",") + "&p=" + i.port + "&k=" + i.secret + "&n=" + URLEncoder.encode(i.computer, "UTF-8") +
-            (if (i.phone) "&t=phone" else "")
+            (if (i.phone) "&t=phone" else "") + (if (i.give) "&t=give" else "")
 
     fun parseInvite(text: String?): Invite? {
         val t = text?.trim() ?: return null
         if (!t.startsWith(PREFIX)) return null
         // Same shape as the one-off code, under its own prefix: one parser, one set of checks.
         val p = WifiSync.parsePairing(WifiSync.PREFIX + t.removePrefix(PREFIX)) ?: return null
-        val phone = t.removePrefix(PREFIX).split('&').any { it == "t=phone" }
-        return Invite(p.hosts, p.port, p.secret, p.computer, phone)
+        val parts = t.removePrefix(PREFIX).split('&')
+        val phone = parts.any { it == "t=phone" }
+        val give = parts.any { it == "t=give" }
+        // A code cannot both take a book and give one: such a code was not made by this app.
+        if (phone && give) return null
+        return Invite(p.hosts, p.port, p.secret, p.computer, phone, give)
     }
 
     // ------------------------------------------------------------ sealing
@@ -309,6 +335,70 @@ object LiveWire {
         return Sent.Unreachable
     }
 
+    // ------------------------------------------------------------ a book given
+
+    /** A give code's request, opened with its [secret]: the asking device's [name] and the address it came from. */
+    class Ask(val secret: String, val name: String, val host: String)
+
+    /**
+     * What the device showing the give code hands over for one [Ask]: the offer's identity (as a phone sender's,
+     * [offerHead]) and the book on the disk. [done] is told whether the joiner said it kept the book; it is told
+     * exactly once, whatever happened on the way (the connection failed: false), and owns [file] from then on.
+     */
+    class Gift(val offer: Offer, val file: java.io.File, val done: (Boolean) -> Unit)
+
+    /** How taking a given book went, on the joiner's side. */
+    sealed interface Given {
+        /** The book, on the disk ([Offer.file]), with the pairing's code ([Offer.code]); [host] answered. */
+        data class Got(val offer: Offer, val host: String) : Given
+        /** The device answered but gave nothing (another code, a code already used, the book could not be made). */
+        object Refused : Given
+        object Unreachable : Given
+    }
+
+    /**
+     * Joiner side of a give code: asks the device at [invite] for its book, which is written to [file] a record at
+     * a time ([SealedChunks]) — never held whole. [accept] is shown the offer (its book in [file]) and says whether
+     * it was read and kept here; the device is told so. Anything but [Given.Got] leaves nothing in [file]. Blocking.
+     */
+    fun takeGift(
+        invite: Invite, name: String, file: java.io.File, accept: (Offer) -> Boolean,
+        connectMs: Int = 3000, readMs: Int = 120_000
+    ): Given {
+        val key = WifiSync.chunkKey(invite.secret)
+        val ask = JSONObject().put("want", "book").put("name", name.take(60)).toString().toByteArray(Charsets.UTF_8)
+        for (host in invite.hosts) {
+            val socket = Socket()
+            try { socket.connect(InetSocketAddress(host, invite.port), connectMs) } catch (e: IOException) { runCatching { socket.close() }; continue }
+            var kept = false
+            try {
+                socket.use { s ->
+                    s.soTimeout = readMs
+                    val out = DataOutputStream(s.getOutputStream().buffered())
+                    out.write(GIVE)
+                    SealedChunks.write(out, key, GIVE_ASK, ask, null)
+                    val input = DataInputStream(s.getInputStream().buffered(1 shl 16))
+                    if (input.read() != OK) return Given.Refused
+                    val r = SealedChunks.Reader(input, key, GIVE_OFFER)
+                    // The offer's identity first, then the book onto the disk; a pairing without its id cannot be answered.
+                    val head = r.next(SealedChunks.MAX_HEAD)?.let { b -> decodeHead(b) }
+                    val pair = head?.pair
+                    if (head == null || pair == null || r.done) return Given.Refused
+                    if (!r.readTo(file, MAX_BYTES.toLong())) return Given.Refused
+                    val offer = head.withFile(file).withCode(pairCode(invite.secret, pair))
+                    kept = try { accept(offer) } catch (e: Exception) { false }
+                    out.write(if (kept) OK else BAD); out.flush()
+                    return if (kept) Given.Got(offer, host) else Given.Refused
+                }
+            } catch (e: IOException) {
+                return Given.Refused
+            } finally {
+                if (!kept) file.delete()
+            }
+        }
+        return Given.Unreachable
+    }
+
     // ------------------------------------------------------------- rounds
 
     /** How a round went from the phone's side. */
@@ -365,6 +455,10 @@ object LiveWire {
         onOffer: (Offer) -> Boolean,
         bookKey: () -> String?,
         spool: java.io.File? = null,
+        /** The give code's secret on the screen ([takeGift]); null while none is shown. */
+        giveSecret: () -> String? = { null },
+        /** The book for one give request that opened with [giveSecret]; null to refuse it. */
+        onGive: (Ask) -> Gift? = { null },
         onRound: (JSONObject) -> JSONObject?
     ) {
         server.soTimeout = 1000
@@ -373,7 +467,7 @@ object LiveWire {
             val s = try { server.accept() } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return }
             if (busy.incrementAndGet() > AT_ONCE) { busy.decrementAndGet(); runCatching { s.close() }; continue }
             val worker = Thread({
-                try { serveOne(s, pairSecret, onOffer, bookKey, spool, onRound) } finally { busy.decrementAndGet() }
+                try { serveOne(s, pairSecret, onOffer, bookKey, spool, giveSecret, onGive, onRound) } finally { busy.decrementAndGet() }
             }, "live-conn")
             worker.isDaemon = true
             worker.start()
@@ -386,6 +480,8 @@ object LiveWire {
         onOffer: (Offer) -> Boolean,
         bookKey: () -> String?,
         spool: java.io.File?,
+        giveSecret: () -> String?,
+        onGive: (Ask) -> Gift?,
         onRound: (JSONObject) -> JSONObject?
     ) = socket.use {
         try {
@@ -415,6 +511,30 @@ object LiveWire {
                         if (!taken) f.delete()
                     }
                     out.write(if (taken) OK else BAD); out.flush()
+                }
+                magic.contentEquals(GIVE) -> {
+                    val secret = giveSecret()
+                    if (secret == null) { refuse(it, out); return@use }
+                    val key = WifiSync.chunkKey(secret)
+                    // One small record, opened with the code's secret, before anything is made: a stranger gets BAD.
+                    val r = SealedChunks.Reader(input, key, GIVE_ASK)
+                    val ask = r.next(ASK_MAX)?.takeIf { r.done }
+                        ?.let { b -> runCatching { JSONObject(String(b, Charsets.UTF_8)) }.getOrNull() }
+                        ?.takeIf { o -> o.optString("want") == "book" }
+                    if (ask == null) { refuse(it, out); return@use }
+                    val asker = Ask(secret, ask.optString("name").take(60), it.inetAddress?.hostAddress.orEmpty())
+                    val gift = try { onGive(asker) } catch (e: Exception) { LiveTrouble.note("giving the book", e); null }
+                    if (gift == null) { refuse(it, out); return@use }
+                    var kept = false
+                    try {
+                        it.soTimeout = 120_000
+                        out.write(OK)
+                        gift.file.inputStream().buffered(1 shl 16).use { body -> SealedChunks.write(out, key, GIVE_OFFER, offerHead(gift.offer), body) }
+                        // The joiner's word once it has read the book: kept, or not.
+                        kept = input.read() == OK
+                    } finally {
+                        try { gift.done(kept) } catch (e: Exception) { LiveTrouble.note("giving the book", e) }
+                    }
                 }
                 magic.contentEquals(LIVE) -> {
                     val n = input.readInt()

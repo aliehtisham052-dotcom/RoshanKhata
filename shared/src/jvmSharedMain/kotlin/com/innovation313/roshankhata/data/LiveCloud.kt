@@ -288,7 +288,9 @@ object LiveCloud {
         if (!allowed(sql)) return Result.Off
         if (halted()) return Result.Halted
         val peers = LiveSync.state(sql).peers
-        if (peers.isEmpty()) return Result.NotPaired
+        // No other device yet, but a book given to a phone waits for its word, which comes only through here (a
+        // phone serves no WiFi round): the relay is read for it (23 Oct 2026).
+        if (peers.isEmpty() && LiveRound.pending(sql)?.phone != true) return Result.NotPaired
         val url = "$root/v1/b/${id.book}/"
         val pass = token(id.key, id.book, root)
         val headers = mapOf(
