@@ -3787,4 +3787,5 @@
     <string name="live_receive_offer_pc">“%1$s” (the computer) wants to give this phone the shop’s book.\n\nCode: %2$s — the same four digits must show on the computer.\n\nThis phone’s own book will be replaced by the shop’s. After this, this phone and the computer keep one book together, on the shop’s WiFi and through the internet relay.</string>
     <string name="live_receive_pc_refused">The computer did not give its book. Its code works once, and only while its Live sync window is open: make a new code there and scan it.</string>
     <string name="live_receive_pc_unreachable">Could not reach the computer. Check that both are on the same WiFi, that its Live sync window is open, and that Windows allowed Roshan Khata on the network.</string>
+    <string name="report_sync_notes_included">— Live sync notes (not crashes: problems live sync passed over and tried again; no names, amounts or keys):</string>
 </resources>

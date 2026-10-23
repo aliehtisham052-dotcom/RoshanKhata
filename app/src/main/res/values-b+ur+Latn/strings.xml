@@ -3573,4 +3573,5 @@
     <string name="live_receive_offer_pc">“%1$s” (computer) is phone ko dukaan ka khata dena chahta hai.\n\nCode: %2$s — yahi chaar hindse computer par bhi nazar aane chahiyein.\n\nIs phone ka apna khata dukaan ke khate se badal jaye ga. Is ke baad yeh phone aur computer dukaan ke WiFi aur internet relay ke zariye ek hi khata mil kar rakhenge.</string>
     <string name="live_receive_pc_refused">Computer ne apna khata nahi diya. Us ka code ek hi baar chalta hai, aur sirf tab jab us ki Live sync wali khirki khuli ho: wahan naya code banayein aur use scan karein.</string>
     <string name="live_receive_pc_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono ek hi WiFi par hain, computer par Live sync wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
+    <string name="report_sync_notes_included">— Live sync notes (crash nahi: woh masle jin ke baad live sync ne dobara koshish ki; koi naam, raqam ya key nahi):</string>
 </resources>

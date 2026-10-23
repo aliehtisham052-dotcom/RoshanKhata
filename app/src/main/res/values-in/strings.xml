@@ -3567,4 +3567,5 @@
     <string name="live_receive_offer_pc">“%1$s” (komputer) ingin memberikan buku toko ke ponsel ini.\n\nKode: %2$s — empat angka yang sama harus tampil di komputer.\n\nBuku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel ini dan komputer menyimpan satu buku bersama, lewat WiFi toko dan relai internet.</string>
     <string name="live_receive_pc_refused">Komputer tidak memberikan bukunya. Kodenya hanya berlaku sekali, dan hanya selama jendela Sinkron langsung terbuka: buat kode baru di sana lalu pindai.</string>
     <string name="live_receive_pc_unreachable">Komputer tidak terjangkau. Pastikan keduanya di WiFi yang sama, jendela Sinkron langsung di komputer terbuka, dan Windows mengizinkan Roshan Khata di jaringan.</string>
+    <string name="report_sync_notes_included">— Catatan sinkron langsung (bukan kerusakan: masalah yang dilewati sinkron langsung lalu dicoba lagi; tanpa nama, jumlah, atau kunci):</string>
 </resources>
