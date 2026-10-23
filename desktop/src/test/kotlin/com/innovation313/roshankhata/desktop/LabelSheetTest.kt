@@ -46,9 +46,12 @@ class LabelSheetTest {
         val room = 120.0
         assertEquals("Urea", sheet.fitted(g, "Urea", room))
         for (name in listOf("A very long product name that cannot fit on one label at all", "یوریا کھاد پچاس کلو کی بوری، اعلیٰ معیار", "यूरिया खाद पचास किलो की बोरी उच्च गुणवत्ता")) {
-            val cut = sheet.fitted(g, name, room)
+            // The room is half the name's own width: how wide a script draws depends on the fonts the machine has
+            // (on the Windows runner the Urdu line fitted 120 pt whole), so the cut is tested against the name itself.
+            val half = PrintFonts.width(g, name) / 2
+            val cut = sheet.fitted(g, name, half)
             assertTrue(cut, cut.endsWith("…"))
-            assertTrue(cut, PrintFonts.width(g, cut) <= room)
+            assertTrue(cut, PrintFonts.width(g, cut) <= half)
             assertTrue(cut, name.startsWith(cut.removeSuffix("…").trimEnd()))
         }
         // A character outside the basic plane (two chars in Kotlin) is never split in half.
