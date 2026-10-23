@@ -62,7 +62,7 @@ object LiveRunner {
     }
 
     /** [Status.Failed]'s reason when a round threw on this phone: the screen says a plain sentence, not the exception. */
-    const val WHY_ERROR = "error"
+    const val WHY_ERROR = LiveWhy.ERROR
 
     private const val PREFS = "live_sync"
     private const val INSTALL = "install"

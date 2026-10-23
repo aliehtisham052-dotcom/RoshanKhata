@@ -51,23 +51,86 @@ class WifiSyncTest {
     @Test
     fun `the computer takes the phone's book and ignores a stranger first`() {
         val server = ServerSocket(0, 4, InetAddress.getLoopbackAddress())
+        val spool = java.nio.file.Files.createTempDirectory("rk-from-phone").toFile()
         val book = ByteArray(300_000) { (it % 251).toByte() }
-        var got: ByteArray? = null
-        val t = thread { got = WifiSync.receive(server, secret) }
-        // A stranger on the network, with nothing of ours to say.
-        Socket(InetAddress.getLoopbackAddress(), server.localPort).use { s ->
-            s.getOutputStream().write("GET / HTTP/1.1\r\n\r\n".toByteArray()); s.getOutputStream().flush()
-            assertEquals(WifiSync.BAD, s.getInputStream().read())
+        var got: java.io.File? = null
+        val t = thread { got = WifiSync.receive(server, secret, spool = spool) }
+        try {
+            // A stranger on the network, with nothing of ours to say.
+            Socket(InetAddress.getLoopbackAddress(), server.localPort).use { s ->
+                s.getOutputStream().write("GET / HTTP/1.1\r\n\r\n".toByteArray()); s.getOutputStream().flush()
+                assertEquals(WifiSync.BAD, s.getInputStream().read())
+            }
+            // Someone who knows the frame but not this secret: refused on the head, before a byte of the book.
+            val wrong = WifiSync.send(WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, WifiSync.newSecret()), book)
+            assertEquals(WifiSync.Outcome.Refused(WifiSync.BAD), wrong)
+            assertEquals(0, spool.listFiles()?.size ?: 0)
+            val sent = WifiSync.send(WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, secret), book)
+            assertEquals(WifiSync.Outcome.Sent("127.0.0.1"), sent)
+            t.join(10_000)
+            // The book arrived onto the disk (23 Oct 2026), never gathered in memory.
+            val file = got
+            assertNotNull(file)
+            assertEquals(spool.canonicalPath, file!!.parentFile.canonicalPath)
+            assertArrayEquals(book, file.readBytes())
+        } finally {
+            server.close()
+            spool.deleteRecursively()
         }
-        // Someone who knows the frame but not this secret.
-        val wrong = WifiSync.send(WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, WifiSync.newSecret()), book)
-        assertEquals(WifiSync.Outcome.Refused(WifiSync.BAD), wrong)
-        val sent = WifiSync.send(WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, secret), book)
-        assertEquals(WifiSync.Outcome.Sent("127.0.0.1"), sent)
-        t.join(10_000)
-        server.close()
-        assertNotNull(got)
-        assertArrayEquals(book, got)
+    }
+
+    @Test
+    fun `a stranger's frame is refused before anything of it is kept`() {
+        val server = ServerSocket(0, 4, InetAddress.getLoopbackAddress())
+        val spool = java.nio.file.Files.createTempDirectory("rk-from-phone").toFile()
+        var stop = false
+        var got: java.io.File? = null
+        val t = thread { got = WifiSync.receive(server, secret, { stop }, spool) }
+        fun frame(write: (java.io.DataOutputStream) -> Unit): Int =
+            Socket(InetAddress.getLoopbackAddress(), server.localPort).use { s ->
+                s.soTimeout = 10_000
+                val out = java.io.DataOutputStream(s.getOutputStream().buffered())
+                write(out); out.flush()
+                s.getInputStream().read()
+            }
+        try {
+            // The one-frame send of before, even with the right secret: refused unread (update both devices).
+            val sealed = WifiSync.seal(secret, ByteArray(1000) { 7 })
+            assertEquals(WifiSync.BAD, frame { out -> out.write("RKS1".toByteArray()); out.writeInt(sealed.size); out.write(sealed) })
+            // "RKB2" with a head sealed under another secret, and a lot after it: refused on the head alone.
+            assertEquals(WifiSync.BAD, frame { out ->
+                out.write("RKB2".toByteArray())
+                val head = java.nio.ByteBuffer.allocate(8).putLong(200_000L).array()
+                SealedChunks.write(out, WifiSync.chunkKey(WifiSync.newSecret()), "RKB2".toByteArray(), head, null)
+                out.write(ByteArray(20_000))
+            })
+            // A record claiming to be longer than a head: refused without being read.
+            assertEquals(WifiSync.BAD, frame { out ->
+                out.write("RKB2".toByteArray()); out.write(ByteArray(8)); out.writeInt(200 * 1024 * 1024); out.writeByte(0)
+            })
+            // The right secret and a book larger than the computer takes: TOO_BIG before the book goes.
+            assertEquals(WifiSync.TOO_BIG, frame { out ->
+                out.write("RKB2".toByteArray())
+                val head = java.nio.ByteBuffer.allocate(8).putLong(WifiSync.MAX_BYTES.toLong() + 1).array()
+                SealedChunks.write(out, WifiSync.chunkKey(secret), "RKB2".toByteArray(), head, null)
+            })
+            // A pull's question claiming a huge length: refused, nothing set aside for it.
+            assertEquals(WifiSync.BAD, frame { out -> out.write("RKG1".toByteArray()); out.writeInt(WifiSync.MAX_BYTES) })
+            Thread.sleep(200)
+            assertNull(got)
+            assertEquals(0, spool.listFiles()?.size ?: 0)
+        } finally {
+            stop = true
+            t.join(10_000)
+            server.close()
+            spool.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `an empty book is refused before anything is sent`() {
+        val tooBig = WifiSync.Outcome.Refused(WifiSync.TOO_BIG)
+        assertEquals(tooBig, WifiSync.send(WifiSync.Pairing(listOf("127.0.0.1"), 1, secret), ByteArray(0)))
     }
 
     @Test
