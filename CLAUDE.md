@@ -708,6 +708,16 @@ real devices yet.
   text, native digits, wrong-script letters and a misspelt app name in the
   RTL files (privacy strings exempt), and warns on Roman Urdu glossary
   variants (dukaan, maujood, ek, gahak, wapas…).
+- **Line sets (E8, LiveSync rule 7):** an entry's goods, an invoice's items and a draft
+  order's lines are one set (`LiveSync.LINE_SETS`): every editor rewrites the whole set with
+  new uids, so two devices editing the same parent before a round both kept both sets (the
+  goods doubled, the fingerprints agreed). Now, when a parcel changes a parent's lines that
+  this device also changed (`lineSetRules`/`decideSet`), the device the parent's own rule
+  picks (bin, else higher device id — `setKeeper`) keeps its whole set: the receiver either
+  takes theirs (its own lines out, kept in sync_conflict, noted "D") or keeps its own
+  (`keepOwnLine`: their lines not written, kept aside, noted "D"/"U" so they follow). No schema
+  change. bill_items stay row-by-row (saveBillLine edits in place). Tests: LineSetSyncTest
+  (both orders and crossing parcels; entries, invoices, orders; uids kept in place).
 
 ### The shared module (KMP)
 
