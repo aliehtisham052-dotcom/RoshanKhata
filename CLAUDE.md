@@ -808,6 +808,23 @@ real devices yet.
   uses the night-aware `*_text` colours; day close keeps its dialog open on a refused save and
   takes the note's focus. Tests: TextFitTest, ImageReattachTest, SnapshotsOnDeviceTest (restore
   with a -wal).
+- **Phase 3 — Windows and release gates (p3-win; CI only):** the MSI's runtime has `jdk.crypto.ec`
+  (R06: on JDK 17 jlink adds SunEC only when named; without it every HTTPS/WSS call — relays, kill
+  switch, update check, the live line — died in the TLS handshake). desktop.yml's "Packaged runtime
+  check" runs `RuntimeSelfCheck` with the app image's own `runtime/bin/java` (modules, SunEC, ECDHE
+  suites, Urdu month names, commons-logging, SQLite's native library, one HTTPS request) and fails
+  on any FAIL line (R36) — **a new module the code needs goes into `modules(...)` and that check**.
+  "Back up now" is owner-only `BACKUP` like the phone (R33); CSV exports stay on EXPORT. A book from
+  a phone (`from-phone/`) is deleted once its question is answered or unreadable, only the newest
+  is kept, and leftovers go on opening (`PhoneSync.forgetIncoming/clearIncoming`, R41). Every CSV
+  cell goes through `CsvCell` (shared: quoted, a leading `= + - @` tab/CR text gets `'`, plain
+  figures and ProductCsv's `="<digits>"` untouched; `CsvImport.cells` takes the mark off) (R153).
+  Window shortcuts do nothing while one of Book's AlertDialogs is open (`KeyActions.busy`, R156) —
+  a new AlertDialog in Book goes into `questionOpen`. aab.yml runs the strings job's checks and
+  build.yml's tests before the keystore, and refuses a versionCode not above the one in the
+  release-aab notes (`versionCode: N`; input `same_version` for a bundle never uploaded) (R37,
+  R102); strings.yml also fires on `shared/src/**` (R103); `*.whl` is ignored, the olefile wheel
+  is gone (R154). Tests: CsvCellTest, PhoneSyncIncomingTest.
 
 ### The shared module (KMP)
 
