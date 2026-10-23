@@ -58,20 +58,21 @@ class LabelSheet(private val products: List<Product>, private val copies: Int = 
         // The name, one line, cut to the label, on the reading side; the price at the far end. In the app's
         // print face, which draws Hindi and Bengali on a stock Windows (21 Oct 2026: SANS_SERIF printed boxes).
         val rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(java.util.Locale.getDefault())
+        // A name in another script than the face's (a Hindi name on an Urdu shop's labels) takes the face that
+        // draws it, a character at a time (PrintFonts.attributed, 23 Oct 2026): one face printed it as boxes.
         g.font = Font(PrintFonts.family, Font.BOLD, 8)
         val fm = g.fontMetrics
-        var name = p.name
-        while (fm.stringWidth(name) > labelW - 2 * pad && name.length > 2) name = name.dropLast(2) + "…"
-        val nameX = if (rtl) x + labelW - pad - fm.stringWidth(name) else x + pad
-        g.drawString(name, nameX.toFloat(), (y + pad + fm.ascent).toFloat())
+        val name = fitted(g, p.name, labelW - 2 * pad)
+        val nameW = PrintFonts.width(g, name)
+        val nameX = if (rtl) x + labelW - pad - nameW else x + pad
+        PrintFonts.draw(g, name, nameX.toFloat(), (y + pad + fm.ascent).toFloat())
         // The price on the end side of the name line.
         p.salePrice?.let { price ->
-            g.font = Font(PrintFonts.family, Font.BOLD, 8)
             val text = Format.money(price)
-            val w = g.fontMetrics.stringWidth(text)
-            if (fm.stringWidth(name) + w + 3 * pad < labelW) {
+            val w = PrintFonts.width(g, text)
+            if (nameW + w + 3 * pad < labelW) {
                 val priceX = if (rtl) x + pad else x + labelW - pad - w
-                g.drawString(text, priceX.toFloat(), (y + pad + fm.ascent).toFloat())
+                PrintFonts.draw(g, text, priceX.toFloat(), (y + pad + fm.ascent).toFloat())
             }
         }
         // The bars: as wide as the label allows, the code's digits under them.
@@ -88,6 +89,17 @@ class LabelSheet(private val products: List<Product>, private val copies: Int = 
         g.font = Font(Font.MONOSPACED, Font.PLAIN, 7)
         val cw = g.fontMetrics.stringWidth(code)
         g.drawString(code, (x + (labelW - cw) / 2).toFloat(), (y + labelH - pad).toFloat())
+    }
+
+    /** [s] as it fits in [room] points in [g]'s font (with the faces PrintFonts gives it), cut whole characters at a time with "…". */
+    internal fun fitted(g: Graphics2D, s: String, room: Double): String {
+        if (PrintFonts.width(g, s) <= room) return s
+        var cut = s
+        while (cut.isNotEmpty() && PrintFonts.width(g, cut.trimEnd() + "…") > room) {
+            // One character off the end, never half of a pair (an emoji, a rare letter).
+            cut = cut.substring(0, cut.offsetByCodePoints(cut.length, -1))
+        }
+        return cut.trimEnd() + "…"
     }
 
     private fun encode(code: String, width: Int, height: Int): BitMatrix? = runCatching {

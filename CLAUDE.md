@@ -745,6 +745,15 @@ real devices yet.
   voice or edit form. Live-sync failures passed over are written to `files/synclog/sync-notes.txt`
   (`SyncLog`, LiveTrouble's sink, 32 KB cap, messages cleaned of quoted text, long numbers and codes)
   and Report a Problem adds the newest 15 under `report_sync_notes_included`, not as a crash.
+- **Windows, phase 2 (From phone, relay reasons, labels):** the phone's send to the "From phone" window is
+  "RKB2": `SealedChunks` under `WifiSync.chunkKey` (label "RKB2"), an 8-byte head (the book's length) opened
+  first within 5 s, the computer's `GO` (or BAD / TOO_BIG: over MAX_BYTES or no disk room), then the book onto
+  `from-phone/rk-phone-*.part` and moved in by `saveIncomingFile`; `WifiSync.receive` returns that file.
+  "RKS1" is refused unread (update phone and computer together); a pull's question is read only up to 256
+  bytes. Reason codes on both platforms go through `LiveWhy` (shared; the phone's `liveWhy` and the Live sync
+  window), "day-bytes" and "book-full" included; the kill switch shows `live_status_halted` there. Barcode
+  labels draw name and price through `PrintFonts.width/draw` and cut whole code points (`LabelSheet.fitted`).
+  Tests: WifiSyncTest, LiveWhyTest, LabelSheetTest. CI only.
 
 ### The shared module (KMP)
 

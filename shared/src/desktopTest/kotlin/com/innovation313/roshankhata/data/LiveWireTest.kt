@@ -155,13 +155,13 @@ class LiveWireTest {
             val secret = WifiSync.newSecret()
 
             val wifi = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
-            val got = java.util.concurrent.atomic.AtomicReference<ByteArray?>(null)
-            val receiver = thread { got.set(WifiSync.receive(wifi, secret)) }
+            val got = java.util.concurrent.atomic.AtomicReference<java.io.File?>(null)
+            val receiver = thread { got.set(WifiSync.receive(wifi, secret, spool = dir.resolve("spool"))) }
             try {
                 val sent = WifiSync.sendFile(WifiSync.Pairing(listOf("127.0.0.1"), wifi.localPort, secret), file)
                 assertTrue("$sent", sent is WifiSync.Outcome.Sent)
                 receiver.join(10_000)
-                assertArrayEquals(book, got.get())
+                assertArrayEquals(book, got.get()!!.readBytes())
             } finally { runCatching { wifi.close() } }
 
             val pairServer = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
