@@ -46,7 +46,13 @@ object ThermalReceipt {
      * whether the cash drawer opens with it — a counter sale paid at least
      * partly in cash, when the drawer setting is on.
      */
-    class Job(val lines: List<Line>, val cash: Boolean = false)
+    /**
+     * One receipt to print. [direct]: a counter ticket goes straight to the
+     * printer used last when Windows still has it (23 Oct 2026, the review: the
+     * busiest button asked which printer every time, while the drawer opened on
+     * the remembered one without asking); the counter's settings change it.
+     */
+    class Job(val lines: List<Line>, val cash: Boolean = false, val direct: Boolean = false)
 
     /**
      * This computer's receipt printer (21 Oct 2026, kept in app.properties —

@@ -141,13 +141,16 @@ fun StaffPane(dao: KhataDao) {
         var role by remember(person) { mutableStateOf(person?.role) }
         var pin by remember(person) { mutableStateOf("") }
         var badPin by remember(person) { mutableStateOf(false) }
+        // Two staff of one name would share a shift and a drawer (23 Oct 2026, the review).
+        var nameTaken by remember(person) { mutableStateOf(false) }
         val mayEditLogin = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STAFF)
         AlertDialog(
             onDismissRequest = { adding = false; editing = null },
             title = { Text(word(if (person == null) W.staff_add else W.staff_edit)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Outlined(name, { name = it }, label = { Text(word(W.staff_name)) }, singleLine = true)
+                    Outlined(name, { name = it; nameTaken = false }, label = { Text(word(W.staff_name)) }, singleLine = true)
+                    if (nameTaken) Text(word(W.staff_name_taken), color = c.owedToMe, fontSize = 13.sp)
                     Outlined(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true,
                         textStyle = androidx.compose.material3.LocalTextStyle.current.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr))
                     Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
@@ -186,12 +189,14 @@ fun StaffPane(dao: KhataDao) {
                         else st.copy(role = role)
                     }
                     scope.launch {
+                        val taken = withContext(Dispatchers.IO) { dao.staffNameTaken(n, person?.id ?: 0L) }
+                        if (taken) { nameTaken = true; return@launch }
                         withContext(Dispatchers.IO) {
                             if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
                             else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
                         }
+                        adding = false; editing = null
                     }
-                    adding = false; editing = null
                 }) { Text(word(W.save)) }
             },
             dismissButton = { TextButton({ adding = false; editing = null }) { Text(word(W.cancel)) } }

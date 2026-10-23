@@ -45,8 +45,14 @@ object Fefo {
         set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
     }.timeInMillis
 
-    /** [product]'s batches, what is left of each, in the order they are sold from. */
-    suspend fun lots(dao: KhataDao, product: Product): List<Lot> {
+    /**
+     * [product]'s batches, what is left of each, in the order they are sold from.
+     * [shelf] is every product's stock on hand read once ([Counter.onHand]) by a
+     * caller that asks for many products (a ticket, the Expiry page — 23 Oct 2026,
+     * the review: each call read the whole book's stock again); without it the
+     * shelf is read here. Either way the same figure caps the batches.
+     */
+    suspend fun lots(dao: KhataDao, product: Product, shelf: Map<Long, Double?>? = null): List<Lot> {
         val batches = dao.batchesOfProduct(product.id)
         if (batches.isEmpty()) return emptyList()
         val moves = dao.batchMovesOfProduct(product.id).groupBy { it.billItemId }
@@ -60,7 +66,7 @@ object Fefo {
             }
             Lot(b.id, b.batchNumber, b.expiryDate, left)
         }.sortedWith(compareBy<Lot, Long?>(nullsLast()) { it.expiryDate }.thenBy { it.billItemId })
-            .let { capByShelf(it, onHand(dao, product)) }
+            .let { capByShelf(it, if (shelf != null) shelf[product.id] else onHand(dao, product)) }
     }
 
     /** What the shelf holds of [product] by the books (every movement, tagged or not); null when it cannot be said. */
@@ -146,10 +152,10 @@ object Fefo {
     }
 
     /** One batch (a supplier bill line) with its product and what is left of it; null when the line is no product's. */
-    suspend fun lotOf(dao: KhataDao, billItemId: Long): Pair<Product, Lot>? {
+    suspend fun lotOf(dao: KhataDao, billItemId: Long, shelf: Map<Long, Double?>? = null): Pair<Product, Lot>? {
         val item = dao.getBillItem(billItemId) ?: return null
         val product = item.productId?.let { dao.productById(it) } ?: return null
-        val lot = lots(dao, product).firstOrNull { it.billItemId == billItemId } ?: return null
+        val lot = lots(dao, product, shelf).firstOrNull { it.billItemId == billItemId } ?: return null
         return product to lot
     }
 
