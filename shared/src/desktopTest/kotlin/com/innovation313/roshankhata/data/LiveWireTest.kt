@@ -98,6 +98,53 @@ class LiveWireTest {
         }
     }
 
+    /**
+     * 23 Oct 2026 (the handover): a pairing frame was gathered whole — up to 256 MB — before the code's secret was
+     * checked. Now its identity is a small sealed record, opened first: a stranger who announces a big one, or
+     * whose small one does not open, is refused at once, and the old one-frame pairing is refused unread.
+     */
+    @Test
+    fun `a stranger's pairing frame is let go before anything big is read, while the code is on the screen`() {
+        val server = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
+        val stop = java.util.concurrent.atomic.AtomicBoolean(false)
+        val secret = WifiSync.newSecret()
+        val offered = java.util.concurrent.atomic.AtomicInteger(0)
+        val spool = Files.createTempDirectory("rk-spool").toFile()
+        val worker = thread { LiveWire.serve(server, { stop.get() }, { secret }, { offered.incrementAndGet(); true }, { null }, spool) { null } }
+        try {
+            // A head record that says 200 MB.
+            java.net.Socket("127.0.0.1", server.localPort).use { s ->
+                s.soTimeout = 5000
+                val out = java.io.DataOutputStream(s.getOutputStream())
+                out.write("RKA2".toByteArray()); out.write(ByteArray(8)); out.writeInt(200 * 1024 * 1024); out.writeByte(0); out.flush()
+                assertEquals(LiveWire.BAD, s.getInputStream().read())
+            }
+            // A small head sealed with another secret (whoever photographed an older code): refused on the head alone.
+            java.net.Socket("127.0.0.1", server.localPort).use { s ->
+                s.soTimeout = 5000
+                val out = java.io.DataOutputStream(s.getOutputStream().buffered())
+                out.write("RKA2".toByteArray())
+                val o = LiveWire.Offer("b".repeat(32), LiveSync.newHex(32), "d1", "Phone", 7, ByteArray(0))
+                SealedChunks.write(out, WifiSync.chunkKey(WifiSync.newSecret()), "RKA2".toByteArray(), LiveWire.offerHead(o), null)
+                assertEquals(LiveWire.BAD, s.getInputStream().read())
+            }
+            // The one-frame pairing of before, with the right secret: refused unread (update both devices).
+            java.net.Socket("127.0.0.1", server.localPort).use { s ->
+                s.soTimeout = 5000
+                val sealed = WifiSync.seal(secret, LiveWire.encodeOffer(LiveWire.Offer("b".repeat(32), LiveSync.newHex(32), "d1", "Phone", 7, ByteArray(10))))
+                val out = java.io.DataOutputStream(s.getOutputStream())
+                out.write("RKA1".toByteArray()); out.writeInt(sealed.size); out.write(sealed); out.flush()
+                assertEquals(LiveWire.BAD, s.getInputStream().read())
+            }
+            assertEquals(0, offered.get())
+            // Nothing a refused frame brought stays on the disk.
+            Thread.sleep(200)
+            assertEquals(0, spool.listFiles()?.size ?: 0)
+        } finally {
+            stop.set(true); runCatching { server.close() }; worker.join(5000); spool.deleteRecursively()
+        }
+    }
+
     @Test
     fun `a book sent from its file arrives whole, by WiFi and in a pairing, as the old frames did`() {
         val dir = Files.createTempDirectory("rk-stream").toFile()
@@ -122,13 +169,17 @@ class LiveWireTest {
             val offered = java.util.concurrent.atomic.AtomicReference<LiveWire.Offer?>(null)
             val worker = thread { LiveWire.serve(pairServer, { stop.get() }, { secret }, { o -> offered.set(o); true }, { null }) { null } }
             try {
-                val o = LiveWire.Offer("b".repeat(32), LiveSync.newHex(32), "d1", "Phone", 7, ByteArray(0), "B", "aa11bb22")
+                val o = LiveWire.Offer("b".repeat(32), LiveSync.newHex(32), "d1", "Phone", 7, ByteArray(0), "B", "aa11bb22", marks = listOf("A", "B", "C"))
                 val sent = LiveWire.sendOfferFile(LiveWire.Invite(listOf("127.0.0.1"), pairServer.localPort, secret), o, file)
                 assertTrue("$sent", sent is LiveWire.Sent.Taken)
                 val back = offered.get()!!
                 assertEquals(o.book, back.book); assertEquals(o.key, back.key); assertEquals(7L, back.seq)
                 assertEquals("B", back.mark); assertEquals("aa11bb22", back.pair)
-                assertArrayEquals(book, back.backup)
+                assertEquals(listOf("A", "B", "C"), back.marks)
+                // The book arrived onto the disk (23 Oct 2026), never gathered in memory.
+                assertEquals(0, back.backup.size)
+                assertArrayEquals(book, back.file!!.readBytes())
+                back.file!!.delete()
                 // Both screens show the same four digits for this pairing, and another pairing gets another code.
                 val code = (sent as LiveWire.Sent.Taken).code
                 assertTrue("$code", code != null && Regex("\\d{4}").matches(code))

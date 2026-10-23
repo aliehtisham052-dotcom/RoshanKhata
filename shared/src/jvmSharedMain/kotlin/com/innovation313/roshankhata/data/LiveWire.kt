@@ -28,12 +28,16 @@ import javax.crypto.spec.SecretKeySpec
  * Two kinds of frame, each: four letters, the sealed bytes' length, the
  * sealed bytes.
  *
- *  - "RKA1", pairing, once: the phone, having scanned the computer's code
+ *  - "RKA2", pairing, once: the phone, having scanned the computer's code
  *    ("rklive:1?…", its addresses, its port and a secret made for that code),
- *    sends this book's sync identity and its whole book, sealed with the
- *    code's secret ([WifiSync.seal]). The computer answers one byte, [OK] or
- *    [BAD], and shows the owner its usual restore confirmation: nothing is
- *    replaced without the owner's yes.
+ *    sends this book's sync identity and its whole book as [SealedChunks]
+ *    under the code's secret: the identity first, opened before anything
+ *    more is read, then the book a record at a time onto the disk (23 Oct
+ *    2026: "RKA1" sealed it as one frame, gathered whole in memory before the
+ *    secret was checked — a stranger's four bytes could make a device hold
+ *    256 MB). The computer answers one byte, [OK] or [BAD], and shows the
+ *    owner its usual restore confirmation: nothing is replaced without the
+ *    owner's yes. "RKA1" is refused unread: update both devices.
  *  - "RKL1", a round, every few seconds after: a request sealed with the
  *    book's own key (AES-256-GCM, deflated first; since 22 Oct 2026 with a
  *    key derived for that road, [Road]), answered by a reply sealed the same
@@ -64,7 +68,8 @@ object LiveWire {
     const val OK: Int = 1
     const val BAD: Int = 2
 
-    private val PAIR = "RKA1".toByteArray(Charsets.US_ASCII)
+    /** Pairing since 23 Oct 2026 ([SealedChunks]); "RKA1", one sealed frame, is refused without being read. */
+    private val PAIR = "RKA2".toByteArray(Charsets.US_ASCII)
     private val LIVE = "RKL1".toByteArray(Charsets.US_ASCII)
     private const val NONCE = 12
     private const val TAG_BITS = 128
@@ -191,9 +196,17 @@ object LiveWire {
         /** On the computer: the code the phone shows for this pairing ([pairCode]), set as the offer is read. */
         val code: String? = null,
         /** The sender's other devices, as far as the copy holds of each ([LiveCrew.offerPeers]); null from an older phone. */
-        val peers: JSONObject? = null
+        val peers: JSONObject? = null,
+        /**
+         * Every letter the sender knows is taken in the book's numbers, its own and the one it gives here included
+         * ([LiveSync.knownMarks], 23 Oct 2026): the joiner never hands one of them to a device it pairs in turn.
+         */
+        val marks: List<String>? = null,
+        /** On the receiving side: the book as it arrived, on the disk ([serve]); [backup] is then empty. */
+        val file: java.io.File? = null
     ) {
-        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c, peers)
+        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c, peers, marks, file)
+        fun withFile(f: java.io.File?) = Offer(book, key, device, name, seq, backup, mark, pair, code, peers, marks, f)
     }
 
     /**
@@ -218,6 +231,7 @@ object LiveWire {
             if (o.mark != null) put("mark", o.mark)
             if (o.pair != null) put("pair", o.pair)
             if (o.peers != null && o.peers.length() > 0) put("peers", o.peers)
+            if (!o.marks.isNullOrEmpty()) put("marks", org.json.JSONArray(o.marks))
         }.toString().toByteArray(Charsets.UTF_8)
         return head + byteArrayOf('\n'.code.toByte())
     }
@@ -225,15 +239,24 @@ object LiveWire {
     fun decodeOffer(bytes: ByteArray): Offer? = runCatching {
         val nl = bytes.indexOf('\n'.code.toByte())
         require(nl > 0)
-        val o = JSONObject(String(bytes, 0, nl, Charsets.UTF_8))
+        decodeHead(bytes.copyOfRange(0, nl))!!.let { h ->
+            Offer(h.book, h.key, h.device, h.name, h.seq, bytes.copyOfRange(nl + 1, bytes.size), h.mark, h.pair, null, h.peers, h.marks)
+        }
+    }.getOrNull()
+
+    /** An offer's identity ([offerHead]) without its book, or null when it is not one. */
+    fun decodeHead(bytes: ByteArray): Offer? = runCatching {
+        val o = JSONObject(String(bytes, Charsets.UTF_8).trim())
         val key = o.getString("key")
         require(key.length == 64 && key.all { it in '0'..'9' || it in 'a'..'f' })
+        val marks = o.optJSONArray("marks")?.let { a -> (0 until minOf(a.length(), 256)).map { a.optString(it) }.filter { LiveSync.validMark(it) } }
         Offer(
-            o.getString("book"), key, o.getString("dev"), o.optString("name"), o.getLong("seq"), bytes.copyOfRange(nl + 1, bytes.size),
+            o.getString("book"), key, o.getString("dev"), o.optString("name"), o.getLong("seq"), ByteArray(0),
             o.optString("mark").takeIf { LiveSync.validMark(it) },
             o.optString("pair").takeIf { it.length in 8..64 && it.all { c -> c in '0'..'9' || c in 'a'..'f' } },
             null,
-            o.optJSONObject("peers")
+            o.optJSONObject("peers"),
+            marks
         )
     }.getOrNull()
 
@@ -247,7 +270,7 @@ object LiveWire {
 
     /**
      * Phone side: the offer with the book read from [backup] as it goes out
-     * (WifiSync.writeSealed), never held whole (22 Oct 2026, the review); the
+     * ([SealedChunks]), never held whole (22 Oct 2026, the review); the
      * computer reads the same frame [sendOffer] sends. [offer]'s own backup
      * bytes are not sent. Blocking.
      */
@@ -258,7 +281,9 @@ object LiveWire {
             try { socket.connect(InetSocketAddress(host, invite.port), connectMs) } catch (e: IOException) { runCatching { socket.close() }; continue }
             socket.use { s ->
                 s.soTimeout = readMs
-                WifiSync.writeSealed(DataOutputStream(s.getOutputStream().buffered(1 shl 16)), PAIR, invite.secret, head, backup)
+                val out = DataOutputStream(s.getOutputStream().buffered(1 shl 16))
+                out.write(PAIR)
+                backup.inputStream().buffered(1 shl 16).use { body -> SealedChunks.write(out, WifiSync.chunkKey(invite.secret), PAIR, head, body) }
                 val answer = s.getInputStream().read()
                 return if (answer == OK) Sent.Taken(host, offer.pair?.let { pairCode(invite.secret, it) }) else Sent.Refused
             }
@@ -266,16 +291,17 @@ object LiveWire {
         return Sent.Unreachable
     }
 
-    /** Phone side: the offer sealed with the code's secret, to the first address that answers. Blocking. */
+    /** Phone side: the offer (its book in [Offer.backup]) under the code's secret, to the first address that answers. Blocking. */
     fun sendOffer(invite: Invite, offer: Offer, connectMs: Int = 3000, readMs: Int = 120_000): Sent {
-        val sealed = WifiSync.seal(invite.secret, encodeOffer(offer))
+        val head = offerHead(offer)
         for (host in invite.hosts) {
             val socket = Socket()
             try { socket.connect(InetSocketAddress(host, invite.port), connectMs) } catch (e: IOException) { runCatching { socket.close() }; continue }
             socket.use { s ->
                 s.soTimeout = readMs
-                val out = DataOutputStream(s.getOutputStream().buffered())
-                out.write(PAIR); out.writeInt(sealed.size); out.write(sealed); out.flush()
+                val out = DataOutputStream(s.getOutputStream().buffered(1 shl 16))
+                out.write(PAIR)
+                SealedChunks.write(out, WifiSync.chunkKey(invite.secret), PAIR, head, java.io.ByteArrayInputStream(offer.backup))
                 val answer = s.getInputStream().read()
                 return if (answer == OK) Sent.Taken(host, offer.pair?.let { pairCode(invite.secret, it) }) else Sent.Refused
             }
@@ -326,6 +352,11 @@ object LiveWire {
      * only thread for a minute, and with it every phone's sync); a
      * connection must say what it is within a few seconds, and a pairing is
      * only read while a code is on the screen.
+     *
+     * A pairing's book is written to a file in [spool] (the system's temporary
+     * folder when null) as it arrives, after its identity opened with the
+     * code's secret ([SealedChunks]); [onOffer] gets it as [Offer.file] and
+     * owns the file when it says yes — otherwise the file is deleted here.
      */
     fun serve(
         server: ServerSocket,
@@ -333,6 +364,7 @@ object LiveWire {
         pairSecret: () -> String?,
         onOffer: (Offer) -> Boolean,
         bookKey: () -> String?,
+        spool: java.io.File? = null,
         onRound: (JSONObject) -> JSONObject?
     ) {
         server.soTimeout = 1000
@@ -341,7 +373,7 @@ object LiveWire {
             val s = try { server.accept() } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return }
             if (busy.incrementAndGet() > AT_ONCE) { busy.decrementAndGet(); runCatching { s.close() }; continue }
             val worker = Thread({
-                try { serveOne(s, pairSecret, onOffer, bookKey, onRound) } finally { busy.decrementAndGet() }
+                try { serveOne(s, pairSecret, onOffer, bookKey, spool, onRound) } finally { busy.decrementAndGet() }
             }, "live-conn")
             worker.isDaemon = true
             worker.start()
@@ -353,43 +385,86 @@ object LiveWire {
         pairSecret: () -> String?,
         onOffer: (Offer) -> Boolean,
         bookKey: () -> String?,
+        spool: java.io.File?,
         onRound: (JSONObject) -> JSONObject?
     ) = socket.use {
-        runCatching {
+        try {
             it.soTimeout = HELLO_MS
-            val input = DataInputStream(it.getInputStream().buffered())
+            val input = DataInputStream(it.getInputStream().buffered(1 shl 16))
             val out = DataOutputStream(it.getOutputStream().buffered())
             val magic = ByteArray(4)
             input.readFully(magic)
-            val n = input.readInt()
             when {
                 magic.contentEquals(PAIR) -> {
                     val secret = pairSecret()
-                    if (secret == null || n <= 0 || n > MAX_BYTES + NONCE + TAG_BITS / 8) { out.write(BAD); out.flush(); return@runCatching }
+                    if (secret == null) { refuse(it, out); return@use }
+                    // The identity first, at most a small record, opened with the code's secret: a stranger gets no further.
+                    val r = SealedChunks.Reader(input, WifiSync.chunkKey(secret), PAIR)
+                    val head = r.next(SealedChunks.MAX_HEAD)?.let { b -> decodeHead(b) }
+                    if (head == null) { refuse(it, out); return@use }
+                    // The sender holds the code's secret: its book is read now, a record at a time, onto the disk.
                     it.soTimeout = 60_000
-                    val sealed = readUpTo(input, n)
-                    val offer = WifiSync.open(secret, sealed)?.let { b -> decodeOffer(b) }?.let { o -> o.withCode(o.pair?.let { pairCode(secret, it) }) }
-                    out.write(if (offer != null && onOffer(offer)) OK else BAD); out.flush()
+                    val f = java.io.File.createTempFile("rk-pair-", ".part", spool?.apply { mkdirs() })
+                    var taken = false
+                    try {
+                        if (r.readTo(f, MAX_BYTES.toLong())) {
+                            val offer = head.withFile(f).withCode(head.pair?.let { p -> pairCode(secret, p) })
+                            taken = try { onOffer(offer) } catch (e: Exception) { LiveTrouble.note("pairing offer", e); false }
+                        }
+                    } finally {
+                        if (!taken) f.delete()
+                    }
+                    out.write(if (taken) OK else BAD); out.flush()
                 }
                 magic.contentEquals(LIVE) -> {
+                    val n = input.readInt()
                     val key = bookKey()
-                    if (key == null || n <= 0 || n > MAX_ROUND_BYTES) { out.writeInt(0); out.flush(); return@runCatching }
+                    if (key == null || n <= 0 || n > MAX_ROUND_BYTES) { out.writeInt(0); out.flush(); return@use }
                     it.soTimeout = 60_000
                     val sealed = readUpTo(input, n)
                     val request = open(key, sealed, Road.REQUEST)?.let { b -> runCatching { JSONObject(String(b, Charsets.UTF_8)) }.getOrNull() }
-                    val reply = request?.let { r -> runCatching { onRound(r) }.getOrNull() }
+                    // A round the book could not answer (a database error) is written down, not only dropped (23 Oct 2026).
+                    val reply = request?.let { r ->
+                        try { onRound(r) } catch (e: Exception) { LiveTrouble.note("wifi round", e); null }
+                    }
                     if (reply == null) out.writeInt(0)
                     else { val b = seal(key, reply.toString().toByteArray(Charsets.UTF_8), Road.REPLY); out.writeInt(b.size); out.write(b) }
                     out.flush()
                 }
-                else -> { out.write(BAD); out.flush(); return@runCatching }
+                // "RKA1" (a phone of before 23 Oct 2026) and anything else: refused, nothing more read.
+                else -> { refuse(it, out); return@use }
             }
             // The phone closes first, so the wait that follows a closed connection (TIME_WAIT, four
             // minutes on Windows) is the phone's, not the computer's: a restarted computer then finds
             // its port free (22 Oct 2026). A phone that never closes is let go after three seconds.
             it.soTimeout = 3000
             try { while (it.getInputStream().read() >= 0) { /* nothing more is expected */ } } catch (e: IOException) {}
+        } catch (e: IOException) {
+            // A connection that stalled or closed: the network's ordinary trouble, not written down.
+        } catch (e: Exception) {
+            LiveTrouble.note("wifi connection", e)
+            Unit
         }
+    }
+
+    /**
+     * [BAD], then a moment for the other side to read it and close first: a little of what it still sends is read
+     * and dropped (closing with bytes unread resets the connection, and the answer could be lost with it).
+     */
+    private fun refuse(s: Socket, out: DataOutputStream) {
+        out.write(BAD); out.flush()
+        try {
+            s.soTimeout = 1000
+            val input = s.getInputStream()
+            val buf = ByteArray(4096)
+            var left = 64 * 1024
+            val until = System.currentTimeMillis() + 3000
+            while (left > 0 && System.currentTimeMillis() < until) {
+                val n = input.read(buf, 0, minOf(buf.size, left))
+                if (n < 0) break
+                left -= n
+            }
+        } catch (e: IOException) {}
     }
 
     // ------------------------------------------------- finding the computer again

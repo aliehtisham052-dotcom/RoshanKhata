@@ -3519,4 +3519,5 @@ Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyim
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
     <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
     <string name="live_relay">Juga lewat internet</string>
+    <string name="wifi_take_too_big">Buku komputer terlalu besar untuk memori atau ruang kosong ponsel ini. Tutup aplikasi lain lalu coba lagi, atau pindahkan buku dengan file cadangan.</string>
 </resources>
