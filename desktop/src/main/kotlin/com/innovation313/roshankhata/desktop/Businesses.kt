@@ -103,7 +103,10 @@ class Businesses(private val home: File) {
         val db = dbFile(id)
         // A book that synced live says goodbye to the relays first (best effort, 23 Oct 2026): the phone must not
         // keep leaving parcels for a book that is gone.
-        if (db.exists()) runCatching {
+        // Only a real SQLite book is opened for it (its first 16 bytes say so): a file that is not one must never be
+        // held open by a failed open while it is being deleted (Windows keeps an open file from going).
+        val isBook = runCatching { db.inputStream().use { s -> String(s.readNBytes(16), Charsets.US_ASCII) } == "SQLite format 3\u0000" }.getOrDefault(false)
+        if (isBook) runCatching {
             val book = DesktopDatabase.open(db)
             try {
                 kotlinx.coroutines.runBlocking {

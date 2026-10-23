@@ -133,8 +133,37 @@ class LiveCloudTest {
 
     @After
     fun close() {
+        LiveLines.maker = null
+        LiveLines.closeAll()
         phone.close(); pc.close()
         dir.deleteRecursively()
+    }
+
+    /**
+     * The live line in memory: each device's line carries the HTTP round's body to [relay] as cloud/worker's
+     * webSocketMessage does, and a parcel left over a line nudges the others' lines ({"t":"new"}).
+     */
+    private inner class FakeLines(private val relay: FakeRelay) : LiveLines.Maker {
+        val open = ArrayList<Pair<String, (String) -> Unit>>()
+        var messages = 0
+        override fun open(url: String, headers: Map<String, String>, onText: (String) -> Unit, onClosed: (Int) -> Unit): LiveLines.Line {
+            val dev = headers.getValue("x-device")
+            val me = dev to onText
+            open += me
+            val http = url.replace("wss://", "https://").removeSuffix("/live")
+            return object : LiveLines.Line {
+                override fun send(text: String): Boolean {
+                    messages++
+                    val o = JSONObject(text)
+                    val (code, bytes) = relay.call("POST", "$http/round", headers, o.getJSONObject("round").toString().toByteArray())
+                    val answer = JSONObject(String(bytes)).put("id", o.getInt("id")).put("status", code)
+                    onText(answer.toString())
+                    if (code == 200 && !answer.isNull("seq")) open.filter { it.first != dev }.forEach { it.second("{\"t\":\"new\"}") }
+                    return true
+                }
+                override fun close() { open.remove(me); onClosed(1000) }
+            }
+        }
     }
 
     private suspend fun both(times: Int = 2) = repeat(times) {
@@ -299,6 +328,37 @@ class LiveCloudTest {
         clock += LiveCloud.RESEND_MS + 1
         both(2)
         assertEquals(1, pc.khataDao().allPartiesForBackup().count { it.name == "Misfiled" })
+    }
+
+    @Test
+    fun `over the live line a round is one message, and a parcel nudges the other side at once`() = runBlocking {
+        val lines = FakeLines(relay)
+        LiveLines.maker = lines
+        var httpCalls = 0
+        val counted = LiveCloud.Http { m, u, h, b -> httpCalls++; relay.call(m, u, h, b) }
+        suspend fun bothOver(times: Int) = repeat(times) {
+            clock += 1000
+            assertTrue(LiveCloud.round(phone.syncSql(), counted, "https://relay.test", clock) { false } is LiveCloud.Result.Done)
+            assertTrue(LiveCloud.round(pc.syncSql(), counted, "https://relay.test", clock) { false } is LiveCloud.Result.Done)
+        }
+        phone.khataDao().insertParty(Party(name = "Over the line"))
+        bothOver(3)
+        assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "Over the line" })
+        // Two hellos over HTTP; every round after went over the lines.
+        assertEquals(2, httpCalls)
+        assertTrue(lines.messages >= 6)
+        // The computer's entry nudges the phone's open line: a waiting runner wakes without asking on a clock.
+        val since = LiveLines.newsMark()
+        pc.khataDao().insertParty(Party(name = "Nudged"))
+        clock += 1000
+        LiveCloud.round(pc.syncSql(), counted, "https://relay.test", clock) { false }
+        assertTrue(LiveLines.waitForNews(2_000, since))
+        // A line that ends leaves the round on HTTP, unchanged.
+        LiveLines.closeAll()
+        LiveLines.maker = null
+        bothOver(2)
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Nudged" })
+        assertTrue(httpCalls > 2)
     }
 
     @Test

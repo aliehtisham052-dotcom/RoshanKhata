@@ -83,7 +83,8 @@ compose.desktop {
             // jdk.localedata (21 Oct 2026, the critical review): without it the MSI's Java knew only
             // English, and Urdu, Arabic, Sindhi... month and day names, AM/PM and the date picker came out
             // in English. CI's full JDK always had it, so every test already ran with it.
-            modules("java.sql", "jdk.unsupported", "java.logging", "jdk.localedata")
+            // java.net.http (23 Oct 2026): live sync's line to the relay (JdkLines) is the JDK's own WebSocket.
+            modules("java.sql", "jdk.unsupported", "java.logging", "jdk.localedata", "java.net.http")
             windows {
                 menu = true
                 menuGroup = "Innovation 313"
