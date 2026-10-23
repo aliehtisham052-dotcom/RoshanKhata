@@ -602,6 +602,23 @@ real devices yet.
 - **Not done:** removing a stale device from the phone's screen (the
   computer's window has it); the hosting relay has no live line (rounds only).
 
+### The 23 Oct review report (kmp-desktop-15)
+
+- **Relays (R06-R08, R36-R39, R84; all three relays, test_relay.py `--caps`/`--idle`):**
+  a Worker object makes its tables only on a hello (`haveTables`), and an emptied
+  book is forgotten by the `!ledger` too (`forget`: ledger DELETE, deleteAlarm, deleteAll);
+  the ledger keeps its total in a row and indexes `at`. Per book: BOOK_BYTES 16 MiB
+  stored (507 `book-full`), DAY_BYTES 32 MiB a day (429 `day-bytes`); the hosting
+  also has MAX_STORE_BYTES 1 GiB over its files; Worker NEW_BOOKS_DAY 100. A round
+  whose parcel meets a limit keeps its ack and still answers the page under the
+  refusal's status; a whole page carries `through` (the cursor passes own parcels).
+  A device unseen for 30 days goes with its parcels (`DEVICE_IDLE_MS`). The hosting
+  counts new books by marks in `new/` and sweeps idle books from health (6 h).
+  Client (`LiveCloud`): a hello refused 507/429/409 waits an hour (`refused_until`);
+  resends ignore peers silent past `STALE_MS` and are one page (the next at once
+  while the peer acks); a daily heartbeat; capacity refusals take the page and fall
+  over to the next relay.
+
 ### The shared module (KMP)
 
 ```

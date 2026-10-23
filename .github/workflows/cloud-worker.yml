@@ -45,6 +45,14 @@ jobs:
           echo "relay smoke test passed"
           # The whole conversation, as the PHP and Supabase relays are held to (relays.yml).
           python3 ../../scripts/test_relay.py http://127.0.0.1:8787
+          # The limits, lowered (23 Oct 2026): two more local Workers, each with its own state, ports and vars.
+          npx wrangler dev --port 8788 --inspector-port 9230 --ip 127.0.0.1 --persist-to .wrangler/caps \
+            --var DAY_LIMIT:4 --var BOOK_BYTES:3000 --var DAY_BYTES:7000 > wr-caps.log 2>&1 &
+          npx wrangler dev --port 8789 --inspector-port 9231 --ip 127.0.0.1 --persist-to .wrangler/idle \
+            --var DEVICE_IDLE_MS:1500 --var PRUNE_EVERY_MS:1000 > wr-idle.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && break; sleep 1; done
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8788 --caps
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8789 --idle
 
   deploy:
     needs: check
