@@ -50,9 +50,13 @@ jobs:
             --var DAY_LIMIT:4 --var BOOK_BYTES:3000 --var DAY_BYTES:7000 > wr-caps.log 2>&1 &
           npx wrangler dev --port 8789 --inspector-port 9231 --ip 127.0.0.1 --persist-to .wrangler/idle \
             --var DEVICE_IDLE_MS:1500 --var PRUNE_EVERY_MS:1000 > wr-idle.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && break; sleep 1; done
+          # The account-wide cap through the !ledger (phase 2, 23 Oct 2026), lowered to 300,000 bytes.
+          npx wrangler dev --port 8790 --inspector-port 9232 --ip 127.0.0.1 --persist-to .wrangler/store \
+            --var ACCOUNT_BYTES:300000 > wr-store.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && curl -sf 127.0.0.1:8790/v1/health && break; sleep 1; done
           python3 ../../scripts/test_relay.py http://127.0.0.1:8788 --caps
           python3 ../../scripts/test_relay.py http://127.0.0.1:8789 --idle
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8790 --store
 
   deploy:
     needs: check

@@ -22,6 +22,14 @@ run them against a deployed relay, whose limits are the real ones):
     --idle   a device not seen for 1.5 s is let go (RK_RELAY_DEVICE_IDLE_MS=1500,
              RK_DEVICE_IDLE_MS=1500; the Worker: --var DEVICE_IDLE_MS:1500
              PRUNE_EVERY_MS:1000, its alarm does it)
+    --store  the whole store (every book together) holds about 300,000 bytes
+             (PHP: RK_RELAY_MAX_STORE_BYTES=300000; Supabase: RK_STORE_BYTES=300000;
+             the Worker: --var ACCOUNT_BYTES:300000). Each relay counts in its own
+             way (the hosting its files, Supabase the parcels, the Worker SQLite's
+             own size reported to its ledger every 64 KiB), so the checks ask only
+             what all three promise: parcels go, then "full" (507) within 40 of
+             30,000 bytes; a new book is refused "full"; a book already there still
+             says hello and is read; once its devices left, a new book is taken.
 """
 import base64
 import json
@@ -209,11 +217,48 @@ def idle():
     check("its parcels went with it", s == 200 and o.get("parcels") == [], (s, o))
 
 
+def store():
+    """The store-wide cap lowered at the relay (23 Oct 2026, phase 2): every book together, not one book."""
+    token = secrets.token_hex(32)
+    a, b = (secrets.token_hex(8) for _ in range(2))
+    p = "/v1/b/" + secrets.token_hex(16) + "/"
+    s, o = call("POST", p + "hello", token, a)
+    check("store: an empty store takes a book", s == 200, (s, o))
+    call("POST", p + "hello", token, b)
+    went, refused = 0, None
+    for _ in range(40):
+        s, o = call("POST", p + "send", token, a, os.urandom(30000))
+        if s != 200:
+            refused = (s, o)
+            break
+        went += 1
+    check("parcels go until the whole store is full, then are refused as full (507)",
+          went > 0 and refused is not None and refused[0] == 507 and refused[1].get("why") == "full", (went, refused))
+    # The same size again (nothing was freed in between): a relay that counts to the byte refuses it as well.
+    s, o = call("POST", p + "round", token, a, {"after": 0, "parcel": base64.b64encode(os.urandom(30000)).decode()})
+    check("a round past it is refused as full and still brings the page",
+          s == 507 and o.get("why") == "full" and o.get("seq") is None and isinstance(o.get("parcels"), list), (s, o))
+    other, other_token = "/v1/b/" + secrets.token_hex(16) + "/", secrets.token_hex(32)
+    s, o = call("POST", other + "hello", other_token, a)
+    check("a new book is refused as full while the store is", s == 507 and o.get("why") == "full", (s, o))
+    s, o = call("POST", p + "hello", token, b)
+    check("a book already there still says hello", s == 200, (s, o))
+    s, o = call("GET", p + "take?after=0", token, b)
+    check("and its devices still read what it holds", s == 200 and len(o.get("parcels", [])) > 0, (s, len(o.get("parcels", []))))
+    call("POST", p + "leave", token, a)
+    s, o = call("POST", p + "leave", token, b)
+    check("its devices leave", s == 200, (s, o))
+    s, o = call("POST", other + "hello", other_token, a)
+    check("once the full book went, a new book is taken again", s == 200, (s, o))
+
+
 def main():
     if MODE == "--caps":
         return caps()
     if MODE == "--idle":
         return idle()
+    if MODE == "--store":
+        return store()
     book = secrets.token_hex(16)
     token = secrets.token_hex(32)
     a, b, c, d = (secrets.token_hex(8) for _ in range(4))

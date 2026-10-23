@@ -88,7 +88,26 @@ object DesktopDatabase {
                     runCatching { connection.execSQL("PRAGMA temp_store = MEMORY") }
                     // Units saved as a label ("بوری", "bori") become their key ("bag"), as the phone
                     // does on every open (23 Oct 2026, R02): otherwise stock reads "?" and a product splits.
-                    UnitWords.normalizeStatements().forEach { sql -> runCatching { connection.execSQL(sql) } }
+                    // One read first, then one savepoint kept out of live sync's log (UnitWords.repairStored).
+                    UnitWords.repairStored(
+                        needed = { sql ->
+                            val st = connection.prepare(sql)
+                            try { st.step() && st.getLong(0) != 0L } finally { st.close() }
+                        },
+                        inTransaction = { body ->
+                            // A savepoint begins a transaction where there is none and nests where there is one.
+                            connection.execSQL("SAVEPOINT rk_units")
+                            try {
+                                body()
+                                connection.execSQL("RELEASE rk_units")
+                            } catch (e: Throwable) {
+                                runCatching { connection.execSQL("ROLLBACK TO rk_units") }
+                                runCatching { connection.execSQL("RELEASE rk_units") }
+                                throw e
+                            }
+                        },
+                        exec = { sql -> connection.execSQL(sql) }
+                    )
                 }
             })
             .build()
