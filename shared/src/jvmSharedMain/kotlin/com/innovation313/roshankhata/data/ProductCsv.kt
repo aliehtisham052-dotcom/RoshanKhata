@@ -51,10 +51,9 @@ object ProductCsv {
         return sb.toString()
     }
 
-    private fun row(sb: StringBuilder, cells: List<String>) {
-        cells.joinTo(sb, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }
-        sb.append("\r\n")
-    }
+    // Quoted, and a name or note Excel would run as a formula made text (CsvCell, R153); asText's
+    // ="<digits>" barcode passes as it is.
+    private fun row(sb: StringBuilder, cells: List<String>) = CsvCell.appendRow(sb, cells)
 
     /** One row as read: every field optional but the name. */
     data class Row(

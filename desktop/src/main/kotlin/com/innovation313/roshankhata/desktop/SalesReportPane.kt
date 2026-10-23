@@ -88,7 +88,7 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             val name = dialog.file ?: return@FluentButton
             val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
             val csv = StringBuilder("﻿")
-            (listOf(t.first) + t.second).forEach { row -> row.joinTo(csv, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }; csv.append("\r\n") }
+            (listOf(t.first) + t.second).forEach { row -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, row) }
             scope.launch {
                 told = runCatching { withContext(Dispatchers.IO) { file.writeText(csv.toString(), Charsets.UTF_8) } }
                     .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }

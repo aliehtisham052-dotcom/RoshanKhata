@@ -20,10 +20,7 @@ import java.awt.print.Printable
 object BookExport {
     fun customersCsv(parties: List<PartyWithBalance>, headers: List<String>): String {
         val sb = StringBuilder("﻿")
-        fun row(cells: List<String>) {
-            cells.joinTo(sb, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }
-            sb.append("\r\n")
-        }
+        fun row(cells: List<String>) = com.innovation313.roshankhata.data.CsvCell.appendRow(sb, cells)
         row(headers)
         com.innovation313.roshankhata.data.NameOrder.sortedBy(parties) { it.name }.forEach { p ->
             row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)))

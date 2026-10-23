@@ -72,7 +72,7 @@ fun AgingPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
             // Figures plain in the file (no currency sign), so Excel adds them up.
             val plain = rows.map { row -> listOf(row.name) + row.buckets.map { "%.2f".format(java.util.Locale.US, it) } + "%.2f".format(java.util.Locale.US, row.balance) }
             val csv = StringBuilder("﻿")
-            (listOf(head) + plain).forEach { line -> line.joinTo(csv, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }; csv.append("\r\n") }
+            (listOf(head) + plain).forEach { line -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, line) }
             scope.launch {
                 told = runCatching { withContext(Dispatchers.IO) { file.writeText(csv.toString(), Charsets.UTF_8) } }
                     .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }

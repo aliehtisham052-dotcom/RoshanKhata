@@ -47,8 +47,6 @@ object LedgerCsv {
     fun plain(value: Double): String =
         if (value % 1.0 == 0.0) "%.0f".format(Digits.FIGURES, value) else "%.2f".format(Digits.FIGURES, value)
 
-    private fun row(sb: StringBuilder, cells: List<String>) {
-        cells.joinTo(sb, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }
-        sb.append("\r\n")
-    }
+    // Quoted, and a name or note Excel would run as a formula made text (CsvCell, R153).
+    private fun row(sb: StringBuilder, cells: List<String>) = CsvCell.appendRow(sb, cells)
 }
