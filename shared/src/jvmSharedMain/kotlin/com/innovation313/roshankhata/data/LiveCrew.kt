@@ -223,6 +223,9 @@ object LiveCrew {
         val pending = LiveRound.pending(sql) ?: return false
         if (pending.pair != pair) return false
         joined(sql, device, name, pending.from)
+        // The pairing it named stays this device's word for it: its WiFi rounds (a phone given the computer's book,
+        // LiveGive) are answered for this pairing only (LiveRound.answer).
+        LiveSync.setPeerPair(sql, device, pair)
         LiveRound.dropPending(sql)
         return true
     }

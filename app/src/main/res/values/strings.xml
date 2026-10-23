@@ -3775,4 +3775,16 @@
         <item quantity="other">EXPIRED \u00B7 %1$d days ago</item>
     </plurals>
     <string name="voice_language_missing_phone">Your phone does not have that language. Listening in the phone\'s own language.</string>
+    <string name="live_give">Give this book to a phone</string>
+    <string name="live_give_steps">On the new phone open Backup → Take a shop’s book on this phone → Scan the computer’s code, and scan this code. Both must be on the same WiFi. The code works for one phone only. The book’s internet relay is turned on, so the phone also meets the book’s other devices.</string>
+    <string name="live_give_sending">Giving the book to “%1$s”…</string>
+    <string name="live_give_sent">The book went to “%1$s”.\n\nCode: %2$s — the phone shows the same four digits. It joins this book once its owner says yes there, within 15 minutes.</string>
+    <string name="live_give_failed">The book did not reach the phone. Make a new code and scan it again.</string>
+    <string name="live_give_new_code">New code</string>
+    <string name="live_give_code_wrong_place">This code gives the computer’s book to a phone. To take it, open Backup → Take a shop’s book on this phone → Scan the computer’s code.</string>
+    <string name="live_receive_scan_pc">Scan the computer’s code</string>
+    <string name="live_receive_not_give">This is not the computer’s give code. On the computer open More → Live sync → Give this book to a phone, and scan the code it shows.</string>
+    <string name="live_receive_offer_pc">“%1$s” (the computer) wants to give this phone the shop’s book.\n\nCode: %2$s — the same four digits must show on the computer.\n\nThis phone’s own book will be replaced by the shop’s. After this, this phone and the computer keep one book together, on the shop’s WiFi and through the internet relay.</string>
+    <string name="live_receive_pc_refused">The computer did not give its book. Its code works once, and only while its Live sync window is open: make a new code there and scan it.</string>
+    <string name="live_receive_pc_unreachable">Could not reach the computer. Check that both are on the same WiFi, that its Live sync window is open, and that Windows allowed Roshan Khata on the network.</string>
 </resources>

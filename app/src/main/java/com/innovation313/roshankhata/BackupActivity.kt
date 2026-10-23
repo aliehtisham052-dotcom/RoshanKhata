@@ -437,6 +437,12 @@ class BackupActivity : BaseActivity() {
                     Toast.makeText(this, R.string.live_not_live_code, Toast.LENGTH_LONG).show()
                     return@addOnSuccessListener
                 }
+                // The computer's "give" code takes no book from this phone: it gives its own (Take a shop's book).
+                if (invite.give) {
+                    MaterialAlertDialogBuilder(this).setTitle(R.string.live_title).setMessage(R.string.live_give_code_wrong_place)
+                        .setPositiveButton(R.string.ok, null).show()
+                    return@addOnSuccessListener
+                }
                 joinComputer(invite)
             }
             .addOnFailureListener {
@@ -566,12 +572,60 @@ class BackupActivity : BaseActivity() {
             .setTitle(R.string.live_receive)
             .setView(box)
             .setNegativeButton(R.string.cancel) { _, _ -> receive.close() }
+            // The computer cannot scan this code (no camera): it shows a give code of its own, scanned from here.
+            .setNeutralButton(R.string.live_receive_scan_pc) { _, _ -> receive.close(); scanGive() }
             .setOnCancelListener { receive.close() }
             .show()
         // Not answered in 15 minutes: the code goes.
         lifecycleScope.launch {
             kotlinx.coroutines.delay(15 * 60_000L)
             if (dialog?.isShowing == true) { dialog?.dismiss(); receive.close() }
+        }
+    }
+
+    /**
+     * The computer's give code (More → Live sync → Give this book to a phone), scanned: its book is asked for over
+     * the shop's WiFi and comes to the same confirmation as a phone's (23 Oct 2026).
+     */
+    private fun scanGive() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val invite = LiveWire.parseInvite(barcode.rawValue)
+                if (invite == null || !invite.give) {
+                    MaterialAlertDialogBuilder(this).setTitle(R.string.live_receive).setMessage(R.string.live_receive_not_give)
+                        .setPositiveButton(R.string.ok, null).show()
+                    return@addOnSuccessListener
+                }
+                pullGiven(invite)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun pullGiven(invite: LiveWire.Invite) {
+        Toast.makeText(this, R.string.wifi_take_asking, Toast.LENGTH_SHORT).show()
+        val receive = com.innovation313.roshankhata.data.LiveReceive(applicationContext)
+        lifecycleScope.launch {
+            val pulled = withContext(Dispatchers.IO) {
+                runCatching { receive.pull(invite, LiveRunner.deviceName()) }
+                    .getOrDefault(com.innovation313.roshankhata.data.LiveReceive.Pulled.Refused)
+            }
+            if (isFinishing || isDestroyed) { receive.close(); return@launch }
+            when (pulled) {
+                is com.innovation313.roshankhata.data.LiveReceive.Pulled.Got -> confirmReceive(receive, pulled.arrived)
+                else -> {
+                    receive.close()
+                    val why = if (pulled == com.innovation313.roshankhata.data.LiveReceive.Pulled.Unreachable) R.string.live_receive_pc_unreachable
+                        else R.string.live_receive_pc_refused
+                    MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.live_receive).setMessage(why)
+                        .setPositiveButton(R.string.ok, null).show()
+                }
+            }
         }
     }
 
@@ -589,7 +643,9 @@ class BackupActivity : BaseActivity() {
                         .joinToString("\n") { "• $it" } + "\n\n" + getString(R.string.restore_loss_kept)
             }
             val sender = arrived.offer.name.ifBlank { getString(R.string.live_title) }
-            val message = listOfNotNull(getString(R.string.live_receive_offer, sender, arrived.offer.code ?: "----"), lost).joinToString("\n\n")
+            // From the computer's give code: the code is checked on the computer's screen, and the two meet on the WiFi too.
+            val offerText = getString(if (arrived.from != null) R.string.live_receive_offer_pc else R.string.live_receive_offer, sender, arrived.offer.code ?: "----")
+            val message = listOfNotNull(offerText, lost).joinToString("\n\n")
             val b = MaterialAlertDialogBuilder(this@BackupActivity)
                 .setTitle(R.string.live_receive)
                 .setMessage(message)

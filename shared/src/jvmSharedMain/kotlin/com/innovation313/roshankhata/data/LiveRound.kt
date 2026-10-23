@@ -189,7 +189,12 @@ object LiveRound {
         val dev = request.getString("dev")
         // This device's own words, played back to it: not a peer's.
         if (dev == id.device) return null
-        if (LiveSync.state(sql).peers.none { it.device == dev }) return null
+        if (LiveSync.state(sql).peers.none { it.device == dev }) {
+            // A phone this computer gave its book to (LiveGive), in its first WiFi round: the pairing it names is its
+            // yes, as through the relay. Any other device this book does not know is not answered.
+            val name = request.optString("name").takeIf { it.isNotBlank() }
+            if (!LiveCrew.confirmFromRelay(sql, dev, name, request.optString("pair"))) return null
+        }
         // Only the pairing this computer said yes to: a phone joining again (or a request of an older pairing)
         // is not answered as this one until the owner says yes here.
         val want = LiveSync.peerPair(sql, dev)
