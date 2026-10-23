@@ -82,7 +82,9 @@ object AccessUi {
                 if (Access.ownerPinShort) activity.runOnUiThread { toast(activity, activity.getString(R.string.access_owner_pin_short)) }
             }
             activity.runOnUiThread {
-                if (activity.isFinishing) return@runOnUiThread
+                // A screen rebuilt meanwhile (turned, a scanner connecting) is destroyed, not finishing: no dialog on
+                // its dead window (23 Oct 2026, the review: BadTokenException), and the caller is told it did not pass.
+                if (activity.isFinishing || activity.isDestroyed) { failed(); return@runOnUiThread }
                 when (result) {
                     null -> { toast(activity, Access.waitSeconds(account = account).let { Digits.quantity(activity.resources, R.plurals.n_wait_seconds, it, it) }); failed() }
                     false -> { toast(activity, activity.getString(R.string.access_wrong_pin)); failed() }
@@ -102,7 +104,7 @@ object AccessUi {
             val staff = withContext(Dispatchers.IO) { dao.loginStaffOnce() }
             val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
             activity.runOnUiThread {
-                if (activity.isFinishing) return@runOnUiThread
+                if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
                 val again = { if (gate && Access.locked) signIn(activity, dao, true, done) }
                 val labels = (listOf(activity.getString(R.string.access_owner)) + staff.map { it.name + " · " + roleWord(activity, it.role) }).toTypedArray()
                 val b = MaterialAlertDialogBuilder(activity)
@@ -168,7 +170,7 @@ object AccessUi {
                 else withContext(Dispatchers.IO) { dao.loginStaffOnce().filter { it.role == Role.MANAGER } }
             val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
             activity.runOnUiThread {
-                if (activity.isFinishing) return@runOnUiThread
+                if (activity.isFinishing || activity.isDestroyed) { cancelled(); return@runOnUiThread }
                 if (managers.isEmpty() && owner == null) { toast(activity, activity.getString(R.string.access_denied)); cancelled(); return@runOnUiThread }
                 val names = (if (owner != null) listOf(activity.getString(R.string.access_owner)) else emptyList()) + managers.map { it.name }
                 MaterialAlertDialogBuilder(activity)
@@ -201,7 +203,7 @@ object AccessUi {
         AppScope.launch {
             val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
             activity.runOnUiThread {
-                if (activity.isFinishing) return@runOnUiThread
+                if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
                 if (owner == null) { then(); return@runOnUiThread }
                 askPin(activity, activity.getString(R.string.access_owner) + " · " + what) { pin ->
                     check(activity, dao, pin, Access.OWNER, { typed -> owner.matches(typed) }) {
@@ -416,7 +418,7 @@ object AccessUi {
         AppScope.launch {
             val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
             activity.runOnUiThread {
-                if (activity.isFinishing) return@runOnUiThread
+                if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
                 if (owner == null) { newOwnerPin(activity, dao, cancelled = { done(false) }) { done(true) }; return@runOnUiThread }
                 askPin(activity, activity.getString(R.string.access_owner_pin_current), onCancel = { done(true) },
                     forgot = { recover(activity, dao, then = { done(true) }, cancelled = { done(true) }) }) { pin ->
@@ -434,7 +436,7 @@ object AccessUi {
         AppScope.launch {
             val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
             activity.runOnUiThread {
-                if (activity.isFinishing) return@runOnUiThread
+                if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
                 if (owner != null) then()
                 else MaterialAlertDialogBuilder(activity).setTitle(R.string.access_owner_pin)
                     .setMessage(R.string.access_owner_pin_needed)
@@ -466,7 +468,7 @@ object AccessUi {
             AppScope.launch {
                 val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) } ?: return@launch
                 activity.runOnUiThread {
-                    if (activity.isFinishing) return@runOnUiThread
+                    if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
                     MaterialAlertDialogBuilder(activity).setTitle(R.string.access_counter_mode)
                         .setMessage(if (on) R.string.access_counter_mode_help else R.string.access_counter_off_help)
                         .setPositiveButton(if (on) R.string.access_counter_turn_on else R.string.access_counter_turn_off) { _, _ ->

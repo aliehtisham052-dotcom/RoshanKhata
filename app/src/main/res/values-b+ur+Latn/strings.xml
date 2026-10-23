@@ -3528,4 +3528,16 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
     <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
+    <string name="pos_void_shift_closed">Jis shift mein yeh bikri hui thi woh gin kar band ho chuki hai. Mansookh karne ke bajaye wapsi karen.</string>
+    <string name="pos_customer_binned">Yeh gahak recycle bin mein hai. Pehle gahak ko wapas layen. Kuch nahi likha gaya.</string>
+    <string name="pos_held_gone">Yeh roka hua ticket pehle hi bik chuka hai ya hataya ja chuka hai, shayad kisi aur device par. Kuch nahi likha gaya.</string>
+    <string name="pos_ticket_not_posted">Yeh bikri ab darj shuda nahi rahi (mansookh ya hata di gayi). Kuch nahi likha gaya.</string>
+    <string name="pos_post_failed">Bikri save nahi hui. Kuch nahi likha gaya; ticket abhi counter par hai.</string>
+    <string name="pos_hold_failed">Ticket roka nahi ja saka. Yeh abhi counter par hai.</string>
+    <string name="pos_void_failed">Bikri mansookh nahi ho saki. Kuch bhi tabdeel nahi hua.</string>
+    <string name="pos_return_failed">Wapsi save nahi hui. Kuch nahi likha gaya.</string>
+    <string name="book_merge_failed">Kuch shamil nahi hua. Yeh khata jun ka tun hai.</string>
+    <string name="products_export_failed">Samaan ki file nahi ban saki.</string>
+    <string name="save_failed_storage_full">Save nahi hua: phone ki memory bhar chuki hai. Kuch jagah khali karen, phir dobara darj karen.</string>
+    <string name="save_failed_not_saved">Save nahi hua: koi kharabi hui. Barah-e-karam dekh kar dobara darj karen.</string>
 </resources>

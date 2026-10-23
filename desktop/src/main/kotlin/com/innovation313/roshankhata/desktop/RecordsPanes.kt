@@ -654,6 +654,8 @@ fun ExpiryPane(dao: KhataDao) {
         }
     }
     var writingOff by remember { mutableStateOf<com.innovation313.roshankhata.data.ExpiringBatch?>(null) }
+    // Who gave their PIN for the write-off (null: the user's own right); the DAO refuses one nobody allowed.
+    var writingOffBy by remember { mutableStateOf<String?>(null) }
     writingOff?.let { b ->
         val found = lots[b.itemId]
         androidx.compose.material3.AlertDialog(
@@ -666,7 +668,8 @@ fun ExpiryPane(dao: KhataDao) {
             confirmButton = {
                 androidx.compose.material3.TextButton({
                     writingOff = null
-                    scope.launch { withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Fefo.writeOff(dao, b.itemId, b.batchNumber) }; tick++ }
+                    val by = writingOffBy
+                    scope.launch { withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Fefo.writeOff(dao, b.itemId, b.batchNumber, allowedBy = by) } }; tick++ }
                 }, enabled = (found?.second?.left ?: 0.0) > 0.0) { Text(word(W.expiry_write_off), color = c.owedToMe) }
             },
             dismissButton = { androidx.compose.material3.TextButton({ writingOff = null }) { Text(word(W.cancel)) } }
@@ -707,7 +710,7 @@ fun ExpiryPane(dao: KhataDao) {
                         )
                         if (b.hasExpired && lot.left > 0.0) {
                             FluentButton(word(W.expiry_write_off), {
-                                Gates.need(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST) { writingOff = b }
+                                Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST) { by -> writingOffBy = by; writingOff = b }
                             }, kind = ButtonKind.DANGER)
                         }
                     }

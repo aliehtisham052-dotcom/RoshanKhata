@@ -27,6 +27,8 @@ import com.innovation313.roshankhata.screens.RoshanTheme
 import com.innovation313.roshankhata.screens.problemWord
 import com.innovation313.roshankhata.words.ProvideWords
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -297,25 +299,45 @@ class CounterSaleActivity : BaseActivity() {
         )
         val ticket = draft.snapshot(notes = notes)
         draft.posting = true
-        lifecycleScope.launch {
+        // The post runs where a rebuilt screen cannot cancel it, and the ticket comes off the till the moment
+        // the sale is written (23 Oct 2026, the review: turned, or a Bluetooth scanner connecting, between the
+        // commit and the clearing, the screen came back with the same lines and Complete posted them again).
+        // The draft is the screen's ViewModel's: the rebuilt screen sees it posting, then cleared.
+        val held = draft
+        val book = dao
+        val app = applicationContext
+        val work = com.innovation313.roshankhata.data.AppScope.async {
             try {
-                val result = withContext(Dispatchers.IO) {
-                    runCatching {
-                        val id = Counter.post(dao, ticket)
-                        val sale = dao.saleWithLines(id)!!
-                        Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
-                            com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
-                    }
-                }
-                result.onSuccess { (sale, party, points) ->
+                val posted = runCatching { Counter.post(book, ticket) }
+                posted.onSuccess {
+                    withContext(Dispatchers.Main) { held.clearAfter(ticket) }
                     // Today's copy of the book follows the sales (a minute after the last one).
-                    com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
+                    com.innovation313.roshankhata.data.Snapshots.afterSale(app)
+                }
+                // The receipt's figures: a sale posted whose receipt cannot be read is still posted.
+                posted.map { id ->
+                    runCatching {
+                        val sale = book.saleWithLines(id)!!
+                        Triple(sale, sale.sale.partyId?.let { pid -> book.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                            com.innovation313.roshankhata.data.Loyalty.onReceipt(book, sale.sale))
+                    }.getOrNull()
+                }
+            } finally {
+                withContext(NonCancellable + Dispatchers.Main) { held.posting = false }
+            }
+        }
+        lifecycleScope.launch {
+            val result = work.await()
+            // A screen rebuilt meanwhile shows nothing of it: the sale is in Recent sales.
+            if (isFinishing || isDestroyed) return@launch
+            result.onSuccess { receipt ->
+                    message = null
+                    reload()
+                    if (receipt == null) return@onSuccess
+                    val (sale, party, points) = receipt
                     val words = AndroidWords(this@CounterSaleActivity)
                     val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
                     val text = SaleReceiptText.build(words, shop, sale, party?.balance, points)
-                    draft.clearAfter(ticket)
-                    message = null
-                    reload()
                     // The change to hand back, in the title (21 Oct 2026).
                     val title = getString(R.string.pos_posted, sale.sale.saleNumber) +
                         (if (change > 0.005) "  ·  " + getString(R.string.pos_change) + " " + com.innovation313.roshankhata.ui.Format.money(change) else "")
@@ -334,27 +356,49 @@ class CounterSaleActivity : BaseActivity() {
                         .setNegativeButton(R.string.close, null)
                         .show()
                 }.onFailure { e ->
+                    android.util.Log.w("RoshanKhata", "sale not posted", e)
                     message = if (e is Counter.ExpiredStock) getString(R.string.pos_expired_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.fresh))
-                        else e.message ?: getString(R.string.backup_failed)
+                        else failWord(e, R.string.pos_post_failed)
+                    // A held ticket another counter rang up meanwhile: this one is no longer held.
+                    if (e is com.innovation313.roshankhata.data.CounterRefused && e.why == com.innovation313.roshankhata.data.CounterRefused.Why.HELD_GONE) draft.heldId = null
                 }
-            } finally {
-                draft.posting = false
-            }
         }
+    }
+
+    /**
+     * A failed counter write in the till's own words ([counterFailWord]), else [fallback]; the English
+     * reason only in the log. The fallback is the phone's own resource: WordIds holds only the words
+     * the shared sources name.
+     */
+    private fun failWord(e: Throwable, fallback: Int): String {
+        val name = com.innovation313.roshankhata.screens.counterFailWord(e, "")
+        return if (name.isEmpty()) getString(fallback) else getString(com.innovation313.roshankhata.data.WordIds.string(name))
     }
 
     /** Park the ticket; cleared only once it is safely held (21 Oct 2026: a failed hold lost it). */
     private fun hold() {
         if (draft.posting || draft.lines.isEmpty()) return
         draft.posting = true
-        lifecycleScope.launch {
+        // As complete(): written where a rebuilt screen cannot cancel it, the till cleared once it is held.
+        val ticket = draft
+        val book = dao
+        val work = com.innovation313.roshankhata.data.AppScope.async {
             try {
-                val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
-                held.onSuccess { draft.clear(); reload() }
-                    .onFailure { e -> message = e.message ?: getString(R.string.backup_failed) }
+                runCatching { Counter.hold(book, ticket) }.also { r ->
+                    if (r.isSuccess) withContext(Dispatchers.Main) { ticket.clear() }
+                }
             } finally {
-                draft.posting = false
+                withContext(NonCancellable + Dispatchers.Main) { ticket.posting = false }
             }
+        }
+        lifecycleScope.launch {
+            val held = work.await()
+            if (isFinishing || isDestroyed) return@launch
+            held.onSuccess { reload() }
+                .onFailure { e ->
+                    android.util.Log.w("RoshanKhata", "ticket not held", e)
+                    message = failWord(e, R.string.pos_hold_failed)
+                }
         }
     }
 
@@ -397,8 +441,9 @@ class CounterSaleActivity : BaseActivity() {
                             when (which) {
                                 // The ticket as an A4 invoice (21 Oct 2026): made once, then opened to print or share.
                                 0 -> openInvoice(s.id)
-                                1 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { startReturn(s.id) }
-                                else -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { askVoid(s.id, s.saleNumber) }
+                                // Who allowed it goes to the DAO, which refuses a void or return nobody allowed (23 Oct 2026).
+                                1 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { by -> startReturn(s.id, by) }
+                                else -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { by -> askVoid(s.id, s.saleNumber, by) }
                             }
                         }
                         .setNegativeButton(R.string.cancel, null)
@@ -419,7 +464,7 @@ class CounterSaleActivity : BaseActivity() {
         }
     }
 
-    private fun askVoid(saleId: Long, number: String) {
+    private fun askVoid(saleId: Long, number: String, allowedBy: String?) {
         val input = android.widget.EditText(this).apply { hint = getString(R.string.pos_void_reason) }
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.pos_void)
@@ -432,13 +477,16 @@ class CounterSaleActivity : BaseActivity() {
                     // A ticket with goods already back, or from a day that is closed, is not voided:
                     // a return is the way (21 Oct 2026), and the screen says which.
                     val refusal = withContext(Dispatchers.IO) { runCatching { dao.voidRefusal(saleId) }.getOrNull() }
-                    val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(saleId, reason) }.getOrDefault(false) }
+                    val voided = if (refusal != null) null else withContext(Dispatchers.IO) { runCatching { dao.voidSale(saleId, reason, allowedBy = allowedBy) } }
+                    val ok = voided?.getOrNull() == true
                     if (ok) com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
+                    voided?.exceptionOrNull()?.let { android.util.Log.w("RoshanKhata", "sale not voided", it) }
                     message = when {
                         ok -> getString(R.string.pos_voided) + " " + number
-                        refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.HAS_RETURNS -> getString(R.string.pos_void_has_returns)
-                        refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.DAY_CLOSED -> getString(R.string.pos_void_day_closed)
-                        else -> getString(R.string.backup_failed)
+                        refusal != null -> com.innovation313.roshankhata.screens.voidRefusalWord(refusal, "")
+                            .let { w -> if (w.isEmpty()) getString(R.string.pos_void_failed) else getString(com.innovation313.roshankhata.data.WordIds.string(w)) }
+                        else -> voided?.exceptionOrNull()?.let { failWord(it, R.string.pos_void_failed) }
+                            ?: getString(R.string.pos_void_failed)
                     }
                     reload()
                 }
@@ -448,7 +496,7 @@ class CounterSaleActivity : BaseActivity() {
     }
 
     /** Goods back against a ticket: the shared ReturnForm in a dialog, posted in one transaction. */
-    private fun startReturn(saleId: Long) {
+    private fun startReturn(saleId: Long, allowedBy: String?) {
         lifecycleScope.launch {
             val full = withContext(Dispatchers.IO) { dao.saleWithLines(saleId) } ?: return@launch
             val back = withContext(Dispatchers.IO) { dao.returnedOfSale(saleId) }.associate { it.saleItemId to it.qty }
@@ -467,13 +515,16 @@ class CounterSaleActivity : BaseActivity() {
                             draft.posting = true
                             lifecycleScope.launch {
                                 try {
-                                    val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                                    val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems(), allowedBy = allowedBy) } }
                                     com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
                                     r.onSuccess { id ->
                                         val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                         message = getString(R.string.pos_return_posted, number)
                                         dialog.dismiss(); reload()
-                                    }.onFailure { problem = it.message }
+                                    }.onFailure {
+                                        android.util.Log.w("RoshanKhata", "return not posted", it)
+                                        problem = failWord(it, R.string.pos_return_failed)
+                                    }
                                 } finally { draft.posting = false }
                             }
                         })

@@ -159,10 +159,10 @@ object Fefo {
      * unit, logged as every adjustment is. Returns how much went, or null
      * when the batch is not a product's.
      */
-    suspend fun writeOff(dao: KhataDao, billItemId: Long, note: String?, user: String? = Access.userName): Double? {
+    suspend fun writeOff(dao: KhataDao, billItemId: Long, note: String?, user: String? = Access.userName, allowedBy: String? = null): Double? {
         val (product, lot) = lotOf(dao, billItemId) ?: return null
         if (lot.left <= EPS) return 0.0
-        dao.adjustStock(product.id, -lot.left, AdjustReason.EXPIRED, note, user, billItemId = billItemId, unit = product.defaultUnit)
+        dao.adjustStock(product.id, -lot.left, AdjustReason.EXPIRED, note, user, billItemId = billItemId, unit = product.defaultUnit, allowedBy = allowedBy)
         return lot.left
     }
 

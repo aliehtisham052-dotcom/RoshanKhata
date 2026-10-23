@@ -15,4 +15,15 @@ class DayCloseTest {
         assertEquals(48500.0, d.expected, 0.0)
         assertEquals(-500.0, d.difference, 0.0)
     }
+
+    @Test
+    fun `a close in the small hours belongs to the working day before`() {
+        val utc = java.util.TimeZone.getTimeZone("UTC")
+        val day = 20_000L
+        val start = day * 24L * 60 * 60 * 1000
+        assertEquals(day - 1, DayCloseMath.businessDayOf(start + 20 * 60_000L, utc))
+        assertEquals(day - 1, DayCloseMath.businessDayOf(start + 3 * 3_600_000L + 59 * 60_000L, utc))
+        assertEquals(day, DayCloseMath.businessDayOf(start + 4 * 3_600_000L, utc))
+        assertEquals(day, DayCloseMath.businessDayOf(start + 22 * 3_600_000L + 30 * 60_000L, utc))
+    }
 }

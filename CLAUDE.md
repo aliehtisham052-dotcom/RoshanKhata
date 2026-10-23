@@ -602,6 +602,32 @@ real devices yet.
 - **Not done:** removing a stale device from the phone's screen (the
   computer's window has it); the hosting relay has no live line (rounds only).
 
+### The 23 Oct review report (kmp-desktop-15)
+
+- **Counter core and Android crash-safety:** the phone posts and holds a
+  ticket on `AppScope` and clears the till the moment it is written (a
+  rebuilt screen no longer posts it twice); `postSale` refuses a held ticket
+  already rung up or dropped (`CounterRefused.HELD_GONE`); refusals carry
+  their reason (`CounterRefused`, `SaleMath.Refused`, `ReturnMath.Refused`)
+  and both counters word them (`counterFailWord`, `voidRefusalWord`), never
+  the English message or backup_failed; voids, returns, counts, adjustments,
+  write-offs and transfers check `Access.requireAllowed(p, allowedBy)` in
+  the DAO (screens pass the PIN prompt's `by`; Windows `Gates.needBy`); a
+  sale of a closed shift is not voided (`VoidRefusal.SHIFT_CLOSED`) and a
+  shift's drawer counts its own device's tickets (`Shift.device`,
+  `ShiftMath.markOf`); a day close is filed by working day
+  (`DayCloseMath.businessDayOf`, before 04:00 = the day before); Insights'
+  profit costs walk-in tickets and does not count walk-in refunds as
+  expenses; `postReturn` takes rate, unit, product, customer and lines from
+  the ticket (`ReturnMath.paidRate`); the bin's purges keep a void's khata
+  rows and numbering goes past `BookSettings.ENTRY_NUMBER_HIGH`; a stock
+  transfer's new product gets its own uid; a bill line's productId wins over
+  its name. `AppScope` has a handler (`AppFailures`: CrashLog + "not saved",
+  storage full said as such); AccessUi checks `isDestroyed` too; the
+  add-entry form is dismissed with its screen and a bill photo that comes
+  back to a rebuilt screen is kept for the next form (the form itself is NOT
+  restored yet). Tests: CounterReviewTest (9 new), ProfitTest, DayCloseTest.
+
 ### The shared module (KMP)
 
 ```

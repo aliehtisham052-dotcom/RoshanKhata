@@ -72,6 +72,13 @@ object BookSettings {
      */
     const val LIVE_RELAY = "live_relay"
 
+    /**
+     * The highest RK- entry number the book has used, noted before the bin is
+     * purged (23 Oct 2026, the review): numbering goes on past it, so a number
+     * purged from the top is never given out again.
+     */
+    const val ENTRY_NUMBER_HIGH = "rk_high"
+
     fun isOn(v: String?): Boolean = v == "1"
 }
 

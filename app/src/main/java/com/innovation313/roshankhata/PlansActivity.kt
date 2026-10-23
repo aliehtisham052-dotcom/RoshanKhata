@@ -419,7 +419,10 @@ class PlansActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    AppScope.launch { dao.softDeletePlan(plan.id) }.join()
+                    val job = AppScope.launch { dao.softDeletePlan(plan.id) }
+                    job.join()
+                    // A failed write was said already ("not saved"); no "deleted" after it (23 Oct 2026).
+                    if (job.isCancelled) return@launch
                     Toast.makeText(
                         this@PlansActivity,
                         R.string.plan_deleted,

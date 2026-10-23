@@ -121,7 +121,7 @@ object BatchReturnDialog {
                 0 -> BatchBuyersDialog.show(activity, scope, dao, billItemId)
                 1 -> show(activity, scope, dao, billItemId)
                 else -> AccessUi.allowed(activity, dao, com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST,
-                    activity.getString(R.string.expiry_write_off)) { writeOff(activity, scope, dao, billItemId) }
+                    activity.getString(R.string.expiry_write_off)) { by -> writeOff(activity, scope, dao, billItemId, by) }
             }
         }
     }
@@ -131,7 +131,7 @@ object BatchReturnDialog {
      * sells an expired lot, so the lot is written off here and the shelf and
      * the batch's own count follow. Asks first, saying how much.
      */
-    private fun writeOff(activity: Activity, scope: LifecycleCoroutineScope, dao: KhataDao, billItemId: Long) {
+    private fun writeOff(activity: Activity, scope: LifecycleCoroutineScope, dao: KhataDao, billItemId: Long, allowedBy: String?) {
         scope.launch {
             val found = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { com.innovation313.roshankhata.data.Fefo.lotOf(dao, billItemId) }
             if (found == null || found.second.left <= 0.0) {
@@ -145,10 +145,15 @@ object BatchReturnDialog {
                 .setMessage(activity.getString(R.string.expiry_write_off_confirm, what, lot.batchNumber ?: product.name))
                 .setPositiveButton(R.string.expiry_write_off) { _, _ ->
                     scope.launch {
-                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                            com.innovation313.roshankhata.data.Fefo.writeOff(dao, billItemId, lot.batchNumber)
+                        // Who allowed it goes to the DAO, which refuses a write-off nobody allowed (23 Oct 2026).
+                        val done = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            runCatching { com.innovation313.roshankhata.data.Fefo.writeOff(dao, billItemId, lot.batchNumber, allowedBy = allowedBy) }
                         }
-                        android.widget.Toast.makeText(activity, R.string.expiry_written_off, android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(activity, when {
+                            done.isSuccess -> R.string.expiry_written_off
+                            done.exceptionOrNull() is com.innovation313.roshankhata.data.CounterRefused -> R.string.access_denied
+                            else -> R.string.save_failed_not_saved
+                        }, android.widget.Toast.LENGTH_SHORT).show()
                     }
                 }
                 .setNegativeButton(R.string.cancel, null)
