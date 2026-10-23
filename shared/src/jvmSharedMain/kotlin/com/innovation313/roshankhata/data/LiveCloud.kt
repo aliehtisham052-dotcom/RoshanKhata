@@ -240,6 +240,8 @@ object LiveCloud {
         try {
             suspend fun hello(): Result? {
                 val (code, o) = call("POST", "hello")
+                // 503: this relay halted or overloaded — its own trouble, as for any other call (roundAll passes over it).
+                if (code == 503) return Result.Halted
                 if (code != 200) return Result.Refused(o?.optString("why") ?: "hello $code")
                 // A device new at the relay reads all that is there: a message read twice changes nothing,
                 // a message skipped would be a change lost.
