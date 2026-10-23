@@ -76,10 +76,10 @@ fun OrdersPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl
     var receiving by remember { mutableStateOf<PurchaseOrderWithLines?>(null) }
     var told by remember { mutableStateOf<String?>(null) }
     val suppliers = parties.filter { !it.isCustomer }
-    val may = Access.can(Access.Permission.STOCK_ADJUST)
 
-    fun newOrder(lowOnly: Boolean) {
-        if (!may) { told = words.text(W.access_denied); return }
+    // A cashier's order waits for a manager's PIN, as the counter's other stock work does (23 Oct 2026,
+    // the review: it was refused flatly). The buttons show for everyone; each asks when it is pressed.
+    fun newOrder(lowOnly: Boolean) = Gates.need(Access.Permission.STOCK_ADJUST) {
         scope.launch {
             val products = withContext(Dispatchers.IO) { dao.productsOnce() }
             val draft = OrderDraft(null, products)
@@ -118,9 +118,9 @@ fun OrdersPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl
                             Text(Format.dateTime(o.timestamp) + " · " + o.itemCount, color = c.textMuted, fontSize = 12.sp, maxLines = 1)
                         }
                         Tag(statusWord(o.status), if (o.status == OrderStatus.RECEIVED) Look.accent else c.inkSoft, if (o.status == OrderStatus.RECEIVED) Look.accentTint else Look.subtle)
-                        OrderActions(dao, o, suppliers, words, rtl, shopName, may,
-                            onEdit = { scope.launch { val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch; editing = OrderDraft(full, withContext(Dispatchers.IO) { dao.productsOnce() }) } },
-                            onReceive = { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } },
+                        OrderActions(dao, o, suppliers, words, rtl, shopName,
+                            onEdit = { Gates.need(Access.Permission.STOCK_ADJUST) { scope.launch { val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch; editing = OrderDraft(full, withContext(Dispatchers.IO) { dao.productsOnce() }) } } },
+                            onReceive = { Gates.need(Access.Permission.STOCK_ADJUST) { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } } },
                             onChanged = { onChanged() })
                     }
                     Rule()
@@ -142,7 +142,7 @@ private fun statusWord(s: String): String = word(
 
 @Composable
 private fun OrderActions(
-    dao: KhataDao, o: OrderSummary, suppliers: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?, may: Boolean,
+    dao: KhataDao, o: OrderSummary, suppliers: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?,
     onEdit: () -> Unit, onReceive: () -> Unit, onChanged: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -170,9 +170,9 @@ private fun OrderActions(
                         ) { p, of -> words.text(W.pdf_stmt_page, p, of) }, o.orderNumber)
                 }
             })
-            if (o.status == OrderStatus.DRAFT && may) FluentButton(word(W.edit), onEdit, kind = ButtonKind.SUBTLE)
-            if (may) FluentButton(word(W.po_receive), onReceive, kind = ButtonKind.ACCENT)
-            if (may) IconAction("ic_close", word(W.po_close), { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.CLOSED) }; onChanged() } })
+            if (o.status == OrderStatus.DRAFT) FluentButton(word(W.edit), onEdit, kind = ButtonKind.SUBTLE)
+            FluentButton(word(W.po_receive), onReceive, kind = ButtonKind.ACCENT)
+            IconAction("ic_close", word(W.po_close), { Gates.need(Access.Permission.STOCK_ADJUST) { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.CLOSED) }; onChanged() } } })
         }
     }
 }

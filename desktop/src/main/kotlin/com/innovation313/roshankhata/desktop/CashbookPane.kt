@@ -61,7 +61,17 @@ import kotlinx.coroutines.withContext
 fun CashbookPane(dao: KhataDao) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
-    val entries by remember { dao.observeCashEntries() }.collectAsState(emptyList())
+    // The newest page of lines, more as the owner scrolls (23 Oct 2026, the review: every line ever
+    // written was read after each write); the count and the figures are the whole table's.
+    var limit by remember { mutableStateOf(com.innovation313.roshankhata.data.ListWindow.PAGE) }
+    var entries by remember { mutableStateOf(emptyList<CashEntry>()) }
+    LaunchedEffect(limit) { dao.observeCashPage(limit).collect { entries = it } }
+    val lineCount by remember { dao.observeCashCount() }.collectAsState(0)
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    LaunchedEffect(listState, entries.size) {
+        androidx.compose.runtime.snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }
+            .collect { last -> limit = com.innovation313.roshankhata.data.ListWindow.grown(limit, entries.size, last) }
+    }
     val income by remember { dao.observeCashIncome() }.collectAsState(0.0)
     val expense by remember { dao.observeCashExpense() }.collectAsState(0.0)
     var adding by remember { mutableStateOf<Boolean?>(null) }
@@ -79,7 +89,8 @@ fun CashbookPane(dao: KhataDao) {
         last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.cashbook_subtitle),
         scroll = false,
         actions = {
-            FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.STANDARD, icon = "ic_print")
+            // The day's profit and the till's difference are the shop's figures (23 Oct 2026, the review).
+            FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.STANDARD, icon = "ic_print")
             FluentButton(word(W.dayclose_button), { closing = true }, icon = "ic_check_plain")
             FluentButton(word(W.cash_expense), { adding = false }, icon = "ic_arrow_gave", kind = ButtonKind.DANGER)
             FluentButton(word(W.cash_income), { adding = true }, icon = "ic_arrow_got", kind = ButtonKind.ACCENT)
@@ -97,9 +108,9 @@ fun CashbookPane(dao: KhataDao) {
                 FluentButton(word(W.cash_income), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
             }
         } else ListCard(Modifier.weight(1f)) {
-            ListHead(word(W.cashbook), entries.size.toString())
+            ListHead(word(W.cashbook), lineCount.toString())
             TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32), endAligned = setOf(2))
-            LazyColumn(Modifier.fillMaxSize()) {
+            LazyColumn(Modifier.fillMaxSize(), state = listState) {
                 items(entries, key = { it.id }) { e ->
                     Row(
                         Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),

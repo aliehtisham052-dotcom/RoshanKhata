@@ -35,6 +35,9 @@ class OrdersActivity : BaseActivity() {
                             runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$it?text=" + Uri.encode(text)))) }.isSuccess
                         } ?: false
                         if (!sent) startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.po_send)))
+                    }, onNeed = { p, then ->
+                        // A cashier's order waits for a manager's PIN (23 Oct 2026, the review).
+                        com.innovation313.roshankhata.ui.AccessUi.allowed(this@OrdersActivity, dao, p, com.innovation313.roshankhata.ui.AccessUi.what(this@OrdersActivity, p)) { then() }
                     })
                 }
             }

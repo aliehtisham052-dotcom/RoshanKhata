@@ -764,6 +764,20 @@ real devices yet.
   reported every 64 KiB moved and at the alarm, at least 64 KiB a book) and refuses new books and
   parcels 507 "full" past `ACCOUNT_BYTES` (4 GiB; the free plan's 5 GB is 4.66 GiB); Supabase keeps
   `books.bytes` and refuses past `RK_STORE_BYTES` (256 MiB). test_relay.py `--store` holds all three.
+- **Phase 3 — counter speed and gates (p3-perf; CI only):** the shelf is read once per ticket and once
+  per Expiry page (`Fefo.lots/lotOf(..., shelf)` from `Counter.onHand`); Cashbook and Invoices (both
+  platforms) read a window that grows as the owner scrolls (`ListWindow`, `observeCashPage`,
+  `observeInvoicePage` — each invoice's lines summed once), counts and this month's figure keep their own
+  reads; the Windows counter reads only its 8 tickets and 6 returns (`observeRecentSales/Returns`); a
+  receipt's balance is `liveBalance` and the phone refreshes only stock and that one balance after a
+  ticket. **No schema 39:** the cashbook and invoice date indexes were not added (the windowed lists give
+  most of it; the day sums still scan the cashbook). Hold is a snapshot (`Counter.holdTicket`, `clearAfter`)
+  and one transaction (`holdSale(dropId)`); a line over `SaleMath.MAX_QTY`/`MAX_RATE` or not finite is
+  refused. The day report needs REPORTS; stock count/adjust/transfer, purchase orders (`OrdersScreen(onNeed)`)
+  and the phone's Products menu ask a manager's PIN instead of refusing; two staff may not share a name
+  (`staffNameTaken`, `staff_name_taken`); counter tickets print on the printer used last without asking
+  (`Job.direct`, phone `TextReceipt.print(direct)`, changed in the counter's settings); the phone has the
+  round-off chip and keeps the payment step open until the ticket is written (`postedTick`). Tests: PerfReviewTest.
 
 ### The shared module (KMP)
 

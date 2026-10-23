@@ -3568,4 +3568,5 @@
     <string name="live_receive_pc_refused">Komputer tidak memberikan bukunya. Kodenya hanya berlaku sekali, dan hanya selama jendela Sinkron langsung terbuka: buat kode baru di sana lalu pindai.</string>
     <string name="live_receive_pc_unreachable">Komputer tidak terjangkau. Pastikan keduanya di WiFi yang sama, jendela Sinkron langsung di komputer terbuka, dan Windows mengizinkan Roshan Khata di jaringan.</string>
     <string name="report_sync_notes_included">— Catatan sinkron langsung (bukan kerusakan: masalah yang dilewati sinkron langsung lalu dicoba lagi; tanpa nama, jumlah, atau kunci):</string>
+    <string name="staff_name_taken">Sudah ada staf dengan nama ini. Tambahkan pembeda, misalnya nama ayah.</string>
 </resources>

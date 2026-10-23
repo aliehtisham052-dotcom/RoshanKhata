@@ -83,10 +83,17 @@ fun CounterSaleScreen(
     /** How this shop's weighing scale prints its labels ([ScaleCode]). */
     scaleRule: ScaleCode.Rule = ScaleCode.Rule(),
     /** A customer's loyalty points, read when they are chosen (null = the screen shows none). */
-    loyaltyBalanceOf: (suspend (Long) -> Double)? = null
+    loyaltyBalanceOf: (suspend (Long) -> Double)? = null,
+    /**
+     * Raised by the host each time a ticket is written: the payment step
+     * closes then, not when Complete is pressed (23 Oct 2026, the review: a
+     * PIN request or a refusal dropped the cashier back on the item list).
+     */
+    postedTick: Int = 0
 ) {
     val c = LocalRoshanColors.current
     var paying by remember { mutableStateOf(false) }
+    LaunchedEffect(postedTick) { if (postedTick > 0) paying = false }
     var query by remember { mutableStateOf("") }
     var choosingParty by remember { mutableStateOf(false) }
     // The item grid (21 Oct 2026): tiles to tap instead of the ticket's lines.
@@ -243,6 +250,12 @@ fun CounterSaleScreen(
                     if (draft.pointsValue > 0.0) Figure(word(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue))
                     if (draft.totals.tax > 0.0) Figure(word(W.pos_tax), Format.money(draft.totals.tax))
                     if (draft.totals.taxIncluded > 0.0) Figure(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
+                    // Settled to whole rupees, as on the computer (23 Oct 2026, the review): the paisa no drawer holds.
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(word(W.pos_round_off), Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp)
+                        FilterChip(selected = draft.roundToWhole, onClick = { draft.roundToWhole = !draft.roundToWhole },
+                            label = { Text(if (draft.totals.roundOff != 0.0) Format.money(draft.totals.roundOff) else "0", fontSize = 12.sp) })
+                    }
                     HorizontalDivider(color = c.pageBg)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
@@ -284,7 +297,7 @@ fun CounterSaleScreen(
                 OutlinedButton(onClick = { paying = false }) { Text(word(W.cancel), color = c.ink) }
                 Spacer(Modifier.weight(1f))
                 Button(
-                    onClick = { onComplete(); paying = false }, enabled = problem == null && !draft.posting,
+                    onClick = { onComplete() }, enabled = problem == null && !draft.posting,
                     colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.testTag("posComplete")
                 ) { Text(word(W.pos_post), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp) }
             }

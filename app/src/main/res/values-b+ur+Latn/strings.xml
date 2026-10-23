@@ -3574,4 +3574,5 @@
     <string name="live_receive_pc_refused">Computer ne apna khata nahi diya. Us ka code ek hi baar chalta hai, aur sirf tab jab us ki Live sync wali khirki khuli ho: wahan naya code banayein aur use scan karein.</string>
     <string name="live_receive_pc_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono ek hi WiFi par hain, computer par Live sync wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
     <string name="report_sync_notes_included">— Live sync notes (crash nahi: woh masle jin ke baad live sync ne dobara koshish ki; koi naam, raqam ya key nahi):</string>
+    <string name="staff_name_taken">Is naam ka staff pehle se list mein hai. Farq ke liye kuch saath likhein, jaise walid ka naam.</string>
 </resources>
