@@ -3572,4 +3572,9 @@
     <string name="live_status_relay">%1$s के साथ इंटरनेट से लाइव। आख़िरी अपडेट: %2$s</string>
     <string name="live_relay_help">जब फ़ोन दुकान के वाई-फ़ाई से दूर हो, उसके बदलाव Innovation 313 के रिले से जाते हैं, इस खाते की अपनी चाबी से बंद: रिले उन्हें पढ़ नहीं सकता, और ज़्यादा से ज़्यादा 7 दिन रखता है। दोनों डिवाइस के लिए एक ही स्विच। ऐप बंद हो तो Google का Firebase फ़ोन को सिर्फ़ इतना बताता है कि कुछ इंतज़ार में है; खाते की कोई चीज़ उसके पास नहीं जाती।</string>
     <string name="live_relay">इंटरनेट से भी</string>
+    <string name="drive_plan_replace">%1$s: इस फ़ोन पर %2$s का खाता इससे बदल जाएगा।</string>
+    <string name="drive_plan_new">%1$s: नई दुकान के रूप में आएगी। इस फ़ोन की %2$s अलग दुकान है और वैसी ही रहेगी।</string>
+    <string name="drive_plan_fresh">%1$s: इस फ़ोन पर एक दुकान के रूप में वापस आएगी।</string>
+    <string name="drive_plan_live">%1$s दूसरे डिवाइस के साथ लाइव सिंक होती है। इसे बदलने से लाइव सिंक रुक जाएगा; बाद में दोनों को फिर जोड़ें।</string>
+    <string name="drive_plan_unreadable">%1$s: ड्राइव से पढ़ी नहीं जा सकी। इसे वैसा ही छोड़ा जा रहा है।</string>
 </resources>

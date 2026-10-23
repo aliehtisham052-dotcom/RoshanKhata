@@ -3519,4 +3519,9 @@ Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyim
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
     <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
     <string name="live_relay">Juga lewat internet</string>
+    <string name="drive_plan_replace">%1$s: menggantikan buku %2$s di ponsel ini.</string>
+    <string name="drive_plan_new">%1$s: masuk sebagai toko baru. %2$s di ponsel ini adalah toko lain dan dibiarkan apa adanya.</string>
+    <string name="drive_plan_fresh">%1$s: kembali sebagai toko di ponsel ini.</string>
+    <string name="drive_plan_live">%1$s sinkron langsung dengan perangkat lain. Menggantinya menghentikan sinkron langsung; hubungkan keduanya lagi sesudahnya.</string>
+    <string name="drive_plan_unreadable">%1$s: tidak dapat dibaca dari Drive. Dibiarkan apa adanya.</string>
 </resources>

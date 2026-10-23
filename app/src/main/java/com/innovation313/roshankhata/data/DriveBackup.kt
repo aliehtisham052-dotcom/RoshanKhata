@@ -138,17 +138,17 @@ object DriveBackup {
             .joinToString(" ")
             .take(40)
 
-    private fun seenAt(context: Context): Long =
-        prefs(context).getLong(key(context, KEY_SEEN_AT), 0L)
+    private fun seenAt(context: Context, businessId: Long): Long =
+        prefs(context).getLong(key(businessId, KEY_SEEN_AT), 0L)
 
     /**
      * Note the state of this shop's backup file that this phone now stands
      * on: after its own upload, and after restoring the open shop from Drive
      * (the restore screen calls this). The next upload compares against it.
      */
-    fun rememberSeen(context: Context, modifiedAt: Long) {
+    fun rememberSeen(context: Context, modifiedAt: Long, businessId: Long = Businesses.active(context).id) {
         if (modifiedAt <= 0L) return
-        prefs(context).edit().putLong(key(context, KEY_SEEN_AT), modifiedAt).apply()
+        prefs(context).edit().putLong(key(businessId, KEY_SEEN_AT), modifiedAt).apply()
     }
 
     /**
@@ -156,8 +156,8 @@ object DriveBackup {
      * from another phone, false on every later run that meets the same one —
      * so the owner is told once per occurrence, not every day.
      */
-    fun firstNoticeOf(context: Context, conflict: OtherPhoneBackup): Boolean {
-        val k = key(context, KEY_CONFLICT_TOLD)
+    fun firstNoticeOf(context: Context, conflict: OtherPhoneBackup, businessId: Long = Businesses.active(context).id): Boolean {
+        val k = key(businessId, KEY_CONFLICT_TOLD)
         if (prefs(context).getLong(k, 0L) == conflict.at) return false
         prefs(context).edit().putLong(k, conflict.at).apply()
         return true
@@ -172,17 +172,22 @@ object DriveBackup {
      * must keep matching what earlier versions of the app already wrote.
      * Without this, a second shop's backup would silently OVERWRITE the
      * first's on Drive, which is the quiet way to lose a book.
+     *
+     * By id, never "whichever shop is open now" (23 Oct 2026, the review: a
+     * switch in the seconds of an automatic backup uploaded one shop's book
+     * under the other shop's file and marked the other as backed up). Every
+     * upload resolves its shop once and passes that id through.
      */
-    private fun backupName(context: Context) =
-        "RoshanKhata_Backup${Businesses.suffix(context)}.txt"
+    private fun backupName(businessId: Long) =
+        "RoshanKhata_Backup${Businesses.suffixFor(businessId)}.txt"
 
-    private fun imagesName(context: Context) =
-        "RoshanKhata_Images${Businesses.suffix(context)}.zip"
+    private fun imagesName(businessId: Long) =
+        "RoshanKhata_Images${Businesses.suffixFor(businessId)}.zip"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-    private fun key(context: Context, base: String) = base + Businesses.suffix(context)
+    private fun key(businessId: Long, base: String) = base + Businesses.suffixFor(businessId)
 
     /**
      * A per-business switch, falling back to what the owner already chose.
@@ -194,9 +199,9 @@ object DriveBackup {
      * this business is given its own answer, it uses Business 1's, which is
      * the answer the owner actually gave.
      */
-    private fun switchFor(context: Context, base: String, default: Boolean): Boolean {
+    private fun switchFor(context: Context, base: String, default: Boolean, businessId: Long): Boolean {
         val p = prefs(context)
-        val own = key(context, base)
+        val own = key(businessId, base)
         // contains(), not getBoolean(..., default): the difference between
         // "chosen false" and "never chosen" is the whole point here.
         if (p.contains(own)) return p.getBoolean(own, default)
@@ -224,12 +229,12 @@ object DriveBackup {
             .apply()
     }
 
-    fun includeImages(context: Context): Boolean =
-        switchFor(context, KEY_BACKUP_IMAGES, false)
+    fun includeImages(context: Context, businessId: Long = Businesses.active(context).id): Boolean =
+        switchFor(context, KEY_BACKUP_IMAGES, false, businessId)
 
     fun setIncludeImages(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putBoolean(key(context, KEY_BACKUP_IMAGES), enabled).apply()
+            .edit().putBoolean(key(Businesses.active(context).id, KEY_BACKUP_IMAGES), enabled).apply()
     }
 
     /**
@@ -238,8 +243,8 @@ object DriveBackup {
      * not one taken on their behalf. Once on, the daily worker backs up on its
      * own when a backup is genuinely due.
      */
-    fun autoBackup(context: Context): Boolean =
-        switchFor(context, KEY_AUTO_BACKUP, false)
+    fun autoBackup(context: Context, businessId: Long = Businesses.active(context).id): Boolean =
+        switchFor(context, KEY_AUTO_BACKUP, false, businessId)
 
     /**
      * Has this business ever been ASKED about automatic backup — and answered?
@@ -253,11 +258,11 @@ object DriveBackup {
      * its own right: its books are separate, and so is its backup.
      */
     fun autoBackupAnswered(context: Context): Boolean =
-        prefs(context).contains(key(context, KEY_AUTO_BACKUP))
+        prefs(context).contains(key(Businesses.active(context).id, KEY_AUTO_BACKUP))
 
     fun setAutoBackup(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putBoolean(key(context, KEY_AUTO_BACKUP), enabled).apply()
+            .edit().putBoolean(key(Businesses.active(context).id, KEY_AUTO_BACKUP), enabled).apply()
     }
 
     /**
@@ -287,13 +292,13 @@ object DriveBackup {
         return "sha256:" + digest.joinToString("") { "%02x".format(it) }
     }
 
-    private fun lastSignature(context: Context): String? =
+    private fun lastSignature(context: Context, businessId: Long): String? =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getString(key(context, KEY_LAST_SIG), null)
+            .getString(key(businessId, KEY_LAST_SIG), null)
 
-    private fun rememberSignature(context: Context, signature: String) {
+    private fun rememberSignature(context: Context, signature: String, businessId: Long) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putString(key(context, KEY_LAST_SIG), signature).apply()
+            .edit().putString(key(businessId, KEY_LAST_SIG), signature).apply()
     }
 
     private fun driveFor(context: Context, accountName: String): Drive {
@@ -326,7 +331,9 @@ object DriveBackup {
         context: Context,
         accountName: String,
         file: File,
-        force: Boolean = false
+        force: Boolean = false,
+        // Resolved once, by the caller, before the book was exported (23 Oct 2026, the review).
+        businessId: Long = Businesses.active(context).id
     ): Result<Long> =
         withContext(Dispatchers.IO) {
             // A read-only phone never uploads. Its copy is always older than
@@ -339,7 +346,7 @@ object DriveBackup {
             try {
                 val drive = driveFor(context, accountName)
 
-                val existing = findBackup(context, drive)
+                val existing = findBackup(drive, businessId)
                 val existingId = existing?.id
                 val mine = deviceId(context)
 
@@ -347,11 +354,11 @@ object DriveBackup {
                     val remoteAt = existing.modifiedTime?.value ?: 0L
                     val remoteDevice = existing.appProperties?.get(PROP_DEVICE)
                     if (writtenElsewhere(
-                            seenAt = seenAt(context),
+                            seenAt = seenAt(context, businessId),
                             remoteAt = remoteAt,
                             remoteDevice = remoteDevice,
                             myDevice = mine,
-                            backedUpBefore = BackupReminder.lastBackupAt(context) > 0L
+                            backedUpBefore = BackupReminder.lastBackupAtOf(context, businessId) > 0L
                         )
                     ) {
                         // Name the other phone only when the mark is really
@@ -366,7 +373,7 @@ object DriveBackup {
                 val stamp = mapOf(PROP_DEVICE to mine, PROP_DEVICE_NAME to deviceName())
 
                 val metadata = DriveFile().apply {
-                    name = backupName(context)
+                    name = backupName(businessId)
                     // Only set parents when CREATING; Drive rejects a parent
                     // change on update.
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
@@ -395,7 +402,7 @@ object DriveBackup {
                 }
                 // What this phone now stands on. Drive's own clock, read back
                 // from the upload itself — never this phone's.
-                rememberSeen(context, saved.modifiedTime?.value ?: 0L)
+                rememberSeen(context, saved.modifiedTime?.value ?: 0L, businessId)
 
                 Result.success(System.currentTimeMillis())
             } catch (e: Exception) {
@@ -448,10 +455,16 @@ object DriveBackup {
     suspend fun autoBackupIfDue(
         context: Context,
         dao: KhataDao,
-        minIntervalMs: Long = 20L * 60 * 60 * 1000 // ~a day, with slack so a daily run isn't skipped by minutes
+        minIntervalMs: Long = 20L * 60 * 60 * 1000, // ~a day, with slack so a daily run isn't skipped by minutes
+        // The shop [dao] belongs to, taken by the caller when it took [dao] (23 Oct 2026, the review):
+        // every name, key and record below is this one shop's, and a switch meanwhile stops the run.
+        businessId: Long = Businesses.active(context).id
     ): AutoResult = withContext(Dispatchers.IO) {
         if (ViewerMode.isOn(context)) return@withContext AutoResult.Skipped
-        if (!autoBackup(context)) return@withContext AutoResult.Skipped
+        // The export reads the open shop's profile: a switch since [dao] was taken would mix two shops.
+        fun stillOpen() = Businesses.active(context).id == businessId
+        if (!stillOpen()) return@withContext AutoResult.Skipped
+        if (!autoBackup(context, businessId)) return@withContext AutoResult.Skipped
 
         val account = DriveAuth.accountName(context) ?: return@withContext AutoResult.Skipped
 
@@ -459,17 +472,20 @@ object DriveBackup {
         if (count == 0) return@withContext AutoResult.Skipped
 
         // Due by time? Reuse the same last-backup timestamp the screen shows.
-        val last = BackupReminder.lastBackupAt(context)
+        val last = BackupReminder.lastBackupAtOf(context, businessId)
         val dueByTime = last == 0L || System.currentTimeMillis() - last >= minIntervalMs
         if (!dueByTime) return@withContext AutoResult.Skipped
 
         // Changed since last backup? The copy is made here on the phone and its content compared;
         // only a book that changed in any way goes up.
         val file = Backup.exportToCache(context, dao)
+        // Switched while the copy was being written: its profile may be the other shop's. Nothing goes up.
+        if (!stillOpen()) { file.delete(); return@withContext AutoResult.Skipped }
         val signature = contentSignature(file)
-        if (signature == lastSignature(context)) { file.delete(); return@withContext AutoResult.Skipped }
+        if (signature == lastSignature(context, businessId)) { file.delete(); return@withContext AutoResult.Skipped }
 
-        val result = backup(context, account, file)
+        val result = backup(context, account, file, businessId = businessId)
+        file.delete()
         if (result.isFailure) {
             val cause = result.exceptionOrNull()
             return@withContext if (cause is OtherPhoneBackup) AutoResult.OtherPhone(cause)
@@ -478,15 +494,16 @@ object DriveBackup {
 
         // Images ride along only if the owner asked for them. An image failure
         // does not fail the text backup that already succeeded.
-        if (includeImages(context)) {
+        // The photos are read from the open shop's folders: only while it is still this shop.
+        if (includeImages(context, businessId) && stillOpen()) {
             val zip = BackupImages.pack(context, dao)
-            backupImages(context, account, zip)
+            if (stillOpen()) backupImages(context, account, zip, businessId)
         }
 
         // Record success so the home screen's "last backup" updates and the
         // next daily check can see nothing has changed.
-        BackupReminder.recordBackup(context)
-        rememberSignature(context, signature)
+        BackupReminder.recordBackupOf(context, businessId)
+        rememberSignature(context, signature, businessId)
         AutoResult.BackedUp
     }
 
@@ -495,7 +512,7 @@ object DriveBackup {
         withContext(Dispatchers.IO) {
             try {
                 val drive = driveFor(context, accountName)
-                val id = findBackupId(context, drive)
+                val id = findBackupId(drive, Businesses.active(context).id)
                     ?: return@withContext Result.success(null)
 
                 val out = ByteArrayOutputStream()
@@ -519,7 +536,12 @@ object DriveBackup {
      * @return true if an archive was uploaded, false if there was nothing to
      *   upload; a failure is a Result.failure with the cause.
      */
-    suspend fun backupImages(context: Context, accountName: String, zip: File?): Result<Boolean> =
+    suspend fun backupImages(
+        context: Context,
+        accountName: String,
+        zip: File?,
+        businessId: Long = Businesses.active(context).id
+    ): Result<Boolean> =
         withContext(Dispatchers.IO) {
             if (ViewerMode.isOn(context)) {
                 return@withContext Result.failure(ViewerMode.ReadOnlyPhone())
@@ -527,10 +549,10 @@ object DriveBackup {
             if (zip == null || !zip.exists()) return@withContext Result.success(false)
             try {
                 val drive = driveFor(context, accountName)
-                val existingId = findImagesId(context, drive)
+                val existingId = findImagesId(drive, businessId)
 
                 val metadata = DriveFile().apply {
-                    name = imagesName(context)
+                    name = imagesName(businessId)
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
                 }
                 val content = ByteArrayContent("application/zip", zip.readBytes())
@@ -681,7 +703,7 @@ object DriveBackup {
         withContext(Dispatchers.IO) {
             try {
                 val drive = driveFor(context, accountName)
-                val id = findImagesId(context, drive)
+                val id = findImagesId(drive, Businesses.active(context).id)
                     ?: return@withContext Result.success(null)
 
                 val out = ByteArrayOutputStream()
@@ -697,7 +719,7 @@ object DriveBackup {
         withContext(Dispatchers.IO) {
             try {
                 val drive = driveFor(context, accountName)
-                val id = findBackupId(context, drive) ?: return@withContext null
+                val id = findBackupId(drive, Businesses.active(context).id) ?: return@withContext null
                 drive.files().get(id)
                     .setFields("modifiedTime")
                     .execute()
@@ -768,28 +790,28 @@ object DriveBackup {
     }
 
     /** This shop's backup file with what the two-phone check needs, or null. */
-    private fun findBackup(context: Context, drive: Drive): DriveFile? =
+    private fun findBackup(drive: Drive, businessId: Long): DriveFile? =
         drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
-            .setQ("name = '${backupName(context)}'")
+            .setQ("name = '${backupName(businessId)}'")
             .setFields("files(id, modifiedTime, appProperties)")
             .execute()
             .files?.firstOrNull()
 
-    private fun findBackupId(context: Context, drive: Drive): String? {
+    private fun findBackupId(drive: Drive, businessId: Long): String? {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
-            .setQ("name = '${backupName(context)}'")
+            .setQ("name = '${backupName(businessId)}'")
             .setFields("files(id, modifiedTime)")
             .execute()
 
         return result.files?.firstOrNull()?.id
     }
 
-    private fun findImagesId(context: Context, drive: Drive): String? {
+    private fun findImagesId(drive: Drive, businessId: Long): String? {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
-            .setQ("name = '${imagesName(context)}'")
+            .setQ("name = '${imagesName(businessId)}'")
             .setFields("files(id, modifiedTime)")
             .execute()
 

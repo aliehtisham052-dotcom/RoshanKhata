@@ -132,8 +132,7 @@ class ShopNameActivity : BaseActivity() {
         val locale = resources.configuration.locales[0]
         val all = com.innovation313.roshankhata.data.ShopCountry.choices(locale)
         val guess = com.innovation313.roshankhata.data.ShopCountry.guess(
-            java.util.Locale.getDefault().country.ifBlank { null } ?: resources.configuration.locales[0].country,
-            BusinessProfile.currency(this), com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
+            deviceRegion(), BusinessProfile.currency(this), com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
         )
         val choices = all.map { c ->
             if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER)
@@ -156,6 +155,26 @@ class ShopNameActivity : BaseActivity() {
             message = getString(R.string.country_ask_body),
             onCancel = { keep(guess); then() }
         ) { which -> keep(all[which]); then() }
+    }
+
+    /**
+     * Where the phone is, never the app's language (23 Oct 2026, the review): the app's locale is the
+     * owner's language choice and carries no region ("ur", "ar"), so a UAE shop in Arabic read as Saudi
+     * Arabia and an English one anywhere as Pakistan. The SIM's country first (no permission needed),
+     * then the network's, then the phone's own system languages, then the app's; the first one that
+     * names a country the app knows.
+     */
+    private fun deviceRegion(): String? {
+        val known = com.innovation313.roshankhata.data.ShopCountry.entries.map { it.code }.filter { it.isNotBlank() }.toSet()
+        val tm = runCatching { getSystemService(TELEPHONY_SERVICE) as? android.telephony.TelephonyManager }.getOrNull()
+        val system = android.content.res.Resources.getSystem().configuration.locales
+        val candidates = buildList {
+            tm?.let { t -> runCatching { t.simCountryIso }.getOrNull()?.let { add(it) }; runCatching { t.networkCountryIso }.getOrNull()?.let { add(it) } }
+            for (i in 0 until system.size()) add(system[i].country)
+            add(resources.configuration.locales[0].country)
+            add(java.util.Locale.getDefault().country)
+        }
+        return candidates.map { it.trim().uppercase(java.util.Locale.ROOT) }.firstOrNull { it in known }
     }
 
     private fun proceed() {

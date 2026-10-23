@@ -3742,4 +3742,9 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="live_status_relay">Live with %1$s through the internet. Last update: %2$s</string>
     <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
     <string name="live_relay">Also through the internet</string>
+    <string name="drive_plan_replace">%1$s: replaces the book of %2$s on this phone.</string>
+    <string name="drive_plan_new">%1$s: comes in as a new shop. This phone\'s %2$s is a different shop and is left as it is.</string>
+    <string name="drive_plan_fresh">%1$s: comes back as a shop on this phone.</string>
+    <string name="drive_plan_live">%1$s syncs live with another device. Replacing it stops live sync; join the two again afterwards.</string>
+    <string name="drive_plan_unreadable">%1$s: could not be read from Drive. It is left as it is.</string>
 </resources>

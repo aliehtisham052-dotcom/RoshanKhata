@@ -294,11 +294,27 @@ object Snapshots {
      */
     fun afterSale(context: Context) {
         val app = context.applicationContext
-        afterSaleJob?.cancel()
-        afterSaleJob = AppScope.launch {
-            kotlinx.coroutines.delay(60_000)
-            refreshToday(app)
+        // The shop the sale was made in (23 Oct 2026, the review): a switch within the minute wrote the
+        // NEW shop's copy instead. A switch refreshes the shop it leaves first ([beforeLeaving]), so a
+        // copy still waiting for another shop has nothing left to do.
+        val businessId = Businesses.active(app).id
+        synchronized(this) {
+            afterSaleJob?.cancel()
+            afterSaleJob = AppScope.launch {
+                kotlinx.coroutines.delay(60_000)
+                if (Businesses.active(app).id == businessId) refreshToday(app)
+            }
         }
+    }
+
+    /**
+     * The open shop is about to be left (a business switch, 23 Oct 2026, the review): its copy of
+     * today is written again now, while it is still the open book, so the day's work done before the
+     * switch is in a daily copy and not only in the file. Off the main thread.
+     */
+    fun beforeLeaving(context: Context) {
+        synchronized(this) { afterSaleJob?.cancel(); afterSaleJob = null }
+        refreshToday(context.applicationContext)
     }
 
     /** Today's copy, written again whatever the day marker says. */

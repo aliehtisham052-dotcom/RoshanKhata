@@ -102,10 +102,14 @@ object AutoBackup {
                 // switched on, Drive connected, data worth protecting, enough
                 // time passed, and something actually changed. This adds only
                 // the interval, because only this knows who is paying.
+                // The shop first, then its book (23 Oct 2026, the review): the two are taken together,
+                // and the backup stops if the owner switches shop while it runs.
+                val businessId = Businesses.active(ctx).id
                 DriveBackup.autoBackupIfDue(
                     ctx,
                     KhataDatabase.get(ctx).khataDao(),
-                    minIntervalMs = minIntervalFor(ctx)
+                    minIntervalMs = minIntervalFor(ctx),
+                    businessId = businessId
                 )
                 Result.success()
             } catch (e: Exception) {

@@ -62,6 +62,8 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         val canNotify = NotificationManagerCompat.from(ctx).areNotificationsEnabled()
         if (canNotify) ensureChannel(ctx)
 
+        // The shop, then its book: the backup and its bell notes are this shop's (23 Oct 2026, the review).
+        val businessId = com.innovation313.roshankhata.data.Businesses.active(ctx).id
         val dao = KhataDatabase.get(ctx).khataDao()
 
         // Automatic backup first: if it is enabled, connected, due, and the
@@ -71,10 +73,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // interrupting the owner, and a due-but-failed backup also asks the
         // system to retry with backoff.
         var autoBackupFailed = false
-        when (val auto = DriveBackup.autoBackupIfDue(ctx, dao)) {
+        when (val auto = DriveBackup.autoBackupIfDue(ctx, dao, businessId = businessId)) {
             is DriveBackup.AutoResult.Failed -> {
                 autoBackupFailed = true
-                AlertNotes.backupFailed(ctx)
+                AlertNotes.backupFailed(ctx, businessId)
                 if (canNotify) notify(
                     ctx, ID_BACKUP, AlertsActivity::class.java,
                     ctx.getString(R.string.notif_backup_failed_title),
@@ -85,8 +87,8 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 // Not a failure to retry: another phone wrote this shop's
                 // backup last, and only the owner may replace it. Said once
                 // per occurrence; the backup screen explains and asks.
-                if (DriveBackup.firstNoticeOf(ctx, auto.conflict)) {
-                    AlertNotes.otherPhone(ctx)
+                if (DriveBackup.firstNoticeOf(ctx, auto.conflict, businessId)) {
+                    AlertNotes.otherPhone(ctx, businessId)
                     if (canNotify) notify(
                         ctx, ID_BACKUP, AlertsActivity::class.java,
                         ctx.getString(R.string.notif_backup_other_phone_title),

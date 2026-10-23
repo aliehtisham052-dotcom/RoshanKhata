@@ -3740,4 +3740,9 @@
     <string name="live_status_relay">مباشر مع %1$s عبر الإنترنت. آخر تحديث: %2$s</string>
     <string name="live_relay_help">حين يكون الهاتف بعيدًا عن واي فاي المتجر تمرّ تغييراته عبر مُرحِّل Innovation 313، مقفلةً بمفتاح هذا الدفتر نفسه: لا يستطيع المُرحِّل قراءتها، ولا يحتفظ بها أكثر من 7 أيام. مفتاح واحد للجهازين. حين يكون التطبيق مغلقًا، لا يفعل Firebase من Google سوى إخبار الهاتف بأن شيئًا ينتظر؛ ولا يحمل شيئًا من الدفتر.</string>
     <string name="live_relay">عبر الإنترنت أيضًا</string>
+    <string name="drive_plan_replace">%1$s: يحلّ محلّ دفتر %2$s على هذا الهاتف.</string>
+    <string name="drive_plan_new">%1$s: يُضاف متجرًا جديدًا. %2$s على هذا الهاتف متجر آخر ويبقى كما هو.</string>
+    <string name="drive_plan_fresh">%1$s: يعود متجرًا على هذا الهاتف.</string>
+    <string name="drive_plan_live">%1$s يتزامن مباشرة مع جهاز آخر. استبداله يوقف المزامنة المباشرة؛ اربط الجهازين من جديد بعد ذلك.</string>
+    <string name="drive_plan_unreadable">%1$s: تعذّرت قراءته من Drive. يُترك كما هو.</string>
 </resources>

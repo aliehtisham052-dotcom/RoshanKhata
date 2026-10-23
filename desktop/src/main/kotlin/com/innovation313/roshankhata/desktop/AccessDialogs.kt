@@ -247,10 +247,12 @@ fun OverrideDialog(dao: KhataDao, what: String, ownerOnly: Boolean = false, onCl
         if (busy || pin.isEmpty() || nobody) return
         busy = true
         val o = owner
+        // The same account as the phone's and the sign-in's (Access.account: by the row's uid, 23 Oct 2026).
+        val account = chosen?.let { id -> managers.firstOrNull { it.id == id }?.let { Access.account(it) } ?: "staff:$id" } ?: Access.OWNER
         scope.launch {
-            val r = checkPin(dao, pin, chosen?.let { "staff:$it" } ?: Access.OWNER) { typed -> Access.override(managers, chosen, typed, o?.let { p -> { t: String -> p.matches(t) } }) != null }
+            val r = checkPin(dao, pin, account) { typed -> Access.override(managers, chosen, typed, o?.let { p -> { t: String -> p.matches(t) } }) != null }
             busy = false
-            problem = pinProblem(words, r, chosen?.let { "staff:$it" } ?: Access.OWNER)
+            problem = pinProblem(words, r, account)
             if (r == true) {
                 val by = if (chosen == null) Access.OWNER else managers.first { it.id == chosen }.name
                 withContext(Dispatchers.IO) { dao.log(AuditAction.MANAGER_OVERRIDE, by, detail = what) }
