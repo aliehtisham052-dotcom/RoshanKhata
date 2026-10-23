@@ -19,6 +19,14 @@
  * Optional wake-up: a device may leave an FCM token; when a parcel for it
  * arrives, a data-only push says "something is waiting" (no figure, no name).
  * Without the FCM secrets this part is simply skipped.
+ *
+ * The live line (23 Oct 2026): a device with the app open keeps one WebSocket
+ * to its book's object ("live"), accepted with the Hibernation API so a quiet
+ * line costs nothing while it waits. A round goes over it as one message
+ * (Cloudflare bills incoming WebSocket messages 20 to a request; outgoing ones
+ * and protocol pings are free), and a parcel left by one device is answered by
+ * a one-word nudge ("new") to the others' lines, so they ask at once instead
+ * of every few seconds. A device whose line is open is not woken by FCM.
  */
 import { DurableObject } from "cloudflare:workers";
 
@@ -70,15 +78,16 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/v1/health") return json({ ok: true, live: env.LIVE !== "0" });
     if (env.LIVE === "0") return refuse(503, "halted");
-    const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round)$/);
+    const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round|live)$/);
     if (!m) return refuse(404, "no-such-path");
     const [, book, action] = m;
     const token = passOf(request);
     if (!HEX64.test(token)) return refuse(401, "no-pass");
     const device = request.headers.get("x-device") ?? "";
     if (!DEVICE.test(device)) return refuse(400, "no-device");
-    const want = action === "take" ? "GET" : "POST";
+    const want = action === "take" || action === "live" ? "GET" : "POST";
     if (request.method !== want) return refuse(405, "method");
+    if (action === "live" && request.headers.get("upgrade")?.toLowerCase() !== "websocket") return refuse(426, "websocket");
     if (action === "hello") {
       // One box for the whole Worker counts the books: a stranger opening boxes at will meets a limit
       // before the plan's does (one extra request per hello only).
@@ -131,6 +140,9 @@ function toBase64(bytes: Uint8Array): string {
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(s);
 }
+
+/** A round's body, over HTTP ("round") or the live line. */
+interface RoundBody { after?: number; upTo?: number | null; parcel?: string | null }
 
 function utcDay(now: number): string {
   return new Date(now).toISOString().slice(0, 10);
@@ -190,6 +202,7 @@ export class Daakiya extends DurableObject<Env> {
       case "wake": return this.wake(request, device, now);
       case "leave": return this.leave(device);
       case "round": return this.round(request, url, device, now);
+      case "live": return this.live(device);
     }
     return refuse(404, "no-such-path");
   }
@@ -246,7 +259,9 @@ export class Daakiya extends DurableObject<Env> {
       `INSERT INTO parcels (sender, at, body) VALUES (?, ?, ?) RETURNING seq`, device, now, body,
     ).one().seq;
     this.touch(device, now, true);
-    this.ctx.waitUntil(this.wakeOthers(device, now));
+    // The open lines are nudged at once; only the devices without one are woken through FCM.
+    const live = this.nudge(device);
+    this.ctx.waitUntil(this.wakeOthers(device, now, live));
     return seq;
   }
 
@@ -289,24 +304,86 @@ export class Daakiya extends DurableObject<Env> {
    * Body: {"after": n, "upTo": n | null, "parcel": base64 | null}.
    */
   private async round(request: Request, url: URL, device: string, now: number): Promise<Response> {
-    const o = (await request.json().catch(() => null)) as { after?: number; upTo?: number | null; parcel?: string | null } | null;
+    const o = (await request.json().catch(() => null)) as RoundBody | null;
     if (!o) return refuse(400, "bad-round");
+    const r = this.roundOf(o, device, now);
+    return json(r.body, r.status);
+  }
+
+  /** A round's work, for the HTTP path and the live line alike: the answer and its HTTP status. */
+  private roundOf(o: RoundBody, device: string, now: number): { body: Record<string, unknown>; status: number } {
+    const no = (status: number, why: string) => ({ body: { ok: false, why }, status });
     const after = Math.max(0, Number(o.after ?? 0) || 0);
     if (o.upTo != null) {
       const upTo = Number(o.upTo);
-      if (!Number.isFinite(upTo) || upTo < 0) return refuse(400, "bad-ack");
+      if (!Number.isFinite(upTo) || upTo < 0) return no(400, "bad-ack");
       this.sql.exec(`UPDATE devices SET acked = MAX(acked, ?) WHERE device = ?`, upTo, device);
       this.pruneTaken();
     }
     let seq: number | null = null;
     if (typeof o.parcel === "string" && o.parcel.length > 0) {
       let body: Uint8Array;
-      try { body = Uint8Array.from(atob(o.parcel), (c) => c.charCodeAt(0)); } catch { return refuse(400, "bad-parcel"); }
+      try { body = Uint8Array.from(atob(o.parcel), (c) => c.charCodeAt(0)); } catch { return no(400, "bad-parcel"); }
       const r = this.put(body, device, now);
-      if (r instanceof Response) return r;
+      if (r instanceof Response) return no(r.status, r.status === 413 ? "too-big" : r.status === 429 ? "day-limit" : "empty");
       seq = r;
     }
-    return json({ ok: true, seq, ...this.takePage(after, device, now) });
+    return { body: { ok: true, seq, ...this.takePage(after, device, now) }, status: 200 };
+  }
+
+  /**
+   * The live line: one WebSocket per open app, tagged with its device. Accepted for hibernation, so the
+   * object leaves memory between messages and a quiet line costs nothing; a device may hold one line
+   * (a new one closes the old). Only a device the book knows (it said hello) may open one.
+   */
+  private live(device: string): Response {
+    for (const old of this.ctx.getWebSockets(device)) {
+      try { old.close(4000, "replaced"); } catch { /* already gone */ }
+    }
+    const pair = new WebSocketPair();
+    const [client, server] = Object.values(pair);
+    this.ctx.acceptWebSocket(server, [device]);
+    server.serializeAttachment({ device });
+    return new Response(null, { status: 101, webSocket: client });
+  }
+
+  /** A round over the live line: {"id": n, "round": {...}} answered with {"id": n, "status": s, ...answer}. */
+  async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
+    const device = (ws.deserializeAttachment() as { device?: string } | null)?.device;
+    if (!device) { ws.close(4001, "no-device"); return; }
+    if (this.env.LIVE === "0") { ws.close(4503, "halted"); return; }
+    let o: { id?: number; round?: RoundBody } | null = null;
+    try { o = JSON.parse(typeof message === "string" ? message : new TextDecoder().decode(message)); } catch { o = null; }
+    const id = Number(o?.id ?? 0);
+    // Still a device of this book (a "leave" or a month's quiet may have let it go): else the line ends.
+    const known = this.sql.exec(`SELECT 1 FROM devices WHERE device = ?`, device).toArray().length > 0;
+    if (!known) { ws.send(JSON.stringify({ id, status: 403, ok: false, why: "say-hello-first" })); return; }
+    if (!o || !o.round || typeof o.round !== "object") { ws.send(JSON.stringify({ id, status: 400, ok: false, why: "bad-round" })); return; }
+    const now = Date.now();
+    const r = this.roundOf(o.round, device, now);
+    // A device that only ever rounds over its line is still "seen" (at most one write an hour), so a month's
+    // sweep never takes a book whose devices are simply quiet.
+    this.touch(device, now, false);
+    ws.send(JSON.stringify({ id, status: r.status, ...r.body }));
+  }
+
+  async webSocketClose(ws: WebSocket, code: number, reason: string): Promise<void> {
+    try { ws.close(code === 1005 ? 1000 : code, reason); } catch { /* already closed */ }
+  }
+
+  async webSocketError(ws: WebSocket): Promise<void> {
+    try { ws.close(1011, "error"); } catch { /* already closed */ }
+  }
+
+  /** A one-word nudge to every other device's open line: "a parcel waits, ask now" (outgoing messages are free). */
+  private nudge(sender: string): Set<string> {
+    const live = new Set<string>();
+    for (const ws of this.ctx.getWebSockets()) {
+      const d = (ws.deserializeAttachment() as { device?: string } | null)?.device;
+      if (!d || d === sender) continue;
+      try { ws.send('{"t":"new"}'); live.add(d); } catch { /* the line went; FCM wakes it instead */ }
+    }
+    return live;
   }
 
   private async ack(request: Request, device: string, now: number): Promise<Response> {
@@ -327,6 +404,9 @@ export class Daakiya extends DurableObject<Env> {
   }
 
   private leave(device: string): Response {
+    for (const ws of this.ctx.getWebSockets(device)) {
+      try { ws.close(4000, "left"); } catch { /* already gone */ }
+    }
     this.sql.exec(`DELETE FROM devices WHERE device = ?`, device);
     this.sql.exec(`DELETE FROM parcels WHERE sender = ?`, device);
     const left = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM devices`).one().n;
@@ -367,12 +447,13 @@ export class Daakiya extends DurableObject<Env> {
     await this.ctx.storage.setAlarm(now + 6 * 3600_000);
   }
 
-  private async wakeOthers(sender: string, now: number): Promise<void> {
+  private async wakeOthers(sender: string, now: number, live: Set<string> = new Set()): Promise<void> {
     if (!this.env.FCM_SERVICE_ACCOUNT || !this.env.FCM_PROJECT_ID) return;
     const rows = this.sql.exec<{ device: string; fcm: string; woke: number }>(
       `SELECT device, fcm, woke FROM devices WHERE device != ? AND fcm IS NOT NULL`, sender,
     ).toArray();
     for (const r of rows) {
+      if (live.has(r.device)) continue;
       if (now - r.woke < WAKE_GAP_MS) continue;
       this.sql.exec(`UPDATE devices SET woke = ? WHERE device = ?`, now, r.device);
       const gone = await sendWake(this.env, r.fcm).catch(() => false);
