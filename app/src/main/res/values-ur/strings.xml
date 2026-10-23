@@ -3528,4 +3528,17 @@
     <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
     <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation 313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
     <string name="live_relay">انٹرنیٹ سے بھی</string>
+    <string name="live_devices_open">آلات اور ایک ساتھ تبدیلیاں</string>
+    <string name="live_devices_none">ابھی اس کھاتے میں کوئی دوسرا آلہ نہیں جڑا۔</string>
+    <string name="live_device_seen">آخری بار دیکھا گیا: %1$s</string>
+    <string name="live_device_never">ابھی کوئی رابطہ نہیں ہوا</string>
+    <string name="live_remove_confirm_phone">%1$s کو اس کھاتے سے ہٹائیں؟ یہ فون اس کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا؛ دوبارہ سنک کے لیے اسے پھر سے جوڑیں۔</string>
+    <string name="live_conflicts_none">کسی چیز میں دو آلات پر ایک ساتھ تبدیلی نہیں ہوئی۔</string>
+    <string name="live_why_other_computer">کسی دوسرے کمپیوٹر نے جواب دیا، وہ نہیں جس سے یہ فون جڑا ہے۔ کمپیوٹر کو دوبارہ جوڑیں</string>
+    <string name="live_why_other_book">دوسرے آلے پر کوئی اور کھاتہ ہے۔ اسے دوبارہ جوڑیں</string>
+    <string name="live_why_unknown_device">ایسے آلے سے تبدیلیاں آئیں جسے یہ کھاتہ نہیں جانتا۔ اسے دوبارہ جوڑیں</string>
+    <string name="live_why_unreachable">کوئی جواب نہیں ملا</string>
+    <string name="live_why_error">اس فون پر کوئی خرابی ہوئی۔ تھوڑی دیر میں دوبارہ کوشش ہوگی</string>
+    <string name="live_why_day_limit">ریلے پر آج کی حد پوری ہو گئی</string>
+    <string name="live_why_relay_full">ریلے اس وقت بھرا ہوا ہے</string>
 </resources>

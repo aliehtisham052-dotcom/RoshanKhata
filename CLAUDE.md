@@ -602,6 +602,21 @@ real devices yet.
 - **Not done:** removing a stale device from the phone's screen (the
   computer's window has it); the hosting relay has no live line (rounds only).
 
+### The 23 Oct review report (kmp-desktop-15)
+
+- **Live-sync screens and the runner (R45, R48, R71, R83, the handover's phone Devices screen):**
+  Backup → "Devices and conflicts" (`LiveDevicesActivity`, gated BACKUP, owner-only on a helper's phone) lists
+  the book's devices with when each was last heard, removes one after a confirmation, and lists/clears
+  conflicts (`LiveSync.conflictViews`). Both platforms remove through `LiveForget.device`: LiveCrew's holds,
+  waits and announcement for it (`LiveCrew.forget` — else the others' acks stayed held for ever), its `via_`
+  road mark, the phone's WiFi target when it was that computer, then `removePeer`; nothing is said to the
+  relays (a "leave" for it would delete its unread parcels). `LiveRunner.bookChanged` (from
+  `Businesses.switchTo`) stops, resets every status and back-off, and starts again; the news wait ends once
+  its book is closed and NumberMark is written only while the round's book is open (`markFrom`/`clearMark`).
+  The later relays are read by time (`LiveCloud.othersDue`, `OTHERS_MS` 2 min) and a peer whose parcels came
+  by the hosting keeps the HTTP clock (`peerOnLinelessRoad`) on the phone and the computer. Known reason codes
+  read in the owner's language (`live_why_*`); an exception is `WHY_ERROR`. Tests: LiveDevicesTest.
+
 ### The shared module (KMP)
 
 ```

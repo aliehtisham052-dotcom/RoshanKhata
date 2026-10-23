@@ -123,6 +123,10 @@ class BackupActivity : BaseActivity() {
             com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_needs_owner)) { scanLive() }
         }
         findViewById<MaterialButton>(R.id.btnLiveStop).setOnClickListener { confirmLiveStop() }
+        // The book's devices (a stale one removed) and its conflicts, as the computer's Live sync window has them.
+        findViewById<MaterialButton>(R.id.btnLiveDevices).setOnClickListener {
+            startActivity(Intent(this, LiveDevicesActivity::class.java))
+        }
         // A phone may take a shop's book from another phone (23 Oct 2026): it shows the code, the other scans it.
         findViewById<MaterialButton>(R.id.btnLiveReceive).setOnClickListener { showReceive() }
         // The relay on the internet: the owner's choice for the book (one switch for both devices), off until then.
@@ -352,18 +356,19 @@ class BackupActivity : BaseActivity() {
                 bidi.unicodeWrap(Digits.toLatin(java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(s.at))))
             )
             LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
-            is LiveRunner.Status.RelayDown -> getString(R.string.live_status_relay_down, bidi.unicodeWrap(s.why))
+            is LiveRunner.Status.RelayDown -> getString(R.string.live_status_relay_down, bidi.unicodeWrap(liveWhy(s.why)))
             is LiveRunner.Status.UpdateNeeded -> getString(R.string.live_status_update_both, bidi.unicodeWrap(s.why))
             is LiveRunner.Status.KeyBusy -> getString(R.string.live_status_key_busy, bidi.unicodeWrap(s.why))
             LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
             LiveRunner.Status.NotAccepted -> getString(R.string.live_status_not_accepted)
             LiveRunner.Status.Rejoin -> getString(R.string.live_status_rejoin)
-            is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, bidi.unicodeWrap(s.why))
+            is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, bidi.unicodeWrap(liveWhy(s.why)))
         }
         findViewById<android.widget.TextView>(R.id.tvLiveStatus).text =
             if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
         val off = s == LiveRunner.Status.Off || s == LiveRunner.Status.Rejoin || s == LiveRunner.Status.NotAccepted
         findViewById<MaterialButton>(R.id.btnLiveStop).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
+        findViewById<MaterialButton>(R.id.btnLiveDevices).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
         val relay = if (off) android.view.View.GONE else android.view.View.VISIBLE
         findViewById<android.view.View>(R.id.switchLiveRelay).visibility = relay
         findViewById<android.view.View>(R.id.tvLiveRelayHint).visibility = relay
@@ -371,6 +376,21 @@ class BackupActivity : BaseActivity() {
             val on = withContext(Dispatchers.IO) { runCatching { dao.settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) == "1" }.getOrDefault(false) }
             showRelay(on)
         }
+    }
+
+    /**
+     * A refusal's reason code in the owner's language (23 Oct 2026, the review's R48: "another computer" stood in
+     * English inside an Urdu sentence). A code not known here (a relay's new word, "schema 39") is shown as it is.
+     */
+    private fun liveWhy(why: String): String = when {
+        why == LiveRunner.WHY_ERROR -> getString(R.string.live_why_error)
+        why == "another computer" -> getString(R.string.live_why_other_computer)
+        why == "another book" -> getString(R.string.live_why_other_book)
+        why == "unknown device" -> getString(R.string.live_why_unknown_device)
+        why == "unreachable" -> getString(R.string.live_why_unreachable)
+        why == "day-limit" -> getString(R.string.live_why_day_limit)
+        why == "full" || why == "new-books" || why == "too-many-devices" -> getString(R.string.live_why_relay_full)
+        else -> why
     }
 
     /** The relay switch set from the book, without asking again. */

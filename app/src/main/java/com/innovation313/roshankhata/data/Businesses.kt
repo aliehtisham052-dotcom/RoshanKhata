@@ -179,6 +179,7 @@ object Businesses {
         require(list(context).any { it.id == id }) { "unknown business $id" }
         prefs(context).edit().putLong(KEY_ACTIVE, id).commit()
         KhataDatabase.closeActive()
+        LiveRunner.bookChanged(context)
         // Photo caches are keyed by party id, and party ids repeat across
         // businesses — a warm cache would put one shop's faces on another's
         // customers. See PartyPhoto.dropCaches.
