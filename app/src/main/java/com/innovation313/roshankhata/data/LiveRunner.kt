@@ -172,6 +172,7 @@ object LiveRunner {
         val pending = LiveRound.pending(sql)
         if (pending != null && now - (pending.since ?: now) > PENDING_MS) {
             // Not said yes to in time (cancelled there, or never seen): given up; off again if it was off before.
+            LiveCrew.dropCopyHold(sql)
             if (LiveRound.dropPending(sql)) {
                 LiveSync.disable(sql)
                 NumberMark.mark = null
@@ -179,18 +180,21 @@ object LiveRunner {
             state.value = Status.NotAccepted
             return ROUND_MS * 3
         }
-        val target = pending ?: LiveRound.target(sql) ?: run { state.value = Status.NotPaired; return ROUND_MS * 3 }
+        // A pairing with a phone waits for its yes through the relay (a phone serves no WiFi rounds): meanwhile the
+        // computer this phone had, if any, is still the WiFi road (23 Oct 2026, several devices per shop).
+        val wifi = if (pending != null && !pending.phone) pending else LiveRound.target(sql)
         if (LiveControl.halted()) { state.value = Status.Halted; return 60_000L }
-        // The relay is told where to ring this phone while the app is closed (Firebase, when the build has it).
-        if (pending == null && now - lastWakeTell > wakeTellWait) {
-            lastWakeTell = now
-            // Not told (the relay down, refusing): asked again after a growing wait, 1 min doubling to an hour —
-            // not one relay call a minute for ever (23 Oct 2026, the second review).
-            val told = runCatching { PushWake.tell(app, sql) }.getOrDefault(false)
-            wakeTellWait = if (told) WAKE_TELL_MS else minOf(wakeTellWait * 2, WAKE_TELL_MAX_MS)
+        val peersNow = LiveSync.state(sql).peers
+        // No computer on the WiFi road: phones that met through the relay alone (or a phone's yes awaited there).
+        val target = wifi ?: run {
+            if (peersNow.isEmpty() && pending?.phone != true) { state.value = Status.NotPaired; return ROUND_MS * 3 }
+            tellWake(app, sql, now, pending)
+            return relayRound(app, sql, peersNow.firstOrNull()?.name, null, side = false)
         }
+        tellWake(app, sql, now, pending)
+        val wifiPending = pending?.takeIf { !it.phone }
         val key = LiveSync.identity(sql)?.key ?: return ROUND_MS
-        val check = pending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS
+        val check = wifiPending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS
         val request = try {
             LiveRound.request(sql, fingerprint = check) ?: return ROUND_MS
         } catch (e: LiveSync.Lost) {
@@ -203,7 +207,7 @@ object LiveRunner {
             return ROUND_MS * 3
         }
         // While a pairing waits, only the computer that took it is asked (not the one this phone knew before).
-        val peer = if (pending != null) null else LiveSync.state(sql).peers.let { ps ->
+        val peer = if (wifiPending != null) null else peersNow.let { ps ->
             target.device?.let { d -> ps.firstOrNull { it.device == d } } ?: ps.firstOrNull()
         }
         val hosts = (listOfNotNull(peer?.host) + target.hosts).distinct()
@@ -236,14 +240,18 @@ object LiveRunner {
                 if (took.joined) fingerprintBad.value = false
                 quietCloud = 0
                 state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer)
-                if (took.more) 200L else ROUND_MS
+                // More than the computer in this book (another phone), or a phone's yes awaited: the relay too, so
+                // the devices away from this WiFi hear this phone's changes (each device sends only its own).
+                val others = LiveSync.state(sql).peers.size > 1 || pending?.phone == true
+                val side = if (others && sideDue(sql, now)) relayRound(app, sql, peer?.name, target.computer, side = true) else Long.MAX_VALUE
+                minOf(if (took.more) 200L else ROUND_MS, side)
             }
             LiveWire.Answer.NotHere -> {
-                state.value = if (pending != null) Status.Waiting else Status.NotHere
+                state.value = if (wifiPending != null) Status.Waiting else Status.NotHere
                 ROUND_MS * 2
             }
             LiveWire.Answer.Unreachable -> {
-                if (pending != null) { state.value = Status.Unreachable; return ROUND_MS * 2 }
+                if (wifiPending != null) { state.value = Status.Unreachable; return ROUND_MS * 2 }
                 // The computer may have a new address on the same WiFi (a day off, a router restart): it is
                 // called for, at most twice a minute, and kept once it proves it holds this book's key.
                 if (now - lastSeek > SEEK_EVERY_MS) {
@@ -256,43 +264,84 @@ object LiveRunner {
                     }
                 }
                 // Not on the shop's WiFi: the relay, when the owner turned it on for this book (Marhala 2).
-                // Cloudflare first, then Supabase, then the owner's hosting; the later ones read every few rounds.
-                cloudRounds++
-                when (val r = LiveCloud.roundAll(sql, readOthers = cloudRounds % OTHERS_EVERY == 0)) {
-                    is LiveCloud.Result.Done -> {
-                        relayMisses = 0
-                        LiveSync.noteMark(sql, marks(app))
-                        NumberMark.mark = LiveSync.mark(sql)
-                        state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer, relay = true)
-                        // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
-                        quietCloud = if (r.took > 0 || r.more) 0 else minOf(quietCloud + 1, 2)
-                        when {
-                            r.more -> 1000L
-                            // A live line wakes the wait on news; on a clock only once in a while, to be sure.
-                            LiveLines.anyOpen() -> LINE_QUIET_MS
-                            else -> CLOUD_MS shl quietCloud
-                        }
-                    }
-                    LiveCloud.Result.Halted -> { state.value = Status.Halted; 60_000L }
-                    LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { state.value = Status.Unreachable; ROUND_MS * 3 }
-                    else -> if (r is LiveCloud.Result.Refused && r.why == LiveRound.LOST) {
-                        // The other device asks for lines this book let go of: only joining again mends it (as on WiFi).
-                        runCatching { LiveCloud.leaveAll(sql) }
-                        LiveSync.disable(sql, LiveSync.OFF_RESTORED)
-                        NumberMark.mark = null
-                        state.value = Status.Rejoin
-                        ROUND_MS * 3
-                    } else if (r is LiveCloud.Result.Refused && r.why.startsWith("schema")) {
-                        state.value = Status.UpdateNeeded(r.why)
-                        60_000L
-                    } else {
-                        // The relay is the trouble, not the WiFi: said as such, and asked again after a growing wait
-                        // (12 s doubling to 10 min — 22 Oct 2026, the review: every phone hammered every relay at 12 s).
-                        state.value = Status.RelayDown(if (r is LiveCloud.Result.Refused) r.why else "unreachable")
-                        relayMisses = minOf(relayMisses + 1, 6)
-                        (ROUND_MS * 3) shl relayMisses
-                    }
+                relayRound(app, sql, peer?.name, target.computer, side = false)
+            }
+        }
+    }
+
+    private var sideAt = 0L
+    private var sideSeq = -1L
+    private var sideNews = -1L
+
+    /**
+     * Whether the relay round beside a WiFi round is due: only when there is something to say or hear — this
+     * phone wrote something, the relay nudged its line — or once a minute (five with a line open). WiFi rounds come
+     * every few seconds; the relay is not asked as often.
+     */
+    private suspend fun sideDue(sql: SyncSql, now: Long): Boolean {
+        val seq = runCatching { LiveSync.lastSeq(sql) }.getOrDefault(0L)
+        val news = LiveLines.newsMark()
+        val quiet = if (LiveLines.anyOpen()) LINE_QUIET_MS else 60_000L
+        if (seq == sideSeq && news == sideNews && now - sideAt < quiet) return false
+        sideAt = now; sideSeq = seq; sideNews = news
+        return true
+    }
+
+    /** The relay is told where to ring this phone while the app is closed (Firebase, when the build has it). */
+    private suspend fun tellWake(app: Context, sql: SyncSql, now: Long, pending: LiveRound.Target?) {
+        if (pending != null && !pending.phone) return
+        if (now - lastWakeTell <= wakeTellWait) return
+        lastWakeTell = now
+        // Not told (the relay down, refusing): asked again after a growing wait, 1 min doubling to an hour —
+        // not one relay call a minute for ever (23 Oct 2026, the second review).
+        val told = runCatching { PushWake.tell(app, sql) }.getOrDefault(false)
+        wakeTellWait = if (told) WAKE_TELL_MS else minOf(wakeTellWait * 2, WAKE_TELL_MAX_MS)
+    }
+
+    /**
+     * One relay round (Cloudflare first, then the owner's hosting; the later ones read every few rounds) and how
+     * long to wait after it. [side]: the WiFi round already said how things stand — a relay round run beside it
+     * for the shop's other devices changes the status only to say that the book must be joined again.
+     */
+    private suspend fun relayRound(app: Context, sql: SyncSql, peerName: String?, computer: String?, side: Boolean): Long {
+        cloudRounds++
+        return when (val r = LiveCloud.roundAll(sql, readOthers = cloudRounds % OTHERS_EVERY == 0)) {
+            is LiveCloud.Result.Done -> {
+                relayMisses = 0
+                LiveSync.noteMark(sql, marks(app))
+                NumberMark.mark = LiveSync.mark(sql)
+                if (!side) state.value = Status.Live(System.currentTimeMillis(), peerName ?: computer, relay = true)
+                // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
+                quietCloud = if (r.took > 0 || r.more) 0 else minOf(quietCloud + 1, 2)
+                when {
+                    r.more -> 1000L
+                    side -> Long.MAX_VALUE
+                    // A live line wakes the wait on news; on a clock only once in a while, to be sure.
+                    LiveLines.anyOpen() -> LINE_QUIET_MS
+                    else -> CLOUD_MS shl quietCloud
                 }
+            }
+            LiveCloud.Result.Halted -> { if (!side) state.value = Status.Halted; 60_000L }
+            LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { if (!side) state.value = Status.Unreachable; if (side) Long.MAX_VALUE else ROUND_MS * 3 }
+            else -> if (r is LiveCloud.Result.Refused && r.why == LiveRound.LOST) {
+                // The other device asks for lines this book let go of: only joining again mends it (as on WiFi).
+                runCatching { LiveCloud.leaveAll(sql) }
+                LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+                NumberMark.mark = null
+                state.value = Status.Rejoin
+                ROUND_MS * 3
+            } else if (side) {
+                relayMisses = minOf(relayMisses + 1, 6)
+                Long.MAX_VALUE
+            } else if (r is LiveCloud.Result.Refused && r.why.startsWith("schema")) {
+                state.value = Status.UpdateNeeded(r.why)
+                60_000L
+            } else {
+                // The relay is the trouble, not the WiFi: said as such, and asked again after a growing wait
+                // (12 s doubling to 10 min — 22 Oct 2026, the review: every phone hammered every relay at 12 s).
+                state.value = Status.RelayDown(if (r is LiveCloud.Result.Refused) r.why else "unreachable")
+                relayMisses = minOf(relayMisses + 1, 6)
+                (ROUND_MS * 3) shl relayMisses
             }
         }
     }

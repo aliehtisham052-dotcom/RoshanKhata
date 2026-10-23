@@ -123,6 +123,8 @@ class BackupActivity : BaseActivity() {
             com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_needs_owner)) { scanLive() }
         }
         findViewById<MaterialButton>(R.id.btnLiveStop).setOnClickListener { confirmLiveStop() }
+        // A phone may take a shop's book from another phone (23 Oct 2026): it shows the code, the other scans it.
+        findViewById<MaterialButton>(R.id.btnLiveReceive).setOnClickListener { showReceive() }
         // The relay on the internet: the owner's choice for the book (one switch for both devices), off until then.
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchLiveRelay).setOnCheckedChangeListener { b, on ->
             if (showingRelay) return@setOnCheckedChangeListener
@@ -431,7 +433,8 @@ class BackupActivity : BaseActivity() {
             val message = when (sent) {
                 null -> getString(R.string.backup_failed)
                 // The pairing's code too: the computer shows the same four digits beside its yes (22 Oct 2026).
-                is LiveWire.Sent.Taken -> getString(R.string.live_sent) + (sent.code?.let { "\n\n" + getString(R.string.live_pair_code, it) } ?: "")
+                is LiveWire.Sent.Taken -> getString(if (invite.phone) R.string.live_sent_phone else R.string.live_sent) +
+                    (sent.code?.let { "\n\n" + getString(R.string.live_pair_code, it) } ?: "")
                 LiveWire.Sent.Refused -> getString(R.string.wifi_send_refused)
                 LiveWire.Sent.Unreachable -> getString(R.string.wifi_send_unreachable)
             }
@@ -450,6 +453,13 @@ class BackupActivity : BaseActivity() {
         val sent: LiveWire.Sent? = try {
             val id = LiveSync.enable(sql, LiveRunner.install(context), LiveRunner.deviceName(), marks = LiveRunner.marks(context))
             val joinerMark = LiveSync.nextJoinerMark(sql)
+            // A phone meets this one through the relay alone (it serves no WiFi rounds): the relay is turned on for
+            // the book before the copy is taken, so the joiner's copy has it on too (23 Oct 2026).
+            if (invite.phone) KhataDatabase.get(context).khataDao().setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, "1")
+            // The book's other devices and how far this one has read each, as the copy will hold them; this phone
+            // holds back its word to them at those lines until they know the joiner (LiveCrew).
+            val peersAtCopy = com.innovation313.roshankhata.data.LiveCrew.offerPeers(sql)
+            com.innovation313.roshankhata.data.LiveCrew.holdForCopy(sql, peersAtCopy)
             // The book is taken after this line: whatever changes after it is sent again
             // in the first rounds, and a row that lands twice lands as one.
             val seq = LiveSync.lastSeq(sql)
@@ -459,12 +469,13 @@ class BackupActivity : BaseActivity() {
             else {
                 val pair = LiveSync.newHex(8)
                 // The book read from its file as it goes out, never held whole (22 Oct 2026, the review).
-                val outcome = LiveWire.sendOfferFile(invite, LiveWire.Offer(id.book, id.key, id.device, id.name, seq, ByteArray(0), joinerMark, pair), file)
+                val offer = LiveWire.Offer(id.book, id.key, id.device, id.name, seq, ByteArray(0), joinerMark, pair, peers = peersAtCopy)
+                val outcome = LiveWire.sendOfferFile(invite, offer, file)
                 if (outcome is LiveWire.Sent.Taken) {
                     // The computer has the book; its owner has not said yes yet. The first round it answers
                     // makes it this phone's computer (LiveRound.take); until then any earlier one stays.
                     val hosts = listOf(outcome.host) + invite.hosts.filter { it != outcome.host }
-                    LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair), wasOff = !wasOn)
+                    LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair, phone = invite.phone), wasOff = !wasOn)
                 }
                 outcome
             }
@@ -475,10 +486,121 @@ class BackupActivity : BaseActivity() {
         } catch (e: Exception) {
             null
         }
-        // Nothing reached the computer, and this phone did not sync before: as it was.
+        // Nothing reached the other device: the holds made for the copy go; and if this phone did not sync before, as it was.
+        if (sent !is LiveWire.Sent.Taken) runCatching { com.innovation313.roshankhata.data.LiveCrew.dropCopyHold(sql) }
         if (sent !is LiveWire.Sent.Taken && !wasOn) runCatching { LiveSync.disable(sql) }
         com.innovation313.roshankhata.data.NumberMark.mark = runCatching { LiveSync.mark(sql) }.getOrNull()
         return sent
+    }
+
+    /**
+     * This phone takes a shop's book from another phone (23 Oct 2026): it shows a live code on the shop's WiFi;
+     * the phone with the book scans it and sends the book; the owner sees the same four digits on both, and what
+     * this phone would lose, before anything is replaced. The window waits 15 minutes; closing it stops listening.
+     */
+    private fun showReceive() {
+        val receive = com.innovation313.roshankhata.data.LiveReceive(applicationContext)
+        var dialog: androidx.appcompat.app.AlertDialog? = null
+        val text = receive.open(LiveRunner.deviceName()) { arrived ->
+            runOnUiThread {
+                if (isFinishing || isDestroyed) { receive.close(); return@runOnUiThread }
+                dialog?.dismiss()
+                confirmReceive(receive, arrived)
+            }
+        }
+        if (text == null) {
+            receive.close()
+            MaterialAlertDialogBuilder(this).setTitle(R.string.live_title).setMessage(R.string.live_receive_no_wifi)
+                .setPositiveButton(R.string.ok, null).show()
+            return
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val box = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(pad, pad / 2, pad, 0)
+            addView(android.widget.ImageView(this@BackupActivity).apply {
+                setImageBitmap(com.innovation313.roshankhata.ui.QrImage.of(text, 720))
+                adjustViewBounds = true
+            })
+            addView(android.widget.TextView(this@BackupActivity).apply {
+                setText(R.string.live_receive_steps)
+                setPadding(0, pad / 2, 0, 0)
+            })
+        }
+        dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.live_receive)
+            .setView(box)
+            .setNegativeButton(R.string.cancel) { _, _ -> receive.close() }
+            .setOnCancelListener { receive.close() }
+            .show()
+        // Not answered in 15 minutes: the code goes.
+        lifecycleScope.launch {
+            kotlinx.coroutines.delay(15 * 60_000L)
+            if (dialog?.isShowing == true) { dialog?.dismiss(); receive.close() }
+        }
+    }
+
+    /** The book came: the owner sees who sent it, the pairing's code and what this phone would lose, then says yes. */
+    private fun confirmReceive(receive: com.innovation313.roshankhata.data.LiveReceive, arrived: com.innovation313.roshankhata.data.LiveReceive.Arrived) {
+        lifecycleScope.launch {
+            val loss = withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, arrived.data) }.getOrNull()
+                    ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN
+            }
+            if (isFinishing) { receive.close(); return@launch }
+            val lost = loss.takeIf { !it.none }?.let { l ->
+                getString(R.string.restore_loss_intro) + "
+" +
+                    com.innovation313.roshankhata.data.RestoreCheck.lines(l, com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)) { Format.dateTime(it) }
+                        .joinToString("
+") { "• $it" } + "
+
+" + getString(R.string.restore_loss_kept)
+            }
+            val sender = arrived.offer.name.ifBlank { getString(R.string.live_title) }
+            val message = listOfNotNull(getString(R.string.live_receive_offer, sender, arrived.offer.code ?: "----"), lost).joinToString("
+
+")
+            val b = MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.live_receive)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel) { _, _ -> receive.close() }
+                .setPositiveButton(R.string.restore_replace) { _, _ -> takeReceived(receive, arrived) }
+                .setCancelable(false)
+            if (lost == null) { b.show(); return@launch }
+            val agree = android.widget.CheckBox(this@BackupActivity).apply { setText(R.string.restore_loss_agree) }
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            b.setView(android.widget.FrameLayout(this@BackupActivity).apply { setPadding(pad, 0, pad, 0); addView(agree) })
+            val d = b.show()
+            val replace = d.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+            replace.isEnabled = false
+            agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
+        }
+    }
+
+    private fun takeReceived(receive: com.innovation313.roshankhata.data.LiveReceive, arrived: com.innovation313.roshankhata.data.LiveReceive.Arrived) {
+        Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
+        val appContext = applicationContext
+        lifecycleScope.launch {
+            // On the app's own scope: a screen turned mid-way does not leave the book half replaced.
+            val outcome = com.innovation313.roshankhata.data.AppScope.async {
+                runCatching { com.innovation313.roshankhata.data.LiveReceive.take(appContext, arrived) }
+            }.await()
+            receive.close()
+            if (isFinishing || isDestroyed) return@launch
+            val ok = outcome.getOrDefault(false)
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.live_title)
+                .setMessage(
+                    when {
+                        ok -> getString(R.string.live_receive_done)
+                        outcome.isSuccess -> getString(R.string.restore_keep_failed)
+                        else -> getString(R.string.snapshot_restore_failed)
+                    }
+                )
+                .setPositiveButton(R.string.ok) { _, _ -> recreate() }
+                .show()
+        }
     }
 
     private fun confirmLiveStop() {

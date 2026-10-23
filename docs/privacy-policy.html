@@ -244,15 +244,19 @@
   changes made while the phone is away from the shop's Wi-Fi pass through
   Innovation 313's relay in that sealed form (on Cloudflare; when it cannot be
   reached, on Innovation 313's own web hosting): no relay can read them, and
-  each keeps them for at most 7 days. The book's key stays on your devices,
-  sealed by the phone's own key store and, on the computer, by Windows for
-  your user account; it is never sent to a relay. While the app is closed, the
-  relay may ask Google's Firebase Cloud Messaging to deliver one word
-  ("rk-wake") to your phone, so it can pick up what is waiting. For this,
-  Firebase gives the phone a token, and Google receives a Firebase installation
-  ID, the app's version and basic device information. No name, figure or other
-  part of the book is sent to Google. None of this happens until you turn the
-  relay on, and turning it off on the phone deletes the token.
+  each keeps them for at most 7 days. Several devices of one shop (for example
+  your phone, your staff's phone and the computer) share the same book this
+  way. The book's key stays on your devices, sealed by the phone's own key
+  store and, on the computer, by Windows for your user account; it is never
+  sent to a relay. While the app is closed, the relay may ask Google's Firebase
+  Cloud Messaging to deliver a message to your phone: either one word
+  ("rk-wake"), so the phone picks up what is waiting, or a small change itself,
+  still sealed with the book's key, which Google carries but cannot read. For
+  this, Firebase gives the phone a token, and Google receives a Firebase
+  installation ID, the app's version and basic device information. No name,
+  figure or other part of the book is sent to Google in a form it can read.
+  None of this happens until you turn the relay on, and turning it off on the
+  phone deletes the token.
 </p>
 
 <h2>18. Staff sign-in and the activity log</h2>

@@ -552,6 +552,56 @@ real devices.
   conflicts screen on the phone (the computer's window has it); `join()` is
   three transactions; swallowed sync failures are not written to errors.log.
 
+### The live line, Firebase's parcels, several devices (23 Oct 2026, kmp-desktop-15 — the owner: "WebSocket bhi banate hain… teen mobile ek ID")
+
+Why: the build polled the relay (a request every 15 s whether or not anything
+changed), so Cloudflare's free 100,000 requests a day carried far fewer shops
+than the plan said; and the engine knew only two devices. CI only — nothing on
+real devices yet.
+
+- **The live line** (`LiveLines`, Worker `live`): one hibernating WebSocket per
+  open app, device and book, to the first relay only. A round is one message
+  (`{"id","round"}` → `{"id","status",...}`, the Worker's `roundOf`, the same
+  as the HTTP round); Cloudflare bills incoming messages 20 to a request and
+  nothing for outgoing ones, pings or a sleeping line. A parcel nudges the
+  other open lines (`{"t":"new"}`); runners wait on `LiveLines.waitForNews`
+  (a nudge, or this device's own log growing) with a 5-minute round only to be
+  sure. No line (404/426: `NoLineHere`, an hour; a drop: 30 s doubling) and the
+  round goes over HTTP unchanged. Sockets: `OkLines` (OkHttp 4.12.0, phone,
+  opened while on screen) and `JdkLines` (java.net.http, the MSI gains that
+  module). test_relay.py speaks a stdlib WebSocket client to the Worker;
+  JdkLinesTest runs the JDK's socket against a loopback server.
+- **Firebase carries the parcel** (Worker `wakeOthers`): a parcel of at most
+  3,400 base64 characters rides in the FCM data message ("rk-parcel": number,
+  sender, the sealed body — Google carries ciphertext), ≤60 a minute to a
+  device, only to devices without an open line; larger ones still "rk-wake".
+  `LiveCloud.takeCarried` writes it in without a relay call and without moving
+  the relay cursor (the relay stays the record); a gap asks for a round;
+  `onDeletedMessages` runs a round. The privacy policy says so (section 17).
+- **Several devices** (`LiveCrew`): an offer carries the sender's other devices
+  and how far it had read each (`offerPeers`); the joiner starts there
+  (`LiveCrew.join`). The sender holds back its acks toward each of them at the
+  copy's line (`holdForCopy`/`ackFor`) until that device names the joiner in
+  its own acks/knows (`heard`), so nobody prunes what the joiner needs; joins
+  are announced in relay messages and WiFi requests/answers (`joins`,
+  `knows`) and taken with `takeJoins`. A phone joiner says its pairing
+  (`pair`) through the relay and the sender adds it there
+  (`confirmFromRelay`). `LiveRound.confirm` no longer drops the book's other
+  devices, only the computer it replaces. The phone runs relay rounds with no
+  computer at all, and beside the WiFi round when the book has more than one
+  peer (`sideDue`: on news or once a minute); the computer keeps its relay
+  rounds while the phone is on its WiFi if the book has other devices.
+- **A phone takes a book** (`LiveReceive`, Backup → "Take a shop's book on
+  this phone"): it shows a live code (`t=phone`) and serves one pairing frame
+  on the WiFi; the confirmation shows the code and what this phone would lose;
+  `Snapshots.keepNow` first, then `Backup.restore`, then `LiveCrew.join`. The
+  sender turns the relay on for the book before the copy (phones meet only
+  through it). The computer still cannot be a sender (no camera to scan).
+- Tests: LiveCloudTest (rounds over a line, nudges, carried parcels, three
+  devices through a phone joiner), JdkLinesTest, test_relay.py's live line.
+- **Not done:** removing a stale device from the phone's screen (the
+  computer's window has it); the hosting relay has no live line (rounds only).
+
 ### The shared module (KMP)
 
 ```

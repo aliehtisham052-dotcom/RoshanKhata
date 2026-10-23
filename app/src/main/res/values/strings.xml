@@ -3706,6 +3706,16 @@ You can change this any time from this screen.</string>
     <string name="live_status_failed">Live sync stopped: %1$s</string>
     <string name="live_mismatch">The two books do not match. Join again to make a fresh copy.</string>
     <string name="live_sent">Sent. On the computer, say yes to replace its book with this phone’s.</string>
+    <string name="live_receive">Take a shop’s book on this phone</string>
+    <string name="live_receive_steps">On the phone that has the shop’s book, open Backup → Live sync → Join, and scan this code. Both phones must be on the same WiFi. This window waits 15 minutes.</string>
+    <string name="live_receive_offer">“%1$s” wants to give this phone the shop’s book.
+
+Code: %2$s — the same four digits must show on that phone.
+
+This phone’s own book will be replaced by the shop’s. After this, the phones keep one book together through the internet relay.</string>
+    <string name="live_receive_done">Done. This phone now keeps the shop’s book together with its other devices.</string>
+    <string name="live_receive_no_wifi">This phone is not on a WiFi network. Join the shop’s WiFi and try again.</string>
+    <string name="live_sent_phone">Sent. On the other phone, say yes to take this book. The two phones then meet through the internet relay.</string>
     <string name="live_not_live_code">This is not a live sync code. On the computer, open Live sync and scan the code it shows.</string>
     <string name="live_pc_steps">On the phone open Backup → Live sync with the computer → Join the computer, and scan this code. After your yes, the phone’s book opens here as a new business (this computer’s own book stays as it is), and from then on the two stay the same.</string>
     <string name="live_pc_none">No phone has joined yet.</string>
