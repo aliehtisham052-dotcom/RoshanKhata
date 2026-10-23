@@ -108,7 +108,9 @@ import java.util.Locale
  * and About. Everything it shows comes from the shared module — the
  * database, the backup format, the money format, the words.
  */
-fun main() {
+fun main(args: Array<String>) {
+    // CI's packaged-runtime check (desktop.yml): the app's own launcher and runtime, nothing of the app opened.
+    if (args.firstOrNull() == "--runtime-self-check") { RuntimeSelfCheck.main(args); return }
     // Live sync's port must be free again right after a restart (22 Oct 2026): Windows' JDK binds exclusively by
     // default, and then every connection still in TIME_WAIT (four minutes) keeps port 47313 from being opened.
     System.setProperty("sun.net.useExclusiveBind", "false")

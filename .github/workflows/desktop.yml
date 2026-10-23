@@ -76,24 +76,24 @@ jobs:
       # image's OWN trimmed Java (the runtime the MSI installs) and one real HTTPS handshake.
       - name: Packaged runtime check
         if: success()
-        shell: bash
+        shell: pwsh
         run: |
-          app=$(find desktop/build/compose/binaries/main/app -mindepth 1 -maxdepth 1 -type d | head -1)
-          [ -n "$app" ] || { echo "::error::No app folder from createDistributable"; exit 1; }
-          java="$app/runtime/bin/java.exe"
-          [ -x "$java" ] || java="$app/runtime/bin/java"
-          [ -x "$java" ] || { echo "::error::No java in the app image's runtime"; exit 1; }
-          "$java" --list-modules | tr -d '\r'
-          set +e
-          "$java" -cp "$app/app/*" com.innovation313.roshankhata.desktop.RuntimeSelfCheck \
-            --net https://github.com 2>&1 | tr -d '\r' | tee /tmp/runtime_check.txt
-          code=${PIPESTATUS[0]}
-          set -e
-          if [ "$code" -ne 0 ] || grep -q '^FAIL' /tmp/runtime_check.txt; then
-            fails=$(grep -E '^FAIL|RUNTIME CHECK' /tmp/runtime_check.txt | head -20 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
-            echo "::error title=The MSI's own Java cannot do what the app needs::$fails"
+          # jpackage strips java.exe from the app's runtime, so the check runs through the app's own launcher
+          # (Main.kt hands "--runtime-self-check" to RuntimeSelfCheck before anything of the app opens).
+          $app = Get-ChildItem desktop/build/compose/binaries/main/app -Directory | Select-Object -First 1
+          if (-not $app) { Write-Output "::error::No app folder from createDistributable"; exit 1 }
+          $exe = Get-ChildItem $app.FullName -Filter *.exe | Select-Object -First 1
+          if (-not $exe) { Write-Output "::error::No launcher (.exe) in the app folder"; exit 1 }
+          $out = Join-Path $env:RUNNER_TEMP "runtime_check.txt"
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList "--runtime-self-check","--out",$out,"--net","https://github.com" -Wait -PassThru
+          if (-not (Test-Path $out)) { Write-Output "::error::The runtime check wrote nothing (exit $($p.ExitCode))"; exit 1 }
+          $text = Get-Content $out -Encoding UTF8
+          $text | ForEach-Object { Write-Output $_ }
+          $fails = $text | Where-Object { $_ -match '^FAIL|RUNTIME CHECK FAILED' }
+          if ($fails -or -not ($text -match 'RUNTIME CHECK PASSED')) {
+            Write-Output "::error title=The MSI's own Java cannot do what the app needs::$(($fails | Select-Object -First 20) -join ' | ')"
             exit 1
-          fi
+          }
 
       # The Store's package (MSIX), from the same app folder the MSI installs.
       # Identity values come from Partner Center once the name is reserved

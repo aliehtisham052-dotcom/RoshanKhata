@@ -18,15 +18,19 @@ import javax.net.ssl.SSLContext
  * What the MSI's trimmed Java must be able to do (23 Oct 2026, R36). The Gradle tests run on
  * the runner's full JDK, so a module missing from desktop/build.gradle.kts's `modules(...)`
  * (java.logging for PDFBox, jdk.localedata for Urdu month names, jdk.crypto.ec for TLS) was
- * only ever found on the owner's laptop. desktop.yml runs this class with the app image's own
- * `runtime/bin/java` after createDistributable and fails the run on any FAIL line.
- *
- * Not part of the app: nothing calls it; it is started by its class name only.
+ * only ever found on the owner's laptop. desktop.yml starts the app image's own launcher with
+ * `--runtime-self-check` (Main.kt hands over before anything else runs) after createDistributable and
+ * fails the run on any FAIL line (jpackage strips java.exe from the runtime, so the launcher is the way in).
  * `--net <https url>` also makes one real HTTPS request (a TLS handshake the relay needs).
  */
 object RuntimeSelfCheck {
     @JvmStatic
     fun main(args: Array<String>) {
+        // The installed app has no console and jpackage leaves no java.exe in its runtime: desktop.yml starts the
+        // app's own launcher with --runtime-self-check --out <file> and reads the file.
+        args.indexOf("--out").takeIf { it >= 0 }?.let { args.getOrNull(it + 1) }?.let { path ->
+            System.setOut(java.io.PrintStream(java.io.FileOutputStream(path), true, "UTF-8"))
+        }
         val failures = mutableListOf<String>()
         fun probe(name: String, block: () -> String) {
             val said = try {
