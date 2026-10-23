@@ -33,6 +33,16 @@
         android:name="android.permission.READ_CONTACTS"
         android:maxSdkVersion="36" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!--
+      Android 7-9 only (23 Oct 2026): a backup or report saved to the public
+      Downloads folder needs this before Android 10 (from 10 MediaStore needs
+      nothing). Asked at the moment of saving (BaseActivity.withDownloadsAccess),
+      never at launch; without it the file still goes to the app's own copy and
+      the share sheet.
+    -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <!--
       Android 11 and up hides other apps from this one unless they are named.

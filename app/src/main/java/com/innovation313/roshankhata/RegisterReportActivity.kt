@@ -76,7 +76,7 @@ class RegisterReportActivity : BaseActivity() {
         btnDownload = findViewById(R.id.btnRegDownload)
         btnShare = findViewById(R.id.btnRegShare)
         btnPreview.setOnClickListener { buildPdf { file -> PdfShare.open(this, file) } }
-        btnDownload.setOnClickListener { buildPdf { file -> saveToDownloads(file) } }
+        btnDownload.setOnClickListener { withDownloadsAccess { buildPdf { file -> saveToDownloads(file) } } }
         btnShare.setOnClickListener { buildPdf { file -> PdfShare.shareDirect(this, file) } }
 
         paintRange()

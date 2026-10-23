@@ -98,7 +98,7 @@ class InspectorReportActivity : BaseActivity() {
         // Read it before it leaves your hands: the register is the one
         // document here that gets handed to an inspector.
         btnPreview.setOnClickListener { buildPdf { file -> PdfShare.open(this, file) } }
-        btnDownload.setOnClickListener { buildPdf { file -> saveToDownloads(file) } }
+        btnDownload.setOnClickListener { withDownloadsAccess { buildPdf { file -> saveToDownloads(file) } } }
         btnShare.setOnClickListener { buildPdf { file -> PdfShare.shareDirect(this, file) } }
 
         paintWindow()

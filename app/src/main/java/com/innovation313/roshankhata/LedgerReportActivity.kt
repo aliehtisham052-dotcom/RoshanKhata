@@ -289,10 +289,12 @@ class LedgerReportActivity : BaseActivity() {
                 iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg)
         )
         ChoiceSheet.show(this, getString(R.string.ledger_report_download_as), options) { which ->
-            if (which == 0) {
-                buildPdf { file -> saveToDownloads(file, "application/pdf") }
-            } else {
-                buildCsv { file -> saveToDownloads(file, "text/csv") }
+            withDownloadsAccess {
+                if (which == 0) {
+                    buildPdf { file -> saveToDownloads(file, "application/pdf") }
+                } else {
+                    buildCsv { file -> saveToDownloads(file, "text/csv") }
+                }
             }
         }
     }

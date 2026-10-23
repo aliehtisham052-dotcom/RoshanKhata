@@ -85,7 +85,7 @@ class BackupActivity : BaseActivity() {
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
-        findViewById<MaterialButton>(R.id.btnBackup).setOnClickListener { createBackup() }
+        findViewById<MaterialButton>(R.id.btnBackup).setOnClickListener { withDownloadsAccess { createBackup() } }
 
         findViewById<MaterialButton>(R.id.btnRestore).setOnClickListener {
             showRestoreOptions()
