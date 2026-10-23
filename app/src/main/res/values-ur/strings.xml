@@ -3551,4 +3551,16 @@
     <string name="fc_look_in">یہاں دیکھیں:</string>
     <string name="fc_folder_name">فولڈر:</string>
     <string name="fc_files_of_type">فائل کی قسم:</string>
+    <string name="pos_void_shift_closed">جس شفٹ میں یہ بِکری ہوئی تھی وہ گن کر بند ہو چکی ہے۔ منسوخ کرنے کے بجائے واپسی کریں۔</string>
+    <string name="pos_customer_binned">یہ گاہک ری سائیکل بِن میں ہے۔ پہلے گاہک کو واپس لائیں۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="pos_held_gone">یہ روکا ہوا ٹکٹ پہلے ہی بِک چکا ہے یا ہٹایا جا چکا ہے، شاید کسی اور آلے پر۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="pos_ticket_not_posted">یہ بِکری اب درج شدہ نہیں رہی (منسوخ یا ہٹا دی گئی)۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="pos_post_failed">بِکری محفوظ نہیں ہوئی۔ کچھ نہیں لکھا گیا؛ ٹکٹ ابھی کاؤنٹر پر ہے۔</string>
+    <string name="pos_hold_failed">ٹکٹ روکا نہیں جا سکا۔ یہ ابھی کاؤنٹر پر ہے۔</string>
+    <string name="pos_void_failed">بِکری منسوخ نہیں ہو سکی۔ کچھ بھی تبدیل نہیں ہوا۔</string>
+    <string name="pos_return_failed">واپسی محفوظ نہیں ہوئی۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="book_merge_failed">کچھ شامل نہیں ہوا۔ یہ کھاتہ جوں کا توں ہے۔</string>
+    <string name="products_export_failed">سامان کی فائل نہیں بن سکی۔</string>
+    <string name="save_failed_storage_full">محفوظ نہیں ہوا: فون کی میموری بھر چکی ہے۔ کچھ جگہ خالی کریں، پھر دوبارہ درج کریں۔</string>
+    <string name="save_failed_not_saved">محفوظ نہیں ہوا: کوئی خرابی ہوئی۔ براہِ کرم دیکھ کر دوبارہ درج کریں۔</string>
 </resources>

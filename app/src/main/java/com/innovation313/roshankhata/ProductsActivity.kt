@@ -64,7 +64,7 @@ class ProductsActivity : BaseActivity() {
                     contentResolver.openOutputStream(uri)!!.use { it.write(text.toByteArray(Charsets.UTF_8)) }
                 }.isSuccess
             }
-            Toast.makeText(this@ProductsActivity, if (ok) R.string.products_export else R.string.backup_failed, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProductsActivity, if (ok) R.string.products_export else R.string.products_export_failed, Toast.LENGTH_SHORT).show()
         }
     }
 

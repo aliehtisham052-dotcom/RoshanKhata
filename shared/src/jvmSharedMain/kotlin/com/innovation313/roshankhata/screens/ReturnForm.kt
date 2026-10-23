@@ -62,16 +62,16 @@ class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>) {
      */
     val share: Double = sale.sale.subtotal.takeIf { it > 0.0 }?.let { sale.sale.grandTotal / it } ?: 1.0
 
-    class Line(val item: com.innovation313.roshankhata.data.SaleItem, val left: Double, private val share: Double = 1.0) {
+    class Line(val item: com.innovation313.roshankhata.data.SaleItem, val left: Double, private val sale: com.innovation313.roshankhata.data.Sale) {
         var qty by mutableStateOf("")
         val qtyValue: Double get() = Calc.evalAmount(qty) ?: 0.0
-        /** Per unit as paid for: the line's own discount and its share of the ticket's spread over it. */
-        val rate: Double get() = if (item.quantity > 0.0) item.lineTotal * share / item.quantity else item.rate * share
+        /** Per unit as paid for: the line's own discount and its share of the ticket's spread over it (the DAO's own rule). */
+        val rate: Double get() = ReturnMath.paidRate(sale, item)
         val total: Double get() = com.innovation313.roshankhata.data.SaleMath.lineTotal(qtyValue, rate)
     }
 
     val lines: SnapshotStateList<Line> = mutableStateListOf<Line>().apply {
-        sale.items.forEach { add(Line(it, it.quantity - (returnedSoFar[it.id] ?: 0.0), share)) }
+        sale.items.forEach { add(Line(it, it.quantity - (returnedSoFar[it.id] ?: 0.0), sale.sale)) }
     }
     var reason by mutableStateOf("")
     /** Being posted: the button waits, so a double tap never writes the return twice (21 Oct 2026). */
@@ -112,6 +112,33 @@ fun returnProblemWord(p: ReturnMath.Problem): String = when (p) {
     ReturnMath.Problem.WALK_IN_NEEDS_CASH -> W.pos_err_walk_in_cash
     ReturnMath.Problem.NO_REASON -> W.pos_err_reason
     ReturnMath.Problem.BAD_METHOD -> W.pos_err_payment
+}
+
+/**
+ * A failed counter write (a sale, a hold, a void, a return) in words, as a W
+ * name (23 Oct 2026, the review): the reason where it is one the counter
+ * knows, else [fallback] — never the exception's English message or another
+ * screen's sentence. Both counters use it.
+ */
+fun counterFailWord(e: Throwable, fallback: String): String = when (e) {
+    is com.innovation313.roshankhata.data.SaleMath.Refused -> problemWord(e.problem)
+    is ReturnMath.Refused -> returnProblemWord(e.problem)
+    is com.innovation313.roshankhata.data.CounterRefused -> when (e.why) {
+        com.innovation313.roshankhata.data.CounterRefused.Why.CUSTOMER_BINNED -> W.pos_customer_binned
+        com.innovation313.roshankhata.data.CounterRefused.Why.HELD_GONE -> W.pos_held_gone
+        com.innovation313.roshankhata.data.CounterRefused.Why.NOT_POSTED -> W.pos_ticket_not_posted
+        com.innovation313.roshankhata.data.CounterRefused.Why.NOT_THIS_TICKET -> fallback
+        com.innovation313.roshankhata.data.CounterRefused.Why.NOT_ALLOWED -> W.access_denied
+    }
+    else -> fallback
+}
+
+/** A refused void in words (W names), on both counters; [VoidRefusal.NOT_DONE] and anything else is [fallback]. */
+fun voidRefusalWord(r: com.innovation313.roshankhata.data.SaleMath.VoidRefusal?, fallback: String): String = when (r) {
+    com.innovation313.roshankhata.data.SaleMath.VoidRefusal.HAS_RETURNS -> W.pos_void_has_returns
+    com.innovation313.roshankhata.data.SaleMath.VoidRefusal.DAY_CLOSED -> W.pos_void_day_closed
+    com.innovation313.roshankhata.data.SaleMath.VoidRefusal.SHIFT_CLOSED -> W.pos_void_shift_closed
+    else -> fallback
 }
 
 @Composable

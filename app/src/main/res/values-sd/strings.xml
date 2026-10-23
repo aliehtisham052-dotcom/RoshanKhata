@@ -3579,4 +3579,16 @@
     <string name="fc_look_in">هتي ڏسو:</string>
     <string name="fc_folder_name">فولڊر:</string>
     <string name="fc_files_of_type">فائل جو قسم:</string>
+    <string name="pos_void_shift_closed">جنهن شفٽ ۾ هي وڪرو ٿيو هو، اها ڳڻي بند ٿي چڪي آهي. منسوخ ڪرڻ بدران واپسي ڪريو.</string>
+    <string name="pos_customer_binned">هي گراهڪ ري سائيڪل بن ۾ آهي. پهرين گراهڪ کي واپس آڻيو. ڪجهه به نه لکيو ويو.</string>
+    <string name="pos_held_gone">هي روڪيل ٽڪيٽ اڳ ۾ ئي وڪامي چڪو آهي يا هٽايو ويو آهي، شايد ڪنهن ٻئي ڊوائيس تي. ڪجهه به نه لکيو ويو.</string>
+    <string name="pos_ticket_not_posted">هي وڪرو هاڻي درج ٿيل ناهي (منسوخ يا هٽايو ويو). ڪجهه به نه لکيو ويو.</string>
+    <string name="pos_post_failed">وڪرو محفوظ نه ٿيو. ڪجهه به نه لکيو ويو؛ ٽڪيٽ اڃا ڪائونٽر تي آهي.</string>
+    <string name="pos_hold_failed">ٽڪيٽ روڪي نه سگهيو. اهو اڃا ڪائونٽر تي آهي.</string>
+    <string name="pos_void_failed">وڪرو منسوخ نه ٿي سگهيو. ڪجهه به تبديل نه ٿيو.</string>
+    <string name="pos_return_failed">واپسي محفوظ نه ٿي. ڪجهه به نه لکيو ويو.</string>
+    <string name="book_merge_failed">ڪجهه به شامل نه ٿيو. هي کاتو جيئن جو تيئن آهي.</string>
+    <string name="products_export_failed">سامان جي فائل نه ٺهي سگهي.</string>
+    <string name="save_failed_storage_full">محفوظ نه ٿيو: فون جي ميموري ڀرجي چڪي آهي. ڪجهه جاءِ خالي ڪريو، پوءِ ٻيهر درج ڪريو.</string>
+    <string name="save_failed_not_saved">محفوظ نه ٿيو: ڪا خرابي ٿي. مهرباني ڪري ڏسي ٻيهر درج ڪريو.</string>
 </resources>

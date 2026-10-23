@@ -3579,4 +3579,16 @@
     <string name="fc_look_in">جستجو در:</string>
     <string name="fc_folder_name">پوشه:</string>
     <string name="fc_files_of_type">نوع فایل:</string>
+    <string name="pos_void_shift_closed">شیفتی که این فروش در آن ثبت شد بسته و شمارش شده است. به جای باطل کردن، برگشت ثبت کنید.</string>
+    <string name="pos_customer_binned">این مشتری در سطل بازیافت است. اول مشتری را بازگردانید. چیزی نوشته نشد.</string>
+    <string name="pos_held_gone">این بلیت نگه‌داشته پیش‌تر فروخته یا حذف شده است، شاید روی دستگاهی دیگر. چیزی نوشته نشد.</string>
+    <string name="pos_ticket_not_posted">این فروش دیگر ثبت‌شده نیست (باطل یا حذف شده). چیزی نوشته نشد.</string>
+    <string name="pos_post_failed">فروش ذخیره نشد. چیزی نوشته نشد؛ بلیت هنوز روی پیشخوان است.</string>
+    <string name="pos_hold_failed">بلیت نگه داشته نشد. هنوز روی پیشخوان است.</string>
+    <string name="pos_void_failed">فروش باطل نشد. چیزی تغییر نکرد.</string>
+    <string name="pos_return_failed">برگشت ذخیره نشد. چیزی نوشته نشد.</string>
+    <string name="book_merge_failed">چیزی افزوده نشد. این دفتر دست‌نخورده است.</string>
+    <string name="products_export_failed">فایل کالاها ساخته نشد.</string>
+    <string name="save_failed_storage_full">ذخیره نشد: حافظهٔ گوشی پر است. کمی جا خالی کنید و دوباره وارد کنید.</string>
+    <string name="save_failed_not_saved">ذخیره نشد: خطایی رخ داد. لطفاً بررسی کنید و دوباره وارد کنید.</string>
 </resources>
