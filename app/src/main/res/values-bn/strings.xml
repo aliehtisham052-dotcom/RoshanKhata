@@ -3586,4 +3586,9 @@
     <string name="live_why_error">এই ফোনে একটি সমস্যা হয়েছে। একটু পরে আবার চেষ্টা হবে</string>
     <string name="live_why_day_limit">রিলেতে আজকের সীমা পূর্ণ হয়েছে</string>
     <string name="live_why_relay_full">রিলে এখন পূর্ণ</string>
+    <string name="drive_plan_replace">%1$s: এই ফোনে %2$s-এর খাতার জায়গা নেবে।</string>
+    <string name="drive_plan_new">%1$s: নতুন দোকান হিসেবে আসবে। এই ফোনের %2$s আলাদা দোকান, সেটি যেমন আছে তেমনই থাকবে।</string>
+    <string name="drive_plan_fresh">%1$s: এই ফোনে একটি দোকান হিসেবে ফিরে আসবে।</string>
+    <string name="drive_plan_live">%1$s অন্য ডিভাইসের সাথে লাইভ সিঙ্ক হয়। এটি বদলালে লাইভ সিঙ্ক থেমে যাবে; পরে দুটোকে আবার যুক্ত করুন।</string>
+    <string name="drive_plan_unreadable">%1$s: ড্রাইভ থেকে পড়া যায়নি। এটি যেমন আছে তেমনই রাখা হচ্ছে।</string>
 </resources>

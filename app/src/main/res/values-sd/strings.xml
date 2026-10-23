@@ -3570,4 +3570,9 @@
     <string name="live_why_error">هن فون تي ڪا خرابي ٿي. ٿوري دير ۾ ٻيهر ڪوشش ٿيندي</string>
     <string name="live_why_day_limit">ريلي تي اڄ جي حد پوري ٿي وئي</string>
     <string name="live_why_relay_full">ريلي هن وقت ڀريل آهي</string>
+    <string name="drive_plan_replace">%1$s: هن فون تي %2$s جو کاتو ان سان بدلجي ويندو.</string>
+    <string name="drive_plan_new">%1$s: نئين دڪان طور ايندي. هن فون جي %2$s الڳ دڪان آهي ۽ ائين ئي رهندي.</string>
+    <string name="drive_plan_fresh">%1$s: هن فون تي هڪ دڪان طور واپس ايندي.</string>
+    <string name="drive_plan_live">%1$s ٻئي ڊوائيس سان لائيو سنڪ ٿئي ٿي. ان کي بدلائڻ سان لائيو سنڪ رڪجي ويندو؛ پوءِ ٻنهي کي ٻيهر ڳنڍيو.</string>
+    <string name="drive_plan_unreadable">%1$s: ڊرائيو مان پڙهي نه سگهي. ان کي ائين ئي ڇڏيو پيو وڃي.</string>
 </resources>

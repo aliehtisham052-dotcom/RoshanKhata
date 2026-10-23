@@ -3586,4 +3586,9 @@
     <string name="live_why_error">इस फ़ोन पर कोई गड़बड़ी हुई। थोड़ी देर में फिर कोशिश होगी</string>
     <string name="live_why_day_limit">रिले पर आज की सीमा पूरी हो गई</string>
     <string name="live_why_relay_full">रिले अभी भरा हुआ है</string>
+    <string name="drive_plan_replace">%1$s: इस फ़ोन पर %2$s का खाता इससे बदल जाएगा।</string>
+    <string name="drive_plan_new">%1$s: नई दुकान के रूप में आएगी। इस फ़ोन की %2$s अलग दुकान है और वैसी ही रहेगी।</string>
+    <string name="drive_plan_fresh">%1$s: इस फ़ोन पर एक दुकान के रूप में वापस आएगी।</string>
+    <string name="drive_plan_live">%1$s दूसरे डिवाइस के साथ लाइव सिंक होती है। इसे बदलने से लाइव सिंक रुक जाएगा; बाद में दोनों को फिर जोड़ें।</string>
+    <string name="drive_plan_unreadable">%1$s: ड्राइव से पढ़ी नहीं जा सकी। इसे वैसा ही छोड़ा जा रहा है।</string>
 </resources>

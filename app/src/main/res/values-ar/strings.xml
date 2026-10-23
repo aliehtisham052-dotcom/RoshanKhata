@@ -3754,4 +3754,9 @@
     <string name="live_why_error">حدث خطأ على هذا الهاتف. ستُعاد المحاولة بعد قليل</string>
     <string name="live_why_day_limit">بلغ المُرحِّل حدّ اليوم</string>
     <string name="live_why_relay_full">المُرحِّل ممتلئ الآن</string>
+    <string name="drive_plan_replace">%1$s: يحلّ محلّ دفتر %2$s على هذا الهاتف.</string>
+    <string name="drive_plan_new">%1$s: يُضاف متجرًا جديدًا. %2$s على هذا الهاتف متجر آخر ويبقى كما هو.</string>
+    <string name="drive_plan_fresh">%1$s: يعود متجرًا على هذا الهاتف.</string>
+    <string name="drive_plan_live">%1$s يتزامن مباشرة مع جهاز آخر. استبداله يوقف المزامنة المباشرة؛ اربط الجهازين من جديد بعد ذلك.</string>
+    <string name="drive_plan_unreadable">%1$s: تعذّرت قراءته من Drive. يُترك كما هو.</string>
 </resources>

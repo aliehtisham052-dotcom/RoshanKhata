@@ -66,9 +66,8 @@ object EraseAll {
         LiveRunner.stop()
         // The relays forget this phone and its wake-up address goes (best effort, 23 Oct 2026): a computer must not
         // keep leaving parcels, and ringing, for a phone that was erased.
-        runCatching {
-            kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(5_000L) { LiveCloud.leaveAll(KhataDatabase.get(context).syncSql()) } }
-        }
+        // Every shop's book, not only the open one (23 Oct 2026, the review).
+        Businesses.leaveRelaysAll(context)
         runCatching { PushWake.off(context) }
         KhataDatabase.whileClosed {
             PartyPhoto.dropCaches()
