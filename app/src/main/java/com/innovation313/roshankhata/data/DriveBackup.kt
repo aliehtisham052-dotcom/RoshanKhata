@@ -9,6 +9,8 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File as DriveFile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -429,6 +431,8 @@ object DriveBackup {
         data class OtherPhone(val conflict: OtherPhoneBackup) : AutoResult()
         /** A backup was due but failed — the worker should notify and retry. */
         data class Failed(val cause: Throwable?) : AutoResult()
+        /** Only the interval stood in the way (a left shop's run, [autoBackupLeftShop]): due at [at]. */
+        data class NotYet(val at: Long) : AutoResult()
     }
 
     /**
@@ -459,6 +463,20 @@ object DriveBackup {
         // The shop [dao] belongs to, taken by the caller when it took [dao] (23 Oct 2026, the review):
         // every name, key and record below is this one shop's, and a switch meanwhile stops the run.
         businessId: Long = Businesses.active(context).id
+    ): AutoResult = autoLock.withLock { autoOpenShop(context, dao, minIntervalMs, businessId) }
+
+    /**
+     * One automatic backup at a time on this phone, whichever shop it is for (23 Oct 2026, the review,
+     * R21): the open shop's run and a left shop's run never meet on Drive, so neither can read the
+     * other's half-done upload as "another phone wrote it".
+     */
+    private val autoLock = Mutex()
+
+    private suspend fun autoOpenShop(
+        context: Context,
+        dao: KhataDao,
+        minIntervalMs: Long,
+        businessId: Long
     ): AutoResult = withContext(Dispatchers.IO) {
         if (ViewerMode.isOn(context)) return@withContext AutoResult.Skipped
         // The export reads the open shop's profile: a switch since [dao] was taken would mix two shops.
@@ -505,6 +523,63 @@ object DriveBackup {
         BackupReminder.recordBackupOf(context, businessId)
         rememberSignature(context, signature, businessId)
         AutoResult.BackedUp
+    }
+
+    /**
+     * The automatic backup of a shop that is NOT open (23 Oct 2026, the review, R21): the shop the
+     * owner just switched away from. The same rules as [autoBackupIfDue] — automatic backup on for
+     * this shop, Drive on and signed in, a book with entries, the interval passed, something changed,
+     * and the two-phone guard inside [backup] — with everything taken by [businessId]: its own file
+     * through [KhataDatabase.openOther] (which refuses the open shop's file), its own profile
+     * ([Backup.exportToCacheFor]), its own Drive name, keys and records.
+     *
+     * A shop that is open again is left to the open shop's own run ([AutoBackup.onAppBackgrounded]),
+     * checked before the book is opened and again before anything goes up. Photos are not sent:
+     * they are read from the open shop's folders, and go with that shop's next backup while it is open.
+     *
+     * @return [AutoResult.NotYet] when only the interval stood in the way.
+     */
+    suspend fun autoBackupLeftShop(context: Context, businessId: Long, minIntervalMs: Long): AutoResult =
+        autoLock.withLock { withContext(Dispatchers.IO) { leftShop(context, businessId, minIntervalMs) } }
+
+    private suspend fun leftShop(context: Context, businessId: Long, minIntervalMs: Long): AutoResult {
+        if (!DriveFeature.ENABLED || ViewerMode.isOn(context)) return AutoResult.Skipped
+        fun stillLeft(): Businesses.Business? =
+            Businesses.list(context).firstOrNull { it.id == businessId }
+                ?.takeIf { Businesses.active(context).id != businessId }
+        // Deleted since, or open again: nothing for this run to do.
+        val business = stillLeft() ?: return AutoResult.Skipped
+        if (!autoBackup(context, businessId)) return AutoResult.Skipped
+        val account = DriveAuth.accountName(context) ?: return AutoResult.Skipped
+
+        val last = BackupReminder.lastBackupAtOf(context, businessId)
+        val now = System.currentTimeMillis()
+        if (last != 0L && now - last < minIntervalMs) return AutoResult.NotYet(last + minIntervalMs)
+
+        val db = KhataDatabase.openOther(context, business) ?: return AutoResult.Skipped
+        val file = try {
+            val dao = db.khataDao()
+            if (dao.totalEntryCount() == 0) return AutoResult.Skipped
+            Backup.exportToCacheFor(context, dao, businessId)
+        } finally {
+            db.close()
+        }
+        try {
+            // Opened again (or deleted) while the copy was written: the open shop's run owns it now.
+            if (stillLeft() == null) return AutoResult.Skipped
+            val signature = contentSignature(file)
+            if (signature == lastSignature(context, businessId)) return AutoResult.Skipped
+            val result = backup(context, account, file, businessId = businessId)
+            if (result.isFailure) {
+                val cause = result.exceptionOrNull()
+                return if (cause is OtherPhoneBackup) AutoResult.OtherPhone(cause) else AutoResult.Failed(cause)
+            }
+            BackupReminder.recordBackupOf(context, businessId)
+            rememberSignature(context, signature, businessId)
+            return AutoResult.BackedUp
+        } finally {
+            file.delete()
+        }
     }
 
     /** Download the backup's text, or null if none exists yet. */

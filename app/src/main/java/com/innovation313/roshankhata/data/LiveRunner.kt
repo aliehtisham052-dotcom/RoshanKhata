@@ -146,6 +146,8 @@ object LiveRunner {
                 } catch (e: Exception) {
                     // A plain sentence on the screen; the exception's own words only in the log (R48).
                     android.util.Log.w("LiveRunner", "round failed", e)
+                    // Written down too, a few lines an hour (SyncLog, through LiveTrouble): it was lost unread.
+                    LiveTrouble.note("phone round", e)
                     state.value = Status.Failed(WHY_ERROR, e.message ?: e.javaClass.simpleName)
                     ROUND_MS * 3
                 }
