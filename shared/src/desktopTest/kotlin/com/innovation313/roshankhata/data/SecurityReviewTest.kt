@@ -343,4 +343,40 @@ class SecurityReviewTest {
         assertNull(LiveSync.identity(sql))
         assertEquals(LiveSync.OFF_RESTORED, LiveSync.offReason(sql))
     }
+
+    /**
+     * A lock that does not answer (the Keystore after an OS update, JNA quarantined) decides nothing: the book stays
+     * paired, the identity waits, and the next open with the lock back finds everything as it was (23 Oct 2026).
+     */
+    @Test
+    fun `a lock that does not answer leaves live sync as it is`() = runBlocking {
+        val db = DesktopDatabase.open(dir.resolve("lock-busy.db")).also { books += it }
+        val sql = db.syncSql()
+        // A lock that seals (so the key is kept wrapped), then stops answering.
+        val xor = object : KeyAtRest.Lock {
+            var answering = true
+            override fun wrap(plain: ByteArray) = plain.map { (it.toInt() xor 0x5A).toByte() }.toByteArray()
+            override fun unwrap(wrapped: ByteArray): ByteArray? {
+                if (!answering) throw KeyLockUnavailable("busy")
+                return wrapped.map { (it.toInt() xor 0x5A).toByte() }.toByteArray()
+            }
+        }
+        KeyAtRest.lock = xor
+        try {
+            val id = LiveSync.enable(sql, install = "inst-1", name = "A")
+            LiveSync.putPeer(sql, "pc-dev", name = "PC", sent = 0, recv = 0)
+            assertTrue(KeyAtRest.isWrapped(sql.read { rows("SELECT v FROM sync_meta WHERE k = 'key'", types = "T").single()[0] as String }))
+            xor.answering = false
+            // Opening with the lock busy: still on, nothing dropped, the trouble said; no identity to round with.
+            assertTrue(LiveSync.check(sql, "inst-1"))
+            assertNull(LiveSync.identity(sql))
+            assertEquals("busy", LiveSync.lockTrouble)
+            assertNull(LiveSync.offReason(sql))
+            assertEquals(1, LiveSync.state(sql).peers.size)
+            // The lock back: the same identity, the same peer, the trouble gone.
+            xor.answering = true
+            assertEquals(id.book, LiveSync.identity(sql)!!.book)
+            assertNull(LiveSync.lockTrouble)
+        } finally { KeyAtRest.resetLock() }
+    }
 }

@@ -64,6 +64,12 @@ object EraseAll {
         // Kept closed while the files go (22 Oct 2026, the review): the live sync loop must not
         // open a book in the middle of this and keep a deleted file alive.
         LiveRunner.stop()
+        // The relays forget this phone and its wake-up address goes (best effort, 23 Oct 2026): a computer must not
+        // keep leaving parcels, and ringing, for a phone that was erased.
+        runCatching {
+            kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(5_000L) { LiveCloud.leaveAll(KhataDatabase.get(context).syncSql()) } }
+        }
+        runCatching { PushWake.off(context) }
         KhataDatabase.whileClosed {
             PartyPhoto.dropCaches()
 

@@ -80,11 +80,12 @@ object PushWake {
      * Tells the relay this phone's address for the open book when it changed
      * (a no-op otherwise; [LiveCloud.tellWake] keeps what it said).
      */
-    suspend fun tell(context: Context, sql: SyncSql) {
-        if (!available(context)) return
-        if (!LiveCloud.allowed(sql)) return
-        val address = address(context) ?: return
-        LiveCloud.tellWake(sql, address)
+    /** True when the relay knows the phone's address now, or there is nothing to tell. */
+    suspend fun tell(context: Context, sql: SyncSql): Boolean {
+        if (!available(context)) return true
+        if (!LiveCloud.allowed(sql)) return true
+        val address = address(context) ?: return true
+        return LiveCloud.tellWake(sql, address)
     }
 
     /**
@@ -104,7 +105,8 @@ object PushWake {
                     LiveSync.check(sql, LiveRunner.install(app), LiveRunner.marks(app))
                     NumberMark.mark = LiveSync.mark(sql)
                     repeat(5) {
-                        val r = LiveCloud.roundAll(sql)
+                        // The wake-up came from the first relay: that one is read; the others wait for the screen's rounds.
+                        val r = LiveCloud.roundAll(sql, readOthers = false)
                         if (r !is LiveCloud.Result.Done) return@withTimeoutOrNull
                         LiveSync.noteMark(sql, LiveRunner.marks(app))
                         NumberMark.mark = LiveSync.mark(sql)

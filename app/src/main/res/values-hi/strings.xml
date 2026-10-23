@@ -3528,6 +3528,10 @@
     <string name="live_pair_other_phone">यह खाता पहले से फ़ोन “%1$s” के साथ चल रहा है। सब बदलने से वह फ़ोन रुक जाएगा। एक खाता = एक फ़ोन और एक कंप्यूटर: दोनों फ़ोन रखने हों तो इस फ़ोन को नए कारोबार के रूप में जोड़ें।</string>
     <string name="na_sync_conflict">%1$s प्रविष्टियाँ दोनों डिवाइस पर एक साथ बदली गईं</string>
     <string name="na_sync_conflict_sub">रखी गई रक़म शायद वह न हो जो आप चाहते थे। लाइव सिंक → क्या बदला देखें।</string>
+    <string name="live_status_update_both">दूसरे डिवाइस पर ऐप का नया वर्शन है (%1$s)। इस डिवाइस को अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
+    <string name="live_status_key_busy">इस डिवाइस के की-स्टोर ने जवाब नहीं दिया (%1$s)। कुछ नहीं बदला; थोड़ी देर में फिर कोशिश होगी।</string>
+    <string name="na_sync_off">लाइव सिंक रुक गया</string>
+    <string name="na_sync_off_sub">यह खाता बदल दिया गया या पुरानी कॉपी पर लौट गया। दूसरे डिवाइस से फिर जोड़ें।</string>
     <string name="live_status_halted">लाइव सिंक अभी रुका हुआ है। आपका खाता सुरक्षित है और हमेशा की तरह चलता है।</string>
     <string name="live_status_failed">लाइव सिंक रुक गया: %1$s</string>
     <string name="live_mismatch">दोनों खाते आपस में नहीं मिलते। नई कॉपी के लिए फिर से जोड़ें।</string>

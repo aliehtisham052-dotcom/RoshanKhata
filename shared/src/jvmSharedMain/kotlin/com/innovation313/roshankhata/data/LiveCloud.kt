@@ -1,9 +1,12 @@
 package com.innovation313.roshankhata.data
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -176,7 +179,11 @@ object LiveCloud {
      * Another device's message, written in. False when it is not for this
      * book or comes from a device this book was never paired with.
      */
+    /** Why the last parcel [absorb] refused was refused (the engine's word, e.g. "schema 39"), for the round's answer. */
+    @Volatile private var lastRefusal: String? = null
+
     suspend fun absorb(sql: SyncSql, msg: JSONObject, now: Long = System.currentTimeMillis()): Boolean {
+        lastRefusal = null
         val id = LiveSync.identity(sql) ?: return false
         val dev = msg.optString("dev")
         if (dev.isBlank() || dev == id.device) return false
@@ -191,8 +198,8 @@ object LiveCloud {
             LiveSync.lowerSent(sql, dev, it)
             setMeta(sql, k("lowered", id.book), "1")
         }
-        return when (LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })) {
-            is LiveSync.Applied.Refused -> false
+        return when (val r = LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })) {
+            is LiveSync.Applied.Refused -> { lastRefusal = r.why; false }
             is LiveSync.Applied.Gap -> { setMeta(sql, k("need_" + dev, id.book), parcel.from.toString()); true }
             else -> { setMeta(sql, k("need_" + dev, id.book), ""); true }
         }
@@ -344,6 +351,7 @@ object LiveCloud {
 
             // The others' messages, in order, from where this device last read.
             var took = 0
+            var refusedWhy: String? = null
             val list = got.getJSONArray("parcels")
             for (i in 0 until list.length()) {
                 val p = list.getJSONObject(i)
@@ -359,6 +367,11 @@ object LiveCloud {
                         took++
                         // Which relay that device's parcels come by: this device sends there too (roundAll).
                         setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
+                    } else if (msg != null && same) {
+                        // The book itself refused it (the other device runs a newer schema): said at the end of the
+                        // round instead of "Live" (23 Oct 2026, the second review). The cursor still moves — the
+                        // sender's pointer does not, so it comes again once this device is updated.
+                        lastRefusal?.let { refusedWhy = it }
                     }
                 }
                 after = maxOf(after, p.getLong("seq"))
@@ -369,6 +382,7 @@ object LiveCloud {
                 if (oneCall) setMeta(sql, k("ack_due", id.book, tag), after.toString())
                 else call("POST", "ack", JSONObject().put("upTo", after).toString().toByteArray(), "application/json")
             }
+            if (took == 0 && refusedWhy != null) return Result.Refused(refusedWhy!!)
             if (!oneCall && sealed != null) {
                 val (sc, so) = call("POST", "send", sealed, "application/octet-stream")
                 if (sc != 200) return Result.Refused(so?.optString("why") ?: "send $sc")
@@ -398,6 +412,9 @@ object LiveCloud {
      * Off, NotPaired and Halted (the kill switch) are the book's state and end the round at once; a relay
      * that answers 503 (its owner halted that one) is passed over like one that cannot be reached.
      */
+    /** One relay round at a time for a book: a wake-up's round and the screen's never run together (23 Oct 2026). */
+    private val rounds = ConcurrentHashMap<String, Mutex>()
+
     suspend fun roundAll(
         sql: SyncSql, http: Http = plain, roads: List<Road> = roads(), now: Long = System.currentTimeMillis(),
         halted: () -> Boolean = { LiveControl.halted() }, readOthers: Boolean = true
@@ -405,6 +422,13 @@ object LiveCloud {
         if (roads.isEmpty()) return Result.Off
         if (halted()) return Result.Halted
         val id = LiveSync.identity(sql)
+        val lock = rounds.getOrPut(id?.book ?: "") { Mutex() }
+        return lock.withLock { roundAllLocked(sql, http, roads, now, id, readOthers) }
+    }
+
+    private suspend fun roundAllLocked(
+        sql: SyncSql, http: Http, roads: List<Road>, now: Long, id: LiveSync.Identity?, readOthers: Boolean
+    ): Result {
         var mine: Result.Done? = null
         var failed: Result? = null
         var took = 0
@@ -415,7 +439,10 @@ object LiveCloud {
                     is Result.Done -> mine = r
                     Result.Off, Result.NotPaired -> return r
                     // The book's state, not the relay's: another relay would say the same.
-                    is Result.Refused -> if (r.why == LiveRound.LOST) return r else if (failed == null) failed = r
+                    is Result.Refused -> if (r.why == LiveRound.LOST || r.why.startsWith("schema")) return r else if (failed == null) failed = r
+                    // A relay answering 503 is that relay halted or overloaded, never everyone stopped (the kill switch
+                    // was read above): passed over like one not reached.
+                    Result.Halted -> if (failed == null) failed = Result.Unreachable
                     else -> if (failed == null) failed = r
                 }
                 continue
@@ -477,7 +504,17 @@ object LiveCloud {
                 setMeta(sql, k("hello", id.book), id.device)
             }
             val body = JSONObject().put("token", address ?: JSONObject.NULL).toString().toByteArray(Charsets.UTF_8)
-            val (code, _) = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
+            var (code, bytes) = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
+            if (code == 403 && runCatching { JSONObject(String(bytes, Charsets.UTF_8)).optString("why") }.getOrNull() == "say-hello-first") {
+                // The relay forgot this device (a month on the shop's WiFi, never a relay round): hello, then once more —
+                // not a 403 every minute for ever (23 Oct 2026, the second review).
+                val (hc, _) = http.call("POST", url + "hello", headers, null)
+                if (hc != 200) return false
+                setMeta(sql, k("after", id.book), "0")
+                setMeta(sql, k("hello", id.book), id.device)
+                val again = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
+                code = again.first
+            }
             if (code != 200) return false
             setMeta(sql, k("wake", id.book), address ?: "")
             true

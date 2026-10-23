@@ -5,6 +5,7 @@ import android.security.keystore.KeyProperties
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
+import javax.crypto.AEADBadTagException
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
@@ -34,18 +35,28 @@ actual object KeyVault {
         return gen.generateKey()
     }
 
-    actual fun wrap(plain: ByteArray): ByteArray? = runCatching {
+    /** The phone always has the Keystore: a failure to seal is the lock not answering, never a reason to keep the key plain. */
+    actual fun wrap(plain: ByteArray): ByteArray? = try {
         val c = Cipher.getInstance("AES/GCM/NoPadding")
         c.init(Cipher.ENCRYPT_MODE, key())
         val nonce = c.iv
         require(nonce.size == NONCE)
         nonce + c.doFinal(plain)
-    }.getOrNull()
+    } catch (e: Exception) {
+        throw KeyLockUnavailable("keystore: " + (e.message ?: e.javaClass.simpleName), e)
+    }
 
-    actual fun unwrap(wrapped: ByteArray): ByteArray? = runCatching {
+    /** Null only when the Keystore's key is not the one that sealed it (another install's file); any other trouble is [KeyLockUnavailable]. */
+    actual fun unwrap(wrapped: ByteArray): ByteArray? {
         if (wrapped.size < NONCE + TAG_BITS / 8) return null
-        val c = Cipher.getInstance("AES/GCM/NoPadding")
-        c.init(Cipher.DECRYPT_MODE, key(), GCMParameterSpec(TAG_BITS, wrapped, 0, NONCE))
-        c.doFinal(wrapped, NONCE, wrapped.size - NONCE)
-    }.getOrNull()
+        return try {
+            val c = Cipher.getInstance("AES/GCM/NoPadding")
+            c.init(Cipher.DECRYPT_MODE, key(), GCMParameterSpec(TAG_BITS, wrapped, 0, NONCE))
+            c.doFinal(wrapped, NONCE, wrapped.size - NONCE)
+        } catch (e: AEADBadTagException) {
+            null
+        } catch (e: Exception) {
+            throw KeyLockUnavailable("keystore: " + (e.message ?: e.javaClass.simpleName), e)
+        }
+    }
 }

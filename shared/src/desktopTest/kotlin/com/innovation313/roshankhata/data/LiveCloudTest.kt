@@ -29,6 +29,10 @@ class LiveCloudTest {
         val parcels = ArrayList<Triple<Long, String, ByteArray>>()
         var seq = 0L
         var down = false
+        /** The relay's owner halted it: 503 to every call. */
+        var halted = false
+        /** The relay forgot every device (its box emptied): the next call of each is told to say hello first. */
+        fun forget() { devices.clear(); pass = null }
         /** The next sent parcel is lost (the relay forgot it). */
         var loseNext = false
         /** The relay files every parcel under this device, whoever sent it (a bug or a lie there). */
@@ -43,6 +47,7 @@ class LiveCloudTest {
 
         override fun call(method: String, url: String, headers: Map<String, String>, body: ByteArray?): Pair<Int, ByteArray> {
             if (down) throw java.io.IOException("no internet")
+            if (halted) return 503 to JSONObject().put("ok", false).put("why", "halted").toString().toByteArray()
             val token = headers["authorization"]!!.removePrefix("RK ")
             val dev = headers["x-device"]!!
             val action = url.substringAfterLast('/').substringBefore('?')
@@ -419,6 +424,36 @@ class LiveCloudTest {
         assertEquals(LiveCloud.Result.Halted, LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { true }))
         assertEquals(before, second.calls)
         assertEquals(LiveCloud.Result.Off, LiveCloud.roundAll(phone.syncSql(), phoneWay, emptyList(), clock, { false }))
+        // A relay answering 503 is that relay's trouble, never "stopped for everyone": the next relay carries the book,
+        // and with none left the round says unreachable, not halted (23 Oct 2026, the second review).
+        relay.down = false; relay.halted = true
+        assertTrue(LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { false }) is LiveCloud.Result.Done)
+        second.halted = true
+        assertEquals(LiveCloud.Result.Unreachable, LiveCloud.roundAll(phone.syncSql(), phoneWay, roads, clock, { false }))
+    }
+
+    @Test
+    fun `a relay that forgot the phone is told its wake-up address again after one hello, not refused for ever`() = runBlocking {
+        val sql = phone.syncSql()
+        val dev = LiveSync.identity(sql)!!.device.take(16).padEnd(16, '0')
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        relay.forget()
+        val calls = relay.calls
+        assertTrue(LiveCloud.tellWake(sql, "token-two-0123456789", relay, "https://relay.test") { false })
+        assertEquals("token-two-0123456789", relay.wakes[dev])
+        // Past the relay's door: the hello and the wake again (the refused wake never got that far).
+        assertEquals(2, relay.calls - calls)
+    }
+
+    @Test
+    fun `a pairing after live sync was turned off is a new conversation at the relay`() = runBlocking {
+        val before = LiveSync.identity(phone.syncSql())!!.book
+        LiveSync.disable(phone.syncSql(), LiveSync.OFF_RESTORED)
+        val after = LiveSync.enable(phone.syncSql(), "install-phone", "Phone").book
+        assertTrue(before != after)
+        // Joining a computer's book keeps that book's id, as before.
+        val pcId = LiveSync.identity(pc.syncSql())!!
+        assertEquals(pcId.book, LiveSync.enable(phone.syncSql(), "install-phone", "Phone", adopt = pcId.book to pcId.key).book)
     }
 
     @Test

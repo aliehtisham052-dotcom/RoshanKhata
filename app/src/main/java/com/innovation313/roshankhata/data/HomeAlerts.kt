@@ -27,8 +27,10 @@ object HomeAlerts {
         val out = ArrayList<Alert>()
         // The ledger's own alerts come from :shared (LedgerAlerts, 20 Oct), so the
         // computer's bell says the same; the cash-flow gap still comes after backup.
-        val conflicts = runCatching { LiveSync.moneyConflicts(KhataDatabase.get(context).syncSql()) }.getOrDefault(0)
-        val ledger = LedgerAlerts.compute(AndroidWords(context), dao, money, conflicts)
+        val sql = KhataDatabase.get(context).syncSql()
+        val conflicts = runCatching { LiveSync.moneyConflicts(sql) }.getOrDefault(0)
+        val syncOff = runCatching { LiveSync.offReason(sql) == LiveSync.OFF_RESTORED }.getOrDefault(false)
+        val ledger = LedgerAlerts.compute(AndroidWords(context), dao, money, conflicts, syncOff)
             .map { a ->
                 val kind = when (a.kind) {
                     LedgerAlerts.Kind.CHEQUE -> Kind.CHEQUE

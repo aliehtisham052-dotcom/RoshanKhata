@@ -3484,6 +3484,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_pair_other_phone">Ye khata pehle hi phone “%1$s” ke saath chal raha hai. Sab badalne se wo phone ruk jayega. Ek khata = ek phone aur ek computer: dono phone rakhne hon to is phone ko naye karobar ke taur par jorein.</string>
     <string name="na_sync_conflict">%1$s indraj dono devices par ek saath badle gaye</string>
     <string name="na_sync_conflict_sub">Rakhi gayi raqam shayad wo na ho jo aap chahte the. Live sync → Kya badla dekhein.</string>
+    <string name="live_status_update_both">Doosre device par app ka naya version hai (%1$s). Is device ko update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
+    <string name="live_status_key_busy">Is device ke key store ne jawab nahi diya (%1$s). Kuch nahi badla; thori der mein dobara koshish hogi.</string>
+    <string name="na_sync_off">Live sync ruk gaya</string>
+    <string name="na_sync_off_sub">Yeh khata badal diya gaya ya purani naqal par wapas chala gaya. Doosre device se dobara jorein.</string>
     <string name="live_status_halted">Live sync filhaal ruka hua hai. Aap ka khata mehfooz hai aur hamesha ki tarah chalta hai.</string>
     <string name="live_status_failed">Live sync ruk gaya: %1$s</string>
     <string name="live_mismatch">Dono khate aapas mein nahi milte. Nayi copy ke liye dobara jorein.</string>

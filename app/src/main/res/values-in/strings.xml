@@ -3475,6 +3475,10 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_pair_other_phone">Buku ini sudah berjalan dengan ponsel “%1$s”. Mengganti akan menghentikan ponsel itu. Satu buku = satu ponsel dan satu komputer: untuk menyimpan kedua ponsel, gabungkan ponsel ini sebagai usaha baru.</string>
     <string name="na_sync_conflict">%1$s catatan diubah di kedua perangkat sekaligus</string>
     <string name="na_sync_conflict_sub">Jumlah yang disimpan mungkin bukan yang Anda maksud. Lihat Sinkron langsung → Apa yang berubah.</string>
+    <string name="live_status_update_both">Perangkat lain menjalankan versi aplikasi yang lebih baru (%1$s). Perbarui perangkat ini; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_status_key_busy">Penyimpanan kunci perangkat ini tidak menjawab (%1$s). Tidak ada yang berubah; dicoba lagi sebentar lagi.</string>
+    <string name="na_sync_off">Sinkron langsung berhenti</string>
+    <string name="na_sync_off_sub">Buku ini diganti atau kembali ke salinan lama. Hubungkan perangkat lain lagi.</string>
     <string name="live_status_halted">Sinkron langsung dijeda untuk sementara. Buku Anda aman dan tetap berjalan seperti biasa.</string>
     <string name="live_status_failed">Sinkron langsung berhenti: %1$s</string>
     <string name="live_mismatch">Kedua buku tidak cocok. Hubungkan lagi untuk membuat salinan baru.</string>

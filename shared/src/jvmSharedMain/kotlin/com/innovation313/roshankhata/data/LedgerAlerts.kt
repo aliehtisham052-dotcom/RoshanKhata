@@ -31,8 +31,11 @@ object LedgerAlerts {
      * here, not only in the Live sync window, because the amount kept may not be the one the owner meant
      * (22 Oct 2026, the review).
      */
-    suspend fun compute(words: Words, dao: KhataDao, money: (Double) -> String, syncConflicts: Int = 0): List<Alert> {
+    suspend fun compute(words: Words, dao: KhataDao, money: (Double) -> String, syncConflicts: Int = 0, syncOff: Boolean = false): List<Alert> {
         val out = ArrayList<Alert>()
+        // Live sync ended by a restore or an older copy (LiveSync.OFF_RESTORED): said in the bell on both devices,
+        // not only inside the Live sync screen (23 Oct 2026, the second review).
+        if (syncOff) out += Alert(Kind.SYNC, words.text(W.na_sync_off), words.text(W.na_sync_off_sub))
         if (syncConflicts > 0) out += Alert(Kind.SYNC, words.text(W.na_sync_conflict, syncConflicts.toString()), words.text(W.na_sync_conflict_sub))
         val t0 = today()
         val t1 = t0 + DAY
