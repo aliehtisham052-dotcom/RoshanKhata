@@ -3742,4 +3742,5 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="live_status_relay">Live with %1$s through the internet. Last update: %2$s</string>
     <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
     <string name="live_relay">Also through the internet</string>
+    <string name="wifi_take_too_big">The computer’s book is too big for this phone’s memory or free space. Close other apps and try again, or move the book with a backup file.</string>
 </resources>

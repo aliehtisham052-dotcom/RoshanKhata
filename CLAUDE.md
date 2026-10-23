@@ -618,6 +618,20 @@ real devices yet.
   resends ignore peers silent past `STALE_MS` and are one page (the next at once
   while the peer acks); a daily heartbeat; capacity refusals take the page and fall
   over to the next relay.
+- **Live-sync engine:** letters — every device's letter is kept (`mark:<device>`,
+  `markgiven:<L>`, `LiveSync.knownMarks`), `nextJoinerMark` takes the lowest free one,
+  the offer carries `marks` and each peer's `mark`, relay messages carry `mark` and
+  `absorb` settles it (R05). After a parcel, a voided ticket with a live return and a
+  line returned past its quantity are kept as `sync_conflict` rows (kept "both",
+  `counterChecks`) for the bell's money row (R31). Pairing is "RKA2" and the pull answer
+  "RKC2": `SealedChunks` (64 KB AES-GCM records, a small head opened first, the book
+  streamed to a file) — a stranger can no longer make a device hold a big frame, and
+  "RKA1" is refused unread: **update phone and computer together**. The phone's pull
+  writes to the cache (`Pulled.Got(file)`, `Pulled.TooBig`, `wifi_take_too_big`) and
+  catches OutOfMemoryError (R46). `LiveCrew.join` is one transaction
+  (`LiveSync.enableWith`). The computer writes live-sync failures it passed over to
+  logs/errors.log (`LiveTrouble`, ten minutes per kind, 20 an hour); the phone has no
+  such log (its CrashLog records crashes only), so nothing is written there.
 
 ### The shared module (KMP)
 

@@ -66,9 +66,14 @@ class LiveReceive(private val context: Context) {
                 onOffer = { offer ->
                     val read = runCatching {
                         val f = File(dir, "live-receive.json")
-                        f.writeBytes(offer.backup)
+                        // The book arrived onto the disk record by record (LiveWire, 23 Oct 2026): moved here, never read whole.
+                        val arrived = offer.file
+                        if (arrived != null) {
+                            f.delete()
+                            if (!arrived.renameTo(f)) { arrived.copyTo(f, overwrite = true); arrived.delete() }
+                        } else f.writeBytes(offer.backup)
                         val (r, d) = BackupCodec.parseFile(f)
-                        if (r is BackupCodec.ImportResult.Ok && d != null) Arrived(offer, f, r, d) else null
+                        if (r is BackupCodec.ImportResult.Ok && d != null) Arrived(offer.withFile(null), f, r, d) else null
                     }.getOrNull()
                     if (read != null) {
                         // One pairing per code: the secret goes once a book came.
@@ -78,6 +83,7 @@ class LiveReceive(private val context: Context) {
                     } else false
                 },
                 bookKey = { null },
+                spool = dir,
                 onRound = { null }
             )
         }
