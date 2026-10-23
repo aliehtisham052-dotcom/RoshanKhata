@@ -754,6 +754,16 @@ real devices yet.
   window), "day-bytes" and "book-full" included; the kill switch shows `live_status_halted` there. Barcode
   labels draw name and price through `PrintFonts.width/draw` and cut whole code points (`LabelSheet.fitted`).
   Tests: WifiSyncTest, LiveWhyTest, LabelSheetTest. CI only.
+- **Phase 2 — units and relay storage (p2-misc):** `UnitWords.STORED_IN` now has the counter's
+  line tables (sale_items, sale_return_items, purchase_order_items, stock_adjustments) and
+  products.packUnit; the repair (`UnitWords.repairStored`, both platforms) reads first
+  (`repairNeededQuery`, nothing written for a book in order) and runs in one transaction under
+  sync_mute — each device repairs its own copy, nothing goes to the sync log (else every label
+  row went out at once and both devices' repairs met as money-table conflicts). Relays: an
+  account-wide cap — the Worker's `!ledger` keeps each book's size (SQLite's `databaseSize`,
+  reported every 64 KiB moved and at the alarm, at least 64 KiB a book) and refuses new books and
+  parcels 507 "full" past `ACCOUNT_BYTES` (4 GiB; the free plan's 5 GB is 4.66 GiB); Supabase keeps
+  `books.bytes` and refuses past `RK_STORE_BYTES` (256 MiB). test_relay.py `--store` holds all three.
 
 ### The shared module (KMP)
 
