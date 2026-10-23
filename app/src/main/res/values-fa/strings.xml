@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">روشن خاتا</string>
     <string name="welcome_title">دفتر شما، در امان</string>
-    <string name="welcome_body">روشن کھاتا سوابق شما را روی همین گوشی نگه می‌دارد. حساب گوگل خود را متصل کنید تا دفترتان در درایو شما پشتیبان‌گیری شود — داده‌ی شما، در حساب شما.</string>
+    <string name="welcome_body">روشن خاتا سوابق شما را روی همین گوشی نگه می‌دارد. حساب گوگل خود را متصل کنید تا دفترتان در درایو شما پشتیبان‌گیری شود — داده‌ی شما، در حساب شما.</string>
     <string name="welcome_note">اتصال فقط پشتیبان‌گیری را ممکن می‌کند. دفتر شما وقتی در امان است که پشتیبان گرفته شود — پشتیبان‌گیری خودکار را روشن کنید یا هر زمان پشتیبان بگیرید.</string>
     <string name="welcome_connect">ادامه با Google</string>
     <string name="welcome_skip">شاید بعداً</string>
@@ -126,9 +126,7 @@
     <string name="add_party">افزودن طرف‌حساب</string>
     <string name="add_party_duplicate_with_phone">مشتری مشابه از قبل موجود است: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">مشتری مشابه از قبل موجود است: %1$s</string>
-    <string name="no_parties_yet">هنوز مشتری‌ای نیست.
-
-اولین مشتری را اضافه کنید و دفتر خود را شروع کنید.</string>
+    <string name="no_parties_yet">هنوز مشتری‌ای نیست.\n\nاولین مشتری را اضافه کنید و دفتر خود را شروع کنید.</string>
     <string name="no_entries_yet">هنوز ثبتی وجود ندارد.</string>
 
     <string name="i_gave">دادم</string>
@@ -163,7 +161,7 @@
 
     <!-- Recycle Bin -->
     <string name="recycle_bin">سطل بازیافت</string>
-    <string name="bin_retention_note">موارد حذف‌شده ۳۰ روز نگه داشته می‌شوند و سپس برای همیشه پاک می‌شوند.</string>
+    <string name="bin_retention_note">موارد حذف‌شده 30 روز نگه داشته می‌شوند و سپس برای همیشه پاک می‌شوند.</string>
     <string name="bin_empty">سطل خالی است.</string>
     <string name="bin_party_note">طرف‌حساب (ثبت‌هایش همراه خودش نگه داشته می‌شود)</string>
     <string name="bin_party_owed_to_me">%1$s طلب دارید</string>
@@ -188,13 +186,13 @@
     <!-- Delete actions -->
     <string name="delete">حذف</string>
     <string name="delete_party_title">طرف‌حساب حذف شود؟</string>
-    <string name="delete_party_confirm">«%1$s» و ثبت‌هایش به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <string name="delete_party_confirm">«%1$s» و ثبت‌هایش به سطل بازیافت می‌رود. تا 30 روز می‌توانید بازگردانید.</string>
     <string name="delete_entry_title">ثبت حذف شود؟</string>
-    <string name="delete_entry_confirm">این ثبت به سطل بازیافت می‌رود. تا ۳۰ روز می‌توانید بازگردانید.</string>
+    <string name="delete_entry_confirm">این ثبت به سطل بازیافت می‌رود. تا 30 روز می‌توانید بازگردانید.</string>
     <string name="select_entries_to_delete">انتخاب ورودی‌ها برای حذف</string>
     <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شود. می‌توانید تا ۳۰ روز آن را بازگردانید.</item>
-        <item quantity="other">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا ۳۰ روز آن‌ها را بازگردانید.</item>
+        <item quantity="one">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شود. می‌توانید تا 30 روز آن را بازگردانید.</item>
+        <item quantity="other">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا 30 روز آن‌ها را بازگردانید.</item>
     </plurals>
     <string name="moved_to_bin">به سطل بازیافت منتقل شد</string>
     <string name="long_press_to_delete">برای حذف، روی طرف‌حساب لمس طولانی کنید</string>
@@ -205,7 +203,7 @@
     <string name="zakat_disclaimer">این ابزار فقط برای راهنمایی است. زکات جزئیات فقهی واقعی دارد — معیار نصاب، حکم طلب‌های مشکوک، سال قمری، و اینکه کدام بدهی‌ها کسر می‌شود، میان علما متفاوت است. روشن خاتا مفتی نیست. لطفاً حکم نهایی را از عالم واجد شرایط بگیرید.</string>
 
     <string name="nisab_section">نصاب</string>
-    <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (۶۱۲٫۳۶ گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود. قیمت امروز هر گرم نقره را وارد کنید.</string>
+    <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (612.36 گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود. قیمت امروز هر گرم نقره را وارد کنید.</string>
     <string name="silver_price_hint">قیمت هر گرم نقره</string>
     <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">برای محاسبه نصاب، قیمت را وارد کنید</string>
@@ -226,7 +224,7 @@
     <string name="include_doubtful_help">بسیاری از علما بر این‌اند که زکاتِ طلبِ مشکوک تنها پس از وصول واجب می‌شود. فقط اگر می‌خواهید محتاط‌تر باشید این را علامت بزنید.</string>
 
     <string name="zakatable_wealth">دارایی مشمول زکات</string>
-    <string name="zakat_due_label">زکات (۲٫۵٪)</string>
+    <string name="zakat_due_label">زکات (2.5٪)</string>
     <string name="zakat_footer_note">زکات همچنین نیازمند گذشت یک سال کامل قمری (حَول) بر دارایی است. روشن خاتا آن را برای شما پیگیری نمی‌کند — خودتان در نظر بگیرید و حکم را از عالم بپرسید.</string>
 
     <!-- Qarz-e-Hasna -->
@@ -258,7 +256,7 @@
 
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">کالا (اختیاری)</string>
-    <string name="goods_help">اگر همراه این ثبت کالایی جابه‌جا شده — ۵ کیسه اوره، ۲ لیتر سم — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
+    <string name="goods_help">اگر همراه این ثبت کالایی جابه‌جا شده — 5 کیسه اوره، 2 لیتر سم — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
     <string name="item_name_hint">کالا (اوره، خوراک…)</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">واحد (کیسه، لیتر، کیلوگرم…)</string>
@@ -292,7 +290,7 @@
 
     <!-- App Lock -->
     <string name="app_lock">قفل برنامه</string>
-    <string name="app_lock_pc_explain">رمز PIN برای روشن کهاته روی این رایانه. دفتر را از چشم دیگران پشت پیشخوان حفظ می‌کند؛ خود فایل را قفل نمی‌کند، پس هنگام رفتن Windows را هم قفل کنید (Win + L).</string>
+    <string name="app_lock_pc_explain">رمز PIN برای روشن خاتا روی این رایانه. دفتر را از چشم دیگران پشت پیشخوان حفظ می‌کند؛ خود فایل را قفل نمی‌کند، پس هنگام رفتن Windows را هم قفل کنید (Win + L).</string>
     <string name="pc_pdf_save">ذخیره PDF</string>
     <string name="pc_pdf_open_folder">باز کردن پوشه</string>
     <string name="pc_pdf_making">در حال ساخت PDF…</string>
@@ -598,13 +596,9 @@
         <item quantity="other">%1$d کسب‌وکار در درایو پیدا شد</item>
     </plurals>
     <string name="drive_restore_all">بازیابی همه</string>
-    <string name="drive_restore_all_warning">این کسب‌وکارها از درایو بازیابی می‌شوند و داده‌های فعلی هرکدام روی این گوشی جایگزین می‌شود:
-
-%1$s</string>
-    <string name="drive_restored_these">بازیابی شد:
-%1$s</string>
-    <string name="drive_restore_missed">بازیابی نشد:
-%1$s</string>
+    <string name="drive_restore_all_warning">این کسب‌وکارها از درایو بازیابی می‌شوند و داده‌های فعلی هرکدام روی این گوشی جایگزین می‌شود:\n\n%1$s</string>
+    <string name="drive_restored_these">بازیابی شد:\n%1$s</string>
+    <string name="drive_restore_missed">بازیابی نشد:\n%1$s</string>
     <string name="business_numbered">کسب‌وکار %1$d</string>
     <string name="backup_for_business">در حال پشتیبان‌گیری: %1$s</string>
     <string name="snapshots_title">نسخه‌های روزانه</string>
@@ -634,8 +628,8 @@
         <item quantity="other">%1$s: %2$d قسط طرح پرداخت سررسید شده است.</item>
     </plurals>
     <plurals name="notif_expiry_body_named">
-        <item quantity="one">%1$s: %2$d قلم تا ۶۰ روز دیگر منقضی می‌شود.</item>
-        <item quantity="other">%1$s: %2$d قلم تا ۶۰ روز دیگر منقضی می‌شود.</item>
+        <item quantity="one">%1$s: %2$d قلم تا 60 روز دیگر منقضی می‌شود.</item>
+        <item quantity="other">%1$s: %2$d قلم تا 60 روز دیگر منقضی می‌شود.</item>
     </plurals>
     <string name="filter_title">فیلتر</string>
     <string name="filter_account_label">حساب</string>
@@ -675,7 +669,7 @@
     <string name="batch_number_hint">شماره بچ</string>
     <string name="batch_why">شماره بچ روی ظرف را بنویسید. اگر روزی نمونه‌ای زیر سؤال رفت یا اداره بازرسی پرسید، همین رکورد نشان می‌دهد کالا دقیقاً از کجا آمده. بعداً نمی‌شود آن را بازسازی کرد.</string>
     <string name="expiry_date">تاریخ انقضا</string>
-    <string name="expiry_why">روشن خاتا ۶۰ روز پیش از انقضا هشدار می‌دهد — به‌قدری زود که بتوانید بفروشید، تخفیف بدهید یا تا وقتی تأمین‌کننده هنوز پس می‌گیرد، برگردانید.</string>
+    <string name="expiry_why">روشن خاتا 60 روز پیش از انقضا هشدار می‌دهد — به‌قدری زود که بتوانید بفروشید، تخفیف بدهید یا تا وقتی تأمین‌کننده هنوز پس می‌گیرد، برگردانید.</string>
     <string name="pick_expiry">انتخاب تاریخ انقضا</string>
     <string name="pick_bill_date">انتخاب تاریخ فاکتور</string>
     <string name="rate_hint">قیمت هر واحد</string>
@@ -694,9 +688,9 @@
     <string name="bill_saved_credit">فاکتور ذخیره و در دفتر شما ثبت شد</string>
     <string name="enter_supplier">لطفاً تأمین‌کننده‌ای انتخاب کنید</string>
     <string name="enter_product">لطفاً نام محصولی وارد کنید</string>
-    <string name="bill_deleted">فاکتور حذف شد. اگر فاکتور نسیه بود، ثبت دفتر آن هم به سطل بازیافت رفت — اگر اشتباه بود تا ۳۰ روز می‌توانید آن را از آنجا برگردانید.</string>
+    <string name="bill_deleted">فاکتور حذف شد. اگر فاکتور نسیه بود، ثبت دفتر آن هم به سطل بازیافت رفت — اگر اشتباه بود تا 30 روز می‌توانید آن را از آنجا برگردانید.</string>
     <string name="delete_bill">حذف فاکتور</string>
-    <string name="delete_bill_confirm">فاکتور و سوابق بچ آن حذف می‌شود. اگر فاکتور نسیه باشد، ثبت دفتر آن (بدهی شما به این تأمین‌کننده) هم به سطل بازیافت می‌رود و مبلغ بدهی به اندازهٔ این فاکتور کم می‌شود. این ثبت را تا ۳۰ روز می‌توانید از سطل بازیافت برگردانید.</string>
+    <string name="delete_bill_confirm">فاکتور و سوابق بچ آن حذف می‌شود. اگر فاکتور نسیه باشد، ثبت دفتر آن (بدهی شما به این تأمین‌کننده) هم به سطل بازیافت می‌رود و مبلغ بدهی به اندازهٔ این فاکتور کم می‌شود. این ثبت را تا 30 روز می‌توانید از سطل بازیافت برگردانید.</string>
     <string name="bill_actions">فاکتور</string>
     <string name="view_items">دیدن اقلام و بچ‌ها</string>
 
@@ -744,9 +738,9 @@
     <string name="invoice_template_thermal">رسید حرارتی — باریک، فروش نقدی</string>
     <string name="invoice_pdf_failed">PDF ساخته نشد. چیزی ارسال نشد.</string>
     <string name="invoice_preview_label">پیش‌نمایش — با پر کردن فرم به‌روز می‌شود</string>
-    <string name="invoice_step_customer">گام ۱ از ۳ — این فاکتور برای کیست؟</string>
-    <string name="invoice_step_items">گام ۲ از ۳ — بابت چه چیزی؟</string>
-    <string name="invoice_step_design">گام ۳ از ۳ — طرح را انتخاب کنید</string>
+    <string name="invoice_step_customer">گام 1 از 3 — این فاکتور برای کیست؟</string>
+    <string name="invoice_step_items">گام 2 از 3 — بابت چه چیزی؟</string>
+    <string name="invoice_step_design">گام 3 از 3 — طرح را انتخاب کنید</string>
     <string name="invoice_next">بعدی</string>
     <string name="invoice_back">قبلی</string>
     <string name="invoice_items_label">اقلام</string>
@@ -755,7 +749,7 @@
     <string name="invoice_charge_amount_hint">مبلغ</string>
     <string name="invoice_received_hint">مبلغ دریافتی (اختیاری)</string>
     <string name="invoice_terms">شرایط و ضوابط</string>
-    <string name="invoice_terms_hint">مثلاً پرداخت ظرف ۱۴ روز.</string>
+    <string name="invoice_terms_hint">مثلاً پرداخت ظرف 14 روز.</string>
     <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
     <string name="adjust_crop_title">تنظیم برش</string>
     <string name="adjust_crop_hint">گوشه‌ها را بکشید تا کادر فقط روی همان قسمتی باشد که می‌خواهید نگه دارید.</string>
@@ -782,7 +776,7 @@
     <!-- Expiry alerts -->
     <string name="expiring_stock">کالای رو به انقضا</string>
     <string name="expiring_subtitle">بفروشید، تخفیف بدهید یا برگردانید — تا هنوز می‌شود</string>
-    <string name="no_expiring">در ۶۰ روز آینده چیزی منقضی نمی‌شود.\n\nفقط کالایی که تاریخ انقضایش ثبت شده قابل پایش است. اگر آن خانه را در فاکتور خالی بگذارید، روشن خاتا نمی‌تواند درباره‌اش هشدار دهد.</string>
+    <string name="no_expiring">در 60 روز آینده چیزی منقضی نمی‌شود.\n\nفقط کالایی که تاریخ انقضایش ثبت شده قابل پایش است. اگر آن خانه را در فاکتور خالی بگذارید، روشن خاتا نمی‌تواند درباره‌اش هشدار دهد.</string>
     <string name="expiring_note">فقط کالایی که تاریخ انقضایش ثبت شده اینجا می‌آید. روشن خاتا فقط درباره چیزی هشدار می‌دهد که به او گفته شده.</string>
     <plurals name="expired_days">
         <item quantity="one">%1$d روز پیش منقضی شده</item>
@@ -871,11 +865,9 @@
     <string name="drive_backup_now">اکنون در Drive پشتیبان بگیر</string>
     <string name="drive_backup_images">تصاویر را هم شامل کن (عکس‌ها، عکس فاکتور، QR)</string>
     <string name="drive_auto_backup">پشتیبان‌گیری خودکار</string>
-    <string name="drive_auto_backup_hint">هرگاه دفتر تغییر کند خودش پشتیبان می‌گیرد — روی وای‌فای حداکثر هر ۳۰ دقیقه و روی داده همراه هر ۶ ساعت. هر زمان هم می‌توانید خودتان پشتیبان بگیرید.</string>
+    <string name="drive_auto_backup_hint">هرگاه دفتر تغییر کند خودش پشتیبان می‌گیرد — روی وای‌فای حداکثر هر 30 دقیقه و روی داده همراه هر 6 ساعت. هر زمان هم می‌توانید خودتان پشتیبان بگیرید.</string>
     <string name="auto_backup_offer_title">پشتیبان‌گیری خودکار؟</string>
-    <string name="auto_backup_offer_body">حساب شما وصل شد. Roshan Khata می‌تواند هر بار که دفترتان تغییر کند آن را خودکار بارگذاری کند، تا با گم یا خراب شدن گوشی سوابق شما از بین نرود.
-
-هر زمان بخواهید می‌توانید این را از همین صفحه تغییر دهید.</string>
+    <string name="auto_backup_offer_body">حساب شما وصل شد. Roshan Khata می‌تواند هر بار که دفترتان تغییر کند آن را خودکار بارگذاری کند، تا با گم یا خراب شدن گوشی سوابق شما از بین نرود.\n\nهر زمان بخواهید می‌توانید این را از همین صفحه تغییر دهید.</string>
     <string name="auto_backup_offer_yes">روشن کن</string>
     <string name="auto_backup_offer_no">الان نه</string>
     <string name="drive_restore">بازگردانی از Drive</string>
@@ -904,10 +896,10 @@
     <string name="insights_no_products">این ماه محصولی ثبت نشده. هنگام ثبت، نام محصول را بنویسید تا این را ببینید.</string>
     <string name="insights_no_sales">این ماه هنوز فروشی ثبت نشده.</string>
     <string name="insights_privacy_note">همه‌چیز روی گوشی شما محاسبه می‌شود. چیزی از دستگاه خارج نمی‌شود.</string>
-    <string name="insights_monthly_title">فروش ماهانه \u00b7 ۱۲ ماه گذشته</string>
+    <string name="insights_monthly_title">فروش ماهانه \u00b7 12 ماه گذشته</string>
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">روی هر ستون بزنید تا مجموع همان ماه نمایش داده شود.</string>
-    <string name="insights_monthly_none">در ۱۲ ماه گذشته فروشی ثبت نشده است.</string>
+    <string name="insights_monthly_none">در 12 ماه گذشته فروشی ثبت نشده است.</string>
     <string name="insights_profit_title">سود \u00b7 این ماه</string>
     <string name="insights_profit_after_expenses">پس از هزینه‌ها: %1$s (هزینه‌ها %2$s)</string>
     <string name="insights_profit_last_month">ماه گذشته: %1$s</string>
@@ -960,9 +952,9 @@
     <string name="sr_down">%1$s ارزان‌تر از فاکتور قبلی (%2$s)</string>
     <string name="sr_cheaper">اخیراً از %1$s ارزان‌تر: %2$s (%3$s)</string>
     <string name="sr_none">هنوز فاکتور تأمین‌کننده با نرخ نیست. روی هر ردیف فاکتور نرخ را بنویسید تا اینجا دیده شود.</string>
-    <string name="sr_note">نرخ‌ها فقط در یک واحد مقایسه می‌شوند و پیشنهاد ارزان‌تر فقط از ۶ ماه اخیر شمرده می‌شود.</string>
+    <string name="sr_note">نرخ‌ها فقط در یک واحد مقایسه می‌شوند و پیشنهاد ارزان‌تر فقط از 6 ماه اخیر شمرده می‌شود.</string>
     <string name="sr_nothing_to_watch">چیزی نیاز به توجه ندارد: کالایی گران‌تر نشده و تأمین‌کننده دیگری اخیراً ارزان‌تر نبوده.</string>
-    <string name="home_slide_cf">در ۳۰ روز آینده چه می‌آید و چه می‌رود</string>
+    <string name="home_slide_cf">در 30 روز آینده چه می‌آید و چه می‌رود</string>
     <string name="home_slide_rates">قیمت‌های شما به‌صورت تصویر برای واتساپ</string>
     <string name="home_slide_cheaper">نرخ هر تأمین‌کننده را مقایسه کنید</string>
     <string name="home_slide_poster">تصویری برای وضعیت واتساپ</string>
@@ -974,7 +966,7 @@
     <string name="na_plan_due">قسط امروز</string>
     <string name="na_plan_late">قسط عقب‌افتاده</string>
     <string name="na_bill_due">فاکتور تأمین‌کننده سررسید %1$s</string>
-    <string name="na_expiring">کالای رو به انقضا تا ۳۰ روز: %1$s بچ</string>
+    <string name="na_expiring">کالای رو به انقضا تا 30 روز: %1$s بچ</string>
     <string name="na_backup">آخرین پشتیبان %1$s روز پیش</string>
     <string name="na_tag_today">امروز</string>
     <string name="na_tag_late">دیرکرد</string>
@@ -983,7 +975,7 @@
     <string name="na_backup_sub">نسخه‌ای از دفترهای خود را ایمن نگه دارید</string>
     <string name="na_backup_failed_sub">پشتیبان‌گیری خودکار ذخیره نشد — پشتیبان را باز کنید و دوباره تلاش کنید</string>
     <string name="na_backup_other_phone_sub">آخرین پشتیبان این فروشگاه را گوشی دیگری ذخیره کرده — پشتیبان را باز کنید و تصمیم بگیرید</string>
-    <string name="na_updated">روشن کھاتہ به %1$s به‌روز شد</string>
+    <string name="na_updated">روشن خاتا به %1$s به‌روز شد</string>
     <string name="na_updated_sub">ببینید چه چیزی تازه است</string>
     <string name="home_section_tools">ابزارها</string>
     <string name="na_backup_never">هنوز پشتیبانی گرفته نشده</string>
@@ -1023,14 +1015,14 @@
     <string name="nisab_silver">نقره</string>
     <string name="nisab_gold">طلا</string>
     <string name="gold_price_hint">قیمت هر گرم طلا</string>
-    <string name="nisab_silver_note">نصاب نقره: ۶۱۲٫۳۶ گرم (۵۲٫۵ توله) نقره. این آستانه پایین‌تر است، پس زکات بر افراد بیشتری واجب می‌شود \u2014 دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
-    <string name="nisab_gold_note">نصاب طلا: ۸۷٫۴۸ گرم (۷٫۵ توله) طلا. این آستانه بالاتر است، پس زکات بر افراد کمتری واجب می‌شود. اینکه کدام معیار بر شما صدق می‌کند را از عالم بپرسید.</string>
-    <string name="per_tola">هر تولہ</string>
+    <string name="nisab_silver_note">نصاب نقره: 612.36 گرم (52.5 توله) نقره. این آستانه پایین‌تر است، پس زکات بر افراد بیشتری واجب می‌شود \u2014 دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
+    <string name="nisab_gold_note">نصاب طلا: 87.48 گرم (7.5 توله) طلا. این آستانه بالاتر است، پس زکات بر افراد کمتری واجب می‌شود. اینکه کدام معیار بر شما صدق می‌کند را از عالم بپرسید.</string>
+    <string name="per_tola">هر توله</string>
     <string name="per_gram">هر گرم</string>
     <string name="price_help">نرخ امروز را از بازار صرافی محلی، روزنامه یا زرگر خود بگیرید.</string>
-    <string name="price_looks_off">این برای این واحد غیرعادی به نظر می‌رسد. بررسی کنید نرخ هر تولہ است یا هر گرم.</string>
+    <string name="price_looks_off">این برای این واحد غیرعادی به نظر می‌رسد. بررسی کنید نرخ هر توله است یا هر گرم.</string>
     <string name="nisab_working">%1$s %2$s x %3$s = %4$s</string>
-    <string name="unit_tola">تولہ</string>
+    <string name="unit_tola">توله</string>
     <string name="unit_gram">گرم</string>
     <string name="metal_silver">نقره</string>
     <string name="metal_gold">طلا</string>
@@ -1138,7 +1130,7 @@
     <string name="notif_backup_title">یادآوری پشتیبان‌گیری</string>
     <string name="notif_backup_body">بیش از یک هفته از آخرین پشتیبان گذشته است. سوابق شما فقط روی همین گوشی است.</string>
     <string name="notif_backup_failed_title">پشتیبان‌گیری خودکار ناموفق شد</string>
-    <string name="notif_backup_failed_body">روشن کھاتا نتوانست در درایو پشتیبان بگیرد. اینترنت را بررسی کنید — دوباره به‌طور خودکار تلاش می‌کند.</string>
+    <string name="notif_backup_failed_body">روشن خاتا نتوانست در درایو پشتیبان بگیرد. اینترنت را بررسی کنید — دوباره به‌طور خودکار تلاش می‌کند.</string>
 
     <!-- Business card -->
     <string name="biz_card">کارت فروشگاه</string>
@@ -1147,7 +1139,7 @@
     <string name="biz_card_template">طرح</string>
     <string name="biz_card_share">اشتراک کارت</string>
     <string name="biz_card_note">کارت روی گوشی شما ساخته و به‌صورت تصویر به اشتراک گذاشته می‌شود. چیزی بارگذاری نمی‌شود.</string>
-    <string name="biz_card_show_mark">نمایش «روشن کھاتہ» روی کارت</string>
+    <string name="biz_card_show_mark">نمایش «روشن خاتا» روی کارت</string>
     <string name="biz_card_show_logo">لوگوی مغازه روی کارت</string>
     <string name="biz_card_logo_none">هنوز لوگویی ندارید. در پروفایل اضافه کنید ←</string>
     <string name="biz_card_enter_name">لطفاً نام کسب‌وکار را وارد کنید</string>
@@ -1162,7 +1154,7 @@
     <string name="faq_q_backup">اگر گوشی‌ام گم شود، دفترم چطور محفوظ می‌ماند؟</string>
     <string name="faq_a_backup">از صفحه اصلی پشتیبان‌گیری و بازیابی را باز کنید و با حساب گوگل خودتان وارد شوید. دفترتان در درایو خودتان ذخیره می‌شود، جایی که فقط شما به آن دسترسی دارید. هفته‌ای یک بار این کار را بکنید تا گم شدن گوشی فقط یک گوشی برایتان آب بخورد، نه حساب‌هایتان.</string>
     <string name="faq_q_restore">گوشی‌ام را عوض کرده‌ام. دفترم را چطور برگردانم؟</string>
-    <string name="faq_a_restore">روشن کھاتہ را روی گوشی جدید نصب کنید، پشتیبان‌گیری و بازیابی را باز کنید، بازیابی را بزنید و با همان حساب گوگل وارد شوید. برنامه از درایو می‌پرسد چه مغازه‌هایی دارد و آن‌ها را با نام فهرست می‌کند — می‌توانید یکی یا همه را برگردانید. آنچه پس از آخرین پشتیبان ثبت شده در آن نیست.</string>
+    <string name="faq_a_restore">روشن خاتا را روی گوشی جدید نصب کنید، پشتیبان‌گیری و بازیابی را باز کنید، بازیابی را بزنید و با همان حساب گوگل وارد شوید. برنامه از درایو می‌پرسد چه مغازه‌هایی دارد و آن‌ها را با نام فهرست می‌کند — می‌توانید یکی یا همه را برگردانید. آنچه پس از آخرین پشتیبان ثبت شده در آن نیست.</string>
     <string name="faq_q_business">دو مغازه دارم. می‌توانم هر دو را در برنامه نگه دارم؟</string>
     <string name="faq_a_business">بله. در بالای صفحه اصلی روی نام مغازه بزنید، سپس افزودن کسب‌وکار. هر مغازه دفتر کاملاً جداگانه‌ای دارد — مشتریان، ثبت‌ها و عکس‌های جدا — و پشتیبان هر کدام هم جداست. برای جابه‌جایی روی نام بزنید. برای گزینه‌های بیشتر نگه دارید — تغییر نام یا حذف.</string>
     <string name="faq_q_snapshot">امروز مشکلی پیش آمد. می‌توانم به دیروز برگردم؟</string>
@@ -1172,7 +1164,7 @@
     <string name="faq_q_hide">اگر کسی کنارم ایستاده، می‌توانم موجودی را پنهان کنم؟</string>
     <string name="faq_a_hide">در صفحه اصلی روی آیکون چشم کنار موجودی بزنید. تا زدن دوباره، همه‌جا پنهان می‌ماند.</string>
     <string name="faq_q_percent">می‌توانم داخل کادر مبلغ تخفیف حساب کنم؟</string>
-    <string name="faq_a_percent">بله. مستقیم بنویسید — 1200-15%% می‌شود 1020 و 500*32%% می‌شود 160. در همه کادرهای مبلغ و در ماشین‌حساب کار می‌کند.</string>
+    <string name="faq_a_percent" formatted="false">بله. مستقیم بنویسید — 1200-15% می‌شود 1020 و 500*32% می‌شود 160. در همه کادرهای مبلغ و در ماشین‌حساب کار می‌کند.</string>
     <string name="faq_q_delete">اشتباهی مشتری را حذف کردم.</string>
     <string name="faq_a_delete">سطل بازیافت، در صفحه اصلی. مشتریان و ثبت‌های حذف‌شده آنجا می‌مانند و برمی‌گردند.</string>
     <string name="faq_q_language">می‌توانم بعداً زبان را عوض کنم؟</string>
@@ -1236,17 +1228,17 @@
         <item quantity="other">حذف %1$d مشتری؟</item>
     </plurals>
     <plurals name="delete_parties_confirm">
-        <item quantity="one">%1$d مشتری و همهٔ ثبت‌هایش به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</item>
-        <item quantity="other">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا ۳۰ روز می‌توانید بازگردانید.</item>
+        <item quantity="one">%1$d مشتری و همهٔ ثبت‌هایش به سطل بازیافت می‌روند. تا 30 روز می‌توانید بازگردانید.</item>
+        <item quantity="other">%1$d مشتری و همهٔ ثبت‌هایشان به سطل بازیافت می‌روند. تا 30 روز می‌توانید بازگردانید.</item>
     </plurals>
     <plurals name="delete_parties_owing">
         <item quantity="one">%1$d نفر از آنها هنوز مانده‌حساب دارد — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</item>
         <item quantity="other">%1$d نفر از آنها هنوز مانده‌حساب دارند — %2$s دریافتنی، %3$s پرداختنی. حذف آنها این را از جمع کل شما برمی‌دارد، اما تسویه نمی‌کند.</item>
     </plurals>
     <string name="customer_qr">کد QR مشتری</string>
-    <string name="customer_qr_hint">در روشن کھاتہ اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>
+    <string name="customer_qr_hint">در روشن خاتا اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>
     <string name="scan_customer_qr">اسکن کارت مشتری</string>
-    <string name="qr_not_ours">این کد کارتِ مشتریِ روشن کھاتہ نیست.</string>
+    <string name="qr_not_ours">این کد کارتِ مشتریِ روشن خاتا نیست.</string>
     <string name="qr_no_customer">هیچ مشتری‌ای در این دفتر با این کارت یافت نشد.</string>
     <string name="qr_scan_failed">اسکنر باز نشد. به Google Play services نیاز دارد.</string>
     <string name="report_crash_included">— سابقهٔ فنی خرابی (به‌طور خودکار روی گوشی شما ذخیره شده، برای یافتن اشکال ضمیمه شد):</string>
@@ -1292,7 +1284,7 @@
     <string name="promo_message">السلام علیکم %1$s. %2$s دوباره در مغازه موجود است. اگر لازم داشتید خبر بدهید.</string>
     <string name="no_promo_customers">در آن بازه کسی این را نخرید.</string>
     <string name="window_same_season">همین فصل سال گذشته</string>
-    <string name="window_last_year">۱۲ ماه گذشته</string>
+    <string name="window_last_year">12 ماه گذشته</string>
     <string name="window_ever">هر زمان</string>
     <string name="edit_bill">ویرایش فاکتور</string>
     <string name="edit_bill_cash_locked">این را نمی‌توان از اینجا تغییر داد. ویرایش فاکتور برای اصلاح اشتباه است، نه برای تسویهٔ بدهی — برای آن، پرداختی را در دفتر ثبت کنید.</string>
@@ -1342,7 +1334,7 @@
     <string name="rate_list_heading_hint">عنوان روی تصویر</string>
     <string name="rate_list_heading_default">قیمت‌های این هفته</string>
     <string name="rate_list_columns">قیمت‌های روی فهرست</string>
-    <string name="rate_list_show_mark">نمایش «روشن کھاتہ» روی فهرست</string>
+    <string name="rate_list_show_mark">نمایش «روشن خاتا» روی فهرست</string>
     <string name="rate_list_col_product">محصول</string>
     <string name="rate_list_col_unit">واحد</string>
     <string name="rate_list_unpriced">محصولات بدون قیمت در فهرست نیستند: %1$s. برای افزودن قیمت، «محصولات و موجودی» را باز کنید، روی محصول بزنید و «ویرایش مشخصات» را انتخاب کنید.</string>
@@ -1354,7 +1346,7 @@
     <string name="poster_heading_hint">سطر بزرگ</string>
     <string name="poster_message_hint">پیام</string>
     <string name="poster_show_logo">لوگوی فروشگاه روی پوستر</string>
-    <string name="poster_show_mark">نمایش «روشن کھاتہ» روی پوستر</string>
+    <string name="poster_show_mark">نمایش «روشن خاتا» روی پوستر</string>
     <string name="poster_custom">نوشته خودتان</string>
     <string name="poster_new_stock">کالای تازه رسید!</string>
     <string name="poster_eid_fitr">عید فطر مبارک</string>
@@ -1560,7 +1552,7 @@
     <string name="pdf_biz_cheques">چک‌های تسویه‌نشده</string>
     <string name="pdf_biz_cheques_note">تا تسویه نشوند پول نیستند. در مانده‌های بالا نیامده‌اند.</string>
     <string name="pdf_biz_cheque">چک</string>
-    <string name="pdf_biz_due"> \u00B7 سررسید </string>
+    <string name="pdf_biz_due">" \u00B7 سررسید "</string>
     <string name="pdf_biz_plans">طرح‌های پرداخت در جریان</string>
     <string name="pdf_biz_paid_of">%1$s از %2$s</string>
     <string name="pdf_biz_expiring">موجودی رو به انقضا</string>
@@ -1569,7 +1561,7 @@
         <item quantity="one">%1$d روز</item>
         <item quantity="other">%1$d روز</item>
     </plurals>
-    <string name="pdf_biz_batch">بچ %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"بچ %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">دفتر فروش و خرید</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1581,11 +1573,11 @@
     <string name="pdf_reg_purchase_lines">سطرهای خرید در بازه</string>
     <string name="pdf_reg_total_purchases">جمع خرید (سطرهای نرخ‌دار)</string>
     <string name="pdf_reg_no_rate_lines">سطرهای خرید بدون نرخ ثبت‌شده</string>
-    <string name="pdf_reg_section_sales">۱. دفتر فروش</string>
-    <string name="pdf_reg_section_sales_cont">۱. دفتر فروش (ادامه)</string>
+    <string name="pdf_reg_section_sales">1. دفتر فروش</string>
+    <string name="pdf_reg_section_sales_cont">1. دفتر فروش (ادامه)</string>
     <string name="pdf_reg_no_sales">در این بازه کالایی فروخته نشده است.</string>
-    <string name="pdf_reg_section_purchases">۲. دفتر خرید</string>
-    <string name="pdf_reg_section_purchases_cont">۲. دفتر خرید (ادامه)</string>
+    <string name="pdf_reg_section_purchases">2. دفتر خرید</string>
+    <string name="pdf_reg_section_purchases_cont">2. دفتر خرید (ادامه)</string>
     <string name="pdf_reg_no_purchases">در این بازه خریدی ثبت نشده است.</string>
     <string name="pdf_reg_col_date">تاریخ</string>
     <string name="pdf_reg_col_customer">مشتری / کالا / بچ</string>
@@ -1635,7 +1627,6 @@
     <string name="pdf_insp_no_batches">هیچ بچی موجود نیست. بچ و انقضا روی فاکتور تأمین‌کننده ثبت می‌شود.</string>
     <string name="pdf_insp_missing_note">هر کالای زیر موجود است اما یک یا چند فیلد برچسب آن هرگز ثبت نشده است.</string>
     <string name="pdf_insp_expired">منقضی</string>
-    <string name="pdf_insp_expired_ago">منقضی \u00B7 %1$d روز پیش</string>
     <string name="pdf_insp_days_left">%1$d روز مانده</string>
     <string name="pdf_insp_units_differ">واحدها متفاوت</string>
     <string name="pdf_insp_company_tag">شرکت</string>
@@ -1698,7 +1689,7 @@
     <string name="calendar_hijri">قمری (تقریبی)</string>
     <string name="calendar_jalali">خورشیدی</string>
     <string name="currency_custom">دیگر (خودتان بنویسید)…</string>
-    <string name="currency_custom_hint">نشانه، حداکثر ۵ نویسه</string>
+    <string name="currency_custom_hint">نشانه، حداکثر 5 نویسه</string>
     <string name="bp_trade">نوع فروشگاه</string>
     <string name="bp_trade_help">این دفتر برای کدام صنف است. ویژگی‌هایی که فقط یک صنف لازم دارد، بر همین اساس عمل می‌کنند.</string>
     <string name="trade_agri">کشاورزی (سم، بذر، خوراک دام)</string>
@@ -1731,7 +1722,7 @@
     <string name="bp_leave_keep">ادامهٔ ویرایش</string>
     <string name="bp_phone">شمارهٔ تلفن</string>
     <string name="bp_phone_help">روی فاکتور چاپ می‌شود تا مشتریان با شما تماس بگیرند.</string>
-    <string name="bp_phone_hint">مثلاً 0300 1234567</string>
+    <string name="bp_phone_hint">مثلاً \u20660300 1234567\u2069</string>
     <string name="bp_logo">لوگوی فروشگاه</string>
     <string name="bp_logo_help">اختیاری — بالای فاکتورها و دفتر موجودی چاپ می‌شود.</string>
     <string name="bp_remove_logo">حذف لوگو</string>
@@ -1811,7 +1802,6 @@
     <string name="followup_queue_open">باز کردن واتس‌اپ</string>
     <string name="followup_queue_skip">رد کردن</string>
     <string name="followup_queue_stop">توقف</string>
-    <string name="followup_queue_done">تمام — امروز %1$d یادآوری باز شد</string>
     <string name="followup_queue_title">%1$d از %2$d</string>
     <string name="season_title">حساب فصل</string>
     <string name="season_subtitle">نسیه بر اساس فصل کشت، جدیدترین اول</string>
@@ -1921,7 +1911,7 @@
     <string name="scheme_mark_claimed">مطالبه دریافت شد</string>
     <string name="scheme_unmark_claimed">مطالبه هنوز دریافت نشده</string>
     <string name="scheme_delete">حذف طرح</string>
-    <string name="scheme_delete_confirm">"%1$s" حذف شود؟ فاکتورهای شما تغییر نمی‌کنند.</string>
+    <string name="scheme_delete_confirm">«%1$s» حذف شود؟ فاکتورهای شما تغییر نمی‌کنند.</string>
     <string name="scheme_claim_hint">مبلغ دریافتی (اعتبارنامه / تخفیف)</string>
     <string name="scheme_need_name">نام طرح را بنویسید</string>
     <string name="scheme_need_slab">حداقل یک هدف و پاداش آن را وارد کنید</string>
@@ -1994,7 +1984,7 @@
     <string name="drive_other_phone_replace">دفتر این گوشی بماند</string>
     <string name="notif_backup_other_phone_title">پشتیبان‌گیری متوقف شد</string>
     <string name="notif_backup_other_phone_body">آخرین پشتیبان این مغازه از گوشی دیگری گرفته شده است. صفحهٔ پشتیبان را باز کنید و انتخاب کنید دفتر کدام گوشی بماند.</string>
-    <string name="cash_paid_now">پول همین حالا نقد رسید («دریافت کردم» را هم بنویس)</string>
+    <string name="cash_paid_now">پول همین حالا نقد رسید («گرفتم» را هم بنویس)</string>
     <string name="cash_paid_recorded">%1$s نقد دریافت شد. فروش و پرداخت هر دو ثبت شد.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">سردبیری</string>
@@ -2869,7 +2859,7 @@
     <string name="calc_khata_positive">فقط مبلغ بیشتر از صفر به حساب اضافه می‌شود.</string>
     <string name="stat_bills">فاکتورها</string>
     <string name="stat_you_owe">بدهی شما</string>
-    <string name="stat_expiring">انقضا تا ۶۰ روز</string>
+    <string name="stat_expiring">انقضا تا 60 روز</string>
     <string name="bills_add_first">اولین فاکتور را اضافه کنید</string>
     <string name="sr_open_short">مقایسه قیمت</string>
     <string name="products_search_hint">جستجوی کالا</string>
@@ -2926,7 +2916,7 @@
     <string name="biz_card_ex_owner">مثلاً علی خان</string>
     <string name="biz_card_ex_address">مثلاً بازار اصلی</string>
     <string name="biz_card_ex_tagline">مثلاً ارسال به منزل</string>
-    <string name="biz_card_ex_phone">مثلاً 0300 1234567</string>
+    <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
     <string name="biz_card_ex_web">مثلاً وب‌سایت یا صفحه فیسبوک</string>
     <string name="biz_card_ex_qr">مثلاً سلام، کارت شما را دیدم</string>
@@ -3110,9 +3100,9 @@
     <string name="staff_role_none">بدون ورود</string>
     <string name="staff_role_manager">مدیر</string>
     <string name="staff_role_cashier">صندوقدار</string>
-    <string name="staff_pin">پین (۴–۸ رقم)</string>
+    <string name="staff_pin">پین (4–8 رقم)</string>
     <string name="staff_pin_keep">برای حفظ پین خالی بگذارید</string>
-    <string name="staff_pin_invalid">پین ۴ تا ۸ رقم است</string>
+    <string name="staff_pin_invalid">پین 4 تا 8 رقم است</string>
     <string name="access_owner">مالک</string>
     <string name="access_who">چه کسی پشت پیشخوان است؟</string>
     <string name="access_sign_in">ورود</string>
@@ -3142,7 +3132,6 @@
     <string name="stock_count_title">شمارش موجودی</string>
     <string name="stock_count_help">آنچه در قفسه است بنویسید؛ فقط اختلاف‌ها ثبت می‌شود، با رقم دفتر کنارش</string>
     <string name="stock_counted_hint">شمرده‌شده</string>
-    <string name="stock_count_saved">%1$d اصلاح ثبت شد</string>
     <string name="stock_adjust">اصلاح موجودی</string>
     <string name="adjust_qty_hint">تعداد (+ ورود، − خروج)</string>
     <string name="adjust_reason">دلیل</string>
@@ -3212,9 +3201,9 @@
     <string name="access_recovery_ask">کد بازیابی‌ای را که هنگام تعیین رمز مالک نشان داده شد بنویسید، سپس رمز تازه‌ای انتخاب کنید.</string>
     <string name="access_recovery_wrong">این کد بازیابی درست نیست.</string>
     <string name="access_owner_pin">رمز مالک</string>
-    <string name="access_owner_pin_help">رمز خود مالک، ۶ تا ۸ رقم. مالک با آن پشت صندوق وارد می‌شود، کارهایی را که صندوقدار به‌تنهایی نمی‌تواند مجاز می‌کند، و حالت صندوق را خاموش می‌کند. فقط هش آن نگه داشته می‌شود، هرگز خود رمز.</string>
-    <string name="access_owner_pin_invalid">رمز مالک ۶ تا ۸ رقم است</string>
-    <string name="access_owner_pin_short">رمز مالک شما کوتاه است. آن را ۶ تا ۸ رقم کنید: رمز کوتاه را می‌توان از فایل پشتیبان در چند دقیقه حدس زد.</string>
+    <string name="access_owner_pin_help">رمز خود مالک، 6 تا 8 رقم. مالک با آن پشت صندوق وارد می‌شود، کارهایی را که صندوقدار به‌تنهایی نمی‌تواند مجاز می‌کند، و حالت صندوق را خاموش می‌کند. فقط هش آن نگه داشته می‌شود، هرگز خود رمز.</string>
+    <string name="access_owner_pin_invalid">رمز مالک 6 تا 8 رقم است</string>
+    <string name="access_owner_pin_short">رمز مالک شما کوتاه است. آن را 6 تا 8 رقم کنید: رمز کوتاه را می‌توان از فایل پشتیبان در چند دقیقه حدس زد.</string>
     <string name="access_recovery_title">کد بازیابی شما</string>
     <string name="access_recovery_help">این کد را یادداشت کنید و دور از صندوق نگه دارید. اگر رمز مالک روزی فراموش شود، این کد رمز تازه‌ای می‌سازد. فقط همین حالا نشان داده می‌شود؛ رمز تازه کد تازه‌ای می‌دهد.</string>
     <string name="access_recovery_written">یادداشتش کردم</string>
@@ -3304,7 +3293,7 @@
     <string name="shift_open_now">اکنون باز</string>
     <string name="shift_recent">شیفت‌های اخیر</string>
     <string name="shift_hours">%1$s ساعت</string>
-    <string name="shift_week_hours">ساعت‌ها، ۷ روز گذشته</string>
+    <string name="shift_week_hours">ساعت‌ها، 7 روز گذشته</string>
     <string name="shift_closed">شیفت بسته شد</string>
     <string name="shift_of">شیفت: %1$s</string>
     <string name="shift_cash_sales">نقد دریافتی از فروش</string>
@@ -3312,7 +3301,7 @@
     <string name="audit_shift_opened">شیفت باز شد</string>
     <string name="audit_shift_closed">شیفت بسته شد</string>
     <string name="printer_section">چاپگر رسید روی این دستگاه</string>
-    <string name="printer_width_80">رول ۸۰ میلی‌متری</string>
+    <string name="printer_width_80">رول 80 میلی‌متری</string>
     <string name="printer_logo">لوگوی فروشگاه در بالا</string>
     <string name="printer_drawer">باز کردن کشوی پول در فروش نقدی</string>
     <string name="printer_drawer_help">برای کشوی پولی که به چاپگر رسید وصل است. چاپگری که کشو ندارد آن را نادیده می‌گیرد.</string>
@@ -3322,18 +3311,18 @@
     <string name="srep_chart">فروش در طول زمان</string>
     <string name="srep_chart_top">بیشترین: %1$s</string>
     <string name="aging_title">بدهی‌ها بر اساس مدت</string>
-    <string name="aging_help">آنچه هنوز مانده است، بر اساس اینکه چه مدت پیش داده شده. پرداخت اول قدیمی‌ترین را صاف می‌کند؛ هر مبلغی بیش از ۹۰ روز تماس می‌خواهد.</string>
-    <string name="aging_0_30">۰–۳۰ روز</string>
-    <string name="aging_31_60">۳۱–۶۰ روز</string>
-    <string name="aging_61_90">۶۱–۹۰ روز</string>
-    <string name="aging_90">بیش از ۹۰ روز</string>
+    <string name="aging_help">آنچه هنوز مانده است، بر اساس اینکه چه مدت پیش داده شده. پرداخت اول قدیمی‌ترین را صاف می‌کند؛ هر مبلغی بیش از 90 روز تماس می‌خواهد.</string>
+    <string name="aging_0_30">0–30 روز</string>
+    <string name="aging_31_60">31–60 روز</string>
+    <string name="aging_61_90">61–90 روز</string>
+    <string name="aging_90">بیش از 90 روز</string>
     <string name="aging_none">هیچ مبلغی باقی نیست</string>
     <string name="aging_oldest">قدیمی‌ترین: %1$s</string>
     <string name="aging_total">جمع</string>
 
     <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
     <string name="loyalty_section">امتیاز وفاداری</string>
-    <string name="loyalty_per_100">امتیاز به ازای هر ۱۰۰ خرید</string>
+    <string name="loyalty_per_100">امتیاز به ازای هر 100 خرید</string>
     <string name="loyalty_value">ارزش هر امتیاز</string>
     <string name="loyalty_help">مشتری دارای حساب در هر فاکتور امتیاز می‌گیرد و بعداً آن را به‌عنوان تخفیف خرج می‌کند. یکی از خانه‌ها را خالی بگذارید تا وفاداری خاموش بماند.</string>
     <string name="loyalty_points">امتیاز: %1$s (ارزش %2$s)</string>
@@ -3341,9 +3330,9 @@
     <string name="loyalty_used">امتیاز استفاده‌شده: %1$s (−%2$s)</string>
     <string name="loyalty_earned">امتیاز کسب‌شده: %1$s · اکنون %2$s</string>
     <string name="scale_section">برچسب‌های ترازو</string>
-    <string name="scale_prefix">پیشوند برچسب (۲۰–۲۹)</string>
+    <string name="scale_prefix">پیشوند برچسب (20–29)</string>
     <string name="scale_price">برچسب قیمت را دارد (نه وزن را)</string>
-    <string name="scale_help">برچسب ترازو ۱۳ رقم است: پیشوند، کد ۵ رقمی کالا در ترازو، وزن به گرم (یا قیمت) و یک رقم کنترل. کد ترازو را در خانهٔ بارکد کالا بنویسید.</string>
+    <string name="scale_help">برچسب ترازو 13 رقم است: پیشوند، کد 5 رقمی کالا در ترازو، وزن به گرم (یا قیمت) و یک رقم کنترل. کد ترازو را در خانهٔ بارکد کالا بنویسید.</string>
     <string name="pos_items">کالاها</string>
     <string name="pos_ticket">فاکتور</string>
     <string name="pos_all">همه</string>
@@ -3382,7 +3371,7 @@
 
     <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
     <string name="book_opening">در حال باز کردن دفتر…</string>
-    <string name="book_cannot_open">دفتر باز نشد و چیزی در آن تغییر نکرد. هر برنامهٔ دیگری را که ممکن است از آن استفاده کند ببندید (یا رایانه را دوباره راه‌اندازی کنید)، سپس روشن کھاتہ را دوباره باز کنید.</string>
+    <string name="book_cannot_open">دفتر باز نشد و چیزی در آن تغییر نکرد. هر برنامهٔ دیگری را که ممکن است از آن استفاده کند ببندید (یا رایانه را دوباره راه‌اندازی کنید)، سپس روشن خاتا را دوباره باز کنید.</string>
     <string name="book_set_aside_note">یک دفتر آسیب‌دیده اینجا کنار گذاشته شد، پاک نشد: %1$s</string>
     <string name="restore_keep_failed">این دفتر نخست نگه داشته نشد، پس چیزی جایگزین نشد. مطمئن شوید دیسک جای خالی دارد و دوباره تلاش کنید.</string>
     <string name="restore_loss_unknown">آنچه از دست می‌رود شمرده نشد. فقط وقتی جایگزین کنید که مطمئنید همین نسخه را می‌خواهید.</string>
@@ -3497,7 +3486,7 @@
     </plurals>
     <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
     <string name="live_title">همگام‌سازی زنده با رایانه</string>
-    <string name="live_explain">گوشی و رایانه یک دفتر را نگه می‌دارند که هر چند ثانیه به‌روز می‌شود، وقتی هر دو روی وای‌فای مغازه باشند و روشن کهاته باز باشد. تا «از راه اینترنت هم» روشن نباشد، هیچ چیز به اینترنت نمی‌رود.</string>
+    <string name="live_explain">گوشی و رایانه یک دفتر را نگه می‌دارند که هر چند ثانیه به‌روز می‌شود، وقتی هر دو روی وای‌فای مغازه باشند و روشن خاتا باز باشد. تا «از راه اینترنت هم» روشن نباشد، هیچ چیز به اینترنت نمی‌رود.</string>
     <string name="live_join">اتصال به رایانه</string>
     <string name="live_stop">خاموش کردن همگام‌سازی زنده</string>
     <string name="live_stop_confirm">همگام‌سازی زنده روی این دستگاه خاموش شود؟ دفتر دقیقاً همان‌طور می‌ماند.</string>
@@ -3505,7 +3494,7 @@
     <string name="live_status_not_paired">همگام‌سازی زنده روشن است. هنوز هیچ رایانه‌ای وصل نشده.</string>
     <string name="live_status_waiting">دفتر به رایانه رسید. برای تمام شدن اتصال، آنجا «بله» را بزنید.</string>
     <string name="live_status_live">زنده با %1$s. آخرین به‌روزرسانی: %2$s</string>
-    <string name="live_status_unreachable">رایانه پاسخ نمی‌دهد. آیا هر دو روی یک وای‌فای هستند و روشن کهاته روی آن باز است؟</string>
+    <string name="live_status_unreachable">رایانه پاسخ نمی‌دهد. آیا هر دو روی یک وای‌فای هستند و روشن خاتا روی آن باز است؟</string>
     <string name="live_status_relay_down">از وای‌فای مغازه دور هستید و رله‌ی اینترنتی پاسخ نداد (%1$s). گوشی به تلاش ادامه می‌دهد؛ در مغازه وای‌فای بدون آن کار می‌کند.</string>
     <string name="live_pc_relay_ok">رله‌ی اینترنتی: کار می‌کند (آخرین دور %1$s).</string>
     <string name="live_pc_relay_down">رله‌ی اینترنتی: پاسخ نمی‌دهد (%1$s). در مغازه وای‌فای بدون آن کار می‌کند.</string>
@@ -3521,12 +3510,8 @@
     <string name="live_mismatch">دو دفتر با هم نمی‌خوانند. برای یک نسخهٔ تازه دوباره وصل کنید.</string>
     <string name="live_sent">فرستاده شد. روی رایانه «بله» را بزنید تا دفترش با دفتر این گوشی جایگزین شود.</string>
     <string name="live_receive">گرفتن دفتر مغازه روی این گوشی</string>
-    <string name="live_receive_steps">روی گوشی‌ای که دفتر مغازه را دارد، پشتیبان‌گیری ← همگام‌سازی زنده ← اتصال را باز کنید و این کد را اسکن کنید. هر دو گوشی باید روی یک وای‌فای باشند. این پنجره ۱۵ دقیقه منتظر می‌ماند.</string>
-    <string name="live_receive_offer">«%1$s» می‌خواهد دفتر مغازه را به این گوشی بدهد.
-
-کد: %2$s — همین چهار رقم باید روی آن گوشی هم دیده شود.
-
-دفتر خود این گوشی با دفتر مغازه جایگزین می‌شود. پس از آن، گوشی‌ها از راه رله‌ی اینترنتی یک دفتر را با هم نگه می‌دارند.</string>
+    <string name="live_receive_steps">روی گوشی‌ای که دفتر مغازه را دارد، پشتیبان‌گیری ← همگام‌سازی زنده ← اتصال را باز کنید و این کد را اسکن کنید. هر دو گوشی باید روی یک وای‌فای باشند. این پنجره 15 دقیقه منتظر می‌ماند.</string>
+    <string name="live_receive_offer">«%1$s» می‌خواهد دفتر مغازه را به این گوشی بدهد.\n\nکد: %2$s — همین چهار رقم باید روی آن گوشی هم دیده شود.\n\nدفتر خود این گوشی با دفتر مغازه جایگزین می‌شود. پس از آن، گوشی‌ها از راه رله‌ی اینترنتی یک دفتر را با هم نگه می‌دارند.</string>
     <string name="live_receive_done">انجام شد. این گوشی اکنون دفتر مغازه را همراه دستگاه‌های دیگرش نگه می‌دارد.</string>
     <string name="live_receive_no_wifi">این گوشی به هیچ وای‌فایی وصل نیست. به وای‌فای مغازه وصل شوید و دوباره تلاش کنید.</string>
     <string name="live_sent_phone">فرستاده شد. روی گوشی دیگر بله را بزنید تا این دفتر را بگیرد. سپس دو گوشی از راه رله‌ی اینترنتی به هم می‌رسند.</string>
@@ -3554,7 +3539,7 @@
     <string name="live_status_not_accepted">رایانه به‌موقع «بله» نگفت. برای اتصال، کد همگام‌سازی زنده‌اش را دوباره اسکن کنید.</string>
     <string name="live_status_not_here">رایانه پاسخ داد، اما الان این دفتر را نگه نمی‌دارد. کسب‌وکار این دفتر را روی رایانه باز کنید.</string>
     <string name="live_status_relay">زنده با %1$s از راه اینترنت. آخرین به‌روزرسانی: %2$s</string>
-    <string name="live_relay_help">وقتی گوشی از وای‌فای مغازه دور است، تغییراتش از رله‌ی Innovation 313 می‌گذرد، قفل‌شده با کلید خود این دفتر: رله نمی‌تواند آن‌ها را بخواند و حداکثر ۷ روز نگهشان می‌دارد. یک کلید برای هر دو دستگاه. وقتی برنامه بسته است، Firebase از Google فقط به گوشی خبر می‌دهد که چیزی منتظر است؛ چیزی از دفتر را با خود نمی‌برد.</string>
+    <string name="live_relay_help">وقتی گوشی از وای‌فای مغازه دور است، تغییراتش از رله‌ی Innovation-313 می‌گذرد، قفل‌شده با کلید خود این دفتر: رله نمی‌تواند آن‌ها را بخواند و حداکثر 7 روز نگهشان می‌دارد. یک کلید برای هر دو دستگاه. وقتی برنامه بسته است، Firebase از Google فقط به گوشی خبر می‌دهد که چیزی منتظر است؛ چیزی از دفتر را با خود نمی‌برد.</string>
     <string name="live_relay">از راه اینترنت هم</string>
     <string name="wifi_take_too_big">دفتر رایانه برای حافظه یا فضای خالی این گوشی خیلی بزرگ است. برنامه‌های دیگر را ببندید و دوباره امتحان کنید، یا دفتر را با فایل پشتیبان منتقل کنید.</string>
     <string name="live_devices_open">دستگاه‌ها و تغییرات هم‌زمان</string>
@@ -3591,4 +3576,17 @@
     <string name="products_export_failed">فایل کالاها ساخته نشد.</string>
     <string name="save_failed_storage_full">ذخیره نشد: حافظهٔ گوشی پر است. کمی جا خالی کنید و دوباره وارد کنید.</string>
     <string name="save_failed_not_saved">ذخیره نشد: خطایی رخ داد. لطفاً بررسی کنید و دوباره وارد کنید.</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d اصلاح ثبت شد</item>
+        <item quantity="other">%1$d اصلاح ثبت شد</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">تمام — امروز %1$d یادآوری باز شد</item>
+        <item quantity="other">تمام — امروز %1$d یادآوری باز شد</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">منقضی \u00B7 %1$d روز پیش</item>
+        <item quantity="other">منقضی \u00B7 %1$d روز پیش</item>
+    </plurals>
+    <string name="voice_language_missing_phone">این گوشی آن زبان را ندارد. به زبان خود گوشی گوش می‌دهد.</string>
 </resources>

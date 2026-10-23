@@ -236,11 +236,12 @@ object InspectorReport {
             .filter { !it.isUntouched }
             .groupBy { productsById[it.productId]?.company?.trim()?.takeIf { c -> c.isNotEmpty() } ?: noCompany }
             .toList()
-            .sortedWith(compareBy(
-                // The unlabelled group sits last, not jumbled into the alphabet.
-                { it.first == noCompany },
-                { it.first.lowercase() }
-            ))
+            .sortedWith { a, b ->
+                // The unlabelled group sits last, not jumbled into the alphabet; the
+                // rest in the reader's alphabet (lesson 30; 23 Oct review, R49).
+                compareValues(a.first == noCompany, b.first == noCompany).takeIf { it != 0 }
+                    ?: NameOrder.byName.compare(a.first, b.first)
+            }
             .map { (company, list) -> company to NameOrder.sortedBy(list) { it.name } }
 
         val typeCounts = typeCounts(
@@ -835,7 +836,7 @@ object InspectorReport {
                 val isSoon = b.itemId in soonIds
                 val status: Cell = when {
                     isExpired -> Cell.Chip(
-                        b.daysLeft?.let { Digits.string(context.resources, R.string.pdf_insp_expired_ago, -it) }
+                        b.daysLeft?.let { Digits.quantity(context.resources, R.plurals.pdf_insp_expired_ago, -it, -it) }
                             ?: context.getString(R.string.pdf_insp_expired),
                         RED_FG, RED_BG
                     )

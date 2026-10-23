@@ -142,7 +142,10 @@ object InvoicePdfExport {
 
     private fun outputFile(context: Context, invoice: Invoice): File {
         val dir = File(context.cacheDir, "invoices").apply { mkdirs() }
-        val safeName = invoice.customerName.replace(Regex("[^A-Za-z0-9 ]"), "").trim().replace(" ", "_")
+        // Letters and digits of every script, with their vowel marks (23 Oct 2026, the review:
+        // an Urdu name was stripped to nothing and every file was "INV-000123_Customer.pdf").
+        val fileSafe = { s: String -> s.replace(Regex("[^\\p{L}\\p{M}\\p{N} ]"), "").trim().replace(Regex("\\s+"), "_").take(60) }
+        val safeName = fileSafe(invoice.customerName).ifEmpty { fileSafe(context.getString(R.string.customer)) }
         return File(dir, "${invoice.invoiceNumber}_${safeName.ifEmpty { "Customer" }}.pdf")
     }
 

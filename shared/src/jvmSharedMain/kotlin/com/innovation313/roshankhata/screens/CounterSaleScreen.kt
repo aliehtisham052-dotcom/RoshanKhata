@@ -132,7 +132,7 @@ fun CounterSaleScreen(
                         Row(Modifier.fillMaxWidth().clickable { ring(p) }.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(p.name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                val under = listOfNotNull(p.company, onHand[p.id]?.let { "${Calc.trim(it)} ${p.defaultUnit.orEmpty()}".trim() })
+                                val under = listOfNotNull(p.company, onHand[p.id]?.let { "${Calc.trim(it)} ${com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit)}".trim() })
                                 if (under.isNotEmpty()) Text(under.joinToString(" · "), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
                             }
                             (if (draft.hasParty) p.creditPrice ?: p.salePrice else p.salePrice)?.let {
@@ -180,7 +180,7 @@ fun CounterSaleScreen(
                                 TextButton(onClick = { draft.remove(line) }) { Text("✕", color = c.textMuted) }
                             }
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                CalcField(line.qty, { line.qty = it }, Modifier.weight(1f).testTag("posQty"), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (line.unit?.let { " ($it)" } ?: ""))
+                                CalcField(line.qty, { line.qty = it }, Modifier.weight(1f).testTag("posQty"), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (com.innovation313.roshankhata.data.UnitWords.label(line.unit).let { u -> if (u.isEmpty()) "" else " ($u)" }))
                                 CalcField(line.rate, { line.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
                                 CalcField(line.discount, { line.discount = it }, Modifier.weight(1f), label = word(W.pos_discount))
                             }

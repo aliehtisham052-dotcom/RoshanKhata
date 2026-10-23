@@ -130,9 +130,7 @@
     <string name="add_party">Add Party</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
-    <string name="no_parties_yet">No customers yet.
-
-Add your first customer and start your khata.</string>
+    <string name="no_parties_yet">No customers yet.\n\nAdd your first customer and start your khata.</string>
     <string name="no_entries_yet">No entries yet.</string>
 
     <string name="i_gave">I Gave</string>
@@ -605,13 +603,9 @@ Add your first customer and start your khata.</string>
         <item quantity="other">%1$d businesses on Drive</item>
     </plurals>
     <string name="drive_restore_all">Restore all</string>
-    <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:
-
-%1$s</string>
-    <string name="drive_restored_these">Restored:
-%1$s</string>
-    <string name="drive_restore_missed">Could not restore:
-%1$s</string>
+    <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:\n\n%1$s</string>
+    <string name="drive_restored_these">Restored:\n%1$s</string>
+    <string name="drive_restore_missed">Could not restore:\n%1$s</string>
     <string name="business_numbered">Business %1$d</string>
     <string name="backup_for_business">Backing up: %1$s</string>
     <string name="snapshots_title">Daily copies</string>
@@ -885,9 +879,7 @@ Add your first customer and start your khata.</string>
     <string name="drive_auto_backup">Automatic backup</string>
     <string name="drive_auto_backup_hint">Backs up by itself whenever the book changes — at most every 30 minutes on Wi-Fi, every 6 hours on mobile data. You can still back up any time.</string>
     <string name="auto_backup_offer_title">Back up by itself?</string>
-    <string name="auto_backup_offer_body">Your account is connected. Roshan Khata can upload your book on its own whenever it changes, so a lost or broken phone does not take your records with it.
-
-You can change this any time from this screen.</string>
+    <string name="auto_backup_offer_body">Your account is connected. Roshan Khata can upload your book on its own whenever it changes, so a lost or broken phone does not take your records with it.\n\nYou can change this any time from this screen.</string>
     <string name="auto_backup_offer_yes">Turn it on</string>
     <string name="auto_backup_offer_no">Not now</string>
     <string name="drive_restore">Restore from Drive</string>
@@ -1187,7 +1179,7 @@ You can change this any time from this screen.</string>
     <string name="faq_q_hide">Can I hide the balance when someone is standing beside me?</string>
     <string name="faq_a_hide">Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.</string>
     <string name="faq_q_percent">Can I work out a discount inside the amount box?</string>
-    <string name="faq_a_percent">Yes. Type the sum straight in — 1200-15%% gives 1020, and 500*32%% gives 160. It works in every amount field and on the Calculator.</string>
+    <string name="faq_a_percent" formatted="false">Yes. Type the sum straight in — 1200-15% gives 1020, and 500*32% gives 160. It works in every amount field and on the Calculator.</string>
     <string name="faq_q_delete">I deleted a customer by mistake.</string>
     <string name="faq_a_delete">Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back.</string>
     <string name="faq_q_language">Can I change the language later?</string>
@@ -1584,7 +1576,7 @@ You can change this any time from this screen.</string>
     <string name="pdf_biz_cheques">Cheques not yet cleared</string>
     <string name="pdf_biz_cheques_note">These are not money until they clear. They are not in the balances above.</string>
     <string name="pdf_biz_cheque">Cheque</string>
-    <string name="pdf_biz_due"> \u00B7 due </string>
+    <string name="pdf_biz_due">" \u00B7 due "</string>
     <string name="pdf_biz_plans">Payment plans still running</string>
     <string name="pdf_biz_paid_of">%1$s of %2$s</string>
     <string name="pdf_biz_expiring">Stock expiring soon</string>
@@ -1593,7 +1585,7 @@ You can change this any time from this screen.</string>
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
-    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
@@ -1661,7 +1653,6 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_no_batches">No batches in stock. Batch and expiry are recorded on a supplier bill.</string>
     <string name="pdf_insp_missing_note">Each product below is in stock with one or more label fields never recorded.</string>
     <string name="pdf_insp_expired">EXPIRED</string>
-    <string name="pdf_insp_expired_ago">EXPIRED \u00B7 %1$d days ago</string>
     <string name="pdf_insp_days_left">%1$d days left</string>
     <string name="pdf_insp_units_differ">units differ</string>
     <string name="pdf_insp_company_tag">COMPANY</string>
@@ -1838,7 +1829,6 @@ You can change this any time from this screen.</string>
     <string name="followup_queue_open">Open WhatsApp</string>
     <string name="followup_queue_skip">Skip</string>
     <string name="followup_queue_stop">Stop</string>
-    <string name="followup_queue_done">Done — %1$d reminders opened today</string>
     <string name="followup_queue_title">%1$d of %2$d</string>
     <string name="season_title">Fasal ka Hisaab</string>
     <string name="season_subtitle">Credit by crop season, newest first</string>
@@ -1948,7 +1938,7 @@ You can change this any time from this screen.</string>
     <string name="scheme_mark_claimed">Claim received</string>
     <string name="scheme_unmark_claimed">Claim not received yet</string>
     <string name="scheme_delete">Delete scheme</string>
-    <string name="scheme_delete_confirm">Delete "%1$s"? Your bills are not touched.</string>
+    <string name="scheme_delete_confirm">Delete “%1$s”? Your bills are not touched.</string>
     <string name="scheme_claim_hint">Amount received (credit note / rebate)</string>
     <string name="scheme_need_name">Give the scheme a name</string>
     <string name="scheme_need_slab">Enter at least one target and its reward</string>
@@ -3328,7 +3318,6 @@ You can change this any time from this screen.</string>
     <string name="stock_count_title">Count stock</string>
     <string name="stock_count_help">Type what is on the shelf; only the differences are written, each with the book figure beside it</string>
     <string name="stock_counted_hint">Counted</string>
-    <string name="stock_count_saved">%1$d corrections written</string>
     <string name="stock_adjust">Adjust stock</string>
     <string name="adjust_qty_hint">Quantity (+ in, − out)</string>
     <string name="adjust_reason">Reason</string>
@@ -3708,11 +3697,7 @@ You can change this any time from this screen.</string>
     <string name="live_sent">Sent. On the computer, say yes to replace its book with this phone’s.</string>
     <string name="live_receive">Take a shop’s book on this phone</string>
     <string name="live_receive_steps">On the phone that has the shop’s book, open Backup → Live sync → Join, and scan this code. Both phones must be on the same WiFi. This window waits 15 minutes.</string>
-    <string name="live_receive_offer">“%1$s” wants to give this phone the shop’s book.
-
-Code: %2$s — the same four digits must show on that phone.
-
-This phone’s own book will be replaced by the shop’s. After this, the phones keep one book together through the internet relay.</string>
+    <string name="live_receive_offer">“%1$s” wants to give this phone the shop’s book.\n\nCode: %2$s — the same four digits must show on that phone.\n\nThis phone’s own book will be replaced by the shop’s. After this, the phones keep one book together through the internet relay.</string>
     <string name="live_receive_done">Done. This phone now keeps the shop’s book together with its other devices.</string>
     <string name="live_receive_no_wifi">This phone is not on a WiFi network. Join the shop’s WiFi and try again.</string>
     <string name="live_sent_phone">Sent. On the other phone, say yes to take this book. The two phones then meet through the internet relay.</string>
@@ -3740,7 +3725,7 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="live_status_not_accepted">The computer did not say yes in time. To join, scan its live sync code again.</string>
     <string name="live_status_not_here">The computer answered, but it is not keeping this book right now. Open this book’s business on the computer.</string>
     <string name="live_status_relay">Live with %1$s through the internet. Last update: %2$s</string>
-    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
+    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation-313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
     <string name="live_relay">Also through the internet</string>
     <string name="wifi_take_too_big">The computer’s book is too big for this phone’s memory or free space. Close other apps and try again, or move the book with a backup file.</string>
     <string name="live_devices_open">Devices and conflicts</string>
@@ -3777,4 +3762,17 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="products_export_failed">The products file could not be made.</string>
     <string name="save_failed_storage_full">Not saved: the phone\'s storage is full. Free some space, then enter it again.</string>
     <string name="save_failed_not_saved">Not saved: something went wrong. Please check and enter it again.</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d correction written</item>
+        <item quantity="other">%1$d corrections written</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">Done — %1$d reminder opened today</item>
+        <item quantity="other">Done — %1$d reminders opened today</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">EXPIRED \u00B7 %1$d day ago</item>
+        <item quantity="other">EXPIRED \u00B7 %1$d days ago</item>
+    </plurals>
+    <string name="voice_language_missing_phone">Your phone does not have that language. Listening in the phone\'s own language.</string>
 </resources>

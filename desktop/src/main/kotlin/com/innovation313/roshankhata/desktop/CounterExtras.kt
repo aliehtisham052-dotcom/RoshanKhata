@@ -92,7 +92,7 @@ fun ItemGridPane(products: List<Product>, onHand: Map<Long, Double?>, draft: Cou
                         color = c.inkSoft, fontSize = 13.sp, maxLines = 1, softWrap = false
                     )
                     if (inTicket > 0.0) Text("× " + Calc.trim(inTicket), color = Look.accent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    else one?.let { onHand[it.id] }?.let { Text(Calc.trim(it) + (g.main.defaultUnit?.let { u -> " $u" } ?: ""), color = if (it <= 0.0) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1) }
+                    else one?.let { onHand[it.id] }?.let { Text(Calc.trim(it) + (com.innovation313.roshankhata.data.UnitWords.label(g.main.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" }), color = if (it <= 0.0) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1) }
                 }
             }
         }
@@ -157,7 +157,7 @@ fun CustomerScreen(draft: CounterDraft, shopName: String, qr: androidx.compose.u
                         Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(line.name, color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                Text(Calc.trim(line.qtyValue) + (line.unit?.let { " $it" } ?: "") + " × " + Format.money(line.rateValue), color = c.inkSoft, fontSize = 17.sp, maxLines = 1)
+                                Text(Calc.trim(line.qtyValue) + (com.innovation313.roshankhata.data.UnitWords.label(line.unit).let { u -> if (u.isEmpty()) "" else " $u" }) + " × " + Format.money(line.rateValue), color = c.inkSoft, fontSize = 17.sp, maxLines = 1)
                             }
                             Text(Format.money(line.total), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                         }

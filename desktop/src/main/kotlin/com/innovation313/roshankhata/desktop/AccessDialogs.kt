@@ -326,7 +326,7 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
             }
             busy = false
             problem = when (r) {
-                null -> words.text(W.lock_pin_wait, Access.waitSeconds(account = Access.OWNER))
+                null -> Access.waitSeconds(account = Access.OWNER).let { words.plural(WP.n_wait_seconds, it, it) }
                 false -> words.text(if (recover) W.access_recovery_wrong else W.access_wrong_pin)
                 true -> null
             }

@@ -15,7 +15,7 @@ fun orderText(words: Words, shopName: String?, o: PurchaseOrderWithLines, partyN
     b.append(words.text(W.po_message_head, o.order.orderNumber, shopName ?: words.text(W.app_name))).append('\n')
     b.append(Format.dateOnly(o.order.timestamp)).append('\n').append(Format.name(partyName)).append("\n\n")
     o.items.forEachIndexed { i, l ->
-        b.append(i + 1).append(". ").append(l.itemName).append(" — ").append(Calc.trim(l.quantity)).append(l.unit?.let { " $it" } ?: "")
+        b.append(i + 1).append(". ").append(l.itemName).append(" — ").append(Calc.trim(l.quantity)).append(com.innovation313.roshankhata.data.UnitWords.label(l.unit).let { u -> if (u.isEmpty()) "" else " $u" })
         l.rate?.let { b.append(" @ ").append(Format.money(it)) }
         b.append('\n')
     }
