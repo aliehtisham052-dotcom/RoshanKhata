@@ -152,6 +152,10 @@ fun CounterSalePane(
     var voiding by remember { mutableStateOf<SaleSummary?>(null) }
     var returning by remember { mutableStateOf<com.innovation313.roshankhata.screens.ReturnDraft?>(null) }
     var voidingReturn by remember { mutableStateOf<com.innovation313.roshankhata.data.ReturnSummary?>(null) }
+    // Who gave their PIN for the void or return now open (null: the user's own right); the DAO refuses one nobody allowed (23 Oct 2026).
+    var voidingBy by remember { mutableStateOf<String?>(null) }
+    var returningBy by remember { mutableStateOf<String?>(null) }
+    var voidingReturnBy by remember { mutableStateOf<String?>(null) }
     val returns by remember(tick) { dao.observeReturns() }.collectAsState(emptyList())
     var showHeld by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
@@ -163,6 +167,11 @@ fun CounterSalePane(
     override?.let { (what, then) -> OverrideDialog(dao, what, onClose = { override = null }) { by -> then(by) } }
     fun allowed(p: com.innovation313.roshankhata.data.Access.Permission, what: String, then: (String?) -> Unit) {
         if (com.innovation313.roshankhata.data.Access.can(p)) then(null) else override = what to { by -> then(by) }
+    }
+    /** A failed counter write: the counter's own words where it knows the reason, else the general "not saved" with it. */
+    fun counterFail(e: Throwable): String {
+        val known = com.innovation313.roshankhata.screens.counterFailWord(e, "")
+        return if (known.isEmpty()) failText(words, e) else words.text(known)
     }
     val searchFocus = remember { FocusRequester() }
     val discountFocus = remember { FocusRequester() }
@@ -286,7 +295,9 @@ fun CounterSalePane(
                     onChanged()
                 }.onFailure { e ->
                     told = if (e is Counter.ExpiredStock) words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
-                        else failText(words, e)
+                        else counterFail(e)
+                    // A held ticket another counter rang up meanwhile: this one is no longer held (23 Oct 2026).
+                    if (e is com.innovation313.roshankhata.data.CounterRefused && e.why == com.innovation313.roshankhata.data.CounterRefused.Why.HELD_GONE) draft.heldId = null
                 }
             } finally {
                 draft.posting = false
@@ -302,7 +313,7 @@ fun CounterSalePane(
             try {
                 val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
                 held.onSuccess { draft.clear(); tick++ }
-                    .onFailure { e -> told = failText(words, e) }
+                    .onFailure { e -> told = counterFail(e) }
             } finally {
                 draft.posting = false
             }
@@ -439,9 +450,10 @@ fun CounterSalePane(
             // squeeze the ticket being rung up (21 Oct 2026, the critical review).
             Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             RecentSales(recent.take(8), words,
-                onVoid = { s -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { voiding = s } },
+                onVoid = { s -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { by -> voidingBy = by; voiding = s } },
                 onReturn = { s ->
-                    allowed(com.innovation313.roshankhata.data.Access.Permission.RETURN, words.text(W.pos_return) + " " + s.saleNumber) {
+                    allowed(com.innovation313.roshankhata.data.Access.Permission.RETURN, words.text(W.pos_return) + " " + s.saleNumber) { by ->
+                        returningBy = by
                         scope.launch {
                             val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
                             val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
@@ -456,7 +468,7 @@ fun CounterSalePane(
                         if (id != null) onInvoice(id)
                     }
                 })
-            RecentReturns(returns.take(6), words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { voidingReturn = r } })
+            RecentReturns(returns.take(6), words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
             }
         }
 
@@ -591,12 +603,12 @@ fun CounterSalePane(
                     draft.posting = true
                     scope.launch {
                         try {
-                            val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems()) } }
+                            val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems(), allowedBy = returningBy) } }
                             r.onSuccess { id ->
                                 val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                 told = words.text(W.pos_return_posted, number)
                                 returning = null; tick++; onChanged()
-                            }.onFailure { problem = failText(words, it) }
+                            }.onFailure { problem = counterFail(it) }
                         } finally { draft.posting = false }
                     }
                 })
@@ -611,14 +623,14 @@ fun CounterSalePane(
                 FluentButton(word(W.pos_void_return), {
                     scope.launch {
                         val refusal = withContext(Dispatchers.IO) { runCatching { dao.returnVoidRefusal(r.id) }.getOrNull() }
-                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason) }.getOrDefault(false) }
+                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidReturn(r.id, reason, allowedBy = voidingReturnBy) }.getOrDefault(false) }
                         voidingReturn = null; tick++; onChanged()
                         // Said only when it happened (21 Oct 2026: the screen said "voided" either way), and why not
                         // when it did not (22 Oct 2026: a closed day's return is not voided).
                         told = when {
                             ok -> words.text(W.pos_voided) + " " + r.returnNumber
                             refusal == SaleMath.VoidRefusal.DAY_CLOSED -> words.text(W.pos_return_void_day_closed)
-                            else -> words.text(W.backup_failed)
+                            else -> words.text(W.pos_void_failed)
                         }
                     }
                 }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
@@ -637,14 +649,10 @@ fun CounterSalePane(
                         // A ticket with goods already back, or from a day that is closed, is not voided:
                         // a return is the way (21 Oct 2026), and the screen says which.
                         val refusal = withContext(Dispatchers.IO) { runCatching { dao.voidRefusal(s.id) }.getOrNull() }
-                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason) }.getOrDefault(false) }
+                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason, allowedBy = voidingBy) }.getOrDefault(false) }
                         voiding = null; tick++; onChanged()
-                        told = when {
-                            ok -> words.text(W.pos_voided) + " " + s.saleNumber
-                            refusal == SaleMath.VoidRefusal.HAS_RETURNS -> words.text(W.pos_void_has_returns)
-                            refusal == SaleMath.VoidRefusal.DAY_CLOSED -> words.text(W.pos_void_day_closed)
-                            else -> words.text(W.backup_failed)
-                        }
+                        told = if (ok) words.text(W.pos_voided) + " " + s.saleNumber
+                            else words.text(com.innovation313.roshankhata.screens.voidRefusalWord(refusal, W.pos_void_failed))
                     }
                 }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
             }) {

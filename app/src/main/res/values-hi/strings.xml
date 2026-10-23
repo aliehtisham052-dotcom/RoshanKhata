@@ -3572,4 +3572,16 @@
     <string name="live_status_relay">%1$s के साथ इंटरनेट से लाइव। आख़िरी अपडेट: %2$s</string>
     <string name="live_relay_help">जब फ़ोन दुकान के वाई-फ़ाई से दूर हो, उसके बदलाव Innovation 313 के रिले से जाते हैं, इस खाते की अपनी चाबी से बंद: रिले उन्हें पढ़ नहीं सकता, और ज़्यादा से ज़्यादा 7 दिन रखता है। दोनों डिवाइस के लिए एक ही स्विच। ऐप बंद हो तो Google का Firebase फ़ोन को सिर्फ़ इतना बताता है कि कुछ इंतज़ार में है; खाते की कोई चीज़ उसके पास नहीं जाती।</string>
     <string name="live_relay">इंटरनेट से भी</string>
+    <string name="pos_void_shift_closed">जिस शिफ़्ट में यह बिक्री हुई थी वह गिनकर बंद हो चुकी है। रद्द करने के बजाय वापसी करें।</string>
+    <string name="pos_customer_binned">यह ग्राहक रीसायकल बिन में है। पहले ग्राहक को वापस लाएँ। कुछ नहीं लिखा गया।</string>
+    <string name="pos_held_gone">यह रोका हुआ टिकट पहले ही बिक चुका है या हटाया जा चुका है, शायद किसी और डिवाइस पर। कुछ नहीं लिखा गया।</string>
+    <string name="pos_ticket_not_posted">यह बिक्री अब दर्ज नहीं रही (रद्द या हटा दी गई)। कुछ नहीं लिखा गया।</string>
+    <string name="pos_post_failed">बिक्री सहेजी नहीं गई। कुछ नहीं लिखा गया; टिकट अभी काउंटर पर है।</string>
+    <string name="pos_hold_failed">टिकट रोका नहीं जा सका। यह अभी काउंटर पर है।</string>
+    <string name="pos_void_failed">बिक्री रद्द नहीं हो सकी। कुछ भी नहीं बदला।</string>
+    <string name="pos_return_failed">वापसी सहेजी नहीं गई। कुछ नहीं लिखा गया।</string>
+    <string name="book_merge_failed">कुछ नहीं जोड़ा गया। यह खाता जैसा था वैसा है।</string>
+    <string name="products_export_failed">सामान की फ़ाइल नहीं बन सकी।</string>
+    <string name="save_failed_storage_full">सहेजा नहीं गया: फ़ोन की मेमोरी भर गई है। कुछ जगह खाली करें, फिर दोबारा दर्ज करें।</string>
+    <string name="save_failed_not_saved">सहेजा नहीं गया: कोई गड़बड़ी हुई। कृपया देखकर दोबारा दर्ज करें।</string>
 </resources>

@@ -147,6 +147,21 @@ object Access {
     }
 
     /**
+     * The data layer's own gate (23 Oct 2026, the review: the role checks
+     * lived only in the screens, so one screen that forgot its gate let a
+     * cashier void, refund or change stock with no PIN). [p] goes through when
+     * the signed-in user may, or when [allowedBy] names who gave their PIN for
+     * it (the `by` the screen's PIN prompt hands back); otherwise
+     * [CounterRefused] with [CounterRefused.Why.NOT_ALLOWED], and nothing is written.
+     */
+    fun requireAllowed(p: Permission, allowedBy: String?) {
+        if (!can(p) && allowedBy.isNullOrBlank()) throw CounterRefused(CounterRefused.Why.NOT_ALLOWED, "not allowed: $p")
+    }
+
+    /** " · <who allowed it>" for an audit row's detail, or nothing when the user's own right was enough. */
+    fun allowedNote(allowedBy: String?): String = allowedBy?.takeIf { it.isNotBlank() }?.let { " · $it" }.orEmpty()
+
+    /**
      * Counter mode on or off for this device. The screens ask for the owner's
      * PIN first (and refuse to turn it on while the book has none). Turning it
      * on locks the counter at once (22 Oct 2026, the review: it left the owner

@@ -117,6 +117,7 @@ class PartyDetailActivity : BaseActivity() {
         private const val STATE_CAMERA_PATH = "camera_path"
         private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
         private const val STATE_CAMERA_TARGET = "camera_target"
+        private const val STATE_PENDING_BILL = "pending_bill_photo"
 
         /**
          * A spoken entry, handed over from the ledger for the owner to check.
@@ -137,6 +138,18 @@ class PartyDetailActivity : BaseActivity() {
      * dialog reads it when Save is pressed.
      */
     private var pendingBillPhoto: String? = null
+
+    /**
+     * A bill photo that came back with no form open to take it (23 Oct 2026,
+     * the review): the screen was rebuilt while the camera was in front —
+     * turned, a scanner connecting, Android reclaiming it — and the form went
+     * with it. The photo is kept for the next new entry's form (its chip
+     * says it is there) instead of being deleted as a cancelled form's.
+     */
+    private var billPhotoKept = false
+
+    /** The add-entry form while it is open: dismissed with the screen, so its window is never leaked. */
+    private var entryDialog: androidx.appcompat.app.AlertDialog? = null
 
     /**
      * The signature taken on the new-entry form (18 Oct). An entry has no
@@ -176,6 +189,8 @@ class PartyDetailActivity : BaseActivity() {
             // Replacing an earlier pick: the old file is nothing but bytes now.
             BillPhoto.delete(pendingBillPhoto)
             pendingBillPhoto = path
+            // No form to take it (this screen was rebuilt while the camera was up): kept for the next one.
+            billPhotoKept = entryDialog?.isShowing != true
             billButton?.setText(R.string.entry_bill_chip_done)
         }
     }
@@ -392,6 +407,8 @@ class PartyDetailActivity : BaseActivity() {
         scanFlow.restoreState(savedInstanceState, STATE_SCAN_CAMERA_PATH)
         cameraTarget = savedInstanceState?.getString(STATE_CAMERA_TARGET)
             ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
+        // A bill photo the form had before the screen was rebuilt: the form is gone, the photo is kept for the next.
+        savedInstanceState?.getString(STATE_PENDING_BILL)?.let { pendingBillPhoto = it; billPhotoKept = true }
         setContentView(R.layout.activity_party_detail)
         onBackPressedDispatcher.addCallback(this, selectionBack)
 
@@ -705,13 +722,20 @@ class PartyDetailActivity : BaseActivity() {
         etAmount.showSoftInputOnFocus = false
 
         // Fresh dialog, fresh attachment. Anything picked for a dialog that was
-        // then cancelled is a file nobody will ever look at.
-        BillPhoto.delete(pendingBillPhoto)
-        pendingBillPhoto = null
+        // then cancelled is a file nobody will ever look at — except a photo that
+        // came back to a rebuilt screen (billPhotoKept): that one is this form's.
+        // An edit has no bill chip, so a kept photo waits for a new entry.
+        val keptPhoto = billPhotoKept && pendingBillPhoto != null
+        if (!keptPhoto) {
+            BillPhoto.delete(pendingBillPhoto)
+            pendingBillPhoto = null
+        } else if (editing == null) {
+            billPhotoKept = false
+        }
         pendingSignature = null
 
         billButton = view.findViewById(R.id.btnAddBill)
-        billButton?.setText(R.string.entry_bill_chip)
+        billButton?.setText(if (keptPhoto && editing == null) R.string.entry_bill_chip_done else R.string.entry_bill_chip)
         // Photo only. The chip itself is wired further down, once the two
         // scans it can also offer exist (see "One chip, two ways in").
         fun pickPhotoOnly() {
@@ -1904,6 +1928,9 @@ class PartyDetailActivity : BaseActivity() {
             }
 
             pendingSignature = sigRow.current
+            // The photo now belongs to this entry (23 Oct 2026, the review): left pending, the next form's
+            // "fresh attachment" deleted the file the saved entry points at.
+            pendingBillPhoto = null
 
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.
@@ -1912,10 +1939,19 @@ class PartyDetailActivity : BaseActivity() {
         }
 
         val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
+        entryDialog = dialog
         // A scan that comes back after the form is gone has nowhere to go.
         dialog.setOnDismissListener {
             onScanUsed = null
             onPaymentScanUsed = null
+            // Closed by the owner (not with the screen, which lets go of it first in onDestroy): a photo
+            // no entry took is a cancelled form's, and goes now rather than onto the next entry.
+            if (entryDialog === dialog) {
+                entryDialog = null
+                BillPhoto.delete(pendingBillPhoto)
+                pendingBillPhoto = null
+                billPhotoKept = false
+            }
         }
 
         btnSupplierBill.setOnClickListener {
@@ -3251,6 +3287,20 @@ class PartyDetailActivity : BaseActivity() {
         cameraPath?.let { outState.putString(STATE_CAMERA_PATH, it) }
         scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
         cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
+        pendingBillPhoto?.let { outState.putString(STATE_PENDING_BILL, it) }
+    }
+
+    override fun onDestroy() {
+        // The open form goes with the screen (23 Oct 2026, the review): a dialog left on a destroyed
+        // screen leaks its window. Its photo stays (onSaveInstanceState) when the screen is only rebuilt;
+        // when the owner leaves, a photo no entry took is nothing but bytes.
+        val leaving = isFinishing && !isChangingConfigurations
+        entryDialog?.let { d -> entryDialog = null; runCatching { d.dismiss() } }
+        if (leaving) {
+            BillPhoto.delete(pendingBillPhoto)
+            pendingBillPhoto = null
+        }
+        super.onDestroy()
     }
 
     /**

@@ -323,8 +323,21 @@ object SaleMath {
         /** Goods from it have come back: voiding would give them back twice. */
         HAS_RETURNS,
         /** Its day has been closed: the closed day's figures stay as counted; a return is dated today. */
-        DAY_CLOSED
+        DAY_CLOSED,
+        /**
+         * The shift it was rung up in has been closed (23 Oct 2026, the review): its cash was counted
+         * in that drawer, and a void now would take it out of today's with neither shift saying so.
+         * A return, dated now, is counted in the drawer that hands the money back.
+         */
+        SHIFT_CLOSED
     }
+
+    /**
+     * A ticket refused for one of the counter's own checks, carrying the
+     * problem so a screen can say it in words (23 Oct 2026, the review: the
+     * English message reached an Urdu till). The message stays as it was.
+     */
+    class Refused(val problem: Problem) : IllegalArgumentException("sale refused: $problem")
 
     /**
      * Every check a sale must pass before anything is written. Returns the
@@ -378,6 +391,28 @@ object SaleMath {
 object SaleNumber {
     const val PREFIX = "S-"
     fun next(highest: Int): String = PREFIX + "%06d".format(Digits.FIGURES, highest + 1) + NumberMark.suffix()
+}
+
+/**
+ * A counter write the data layer refused, with the reason a screen can put
+ * into the till's own language (23 Oct 2026, the review: "sale refused: the
+ * customer is in the recycle bin" reached an Urdu counter in English, and a
+ * failed sale said "The backup could not be created"). The message stays
+ * English for the log; screens word [why] ([com.innovation313.roshankhata.screens.counterFailWord]).
+ */
+class CounterRefused(val why: Why, message: String) : IllegalArgumentException(message) {
+    enum class Why {
+        /** The ticket's (or the return's) customer is in the recycle bin. */
+        CUSTOMER_BINNED,
+        /** The held ticket was rung up or dropped already (on this counter or another). */
+        HELD_GONE,
+        /** The ticket is no longer a posted one (voided, binned) — a return against it is refused. */
+        NOT_POSTED,
+        /** The return's customer or lines are not the ticket's own. */
+        NOT_THIS_TICKET,
+        /** The signed-in user may not do this, and nobody allowed it ([Access.can]). */
+        NOT_ALLOWED
+    }
 }
 
 /**

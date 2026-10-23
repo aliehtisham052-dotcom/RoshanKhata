@@ -3572,4 +3572,16 @@
     <string name="live_status_relay">%1$s এর সাথে ইন্টারনেট দিয়ে লাইভ। শেষ হালনাগাদ: %2$s</string>
     <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation 313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ ৭ দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
     <string name="live_relay">ইন্টারনেট দিয়েও</string>
+    <string name="pos_void_shift_closed">যে শিফটে এই বিক্রি হয়েছিল তা গুনে বন্ধ হয়ে গেছে। বাতিল না করে ফেরত করুন।</string>
+    <string name="pos_customer_binned">এই গ্রাহক রিসাইকেল বিনে আছেন। আগে গ্রাহককে ফিরিয়ে আনুন। কিছুই লেখা হয়নি।</string>
+    <string name="pos_held_gone">এই রাখা টিকিটটি আগেই বিক্রি হয়েছে বা সরানো হয়েছে, হয়তো অন্য ডিভাইসে। কিছুই লেখা হয়নি।</string>
+    <string name="pos_ticket_not_posted">এই বিক্রিটি আর নথিভুক্ত নেই (বাতিল বা সরানো হয়েছে)। কিছুই লেখা হয়নি।</string>
+    <string name="pos_post_failed">বিক্রি সংরক্ষণ হয়নি। কিছুই লেখা হয়নি; টিকিট এখনও কাউন্টারে আছে।</string>
+    <string name="pos_hold_failed">টিকিট রাখা যায়নি। এটি এখনও কাউন্টারে আছে।</string>
+    <string name="pos_void_failed">বিক্রি বাতিল করা যায়নি। কিছুই বদলায়নি।</string>
+    <string name="pos_return_failed">ফেরত সংরক্ষণ হয়নি। কিছুই লেখা হয়নি।</string>
+    <string name="book_merge_failed">কিছুই যোগ হয়নি। এই খাতা আগের মতোই আছে।</string>
+    <string name="products_export_failed">পণ্যের ফাইল তৈরি করা যায়নি।</string>
+    <string name="save_failed_storage_full">সংরক্ষণ হয়নি: ফোনের স্টোরেজ ভরে গেছে। কিছু জায়গা খালি করে আবার লিখুন।</string>
+    <string name="save_failed_not_saved">সংরক্ষণ হয়নি: কিছু একটা ভুল হয়েছে। দয়া করে দেখে আবার লিখুন।</string>
 </resources>

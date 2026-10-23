@@ -81,8 +81,8 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
         val s = closing ?: return@LaunchedEffect
         withContext(Dispatchers.IO) {
             val now = System.currentTimeMillis()
-            taken = dao.cashTakenBy(s.user, s.openedAt, now)
-            back = dao.cashRefundedBy(s.user, s.openedAt, now)
+            taken = com.innovation313.roshankhata.data.ShiftMath.taken(dao, s, now)
+            back = com.innovation313.roshankhata.data.ShiftMath.back(dao, s, now)
         }
     }
     fun who(user: String?) = user?.let { Format.name(it) } ?: words.text(W.access_owner)
@@ -108,7 +108,7 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                         float?.let { f ->
                             busy = true
                             scope.launch {
-                                val r = withContext(Dispatchers.IO) { runCatching { dao.openShift(Shift(user = me, openingFloat = LineMath.round(f))) } }
+                                val r = withContext(Dispatchers.IO) { runCatching { dao.openShift(Shift(user = me, device = com.innovation313.roshankhata.data.NumberMark.mark, openingFloat = LineMath.round(f))) } }
                                 told = r.fold({ words.text(W.audit_shift_opened) }, { words.text(W.shift_already_open) })
                                 floatText = ""; busy = false; onChanged()
                             }

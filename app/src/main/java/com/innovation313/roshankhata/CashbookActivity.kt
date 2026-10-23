@@ -195,7 +195,8 @@ class CashbookActivity : BaseActivity() {
                         return@setPositiveButton
                     }
                     val close = DayClose(
-                        day = ReminderLog.dayOf(now),
+                        // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
+                        day = DayCloseMath.businessDayOf(now),
                         opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0,
                         cashIn = LineMath.round(cashIn),
                         cashOut = LineMath.round(cashOut),

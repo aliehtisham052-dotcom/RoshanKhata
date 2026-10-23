@@ -3519,4 +3519,16 @@ Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyim
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
     <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
     <string name="live_relay">Juga lewat internet</string>
+    <string name="pos_void_shift_closed">Shift tempat penjualan ini dicatat sudah ditutup dan dihitung. Buat retur alih-alih membatalkannya.</string>
+    <string name="pos_customer_binned">Pelanggan ini ada di tempat sampah. Pulihkan pelanggan terlebih dahulu. Tidak ada yang ditulis.</string>
+    <string name="pos_held_gone">Tiket yang ditahan ini sudah dijual atau dihapus, mungkin di perangkat lain. Tidak ada yang ditulis.</string>
+    <string name="pos_ticket_not_posted">Penjualan ini sudah tidak tercatat (dibatalkan atau dihapus). Tidak ada yang ditulis.</string>
+    <string name="pos_post_failed">Penjualan tidak tersimpan. Tidak ada yang ditulis; tiket masih di kasir.</string>
+    <string name="pos_hold_failed">Tiket tidak dapat ditahan. Tiket masih di kasir.</string>
+    <string name="pos_void_failed">Penjualan tidak dapat dibatalkan. Tidak ada yang berubah.</string>
+    <string name="pos_return_failed">Retur tidak tersimpan. Tidak ada yang ditulis.</string>
+    <string name="book_merge_failed">Tidak ada yang ditambahkan. Buku ini tidak berubah.</string>
+    <string name="products_export_failed">File produk tidak dapat dibuat.</string>
+    <string name="save_failed_storage_full">Tidak tersimpan: penyimpanan ponsel penuh. Kosongkan sedikit ruang, lalu masukkan lagi.</string>
+    <string name="save_failed_not_saved">Tidak tersimpan: terjadi kesalahan. Silakan periksa dan masukkan lagi.</string>
 </resources>

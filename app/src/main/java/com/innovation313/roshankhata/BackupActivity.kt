@@ -782,7 +782,8 @@ class BackupActivity : BaseActivity() {
             val p = plan.getOrElse { e ->
                 val msg = if (e is com.innovation313.roshankhata.data.BookMerge.Refused)
                     getString(com.innovation313.roshankhata.data.WordIds.string(com.innovation313.roshankhata.data.BookMerge.refusalWord(e)))
-                else e.message ?: getString(R.string.backup_failed)
+                // In the owner's words, never the English reason or the backup's sentence (23 Oct 2026, the review).
+                else getString(R.string.book_merge_failed).also { android.util.Log.w("RoshanKhata", "merge plan failed", e) }
                 MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.merge_title).setMessage(msg).setPositiveButton(android.R.string.ok, null).show()
                 return@launch
             }
@@ -815,7 +816,16 @@ class BackupActivity : BaseActivity() {
             result.onSuccess { done ->
                 Toast.makeText(this@BackupActivity, Digits.string(resources, R.string.merge_done, done.rows, done.renumbered), Toast.LENGTH_LONG).show()
             }.onFailure { e ->
-                Toast.makeText(this@BackupActivity, e.message ?: getString(R.string.backup_failed), Toast.LENGTH_LONG).show()
+                android.util.Log.w("RoshanKhata", "merge failed", e)
+                // In the owner's words (23 Oct 2026, the review): the safety copy's own sentence, a refusal's, or "nothing was added".
+                val keepFailed = getString(R.string.restore_keep_failed)
+                val msg = when {
+                    e is com.innovation313.roshankhata.data.BookMerge.Refused ->
+                        getString(com.innovation313.roshankhata.data.WordIds.string(com.innovation313.roshankhata.data.BookMerge.refusalWord(e)))
+                    e.message == keepFailed -> keepFailed
+                    else -> getString(R.string.book_merge_failed)
+                }
+                Toast.makeText(this@BackupActivity, msg, Toast.LENGTH_LONG).show()
             }
         }
     }

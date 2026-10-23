@@ -22,10 +22,16 @@ import com.innovation313.roshankhata.words.word
  * PIN window; with no book open nothing is allowed that is not already.
  */
 object Gates {
-    internal var ask: ((Access.Permission, () -> Unit) -> Unit)? = null
+    internal var ask: ((Access.Permission, (String?) -> Unit) -> Unit)? = null
 
-    fun need(p: Access.Permission, then: () -> Unit) {
-        if (Access.can(p)) then() else ask?.invoke(p, then)
+    fun need(p: Access.Permission, then: () -> Unit) = needBy(p) { then() }
+
+    /**
+     * As [need], handing [then] who gave their PIN (null when the signed-in user's own right was
+     * enough): the DAO's gated writes take it as `allowedBy` (23 Oct 2026, the review).
+     */
+    fun needBy(p: Access.Permission, then: (String?) -> Unit) {
+        if (Access.can(p)) then(null) else ask?.invoke(p, then)
     }
 
     /** A change to what is already written: an edit, a delete, the bin. */
@@ -35,14 +41,14 @@ object Gates {
 /** Hosts [Gates] for [content]: the PIN window for whatever was asked. */
 @Composable
 fun GateHost(dao: KhataDao, content: @Composable () -> Unit) {
-    var pending by remember { mutableStateOf<Pair<Access.Permission, () -> Unit>?>(null) }
+    var pending by remember { mutableStateOf<Pair<Access.Permission, (String?) -> Unit>?>(null) }
     DisposableEffect(dao) {
         Gates.ask = { p, then -> pending = p to then }
         onDispose { Gates.ask = null }
     }
     content()
     pending?.let { (p, then) ->
-        OverrideDialog(dao, whatWord(p), ownerOnly = Access.ownerOnly(p), onClose = { pending = null }) { _ -> then() }
+        OverrideDialog(dao, whatWord(p), ownerOnly = Access.ownerOnly(p), onClose = { pending = null }) { by -> then(by) }
     }
 }
 
