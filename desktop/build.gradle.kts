@@ -84,7 +84,13 @@ compose.desktop {
             // English, and Urdu, Arabic, Sindhi... month and day names, AM/PM and the date picker came out
             // in English. CI's full JDK always had it, so every test already ran with it.
             // java.net.http (23 Oct 2026): live sync's line to the relay (JdkLines) is the JDK's own WebSocket.
-            modules("java.sql", "jdk.unsupported", "java.logging", "jdk.localedata", "java.net.http")
+            // jdk.crypto.ec (23 Oct 2026, R06): the SunEC provider. On JDK 17 (the toolchain and the
+            // runner's JDK) EC is a module of its own that jlink adds only when named; without it TLS
+            // has no ECDHE suite and no key-share group, so every HTTPS/WSS call (relays, kill switch,
+            // update check, the live line) failed in the handshake. JDK 22+ moved it into java.base
+            // (JDK-8308398) and keeps the module as an empty, deprecated one. desktop.yml's
+            // "Packaged runtime check" runs RuntimeSelfCheck inside the app image's own Java.
+            modules("java.sql", "jdk.unsupported", "java.logging", "jdk.localedata", "java.net.http", "jdk.crypto.ec")
             windows {
                 menu = true
                 menuGroup = "Innovation 313"
