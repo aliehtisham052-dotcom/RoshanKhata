@@ -3572,4 +3572,8 @@
     <string name="live_status_relay">%1$s এর সাথে ইন্টারনেট দিয়ে লাইভ। শেষ হালনাগাদ: %2$s</string>
     <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation 313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ ৭ দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
     <string name="live_relay">ইন্টারনেট দিয়েও</string>
+    <string name="live_pair_other_business">এই ফোনের খাতা এই কম্পিউটারে “%1$s” ব্যবসায় আগে থেকেই লাইভ চলছে। সেই ব্যবসাটি খুলুন: এখানে দ্বিতীয় কপি ধীরে ধীরে সেটি থেকে আলাদা হয়ে যাবে।</string>
+    <string name="fc_look_in">এখানে দেখুন:</string>
+    <string name="fc_folder_name">ফোল্ডার:</string>
+    <string name="fc_files_of_type">ফাইলের ধরন:</string>
 </resources>

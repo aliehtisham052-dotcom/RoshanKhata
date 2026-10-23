@@ -39,19 +39,30 @@ class AppPrefs(private val file: File) {
         save()
     }
 
-    /** Which optional invoice fields the shop uses (the phone's InvoiceFeatureSettings); all on until turned off. */
-    fun invoiceFields(): InvoiceFields = InvoiceFields(
-        discount = flag(KEY_INV_DISCOUNT), tax = flag(KEY_INV_TAX), charge = flag(KEY_INV_CHARGE),
-        received = flag(KEY_INV_RECEIVED), note = flag(KEY_INV_NOTE), dueDate = flag(KEY_INV_DUE)
-    )
+    /**
+     * Which optional invoice fields the shop uses (the phone's InvoiceFeatureSettings); all on until turned off.
+     * Per business (R78, 23 Oct 2026), as the phone's invoice_feature_settings_b<id>: one shop turning Tax off
+     * hid it on every other shop's new invoices. Business 1 keeps the keys it always had; the others' carry
+     * "_b<id>" (an id is never given out again, so a deleted shop's keys are never read by another).
+     */
+    fun invoiceFields(businessId: Long = 1L): InvoiceFields {
+        val s = invoiceSuffix(businessId)
+        return InvoiceFields(
+            discount = flag(KEY_INV_DISCOUNT + s), tax = flag(KEY_INV_TAX + s), charge = flag(KEY_INV_CHARGE + s),
+            received = flag(KEY_INV_RECEIVED + s), note = flag(KEY_INV_NOTE + s), dueDate = flag(KEY_INV_DUE + s)
+        )
+    }
 
     @Synchronized
-    fun setInvoiceFields(f: InvoiceFields) {
+    fun setInvoiceFields(f: InvoiceFields, businessId: Long = 1L) {
+        val s = invoiceSuffix(businessId)
         listOf(KEY_INV_DISCOUNT to f.discount, KEY_INV_TAX to f.tax, KEY_INV_CHARGE to f.charge,
             KEY_INV_RECEIVED to f.received, KEY_INV_NOTE to f.note, KEY_INV_DUE to f.dueDate)
-            .forEach { (k, on) -> props.setProperty(k, on.toString()) }
+            .forEach { (k, on) -> props.setProperty(k + s, on.toString()) }
         save()
     }
+
+    private fun invoiceSuffix(businessId: Long) = if (businessId == 1L) "" else "_b$businessId"
 
     private fun flag(key: String): Boolean = props.getProperty(key)?.toBooleanStrictOrNull() ?: true
 

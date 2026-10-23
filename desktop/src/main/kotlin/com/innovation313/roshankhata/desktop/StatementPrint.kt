@@ -127,14 +127,14 @@ class StatementPrint(
     private fun Graphics2D.text(raw: String, x: Double, y: Double, end: Boolean = false) {
         // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
         val s = com.innovation313.roshankhata.data.Digits.forPrint(raw)
-        val w = fontMetrics.stringWidth(s)
+        val w = PrintFonts.width(this, s)
         val left = when {
             !rtl && !end -> x
             !rtl && end -> x - w
             rtl && !end -> pageW - x - w
             else -> pageW - x
         }
-        drawString(s, left.toFloat(), y.toFloat())
+        PrintFonts.draw(this, s, left.toFloat(), y.toFloat())
     }
 
     override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {

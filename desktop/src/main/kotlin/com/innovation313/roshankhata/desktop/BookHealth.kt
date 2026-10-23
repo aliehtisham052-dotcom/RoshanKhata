@@ -65,8 +65,14 @@ object BookHealth {
     }
 
     /** SQLite's quick_check on [file]. A missing file is a new book and is sound. */
-    fun check(file: File): Verdict {
-        if (!file.isFile) return Verdict.SOUND
+    fun check(file: File): Verdict = checkWhy(file).first
+
+    /**
+     * [check] with the error behind its verdict, when there was one (R85, 23 Oct 2026): an unreadable book
+     * was said as "cannot open" with the reason thrown away, so errors.log and Report a problem had nothing.
+     */
+    fun checkWhy(file: File): Pair<Verdict, Throwable?> {
+        if (!file.isFile) return Verdict.SOUND to null
         return try {
             val c = BundledSQLiteDriver().open(file.absolutePath)
             try {
@@ -74,10 +80,10 @@ object BookHealth {
                 val wait = c.prepare("PRAGMA busy_timeout = 5000")
                 try { wait.step() } finally { wait.close() }
                 val s = c.prepare("PRAGMA quick_check")
-                try { if (s.step() && s.getText(0) == "ok") Verdict.SOUND else Verdict.DAMAGED } finally { s.close() }
+                try { (if (s.step() && s.getText(0) == "ok") Verdict.SOUND else Verdict.DAMAGED) to null } finally { s.close() }
             } finally { c.close() }
         } catch (e: Throwable) {
-            classify(e)
+            classify(e) to e
         }
     }
 
@@ -112,9 +118,10 @@ object BookHealth {
      * call it off the window's thread.
      */
     fun open(file: File, settings: FileShopSettings, copyDirs: List<File>): Opened {
-        when (check(file)) {
+        val (verdict, why) = checkWhy(file)
+        when (verdict) {
             Verdict.SOUND -> return Opened(DesktopDatabase.open(file), setAside = setAside(file))
-            Verdict.UNREADABLE -> throw CannotOpen(file, null)
+            Verdict.UNREADABLE -> throw CannotOpen(file, why)
             Verdict.DAMAGED -> Unit
         }
         val stamp = SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.ENGLISH).format(Date())

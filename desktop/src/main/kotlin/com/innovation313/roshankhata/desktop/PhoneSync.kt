@@ -135,7 +135,7 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> 
         }
     }
 
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.wifi_pc_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(820.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.wifi_pc_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(820.dp))) {
         Box(Modifier.fillMaxSize().background(c.surface)) {
             Column(
                 Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),

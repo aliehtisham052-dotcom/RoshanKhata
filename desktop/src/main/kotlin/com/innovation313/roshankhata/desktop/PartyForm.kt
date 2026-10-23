@@ -41,7 +41,7 @@ import com.innovation313.roshankhata.words.word
  * informs and never blocks, as on the phone.
  */
 @Composable
-fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) -> Unit, onCancel: () -> Unit, home: java.io.File? = null) {
+fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) -> Unit, onCancel: () -> Unit, home: java.io.File? = null, businessId: Long = 1L) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.name.orEmpty()) }
     var phone by remember { mutableStateOf(existing?.phone.orEmpty()) }
@@ -63,7 +63,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
         TwoWay(word(W.customer), word(W.supplier), customer) { customer = it }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FluentField(name, { name = it }, Modifier.weight(1f), label = word(W.name))
-            FluentField(phone, { phone = it }, Modifier.weight(1f), label = word(W.phone_optional), leadingIcon = "ic_phone")
+            FluentField(phone, { phone = it }, Modifier.weight(1f), label = word(W.phone_optional), leadingIcon = "ic_phone", ltr = true)
         }
         similar?.let { m ->
             Text(
@@ -87,7 +87,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
                 }
                 TextButton({
                     Photos.pick(photoTitle)?.let { src ->
-                        val target = Photos.partyFile(home, existing.id)
+                        val target = Photos.partyFile(home, businessId, existing.id)
                         if (Photos.save(src, target, max = 600)) { photo = target.absolutePath; photoVersion++; photoFailed = false } else photoFailed = true
                     }
                 }) { Text(word(if (bmp == null) W.set_photo else W.change_photo), color = c.brandGreenText) }

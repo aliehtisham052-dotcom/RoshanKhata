@@ -84,7 +84,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     // Prices are the owner's and a manager's to change (POS Phase 5); a cashier sees them.
     val mayPrice = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
 
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
         Column(
             Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)

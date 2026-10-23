@@ -77,7 +77,7 @@ fun InventoryPane(
     val may = Access.can(Access.Permission.STOCK_ADJUST)
 
     counting?.let { draft ->
-        DialogWindow(onCloseRequest = { counting = null }, onPreviewKeyEvent = escCloses { counting = null }, title = word(W.stock_count_title), state = rememberDialogState(width = fitW(640.dp), height = fitH(760.dp))) {
+        AppDialog(onCloseRequest = { counting = null }, onPreviewKeyEvent = escCloses { counting = null }, title = word(W.stock_count_title), state = rememberDialogState(width = fitW(640.dp), height = fitH(760.dp))) {
             DialogFrame(word(W.stock_count_title), onClose = { counting = null }, scroll = false, footer = {}) {
                 StockCountForm(draft, onCancel = { counting = null }, onSave = {
                     scope.launch {
@@ -180,7 +180,7 @@ private fun AdjustDialog(dao: KhataDao, words: Words, onClose: () -> Unit, done:
     // Signed (21 Oct 2026): "+ in, − out", as the box says. Read as an amount, "−5" for damaged
     // goods came out as +5 and the shelf went UP. evalPad keeps the sign; zero is nothing to adjust.
     val amount = Calc.evalPad(qty)?.takeIf { it != 0.0 }
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(560.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(560.dp))) {
         DialogFrame(title, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
@@ -245,7 +245,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
     var busy by remember { mutableStateOf(false) }
     val ready = to != null && lines.isNotEmpty() && lines.all { (Calc.evalAmount(it.second.value) ?: 0.0) > 0.0 } && !busy
     val title = word(W.transfer_title)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(620.dp), height = fitH(680.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(620.dp), height = fitH(680.dp))) {
         DialogFrame(title, onClose = onClose, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 12.sp) } }, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.transfer_title), {
