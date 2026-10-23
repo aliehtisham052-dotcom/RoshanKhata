@@ -231,7 +231,7 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
     var start by remember { mutableStateOf(existing?.startDate ?: com.innovation313.roshankhata.data.Payroll.dayOf(System.currentTimeMillis())) }
     var end by remember { mutableStateOf(existing?.endDate ?: (com.innovation313.roshankhata.data.Payroll.dayOf(System.currentTimeMillis() + 90 * day) + day - 1)) }
     var byQty by remember { mutableStateOf(existing?.measure == SchemeMath.BY_QTY) }
-    var unit by remember { mutableStateOf(existing?.unit.orEmpty()) }
+    var unit by remember { mutableStateOf(UnitWords.label(existing?.unit)) }
     var kind by remember { mutableStateOf(existing?.rewardKind ?: SchemeMath.PERCENT) }
     val targets = remember { mutableStateOf(listOf(existing?.target1, existing?.target2, existing?.target3).map { it?.let(Calc::trim).orEmpty() }) }
     val rewards = remember { mutableStateOf(listOf(existing?.reward1, existing?.reward2, existing?.reward3).map { it?.let(Calc::trim).orEmpty() }) }

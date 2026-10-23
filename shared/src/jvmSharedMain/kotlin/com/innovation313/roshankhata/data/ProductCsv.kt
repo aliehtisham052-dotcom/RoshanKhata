@@ -80,7 +80,9 @@ object ProductCsv {
         val table = CsvImport.cells(text.removePrefix("﻿")).filter { r -> r.any { it.isNotBlank() } }
         if (table.isEmpty()) return emptyList()
         val first = table.first().map { it.trim().lowercase() }
-        val hasHeader = first.any { h -> h.isNotEmpty() && HEADER_WORDS.values.any { ws -> ws.any { h.contains(it) } } } && first.none { CsvImport.amount(it) != null }
+        val dots = CsvImport.dotGroups(text)
+        fun amount(s: String): Double? = CsvImport.amount(s, dots)
+        val hasHeader = first.any { h -> h.isNotEmpty() && HEADER_WORDS.values.any { ws -> ws.any { h.contains(it) } } } && first.none { amount(it) != null }
         val body = if (hasHeader) table.drop(1) else table
         fun col(key: String): Int? = if (!hasHeader) DEFAULT_COLS[key] else first.indices.firstOrNull { i -> HEADER_WORDS.getValue(key).any { first[i].contains(it) } && EXCLUDE[key]?.none { first[i].contains(it) } ?: true }
         val cols = HEADER_WORDS.keys.associateWith { col(it) }
@@ -89,9 +91,9 @@ object ProductCsv {
             val name = cell(r, "name") ?: return@mapNotNull null
             Row(
                 name = name, category = cell(r, "category"), company = cell(r, "company"), unit = cell(r, "unit"),
-                salePrice = cell(r, "sale")?.let(CsvImport::amount), creditPrice = cell(r, "credit")?.let(CsvImport::amount),
-                costPrice = cell(r, "cost")?.let(CsvImport::amount), barcode = cell(r, "barcode")?.let(::barcodeOf),
-                lowStock = cell(r, "low")?.let(CsvImport::amount), type = cell(r, "type")
+                salePrice = cell(r, "sale")?.let { amount(it) }, creditPrice = cell(r, "credit")?.let { amount(it) },
+                costPrice = cell(r, "cost")?.let { amount(it) }, barcode = cell(r, "barcode")?.let(::barcodeOf),
+                lowStock = cell(r, "low")?.let { amount(it) }, type = cell(r, "type")
             )
         }
     }

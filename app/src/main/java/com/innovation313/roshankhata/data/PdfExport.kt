@@ -526,8 +526,13 @@ object PdfExport {
         // Written to cache: a statement is a throwaway artefact, not something
         // to quietly accumulate in the user's storage.
         val dir = File(context.cacheDir, "statements").apply { mkdirs() }
-        val safeName = partyName.replace(Regex("[^A-Za-z0-9 ]"), "").trim().replace(" ", "_")
-        val file = File(dir, "Statement_${safeName.ifEmpty { "Party" }}.pdf")
+        // Letters and digits of every script, with their vowel marks (23 Oct 2026, the review:
+        // an Urdu or Hindi name was stripped to nothing and every file was "Statement_Party.pdf").
+        // The words around it are the app's own, in its language.
+        val fileSafe = { s: String -> s.replace(Regex("[^\\p{L}\\p{M}\\p{N} ]"), "").trim().replace(Regex("\\s+"), "_").take(60) }
+        val safeName = fileSafe(partyName).ifEmpty { fileSafe(context.getString(R.string.party)) }
+        val prefix = fileSafe(context.getString(R.string.statement_pdf)).ifEmpty { "Statement" }
+        val file = File(dir, "${prefix}_${safeName.ifEmpty { "Party" }}.pdf")
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }

@@ -51,7 +51,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     val scope = rememberCoroutineScope()
     var name by remember { mutableStateOf(product.name) }
     var company by remember { mutableStateOf(product.company.orEmpty()) }
-    var unit by remember { mutableStateOf(product.defaultUnit.orEmpty()) }
+    var unit by remember { mutableStateOf(UnitWords.label(product.defaultUnit)) }
     var cash by remember { mutableStateOf(product.salePrice?.let { Calc.trim(it) }.orEmpty()) }
     var credit by remember { mutableStateOf(product.creditPrice?.let { Calc.trim(it) }.orEmpty()) }
     var type by remember { mutableStateOf(product.productType.orEmpty()) }

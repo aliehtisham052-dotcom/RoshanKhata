@@ -44,7 +44,7 @@ BUKU ANDA, DI PONSEL ANDA
 SEMBILAN BAHASA
 Inggris, Urdu, Urdu Latin, Sindhi, Arab, Persia, Hindi, Bengali, dan Indonesia — setiap layar, setiap struk.
 
-Roshan Khata dibuat oleh Innovation 313, tim kecil yang juga menjalankan toko.
+Roshan Khata dibuat oleh Innovation-313, tim kecil yang juga menjalankan toko.
 
 Bantuan: innovation313.support@gmail.com
 

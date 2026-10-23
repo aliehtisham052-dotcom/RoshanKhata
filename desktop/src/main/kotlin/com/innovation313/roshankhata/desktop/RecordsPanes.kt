@@ -333,7 +333,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                            val sub = listOfNotNull(p.company, p.category, p.defaultUnit).filter { it.isNotBlank() }
+                            val sub = listOfNotNull(p.company, p.category, p.defaultUnit?.let { com.innovation313.roshankhata.data.UnitWords.label(it) }).filter { it.isNotBlank() }
                             if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
                         }
                         p.barcode?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
@@ -662,7 +662,7 @@ fun ExpiryPane(dao: KhataDao) {
             onDismissRequest = { writingOff = null },
             title = { Text(word(W.expiry_write_off)) },
             text = {
-                Text(found?.let { (p, lot) -> word(W.expiry_write_off_confirm, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (p.defaultUnit?.let { " $it" } ?: ""), lot.batchNumber ?: p.name) }
+                Text(found?.let { (p, lot) -> word(W.expiry_write_off_confirm, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" }), lot.batchNumber ?: p.name) }
                     ?: word(W.expiry_nothing_left))
             },
             confirmButton = {
@@ -705,7 +705,7 @@ fun ExpiryPane(dao: KhataDao) {
                     Text(Format.dateOnly(b.expiryDate), color = c.textMuted, fontSize = 12.sp)
                     lots[b.itemId]?.let { (p, lot) ->
                         Text(
-                            if (lot.left > 0.0) word(W.expiry_left, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (p.defaultUnit?.let { " $it" } ?: "")) else word(W.expiry_nothing_left),
+                            if (lot.left > 0.0) word(W.expiry_left, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" })) else word(W.expiry_nothing_left),
                             color = c.textMuted, fontSize = 12.sp
                         )
                         if (b.hasExpired && lot.left > 0.0) {

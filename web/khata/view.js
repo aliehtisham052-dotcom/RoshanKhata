@@ -155,7 +155,7 @@
     foot.textContent = "";
     foot.appendChild(el("span", null, w.foot));
     foot.appendChild(el("br"));
-    foot.appendChild(el("span", "brand", w.brand + " · Innovation 313"));
+    foot.appendChild(el("span", "brand", w.brand + " · Innovation-313"));
   }
   /** A message before the page could be opened: in the reader's language, and in English beside it. */
   function say(key) {

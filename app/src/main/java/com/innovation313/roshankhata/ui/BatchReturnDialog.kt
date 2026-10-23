@@ -139,7 +139,7 @@ object BatchReturnDialog {
                 return@launch
             }
             val (product, lot) = found
-            val what = com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (product.defaultUnit?.let { " $it" } ?: "")
+            val what = com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (com.innovation313.roshankhata.data.UnitWords.label(product.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" })
             com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.expiry_write_off)
                 .setMessage(activity.getString(R.string.expiry_write_off_confirm, what, lot.batchNumber ?: product.name))

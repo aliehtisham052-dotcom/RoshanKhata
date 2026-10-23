@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">روشن کھاتہ</string>
     <string name="welcome_title">آپ کا کھاتا، محفوظ</string>
-    <string name="welcome_body">روشن کھاتا آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
+    <string name="welcome_body">روشن کھاتہ آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
     <string name="welcome_note">منسلک کرنے سے صرف بیک اپ ممکن ہوتا ہے۔ آپ کا کھاتا تب محفوظ ہوتا ہے جب بیک اپ ہو جائے — خودکار بیک اپ آن کریں، یا کسی بھی وقت بیک اپ کریں۔</string>
     <string name="welcome_connect">Google کے ساتھ جاری رکھیں</string>
     <string name="welcome_skip">شاید بعد میں</string>
@@ -26,7 +26,7 @@
     <string name="coach_desc_nav_more">زکوٰۃ کیلکولیٹر، دکان کارڈ، بیک اپ، ایپ لاک، اور سیٹنگز۔</string>
         <string name="coach_title_bills">سپلائر بلز</string>
     <string name="coach_desc_bills">سپلائر سے جو خریدا اور جو ابھی دینا باقی ہے، وہ درج کریں۔</string>
-    <string name="coach_title_stock">ختم ہوتا اسٹاک</string>
+    <string name="coach_title_stock">ایکسپائر ہوتا اسٹاک</string>
     <string name="coach_desc_stock">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے۔</string>
     <string name="coach_title_insights">سیل انسائٹس</string>
     <string name="coach_desc_insights">دیکھیں کیا بک رہا ہے، کیا پڑا ہے، اور آپ کا پیسہ کہاں پھنسا ہے۔</string>
@@ -126,9 +126,7 @@
     <string name="add_party">پارٹی شامل کریں</string>
     <string name="add_party_duplicate_with_phone">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>
-    <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔
-
-پہلا گاہک شامل کریں اور اپنا کھاتہ شروع کریں۔</string>
+    <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔\n\nپہلا گاہک شامل کریں اور اپنا کھاتہ شروع کریں۔</string>
     <string name="no_entries_yet">ابھی کوئی اندراج نہیں۔</string>
 
     <string name="i_gave">میں نے دیا</string>
@@ -578,13 +576,9 @@
         <item quantity="other">ڈرائیو پر %1$d کاروبار ملے</item>
     </plurals>
     <string name="drive_restore_all">سب بحال کریں</string>
-    <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:
-
-%1$s</string>
-    <string name="drive_restored_these">بحال ہو گئے:
-%1$s</string>
-    <string name="drive_restore_missed">بحال نہیں ہو سکے:
-%1$s</string>
+    <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:\n\n%1$s</string>
+    <string name="drive_restored_these">بحال ہو گئے:\n%1$s</string>
+    <string name="drive_restore_missed">بحال نہیں ہو سکے:\n%1$s</string>
     <string name="business_numbered">کاروبار %1$d</string>
     <string name="backup_for_business">بیک اپ ہو رہا ہے: %1$s</string>
     <string name="snapshots_title">روزانہ کاپیاں</string>
@@ -800,7 +794,7 @@
 
     <string name="report_problem">مسئلہ بتائیں</string>
     <string name="rate_app">ایپ کو ریٹنگ دیں</string>
-    <string name="rate_app_note">آپ کی ریٹنگ سے دوسرے دکانداروں تک یہ ایپ پہنچتی ہے۔ کوئی خرابی یا کمی ہو تو "مسئلہ بتائیں" استعمال کریں — وہ سیدھا ہم تک پہنچتا ہے۔</string>
+    <string name="rate_app_note">آپ کی ریٹنگ سے دوسرے دکانداروں تک یہ ایپ پہنچتی ہے۔ کوئی خرابی یا کمی ہو تو “مسئلہ بتائیں” استعمال کریں — وہ سیدھا ہم تک پہنچتا ہے۔</string>
     <string name="report_problem_sub">بتائیں کیا خراب ہوا</string>
     <string name="report_privacy">آپ کے گاہکوں کے نام، نمبر اور بیلنس کبھی نہیں بھیجے جاتے۔ رپورٹ کے ساتھ صرف ایپ ورژن اور فون ماڈل جاتا ہے \u2014 یہی خرابی ڈھونڈنے میں مدد دیتا ہے۔\n\nای میل آپ کی اپنی میل ایپ میں کھلتی ہے، اس لیے بھیجنے سے پہلے آپ دیکھ سکتے ہیں کہ کیا جا رہا ہے۔</string>
 
@@ -845,9 +839,7 @@
     <string name="drive_auto_backup">خودکار بیک اپ</string>
     <string name="drive_auto_backup_hint">جب بھی کھاتے میں تبدیلی ہو، خود بیک اپ ہو جاتا ہے — وائی فائی پر زیادہ سے زیادہ ہر 30 منٹ، موبائل ڈیٹا پر ہر 6 گھنٹے۔ آپ کبھی بھی خود بھی بیک اپ لے سکتے ہیں۔</string>
     <string name="auto_backup_offer_title">خود بخود بیک اپ کریں؟</string>
-    <string name="auto_backup_offer_body">آپ کا اکاؤنٹ جڑ گیا ہے۔ روشن کھاتہ آپ کی کتاب خود اپ لوڈ کر سکتا ہے جب بھی اس میں تبدیلی ہو، تاکہ فون گم یا خراب ہونے پر آپ کا ریکارڈ ساتھ نہ جائے۔
-
-اسے آپ کبھی بھی اسی اسکرین سے بدل سکتے ہیں۔</string>
+    <string name="auto_backup_offer_body">آپ کا اکاؤنٹ جڑ گیا ہے۔ روشن کھاتہ آپ کی کتاب خود اپ لوڈ کر سکتا ہے جب بھی اس میں تبدیلی ہو، تاکہ فون گم یا خراب ہونے پر آپ کا ریکارڈ ساتھ نہ جائے۔\n\nاسے آپ کبھی بھی اسی اسکرین سے بدل سکتے ہیں۔</string>
     <string name="auto_backup_offer_yes">چالو کریں</string>
     <string name="auto_backup_offer_no">ابھی نہیں</string>
     <string name="drive_restore">ڈرائیو سے بحال کریں</string>
@@ -1110,7 +1102,7 @@
     <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
     <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
     <string name="notif_backup_failed_title">خودکار بیک اپ ناکام</string>
-    <string name="notif_backup_failed_body">روشن کھاتا ڈرائیو پر بیک اپ نہ کر سکا۔ انٹرنیٹ دیکھیں — یہ خود دوبارہ کوشش کرے گا۔</string>
+    <string name="notif_backup_failed_body">روشن کھاتہ ڈرائیو پر بیک اپ نہ کر سکا۔ انٹرنیٹ دیکھیں — یہ خود دوبارہ کوشش کرے گا۔</string>
 
     <!-- Business card -->
     <string name="biz_card">دکان کارڈ</string>
@@ -1144,7 +1136,7 @@
     <string name="faq_q_hide">کوئی پاس کھڑا ہو تو بیلنس چھپا سکتا ہوں؟</string>
     <string name="faq_a_hide">ہوم اسکرین پر بیلنس کے ساتھ آنکھ کے نشان پر ٹیپ کریں۔ دوبارہ ٹیپ کرنے تک ہر جگہ چھپا رہے گا۔</string>
     <string name="faq_q_percent">رقم والے خانے میں رعایت کا حساب لگا سکتا ہوں؟</string>
-    <string name="faq_a_percent">جی ہاں۔ سیدھا لکھ دیں — 1200-15%% کا جواب 1020 اور 500*32%% کا 160۔ یہ ہر رقم والے خانے اور کیلکولیٹر میں کام کرتا ہے۔</string>
+    <string name="faq_a_percent" formatted="false">جی ہاں۔ سیدھا لکھ دیں — 1200-15% کا جواب 1020 اور 500*32% کا 160۔ یہ ہر رقم والے خانے اور کیلکولیٹر میں کام کرتا ہے۔</string>
     <string name="faq_q_delete">غلطی سے گاہک ڈیلیٹ ہو گیا۔</string>
     <string name="faq_a_delete">ہوم اسکرین پر ری سائیکل بن۔ ڈیلیٹ کیے گئے گاہک اور اندراج وہیں رہتے ہیں اور واپس لائے جا سکتے ہیں۔</string>
     <string name="faq_q_language">زبان بعد میں بدل سکتا ہوں؟</string>
@@ -1532,7 +1524,7 @@
     <string name="pdf_biz_cheques">چیک جو ابھی کلیئر نہیں ہوئے</string>
     <string name="pdf_biz_cheques_note">یہ کلیئر ہونے تک رقم نہیں۔ یہ اوپر کے بیلنس میں شامل نہیں۔</string>
     <string name="pdf_biz_cheque">چیک</string>
-    <string name="pdf_biz_due"> \u00B7 مقررہ تاریخ </string>
+    <string name="pdf_biz_due">" \u00B7 مقررہ تاریخ "</string>
     <string name="pdf_biz_plans">جاری ادائیگی منصوبے</string>
     <string name="pdf_biz_paid_of">%2$s میں سے %1$s</string>
     <string name="pdf_biz_expiring">اسٹاک جو جلد ختم ہو رہا ہے</string>
@@ -1541,7 +1533,7 @@
         <item quantity="one">%1$d دن</item>
         <item quantity="other">%1$d دن</item>
     </plurals>
-    <string name="pdf_biz_batch">بیچ %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"بیچ %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">سیلز اینڈ پرچیز رجسٹر</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1607,7 +1599,6 @@
     <string name="pdf_insp_no_batches">اسٹاک میں کوئی بیچ نہیں۔ بیچ اور میعاد سپلائر بل پر درج ہوتی ہے۔</string>
     <string name="pdf_insp_missing_note">نیچے ہر پروڈکٹ اسٹاک میں ہے لیکن اس کے ایک یا زیادہ لیبل خانے کبھی درج نہیں ہوئے۔</string>
     <string name="pdf_insp_expired">میعاد ختم</string>
-    <string name="pdf_insp_expired_ago">میعاد ختم \u00B7 %1$d دن پہلے</string>
     <string name="pdf_insp_days_left">%1$d دن باقی</string>
     <string name="pdf_insp_units_differ">یونٹ مختلف</string>
     <string name="pdf_insp_company_tag">کمپنی</string>
@@ -1703,7 +1694,7 @@
     <string name="bp_leave_keep">ترمیم جاری رکھیں</string>
     <string name="bp_phone">فون نمبر</string>
     <string name="bp_phone_help">انوائس پر چھپتا ہے تاکہ گاہک آپ کو فون کر سکیں۔</string>
-    <string name="bp_phone_hint">مثلاً 0300 1234567</string>
+    <string name="bp_phone_hint">مثلاً \u20660300 1234567\u2069</string>
     <string name="bp_logo">دکان کا لوگو</string>
     <string name="bp_logo_help">اختیاری — انوائس اور اسٹاک رجسٹر کے اوپر چھپتا ہے۔</string>
     <string name="bp_remove_logo">لوگو ہٹائیں</string>
@@ -1783,7 +1774,6 @@
     <string name="followup_queue_open">واٹس ایپ کھولیں</string>
     <string name="followup_queue_skip">چھوڑیں</string>
     <string name="followup_queue_stop">روکیں</string>
-    <string name="followup_queue_done">مکمل — آج %1$d یاد دہانیاں کھولی گئیں</string>
     <string name="followup_queue_title">%2$d میں سے %1$d</string>
     <string name="season_title">فصل کا حساب</string>
     <string name="season_subtitle">فصل کے لحاظ سے ادھار، نئی فصل پہلے</string>
@@ -1893,7 +1883,7 @@
     <string name="scheme_mark_claimed">کلیم مل گیا</string>
     <string name="scheme_unmark_claimed">کلیم ابھی نہیں ملا</string>
     <string name="scheme_delete">اسکیم حذف کریں</string>
-    <string name="scheme_delete_confirm">"%1$s" حذف کریں؟ آپ کے بل نہیں بدلیں گے۔</string>
+    <string name="scheme_delete_confirm">“%1$s” حذف کریں؟ آپ کے بل نہیں بدلیں گے۔</string>
     <string name="scheme_claim_hint">وصول رقم (کریڈٹ نوٹ / ریبیٹ)</string>
     <string name="scheme_need_name">اسکیم کا نام لکھیں</string>
     <string name="scheme_need_slab">کم از کم ایک ٹارگٹ اور اس کا انعام لکھیں</string>
@@ -2841,7 +2831,7 @@
     <string name="calc_khata_positive">کھاتے میں صرف صفر سے زیادہ رقم جا سکتی ہے۔</string>
     <string name="stat_bills">بل</string>
     <string name="stat_you_owe">آپ نے دینے ہیں</string>
-    <string name="stat_expiring">60 دن میں ختم</string>
+    <string name="stat_expiring">60 دن میں ایکسپائر</string>
     <string name="bills_add_first">پہلا بل درج کریں</string>
     <string name="sr_open_short">ریٹ ملائیں</string>
     <string name="products_search_hint">پروڈکٹ تلاش کریں</string>
@@ -2898,7 +2888,7 @@
     <string name="biz_card_ex_owner">مثلاً علی خان</string>
     <string name="biz_card_ex_address">مثلاً مین بازار، پسرور</string>
     <string name="biz_card_ex_tagline">مثلاً گھر تک ڈیلیوری</string>
-    <string name="biz_card_ex_phone">مثلاً 0300 1234567</string>
+    <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
     <string name="biz_card_ex_web">مثلاً ویب سائٹ یا فیس بک پیج</string>
     <string name="biz_card_ex_qr">مثلاً السلام علیکم، آپ کا کارڈ دیکھا</string>
@@ -3114,7 +3104,6 @@
     <string name="stock_count_title">اسٹاک گنیں</string>
     <string name="stock_count_help">شیلف پر جو ہے وہ لکھیں؛ صرف فرق لکھا جائے گا، ساتھ کتاب کا ہندسہ</string>
     <string name="stock_counted_hint">گنا</string>
-    <string name="stock_count_saved">%1$d درستگیاں لکھی گئیں</string>
     <string name="stock_adjust">اسٹاک درست کریں</string>
     <string name="adjust_qty_hint">مقدار (+ اندر، − باہر)</string>
     <string name="adjust_reason">وجہ</string>
@@ -3360,7 +3349,7 @@
     <string name="restore_loss_unknown">کیا ضائع ہوگا یہ گنا نہیں جا سکا۔ تبھی بدلیں جب آپ کو یقین ہو کہ یہی کاپی چاہیے۔</string>
     <string name="clock_behind_title">کمپیوٹر کی تاریخ غلط لگتی ہے</string>
     <string name="clock_behind_body">سب سے نئی روزانہ کاپی %1$s کی ہے، مگر یہ کمپیوٹر آج کی تاریخ %2$s بتا رہا ہے۔ ونڈوز میں صحیح تاریخ اور وقت لگائیں۔ تب تک کوئی پرانی کاپی نہیں مٹائی جائے گی۔</string>
-    <string name="pos_void_has_returns">اس بِکری کا مال پہلے ہی واپس ہو چکا ہے۔ واپسی والی بِکری منسوخ نہیں ہو سکتی؛ باقی مال کی واپسی کریں۔</string>
+    <string name="pos_void_has_returns">اس سیل کا مال پہلے ہی واپس ہو چکا ہے۔ واپسی والی سیل منسوخ نہیں ہو سکتی؛ باقی مال کی واپسی کریں۔</string>
     <string name="pos_void_day_closed">اس بِکری کا دن بند ہو چکا ہے۔ منسوخ کرنے کے بجائے واپسی کریں۔</string>
     <string name="pos_err_rate_missing">ایک لائن کا ریٹ نہیں لکھا۔</string>
     <string name="pos_err_tax">ٹیکس پڑھا نہیں جا سکا۔</string>
@@ -3494,11 +3483,7 @@
     <string name="live_sent">بھیج دیا۔ کمپیوٹر پر ہاں دبائیں تاکہ اس کا کھاتہ اس فون کے کھاتے سے بدل جائے۔</string>
     <string name="live_receive">دکان کا کھاتہ اس فون پر لیں</string>
     <string name="live_receive_steps">جس فون پر دکان کا کھاتہ ہے اس پر بیک اپ ← لائیو سنک ← جوڑیں کھولیں اور یہ کوڈ اسکین کریں۔ دونوں فون ایک ہی وائی فائی پر ہوں۔ یہ کھڑکی 15 منٹ انتظار کرتی ہے۔</string>
-    <string name="live_receive_offer">“%1$s” اس فون کو دکان کا کھاتہ دینا چاہتا ہے۔
-
-کوڈ: %2$s — یہی چار ہندسے اس فون پر بھی نظر آنے چاہئیں۔
-
-اس فون کا اپنا کھاتہ دکان کے کھاتے سے بدل جائے گا۔ اس کے بعد فون انٹرنیٹ ریلے کے ذریعے ایک ہی کھاتہ مل کر رکھیں گے۔</string>
+    <string name="live_receive_offer">“%1$s” اس فون کو دکان کا کھاتہ دینا چاہتا ہے۔\n\nکوڈ: %2$s — یہی چار ہندسے اس فون پر بھی نظر آنے چاہئیں۔\n\nاس فون کا اپنا کھاتہ دکان کے کھاتے سے بدل جائے گا۔ اس کے بعد فون انٹرنیٹ ریلے کے ذریعے ایک ہی کھاتہ مل کر رکھیں گے۔</string>
     <string name="live_receive_done">ہو گیا۔ یہ فون اب دکان کا کھاتہ اس کے دوسرے آلات کے ساتھ رکھتا ہے۔</string>
     <string name="live_receive_no_wifi">یہ فون کسی وائی فائی پر نہیں ہے۔ دکان کے وائی فائی سے جڑیں اور دوبارہ کوشش کریں۔</string>
     <string name="live_sent_phone">بھیج دیا۔ دوسرے فون پر ہاں دبائیں تاکہ وہ یہ کھاتہ لے لے۔ پھر دونوں فون انٹرنیٹ ریلے کے ذریعے ملیں گے۔</string>
@@ -3526,7 +3511,7 @@
     <string name="live_status_not_accepted">کمپیوٹر نے وقت پر ہاں نہیں کی۔ جوڑنے کے لیے اس کا لائیو سنک کوڈ دوبارہ اسکین کریں۔</string>
     <string name="live_status_not_here">کمپیوٹر نے جواب دیا، مگر اس وقت یہ کھاتہ اس پر نہیں رکھا ہوا۔ کمپیوٹر پر اس کھاتے کا کاروبار کھولیں۔</string>
     <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
-    <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation 313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
+    <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation-313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
     <string name="live_relay">انٹرنیٹ سے بھی</string>
     <string name="wifi_take_too_big">کمپیوٹر کی کتاب اس فون کی میموری یا خالی جگہ کے لیے بہت بڑی ہے۔ دوسری ایپس بند کر کے دوبارہ کوشش کریں، یا کتاب بیک اپ فائل سے منتقل کریں۔</string>
     <string name="live_devices_open">آلات اور ایک ساتھ تبدیلیاں</string>
@@ -3563,4 +3548,17 @@
     <string name="products_export_failed">سامان کی فائل نہیں بن سکی۔</string>
     <string name="save_failed_storage_full">محفوظ نہیں ہوا: فون کی میموری بھر چکی ہے۔ کچھ جگہ خالی کریں، پھر دوبارہ درج کریں۔</string>
     <string name="save_failed_not_saved">محفوظ نہیں ہوا: کوئی خرابی ہوئی۔ براہِ کرم دیکھ کر دوبارہ درج کریں۔</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d درستگی لکھی گئی</item>
+        <item quantity="other">%1$d درستگیاں لکھی گئیں</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">مکمل — آج %1$d یاد دہانی کھولی گئی</item>
+        <item quantity="other">مکمل — آج %1$d یاد دہانیاں کھولی گئیں</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">میعاد ختم \u00B7 %1$d دن پہلے</item>
+        <item quantity="other">میعاد ختم \u00B7 %1$d دن پہلے</item>
+    </plurals>
+    <string name="voice_language_missing_phone">آپ کے فون میں یہ زبان موجود نہیں۔ فون کی اپنی زبان میں سن رہا ہے۔</string>
 </resources>

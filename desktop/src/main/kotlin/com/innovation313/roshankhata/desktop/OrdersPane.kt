@@ -166,7 +166,7 @@ private fun OrderActions(
                     StatementPrint.show(
                         TablePrint(rtl, shopName ?: words.text(W.app_name), o.orderNumber + "  ·  " + o.partyName + "  ·  " + Format.dateOnly(o.timestamp),
                             listOf(words.text(W.pos_col_item), words.text(W.pos_col_qty), words.text(W.pos_col_rate)),
-                            full.items.map { listOf(it.itemName, Calc.trim(it.quantity) + (it.unit?.let { u -> " $u" } ?: ""), it.rate?.let { r -> Format.money(r) } ?: "") }
+                            full.items.map { listOf(it.itemName, Calc.trim(it.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(it.unit).let { u -> if (u.isEmpty()) "" else " $u" }), it.rate?.let { r -> Format.money(r) } ?: "") }
                         ) { p, of -> words.text(W.pdf_stmt_page, p, of) }, o.orderNumber)
                 }
             })
@@ -207,7 +207,7 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
                 Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (l.productId == null) FluentField(l.name, { l.name = it }, Modifier.weight(3f), placeholder = word(W.item_name_hint))
                     else Text(l.name, Modifier.weight(3f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    FluentField(l.qty, { l.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty) + (l.unit?.let { " ($it)" } ?: ""), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                    FluentField(l.qty, { l.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty) + (com.innovation313.roshankhata.data.UnitWords.label(l.unit).let { u -> if (u.isEmpty()) "" else " ($u)" }), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                     FluentField(l.rate, { l.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate), placeholder = "–", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     IconAction("ic_close", word(W.delete), { draft.lines.remove(l) })
                 }

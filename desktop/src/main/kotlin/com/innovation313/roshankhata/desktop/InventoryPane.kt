@@ -82,7 +82,7 @@ fun InventoryPane(
                 StockCountForm(draft, onCancel = { counting = null }, onSave = {
                     scope.launch {
                         val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }) }.getOrDefault(0) }
-                        told = words.text(W.stock_count_saved, n)
+                        told = words.plural(com.innovation313.roshankhata.words.WP.stock_count_saved, n, n)
                         counting = null; tick++; onChanged()
                     }
                 }, modifier = Modifier.fillMaxSize())
@@ -128,7 +128,7 @@ fun InventoryPane(
                             Text(r.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             if (r.isLow) Tag(word(W.stock_low_title), c.owedToMe, Look.getTint)
                         }
-                        Text(r.onHand?.let { Calc.trim(it) + (r.unit?.let { u -> " $u" } ?: "") } ?: "?", Modifier.weight(2f), color = if (r.isLow) c.owedToMe else c.ink, fontSize = 14.sp, textAlign = TextAlign.End, maxLines = 1)
+                        Text(r.onHand?.let { Calc.trim(it) + (com.innovation313.roshankhata.data.UnitWords.label(r.unit).let { u -> if (u.isEmpty()) "" else " $u" }) } ?: "?", Modifier.weight(2f), color = if (r.isLow) c.owedToMe else c.ink, fontSize = 14.sp, textAlign = TextAlign.End, maxLines = 1)
                         Text(r.cost?.let { Format.money(it) } ?: "–", Modifier.weight(2f), color = c.inkSoft, fontSize = 13.sp, textAlign = TextAlign.End, maxLines = 1)
                         Text(r.value?.let { Format.money(it) } ?: "–", Modifier.weight(2f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End, maxLines = 1)
                     }
@@ -144,7 +144,7 @@ fun InventoryPane(
                     Text(Format.dateTime(a.timestamp), Modifier.width(130.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
                     Text(names[a.productId] ?: a.productId.toString(), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(reasonWord(a.reason) + (a.note?.let { " · $it" } ?: ""), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text((if (a.quantity > 0) "+" else "") + Calc.trim(a.quantity) + (a.unit?.let { " $it" } ?: ""), color = if (a.quantity < 0) c.owedToMe else c.iOwe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    Text((if (a.quantity > 0) "+" else "") + Calc.trim(a.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(a.unit).let { u -> if (u.isEmpty()) "" else " $u" }), color = if (a.quantity < 0) c.owedToMe else c.iOwe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 }
                 if (i < minOf(corrections.size, 6) - 1) Rule()
             }
@@ -284,7 +284,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
                         query = ""
                     }.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(pr.name, Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        onHand[pr.id]?.let { Text(Calc.trim(it) + (pr.defaultUnit?.let { u -> " $u" } ?: ""), color = c.textMuted, fontSize = 12.sp) }
+                        onHand[pr.id]?.let { Text(Calc.trim(it) + (com.innovation313.roshankhata.data.UnitWords.label(pr.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" }), color = c.textMuted, fontSize = 12.sp) }
                     }
                     Rule()
                 }
@@ -293,7 +293,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Column(Modifier.weight(1f)) {
                         Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        onHand[p.id]?.let { Text(word(W.inspector_col_left) + ": " + Calc.trim(it) + (p.defaultUnit?.let { u -> " $u" } ?: ""), color = c.textMuted, fontSize = 12.sp) }
+                        onHand[p.id]?.let { Text(word(W.inspector_col_left) + ": " + Calc.trim(it) + (com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" }), color = c.textMuted, fontSize = 12.sp) }
                     }
                     FluentField(qty.value, { qty.value = it }, Modifier.width(110.dp), placeholder = word(W.pos_col_qty), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                     IconAction("ic_close", word(W.delete), { lines.removeAll { it.first.id == p.id } })

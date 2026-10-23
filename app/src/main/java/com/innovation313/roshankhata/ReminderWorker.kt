@@ -51,7 +51,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val ctx = applicationContext
+        // The app's language, not the phone's: on Android 12 and lower the
+        // application context keeps the phone's (23 Oct review, R10).
+        val ctx = com.innovation313.roshankhata.ui.AppLanguage.context(applicationContext)
         Currency.refresh(ctx) // notifications print money; wear the shop's sign
         com.innovation313.roshankhata.data.ShopCalendar.refresh(ctx)
         // A helper's read-only phone holds a copy, not the book. Reminders
