@@ -78,17 +78,24 @@ class WifiSyncTest {
         var stop = false
         val t = thread { WifiSync.receive(server, secret, { stop }) { if (giving) pcBook else null } }
         val p = WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, secret)
-        assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p))
-        giving = true
-        assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p.copy(secret = WifiSync.newSecret())))
-        val got = WifiSync.pull(p)
-        assertTrue(got is WifiSync.Pulled.Got)
-        assertArrayEquals(pcBook, (got as WifiSync.Pulled.Got).book)
-        // Once per code shown: the same code does not hand the book out again (21 Oct 2026).
-        assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p))
-        stop = true
-        t.join(10_000)
-        server.close()
+        // The book is written to this file as it arrives (23 Oct 2026), never held whole.
+        val into = java.io.File.createTempFile("rk-pull", ".txt")
+        try {
+            assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p, into))
+            assertTrue(!into.exists())
+            giving = true
+            assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p.copy(secret = WifiSync.newSecret()), into))
+            val got = WifiSync.pull(p, into)
+            assertTrue("$got", got is WifiSync.Pulled.Got)
+            assertArrayEquals(pcBook, (got as WifiSync.Pulled.Got).file.readBytes())
+            // Once per code shown: the same code does not hand the book out again (21 Oct 2026).
+            assertEquals(WifiSync.Pulled.Refused, WifiSync.pull(p, into))
+        } finally {
+            into.delete()
+            stop = true
+            t.join(10_000)
+            server.close()
+        }
     }
 
     @Test

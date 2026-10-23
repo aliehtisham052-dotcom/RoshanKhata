@@ -85,12 +85,20 @@ object PhoneSync {
     }
 
     /** Where a book from the phone is kept before the owner confirms it: this computer's own folder, never the shop's. */
-    fun saveIncoming(home: File, book: ByteArray): File {
+    fun saveIncoming(home: File, book: ByteArray): File = saveIncoming(home) { tmp -> tmp.writeBytes(book) }
+
+    /** The same, for a book that arrived as a file ([from], a live pairing's, 23 Oct 2026): moved in, never read whole. */
+    fun saveIncomingFile(home: File, from: File): File = saveIncoming(home) { tmp ->
+        tmp.delete()
+        if (!from.renameTo(tmp)) { from.copyTo(tmp, overwrite = true); from.delete() }
+    }
+
+    private fun saveIncoming(home: File, write: (File) -> Unit): File {
         val dir = File(home, "from-phone").apply { mkdirs() }
         val name = "RoshanKhata_FromPhone_" + SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.ENGLISH).format(Date()) + ".txt"
         val file = File(dir, name)
         val tmp = File(dir, "$name.tmp")
-        tmp.writeBytes(book)
+        write(tmp)
         // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
         // the old one first — a power cut in between left neither.
         replaceAtomically(tmp, file)

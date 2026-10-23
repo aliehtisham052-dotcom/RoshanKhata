@@ -181,7 +181,7 @@ object LiveSync {
         // The phone's target (LiveRound's live_*), the relay's cursors, each device's pairing and the let-go line.
         exec(
             "DELETE FROM sync_meta WHERE k LIKE 'live\\_%' ESCAPE '\\' OR k LIKE 'cloud\\_%' ESCAPE '\\' " +
-                "OR k LIKE 'pair:%' OR k = 'floor'"
+                "OR k LIKE 'pair:%' OR k = 'floor' OR k LIKE 'mark:%' OR k LIKE 'markgiven:%'"
         )
         setMeta("on", "0")
         setMeta("off_why", why)
@@ -240,6 +240,16 @@ object LiveSync {
     suspend fun enable(
         sql: SyncSql, install: String, name: String, adopt: Pair<String, String>? = null, mark: String? = null,
         marks: LogMarks? = null
+    ): Identity = enableWith(sql, install, name, adopt, mark, marks) {}
+
+    /**
+     * [enable], with [then] written in the same transaction once the identity stands (23 Oct 2026, the
+     * handover: a join was three transactions — the identity, the sender as a peer, the pairing — and a
+     * failure between them left a book that synced with nobody, or with a sender at the wrong line).
+     */
+    suspend fun enableWith(
+        sql: SyncSql, install: String, name: String, adopt: Pair<String, String>?, mark: String?,
+        marks: LogMarks?, then: suspend SyncTx.(Identity) -> Unit
     ): Identity {
         val (id, counter) = sql.write {
             for (s in CREATE) exec(s)
@@ -247,7 +257,7 @@ object LiveSync {
             val copied = meta("install") != null && meta("install") != install
             if (meta("install") != install) {
                 for (t in listOf("sync_log", "sync_peers", "sync_alias", "sync_pending", "sync_conflict", "sync_held", "sync_mute")) exec("DELETE FROM $t")
-                exec("DELETE FROM sync_meta WHERE k LIKE 'pair:%' OR k = 'floor'")
+                exec("DELETE FROM sync_meta WHERE k LIKE 'pair:%' OR k = 'floor' OR k LIKE 'mark:%' OR k LIKE 'markgiven:%'")
                 setMeta("install", install)
                 setMeta("device", newHex(8))
                 setMeta("mark", null)
@@ -257,7 +267,8 @@ object LiveSync {
             if (adopt != null && !sameBook) {
                 // Another book from now on: what was said about the old one no longer applies.
                 for (t in listOf("sync_log", "sync_peers", "sync_alias", "sync_pending", "sync_conflict", "sync_held")) exec("DELETE FROM $t")
-                exec("DELETE FROM sync_meta WHERE k LIKE 'pair:%' OR k = 'floor'")
+                exec("DELETE FROM sync_meta WHERE k LIKE 'pair:%' OR k = 'floor' OR k LIKE 'mark:%' OR k LIKE 'markgiven:%'")
+                setMeta("next_mark", null)
             }
             // A pairing made after live sync was turned off is a new conversation: a new book id, so the relay's box
             // of the old one (parcels nobody acknowledged, kept up to 7 days) can never be read into it (23 Oct 2026).
@@ -287,7 +298,9 @@ object LiveSync {
             ensureUids()
             installTriggers()
             setMeta("on", "1")
-            Identity(meta("book")!!, keyHere()!!, meta("device")!!, name) to logCounter()
+            val made = Identity(meta("book")!!, keyHere()!!, meta("device")!!, name)
+            then(made)
+            made to logCounter()
         }
         // From here on this file's log only grows: a copy that comes back with less is caught by [check].
         marks?.put(id.book, counter)
@@ -390,11 +403,56 @@ object LiveSync {
         if (!hasTables() || meta("on") != "1") null else meta("mark")
     }
 
-    /** The letter for the next device that joins this book from here: one no device has had from it. */
+    /**
+     * Every letter this device knows is taken in the book's numbers: its own, each other device's as last heard
+     * ("mark:<device>", from rounds, relay messages and the offer it joined with), and each one it or the device
+     * it joined from handed out to a joiner whose id it does not know yet ("markgiven:<letter>"; before 23 Oct 2026
+     * only a counter, "next_mark": every letter below it).
+     */
+    private suspend fun SyncTx.knownMarksIn(): Set<String> {
+        val out = HashSet<String>()
+        meta("mark")?.let { out += it }
+        for (r in rows("SELECT k, v FROM sync_meta WHERE k LIKE 'mark:%' OR k LIKE 'markgiven:%'", types = "TT")) {
+            val k = r[0] as String
+            val v = if (k.startsWith("markgiven:")) k.removePrefix("markgiven:") else r[1] as String?
+            if (v != null && validMark(v)) out += v
+        }
+        val counted = meta("next_mark")?.toIntOrNull() ?: 1
+        for (i in 1 until minOf(counted, 2000)) out += markAt(i)
+        return out
+    }
+
+    /** The letters [knownMarksIn] holds, for an offer ([LiveWire.Offer.marks]). */
+    suspend fun knownMarks(sql: SyncSql): List<String> = sql.read { if (!hasTables()) emptyList() else knownMarksIn().sorted() }
+
+    /**
+     * Notes letters another device said are taken ([LiveWire.Offer.marks] on joining; [device] null) or [device]'s
+     * own letter. Never this device's own as given: it is in "mark" already.
+     */
+    internal suspend fun rememberMarksIn(tx: SyncTx, device: String?, letters: Collection<String>) = with(tx) {
+        val mine = meta("mark")
+        for (m in letters) {
+            if (!validMark(m)) continue
+            if (device != null) { if (meta("mark:$device") != m) setMeta("mark:$device", m) }
+            else if (m != mine) setMeta("markgiven:$m", "1")
+        }
+    }
+
+    /**
+     * The letter for the next device that joins this book from here: the lowest that is not A, not this device's
+     * own, and not one this device knows is taken ([knownMarksIn]) — 23 Oct 2026, the review report: a counter of
+     * this device's own gave a phone's joiner B again when that phone had been given B itself, and the two printed
+     * the same S-, R- and RK- numbers for good.
+     */
     suspend fun nextJoinerMark(sql: SyncSql): String = sql.write {
-        val n = meta("next_mark")?.toIntOrNull() ?: 1
-        setMeta("next_mark", (n + 1).toString())
-        markAt(n)
+        val taken = knownMarksIn() + "A"
+        var n = 1
+        while (markAt(n) in taken) n++
+        val m = markAt(n)
+        setMeta("markgiven:$m", "1")
+        val counted = meta("next_mark")?.toIntOrNull() ?: 1
+        setMeta("next_mark", maxOf(counted, n + 1).toString())
+        m
     }
 
     /** 0 → A, 1 → B … 25 → Z, then Z1, Z2 …. */
@@ -414,14 +472,20 @@ object LiveSync {
      * Returns this device's new letter, or null when nothing changed.
      */
     suspend fun settleMark(sql: SyncSql, theirDevice: String, theirMark: String?): String? = sql.write {
-        if (!hasTables() || meta("on") != "1" || theirMark.isNullOrBlank()) return@write null
-        val mine = meta("mark") ?: return@write null
+        if (!hasTables() || meta("on") != "1" || theirMark.isNullOrBlank() || !validMark(theirMark)) return@write null
         val me = meta("device") ?: return@write null
+        if (theirDevice == me) return@write null
+        // Every device's letter is remembered, so a letter handed out or moved to later is never one in use.
+        if (meta("mark:$theirDevice") != theirMark) setMeta("mark:$theirDevice", theirMark)
+        val mine = meta("mark") ?: return@write null
         if (mine != theirMark || me >= theirDevice) return@write null
+        // Away from every letter this device knows of, not only the other's and A (23 Oct 2026, the review report).
+        val taken = knownMarksIn() + "A"
         var n = 1 + (me + theirDevice).hashCode().mod(25)
         var next = markAt(n)
         var tries = 0
-        while ((next == theirMark || next == "A") && tries < 30) { n = n % 25 + 1; next = markAt(n); tries++ }
+        while (next in taken && tries < 25) { n = n % 25 + 1; next = markAt(n); tries++ }
+        if (next in taken) { var m = 26; while (markAt(m) in taken) m++; next = markAt(m) }
         setMeta("mark", next)
         next
     }
@@ -822,8 +886,67 @@ object LiveSync {
         }
         resolvePending()
         written += retryHeld(mine, now, cache)
+        conflicts += counterChecks(p, now, cache)
         exec("DELETE FROM sync_mute")
         return Applied.Done(written, conflicts, p.to)
+    }
+
+    private val COUNTER_TABLES = setOf("sales", "sale_items", "sale_returns", "sale_return_items")
+
+    /**
+     * The counter's own rules, checked again once another device's changes are in (23 Oct 2026, the review
+     * report, R31): a void refuses a ticket with a return, and a line may not come back more than it was sold —
+     * but each device checked only its own copy, so a void on one and a return on the other (or a return of the
+     * last two bags on each) both stood after the next round. Nothing is undone here (both devices decide alike
+     * only for one row, and money was already handed over); each hit is kept as a conflict ("both" kept), so the
+     * bell's money row ([moneyConflicts]) and the computer's window show it on every device that took it.
+     * Only the tickets this parcel touched are read, and a hit already noted is not noted again.
+     */
+    private suspend fun SyncTx.counterChecks(p: Parcel, now: Long, cache: MutableMap<String, List<Col>>): Int {
+        val sales = HashSet<Long>()
+        for (c in p.changes) {
+            if (c.table !in COUNTER_TABLES || c.op != "U") continue
+            val id = idOf(c.table, c.uid) ?: continue
+            val sale: Long? = when (c.table) {
+                "sales" -> id
+                "sale_return_items" -> rows(
+                    "SELECT r.saleId FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId WHERE ri.id = ?", listOf(id), "I"
+                ).firstOrNull()?.get(0) as Long?
+                else -> rows("SELECT saleId FROM `${c.table}` WHERE id = ?", listOf(id), "I").firstOrNull()?.get(0) as Long?
+            }
+            if (sale != null) sales += sale
+        }
+        if (sales.isEmpty()) return 0
+        var found = 0
+        for (part in sales.toList().chunked(400)) {
+            val ids = part.joinToString(",") { "?" }
+            val voided = rows(
+                "SELECT s.uid FROM sales s WHERE s.id IN ($ids) AND s.status = 'void' AND s.uid IS NOT NULL AND EXISTS " +
+                    "(SELECT 1 FROM sale_returns r WHERE r.saleId = s.id AND r.status = 'done' AND r.isDeleted = 0)",
+                part, "T"
+            )
+            for (r in voided) if (noteCounter("sales", r[0] as String, "a return stands against this voided ticket", p.device, now, cache)) found++
+            val over = rows(
+                "SELECT si.uid FROM sale_items si WHERE si.saleId IN ($ids) AND si.isDeleted = 0 AND si.uid IS NOT NULL AND " +
+                    "(SELECT COALESCE(SUM(ri.quantity), 0) FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId " +
+                    "WHERE ri.saleItemId = si.id AND ri.isDeleted = 0 AND r.status = 'done' AND r.isDeleted = 0) > si.quantity + 0.000001",
+                part, "T"
+            )
+            for (r in over) if (noteCounter("sale_items", r[0] as String, "returned more than was sold", p.device, now, cache)) found++
+        }
+        return found
+    }
+
+    /** One counter rule broken by two devices' changes, kept for the owner once; true when it was new. */
+    private suspend fun SyncTx.noteCounter(table: String, uid: String, problem: String, from: String, now: Long, cache: MutableMap<String, List<Col>>): Boolean {
+        val seen = rows("SELECT 1 FROM sync_conflict WHERE tbl = ? AND uid = ? AND kept = 'both' LIMIT 1", listOf(table, uid), "I")
+        if (seen.isNotEmpty()) return false
+        val t = SyncSchema.table(table) ?: return false
+        // The row as it stands, with the problem beside it: the window shows only what differs, that is the problem.
+        val row = rowOut(t, uid, cache) ?: JSONObject()
+        row.put("problem", problem)
+        keepAside(table, uid, now, from, "both", row.toString())
+        return true
     }
 
     private sealed interface One {

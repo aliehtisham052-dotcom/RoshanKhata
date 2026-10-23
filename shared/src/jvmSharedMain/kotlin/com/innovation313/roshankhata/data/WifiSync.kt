@@ -72,10 +72,40 @@ object WifiSync {
 
     /** How a pull ended. */
     sealed interface Pulled {
-        data class Got(val book: ByteArray) : Pulled
+        /** The computer's book, written to [file] as it arrived (never held whole in memory, 23 Oct 2026). */
+        data class Got(val file: java.io.File) : Pulled
         /** A computer answered but gave nothing (its window is not open to giving, or the secret is wrong). */
         object Refused : Pulled
+        /** The book is bigger than this device can take (its free space, or its memory for reading the book after). */
+        object TooBig : Pulled
         object Unreachable : Pulled
+    }
+
+    /**
+     * The length a computer answers a pull with when the book follows as [SealedChunks] (23 Oct 2026): "RKC2",
+     * larger than any book, so a phone of before refuses it rather than reading 1.3 GB.
+     */
+    private const val CHUNKED = 0x524B4332
+
+    /** The key a [SealedChunks] stream under [secret] is sealed with: its own, never the one-frame key ([key]). */
+    internal fun chunkKey(secret: String): SecretKeySpec {
+        val d = MessageDigest.getInstance("SHA-256")
+        d.update("roshan-khata-wifi-chunks-1:".toByteArray(Charsets.UTF_8))
+        d.update(secret.toByteArray(Charsets.UTF_8))
+        return SecretKeySpec(d.digest(), "AES")
+    }
+
+    /**
+     * Whether a book of [bytes] can be taken here: the folder has room for it, and the memory left could read it
+     * after (the restore's parse keeps the book's rows; twice the text is the least it needs).
+     */
+    fun roomFor(bytes: Long, folder: java.io.File?): Boolean {
+        if (bytes < 0 || bytes > MAX_BYTES) return false
+        val space = folder?.usableSpace ?: 0L
+        if (folder != null && space in 1 until bytes + (1L shl 20)) return false
+        val rt = Runtime.getRuntime()
+        val free = rt.maxMemory() - (rt.totalMemory() - rt.freeMemory())
+        return bytes * 2 <= free
     }
 
     /** 32 random bytes, as 64 hex digits (no Base64: the phone runs from Android 7). */
@@ -224,11 +254,22 @@ object WifiSync {
     }
 
     /**
-     * Phone side: asks the computer for its book. Blocking; call off the main thread.
-     * The answer is sealed with the same secret, so only the computer that
-     * showed the code can have written it.
+     * Phone side: asks the computer for its book, written to [into] as it
+     * arrives. Blocking; call off the main thread. The answer is sealed with
+     * the same secret, so only the computer that showed the code can have
+     * written it. Since 23 Oct 2026 (the review report, R46) the book comes as
+     * [SealedChunks]: its length first, checked against this device's room
+     * ([roomFor]), then a record at a time onto the disk; a computer of before
+     * (one sealed frame) is still read, only when the frame fits in memory.
+     * [into] is deleted unless the answer is [Pulled.Got].
      */
-    fun pull(p: Pairing, connectMs: Int = 3000, readMs: Int = 120_000): Pulled {
+    fun pull(p: Pairing, into: java.io.File, connectMs: Int = 3000, readMs: Int = 120_000): Pulled {
+        val r = pullInto(p, into, connectMs, readMs)
+        if (r !is Pulled.Got) runCatching { into.delete() }
+        return r
+    }
+
+    private fun pullInto(p: Pairing, into: java.io.File, connectMs: Int, readMs: Int): Pulled {
         val ask = seal(p.secret, PULL)
         for (host in p.hosts) {
             val socket = Socket()
@@ -245,11 +286,26 @@ object WifiSync {
                 out.writeInt(ask.size)
                 out.write(ask)
                 out.flush()
-                val input = DataInputStream(s.getInputStream().buffered())
+                val input = DataInputStream(s.getInputStream().buffered(1 shl 16))
                 val n = try { input.readInt() } catch (e: IOException) { return Pulled.Refused }
+                if (n == CHUNKED) {
+                    return try {
+                        val r = SealedChunks.Reader(input, chunkKey(p.secret), MAGIC_GET)
+                        // The head: the book's length, opened before a byte of the book is read.
+                        val head = r.next(64) ?: return Pulled.Refused
+                        if (head.size != 8) return Pulled.Refused
+                        val length = java.nio.ByteBuffer.wrap(head).long
+                        if (!roomFor(length, into.parentFile)) return Pulled.TooBig
+                        if (!r.readTo(into, length) || into.length() != length) return Pulled.Refused
+                        Pulled.Got(into)
+                    } catch (e: IOException) { Pulled.Refused }
+                }
+                // A computer of before: one sealed frame, taken only when this device can hold it.
                 if (n <= 0 || n > MAX_BYTES + NONCE + TAG_BITS / 8) return Pulled.Refused
+                if (!roomFor(n.toLong() * 2, into.parentFile)) return Pulled.TooBig
                 val sealed = try { readUpTo(input, n) } catch (e: IOException) { return Pulled.Refused }
-                return open(p.secret, sealed)?.let { Pulled.Got(it) } ?: Pulled.Refused
+                val book = open(p.secret, sealed) ?: return Pulled.Refused
+                return try { into.writeBytes(book); Pulled.Got(into) } catch (e: IOException) { Pulled.Refused }
             }
         }
         return Pulled.Unreachable
@@ -279,7 +335,13 @@ object WifiSync {
                         val book = if (given) null else give?.invoke()
                         val out = DataOutputStream(it.getOutputStream().buffered())
                         runCatching {
-                            if (book == null) out.writeInt(0) else { val sealed = seal(secret, book); out.writeInt(sealed.size); out.write(sealed) }
+                            if (book == null) out.writeInt(0)
+                            else {
+                                // A record at a time (SealedChunks), its length first: the phone never holds it whole.
+                                out.writeInt(CHUNKED)
+                                val head = java.nio.ByteBuffer.allocate(8).putLong(book.size.toLong()).array()
+                                SealedChunks.write(out, chunkKey(secret), MAGIC_GET, head, java.io.ByteArrayInputStream(book))
+                            }
                             out.flush()
                             if (book != null) given = true
                         }

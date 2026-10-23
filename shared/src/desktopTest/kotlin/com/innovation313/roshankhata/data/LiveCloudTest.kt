@@ -472,6 +472,85 @@ class LiveCloudTest {
         }
     }
 
+    /**
+     * Letters in a chain of pairings (23 Oct 2026, the review report R05): the owner's phone gives the book to a
+     * second phone, which gives it to a third; each joiner's letter is new to every device, so no two devices print
+     * the same S- number. Two devices that come to one letter anyway (an older pairing) are moved apart by the
+     * relay rounds alone, as the WiFi rounds always did.
+     */
+    @Test
+    fun `phones paired one from another never share a letter, and the relay settles two that do`() = runBlocking {
+        both(2)
+        val b = DesktopDatabase.open(dir.resolve("phone-b.db"))
+        val d = DesktopDatabase.open(dir.resolve("phone-d.db"))
+        try {
+            val aSql = phone.syncSql(); val cSql = pc.syncSql(); val bSql = b.syncSql(); val dSql = d.syncSql()
+            // The owner's phone heard the computer's letter through the relay.
+            assertTrue(LiveSync.knownMarks(aSql).contains(LiveSync.mark(cSql)!!))
+            val everyone = arrayListOf(aSql, cSql)
+
+            suspend fun all(times: Int) = repeat(times) {
+                clock += 1000
+                for (s in everyone) {
+                    val res = LiveCloud.round(s, relay, "https://relay.test", clock) { false }
+                    assertTrue("$res", res is LiveCloud.Result.Done)
+                }
+            }
+            /** [from] gives its book to [to] as Backup's pairing and LiveReceive do, and the joiner is heard of. */
+            suspend fun give(from: KhataDatabase, to: KhataDatabase, install: String, name: String) {
+                val fSql = from.syncSql(); val tSql = to.syncSql()
+                val peersAtCopy = LiveCrew.offerPeers(fSql)
+                LiveCrew.holdForCopy(fSql, peersAtCopy)
+                val seq = LiveSync.lastSeq(fSql)
+                val text = java.io.StringWriter().also { BackupCodec.exportTo(from.khataDao(), "Shop", JSONObject(), it) }.toString()
+                val (r, data) = BackupCodec.parseText(text)
+                assertTrue("$r", r is BackupCodec.ImportResult.Ok)
+                val fId = LiveSync.identity(fSql)!!
+                val pair = LiveSync.newHex(8)
+                val given = LiveSync.nextJoinerMark(fSql)
+                val offer = LiveWire.Offer(
+                    fId.book, fId.key, fId.device, fId.name, seq, ByteArray(0), given, pair, peers = peersAtCopy,
+                    marks = LiveSync.knownMarks(fSql)
+                )
+                // The offer travels as the pairing frame's head does.
+                val head = LiveWire.decodeHead(LiveWire.offerHead(offer))!!
+                assertEquals(offer.marks, head.marks)
+                LiveRound.setPending(fSql, LiveRound.Target(listOf("192.168.1.9"), 47313, seq, name, pair = pair, phone = true), wasOff = false)
+                BackupCodec.restoreLedger(to.khataDao(), data!!)
+                to.khataDao().setSetting(BookSettings.LIVE_RELAY, "1")
+                LiveCrew.join(tSql, install, name, head, head.peers)
+                assertEquals(given, LiveSync.mark(tSql))
+                everyone += tSql
+                all(6)
+                assertEquals(null, LiveRound.pending(fSql))
+            }
+
+            give(phone, b, "install-b", "Second phone")
+            give(b, d, "install-d", "Third phone")
+            val marks = everyone.map { LiveSync.mark(it)!! }
+            assertEquals("$marks", 4, marks.toSet().size)
+            // So every device's next ticket has a number of its own.
+            try {
+                val numbers = marks.map { m -> NumberMark.mark = m; SaleNumber.next(19) }
+                assertEquals("$numbers", 4, numbers.toSet().size)
+            } finally {
+                NumberMark.mark = null
+            }
+
+            // The third phone comes to the computer's letter (as a pairing before letters were known could):
+            // relay rounds that carry a change of each move one of them, to a letter nobody holds.
+            dSql.write { exec("UPDATE sync_meta SET v = ? WHERE k = 'mark'", listOf(LiveSync.mark(cSql)!!)) }
+            pc.khataDao().insertParty(Party(name = "On the computer"))
+            d.khataDao().insertParty(Party(name = "On the third phone"))
+            all(3)
+            val after = everyone.map { LiveSync.mark(it)!! }
+            assertEquals("$after", 4, after.toSet().size)
+            assertTrue("$after", "A" == after[0])
+        } finally {
+            b.close(); d.close()
+        }
+    }
+
     @Test
     fun `a lost parcel is sent again and nothing arrives twice`() = runBlocking {
         both(1)

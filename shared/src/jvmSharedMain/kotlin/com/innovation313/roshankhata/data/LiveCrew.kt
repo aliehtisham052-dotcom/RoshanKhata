@@ -63,7 +63,12 @@ object LiveCrew {
     suspend fun offerPeers(sql: SyncSql): JSONObject = sql.read {
         val out = JSONObject()
         if (!hasTables()) return@read out
-        for ((d, p) in peers()) out.put(d, JSONObject().put("name", p.first ?: "").put("line", p.second))
+        for ((d, p) in peers()) {
+            val o = JSONObject().put("name", p.first ?: "").put("line", p.second)
+            // Its letter in the book's numbers, as last heard (23 Oct 2026): the joiner never hands it out again.
+            meta("mark:$d")?.takeIf { LiveSync.validMark(it) }?.let { o.put("mark", it) }
+            out.put(d, o)
+        }
         out
     }
 
@@ -180,20 +185,28 @@ object LiveCrew {
     suspend fun join(
         sql: SyncSql, install: String, name: String, offer: LiveWire.Offer, peersAtCopy: JSONObject?, marks: LiveSync.LogMarks? = null
     ): LiveSync.Identity {
-        val id = LiveSync.enable(sql, install, name, adopt = offer.book to offer.key, mark = offer.mark, marks = marks)
-        LiveSync.putPeer(sql, offer.device, name = offer.name, sent = 0, recv = offer.seq, seen = System.currentTimeMillis())
-        LiveSync.setPeerPair(sql, offer.device, offer.pair)
-        sql.write {
+        val now = System.currentTimeMillis()
+        // One transaction (23 Oct 2026, the handover: the identity, the sender and the pairing were three, and a
+        // failure between them left a book that synced with nobody, or knew its sender without the pairing).
+        return LiveSync.enableWith(sql, install, name, adopt = offer.book to offer.key, mark = offer.mark, marks = marks) { id ->
+            exec("INSERT OR IGNORE INTO sync_peers (device) VALUES (?)", listOf(offer.device))
+            exec(
+                "UPDATE sync_peers SET name = ?, sent = 0, recv = ?, seen = ? WHERE device = ?",
+                listOf(offer.name, offer.seq, now, offer.device)
+            )
+            setMeta("pair:" + offer.device, offer.pair)
             if (peersAtCopy != null) for (d in peersAtCopy.keys()) {
                 if (d == id.device || d == offer.device) continue
                 val p = peersAtCopy.optJSONObject(d) ?: continue
                 exec("INSERT OR IGNORE INTO sync_peers (device) VALUES (?)", listOf(d))
                 exec("UPDATE sync_peers SET sent = 0, recv = ? WHERE device = ?", listOf(p.optLong("line", 0L), d))
                 p.optString("name").takeIf { it.isNotBlank() }?.let { exec("UPDATE sync_peers SET name = ? WHERE device = ?", listOf(it.take(60), d)) }
+                p.optString("mark").takeIf { LiveSync.validMark(it) }?.let { LiveSync.rememberMarksIn(this, d, listOf(it)) }
             }
+            // Every letter the sender knew was taken (its own and this device's included): never handed out from here.
+            offer.marks?.let { LiveSync.rememberMarksIn(this, null, it) }
             if (offer.pair != null) setMeta(PAIR_WAIT, offer.pair + "|" + offer.device)
         }
-        return id
     }
 
     /** The pairing this joiner still names in its messages ("pair"), until the sender is heard; null after. */
