@@ -602,6 +602,23 @@ real devices yet.
 - **Not done:** removing a stale device from the phone's screen (the
   computer's window has it); the hosting relay has no live line (rounds only).
 
+### The 23 Oct review report (kmp-desktop-15)
+
+- **Languages and units:** units are saved as keys on Windows too
+  (`UnitWords.canonical` in the entry, bill and invoice forms; labels shown
+  through `UnitWords.label` everywhere a unit is printed) and a book's
+  label-units are repaired on every open on both platforms
+  (`UnitWords.normalizeStatements`, run by the phone's normalizeStored and
+  DesktopDatabase's onOpen). Quantities group like money (`Format.qty/goods`
+  through `groupedForReader`); CSV figures read the decimal mark from the
+  figure (`CsvImport.amount(raw, groupDots)`); WhatsApp numbers on the phone
+  take the shop's country (Reminder no longer passes "92"); notifications use
+  the app's language on Android 7-12 (`ui/AppLanguage`). `check_strings.py`
+  now fails real line breaks, edge spaces, bare `"`, `%%` in unformatted
+  text, native digits, wrong-script letters and a misspelt app name in the
+  RTL files (privacy strings exempt), and warns on Roman Urdu glossary
+  variants (dukaan, maujood, ek, gahak, wapas…).
+
 ### The shared module (KMP)
 
 ```

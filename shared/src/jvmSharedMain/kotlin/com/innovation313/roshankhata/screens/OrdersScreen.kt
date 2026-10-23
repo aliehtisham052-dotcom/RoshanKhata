@@ -208,7 +208,7 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, on
                     TextButton(onClick = { draft.lines.remove(l) }) { Text("✕", color = c.textMuted) }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CalcField(l.qty, { l.qty = it }, Modifier.weight(1f), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (l.unit?.let { " ($it)" } ?: ""))
+                    CalcField(l.qty, { l.qty = it }, Modifier.weight(1f), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (com.innovation313.roshankhata.data.UnitWords.label(l.unit).let { u -> if (u.isEmpty()) "" else " ($u)" }))
                     CalcField(l.rate, { l.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
                 }
             }

@@ -21,12 +21,15 @@ import com.innovation313.roshankhata.data.PaymentDetails
 object Reminder {
 
     /**
-     * Pakistani numbers arrive in many shapes: 03001234567, +923001234567,
-     * 0092..., or with spaces and dashes. WhatsApp needs a bare international
-     * number with no plus and no separators.
+     * Numbers arrive in many shapes: 03001234567, +923001234567, 0092...,
+     * or with spaces and dashes. WhatsApp needs a bare international number
+     * with no plus and no separators. A local number takes the SHOP'S
+     * country's code (WhatsAppNumber's own default, ShopCountry.current):
+     * this wrapper passed a literal "92" until 23 Oct, so a Bangladeshi
+     * shop's reminder went to a Pakistani number.
      */
-    fun toWhatsAppNumber(raw: String, defaultCountryCode: String = "92"): String? =
-        com.innovation313.roshankhata.data.WhatsAppNumber.of(raw, defaultCountryCode)
+    fun toWhatsAppNumber(raw: String): String? =
+        com.innovation313.roshankhata.data.WhatsAppNumber.of(raw)
 
     /**
      * The message body. Kept plain and polite — this goes to a real customer.

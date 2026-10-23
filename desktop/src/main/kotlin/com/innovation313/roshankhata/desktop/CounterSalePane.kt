@@ -373,7 +373,7 @@ fun CounterSalePane(
                                 Column(Modifier.weight(1f)) {
                                     Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     Text(
-                                        listOfNotNull(p.company, p.barcode?.let { Format.ltr(it) }, stock?.let { "${Calc.trim(it)} ${p.defaultUnit.orEmpty()}".trim() }).joinToString(" · "),
+                                        listOfNotNull(p.company, p.barcode?.let { Format.ltr(it) }, stock?.let { "${Calc.trim(it)} ${com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit)}".trim() }).joinToString(" · "),
                                         color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
                                     )
                                 }
@@ -408,7 +408,7 @@ fun CounterSalePane(
                                     } else {
                                         Text(line.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                         val under = listOfNotNull(
-                                            line.unit, line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)) },
+                                            com.innovation313.roshankhata.data.UnitWords.label(line.unit).takeIf { it.isNotEmpty() }, line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)) },
                                             line.taxRate?.takeIf { it > 0.0 }?.let { word(W.pos_tax) + " " + Calc.trim(it) + "%" }
                                         )
                                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -736,7 +736,7 @@ object SaleReceipt {
         for (i in s.items) {
             out += ThermalReceipt.Line(i.itemName, 20f)
             out += ThermalReceipt.Line(
-                "  " + Calc.trim(i.quantity) + (i.unit?.let { " $it" } ?: "") + " × " + Format.money(i.rate) +
+                "  " + Calc.trim(i.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }) + " × " + Format.money(i.rate) +
                     (if (i.discount > 0.0) "  −" + Format.money(i.discount) else "") + "  =  " + Format.money(i.lineTotal), 18f
             )
         }

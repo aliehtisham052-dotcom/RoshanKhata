@@ -237,7 +237,7 @@ object ViewerMode {
         val now = SystemClock.elapsedRealtime()
         if (now - lastSaidAt < 3000L) return
         lastSaidAt = now
-        val app = context.applicationContext
+        val app = com.innovation313.roshankhata.ui.AppLanguage.context(context.applicationContext)
         Handler(Looper.getMainLooper()).post {
             runCatching { Toast.makeText(app, R.string.viewer_refused, Toast.LENGTH_LONG).show() }
         }

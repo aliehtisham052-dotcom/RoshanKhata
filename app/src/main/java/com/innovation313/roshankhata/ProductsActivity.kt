@@ -201,7 +201,7 @@ class ProductsActivity : BaseActivity() {
                         com.innovation313.roshankhata.screens.StockCountForm(draft, onCancel = { dialog.dismiss() }, onSave = {
                             lifecycleScope.launch {
                                 val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }) }.getOrDefault(0) }
-                                Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.string(resources, R.string.stock_count_saved, n), Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.quantity(resources, R.plurals.stock_count_saved, n, n), Toast.LENGTH_LONG).show()
                                 dialog.dismiss(); refresh()
                             }
                         })
@@ -257,7 +257,7 @@ class ProductsActivity : BaseActivity() {
         lifecycleScope.launch {
             val v = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Valuation.compute(dao) }
             val lines = v.rows.filter { it.value != null }.sortedByDescending { it.value }.take(40).joinToString("\n") {
-                it.name + ": " + com.innovation313.roshankhata.ui.Calc.trim(it.onHand ?: 0.0) + (it.unit?.let { u -> " $u" } ?: "") + " × " + com.innovation313.roshankhata.ui.Format.money(it.cost ?: 0.0) + " = " + com.innovation313.roshankhata.ui.Format.money(it.value ?: 0.0)
+                it.name + ": " + com.innovation313.roshankhata.ui.Calc.trim(it.onHand ?: 0.0) + (com.innovation313.roshankhata.data.UnitWords.label(it.unit).let { u -> if (u.isEmpty()) "" else " $u" }) + " × " + com.innovation313.roshankhata.ui.Format.money(it.cost ?: 0.0) + " = " + com.innovation313.roshankhata.ui.Format.money(it.value ?: 0.0)
             }
             MaterialAlertDialogBuilder(this@ProductsActivity)
                 .setTitle(getString(R.string.stock_valuation) + " · " + com.innovation313.roshankhata.ui.Format.money(v.total))

@@ -94,7 +94,7 @@ class FollowUpActivity : BaseActivity() {
         if (isFinishing || isDestroyed) return
         if (queueIndex >= queue.size) {
             if (queue.isNotEmpty()) {
-                Toast.makeText(this, Digits.string(resources, R.string.followup_queue_done, queueOpened), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, Digits.quantity(resources, R.plurals.followup_queue_done, queueOpened, queueOpened), Toast.LENGTH_LONG).show()
             }
             queue = emptyList()
             return

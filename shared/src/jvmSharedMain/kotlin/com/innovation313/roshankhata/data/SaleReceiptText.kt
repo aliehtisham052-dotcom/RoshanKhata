@@ -18,7 +18,7 @@ object SaleReceiptText {
         b.append(sale.customerName?.let { Format.name(it) } ?: words.text(W.pos_walk_in)).append("\n\n")
         for (i in s.items) {
             b.append(i.itemName).append('\n')
-            b.append("  ").append(Calc.trim(i.quantity)).append(i.unit?.let { " $it" } ?: "").append(" × ").append(Format.money(i.rate))
+            b.append("  ").append(Calc.trim(i.quantity)).append(com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }).append(" × ").append(Format.money(i.rate))
             if (i.discount > 0.0) b.append("  −").append(Format.money(i.discount))
             b.append("  =  ").append(Format.money(i.lineTotal)).append('\n')
         }

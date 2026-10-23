@@ -191,7 +191,7 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.productName.orEmpty()) }
     var qty by remember { mutableStateOf(existing?.quantity?.let { Calc.trim(it) }.orEmpty()) }
-    var unit by remember { mutableStateOf(existing?.unit.orEmpty()) }
+    var unit by remember { mutableStateOf(com.innovation313.roshankhata.data.UnitWords.label(existing?.unit)) }
     var rate by remember { mutableStateOf(existing?.rate?.let { Calc.trim(it) }.orEmpty()) }
     var batch by remember { mutableStateOf(existing?.batchNumber.orEmpty()) }
     var expiry by remember { mutableStateOf(existing?.expiryDate) }
@@ -222,7 +222,7 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
                 else -> {
                     val line = BillItem(
                         billId = 0, productName = name.trim(), batchNumber = batch.trim().ifEmpty { null },
-                        expiryDate = expiry, quantity = q, unit = unit.trim().ifEmpty { null },
+                        expiryDate = expiry, quantity = q, unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit),
                         rate = Calc.evalAmount(rate)
                     )
                     onAdd(existing?.let { line.copy(id = it.id, billId = it.billId, note = it.note) } ?: line)

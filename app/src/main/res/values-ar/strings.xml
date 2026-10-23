@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">روشن كهاتا</string>
     <string name="welcome_title">دفاترك في أمان</string>
-    <string name="welcome_body">يحتفظ روشن كھاتا بسجلاتك على هذا الهاتف. اربط حساب Google الخاص بك ليتم نسخ دفاترك احتياطيًا إلى درايفك — بياناتك، في حسابك.</string>
+    <string name="welcome_body">يحتفظ روشن كهاتا بسجلاتك على هذا الهاتف. اربط حساب Google الخاص بك ليتم نسخ دفاترك احتياطيًا إلى درايفك — بياناتك، في حسابك.</string>
     <string name="welcome_note">الربط يجعل النسخ الاحتياطي ممكنًا فقط. تصبح دفاترك في أمان بعد إجراء نسخة احتياطية — فعّل النسخ التلقائي، أو انسخ في أي وقت.</string>
     <string name="welcome_connect">المتابعة باستخدام Google</string>
     <string name="welcome_skip">ربما لاحقًا</string>
@@ -26,7 +26,7 @@
     <string name="coach_desc_nav_more">حاسبة الزكاة، بطاقة المتجر، النسخ الاحتياطي، قفل التطبيق، والإعدادات.</string>
         <string name="coach_title_bills">فواتير الموردين</string>
     <string name="coach_desc_bills">سجّل ما تشتريه من الموردين وما لا يزال عليك لهم.</string>
-    <string name="coach_title_stock">مخزون قارب على الانتهاء</string>
+    <string name="coach_title_stock">مخزون تقترب صلاحيته من الانتهاء</string>
     <string name="coach_desc_stock">بِعه أو خفّض سعره أو أرجعه — ما دام في الوقت متسع.</string>
     <string name="coach_title_insights">تحليلات المبيعات</string>
     <string name="coach_desc_insights">اعرف ما يُباع، وما يبقى راكدًا، وأين تتجمّد أموالك.</string>
@@ -142,9 +142,7 @@
     <string name="add_party">إضافة طرف</string>
     <string name="add_party_duplicate_with_phone">يوجد عميل مشابه بالفعل: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">يوجد عميل مشابه بالفعل: %1$s</string>
-    <string name="no_parties_yet">لا عملاء بعد.
-
-أضف أول عميل وابدأ دفترك.</string>
+    <string name="no_parties_yet">لا عملاء بعد.\n\nأضف أول عميل وابدأ دفترك.</string>
     <string name="no_entries_yet">لا قيود بعد.</string>
 
     <string name="i_gave">أعطيت</string>
@@ -315,7 +313,7 @@
     <string name="no_entries_to_export">لا قيود لوضعها في كشف بعد.</string>
 
     <string name="app_lock">قفل التطبيق</string>
-    <string name="app_lock_pc_explain">رمز PIN لروشن كهاته على هذا الحاسوب. يحمي الدفتر من أعين الآخرين عند المنضدة؛ ولا يقفل الملف نفسه، لذا اقفل Windows أيضًا (Win + L) عند ابتعادك.</string>
+    <string name="app_lock_pc_explain">رمز PIN لروشن كهاتا على هذا الحاسوب. يحمي الدفتر من أعين الآخرين عند المنضدة؛ ولا يقفل الملف نفسه، لذا اقفل Windows أيضًا (Win + L) عند ابتعادك.</string>
     <string name="pc_pdf_save">حفظ PDF</string>
     <string name="pc_pdf_open_folder">فتح المجلد</string>
     <string name="pc_pdf_making">جارٍ إنشاء ملف PDF…</string>
@@ -626,13 +624,9 @@
         <item quantity="other">تم العثور على %1$d نشاط تجاري في درايف</item>
     </plurals>
     <string name="drive_restore_all">استعادة الكل</string>
-    <string name="drive_restore_all_warning">ستُستعاد هذه الأنشطة من درايف، وستُستبدل بيانات كل منها على هذا الهاتف:
-
-%1$s</string>
-    <string name="drive_restored_these">تمت الاستعادة:
-%1$s</string>
-    <string name="drive_restore_missed">تعذرت الاستعادة:
-%1$s</string>
+    <string name="drive_restore_all_warning">ستُستعاد هذه الأنشطة من درايف، وستُستبدل بيانات كل منها على هذا الهاتف:\n\n%1$s</string>
+    <string name="drive_restored_these">تمت الاستعادة:\n%1$s</string>
+    <string name="drive_restore_missed">تعذرت الاستعادة:\n%1$s</string>
     <string name="business_numbered">نشاط %1$d</string>
     <string name="backup_for_business">جارٍ النسخ الاحتياطي: %1$s</string>
     <string name="snapshots_title">النسخ اليومية</string>
@@ -787,9 +781,9 @@
     <string name="invoice_template_thermal">إيصال حراري — ضيق، بيع نقدي</string>
     <string name="invoice_pdf_failed">تعذّر إنشاء ملف PDF. لم تتم مشاركة أي شيء.</string>
     <string name="invoice_preview_label">معاينة — تتحدث أثناء التعبئة</string>
-    <string name="invoice_step_customer">الخطوة ١ من ٣ — لمن هذه الفاتورة؟</string>
-    <string name="invoice_step_items">الخطوة ٢ من ٣ — ما الذي تفوتره؟</string>
-    <string name="invoice_step_design">الخطوة ٣ من ٣ — اختر التصميم</string>
+    <string name="invoice_step_customer">الخطوة 1 من 3 — لمن هذه الفاتورة؟</string>
+    <string name="invoice_step_items">الخطوة 2 من 3 — ما الذي تفوتره؟</string>
+    <string name="invoice_step_design">الخطوة 3 من 3 — اختر التصميم</string>
     <string name="invoice_next">التالي</string>
     <string name="invoice_back">السابق</string>
     <string name="invoice_items_label">الأصناف</string>
@@ -876,7 +870,7 @@
 
     <string name="report_problem">الإبلاغ عن مشكلة</string>
     <string name="rate_app">قيّم هذا التطبيق</string>
-    <string name="rate_app_note">تقييمك يساعد أصحاب المحلات الآخرين على اكتشاف التطبيق. إن وجدت خللاً أو نقصاً فاستخدم "الإبلاغ عن مشكلة" — فهي تصلنا مباشرة.</string>
+    <string name="rate_app_note">تقييمك يساعد أصحاب المحلات الآخرين على اكتشاف التطبيق. إن وجدت خللاً أو نقصاً فاستخدم «الإبلاغ عن مشكلة» — فهي تصلنا مباشرة.</string>
     <string name="report_problem_sub">أخبرنا بما حدث</string>
     <string name="report_privacy">أسماء عملائك وأرقامهم وأرصدتهم لا تُرسل أبدًا. يذهب مع البلاغ إصدار التطبيق وطراز هاتفك فقط \u2014 وهذا ما يعيننا على إيجاد الخلل.\n\nيفتح البريد في تطبيقك أنت، فترى ما يُرسل قبل أن يذهب.</string>
 
@@ -921,9 +915,7 @@
     <string name="drive_auto_backup">نسخ احتياطي تلقائي</string>
     <string name="drive_auto_backup_hint">يحفظ نسخة تلقائيًا كلما تغيّر الدفتر — بحد أقصى كل 30 دقيقة على الواي فاي وكل 6 ساعات على بيانات الهاتف. ويمكنك أخذ نسخة يدويًا في أي وقت.</string>
     <string name="auto_backup_offer_title">نسخ احتياطي تلقائي؟</string>
-    <string name="auto_backup_offer_body">تم ربط حسابك. يستطيع Roshan Khata رفع دفترك تلقائيًا كلما تغيّر، حتى لا تضيع سجلاتك مع هاتف مفقود أو تالف.
-
-يمكنك تغيير ذلك في أي وقت من هذه الشاشة.</string>
+    <string name="auto_backup_offer_body">تم ربط حسابك. يستطيع Roshan Khata رفع دفترك تلقائيًا كلما تغيّر، حتى لا تضيع سجلاتك مع هاتف مفقود أو تالف.\n\nيمكنك تغيير ذلك في أي وقت من هذه الشاشة.</string>
     <string name="auto_backup_offer_yes">تشغيل</string>
     <string name="auto_backup_offer_no">ليس الآن</string>
     <string name="drive_restore">استعادة من Drive</string>
@@ -1210,7 +1202,7 @@
     <string name="notif_backup_title">تذكير النسخ الاحتياطي</string>
     <string name="notif_backup_body">مضى أكثر من أسبوع على آخر نسخة احتياطية. سجلاتك على هذا الهاتف فقط.</string>
     <string name="notif_backup_failed_title">فشل النسخ الاحتياطي التلقائي</string>
-    <string name="notif_backup_failed_body">تعذّر على روشن كھاتا النسخ إلى درايف. تحقق من الإنترنت — سيحاول تلقائيًا مرة أخرى.</string>
+    <string name="notif_backup_failed_body">تعذّر على روشن كهاتا النسخ إلى درايف. تحقق من الإنترنت — سيحاول تلقائيًا مرة أخرى.</string>
 
     <!-- Business card -->
     <string name="biz_card">بطاقة المتجر</string>
@@ -1219,7 +1211,7 @@
     <string name="biz_card_template">التصميم</string>
     <string name="biz_card_share">مشاركة البطاقة</string>
     <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
-    <string name="biz_card_show_mark">إظهار “روشن كھاتہ” على البطاقة</string>
+    <string name="biz_card_show_mark">إظهار “روشن كهاتا” على البطاقة</string>
     <string name="biz_card_show_logo">شعار المتجر على البطاقة</string>
     <string name="biz_card_logo_none">لا يوجد شعار بعد. أضفه من الملف الشخصي ←</string>
     <string name="biz_card_enter_name">يرجى إدخال اسم النشاط التجاري</string>
@@ -1234,7 +1226,7 @@
     <string name="faq_q_backup">كيف أحافظ على دفتري إذا فقدت هاتفي؟</string>
     <string name="faq_a_backup">افتح النسخ الاحتياطي والاستعادة من الشاشة الرئيسية وسجّل الدخول بحساب جوجل الخاص بك. يُحفظ دفترك في درايف الخاص بك، حيث لا يصل إليه أحد سواك. افعل ذلك مرة كل أسبوع، وعندها يكلّفك فقدان الهاتف هاتفًا فقط لا حساباتك.</string>
     <string name="faq_q_restore">غيّرت هاتفي. كيف أستعيد دفتري؟</string>
-    <string name="faq_a_restore">ثبّت روشن كھاتہ على الهاتف الجديد، افتح النسخ الاحتياطي والاستعادة، اضغط استعادة، وسجّل الدخول بنفس حساب جوجل. يسأل التطبيق درايف عن المتاجر الموجودة ويعرضها بالاسم — يمكنك استعادة واحد أو كلها. ما أُدخل بعد آخر نسخة احتياطية ليس فيها.</string>
+    <string name="faq_a_restore">ثبّت روشن كهاتا على الهاتف الجديد، افتح النسخ الاحتياطي والاستعادة، اضغط استعادة، وسجّل الدخول بنفس حساب جوجل. يسأل التطبيق درايف عن المتاجر الموجودة ويعرضها بالاسم — يمكنك استعادة واحد أو كلها. ما أُدخل بعد آخر نسخة احتياطية ليس فيها.</string>
     <string name="faq_q_business">لدي متجران. هل يمكنني الاحتفاظ بكليهما في التطبيق؟</string>
     <string name="faq_a_business">نعم. اضغط على اسم متجرك أعلى الشاشة الرئيسية، ثم إضافة نشاط تجاري. لكل متجر دفتر منفصل تمامًا — عملاء وقيود وصور منفصلة — ولكل منها نسخة احتياطية خاصة. اضغط على الاسم للتبديل. اضغط مطولاً لمزيد من الخيارات — إعادة التسمية أو الحذف.</string>
     <string name="faq_q_snapshot">حدث خطأ ما اليوم. هل يمكنني العودة إلى الأمس؟</string>
@@ -1244,7 +1236,7 @@
     <string name="faq_q_hide">هل أستطيع إخفاء الرصيد إذا وقف أحدهم بجانبي؟</string>
     <string name="faq_a_hide">اضغط على أيقونة العين بجوار الرصيد في الشاشة الرئيسية. يبقى مخفيًا في كل مكان حتى تضغط عليها ثانية.</string>
     <string name="faq_q_percent">هل أحسب خصمًا داخل خانة المبلغ؟</string>
-    <string name="faq_a_percent">نعم. اكتب العملية مباشرة — 1200-15%% تعطي 1020، و 500*32%% تعطي 160. تعمل في كل خانة مبلغ وفي الآلة الحاسبة.</string>
+    <string name="faq_a_percent" formatted="false">نعم. اكتب العملية مباشرة — 1200-15% تعطي 1020، و 500*32% تعطي 160. تعمل في كل خانة مبلغ وفي الآلة الحاسبة.</string>
     <string name="faq_q_delete">حذفت عميلاً بالخطأ.</string>
     <string name="faq_a_delete">سلة المحذوفات في الشاشة الرئيسية. يبقى فيها العملاء والقيود المحذوفة ويمكن إعادتها.</string>
     <string name="faq_q_language">هل أغيّر اللغة لاحقًا؟</string>
@@ -1434,7 +1426,7 @@
     <string name="rate_list_heading_hint">العنوان على الصورة</string>
     <string name="rate_list_heading_default">أسعار هذا الأسبوع</string>
     <string name="rate_list_columns">الأسعار في القائمة</string>
-    <string name="rate_list_show_mark">إظهار “روشن كھاتہ” على القائمة</string>
+    <string name="rate_list_show_mark">إظهار “روشن كهاتا” على القائمة</string>
     <string name="rate_list_col_product">المنتج</string>
     <string name="rate_list_col_unit">الوحدة</string>
     <string name="rate_list_unpriced">المنتجات التي لا سعر لها لا تظهر في القائمة: %1$s. لإضافة سعر افتح «المنتجات والمخزون»، واضغط على المنتج، واختر «تعديل البيانات».</string>
@@ -1446,7 +1438,7 @@
     <string name="poster_heading_hint">السطر الكبير</string>
     <string name="poster_message_hint">الرسالة</string>
     <string name="poster_show_logo">شعار المتجر على الملصق</string>
-    <string name="poster_show_mark">إظهار “روشن كھاتہ” على الملصق</string>
+    <string name="poster_show_mark">إظهار “روشن كهاتا” على الملصق</string>
     <string name="poster_custom">كلماتك الخاصة</string>
     <string name="poster_new_stock">وصلت بضاعة جديدة!</string>
     <string name="poster_eid_fitr">عيد فطر مبارك</string>
@@ -1668,7 +1660,7 @@
     <string name="pdf_biz_cheques">شيكات لم تُحصّل بعد</string>
     <string name="pdf_biz_cheques_note">ليست مالًا حتى تُحصّل. وهي غير مدرجة في الأرصدة أعلاه.</string>
     <string name="pdf_biz_cheque">شيك</string>
-    <string name="pdf_biz_due"> \u00B7 الاستحقاق </string>
+    <string name="pdf_biz_due">" \u00B7 الاستحقاق "</string>
     <string name="pdf_biz_plans">خطط سداد جارية</string>
     <string name="pdf_biz_paid_of">%1$s من %2$s</string>
     <string name="pdf_biz_expiring">مخزون قارب على الانتهاء</string>
@@ -1681,7 +1673,7 @@
         <item quantity="many">%1$d يومًا</item>
         <item quantity="other">%1$d يومًا</item>
     </plurals>
-    <string name="pdf_biz_batch">دفعة %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"دفعة %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">سجل المبيعات والمشتريات</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1747,7 +1739,6 @@
     <string name="pdf_insp_no_batches">لا دفعات في المخزون. تُسجل الدفعة وتاريخ الانتهاء على فاتورة المورد.</string>
     <string name="pdf_insp_missing_note">كل منتج أدناه متوفر في المخزون لكن حقلًا أو أكثر من حقول ملصقه لم يُسجل قط.</string>
     <string name="pdf_insp_expired">منتهي الصلاحية</string>
-    <string name="pdf_insp_expired_ago">منتهي الصلاحية \u00B7 قبل %1$d يومًا</string>
     <string name="pdf_insp_days_left">بقي %1$d يومًا</string>
     <string name="pdf_insp_units_differ">الوحدات مختلفة</string>
     <string name="pdf_insp_company_tag">الشركة</string>
@@ -1847,7 +1838,7 @@
     <string name="bp_leave_keep">متابعة التعديل</string>
     <string name="bp_phone">رقم الهاتف</string>
     <string name="bp_phone_help">يُطبع على الفواتير ليتمكن العملاء من الاتصال بك.</string>
-    <string name="bp_phone_hint">مثال: 0300 1234567</string>
+    <string name="bp_phone_hint">مثال: \u20660300 1234567\u2069</string>
     <string name="bp_logo">شعار المتجر</string>
     <string name="bp_logo_help">اختياري — يُطبع أعلى الفواتير وسجل المخزون.</string>
     <string name="bp_remove_logo">إزالة الشعار</string>
@@ -1935,7 +1926,6 @@
     <string name="followup_queue_open">افتح واتساب</string>
     <string name="followup_queue_skip">تخطي</string>
     <string name="followup_queue_stop">إيقاف</string>
-    <string name="followup_queue_done">تم — فُتح %1$d تذكيرًا اليوم</string>
     <string name="followup_queue_title">%1$d من %2$d</string>
     <string name="season_title">حساب المواسم</string>
     <string name="season_subtitle">الآجل حسب الموسم الزراعي، الأحدث أولًا</string>
@@ -2061,7 +2051,7 @@
     <string name="scheme_mark_claimed">استُلمت المطالبة</string>
     <string name="scheme_unmark_claimed">لم تُستلم المطالبة بعد</string>
     <string name="scheme_delete">حذف العرض</string>
-    <string name="scheme_delete_confirm">حذف "%1$s"؟ لن تتغير فواتيرك.</string>
+    <string name="scheme_delete_confirm">حذف «%1$s»؟ لن تتغير فواتيرك.</string>
     <string name="scheme_claim_hint">المبلغ المستلم (إشعار دائن / خصم)</string>
     <string name="scheme_need_name">أدخل اسم العرض</string>
     <string name="scheme_need_slab">أدخل هدفًا واحدًا على الأقل ومكافأته</string>
@@ -3086,7 +3076,7 @@
     <string name="biz_card_ex_owner">مثلاً علي خان</string>
     <string name="biz_card_ex_address">مثلاً السوق الرئيسي</string>
     <string name="biz_card_ex_tagline">مثلاً توصيل للمنزل</string>
-    <string name="biz_card_ex_phone">مثلاً 0300 1234567</string>
+    <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
     <string name="biz_card_ex_web">مثلاً موقعك أو صفحة فيسبوك</string>
     <string name="biz_card_ex_qr">مثلاً السلام عليكم، رأيت بطاقتك</string>
@@ -3302,7 +3292,6 @@
     <string name="stock_count_title">جرد المخزون</string>
     <string name="stock_count_help">اكتب ما على الرف؛ تُسجَّل الفروق فقط، مع رقم الدفتر بجانبها</string>
     <string name="stock_counted_hint">المعدود</string>
-    <string name="stock_count_saved">سُجّل %1$d تصحيحات</string>
     <string name="stock_adjust">تعديل المخزون</string>
     <string name="adjust_qty_hint">الكمية (+ داخل، − خارج)</string>
     <string name="adjust_reason">السبب</string>
@@ -3706,11 +3695,7 @@
     <string name="live_sent">أُرسل. اضغط نعم على الحاسوب ليُستبدل دفتره بدفتر هذا الهاتف.</string>
     <string name="live_receive">استلام دفتر المتجر على هذا الهاتف</string>
     <string name="live_receive_steps">على الهاتف الذي يحمل دفتر المتجر افتح النسخ الاحتياطي ← المزامنة الحية ← ربط، وامسح هذا الرمز. يجب أن يكون الهاتفان على شبكة واي فاي نفسها. تنتظر هذه النافذة 15 دقيقة.</string>
-    <string name="live_receive_offer">«%1$s» يريد أن يعطي هذا الهاتف دفتر المتجر.
-
-الرمز: %2$s — يجب أن تظهر الأرقام الأربعة نفسها على ذلك الهاتف.
-
-سيُستبدل دفتر هذا الهاتف بدفتر المتجر. بعد ذلك يحتفظ الهاتفان بدفتر واحد معًا عبر مُرحِّل الإنترنت.</string>
+    <string name="live_receive_offer">«%1$s» يريد أن يعطي هذا الهاتف دفتر المتجر.\n\nالرمز: %2$s — يجب أن تظهر الأرقام الأربعة نفسها على ذلك الهاتف.\n\nسيُستبدل دفتر هذا الهاتف بدفتر المتجر. بعد ذلك يحتفظ الهاتفان بدفتر واحد معًا عبر مُرحِّل الإنترنت.</string>
     <string name="live_receive_done">تم. يحتفظ هذا الهاتف الآن بدفتر المتجر مع أجهزته الأخرى.</string>
     <string name="live_receive_no_wifi">هذا الهاتف ليس على شبكة واي فاي. اتصل بواي فاي المتجر وحاول مجددًا.</string>
     <string name="live_sent_phone">أُرسل. على الهاتف الآخر اضغط نعم ليستلم هذا الدفتر. بعدها يلتقي الهاتفان عبر مُرحِّل الإنترنت.</string>
@@ -3738,6 +3723,31 @@
     <string name="live_status_not_accepted">لم يوافق الحاسوب في الوقت المحدد. للربط، امسح رمز المزامنة المباشرة مرة أخرى.</string>
     <string name="live_status_not_here">أجاب الحاسوب، لكنه لا يحتفظ بهذا الدفتر الآن. افتح نشاط هذا الدفتر على الحاسوب.</string>
     <string name="live_status_relay">مباشر مع %1$s عبر الإنترنت. آخر تحديث: %2$s</string>
-    <string name="live_relay_help">حين يكون الهاتف بعيدًا عن واي فاي المتجر تمرّ تغييراته عبر مُرحِّل Innovation 313، مقفلةً بمفتاح هذا الدفتر نفسه: لا يستطيع المُرحِّل قراءتها، ولا يحتفظ بها أكثر من 7 أيام. مفتاح واحد للجهازين. حين يكون التطبيق مغلقًا، لا يفعل Firebase من Google سوى إخبار الهاتف بأن شيئًا ينتظر؛ ولا يحمل شيئًا من الدفتر.</string>
+    <string name="live_relay_help">حين يكون الهاتف بعيدًا عن واي فاي المتجر تمرّ تغييراته عبر مُرحِّل Innovation-313، مقفلةً بمفتاح هذا الدفتر نفسه: لا يستطيع المُرحِّل قراءتها، ولا يحتفظ بها أكثر من 7 أيام. مفتاح واحد للجهازين. حين يكون التطبيق مغلقًا، لا يفعل Firebase من Google سوى إخبار الهاتف بأن شيئًا ينتظر؛ ولا يحمل شيئًا من الدفتر.</string>
     <string name="live_relay">عبر الإنترنت أيضًا</string>
+    <plurals name="stock_count_saved">
+        <item quantity="zero">لم يُسجَّل أي تصحيح</item>
+        <item quantity="one">سُجّل تصحيح واحد</item>
+        <item quantity="two">سُجّل تصحيحان</item>
+        <item quantity="few">سُجّلت %1$d تصحيحات</item>
+        <item quantity="many">سُجّل %1$d تصحيحًا</item>
+        <item quantity="other">سُجّل %1$d تصحيح</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="zero">تم — لم يُفتح أي تذكير اليوم</item>
+        <item quantity="one">تم — فُتح تذكير واحد اليوم</item>
+        <item quantity="two">تم — فُتح تذكيران اليوم</item>
+        <item quantity="few">تم — فُتحت %1$d تذكيرات اليوم</item>
+        <item quantity="many">تم — فُتح %1$d تذكيرًا اليوم</item>
+        <item quantity="other">تم — فُتح %1$d تذكير اليوم</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="zero">منتهي الصلاحية \u00B7 قبل %1$d يوم</item>
+        <item quantity="one">منتهي الصلاحية \u00B7 قبل يوم واحد</item>
+        <item quantity="two">منتهي الصلاحية \u00B7 قبل يومين</item>
+        <item quantity="few">منتهي الصلاحية \u00B7 قبل %1$d أيام</item>
+        <item quantity="many">منتهي الصلاحية \u00B7 قبل %1$d يومًا</item>
+        <item quantity="other">منتهي الصلاحية \u00B7 قبل %1$d يوم</item>
+    </plurals>
+    <string name="voice_language_missing_phone">هذا الهاتف لا يحتوي على تلك اللغة. الاستماع بلغة الهاتف نفسه.</string>
 </resources>

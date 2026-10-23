@@ -86,6 +86,9 @@ object DesktopDatabase {
                 override fun onOpen(connection: androidx.sqlite.SQLiteConnection) {
                     runCatching { connection.execSQL("PRAGMA cache_size = -16000") }
                     runCatching { connection.execSQL("PRAGMA temp_store = MEMORY") }
+                    // Units saved as a label ("بوری", "bori") become their key ("bag"), as the phone
+                    // does on every open (23 Oct 2026, R02): otherwise stock reads "?" and a product splits.
+                    UnitWords.normalizeStatements().forEach { sql -> runCatching { connection.execSQL(sql) } }
                 }
             })
             .build()

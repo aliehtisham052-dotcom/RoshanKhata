@@ -126,9 +126,7 @@
     <string name="add_party">Tambah Kontak</string>
     <string name="add_party_duplicate_with_phone">Pelanggan serupa sudah ada: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Pelanggan serupa sudah ada: %1$s</string>
-    <string name="no_parties_yet">Belum ada pelanggan.
-
-Tambahkan pelanggan pertama dan mulai buku Anda.</string>
+    <string name="no_parties_yet">Belum ada pelanggan.\n\nTambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="no_entries_yet">Belum ada catatan.</string>
 
     <string name="i_gave">Saya Beri</string>
@@ -593,9 +591,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
         <item quantity="other">%1$d usaha di Drive</item>
     </plurals>
     <string name="drive_restore_all">Pulihkan semua</string>
-    <string name="drive_restore_all_warning">Usaha berikut akan dipulihkan dari Drive, menggantikan apa pun yang ada di ponsel ini untuk masing-masing: %1$s</string>
-    <string name="drive_restored_these">Dipulihkan: %1$s</string>
-    <string name="drive_restore_missed">Tidak dapat dipulihkan: %1$s</string>
+    <string name="drive_restore_all_warning">Usaha berikut akan dipulihkan dari Drive, menggantikan apa pun yang ada di ponsel ini untuk masing-masing:\n\n%1$s</string>
+    <string name="drive_restored_these">Dipulihkan:\n%1$s</string>
+    <string name="drive_restore_missed">Tidak dapat dipulihkan:\n%1$s</string>
     <string name="business_numbered">Usaha %1$d</string>
     <string name="backup_for_business">Mencadangkan: %1$s</string>
     <string name="snapshots_title">Salinan harian</string>
@@ -861,7 +859,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="drive_auto_backup">Cadangan otomatis</string>
     <string name="drive_auto_backup_hint">Mencadangkan sendiri setiap kali buku berubah — paling sering tiap 30 menit dengan Wi-Fi, tiap 6 jam dengan data seluler. Anda tetap bisa mencadangkan kapan saja.</string>
     <string name="auto_backup_offer_title">Cadangkan secara otomatis?</string>
-    <string name="auto_backup_offer_body">Akun Anda sudah terhubung. Roshan Khata dapat mengunggah buku Anda sendiri setiap kali ada perubahan, sehingga ponsel yang hilang atau rusak tidak membawa serta catatan Anda. Anda dapat mengubahnya kapan saja dari layar ini.</string>
+    <string name="auto_backup_offer_body">Akun Anda sudah terhubung. Roshan Khata dapat mengunggah buku Anda sendiri setiap kali ada perubahan, sehingga ponsel yang hilang atau rusak tidak membawa serta catatan Anda.\n\nAnda dapat mengubahnya kapan saja dari layar ini.</string>
     <string name="auto_backup_offer_yes">Aktifkan</string>
     <string name="auto_backup_offer_no">Nanti saja</string>
     <string name="drive_restore">Pulihkan dari Drive</string>
@@ -1153,7 +1151,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="faq_q_hide">Bisakah saldo disembunyikan saat ada orang di samping saya?</string>
     <string name="faq_a_hide">Ketuk ikon mata di samping saldo pada layar utama. Saldo tersembunyi di semua tempat sampai Anda mengetuknya lagi.</string>
     <string name="faq_q_percent">Bisakah saya menghitung diskon di dalam kolom jumlah?</string>
-    <string name="faq_a_percent">Bisa. Ketik hitungannya langsung — 1200-15%% menghasilkan 1020, dan 500*32%% menghasilkan 160. Ini berfungsi di setiap kolom jumlah dan di Kalkulator.</string>
+    <string name="faq_a_percent" formatted="false">Bisa. Ketik hitungannya langsung — 1200-15% menghasilkan 1020, dan 500*32% menghasilkan 160. Ini berfungsi di setiap kolom jumlah dan di Kalkulator.</string>
     <string name="faq_q_delete">Saya tidak sengaja menghapus pelanggan.</string>
     <string name="faq_a_delete">Tempat Sampah, di layar utama. Pelanggan dan catatan yang dihapus menunggu di sana dan bisa dikembalikan.</string>
     <string name="faq_q_language">Bisakah saya mengganti bahasa nanti?</string>
@@ -1539,7 +1537,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pdf_biz_cheques">Cek yang belum cair</string>
     <string name="pdf_biz_cheques_note">Ini belum menjadi uang sebelum cair. Tidak termasuk dalam saldo di atas.</string>
     <string name="pdf_biz_cheque">Cek</string>
-    <string name="pdf_biz_due"> \u00B7 jatuh tempo </string>
+    <string name="pdf_biz_due">" \u00B7 jatuh tempo "</string>
     <string name="pdf_biz_plans">Rencana cicilan yang masih berjalan</string>
     <string name="pdf_biz_paid_of">%1$s dari %2$s</string>
     <string name="pdf_biz_expiring">Stok segera kedaluwarsa</string>
@@ -1547,7 +1545,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <plurals name="pdf_biz_days_left">
         <item quantity="other">%1$d hari</item>
     </plurals>
-    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Register Penjualan &amp; Pembelian</string>
@@ -1615,7 +1613,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pdf_insp_no_batches">Tidak ada batch tersedia. Batch dan kedaluwarsa dicatat pada tagihan pemasok.</string>
     <string name="pdf_insp_missing_note">Setiap produk di bawah ini ada stoknya dengan satu atau lebih kolom label yang tidak pernah dicatat.</string>
     <string name="pdf_insp_expired">KEDALUWARSA</string>
-    <string name="pdf_insp_expired_ago">KEDALUWARSA \u00B7 %1$d hari lalu</string>
     <string name="pdf_insp_days_left">sisa %1$d hari</string>
     <string name="pdf_insp_units_differ">satuan berbeda</string>
     <string name="pdf_insp_company_tag">PERUSAHAAN</string>
@@ -1789,7 +1786,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="followup_queue_open">Buka WhatsApp</string>
     <string name="followup_queue_skip">Lewati</string>
     <string name="followup_queue_stop">Berhenti</string>
-    <string name="followup_queue_done">Selesai — %1$d pengingat dibuka hari ini</string>
     <string name="followup_queue_title">%1$d dari %2$d</string>
     <string name="season_title">Musim Tanam</string>
     <string name="season_subtitle">Utang per musim tanam, terbaru lebih dulu</string>
@@ -3111,7 +3107,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="stock_count_title">Hitung stok</string>
     <string name="stock_count_help">Tulis yang ada di rak; hanya selisih yang dicatat, dengan angka buku di sampingnya</string>
     <string name="stock_counted_hint">Dihitung</string>
-    <string name="stock_count_saved">%1$d koreksi dicatat</string>
     <string name="stock_adjust">Sesuaikan stok</string>
     <string name="adjust_qty_hint">Jumlah (+ masuk, − keluar)</string>
     <string name="adjust_reason">Alasan</string>
@@ -3485,11 +3480,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_sent">Terkirim. Di komputer, tekan ya agar bukunya diganti dengan buku ponsel ini.</string>
     <string name="live_receive">Terima buku toko di ponsel ini</string>
     <string name="live_receive_steps">Di ponsel yang memegang buku toko, buka Cadangan → Sinkron langsung → Hubungkan, lalu pindai kode ini. Kedua ponsel harus di WiFi yang sama. Jendela ini menunggu 15 menit.</string>
-    <string name="live_receive_offer">“%1$s” ingin memberikan buku toko ke ponsel ini.
-
-Kode: %2$s — empat angka yang sama harus tampil di ponsel itu.
-
-Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyimpan satu buku bersama melalui relai internet.</string>
+    <string name="live_receive_offer">“%1$s” ingin memberikan buku toko ke ponsel ini.\n\nKode: %2$s — empat angka yang sama harus tampil di ponsel itu.\n\nBuku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyimpan satu buku bersama melalui relai internet.</string>
     <string name="live_receive_done">Selesai. Ponsel ini kini menyimpan buku toko bersama perangkat lainnya.</string>
     <string name="live_receive_no_wifi">Ponsel ini tidak terhubung ke WiFi. Sambungkan ke WiFi toko lalu coba lagi.</string>
     <string name="live_sent_phone">Terkirim. Di ponsel lain, tekan ya untuk menerima buku ini. Lalu kedua ponsel bertemu melalui relai internet.</string>
@@ -3517,6 +3508,16 @@ Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyim
     <string name="live_status_not_accepted">Komputer tidak menyetujui tepat waktu. Untuk menghubungkan, pindai lagi kode sinkron langsungnya.</string>
     <string name="live_status_not_here">Komputer menjawab, tetapi saat ini tidak memegang buku ini. Buka usaha buku ini di komputer.</string>
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
-    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
+    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation-313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
     <string name="live_relay">Juga lewat internet</string>
+    <plurals name="stock_count_saved">
+        <item quantity="other">%1$d koreksi dicatat</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="other">Selesai — %1$d pengingat dibuka hari ini</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="other">KEDALUWARSA \u00B7 %1$d hari lalu</item>
+    </plurals>
+    <string name="voice_language_missing_phone">Ponsel Anda tidak memiliki bahasa itu. Mendengarkan dalam bahasa ponsel sendiri.</string>
 </resources>
