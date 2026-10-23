@@ -17,7 +17,9 @@ object StockTransfer {
     fun number(now: Long): String = "TR-" + DateWords.format("yyMMdd-HHmmss", now, java.util.Locale.US)
 
     suspend fun send(from: KhataDao, to: KhataDao, lines: List<Line>, fromShop: String, toShop: String,
-                     user: String? = Access.userName, now: Long = System.currentTimeMillis()): String {
+                     user: String? = Access.userName, now: Long = System.currentTimeMillis(), allowedBy: String? = null): String {
+        // Refused before the other book is touched (23 Oct 2026, the review: the DAO now gates it too).
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
         val live = lines.filter { it.quantity > 0.0 }
         require(live.isNotEmpty()) { "nothing to transfer" }
         val number = number(now)
@@ -28,12 +30,12 @@ object StockTransfer {
             val here = to.productById(id) ?: throw IllegalArgumentException("no such product")
             id to (inUnitOf(line.product, line.quantity, here) ?: throw IllegalArgumentException("units differ: " + line.product.name))
         }
-        to.transferStock(number, inbound, fromShop, out = false, user = user, now = now)
+        to.transferStock(number, inbound, fromShop, out = false, user = user, now = now, allowedBy = allowedBy)
         try {
-            from.transferStock(number, live.map { it.product.id to it.quantity }, toShop, out = true, user = user, now = now)
+            from.transferStock(number, live.map { it.product.id to it.quantity }, toShop, out = true, user = user, now = now, allowedBy = allowedBy)
         } catch (e: Exception) {
             // The other book took the goods in; this one could not send them: take them back out there.
-            runCatching { to.transferStock("$number ✕", inbound, fromShop, out = true, user = user) }
+            runCatching { to.transferStock("$number ✕", inbound, fromShop, out = true, user = user, allowedBy = allowedBy) }
             throw e
         }
         return number

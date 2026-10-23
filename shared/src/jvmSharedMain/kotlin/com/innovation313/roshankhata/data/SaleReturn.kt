@@ -131,6 +131,19 @@ object ReturnNumber {
 object ReturnMath {
     enum class Problem { NO_LINES, BAD_QUANTITY, OVER_SOLD, BAD_REFUND, WALK_IN_NEEDS_CASH, NO_REASON, BAD_METHOD }
 
+    /** A return refused by [check] inside the DAO, carrying the problem for the screen's words (23 Oct 2026). */
+    class Refused(val problem: Problem) : IllegalArgumentException("return refused: $problem")
+
+    /**
+     * What one unit of [item] was actually paid for on [sale] (21 Oct 2026, moved here 23 Oct so the
+     * form and the DAO share it): the line's own discount, and the ticket's discount, tax on top and
+     * round-off spread over the lines by their worth. A return gives back this, not the shelf price.
+     */
+    fun paidRate(sale: Sale, item: SaleItem): Double {
+        val share = sale.subtotal.takeIf { it > 0.0 }?.let { sale.grandTotal / it } ?: 1.0
+        return if (item.quantity > 0.0) item.lineTotal * share / item.quantity else item.rate * share
+    }
+
     /**
      * [soldLeft]: per sale line, what was sold minus what already came back;
      * a line with no sale line (no receipt) is not held to any figure.

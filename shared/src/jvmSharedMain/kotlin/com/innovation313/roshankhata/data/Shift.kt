@@ -16,7 +16,7 @@ data class Shift(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     /** Who: the staff member's name, or null for the owner (as on every sale). */
     val user: String? = null,
-    /** Which counter (the device's counter code), where set. */
+    /** Which counter: the device's document letter ([NumberMark.mark]) when the book synced as it opened, else null. */
     val device: String? = null,
     val openedAt: Long = System.currentTimeMillis(),
     val openingFloat: Double,
@@ -41,11 +41,21 @@ data class Shift(
  */
 object ShiftMath {
 
-    suspend fun expected(dao: KhataDao, shift: Shift, until: Long = System.currentTimeMillis()): Double {
-        val taken = dao.cashTakenBy(shift.user, shift.openedAt, until)
-        val back = dao.cashRefundedBy(shift.user, shift.openedAt, until)
-        return LineMath.round(shift.openingFloat + taken - back)
-    }
+    suspend fun expected(dao: KhataDao, shift: Shift, until: Long = System.currentTimeMillis()): Double =
+        LineMath.round(shift.openingFloat + taken(dao, shift, until) - back(dao, shift, until))
+
+    /**
+     * Which device's tickets a shift's drawer holds (23 Oct 2026, the review): the letter of the device
+     * it was opened on ([Shift.device], set from [NumberMark] since then), else this device's while the
+     * book syncs; "" — every ticket — on a book that does not sync.
+     */
+    fun markOf(shift: Shift): String = shift.device?.takeIf { it.isNotBlank() }?.let { "-$it" } ?: NumberMark.suffix()
+
+    /** The cash taken on the shift's own tickets until [until]. */
+    suspend fun taken(dao: KhataDao, shift: Shift, until: Long): Double = dao.cashTakenBy(shift.user, shift.openedAt, until, markOf(shift))
+
+    /** The cash handed back on the shift's own returns until [until]. */
+    suspend fun back(dao: KhataDao, shift: Shift, until: Long): Double = dao.cashRefundedBy(shift.user, shift.openedAt, until, markOf(shift))
 
     /** Hours on the clock per person (null = the owner) over [shifts], closed ones only, to two places. */
     fun hours(shifts: List<Shift>): Map<String?, Double> =

@@ -28,6 +28,10 @@ import java.util.Locale
  * they cost, so they lower the profit. Goods the customer brought back
  * (isGiven = 0 with a quantity) reverse both the sale and its cost.
  *
+ * The counter's walk-in tickets have no khata entry: their lines are read
+ * from the tickets and costed at the cost each line carried when it was rung
+ * up; goods back from them take their margin off again (23 Oct 2026).
+ *
  * Expenses from the Cashbook are reported on their own line, never folded
  * into the per-product figures: rent is not a cost of Urea.
  *
@@ -158,7 +162,16 @@ object Profit {
         purchases: List<PurchaseLine>,
         productNames: Map<Long, String>,
         salesTotal: Double,
-        expenses: Double
+        expenses: Double,
+        /**
+         * The counter's walk-in tickets' lines (23 Oct 2026, the review): they
+         * have no khata entry, so [sales] never holds them, yet [salesTotal]
+         * does. Each is costed at the cost written on its line when it was rung
+         * up ([SoldLine.cost]); a line without one is skipped and said so.
+         */
+        walkIns: List<SoldLine> = emptyList(),
+        /** Goods back from walk-in tickets: the margin their sale made comes off again, where its cost was known. */
+        walkInReturns: List<ReturnedLine> = emptyList()
     ): ProfitReport {
         val byId = purchases.associateBy { it.id }
         val byProduct = purchases.filter { it.productId != null }.groupBy { it.productId!! }
@@ -198,6 +211,31 @@ object Profit {
             )
         }
 
+        for (line in walkIns) {
+            val lineCost = line.cost
+            if (line.quantity <= 0.0 || lineCost == null) { skipped++; continue }
+            val revenue = line.revenue
+            gross += revenue - lineCost
+            covered += revenue
+            counted++
+            val pid = line.productId ?: continue
+            val prev = perProduct[pid]
+            perProduct[pid] = ProductProfit(
+                productId = pid,
+                name = productNames[pid] ?: line.itemName.ifBlank { prev?.name ?: "" },
+                soldQty = (prev?.soldQty ?: 0.0) + line.quantity,
+                unit = prev?.unit ?: line.unit,
+                revenue = (prev?.revenue ?: 0.0) + revenue,
+                cost = (prev?.cost ?: 0.0) + lineCost
+            )
+        }
+        for (back in walkInReturns) {
+            val backCost = back.cost ?: continue
+            val revenue = back.revenue
+            gross -= revenue - backCost
+            covered -= revenue
+        }
+
         return ProfitReport(
             grossProfit = gross,
             coveredRevenue = covered,
@@ -230,8 +268,11 @@ object Profit {
             purchases = purchases,
             productNames = names,
             salesTotal = dao.salesTotalBetween(from, to),
-            // cashbookTotalBetween is (from, to]; shift by one to read [from, to).
-            expenses = dao.cashbookTotalBetween(false, from - 1, to - 1)
+            // (from, to]; shift by one to read [from, to). A walk-in's refund (category Return) is a
+            // return, not an expense (23 Oct 2026, the review: it came off in full, as if it were rent).
+            expenses = dao.cashbookExpensesBetween(from - 1, to - 1),
+            walkIns = dao.walkInSoldLinesBetween(from, to),
+            walkInReturns = dao.walkInReturnedLinesBetween(from, to)
         )
     }
 

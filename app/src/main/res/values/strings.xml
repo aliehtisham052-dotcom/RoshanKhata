@@ -3765,4 +3765,16 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="fc_look_in">Look in:</string>
     <string name="fc_folder_name">Folder:</string>
     <string name="fc_files_of_type">Files of type:</string>
+    <string name="pos_void_shift_closed">The shift this sale was rung up in has been closed and counted. Make a return instead of voiding it.</string>
+    <string name="pos_customer_binned">This customer is in the recycle bin. Restore the customer first. Nothing was written.</string>
+    <string name="pos_held_gone">This held ticket was already rung up or removed, perhaps on another device. Nothing was written.</string>
+    <string name="pos_ticket_not_posted">This sale is no longer a posted one (it was voided or removed). Nothing was written.</string>
+    <string name="pos_post_failed">The sale was not saved. Nothing was written; the ticket is still on the counter.</string>
+    <string name="pos_hold_failed">The ticket could not be held. It is still on the counter.</string>
+    <string name="pos_void_failed">The sale could not be voided. Nothing was changed.</string>
+    <string name="pos_return_failed">The return was not saved. Nothing was written.</string>
+    <string name="book_merge_failed">Nothing was added. This book is unchanged.</string>
+    <string name="products_export_failed">The products file could not be made.</string>
+    <string name="save_failed_storage_full">Not saved: the phone\'s storage is full. Free some space, then enter it again.</string>
+    <string name="save_failed_not_saved">Not saved: something went wrong. Please check and enter it again.</string>
 </resources>

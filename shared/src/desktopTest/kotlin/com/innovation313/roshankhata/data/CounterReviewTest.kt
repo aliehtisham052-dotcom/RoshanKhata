@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -252,5 +253,212 @@ class CounterReviewTest {
         again.payRestInCash()
         Counter.post(dao, again)
         assertTrue(dao.heldSalesOnce().isEmpty())
+    }
+
+    // ---------- The 23 Oct 2026 review report (R30, R32-R35, R79-R82) ----------
+
+    @Test
+    fun `a held ticket rung up or dropped elsewhere is not rung up again`() = runBlocking {
+        val p = dao.productById(product("Urea"))!!
+        val draft = CounterDraft()
+        draft.add(p, qty = 1.0)
+        val held = Counter.hold(dao, draft)
+        // The other counter rang it up (or dropped it): the hook is empty.
+        dao.dropHeldSale(held)
+        val again = CounterDraft()
+        again.add(p, qty = 1.0)
+        again.heldId = held
+        again.payRestInCash()
+        try {
+            Counter.post(dao, again)
+            fail("a ticket no longer held was rung up")
+        } catch (e: CounterRefused) {
+            assertEquals(CounterRefused.Why.HELD_GONE, e.why)
+        }
+        assertTrue(dao.salesBetween(0, Long.MAX_VALUE).none { it.status == SaleStatus.DONE })
+    }
+
+    @Test
+    fun `profit counts a walk-in ticket's margin and a walk-in refund is no expense`() = runBlocking {
+        val urea = product("Urea")
+        val sale = dao.postSale(
+            Sale(timestamp = now, subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+            listOf(SaleItem(saleId = 0, productId = urea, itemName = "Urea", quantity = 2.0, unit = "bottle", rate = 1000.0, costRate = 600.0)),
+            listOf(SalePayment(saleId = 0, method = PaymentMethod.CASH, amount = 2000.0))
+        )
+        val line = dao.saleItems(sale).single()
+        dao.postReturn(
+            SaleReturn(saleId = sale, total = 0.0, refundMethod = PaymentMethod.CASH, refundAmount = 1000.0, reason = "torn", timestamp = now),
+            listOf(SaleReturnItem(returnId = 0, saleItemId = line.id, itemName = "Urea", quantity = 1.0, rate = 1000.0))
+        )
+        dao.insertCashEntry(CashEntry(amount = 100.0, isIncome = false, category = "Rent", timestamp = now))
+        val r = Profit.between(dao, now - 60_000, now + 60_000)
+        // Two sold at 400 margin each, one back: 400. Before, the walk-in was never costed (0) and the
+        // 1,000 refund came off as an expense beside the rent.
+        assertEquals(400.0, r.grossProfit, 0.001)
+        assertEquals(100.0, r.expenses, 0.001)
+        assertEquals(1, r.countedLines)
+        assertEquals(300.0, r.netAfterExpenses, 0.001)
+    }
+
+    @Test
+    fun `a drawer counted after midnight is the evening before's and is not overwritten`() = runBlocking {
+        val today = DayCloseMath.dayOf(now)
+        val midnight = DayCloseMath.startOf(today)
+        val lateNight = midnight + 20 * 60_000L
+        val evening = midnight + 22 * 3_600_000L + 30 * 60_000L
+        dao.saveDayClose(DayClose(day = DayCloseMath.businessDayOf(lateNight), opening = 0.0, cashIn = 0.0, cashOut = 0.0, counted = 1111.0, closedAt = lateNight))
+        dao.saveDayClose(DayClose(day = DayCloseMath.businessDayOf(evening), opening = 0.0, cashIn = 0.0, cashOut = 0.0, counted = 2222.0, closedAt = evening))
+        assertEquals(1111.0, dao.dayCloseFor(today - 1)!!.counted, 0.0)
+        assertEquals(2222.0, dao.dayCloseFor(today)!!.counted, 0.0)
+        // A close filed by an older version under the calendar day moves to its own day, not overwritten.
+        val other = today + 10
+        val small = DayCloseMath.startOf(other) + 30 * 60_000L
+        dao.saveDayClose(DayClose(day = other, opening = 0.0, cashIn = 0.0, cashOut = 0.0, counted = 3333.0, closedAt = small))
+        dao.saveDayClose(DayClose(day = other, opening = 0.0, cashIn = 0.0, cashOut = 0.0, counted = 4444.0, closedAt = DayCloseMath.startOf(other) + 21 * 3_600_000L))
+        assertEquals(3333.0, dao.dayCloseFor(other - 1)!!.counted, 0.0)
+        assertEquals(4444.0, dao.dayCloseFor(other)!!.counted, 0.0)
+    }
+
+    @Test
+    fun `a sale of a closed shift is not voided, and a shift's drawer holds its own device's tickets`() = runBlocking {
+        val soap = product("Soap")
+        val shift = dao.openShift(Shift(user = null, openingFloat = 0.0, openedAt = now - 3_600_000L))
+        val sale = sellTo(null, soap, 1.0)
+        dao.closeShift(shift, 1000.0, null, now = now + 1000)
+        assertEquals(SaleMath.VoidRefusal.SHIFT_CLOSED, dao.voidRefusal(sale))
+        assertFalse(dao.voidSale(sale, "late"))
+        assertEquals(SaleStatus.DONE, dao.getSale(sale)!!.status)
+        try {
+            NumberMark.mark = "B"
+            sellTo(null, soap, 2.0)
+            NumberMark.mark = "A"
+            sellTo(null, soap, 3.0)
+            // A's drawer: its own 3,000 and the 1,000 rung up before the book synced; never B's 2,000.
+            assertEquals(4000.0, dao.cashTakenBy(null, 0L, Long.MAX_VALUE, "-A"), 0.001)
+            assertEquals(6000.0, dao.cashTakenBy(null, 0L, Long.MAX_VALUE), 0.001)
+            assertEquals("-B", ShiftMath.markOf(Shift(device = "B", openingFloat = 0.0)))
+            assertEquals("-A", ShiftMath.markOf(Shift(openingFloat = 0.0)))
+        } finally {
+            NumberMark.mark = null
+        }
+    }
+
+    @Test
+    fun `a product sent twice after a rename gets its own uid each time`() = runBlocking {
+        val other = DesktopDatabase.open(dir.resolve("khata_b2.db"))
+        try {
+            val there = other.khataDao()
+            val sent = dao.productById(product("Karate"))!!
+            val first = there.productsForTransfer(listOf(sent)).single()
+            val renamed = "Karate 5EC"
+            there.updateProduct(there.productById(first)!!.copy(name = renamed, nameKey = ProductName.key(renamed), normalisedName = ProductName.normalised(renamed)))
+            val second = there.productsForTransfer(listOf(sent)).single()
+            assertNotEquals(first, second)
+            val uids = listOf(first, second).map { there.productById(it)!!.uid }
+            assertEquals(2, uids.toSet().size)
+            assertFalse(sent.uid in uids)
+        } finally {
+            other.close()
+        }
+    }
+
+    @Test
+    fun `a purchase order is received into the product it named, renamed or not`() = runBlocking {
+        val engro = dao.insertParty(Party(name = "Engro", isCustomer = false))
+        val karate = product("Karate")
+        val order = dao.saveOrder(PurchaseOrder(partyId = engro), listOf(PurchaseOrderItem(orderId = 0, productId = karate, itemName = "Karate", quantity = 10.0, unit = "bottle", rate = 500.0)))
+        val renamed = "Karate 5EC"
+        dao.updateProduct(dao.productById(karate)!!.copy(name = renamed, nameKey = ProductName.key(renamed), normalisedName = ProductName.normalised(renamed)))
+        val received = dao.orderItems(order).map { BillItem(billId = 0, productName = it.itemName, quantity = it.quantity, unit = it.unit, rate = it.rate, productId = it.productId) }
+        val billId = dao.receiveOrder(order, SupplierBill(partyId = engro, totalAmount = 5000.0), received, null)
+        assertEquals(karate, dao.billItems(billId).single().productId)
+        assertEquals(1, dao.productsOnce().size)
+    }
+
+    @Test
+    fun `emptying the bin keeps a void's khata rows and never gives an RK number out again`() = runBlocking {
+        val aslam = dao.insertParty(Party(name = "Aslam"))
+        val sale = sellTo(aslam, product("DAP"), 1.0, cash = 500.0)
+        val gave = dao.getSale(sale)!!.ledgerEntryId!!
+        assertTrue(dao.voidSale(sale, "wrong customer"))
+        dao.purgeAllEntries()
+        dao.purgeOldEntries(Long.MAX_VALUE)
+        assertNotNull("a void's row was erased", dao.getEntry(gave))
+        // The newest entry, binned and purged: its number is not handed out again.
+        val own = dao.insertEntryNumbered(LedgerEntry(partyId = aslam, amount = 100.0, isGiven = true, entryNumber = ""))
+        val number = dao.getEntry(own)!!.entryNumber
+        dao.softDeleteEntry(own)
+        dao.purgeEntry(own)
+        val next = dao.insertEntryNumbered(LedgerEntry(partyId = aslam, amount = 100.0, isGiven = true, entryNumber = ""))
+        assertNotEquals(number, dao.getEntry(next)!!.entryNumber)
+    }
+
+    @Test
+    fun `a return is priced, owned and limited by its ticket, not by the caller`() = runBlocking {
+        val dap = product("DAP")
+        // Two at 1,000 with 200 off the ticket: each came to 900.
+        val sale = dao.postSale(
+            Sale(timestamp = now, subtotal = 0.0, discountAmount = 200.0, grandTotal = 0.0, paidTotal = 0.0),
+            listOf(SaleItem(saleId = 0, productId = dap, itemName = "DAP", quantity = 2.0, unit = "bottle", rate = 1000.0)),
+            listOf(SalePayment(saleId = 0, method = PaymentMethod.CASH, amount = 1800.0))
+        )
+        val line = dao.saleItems(sale).single()
+        val r = dao.postReturn(
+            SaleReturn(saleId = sale, total = 0.0, refundMethod = PaymentMethod.CASH, refundAmount = 900.0, reason = "torn"),
+            listOf(SaleReturnItem(returnId = 0, saleItemId = line.id, itemName = "DAP", quantity = 1.0, rate = 1000.0))
+        )
+        assertEquals(900.0, dao.getReturn(r)!!.total, 0.001)
+        // Not to a customer the ticket was not sold to.
+        val aslam = dao.insertParty(Party(name = "Aslam"))
+        try {
+            dao.postReturn(
+                SaleReturn(saleId = sale, partyId = aslam, total = 0.0, refundMethod = SaleReturn.ACCOUNT, reason = "x"),
+                listOf(SaleReturnItem(returnId = 0, saleItemId = line.id, itemName = "DAP", quantity = 1.0, rate = 900.0))
+            )
+            fail("a walk-in's ticket credited to a customer")
+        } catch (e: CounterRefused) {
+            assertEquals(CounterRefused.Why.NOT_THIS_TICKET, e.why)
+        }
+        // Not a line of another ticket, held to no limit.
+        val otherSale = sellTo(null, dap, 5.0)
+        val otherLine = dao.saleItems(otherSale).single()
+        try {
+            dao.postReturn(
+                SaleReturn(saleId = sale, total = 0.0, refundMethod = PaymentMethod.CASH, refundAmount = 900.0, reason = "x"),
+                listOf(SaleReturnItem(returnId = 0, saleItemId = otherLine.id, itemName = "DAP", quantity = 5.0, rate = 1000.0))
+            )
+            fail("another ticket's line returned")
+        } catch (e: CounterRefused) {
+            assertEquals(CounterRefused.Why.NOT_THIS_TICKET, e.why)
+        }
+    }
+
+    @Test
+    fun `a cashier's void, return and stock correction need someone's PIN at the data layer`() = runBlocking {
+        val urea = product("Urea")
+        val sale = sellTo(null, urea, 1.0)
+        try {
+            Access.signIn(Staff(id = 4, name = "Imran", monthlySalary = 1.0, role = Role.CASHIER))
+            try {
+                dao.voidSale(sale, "x")
+                fail("a cashier voided alone")
+            } catch (e: CounterRefused) {
+                assertEquals(CounterRefused.Why.NOT_ALLOWED, e.why)
+            }
+            assertEquals(SaleStatus.DONE, dao.getSale(sale)!!.status)
+            try {
+                dao.adjustStock(urea, -1.0, AdjustReason.DAMAGE, null)
+                fail("a cashier changed stock alone")
+            } catch (e: CounterRefused) {
+                assertEquals(CounterRefused.Why.NOT_ALLOWED, e.why)
+            }
+            // With a manager's PIN given, it goes, and the log names who allowed it.
+            assertTrue(dao.adjustStock(urea, -1.0, AdjustReason.DAMAGE, null, allowedBy = "Asad") > 0)
+            assertTrue(dao.voidSale(sale, "x", allowedBy = "Asad"))
+            assertTrue(dao.auditInOrder().any { it.action == AuditAction.SALE_VOIDED && it.detail!!.endsWith("Asad") })
+        } finally {
+            Access.resetForTest()
+        }
     }
 }

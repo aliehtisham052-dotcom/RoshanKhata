@@ -3763,4 +3763,16 @@
     <string name="fc_look_in">البحث في:</string>
     <string name="fc_folder_name">المجلد:</string>
     <string name="fc_files_of_type">نوع الملفات:</string>
+    <string name="pos_void_shift_closed">أُغلقت الوردية التي سُجّل فيها هذا البيع وعُدّ نقدها. سجّل مرتجعًا بدلًا من إلغائه.</string>
+    <string name="pos_customer_binned">هذا العميل في سلة المحذوفات. استعد العميل أولًا. لم يُكتب شيء.</string>
+    <string name="pos_held_gone">هذه التذكرة المعلّقة سُجّلت بيعًا أو أُزيلت من قبل، ربما على جهاز آخر. لم يُكتب شيء.</string>
+    <string name="pos_ticket_not_posted">لم يعد هذا البيع مسجّلًا (أُلغي أو أُزيل). لم يُكتب شيء.</string>
+    <string name="pos_post_failed">لم يُحفظ البيع. لم يُكتب شيء؛ التذكرة ما زالت على الكاشير.</string>
+    <string name="pos_hold_failed">تعذّر تعليق التذكرة. ما زالت على الكاشير.</string>
+    <string name="pos_void_failed">تعذّر إلغاء البيع. لم يتغير شيء.</string>
+    <string name="pos_return_failed">لم يُحفظ المرتجع. لم يُكتب شيء.</string>
+    <string name="book_merge_failed">لم يُضف شيء. هذا الدفتر كما هو.</string>
+    <string name="products_export_failed">تعذّر إنشاء ملف المنتجات.</string>
+    <string name="save_failed_storage_full">لم يُحفظ: ذاكرة الهاتف ممتلئة. أفرغ بعض المساحة ثم أدخله مرة أخرى.</string>
+    <string name="save_failed_not_saved">لم يُحفظ: حدث خطأ ما. يُرجى التحقق وإدخاله مرة أخرى.</string>
 </resources>

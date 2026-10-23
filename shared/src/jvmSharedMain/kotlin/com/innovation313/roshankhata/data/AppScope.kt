@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.data
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,5 +44,28 @@ import kotlinx.coroutines.SupervisorJob
  * writing hops back to `Dispatchers.Main` and checks the Activity is still
  * alive before touching it — the write happens either way, and the toast is
  * offered only if there is still a screen to show it on.
+ *
+ * A WRITE THAT FAILS (23 Oct 2026, the review). An exception thrown inside
+ * [AppScope]'s `launch` used to reach the thread's default handler, and the
+ * whole app died — on a phone whose storage is full (SQLite cannot grow its
+ * file) every save of a sale or a payment did, with the dialog already gone
+ * as if saved. Now it goes to [AppFailures.report]: the app writes it down
+ * and tells the owner it was NOT saved. The transaction rolled back, so the
+ * book holds nothing half-written.
  */
-object AppScope : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.IO)
+object AppScope : CoroutineScope by CoroutineScope(
+    SupervisorJob() + Dispatchers.IO + CoroutineExceptionHandler { _, e -> AppFailures.report(e) }
+)
+
+/**
+ * Where a failed [AppScope] job is told (23 Oct 2026). The phone sets [report]
+ * once, in its Application (the crash record, then "not saved" on screen).
+ * Unset, it hands the failure to the thread's own uncaught handler, as before.
+ */
+object AppFailures {
+    @Volatile
+    var report: (Throwable) -> Unit = { e ->
+        val t = Thread.currentThread()
+        t.uncaughtExceptionHandler?.uncaughtException(t, e) ?: throw e
+    }
+}

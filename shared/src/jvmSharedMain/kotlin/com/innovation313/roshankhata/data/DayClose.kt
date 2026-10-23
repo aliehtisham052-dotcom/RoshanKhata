@@ -10,7 +10,8 @@ import androidx.room.PrimaryKey
  *
  * Kept as the figures of that evening, not recomputed later: an entry edited
  * next week must not silently rewrite what the drawer was found to hold.
- * One row per calendar day; closing again the same day replaces it.
+ * One row per working day ([DayCloseMath.businessDayOf]: the small hours
+ * count to the day before); closing again the same day replaces it.
  */
 @Entity(tableName = "day_close", indices = [Index(value = ["day"], unique = true), Index("uid")])
 data class DayClose(
@@ -38,6 +39,18 @@ object DayCloseMath {
     /** The local calendar day of a moment, as [DayClose.day] keys it (the phone's ReminderLog.dayOf). */
     fun dayOf(millis: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long =
         Math.floorDiv(millis + tz.getOffset(millis), 24L * 60 * 60 * 1000)
+
+    /**
+     * The hour a shop's working day ends by (23 Oct 2026, the review): a drawer
+     * counted before 04:00 is the evening before's — a shop that closes
+     * Friday's till at 00:20 on Saturday files it under Friday, and Saturday's
+     * own close that night no longer overwrites it.
+     */
+    const val DAY_ENDS_HOUR = 4
+
+    /** The working day a close made at [millis] belongs to: [dayOf], with the small hours counted to the day before. */
+    fun businessDayOf(millis: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault(), endHour: Int = DAY_ENDS_HOUR): Long =
+        dayOf(millis - endHour * 3_600_000L, tz)
 
     /** The first millisecond of a local day number. */
     fun startOf(day: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long {

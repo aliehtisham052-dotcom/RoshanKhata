@@ -35,6 +35,18 @@ object CrashLog {
         }
     }
 
+    /**
+     * A failure the app survived (23 Oct 2026: a background save that threw,
+     * see AppFailures) written down the same way, so Report a Problem can
+     * still carry it. Never throws.
+     */
+    fun record(context: Context, e: Throwable) {
+        try {
+            write(context, Thread.currentThread(), e)
+        } catch (_: Exception) {
+        }
+    }
+
     private fun write(context: Context, thread: Thread, e: Throwable) {
         val dir = File(context.filesDir, DIR).apply { mkdirs() }
         val stamp = android.text.format.DateFormat

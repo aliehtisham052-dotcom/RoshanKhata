@@ -308,7 +308,8 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                     problem = needReason; return@TextButton
                 }
                 val close = com.innovation313.roshankhata.data.DayClose(
-                    day = Math.floorDiv(f.now + java.util.TimeZone.getDefault().getOffset(f.now), 24L * 60 * 60 * 1000),
+                    // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
+                    day = com.innovation313.roshankhata.data.DayCloseMath.businessDayOf(f.now),
                     opening = open,
                     cashIn = com.innovation313.roshankhata.data.LineMath.round(f.cbIn + f.kIn),
                     cashOut = com.innovation313.roshankhata.data.LineMath.round(f.cbOut + f.kOut),

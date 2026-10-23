@@ -355,8 +355,28 @@ interface KhataDao {
      * counter tickets) lost every entry and kept his name, and came back
      * from the bin with nothing owed.
      */
-    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)")
-    suspend fun purgeOldEntries(cutoff: Long)
+    @Query(
+        """
+        DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
+    suspend fun purgeOldEntryRows(cutoff: Long)
+
+    /*
+     * The bin's 30-day purge. A voided ticket's or return's khata rows are
+     * not the bin's to erase (23 Oct 2026, the review: "delete nothing,
+     * reverse it" — emptying the bin wiped the khata side of every void), and
+     * the highest RK- number is noted first, so an entry purged from the top
+     * never gives its number out again ([keepEntryNumberHigh]).
+     */
+    @Transaction
+    suspend fun purgeOldEntries(cutoff: Long) {
+        keepEntryNumberHigh()
+        purgeOldEntryRows(cutoff)
+    }
 
     /*
      * A party is never purged while it still has cheques, payment plans or
@@ -378,9 +398,23 @@ interface KhataDao {
     )
     suspend fun purgeOldParties(cutoff: Long)
 
-    /** Every entry binned on its own; a binned customer's go with him ([purgeOldEntries]). */
-    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)")
-    suspend fun purgeAllEntries()
+    /** Every entry binned on its own but a void's; a binned customer's go with him ([purgeOldEntries]). */
+    @Query(
+        """
+        DELETE FROM transactions WHERE isDeleted = 1 AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
+    suspend fun purgeAllEntryRows()
+
+    /** Empty bin: as [purgeOldEntries], every date. */
+    @Transaction
+    suspend fun purgeAllEntries() {
+        keepEntryNumberHigh()
+        purgeAllEntryRows()
+    }
 
     /** Customers in the bin: after emptying it, the ones kept by their bills, cheques, plans or counter tickets. */
     @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 1")
@@ -428,7 +462,14 @@ interface KhataDao {
     suspend fun purgeParty(id: Long): Int
 
     @Query("DELETE FROM transactions WHERE id = :id AND isDeleted = 1")
-    suspend fun purgeEntry(id: Long)
+    suspend fun purgeEntryRow(id: Long)
+
+    /** One binned entry deleted for good from the bin; its number, if the highest, is not given out again. */
+    @Transaction
+    suspend fun purgeEntry(id: Long) {
+        keepEntryNumberHigh()
+        purgeEntryRow(id)
+    }
 
     // ---------- Totals ----------
 
@@ -1430,7 +1471,17 @@ interface KhataDao {
      */
     @Transaction
     suspend fun saveDayClose(close: DayClose, user: String? = Access.userName) {
-        val here = dayCloseFor(close.day)
+        var here = dayCloseFor(close.day)
+        // A close already filed under this day that belongs to another working day (23 Oct 2026, the review:
+        // before the small hours counted to the day before, Friday's 00:20 close sat under Saturday) is moved
+        // to its own day when that day is free, so this close never overwrites a different stretch's count.
+        if (here != null) {
+            val own = DayCloseMath.businessDayOf(here.closedAt)
+            if (own != close.day && dayCloseFor(own) == null) {
+                saveDayCloseRow(here.copy(day = own))
+                here = null
+            }
+        }
         saveDayCloseRow(if (here != null) close.copy(id = here.id, uid = here.uid) else close)
         val said = auditAmount(close.counted) + (here?.let { " (" + auditAmount(it.counted) + " / " + auditAmount(it.difference) + ")" } ?: "")
         log(AuditAction.DAY_CLOSED, user, "day_close", here?.id, said)
@@ -2398,7 +2449,9 @@ interface KhataDao {
         // ten entries, #3 purged, count = 9, next = RK-000010 — which exists.
         // The count is still consulted so a book whose entries were never
         // numbered in the RK- form keeps moving forward, never backward.
-        val next = maxOf(totalEntryCount(), highestEntryNumber())
+        // And past the highest ever purged (23 Oct 2026, the review: the bin emptied of the newest entries
+        // gave their RK- numbers out again — numbers already printed or sent on a receipt).
+        val next = maxOf(totalEntryCount(), highestEntryNumber(), settingValue(BookSettings.ENTRY_NUMBER_HIGH)?.toIntOrNull() ?: 0)
         return insertEntry(entry.copy(entryNumber = EntryNumber.next(next)))
     }
 
@@ -2412,6 +2465,14 @@ interface KhataDao {
         "FROM transactions WHERE entryNumber LIKE 'RK-%'"
     )
     suspend fun highestEntryNumber(): Int
+
+    /** The highest RK- number noted in the book's settings before anything is purged ([insertEntryNumbered] counts past it). */
+    @Transaction
+    suspend fun keepEntryNumberHigh() {
+        val high = highestEntryNumber()
+        val kept = settingValue(BookSettings.ENTRY_NUMBER_HIGH)?.toIntOrNull() ?: 0
+        if (high > kept) setSetting(BookSettings.ENTRY_NUMBER_HIGH, high.toString())
+    }
 
     // ---------- Goods lines (entry_items, v20) ----------
     //
@@ -2603,7 +2664,8 @@ interface KhataDao {
     @Transaction
     suspend fun undoCashForSale(saleId: Long, gotId: Long) {
         softDeleteEntry(gotId)
-        purgeEntry(gotId)
+        // Not through the bin's purge: the "I got" was written a moment ago and never kept, as before.
+        purgeEntryRow(gotId)
         setPairedEntry(saleId, null)
     }
 
@@ -2677,7 +2739,10 @@ interface KhataDao {
         val ledgerId = entry?.let { insertEntryNumbered(it) }
         val billId = insertBill(bill.copy(ledgerEntryId = ledgerId))
         return items.map { item ->
-            val product = findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
+            // The product the line already names comes first (23 Oct 2026, the review: a purchase order's line
+            // for a product renamed since was received into a new product under the old name).
+            val product = item.productId?.let { productById(it) }?.takeIf { !it.isDeleted }
+                ?: findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
             insertBillItem(item.copy(billId = billId, productId = product.id))
             product
         }
@@ -3015,9 +3080,17 @@ interface KhataDao {
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
         val hasParty = sale.partyId != null
         // Not to a customer in the recycle bin (22 Oct 2026, the review): his rows would count nowhere.
-        if (hasParty) require(getParty(sale.partyId!!)?.isDeleted == false) { "sale refused: the customer is in the recycle bin" }
+        if (hasParty && getParty(sale.partyId!!)?.isDeleted != false)
+            throw CounterRefused(CounterRefused.Why.CUSTOMER_BINNED, "sale refused: the customer is in the recycle bin")
+        // The held ticket it came off must still be on the hook (23 Oct 2026, the review): two counters (or the
+        // phone and the computer) that both resumed one parked ticket each rang it up — charged twice, stock out twice.
+        heldId?.let { h ->
+            val held = getSale(h)
+            if (held == null || held.status != SaleStatus.HELD || held.isDeleted)
+                throw CounterRefused(CounterRefused.Why.HELD_GONE, "sale refused: the held ticket was already rung up or dropped")
+        }
         SaleMath.check(lines, payments, totals.grandTotal, hasParty)?.let {
-            throw IllegalArgumentException("sale refused: $it")
+            throw SaleMath.Refused(it)
         }
         val paid = SaleMath.paid(payments)
         val number = SaleNumber.next(highestSaleNumber())
@@ -3125,7 +3198,8 @@ interface KhataDao {
      * is not a posted one.
      */
     @Transaction
-    suspend fun voidSale(saleId: Long, reason: String, user: String? = Access.userName): Boolean {
+    suspend fun voidSale(saleId: Long, reason: String, user: String? = Access.userName, allowedBy: String? = null): Boolean {
+        Access.requireAllowed(Access.Permission.VOID, allowedBy)
         val sale = getSale(saleId) ?: return false
         if (sale.status != SaleStatus.DONE || sale.isDeleted) return false
         if (voidRefusal(saleId) != null) return false
@@ -3149,7 +3223,7 @@ interface KhataDao {
         insertAudit(
             AuditLog(
                 user = user, action = AuditAction.SALE_VOIDED, refTable = "sales", refId = saleId,
-                detail = "${sale.saleNumber} ${reason.trim()}"
+                detail = "${sale.saleNumber} ${reason.trim()}" + Access.allowedNote(allowedBy)
             )
         )
         return true
@@ -3167,8 +3241,15 @@ interface KhataDao {
         if (sale.status != SaleStatus.DONE || sale.isDeleted) return SaleMath.VoidRefusal.NOT_DONE
         if (liveReturnsOfSale(saleId) > 0) return SaleMath.VoidRefusal.HAS_RETURNS
         if (dayClosesSince(sale.timestamp) > 0) return SaleMath.VoidRefusal.DAY_CLOSED
+        // Its shift is counted and closed (23 Oct 2026, the review): the void would take the cash out of
+        // today's drawer while neither shift's figure moved. A return, dated now, counts in the drawer that pays.
+        if (closedShiftsCovering(sale.createdBy, sale.timestamp) > 0) return SaleMath.VoidRefusal.SHIFT_CLOSED
         return null
     }
+
+    /** Closed shifts of [user] (null = the owner) that were open at [at]. */
+    @Query("SELECT COUNT(*) FROM shifts WHERE closedAt IS NOT NULL AND openedAt <= :at AND closedAt > :at AND ((:user IS NULL AND user IS NULL) OR user = :user)")
+    suspend fun closedShiftsCovering(user: String?, at: Long): Int
 
     @Query("SELECT COUNT(*) FROM sale_returns WHERE saleId = :saleId AND isDeleted = 0 AND status = 'done'")
     suspend fun liveReturnsOfSale(saleId: Long): Int
@@ -3392,24 +3473,43 @@ interface KhataDao {
      * Throws IllegalArgumentException on a return that fails its checks.
      */
     @Transaction
-    suspend fun postReturn(ret: SaleReturn, items: List<SaleReturnItem>): Long {
-        val lines = items.filter { !it.isDeleted }
-        val total = ReturnMath.total(lines)
-        val hasParty = ret.partyId != null
+    suspend fun postReturn(ret: SaleReturn, items: List<SaleReturnItem>, allowedBy: String? = null): Long {
+        Access.requireAllowed(Access.Permission.RETURN, allowedBy)
+        val given = items.filter { !it.isDeleted }
         // Only against a ticket still posted, read inside this transaction (22 Oct 2026, the review: a ticket
         // voided meanwhile — on the other device, or another window — was refunded a second time).
-        ret.saleId?.let { sid ->
+        val ticket = ret.saleId?.let { sid ->
             val sale = getSale(sid)
-            require(sale != null && sale.status == SaleStatus.DONE && !sale.isDeleted) { "return refused: the ticket is not a posted one" }
+            if (sale == null || sale.status != SaleStatus.DONE || sale.isDeleted)
+                throw CounterRefused(CounterRefused.Why.NOT_POSTED, "return refused: the ticket is not a posted one")
+            sale
         }
-        if (hasParty) require(getParty(ret.partyId!!)?.isDeleted == false) { "return refused: the customer is in the recycle bin" }
+        // Against a ticket, the ticket decides (23 Oct 2026, the review: the rates, the customer and the lines
+        // were the caller's word): the same customer as the sale, only the sale's own lines, each at what was
+        // paid for it ([ReturnMath.paidRate]) in the unit, product and batch it was sold in.
+        val soldItems = ticket?.let { saleItems(it.id) }.orEmpty()
+        val lines = if (ticket == null) given else {
+            if (ret.partyId != ticket.partyId)
+                throw CounterRefused(CounterRefused.Why.NOT_THIS_TICKET, "return refused: not the ticket's customer")
+            val byId = soldItems.associateBy { it.id }
+            given.map { l ->
+                val sold = l.saleItemId?.let { byId[it] }
+                    ?: throw CounterRefused(CounterRefused.Why.NOT_THIS_TICKET, "return refused: a line that is not the ticket's")
+                l.copy(rate = ReturnMath.paidRate(ticket, sold), unit = sold.unit, productId = sold.productId,
+                    billItemId = sold.billItemId, itemName = sold.itemName)
+            }
+        }
+        val total = ReturnMath.total(lines)
+        val hasParty = ret.partyId != null
+        if (hasParty && getParty(ret.partyId!!)?.isDeleted != false)
+            throw CounterRefused(CounterRefused.Why.CUSTOMER_BINNED, "return refused: the customer is in the recycle bin")
         val refund = LineMath.round(ret.refundAmount)
-        val soldLeft: Map<Long, Double> = ret.saleId?.let { sid ->
-            val back = returnedOfSale(sid).associate { it.saleItemId to it.qty }
-            saleItems(sid).associate { it.id to it.quantity - (back[it.id] ?: 0.0) }
+        val soldLeft: Map<Long, Double> = ticket?.let { sale ->
+            val back = returnedOfSale(sale.id).associate { it.saleItemId to it.qty }
+            soldItems.associate { it.id to it.quantity - (back[it.id] ?: 0.0) }
         } ?: emptyMap()
         ReturnMath.check(lines, ret.refundMethod, refund, total, hasParty, ret.reason, soldLeft)?.let {
-            throw IllegalArgumentException("return refused: $it")
+            throw ReturnMath.Refused(it)
         }
         val number = ReturnNumber.next(highestReturnNumber())
         val id = insertReturn(
@@ -3468,7 +3568,7 @@ interface KhataDao {
             }
         }
         insertAudit(AuditLog(user = ret.createdBy, action = AuditAction.RETURN_POSTED, refTable = "sale_returns", refId = id,
-            detail = "$number ${"%.2f".format(Digits.FIGURES, total)}"))
+            detail = "$number ${"%.2f".format(Digits.FIGURES, total)}" + Access.allowedNote(allowedBy)))
         return id
     }
 
@@ -3486,7 +3586,8 @@ interface KhataDao {
 
     /** A posted return taken back: its rows binned, its number kept. False unless it is a posted one whose day is open. */
     @Transaction
-    suspend fun voidReturn(id: Long, reason: String, user: String? = Access.userName): Boolean {
+    suspend fun voidReturn(id: Long, reason: String, user: String? = Access.userName, allowedBy: String? = null): Boolean {
+        Access.requireAllowed(Access.Permission.VOID, allowedBy)
         val r = getReturn(id) ?: return false
         if (returnVoidRefusal(id) != null) return false
         require(reason.isNotBlank()) { "a void needs its reason" }
@@ -3497,7 +3598,7 @@ interface KhataDao {
         updateReturn(r.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
         // The points the return took back are given back.
         r.partyId?.let { dropLoyaltyNoted(it, r.returnNumber) }
-        insertAudit(AuditLog(user = user, action = AuditAction.RETURN_VOIDED, refTable = "sale_returns", refId = id, detail = "${r.returnNumber} ${reason.trim()}"))
+        insertAudit(AuditLog(user = user, action = AuditAction.RETURN_VOIDED, refTable = "sale_returns", refId = id, detail = "${r.returnNumber} ${reason.trim()}" + Access.allowedNote(allowedBy)))
         return true
     }
 
@@ -3538,7 +3639,8 @@ interface KhataDao {
      * One transaction, one audit row. Returns how many rows were written.
      */
     @Transaction
-    suspend fun recordCount(counts: Map<Long, Double>, note: String?, user: String? = Access.userName): Int {
+    suspend fun recordCount(counts: Map<Long, Double>, note: String?, user: String? = Access.userName, allowedBy: String? = null): Int {
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
         val stock = Stock.of(this).associateBy { it.productId }
         var n = 0
         val now = System.currentTimeMillis()
@@ -3554,7 +3656,7 @@ interface KhataDao {
                 reason = AdjustReason.COUNT, note = note, bookQty = book, countedQty = counted, createdBy = user))
             n++
         }
-        insertAudit(AuditLog(user = user, action = AuditAction.STOCK_COUNT, detail = n.toString()))
+        insertAudit(AuditLog(user = user, action = AuditAction.STOCK_COUNT, detail = n.toString() + Access.allowedNote(allowedBy)))
         return n
     }
 
@@ -3565,13 +3667,14 @@ interface KhataDao {
      */
     @Transaction
     suspend fun adjustStock(productId: Long, quantity: Double, reason: String, note: String?, user: String? = Access.userName,
-                            billItemId: Long? = null, unit: String? = null): Long {
+                            billItemId: Long? = null, unit: String? = null, allowedBy: String? = null): Long {
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
         require(reason in AdjustReason.ALL) { "unknown reason" }
         require(quantity != 0.0 && !quantity.isNaN()) { "nothing to adjust" }
         val u = unit ?: productById(productId)?.defaultUnit
         val id = insertAdjustment(StockAdjustment(productId = productId, quantity = quantity, unit = u, reason = reason, note = note, createdBy = user, billItemId = billItemId))
         insertAudit(AuditLog(user = user, action = AuditAction.STOCK_ADJUSTED, refTable = "stock_adjustments", refId = id,
-            detail = "$reason ${"%.2f".format(Digits.FIGURES, quantity)}"))
+            detail = "$reason ${"%.2f".format(Digits.FIGURES, quantity)}" + Access.allowedNote(allowedBy)))
         return id
     }
 
@@ -3582,7 +3685,9 @@ interface KhataDao {
      * otherwise — and one audit row naming the other shop.
      */
     @Transaction
-    suspend fun transferStock(number: String, lines: List<Pair<Long, Double>>, otherShop: String, out: Boolean, user: String? = Access.userName, now: Long = System.currentTimeMillis()) {
+    suspend fun transferStock(number: String, lines: List<Pair<Long, Double>>, otherShop: String, out: Boolean, user: String? = Access.userName, now: Long = System.currentTimeMillis(),
+                              allowedBy: String? = null) {
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
         require(lines.isNotEmpty() && lines.all { it.second > 0.0 && !it.second.isNaN() }) { "nothing to transfer" }
         for ((productId, qty) in lines) {
             val p = productById(productId) ?: throw IllegalArgumentException("no such product")
@@ -3590,7 +3695,7 @@ interface KhataDao {
                 note = "$number · $otherShop", createdBy = user, timestamp = now))
         }
         insertAudit(AuditLog(user = user, action = if (out) AuditAction.TRANSFER_OUT else AuditAction.TRANSFER_IN, refTable = "stock_adjustments",
-            detail = "$number $otherShop ${lines.size}"))
+            detail = "$number $otherShop ${lines.size}" + Access.allowedNote(allowedBy)))
     }
 
     /**
@@ -3603,7 +3708,9 @@ interface KhataDao {
         // A name that matches a removed product brings it back, as findOrCreateProduct does.
         p.barcode?.let { productByBarcode(it) }?.id
             ?: productByKey(p.nameKey)?.let { found -> if (found.isDeleted) restoreProduct(found.id); found.id }
-            ?: insertProduct(p.copy(id = 0, barcode = p.barcode?.takeIf { productByBarcode(it) == null }, parentId = null, isDeleted = false, deletedAt = null))
+            // Its own identity in this book (23 Oct 2026, the review): the sending book's uid, kept, gave a
+            // renamed product's second transfer a second row with the same uid, and live sync took the one for the other.
+            ?: insertProduct(p.copy(id = 0, uid = Uid.next(), barcode = p.barcode?.takeIf { productByBarcode(it) == null }, parentId = null, isDeleted = false, deletedAt = null))
     }
 
     @Insert
@@ -3759,6 +3866,35 @@ interface KhataDao {
         """
     )
     suspend fun returnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
+
+    /** [soldLinesBetween] for walk-in tickets only (no customer, so no khata entry): Insights' profit (23 Oct 2026). */
+    @Query(
+        """
+        SELECT s.id AS saleId, s.timestamp AS timestamp, s.customerName AS customerName, s.createdBy AS createdBy,
+               s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
+               i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded,
+               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.partyId IS NULL
+          AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.timestamp ASC, i.lineNo ASC
+        """
+    )
+    suspend fun walkInSoldLinesBetween(from: Long, to: Long): List<SoldLine>
+
+    /** [returnedLinesBetween] for walk-in returns only (no customer): a customer's comes back through his khata. */
+    @Query(
+        """
+        SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
+               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
+             JOIN sales s ON s.id = si.saleId
+        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.partyId IS NULL
+          AND r.timestamp >= :from AND r.timestamp < :to
+        """
+    )
+    suspend fun walkInReturnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
 
     /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND category != 'Return' AND timestamp > :from AND timestamp <= :to")
@@ -4053,20 +4189,27 @@ interface KhataDao {
     @Query("SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC")
     suspend fun agingMoves(): List<AgingMove>
 
-    /** Cash taken on [user]'s counter sales (null = the owner's) in [from, to): a shift's drawer ([ShiftMath]). */
+    /**
+     * Cash taken on [user]'s counter sales (null = the owner's) in [from, to): a shift's drawer ([ShiftMath]).
+     * [mark] ("-B", see [NumberMark]) keeps it to one device's tickets while the book syncs (23 Oct 2026, the
+     * review: the owner's phone sales were added to the drawer of his shift on the computer); "" = every device.
+     * A ticket with no letter (written while the book did not sync) counts on any device.
+     */
     @Query(
         "SELECT COALESCE(SUM(p.amount), 0) FROM sale_payments p JOIN sales s ON s.id = p.saleId " +
         "WHERE s.isDeleted = 0 AND s.status = 'done' AND p.method = 'cash' AND s.timestamp >= :from AND s.timestamp < :to " +
-        "AND ((:user IS NULL AND s.createdBy IS NULL) OR s.createdBy = :user)"
+        "AND ((:user IS NULL AND s.createdBy IS NULL) OR s.createdBy = :user) " +
+        "AND (:mark = '' OR s.saleNumber LIKE '%' || :mark OR s.saleNumber NOT LIKE '%-%-%')"
     )
-    suspend fun cashTakenBy(user: String?, from: Long, to: Long): Double
+    suspend fun cashTakenBy(user: String?, from: Long, to: Long, mark: String = ""): Double
 
-    /** Cash handed back on [user]'s counter returns in [from, to). */
+    /** Cash handed back on [user]'s counter returns in [from, to); [mark] as in [cashTakenBy]. */
     @Query(
         "SELECT COALESCE(SUM(refundAmount), 0) FROM sale_returns WHERE isDeleted = 0 AND status = 'done' AND refundMethod = 'cash' " +
-        "AND timestamp >= :from AND timestamp < :to AND ((:user IS NULL AND createdBy IS NULL) OR createdBy = :user)"
+        "AND timestamp >= :from AND timestamp < :to AND ((:user IS NULL AND createdBy IS NULL) OR createdBy = :user) " +
+        "AND (:mark = '' OR returnNumber LIKE '%' || :mark OR returnNumber NOT LIKE '%-%-%')"
     )
-    suspend fun cashRefundedBy(user: String?, from: Long, to: Long): Double
+    suspend fun cashRefundedBy(user: String?, from: Long, to: Long, mark: String = ""): Double
 
     /** A shift opened at the counter, with its audit row; refused when this person already has one open. */
     @Transaction
