@@ -1390,8 +1390,15 @@ class KhataActivity : BaseActivity() {
     private fun askPhoneWhatItSpeaks() {
         if (speechLanguages != null) return
         try {
+            // Addressed to the recogniser that answers it (23 Oct 2026, the review): the bare
+            // implicit broadcast reaches no app's manifest receiver on Android 8+, so the answer
+            // never came. getVoiceDetailsIntent names the receiver the WEB_SEARCH activity
+            // declares (manifest <queries> lets Android 11+ see it); null means none does,
+            // and the old guess stands.
+            val ask = android.speech.RecognizerIntent.getVoiceDetailsIntent(this)
+                ?: Intent(android.speech.RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS)
             sendOrderedBroadcast(
-                Intent(android.speech.RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS),
+                ask,
                 null,
                 object : android.content.BroadcastReceiver() {
                     override fun onReceive(context: android.content.Context?, intent: Intent?) {
@@ -1452,9 +1459,16 @@ class KhataActivity : BaseActivity() {
         // do quietly. Without this the app would appear to be broken, when in
         // fact the phone simply does not carry their language.
         if (!choice.exact) {
+            // The language's name in the app's language, never a raw tag such as "ur-PK";
+            // no tag at all means the phone listens in its own setting.
+            val heard = choice.tag?.let { tag ->
+                val inApp = java.util.Locale.forLanguageTag(appLanguageTag())
+                java.util.Locale.forLanguageTag(tag).getDisplayLanguage(inApp).takeIf { it.isNotBlank() } ?: tag
+            }
             Toast.makeText(
                 this,
-                getString(R.string.voice_language_missing, choice.tag ?: ""),
+                if (heard != null) getString(R.string.voice_language_missing, heard)
+                else getString(R.string.voice_language_missing_phone),
                 Toast.LENGTH_LONG
             ).show()
         }

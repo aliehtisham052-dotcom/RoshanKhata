@@ -53,7 +53,8 @@ object RateList {
             val key = companyKey(p.company) ?: return@forEach
             seen.getOrPut(key) { p.company!!.trim() }
         }
-        return seen.values.sortedBy { it.lowercase(Locale.ROOT) }
+        // The reader's alphabet, never code points (lesson 30; 23 Oct review, R49).
+        return seen.values.sortedWith(NameOrder.byName)
     }
 
     /**
@@ -65,7 +66,7 @@ object RateList {
         return products
             .filter { !it.isDeleted && hasPrice(it) }
             .filter { want == null || companyKey(it.company) == want }
-            .sortedBy { it.name.lowercase(Locale.ROOT) }
+            .sortedWith(compareBy(NameOrder.byName) { it.name })
     }
 
     /** The rows that go on the picture: [candidates] minus what the owner unticked. */

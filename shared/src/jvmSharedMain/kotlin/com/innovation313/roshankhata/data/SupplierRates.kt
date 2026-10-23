@@ -50,5 +50,5 @@ object SupplierRates {
                 .minByOrNull { it.rate }
                 ?.let { Quote(it.supplierId, it.supplierName, it.rate, it.billDate) }
             Row(l.productName.trim(), l.unit?.trim()?.takeIf { it.isNotEmpty() }, last, prev, cheaper)
-        }.sortedWith(compareByDescending<Row> { it.needsLook }.thenBy { it.name.lowercase(Locale.ROOT) })
+        }.sortedWith(compareByDescending<Row> { it.needsLook }.thenBy(NameOrder.byName) { it.name })
 }

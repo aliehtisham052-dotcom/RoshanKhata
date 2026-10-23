@@ -22,18 +22,18 @@
     <string name="coach_desc_nav_cheques">Wo cheques jo aap ne diye ya wasool kiye, due dates ke sath unka hisaab rakhein.</string>
     <string name="coach_title_nav_plans">Plans</string>
     <string name="coach_desc_nav_plans">Un customers ke liye installment plans jo hisson mein payment karte hain.</string>
-    <string name="coach_title_nav_more">More</string>
-    <string name="coach_desc_nav_more">Zakat calculator, Dukan Card, backup, App Lock, aur settings.</string>
+    <string name="coach_title_nav_more">Mazeed</string>
+    <string name="coach_desc_nav_more">Zakat calculator, Dukaan Card, backup, App Lock, aur settings.</string>
         <string name="coach_title_bills">Supplier Bills</string>
     <string name="coach_desc_bills">Supplier se jo khareeda aur jo abhi dena baaki hai, wo darj karein.</string>
-    <string name="coach_title_stock">Khatam Hota Stock</string>
-    <string name="coach_desc_stock">Bechein, riayat dein, ya wapis karein — jab tak waqt hai.</string>
+    <string name="coach_title_stock">Expire Hota Stock</string>
+    <string name="coach_desc_stock">Bechein, riayat dein, ya wapas karein — jab tak waqt hai.</string>
     <string name="coach_title_insights">Sale Insights</string>
     <string name="coach_desc_insights">Dekhein kya bik raha hai, kya para hai, aur aap ka paisa kahan phansa hai.</string>
     <string name="coach_title_zakat">Zakat Calculator</string>
     <string name="coach_desc_zakat">Zakat ka andaza lagane ka rahnuma tool — hukm kisi mustanad aalim se maloom karein.</string>
     <string name="coach_title_bizcard">Business Card</string>
-    <string name="coach_desc_bizcard">Apni dukan ke liye seconds mein share hone wala card banayein, teen andaaz mein.</string>
+    <string name="coach_desc_bizcard">Apni dukaan ke liye seconds mein share hone wala card banayein, teen andaaz mein.</string>
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Apne customers ke liye professional invoice banayein — tayyar designon mein se chunein, aap ke naam, muhar aur QR ke saath.</string>
     <string name="coach_title_products">Products aur Stock</string>
@@ -49,12 +49,12 @@
         <item quantity="other">Aakhri len-den %1$d din pehle</item>
     </plurals>
     <plurals name="followup_habit">
-        <item quantity="one">Aam tor par har %1$d din mein adaigi</item>
-        <item quantity="other">Aam tor par har %1$d din mein adaigi</item>
+        <item quantity="one">Aam taur par har %1$d din mein adaigi</item>
+        <item quantity="other">Aam taur par har %1$d din mein adaigi</item>
     </plurals>
     <plurals name="followup_habit_late">
-        <item quantity="one">Adaigi mein der — ab %1$d din, aam tor par ~%2$d</item>
-        <item quantity="other">Adaigi mein der — ab %1$d din, aam tor par ~%2$d</item>
+        <item quantity="one">Adaigi mein der — ab %1$d din, aam taur par ~%2$d</item>
+        <item quantity="other">Adaigi mein der — ab %1$d din, aam taur par ~%2$d</item>
     </plurals>
     <string name="followup_today">Aaj len-den hua</string>
     <string name="followup_empty">Is waqt kisi ke zimme kuch nahi — sab settled.</string>
@@ -63,7 +63,7 @@
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Apna khata mehfooz tareeqe se apni Google Drive par rakhein.</string>
         <string name="coach_title_settings">Business Settings</string>
-    <string name="coach_desc_settings">Aap ki dukan ka naam, rabta aur tarjeehat — ek baar set karein, har jagah istemal hongi.</string>
+    <string name="coach_desc_settings">Aap ki dukaan ka naam, rabta aur tarjeehat — ek baar set karein, har jagah istemal hongi.</string>
         <string name="calculator">Calculator</string>
     <string name="calc_clear">C</string>
     <string name="calc_backspace">\u232B</string>
@@ -78,7 +78,7 @@
     <string name="coach_title_calc">Calculator</string>
     <string name="coach_desc_calc">Khaate ke sath foran hisaab — munafa, kul meezan aur taqseem.</string>
     <string name="coach_title_applock">Recycle Bin</string>
-    <string name="coach_desc_applock">Ghalti se koi customer delete ho gaya? Yahan se wapis layein.</string>
+    <string name="coach_desc_applock">Ghalti se koi customer delete ho gaya? Yahan se wapas layein.</string>
     <string name="coach_title_add">Customer Shamil Karein</string>
     <string name="coach_desc_add">Apna pehla customer shamil karne aur khata shuru karne ke liye yahan tap karein.</string>
     <string name="app_tagline">Innovation-313</string>
@@ -126,9 +126,7 @@
     <string name="add_party">Party Shamil Karein</string>
     <string name="add_party_duplicate_with_phone">Milta-julta customer pehle se maujood hai: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Milta-julta customer pehle se maujood hai: %1$s</string>
-    <string name="no_parties_yet">Abhi koi gahak nahi.
-
-Pehla gahak shamil karein aur apna khata shuru karein.</string>
+    <string name="no_parties_yet">Abhi koi gahak nahi.\n\nPehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="no_entries_yet">Abhi koi entry nahi.</string>
 
     <string name="i_gave">Main Ne Diya</string>
@@ -195,14 +193,14 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
         <item quantity="other">%1$d chuni gayi entries delete karein? Ye Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
     </plurals>
     <string name="moved_to_bin">Recycle Bin mein muntaqil ho gaya</string>
-    <string name="long_press_to_delete">Party delete karne ke liye usey der tak dabayen</string>
+    <string name="long_press_to_delete">Party delete karne ke liye usey der tak dabayein</string>
 
     <string name="zakat_calculator">Zakat Calculator</string>
     <string name="zakat_subtitle">Sirf rehnumai ke liye — fatwa nahi</string>
     <string name="zakat_disclaimer">Ye sahulat sirf rehnumai ke liye hai. Zakat ki fiqhi tafseel ahem hai — nisab ka miyaar, mashkook qarzon ka hukm, qamari saal, aur kaun si adaigiyan minha hongi, in sab mein ulama ki raaye mukhtalif hai. Roshan Khata mufti nahi hai. Hatmi hukm kisi mustanad aalim se zaroor lein.</string>
 
     <string name="nisab_section">Nisab</string>
-    <string name="nisab_help">Yahan nisab chandi ke miyaar (612.36 gram) par rakha gaya hai — ye mauqif aam tor par ghareebon ke haq mein zyada mohtat samjha jata hai. Aaj ki chandi ki fi gram qeemat likhein.</string>
+    <string name="nisab_help">Yahan nisab chandi ke miyaar (612.36 gram) par rakha gaya hai — ye mauqif aam taur par ghareebon ke haq mein zyada mohtat samjha jata hai. Aaj ki chandi ki fi gram qeemat likhein.</string>
     <string name="silver_price_hint">Chandi ki qeemat fi gram</string>
     <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Nisab maloom karne ke liye qeemat likhein</string>
@@ -268,7 +266,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="already_added">Shamil hai</string>
     <string name="loading_contacts">Contacts load ho rahe hain\u2026</string>
     <string name="no_contacts_found">Is phone par koi contact nahi mila.</string>
-    <string name="contacts_picker_missing">Is phone mein contacts chunne wala system nahi. Grahak haath se shamil karein.</string>
+    <string name="contacts_picker_missing">Is phone mein contacts chunne wala system nahi. Gahak haath se shamil karein.</string>
     <string name="no_matching_contacts">Aap ki talash se koi contact nahi milta.</string>
     <string name="continue_action">Jari Rakhein</string>
     <string name="contacts_permission_title">Aap ke contacts tak rasai?</string>
@@ -292,7 +290,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="lock_pin_new">4 se 8 hindson ka PIN chunein</string>
     <string name="lock_pin_again">Wohi PIN dobara likhein</string>
     <string name="lock_pin_wrong">Ghalat PIN. Dobara koshish karein.</string>
-    <string name="lock_pin_mismatch">Dono PIN aik jaise nahi hain.</string>
+    <string name="lock_pin_mismatch">Dono PIN ek jaise nahi hain.</string>
     <string name="lock_pin_wait">Bohat zyada koshishen. %1$d second intezar karein.</string>
     <string name="lock_unlock">Kholein</string>
     <string name="lock_title">Roshan Khata Kholein</string>
@@ -323,7 +321,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="business_name_urdu">Dukaan ka naam Urdu mein</string>
     <string name="business_name_urdu_hint">Maslan بھٹی ٹریڈرز</string>
     <string name="business_name_urdu_help">Urdu poster par yahi naam chhapega. Khali chhorein to upar wala naam.</string>
-    <string name="business_address">Dukan ka pata</string>
+    <string name="business_address">Dukaan ka pata</string>
     <string name="business_address_hint">maslan Main Bazaar, Pasrur</string>
     <string name="invoice_bank_name_hint">Bank ka naam</string>
     <string name="invoice_bank_title_hint">Account title</string>
@@ -440,7 +438,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="set_credit_limit">Udhaar ki hadd muqarrar karein</string>
     <string name="credit_limit_help">Zyada se zyada jitna udhaar aap is party ko dena chahte hain. Hadd se barhne wali entry se pehle Roshan Khata aap ko khabardar karega. Hadd na ho to khali chhor dein.</string>
     <string name="credit_limit_hint">Hadd</string>
-    <string name="credit_limit_advisory">Ye sirf intebah hai, rukawat nahi. Karobar aap ka hai — aap hamesha aage barh sakte hain.</string>
+    <string name="credit_limit_advisory">Ye sirf intibah hai, rukawat nahi. Karobar aap ka hai — aap hamesha aage barh sakte hain.</string>
     <string name="credit_limit_current">Is waqt aap ke %1$s wajib hain</string>
     <string name="credit_limit_none">Koi hadd muqarrar nahi</string>
     <string name="credit_limit_set_to">Hadd: %1$s</string>
@@ -451,7 +449,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="near_limit_badge">Hadd ke qareeb</string>
 
     <string name="limit_warning_title">Ye un ki udhaar ki hadd se barh jayega</string>
-    <string name="limit_warning_message">%1$s ke zimme is waqt %2$s hain.\n\n%3$s ki ye entry unhein %4$s par le jayegi, jo aap ki muqarrar karda %5$s hadd se zyada hai.\n\nAap phir bhi aage barh sakte hain — ye sirf intebah hai.</string>
+    <string name="limit_warning_message">%1$s ke zimme is waqt %2$s hain.\n\n%3$s ki ye entry unhein %4$s par le jayegi, jo aap ki muqarrar karda %5$s hadd se zyada hai.\n\nAap phir bhi aage barh sakte hain — ye sirf intibah hai.</string>
     <string name="proceed_anyway">Aage Barhein</string>
 
     <string name="report">Report</string>
@@ -557,34 +555,30 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="business_rename">Business ka naam badlein</string>
     <string name="business_delete">Business delete karein</string>
     <string name="business_delete_confirm_title">%1$s delete karein?</string>
-    <string name="business_delete_confirm_body">%1$d customers, balance %2$s. Is business ki har entry, photo aur invoice is phone se hamesha ke liye hata di jayegi. Agar Drive backup mojood hai to use chheda nahi jayega. Ye wapas nahi ho sakta.</string>
+    <string name="business_delete_confirm_body">%1$d customers, balance %2$s. Is business ki har entry, photo aur invoice is phone se hamesha ke liye hata di jayegi. Agar Drive backup maujood hai to use chheda nahi jayega. Ye wapas nahi ho sakta.</string>
     <string name="business_delete_type_hint">Confirm karne ke liye \"%1$s\" likhein</string>
     <string name="business_delete_done">%1$s delete ho gaya</string>
     <string name="erase_all_button">Sara data mitayein</string>
     <string name="erase_all_title">Sab kuch mita dein?</string>
-    <string name="erase_all_body">Is phone par har business — tamam customers, entries, cheque, cashbook, invoices, photos aur settings — hamesha ke liye mit jayenge. App bilkul nayi install jaisi khali ho jayegi.\n\nAap ki apni Google Drive par mojood backups ko HATH NAHI lagaya jayega — wo baad mein bhi bahal ho sakte hain.\n\nAgar yaqeen nahi, pehle backup lein. Ye wapas nahi ho sakta.</string>
+    <string name="erase_all_body">Is phone par har business — tamam customers, entries, cheque, cashbook, invoices, photos aur settings — hamesha ke liye mit jayenge. App bilkul nayi install jaisi khali ho jayegi.\n\nAap ki apni Google Drive par maujood backups ko HATH NAHI lagaya jayega — wo baad mein bhi bahal ho sakte hain.\n\nAgar yaqeen nahi, pehle backup lein. Ye wapas nahi ho sakta.</string>
     <string name="erase_all_keyword">MITAO</string>
     <string name="erase_all_done">Sara data mit gaya.</string>
     <string name="db_broken_title">Khata khul nahi raha</string>
     <string name="db_broken_body">Is phone par khatay ki file kharab ho gayi hai. Aap ki daily copies mehfooz hain — app pichle saat dinon ki ek ek copy rakhti hai, aur kisi copy par wapas jane se aaj ki file ko us waqt tak haath nahi lagta jab tak sehatmand copy tasdeeq na ho jaye.</string>
-    <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayen</string>
+    <string name="business_rename_hint">Kholne ke liye tap · naam badalne ke liye der tak dabayein</string>
     <string name="restore_business_mismatch">Ye backup %1$s ka hai, lekin abhi %2$s khula hai. Bahal karne se khule hue business ka data us backup se badal jayega.</string>
     <string name="contact_in_recycle_bin">Recycle Bin mein</string>
-    <string name="restore_no_images">Aap ka record wapas aa gaya, lekin is backup ke sath images nahi thin, is liye photos, bill photos aur QR bahal nahi hue. Aainda backup mein images rakhne ke liye backup se pehle Include images on karein.</string>
-    <string name="restore_file_no_images">Aap ka record wapas aa gaya. File backup sirf record le kar jata hai — usme images kabhi shamil nahi hotin. Photos bhi mehfooz rakhne ke liye Include images on kar ke Google Drive par backup karein.</string>
+    <string name="restore_no_images">Aap ka record wapas aa gaya, lekin is backup ke sath images nahi thin, is liye photos, bill photos aur QR bahal nahi hue. Aainda backup mein images rakhne ke liye backup se pehle “Images bhi shamil karein” wala switch on karein.</string>
+    <string name="restore_file_no_images">Aap ka record wapas aa gaya. File backup sirf record le kar jata hai — usme images kabhi shamil nahi hotin. Photos bhi mehfooz rakhne ke liye “Images bhi shamil karein” wala switch on kar ke Google Drive par backup karein.</string>
     <string name="drive_looking">Drive par dekh rahe hain…</string>
     <plurals name="drive_found_businesses">
         <item quantity="one">Drive par %1$d business mila</item>
         <item quantity="other">Drive par %1$d business mile</item>
     </plurals>
     <string name="drive_restore_all">Sab bahal karein</string>
-    <string name="drive_restore_all_warning">Ye business Drive se bahal honge, aur har ek ka mojooda data is phone par un se badal jayega:
-
-%1$s</string>
-    <string name="drive_restored_these">Bahal ho gaye:
-%1$s</string>
-    <string name="drive_restore_missed">Bahal nahi ho sake:
-%1$s</string>
+    <string name="drive_restore_all_warning">Ye business Drive se bahal honge, aur har ek ka maujooda data is phone par un se badal jayega:\n\n%1$s</string>
+    <string name="drive_restored_these">Bahal ho gaye:\n%1$s</string>
+    <string name="drive_restore_missed">Bahal nahi ho sake:\n%1$s</string>
     <string name="business_numbered">Business %1$d</string>
     <string name="backup_for_business">Backup ho raha hai: %1$s</string>
     <string name="snapshots_title">Rozana copies</string>
@@ -598,8 +592,8 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="snapshot_restored_title">Khata bahal ho gaya</string>
     <string name="snapshot_restored_body">App ab bahal kiye gaye khate ke sath dobara khulegi.</string>
     <string name="snapshot_unhealthy_title">Ye copy kharab hai</string>
-    <string name="snapshot_unhealthy_body">Ye copy apni jaanch mein pass nahi hui, is liye istemal nahi ki gayi. Aap ka mojooda khata bilkul nahi chhera gaya. Koi pehle din ki copy azmayein.</string>
-    <string name="snapshot_restore_failed">Ye copy bahal nahi ho saki. Aap ka mojooda khata nahi badla.</string>
+    <string name="snapshot_unhealthy_body">Ye copy apni jaanch mein pass nahi hui, is liye istemal nahi ki gayi. Aap ka maujooda khata bilkul nahi chhera gaya. Koi pehle din ki copy azmayein.</string>
+    <string name="snapshot_restore_failed">Ye copy bahal nahi ho saki. Aap ka maujooda khata nahi badla.</string>
     <string name="daily_copies">Rozana copies</string>
     <string name="business_last_backup">Aakhri backup %1$s</string>
     <string name="business_never_backed_up">Kabhi backup nahi hua</string>
@@ -646,7 +640,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="bill_due_date">Adaigi ki tareekh (ikhtiyari)</string>
     <string name="bill_paid_cash">Delivery par naqad ada kiya</string>
     <string name="bill_paid_cash_help">Ye sirf us waqt lagayen jab fori ada kiya ho. Warna raqam aap ke khate mein un ke hisaab par jayegi, jo aap ka wajib hai.</string>
-    <string name="bill_credit_note">Ye aap ke khate mein ek entry ke tor par %2$s ke wajib mein %1$s jor dega.</string>
+    <string name="bill_credit_note">Ye aap ke khate mein ek entry ke taur par %2$s ke wajib mein %1$s jor dega.</string>
 
     <string name="bill_items_title">Delivery mein kya tha</string>
     <string name="add_item">Cheez shamil karein</string>
@@ -743,7 +737,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="crop_save_failed">Crop mehfooz nahi ho saki. Dobara koshish karein.</string>
     <string name="invoice_more_options">Mazeed options (ikhtiyari)</string>
     <string name="invoice_settings_title">Invoice Settings</string>
-    <string name="invoice_settings_subtitle">Jo cheez ye dukan kabhi istemal nahi karti usay band kar dein — har nayi invoice ke liye band rahegi.</string>
+    <string name="invoice_settings_subtitle">Jo cheez ye dukaan kabhi istemal nahi karti usay band kar dein — har nayi invoice ke liye band rahegi.</string>
     <string name="invoice_feature_discount">Discount</string>
     <string name="invoice_feature_discount_desc">Invoice ke total mein se feesad kami.</string>
     <string name="invoice_feature_tax">Tax</string>
@@ -800,7 +794,7 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
 
     <string name="report_problem">Masla Batayen</string>
     <string name="rate_app">App ko rating dein</string>
-    <string name="rate_app_note">Aap ki rating se doosre dukandaron tak ye app pohanchti hai. Koi kharabi ya kami ho to "Masla batayen" istemal karein — wo seedha hum tak pohanchta hai.</string>
+    <string name="rate_app_note">Aap ki rating se doosre dukandaron tak ye app pohanchti hai. Koi kharabi ya kami ho to “Masla batayen” istemal karein — wo seedha hum tak pohanchta hai.</string>
     <string name="report_problem_sub">Batayen kya kharab hua</string>
     <string name="report_privacy">Aap ke gahakon ke naam, number aur balance kabhi nahi bheje jate. Report ke saath sirf app version aur phone model jata hai \u2014 yehi kharabi dhoondne mein madad deta hai.\n\nEmail aap ki apni mail app mein khulti hai, is liye bhejne se pehle aap dekh sakte hain ke kya ja raha hai.</string>
 
@@ -837,17 +831,15 @@ Pehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="drive_section">Khudkar cloud backup</string>
     <string name="file_section">File mein backup</string>
     <string name="drive_not_connected">Apna Google account jorein to aap ka Khata aap ki APNI Google Drive mein khudkar backup hota rahega. Phone badlein, dobara sign in karein, sab wapas. Data aap ki Drive mein rehta hai; hamare paas kabhi nahi aata.</string>
-    <string name="drive_connected">%1$s ke tor par jura hai. Aakhri cloud backup: %2$s</string>
-    <string name="drive_connected_never">%1$s ke tor par jura hai. Abhi koi cloud backup nahi \u2014 "Drive Mein Backup" dabayen.</string>
+    <string name="drive_connected">%1$s ke taur par jura hai. Aakhri cloud backup: %2$s</string>
+    <string name="drive_connected_never">%1$s ke taur par jura hai. Abhi koi cloud backup nahi \u2014 “Drive Mein Backup” dabayein.</string>
     <string name="welcome_signed_in_title">Kamyabi se sign in ho gaya</string>
     <string name="drive_backup_now">Abhi Drive Mein Backup Lein</string>
     <string name="drive_backup_images">Images bhi shamil karein (photos, bill photos, QR)</string>
     <string name="drive_auto_backup">Khudkar backup</string>
     <string name="drive_auto_backup_hint">Jab bhi khatay mein tabdeeli ho, khud backup ho jata hai — Wi-Fi par zyada se zyada har 30 minute, mobile data par har 6 ghante. Aap kabhi bhi khud bhi backup le sakte hain.</string>
     <string name="auto_backup_offer_title">Khud ba khud backup karein?</string>
-    <string name="auto_backup_offer_body">Aap ka account jur gaya hai. Roshan Khata aap ki kitaab khud upload kar sakta hai jab bhi us mein tabdeeli ho, taake phone gum ya kharab hone par aap ka record saath na jaye.
-
-Ise aap kabhi bhi isi screen se badal sakte hain.</string>
+    <string name="auto_backup_offer_body">Aap ka account jur gaya hai. Roshan Khata aap ki kitaab khud upload kar sakta hai jab bhi us mein tabdeeli ho, taake phone gum ya kharab hone par aap ka record saath na jaye.\n\nIse aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="auto_backup_offer_yes">Chaalu karein</string>
     <string name="auto_backup_offer_no">Abhi nahi</string>
     <string name="drive_restore">Drive Se Bahal Karein</string>
@@ -904,7 +896,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="vq_open">Kholein</string>
     <string name="vq_nobody">Abhi kisi par aap ka baqaya nahi.</string>
     <string name="vq_no_recognizer">Is phone mein awaaz pehchanne wali app nahi.</string>
-    <string name="vq_not_paid_body">Follow-up list mein woh grahak sab se upar hain jin se pehle wusooli karni hai.</string>
+    <string name="vq_not_paid_body">Follow-up list mein woh gahak sab se upar hain jin se pehle wusooli karni hai.</string>
     <string name="vq_expiring_body">Expiring stock screen par woh maal hai jo sab se pehle khatam hoga.</string>
     <string name="cf_title">Cash Flow</string>
     <string name="cf_subtitle">Aane ka waada aur jane wala paisa</string>
@@ -932,7 +924,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="sr_down">Pichhle bill se %1$s sasta (%2$s)</string>
     <string name="sr_cheaper">Haal hi mein %1$s se sasta mila: %2$s (%3$s)</string>
     <string name="sr_none">Abhi rate wale supplier bills nahi. Supplier bill ki har line par rate likhein, yahan nazar aayega.</string>
-    <string name="sr_note">Rate sirf aik hi ikai mein milaye jate hain, aur sasta rate sirf pichhle 6 mahine ka gina jata hai.</string>
+    <string name="sr_note">Rate sirf ek hi ikai mein milaye jate hain, aur sasta rate sirf pichhle 6 mahine ka gina jata hai.</string>
     <string name="sr_nothing_to_watch">Kuch dekhne ki zaroorat nahi: koi cheez mehengi nahi hui, aur kisi aur supplier se sasta nahi mila.</string>
     <string name="home_slide_cf">Agle 30 din mein kya aayega, kya jayega</string>
     <string name="home_slide_rates">Apni qeematein WhatsApp par tasveer mein</string>
@@ -995,7 +987,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="nisab_silver">Chandi</string>
     <string name="nisab_gold">Sona</string>
     <string name="gold_price_hint">Sone ki qeemat fi gram</string>
-    <string name="nisab_silver_note">Chandi ka nisab: 612.36 gram (52.5 tola) chandi. Ye kam hadd hai, is liye zyada logon par Zakat aati hai \u2014 ye mauqif aam tor par ghareebon ke haq mein zyada mohtat samjha jata hai.</string>
+    <string name="nisab_silver_note">Chandi ka nisab: 612.36 gram (52.5 tola) chandi. Ye kam hadd hai, is liye zyada logon par Zakat aati hai \u2014 ye mauqif aam taur par ghareebon ke haq mein zyada mohtat samjha jata hai.</string>
     <string name="nisab_gold_note">Sone ka nisab: 87.48 gram (7.5 tola) sona. Ye oonchi hadd hai, is liye kam logon par Zakat aati hai. Kaun sa miyaar aap par lagoo hai, aalim se tasdeeq karein.</string>
     <string name="per_tola">Fi tola</string>
     <string name="per_gram">Fi gram</string>
@@ -1058,20 +1050,20 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="share_failed">Share karne ke liye tasveer nahi ban saki</string>
     <string name="print_receipt">Raseed print karein</string>
     <string name="print_choose">Printer chunein</string>
-    <string name="print_no_printer">Koi paired printer nahi. Pehle phone ki Bluetooth settings mein apna raseed printer pair karein, phir dobara Print dabayen.</string>
-    <string name="print_bluetooth_off">Bluetooth band hai. Isay on karke dobara Print dabayen.</string>
+    <string name="print_no_printer">Koi paired printer nahi. Pehle phone ki Bluetooth settings mein apna raseed printer pair karein, phir dobara Print dabayein.</string>
+    <string name="print_bluetooth_off">Bluetooth band hai. Isay on karke dobara Print dabayein.</string>
     <string name="print_no_bluetooth">Is phone mein Bluetooth nahi.</string>
     <string name="print_permission">Printer tak pahunchne ke liye Nearby devices ki ijazat chahiye.</string>
     <string name="print_sending">Printer ko bheja ja raha hai…</string>
     <string name="print_done">Print ho gaya</string>
     <string name="print_failed">Printer se rabta nahi hua. Kya woh on hai, paired hai aur us mein kaghaz hai?</string>
-    <string name="sig_take">Grahak ke dastakhat lein</string>
+    <string name="sig_take">Gahak ke dastakhat lein</string>
     <string name="sig_retake">Dastakhat badlein</string>
     <string name="sig_title">Yahan dastakhat karein</string>
-    <string name="sig_hint">Grahak ungli se dastakhat kare. Ye sirf is phone aur aap ke backup mein rahenge.</string>
+    <string name="sig_hint">Gahak ungli se dastakhat kare. Ye sirf is phone aur aap ke backup mein rahenge.</string>
     <string name="sig_clear">Mitayen</string>
     <string name="sig_empty">Pehle dastakhat karein</string>
-    <string name="sig_label">Grahak ke dastakhat</string>
+    <string name="sig_label">Gahak ke dastakhat</string>
     <string name="sig_undo">Wapas</string>
     <string name="sig_save">Dastakhat mehfooz karein</string>
     <string name="sig_signed_at">Dastakhat: %1$s</string>
@@ -1086,7 +1078,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="invalid_amount">Durust raqam likhein</string>
     <string name="saved">Mehfooz ho gaya</string>
     <string name="select_language">Apni zaban chunein</string>
-    <string name="language_change_note">Zaban kabhi bhi "Mazeed" se badal sakte hain.</string>
+    <string name="language_change_note">Zaban kabhi bhi “Mazeed” se badal sakte hain.</string>
     <string name="language">Zaban</string>
 
     <!-- Daily reminder notifications -->
@@ -1113,12 +1105,12 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="notif_backup_failed_body">Roshan Khata Drive par backup nahi kar saka. Internet dekhein — yeh khud dobara koshish karega.</string>
 
     <!-- Business card -->
-    <string name="biz_card">Dukan Card</string>
-    <string name="biz_card_sub">Aap ki dukan ka card, share ke liye tayyar</string>
+    <string name="biz_card">Dukaan Card</string>
+    <string name="biz_card_sub">Aap ki dukaan ka card, share ke liye tayyar</string>
     <string name="biz_card_name_hint">Karobar ka naam</string>
     <string name="biz_card_template">Design</string>
     <string name="biz_card_share">Card share karein</string>
-    <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke tor par share hota hai. Kuch bhi upload nahi hota.</string>
+    <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke taur par share hota hai. Kuch bhi upload nahi hota.</string>
     <string name="biz_card_show_mark">Card par “Roshan Khata” dikhayein</string>
     <string name="biz_card_show_logo">Card par dukaan ka logo</string>
     <string name="biz_card_logo_none">Abhi logo nahi hai. Profile mein lagayein →</string>
@@ -1133,7 +1125,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
 
     <string name="faq_q_backup">Phone gum ho jaye to khata kaise mehfooz rahega?</string>
     <string name="faq_a_backup">Home screen se Backup &amp; Restore kholein aur apne Google account se sign in karein. Aap ka khata aap hi ki Drive par mehfooz ho jayega, jahan sirf aap pahunch sakte hain. Hafte mein ek baar kar lein, phir phone gumne par sirf phone jayega, hisaab nahi.</string>
-    <string name="faq_q_restore">Phone badal liya hai. Khata wapis kaise laun?</string>
+    <string name="faq_q_restore">Phone badal liya hai. Khata wapas kaise laun?</string>
     <string name="faq_a_restore">Naye phone par Roshan Khata install karein, Backup &amp; Restore kholein, Restore dabayein, aur wahi Google account se sign in karein. App Drive se poochhti hai ke us par kaun si dukaanein hain aur unhe naam ke sath dikhati hai — aap ek ya sab bahal kar sakte hain. Aakhri backup ke baad ka darj kiya hua us mein nahi hota.</string>
     <string name="faq_q_business">Meri do dukaanein hain. Kya dono app mein rakh sakta hoon?</string>
     <string name="faq_a_business">Ji haan. Home screen par upar apni dukaan ke naam par tap karein, phir Naya business shamil karein. Har dukaan ka bilkul alag khata rehta hai — alag customers, entries aur photos — aur har ek ka backup bhi alag. Naam par tap karke dukaan badlein. Zyada options ke liye der tak dabayein — naam badlein ya delete karein.</string>
@@ -1144,11 +1136,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="faq_q_hide">Koi paas khara ho to balance chupa sakta hoon?</string>
     <string name="faq_a_hide">Home screen par balance ke sath aankh ke nishan par tap karein. Dobara tap karne tak har jagah chupa rahega.</string>
     <string name="faq_q_percent">Raqam wale khane mein riayat ka hisaab laga sakta hoon?</string>
-    <string name="faq_a_percent">Ji haan. Seedha likh dein — 1200-15%% ka jawab 1020 aur 500*32%% ka 160. Ye har raqam wale khane aur Calculator mein kaam karta hai.</string>
+    <string name="faq_a_percent" formatted="false">Ji haan. Seedha likh dein — 1200-15% ka jawab 1020 aur 500*32% ka 160. Ye har raqam wale khane aur Calculator mein kaam karta hai.</string>
     <string name="faq_q_delete">Ghalti se gahak delete ho gaya.</string>
-    <string name="faq_a_delete">Home screen par Recycle Bin. Delete kiye gaye gahak aur indraj wahin rehte hain aur wapis laye ja sakte hain.</string>
+    <string name="faq_a_delete">Home screen par Recycle Bin. Delete kiye gaye gahak aur indiraaj wahin rehte hain aur wapas laye ja sakte hain.</string>
     <string name="faq_q_language">Zubaan baad mein badal sakta hoon?</string>
-    <string name="faq_a_language">More → Language, jab chahein. Khaate par koi asar nahi parega.</string>
+    <string name="faq_a_language">Mazeed → Zaban, jab chahein. Khaate par koi asar nahi parega.</string>
     <string name="faq_q_data">Mera data kahan rehta hai? Kya koi aur dekh sakta hai?</string>
     <string name="faq_a_data">Aap ke phone par, aur kahin nahi — siwaye iske ke aap backup karein, aur wo bhi aap hi ki Google Drive par jata hai, hamare paas nahi. Hum aap ke gahak, unke number, ya kisi ka hisaab kabhi nahi dekhte.</string>
     <string name="entry_date">Tareekh: %1$s</string>
@@ -1156,7 +1148,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pick_time">Waqt chunein</string>
     <string name="about_us">Taaruf</string>
     <string name="about_version">Version %1$s</string>
-    <string name="about_what">Dukan ke counter ka khata. Gahakon ke hisaab, rozana nakad, cheques, supplier bills aur qisten — jaise kaghaz par rakhe jate hain waise, aur usi zubaan mein jis mein dukan chalti hai. Ek dukaan ho ya kai, har ek ka apna khata.</string>
+    <string name="about_what">Dukaan ke counter ka khata. Gahakon ke hisaab, rozana nakad, cheques, supplier bills aur qisten — jaise kaghaz par rakhe jate hain waise, aur usi zubaan mein jis mein dukaan chalti hai. Ek dukaan ho ya kai, har ek ka apna khata.</string>
     <string name="about_privacy_title">Aap ka hisaab aap hi ka rehta hai</string>
     <string name="about_privacy_body">Sab kuch isi phone par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup bhi aap hi ki Google Drive par jata hai — hamare paas nahi.</string>
     <string name="about_privacy_policy">Privacy Policy</string>
@@ -1191,7 +1183,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="made_with_app">Roshan Khata</string>
     <string name="more_details">Note, maal ya wasooli shamil karein</string>
     <string name="back_to_amount">Raqam par wapas</string>
-    <string name="voice_entry">Bol kar indraj karein</string>
+    <string name="voice_entry">Bol kar indiraaj karein</string>
     <string name="voice_prompt">Aise kahein: Bilal ko paanch hazaar diye</string>
     <string name="voice_unavailable">Is phone mein awaaz pehchanne ka nizam nahi hai.</string>
     <string name="voice_language_missing">Aap ke phone mein ye zaban maujood nahi. %1$s mein sun raha hai.</string>
@@ -1201,7 +1193,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="voice_problem_title">Entry nahi ban saki</string>
     <string name="voice_no_party">Aap ke khate mein abhi koi gahak nahi. Pehle ek gahak shamil karein.</string>
     <string name="voice_no_amount">Is mein raqam nahi thi. Adad bhi kahein.</string>
-    <string name="voice_open_entry">Indraj kholein</string>
+    <string name="voice_open_entry">Indiraaj kholein</string>
     <string name="voice_which_party">%1$s — kaun sa gahak?</string>
     <plurals name="delete_parties_title">
         <item quantity="one">%1$d gaahak delete karein?</item>
@@ -1223,7 +1215,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="qr_scan_failed">Scanner nahi khul saka. Is ke liye Google Play services chahiye.</string>
     <string name="report_crash_included">— Technical crash record (khud-ba-khud aap ke phone par mehfooz, kharabi dhoondhne mein madad ke liye shamil):</string>
     <string name="products_stock">Products aur stock</string>
-    <string name="products_subtitle">Dukan kya bechti hai, aur kitna bacha hai</string>
+    <string name="products_subtitle">Dukaan kya bechti hai, aur kitna bacha hai</string>
     <string name="products_note">Ye hisaab sirf un entries ka hai jo kisi product se juri hain. Jo pehle likhi ja chuki hain, unhein neeche wale button se jorein.</string>
     <string name="no_products">Abhi koi product nahi. Neeche se purani entries jorein, ya jab kisi bill par naam likhenge to product khud ban jayega.</string>
     <string name="link_goods">Purani entries ko products se jorein</string>
@@ -1261,7 +1253,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="promo_window">Kis arse ka</string>
     <string name="promo_last_bought">aakhri baar %1$s</string>
     <string name="promo_send">Paigham</string>
-    <string name="promo_message">Assalam o Alaikum %1$s. %2$s dobara dukan par maujood hai. Zaroorat ho to bata dijiyega.</string>
+    <string name="promo_message">Assalam o Alaikum %1$s. %2$s dobara dukaan par maujood hai. Zaroorat ho to bata dijiyega.</string>
     <string name="no_promo_customers">Us arse mein kisi ne ye nahi khareeda.</string>
     <string name="window_same_season">Pichle saal isi mausam</string>
     <string name="window_last_year">Pichle 12 mahine</string>
@@ -1277,20 +1269,20 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pick_batch_clear">Kisi khaas batch se nahi</string>
     <string name="batch_chosen">Batch: %1$s</string>
     <string name="batch_remaining">%1$s baqi</string>
-    <string name="import_as_title">Kis tor par save karein</string>
+    <string name="import_as_title">Kis taur par save karein</string>
     <plurals name="import_as_message">
-        <item quantity="one">%1$d contact is tor par save hoga:</item>
-        <item quantity="other">%1$d contacts is tor par save honge:</item>
+        <item quantity="one">%1$d contact is taur par save hoga:</item>
+        <item quantity="other">%1$d contacts is taur par save honge:</item>
     </plurals>
     <string name="bill_to_customer_title">Ye party customer hai</string>
-    <string name="bill_to_customer_warn">%1$s customer ke tor par save hai, supplier nahi. Supplier bill un ke khate mein wo raqam likhti hai jo AAP ne dena hai. Agar wahi shakhs waqai aap ko maal deta hai to aage barhein — warna naam check kar lein.</string>
+    <string name="bill_to_customer_warn">%1$s customer ke taur par save hai, supplier nahi. Supplier bill un ke khate mein wo raqam likhti hai jo AAP ne dena hai. Agar wahi shakhs waqai aap ko maal deta hai to aage barhein — warna naam check kar lein.</string>
     <string name="bill_new_supplier_title">Naya supplier?</string>
     <string name="bill_new_supplier_msg">%1$s abhi aap ke khate mein nahi. Inhein supplier bana kar ye bill save karein?</string>
     <string name="bill_new_supplier_yes">Supplier bana kar save karein</string>
     <string name="change_party_type">Customer ya supplier</string>
     <string name="change_party_type_help">Ye sirf ye durust karta hai ke party kis qism ki hai. Khata, balance aur har bill jaise hain waise hi rahenge — koi raqam idhar udhar nahi hoti. Haan, ye tay karta hai ke product promotion list mein kaun aayega, kyunki us mein sirf customers aate hain.</string>
-    <string name="now_a_customer">Customer ke tor par mehfooz</string>
-    <string name="now_a_supplier">Supplier ke tor par mehfooz</string>
+    <string name="now_a_customer">Customer ke taur par mehfooz</string>
+    <string name="now_a_supplier">Supplier ke taur par mehfooz</string>
 
     <string name="father_name_optional">Walid ka naam (ikhtiyari)</string>
     <string name="village_optional">Gaon (ikhtiyari)</string>
@@ -1370,8 +1362,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="inspector_expired">EXPIRED</string>
     <string name="inspector_batch_prefix">Batch</string>
     <plurals name="inspector_gap_labels">
-        <item quantity="one">Stock mein %1$d product ki label tafseel mojood nahi</item>
-        <item quantity="other">Stock mein %1$d products ki label tafseel mojood nahi</item>
+        <item quantity="one">Stock mein %1$d product ki label tafseel maujood nahi</item>
+        <item quantity="other">Stock mein %1$d products ki label tafseel maujood nahi</item>
     </plurals>
     <plurals name="inspector_gap_expiry">
         <item quantity="one">%1$d batch ki expiry date darj nahi</item>
@@ -1379,7 +1371,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     </plurals>
     <!-- Sales & purchase register (date-ranged) -->
     <string name="register_title">Farokht o Khareed register</string>
-    <string name="register_subtitle">Aik muddat mein kya aaya, kya gaya</string>
+    <string name="register_subtitle">Ek muddat mein kya aaya, kya gaya</string>
     <string name="register_period_title">MUDDAT</string>
     <string name="register_download">PDF download karein</string>
     <string name="register_share">PDF share karein</string>
@@ -1404,7 +1396,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="rate_unit_mismatch">Ye rate %1$s ka hai, is liye %2$s par nahi lagaya.</string>
     <string name="entry_rate_hint">Rate</string>
     <string name="add_line">+ Aur item</string>
-    <string name="lines_total_fill">Items ka jor %1$s. Bharne ke liye dabayen.</string>
+    <string name="lines_total_fill">Items ka jor %1$s. Bharne ke liye dabayein.</string>
     <string name="lines_total_unknown">Kisi item ka rate nahi, is liye jor nahi ban sakta.</string>
     <string name="lines_total_need_qty">Jor ke liye miqdaar likhein.</string>
     <string name="lines_amount_less">Items %1$s · likha %2$s · %3$s kam</string>
@@ -1424,7 +1416,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="add_to_products">%1$s ko products list mein bhi daal dein</string>
     <string name="supplier_bill_button">Supplier bill banayein (maal, batch, expiry)</string>
     <string name="delete_pair_title">Is ka doosra hissa bhi mitayein?</string>
-    <string name="delete_pair_message">Ye entry aik naqd sauday ka aik hissa hai (%1$s). Sirf aik hissa mitane se balance ghalat ho jayega.</string>
+    <string name="delete_pair_message">Ye entry ek naqd sauday ka ek hissa hai (%1$s). Sirf ek hissa mitane se balance ghalat ho jayega.</string>
     <string name="delete_pair_both">Dono mitayein</string>
     <string name="delete_pair_one">Sirf ye</string>
 
@@ -1532,7 +1524,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_biz_cheques">Cheque jo abhi clear nahi hue</string>
     <string name="pdf_biz_cheques_note">Ye clear hone tak paisa nahi. Ye upar ke balance mein shamil nahi.</string>
     <string name="pdf_biz_cheque">Cheque</string>
-    <string name="pdf_biz_due"> \u00B7 due </string>
+    <string name="pdf_biz_due">" \u00B7 due "</string>
     <string name="pdf_biz_plans">Payment plans jo chal rahe hain</string>
     <string name="pdf_biz_paid_of">%2$s mein se %1$s</string>
     <string name="pdf_biz_expiring">Stock jo jald expire ho raha hai</string>
@@ -1541,7 +1533,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="one">%1$d din</item>
         <item quantity="other">%1$d din</item>
     </plurals>
-    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1581,13 +1573,13 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_how_to_read">Parhne ka tareeqa: miqdaar \u201Cis se zyada nahi\u201D hoti hai.</string>
     <string name="pdf_insp_how_1">Jo sale kisi batch se nahi jori gayi, wo us batch ko kam nahi karti, is liye</string>
     <string name="pdf_insp_how_2">dikhaya gaya stock shelf se zyada ho sakta hai. Dash ka matlab kabhi darj nahi hua.</string>
-    <string name="pdf_insp_sum_products">Kitaab par mojood products</string>
+    <string name="pdf_insp_sum_products">Kitaab par maujood products</string>
     <string name="pdf_insp_sum_batches">Stock mein batches</string>
     <string name="pdf_insp_sum_expired">Expire ho chuke, abhi bhi stock mein</string>
     <string name="pdf_insp_sum_expiring">%1$d din mein expire hone wale</string>
     <string name="pdf_insp_sum_no_expiry">Stock mein jin ki expiry darj nahi</string>
     <string name="pdf_insp_sum_incomplete">Products jin ki label tafseel adhoori hai</string>
-    <string name="pdf_insp_sec_current">Mojooda stock</string>
+    <string name="pdf_insp_sec_current">Maujooda stock</string>
     <string name="pdf_insp_sec_company">Company ke hisaab se stock</string>
     <string name="pdf_insp_sec_cont">%1$s (jari)</string>
     <string name="pdf_insp_no_movement">Abhi koi stock harkat darj nahi.</string>
@@ -1596,7 +1588,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_col_technical">TECHNICAL NAME</string>
     <string name="pdf_insp_col_form">FORM.</string>
     <string name="pdf_insp_col_reg">REG#</string>
-    <string name="pdf_insp_col_onhand">MOJOOD</string>
+    <string name="pdf_insp_col_onhand">MAUJOOD</string>
     <string name="pdf_insp_col_batch">BATCH</string>
     <string name="pdf_insp_col_supplier">SUPPLIER</string>
     <string name="pdf_insp_col_bill">BILL</string>
@@ -1607,7 +1599,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_no_batches">Stock mein koi batch nahi. Batch aur expiry supplier bill par darj hoti hai.</string>
     <string name="pdf_insp_missing_note">Neeche har product stock mein hai lekin us ke ek ya zyada label khane kabhi darj nahi hue.</string>
     <string name="pdf_insp_expired">EXPIRE HO CHUKA</string>
-    <string name="pdf_insp_expired_ago">EXPIRE HO CHUKA \u00B7 %1$d din pehle</string>
     <string name="pdf_insp_days_left">%1$d din baqi</string>
     <string name="pdf_insp_units_differ">units alag</string>
     <string name="pdf_insp_company_tag">COMPANY</string>
@@ -1626,7 +1617,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pdf_insp_as_of">Tareekh: %1$s</string>
     <string name="pdf_insp_col_in">AAYA</string>
     <string name="pdf_insp_col_out">GAYA</string>
-    <string name="pdf_insp_current_note">Aaya = bill par khareeda \u00B7 Gaya = becha \u00B7 Mojood = Aaya \u2212 Gaya</string>
+    <string name="pdf_insp_current_note">Aaya = bill par khareeda \u00B7 Gaya = becha \u00B7 Maujood = Aaya \u2212 Gaya</string>
     <string name="pdf_insp_no_total">Kul jora nahi: products alag alag unit mein gini jati hain.</string>
     <string name="pdf_insp_sec_batch_expiry">Batch aur expiry</string>
     <string name="pdf_insp_batch_expiry_note">Pehle expire ho chuka, phir %1$d din mein expire hone wala, phir baqi \u2014 har ek apne bill ke saath.</string>
@@ -1665,14 +1656,14 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_currency">Currency</string>
     <string name="bp_currency_help">Raqam ke saath likha nishaan, jaise Rs ya $. Raqam tabdeel nahi hoti.</string>
     <string name="bp_calendar">Taqweem</string>
-    <string name="bp_calendar_help">Lists, bills aur PDF mein tareekh kis tarah dikhe. Hijri tareekh hisaab se nikalti hai, chand dekh kar nahi, is liye aap ke ilaqe se aik din ka farq ho sakta hai. Mehfooz tareekhein nahi badaltin.</string>
+    <string name="bp_calendar_help">Lists, bills aur PDF mein tareekh kis tarah dikhe. Hijri tareekh hisaab se nikalti hai, chand dekh kar nahi, is liye aap ke ilaqe se ek din ka farq ho sakta hai. Mehfooz tareekhein nahi badaltin.</string>
     <string name="calendar_gregorian">Eeswi</string>
     <string name="calendar_hijri">Hijri (andaza)</string>
     <string name="calendar_jalali">Shamsi Hijri</string>
     <string name="currency_custom">Koi aur (khud likhein)…</string>
     <string name="currency_custom_hint">Nishaan, zyada se zyada 5 harf</string>
     <string name="bp_trade">Dukaan ka shoba</string>
-    <string name="bp_trade_help">Ye khata kis shobay ka hai. Jo features sirf aik shobay ke liye hain, woh isi ke mutabiq chalenge.</string>
+    <string name="bp_trade_help">Ye khata kis shobay ka hai. Jo features sirf ek shobay ke liye hain, woh isi ke mutabiq chalenge.</string>
     <string name="trade_agri">Zarat (zarai adwiyat, beej, feed)</string>
     <string name="trade_medical">Medical store</string>
     <string name="trade_mobile">Mobile ki dukaan</string>
@@ -1715,7 +1706,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bill_scan_camera">Tasveer khainchein</string>
     <string name="bill_scan_gallery">Gallery se chunein</string>
     <string name="bill_scan_reading">Bill parha ja raha hai…</string>
-    <string name="bill_scan_unavailable">Is phone par bill parhne ki sahulat abhi tayyar nahi. Aik minute ke liye internet chalayein taake Google Play services ise mukammal kar le, phir dobara koshish karein.</string>
+    <string name="bill_scan_unavailable">Is phone par bill parhne ki sahulat abhi tayyar nahi. Ek minute ke liye internet chalayein taake Google Play services ise mukammal kar le, phir dobara koshish karein.</string>
     <string name="bill_scan_nothing">Is tasveer se kuch kaam ka nahi parha ja saka. Bill ko achi roshni mein seedha rakhein, poori tasveer mein bill ho, aur dobara koshish karein. English mein chhape bill sab se behtar parhe jate hain.</string>
     <string name="bill_scan_found_title">Bill par ye mila</string>
     <string name="bill_scan_use">Ye istemal karein</string>
@@ -1744,15 +1735,15 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="payment_scan_use">Ye istemal karein</string>
     <string name="payment_scan_amount">Raqam: %1$s</string>
     <string name="payment_scan_reference">Ref: %1$s</string>
-    <string name="payment_scan_no_amount">Raqam yaqeeni tor par nahi parhi ja saki. Khud likhein.</string>
+    <string name="payment_scan_no_amount">Raqam yaqeeni taur par nahi parhi ja saki. Khud likhein.</string>
     <string name="bill_item_figures">%1$s × %2$s = %3$s</string>
     <string name="bill_items_tap_hint">Kisi item ko badalne ya hatane ke liye us par tap karein</string>
     <string name="label_guess_note">Kuch khane bill se bhare gaye hain (company, unit, qism, formulation). Save karne se pehle label se mila lein.</string>
     <string name="entry_make_invoice">Invoice</string>
     <string name="followup_promised">Wada: %1$s</string>
     <plurals name="followup_today">
-        <item quantity="one">Aaj %d ko yaad dihani</item>
-        <item quantity="other">Aaj %d ko yaad dihani</item>
+        <item quantity="one">Aaj %d ko yaad dehani</item>
+        <item quantity="other">Aaj %d ko yaad dehani</item>
     </plurals>
     <string name="view_bill_photo">Bill ki tasveer dekhein</string>
     <string name="bill_photo_missing">Is bill ki tasveer is phone par maujood nahi</string>
@@ -1775,7 +1766,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="entry_share_send">Bhejein</string>
     <string name="party_no_entry_share">Is customer ko entry WhatsApp par bhejne ka na poochein</string>
     <string name="bp_ask_share">Har entry WhatsApp par bhejne ka poochein</string>
-    <string name="bp_ask_share_help">Entry save karne ke baad aik chhoti patti customer ko bhejne ka poochegi. Send aap WhatsApp mein dabayenge.</string>
+    <string name="bp_ask_share_help">Entry save karne ke baad ek chhoti patti customer ko bhejne ka poochegi. Send aap WhatsApp mein dabayenge.</string>
     <string name="bp_pay_reminder">Reminder mein payment ki tafseel</string>
     <string name="bp_pay_reminder_help">Har payment reminder ke neeche aap ka mobile wallet aur bank account (Invoice settings se) lag jayega.</string>
     <string name="followup_send_all">Sab ko baari baari yaad dilayein</string>
@@ -1783,7 +1774,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="followup_queue_open">WhatsApp kholein</string>
     <string name="followup_queue_skip">Chhorein</string>
     <string name="followup_queue_stop">Rokein</string>
-    <string name="followup_queue_done">Mukammal — aaj %1$d reminders khole gaye</string>
     <string name="followup_queue_title">%2$d mein se %1$d</string>
     <string name="season_title">Fasal ka Hisaab</string>
     <string name="season_subtitle">Fasal ke hisaab se udhaar, nayi fasal pehle</string>
@@ -1794,7 +1784,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="season_harvest_kharif">Katai: Oct–Nov %1$d</string>
     <string name="season_back_out">Wapas %1$s · Abhi bahar %2$s</string>
     <string name="season_pace_none">%2$d mein se %1$d clear</string>
-    <string name="season_pace_before">%2$d mein se %1$d clear · aam tor par katai tak</string>
+    <string name="season_pace_before">%2$d mein se %1$d clear · aam taur par katai tak</string>
     <string name="season_all_clear">Is fasal ka sab ne hisaab saaf kar diya.</string>
     <string name="season_owing_title">%1$s ka abhi baqaya</string>
     <string name="season_rec_due">%1$s: %2$s baqaya</string>
@@ -1808,8 +1798,8 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
         <item quantity="other">%1$d customers · diya %2$s</item>
     </plurals>
     <plurals name="season_pace_after">
-        <item quantity="one">%2$d mein se %1$d clear · aam tor par katai ke %3$d din baad</item>
-        <item quantity="other">%2$d mein se %1$d clear · aam tor par katai ke %3$d din baad</item>
+        <item quantity="one">%2$d mein se %1$d clear · aam taur par katai ke %3$d din baad</item>
+        <item quantity="other">%2$d mein se %1$d clear · aam taur par katai ke %3$d din baad</item>
     </plurals>
     <plurals name="season_rec_after">
         <item quantity="one">%1$s: katai ke %2$d din baad clear</item>
@@ -1849,7 +1839,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="return_qty_hint">Wapas jane wali miqdar</string>
     <string name="return_rate_hint">Fi unit credit rate</string>
     <string name="return_total">Supplier se credit: %1$s</string>
-    <string name="return_help">Supplier ke khate mein diye gaye maal ke tor par save hoga: batch ka stock kam hoga aur aap ka baqaya bhi.</string>
+    <string name="return_help">Supplier ke khate mein diye gaye maal ke taur par save hoga: batch ka stock kam hoga aur aap ka baqaya bhi.</string>
     <string name="return_note">Wapsi: %1$s · batch %2$s</string>
     <string name="return_saved">Wapsi supplier ke khate mein save ho gayi</string>
     <string name="return_bad_qty">Shelf par maujood miqdar tak likhein</string>
@@ -1893,10 +1883,10 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="scheme_mark_claimed">Claim mil gaya</string>
     <string name="scheme_unmark_claimed">Claim abhi nahi mila</string>
     <string name="scheme_delete">Scheme delete karein</string>
-    <string name="scheme_delete_confirm">"%1$s" delete karein? Aap ke bills nahi badlenge.</string>
+    <string name="scheme_delete_confirm">“%1$s” delete karein? Aap ke bills nahi badlenge.</string>
     <string name="scheme_claim_hint">Wusool raqam (credit note / rebate)</string>
     <string name="scheme_need_name">Scheme ka naam likhein</string>
-    <string name="scheme_need_slab">Kam az kam aik target aur us ka inaam likhein</string>
+    <string name="scheme_need_slab">Kam az kam ek target aur us ka inaam likhein</string>
     <string name="scheme_bad_dates">Aakhri tareekh shuru se pehle hai</string>
     <plurals name="schemes_claims_due">
         <item quantity="one">%d claim baqi</item>
@@ -1923,7 +1913,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="backup_saved_flash">Backup ho gaya ✓</string>
     <!-- Helper's read-only phone (3 Oct 2026) -->
     <string name="viewer_title">Madadgar ka phone</string>
-    <string name="viewer_subtitle">Aik phone khata likhta hai. Baqi phone sirf dekhte hain.</string>
+    <string name="viewer_subtitle">Ek phone khata likhta hai. Baqi phone sirf dekhte hain.</string>
     <string name="viewer_on_note">Ye phone sirf malik ka khata dikhata hai. Yahan na kuch joda ja sakta hai, na badla, na mitaya, aur ye kabhi backup nahi karta. Har subah taaza copy lein.</string>
     <string name="viewer_refresh">Drive se taaza copy lein</string>
     <string name="viewer_refresh_file">Malik ki nayi file kholein</string>
@@ -1961,12 +1951,12 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="viewer_send_without_photos">Sirf hisaab (chhoti file)</string>
     <string name="viewer_loaded_no_photos">Malik ka khata load ho gaya, lekin tasveerein nahi khul sakin. Ab ye phone sirf dekhne wala hai.</string>
     <string name="drive_other_phone_title">Is dukaan ka backup doosre phone se hua hai</string>
-    <string name="drive_other_phone_body">Drive par mojood backup %1$s ko bana tha, aur is phone se nahi bana. Agar aage barhein to is phone ka khata us ki jagah le lega, aur jo entries sirf doosre phone par hui hain woh backup mein nahi rahengi.\n\nAik dukaan ka khata aik hi phone par likha jaye. Agar nayi entries doosre phone par hain to mansookh karein aur usi phone se backup lein.</string>
-    <string name="drive_other_phone_body_named">Drive par mojood backup doosre phone (%1$s) se %2$s ko bana tha. Agar aage barhein to is phone ka khata us ki jagah le lega, aur jo entries sirf doosre phone par hui hain woh backup mein nahi rahengi.\n\nAik dukaan ka khata aik hi phone par likha jaye. Agar nayi entries doosre phone par hain to mansookh karein aur usi phone se backup lein.</string>
+    <string name="drive_other_phone_body">Drive par maujood backup %1$s ko bana tha, aur is phone se nahi bana. Agar aage barhein to is phone ka khata us ki jagah le lega, aur jo entries sirf doosre phone par hui hain woh backup mein nahi rahengi.\n\nEk dukaan ka khata ek hi phone par likha jaye. Agar nayi entries doosre phone par hain to mansookh karein aur usi phone se backup lein.</string>
+    <string name="drive_other_phone_body_named">Drive par maujood backup doosre phone (%1$s) se %2$s ko bana tha. Agar aage barhein to is phone ka khata us ki jagah le lega, aur jo entries sirf doosre phone par hui hain woh backup mein nahi rahengi.\n\nEk dukaan ka khata ek hi phone par likha jaye. Agar nayi entries doosre phone par hain to mansookh karein aur usi phone se backup lein.</string>
     <string name="drive_other_phone_replace">Is phone ka khata rakhein</string>
     <string name="notif_backup_other_phone_title">Backup ruk gaya</string>
     <string name="notif_backup_other_phone_body">Is dukaan ka aakhri backup doosre phone se hua hai. Backup khol kar faisla karein ke kis phone ka khata rakhna hai.</string>
-    <string name="cash_paid_now">Paise abhi naqd mil gaye (\"I got\" bhi likhein)</string>
+    <string name="cash_paid_now">Paise abhi naqd mil gaye (\"Main Ne Liya\" bhi likhein)</string>
     <string name="cash_paid_recorded">%1$s naqd mil gaye. Sale aur wusooli dono likh di gayin.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">Akhbari</string>
@@ -1990,7 +1980,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="biz_tpl_salon">Salon</string>
     <string name="biz_tpl_solar">Solar</string>
     <string name="biz_card_qr_message_default">Salam, aap ka card dekh kar aaya hoon</string>
-    <string name="vocab_suggested">Aap ki dukan ke liye tajweez</string>
+    <string name="vocab_suggested">Aap ki dukaan ke liye tajweez</string>
     <string name="vocab_item_hint">Cheez (%1$s…)</string>
     <string name="vocab_unit_hint">Unit (%1$s…)</string>
     <string name="vocab_type_hint">Qism — %1$s</string>
@@ -2916,7 +2906,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="auto_folder_last">Wahan aakhri copy: %1$s</string>
     <string name="auto_folder_missing">Ye folder abhi dastiyab nahi. USB lagayein, ya koi aur folder chunein.</string>
     <string name="import_csv">Customers import karein</string>
-    <string name="import_csv_help">Kisi doosri khata app se customers layein: naam, phone aur balance wali CSV file. Har customer apne balance ke saath aik ibtidai entry ke taur par aayega.</string>
+    <string name="import_csv_help">Kisi doosri khata app se customers layein: naam, phone aur balance wali CSV file. Har customer apne balance ke saath ek ibtidai entry ke taur par aayega.</string>
     <string name="import_csv_found">File mein customers: %1$d · kul %2$s</string>
     <string name="import_csv_skipped">Pehle se khate mein, jon ke ton chhor diye: %1$d</string>
     <string name="import_csv_sign">Is file mein musbat balance ka matlab hai:</string>
@@ -2924,20 +2914,20 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="import_csv_i_owe">Main ne unhein dena hai</string>
     <string name="import_csv_go">Inhein le aayein</string>
     <string name="import_csv_done">Customers shamil huay: %1$d</string>
-    <string name="import_csv_empty">Is file se koi customer nahi parha ja saka. Is mein kam az kam naamon ka aik column hona chahiye.</string>
+    <string name="import_csv_empty">Is file se koi customer nahi parha ja saka. Is mein kam az kam naamon ka ek column hona chahiye.</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">Computer ko bhejein (WiFi)</string>
-    <string name="wifi_send_explain">Computer par Roshan Khata kholein aur “Phone se” dabayein, phir wahan dikhne wala code scan karein. Dono aik hi WiFi par hon. Kuch bhi internet par nahi jata.</string>
+    <string name="wifi_send_explain">Computer par Roshan Khata kholein aur “Phone se” dabayein, phir wahan dikhne wala code scan karein. Dono ek hi WiFi par hon. Kuch bhi internet par nahi jata.</string>
     <string name="wifi_send_button">Computer ka code scan karein</string>
     <string name="wifi_send_not_computer">Ye Roshan Khata computer ka code nahi hai.</string>
     <string name="wifi_send_sending">Computer ko bhej rahe hain…</string>
     <string name="wifi_send_done">Bhej diya. Computer par dekh kar wahin tasdeeq karein to khata aa jayega.</string>
     <string name="wifi_send_refused">Computer ne nahi liya. Us ki “Phone se” wali khirki band kar ke dobara kholein aur naya code scan karein.</string>
-    <string name="wifi_send_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono aik hi WiFi par hain, computer par “Phone se” wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
+    <string name="wifi_send_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono ek hi WiFi par hain, computer par “Phone se” wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
     <string name="wifi_pc_button">Phone se</string>
     <string name="wifi_pc_title">Aap ke phone se, WiFi ke zariye</string>
-    <string name="wifi_pc_steps">Phone par: Backup → Computer ka code scan karein, aur is code par rakhein. Dono aik hi WiFi par hon. Kuch bhi internet par nahi jata, aur aap ki haan ke baghair yahan kuch nahi badalta.</string>
+    <string name="wifi_pc_steps">Phone par: Backup → Computer ka code scan karein, aur is code par rakhein. Dono ek hi WiFi par hon. Kuch bhi internet par nahi jata, aur aap ki haan ke baghair yahan kuch nahi badalta.</string>
     <string name="wifi_pc_waiting">Phone ka intezar hai…</string>
     <string name="wifi_pc_no_network">Ye computer kisi network par nahi hai. Ise dukaan ke WiFi se joRein aur ye khirki dobara kholein.</string>
     <string name="wifi_pc_firewall">Agar Windows poochhe to Roshan Khata ko private network ki ijazat dein.</string>
@@ -3005,7 +2995,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="pos_today_count">Aaj %1$d sales</string>
     <string name="pos_today_total">Aaj %1$s</string>
     <string name="pos_recent">Haliya sales</string>
-    <string name="pos_err_no_lines">Kam az kam aik item shamil karein</string>
+    <string name="pos_err_no_lines">Kam az kam ek item shamil karein</string>
     <string name="pos_err_quantity">Miqdar sifar se zyada honi chahiye</string>
     <string name="pos_err_rate">Rate manfi nahi ho sakta</string>
     <string name="pos_err_discount">Riayat line se zyada hai</string>
@@ -3036,7 +3026,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="products_import_clash">%1$d qataron ka barcode kisi aur product par pehle se hai — wo code chhor diye jayenge</string>
     <string name="products_import_none">Is file mein koi product nahi mili</string>
     <string name="products_imported">%1$d products shamil, %2$d update</string>
-    <string name="products_labels_assign">%1$d products ka barcode nahi — unhein dukan ka apna (EAN-13) de kar print karein?</string>
+    <string name="products_labels_assign">%1$d products ka barcode nahi — unhein dukaan ka apna (EAN-13) de kar print karein?</string>
     <string name="products_labels_none">Label print karne ke liye koi product nahi</string>
     <string name="label_sheet_title">Barcode label</string>
 
@@ -3114,7 +3104,6 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="stock_count_title">Stock ginein</string>
     <string name="stock_count_help">Shelf par jo hai wo likhein; sirf farq likha jayega, sath kitab ka hindsa</string>
     <string name="stock_counted_hint">Gina</string>
-    <string name="stock_count_saved">%1$d durustgiyan likhi gayin</string>
     <string name="stock_adjust">Stock durust karein</string>
     <string name="adjust_qty_hint">Miqdar (+ andar, − bahar)</string>
     <string name="adjust_reason">Wajah</string>
@@ -3435,7 +3424,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="bp_country">Mulk</string>
     <string name="bp_country_help">WhatsApp ka country code, tax number ka naam, hafte ka pehla din aur calendar isi se tay hote hain. Raqmein kabhi nahi badalteen.</string>
     <string name="country_other">Deegar</string>
-    <string name="country_ask_title">Aap ki dukan kis mulk mein hai?</string>
+    <string name="country_ask_title">Aap ki dukaan kis mulk mein hai?</string>
     <string name="country_ask_body">App isay WhatsApp number, tax number ke naam aur hafte ke liye istemal karti hai. Baad mein Business Profile se badal sakte hain.</string>
     <string name="poster_national_day">Qaumi din</string>
 
@@ -3469,7 +3458,7 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     </plurals>
     <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
     <string name="live_title">Computer ke saath live sync</string>
-    <string name="live_explain">Phone aur computer ek hi khata rakhte hain, jo har chand second mein taaza hota hai jab dono dukan ke WiFi par hon aur Roshan Khata khula ho. Jab tak “Internet se bhi” on na ho, kuch bhi internet par nahi jaata.</string>
+    <string name="live_explain">Phone aur computer ek hi khata rakhte hain, jo har chand second mein taaza hota hai jab dono dukaan ke WiFi par hon aur Roshan Khata khula ho. Jab tak “Internet se bhi” on na ho, kuch bhi internet par nahi jaata.</string>
     <string name="live_join">Computer se jorein</string>
     <string name="live_stop">Live sync band karein</string>
     <string name="live_stop_confirm">Is device par live sync band karein? Khata bilkul waisa hi rahega.</string>
@@ -3478,11 +3467,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_status_waiting">Khata computer tak pohanch gaya. Jorr mukammal karne ke liye wahan haan dabayein.</string>
     <string name="live_status_live">%1$s ke saath live. Aakhri update: %2$s</string>
     <string name="live_status_unreachable">Computer jawab nahi de raha. Kya dono ek hi WiFi par hain, aur kya us par Roshan Khata khula hai?</string>
-    <string name="live_status_relay_down">Dukan ke WiFi se door hain, aur internet wale relay ne jawab nahi diya (%1$s). Phone koshish karta rahega; dukan par WiFi is ke baghair chalta hai.</string>
+    <string name="live_status_relay_down">Dukaan ke WiFi se door hain, aur internet wale relay ne jawab nahi diya (%1$s). Phone koshish karta rahega; dukaan par WiFi is ke baghair chalta hai.</string>
     <string name="live_pc_relay_ok">Internet wala relay: chal raha hai (aakhri round %1$s).</string>
-    <string name="live_pc_relay_down">Internet wala relay: jawab nahi de raha (%1$s). Dukan par WiFi is ke baghair chalta hai.</string>
+    <string name="live_pc_relay_down">Internet wala relay: jawab nahi de raha (%1$s). Dukaan par WiFi is ke baghair chalta hai.</string>
     <string name="live_pair_other_phone">Ye khata pehle hi phone “%1$s” ke saath chal raha hai. Sab badalne se wo phone ruk jayega. Ek khata = ek phone aur ek computer: dono phone rakhne hon to is phone ko naye karobar ke taur par jorein.</string>
-    <string name="na_sync_conflict">%1$s indraj dono devices par ek saath badle gaye</string>
+    <string name="na_sync_conflict">%1$s indiraaj dono devices par ek saath badle gaye</string>
     <string name="na_sync_conflict_sub">Rakhi gayi raqam shayad wo na ho jo aap chahte the. Live sync → Kya badla dekhein.</string>
     <string name="live_status_update_both">Doosre device par app ka naya version hai (%1$s). Is device ko update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
     <string name="live_status_key_busy">Is device ke key store ne jawab nahi diya (%1$s). Kuch nahi badla; thori der mein dobara koshish hogi.</string>
@@ -3492,15 +3481,11 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_status_failed">Live sync ruk gaya: %1$s</string>
     <string name="live_mismatch">Dono khate aapas mein nahi milte. Nayi copy ke liye dobara jorein.</string>
     <string name="live_sent">Bhej diya. Computer par haan dabayein taake us ka khata is phone ke khate se badal jaye.</string>
-    <string name="live_receive">Dukan ka khata is phone par lein</string>
-    <string name="live_receive_steps">Jis phone par dukan ka khata hai us par Backup → Live sync → Jorein kholein aur yeh code scan karein. Dono phone ek hi WiFi par hon. Yeh khirki 15 minute intezar karti hai.</string>
-    <string name="live_receive_offer">“%1$s” is phone ko dukan ka khata dena chahta hai.
-
-Code: %2$s — yahi chaar hindse us phone par bhi nazar aane chahiyein.
-
-Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone internet relay ke zariye ek hi khata mil kar rakhenge.</string>
-    <string name="live_receive_done">Ho gaya. Yeh phone ab dukan ka khata us ke doosre devices ke saath rakhta hai.</string>
-    <string name="live_receive_no_wifi">Yeh phone kisi WiFi par nahi hai. Dukan ke WiFi se jurein aur dobara koshish karein.</string>
+    <string name="live_receive">Dukaan ka khata is phone par lein</string>
+    <string name="live_receive_steps">Jis phone par dukaan ka khata hai us par Backup → Live sync → Jorein kholein aur yeh code scan karein. Dono phone ek hi WiFi par hon. Yeh khirki 15 minute intezar karti hai.</string>
+    <string name="live_receive_offer">“%1$s” is phone ko dukaan ka khata dena chahta hai.\n\nCode: %2$s — yahi chaar hindse us phone par bhi nazar aane chahiyein.\n\nIs phone ka apna khata dukaan ke khate se badal jaye ga. Is ke baad phone internet relay ke zariye ek hi khata mil kar rakhenge.</string>
+    <string name="live_receive_done">Ho gaya. Yeh phone ab dukaan ka khata us ke doosre devices ke saath rakhta hai.</string>
+    <string name="live_receive_no_wifi">Yeh phone kisi WiFi par nahi hai. Dukaan ke WiFi se jurein aur dobara koshish karein.</string>
     <string name="live_sent_phone">Bhej diya. Doosre phone par haan dabayein taake woh yeh khata le le. Phir dono phone internet relay ke zariye milenge.</string>
     <string name="live_not_live_code">Yeh live sync ka code nahi. Computer par Live sync kholein aur wahan dikhne wala code scan karein.</string>
     <string name="live_pc_steps">Phone par Backup → Computer ke saath live sync → Computer se jorein kholein aur yeh code scan karein. Aap ki haan ke baad phone ka khata yahan naye business ke taur par khulega (is computer ka apna khata waisa hi rahega), aur phir dono ek jaise rahenge.</string>
@@ -3526,6 +3511,19 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="live_status_not_accepted">Computer ne waqt par haan nahi ki. Jorne ke liye us ka live sync code dobara scan karein.</string>
     <string name="live_status_not_here">Computer ne jawab diya, magar is waqt yeh khata us par nahi rakha hua. Computer par is khate ka business kholein.</string>
     <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
-    <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
+    <string name="live_relay_help">Jab phone dukaan ke WiFi se door ho to us ki tabdeeliyan Innovation-313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d durustgi likhi gayi</item>
+        <item quantity="other">%1$d durustgiyan likhi gayin</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">Mukammal — aaj %1$d reminder khola gaya</item>
+        <item quantity="other">Mukammal — aaj %1$d reminders khole gaye</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">EXPIRE HO CHUKA \u00B7 %1$d din pehle</item>
+        <item quantity="other">EXPIRE HO CHUKA \u00B7 %1$d din pehle</item>
+    </plurals>
+    <string name="voice_language_missing_phone">Aap ke phone mein ye zaban maujood nahi. Phone ki apni zaban mein sun raha hai.</string>
 </resources>

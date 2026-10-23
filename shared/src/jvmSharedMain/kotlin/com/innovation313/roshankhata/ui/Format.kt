@@ -196,7 +196,9 @@ object Format {
         if (item.isEmpty() && quantity == null) return null
 
         val qtyPart = quantity?.let { q ->
-            val n = if (q % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, q) else "%,.2f".format(Digits.FIGURES, q)
+            // Grouped as the reader groups, as [money] is (23 Oct: Indonesian "1,500 karung" beside
+            // "Rp 1.500" read as one and a half).
+            val n = groupedForReader(if (q % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, q) else "%,.2f".format(Digits.FIGURES, q))
             // The unit in the app's language; what is saved is its key.
             val u = UnitWords.label(unit)
             if (u.isEmpty()) n else "$n $u"
@@ -221,8 +223,11 @@ object Format {
      * it twice.
      */
     fun qty(quantity: Double, unit: String?): String {
-        val n = if (quantity % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, quantity)
-        else "%,.2f".format(Digits.FIGURES, quantity)
+        // Grouped as the reader groups, as [money] is (23 Oct, Indonesian).
+        val n = groupedForReader(
+            if (quantity % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, quantity)
+            else "%,.2f".format(Digits.FIGURES, quantity)
+        )
         val u = UnitWords.label(unit)
         return if (u.isEmpty()) n else "$n $u"
     }

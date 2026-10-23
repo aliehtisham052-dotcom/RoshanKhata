@@ -93,7 +93,7 @@ fun EntryEditor(
     var at by remember { mutableStateOf(existing?.timestamp ?: System.currentTimeMillis()) }
     var item by remember { mutableStateOf(existingItem?.itemName.orEmpty()) }
     var qty by remember { mutableStateOf(existingItem?.quantity?.let { Calc.trim(it) }.orEmpty()) }
-    var unit by remember { mutableStateOf(existingItem?.unit.orEmpty()) }
+    var unit by remember { mutableStateOf(com.innovation313.roshankhata.data.UnitWords.label(existingItem?.unit)) }
     var rate by remember { mutableStateOf(existingItem?.rate?.let { Calc.trim(it) }.orEmpty()) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var qarz by remember { mutableStateOf(existing?.isQarzeHasna ?: false) }
@@ -244,7 +244,7 @@ fun EntryEditor(
                 val goods = item.trim().takeIf { it.isNotEmpty() }?.let {
                     EntryItem(
                         id = 0, entryId = existing?.id ?: 0, itemName = it, quantity = q,
-                        unit = unit.trim().ifEmpty { null }, rate = r, productId = existingItem?.takeIf { e -> e.itemName == it }?.productId,
+                        unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit), rate = r, productId = existingItem?.takeIf { e -> e.itemName == it }?.productId,
                         billItemId = if (isSale) batchId?.takeIf { id -> batches.any { b -> b.id == id } || id == existingItem?.billItemId } else null
                     )
                 }

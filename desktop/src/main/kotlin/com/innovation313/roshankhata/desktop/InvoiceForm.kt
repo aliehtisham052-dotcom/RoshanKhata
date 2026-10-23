@@ -270,7 +270,7 @@ private fun InvoiceLineForm(onAdd: (InvoiceItem) -> Unit) {
     val q = Calc.evalAmount(qty)
     val r = Calc.evalPad(rate)
     FillButton(word(W.add_item), c.brandGreen, enabled = name.isNotBlank() && q != null && r != null && r >= 0) {
-        onAdd(InvoiceItem(invoiceId = 0, itemName = name.trim(), quantity = q!!, unit = unit.trim().ifEmpty { null }, rate = r!!))
+        onAdd(InvoiceItem(invoiceId = 0, itemName = name.trim(), quantity = q!!, unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit), rate = r!!))
         name = ""; qty = "1"; unit = ""; rate = ""
     }
 }

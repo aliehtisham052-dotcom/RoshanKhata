@@ -78,7 +78,10 @@ object PosterWords {
     }
 
     private fun amPm(ctx: Context, minutes: Int): String {
-        val ap = DateFormatSymbols.getInstance(locale(ctx)).amPmStrings
+        // The app's own pair first (DateWords), as the app's date lines print it; the phone's tables only
+        // where the language has none of its own there (23 Oct 2026, the review).
+        val l = locale(ctx)
+        val ap = com.innovation313.roshankhata.data.DateWords.amPm(l) ?: DateFormatSymbols.getInstance(l).amPmStrings
         return ap[if (minutes / 60 % 24 < 12) 0 else 1]
     }
 
@@ -115,8 +118,11 @@ object PosterWords {
     fun day(ctx: Context, calDay: Int, short: Boolean = false): String {
         if (style(ctx) == Style.ROMAN) return ROMAN_DAYS.getValue(calDay)
         val l = locale(ctx)
-        val sym = DateFormatSymbols.getInstance(l)
         val shortOk = l.language == "en" || l.language == "in" || l.language == "id"
+        // The whole word from the app's own tables (DateWords) where it has them: an older phone
+        // has no Sindhi data and printed Latin day names in a Sindhi panel (23 Oct 2026, the review).
+        if (!(short && shortOk)) com.innovation313.roshankhata.data.DateWords.weekday(l, calDay)?.let { return it }
+        val sym = DateFormatSymbols.getInstance(l)
         return (if (short && shortOk) sym.shortWeekdays[calDay] else sym.weekdays[calDay]).trim()
     }
 

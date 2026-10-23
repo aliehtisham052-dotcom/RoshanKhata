@@ -64,7 +64,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
                 )
                 val table = shown.map { r ->
                     listOfNotNull(
-                        r.name + (r.unit?.let { " ($it)" } ?: ""),
+                        r.name + (com.innovation313.roshankhata.data.UnitWords.label(r.unit).let { u -> if (u.isEmpty()) "" else " ($u)" }),
                         if (cols.cash) r.cash?.let { Format.money(it) } ?: "–" else null,
                         if (cols.credit) r.credit?.let { Format.money(it) } ?: "–" else null
                     )

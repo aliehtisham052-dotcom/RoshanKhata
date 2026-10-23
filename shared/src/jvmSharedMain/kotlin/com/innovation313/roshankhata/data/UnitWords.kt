@@ -112,6 +112,31 @@ object UnitWords {
     // phone (TradeVocab, SQLite): app data/UnitWordsAndroid.kt.
 
     /**
+     * The UPDATEs that turn units saved as one of the app's own labels into
+     * their key, one per table in [STORED_IN], touching only rows whose unit
+     * is exactly such a label; a key, an empty unit and the owner's own words
+     * are not rows they match. Run once per opening of a book, each on its
+     * own and never fatal — by the phone (normalizeStored) and, since 23 Oct
+     * 2026, by the computer's DesktopDatabase too, which until then never
+     * repaired a book whose Windows forms had saved "بوری" for "bag".
+     *
+     * English keys are deliberately not in the list: "bag" is already right,
+     * and "Bag" typed by hand is left as the owner wrote it (the app has
+     * always compared units without regard to letter case).
+     */
+    fun normalizeStatements(): List<String> {
+        val pairs = TO_KEY.filter { (label, key) -> label != key }
+        if (pairs.isEmpty()) return emptyList()
+        val quoted = { s: String -> "'" + s.replace("'", "''") + "'" }
+        val cases = pairs.entries.joinToString(" ") { (label, key) -> "WHEN ${quoted(label)} THEN ${quoted(key)}" }
+        val labels = pairs.keys.joinToString(", ") { quoted(it) }
+        return STORED_IN.map { (table, column) ->
+            "UPDATE $table SET $column = CASE lower(trim($column)) $cases ELSE $column END " +
+                "WHERE $column IS NOT NULL AND lower(trim($column)) IN ($labels)"
+        }
+    }
+
+    /**
      * What to SAVE or COMPARE for a unit the owner typed or picked: the key
      * when the text is a key or any language's word for one, otherwise the
      * text itself, trimmed. Null for nothing typed.

@@ -130,9 +130,7 @@
     <string name="add_party">पार्टी जोड़ें</string>
     <string name="add_party_duplicate_with_phone">मिलता-जुलता ग्राहक पहले से है: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">मिलता-जुलता ग्राहक पहले से है: %1$s</string>
-    <string name="no_parties_yet">अभी कोई ग्राहक नहीं।
-
-पहला ग्राहक जोड़ें और अपना खाता शुरू करें।</string>
+    <string name="no_parties_yet">अभी कोई ग्राहक नहीं।\n\nपहला ग्राहक जोड़ें और अपना खाता शुरू करें।</string>
     <string name="no_entries_yet">अभी कोई एंट्री नहीं।</string>
 
     <string name="i_gave">मैंने दिए</string>
@@ -605,9 +603,9 @@
         <item quantity="other">Drive पर %1$d बिज़नेस</item>
     </plurals>
     <string name="drive_restore_all">सब रीस्टोर करें</string>
-    <string name="drive_restore_all_warning">ये बिज़नेस Drive से रीस्टोर होंगे, और इस फ़ोन में इनका जो कुछ है वह बदल जाएगा: %1$s</string>
-    <string name="drive_restored_these">रीस्टोर हुए: %1$s</string>
-    <string name="drive_restore_missed">रीस्टोर नहीं हो सके: %1$s</string>
+    <string name="drive_restore_all_warning">ये बिज़नेस Drive से रीस्टोर होंगे, और इस फ़ोन में इनका जो कुछ है वह बदल जाएगा:\n\n%1$s</string>
+    <string name="drive_restored_these">रीस्टोर हुए:\n%1$s</string>
+    <string name="drive_restore_missed">रीस्टोर नहीं हो सके:\n%1$s</string>
     <string name="business_numbered">बिज़नेस %1$d</string>
     <string name="backup_for_business">बैकअप हो रहा है: %1$s</string>
     <string name="snapshots_title">रोज़ की कॉपियाँ</string>
@@ -880,7 +878,7 @@
     <string name="drive_auto_backup">ऑटोमैटिक बैकअप</string>
     <string name="drive_auto_backup_hint">खाता बदलते ही अपने आप बैकअप लेता है — Wi-Fi पर ज़्यादा से ज़्यादा हर 30 मिनट, मोबाइल डेटा पर हर 6 घंटे। आप फिर भी कभी भी बैकअप ले सकते हैं।</string>
     <string name="auto_backup_offer_title">अपने आप बैकअप ले?</string>
-    <string name="auto_backup_offer_body">आपका अकाउंट जुड़ गया है। रोशन खाता आपका खाता बदलते ही खुद अपलोड कर सकता है, ताकि फ़ोन खोने या टूटने पर रिकॉर्ड साथ न जाए। इसे इस स्क्रीन से कभी भी बदल सकते हैं।</string>
+    <string name="auto_backup_offer_body">आपका अकाउंट जुड़ गया है। रोशन खाता आपका खाता बदलते ही खुद अपलोड कर सकता है, ताकि फ़ोन खोने या टूटने पर रिकॉर्ड साथ न जाए।\n\nइसे इस स्क्रीन से कभी भी बदल सकते हैं।</string>
     <string name="auto_backup_offer_yes">चालू करें</string>
     <string name="auto_backup_offer_no">अभी नहीं</string>
     <string name="drive_restore">Drive से रीस्टोर करें</string>
@@ -1178,7 +1176,7 @@
     <string name="faq_q_hide">कोई पास खड़ा हो तो क्या बैलेंस छुपा सकता हूँ?</string>
     <string name="faq_a_hide">होम स्क्रीन पर बैलेंस के पास आँख के निशान पर टैप करें। दोबारा टैप करने तक यह हर जगह छुपा रहता है।</string>
     <string name="faq_q_percent">क्या रकम के खाने में ही छूट का हिसाब कर सकता हूँ?</string>
-    <string name="faq_a_percent">हाँ। हिसाब सीधे लिखें — 1200-15%% से 1020 आता है, और 500*32%% से 160। यह हर रकम के खाने और कैलकुलेटर में चलता है।</string>
+    <string name="faq_a_percent" formatted="false">हाँ। हिसाब सीधे लिखें — 1200-15% से 1020 आता है, और 500*32% से 160। यह हर रकम के खाने और कैलकुलेटर में चलता है।</string>
     <string name="faq_q_delete">मैंने गलती से ग्राहक मिटा दिया।</string>
     <string name="faq_a_delete">होम स्क्रीन पर रीसायकल बिन। मिटाए गए ग्राहक और एंट्रियाँ वहाँ रहती हैं और वापस लाई जा सकती हैं।</string>
     <string name="faq_q_language">क्या बाद में भाषा बदल सकता हूँ?</string>
@@ -1573,7 +1571,7 @@
     <string name="pdf_biz_cheques">जो चेक अभी क्लियर नहीं हुए</string>
     <string name="pdf_biz_cheques_note">क्लियर होने तक ये पैसा नहीं हैं। ये ऊपर के बैलेंस में शामिल नहीं।</string>
     <string name="pdf_biz_cheque">चेक</string>
-    <string name="pdf_biz_due"> \u00B7 देय </string>
+    <string name="pdf_biz_due">" \u00B7 देय "</string>
     <string name="pdf_biz_plans">चल रहे भुगतान प्लान</string>
     <string name="pdf_biz_paid_of">%2$s में से %1$s</string>
     <string name="pdf_biz_expiring">जल्द एक्सपायर होने वाला स्टॉक</string>
@@ -1582,7 +1580,7 @@
         <item quantity="one">%1$d दिन</item>
         <item quantity="other">%1$d दिन</item>
     </plurals>
-    <string name="pdf_biz_batch">बैच %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"बैच %1$s \u00B7 "</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">बिक्री और खरीद रजिस्टर</string>
@@ -1650,7 +1648,6 @@
     <string name="pdf_insp_no_batches">स्टॉक में कोई बैच नहीं। बैच और एक्सपायरी सप्लायर बिल में लिखी जाती है।</string>
     <string name="pdf_insp_missing_note">नीचे का हर प्रोडक्ट स्टॉक में है और उसके लेबल का कोई खाना कभी नहीं भरा गया।</string>
     <string name="pdf_insp_expired">एक्सपायर</string>
-    <string name="pdf_insp_expired_ago">एक्सपायर \u00B7 %1$d दिन पहले</string>
     <string name="pdf_insp_days_left">%1$d दिन बाकी</string>
     <string name="pdf_insp_units_differ">इकाइयाँ अलग हैं</string>
     <string name="pdf_insp_company_tag">कंपनी</string>
@@ -1827,7 +1824,6 @@
     <string name="followup_queue_open">WhatsApp खोलें</string>
     <string name="followup_queue_skip">छोड़ें</string>
     <string name="followup_queue_stop">रोकें</string>
-    <string name="followup_queue_done">हो गया — आज %1$d रिमाइंडर खोले</string>
     <string name="followup_queue_title">%2$d में से %1$d</string>
     <string name="season_title">फ़सल का हिसाब</string>
     <string name="season_subtitle">फ़सल के सीज़न के हिसाब से उधार, नया पहले</string>
@@ -3158,7 +3154,6 @@
     <string name="stock_count_title">स्टॉक गिनें</string>
     <string name="stock_count_help">शेल्फ़ पर जो है वह लिखें; सिर्फ़ अंतर लिखा जाएगा, साथ में बही का आँकड़ा</string>
     <string name="stock_counted_hint">गिना</string>
-    <string name="stock_count_saved">%1$d सुधार लिखे गए</string>
     <string name="stock_adjust">स्टॉक सुधारें</string>
     <string name="adjust_qty_hint">मात्रा (+ अंदर, − बाहर)</string>
     <string name="adjust_reason">कारण</string>
@@ -3538,11 +3533,7 @@
     <string name="live_sent">भेज दिया। कंप्यूटर पर हाँ दबाएँ ताकि उसका खाता इस फ़ोन के खाते से बदल जाए।</string>
     <string name="live_receive">दुकान का खाता इस फ़ोन पर लें</string>
     <string name="live_receive_steps">जिस फ़ोन पर दुकान का खाता है, उस पर बैकअप → लाइव सिंक → जोड़ें खोलें और यह कोड स्कैन करें। दोनों फ़ोन एक ही वाई-फ़ाई पर हों। यह खिड़की 15 मिनट इंतज़ार करती है।</string>
-    <string name="live_receive_offer">“%1$s” इस फ़ोन को दुकान का खाता देना चाहता है।
-
-कोड: %2$s — यही चार अंक उस फ़ोन पर भी दिखने चाहिए।
-
-इस फ़ोन का अपना खाता दुकान के खाते से बदल जाएगा। इसके बाद फ़ोन इंटरनेट रिले के ज़रिए एक ही खाता मिलकर रखेंगे।</string>
+    <string name="live_receive_offer">“%1$s” इस फ़ोन को दुकान का खाता देना चाहता है।\n\nकोड: %2$s — यही चार अंक उस फ़ोन पर भी दिखने चाहिए।\n\nइस फ़ोन का अपना खाता दुकान के खाते से बदल जाएगा। इसके बाद फ़ोन इंटरनेट रिले के ज़रिए एक ही खाता मिलकर रखेंगे।</string>
     <string name="live_receive_done">हो गया। यह फ़ोन अब दुकान का खाता उसके दूसरे डिवाइसों के साथ रखता है।</string>
     <string name="live_receive_no_wifi">यह फ़ोन किसी वाई-फ़ाई पर नहीं है। दुकान के वाई-फ़ाई से जुड़ें और फिर कोशिश करें।</string>
     <string name="live_sent_phone">भेज दिया। दूसरे फ़ोन पर हाँ दबाएँ ताकि वह यह खाता ले ले। फिर दोनों फ़ोन इंटरनेट रिले के ज़रिए मिलेंगे।</string>
@@ -3570,6 +3561,19 @@
     <string name="live_status_not_accepted">कंप्यूटर ने समय पर हाँ नहीं की। जोड़ने के लिए उसका लाइव सिंक कोड फिर से स्कैन करें।</string>
     <string name="live_status_not_here">कंप्यूटर ने जवाब दिया, पर इस समय यह खाता उस पर नहीं है। कंप्यूटर पर इस खाते का व्यवसाय खोलें।</string>
     <string name="live_status_relay">%1$s के साथ इंटरनेट से लाइव। आख़िरी अपडेट: %2$s</string>
-    <string name="live_relay_help">जब फ़ोन दुकान के वाई-फ़ाई से दूर हो, उसके बदलाव Innovation 313 के रिले से जाते हैं, इस खाते की अपनी चाबी से बंद: रिले उन्हें पढ़ नहीं सकता, और ज़्यादा से ज़्यादा 7 दिन रखता है। दोनों डिवाइस के लिए एक ही स्विच। ऐप बंद हो तो Google का Firebase फ़ोन को सिर्फ़ इतना बताता है कि कुछ इंतज़ार में है; खाते की कोई चीज़ उसके पास नहीं जाती।</string>
+    <string name="live_relay_help">जब फ़ोन दुकान के वाई-फ़ाई से दूर हो, उसके बदलाव Innovation-313 के रिले से जाते हैं, इस खाते की अपनी चाबी से बंद: रिले उन्हें पढ़ नहीं सकता, और ज़्यादा से ज़्यादा 7 दिन रखता है। दोनों डिवाइस के लिए एक ही स्विच। ऐप बंद हो तो Google का Firebase फ़ोन को सिर्फ़ इतना बताता है कि कुछ इंतज़ार में है; खाते की कोई चीज़ उसके पास नहीं जाती।</string>
     <string name="live_relay">इंटरनेट से भी</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d सुधार लिखा गया</item>
+        <item quantity="other">%1$d सुधार लिखे गए</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">हो गया — आज %1$d रिमाइंडर खोला</item>
+        <item quantity="other">हो गया — आज %1$d रिमाइंडर खोले</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">एक्सपायर \u00B7 %1$d दिन पहले</item>
+        <item quantity="other">एक्सपायर \u00B7 %1$d दिन पहले</item>
+    </plurals>
+    <string name="voice_language_missing_phone">आपके फ़ोन में वह भाषा नहीं है। फ़ोन की अपनी भाषा में सुना जा रहा है।</string>
 </resources>

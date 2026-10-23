@@ -103,6 +103,22 @@ object DateWords {
     )
 
     /**
+     * A weekday's whole name from the app's own tables (Calendar.SUNDAY = 1
+     * … Calendar.SATURDAY = 7), or null where the language has none here
+     * (English, which the phone's own tables always carry). For the poster
+     * (23 Oct 2026, the review): an older phone without Sindhi data printed
+     * Latin "Mon" in a Sindhi panel.
+     */
+    fun weekday(locale: Locale, calDay: Int): String? {
+        val roman = locale.language.equals("ur", ignoreCase = true) && locale.script.equals("Latn", ignoreCase = true)
+        val days = if (roman) ROMAN_WEEKDAYS else WEEKDAYS[keyOf(locale)]
+        return days?.getOrNull(calDay - 1)
+    }
+
+    /** Before noon and after noon in [locale]'s own words, or null where AM/PM is right. */
+    fun amPm(locale: Locale): Array<String>? = AM_PM[keyOf(locale)]?.copyOf()
+
+    /**
      * Which table a locale reads from: its language, except that Roman Urdu
      * (ur written in Latin letters) reads English, and Indonesian answers to
      * both of its codes ("id", and Android's old "in").

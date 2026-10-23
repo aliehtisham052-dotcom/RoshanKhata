@@ -43,6 +43,10 @@
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>
+        <!-- The recogniser's language list (RecognizerIntent.getVoiceDetailsIntent) is found through its WEB_SEARCH activity. -->
+        <intent>
+            <action android:name="android.speech.action.WEB_SEARCH" />
+        </intent>
         <!--
           Android 11+ hides other apps from us unless we declare what we need
           to see. Without this, resolveActivity() for a PDF returns null even

@@ -93,7 +93,7 @@ fun ItemGrid(
                     )
                     val stock = if (g.choices.size == 1) onHand[g.choices[0].id] else null
                     if (inTicket > 0.0) Text("× " + Calc.trim(inTicket), color = c.brandGreenText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    else stock?.let { Text(Calc.trim(it) + (g.main.defaultUnit?.let { u -> " $u" } ?: ""), color = if (it <= 0.0) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1) }
+                    else stock?.let { Text(Calc.trim(it) + (com.innovation313.roshankhata.data.UnitWords.label(g.main.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" }), color = if (it <= 0.0) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1) }
                 }
             }
         }

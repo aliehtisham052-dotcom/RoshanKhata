@@ -189,7 +189,7 @@ class SalesReport(
             // Dead stock: on the shelf, and not sold over the counter or the khata in DEAD_DAYS.
             val since = to - DEAD_DAYS * 24L * 60 * 60 * 1000
             val recent = dao.productsSoldSince(since).toSet()
-            val dead = Stock.of(dao).filter { (it.onHand ?: 0.0) > 0.0 && it.productId !in recent }.map { it.name }.sorted()
+            val dead = Stock.of(dao).filter { (it.onHand ?: 0.0) > 0.0 && it.productId !in recent }.map { it.name }.sortedWith(NameOrder.byName)
             val returned = dao.returnedLinesBetween(from, to).filter { it.cost != null }
             return SalesReport(
                 from, to, lines, LineMath.round(expenses), LineMath.round(returns), dead,

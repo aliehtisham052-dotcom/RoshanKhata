@@ -1471,7 +1471,7 @@ private fun Book(
                             ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true),
                             item?.takeIf { !it.itemName.isNullOrBlank() }?.let { i ->
                                 ThermalReceipt.Line(
-                                    listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (i.unit?.let { u -> " $u" } ?: "") },
+                                    listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }) },
                                         i.rate?.let { r -> "@ " + Format.money(r) }).joinToString("  "), 20f
                                 )
                             },

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.Access
+import com.innovation313.roshankhata.data.AdjustReason
 import com.innovation313.roshankhata.data.AuditAction
 import com.innovation313.roshankhata.data.AuditChain
 import com.innovation313.roshankhata.data.AuditLog
@@ -42,6 +43,7 @@ import kotlinx.coroutines.withContext
 fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
     val c = LocalRoshanColors.current
     val rows by remember { dao.observeAudit(500) }.collectAsState(emptyList())
+    val staff by remember { dao.observeStaff() }.collectAsState(emptyList())
     var seal by remember { mutableStateOf<AuditChain.Result?>(null) }
     LaunchedEffect(rows.size) { seal = withContext(Dispatchers.IO) { AuditChain.verify(dao.auditInOrder()) } }
     if (rows.isEmpty()) {
@@ -65,13 +67,61 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
                     Text(Format.dateTime(a.timestamp), color = c.textMuted, fontSize = 12.sp)
                 }
                 Text(
-                    listOfNotNull(word(W.audit_by, a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner)), a.detail).joinToString(" · "),
+                    listOfNotNull(word(W.audit_by, a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner)), auditDetail(a, staff)).joinToString(" · "),
                     color = c.inkSoft, fontSize = 13.sp
                 )
             }
             HorizontalDivider(color = c.pageBg)
         }
     }
+}
+
+/**
+ * A row's detail in the app's words (23 Oct 2026, the review: an Urdu owner
+ * read "damage -3.00", "staff:12" and an English merge summary). What is
+ * stored stays as it was, so old rows read the same way; only the codes the
+ * app itself writes are turned into words, and anything else shows as saved.
+ */
+@Composable
+private fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staff>): String? {
+    val detail = a.detail?.takeIf { it.isNotBlank() } ?: return null
+    return when (a.action) {
+        AuditAction.STOCK_ADJUSTED -> {
+            // "<reason> <signed quantity>", written by KhataDao.adjustStock.
+            val reason = detail.substringBefore(' ')
+            val figure = detail.substringAfter(' ', "").toDoubleOrNull()
+            val known = reason in AdjustReason.ALL || reason == AdjustReason.TRANSFER
+            if (!known) detail
+            else listOfNotNull(
+                word(adjustReasonName(reason)),
+                figure?.let { (if (it > 0) "+" else "") + com.innovation313.roshankhata.ui.Calc.trim(it) }
+            ).joinToString(" ")
+        }
+        AuditAction.PIN_WAIT -> when {
+            // The account whose PIN was guessed (Access.account): the owner, a staff row, or none named.
+            detail == Access.OWNER -> word(W.access_owner)
+            detail.startsWith("staff:") ->
+                detail.removePrefix("staff:").toLongOrNull()?.let { id -> staff.firstOrNull { it.id == id }?.name }?.let { Format.name(it) }
+            detail == "any" -> null
+            else -> detail
+        }
+        AuditAction.BOOK_MERGED -> {
+            // "entries 3 · cash 2 · sales 1 · other 0 · parties 1 · products 0 · renumbered 1" (BookMerge.detail).
+            val n = Regex("([a-z]+) (\\d+)").findAll(detail).associate { it.groupValues[1] to it.groupValues[2].toInt() }
+            val rows = listOf("entries", "cash", "sales", "other").sumOf { n[it] ?: 0 }
+            if (n.isEmpty()) detail else word(W.merge_done, rows, n["renumbered"] ?: 0)
+        }
+        else -> detail
+    }
+}
+
+private fun adjustReasonName(reason: String): String = when (reason) {
+    AdjustReason.COUNT -> W.adjust_reason_count
+    AdjustReason.DAMAGE -> W.adjust_reason_damage
+    AdjustReason.EXPIRED -> W.adjust_reason_expired
+    AdjustReason.THEFT -> W.adjust_reason_theft
+    AdjustReason.TRANSFER -> W.adjust_reason_transfer
+    else -> W.adjust_reason_other
 }
 
 @Composable
