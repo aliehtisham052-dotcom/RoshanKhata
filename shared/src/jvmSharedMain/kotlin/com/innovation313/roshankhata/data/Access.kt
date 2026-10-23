@@ -369,7 +369,10 @@ object Access {
      * a cashier's own right PIN cleared the misses made guessing the owner's,
      * so the owner's PIN could be guessed without end, four at a time.
      */
-    fun account(staff: Staff?): String = staff?.let { "staff:" + it.id } ?: OWNER
+    // By the row's uid, not its id (23 Oct 2026, the review): ids start at 1 in every shop's book, and the
+    // counts are the device's, so staff 2 of one shop shared a count and a wait with staff 2 of another.
+    // A row from before uids (none since schema 38) keeps its id. Old counts are simply forgotten.
+    fun account(staff: Staff?): String = staff?.let { "staff:" + (it.uid?.takeIf { u -> u.isNotBlank() } ?: it.id.toString()) } ?: OWNER
 
     /** The account of a PIN typed where it is not known whose it is (the old single count). */
     const val ANY = "any"

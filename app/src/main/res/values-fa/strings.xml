@@ -3570,4 +3570,9 @@
     <string name="live_why_error">روی این گوشی خطایی رخ داد. کمی بعد دوباره امتحان می‌شود</string>
     <string name="live_why_day_limit">سقف امروزِ رله پر شد</string>
     <string name="live_why_relay_full">رله الان پر است</string>
+    <string name="drive_plan_replace">%1$s: جای دفتر %2$s را در این گوشی می‌گیرد.</string>
+    <string name="drive_plan_new">%1$s: به‌عنوان یک فروشگاه تازه می‌آید. %2$s در این گوشی فروشگاه دیگری است و همان‌طور می‌ماند.</string>
+    <string name="drive_plan_fresh">%1$s: به‌عنوان یک فروشگاه در این گوشی برمی‌گردد.</string>
+    <string name="drive_plan_live">%1$s با دستگاه دیگری همگام زنده است. جایگزین کردنش همگام‌سازی زنده را متوقف می‌کند؛ بعد از آن دو را دوباره وصل کنید.</string>
+    <string name="drive_plan_unreadable">%1$s: از Drive خوانده نشد. همان‌طور که هست می‌ماند.</string>
 </resources>

@@ -268,6 +268,28 @@ object BusinessProfile {
         prefs(context).edit().putString(KEY_CURRENCY, Currency.clean(value)).apply()
     }
 
+    /** A named shop's sign, open or not (the delete confirmation shows a closed shop's balance). */
+    fun currencyOf(context: Context, businessId: Long): String =
+        Currency.clean(prefsOf(context, businessId).getString(KEY_CURRENCY, null))
+
+    /**
+     * A new shop starts where the open one is (23 Oct 2026, the review): its country, currency sign
+     * and calendar are carried over, so a second shop in Dhaka is not silently Pakistan (+92, Rs,
+     * STRN, Rabi/Kharif). Only what the source has is copied; the owner changes any of it in the
+     * new shop's Profile. Never over a choice the new shop already has.
+     */
+    fun copyRegion(context: Context, fromId: Long, toId: Long) {
+        if (fromId == toId) return
+        val from = prefsOf(context, fromId)
+        val to = prefsOf(context, toId)
+        val edit = to.edit()
+        for (k in listOf(KEY_COUNTRY, KEY_CURRENCY, KEY_CALENDAR)) {
+            val v = from.getString(k, null) ?: continue
+            if (!to.contains(k)) edit.putString(k, v)
+        }
+        edit.commit()
+    }
+
     // ---------- Country (21 Oct 2026): see ShopCountry ----------
 
     private const val KEY_COUNTRY = "country"

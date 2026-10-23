@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import com.innovation313.roshankhata.data.string
+import com.innovation313.roshankhata.data.get
 
 import android.app.Activity
 import android.content.Intent
@@ -186,7 +187,12 @@ object ShopSheet {
                     initials = initials(label), ticked = open) {
                     if (!open) {
                         sheet.dismiss()
-                        BusinessSwitchActivity.switchAndRestart(activity, b.id)
+                        // The same permission the Businesses screen asks (23 Oct 2026, the review): a cashier
+                        // cannot move the counter to another shop; a manager's or the owner's PIN can, and is logged.
+                        val p = com.innovation313.roshankhata.data.Access.Permission.SETTINGS
+                        if (com.innovation313.roshankhata.data.Access.can(p)) BusinessSwitchActivity.switchAndRestart(activity, b.id)
+                        else AccessUi.allowed(activity, com.innovation313.roshankhata.data.KhataDatabase.get(activity).khataDao(), p,
+                            AccessUi.what(activity, p)) { BusinessSwitchActivity.switchAndRestart(activity, b.id) }
                     }
                 }
             } + Row(R.drawable.ic_add_plain, R.color.brand_green_soft, R.color.brand_green_text,

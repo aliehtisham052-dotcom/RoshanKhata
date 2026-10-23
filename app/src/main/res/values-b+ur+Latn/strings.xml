@@ -3542,4 +3542,9 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="live_why_error">is phone par koi kharabi hui. Thori dair mein dobara koshish hogi</string>
     <string name="live_why_day_limit">relay par aaj ki had poori ho gayi</string>
     <string name="live_why_relay_full">relay is waqt bhara hua hai</string>
+    <string name="drive_plan_replace">%1$s: is phone par %2$s ka khata is se badal jayega.</string>
+    <string name="drive_plan_new">%1$s: nayi dukaan ke taur par aayegi. Is phone ki %2$s alag dukaan hai aur waisi hi rahegi.</string>
+    <string name="drive_plan_fresh">%1$s: is phone par ek dukaan ke taur par wapas aayegi.</string>
+    <string name="drive_plan_live">%1$s doosre device ke saath live sync hoti hai. Ise badalne se live sync ruk jayega; baad mein dono ko dobara jorein.</string>
+    <string name="drive_plan_unreadable">%1$s: Drive se parhi nahi ja saki. Ise waisa hi chhoda ja raha hai.</string>
 </resources>

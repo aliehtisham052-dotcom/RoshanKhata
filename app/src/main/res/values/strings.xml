@@ -3756,4 +3756,9 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="live_why_error">something went wrong on this phone. It is tried again shortly</string>
     <string name="live_why_day_limit">today’s limit at the relay was reached</string>
     <string name="live_why_relay_full">the relay is full right now</string>
+    <string name="drive_plan_replace">%1$s: replaces the book of %2$s on this phone.</string>
+    <string name="drive_plan_new">%1$s: comes in as a new shop. This phone\'s %2$s is a different shop and is left as it is.</string>
+    <string name="drive_plan_fresh">%1$s: comes back as a shop on this phone.</string>
+    <string name="drive_plan_live">%1$s syncs live with another device. Replacing it stops live sync; join the two again afterwards.</string>
+    <string name="drive_plan_unreadable">%1$s: could not be read from Drive. It is left as it is.</string>
 </resources>

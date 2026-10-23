@@ -18,11 +18,25 @@ object AlertNotes {
 
     private fun p(ctx: Context) = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-    fun backupFailed(ctx: Context) = p(ctx).edit().putLong(KEY_FAILED_AT, System.currentTimeMillis()).apply()
-    fun backupFailedAt(ctx: Context): Long = p(ctx).getLong(KEY_FAILED_AT, 0L)
+    // Per shop (23 Oct 2026, the review): one shop's failed or contested backup showed in every other
+    // shop's bell. Business 1 keeps the names it always had (Businesses.suffixFor).
+    private fun k(base: String, businessId: Long) = base + Businesses.suffixFor(businessId)
 
-    fun otherPhone(ctx: Context) = p(ctx).edit().putLong(KEY_OTHER_PHONE_AT, System.currentTimeMillis()).apply()
-    fun otherPhoneAt(ctx: Context): Long = p(ctx).getLong(KEY_OTHER_PHONE_AT, 0L)
+    fun backupFailed(ctx: Context, businessId: Long) =
+        p(ctx).edit().putLong(k(KEY_FAILED_AT, businessId), System.currentTimeMillis()).apply()
+    fun backupFailedAt(ctx: Context, businessId: Long = Businesses.active(ctx).id): Long =
+        p(ctx).getLong(k(KEY_FAILED_AT, businessId), 0L)
+
+    fun otherPhone(ctx: Context, businessId: Long) =
+        p(ctx).edit().putLong(k(KEY_OTHER_PHONE_AT, businessId), System.currentTimeMillis()).apply()
+    fun otherPhoneAt(ctx: Context, businessId: Long = Businesses.active(ctx).id): Long =
+        p(ctx).getLong(k(KEY_OTHER_PHONE_AT, businessId), 0L)
+
+    /** A deleted shop's notes go with it. */
+    fun clear(ctx: Context, businessId: Long) {
+        if (businessId == 1L) return
+        p(ctx).edit().remove(k(KEY_FAILED_AT, businessId)).remove(k(KEY_OTHER_PHONE_AT, businessId)).apply()
+    }
 
     /**
      * True once per update: the app's version code is newer than the one the

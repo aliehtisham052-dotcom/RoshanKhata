@@ -92,6 +92,8 @@ class BusinessSwitchActivity : BaseActivity() {
                 }) { trade ->
                     val fresh = Businesses.create(this, name)
                     com.innovation313.roshankhata.data.BusinessProfile.setTradeOf(this, fresh.id, trade)
+                    // Its country, sign and calendar from the shop open now (23 Oct 2026): never a silent Pakistan.
+                    com.innovation313.roshankhata.data.BusinessProfile.copyRegion(this, Businesses.active(this).id, fresh.id)
                     // Created to be used: open it straight away. The restart
                     // below is also what makes the new empty book visibly real.
                     switchAndRestart(fresh.id)
@@ -168,7 +170,8 @@ class BusinessSwitchActivity : BaseActivity() {
         val etConfirm: EditText = view.findViewById(R.id.etDeleteConfirmName)
         tvSummary.text = Digits.string(resources, R.string.business_delete_confirm_body,
             summary.partyCount,
-            Format.money(summary.netBalance)
+            // In that shop's own sign, not the open shop's (23 Oct 2026, the review).
+            Format.money(summary.netBalance, com.innovation313.roshankhata.data.BusinessProfile.currencyOf(this, business.id))
         )
         etConfirm.hint = getString(R.string.business_delete_type_hint, display)
 
@@ -228,12 +231,32 @@ class BusinessSwitchActivity : BaseActivity() {
          * switch, then rebuild every screen against the new shop's book.
          */
         fun switchAndRestart(activity: android.app.Activity, id: Long) {
-            // Whoever was signed in is signed out by the switch itself (KhataDatabase.closeActive).
-            Businesses.switchTo(activity, id)
-            val fresh = Intent(activity, KhataActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            activity.startActivity(fresh)
+            if (switching) return
+            switching = true
+            val app = activity.applicationContext
+            com.innovation313.roshankhata.data.AppScope.launch {
+                // The shop being left is protected first, while it is still the open book (23 Oct 2026,
+                // the review): today's daily copy written again, so the work done in it before the
+                // switch is in a copy, and a copy still waiting after a sale is not written into the
+                // next shop. Best effort: a copy that fails never stops the switch.
+                runCatching { com.innovation313.roshankhata.data.Snapshots.beforeLeaving(app) }
+                withContext(Dispatchers.Main) {
+                    try {
+                        // Whoever was signed in is signed out by the switch itself (KhataDatabase.closeActive).
+                        Businesses.switchTo(app, id)
+                        val alive = !activity.isFinishing && !activity.isDestroyed
+                        val fresh = Intent(if (alive) activity else app, KhataActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        if (alive) activity.startActivity(fresh) else app.startActivity(fresh)
+                    } finally {
+                        switching = false
+                    }
+                }
+            }
         }
+
+        /** A switch is on its way (the copy first): a second tap does not start another. */
+        @Volatile private var switching = false
     }
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.VH>() {
