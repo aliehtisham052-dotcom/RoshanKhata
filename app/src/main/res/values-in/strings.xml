@@ -3555,4 +3555,16 @@
         <item quantity="other">KEDALUWARSA \u00B7 %1$d hari lalu</item>
     </plurals>
     <string name="voice_language_missing_phone">Ponsel Anda tidak memiliki bahasa itu. Mendengarkan dalam bahasa ponsel sendiri.</string>
+    <string name="live_give">Berikan buku ini ke ponsel</string>
+    <string name="live_give_steps">Di ponsel baru buka Cadangan → Terima buku toko di ponsel ini → Pindai kode komputer, lalu pindai kode ini. Keduanya harus di WiFi yang sama. Kode ini hanya untuk satu ponsel. Relai internet buku ini dinyalakan, sehingga ponsel juga bertemu perangkat lain dari buku ini.</string>
+    <string name="live_give_sending">Memberikan buku ke “%1$s”…</string>
+    <string name="live_give_sent">Buku sudah sampai ke “%1$s”.\n\nKode: %2$s — ponsel menampilkan empat angka yang sama. Ponsel bergabung ke buku ini setelah pemiliknya setuju di sana, dalam 15 menit.</string>
+    <string name="live_give_failed">Buku tidak sampai ke ponsel. Buat kode baru dan pindai lagi.</string>
+    <string name="live_give_new_code">Kode baru</string>
+    <string name="live_give_code_wrong_place">Kode ini memberikan buku komputer ke ponsel. Untuk menerimanya, buka Cadangan → Terima buku toko di ponsel ini → Pindai kode komputer.</string>
+    <string name="live_receive_scan_pc">Pindai kode komputer</string>
+    <string name="live_receive_not_give">Ini bukan kode pemberian dari komputer. Di komputer buka Lainnya → Sinkron langsung → Berikan buku ini ke ponsel, lalu pindai kode yang ditampilkan.</string>
+    <string name="live_receive_offer_pc">“%1$s” (komputer) ingin memberikan buku toko ke ponsel ini.\n\nKode: %2$s — empat angka yang sama harus tampil di komputer.\n\nBuku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel ini dan komputer menyimpan satu buku bersama, lewat WiFi toko dan relai internet.</string>
+    <string name="live_receive_pc_refused">Komputer tidak memberikan bukunya. Kodenya hanya berlaku sekali, dan hanya selama jendela Sinkron langsung terbuka: buat kode baru di sana lalu pindai.</string>
+    <string name="live_receive_pc_unreachable">Komputer tidak terjangkau. Pastikan keduanya di WiFi yang sama, jendela Sinkron langsung di komputer terbuka, dan Windows mengizinkan Roshan Khata di jaringan.</string>
 </resources>

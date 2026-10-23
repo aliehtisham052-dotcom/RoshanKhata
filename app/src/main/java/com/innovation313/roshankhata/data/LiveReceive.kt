@@ -20,11 +20,26 @@ import kotlin.concurrent.thread
  * phone would lose) before anything is replaced. A phone serves no rounds
  * after: once joined ([LiveCrew.join]) it meets the shop's other devices
  * through the relay, with its live line and Firebase.
+ *
+ * The other way (23 Oct 2026): a computer has no camera to scan this phone's code, so it shows a "give" code of
+ * its own; this phone scans it and asks for the book ([pull], [LiveWire.takeGift]). The book arrives the same way
+ * and goes to the same confirmation; once joined, this phone also keeps the computer as its WiFi road ([take]).
  */
 class LiveReceive(private val context: Context) {
 
     /** A book that arrived: the offer (with the pairing code) and the copy, read and checked. */
-    class Arrived(val offer: LiveWire.Offer, val file: File, val counts: BackupCodec.ImportResult.Ok, val data: BackupCodec.ParsedBackup)
+    class Arrived(
+        val offer: LiveWire.Offer, val file: File, val counts: BackupCodec.ImportResult.Ok, val data: BackupCodec.ParsedBackup,
+        /** The computer's give code this book came from ([pull]), with the address that answered first; null from a phone. */
+        val from: LiveWire.Invite? = null
+    )
+
+    /** How asking a computer for its book went ([pull]). */
+    sealed interface Pulled {
+        data class Got(val arrived: Arrived) : Pulled
+        object Refused : Pulled
+        object Unreachable : Pulled
+    }
 
     @Volatile private var stopped = false
     @Volatile private var secret: String? = null
@@ -90,6 +105,30 @@ class LiveReceive(private val context: Context) {
         return LiveWire.inviteText(LiveWire.Invite(hosts, s.localPort, code, deviceName, phone = true))
     }
 
+    /**
+     * The computer's give code ([invite]) scanned: its book asked for and read here, never held whole (blocking —
+     * run it off the main thread). The computer is told the book was kept only once it parsed; nothing is replaced
+     * before the owner's yes ([take]).
+     */
+    fun pull(invite: LiveWire.Invite, deviceName: String): Pulled {
+        val dir = File(context.cacheDir, "backups").apply { mkdirs() }
+        val f = File(dir, "live-receive.json")
+        f.delete()
+        var arrived: Arrived? = null
+        val given = LiveWire.takeGift(invite, deviceName, f, accept = { offer ->
+            val (r, d) = BackupCodec.parseFile(f)
+            if (r is BackupCodec.ImportResult.Ok && d != null) { arrived = Arrived(offer.withFile(null), f, r, d, invite); true } else false
+        })
+        return when (given) {
+            is LiveWire.Given.Got -> arrived?.let { a ->
+                // The address that answered first, for this phone's rounds after.
+                Pulled.Got(Arrived(a.offer, a.file, a.counts, a.data, invite.copy(hosts = (listOf(given.host) + invite.hosts).distinct())))
+            } ?: Pulled.Refused
+            LiveWire.Given.Refused -> Pulled.Refused
+            LiveWire.Given.Unreachable -> Pulled.Unreachable
+        }
+    }
+
     /** Stops listening; the arrived copy, if any, is removed from the cache. */
     fun close() {
         stopped = true
@@ -110,6 +149,13 @@ class LiveReceive(private val context: Context) {
             Backup.restore(app, dao, arrived.data)
             val sql = KhataDatabase.get(app).syncSql()
             LiveCrew.join(sql, LiveRunner.install(app), LiveRunner.deviceName(), arrived.offer, arrived.offer.peers, LiveRunner.marks(app))
+            // A computer's book: the computer is this phone's WiFi road too, as when the phone joined it. Its first
+            // round names the pairing and is the computer's word that this phone joined (LiveRound.answer).
+            arrived.from?.let { inv ->
+                LiveRound.setTarget(
+                    sql, LiveRound.Target(inv.hosts, inv.port, 0L, arrived.offer.name, pair = arrived.offer.pair, device = arrived.offer.device)
+                )
+            }
             NumberMark.mark = LiveSync.mark(sql)
             runCatching { arrived.file.delete() }
             // The rounds begin at once (through the relay: a phone has no WiFi road of its own).
