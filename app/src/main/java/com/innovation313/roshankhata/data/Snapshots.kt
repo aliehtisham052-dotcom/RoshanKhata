@@ -154,18 +154,53 @@ object Snapshots {
             if (wal.isFile && wal.length() > 0) wal.inputStream().use { i -> File(keep.path + "-wal").outputStream().use { o -> i.copyTo(o) } }
         }
 
-        // The old write-ahead log must not survive its database.
+        // The copy made whole first, beside the book (23 Oct 2026, review R07): a copy kept with its own
+        // log (a damaged book's, or a before-restore copy whose close could not fold) has committed
+        // writes in that log. Copied alone, the file came back older than the copy the owner chose.
+        val tmp = File(live.parentFile, live.name + ".restoring")
+        if (!foldedCopy(snapshot.file, tmp)) return RestoreResult.Failed
+
+        // The old write-ahead log must not survive its database — only now, once the new file is ready.
         File(live.parentFile, live.name + "-wal").delete()
         File(live.parentFile, live.name + "-shm").delete()
-
-        val tmp = File(live.parentFile, live.name + ".restoring")
-        snapshot.file.inputStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
         live.delete()
         if (!tmp.renameTo(live)) {
             tmp.delete()
             return RestoreResult.Failed
         }
         return RestoreResult.Ok
+    }
+
+    /**
+     * [source] and its log (when it has one) copied to [tmp] and folded into one file there: opened
+     * on its own, the log checkpointed, checked, closed (23 Oct 2026, review R07 — the same steps as
+     * [copyWhole]'s copy). False, with nothing left behind, when the fold or the check fails.
+     */
+    private fun foldedCopy(source: File, tmp: File): Boolean {
+        val tmpWal = File(tmp.path + "-wal")
+        val tmpShm = File(tmp.path + "-shm")
+        fun clear() { tmpWal.delete(); tmpShm.delete() }
+        return try {
+            // A run killed here before leaves these: never let an old log meet the new copy.
+            tmp.delete(); clear()
+            source.inputStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
+            val wal = File(source.path + "-wal")
+            if (wal.isFile && wal.length() > 0) wal.inputStream().use { i -> tmpWal.outputStream().use { o -> i.copyTo(o) } }
+            val good = android.database.sqlite.SQLiteDatabase.openDatabase(
+                tmp.absolutePath, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE
+            ).use { copy ->
+                copy.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).use { it.moveToFirst() }
+                copy.rawQuery("PRAGMA quick_check", null).use { c -> c.moveToFirst() && c.getString(0).equals("ok", ignoreCase = true) }
+            }
+            // Closed, the log is folded in and gone; one left with frames in it was not.
+            val folded = !tmpWal.exists() || tmpWal.length() == 0L
+            clear()
+            if (!good || !folded) { tmp.delete(); return false }
+            true
+        } catch (_: Exception) {
+            tmp.delete(); clear()
+            false
+        }
     }
 
     /** Copies kept before a restore, per business; the oldest beyond this go. */
@@ -220,7 +255,7 @@ object Snapshots {
                 dir.listFiles { f -> mine.matches(f.name) }
                     ?.sortedByDescending { it.name }
                     ?.drop(KEEP_BEFORE_RESTORE)
-                    ?.forEach { it.delete(); File(it.path + "-wal").delete() }
+                    ?.forEach { it.delete(); File(it.path + "-wal").delete(); File(it.path + "-shm").delete() }
             }
             true
         } catch (_: Exception) {
@@ -373,7 +408,10 @@ object Snapshots {
                 if (business.id == 1L) "^khata-\\d{8}\\.db$"
                 else "^khata-b${business.id}-\\d{8}\\.db$"
             )
-            dir.listFiles { f -> f.name.endsWith(".tmp") }?.forEach { it.delete() }
+            // A copy cut short leaves its log and index too (23 Oct 2026, review R104): "x.db.tmp-wal"
+            // does not end in ".tmp". Nothing else in this folder has ".tmp" in its name.
+            dir.listFiles { f -> f.name.endsWith(".tmp") || f.name.endsWith(".tmp-wal") || f.name.endsWith(".tmp-shm") }
+                ?.forEach { it.delete() }
             dir.listFiles { f -> own.matches(f.name) }
                 ?.sortedByDescending { it.name }
                 ?.drop(KEEP)
