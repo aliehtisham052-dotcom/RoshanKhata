@@ -155,6 +155,9 @@ object LiveDesk {
         db = book
         this.home = home
         this.file = file
+        // The last book's relay time and WiFi mark are not this one's (23 Oct 2026, the second review).
+        relayState.value = RelayState.Unknown
+        lastWifi = 0L
         // The last book's letter never numbers this one's documents (NumberMark).
         NumberMark.mark = null
         val on = runCatching { LiveSync.check(book.syncSql(), install(home), marks(home, file)) }.getOrDefault(false)
@@ -216,6 +219,9 @@ object LiveDesk {
             while (!stopped && generation == mine) {
                 val d = db
                 val now = System.currentTimeMillis()
+                // The kill switch is read here (every 6 h, on this thread) even while the phone is on the WiFi and the
+                // relay is not needed: the connection threads only read the cached word (23 Oct 2026).
+                runCatching { LiveControl.halted(now) }
                 wait = if (d == null || LiveCloud.base == null || now - lastWifi < WIFI_QUIET_MS) CLOUD_MS
                 // Cloudflare first, then Supabase, then the owner's hosting (22 Oct 2026); the later ones read every few rounds.
                 else when (val r = runCatching { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = ++rounds % OTHERS_EVERY == 0) } }.getOrNull()) {
@@ -228,8 +234,10 @@ object LiveDesk {
                     LiveCloud.Result.Halted -> { relayState.value = RelayState.Down("halted"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
                     is LiveCloud.Result.Refused -> if (r.why == LiveRound.LOST) {
                         // The phone asks for lines this book let go of (its book went back to an older copy): only
-                        // joining again mends it — the window then says so (OFF_RESTORED), as the WiFi road does.
+                        // joining again mends it — the window and the bell then say so (OFF_RESTORED), as on the phone.
+                        runCatching { runBlocking { LiveCloud.leaveAll(d!!.syncSql()) } }
                         runCatching { runBlocking { LiveSync.disable(d!!.syncSql(), LiveSync.OFF_RESTORED) } }
+                        NumberMark.mark = null
                         relayState.value = RelayState.Off
                         CLOUD_OFF_MS
                     } else { relayState.value = RelayState.Down(r.why); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
@@ -300,6 +308,15 @@ object LiveDesk {
         return true
     }
 
+    /** The book is about to close (a switch, the app closing): nothing of live sync holds it any more. */
+    @Synchronized
+    fun detach(book: KhataDatabase) {
+        if (db !== book) return
+        stop()
+        db = null
+        relayState.value = RelayState.Unknown
+    }
+
     @Synchronized
     fun stop() {
         stopped = true
@@ -315,8 +332,9 @@ object LiveDesk {
 
     private fun answer(r: JSONObject): JSONObject? {
         val d = db ?: return null
-        // Stopped for everyone (LiveControl): the computer answers nothing, as the phone asks nothing.
-        if (LiveControl.halted()) return null
+        // Stopped for everyone (LiveControl): the computer answers nothing, as the phone asks nothing. The word as
+        // last read — the network read is the cloud thread's, never a phone's connection waiting 10 s for GitHub.
+        if (LiveControl.haltedCached()) return null
         val reply = runBlocking { LiveRound.answer(d.syncSql(), r) } ?: return null
         lastWifi = System.currentTimeMillis()
         noteRound(d)
@@ -440,7 +458,11 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit) {
                 else if (port != null) Text(hosts.joinToString("  ·  ") + "  :" + port, color = c.textMuted, fontSize = 12.sp)
                 val s = state
                 val peers = s?.peers.orEmpty()
-                if (s == null || !s.on) Text(
+                val lock = LiveSync.lockTrouble
+                if (s != null && s.on && s.identity == null && lock != null) Text(
+                    word(W.live_status_key_busy, lock), color = c.owedToMe, fontSize = 15.sp, fontWeight = FontWeight.Medium
+                )
+                else if (s == null || !s.on) Text(
                     word(if (s?.offWhy == LiveSync.OFF_RESTORED) W.live_status_rejoin else W.live_status_off),
                     color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium
                 )

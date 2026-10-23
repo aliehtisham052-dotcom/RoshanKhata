@@ -308,6 +308,9 @@ object Backup {
             throw e
         }
         if (live) {
+            // The relays are told this device is done with the conversation (best effort: its box there goes, and no
+            // wake-up rings a phone that will never answer — 23 Oct 2026, the second review), then it ends here.
+            runCatching { LiveCloud.leaveAll(sql) }
             LiveSync.disable(sql, LiveSync.OFF_RESTORED)
             NumberMark.mark = null
         }

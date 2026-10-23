@@ -3696,6 +3696,10 @@
     <string name="live_pair_other_phone">هذا الدفتر يعمل بالفعل مع الهاتف «%1$s». الاستبدال يوقف ذلك الهاتف. دفتر واحد = هاتف واحد وحاسوب واحد: للاحتفاظ بالهاتفين، أضف هذا الهاتف كنشاط تجاري جديد.</string>
     <string name="na_sync_conflict">%1$s قيود تغيّرت على الجهازين في الوقت نفسه</string>
     <string name="na_sync_conflict_sub">قد لا يكون المبلغ المحفوظ هو ما قصدته. انظر المزامنة الحية ← ما الذي تغيّر.</string>
+    <string name="live_status_update_both">الجهاز الآخر يعمل بإصدار أحدث من التطبيق (%1$s). حدِّث هذا الجهاز؛ تنتظر تغييراته حتى ذلك الحين.</string>
+    <string name="live_status_key_busy">لم يُجب مخزن المفاتيح في هذا الجهاز (%1$s). لم يتغير شيء؛ ستُعاد المحاولة بعد قليل.</string>
+    <string name="na_sync_off">توقفت المزامنة الحية</string>
+    <string name="na_sync_off_sub">استُبدل هذا الدفتر أو عاد إلى نسخة أقدم. اربط الجهاز الآخر من جديد.</string>
     <string name="live_status_halted">المزامنة المباشرة متوقفة مؤقتًا. دفترك آمن ويعمل كالمعتاد.</string>
     <string name="live_status_failed">توقفت المزامنة المباشرة: %1$s</string>
     <string name="live_mismatch">الدفتران غير متطابقين. اربط من جديد لعمل نسخة جديدة.</string>

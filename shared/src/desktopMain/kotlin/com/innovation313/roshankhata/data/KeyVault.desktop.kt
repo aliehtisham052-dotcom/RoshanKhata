@@ -57,23 +57,37 @@ actual object KeyVault {
     private val crypt32: Crypt32 by lazy { Native.load("Crypt32", Crypt32::class.java) }
     private val kernel32: Kernel32 by lazy { Native.load("Kernel32", Kernel32::class.java) }
 
-    actual fun wrap(plain: ByteArray): ByteArray? {
-        if (!windows) return null
-        return runCatching {
-            val out = DataBlob()
-            if (!crypt32.CryptProtectData(DataBlob.of(plain), WString("Roshan Khata sync key"), DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) return null
-            out.read()
-            try { out.bytes() } finally { kernel32.LocalFree(out.pbData) }
-        }.getOrNull()
+    /** JNA's library or Windows' call not reachable (quarantined, a locked TEMP): the lock did not answer. */
+    private fun <T> withLock(block: () -> T): T = try {
+        block()
+    } catch (e: KeyLockUnavailable) {
+        throw e
+    } catch (e: Throwable) {
+        // UnsatisfiedLinkError, NoClassDefFoundError, a JNA Error: never a reason to keep the key plain.
+        throw KeyLockUnavailable("dpapi: " + (e.message ?: e.javaClass.simpleName), e)
     }
 
-    actual fun unwrap(wrapped: ByteArray): ByteArray? {
+    /** On Windows the lock is always there: a refusal to seal is [KeyLockUnavailable], never a plain key. */
+    actual fun wrap(plain: ByteArray): ByteArray? {
         if (!windows) return null
-        return runCatching {
+        return withLock {
             val out = DataBlob()
-            if (!crypt32.CryptUnprotectData(DataBlob.of(wrapped), null, DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) return null
+            if (!crypt32.CryptProtectData(DataBlob.of(plain), WString("Roshan Khata sync key"), DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) {
+                throw KeyLockUnavailable("dpapi: CryptProtectData refused")
+            }
             out.read()
             try { out.bytes() } finally { kernel32.LocalFree(out.pbData) }
-        }.getOrNull()
+        }
+    }
+
+    /** Null when Windows will not open it for this user (another user's, another computer's — not this device's). */
+    actual fun unwrap(wrapped: ByteArray): ByteArray? {
+        if (!windows) return null
+        return withLock {
+            val out = DataBlob()
+            if (!crypt32.CryptUnprotectData(DataBlob.of(wrapped), null, DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) return@withLock null
+            out.read()
+            try { out.bytes() } finally { kernel32.LocalFree(out.pbData) }
+        }
     }
 }

@@ -3698,6 +3698,10 @@ You can change this any time from this screen.</string>
     <string name="live_pair_other_phone">This book already keeps its ledger with the phone “%1$s”. Replace stops that phone. One book is one phone and one computer: to keep both phones, join this one as a new business.</string>
     <string name="na_sync_conflict">%1$s entries were changed on both devices at once</string>
     <string name="na_sync_conflict_sub">The amount kept may not be the one you meant. See Live sync → What changed.</string>
+    <string name="live_status_update_both">The other device runs a newer version of the app (%1$s). Update this one; its changes wait until then.</string>
+    <string name="live_status_key_busy">This device’s key store did not answer (%1$s). Nothing was changed; it is tried again shortly.</string>
+    <string name="na_sync_off">Live sync stopped</string>
+    <string name="na_sync_off_sub">This book was replaced or went back to an older copy. Join the other device again.</string>
     <string name="live_status_halted">Live sync is paused for now. Your book is safe and works as always.</string>
     <string name="live_status_failed">Live sync stopped: %1$s</string>
     <string name="live_mismatch">The two books do not match. Join again to make a fresh copy.</string>

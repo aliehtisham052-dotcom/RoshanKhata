@@ -29,6 +29,9 @@ object LiveControl {
         return stopped
     }
 
+    /** The word as last read, without a network read: for a thread that must answer at once. */
+    fun haltedCached(): Boolean = stopped
+
     /** What the file says: true = stopped, false = live, null = no answer (kept as it was). */
     fun read(): Boolean? = runCatching {
         val c = URL(URL_TEXT).openConnection() as HttpURLConnection

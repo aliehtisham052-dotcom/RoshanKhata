@@ -83,6 +83,9 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
     }
 }
 
+/** Whether [db] is still the open book: false once a restore, a switch or an erase closed it (a round then stops). */
+fun KhataDatabase.Companion.isOpen(db: KhataDatabase): Boolean = KhataDatabaseHolder.instance === db
+
 /**
  * A SEPARATE, short-lived handle on ANOTHER business's file — never
  * the singleton, and never the active business.

@@ -214,7 +214,9 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     }
     val db = book.db
     var recoveryTold by remember(active) { mutableStateOf(book.corruptKept == null && !emptyButSetAside) }
-    DisposableEffect(db) { onDispose { db.close() } }
+    // Live sync is let go of before the book closes (a business switch): a round in flight must not reopen the
+    // old file through a closed handle (23 Oct 2026, the second review).
+    DisposableEffect(db) { onDispose { runCatching { LiveDesk.detach(db) }; runCatching { db.close() } } }
     // The shop's logo, signature, stamp and payment QR for its invoices, one set per business.
     val images = remember(active) { com.innovation313.roshankhata.desktop.invoice.ProfileImages.forBusiness(home, active) }
     LaunchedEffect(db) { runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir) } }
@@ -304,7 +306,9 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                 outsideDir?.let { dir -> runCatching { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } }
             }
         }
-        db.close(); exitApplication()
+        runCatching { LiveDesk.detach(db) }
+        runCatching { db.close() }
+        exitApplication()
     }
     Window(
         visible = !closing,
@@ -679,7 +683,8 @@ private fun Book(
         alerts = withContext(Dispatchers.IO) {
             runCatching {
                 val conflicts = runCatching { LiveSync.moneyConflicts(db.syncSql()) }.getOrDefault(0)
-                com.innovation313.roshankhata.data.LedgerAlerts.compute(words, dao, { Format.money(it) }, conflicts)
+                val syncOff = runCatching { LiveSync.offReason(db.syncSql()) == LiveSync.OFF_RESTORED }.getOrDefault(false)
+                com.innovation313.roshankhata.data.LedgerAlerts.compute(words, dao, { Format.money(it) }, conflicts, syncOff)
             }.getOrDefault(emptyList())
         }
     }
@@ -1202,7 +1207,9 @@ private fun Book(
           val loss = rememberLoss(dao, p.data)
           var agreed by remember(p) { mutableStateOf(false) }
           AlertDialog(
-            onDismissRequest = { if (!busy) picked = null },
+            // A live pairing's question is not lost to a click outside it: it comes back at once (23 Oct 2026,
+            // the second review: the phone waited 15 minutes for an answer nobody could give).
+            onDismissRequest = { if (!busy && p.live == null) picked = null },
             title = { Text(word(W.restore_warning_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {

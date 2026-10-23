@@ -351,6 +351,8 @@ class BackupActivity : BaseActivity() {
             )
             LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
             is LiveRunner.Status.RelayDown -> getString(R.string.live_status_relay_down, bidi.unicodeWrap(s.why))
+            is LiveRunner.Status.UpdateNeeded -> getString(R.string.live_status_update_both, bidi.unicodeWrap(s.why))
+            is LiveRunner.Status.KeyBusy -> getString(R.string.live_status_key_busy, bidi.unicodeWrap(s.why))
             LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
             LiveRunner.Status.NotAccepted -> getString(R.string.live_status_not_accepted)
             LiveRunner.Status.Rejoin -> getString(R.string.live_status_rejoin)
@@ -452,6 +454,7 @@ class BackupActivity : BaseActivity() {
             // in the first rounds, and a row that lands twice lands as one.
             val seq = LiveSync.lastSeq(sql)
             val file = Backup.exportToCache(context, KhataDatabase.get(context).khataDao())
+            try {
             if (file.length() > LiveWire.MAX_BYTES) LiveWire.Sent.Refused
             else {
                 val pair = LiveSync.newHex(8)
@@ -464,6 +467,10 @@ class BackupActivity : BaseActivity() {
                     LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair), wasOff = !wasOn)
                 }
                 outcome
+            }
+            } finally {
+                // The whole book, PIN hashes included, does not linger in the cache once sent (23 Oct 2026).
+                file.delete()
             }
         } catch (e: Exception) {
             null
@@ -489,6 +496,8 @@ class BackupActivity : BaseActivity() {
                             LiveRound.setTarget(sql, null)
                             LiveSync.disable(sql)
                             com.innovation313.roshankhata.data.NumberMark.mark = null
+                            // No conversation, no wake-up: the Firebase token goes with it (23 Oct 2026).
+                            runCatching { com.innovation313.roshankhata.data.PushWake.off(this@BackupActivity) }
                         }
                     }
                     showLive(LiveRunner.Status.Off)

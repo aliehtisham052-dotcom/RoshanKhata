@@ -530,6 +530,27 @@ real devices.
   the hosting goes.
 - **Not done:** sharding books across relays (Cloudflare stays first for
   FCM); the audit chain across devices; E8 line-set versions.
+- **The second pass (23 Oct, both variants against WiFi + the three relays +
+  Firebase, two reviewers):** the device's lock **not answering**
+  (`KeyLockUnavailable`: Keystore after an OS update, JNA quarantined, DPAPI
+  reset) decides nothing — `LiveSync.lockTrouble`, identity waits, the phone
+  says `KeyBusy`, the window `live_status_key_busy`; only a key that is **not
+  this device's** (AEADBadTag / DPAPI refusal) turns sync off; Windows never
+  falls back to a plain key. A pairing after an off is a new book id (the
+  relay's old box is never read into it). WiFi `Lost` → Rejoin like the relay
+  road; a schema refusal is `UpdateNeeded` / "update both", not "Live"; a
+  relay's 503 is never "halted for everyone"; one relay round at a time per
+  book (`Mutex`); `tellWake` re-hellos once and the phone backs it off to an
+  hour; `leaveAll` before every `disable` (restore, LOST, erase, a deleted
+  business) and `PushWake.off` on Stop/erase; the phone drops a round's answer
+  once the book was closed under it (`KhataDatabase.isOpen`); the computer
+  detaches live sync before `db.close()`, clears NumberMark on LOST, answers
+  phones from the cached kill switch, does not lose a pairing's question to a
+  click outside; `Kind.SYNC` bell row on both while `OFF_RESTORED`
+  (`na_sync_off`). Still open, with the reason: a pairing frame is gathered
+  in RAM before the secret is checked (256 MB cap; stream to a file next); no
+  conflicts screen on the phone (the computer's window has it); `join()` is
+  three transactions; swallowed sync failures are not written to errors.log.
 
 ### The shared module (KMP)
 
@@ -791,6 +812,15 @@ Each of these cost a build or a bug.
     nothing to say must write nothing (no `seen` on every take): Cloudflare's
     free DO counts rows written, 100k a day, and 20 devices polling every 4 s
     would have spent it by noon.
+48. **A lock that does not answer is not a lock that refuses.** `KeyVault`
+    returns null only for "not this device's key" and throws
+    `KeyLockUnavailable` for everything else; a null un-pairs, a throw waits.
+    `runCatching { … }.getOrNull()` around a security primitive turned a
+    Keystore hiccup into a wiped pairing and, on Windows, a plain key.
+49. **A round's answer is for the book that asked.** The phone checks
+    `KhataDatabase.isOpen(db)` before writing a round in; Room reopens a
+    closed database on the next write, so a stale handle would have reopened
+    the old file beside the restored one.
 
 ---
 

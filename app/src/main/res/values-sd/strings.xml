@@ -3512,6 +3512,10 @@
     <string name="live_pair_other_phone">هي کاتو اڳ ۾ ئي فون «%1$s» سان هلي رهيو آهي. سڀ بدلائڻ سان اهو فون بيهي ويندو. هڪ کاتو = هڪ فون ۽ هڪ ڪمپيوٽر: ٻئي فون رکڻا هجن ته هن فون کي نئين ڪاروبار طور ڳنڍيو.</string>
     <string name="na_sync_conflict">%1$s داخلائون ٻنهي ڊوائيسن تي هڪ ئي وقت بدليون ويون</string>
     <string name="na_sync_conflict_sub">رکيل رقم شايد اها نه هجي جيڪا توهان چاهيو ٿي. لائيو سنڪ ← ڇا بدليو ڏسو.</string>
+    <string name="live_status_update_both">ٻئي ڊوائيس تي ايپ جو نئون ورزن آهي (%1$s). هن ڊوائيس کي اپڊيٽ ڪريو؛ تيستائين ان جون تبديليون انتظار ۾ رهنديون.</string>
+    <string name="live_status_key_busy">هن ڊوائيس جي ڪي اسٽور جواب نه ڏنو (%1$s). ڪجهه نه بدليو؛ ٿوري دير ۾ ٻيهر ڪوشش ٿيندي.</string>
+    <string name="na_sync_off">لائيو سنڪ بيهي ويو</string>
+    <string name="na_sync_off_sub">هي کاتو بدلايو ويو يا پراڻي نقل تي واپس هليو ويو. ٻئي ڊوائيس سان ٻيهر ڳنڍيو.</string>
     <string name="live_status_halted">لائيو سنڪ في الحال رڪيل آهي. توهان جو کاتو محفوظ آهي ۽ هميشه وانگر هلي ٿو.</string>
     <string name="live_status_failed">لائيو سنڪ رڪجي ويو: %1$s</string>
     <string name="live_mismatch">ٻئي کاتا پاڻ ۾ نٿا ملن. نئين ڪاپي لاءِ ٻيهر ڳنڍيو.</string>

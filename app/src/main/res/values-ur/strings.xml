@@ -3484,6 +3484,10 @@
     <string name="live_pair_other_phone">یہ کھاتہ پہلے ہی فون «%1$s» کے ساتھ چل رہا ہے۔ سب بدلنے سے وہ فون رک جائے گا۔ ایک کھاتہ = ایک فون اور ایک کمپیوٹر: دونوں فون رکھنے ہوں تو اس فون کو نئے کاروبار کے طور پر جوڑیں۔</string>
     <string name="na_sync_conflict">%1$s اندراج دونوں آلات پر ایک ساتھ بدلے گئے</string>
     <string name="na_sync_conflict_sub">رکھی گئی رقم شاید وہ نہ ہو جو آپ چاہتے تھے۔ لائیو سنک ← کیا بدلا دیکھیں۔</string>
+    <string name="live_status_update_both">دوسرے آلے پر ایپ کا نیا ورژن ہے (%1$s)۔ اس آلے کو اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_status_key_busy">اس آلے کے کی اسٹور نے جواب نہیں دیا (%1$s)۔ کچھ نہیں بدلا؛ تھوڑی دیر میں دوبارہ کوشش ہوگی۔</string>
+    <string name="na_sync_off">لائیو سنک رک گیا</string>
+    <string name="na_sync_off_sub">یہ کھاتہ بدل دیا گیا یا پرانی نقل پر واپس چلا گیا۔ دوسرے آلے سے دوبارہ جوڑیں۔</string>
     <string name="live_status_halted">لائیو سنک فی الحال رکا ہوا ہے۔ آپ کا کھاتہ محفوظ ہے اور ہمیشہ کی طرح چلتا ہے۔</string>
     <string name="live_status_failed">لائیو سنک رک گیا: %1$s</string>
     <string name="live_mismatch">دونوں کھاتے آپس میں نہیں ملتے۔ نئی کاپی کے لیے دوبارہ جوڑیں۔</string>

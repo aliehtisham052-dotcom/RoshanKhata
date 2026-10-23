@@ -42,6 +42,10 @@ object LiveRunner {
         object Unreachable : Status
         /** Away from the shop's WiFi, and no relay on the internet answered: [why] is the relay's own word (22 Oct 2026). */
         data class RelayDown(val why: String) : Status
+        /** The other device runs a newer version of the app: its changes wait until this one is updated. */
+        data class UpdateNeeded(val why: String) : Status
+        /** The phone's key store did not answer (after an update, say): nothing is decided; asked again next round. */
+        data class KeyBusy(val why: String) : Status
         /** Turned off for everyone by Innovation 313 ([LiveControl]); the book is untouched. */
         object Halted : Status
         /** The computer did not say yes in time: the pairing was given up. */
@@ -75,6 +79,8 @@ object LiveRunner {
     private const val SEEK_EVERY_MS = 30_000L
     /** How often a round looks whether the relay must be told this phone's wake-up address (a cheap check). */
     private const val WAKE_TELL_MS = 60_000L
+    private const val WAKE_TELL_MAX_MS = 60 * 60_000L
+    private var wakeTellWait = WAKE_TELL_MS
     private var lastWakeTell = 0L
     private val fingerprintBad = MutableStateFlow(false)
     /** The last check of the whole book found the two devices different. */
@@ -116,7 +122,7 @@ object LiveRunner {
                         NumberMark.mark = LiveSync.mark(sql)
                         checked = db
                     }
-                    once(app, sql)
+                    once(app, db, sql)
                 } catch (e: CancellationException) {
                     // The app left the screen: that is not a failure to show (22 Oct 2026, the review).
                     throw e
@@ -139,8 +145,9 @@ object LiveRunner {
     }
 
     /** One round; how long to wait before the next. */
-    private suspend fun once(app: Context, sql: SyncSql): Long {
+    private suspend fun once(app: Context, db: KhataDatabase, sql: SyncSql): Long {
         if (LiveSync.identity(sql) == null) {
+            LiveSync.lockTrouble?.let { state.value = Status.KeyBusy(it); return ROUND_MS * 3 }
             state.value = if (LiveSync.offReason(sql) == LiveSync.OFF_RESTORED) Status.Rejoin else Status.Off
             return ROUND_MS * 3
         }
@@ -158,13 +165,26 @@ object LiveRunner {
         val target = pending ?: LiveRound.target(sql) ?: run { state.value = Status.NotPaired; return ROUND_MS * 3 }
         if (LiveControl.halted()) { state.value = Status.Halted; return 60_000L }
         // The relay is told where to ring this phone while the app is closed (Firebase, when the build has it).
-        if (pending == null && now - lastWakeTell > WAKE_TELL_MS) {
+        if (pending == null && now - lastWakeTell > wakeTellWait) {
             lastWakeTell = now
-            runCatching { PushWake.tell(app, sql) }
+            // Not told (the relay down, refusing): asked again after a growing wait, 1 min doubling to an hour —
+            // not one relay call a minute for ever (23 Oct 2026, the second review).
+            val told = runCatching { PushWake.tell(app, sql) }.getOrDefault(false)
+            wakeTellWait = if (told) WAKE_TELL_MS else minOf(wakeTellWait * 2, WAKE_TELL_MAX_MS)
         }
         val key = LiveSync.identity(sql)?.key ?: return ROUND_MS
         val check = pending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS
-        val request = LiveRound.request(sql, fingerprint = check) ?: return ROUND_MS
+        val request = try {
+            LiveRound.request(sql, fingerprint = check) ?: return ROUND_MS
+        } catch (e: LiveSync.Lost) {
+            // The computer asked for lines this phone let go of (its book went back to an older copy): only joining
+            // again mends it — said as the relay road says it, not as a raw failure every round (23 Oct 2026).
+            runCatching { LiveCloud.leaveAll(sql) }
+            LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+            NumberMark.mark = null
+            state.value = Status.Rejoin
+            return ROUND_MS * 3
+        }
         // While a pairing waits, only the computer that took it is asked (not the one this phone knew before).
         val peer = if (pending != null) null else LiveSync.state(sql).peers.let { ps ->
             target.device?.let { d -> ps.firstOrNull { it.device == d } } ?: ps.firstOrNull()
@@ -172,16 +192,20 @@ object LiveRunner {
         val hosts = (listOfNotNull(peer?.host) + target.hosts).distinct()
         return when (val a = LiveWire.round(hosts, target.port, key, request)) {
             is LiveWire.Answer.Got -> {
+                // The book was closed while the computer answered (a restore, a switch, an erase): the answer is
+                // for a book that is no longer open; written through the old handle it would reopen the old file.
+                if (!KhataDatabase.isOpen(db)) return ROUND_MS
                 val took = LiveRound.take(sql, request, a.reply, a.host)
                 took.refused?.let { why ->
                     if (why == LiveRound.LOST) {
                         // The computer no longer has what this phone asks for: this book went back to an older copy.
+                        runCatching { LiveCloud.leaveAll(sql) }
                         LiveSync.disable(sql, LiveSync.OFF_RESTORED)
                         NumberMark.mark = null
                         state.value = Status.Rejoin
                         return ROUND_MS * 3
                     }
-                    state.value = Status.Failed(why)
+                    state.value = if (why.startsWith("schema")) Status.UpdateNeeded(why) else Status.Failed(why)
                     return 60_000L
                 }
                 LiveSync.noteMark(sql, marks(app))
@@ -231,10 +255,14 @@ object LiveRunner {
                     LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { state.value = Status.Unreachable; ROUND_MS * 3 }
                     else -> if (r is LiveCloud.Result.Refused && r.why == LiveRound.LOST) {
                         // The other device asks for lines this book let go of: only joining again mends it (as on WiFi).
+                        runCatching { LiveCloud.leaveAll(sql) }
                         LiveSync.disable(sql, LiveSync.OFF_RESTORED)
                         NumberMark.mark = null
                         state.value = Status.Rejoin
                         ROUND_MS * 3
+                    } else if (r is LiveCloud.Result.Refused && r.why.startsWith("schema")) {
+                        state.value = Status.UpdateNeeded(r.why)
+                        60_000L
                     } else {
                         // The relay is the trouble, not the WiFi: said as such, and asked again after a growing wait
                         // (12 s doubling to 10 min — 22 Oct 2026, the review: every phone hammered every relay at 12 s).

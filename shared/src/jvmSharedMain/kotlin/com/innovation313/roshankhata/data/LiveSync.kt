@@ -259,7 +259,12 @@ object LiveSync {
                 for (t in listOf("sync_log", "sync_peers", "sync_alias", "sync_pending", "sync_conflict", "sync_held")) exec("DELETE FROM $t")
                 exec("DELETE FROM sync_meta WHERE k LIKE 'pair:%' OR k = 'floor'")
             }
-            val fresh = meta("book") == null || keyHere() == null
+            // A pairing made after live sync was turned off is a new conversation: a new book id, so the relay's box
+            // of the old one (parcels nobody acknowledged, kept up to 7 days) can never be read into it (23 Oct 2026).
+            val fresh = meta("book") == null || keyHere() == null || (adopt == null && meta("off_why") != null)
+            // A new identity: the relay's cursors of the conversation before go with it (a pairing of a second
+            // computer while sync is on keeps everything, the first computer's target included).
+            if (fresh || adopt != null) exec("DELETE FROM sync_meta WHERE k LIKE 'cloud\\_%' ESCAPE '\\'")
             // The key at rest is sealed for this device alone where the device can (KeyAtRest, 22 Oct 2026).
             when {
                 adopt != null -> { setMeta("book", adopt.first); setMeta("key", KeyAtRest.store(adopt.second)) }
@@ -343,10 +348,15 @@ object LiveSync {
             // book may have been replaced, so the conversation cannot go on.
             if (meta("paused") == "1") turnOffIn(OFF_RESTORED)
             var on = meta("on") == "1" && meta("install") == install
-            // A key sealed for another device (the file came from it, or another Windows user opened it): not this device's.
-            if (on && meta("key") != null && keyHere() == null) { turnOffIn(OFF_RESTORED); on = false }
-            // A key still in plain from before the lock existed is sealed now.
-            if (on && !KeyAtRest.isWrapped(meta("key"))) keyHere()?.let { setMeta("key", KeyAtRest.store(it)) }
+            // A key sealed for another device (the file came from it, or another Windows user opened it): not this
+            // device's. A lock that did not answer decides nothing: the book stays as it is, asked again next time.
+            val lockAnswered = try {
+                if (on && meta("key") != null && keyHere() == null) { turnOffIn(OFF_RESTORED); on = false }
+                // A key still in plain from before the lock existed is sealed now.
+                if (on && !KeyAtRest.isWrapped(meta("key"))) keyHere()?.let { setMeta("key", KeyAtRest.store(it)) }
+                true
+            } catch (e: KeyLockUnavailable) { lockTrouble = e.message; false }
+            if (lockAnswered) lockTrouble = null
             if (on && kept != null && kept > logCounter()) {
                 turnOffIn(OFF_RESTORED)
                 on = false
@@ -419,10 +429,23 @@ object LiveSync {
     /** The book's key as this device can read it: null when it is sealed for another device (a copied file). */
     private suspend fun SyncTx.keyHere(): String? = KeyAtRest.read(meta("key"))
 
+    /**
+     * Why the device's lock last refused to answer ([KeyLockUnavailable]), or null while it answers. While set,
+     * [identity] is null — live sync waits, nothing is turned off — and the screens say the lock, not the pairing,
+     * is the trouble (23 Oct 2026, the second review).
+     */
+    @Volatile var lockTrouble: String? = null
+        private set
+
+    /** [keyHere], with a lock that did not answer noted rather than thrown: the callers' rounds simply wait. */
+    private suspend fun SyncTx.keyOrWait(): String? = try {
+        keyHere().also { lockTrouble = null }
+    } catch (e: KeyLockUnavailable) { lockTrouble = e.message; null }
+
     suspend fun identity(sql: SyncSql): Identity? = sql.read {
         if (!hasTables() || meta("on") != "1") return@read null
         val book = meta("book") ?: return@read null
-        val key = keyHere() ?: return@read null
+        val key = keyOrWait() ?: return@read null
         val device = meta("device") ?: return@read null
         Identity(book, key, device, meta("name").orEmpty())
     }
@@ -431,7 +454,7 @@ object LiveSync {
         if (!hasTables()) return@read State(false, null, emptyList(), 0, 0)
         val on = meta("on") == "1"
         val id = run {
-            val b = meta("book"); val k = keyHere(); val d = meta("device")
+            val b = meta("book"); val k = keyOrWait(); val d = meta("device")
             if (on && b != null && k != null && d != null) Identity(b, k, d, meta("name").orEmpty()) else null
         }
         val peers = rows("SELECT device, name, sent, recv, host, port, seen FROM sync_peers ORDER BY seen DESC", types = "TTIITII").map {

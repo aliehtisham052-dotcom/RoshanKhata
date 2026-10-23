@@ -28,6 +28,7 @@ import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.BusinessDeleteSummary
 import com.innovation313.roshankhata.data.DesktopDatabase
 import com.innovation313.roshankhata.data.FileShopSettings
+import com.innovation313.roshankhata.data.LiveCloud
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
@@ -99,6 +100,17 @@ class Businesses(private val home: File) {
     fun delete(id: Long) {
         check(canDelete(id)) { "Business $id cannot be deleted (it is Business 1 or the open one)" }
         val db = dbFile(id)
+        // A book that synced live says goodbye to the relays first (best effort, 23 Oct 2026): the phone must not
+        // keep leaving parcels for a book that is gone.
+        if (db.exists()) runCatching {
+            val book = DesktopDatabase.open(db)
+            try {
+                kotlinx.coroutines.runBlocking {
+                    kotlinx.coroutines.withTimeoutOrNull(5_000L) { LiveCloud.leaveAll(book.syncSql()) }
+                }
+            } finally { book.close() }
+        }
+        props.remove("live.$id")
         listOf(db, File(db.path + "-wal"), File(db.path + "-shm"), File(db.path + "-journal"), settingsFile(id)).forEach { it.delete() }
         props.setProperty(KEY_IDS, list().map { it.id }.filter { it != id && it != 1L }.joinToString(","))
         props.remove("name.$id")
