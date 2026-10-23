@@ -16,6 +16,7 @@ import com.innovation313.roshankhata.data.LiveForget
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.SyncSql
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.data.string
 import com.innovation313.roshankhata.data.syncSql
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
@@ -104,7 +105,7 @@ class LiveDevicesActivity : BaseActivity() {
 
     private fun showConflicts(views: List<LiveSync.ConflictView>) {
         conflicts.removeAllViews()
-        findViewById<TextView>(R.id.tvConflictsHead).text = getString(R.string.live_conflicts, views.size)
+        findViewById<TextView>(R.id.tvConflictsHead).text = Digits.string(resources, R.string.live_conflicts, views.size)
         findViewById<TextView>(R.id.tvConflictsEmpty).visibility =
             if (views.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
         val inflater = LayoutInflater.from(this)
