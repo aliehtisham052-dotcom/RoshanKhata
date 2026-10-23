@@ -3561,4 +3561,16 @@
         <item quantity="other">EXPIRE HO CHUKA \u00B7 %1$d din pehle</item>
     </plurals>
     <string name="voice_language_missing_phone">Aap ke phone mein ye zaban maujood nahi. Phone ki apni zaban mein sun raha hai.</string>
+    <string name="live_give">Yeh khata kisi phone ko dein</string>
+    <string name="live_give_steps">Naye phone par Backup → Dukaan ka khata is phone par lein → Computer ka code scan karein kholein aur yeh code scan karein. Dono ek hi WiFi par hon. Yeh code sirf ek phone ke liye hai. Khate ka internet relay chalu kar diya jata hai, taake phone khate ke baqi devices se bhi milta rahe.</string>
+    <string name="live_give_sending">Khata “%1$s” ko diya ja raha hai…</string>
+    <string name="live_give_sent">Khata “%1$s” ko pohanch gaya.\n\nCode: %2$s — phone par bhi yahi chaar hindse nazar aayenge. Wahan malik ki haan ke baad, 15 minute ke andar, phone is khate mein shamil ho jaye ga.</string>
+    <string name="live_give_failed">Khata phone tak nahi pohancha. Naya code banayein aur dobara scan karein.</string>
+    <string name="live_give_new_code">Naya code</string>
+    <string name="live_give_code_wrong_place">Yeh code computer ka khata kisi phone ko deta hai. Ise lene ke liye Backup → Dukaan ka khata is phone par lein → Computer ka code scan karein kholein.</string>
+    <string name="live_receive_scan_pc">Computer ka code scan karein</string>
+    <string name="live_receive_not_give">Yeh computer ka khata dene wala code nahi. Computer par More → Live sync → Yeh khata kisi phone ko dein kholein aur wahan dikhne wala code scan karein.</string>
+    <string name="live_receive_offer_pc">“%1$s” (computer) is phone ko dukaan ka khata dena chahta hai.\n\nCode: %2$s — yahi chaar hindse computer par bhi nazar aane chahiyein.\n\nIs phone ka apna khata dukaan ke khate se badal jaye ga. Is ke baad yeh phone aur computer dukaan ke WiFi aur internet relay ke zariye ek hi khata mil kar rakhenge.</string>
+    <string name="live_receive_pc_refused">Computer ne apna khata nahi diya. Us ka code ek hi baar chalta hai, aur sirf tab jab us ki Live sync wali khirki khuli ho: wahan naya code banayein aur use scan karein.</string>
+    <string name="live_receive_pc_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono ek hi WiFi par hain, computer par Live sync wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
 </resources>
