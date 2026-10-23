@@ -152,18 +152,38 @@ object LiveDesk {
         }
     }
 
+    /**
+     * A live-sync failure a round passed over, written to logs/errors.log ([CrashLog]) — kept to a few lines an
+     * hour by [com.innovation313.roshankhata.data.LiveTrouble] (23 Oct 2026, the handover: they were dropped unread).
+     */
+    private fun trouble(where: String, e: Throwable) {
+        com.innovation313.roshankhata.data.LiveTrouble.note(where, e)
+    }
+
+    /** [block], its failure written down ([trouble]) and [fallback] given instead — as the runCatching it replaced. */
+    private inline fun <T> logged(where: String, fallback: T, block: () -> T): T =
+        try { block() } catch (e: Throwable) { trouble(where, e); fallback }
+
+    /** The shared engine's failures (a WiFi round, a pairing) go to this computer's log too. */
+    private fun sinkTo(home: File) {
+        com.innovation313.roshankhata.data.LiveTrouble.sink = { where, e ->
+            CrashLog.write(home, "$where (not a crash: live sync went on)", e)
+        }
+    }
+
     /** The book now open: its live sync checked, and the computer listening when it syncs. */
     suspend fun attach(book: KhataDatabase, home: File, file: String) {
         db = book
         this.home = home
         this.file = file
+        sinkTo(home)
         // The last book's relay time and WiFi mark are not this one's (23 Oct 2026, the second review).
         relayState.value = RelayState.Unknown
         lastWifi = 0L
         // The last book's letter never numbers this one's documents (NumberMark).
         NumberMark.mark = null
-        val on = runCatching { LiveSync.check(book.syncSql(), install(home), marks(home, file)) }.getOrDefault(false)
-        if (on) NumberMark.mark = runCatching { LiveSync.mark(book.syncSql()) }.getOrNull()
+        val on = logged("opening the book", false) { LiveSync.check(book.syncSql(), install(home), marks(home, file)) }
+        if (on) NumberMark.mark = logged("the book's letter", null) { LiveSync.mark(book.syncSql()) }
         if (on) start() else if (pairSecret == null) stop()
     }
 
@@ -225,13 +245,13 @@ object LiveDesk {
                 val since = LiveLines.newsMark()
                 // The kill switch is read here (every 6 h, on this thread) even while the phone is on the WiFi and the
                 // relay is not needed: the connection threads only read the cached word (23 Oct 2026).
-                runCatching { LiveControl.halted(now) }
+                logged("the kill switch", false) { LiveControl.halted(now) }
                 // The phone on this WiFi talks to the computer directly — unless the book has other devices too (another
                 // phone away from the shop): each device sends only its own changes, so this one keeps the relay going.
-                val alone = d == null || runCatching { runBlocking { LiveSync.state(d.syncSql()).peers.size } }.getOrDefault(0) <= 1
+                val alone = d == null || logged("live state", 0) { runBlocking { LiveSync.state(d.syncSql()).peers.size } } <= 1
                 wait = if (d == null || LiveCloud.base == null || (now - lastWifi < WIFI_QUIET_MS && alone)) CLOUD_MS
                 // Cloudflare first, then Supabase, then the owner's hosting (22 Oct 2026); the later ones read every few rounds.
-                else when (val r = runCatching { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = ++rounds % OTHERS_EVERY == 0) } }.getOrNull()) {
+                else when (val r = logged("relay round", null) { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = ++rounds % OTHERS_EVERY == 0) } }) {
                     is LiveCloud.Result.Done -> {
                         noteRound(d)
                         relayState.value = RelayState.Live(now, r.took)
@@ -248,8 +268,8 @@ object LiveDesk {
                     is LiveCloud.Result.Refused -> if (r.why == LiveRound.LOST) {
                         // The phone asks for lines this book let go of (its book went back to an older copy): only
                         // joining again mends it — the window and the bell then say so (OFF_RESTORED), as on the phone.
-                        runCatching { runBlocking { LiveCloud.leaveAll(d!!.syncSql()) } }
-                        runCatching { runBlocking { LiveSync.disable(d!!.syncSql(), LiveSync.OFF_RESTORED) } }
+                        logged("leaving the relays", Unit) { runBlocking { LiveCloud.leaveAll(d!!.syncSql()) } }
+                        logged("turning live sync off", Unit) { runBlocking { LiveSync.disable(d!!.syncSql(), LiveSync.OFF_RESTORED) } }
                         NumberMark.mark = null
                         relayState.value = RelayState.Off
                         CLOUD_OFF_MS
@@ -260,7 +280,7 @@ object LiveDesk {
                 try {
                     if (d != null && LiveLines.anyOpen()) {
                         // News: the relay's nudge, or this computer writing something (its log grew).
-                        val before = runCatching { runBlocking { LiveSync.lastSeq(d.syncSql()) } }.getOrDefault(0L)
+                        val before = logged("the log's line", 0L) { runBlocking { LiveSync.lastSeq(d.syncSql()) } }
                         LiveLines.waitForNews(wait, since) { runBlocking { LiveSync.lastSeq(d.syncSql()) } > before }
                     } else Thread.sleep(wait)
                 } catch (e: InterruptedException) { break }
@@ -304,6 +324,8 @@ object LiveDesk {
                 pairSecret = { pairSecret },
                 onOffer = { o -> takeOffer(o) },
                 bookKey = { key() },
+                // A pairing's book arrives onto this computer's own folder, never into memory (23 Oct 2026).
+                spool = home?.let { File(it, "from-phone") },
                 onRound = { r -> answer(r) }
             )
         }
@@ -317,11 +339,12 @@ object LiveDesk {
      */
     private fun takeOffer(o: LiveWire.Offer): Boolean {
         val h = home ?: return false
-        val read = runCatching {
-            val f = PhoneSync.saveIncoming(h, o.backup)
+        val read = logged("a pairing's book", null) {
+            val arrived = o.file
+            val f = if (arrived != null) PhoneSync.saveIncomingFile(h, arrived) else PhoneSync.saveIncoming(h, o.backup)
             val (r, d) = com.innovation313.roshankhata.data.BackupCodec.parseFile(f)
-            if (r is com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok && d != null) Incoming(o, f, d, r) else null
-        }.getOrNull() ?: return false
+            if (r is com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok && d != null) Incoming(o.withFile(null), f, d, r) else null
+        } ?: return false
         pairSecret = null
         offers.value = read
         return true
@@ -348,7 +371,7 @@ object LiveDesk {
         seeker = null
     }
 
-    private fun key(): String? = db?.let { d -> runCatching { runBlocking { LiveSync.identity(d.syncSql())?.key } }.getOrNull() }
+    private fun key(): String? = db?.let { d -> logged("the book's key", null) { runBlocking { LiveSync.identity(d.syncSql())?.key } } }
 
     private fun answer(r: JSONObject): JSONObject? {
         val d = db ?: return null
@@ -363,7 +386,7 @@ object LiveDesk {
 
     /** After a round: this book's letter (it may have moved, LiveSync.settleMark) and its log's high line. */
     private fun noteRound(d: KhataDatabase) {
-        runCatching {
+        logged("after a round", Unit) {
             runBlocking {
                 val sql = d.syncSql()
                 NumberMark.mark = LiveSync.mark(sql)
@@ -381,7 +404,9 @@ object LiveDesk {
      */
     suspend fun join(book: KhataDatabase, home: File, file: String, offer: LiveWire.Offer) {
         val sql = book.syncSql()
-        // The sender, and every other device it knew as far as the copy held of each (LiveCrew, 23 Oct 2026).
+        sinkTo(home)
+        // The sender, and every other device it knew as far as the copy held of each (LiveCrew, 23 Oct 2026); one
+        // transaction, so a failure leaves the book as the restore made it, not half joined.
         LiveCrew.join(sql, install(home), name(), offer, offer.peers, marks(home, file))
         NumberMark.mark = LiveSync.mark(sql)
         db = book

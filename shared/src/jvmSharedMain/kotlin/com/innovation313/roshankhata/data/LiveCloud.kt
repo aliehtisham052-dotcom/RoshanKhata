@@ -177,6 +177,9 @@ object LiveCloud {
             // The book's devices that joined lately, for the others to add (LiveCrew); a joiner's pairing, for its sender.
             joins?.let { put("joins", it) }
             pair?.let { put("pair", it) }
+            // This device's letter in the book's numbers, as a WiFi round says it (LiveRound): devices that meet only
+            // here settle a letter they share (LiveSync.settleMark, 23 Oct 2026, the review report R05).
+            LiveSync.mark(sql)?.let { put("mark", it) }
             put("parcel", LiveSync.export(sql, after, page).toJson())
         }
     }
@@ -210,7 +213,10 @@ object LiveCloud {
             LiveSync.lowerSent(sql, dev, it)
             setMeta(sql, k("lowered", id.book), "1")
         }
-        return when (val r = LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })) {
+        val applied = LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })
+        // The sender's letter, heard as over the WiFi: remembered, and this device moves off it if both hold it.
+        if (applied !is LiveSync.Applied.Refused) LiveSync.settleMark(sql, dev, msg.optString("mark").takeIf { it.isNotBlank() })
+        return when (val r = applied) {
             is LiveSync.Applied.Refused -> { lastRefusal = r.why; false }
             is LiveSync.Applied.Gap -> { setMeta(sql, k("need_" + dev, id.book), parcel.from.toString()); true }
             else -> { setMeta(sql, k("need_" + dev, id.book), ""); true }

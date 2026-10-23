@@ -314,4 +314,73 @@ class LiveSyncReviewTest {
         assertEquals(1, pc.khataDao().allDayClosesForBackup().size)
         assertEquals(LiveSync.fingerprint(phoneSql), LiveSync.fingerprint(pcSql))
     }
+
+    // ---- The counter's rules across two devices (23 Oct 2026, the review report R31) ----
+
+    private suspend fun sellTwoBags(): Long {
+        val dao = phone.khataDao()
+        val aslam = dao.insertParty(Party(name = "Aslam"))
+        val dap = dao.insertProduct(
+            Product(name = "DAP", nameKey = ProductName.key("DAP"), normalisedName = ProductName.normalised("DAP"), defaultUnit = "bag", salePrice = 1000.0)
+        )
+        return dao.postSale(
+            Sale(partyId = aslam, customerName = "Aslam", timestamp = System.currentTimeMillis(), subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+            listOf(SaleItem(saleId = 0, productId = dap, itemName = "DAP", quantity = 2.0, unit = "bag", rate = 1000.0)),
+            emptyList()
+        )
+    }
+
+    /** Two bags of [db]'s copy of the ticket taken back, as its own counter would (its own copy passes the checks). */
+    private suspend fun returnTwoBags(db: KhataDatabase) {
+        val dao = db.khataDao()
+        val sale = dao.allSalesForBackup().single()
+        val line = dao.saleItems(sale.id).single()
+        dao.postReturn(
+            SaleReturn(saleId = sale.id, partyId = sale.partyId, total = 0.0, refundMethod = SaleReturn.ACCOUNT, reason = "damaged"),
+            listOf(SaleReturnItem(returnId = 0, saleItemId = line.id, productId = line.productId, itemName = "DAP", quantity = 2.0, unit = "bag", rate = 1000.0))
+        )
+    }
+
+    private suspend fun counterConflicts(sql: SyncSql) = LiveSync.conflicts(sql).filter { it.kept == "both" }
+
+    @Test
+    fun `a ticket voided on one device and returned on the other is said on both`() = runBlocking {
+        val sale = sellTwoBags()
+        round()
+        // Apart for a while: the phone voids the ticket, the computer takes the two bags back against it.
+        assertTrue(phone.khataDao().voidSale(sale, "wrong customer"))
+        returnTwoBags(pc)
+        assertEquals(0, LiveSync.moneyConflicts(pcSql))
+        round()
+        val uid = phone.khataDao().getSale(sale)!!.uid
+        for (sql in listOf(phoneSql, pcSql)) {
+            val c = counterConflicts(sql)
+            assertEquals(listOf("sales"), c.map { it.table })
+            assertEquals(uid, c.single().uid)
+            // The bell's money row counts it.
+            assertTrue(LiveSync.moneyConflicts(sql) >= 1)
+            // The window shows what is wrong, beside the ticket as it stands.
+            assertTrue(LiveSync.conflictViews(sql).any { v -> v.fields.any { it.first == "problem" } })
+        }
+        // Noted once: later parcels touching the ticket do not note it again.
+        pc.khataDao().updateSale(pc.khataDao().allSalesForBackup().single().let { it.copy(note = "seen") })
+        round()
+        assertEquals(1, counterConflicts(phoneSql).size)
+        assertEquals(1, counterConflicts(pcSql).size)
+    }
+
+    @Test
+    fun `the last bags returned on both devices are said on both`() = runBlocking {
+        val sale = sellTwoBags()
+        round()
+        returnTwoBags(phone)
+        returnTwoBags(pc)
+        round()
+        val line = phone.khataDao().saleItems(sale).single().uid
+        for (sql in listOf(phoneSql, pcSql)) {
+            val c = counterConflicts(sql)
+            assertEquals(listOf("sale_items"), c.map { it.table })
+            assertEquals(line, c.single().uid)
+        }
+    }
 }

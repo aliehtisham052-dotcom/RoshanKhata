@@ -319,18 +319,28 @@ class BackupActivity : BaseActivity() {
     private fun takeFromComputer(pairing: WifiSync.Pairing) {
         Toast.makeText(this, R.string.wifi_take_asking, Toast.LENGTH_SHORT).show()
         lifecycleScope.launch {
+            // The book is written to the cache as it arrives, never held whole (23 Oct 2026, the review report R46);
+            // a book too big for this phone is refused before it is read, and running out of memory reading it after
+            // is said, not a crash.
+            val into = File(File(cacheDir, "backups").apply { mkdirs() }, "from_computer.txt")
             val pulled = withContext(Dispatchers.IO) {
-                try { WifiSync.pull(pairing) } catch (e: Exception) { WifiSync.Pulled.Unreachable }
+                try { WifiSync.pull(pairing, into) }
+                catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                catch (e: OutOfMemoryError) { runCatching { into.delete() }; WifiSync.Pulled.TooBig }
+                catch (e: Exception) { WifiSync.Pulled.Unreachable }
             }
             if (isFinishing || isDestroyed) return@launch
             when (pulled) {
                 is WifiSync.Pulled.Got -> {
-                    val file = withContext(Dispatchers.IO) {
-                        File(File(cacheDir, "backups").apply { mkdirs() }, "from_computer.txt").also { it.writeBytes(pulled.book) }
+                    val parsed = withContext(Dispatchers.IO) {
+                        try { BackupCodec.parseFile(pulled.file) }
+                        catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                        catch (e: OutOfMemoryError) { null }
                     }
-                    val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
-                    handleParseResult(result, data)
+                    if (parsed == null) tell(R.string.wifi_take_too_big)
+                    else handleParseResult(parsed.first, parsed.second)
                 }
+                WifiSync.Pulled.TooBig -> tell(R.string.wifi_take_too_big)
                 WifiSync.Pulled.Refused -> tell(R.string.wifi_take_refused)
                 WifiSync.Pulled.Unreachable -> tell(R.string.wifi_send_unreachable)
             }
@@ -469,7 +479,11 @@ class BackupActivity : BaseActivity() {
             else {
                 val pair = LiveSync.newHex(8)
                 // The book read from its file as it goes out, never held whole (22 Oct 2026, the review).
-                val offer = LiveWire.Offer(id.book, id.key, id.device, id.name, seq, ByteArray(0), joinerMark, pair, peers = peersAtCopy)
+                val offer = LiveWire.Offer(
+                    id.book, id.key, id.device, id.name, seq, ByteArray(0), joinerMark, pair, peers = peersAtCopy,
+                    // Every letter taken in the book as this phone knows it: the joiner never gives one of them again (R05).
+                    marks = LiveSync.knownMarks(sql)
+                )
                 val outcome = LiveWire.sendOfferFile(invite, offer, file)
                 if (outcome is LiveWire.Sent.Taken) {
                     // The computer has the book; its owner has not said yes yet. The first round it answers
