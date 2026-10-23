@@ -89,6 +89,18 @@ actual object KeyVault {
     private val NOT_THIS_DEVICE = setOf(13, 0x80090005.toInt(), 0x80090003.toInt(), 0x8009000B.toInt())
 
     /**
+     * The refusals that only mean "not now": the protection service (RPC) not answering, memory or resources
+     * short, the profile's disk not ready. Only these wait ([KeyLockUnavailable]); every other refusal is read
+     * as not this device's key, as before. Listing the transient ones (not the final ones) is the safe way round:
+     * the Windows runner showed that a damaged blob comes back with a code outside [NOT_THIS_DEVICE] (CI, 23 Oct
+     * 2026), and such a book must turn sync off, not wait for ever.
+     */
+    private val NOT_NOW = setOf(
+        8, 14, 21, 1450, 1722, 1726, 1727,                       // ERROR_NOT_ENOUGH_MEMORY, _OUTOFMEMORY, _NOT_READY, _NO_SYSTEM_RESOURCES, RPC_S_*
+        0x8007000E.toInt(), 0x800706BA.toInt(), 0x800706BE.toInt(), 0x800706BF.toInt()
+    )
+
+    /**
      * Null when Windows will not open it for this user (another user's, another computer's — not this device's).
      * Any other refusal — the profile's key files not reachable yet, the protection service not answering — is the
      * lock not answering ([KeyLockUnavailable]): a null there turned live sync off and un-paired the shop
@@ -101,8 +113,8 @@ actual object KeyVault {
             if (!crypt32.CryptUnprotectData(DataBlob.of(wrapped), null, DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) {
                 // Read at once: JNA keeps the call's GetLastError for this thread until the next native call.
                 val err = Native.getLastError()
-                if (err in NOT_THIS_DEVICE) return@withLock null
-                throw KeyLockUnavailable("dpapi: CryptUnprotectData error " + Integer.toHexString(err))
+                if (err in NOT_NOW) throw KeyLockUnavailable("dpapi: CryptUnprotectData error " + Integer.toHexString(err))
+                return@withLock null
             }
             out.read()
             try { out.bytes() } finally { kernel32.LocalFree(out.pbData) }
