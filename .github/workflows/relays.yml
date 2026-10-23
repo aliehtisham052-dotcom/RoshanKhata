@@ -47,12 +47,14 @@ jobs:
           for i in $(seq 1 30); do curl -sf 127.0.0.1:8098/r/v1/health && break; sleep 0.3; done
           python3 scripts/test_relay.py http://127.0.0.1:8098/r
           # The limits, lowered (23 Oct 2026): a refused parcel still brings the page, bytes are counted, idle devices go.
-          C=$(mktemp -d); I=$(mktemp -d)
+          C=$(mktemp -d); I=$(mktemp -d); W=$(mktemp -d)
           RK_RELAY_DATA=$C RK_RELAY_DAY_LIMIT=4 RK_RELAY_BOOK_BYTES=3000 RK_RELAY_DAY_BYTES=7000 php -S 127.0.0.1:8099 web/relay/index.php > php-caps.log 2>&1 &
           RK_RELAY_DATA=$I RK_RELAY_DEVICE_IDLE_MS=1500 php -S 127.0.0.1:8100 web/relay/index.php > php-idle.log 2>&1 &
-          for i in $(seq 1 30); do curl -sf 127.0.0.1:8099/r/v1/health && curl -sf 127.0.0.1:8100/r/v1/health && break; sleep 0.3; done
+          RK_RELAY_DATA=$W RK_RELAY_MAX_STORE_BYTES=300000 php -S 127.0.0.1:8101 web/relay/index.php > php-store.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf 127.0.0.1:8099/r/v1/health && curl -sf 127.0.0.1:8100/r/v1/health && curl -sf 127.0.0.1:8101/r/v1/health && break; sleep 0.3; done
           python3 scripts/test_relay.py http://127.0.0.1:8099/r --caps
           python3 scripts/test_relay.py http://127.0.0.1:8100/r --idle
+          python3 scripts/test_relay.py http://127.0.0.1:8101/r --store
           # The owner's switch: an empty "halt" file stops every call but health.
           touch $S/halt
           curl -s 127.0.0.1:8098/r/v1/health | grep -q '"live":false'
@@ -95,10 +97,12 @@ jobs:
           for i in $(seq 1 60); do curl -sf 127.0.0.1:8000/daakiya/v1/health && break; sleep 1; done
           python3 scripts/test_relay.py http://127.0.0.1:8000/daakiya
           # The limits, lowered (23 Oct 2026): the same function again with RK_* set, one run each.
-          for mode in caps idle; do
+          for mode in caps idle store; do
             kill $(jobs -p) 2>/dev/null || true; pkill -f "daakiya/[i]ndex.ts" || true; sleep 2
-            if [ $mode = caps ]; then export RK_DAY_LIMIT=4 RK_BOOK_BYTES=3000 RK_DAY_BYTES=7000; unset RK_DEVICE_IDLE_MS
-            else export RK_DEVICE_IDLE_MS=1500; unset RK_DAY_LIMIT RK_BOOK_BYTES RK_DAY_BYTES; fi
+            unset RK_DAY_LIMIT RK_BOOK_BYTES RK_DAY_BYTES RK_DEVICE_IDLE_MS RK_STORE_BYTES
+            if [ $mode = caps ]; then export RK_DAY_LIMIT=4 RK_BOOK_BYTES=3000 RK_DAY_BYTES=7000
+            elif [ $mode = idle ]; then export RK_DEVICE_IDLE_MS=1500
+            else export RK_STORE_BYTES=300000; fi
             deno run --allow-net --allow-env --allow-read supabase/functions/daakiya/index.ts > deno-$mode.log 2>&1 &
             for i in $(seq 1 60); do curl -sf 127.0.0.1:8000/daakiya/v1/health && break; sleep 1; done
             python3 scripts/test_relay.py http://127.0.0.1:8000/daakiya --$mode

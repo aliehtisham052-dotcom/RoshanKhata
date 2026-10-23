@@ -13,7 +13,7 @@ KEEP_DAYS = "7"
 # Parcels one book may leave in a UTC day (a busy counter is a few hundred).
 DAY_LIMIT = "3000"
 # Also read when set (defaults in src/index.ts; the tests lower them with wrangler dev --var):
-#   BOOK_BYTES, DAY_BYTES, DEVICE_IDLE_MS, PRUNE_EVERY_MS, NEW_BOOKS_DAY, MAX_BOOKS
+#   BOOK_BYTES, DAY_BYTES, DEVICE_IDLE_MS, PRUNE_EVERY_MS, NEW_BOOKS_DAY, MAX_BOOKS, ACCOUNT_BYTES
 # The Firebase project whose messaging wakes a phone (not a secret: a project's name).
 FCM_PROJECT_ID = "roshan-khata"
 # Called once a day by the cron below, so the free Supabase relay is never paused (7 quiet days pause it).

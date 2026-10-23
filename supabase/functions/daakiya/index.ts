@@ -40,8 +40,17 @@ const IDLE_DAYS = 30;
 const BOOK_BYTES = Number(Deno.env.get("RK_BOOK_BYTES") ?? String(16 * 1024 * 1024));
 const DAY_BYTES = Number(Deno.env.get("RK_DAY_BYTES") ?? String(32 * 1024 * 1024));
 const DEVICE_IDLE_MS = Number(Deno.env.get("RK_DEVICE_IDLE_MS") ?? String(30 * 86_400_000));
+/**
+ * Parcel bytes all books together may hold (23 Oct 2026, phase 2 of the review report): the free database is
+ * 500 MB for everything in the project, and BOOK_BYTES alone let anyone opening books fill 300 x 16 MiB a day.
+ * Each book's own figure is kept in its row (books.bytes, put right after every parcel in or out), so the store's
+ * total is a sum over at most MAX_BOOKS rows, never a scan of the parcels. Past it: 507 "full", as the hosting.
+ */
+const STORE_BYTES = Number(Deno.env.get("RK_STORE_BYTES") ?? String(256 * 1024 * 1024));
+/** A new book is taken only while the store has at least this much room left for it (as the Worker's BOOK_FLOOR). */
+const NEW_BOOK_ROOM = 64 * 1024;
 /** Refusals of a parcel after which a round still answers the others' page (and keeps its ack). */
-const CAPACITY = new Set(["day-limit", "day-bytes", "book-full"]);
+const CAPACITY = new Set(["day-limit", "day-bytes", "book-full", "full"]);
 /** A round's JSON: a parcel's base64 (4/3 of MAX_PARCEL) and its few fields. */
 const MAX_ROUND = MAX_PARCEL * 2;
 const MAX_SMALL = 64 * 1024;
@@ -78,6 +87,16 @@ function setup(): Promise<void> {
       ALTER TABLE rk_relay.parcels ENABLE ROW LEVEL SECURITY;
       REVOKE ALL ON SCHEMA rk_relay FROM PUBLIC;
     `);
+    // Each book's parcel bytes (phase 2, 23 Oct 2026): a store from before gets the column once, counted from its
+    // parcels then; after that it is kept as parcels come and go (bookBytes).
+    const has = await sql`SELECT 1 FROM information_schema.columns
+                          WHERE table_schema = 'rk_relay' AND table_name = 'books' AND column_name = 'bytes'`;
+    if (has.length === 0) {
+      await sql.unsafe(`
+        ALTER TABLE rk_relay.books ADD COLUMN IF NOT EXISTS bytes BIGINT NOT NULL DEFAULT 0;
+        UPDATE rk_relay.books b SET bytes = COALESCE((SELECT SUM(octet_length(p.body)) FROM rk_relay.parcels p WHERE p.book = b.book), 0);
+      `);
+    }
   })().catch((e) => { ready = null; throw e; });
   return ready;
 }
@@ -174,6 +193,11 @@ async function handle(request: Request): Promise<Response> {
       await sql`DELETE FROM rk_relay.parcels p USING rk_relay.devices d
                 WHERE p.book = d.book AND p.sender = d.device AND d.seen < ${now - DEVICE_IDLE_MS}`;
       await sql`DELETE FROM rk_relay.devices WHERE seen < ${now - DEVICE_IDLE_MS}`;
+      // Every book's byte figure put right from its parcels (the sweep above took some; a figure kept may drift).
+      await sql`UPDATE rk_relay.books b SET bytes = s.n
+                FROM (SELECT b2.book, COALESCE((SELECT SUM(octet_length(p.body)) FROM rk_relay.parcels p WHERE p.book = b2.book), 0) AS n
+                      FROM rk_relay.books b2) s
+                WHERE b.book = s.book AND b.bytes <> s.n`;
     }
     return json({ ok: true, live });
   }
@@ -224,8 +248,10 @@ async function handle(request: Request): Promise<Response> {
     if (!b) {
       // The book's first device sets the pass, and only by a hello (never by a stray parcel).
       if (action !== "hello") throw new Answer(refuse(403, "say-hello-first"));
-      const counts = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d FROM rk_relay.books`)[0];
+      const counts = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d,
+                                      COALESCE(SUM(bytes), 0) AS bytes FROM rk_relay.books`)[0];
       if (Number(counts.n) >= MAX_BOOKS) throw new Answer(refuse(507, "full"));
+      if (Number(counts.bytes) + NEW_BOOK_ROOM > STORE_BYTES) throw new Answer(refuse(507, "full"));
       if (Number(counts.d) >= NEW_BOOKS_DAY) throw new Answer(refuse(429, "new-books"));
       await tx`INSERT INTO rk_relay.books (book, pass, created, seen) VALUES (${book}, ${pass}, ${now}, ${now})
                ON CONFLICT (book) DO NOTHING`;
@@ -242,13 +268,14 @@ async function handle(request: Request): Promise<Response> {
     if (cut != null) {
       await tx`DELETE FROM rk_relay.parcels WHERE book = ${book} AND seq <= ${cut}`;
       prunedPast = Math.max(prunedPast, Number(cut));
+      await bookBytes(tx, book);
     }
     // Another device not seen for DEVICE_IDLE_MS goes with its parcels (23 Oct 2026, the review: a lost phone kept
     // every parcel of the book for the full week, and its place among the eight for ever).
     const idle = await tx`DELETE FROM rk_relay.devices
                           WHERE book = ${book} AND seen < ${now - DEVICE_IDLE_MS} AND device != ${device} RETURNING device`;
     for (const r of idle) await tx`DELETE FROM rk_relay.parcels WHERE book = ${book} AND sender = ${r.device as string}`;
-    if (idle.length > 0) await pruneTaken(tx, book);
+    if (idle.length > 0) { await pruneTaken(tx, book); await bookBytes(tx, book); }
     // The book's "seen" (its idle sweep) is written when something happened, else at most once an hour:
     // a quiet round costs no row.
     if (cut != null) await tx`UPDATE rk_relay.books SET seen = ${now}, pruned_past = ${prunedPast} WHERE book = ${book}`;
@@ -310,7 +337,10 @@ async function handle(request: Request): Promise<Response> {
         await tx`DELETE FROM rk_relay.parcels WHERE book = ${book} AND sender = ${device}`;
         const left = Number((await tx`SELECT COUNT(*) AS n FROM rk_relay.devices WHERE book = ${book}`)[0].n);
         if (left === 0) await tx`DELETE FROM rk_relay.books WHERE book = ${book}`;
-        else await pruneTaken(tx, book);
+        else {
+          await pruneTaken(tx, book);
+          await bookBytes(tx, book);
+        }
         return json({ ok: true });
       }
     }
@@ -322,14 +352,18 @@ async function handle(request: Request): Promise<Response> {
 // deno-lint-ignore no-explicit-any
 async function put(tx: any, book: string, device: string, now: number, body: Uint8Array, b: { day: string; day_count: number; day_bytes: string }): Promise<number | [number, string]> {
   if (body.length === 0) return [400, "empty"];
+  const stored = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}`)[0].n);
+  // The whole store first, as the hosting does: the other books' figures as kept, this book's counted afresh.
+  const others = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books WHERE book != ${book}`)[0].n);
+  if (others + stored + body.length > STORE_BYTES) return [507, "full"];
   const day = new Date(now).toISOString().slice(0, 10);
   const count = b.day === day ? Number(b.day_count) : 0;
   const dayBytes = b.day === day ? Number(b.day_bytes ?? 0) : 0;
   if (count >= DAY_LIMIT) return [429, "day-limit"];
   if (dayBytes + body.length > DAY_BYTES) return [429, "day-bytes"];
-  const stored = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}`)[0].n);
   if (stored + body.length > BOOK_BYTES) return [507, "book-full"];
-  await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1}, day_bytes = ${dayBytes + body.length} WHERE book = ${book}`;
+  await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1}, day_bytes = ${dayBytes + body.length},
+           bytes = ${stored + body.length} WHERE book = ${book}`;
   b.day = day; b.day_count = count + 1; b.day_bytes = String(dayBytes + body.length);
   const seq = Number((await tx`INSERT INTO rk_relay.parcels (book, sender, at, body)
                                VALUES (${book}, ${device}, ${now}, ${body}) RETURNING seq`)[0].seq);
@@ -361,9 +395,19 @@ async function takePage(tx: any, book: string, device: string, now: number, afte
   return { parcels: page, more, gap: after < prunedPast, through: Math.max(after, top) };
 }
 
-/** Parcels every other device of the book has taken are gone (as cloud/worker's pruneTaken). */
+/** Parcels every other device of the book has taken are gone (as cloud/worker's pruneTaken), and the book's bytes with them. */
 // deno-lint-ignore no-explicit-any
 async function pruneTaken(tx: any, book: string): Promise<void> {
-  await tx`DELETE FROM rk_relay.parcels p WHERE p.book = ${book} AND NOT EXISTS (
-             SELECT 1 FROM rk_relay.devices d WHERE d.book = ${book} AND d.device != p.sender AND d.acked < p.seq)`;
+  const gone = await tx`DELETE FROM rk_relay.parcels p WHERE p.book = ${book} AND NOT EXISTS (
+                          SELECT 1 FROM rk_relay.devices d WHERE d.book = ${book} AND d.device != p.sender AND d.acked < p.seq)
+                        RETURNING 1`;
+  if (gone.length > 0) await bookBytes(tx, book);
+}
+
+/** The book's kept byte figure (STORE_BYTES' sum) put right from its parcels; no row is written when it is right. */
+// deno-lint-ignore no-explicit-any
+async function bookBytes(tx: any, book: string): Promise<void> {
+  await tx`UPDATE rk_relay.books SET bytes = s.n
+           FROM (SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}) s
+           WHERE book = ${book} AND bytes <> s.n`;
 }
