@@ -48,7 +48,8 @@ object HomeSlides {
         override fun onBindViewHolder(h: Holder, i: Int) {
             val s = slides[i % slides.size]
             TextFit.relax(h.itemView)
-            h.itemView.findViewById<View>(R.id.slideRoot).background = ContextCompat.getDrawable(ctx, s.ground)
+            // Clipped to the rounded banner in code: the XML attribute exists only from API 31 (R101).
+            h.itemView.findViewById<View>(R.id.slideRoot).also { it.clipToOutline = true }.background = ContextCompat.getDrawable(ctx, s.ground)
             h.itemView.findViewById<ImageView>(R.id.ivSlideIcon).setImageResource(s.icon)
             h.itemView.findViewById<TextView>(R.id.tvSlideSub).setText(s.sub)
             h.itemView.findViewById<TextView>(R.id.tvSlideTitle).apply {

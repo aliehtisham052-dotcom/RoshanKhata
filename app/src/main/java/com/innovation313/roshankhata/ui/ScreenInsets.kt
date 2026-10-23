@@ -1,12 +1,16 @@
 package com.innovation313.roshankhata.ui
 
 import android.app.Activity
+import android.content.res.Configuration
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.innovation313.roshankhata.R
 
 /**
@@ -76,6 +80,15 @@ object ScreenInsets {
             }
         }
 
+        // Android 15+ ignores the theme's status-bar colour (23 Oct 2026, review R34): the bar is
+        // see-through, and on a screen with no header what shows behind the clock is the root's own
+        // page colour, not the dark bar the theme's light icons were chosen for. So the icons follow
+        // that colour: dark on the day's pale page, light on the night's. A screen with a header keeps
+        // the theme's light icons over its dark header; a screen that sets its own after this call wins.
+        if (header == null && Build.VERSION.SDK_INT >= 35) {
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = isLight(root)
+        }
+
         val rootBase = intArrayOf(
             root.paddingStart, root.paddingTop,
             root.paddingEnd, root.paddingBottom
@@ -106,6 +119,15 @@ object ScreenInsets {
         KeyboardFollow.keepFocusedVisible(root)
 
         ViewCompat.requestApplyInsets(root)
+    }
+
+    /** Whether [root]'s own background is pale (dark icons read on it); by the night mode when it is not one colour. */
+    private fun isLight(root: View): Boolean {
+        // A see-through root shows the window's page colour, which follows the night mode as well.
+        val colour = (root.background as? ColorDrawable)?.color?.takeIf { android.graphics.Color.alpha(it) > 0 }
+        if (colour != null) return androidx.core.graphics.ColorUtils.calculateLuminance(colour) > 0.5
+        val night = (root.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        return !night
     }
 
     /*
