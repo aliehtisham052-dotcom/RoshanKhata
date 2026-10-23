@@ -3572,4 +3572,9 @@
     <string name="live_status_relay">%1$s এর সাথে ইন্টারনেট দিয়ে লাইভ। শেষ হালনাগাদ: %2$s</string>
     <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation 313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ ৭ দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
     <string name="live_relay">ইন্টারনেট দিয়েও</string>
+    <string name="drive_plan_replace">%1$s: এই ফোনে %2$s-এর খাতার জায়গা নেবে।</string>
+    <string name="drive_plan_new">%1$s: নতুন দোকান হিসেবে আসবে। এই ফোনের %2$s আলাদা দোকান, সেটি যেমন আছে তেমনই থাকবে।</string>
+    <string name="drive_plan_fresh">%1$s: এই ফোনে একটি দোকান হিসেবে ফিরে আসবে।</string>
+    <string name="drive_plan_live">%1$s অন্য ডিভাইসের সাথে লাইভ সিঙ্ক হয়। এটি বদলালে লাইভ সিঙ্ক থেমে যাবে; পরে দুটোকে আবার যুক্ত করুন।</string>
+    <string name="drive_plan_unreadable">%1$s: ড্রাইভ থেকে পড়া যায়নি। এটি যেমন আছে তেমনই রাখা হচ্ছে।</string>
 </resources>

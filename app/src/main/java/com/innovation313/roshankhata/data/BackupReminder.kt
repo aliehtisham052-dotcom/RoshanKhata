@@ -33,9 +33,12 @@ object BackupReminder {
         KEY_LAST + if (businessId == 1L) "" else "_b$businessId"
 
     /** Record that a backup just succeeded. */
-    fun recordBackup(context: Context) {
+    fun recordBackup(context: Context) = recordBackupOf(context, Businesses.active(context).id)
+
+    /** The same, for a named shop: the one an upload was made for, whichever is open by now. */
+    fun recordBackupOf(context: Context, businessId: Long) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putLong(key(context), System.currentTimeMillis()).apply()
+            .edit().putLong(keyOf(businessId), System.currentTimeMillis()).apply()
     }
 
     /**

@@ -3528,4 +3528,9 @@
     <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
     <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation 313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
     <string name="live_relay">انٹرنیٹ سے بھی</string>
+    <string name="drive_plan_replace">%1$s: اس فون پر %2$s کا کھاتہ اس سے بدل جائے گا۔</string>
+    <string name="drive_plan_new">%1$s: نئی دکان کے طور پر آئے گی۔ اس فون کی %2$s ایک الگ دکان ہے اور ویسی ہی رہے گی۔</string>
+    <string name="drive_plan_fresh">%1$s: اس فون پر ایک دکان کے طور پر واپس آئے گی۔</string>
+    <string name="drive_plan_live">%1$s دوسرے آلے کے ساتھ لائیو سنک ہوتی ہے۔ اسے بدلنے سے لائیو سنک رک جائے گا؛ بعد میں دونوں کو دوبارہ جوڑیں۔</string>
+    <string name="drive_plan_unreadable">%1$s: ڈرائیو سے پڑھی نہیں جا سکی۔ اسے ویسا ہی چھوڑا جا رہا ہے۔</string>
 </resources>

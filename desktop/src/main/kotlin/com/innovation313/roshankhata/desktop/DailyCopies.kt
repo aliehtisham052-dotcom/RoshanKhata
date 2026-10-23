@@ -263,7 +263,9 @@ fun DailyCopiesPane(
                                 // no restore (21 Oct 2026: a failed copy was passed over in silence).
                                 DailyCopies.makeToday(dao, settings, dir, label = "before-restore-" + System.currentTimeMillis())
                                     ?: error(keepFailed)
-                                withContext(Dispatchers.IO) {
+                                // Not cancelled half way by the page closing (23 Oct 2026, the review), as Main.kt's restore:
+                                // a cancelled resume left the book paused, then turned off at its next opening.
+                                withContext(kotlinx.coroutines.NonCancellable + Dispatchers.IO) {
                                     // Live sync pauses first, so the restore's own writes are not sent to the phone as
                                     // changes (22 Oct 2026, the review: they removed the phone's newer work); it stops once
                                     // the restore went through (the two must be joined again), and a failure changes nothing.

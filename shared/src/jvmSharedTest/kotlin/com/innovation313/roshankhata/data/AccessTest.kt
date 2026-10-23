@@ -128,6 +128,21 @@ class AccessTest {
     }
 
     @Test
+    fun staffNumberTwoOfTwoShopsKeepTwoSeparateMissCounts() {
+        // 23 Oct 2026, the review: ids start at 1 in every shop's book, the counts are the device's.
+        Access.store = Prefs()
+        val now = 7_000_000L
+        val shopA = Staff(id = 2, name = "Ali", monthlySalary = 1.0, uid = "uid-shop-a")
+        val shopB = Staff(id = 2, name = "Bilal", monthlySalary = 1.0, uid = "uid-shop-b")
+        assertFalse(Access.account(shopA) == Access.account(shopB))
+        repeat(5) { Access.tryPin("0000", now, account = Access.account(shopA)) { it == "1234" } }
+        assertEquals(30_000L, Access.waitMillis(now, Access.account(shopA)))
+        assertEquals("the other shop's staff 2 is not kept waiting", 0L, Access.waitMillis(now, Access.account(shopB)))
+        // A row without a uid still has an account of its own.
+        assertEquals("staff:9", Access.account(Staff(id = 9, name = "Old", monthlySalary = 1.0, uid = null)))
+    }
+
+    @Test
     fun aRecoveryCodeIsEightPlainCharactersAndTypedLooselyStillMatches() {
         val code = RecoveryCode.next()
         assertTrue(code, Regex("[A-Z2-9]{4}-[A-Z2-9]{4}").matches(code))

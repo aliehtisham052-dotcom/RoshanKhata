@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.data.LiveRunner
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
 import com.innovation313.roshankhata.data.syncSql
+import com.innovation313.roshankhata.data.openOther
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -668,7 +669,7 @@ class BackupActivity : BaseActivity() {
     private fun handleParseResult(
         result: BackupCodec.ImportResult,
         data: BackupCodec.ParsedBackup?,
-        driveAccount: String? = null
+        drive: DriveSource? = null
     ) {
         when (result) {
             is BackupCodec.ImportResult.Failed -> {
@@ -681,7 +682,7 @@ class BackupActivity : BaseActivity() {
 
             is BackupCodec.ImportResult.Ok -> {
                 if (data == null) return
-                confirmRestore(result, data, driveAccount)
+                confirmRestore(result, data, drive)
             }
         }
     }
@@ -695,7 +696,7 @@ class BackupActivity : BaseActivity() {
     private fun confirmRestore(
         counts: BackupCodec.ImportResult.Ok,
         data: BackupCodec.ParsedBackup,
-        driveAccount: String? = null
+        drive: DriveSource? = null
     ) {
         // What the restore would take away, worked out before the question is
         // asked (21 Oct 2026): a phone's newer work must never vanish under an
@@ -705,14 +706,14 @@ class BackupActivity : BaseActivity() {
                 // A count that could not be made is said, and ticked, never read as "nothing lost".
                 ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN }
             val live = withContext(Dispatchers.IO) { Backup.liveOn(this@BackupActivity) }
-            if (!isFinishing) askRestore(counts, data, driveAccount, loss, live)
+            if (!isFinishing) askRestore(counts, data, drive, loss, live)
         }
     }
 
     private fun askRestore(
         counts: BackupCodec.ImportResult.Ok,
         data: BackupCodec.ParsedBackup,
-        driveAccount: String?,
+        drive: DriveSource?,
         loss: com.innovation313.roshankhata.data.RestoreCheck.Loss?,
         live: Boolean = false
     ) {
@@ -753,7 +754,7 @@ class BackupActivity : BaseActivity() {
             .setTitle(if (lost != null) R.string.restore_loss_title else R.string.restore_warning_title)
             .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, driveAccount) }
+            .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, drive) }
             // Or keep this book and add only what the copy has that it lacks (21 Oct 2026).
             .setNeutralButton(R.string.merge_button) { _, _ -> askMerge(data) }
         if (lost == null) { b.show(); return }
@@ -820,7 +821,7 @@ class BackupActivity : BaseActivity() {
         }
     }
 
-    private fun doRestore(data: BackupCodec.ParsedBackup, driveAccount: String? = null) {
+    private fun doRestore(data: BackupCodec.ParsedBackup, drive: DriveSource? = null) {
         Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
@@ -831,8 +832,15 @@ class BackupActivity : BaseActivity() {
                 runCatching {
                     // This book as it stands, kept first (Daily copies), so the restore can be undone.
                     // No copy, no restore (21 Oct 2026).
-                    com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
+                    val kept = com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
                         .also { if (it) Backup.restore(appContext, dao, data) }
+                    // From Drive (23 Oct 2026, the review): this phone now stands on that shop's backup, so
+                    // its next upload continues it instead of being asked about "another phone's" file.
+                    if (kept && drive != null && Businesses.active(appContext).id == drive.biz.id) {
+                        BackupReminder.recordBackupOf(appContext, drive.biz.id)
+                        DriveBackup.rememberSeen(appContext, drive.biz.modifiedAt, drive.biz.id)
+                    }
+                    kept
                 }
             }.await()
             // A restore that failed rolled back whole (22 Oct 2026, the review: it crashed the app and said nothing).
@@ -857,24 +865,22 @@ class BackupActivity : BaseActivity() {
             // Images, only on the Drive route and only if an archive is there.
             // This runs AFTER the text restore on purpose: the bill-photo path
             // re-map reads and rewrites the very entries the text restore just
-            // put back. A file restore (driveAccount == null) never carries
+            // put back. A file restore (drive == null) never carries
             // images, by the owner's design.
             var imagesFailed = false
             // Silence used to be the answer when no archive came back, and
             // silence reads as "everything came back". It does not: photos
             // simply were not in this backup. Say which of the two happened.
             var noImages = false
-            if (driveAccount != null) {
+            if (drive != null) {
                 imagesFailed = withContext(Dispatchers.IO) {
-                    val result = DriveBackup.restoreImages(this@BackupActivity, driveAccount)
+                    // That shop's own archive, by its Drive number (23 Oct 2026, the review).
+                    val result = DriveBackup.readImagesForBusiness(appContext, drive.account, drive.biz.id)
                     val bytes = result.getOrNull()
                     when {
                         result.isFailure -> true
                         bytes == null -> { noImages = true; false }
-                        else -> {
-                            BackupImages.restore(this@BackupActivity, dao, bytes)
-                            false
-                        }
+                        else -> runCatching { BackupImages.restore(appContext, dao, bytes) }.isFailure
                     }
                 }
             } else {
@@ -902,7 +908,7 @@ class BackupActivity : BaseActivity() {
             // had no archive beside it.
             val imagesNote = when {
                 !noImages -> null
-                driveAccount == null -> getString(R.string.restore_file_no_images)
+                drive == null -> getString(R.string.restore_file_no_images)
                 else -> getString(R.string.restore_no_images)
             }
 
@@ -1425,106 +1431,233 @@ class BackupActivity : BaseActivity() {
                 Digits.quantity(resources, R.plurals.drive_found_businesses, found.size, found.size),
                 choices,
                 secondary = ChoiceSheet.Action(getString(R.string.drive_restore_all)) {
-                    confirmRestoreAll(account, found)
+                    planDrive(account, found)
                 }
-            ) { which -> confirmRestoreAll(account, listOf(found[which])) }
+            ) { which -> planDrive(account, listOf(found[which])) }
         }
     }
 
-    private fun confirmRestoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
-        val names = businesses.joinToString("\n") { biz ->
-            "• " + (biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id))
+    /** Where a restore came from: one shop's backup on Drive, whose own photos then come with it. */
+    private class DriveSource(val account: String, val biz: DriveBackup.DriveBusiness)
+
+    /**
+     * One Drive shop, read and weighed before anything is asked (23 Oct 2026, the review: a Drive
+     * restore replaced books with no figures, no wrong-shop guard and no live-sync warning).
+     */
+    private class DrivePlan(
+        val biz: DriveBackup.DriveBusiness,
+        /** The Drive shop's name, or its number. */
+        val label: String,
+        /** The downloaded copy; null when it could not be read. Deleted once restored or let go. */
+        val file: File?,
+        /** The phone's shop it would replace, or null when it comes in as a shop of its own. */
+        val hereId: Long? = null,
+        val hereName: String? = null,
+        /** A different shop holds its number here: it comes in as a new shop beside it. */
+        val asNew: Boolean = false,
+        /** What the replace would take away from the phone's book; null when that book is empty or absent. */
+        val loss: com.innovation313.roshankhata.data.RestoreCheck.Loss? = null,
+        /** The phone's book syncs live: a replace stops that. */
+        val live: Boolean = false
+    ) {
+        val lost: Boolean get() = loss != null && !loss.none
+    }
+
+    /** Downloads and weighs one Drive shop, off the main thread. Nothing on the phone is changed. */
+    private suspend fun planFor(account: String, biz: DriveBackup.DriveBusiness, label: String): DrivePlan {
+        val ctx = applicationContext
+        val file = DriveBackup.restoreByIdToFile(ctx, account, biz.backupFileId).getOrNull()
+            ?: return DrivePlan(biz, label, null)
+        val (result, data) = Backup.parseFile(file)
+        if (result !is BackupCodec.ImportResult.Ok || data == null) { file.delete(); return DrivePlan(biz, label, null) }
+        val here = Businesses.list(ctx).firstOrNull { it.id == biz.id }
+            ?: return DrivePlan(biz, label, file)
+        val hereName = Businesses.displayName(ctx, here)
+        val differs = !biz.name.isNullOrBlank() && !hereName.isNullOrBlank() &&
+            !hereName.trim().equals(biz.name.trim(), ignoreCase = true)
+        var loss: com.innovation313.roshankhata.data.RestoreCheck.Loss? = null
+        var live = false
+        if (here.id == Businesses.active(ctx).id) {
+            loss = runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull()
+                ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN
+            live = Backup.liveOn(ctx)
+        } else {
+            // A closed shop is read through its own short-lived handle; null = never written, nothing to lose.
+            val other = try { KhataDatabase.openOther(ctx, here) } catch (_: Exception) {
+                loss = com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN; null
+            }
+            if (other != null) try {
+                loss = runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(other.khataDao(), data) }.getOrNull()
+                    ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN
+                live = runCatching { LiveSync.identity(other.syncSql()) != null }.getOrDefault(false)
+            } finally {
+                other.close()
+            }
         }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore_warning_title)
-            .setMessage(getString(R.string.drive_restore_all_warning, names))
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore_replace) { _, _ -> restoreAll(account, businesses) }
-            .show()
+        // A shop of this number here under ANOTHER name is a different shop: the Drive copy comes in
+        // beside it. Business 1 too, unless replacing it would take nothing away (a new phone's
+        // empty first shop, named a little differently, is where its own backup belongs).
+        val nothingHere = loss == null || loss.none
+        if (differs && (here.id != 1L || !nothingHere)) return DrivePlan(biz, label, file, hereName = hereName, asNew = true)
+        return DrivePlan(biz, label, file, hereId = here.id, hereName = hereName, loss = loss, live = live)
     }
 
     /**
-     * Restore each discovered shop into its own book, one after another.
-     *
-     * Two things here are deliberate and load-bearing. Each shop's registry
-     * entry is recreated at the id its Drive file already carries, so it lands
-     * back on its own database file rather than a newly numbered one. And the
-     * DAO is fetched fresh inside every round, never the screen's cached one:
-     * switching business closes and reopens the database, so a handle taken
-     * before the switch would write this shop's ledger into the last shop's
-     * file. That is the single worst thing this feature could do, so it is
-     * done explicitly rather than left to habit.
+     * Read and weigh the chosen Drive shops, then ask. The open shop alone, replaced in place, takes
+     * the single restore's own question (figures, the wrong-shop line, live sync, Merge) and its photos.
      */
-    private fun restoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
-        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
-
+    private fun planDrive(account: String, businesses: List<DriveBackup.DriveBusiness>) {
+        Toast.makeText(this, R.string.reading_backup, Toast.LENGTH_SHORT).show()
+        val labels = businesses.map { biz -> biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id) }
         lifecycleScope.launch {
+            val plans = withContext(Dispatchers.IO) { businesses.mapIndexed { i, biz -> planFor(account, biz, labels[i]) } }
+            if (isFinishing || isDestroyed) { plans.forEach { it.file?.delete() }; return@launch }
+            val one = plans.singleOrNull()
+            val oneFile = one?.file
+            if (one != null && oneFile != null && !one.asNew && one.hereId == Businesses.active(this@BackupActivity).id) {
+                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(oneFile).also { oneFile.delete() } }
+                handleParseResult(result, data, DriveSource(account, one.biz))
+                return@launch
+            }
+            askDrivePlans(account, plans)
+        }
+    }
+
+    private fun askDrivePlans(account: String, plans: List<DrivePlan>) {
+        val ready = plans.filter { it.file != null }
+        if (ready.isEmpty()) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.restore_warning_title)
+                .setMessage(getString(R.string.drive_restore_missed, plans.joinToString("\n") { "• " + it.label }))
+                .setPositiveButton(R.string.ok, null)
+                .show()
+            return
+        }
+        val words = com.innovation313.roshankhata.data.AndroidWords(this)
+        val parts = plans.map { p ->
+            val hereLabel = p.hereName ?: p.hereId?.let { Digits.string(resources, R.string.business_numbered, it) }.orEmpty()
+            when {
+                p.file == null -> getString(R.string.drive_plan_unreadable, p.label)
+                p.asNew -> getString(R.string.drive_plan_new, p.label, hereLabel)
+                p.hereId == null -> getString(R.string.drive_plan_fresh, p.label)
+                else -> listOfNotNull(
+                    getString(R.string.drive_plan_replace, p.label, hereLabel),
+                    p.loss?.takeIf { p.lost }?.let { l ->
+                        getString(R.string.restore_loss_intro) + "\n" +
+                            com.innovation313.roshankhata.data.RestoreCheck.lines(l, words) { Format.dateTime(it) }
+                                .joinToString("\n") { "• $it" }
+                    },
+                    if (p.live) getString(R.string.drive_plan_live, hereLabel) else null
+                ).joinToString("\n")
+            }
+        }
+        val anyLoss = ready.any { it.lost }
+        val message = (parts + listOfNotNull(if (anyLoss) getString(R.string.restore_loss_kept) else null)).joinToString("\n\n")
+        var started = false
+        val b = MaterialAlertDialogBuilder(this)
+            .setTitle(if (anyLoss) R.string.restore_loss_title else R.string.restore_warning_title)
+            .setMessage(message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.restore_replace) { _, _ -> started = true; restoreAll(account, plans) }
+            .setOnDismissListener { if (!started) plans.forEach { it.file?.delete() } }
+        if (!anyLoss) { b.show(); return }
+        // Work would be lost: the owner ticks that he understands before Replace works, as a single restore.
+        val agree = android.widget.CheckBox(this).apply { setText(R.string.restore_loss_agree) }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        b.setView(android.widget.FrameLayout(this).apply { setPadding(pad, 0, pad, 0); addView(agree) })
+        val dialog = b.show()
+        val replace = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+        replace.isEnabled = false
+        agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
+    }
+
+    /**
+     * Restore each weighed Drive shop into its own book, one after another.
+     *
+     * Each shop's registry entry is recreated at the id its Drive file already carries, so it lands
+     * back on its own database file, unless a different shop holds that number here (then it comes
+     * in as a new shop). The DAO is fetched fresh after every switch, never the screen's cached one:
+     * a handle taken before the switch would write this shop's ledger into the last shop's file.
+     *
+     * On the app's own scope (23 Oct 2026, the review): a screen turned mid-restore used to stop it
+     * half way, leave the phone on another shop and a syncing book paused. Only the summary waits for
+     * the screen; with the screen gone the app is simply restarted on the shop it ends on.
+     */
+    private fun restoreAll(account: String, plans: List<DrivePlan>) {
+        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
+        val app = applicationContext
+        val startId = Businesses.active(app).id
+        com.innovation313.roshankhata.data.AppScope.launch {
             val done = mutableListOf<String>()
             val failed = mutableListOf<String>()
+            for (p in plans) {
+                val file = p.file
+                if (file == null) { failed += p.label; continue }
+                try {
+                    val (result, data) = Backup.parseFile(file)
+                    if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += p.label; continue }
+                    val target = if (p.asNew) Businesses.create(app, p.biz.name.orEmpty())
+                        else Businesses.ensure(app, p.biz.id, p.biz.name)
+                    withContext(Dispatchers.Main) { Businesses.switchTo(app, target.id) }
 
-            for (biz in businesses) {
-                val label = biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id)
-
-                // A shop of this number already here under ANOTHER name is a different shop (21 Oct 2026,
-                // the critical review: it was replaced by the Drive copy without a word). The Drive copy
-                // then comes in as a shop of its own, beside it.
-                val here = Businesses.list(this@BackupActivity).firstOrNull { it.id == biz.id }
-                val hereName = here?.let { Businesses.displayName(this@BackupActivity, it) }
-                val otherShop = here != null && here.id != 1L && !biz.name.isNullOrBlank() && !hereName.isNullOrBlank() &&
-                    !hereName.trim().equals(biz.name.trim(), ignoreCase = true)
-                val target = if (otherShop) Businesses.create(this@BackupActivity, biz.name.orEmpty())
-                    else Businesses.ensure(this@BackupActivity, biz.id, biz.name)
-                Businesses.switchTo(this@BackupActivity, target.id)
-
-                val file = DriveBackup.restoreByIdToFile(this@BackupActivity, account, biz.backupFileId)
-                    .getOrNull()
-                if (file == null) { failed += label; continue }
-
-                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(file).also { file.delete() } }
-                if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += label; continue }
-
-                val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
-                val kept = withContext(Dispatchers.IO) {
+                    val liveDao = KhataDatabase.get(app).khataDao()
                     // Each shop's own book kept first, as a single restore does; not replaced unless kept.
                     // A restore that fails rolls back whole and is counted as failed, never a crash (22 Oct 2026).
-                    runCatching {
-                        com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)
-                            .also { if (it) Backup.restore(this@BackupActivity, liveDao, data) }
+                    val kept = runCatching {
+                        com.innovation313.roshankhata.data.Snapshots.keepNow(app)
+                            .also { if (it) Backup.restore(app, liveDao, data) }
                     }.getOrDefault(false)
-                }
-                if (!kept) { failed += label; continue }
+                    if (!kept) { failed += p.label; continue }
 
-                // Images for this shop, from this shop's own archive. A shop
-                // without one is restored without photos, not failed.
-                DriveBackup.restoreImages(this@BackupActivity, account).getOrNull()?.let { bytes ->
-                    withContext(Dispatchers.IO) {
-                        BackupImages.restore(this@BackupActivity, liveDao, bytes)
+                    // Images from the Drive shop's own archive, by its Drive number (23 Oct 2026, the
+                    // review: a shop given a new number here took another shop's photos). A shop without
+                    // one is restored without photos, not failed.
+                    DriveBackup.readImagesForBusiness(app, account, p.biz.id).getOrNull()?.let { bytes ->
+                        runCatching { BackupImages.restore(app, liveDao, bytes) }
                     }
-                }
 
-                BackupReminder.recordBackup(this@BackupActivity)
-                // This phone now stands on that backup: its next upload is a
-                // continuation of it, not a stranger's file to be asked about.
-                DriveBackup.rememberSeen(this@BackupActivity, biz.modifiedAt)
-                done += label
+                    // This phone now stands on that backup: its next upload continues it. Only when it
+                    // is the same Drive file, which a shop given a new number here is not.
+                    if (target.id == p.biz.id) {
+                        BackupReminder.recordBackupOf(app, target.id)
+                        DriveBackup.rememberSeen(app, p.biz.modifiedAt, target.id)
+                    }
+                    done += p.label
+                } catch (e: Exception) {
+                    failed += p.label
+                } finally {
+                    file.delete()
+                }
+            }
+            // Several shops: back to the one that was open. One shop: stay on it, it is what was asked for.
+            if (plans.size > 1 && Businesses.list(app).any { it.id == startId } && Businesses.active(app).id != startId) {
+                withContext(Dispatchers.Main) { Businesses.switchTo(app, startId) }
             }
 
             val body = buildString {
-                if (done.isNotEmpty()) {
-                    append(getString(R.string.drive_restored_these, done.joinToString("\n") { "• $it" }))
-                }
+                if (done.isNotEmpty()) append(getString(R.string.drive_restored_these, done.joinToString("\n") { "• $it" }))
                 if (failed.isNotEmpty()) {
                     if (isNotEmpty()) append("\n\n")
                     append(getString(R.string.drive_restore_missed, failed.joinToString("\n") { "• $it" }))
                 }
             }
-
-            MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(R.string.restore_done)
-                .setMessage(body)
-                .setCancelable(false)
-                .setPositiveButton(R.string.ok) { _, _ -> goHome() }
-                .show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    MaterialAlertDialogBuilder(this@BackupActivity)
+                        .setTitle(R.string.restore_done)
+                        .setMessage(body)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.ok) { _, _ -> goHome() }
+                        .show()
+                } else {
+                    // Every screen still holds the book it was opened on: start them again on this one.
+                    app.startActivity(
+                        Intent(app, MainActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .putExtra(MainActivity.EXTRA_UNLOCKED, true)
+                    )
+                }
+            }
         }
     }
 

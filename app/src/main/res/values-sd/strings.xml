@@ -3556,4 +3556,9 @@
     <string name="live_status_relay">%1$s سان انٽرنيٽ ذريعي لائيو. آخري تازگي: %2$s</string>
     <string name="live_relay_help">جڏهن فون دڪان جي وائي فائي کان پري هجي ته ان جون تبديليون Innovation 313 جي ريلي ذريعي وڃن ٿيون، هن کاتي جي پنهنجي چاٻي سان بند: ريلي انهن کي پڙهي نٿي سگهي، ۽ وڌ ۾ وڌ 7 ڏينهن رکي ٿي. ٻنهي ڊوائيسن لاءِ هڪ ئي سوئچ. جڏهن ايپ بند هجي ته Google جو Firebase فون کي رڳو ايترو ٻڌائي ٿو ته ڪجهه انتظار ۾ آهي؛ کاتي جي ڪا به شيءِ ان وٽ نٿي وڃي.</string>
     <string name="live_relay">انٽرنيٽ ذريعي به</string>
+    <string name="drive_plan_replace">%1$s: هن فون تي %2$s جو کاتو ان سان بدلجي ويندو.</string>
+    <string name="drive_plan_new">%1$s: نئين دڪان طور ايندي. هن فون جي %2$s الڳ دڪان آهي ۽ ائين ئي رهندي.</string>
+    <string name="drive_plan_fresh">%1$s: هن فون تي هڪ دڪان طور واپس ايندي.</string>
+    <string name="drive_plan_live">%1$s ٻئي ڊوائيس سان لائيو سنڪ ٿئي ٿي. ان کي بدلائڻ سان لائيو سنڪ رڪجي ويندو؛ پوءِ ٻنهي کي ٻيهر ڳنڍيو.</string>
+    <string name="drive_plan_unreadable">%1$s: ڊرائيو مان پڙهي نه سگهي. ان کي ائين ئي ڇڏيو پيو وڃي.</string>
 </resources>

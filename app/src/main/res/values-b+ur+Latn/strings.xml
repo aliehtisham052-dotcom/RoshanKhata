@@ -3528,4 +3528,9 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
     <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
+    <string name="drive_plan_replace">%1$s: is phone par %2$s ka khata is se badal jayega.</string>
+    <string name="drive_plan_new">%1$s: nayi dukaan ke taur par aayegi. Is phone ki %2$s alag dukaan hai aur waisi hi rahegi.</string>
+    <string name="drive_plan_fresh">%1$s: is phone par ek dukaan ke taur par wapas aayegi.</string>
+    <string name="drive_plan_live">%1$s doosre device ke saath live sync hoti hai. Ise badalne se live sync ruk jayega; baad mein dono ko dobara jorein.</string>
+    <string name="drive_plan_unreadable">%1$s: Drive se parhi nahi ja saki. Ise waisa hi chhoda ja raha hai.</string>
 </resources>

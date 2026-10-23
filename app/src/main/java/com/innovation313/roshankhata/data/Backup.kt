@@ -46,8 +46,20 @@ object Backup {
      * back exactly the same way. Only the label differs, because the label is
      * what was standing between the owner and a backup that actually travelled.
      */
-    fun suggestedFileName(): String =
-        "RoshanKhata_Backup_${stamp.format(Date())}.txt"
+    fun suggestedFileName(context: Context, businessId: Long = Businesses.active(context).id): String =
+        // The shop's number in the name (23 Oct 2026, the review): a Downloads folder holding two shops'
+        // copies says which is which. Business 1's name is as it always was.
+        "RoshanKhata_Backup${Businesses.suffixFor(businessId)}_${stamp.format(Date())}.txt"
+
+    /**
+     * The folder of the app's own saved backups, one per shop (23 Oct 2026, the review: one pool for
+     * every shop let shop B's five copies push out all of shop A's, and the restore list offered other
+     * shops' books). Business 1 keeps "backups", which also holds the copies made before this.
+     */
+    fun internalDirName(businessId: Long): String = "backups" + Businesses.suffixFor(businessId)
+
+    private fun internalDir(context: Context): File =
+        File(context.filesDir, internalDirName(Businesses.active(context).id))
 
     // ---------- Export ----------
 
@@ -99,7 +111,7 @@ object Backup {
      * @return a human-readable location to show the owner, or null on failure.
      */
     fun saveToDownloads(context: Context, json: String): String? {
-        val name = suggestedFileName()
+        val name = suggestedFileName(context)
 
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -156,12 +168,12 @@ object Backup {
     /** The streamed backup's cache file (P6): the one copy every other path copies from. */
     suspend fun exportToCache(context: Context, dao: KhataDao, secrets: Boolean = true): File {
         val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-        return exportToFile(context, dao, File(dir, suggestedFileName()), secrets)
+        return exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets)
     }
 
     /** [saveToDownloads], from a file — streamed, never held as one string. */
     fun saveToDownloads(context: Context, source: File): String? {
-        val name = suggestedFileName()
+        val name = suggestedFileName(context)
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
@@ -194,8 +206,8 @@ object Backup {
     /** [writeInternalCopy], from a file. */
     fun writeInternalCopy(context: Context, source: File): File? {
         return try {
-            val dir = File(context.filesDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName())
+            val dir = internalDir(context).apply { mkdirs() }
+            val file = File(dir, suggestedFileName(context))
             source.copyTo(file, overwrite = true)
             dir.listFiles()
                 ?.sortedByDescending { it.lastModified() }
@@ -209,8 +221,8 @@ object Backup {
 
     fun writeInternalCopy(context: Context, json: String): File? {
         return try {
-            val dir = File(context.filesDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName())
+            val dir = internalDir(context).apply { mkdirs() }
+            val file = File(dir, suggestedFileName(context))
             file.writeText(json)
 
             // Keep the last few, then stop. An unbounded pile of backups would
@@ -228,7 +240,7 @@ object Backup {
 
     /** The app's own saved backups, newest first. */
     fun internalBackups(context: Context): List<File> {
-        val dir = File(context.filesDir, "backups")
+        val dir = internalDir(context)
         if (!dir.exists()) return emptyList()
         return dir.listFiles()
             ?.filter { it.isFile }
@@ -240,7 +252,7 @@ object Backup {
     fun writeToCache(context: Context, json: String): File? {
         return try {
             val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName())
+            val file = File(dir, suggestedFileName(context))
             file.writeText(json)
             file
         } catch (e: Exception) {
@@ -304,7 +316,9 @@ object Backup {
         try {
             BackupCodec.restoreLedger(dao, data)
         } catch (e: Exception) {
-            if (live) LiveSync.resume(sql)
+            // Even when the restore was cancelled (23 Oct 2026, the review): a cancelled coroutine's
+            // resume threw at once and left the book paused, then turned off at its next opening.
+            if (live) kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) { LiveSync.resume(sql) }
             throw e
         }
         if (live) {

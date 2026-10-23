@@ -75,10 +75,10 @@ object Format {
         return pick(untagged) ?: pick(name) ?: "?"
     }
 
-    fun money(value: Double): String {
+    // [sign]: another shop's own sign, for a figure read from a shop that is not open (23 Oct 2026).
+    fun money(value: Double, sign: String = Currency.symbol): String {
         val rounded = abs(value)
         // The sign is the shop's own choice (Profile → Currency); see [Currency].
-        val sign = Currency.symbol
         // A fraction is printed to the currency's own decimals (21 Oct 2026): 3 for KWD/BHD/OMR, none for IRR/Rp.
         val figure = if (rounded % 1.0 == 0.0 || Currency.decimals(sign) == 0) "%,.0f".format(Digits.FIGURES, rounded)
             else "%,.${Currency.decimals(sign)}f".format(Digits.FIGURES, rounded)

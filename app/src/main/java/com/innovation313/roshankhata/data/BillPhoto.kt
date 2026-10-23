@@ -110,6 +110,28 @@ object BillPhoto {
         return out
     }
 
+    /**
+     * A shop being deleted ([Businesses.delete], 23 Oct 2026): its bill photos go, except any that
+     * another shop's book on this phone (the open one included) still points at. A book that cannot
+     * be read throws before anything is removed.
+     */
+    internal suspend fun forgetShop(context: Context, gone: KhataDao, goneId: Long) {
+        val paths = referenced(gone)
+        if (paths.isEmpty()) return
+        val kept = HashSet<String>()
+        referenced(KhataDatabase.get(context).khataDao()).filterTo(kept) { it in paths }
+        for (b in Businesses.list(context)) {
+            if (b.id == goneId) continue
+            val other = KhataDatabase.openOther(context, b) ?: continue
+            try {
+                referenced(other.khataDao()).filterTo(kept) { it in paths }
+            } finally {
+                other.close()
+            }
+        }
+        (paths - kept).forEach { delete(it) }
+    }
+
     /** Remove a photo's file. Safe to call when it has already gone. */
     fun delete(path: String?) {
         if (path.isNullOrBlank()) return

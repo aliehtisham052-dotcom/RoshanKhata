@@ -602,6 +602,25 @@ real devices yet.
 - **Not done:** removing a stale device from the phone's screen (the
   computer's window has it); the hosting relay has no live line (rounds only).
 
+### The 23 Oct review report (kmp-desktop-15)
+
+- **Several shops and Drive (phone):** a Drive restore, one shop or all, is
+  read and weighed first (`planDrive`/`planFor`: download, parse, RestoreCheck
+  against that shop's own book via `openOther`, live sync) and says per shop
+  whether it replaces, comes in new or could not be read, with figures and the
+  tick; the open shop alone goes through the single restore's question.
+  Business 1 under another name comes in as a new shop unless replacing it
+  loses nothing. The loop runs on AppScope; photos by the Drive shop's number.
+  DriveBackup's names, keys and records are by business id; an automatic
+  backup stops if the shop changes under it. A switch writes the left shop's
+  daily copy first (`Snapshots.beforeLeaving`); afterSale is bound to its
+  shop. Own saved backups are per shop (`backups_b<id>`); bell backup notes
+  per shop; delete/erase say goodbye to the relays for closed books and take
+  bill photos, signatures and reminder notes; a new shop takes the open
+  shop's country, sign and calendar (`copyRegion`); the shop sheet asks
+  SETTINGS; PIN counts are by staff uid. Not done: a Drive backup of the shop
+  being left (the export reads the open shop's profile).
+
 ### The shared module (KMP)
 
 ```
