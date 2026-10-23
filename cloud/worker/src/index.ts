@@ -56,6 +56,14 @@ const HEX32 = /^[0-9a-f]{32}$/;
 const HEX64 = /^[0-9a-f]{64}$/;
 const DEVICE = /^[0-9a-f]{16}$/;
 const WAKE_GAP_MS = 30_000;
+/**
+ * A parcel this small rides inside the FCM message itself (23 Oct 2026): the phone takes it without asking the
+ * relay. FCM's data payload is at most 4,096 bytes (Firebase's error codes page); the base64 body is kept well
+ * under it with room for the keys.
+ */
+const CARRY_MAX_B64 = 3_400;
+/** FCM marks a sender abusive near 240 messages a minute to one device: carried parcels stop well short. */
+const CARRY_PER_MINUTE = 60;
 /** A quiet call does not write the device's "seen" more often than this: the free plan counts rows written. */
 const SEEN_EVERY_MS = 3_600_000;
 /** New books one Worker takes in a UTC day, and books it holds at most (22 Oct 2026: anyone may open a book). */
@@ -259,9 +267,10 @@ export class Daakiya extends DurableObject<Env> {
       `INSERT INTO parcels (sender, at, body) VALUES (?, ?, ?) RETURNING seq`, device, now, body,
     ).one().seq;
     this.touch(device, now, true);
-    // The open lines are nudged at once; only the devices without one are woken through FCM.
+    // The open lines are nudged at once; the devices without one get the parcel itself through FCM when it is small
+    // (or a wake-up to come for it).
     const live = this.nudge(device);
-    this.ctx.waitUntil(this.wakeOthers(device, now, live));
+    this.ctx.waitUntil(this.wakeOthers(device, now, live, { seq, body }));
     return seq;
   }
 
@@ -447,16 +456,32 @@ export class Daakiya extends DurableObject<Env> {
     await this.ctx.storage.setAlarm(now + 6 * 3600_000);
   }
 
-  private async wakeOthers(sender: string, now: number, live: Set<string> = new Set()): Promise<void> {
+  /** Carried parcels per device in the current minute (kept in memory: a reset only lets a few more through). */
+  private carried = new Map<string, { minute: number; n: number }>();
+
+  private async wakeOthers(sender: string, now: number, live: Set<string> = new Set(), parcel?: { seq: number; body: Uint8Array }): Promise<void> {
     if (!this.env.FCM_SERVICE_ACCOUNT || !this.env.FCM_PROJECT_ID) return;
     const rows = this.sql.exec<{ device: string; fcm: string; woke: number }>(
       `SELECT device, fcm, woke FROM devices WHERE device != ? AND fcm IS NOT NULL`, sender,
     ).toArray();
+    const b64 = parcel ? toBase64(parcel.body) : null;
     for (const r of rows) {
       if (live.has(r.device)) continue;
-      if (now - r.woke < WAKE_GAP_MS) continue;
+      // The parcel itself, when it fits and the device is not being sent too many this minute: every parcel goes
+      // (a skipped one would wait for the next round), so the relay stays the record and FCM only the fast road.
+      const minute = Math.floor(now / 60_000);
+      const c = this.carried.get(r.device);
+      const n = c && c.minute === minute ? c.n : 0;
+      let data: Record<string, string> | null = null;
+      if (parcel && b64 && b64.length <= CARRY_MAX_B64 && n < CARRY_PER_MINUTE) {
+        this.carried.set(r.device, { minute, n: n + 1 });
+        data = { t: "rk-parcel", s: String(parcel.seq), f: sender, b: b64 };
+      } else if (now - r.woke >= WAKE_GAP_MS) {
+        data = { t: "rk-wake" };
+      }
+      if (!data) continue;
       this.sql.exec(`UPDATE devices SET woke = ? WHERE device = ?`, now, r.device);
-      const gone = await sendWake(this.env, r.fcm).catch(() => false);
+      const gone = await sendWake(this.env, r.fcm, data).catch(() => false);
       if (gone === "gone") this.sql.exec(`UPDATE devices SET fcm = NULL WHERE device = ?`, r.device);
     }
   }
@@ -497,12 +522,17 @@ async function accessToken(env: Env): Promise<string> {
   return o.access_token;
 }
 
-/** A data-only push saying a parcel waits; "gone" when the device's token is no longer valid. */
-async function sendWake(env: Env, fcmToken: string): Promise<boolean | "gone"> {
+/**
+ * A data-only push: "rk-wake" (a parcel waits) or "rk-parcel" (the sealed parcel itself, which only the book's
+ * devices can open — Google carries ciphertext); "gone" when the device's token is no longer valid. A carried
+ * parcel lives a day at FCM (the relay keeps it seven), a wake-up ten minutes.
+ */
+async function sendWake(env: Env, fcmToken: string, data: Record<string, string> = { t: "rk-wake" }): Promise<boolean | "gone"> {
+  const ttl = data.t === "rk-parcel" ? "86400s" : "600s";
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${env.FCM_PROJECT_ID}/messages:send`, {
     method: "POST",
     headers: { authorization: "Bearer " + (await accessToken(env)), "content-type": "application/json" },
-    body: JSON.stringify({ message: { token: fcmToken, data: { t: "rk-wake" }, android: { priority: "high", ttl: "600s" } } }),
+    body: JSON.stringify({ message: { token: fcmToken, data, android: { priority: "high", ttl } } }),
   });
   // Only a token FCM no longer knows is let go (22 Oct 2026, the review: any 400 dropped it, and the
   // device was never woken again until it registered anew). 404 is UNREGISTERED; a 400 is let go

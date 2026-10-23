@@ -205,6 +205,36 @@ object LiveCloud {
         }
     }
 
+    /** What a parcel carried by a push came to ([takeCarried]). */
+    enum class Carried {
+        /** Written in; nothing more to ask for. */
+        TOOK,
+        /** Opened, but something before it never came (or it could not be written yet): a round fetches the rest. */
+        ASK,
+        /** Not this book's, not sealed with its key, or from a device it does not know: left alone. */
+        NOT_MINE
+    }
+
+    /**
+     * A parcel the relay sent inside the push itself (23 Oct 2026: "rk-parcel" — the sealed body, its number at the
+     * relay and its sender), written in without asking the relay anything. The relay's cursor is not moved: the
+     * relay stays the record, and the next round reads the parcel again and finds it already written (every write
+     * lands by uid and each device's log line). [ASK] when a round should follow at once.
+     */
+    suspend fun takeCarried(sql: SyncSql, from: String, bodyB64: String, now: Long = System.currentTimeMillis()): Carried {
+        val id = LiveSync.identity(sql) ?: return Carried.NOT_MINE
+        val sealedIn = runCatching { B64.decode(bodyB64) }.getOrNull() ?: return Carried.NOT_MINE
+        val plain = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY) ?: return Carried.NOT_MINE
+        val msg = runCatching { JSONObject(String(plain, Charsets.UTF_8)) }.getOrNull() ?: return Carried.NOT_MINE
+        val dev = msg.optString("dev")
+        // The relay's word on the sender must be the sealed message's own (as in a round).
+        if (from.isNotBlank() && from != dev.take(16).padEnd(16, '0')) return Carried.NOT_MINE
+        if (!absorb(sql, msg, now)) return if (lastRefusal != null) Carried.ASK else Carried.NOT_MINE
+        // A gap (something before it never came) is fetched by a round now, not at the next app opening.
+        val gap = !getMeta(sql, k("need_" + dev, id.book)).isNullOrBlank()
+        return if (gap) Carried.ASK else Carried.TOOK
+    }
+
     /**
      * One cloud round: say hello once, pick up the others' messages,
      * acknowledge them, leave this device's own. Nothing at all unless the
