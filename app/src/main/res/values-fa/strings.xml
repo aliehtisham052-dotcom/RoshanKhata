@@ -3589,4 +3589,5 @@
         <item quantity="other">منقضی \u00B7 %1$d روز پیش</item>
     </plurals>
     <string name="voice_language_missing_phone">این گوشی آن زبان را ندارد. به زبان خود گوشی گوش می‌دهد.</string>
+    <string name="report_sync_notes_included">— یادداشت‌های همگام‌سازی زنده (خرابی نیست: مشکلاتی که همگام‌سازی زنده از آن‌ها گذشت و دوباره تلاش کرد؛ بدون نام، مبلغ یا کلید):</string>
 </resources>

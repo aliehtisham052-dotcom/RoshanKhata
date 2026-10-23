@@ -80,6 +80,57 @@ object BusinessProfile {
     }
 
     /**
+     * A named shop's profile as [ShopSettings], open or not, for the Drive backup of a shop being
+     * left (23 Oct 2026, the review, R21): every getter reads [businessId]'s own file, exactly as the
+     * open shop's getters below read theirs, so a closed shop's backup can never carry the open
+     * shop's name, bank or terms. Read-only: a restore always goes through the open shop's
+     * [AndroidShopSettings], and a setter here throws rather than write a closed shop in silence.
+     */
+    fun settingsOf(context: Context, businessId: Long): ShopSettings = ProfileOf(prefsOf(context, businessId))
+
+    private class ProfileOf(private val p: android.content.SharedPreferences) : ShopSettings {
+        private fun text(key: String): String? = p.getString(key, null)?.takeIf { it.isNotBlank() }
+        private fun readOnly(): Nothing = throw UnsupportedOperationException("a closed shop's profile is read only")
+
+        override fun businessName() = text(KEY_BUSINESS_NAME)
+        override fun setBusinessName(value: String?) { readOnly() }
+        override fun businessNameUrdu() = text(KEY_BUSINESS_NAME_URDU)
+        override fun setBusinessNameUrdu(value: String?) { readOnly() }
+        override fun businessAddress() = text(KEY_BUSINESS_ADDRESS)
+        override fun setBusinessAddress(value: String?) { readOnly() }
+        override fun businessPhone() = text(KEY_BUSINESS_PHONE)
+        override fun setBusinessPhone(value: String?) { readOnly() }
+        override fun businessEmail() = text(KEY_BUSINESS_EMAIL)
+        override fun setBusinessEmail(value: String?) { readOnly() }
+        override fun bankName() = text(KEY_BANK_NAME)
+        override fun setBankName(value: String?) { readOnly() }
+        override fun bankAccountTitle() = text(KEY_BANK_TITLE)
+        override fun setBankAccountTitle(value: String?) { readOnly() }
+        override fun bankIban() = text(KEY_BANK_IBAN)
+        override fun setBankIban(value: String?) { readOnly() }
+        override fun bankJazzCash() = text(KEY_BANK_JAZZCASH)
+        override fun setBankJazzCash(value: String?) { readOnly() }
+        override fun termsAndConditions() = text(KEY_TERMS)
+        override fun setTermsAndConditions(value: String?) { readOnly() }
+        override fun strn() = text(KEY_STRN)
+        override fun setStrn(value: String?) { readOnly() }
+        override fun currency(): String = Currency.clean(p.getString(KEY_CURRENCY, null))
+        override fun setCurrency(value: String?) { readOnly() }
+        override fun calendar(): ShopCalendar.Kind = ShopCalendar.Kind.of(p.getString(KEY_CALENDAR, null))
+        override fun setCalendar(kind: ShopCalendar.Kind) { readOnly() }
+        override fun country(): ShopCountry = ShopCountry.of(p.getString(KEY_COUNTRY, null))
+        override fun setCountry(country: ShopCountry) { readOnly() }
+        override fun tradeKey() = text(KEY_TRADE)
+        override fun setTradeKey(key: String) { readOnly() }
+        override fun otherTradeName() = text(KEY_TRADE_OTHER_NAME)
+        override fun otherTradeItems() = text(KEY_TRADE_OTHER_ITEMS)
+        override fun setOtherTrade(name: String?, items: String?) { readOnly() }
+        override fun photoOnStatement() = p.getBoolean(KEY_PHOTO_ON_STATEMENT, false)
+        override fun setPhotoOnStatement(enabled: Boolean) { readOnly() }
+        override fun refreshDisplay() = Unit
+    }
+
+    /**
      * Where this business's identity images live. Business 1: the legacy
      * flat files. Any other: its own biz_b<id>/ folder, so two shops'
      * stamps, QRs, and signatures can never overwrite each other.

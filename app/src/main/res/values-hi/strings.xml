@@ -3611,4 +3611,5 @@
         <item quantity="other">एक्सपायर \u00B7 %1$d दिन पहले</item>
     </plurals>
     <string name="voice_language_missing_phone">आपके फ़ोन में वह भाषा नहीं है। फ़ोन की अपनी भाषा में सुना जा रहा है।</string>
+    <string name="report_sync_notes_included">— लाइव सिंक नोट्स (क्रैश नहीं: वे दिक्कतें जिनके बाद लाइव सिंक ने फिर कोशिश की; कोई नाम, रकम या चाबी नहीं):</string>
 </resources>

@@ -171,6 +171,27 @@ object Backup {
         return exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets)
     }
 
+    /**
+     * A NAMED shop's backup to the cache, open or not (23 Oct 2026, the review, R21: the Drive backup
+     * of the shop being left). [dao] must be that shop's own book ([KhataDatabase.openOther]); its
+     * name, profile and file name are all read by [businessId] ([BusinessProfile.settingsOf]), never
+     * from whichever shop is open now, so one shop's book can never go out under another's details.
+     */
+    suspend fun exportToCacheFor(context: Context, dao: KhataDao, businessId: Long): File {
+        val dir = File(context.cacheDir, "backups").apply { mkdirs() }
+        // Its own name in the cache ("left-"): never the file a manual backup of the same shop writes that minute.
+        val file = File(dir, "left-" + suggestedFileName(context, businessId))
+        java.io.BufferedWriter(java.io.OutputStreamWriter(java.io.FileOutputStream(file), Charsets.UTF_8), 64 * 1024).use {
+            BackupCodec.exportTo(
+                dao,
+                BusinessProfile.nameOf(context, businessId),
+                BackupCodec.profileToJson(BusinessProfile.settingsOf(context, businessId)),
+                it
+            )
+        }
+        return file
+    }
+
     /** [saveToDownloads], from a file — streamed, never held as one string. */
     fun saveToDownloads(context: Context, source: File): String? {
         val name = suggestedFileName(context)

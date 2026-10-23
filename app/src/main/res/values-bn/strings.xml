@@ -3611,4 +3611,5 @@
         <item quantity="other">মেয়াদ শেষ \u00B7 %1$d দিন আগে</item>
     </plurals>
     <string name="voice_language_missing_phone">আপনার ফোনে ওই ভাষা নেই। ফোনের নিজের ভাষায় শোনা হচ্ছে।</string>
+    <string name="report_sync_notes_included">— লাইভ সিঙ্ক নোট (ক্র্যাশ নয়: যেসব সমস্যার পর লাইভ সিঙ্ক আবার চেষ্টা করেছে; কোনো নাম, টাকার অঙ্ক বা চাবি নেই):</string>
 </resources>

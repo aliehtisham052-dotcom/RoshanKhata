@@ -120,6 +120,35 @@ class PartyDetailActivity : BaseActivity() {
         private const val STATE_PENDING_BILL = "pending_bill_photo"
 
         /**
+         * The add-entry form as it stood (23 Oct 2026, the review, R41), a small Bundle of its own:
+         * put back by [reopenSavedForm] when the screen is rebuilt with the form open.
+         */
+        private const val STATE_ENTRY_FORM = "entry_form"
+        private const val F_GIVEN = "given"
+        private const val F_EDIT = "edit_id"
+        private const val F_AMOUNT = "amount"
+        private const val F_AMOUNT_OWN = "amount_own"
+        private const val F_AMOUNT_BY_ITEMS = "amount_by_items"
+        private const val F_NOTE = "note"
+        private const val F_TIME = "time"
+        private const val F_CASH = "rate_cash"
+        private const val F_LINES = "lines"
+        private const val F_ITEM = "item"
+        private const val F_QTY = "qty"
+        private const val F_UNIT = "unit"
+        private const val F_RATE = "rate"
+        private const val F_AUTO_RATE = "auto_rate"
+        private const val F_EDIT_INDEX = "edit_index"
+        private const val F_BATCH = "batch"
+        private const val F_RECOVERY = "recovery"
+        private const val F_METHOD = "method"
+        private const val F_QARZ = "qarz"
+        private const val F_PAID_NOW = "paid_now"
+        private const val F_DETAILS = "details_open"
+        private const val F_DUE = "due"
+        private const val F_DUE_TOUCHED = "due_touched"
+
+        /**
          * A spoken entry, handed over from the ledger for the owner to check.
          *
          * Pre-filled, never saved: it lands in the normal dialog so the credit
@@ -150,6 +179,9 @@ class PartyDetailActivity : BaseActivity() {
 
     /** The add-entry form while it is open: dismissed with the screen, so its window is never leaked. */
     private var entryDialog: androidx.appcompat.app.AlertDialog? = null
+
+    /** The open form's state as a Bundle, for [onSaveInstanceState] (R41); null with no form open. */
+    private var entryFormState: (() -> Bundle)? = null
 
     /**
      * The signature taken on the new-entry form (18 Oct). An entry has no
@@ -409,6 +441,8 @@ class PartyDetailActivity : BaseActivity() {
             ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
         // A bill photo the form had before the screen was rebuilt: the form is gone, the photo is kept for the next.
         savedInstanceState?.getString(STATE_PENDING_BILL)?.let { pendingBillPhoto = it; billPhotoKept = true }
+        // The form that was open, if one was (R41): reopened as it stood once the customer is read.
+        val savedForm = savedInstanceState?.getBundle(STATE_ENTRY_FORM)
         setContentView(R.layout.activity_party_detail)
         onBackPressedDispatcher.addCallback(this, selectionBack)
 
@@ -419,8 +453,10 @@ class PartyDetailActivity : BaseActivity() {
 
         // Arrived by voice: open the entry already filled in, once the screen
         // has settled and the balance is known.
+        // Only on the screen's first creation (R41): a rebuilt screen's form is the one it saved, open
+        // or closed, never the intent's again.
         val spokenAmount = intent.getDoubleExtra(EXTRA_VOICE_AMOUNT, 0.0)
-        if (spokenAmount > 0.0) {
+        if (spokenAmount > 0.0 && savedInstanceState == null) {
             val spokenGiven = intent.getBooleanExtra(EXTRA_VOICE_IS_GIVEN, true)
             findViewById<View>(android.R.id.content).post {
                 showAddEntryDialog(spokenGiven, prefillAmount = spokenAmount)
@@ -430,7 +466,7 @@ class PartyDetailActivity : BaseActivity() {
             finish()
             return
         }
-        intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L).takeIf { it > 0L }?.let { openEditor(it) }
+        if (savedInstanceState == null) intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L).takeIf { it > 0L }?.let { openEditor(it) }
 
         setSupportActionBar(findViewById<Toolbar>(R.id.detailToolbar))
         // The light header (P2, 7 Oct), as on Home and the Khata list: a
@@ -549,6 +585,27 @@ class PartyDetailActivity : BaseActivity() {
 
         loadParty()
         observeEntries()
+        savedForm?.let { reopenSavedForm(it) }
+    }
+
+    /**
+     * The add-entry form the screen was rebuilt under, put back as it stood (23 Oct 2026, the review,
+     * R41). The customer and balance are read first, as the form needs them (name, due date, quick
+     * shares); an edit goes through [openEditor]'s checks again, as when it was first opened.
+     */
+    private fun reopenSavedForm(state: Bundle) {
+        lifecycleScope.launch {
+            val p = dao.getParty(partyId) ?: return@launch
+            partyName = p.name
+            partyIsCustomerAccount = p.isCustomer
+            harvestPromise = p.harvestPromise
+            creditLimit = p.creditLimit
+            currentBalance = dao.liveBalance(partyId)
+            if (isFinishing || isDestroyed || entryDialog?.isShowing == true) return@launch
+            val editId = state.getLong(F_EDIT, 0L)
+            if (editId > 0L) openEditor(editId, state)
+            else showAddEntryDialog(state.getBoolean(F_GIVEN, true), restore = state)
+        }
     }
 
     private fun loadParty() {
@@ -674,18 +731,18 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     /** Put an existing entry back on the full form. Its own customer only; never a binned one. */
-    private fun openEditor(entryId: Long) {
-        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { openEditor(entryId) }) return
+    private fun openEditor(entryId: Long, restore: Bundle? = null) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { openEditor(entryId, restore) }) return
         // An entry a bill, plan, cheque or ticket wrote is changed there (21 Oct 2026).
-        com.innovation313.roshankhata.ui.LinkedEntry.check(this, dao, entryId) { openEditorNow(entryId) }
+        com.innovation313.roshankhata.ui.LinkedEntry.check(this, dao, entryId) { openEditorNow(entryId, restore) }
     }
 
-    private fun openEditorNow(entryId: Long) {
+    private fun openEditorNow(entryId: Long, restore: Bundle? = null) {
         lifecycleScope.launch {
             val e = dao.getEntry(entryId) ?: return@launch
             if (e.partyId != partyId || e.isDeleted) return@launch
             if (partyName.isEmpty()) dao.getParty(partyId)?.let { partyName = it.name }
-            showAddEntryDialog(e.isGiven, editing = EntryWithItems(e, dao.itemsOfEntry(entryId)))
+            showAddEntryDialog(e.isGiven, editing = EntryWithItems(e, dao.itemsOfEntry(entryId)), restore = restore)
         }
     }
 
@@ -699,7 +756,9 @@ class PartyDetailActivity : BaseActivity() {
     private fun showAddEntryDialog(
         isGiven: Boolean,
         prefillAmount: Double? = null,
-        editing: EntryWithItems? = null
+        editing: EntryWithItems? = null,
+        // The form as it stood before the screen was rebuilt (R41); null for every form the owner opens.
+        restore: Bundle? = null
     ) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
@@ -1348,7 +1407,10 @@ class PartyDetailActivity : BaseActivity() {
             refreshTotal()
         })
 
-        // Whether this is a customer decides everything sale-only above.
+        // Whether this is a customer decides everything sale-only above. A restored form finishes
+        // putting itself back once it is known ([onCustomerKnown], R41).
+        var customerKnown = false
+        var onCustomerKnown: () -> Unit = {}
         lifecycleScope.launch {
             partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: false
             if (isSale() && editing == null) lastSaleEntry = dao.lastSaleWithItems(partyId)
@@ -1362,6 +1424,8 @@ class PartyDetailActivity : BaseActivity() {
             etRate.visibility = if (list) View.VISIBLE else View.GONE
             btnAddLine.visibility = if (list) View.VISIBLE else View.GONE
             refreshRateSuggestion()
+            customerKnown = true
+            onCustomerKnown()
         }
 
         /**
@@ -1744,6 +1808,58 @@ class PartyDetailActivity : BaseActivity() {
             refreshRateSuggestion()
         }
 
+        // ---- A form the screen was rebuilt under (23 Oct 2026, the review, R41): as it stood ----
+        // Over whatever the lines above put in (an edit's saved entry). The rate chip first, while the
+        // list is replaced right after; the amount's two flags before its figure, so the items do not
+        // take it over; the Rate box last, with the figure the app itself had put there, so a rate
+        // the owner typed stays his. Not put back: the signature drawn on the form (a picture, not
+        // state) and the two product offers' ticks (shown again, unticked, by the lookup).
+        if (restore != null) {
+            cgRateType.check(if (restore.getBoolean(F_CASH)) R.id.chipRateCash else R.id.chipRateCredit)
+            lines.clear()
+            lines.addAll(com.innovation313.roshankhata.ui.EntryFormLines.fromJson(restore.getString(F_LINES)))
+            etNote.setText(restore.getString(F_NOTE).orEmpty())
+            cbQarzeHasna.isChecked = restore.getBoolean(F_QARZ)
+            restore.getInt(F_RECOVERY, View.NO_ID).takeIf { it != View.NO_ID && isGiven }?.let { rgRecovery.check(it) }
+            if (!isGiven) {
+                when (restore.getString(F_METHOD)) {
+                    PaymentMethod.CASH -> cgPaymentMethod.check(R.id.chipCash)
+                    PaymentMethod.BANK -> cgPaymentMethod.check(R.id.chipBank)
+                    PaymentMethod.CHEQUE -> cgPaymentMethod.check(R.id.chipCheque)
+                    PaymentMethod.ONLINE -> cgPaymentMethod.check(R.id.chipOnline)
+                    else -> cgPaymentMethod.clearCheck()
+                }
+            }
+            amountOwn = restore.getBoolean(F_AMOUNT_OWN)
+            amountByItems = restore.getBoolean(F_AMOUNT_BY_ITEMS)
+            autoWriting = true
+            try {
+                etAmount.setText(restore.getString(F_AMOUNT).orEmpty())
+                etAmount.setSelection(etAmount.text.length)
+            } finally {
+                autoWriting = false
+            }
+            etItemName.setText(restore.getString(F_ITEM).orEmpty(), false)
+            etQuantity.setText(restore.getString(F_QTY).orEmpty())
+            etUnit.setText(restore.getString(F_UNIT).orEmpty(), false)
+            editingIndex = restore.getInt(F_EDIT_INDEX, -1).takeIf { it >= 0 }
+            pendingBatchId = restore.getLong(F_BATCH, 0L).takeIf { it > 0L }
+            autoRate = if (restore.containsKey(F_AUTO_RATE)) restore.getDouble(F_AUTO_RATE) else null
+            etRate.setText(restore.getString(F_RATE).orEmpty())
+            chosenTime = restore.getLong(F_TIME, chosenTime)
+            attachDate()
+            renderLines()
+            refreshRateSuggestion(fill = false)
+            // What waits on knowing this is a customer: the paid-now tick and the product in the boxes.
+            val afterLookup: () -> Unit = {
+                syncPaidNow()
+                if (cbPaidNow.visibility == View.VISIBLE) cbPaidNow.isChecked = restore.getBoolean(F_PAID_NOW)
+                if (etItemName.text.isNotBlank()) refreshBatchButton()
+                refreshRateSuggestion(fill = false)
+            }
+            if (customerKnown) afterLookup() else onCustomerKnown = afterLookup
+        }
+
         // The Save button's action, set once the dialog exists below; the
         // over-return check calls it again after the owner has answered.
         var requestSave: () -> Unit = {}
@@ -1940,8 +2056,41 @@ class PartyDetailActivity : BaseActivity() {
 
         val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
         entryDialog = dialog
+
+        // What onSaveInstanceState keeps of this form (R41): everything the owner put on it, as text
+        // and figures, read back by the restore block above.
+        val snapshot: () -> Bundle = {
+            val b = Bundle()
+            b.putBoolean(F_GIVEN, isGiven)
+            b.putLong(F_EDIT, editing?.entry?.id ?: 0L)
+            b.putString(F_AMOUNT, etAmount.text.toString())
+            b.putBoolean(F_AMOUNT_OWN, amountOwn)
+            b.putBoolean(F_AMOUNT_BY_ITEMS, amountByItems)
+            b.putString(F_NOTE, etNote.text.toString())
+            b.putLong(F_TIME, chosenTime)
+            b.putBoolean(F_CASH, chosenRateType() == RateType.CASH)
+            b.putString(F_LINES, com.innovation313.roshankhata.ui.EntryFormLines.toJson(lines))
+            b.putString(F_ITEM, etItemName.text.toString())
+            b.putString(F_QTY, etQuantity.text.toString())
+            b.putString(F_UNIT, etUnit.text.toString())
+            b.putString(F_RATE, etRate.text.toString())
+            autoRate?.let { b.putDouble(F_AUTO_RATE, it) }
+            editingIndex?.let { b.putInt(F_EDIT_INDEX, it) }
+            (selectedBatch?.id ?: pendingBatchId)?.let { b.putLong(F_BATCH, it) }
+            b.putInt(F_RECOVERY, rgRecovery.checkedRadioButtonId)
+            chosenPaymentMethod()?.let { b.putString(F_METHOD, it) }
+            b.putBoolean(F_QARZ, cbQarzeHasna.isChecked)
+            b.putBoolean(F_PAID_NOW, cbPaidNow.isChecked)
+            b.putBoolean(F_DETAILS, view.findViewById<View>(R.id.stepTwo).visibility == View.VISIBLE)
+            b.putBoolean(F_DUE_TOUCHED, entryDueTouched)
+            entryDue?.let { b.putLong(F_DUE, it) }
+            b
+        }
+        entryFormState = snapshot
+
         // A scan that comes back after the form is gone has nowhere to go.
         dialog.setOnDismissListener {
+            if (entryFormState === snapshot) entryFormState = null
             onScanUsed = null
             onPaymentScanUsed = null
             // Closed by the owner (not with the screen, which lets go of it first in onDestroy): a photo
@@ -1993,6 +2142,11 @@ class PartyDetailActivity : BaseActivity() {
         // Cash flow already read — set right where the udhar is written.
         entryDue = harvestPromise
         entryDueTouched = false
+        // A day the owner chose on the form before the rebuild (R41) wins over the customer's saved one.
+        if (restore != null && restore.getBoolean(F_DUE_TOUCHED)) {
+            entryDueTouched = true
+            entryDue = if (restore.containsKey(F_DUE)) restore.getLong(F_DUE) else null
+        }
         val btnDue = view.findViewById<MaterialButton>(R.id.btnEntryDueDate)
         if (isGiven && partyIsCustomerAccount) {
             fun paintDue() {
@@ -2116,8 +2270,8 @@ class PartyDetailActivity : BaseActivity() {
                 more.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails() else openDetails()
                 }
-                // Editing opens on the items — that is what it is for.
-                if (editing != null) openDetails()
+                // Editing opens on the items — that is what it is for. A restored form opens where it was.
+                if (restore?.getBoolean(F_DETAILS) ?: (editing != null)) openDetails()
 
                 // With the details open the keypad is hidden and the system
                 // keyboard is suppressed on this field, so a tap on the amount
@@ -3288,6 +3442,10 @@ class PartyDetailActivity : BaseActivity() {
         scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
         cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
         pendingBillPhoto?.let { outState.putString(STATE_PENDING_BILL, it) }
+        // The open form itself (R41). Never fatal: a form that cannot be read is simply not put back.
+        if (entryDialog?.isShowing == true) {
+            entryFormState?.let { state -> runCatching { state() }.getOrNull()?.let { outState.putBundle(STATE_ENTRY_FORM, it) } }
+        }
     }
 
     override fun onDestroy() {

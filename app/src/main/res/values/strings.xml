@@ -3775,4 +3775,5 @@
         <item quantity="other">EXPIRED \u00B7 %1$d days ago</item>
     </plurals>
     <string name="voice_language_missing_phone">Your phone does not have that language. Listening in the phone\'s own language.</string>
+    <string name="report_sync_notes_included">— Live sync notes (not crashes: problems live sync passed over and tried again; no names, amounts or keys):</string>
 </resources>

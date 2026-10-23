@@ -47,6 +47,8 @@ class RoshanKhataApp : Application() {
         com.innovation313.roshankhata.data.Currency.refresh(this)
         com.innovation313.roshankhata.data.ShopCalendar.refresh(this)
         CrashLog.install(this)
+        // Live sync's passed-over failures go to their own small file, never shown as a crash (23 Oct 2026).
+        com.innovation313.roshankhata.data.SyncLog.install(this)
         // A background save that fails (23 Oct 2026, the review): written down and said — "not saved" —
         // instead of the whole app closing with the entry's dialog already gone as if it were saved.
         com.innovation313.roshankhata.data.AppFailures.report = { e -> saveFailed(e) }

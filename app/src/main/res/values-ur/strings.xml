@@ -3561,4 +3561,5 @@
         <item quantity="other">میعاد ختم \u00B7 %1$d دن پہلے</item>
     </plurals>
     <string name="voice_language_missing_phone">آپ کے فون میں یہ زبان موجود نہیں۔ فون کی اپنی زبان میں سن رہا ہے۔</string>
+    <string name="report_sync_notes_included">— لائیو سنک نوٹس (کریش نہیں: وہ مسائل جن کے بعد لائیو سنک نے دوبارہ کوشش کی؛ کوئی نام، رقم یا چابی نہیں):</string>
 </resources>

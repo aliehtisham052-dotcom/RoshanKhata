@@ -177,7 +177,11 @@ object Businesses {
      */
     fun switchTo(context: Context, id: Long) {
         require(list(context).any { it.id == id }) { "unknown business $id" }
+        val left = active(context).id
         prefs(context).edit().putLong(KEY_ACTIVE, id).commit()
+        // The shop being left gets its Drive backup by its own id, as the open shop does when the app
+        // leaves the screen (23 Oct 2026, the review, R21). Only enqueued here; never a reason to stop a switch.
+        if (left != id && !ViewerMode.isOn(context)) runCatching { AutoBackup.afterLeaving(context, left) }
         KhataDatabase.closeActive()
         LiveRunner.bookChanged(context)
         // Photo caches are keyed by party id, and party ids repeat across

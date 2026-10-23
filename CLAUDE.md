@@ -708,6 +708,20 @@ real devices yet.
   text, native digits, wrong-script letters and a misspelt app name in the
   RTL files (privacy strings exempt), and warns on Roman Urdu glossary
   variants (dukaan, maujood, ek, gahak, wapas…).
+- **Phone, phase 2 (R21, R41, sync notes; CI only):** a switch asks for the left shop's Drive
+  backup (`AutoBackup.afterLeaving` from `Businesses.switchTo`; unique job `backup_after_change_b<id>`,
+  the id as input, delayed to when its interval is due): `DriveBackup.autoBackupLeftShop` opens that
+  shop's own file (`openOther`), exports with its own profile (`Backup.exportToCacheFor`,
+  `BusinessProfile.settingsOf`, read-only) and keeps the open shop's rules (auto on, signed in,
+  `DriveFeature.ENABLED` — true since the Cloud setup — entries, interval, changed, two-phone guard);
+  a shop open again is skipped (its own run covers it), and one `Mutex` runs every automatic backup
+  one at a time. Photos are not sent for a closed shop. The add-entry form is kept in
+  onSaveInstanceState (`entry_form` Bundle, lines via `ui/EntryFormLines`) and reopened after the
+  customer is read (`reopenSavedForm`; an edit through openEditor's checks again); not kept: the
+  signature drawn and the two product-offer ticks; a rebuilt screen no longer reopens the intent's
+  voice or edit form. Live-sync failures passed over are written to `files/synclog/sync-notes.txt`
+  (`SyncLog`, LiveTrouble's sink, 32 KB cap, messages cleaned of quoted text, long numbers and codes)
+  and Report a Problem adds the newest 15 under `report_sync_notes_included`, not as a crash.
 
 ### The shared module (KMP)
 

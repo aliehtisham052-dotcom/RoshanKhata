@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -76,6 +77,33 @@ object AutoBackup {
             .enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request)
     }
 
+    /** The left shop's own job (R21), one per shop: never the open shop's [WORK_NAME]. */
+    internal fun leftWorkName(businessId: Long) = WORK_NAME + "_b" + businessId
+
+    private const val KEY_BUSINESS = "business"
+
+    /**
+     * The owner switched away from [businessId] (23 Oct 2026, the review, R21; from
+     * [Businesses.switchTo]): its Drive backup is asked for as the open shop's is when the app leaves
+     * the screen — two minutes on, or once its interval has passed — by a job of its own, keyed by
+     * the shop and carrying its id, so it never replaces the open shop's job or another shop's.
+     */
+    fun afterLeaving(context: Context, businessId: Long) {
+        val last = BackupReminder.lastBackupAtOf(context, businessId)
+        val due = if (last == 0L) 0L else last + minIntervalFor(context) - System.currentTimeMillis()
+        enqueueLeft(context, businessId, maxOf(2L * 60 * 1000, due), ExistingWorkPolicy.REPLACE)
+    }
+
+    private fun enqueueLeft(context: Context, businessId: Long, delayMs: Long, policy: ExistingWorkPolicy) {
+        val request = OneTimeWorkRequestBuilder<LeftShopWorker>()
+            .setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setInputData(Data.Builder().putLong(KEY_BUSINESS, businessId).build())
+            .build()
+        WorkManager.getInstance(context.applicationContext)
+            .enqueueUniqueWork(leftWorkName(businessId), policy, request)
+    }
+
     /**
      * How long must have passed since the last backup, on the connection this
      * phone has right now. Unknown counts as metered — when in doubt, assume
@@ -88,6 +116,40 @@ object AutoBackup {
             ?: return METERED_INTERVAL_MS
         val unmetered = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
         return if (unmetered) UNMETERED_INTERVAL_MS else METERED_INTERVAL_MS
+    }
+
+    /**
+     * A left shop's backup ([afterLeaving]). Only the shop named in its input is ever read or sent
+     * ([DriveBackup.autoBackupLeftShop]); a shop open again is skipped, its own run covers it. Not
+     * due yet (the connection changed since the switch): asked again at the time it is due, after
+     * this run (APPEND_OR_REPLACE, so this running job is not cancelled by its own follow-up).
+     */
+    class LeftShopWorker(context: Context, params: WorkerParameters) :
+        CoroutineWorker(context, params) {
+
+        override suspend fun doWork(): Result {
+            val ctx = applicationContext
+            val businessId = inputData.getLong(KEY_BUSINESS, -1L)
+            if (businessId <= 0L || ViewerMode.isOn(ctx)) return Result.success()
+            try {
+                when (val r = DriveBackup.autoBackupLeftShop(ctx, businessId, minIntervalFor(ctx))) {
+                    is DriveBackup.AutoResult.NotYet -> enqueueLeft(
+                        ctx, businessId,
+                        maxOf(60_000L, r.at - System.currentTimeMillis()),
+                        ExistingWorkPolicy.APPEND_OR_REPLACE
+                    )
+                    // The shop's own bell notes, as the daily sweep keeps them for the open shop; the
+                    // owner sees them when he opens that shop.
+                    is DriveBackup.AutoResult.Failed -> AlertNotes.backupFailed(ctx, businessId)
+                    is DriveBackup.AutoResult.OtherPhone ->
+                        if (DriveBackup.firstNoticeOf(ctx, r.conflict, businessId)) AlertNotes.otherPhone(ctx, businessId) else Unit
+                    else -> Unit
+                }
+            } catch (e: Exception) {
+                // As the open shop's run: no blind retry; the shop's next switch or opening tries again.
+            }
+            return Result.success()
+        }
     }
 
     class Worker(context: Context, params: WorkerParameters) :
