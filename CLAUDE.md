@@ -794,6 +794,21 @@ real devices yet.
   (`Job.direct`, phone `TextReceipt.print(direct)`, changed in the counter's settings); the phone has the
   round-off chip and keeps the payment step open until the ticket is written (`postedTick`). Tests: PerfReviewTest.
 
+- **Phone, phase 3 (p3-droid: R04, R07, R34, R38, R39, R99-R101, R104, R155, R157; CI only):**
+  `TextFit.needed` also relaxes fixed heights at the normal size in Urdu, Sindhi, Arabic and
+  Farsi on Android 15+ (targetSdk 35+ turns `elegantTextHeight` on, and Android 16 ignores the
+  attribute for targetSdk 36 — no theme switch exists); Roman Urdu (`ur-Latn`) stays as designed.
+  A snapshot restore folds the copy's own -wal into a temp file first (`Snapshots.foldedCopy`)
+  and only then deletes the live log; the daily sweep takes `.tmp-wal`/`.tmp-shm` too. Picture
+  reattach writes a plan (`reattach.plan` → `reattach.staged`) before renaming and finishes a
+  killed run at app start (`ImageReattach.recover`); a `.moving` with no plan is set aside, never
+  guessed. Cache backups (`RoshanKhata_Backup*.txt`, `left-…`) older than an hour are swept on each
+  export (`Backup.sweepCache`; other files in cache/backups untouched). Headerless screens on
+  Android 15+ pick status-bar icons from the root's colour (`ScreenInsets.isLight`). Cheque status
+  uses the night-aware `*_text` colours; day close keeps its dialog open on a refused save and
+  takes the note's focus. Tests: TextFitTest, ImageReattachTest, SnapshotsOnDeviceTest (restore
+  with a -wal).
+
 ### The shared module (KMP)
 
 ```
@@ -840,7 +855,8 @@ app/src/main/java/com/innovation313/roshankhata/
   RecycleBinActivity.kt     Bin + bulk delete
   BaseActivity.kt           Every screen extends this (not AppCompatActivity): text size
   data/TextSize.kt          Owner's text size (Home ⋮) x phone scale, 85%-150% bounds
-  ui/TextFit.kt             Fixed-height buttons may grow ONLY when text > 100%;
+  ui/TextFit.kt             Fixed-height buttons may grow ONLY when text > 100%, or in
+                            ur/sd/ar/fa on Android 15+ (the elegant font, R04);
                             call TextFit.relax(view) after inflating any dialog/row in code
   data/
     VoiceEntry.kt           Spoken sentence -> party, amount, direction

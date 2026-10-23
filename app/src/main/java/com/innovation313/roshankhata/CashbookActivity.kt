@@ -162,6 +162,8 @@ class CashbookActivity : BaseActivity() {
                     counted == null -> ""
                     else -> {
                         val d = DayCloseMath.difference(counted, expected)
+                        // A difference needs its reason: the note box says so before Save is pressed (R155).
+                        etNote.hint = getString(if (kotlin.math.abs(d) >= 0.005) R.string.z_variance_reason else R.string.dayclose_note_hint)
                         when {
                             Money.isPositive(d) -> getString(R.string.dayclose_over, Format.money(d))
                             Money.isPositive(-d) -> getString(R.string.dayclose_short, Format.money(-d))
@@ -183,33 +185,43 @@ class CashbookActivity : BaseActivity() {
                 .setTitle(R.string.dayclose_title)
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
-                    if (counted == null) {
-                        Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
+                // Save is wired after show() (23 Oct 2026, review R155): a builder's button closes the
+                // dialog whatever its listener returns, so a refused save threw away both counted figures.
+                .setPositiveButton(R.string.save, null)
+                .show().also { dialog ->
+                    com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                    dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+                        val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
+                        if (counted == null) {
+                            Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
+                            etCounted.requestFocus()
+                            return@setOnClickListener
+                        }
+                        // A drawer that does not match the books needs its reason written down (POS Phase 4):
+                        // a figure with no story is one nobody can answer for next week.
+                        val openingNow = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
+                        val expectedNow = DayCloseMath.expected(openingNow, cashIn, cashOut)
+                        if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= 0.005 && etNote.text.toString().isBlank()) {
+                            Toast.makeText(this@CashbookActivity, R.string.z_variance_reason, Toast.LENGTH_LONG).show()
+                            // The box it wants sits below the whole pad: brought on screen and given the focus.
+                            etNote.requestFocus()
+                            (view as? android.widget.ScrollView)?.let { sv -> sv.post { sv.smoothScrollTo(0, etNote.top) } }
+                            return@setOnClickListener
+                        }
+                        val close = DayClose(
+                            // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
+                            day = DayCloseMath.businessDayOf(now),
+                            opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0,
+                            cashIn = LineMath.round(cashIn),
+                            cashOut = LineMath.round(cashOut),
+                            counted = counted,
+                            note = etNote.text.toString().trim().ifEmpty { null },
+                            closedAt = now
+                        )
+                        AppScope.launch { dao.saveDayClose(close) }
+                        dialog.dismiss()
                     }
-                    // A drawer that does not match the books needs its reason written down (POS Phase 4):
-                    // a figure with no story is one nobody can answer for next week.
-                    val openingNow = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
-                    val expectedNow = DayCloseMath.expected(openingNow, cashIn, cashOut)
-                    if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= 0.005 && etNote.text.toString().isBlank()) {
-                        Toast.makeText(this@CashbookActivity, R.string.z_variance_reason, Toast.LENGTH_LONG).show()
-                        return@setPositiveButton
-                    }
-                    val close = DayClose(
-                        // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
-                        day = DayCloseMath.businessDayOf(now),
-                        opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0,
-                        cashIn = LineMath.round(cashIn),
-                        cashOut = LineMath.round(cashOut),
-                        counted = counted,
-                        note = etNote.text.toString().trim().ifEmpty { null },
-                        closedAt = now
-                    )
-                    AppScope.launch { dao.saveDayClose(close) }
                 }
-                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
     }
 

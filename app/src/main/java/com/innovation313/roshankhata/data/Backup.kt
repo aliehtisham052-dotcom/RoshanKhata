@@ -168,7 +168,30 @@ object Backup {
     /** The streamed backup's cache file (P6): the one copy every other path copies from. */
     suspend fun exportToCache(context: Context, dao: KhataDao, secrets: Boolean = true): File {
         val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-        return exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets)
+        val file = exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets)
+        sweepCache(dir, file)
+        return file
+    }
+
+    /** How long a backup in the cache may wait for whoever it was made for (a share, an upload, a send). */
+    private const val CACHE_KEEP_MS = 60 * 60 * 1000L
+
+    /** This file's own names in the cache: "RoshanKhata_Backup…txt", and "left-" before it for a shop left. */
+    private val CACHED_BACKUP = Regex("^(left-)?RoshanKhata_Backup.*\\.txt$")
+
+    /**
+     * The cache's older backups go (23 Oct 2026, review R38): every export wrote a new whole book
+     * there — the PIN hashes in it — and nothing ever deleted one. Only this file's own names, and
+     * only those older than [CACHE_KEEP_MS]: a share handed to WhatsApp a minute ago is still read
+     * from its file; the folder's other files (a pulled book, a pairing's, the helper's zip) are
+     * their own writers' to clear. Never throws.
+     */
+    private fun sweepCache(dir: File, keep: File) {
+        runCatching {
+            val before = System.currentTimeMillis() - CACHE_KEEP_MS
+            dir.listFiles { f -> f.isFile && f != keep && CACHED_BACKUP.matches(f.name) && f.lastModified() < before }
+                ?.forEach { it.delete() }
+        }
     }
 
     /**
@@ -189,6 +212,7 @@ object Backup {
                 it
             )
         }
+        sweepCache(dir, file)
         return file
     }
 
@@ -275,6 +299,7 @@ object Backup {
             val dir = File(context.cacheDir, "backups").apply { mkdirs() }
             val file = File(dir, suggestedFileName(context))
             file.writeText(json)
+            sweepCache(dir, file)
             file
         } catch (e: Exception) {
             null

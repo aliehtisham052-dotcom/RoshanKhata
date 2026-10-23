@@ -49,6 +49,9 @@ class RoshanKhataApp : Application() {
         CrashLog.install(this)
         // Live sync's passed-over failures go to their own small file, never shown as a crash (23 Oct 2026).
         com.innovation313.roshankhata.data.SyncLog.install(this)
+        // Pictures a restore was renaming when the app was killed get their names back (23 Oct 2026, R39). Off the main thread.
+        val app = this
+        Thread { com.innovation313.roshankhata.data.ImageReattach.recover(app) }.start()
         // A background save that fails (23 Oct 2026, the review): written down and said — "not saved" —
         // instead of the whole app closing with the entry's dialog already gone as if it were saved.
         com.innovation313.roshankhata.data.AppFailures.report = { e -> saveFailed(e) }

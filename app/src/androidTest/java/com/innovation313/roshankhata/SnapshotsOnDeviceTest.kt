@@ -55,4 +55,50 @@ class SnapshotsOnDeviceTest {
         }
         Unit
     }
+
+    /**
+     * A copy kept with its own log (a damaged book's, or a before-restore copy whose close could
+     * not fold) comes back WITH the writes in that log (23 Oct 2026, review R07: the file was
+     * copied alone and the book came back older than the copy chosen).
+     */
+    @Test
+    fun aCopyWithItsOwnLogIsRestoredWithTheLog(): Unit = runBlocking {
+        val before = "Wal restore " + System.nanoTime()
+        val after = before + " (in the log)"
+        val id = KhataDatabase.get(context).khataDao().insertParty(Party(name = before))
+        val made = mutableListOf<File>()
+        try {
+            assertTrue("kept", Snapshots.keepNow(context))
+            val base = Snapshots.list(context).first { it.beforeRestore }.file
+            made += base
+            // The copy with a write that lives only in its log: opened in WAL mode, no automatic
+            // checkpoint, one change, and the file and its log copied while it is still open.
+            val chosen = File(base.parentFile, base.name.removeSuffix(".db") + "-77.db")
+            made += chosen
+            val db = SQLiteDatabase.openDatabase(
+                base.path, null, SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING
+            )
+            try {
+                db.rawQuery("PRAGMA wal_autocheckpoint=0", null).use { it.moveToFirst() }
+                db.execSQL("UPDATE parties SET name = ? WHERE id = ?", arrayOf<Any>(after, id))
+                val wal = File(base.path + "-wal")
+                assertTrue("the change is in the log", wal.isFile && wal.length() > 0)
+                base.copyTo(chosen, overwrite = true)
+                wal.copyTo(File(chosen.path + "-wal"), overwrite = true)
+            } finally {
+                db.close()
+            }
+            val snapshot = Snapshots.Snapshot(chosen, System.currentTimeMillis(), chosen.length(), beforeRestore = true)
+            val result = Snapshots.restore(context, snapshot)
+            assertTrue("restored", result is Snapshots.RestoreResult.Ok)
+            val party = KhataDatabase.get(context).khataDao().getParty(id)
+            assertEquals("the log's write came back with the copy", after, party?.name)
+        } finally {
+            val dao = KhataDatabase.get(context).khataDao()
+            dao.softDeleteParty(id)
+            dao.purgeParty(id)
+            for (f in made) { f.delete(); File(f.path + "-wal").delete(); File(f.path + "-shm").delete() }
+        }
+        Unit
+    }
 }
