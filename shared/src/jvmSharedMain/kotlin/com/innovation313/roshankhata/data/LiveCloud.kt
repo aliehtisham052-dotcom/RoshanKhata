@@ -213,7 +213,7 @@ object LiveCloud {
      */
     suspend fun round(
         sql: SyncSql, http: Http = plain, relay: String? = base, now: Long = System.currentTimeMillis(),
-        tag: String = "", send: Boolean = true,
+        tag: String = "", send: Boolean = true, useLines: Boolean = true,
         // Last, so a caller's trailing { } is this (22 Oct 2026: put before tag and send, the tests' { false } became send).
         halted: () -> Boolean = { LiveControl.halted() }
     ): Result {
@@ -308,14 +308,18 @@ object LiveCloud {
             // the three requests of before where it does not yet (a hand-uploaded relay).
             var after = getMeta(sql, k("after", id.book, tag))?.toLongOrNull() ?: 0L
             val ackDue = getMeta(sql, k("ack_due", id.book, tag))?.toLongOrNull()
-            fun roundBody(a: Long): ByteArray = JSONObject().apply {
+            fun roundJson(a: Long): JSONObject = JSONObject().apply {
                 put("after", a)
                 put("upTo", ackDue ?: JSONObject.NULL)
                 put("parcel", sealed?.let { B64.encode(it) } ?: JSONObject.NULL)
-            }.toString().toByteArray(Charsets.UTF_8)
+            }
+            fun roundBody(a: Long): ByteArray = roundJson(a).toString().toByteArray(Charsets.UTF_8)
             // "round" where the relay has it; a relay that answers "no such path" (uploaded before it existed) is
             // asked the old way, take first, from then on — also when the path is only found after a hello.
             fun ask(a: Long): Pair<Int, JSONObject?> {
+                // Over the live line when there is one (23 Oct 2026): the same round as one message, a twentieth of a
+                // request; no line (none here, or it dropped) and the round goes over HTTP, unchanged.
+                if (legacy[root] != true && useLines) LiveLines.ask(root, id.book, headers, roundJson(a), now)?.let { return it }
                 if (legacy[root] != true) {
                     val r = call("POST", "round", roundBody(a), "application/json")
                     if (!(r.first == 404 && r.second?.optString("why") == "no-such-path")) return r
@@ -437,7 +441,7 @@ object LiveCloud {
         var more = false
         for (road in roads) {
             if (mine == null) {
-                when (val r = round(sql, http, road.base, now, road.tag, send = true, halted = { false })) {
+                when (val r = round(sql, http, road.base, now, road.tag, send = true, useLines = road.tag == "", halted = { false })) {
                     is Result.Done -> mine = r
                     Result.Off, Result.NotPaired -> return r
                     // The book's state, not the relay's: another relay would say the same.
@@ -453,7 +457,7 @@ object LiveCloud {
             // (per peer, not by time — 22 Oct 2026, the review: a 24 h mark went stale while the peer was quiet).
             val used = id != null && LiveSync.state(sql).peers.any { getMeta(sql, k("via_" + it.device, id.book)) == road.tag }
             if (!readOthers && !used) continue
-            val r = round(sql, http, road.base, now, road.tag, send = used, halted = { false })
+            val r = round(sql, http, road.base, now, road.tag, send = used, useLines = road.tag == "", halted = { false })
             if (r is Result.Done) { took += r.took; more = more || r.more }
         }
         val first = mine ?: return failed ?: Result.Unreachable

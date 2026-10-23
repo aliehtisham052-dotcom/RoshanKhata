@@ -36,6 +36,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LiveCloud
 import com.innovation313.roshankhata.data.LiveControl
 import com.innovation313.roshankhata.data.LiveRound
+import com.innovation313.roshankhata.data.LiveLines
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
 import com.innovation313.roshankhata.data.NumberMark
@@ -219,6 +220,8 @@ object LiveDesk {
             while (!stopped && generation == mine) {
                 val d = db
                 val now = System.currentTimeMillis()
+                // Marked before the round: a nudge landing while it runs still wakes the wait after it.
+                val since = LiveLines.newsMark()
                 // The kill switch is read here (every 6 h, on this thread) even while the phone is on the WiFi and the
                 // relay is not needed: the connection threads only read the cached word (23 Oct 2026).
                 runCatching { LiveControl.halted(now) }
@@ -228,7 +231,13 @@ object LiveDesk {
                     is LiveCloud.Result.Done -> {
                         noteRound(d)
                         relayState.value = RelayState.Live(now, r.took)
-                        if (r.took > 0 || r.more) CLOUD_MS else minOf(wait * 2, CLOUD_QUIET_MAX_MS)
+                        when {
+                            r.more -> 1000L
+                            r.took > 0 -> CLOUD_MS
+                            // The live line wakes the wait on news: on a clock only every five minutes, to be sure.
+                            LiveLines.anyOpen() -> CLOUD_QUIET_MAX_MS
+                            else -> minOf(wait * 2, CLOUD_QUIET_MAX_MS)
+                        }
                     }
                     LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { relayState.value = RelayState.Off; CLOUD_OFF_MS }
                     LiveCloud.Result.Halted -> { relayState.value = RelayState.Down("halted"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
@@ -244,7 +253,13 @@ object LiveDesk {
                     // Unreachable, or the round threw: the window says so instead of nothing (22 Oct 2026, the review).
                     else -> { relayState.value = RelayState.Down("unreachable"); minOf(wait * 2, CLOUD_QUIET_MAX_MS) }
                 }
-                try { Thread.sleep(wait) } catch (e: InterruptedException) { break }
+                try {
+                    if (d != null && LiveLines.anyOpen()) {
+                        // News: the relay's nudge, or this computer writing something (its log grew).
+                        val before = runCatching { runBlocking { LiveSync.lastSeq(d.syncSql()) } }.getOrDefault(0L)
+                        LiveLines.waitForNews(wait, since) { runBlocking { LiveSync.lastSeq(d.syncSql()) } > before }
+                    } else Thread.sleep(wait)
+                } catch (e: InterruptedException) { break }
             }
         }
         return sock.localPort
@@ -320,6 +335,7 @@ object LiveDesk {
     @Synchronized
     fun stop() {
         stopped = true
+        runCatching { LiveLines.closeAll() }
         runCatching { server?.close() }
         runCatching { extra?.close() }
         runCatching { seeker?.close() }

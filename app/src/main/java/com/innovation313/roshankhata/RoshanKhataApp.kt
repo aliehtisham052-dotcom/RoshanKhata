@@ -80,7 +80,11 @@ class RoshanKhataApp : Application() {
         override fun onActivityStarted(activity: Activity) {
             started++
             // Live sync with the computer runs only while the app is on the screen (22 Oct 2026).
-            if (started == 1) runCatching { com.innovation313.roshankhata.data.LiveRunner.start(app) }
+            if (started == 1) runCatching {
+                // The live line's socket (23 Oct 2026): OkHttp's WebSocket, set once before the first round.
+                com.innovation313.roshankhata.data.LiveLines.maker = com.innovation313.roshankhata.data.OkLines
+                com.innovation313.roshankhata.data.LiveRunner.start(app)
+            }
         }
 
         override fun onActivityStopped(activity: Activity) {

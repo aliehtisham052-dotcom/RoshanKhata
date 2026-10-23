@@ -233,7 +233,7 @@ def main():
     else:
         check("a known device opens a live line", probe.status == 101, probe.status)
         probe.close()
-        stranger = Line(p + "live", token, d)
+        stranger = Line(p + "live", token, secrets.token_hex(8))
         check("a device that never said hello gets no line", stranger.status == 403, stranger.status)
         stranger.close()
         wrong = Line(p + "live", secrets.token_hex(32), a)

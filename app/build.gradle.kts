@@ -356,6 +356,9 @@ dependencies {
     // Firebase's Android release notes): firebase-messaging 26.0.0, minSdk 24 like this app.
     implementation(platform("com.google.firebase:firebase-bom:35.0.2"))
     implementation("com.google.firebase:firebase-messaging")
+    // Live sync's live line to the relay (LiveLines, 23 Oct 2026): a WebSocket while the app is on screen.
+    // OkHttp 4.12.0 (stable since Oct 2023, minSdk 21) ships its own R8 rules.
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.room:room-runtime:2.7.1")
     implementation("androidx.room:room-ktx:2.7.1")
     // Room's code is generated in the shared module now, where the database

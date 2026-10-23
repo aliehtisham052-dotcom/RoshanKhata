@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.runInterruptible
 
 /**
  * The phone's live sync with the computer over the shop's WiFi (Marhala 1,
@@ -79,6 +81,8 @@ object LiveRunner {
     private const val SEEK_EVERY_MS = 30_000L
     /** How often a round looks whether the relay must be told this phone's wake-up address (a cheap check). */
     private const val WAKE_TELL_MS = 60_000L
+    /** With the live line open, a quiet book still makes one round this often, in case a nudge was lost. */
+    private const val LINE_QUIET_MS = 5 * 60_000L
     private const val WAKE_TELL_MAX_MS = 60 * 60_000L
     private var wakeTellWait = WAKE_TELL_MS
     private var lastWakeTell = 0L
@@ -114,6 +118,9 @@ object LiveRunner {
         job = scope.launch {
             var checked: KhataDatabase? = null
             while (isActive) {
+                // Marked before the round: a nudge that lands while it runs still wakes the wait after it.
+                val since = LiveLines.newsMark()
+                var sqlNow: SyncSql? = null
                 val wait = try {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
@@ -122,6 +129,7 @@ object LiveRunner {
                         NumberMark.mark = LiveSync.mark(sql)
                         checked = db
                     }
+                    sqlNow = sql
                     once(app, db, sql)
                 } catch (e: CancellationException) {
                     // The app left the screen: that is not a failure to show (22 Oct 2026, the review).
@@ -130,7 +138,13 @@ object LiveRunner {
                     state.value = Status.Failed(e.message ?: e.javaClass.simpleName)
                     ROUND_MS * 3
                 }
-                delay(wait)
+                // With the relay's live line open, the next round is when there is news — the relay's nudge, or
+                // this phone writing something — not on a clock (23 Oct 2026): a quiet book asks nothing.
+                val s = sqlNow
+                if (LiveLines.anyOpen() && s != null) {
+                    val before = runCatching { LiveSync.lastSeq(s) }.getOrDefault(0L)
+                    runInterruptible { LiveLines.waitForNews(wait, since) { runBlocking { LiveSync.lastSeq(s) } > before } }
+                } else delay(wait)
             }
         }
     }
@@ -142,6 +156,9 @@ object LiveRunner {
     fun stop() {
         job?.cancel()
         job = null
+        // The app left the screen: the live line goes too (a sleeping line costs nothing, but a closed app holds
+        // none); Firebase reaches the phone from here on.
+        runCatching { LiveLines.closeAll() }
     }
 
     /** One round; how long to wait before the next. */
@@ -249,7 +266,12 @@ object LiveRunner {
                         state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer, relay = true)
                         // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
                         quietCloud = if (r.took > 0 || r.more) 0 else minOf(quietCloud + 1, 2)
-                        if (r.more) 1000L else CLOUD_MS shl quietCloud
+                        when {
+                            r.more -> 1000L
+                            // A live line wakes the wait on news; on a clock only once in a while, to be sure.
+                            LiveLines.anyOpen() -> LINE_QUIET_MS
+                            else -> CLOUD_MS shl quietCloud
+                        }
                     }
                     LiveCloud.Result.Halted -> { state.value = Status.Halted; 60_000L }
                     LiveCloud.Result.Off, LiveCloud.Result.NotPaired -> { state.value = Status.Unreachable; ROUND_MS * 3 }

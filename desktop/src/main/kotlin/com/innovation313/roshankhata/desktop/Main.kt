@@ -115,6 +115,8 @@ fun main() {
     val home = DesktopDatabase.home()
     // Any crash is written down before anything else runs (Report a problem shows it).
     CrashLog.install(home)
+    // Live sync's line to the relay is the JDK's own WebSocket (23 Oct 2026).
+    com.innovation313.roshankhata.data.LiveLines.maker = com.innovation313.roshankhata.data.JdkLines
     // One Roshan Khata at a time on this computer (21 Oct 2026, SingleInstance).
     val lock = SingleInstance.acquire(home)
     if (lock == null) { SingleInstance.tellAlreadyOpen(); return }
