@@ -243,6 +243,12 @@
             android:exported="false"
             android:parentActivityName=".BackupActivity" />
 
+        <!-- Live sync's devices and conflicts on the phone (23 Oct 2026). -->
+        <activity
+            android:name=".LiveDevicesActivity"
+            android:exported="false"
+            android:parentActivityName=".BackupActivity" />
+
         <activity
             android:name=".BusinessCardActivity"
             android:exported="false"

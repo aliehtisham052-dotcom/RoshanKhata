@@ -3573,4 +3573,17 @@
     <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation 313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ ৭ দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
     <string name="live_relay">ইন্টারনেট দিয়েও</string>
     <string name="wifi_take_too_big">কম্পিউটারের খাতাটি এই ফোনের মেমরি বা খালি জায়গার তুলনায় খুব বড়। অন্য অ্যাপ বন্ধ করে আবার চেষ্টা করুন, অথবা ব্যাকআপ ফাইল দিয়ে খাতাটি সরান।</string>
+    <string name="live_devices_open">ডিভাইস ও একসাথে বদল</string>
+    <string name="live_devices_none">এখনও এই খাতায় অন্য কোনো ডিভাইস যুক্ত হয়নি।</string>
+    <string name="live_device_seen">শেষ দেখা: %1$s</string>
+    <string name="live_device_never">এখনও কোনো যোগাযোগ হয়নি</string>
+    <string name="live_remove_confirm_phone">%1$s এই খাতা থেকে সরাবেন? এই ফোন এর সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে; আবার সিঙ্ক করতে এটিকে আবার যুক্ত করুন।</string>
+    <string name="live_conflicts_none">কোনো কিছুই দুটি ডিভাইসে একসাথে বদলায়নি।</string>
+    <string name="live_why_other_computer">অন্য একটি কম্পিউটার উত্তর দিয়েছে, যেটির সাথে এই ফোন যুক্ত সেটি নয়। কম্পিউটারটি আবার যুক্ত করুন</string>
+    <string name="live_why_other_book">অন্য ডিভাইসে আলাদা খাতা আছে। এটিকে আবার যুক্ত করুন</string>
+    <string name="live_why_unknown_device">এমন ডিভাইস থেকে বদল এসেছে যাকে এই খাতা চেনে না। এটিকে আবার যুক্ত করুন</string>
+    <string name="live_why_unreachable">কোনো উত্তর নেই</string>
+    <string name="live_why_error">এই ফোনে একটি সমস্যা হয়েছে। একটু পরে আবার চেষ্টা হবে</string>
+    <string name="live_why_day_limit">রিলেতে আজকের সীমা পূর্ণ হয়েছে</string>
+    <string name="live_why_relay_full">রিলে এখন পূর্ণ</string>
 </resources>

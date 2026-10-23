@@ -3529,4 +3529,17 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
     <string name="wifi_take_too_big">Computer ki kitaab is phone ki memory ya khaali jagah ke liye bohat bari hai. Doosri apps band kar ke dobara koshish karein, ya kitaab backup file se muntaqil karein.</string>
+    <string name="live_devices_open">Devices aur ek saath tabdeeliyan</string>
+    <string name="live_devices_none">Abhi is khate mein koi doosra device nahi jura.</string>
+    <string name="live_device_seen">Aakhri baar dekha gaya: %1$s</string>
+    <string name="live_device_never">Abhi koi rabta nahi hua</string>
+    <string name="live_remove_confirm_phone">%1$s ko is khate se hatayein? Yeh phone us ke saath sync karna band kar dega. Us ka apna khata waisa hi rahega; dobara sync ke liye use phir se jorein.</string>
+    <string name="live_conflicts_none">Kisi cheez mein do devices par ek saath tabdeeli nahi hui.</string>
+    <string name="live_why_other_computer">kisi doosre computer ne jawab diya, woh nahi jis se yeh phone jura hai. Computer ko dobara jorein</string>
+    <string name="live_why_other_book">doosre device par koi aur khata hai. Use dobara jorein</string>
+    <string name="live_why_unknown_device">aise device se tabdeeliyan aayin jise yeh khata nahi janta. Use dobara jorein</string>
+    <string name="live_why_unreachable">koi jawab nahi mila</string>
+    <string name="live_why_error">is phone par koi kharabi hui. Thori dair mein dobara koshish hogi</string>
+    <string name="live_why_day_limit">relay par aaj ki had poori ho gayi</string>
+    <string name="live_why_relay_full">relay is waqt bhara hua hai</string>
 </resources>
