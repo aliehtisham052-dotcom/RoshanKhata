@@ -3743,4 +3743,17 @@ This phone’s own book will be replaced by the shop’s. After this, the phones
     <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
     <string name="live_relay">Also through the internet</string>
     <string name="wifi_take_too_big">The computer’s book is too big for this phone’s memory or free space. Close other apps and try again, or move the book with a backup file.</string>
+    <string name="live_devices_open">Devices and conflicts</string>
+    <string name="live_devices_none">No other device has joined this book yet.</string>
+    <string name="live_device_seen">Last seen: %1$s</string>
+    <string name="live_device_never">Not heard from yet</string>
+    <string name="live_remove_confirm_phone">Remove %1$s from this book? This phone stops syncing with it. Its own book stays as it is; to sync with it again, join it again.</string>
+    <string name="live_conflicts_none">Nothing was changed on two devices at once.</string>
+    <string name="live_why_other_computer">another computer answered, not the one this phone is joined to. Join the computer again</string>
+    <string name="live_why_other_book">the other device keeps a different book. Join it again</string>
+    <string name="live_why_unknown_device">changes came from a device this book does not know. Join it again</string>
+    <string name="live_why_unreachable">no answer</string>
+    <string name="live_why_error">something went wrong on this phone. It is tried again shortly</string>
+    <string name="live_why_day_limit">today’s limit at the relay was reached</string>
+    <string name="live_why_relay_full">the relay is full right now</string>
 </resources>

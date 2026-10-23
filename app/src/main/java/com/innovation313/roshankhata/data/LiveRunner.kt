@@ -54,8 +54,15 @@ object LiveRunner {
         object NotAccepted : Status
         /** The book was replaced by a restore or went back to an older copy: the devices must be joined again. */
         object Rejoin : Status
-        data class Failed(val why: String) : Status
+        /**
+         * [why] is a reason code (the engine's, e.g. "another computer"; the Backup screen says the known ones in
+         * the owner's language) or [WHY_ERROR] for an exception on this phone, whose own text is [detail] (R48).
+         */
+        data class Failed(val why: String, val detail: String? = null) : Status
     }
+
+    /** [Status.Failed]'s reason when a round threw on this phone: the screen says a plain sentence, not the exception. */
+    const val WHY_ERROR = "error"
 
     private const val PREFS = "live_sync"
     private const val INSTALL = "install"
@@ -73,11 +80,8 @@ object LiveRunner {
     private var lastFingerprint = 0L
     private var lastSeek = 0L
     private var quietCloud = 0
-    private var cloudRounds = 0
     /** Relay rounds that failed in a row: each waits twice as long, up to about 13 minutes. */
     private var relayMisses = 0
-    /** The relays after the first are read every this many relay rounds (each costs a call on a free plan). */
-    private const val OTHERS_EVERY = 8
     private const val SEEK_EVERY_MS = 30_000L
     /** How often a round looks whether the relay must be told this phone's wake-up address (a cheap check). */
     private const val WAKE_TELL_MS = 60_000L
@@ -121,29 +125,39 @@ object LiveRunner {
                 // Marked before the round: a nudge that lands while it runs still wakes the wait after it.
                 val since = LiveLines.newsMark()
                 var sqlNow: SyncSql? = null
+                // The book this round was for: once a switch, a restore or an erase closed it, the wait below ends
+                // without touching its handle (23 Oct 2026, the review's R45: Room reopened the closed file, and its
+                // onOpen put the old book's letter on the new book's document numbers).
+                var dbNow: KhataDatabase? = null
                 val wait = try {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
                     if (checked !== db) {
                         LiveSync.check(sql, install(app), marks(app))
-                        NumberMark.mark = LiveSync.mark(sql)
+                        markFrom(db, sql)
                         checked = db
                     }
                     sqlNow = sql
+                    dbNow = db
                     once(app, db, sql)
                 } catch (e: CancellationException) {
                     // The app left the screen: that is not a failure to show (22 Oct 2026, the review).
                     throw e
                 } catch (e: Exception) {
-                    state.value = Status.Failed(e.message ?: e.javaClass.simpleName)
+                    // A plain sentence on the screen; the exception's own words only in the log (R48).
+                    android.util.Log.w("LiveRunner", "round failed", e)
+                    state.value = Status.Failed(WHY_ERROR, e.message ?: e.javaClass.simpleName)
                     ROUND_MS * 3
                 }
                 // With the relay's live line open, the next round is when there is news — the relay's nudge, or
                 // this phone writing something — not on a clock (23 Oct 2026): a quiet book asks nothing.
                 val s = sqlNow
-                if (LiveLines.anyOpen() && s != null) {
+                val d = dbNow
+                if (LiveLines.anyOpen() && s != null && d != null && KhataDatabase.isOpen(d)) {
                     val before = runCatching { LiveSync.lastSeq(s) }.getOrDefault(0L)
-                    runInterruptible { LiveLines.waitForNews(wait, since) { runBlocking { LiveSync.lastSeq(s) } > before } }
+                    runInterruptible {
+                        LiveLines.waitForNews(wait, since) { !KhataDatabase.isOpen(d) || runBlocking { LiveSync.lastSeq(s) } > before }
+                    }
                 } else delay(wait)
             }
         }
@@ -161,6 +175,40 @@ object LiveRunner {
         runCatching { LiveLines.closeAll() }
     }
 
+    /**
+     * Another business's book was opened (Businesses.switchTo, after the old one was closed): the rounds start
+     * again for it at once, with nothing of the last book's — its status, its "books differ", its live line, its
+     * waits and back-offs (23 Oct 2026, the review's R71: for up to five minutes the new shop's Backup screen said
+     * "Live with" the old shop's computer, and the new shop's own sync waited).
+     */
+    @Synchronized
+    fun bookChanged(context: Context) {
+        val was = running
+        stop()
+        state.value = Status.Off
+        fingerprintBad.value = false
+        lastFingerprint = 0L
+        lastSeek = 0L
+        quietCloud = 0
+        relayMisses = 0
+        wakeTellWait = WAKE_TELL_MS
+        lastWakeTell = 0L
+        sideAt = 0L
+        sideSeq = -1L
+        sideNews = -1L
+        if (was) start(context)
+    }
+
+    /** This book's letter for document numbers ([NumberMark]), written only while [db] is still the open book (R45). */
+    private suspend fun markFrom(db: KhataDatabase, sql: SyncSql) {
+        if (KhataDatabase.isOpen(db)) NumberMark.mark = LiveSync.mark(sql)
+    }
+
+    /** No letter any more — for [db]'s book only: a book opened since keeps its own (R45). */
+    private fun clearMark(db: KhataDatabase) {
+        if (KhataDatabase.isOpen(db)) NumberMark.mark = null
+    }
+
     /** One round; how long to wait before the next. */
     private suspend fun once(app: Context, db: KhataDatabase, sql: SyncSql): Long {
         if (LiveSync.identity(sql) == null) {
@@ -175,7 +223,7 @@ object LiveRunner {
             LiveCrew.dropCopyHold(sql)
             if (LiveRound.dropPending(sql)) {
                 LiveSync.disable(sql)
-                NumberMark.mark = null
+                clearMark(db)
             }
             state.value = Status.NotAccepted
             return ROUND_MS * 3
@@ -189,7 +237,7 @@ object LiveRunner {
         val target = wifi ?: run {
             if (peersNow.isEmpty() && pending?.phone != true) { state.value = Status.NotPaired; return ROUND_MS * 3 }
             tellWake(app, sql, now, pending)
-            return relayRound(app, sql, peersNow.firstOrNull()?.name, null, side = false)
+            return relayRound(app, db, sql, peersNow.firstOrNull()?.name, null, side = false)
         }
         tellWake(app, sql, now, pending)
         val wifiPending = pending?.takeIf { !it.phone }
@@ -202,7 +250,7 @@ object LiveRunner {
             // again mends it — said as the relay road says it, not as a raw failure every round (23 Oct 2026).
             runCatching { LiveCloud.leaveAll(sql) }
             LiveSync.disable(sql, LiveSync.OFF_RESTORED)
-            NumberMark.mark = null
+            clearMark(db)
             state.value = Status.Rejoin
             return ROUND_MS * 3
         }
@@ -222,7 +270,7 @@ object LiveRunner {
                         // The computer no longer has what this phone asks for: this book went back to an older copy.
                         runCatching { LiveCloud.leaveAll(sql) }
                         LiveSync.disable(sql, LiveSync.OFF_RESTORED)
-                        NumberMark.mark = null
+                        clearMark(db)
                         state.value = Status.Rejoin
                         return ROUND_MS * 3
                     }
@@ -230,7 +278,7 @@ object LiveRunner {
                     return 60_000L
                 }
                 LiveSync.noteMark(sql, marks(app))
-                NumberMark.mark = LiveSync.mark(sql)
+                markFrom(db, sql)
                 // Only a check made while nothing was on its way counts; a busy round asks again in the next.
                 took.fingerprintMatches?.let { same ->
                     fingerprintBad.value = !same
@@ -243,7 +291,7 @@ object LiveRunner {
                 // More than the computer in this book (another phone), or a phone's yes awaited: the relay too, so
                 // the devices away from this WiFi hear this phone's changes (each device sends only its own).
                 val others = LiveSync.state(sql).peers.size > 1 || pending?.phone == true
-                val side = if (others && sideDue(sql, now)) relayRound(app, sql, peer?.name, target.computer, side = true) else Long.MAX_VALUE
+                val side = if (others && sideDue(sql, now)) relayRound(app, db, sql, peer?.name, target.computer, side = true) else Long.MAX_VALUE
                 minOf(if (took.more) 200L else ROUND_MS, side)
             }
             LiveWire.Answer.NotHere -> {
@@ -264,7 +312,7 @@ object LiveRunner {
                     }
                 }
                 // Not on the shop's WiFi: the relay, when the owner turned it on for this book (Marhala 2).
-                relayRound(app, sql, peer?.name, target.computer, side = false)
+                relayRound(app, db, sql, peer?.name, target.computer, side = false)
             }
         }
     }
@@ -281,7 +329,9 @@ object LiveRunner {
     private suspend fun sideDue(sql: SyncSql, now: Long): Boolean {
         val seq = runCatching { LiveSync.lastSeq(sql) }.getOrDefault(0L)
         val news = LiveLines.newsMark()
-        val quiet = if (LiveLines.anyOpen()) LINE_QUIET_MS else 60_000L
+        // A device on the owner's hosting has no line to nudge this one: once a minute, as without a line (R83).
+        val lineless = runCatching { LiveCloud.peerOnLinelessRoad(sql) }.getOrDefault(false)
+        val quiet = if (LiveLines.anyOpen() && !lineless) LINE_QUIET_MS else 60_000L
         if (seq == sideSeq && news == sideNews && now - sideAt < quiet) return false
         sideAt = now; sideSeq = seq; sideNews = news
         return true
@@ -299,23 +349,32 @@ object LiveRunner {
     }
 
     /**
-     * One relay round (Cloudflare first, then the owner's hosting; the later ones read every few rounds) and how
+     * One relay round (Cloudflare first, then the owner's hosting; the later ones read every two minutes) and how
      * long to wait after it. [side]: the WiFi round already said how things stand — a relay round run beside it
      * for the shop's other devices changes the status only to say that the book must be joined again.
      */
-    private suspend fun relayRound(app: Context, sql: SyncSql, peerName: String?, computer: String?, side: Boolean): Long {
-        cloudRounds++
-        return when (val r = LiveCloud.roundAll(sql, readOthers = cloudRounds % OTHERS_EVERY == 0)) {
+    private suspend fun relayRound(app: Context, db: KhataDatabase, sql: SyncSql, peerName: String?, computer: String?, side: Boolean): Long {
+        // The relays after the first are read by time (every two minutes at most), not every eighth round: with the
+        // line open a quiet round comes only every five minutes (23 Oct 2026, the review's R83).
+        val readOthers = runCatching { LiveCloud.othersDue(sql) }.getOrDefault(false)
+        val r = LiveCloud.roundAll(sql, readOthers = readOthers)
+        // The book was closed while the relay answered (a switch, a restore, an erase): nothing more is done with
+        // the old handle — it would reopen the old file (lesson 49) — and the loop opens the new book next.
+        if (!KhataDatabase.isOpen(db)) return ROUND_MS
+        return when (r) {
             is LiveCloud.Result.Done -> {
                 relayMisses = 0
                 LiveSync.noteMark(sql, marks(app))
-                NumberMark.mark = LiveSync.mark(sql)
+                markFrom(db, sql)
                 if (!side) state.value = Status.Live(System.currentTimeMillis(), peerName ?: computer, relay = true)
                 // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
                 quietCloud = if (r.took > 0 || r.more) 0 else minOf(quietCloud + 1, 2)
                 when {
                     r.more -> 1000L
                     side -> Long.MAX_VALUE
+                    // A device whose parcels come by the owner's hosting: nothing there nudges this phone, so the
+                    // HTTP clock stands even with the line open (R83).
+                    runCatching { LiveCloud.peerOnLinelessRoad(sql) }.getOrDefault(false) -> CLOUD_MS shl quietCloud
                     // A live line wakes the wait on news; on a clock only once in a while, to be sure.
                     LiveLines.anyOpen() -> LINE_QUIET_MS
                     else -> CLOUD_MS shl quietCloud
@@ -327,7 +386,7 @@ object LiveRunner {
                 // The other device asks for lines this book let go of: only joining again mends it (as on WiFi).
                 runCatching { LiveCloud.leaveAll(sql) }
                 LiveSync.disable(sql, LiveSync.OFF_RESTORED)
-                NumberMark.mark = null
+                clearMark(db)
                 state.value = Status.Rejoin
                 ROUND_MS * 3
             } else if (side) {

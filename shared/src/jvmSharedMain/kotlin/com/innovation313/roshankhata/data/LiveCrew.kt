@@ -226,4 +226,35 @@ object LiveCrew {
         LiveRound.dropPending(sql)
         return true
     }
+
+    // ------------------------------------------------------------------ a device removed
+
+    /**
+     * The owner removed [device] from this book on this device (23 Oct 2026): nothing is held or announced for it
+     * any more. A device that never comes back would otherwise keep this one's acks toward the others held at a
+     * copy's line for ever (it was a joiner they had to hear of), and the relays would keep every parcel for the
+     * full seven days; and it would still be announced as a joiner and named in a waiting pairing's copy.
+     */
+    suspend fun forget(sql: SyncSql, device: String) = sql.write {
+        if (!hasTables()) return@write
+        setMeta(JOIN + device, null)
+        setMeta(WAITS + device, null)
+        setMeta(HOLD + device, null)
+        meta(PAIR_WAIT)?.split('|')?.let { if (it.size == 2 && it[1] == device) setMeta(PAIR_WAIT, null) }
+        val copy = meta(P_PEERS)?.let { runCatching { JSONObject(it) }.getOrNull() }
+        if (copy != null && copy.has(device)) {
+            copy.remove(device)
+            setMeta(P_PEERS, copy.toString())
+        }
+        // Other devices waited on to hear of it: no longer; a device waited on for nothing else is held no more.
+        for ((d, w) in metaLike(WAITS)) {
+            val list = w.split(',').filter { it.isNotBlank() }
+            if (device !in list) continue
+            val left = list.filter { it != device }
+            if (left.isEmpty()) {
+                setMeta(WAITS + d, null)
+                if (copy?.has(d) != true) setMeta(HOLD + d, null)
+            } else setMeta(WAITS + d, left.joinToString(","))
+        }
+    }
 }

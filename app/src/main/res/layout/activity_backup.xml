@@ -437,6 +437,14 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/live_receive" />
 
+                <!-- The book's other devices (remove a stale one) and what changed on two at once (23 Oct 2026). -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLiveDevices"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/live_devices_open"
+                    android:visibility="gone" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLiveStop"
                     style="@style/BackupOutlineButton"

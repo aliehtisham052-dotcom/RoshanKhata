@@ -3557,4 +3557,17 @@
     <string name="live_relay_help">جڏهن فون دڪان جي وائي فائي کان پري هجي ته ان جون تبديليون Innovation 313 جي ريلي ذريعي وڃن ٿيون، هن کاتي جي پنهنجي چاٻي سان بند: ريلي انهن کي پڙهي نٿي سگهي، ۽ وڌ ۾ وڌ 7 ڏينهن رکي ٿي. ٻنهي ڊوائيسن لاءِ هڪ ئي سوئچ. جڏهن ايپ بند هجي ته Google جو Firebase فون کي رڳو ايترو ٻڌائي ٿو ته ڪجهه انتظار ۾ آهي؛ کاتي جي ڪا به شيءِ ان وٽ نٿي وڃي.</string>
     <string name="live_relay">انٽرنيٽ ذريعي به</string>
     <string name="wifi_take_too_big">ڪمپيوٽر جو کاتو هن فون جي ميموري يا خالي جاءِ لاءِ تمام وڏو آهي. ٻيون ايپس بند ڪري ٻيهر ڪوشش ڪريو، يا کاتو بيڪ اپ فائل ذريعي منتقل ڪريو.</string>
+    <string name="live_devices_open">ڊوائيس ۽ گڏ تبديليون</string>
+    <string name="live_devices_none">اڃا هن کاتي ۾ ڪا ٻي ڊوائيس نه ڳنڍي وئي آهي.</string>
+    <string name="live_device_seen">آخري ڀيرو ڏٺو ويو: %1$s</string>
+    <string name="live_device_never">اڃا ڪو رابطو نه ٿيو</string>
+    <string name="live_remove_confirm_phone">%1$s کي هن کاتي مان هٽايو؟ هي فون ان سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو؛ ٻيهر سنڪ لاءِ ان کي ٻيهر ڳنڍيو.</string>
+    <string name="live_conflicts_none">ڪنهن به شيءِ ۾ ٻن ڊوائيسن تي گڏ تبديلي نه ٿي.</string>
+    <string name="live_why_other_computer">ڪنهن ٻئي ڪمپيوٽر جواب ڏنو، اهو نه جنهن سان هي فون ڳنڍيل آهي. ڪمپيوٽر کي ٻيهر ڳنڍيو</string>
+    <string name="live_why_other_book">ٻي ڊوائيس تي ٻيو کاتو آهي. ان کي ٻيهر ڳنڍيو</string>
+    <string name="live_why_unknown_device">اهڙي ڊوائيس مان تبديليون آيون جنهن کي هي کاتو نٿو سڃاڻي. ان کي ٻيهر ڳنڍيو</string>
+    <string name="live_why_unreachable">ڪو جواب نه مليو</string>
+    <string name="live_why_error">هن فون تي ڪا خرابي ٿي. ٿوري دير ۾ ٻيهر ڪوشش ٿيندي</string>
+    <string name="live_why_day_limit">ريلي تي اڄ جي حد پوري ٿي وئي</string>
+    <string name="live_why_relay_full">ريلي هن وقت ڀريل آهي</string>
 </resources>

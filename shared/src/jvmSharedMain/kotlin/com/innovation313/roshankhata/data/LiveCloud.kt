@@ -532,6 +532,41 @@ object LiveCloud {
     /** One relay round at a time for a book: a wake-up's round and the screen's never run together (23 Oct 2026). */
     private val rounds = ConcurrentHashMap<String, Mutex>()
 
+    /**
+     * The relays after the first are read at least this often (23 Oct 2026, the review's R83): by time, not every
+     * eighth round — with a live line open a quiet round comes only every five minutes, and a device that can reach
+     * only the owner's hosting was found after up to forty.
+     */
+    const val OTHERS_MS = 2 * 60_000L
+
+    /** When the relays after the first were last read, per book (this run of the app only). */
+    private val othersAt = ConcurrentHashMap<String, Long>()
+
+    /** Whether this book's round should read the relays after the first too ([OTHERS_MS] since they last were). */
+    suspend fun othersDue(sql: SyncSql, now: Long = System.currentTimeMillis()): Boolean {
+        val book = LiveSync.identity(sql)?.book ?: return false
+        return now - (othersAt[book] ?: 0L) >= OTHERS_MS
+    }
+
+    /**
+     * Whether some device of this book last sent its parcels by a relay after the first (the owner's hosting):
+     * that relay has no live line, no nudge and no Firebase, so nothing wakes this device for that device's
+     * changes — its rounds then keep the HTTP clock (15 s to a minute), not the line's five minutes (R83).
+     */
+    suspend fun peerOnLinelessRoad(sql: SyncSql): Boolean {
+        val id = LiveSync.identity(sql) ?: return false
+        return LiveSync.state(sql).peers.any { !getMeta(sql, k("via_" + it.device, id.book)).isNullOrEmpty() }
+    }
+
+    /** A device removed from this book (the owner's Remove): which relay its parcels came by is forgotten too. */
+    suspend fun forgetDevice(sql: SyncSql, device: String) {
+        val id = LiveSync.identity(sql) ?: return
+        sql.write {
+            exec("DELETE FROM sync_meta WHERE k = ?", listOf(k("via_" + device, id.book)))
+            exec("DELETE FROM sync_meta WHERE k = ?", listOf(k("need_" + device, id.book)))
+        }
+    }
+
     suspend fun roundAll(
         sql: SyncSql, http: Http = plain, roads: List<Road> = roads(), now: Long = System.currentTimeMillis(),
         halted: () -> Boolean = { LiveControl.halted() }, readOthers: Boolean = true
@@ -571,6 +606,8 @@ object LiveCloud {
             val r = round(sql, http, road.base, now, road.tag, send = used, useLines = road.tag == "", halted = { false })
             if (r is Result.Done) { took += r.took; more = more || r.more }
         }
+        // The later relays were read in this round: the next reading of them is OTHERS_MS from now (othersDue).
+        if (readOthers && id != null) othersAt[id.book] = now
         val first = mine ?: return failed ?: Result.Unreachable
         return first.copy(took = first.took + took, more = first.more || more)
     }
