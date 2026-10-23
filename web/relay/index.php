@@ -49,6 +49,13 @@ define('IDLE_DAYS', 30);                               // a book nobody touched 
 define('MIN_FREE', limit('MIN_FREE', 200 * 1048576));  // free bytes kept: below them nothing new is written
 define('NEW_BOOKS_DAY', limit('NEW_BOOKS_DAY', 300));  // new books taken in a UTC day, all together
 define('SEEN_EVERY_MS', 3600000);                      // a quiet call writes "seen" at most this often
+// Bytes (23 Oct 2026, the review): counts alone let one book store 3,000 MB a day, and the hosting
+// account's quota is not the disk's free space (MIN_FREE). Every limit may be lowered by the environment.
+define('BOOK_BYTES', limit('BOOK_BYTES', 16 * 1048576));        // bytes one book's parcels may hold
+define('DAY_BYTES', limit('DAY_BYTES', 32 * 1048576));          // bytes one book may leave in a UTC day
+define('MAX_STORE_BYTES', limit('MAX_STORE_BYTES', 1073741824)); // all books' files together
+define('DEVICE_IDLE_MS', limit('DEVICE_IDLE_MS', 30 * 86400000)); // a device not seen this long goes
+define('SWEEP_EVERY', 6 * 3600);                                 // seconds between idle-book sweeps
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -123,13 +130,25 @@ function prune_taken($db) {
         SELECT 1 FROM devices d WHERE d.device != parcels.sender AND d.acked < parcels.seq)');
 }
 
-/** Parcels older than KEEP_DAYS go, and the line past which they went is kept (the take answer's "gap"). */
-function prune_old($db, $now) {
+/**
+ * Parcels older than KEEP_DAYS go, and the line past which they went is kept (the take answer's "gap").
+ * A device other than the caller not seen for DEVICE_IDLE_MS goes with its parcels (23 Oct 2026, the review:
+ * a lost phone kept every parcel of the book for the full week and a place among the eight for ever).
+ */
+function prune_old($db, $now, $device) {
     $cut = one($db, 'SELECT MAX(seq) FROM parcels WHERE at < ?', [$now - KEEP_DAYS * 86400000]);
     if ($cut !== null && $cut !== false) {
         $db->prepare('DELETE FROM parcels WHERE seq <= ?')->execute([(int)$cut]);
         if ((int)$cut > (int)(meta($db, 'pruned_past') ?? 0)) set_meta($db, 'pruned_past', (int)$cut);
     }
+    $s = $db->prepare('SELECT device FROM devices WHERE seen < ? AND device != ?');
+    $s->execute([$now - DEVICE_IDLE_MS, $device]);
+    $gone = $s->fetchAll(PDO::FETCH_COLUMN);
+    foreach ($gone as $g) {
+        $db->prepare('DELETE FROM devices WHERE device = ?')->execute([$g]);
+        $db->prepare('DELETE FROM parcels WHERE sender = ?')->execute([$g]);
+    }
+    if ($gone) prune_taken($db);
 }
 
 /** A quiet call writes "seen" at most once an hour; one that did something, always. */
@@ -138,22 +157,64 @@ function touch_seen($db, $device, $now, $always) {
     else $db->prepare('UPDATE devices SET seen = ? WHERE device = ? AND seen < ?')->execute([$now, $device, $now - SEEN_EVERY_MS]);
 }
 
+/** Refusals of a parcel after which a round still answers the others' page (and keeps its ack). */
+function capacity($why) { return in_array($why, ['day-limit', 'day-bytes', 'book-full', 'full'], true); }
+
+/**
+ * Bytes of every book's files together, kept in $store/.size and counted again from the files at most every
+ * ten minutes (the files are what the hosting account's quota measures).
+ */
+function store_bytes($store, $fresh = false) {
+    $f = $store . '/.size';
+    $m = @filemtime($f);
+    if (!$fresh && $m !== false && time() - $m < 600) {
+        $v = trim((string)@file_get_contents($f));
+        if (ctype_digit($v)) return (int)$v;
+    }
+    $n = 0;
+    foreach (glob($store . '/*.sqlite*') ?: [] as $x) { $z = @filesize($x); if ($z !== false) $n += $z; }
+    @file_put_contents($f, (string)$n, LOCK_EX);
+    return $n;
+}
+
+/** A parcel written: the kept total grows with it until the next count from the files. */
+function store_grew($store, $len) {
+    $h = @fopen($store . '/.size', 'c+');
+    if ($h === false) return;
+    if (flock($h, LOCK_EX)) {
+        $v = trim((string)stream_get_contents($h));
+        $n = (ctype_digit($v) ? (int)$v : 0) + $len;
+        ftruncate($h, 0); rewind($h); fwrite($h, (string)$n);
+        flock($h, LOCK_UN);
+    }
+    fclose($h);
+}
+
 /** One parcel in: its number, or a refusal [code, why]. */
 function put_parcel($db, $store, $device, $now, $body) {
     if ($body === '' || $body === false) return [400, 'empty'];
-    if (strlen($body) > MAX_PARCEL) return [413, 'too-big'];
+    $len = strlen($body);
+    if ($len > MAX_PARCEL) return [413, 'too-big'];
     $free = @disk_free_space($store);
     if ($free !== false && $free < MIN_FREE) return [507, 'full'];
+    if (store_bytes($store) + $len > MAX_STORE_BYTES) return [507, 'full'];
     $key = 'count:' . gmdate('Y-m-d', intdiv($now, 1000));
-    $count = (int)(meta($db, $key) ?? 0);
+    // "<parcels>/<bytes>" for the day (a value from before 23 Oct holds the parcels alone).
+    $parts = explode('/', (string)(meta($db, $key) ?? '0'));
+    $count = (int)$parts[0];
+    $dayBytes = isset($parts[1]) ? (int)$parts[1] : 0;
     if ($count >= DAY_LIMIT) return [429, 'day-limit'];
+    if ($dayBytes + $len > DAY_BYTES) return [429, 'day-bytes'];
+    $stored = (int)one($db, 'SELECT COALESCE(SUM(length(body)), 0) FROM parcels');
+    if ($stored + $len > BOOK_BYTES) return [507, 'book-full'];
     $db->prepare("DELETE FROM meta WHERE k LIKE 'count:%' AND k != ?")->execute([$key]);
-    set_meta($db, $key, $count + 1);
+    set_meta($db, $key, ($count + 1) . '/' . ($dayBytes + $len));
     $s = $db->prepare('INSERT INTO parcels (sender, at, body) VALUES (?, ?, ?)');
     $s->bindValue(1, $device);
     $s->bindValue(2, $now, PDO::PARAM_INT);
     $s->bindValue(3, $body, PDO::PARAM_LOB);
     $s->execute();
+    store_grew($store, $len);
     touch_seen($db, $device, $now, true);
     return (int)$db->lastInsertId();
 }
@@ -174,25 +235,57 @@ function take_page($db, $device, $now, $after) {
         $page[] = ['seq' => (int)$r['seq'], 'from' => $r['sender'], 'at' => (int)$r['at'], 'body' => $b64];
         $bytes += strlen($b64);
     }
-    return ['parcels' => $page, 'more' => count($rows) > count($page), 'gap' => $after < $prunedPast];
+    $more = count($rows) > count($page);
+    $out = ['parcels' => $page, 'more' => $more, 'gap' => $after < $prunedPast];
+    // The whole page went: every other device's parcel up to the book's last number is in it, so the device may
+    // read on from there instead of passing its own parcels again each round (23 Oct 2026).
+    if (!$more) $out['through'] = max($after, (int)(one($db, 'SELECT MAX(seq) FROM parcels') ?: 0));
+    return $out;
 }
 
-/** Now and then (one request in a hundred): books nobody touched for IDLE_DAYS are let go. */
-function sweep_idle($store, $now) {
-    if (mt_rand(1, 100) !== 1) return;
+/**
+ * Books nobody touched for IDLE_DAYS are let go: at most once every SWEEP_EVERY (the hourly health call
+ * brings it), or at once when $force (a new book would be refused as full). 23 Oct 2026, the review: one
+ * hello in a hundred swept, and clients say hello once per book, so dead books were never let go.
+ */
+function sweep_idle($store, $now, $force = false) {
+    $mark = $store . '/.swept';
+    $m = @filemtime($mark);
+    if (!$force && $m !== false && time() - $m < SWEEP_EVERY) return;
+    @touch($mark);
     foreach (glob($store . '/*.sqlite') ?: [] as $f) {
         $m = @filemtime($f);
         if ($m !== false && ($now / 1000) - $m > IDLE_DAYS * 86400) {
             @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
         }
     }
+    store_bytes($store, true);
+}
+
+/**
+ * New books in the last 24 hours, each marked by an empty file in $store/new when it was made (a book's own
+ * file's ctime moves with every write, so it counted every busy book as new). Older marks go.
+ */
+function new_books_today($store) {
+    $dir = $store . '/new';
+    if (!is_dir($dir)) @mkdir($dir, 0700, true);
+    $n = 0;
+    foreach (glob($dir . '/*') ?: [] as $f) {
+        $m = @filemtime($f);
+        if ($m === false) continue;
+        if (time() - $m < 86400) $n++; else @unlink($f);
+    }
+    return $n;
 }
 
 $store = store_dir();
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $halted = file_exists($store . '/halt');
 
-if (preg_match('#/v1/health$#', $path)) answer(200, ['ok' => true, 'live' => !$halted]);
+if (preg_match('#/v1/health$#', $path)) {
+    sweep_idle($store, (int)floor(microtime(true) * 1000));
+    answer(200, ['ok' => true, 'live' => !$halted]);
+}
 if ($halted) refuse(503, 'halted');
 if (!preg_match('#/v1/b/([0-9a-f]{32})/(hello|send|take|ack|wake|leave|round)$#', $path, $m)) refuse(404, 'no-such-path');
 $book = $m[1];
@@ -218,14 +311,18 @@ try {
         // The book's first device sets the pass, and only by a hello (never by a stray parcel).
         if ($action !== 'hello') refuse(403, 'say-hello-first');
         $all = glob($store . '/*.sqlite') ?: [];
-        if (count($all) >= MAX_BOOKS) refuse(507, 'full');
+        if (count($all) >= MAX_BOOKS || store_bytes($store) >= MAX_STORE_BYTES) {
+            // Idle books are let go first; only a store still full refuses.
+            sweep_idle($store, $now, true);
+            $all = glob($store . '/*.sqlite') ?: [];
+            if (count($all) >= MAX_BOOKS || store_bytes($store) >= MAX_STORE_BYTES) refuse(507, 'full');
+        }
         $free = @disk_free_space($store);
         if ($free !== false && $free < MIN_FREE) refuse(507, 'full');
         // New books in a day, all together: a stranger opening books at will meets a limit (22 Oct 2026).
-        $fresh = 0;
-        foreach ($all as $f) { $c = @filectime($f); if ($c !== false && time() - $c < 86400) $fresh++; }
-        if ($fresh >= NEW_BOOKS_DAY) refuse(429, 'new-books');
+        if (new_books_today($store) >= NEW_BOOKS_DAY) refuse(429, 'new-books');
         $db = open_book($store, $book, true);
+        @touch($store . '/new/' . $book);
     }
     $db->exec('BEGIN IMMEDIATE');
     $known = meta($db, 'pass');
@@ -239,7 +336,7 @@ try {
     }
     $isKnown = one($db, 'SELECT 1 FROM devices WHERE device = ?', [$device]) !== false;
     if (!$isKnown && $action !== 'hello') { $db->exec('ROLLBACK'); refuse(403, 'say-hello-first'); }
-    prune_old($db, $now);
+    prune_old($db, $now, $device);
 
     switch ($action) {
         case 'hello': {
@@ -253,7 +350,6 @@ try {
             $others = array_map(function ($r) { return ['device' => $r['device'], 'seen' => (int)$r['seen']]; },
                 $s->fetchAll(PDO::FETCH_ASSOC));
             $db->exec('COMMIT');
-            sweep_idle($store, $now);
             answer(200, ['ok' => true, 'top' => $top, 'others' => $others]);
         }
         case 'send': {
@@ -297,7 +393,14 @@ try {
                 $body = base64_decode($o['parcel'], true);
                 if ($body === false) { $db->exec('ROLLBACK'); refuse(400, 'bad-parcel'); }
                 $r = put_parcel($db, $store, $device, $now, $body);
-                if (is_array($r)) { $db->exec('ROLLBACK'); refuse($r[0], $r[1]); }
+                if (is_array($r) && !capacity($r[1])) { $db->exec('ROLLBACK'); refuse($r[0], $r[1]); }
+                if (is_array($r)) {
+                    // The book's limit refuses the parcel, not the round (23 Oct 2026, the review): the ack above
+                    // stays and the others' page still comes, under the refusal's status.
+                    $page = take_page($db, $device, $now, $after);
+                    $db->exec('COMMIT');
+                    answer($r[0], ['ok' => false, 'why' => $r[1], 'seq' => null] + $page);
+                }
                 $seq = $r;
             }
             $page = take_page($db, $device, $now, $after);

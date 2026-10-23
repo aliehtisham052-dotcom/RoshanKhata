@@ -33,6 +33,18 @@ const KEEP_DAYS = Number(Deno.env.get("RK_KEEP_DAYS") ?? "7");
 const DAY_LIMIT = Number(Deno.env.get("RK_DAY_LIMIT") ?? "3000");
 const MAX_DEVICES = 8;
 const IDLE_DAYS = 30;
+/**
+ * Bytes a book may hold and leave in a UTC day (23 Oct 2026, the review: counts alone let one book store
+ * 3,000 MB a day; the free database is 500 MB for every shop). A device not seen for DEVICE_IDLE_MS goes.
+ */
+const BOOK_BYTES = Number(Deno.env.get("RK_BOOK_BYTES") ?? String(16 * 1024 * 1024));
+const DAY_BYTES = Number(Deno.env.get("RK_DAY_BYTES") ?? String(32 * 1024 * 1024));
+const DEVICE_IDLE_MS = Number(Deno.env.get("RK_DEVICE_IDLE_MS") ?? String(30 * 86_400_000));
+/** Refusals of a parcel after which a round still answers the others' page (and keeps its ack). */
+const CAPACITY = new Set(["day-limit", "day-bytes", "book-full"]);
+/** A round's JSON: a parcel's base64 (4/3 of MAX_PARCEL) and its few fields. */
+const MAX_ROUND = MAX_PARCEL * 2;
+const MAX_SMALL = 64 * 1024;
 /** Books this relay holds at most, and new ones it takes in a UTC day (anyone may open a book: a limit before the plan's). */
 const MAX_BOOKS = Number(Deno.env.get("RK_MAX_BOOKS") ?? "5000");
 const NEW_BOOKS_DAY = Number(Deno.env.get("RK_NEW_BOOKS_DAY") ?? "300");
@@ -60,6 +72,7 @@ function setup(): Promise<void> {
         seq BIGSERIAL PRIMARY KEY, book TEXT NOT NULL REFERENCES rk_relay.books(book) ON DELETE CASCADE,
         sender TEXT NOT NULL, at BIGINT NOT NULL, body BYTEA NOT NULL);
       CREATE INDEX IF NOT EXISTS parcels_book_seq ON rk_relay.parcels (book, seq);
+      ALTER TABLE rk_relay.books ADD COLUMN IF NOT EXISTS day_bytes BIGINT NOT NULL DEFAULT 0;
       ALTER TABLE rk_relay.books ENABLE ROW LEVEL SECURITY;
       ALTER TABLE rk_relay.devices ENABLE ROW LEVEL SECURITY;
       ALTER TABLE rk_relay.parcels ENABLE ROW LEVEL SECURITY;
@@ -95,6 +108,42 @@ function toBase64(bytes: Uint8Array): string {
   return btoa(s);
 }
 
+/**
+ * The request's body, at most [cap] bytes; null when it was longer. Past the cap it is still read to its end
+ * but nothing more is kept (23 Oct 2026, the review: the whole body was held in memory before any check, and
+ * Supabase's gateway holds an answer given before the body was read until the upload ends).
+ */
+async function readCapped(request: Request, cap: number): Promise<Uint8Array | null> {
+  const declared = Number(request.headers.get("content-length") ?? "NaN");
+  const reader = request.body?.getReader();
+  if (!reader) return new Uint8Array(0);
+  const chunks: Uint8Array[] = [];
+  let n = 0;
+  let over = Number.isFinite(declared) && declared > cap;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    n += value.length;
+    if (n > cap) over = true;
+    if (!over) chunks.push(value);
+  }
+  if (over) return null;
+  const out = new Uint8Array(n);
+  let at = 0;
+  for (const c of chunks) { out.set(c, at); at += c.length; }
+  return out;
+}
+
+function parseJson(bytes: Uint8Array | null): Record<string, unknown> | null {
+  if (!bytes) return null;
+  try {
+    const o = JSON.parse(new TextDecoder().decode(bytes));
+    return o && typeof o === "object" ? o as Record<string, unknown> : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Thrown inside a transaction to roll it back and answer with this. */
 class Answer extends Error {
   constructor(public res: Response) { super("answer"); }
@@ -121,6 +170,10 @@ async function handle(request: Request): Promise<Response> {
     if (keep && request.headers.get("x-rk-keep") === keep) {
       const now = Date.now();
       await sql`DELETE FROM rk_relay.books WHERE seen < ${now - IDLE_DAYS * 86_400_000}`;
+      // A device nobody saw for DEVICE_IDLE_MS goes with its parcels, in books still in use too.
+      await sql`DELETE FROM rk_relay.parcels p USING rk_relay.devices d
+                WHERE p.book = d.book AND p.sender = d.device AND d.seen < ${now - DEVICE_IDLE_MS}`;
+      await sql`DELETE FROM rk_relay.devices WHERE seen < ${now - DEVICE_IDLE_MS}`;
     }
     return json({ ok: true, live });
   }
@@ -144,13 +197,15 @@ async function handle(request: Request): Promise<Response> {
   let body: Uint8Array | null = null;
   let o: Record<string, unknown> | null = null;
   if (action === "send") {
-    // Read whole before answering, even when too big: Supabase's gateway holds an answer given before the
+    // Read to its end before answering, even when too big: Supabase's gateway holds an answer given before the
     // body was read until the upload ends, and the caller timed out (22 Oct 2026, the deployed check).
-    body = new Uint8Array(await request.arrayBuffer());
+    body = await readCapped(request, MAX_PARCEL);
+    if (body == null) return refuse(413, "too-big");
     if (body.length === 0) return refuse(400, "empty");
-    if (body.length > MAX_PARCEL) return refuse(413, "too-big");
   } else if (action === "ack" || action === "wake" || action === "round") {
-    o = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+    const raw = await readCapped(request, action === "round" ? MAX_ROUND : MAX_SMALL);
+    if (raw == null) return refuse(413, "too-big");
+    o = parseJson(raw);
     if (action === "round") {
       if (!o) return refuse(400, "bad-round");
       if (typeof o.parcel === "string" && o.parcel.length > 0) {
@@ -163,8 +218,8 @@ async function handle(request: Request): Promise<Response> {
   const pass = await sha256Hex(token);
   const now = Date.now();
   return await sql.begin(async (tx) => {
-    const rows = await tx`SELECT pass, pruned_past, day, day_count FROM rk_relay.books WHERE book = ${book} FOR UPDATE`;
-    type Book = { pass: string; pruned_past: string; day: string; day_count: number };
+    const rows = await tx`SELECT pass, pruned_past, day, day_count, day_bytes FROM rk_relay.books WHERE book = ${book} FOR UPDATE`;
+    type Book = { pass: string; pruned_past: string; day: string; day_count: number; day_bytes: string };
     let b = rows[0] as unknown as Book | undefined;
     if (!b) {
       // The book's first device sets the pass, and only by a hello (never by a stray parcel).
@@ -174,7 +229,7 @@ async function handle(request: Request): Promise<Response> {
       if (Number(counts.d) >= NEW_BOOKS_DAY) throw new Answer(refuse(429, "new-books"));
       await tx`INSERT INTO rk_relay.books (book, pass, created, seen) VALUES (${book}, ${pass}, ${now}, ${now})
                ON CONFLICT (book) DO NOTHING`;
-      const again = await tx`SELECT pass, pruned_past, day, day_count FROM rk_relay.books WHERE book = ${book} FOR UPDATE`;
+      const again = await tx`SELECT pass, pruned_past, day, day_count, day_bytes FROM rk_relay.books WHERE book = ${book} FOR UPDATE`;
       b = again[0] as unknown as Book | undefined;
     }
     if (!b || !sameHex(b.pass, pass)) throw new Answer(refuse(403, "wrong-pass"));
@@ -188,6 +243,12 @@ async function handle(request: Request): Promise<Response> {
       await tx`DELETE FROM rk_relay.parcels WHERE book = ${book} AND seq <= ${cut}`;
       prunedPast = Math.max(prunedPast, Number(cut));
     }
+    // Another device not seen for DEVICE_IDLE_MS goes with its parcels (23 Oct 2026, the review: a lost phone kept
+    // every parcel of the book for the full week, and its place among the eight for ever).
+    const idle = await tx`DELETE FROM rk_relay.devices
+                          WHERE book = ${book} AND seen < ${now - DEVICE_IDLE_MS} AND device != ${device} RETURNING device`;
+    for (const r of idle) await tx`DELETE FROM rk_relay.parcels WHERE book = ${book} AND sender = ${r.device as string}`;
+    if (idle.length > 0) await pruneTaken(tx, book);
     // The book's "seen" (its idle sweep) is written when something happened, else at most once an hour:
     // a quiet round costs no row.
     if (cut != null) await tx`UPDATE rk_relay.books SET seen = ${now}, pruned_past = ${prunedPast} WHERE book = ${book}`;
@@ -206,8 +267,9 @@ async function handle(request: Request): Promise<Response> {
         return json({ ok: true, top, others: others.map((r) => ({ device: r.device, seen: Number(r.seen) })) });
       }
       case "send": {
-        const seq = await put(tx, book, device, now, body!, b);
-        return json({ ok: true, seq });
+        const r = await put(tx, book, device, now, body!, b);
+        if (Array.isArray(r)) throw new Answer(refuse(r[0], r[1]));
+        return json({ ok: true, seq: r });
       }
       case "take": {
         const after = Math.max(0, Number(url.searchParams.get("after") ?? "0") || 0);
@@ -229,8 +291,14 @@ async function handle(request: Request): Promise<Response> {
           await tx`UPDATE rk_relay.devices SET acked = GREATEST(acked, ${Math.floor(upTo)}) WHERE book = ${book} AND device = ${device}`;
           await pruneTaken(tx, book);
         }
-        const seq = body ? await put(tx, book, device, now, body, b) : null;
-        return json({ ok: true, seq, ...(await takePage(tx, book, device, now, after, prunedPast)) });
+        const r = body ? await put(tx, book, device, now, body, b) : null;
+        if (Array.isArray(r)) {
+          if (!CAPACITY.has(r[1])) throw new Answer(refuse(r[0], r[1]));
+          // The book's limit refuses the parcel, not the round (23 Oct 2026, the review): the ack above is kept
+          // (committed) and the others' page still comes, under the refusal's status.
+          return json({ ok: false, why: r[1], seq: null, ...(await takePage(tx, book, device, now, after, prunedPast)) }, r[0]);
+        }
+        return json({ ok: true, seq: r, ...(await takePage(tx, book, device, now, after, prunedPast)) });
       }
       case "wake": {
         const t = typeof o?.token === "string" && o.token.length > 20 && o.token.length < 4096 ? o.token : null;
@@ -250,15 +318,19 @@ async function handle(request: Request): Promise<Response> {
   });
 }
 
-/** One parcel in: its number. Throws the refusal. */
+/** One parcel in: its number, or the refusal [status, why]. */
 // deno-lint-ignore no-explicit-any
-async function put(tx: any, book: string, device: string, now: number, body: Uint8Array, b: { day: string; day_count: number }): Promise<number> {
-  if (body.length === 0) throw new Answer(refuse(400, "empty"));
+async function put(tx: any, book: string, device: string, now: number, body: Uint8Array, b: { day: string; day_count: number; day_bytes: string }): Promise<number | [number, string]> {
+  if (body.length === 0) return [400, "empty"];
   const day = new Date(now).toISOString().slice(0, 10);
   const count = b.day === day ? Number(b.day_count) : 0;
-  if (count >= DAY_LIMIT) throw new Answer(refuse(429, "day-limit"));
-  await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1} WHERE book = ${book}`;
-  b.day = day; b.day_count = count + 1;
+  const dayBytes = b.day === day ? Number(b.day_bytes ?? 0) : 0;
+  if (count >= DAY_LIMIT) return [429, "day-limit"];
+  if (dayBytes + body.length > DAY_BYTES) return [429, "day-bytes"];
+  const stored = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}`)[0].n);
+  if (stored + body.length > BOOK_BYTES) return [507, "book-full"];
+  await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1}, day_bytes = ${dayBytes + body.length} WHERE book = ${book}`;
+  b.day = day; b.day_count = count + 1; b.day_bytes = String(dayBytes + body.length);
   const seq = Number((await tx`INSERT INTO rk_relay.parcels (book, sender, at, body)
                                VALUES (${book}, ${device}, ${now}, ${body}) RETURNING seq`)[0].seq);
   await tx`UPDATE rk_relay.devices SET seen = ${now} WHERE book = ${book} AND device = ${device}`;
@@ -281,7 +353,12 @@ async function takePage(tx: any, book: string, device: string, now: number, afte
     page.push({ seq: Number(r.seq), from: r.sender as string, at: Number(r.at), body: b64 });
     bytes += b64.length;
   }
-  return { parcels: page, more: list.length > page.length, gap: after < prunedPast };
+  const more = list.length > page.length;
+  if (more) return { parcels: page, more, gap: after < prunedPast };
+  // The whole page went: every other device's parcel up to the book's last number is in it (the book's row is
+  // held FOR UPDATE, so none comes in between), and the device may read on from there (23 Oct 2026).
+  const top = Number((await tx`SELECT COALESCE(MAX(seq), 0) AS s FROM rk_relay.parcels WHERE book = ${book}`)[0].s);
+  return { parcels: page, more, gap: after < prunedPast, through: Math.max(after, top) };
 }
 
 /** Parcels every other device of the book has taken are gone (as cloud/worker's pruneTaken). */

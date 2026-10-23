@@ -11,6 +11,17 @@ for all of them. This script holds each to it:
 
 It uses a fresh random book each run and touches nothing else. Exit code 0
 when every check passed.
+
+Two more modes hold a relay started with lowered limits (23 Oct 2026; never
+run them against a deployed relay, whose limits are the real ones):
+
+    --caps   the relay runs with a day limit of 4 parcels, 3000 bytes a book
+             and 7000 bytes a day (PHP: RK_RELAY_DAY_LIMIT=4 RK_RELAY_BOOK_BYTES=3000
+             RK_RELAY_DAY_BYTES=7000; Supabase: RK_DAY_LIMIT, RK_BOOK_BYTES,
+             RK_DAY_BYTES; the Worker: --var DAY_LIMIT:4 BOOK_BYTES:3000 DAY_BYTES:7000)
+    --idle   a device not seen for 1.5 s is let go (RK_RELAY_DEVICE_IDLE_MS=1500,
+             RK_DEVICE_IDLE_MS=1500; the Worker: --var DEVICE_IDLE_MS:1500
+             PRUNE_EVERY_MS:1000, its alarm does it)
 """
 import base64
 import json
@@ -20,11 +31,13 @@ import socket
 import ssl
 import struct
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 
 BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "http://127.0.0.1:8098"
+MODE = sys.argv[2] if len(sys.argv) > 2 else ""
 FAILED = []
 LAST = ["(none yet)"]
 STEP = ["start"]
@@ -129,7 +142,78 @@ def check(name, cond, detail=""):
             print("::error title=relay check::" + name + " -- " + str(detail)[:600].replace("\n", " "))
 
 
+def caps():
+    """Limits lowered at the relay: a refused parcel still brings the page and keeps the ack; bytes are counted."""
+    token = secrets.token_hex(32)
+    a, b, c = (secrets.token_hex(8) for _ in range(3))
+    p = "/v1/b/" + secrets.token_hex(16) + "/"
+    call("POST", p + "hello", token, a)
+    call("POST", p + "hello", token, b)
+    s, ob = call("POST", p + "send", token, b, b"from b")
+    check("caps: a parcel goes", s == 200, (s, ob))
+    for i in range(3):
+        call("POST", p + "round", token, a, {"after": 0, "parcel": base64.b64encode(b"a%d" % i).decode()})
+    s, o = call("POST", p + "round", token, a, {"after": 0, "parcel": base64.b64encode(b"one too many").decode()})
+    got = [base64.b64decode(x["body"]) for x in (o or {}).get("parcels", [])]
+    check("a round past the day's parcels is refused as day-limit", s == 429 and o.get("why") == "day-limit" and o.get("seq") is None, (s, o))
+    check("and still brings the others' page", got == [b"from b"], got)
+    s, o = call("POST", p + "round", token, a, {"after": ob.get("seq"), "upTo": ob.get("seq"), "parcel": base64.b64encode(b"again").decode()})
+    check("a refused round with an ack is refused the same way", s == 429 and o.get("why") == "day-limit", (s, o))
+    s, o = call("POST", p + "send", token, a, b"x")
+    check("a send past it is refused too", s == 429 and o.get("why") == "day-limit", (s, o))
+    s, o = call("POST", p + "hello", token, c)
+    s, o = call("GET", p + "take?after=0", token, c)
+    got = [base64.b64decode(x["body"]) for x in o.get("parcels", [])]
+    check("the refused round's ack was kept (what it acked is gone)", s == 200 and got == [b"a0", b"a1", b"a2"], (s, got))
+
+    # Bytes: 3000 a book, 7000 a day.
+    p = "/v1/b/" + secrets.token_hex(16) + "/"
+    call("POST", p + "hello", token, a)
+    call("POST", p + "hello", token, b)
+    s, o = call("POST", p + "send", token, a, b"1" * 2000)
+    check("caps: 2000 bytes go", s == 200, (s, o))
+    last = o.get("seq")
+    s, o = call("POST", p + "send", token, a, b"2" * 2000)
+    check("past the book's bytes a parcel is refused as book-full", s == 507 and o.get("why") == "book-full", (s, o))
+    s, o = call("POST", p + "round", token, b, {"after": last, "upTo": last})
+    s, o = call("POST", p + "send", token, a, b"3" * 2000)
+    check("the bytes of parcels taken are free again", s == 200, (s, o))
+    last = o.get("seq")
+    call("POST", p + "round", token, b, {"after": last, "upTo": last})
+    s, o = call("POST", p + "send", token, a, b"4" * 2000)
+    last = o.get("seq")
+    call("POST", p + "round", token, b, {"after": last, "upTo": last})
+    s, o = call("POST", p + "send", token, a, b"5" * 2000)
+    check("past the day's bytes a parcel is refused as day-bytes", s == 429 and o.get("why") == "day-bytes", (s, o))
+    s, o = call("POST", p + "round", token, a, {"after": 0, "parcel": base64.b64encode(b"6" * 2000).decode()})
+    check("and a round says day-bytes with its page", s == 429 and o.get("why") == "day-bytes" and isinstance(o.get("parcels"), list), (s, o))
+
+
+def idle():
+    """A device not seen for the idle period goes with its parcels; a device of the book that comes back says hello again."""
+    token = secrets.token_hex(32)
+    a, b = (secrets.token_hex(8) for _ in range(2))
+    p = "/v1/b/" + secrets.token_hex(16) + "/"
+    call("POST", p + "hello", token, a)
+    call("POST", p + "hello", token, b)
+    s, o = call("POST", p + "send", token, a, b"before a went quiet")
+    check("idle: a parcel goes", s == 200, (s, o))
+    time.sleep(4)
+    call("GET", p + "take?after=0", token, b)  # the hostings sweep on another device's call; the Worker's alarm already did
+    s, o = call("GET", p + "take?after=0", token, a)
+    check("a device not seen for the idle period is let go", s == 403 and o.get("why") == "say-hello-first", (s, o))
+    s, o = call("POST", p + "hello", token, a)
+    check("and says hello again", s == 200, (s, o))
+    call("POST", p + "hello", token, b)
+    s, o = call("GET", p + "take?after=0", token, b)
+    check("its parcels went with it", s == 200 and o.get("parcels") == [], (s, o))
+
+
 def main():
+    if MODE == "--caps":
+        return caps()
+    if MODE == "--idle":
+        return idle()
     book = secrets.token_hex(16)
     token = secrets.token_hex(32)
     a, b, c, d = (secrets.token_hex(8) for _ in range(4))
@@ -180,8 +264,10 @@ def main():
     check("the other device takes them whole, byte for byte", s == 200 and got == [one, two], (s, len(got)))
     check("each says who sent it", all(x["from"] == a for x in o.get("parcels", [])), o.get("parcels"))
     check("no gap and nothing more", o.get("more") is False and o.get("gap") is False, o)
+    check("a whole page says how far the book goes", o.get("through") == o2["seq"], o.get("through"))
     s, o = call("GET", p + "take?after=0", token, a)
     check("a device is never given its own parcels", s == 200 and o["parcels"] == [], (s, o))
+    check("and may read on past them", o.get("through") == o2["seq"], o.get("through"))
     s, o = call("GET", p + "take?after=" + str(o1["seq"]), token, b)
     check("after= skips what was taken", [x["seq"] for x in o["parcels"]] == [o2["seq"]], o)
 
@@ -200,6 +286,7 @@ def main():
         seqs.append(o.get("seq"))
     s, o = call("GET", p + "take?after=" + str(o2["seq"]), token, b)
     check("a page holds at most 40 and says there is more", len(o["parcels"]) == 40 and o["more"] is True, (len(o["parcels"]), o.get("more")))
+    check("a page with more to come says no through", "through" not in o, o.get("through"))
     last = o["parcels"][-1]["seq"]
     s, o = call("GET", p + "take?after=" + str(last), token, b)
     check("the next page holds the rest", len(o["parcels"]) == 5 and o["more"] is False, (len(o["parcels"]), o.get("more")))
@@ -273,16 +360,15 @@ def main():
     s, o = call("GET", p + "take?after=0", token, a)
     check("and it must say hello again", s == 403 and o.get("why") == "say-hello-first", (s, o))
 
-    print()
-    if FAILED:
-        print("%d check(s) failed: %s" % (len(FAILED), ", ".join(FAILED)))
-        sys.exit(1)
-    print("every check passed against " + BASE)
-
 
 if __name__ == "__main__":
     try:
         main()
+        print()
+        if FAILED:
+            print("%d check(s) failed: %s" % (len(FAILED), ", ".join(FAILED)))
+            sys.exit(1)
+        print("every check passed against " + BASE + (" " + MODE if MODE else ""))
     except SystemExit:
         raise
     except BaseException as e:  # a crash is said as plainly as a failed check

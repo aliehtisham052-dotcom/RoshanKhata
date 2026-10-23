@@ -41,7 +41,32 @@ export interface Env {
   KEEP_SECRET?: string;
   FCM_SERVICE_ACCOUNT?: string;
   FCM_PROJECT_ID?: string;
+  /** Limits a test (or the owner) may lower through wrangler vars; each has its default below. */
+  BOOK_BYTES?: string;
+  DAY_BYTES?: string;
+  DEVICE_IDLE_MS?: string;
+  PRUNE_EVERY_MS?: string;
+  NEW_BOOKS_DAY?: string;
+  MAX_BOOKS?: string;
 }
+
+/** A limit from the Worker's vars, else its default. */
+function limit(v: string | undefined, fallback: number): number {
+  const n = Number(v);
+  return v != null && v !== "" && Number.isFinite(n) && n >= 0 ? n : fallback;
+}
+
+/**
+ * Bytes a book may hold and leave in a UTC day (23 Oct 2026, the review: counts alone let one book store
+ * 3,000 MB a day). The free plan's 5 GB is shared by every shop; a busy counter leaves well under 1 MB a day.
+ */
+const BOOK_BYTES = 16 * 1024 * 1024;
+const DAY_BYTES = 32 * 1024 * 1024;
+/** A device not seen this long is let go (its parcels too), so a lost phone stops pinning the book's parcels. */
+const DEVICE_IDLE_MS = 30 * 86_400_000;
+const PRUNE_EVERY_MS = 6 * 3600_000;
+/** Refusals of a parcel after which the round still answers the others' page (and keeps the ack). */
+const CAPACITY = new Set(["day-limit", "day-bytes", "book-full"]);
 
 const MAX_PARCEL = 1024 * 1024;
 const TAKE_PAGE = 40;
@@ -66,8 +91,11 @@ const CARRY_MAX_B64 = 3_400;
 const CARRY_PER_MINUTE = 60;
 /** A quiet call does not write the device's "seen" more often than this: the free plan counts rows written. */
 const SEEN_EVERY_MS = 3_600_000;
-/** New books one Worker takes in a UTC day, and books it holds at most (22 Oct 2026: anyone may open a book). */
-const NEW_BOOKS_DAY = 300;
+/**
+ * New books one Worker takes in 24 hours, and books it holds at most (22 Oct 2026: anyone may open a book).
+ * 100 a day since 23 Oct (was 300): each new book may hold BOOK_BYTES, and the free plan's storage is shared.
+ */
+const NEW_BOOKS_DAY = 100;
 const MAX_BOOKS = 20_000;
 
 function json(body: unknown, status = 200): Response {
@@ -158,16 +186,64 @@ function utcDay(now: number): string {
 
 export class Daakiya extends DurableObject<Env> {
   private sql: SqlStorage;
+  /** Whether this object's tables are known to exist (they are made only by a book's first hello). */
+  private tables = false;
+  private ledgerReady = false;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.sql = ctx.storage.sql;
+  }
+
+  /**
+   * The book's tables, made only when [create] (a hello). Any other call to an object without them is refused
+   * before anything is written (23 Oct 2026, the review: the constructor made them for every stranger's call,
+   * and an object once written to stays stored until deleteAll).
+   */
+  private haveTables(create: boolean): boolean {
+    if (this.tables) return true;
+    const has = this.sql.exec(`SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'meta'`).toArray().length > 0;
+    if (!has && !create) return false;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS devices (
       device TEXT PRIMARY KEY, acked INTEGER NOT NULL DEFAULT 0, seen INTEGER NOT NULL,
       fcm TEXT, woke INTEGER NOT NULL DEFAULT 0)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS parcels (
       seq INTEGER PRIMARY KEY AUTOINCREMENT, sender TEXT NOT NULL, at INTEGER NOT NULL, body BLOB NOT NULL)`);
+    // Pruning by sender reads about the rows it deletes, not every parcel times every device.
+    this.sql.exec(`CREATE INDEX IF NOT EXISTS parcels_sender ON parcels (sender, seq)`);
+    this.tables = true;
+    return true;
+  }
+
+  /** The book emptied: the ledger forgets it, then every stored byte and the alarm go. */
+  private async forget(): Promise<void> {
+    const book = this.meta("book");
+    if (book) {
+      const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
+      await ledger.fetch(new Request("https://ledger/" + book, { method: "DELETE" })).catch(() => null);
+    }
+    for (const ws of this.ctx.getWebSockets()) {
+      try { ws.close(4000, "gone"); } catch { /* already gone */ }
+    }
+    await this.ctx.storage.deleteAlarm();
+    await this.ctx.storage.deleteAll();
+    // The instance lives on with no tables: the next call is refused until a hello makes them again.
+    this.tables = false;
+  }
+
+  /** Bytes the book's parcels hold (kept as a count, put right from the parcels at each alarm). */
+  private addBytes(delta: number): void {
+    if (delta === 0) return;
+    this.setMeta("bytes", String(Math.max(0, Number(this.meta("bytes") ?? "0") + delta)));
+  }
+
+  /** Parcels matching [where] go, and their bytes leave the count; nothing is written when none match. */
+  private dropParcels(where: string, ...args: (string | number)[]): void {
+    const n = this.sql.exec<{ b: number | null }>(`SELECT SUM(length(body)) AS b FROM parcels WHERE ${where}`, ...args).one().b;
+    if (n == null) return;
+    this.sql.exec(`DELETE FROM parcels WHERE ${where}`, ...args);
+    this.addBytes(-n);
   }
 
   private meta(k: string): string | null {
@@ -181,12 +257,16 @@ export class Daakiya extends DurableObject<Env> {
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    if (url.hostname === "ledger") return this.ledger(url.pathname.slice(1));
-    const action = url.pathname.split("/").pop()!;
+    if (url.hostname === "ledger") return this.ledger(url.pathname.slice(1), request.method);
+    const parts = url.pathname.split("/");
+    const action = parts.pop()!;
+    const book = parts.pop()!;
     const token = passOf(request);
     const device = request.headers.get("x-device")!;
     const now = Date.now();
 
+    // An object with no tables is no book yet: only a hello makes one (nothing is written for any other call).
+    if (!this.haveTables(action === "hello")) return refuse(403, "say-hello-first");
     const pass = await sha256Hex(token);
     const known = this.meta("pass");
     if (known == null) {
@@ -194,8 +274,12 @@ export class Daakiya extends DurableObject<Env> {
       if (action !== "hello") return refuse(403, "say-hello-first");
       this.setMeta("pass", pass);
       this.setMeta("created", String(now));
+      this.setMeta("book", book);
     } else if (!sameHex(known, pass)) {
       return refuse(403, "wrong-pass");
+    } else if (action === "hello" && this.meta("book") == null) {
+      // A book from before 23 Oct learns its own id, so the ledger can forget it when it empties.
+      this.setMeta("book", book);
     }
 
     const isKnown = this.sql.exec(`SELECT 1 FROM devices WHERE device = ?`, device).toArray().length > 0;
@@ -208,25 +292,51 @@ export class Daakiya extends DurableObject<Env> {
       case "take": return this.take(url, device, now);
       case "ack": return this.ack(request, device, now);
       case "wake": return this.wake(request, device, now);
-      case "leave": return this.leave(device);
+      case "leave": return await this.leave(device);
       case "round": return this.round(request, url, device, now);
       case "live": return this.live(device);
     }
     return refuse(404, "no-such-path");
   }
 
-  /** The Worker's one count of books (the "!ledger" object): a book is counted on its first hello. */
-  private ledger(book: string): Response {
-    this.sql.exec(`CREATE TABLE IF NOT EXISTS books (book TEXT PRIMARY KEY, at INTEGER NOT NULL)`);
+  /**
+   * The Worker's one count of books (the "!ledger" object): a book is counted on its first hello (POST) and
+   * forgotten when its object empties (DELETE, from forget()). The total is kept in one row and the day's
+   * count reads an index (23 Oct 2026, the review: two COUNT(*) scans of every book on each refused hello).
+   */
+  private ledger(book: string, method: string): Response {
+    if (!this.ledgerReady) {
+      this.sql.exec(`CREATE TABLE IF NOT EXISTS books (book TEXT PRIMARY KEY, at INTEGER NOT NULL)`);
+      this.sql.exec(`CREATE INDEX IF NOT EXISTS books_at ON books (at)`);
+      this.sql.exec(`CREATE TABLE IF NOT EXISTS counts (k TEXT PRIMARY KEY, n INTEGER NOT NULL)`);
+      this.ledgerReady = true;
+    }
     const known = this.sql.exec(`SELECT 1 FROM books WHERE book = ?`, book).toArray().length > 0;
+    if (method === "DELETE") {
+      if (known) {
+        this.sql.exec(`DELETE FROM books WHERE book = ?`, book);
+        this.sql.exec(`UPDATE counts SET n = MAX(0, n - 1) WHERE k = 'books'`);
+      }
+      return json({ ok: true });
+    }
     if (known) return json({ ok: true });
     const now = Date.now();
-    const total = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books`).one().n;
-    if (total >= MAX_BOOKS) return refuse(507, "full");
+    const total = this.ledgerTotal();
+    if (total >= limit(this.env.MAX_BOOKS, MAX_BOOKS)) return refuse(507, "full");
     const today = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books WHERE at > ?`, now - 86_400_000).one().n;
-    if (today >= NEW_BOOKS_DAY) return refuse(429, "new-books");
+    if (today >= limit(this.env.NEW_BOOKS_DAY, NEW_BOOKS_DAY)) return refuse(429, "new-books");
     this.sql.exec(`INSERT INTO books (book, at) VALUES (?, ?)`, book, now);
+    this.sql.exec(`UPDATE counts SET n = n + 1 WHERE k = 'books'`);
     return json({ ok: true });
+  }
+
+  /** The ledger's total; counted once from the rows for a ledger kept before the total was. */
+  private ledgerTotal(): number {
+    const r = this.sql.exec<{ n: number }>(`SELECT n FROM counts WHERE k = 'books'`).toArray();
+    if (r.length) return r[0].n;
+    const n = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books`).one().n;
+    this.sql.exec(`INSERT INTO counts (k, n) VALUES ('books', ?)`, n);
+    return n;
   }
 
   private hello(device: string, now: number): Response {
@@ -249,20 +359,27 @@ export class Daakiya extends DurableObject<Env> {
   private async send(request: Request, device: string, now: number): Promise<Response> {
     const body = new Uint8Array(await request.arrayBuffer());
     const r = this.put(body, device, now);
-    if (r instanceof Response) return r;
+    if (typeof r !== "number") return refuse(r.status, r.why);
     return json({ ok: true, seq: r });
   }
 
   /** One parcel in: its number, or the refusal. */
-  private put(body: Uint8Array, device: string, now: number): number | Response {
-    if (body.length === 0) return refuse(400, "empty");
-    if (body.length > MAX_PARCEL) return refuse(413, "too-big");
+  private put(body: Uint8Array, device: string, now: number): number | { status: number; why: string } {
+    if (body.length === 0) return { status: 400, why: "empty" };
+    if (body.length > MAX_PARCEL) return { status: 413, why: "too-big" };
     const day = utcDay(now);
     const countKey = "count:" + day;
-    const count = Number(this.meta(countKey) ?? "0");
-    if (count >= Number(this.env.DAY_LIMIT || "3000")) return refuse(429, "day-limit");
+    // "<parcels>/<bytes>" for the day (a value from before 23 Oct holds the parcels alone).
+    const [countText, dayBytesText] = (this.meta(countKey) ?? "0").split("/");
+    const count = Number(countText) || 0;
+    const dayBytes = Number(dayBytesText ?? "0") || 0;
+    if (count >= limit(this.env.DAY_LIMIT, 3000)) return { status: 429, why: "day-limit" };
+    if (dayBytes + body.length > limit(this.env.DAY_BYTES, DAY_BYTES)) return { status: 429, why: "day-bytes" };
+    const stored = Number(this.meta("bytes") ?? "0");
+    if (stored + body.length > limit(this.env.BOOK_BYTES, BOOK_BYTES)) return { status: 507, why: "book-full" };
     this.sql.exec(`DELETE FROM meta WHERE k LIKE 'count:%' AND k != ?`, countKey);
-    this.setMeta(countKey, String(count + 1));
+    this.setMeta(countKey, `${count + 1}/${dayBytes + body.length}`);
+    this.setMeta("bytes", String(stored + body.length));
     const seq = this.sql.exec<{ seq: number }>(
       `INSERT INTO parcels (sender, at, body) VALUES (?, ?, ?) RETURNING seq`, device, now, body,
     ).one().seq;
@@ -285,7 +402,7 @@ export class Daakiya extends DurableObject<Env> {
     this.sql.exec(`UPDATE devices SET seen = ? WHERE device = ? AND seen < ?`, now, device, now - SEEN_EVERY_MS);
   }
 
-  private takePage(after: number, device: string, now: number): { parcels: { seq: number; from: string; at: number; body: string }[]; more: boolean; gap: boolean } {
+  private takePage(after: number, device: string, now: number): { parcels: { seq: number; from: string; at: number; body: string }[]; more: boolean; gap: boolean; through?: number } {
     const rows = this.sql.exec<{ seq: number; sender: string; at: number; body: ArrayBuffer }>(
       `SELECT seq, sender, at, body FROM parcels WHERE seq > ? AND sender != ? ORDER BY seq LIMIT ?`,
       after, device, TAKE_PAGE + 1,
@@ -303,7 +420,11 @@ export class Daakiya extends DurableObject<Env> {
     // Parcels older than KEEP_DAYS were forgotten: a device asking from before them has missed some (it must pair again).
     const prunedPast = Number(this.meta("pruned_past") ?? "0");
     const gap = after < prunedPast;
-    return { parcels: page, more, gap };
+    if (more) return { parcels: page, more, gap };
+    // The whole page went: every other device's parcel up to the book's last number is in it, so the device may
+    // read on from there (its own parcels after its cursor are not scanned again each round; 23 Oct 2026).
+    const through = this.sql.exec<{ s: number | null }>(`SELECT MAX(seq) AS s FROM parcels`).one().s ?? after;
+    return { parcels: page, more, gap, through: Math.max(after, through) };
   }
 
   /**
@@ -334,7 +455,12 @@ export class Daakiya extends DurableObject<Env> {
       let body: Uint8Array;
       try { body = Uint8Array.from(atob(o.parcel), (c) => c.charCodeAt(0)); } catch { return no(400, "bad-parcel"); }
       const r = this.put(body, device, now);
-      if (r instanceof Response) return no(r.status, r.status === 413 ? "too-big" : r.status === 429 ? "day-limit" : "empty");
+      if (typeof r !== "number") {
+        if (!CAPACITY.has(r.why)) return no(r.status, r.why);
+        // The book's limit refuses the parcel, not the round (23 Oct 2026, the review): the ack above stays and the
+        // others' page still comes, under the refusal's status; the device leaves its parcel at another relay.
+        return { body: { ok: false, why: r.why, seq: null, ...this.takePage(after, device, now) }, status: r.status };
+      }
       seq = r;
     }
     return { body: { ok: true, seq, ...this.takePage(after, device, now) }, status: 200 };
@@ -361,6 +487,8 @@ export class Daakiya extends DurableObject<Env> {
     const device = (ws.deserializeAttachment() as { device?: string } | null)?.device;
     if (!device) { ws.close(4001, "no-device"); return; }
     if (this.env.LIVE === "0") { ws.close(4503, "halted"); return; }
+    // The book was emptied under the line (its last device left, or a month's quiet): nothing is made again here.
+    if (!this.haveTables(false)) { ws.close(4001, "gone"); return; }
     let o: { id?: number; round?: RoundBody } | null = null;
     try { o = JSON.parse(typeof message === "string" ? message : new TextDecoder().decode(message)); } catch { o = null; }
     const id = Number(o?.id ?? 0);
@@ -412,48 +540,86 @@ export class Daakiya extends DurableObject<Env> {
     return json({ ok: true, wake: t != null });
   }
 
-  private leave(device: string): Response {
+  private async leave(device: string): Promise<Response> {
     for (const ws of this.ctx.getWebSockets(device)) {
       try { ws.close(4000, "left"); } catch { /* already gone */ }
     }
     this.sql.exec(`DELETE FROM devices WHERE device = ?`, device);
-    this.sql.exec(`DELETE FROM parcels WHERE sender = ?`, device);
+    this.dropParcels(`sender = ?`, device);
     const left = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM devices`).one().n;
-    if (left === 0) this.ctx.storage.deleteAll();
+    // The last device gone: the ledger forgets the book and every byte of it goes (awaited, 23 Oct 2026).
+    if (left === 0) await this.forget();
     else this.pruneTaken();
     return json({ ok: true });
   }
 
-  /** Parcels every other device has taken are gone. */
+  /**
+   * Parcels every other device has taken are gone. Per sender (at most 8): its parcels up to the lowest ack of
+   * the book's other devices, read through the (sender, seq) index — about the rows deleted, not every parcel
+   * times every device (23 Oct 2026, the review). A sender alone in the book waits for nobody.
+   */
   private pruneTaken(): void {
     const devices = this.sql.exec<{ device: string; acked: number }>(`SELECT device, acked FROM devices`).toArray();
-    if (devices.length === 0) return;
-    // A parcel is waiting for every device except its sender: it may go once each of them acked past it.
-    this.sql.exec(
-      `DELETE FROM parcels WHERE NOT EXISTS (
-         SELECT 1 FROM devices d WHERE d.device != parcels.sender AND d.acked < parcels.seq)`,
-    );
+    for (const s of devices) {
+      const others = devices.filter((d) => d.device !== s.device).map((d) => d.acked);
+      if (others.length === 0) this.dropParcels(`sender = ?`, s.device);
+      else {
+        const upTo = Math.min(...others);
+        if (upTo > 0) this.dropParcels(`sender = ? AND seq <= ?`, s.device, upTo);
+      }
+    }
   }
 
   private async schedulePrune(now: number): Promise<void> {
-    if ((await this.ctx.storage.getAlarm()) == null) await this.ctx.storage.setAlarm(now + 6 * 3600_000);
+    if ((await this.ctx.storage.getAlarm()) == null) await this.ctx.storage.setAlarm(now + limit(this.env.PRUNE_EVERY_MS, PRUNE_EVERY_MS));
   }
 
-  /** Every six hours: parcels older than KEEP_DAYS go; a book nobody touched for 30 days is emptied. */
+  /**
+   * Every six hours: parcels older than KEEP_DAYS go; a device not seen for DEVICE_IDLE_MS goes with its parcels
+   * (a lost phone no longer keeps every parcel for the full week, nor a place among the eight); a book with no
+   * device left, or nobody seen for 30 days, is emptied.
+   */
   async alarm(): Promise<void> {
+    if (!this.haveTables(false)) return;
     const now = Date.now();
     const keep = Math.max(1, Number(this.env.KEEP_DAYS || "7")) * 86_400_000;
-    const cut = this.sql.exec<{ s: number | null }>(`SELECT MAX(seq) AS s FROM parcels WHERE at < ?`, now - keep).one().s;
-    if (cut != null) {
-      this.sql.exec(`DELETE FROM parcels WHERE seq <= ?`, cut);
-      this.setMeta("pruned_past", String(cut));
+    // The cut is read from the oldest parcels only ("at" rises with the number), not by scanning them all.
+    let cut: number | null = null;
+    for (let batch = 0; batch < 20; batch++) {
+      const rows = this.sql.exec<{ seq: number; at: number }>(
+        `SELECT seq, at FROM parcels WHERE seq > ? ORDER BY seq LIMIT 1000`, cut ?? 0,
+      ).toArray();
+      let stopped = false;
+      for (const r of rows) {
+        if (r.at >= now - keep) { stopped = true; break; }
+        cut = r.seq;
+      }
+      if (stopped || rows.length < 1000) break;
     }
-    const last = this.sql.exec<{ s: number | null }>(`SELECT MAX(seen) AS s FROM devices`).one().s ?? 0;
-    if (now - last > 30 * 86_400_000) {
-      await this.ctx.storage.deleteAll();
+    if (cut != null) {
+      this.dropParcels(`seq <= ?`, cut);
+      this.setMeta("pruned_past", String(Math.max(cut, Number(this.meta("pruned_past") ?? "0"))));
+    }
+    const idle = this.sql.exec<{ device: string }>(
+      `SELECT device FROM devices WHERE seen < ?`, now - limit(this.env.DEVICE_IDLE_MS, DEVICE_IDLE_MS),
+    ).toArray();
+    for (const r of idle) {
+      for (const ws of this.ctx.getWebSockets(r.device)) {
+        try { ws.close(4000, "idle"); } catch { /* already gone */ }
+      }
+      this.sql.exec(`DELETE FROM devices WHERE device = ?`, r.device);
+      this.dropParcels(`sender = ?`, r.device);
+    }
+    if (idle.length > 0) this.pruneTaken();
+    const left = this.sql.exec<{ n: number; s: number | null }>(`SELECT COUNT(*) AS n, MAX(seen) AS s FROM devices`).one();
+    if (left.n === 0 || now - (left.s ?? 0) > 30 * 86_400_000) {
+      await this.forget();
       return;
     }
-    await this.ctx.storage.setAlarm(now + 6 * 3600_000);
+    // The byte count put right from the parcels themselves (a count kept by hand may drift).
+    const bytes = this.sql.exec<{ b: number | null }>(`SELECT SUM(length(body)) AS b FROM parcels`).one().b ?? 0;
+    if (bytes !== Number(this.meta("bytes") ?? "0")) this.setMeta("bytes", String(bytes));
+    await this.ctx.storage.setAlarm(now + limit(this.env.PRUNE_EVERY_MS, PRUNE_EVERY_MS));
   }
 
   /** Carried parcels per device in the current minute (kept in memory: a reset only lets a few more through). */
