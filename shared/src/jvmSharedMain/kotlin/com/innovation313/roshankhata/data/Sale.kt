@@ -308,6 +308,15 @@ object SaleMath {
         }
     }
 
+    /**
+     * The most one line may carry (23 Oct 2026, the review): a barcode scanned
+     * into a focused quantity box typed a 13-digit quantity that passed every
+     * check onto a customer's account. No shop sells a million of anything on
+     * one line, nor at a hundred million a unit; past these it is a slip.
+     */
+    const val MAX_QTY = 1_000_000.0
+    const val MAX_RATE = 100_000_000.0
+
     /** Why a ticket cannot be posted; the screen words each one. */
     enum class Problem {
         NO_LINES, BAD_QUANTITY, BAD_RATE, BAD_DISCOUNT, BAD_PAYMENT, BAD_METHOD,
@@ -355,8 +364,8 @@ object SaleMath {
         if (live.isEmpty()) return Problem.NO_LINES
         for (l in live) {
             if (l.itemName.isBlank()) return Problem.EMPTY_NAME
-            if (l.quantity <= 0.0 || l.quantity.isNaN()) return Problem.BAD_QUANTITY
-            if (l.rate < 0.0 || l.rate.isNaN()) return Problem.BAD_RATE
+            if (!l.quantity.isFinite() || l.quantity <= 0.0 || l.quantity > MAX_QTY) return Problem.BAD_QUANTITY
+            if (!l.rate.isFinite() || l.rate < 0.0 || l.rate > MAX_RATE) return Problem.BAD_RATE
             if (l.discount < 0.0 || l.discount > l.quantity * l.rate + 0.005) return Problem.BAD_DISCOUNT
         }
         for (p in payments) {

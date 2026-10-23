@@ -491,11 +491,16 @@ object Counter {
         // (a carton and loose bottles, two scale labels) were each given the whole of the same batch, so it
         // went below nothing and an expired batch behind it was never refused.
         val lotsOf = HashMap<Long, MutableList<Fefo.Lot>>()
+        // The whole book's stock is read once for the ticket, not once per product (23 Oct 2026, the review:
+        // a five-product ticket ran Stock.of five times before it was written). Nothing is written between,
+        // so every product's shelf is the figure the per-product read gave; a failed read falls back to it.
+        val shelf: Map<Long, Double?>? =
+            if (ticket.items.any { it.productId != null }) runCatching { onHand(dao) }.getOrNull() else null
         for (item in ticket.items) {
             val p = item.productId?.let { products[it] }
             items += item.copy(costRate = p?.let { costOf(dao, it, item.unit) })
             if (p == null) { takes += null; continue }
-            val lots = lotsOf.getOrPut(p.id) { Fefo.lots(dao, p).toMutableList() }
+            val lots = lotsOf.getOrPut(p.id) { Fefo.lots(dao, p, shelf).toMutableList() }
             val factor = Units.factor(p, item.unit)
             if (item.billItemId != null) {
                 // A batch chosen already (a held ticket): never an expired one.
@@ -521,12 +526,25 @@ object Counter {
             pointsUsed = ticket.pointsUsed, heldId = ticket.heldId, notes = ticket.notes)
     }
 
-    /** Park the draft; returns the held row's id. */
-    suspend fun hold(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName): Long {
-        // Points are spent when the ticket is paid, not while it waits.
+    /**
+     * Park the draft; returns the held row's id. A screen takes the ticket
+     * itself on its own thread ([holdTicket]) and clears with
+     * [CounterDraft.clearAfter], so a line scanned while it is written stays.
+     */
+    suspend fun hold(dao: KhataDao, draft: CounterDraft, createdBy: String? = Access.userName): Long =
+        hold(dao, holdTicket(draft, createdBy))
+
+    /**
+     * The ticket to park, taken from the draft at once (23 Oct 2026, the
+     * review: Hold read the live draft on the IO thread and the screen then
+     * wiped it, so a line rung up meanwhile was lost). Points are spent when
+     * the ticket is paid, not while it waits, so they are switched off first.
+     */
+    fun holdTicket(draft: CounterDraft, createdBy: String? = Access.userName): Ticket {
         draft.usePoints(false)
-        val id = dao.holdSale(draft.toSale(createdBy), draft.toItems())
-        draft.heldId?.let { dao.dropHeldSale(it) }
-        return id
+        return draft.snapshot(createdBy)
     }
+
+    /** Park a ticket already taken; the held ticket it was resumed from comes off in the same transaction. */
+    suspend fun hold(dao: KhataDao, ticket: Ticket): Long = dao.holdSale(ticket.sale, ticket.items, ticket.heldId)
 }

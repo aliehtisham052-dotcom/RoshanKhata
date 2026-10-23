@@ -71,10 +71,15 @@ import kotlinx.coroutines.withContext
  * a new order (from the low stock or empty), the order sent as a message
  * ([onSend] — the phone opens WhatsApp or the share sheet), and the goods
  * received as a supplier bill (receiveOrder). The same OrderDraft and
- * orderText as the computer.
+ * orderText as the computer. [onNeed] asks for the PIN of someone who may
+ * (the phone's AccessUi.allowed) and runs the action after; without it a
+ * cashier is told no, as before (23 Oct 2026, the review).
  */
 @Composable
-fun OrdersScreen(dao: KhataDao, shopName: String?, onSend: (phone: String?, text: String) -> Unit, modifier: Modifier = Modifier) {
+fun OrdersScreen(
+    dao: KhataDao, shopName: String?, onSend: (phone: String?, text: String) -> Unit, modifier: Modifier = Modifier,
+    onNeed: ((Access.Permission, () -> Unit) -> Unit)? = null
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val words = LocalWords.current
@@ -85,9 +90,18 @@ fun OrdersScreen(dao: KhataDao, shopName: String?, onSend: (phone: String?, text
     var told by remember { mutableStateOf<String?>(null) }
     androidx.compose.runtime.LaunchedEffect(orders) { suppliers = withContext(Dispatchers.IO) { dao.partiesWithBalanceOnce().filter { !it.isCustomer } } }
     val may = Access.can(Access.Permission.STOCK_ADJUST)
+    // The actions show when the user may, or when a manager's PIN can be asked for.
+    val offered = may || onNeed != null
+    fun gated(then: () -> Unit) {
+        val ask = onNeed
+        when {
+            Access.can(Access.Permission.STOCK_ADJUST) -> then()
+            ask != null -> ask(Access.Permission.STOCK_ADJUST, then)
+            else -> told = words.text(W.access_denied)
+        }
+    }
 
-    fun newOrder(lowOnly: Boolean) {
-        if (!may) { told = words.text(W.access_denied); return }
+    fun newOrder(lowOnly: Boolean) = gated {
         scope.launch {
             val products = withContext(Dispatchers.IO) { dao.productsOnce() }
             val draft = OrderDraft(null, products)
@@ -150,11 +164,11 @@ fun OrdersScreen(dao: KhataDao, shopName: String?, onSend: (phone: String?, text
                                 withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.SENT) }
                             }
                         }) { Text(word(W.po_send), color = c.brandGreenText) }
-                        if (o.status == OrderStatus.DRAFT && may) TextButton(onClick = {
+                        if (o.status == OrderStatus.DRAFT && offered) TextButton(onClick = { gated {
                             scope.launch { val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch; editing = OrderDraft(full, withContext(Dispatchers.IO) { dao.productsOnce() }) }
-                        }) { Text(word(W.edit), color = c.ink) }
-                        if (may) TextButton(onClick = { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } }) { Text(word(W.po_receive), color = c.brandGreenText, fontWeight = FontWeight.Bold) }
-                        if (may) TextButton(onClick = { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.CLOSED) } } }) { Text(word(W.po_close), color = c.textMuted) }
+                        } }) { Text(word(W.edit), color = c.ink) }
+                        if (offered) TextButton(onClick = { gated { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } } }) { Text(word(W.po_receive), color = c.brandGreenText, fontWeight = FontWeight.Bold) }
+                        if (offered) TextButton(onClick = { gated { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.CLOSED) } } } }) { Text(word(W.po_close), color = c.textMuted) }
                     }
                 }
             }

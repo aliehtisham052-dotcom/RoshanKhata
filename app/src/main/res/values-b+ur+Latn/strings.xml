@@ -3577,4 +3577,5 @@
     <string name="live_phone_relay_ask">Do phone sirf internet relay ke zariye milte hain. Yeh khata doosre phone ko bhejne se iske liye “Internet se bhi” on ho jayega. Agar doosra phone khata na le to yeh switch pehle jaisa ho jayega.</string>
     <string name="live_pair_left_business">Phone ka jor us waqt aaya jab karobar “%1$s” khula tha, aur ab doosra karobar khula hai: isay chhor diya gaya taake yeh is khate ki jagah na le. Jorne ke liye “%1$s” kholein aur phone par code dobara scan karein.</string>
     <string name="live_wake_off">App band ho to relay is phone ko jaga nahin sakta: doosre device ki tabdeeliyan app khulne par aayengi.</string>
+    <string name="staff_name_taken">Is naam ka staff pehle se list mein hai. Farq ke liye kuch saath likhein, jaise walid ka naam.</string>
 </resources>

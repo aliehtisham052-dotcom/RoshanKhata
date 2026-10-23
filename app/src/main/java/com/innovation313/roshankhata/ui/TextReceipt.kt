@@ -86,9 +86,17 @@ object TextReceipt {
     /**
      * The paired printers to choose from, then the text sent as a picture —
      * with the drawer's pulse first when the sale took [cash] and the drawer
-     * setting is on.
+     * setting is on. [direct] (a counter ticket, 23 Oct 2026, the review):
+     * straight to the printer used last while it is still paired, without the
+     * list; the list comes up when it is gone. [choosePrinter] changes it.
      */
-    fun print(activity: Activity, scope: LifecycleCoroutineScope, text: String, cash: Boolean = false) {
+    fun print(activity: Activity, scope: LifecycleCoroutineScope, text: String, cash: Boolean = false, direct: Boolean = false) =
+        printOrChoose(activity, scope, text, cash, direct)
+
+    /** The paired printers to choose from, the choice kept for the next receipt; nothing is printed (the counter's settings). */
+    fun choosePrinter(activity: Activity, scope: LifecycleCoroutineScope) = printOrChoose(activity, scope, null, false, false)
+
+    private fun printOrChoose(activity: Activity, scope: LifecycleCoroutineScope, text: String?, cash: Boolean, direct: Boolean) {
         // Android 12 and later ask the owner before any paired printer may be listed (21 Oct 2026:
         // the counter and the cashbook went straight to the list, and the app closed on a
         // SecurityException; only an entry's receipt asked). Asked here once, then the print goes on.
@@ -104,7 +112,7 @@ object TextReceipt {
             ) { granted ->
                 launcher?.unregister()
                 if (activity.isFinishing) return@register
-                if (granted) print(activity, scope, text, cash)
+                if (granted) printOrChoose(activity, scope, text, cash, direct)
                 else Toast.makeText(activity, R.string.print_permission, Toast.LENGTH_LONG).show()
             }
             launcher.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
@@ -121,15 +129,15 @@ object TextReceipt {
         val prefs = prefs(activity)
         val settings = settings(activity)
         val last = devices.indexOfFirst { it.address == prefs.getString("address", null) }
-        val choices = devices.map { ChoiceSheet.Option(ReceiptPrinter.label(it), icon = R.drawable.ic_print, iconTint = R.color.tile_calc_fg, tile = R.color.tile_calc_bg) }
-        ChoiceSheet.show(activity, activity.getString(R.string.print_choose), choices, last) { which ->
+        val send = send@{ which: Int ->
             prefs.edit().putString("address", devices[which].address).apply()
+            val words = text ?: return@send
             Toast.makeText(activity, R.string.print_sending, Toast.LENGTH_SHORT).show()
             val appContext = activity.applicationContext
             scope.launch {
                 val ok = withContext(Dispatchers.IO) {
                     val logo = if (settings.logo) com.innovation313.roshankhata.data.BusinessProfile.loadLogo(appContext) else null
-                    val bmp = picture(text, settings.width, logo)
+                    val bmp = picture(words, settings.width, logo)
                     try {
                         ReceiptPrinter.send(devices[which], EscPos.withDrawer(ReceiptPrinter.bytes(bmp, settings.width), cash && settings.drawer))
                         true
@@ -137,6 +145,10 @@ object TextReceipt {
                 }
                 Toast.makeText(activity, if (ok) R.string.print_done else R.string.print_failed, Toast.LENGTH_LONG).show()
             }
+            Unit
         }
+        if (direct && last >= 0) { send(last); return }
+        val choices = devices.map { ChoiceSheet.Option(ReceiptPrinter.label(it), icon = R.drawable.ic_print, iconTint = R.color.tile_calc_fg, tile = R.color.tile_calc_bg) }
+        ChoiceSheet.show(activity, activity.getString(R.string.print_choose), choices, last) { which -> send(which) }
     }
 }

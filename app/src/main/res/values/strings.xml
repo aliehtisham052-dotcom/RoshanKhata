@@ -3791,4 +3791,5 @@
     <string name="live_phone_relay_ask">Two phones meet only through the internet relay. Sending this book to the other phone turns “Also through the internet” on for it. If the other phone does not take the book, the switch goes back as it was.</string>
     <string name="live_pair_left_business">A phone’s pairing came while the business “%1$s” was open, and another business is open now: it was let go, so it cannot replace this book. To pair, open “%1$s” and scan the code again on the phone.</string>
     <string name="live_wake_off">The relay cannot wake this phone while the app is closed: the other device’s changes come in when the app is opened.</string>
+    <string name="staff_name_taken">Someone on the staff list already has this name. Add something to tell them apart, such as the father\'s name.</string>
 </resources>

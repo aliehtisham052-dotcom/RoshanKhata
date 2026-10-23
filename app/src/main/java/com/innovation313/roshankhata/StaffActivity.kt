@@ -254,6 +254,11 @@ class StaffActivity : BaseActivity() {
                 }
                 val save = {
                     lifecycleScope.launch {
+                        // Two staff of one name would share a shift and a drawer (23 Oct 2026, the review).
+                        if (dao.staffNameTaken(n, person?.id ?: 0L)) {
+                            Toast.makeText(this@StaffActivity, R.string.staff_name_taken, Toast.LENGTH_LONG).show()
+                            return@launch
+                        }
                         if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
                         else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
                     }

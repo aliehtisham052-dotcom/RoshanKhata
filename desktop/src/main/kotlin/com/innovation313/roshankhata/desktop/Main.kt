@@ -1852,7 +1852,8 @@ private fun Book(
                 }
             }
         }
-        PrinterChoiceDialog(remember { ThermalReceipt.printers() }, onCancel = { receipt = null }, onSavePicture = savePicture) { name ->
+        val names = remember(job) { ThermalReceipt.printers() }
+        fun printOn(name: String) {
             receipt = null
             scope.launch {
                 val ok = withContext(Dispatchers.IO) { ThermalReceipt.send(name, ThermalReceipt.bytes(lines, rtl, printer, receiptLogo(), cash = job.cash)) }
@@ -1860,6 +1861,10 @@ private fun Book(
                 told = words.text(W.print_receipt) to words.text(if (ok) W.print_done else W.print_failed)
             }
         }
+        // A counter ticket goes to the printer used last, without asking, while Windows still has it.
+        val auto = if (job.direct) ThermalReceipt.lastPrinter?.takeIf { it in names } else null
+        if (auto != null) LaunchedEffect(job) { printOn(auto) }
+        else PrinterChoiceDialog(names, onCancel = { receipt = null }, onSavePicture = savePicture) { name -> printOn(name) }
     }
     importing?.let { (fresh, skipped) ->
         ImportPreviewDialog(fresh, skipped, onCancel = { importing = null }) { rows ->

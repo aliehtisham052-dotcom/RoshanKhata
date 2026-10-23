@@ -144,7 +144,9 @@ fun CounterSalePane(
         }
     }
     val held by remember(tick) { dao.observeHeldSales() }.collectAsState(emptyList())
-    val recent by remember(tick) { dao.observeSales() }.collectAsState(emptyList())
+    // Only the tickets and returns shown (23 Oct 2026, the review: every one ever made was read, again after
+    // each ticket); Room re-reads them when sales or returns change, so no re-subscribe on tick.
+    val recent by remember { dao.observeRecentSales(8) }.collectAsState(emptyList())
 
     var query by remember { mutableStateOf("") }
     var told by remember { mutableStateOf<String?>(null) }
@@ -156,7 +158,7 @@ fun CounterSalePane(
     var voidingBy by remember { mutableStateOf<String?>(null) }
     var returningBy by remember { mutableStateOf<String?>(null) }
     var voidingReturnBy by remember { mutableStateOf<String?>(null) }
-    val returns by remember(tick) { dao.observeReturns() }.collectAsState(emptyList())
+    val returns by remember { dao.observeRecentReturns(6) }.collectAsState(emptyList())
     var showHeld by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
     if (reporting) ZReportDialog(dao, onReceipt = { onReceipt(ThermalReceipt.Job(it)) }) { reporting = false }
@@ -278,17 +280,18 @@ fun CounterSalePane(
                     runCatching {
                         val id = Counter.post(dao, ticket)
                         val sale = dao.saleWithLines(id)!!
-                        Triple(sale, sale.sale.partyId?.let { pid -> dao.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                        // The customer's balance alone (23 Oct 2026, the review: the whole book's balances were summed for it).
+                        Triple(sale, sale.sale.partyId?.let { pid -> dao.liveBalance(pid) },
                             com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
                     }
                 }
-                result.onSuccess { (sale, party, points) ->
+                result.onSuccess { (sale, balance, points) ->
                     // The change to hand back, said with the sale (21 Oct 2026).
                     told = words.text(W.pos_posted, sale.sale.saleNumber) +
                         (if (change > 0.005) "  ·  " + words.text(W.pos_change) + " " + Format.money(change) else "")
                     // Cash in the drawer: the drawer opens with the receipt, or alone when none is printed.
                     val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
-                    if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, party, points), cash))
+                    if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, balance, points), cash, direct = true))
                     else if (cash) onDrawer()
                     draft.clearAfter(ticket)
                     tick++
@@ -309,10 +312,12 @@ fun CounterSalePane(
     fun hold() {
         if (draft.lines.isEmpty() || draft.posting) return
         draft.posting = true
+        // Taken here, on the window's thread, before anything is written (23 Oct 2026, the review).
+        val ticket = Counter.holdTicket(draft)
         scope.launch {
             try {
-                val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, draft) } }
-                held.onSuccess { draft.clear(); tick++ }
+                val held = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, ticket) } }
+                held.onSuccess { draft.clearAfter(ticket); tick++ }
                     .onFailure { e -> told = counterFail(e) }
             } finally {
                 draft.posting = false
@@ -353,7 +358,8 @@ fun CounterSalePane(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
                 if (held.isNotEmpty()) FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
-                FluentButton(word(W.z_title), { reporting = true }, kind = ButtonKind.SUBTLE)
+                // The day's profit and the till's difference are the shop's figures (23 Oct 2026, the review).
+                FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.SUBTLE)
                 // The shift on this counter: who has it open, or that none is (a counter in counter mode should have one).
                 FluentButton(
                     if (myShift != null) word(W.shift_title) else word(W.shift_none), { shifting = true },
@@ -449,7 +455,7 @@ fun CounterSalePane(
             // The day's tickets and returns in their own scrolling strip, so on a laptop they never
             // squeeze the ticket being rung up (21 Oct 2026, the critical review).
             Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            RecentSales(recent.take(8), words,
+            RecentSales(recent, words,
                 onVoid = { s -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { by -> voidingBy = by; voiding = s } },
                 onReturn = { s ->
                     allowed(com.innovation313.roshankhata.data.Access.Permission.RETURN, words.text(W.pos_return) + " " + s.saleNumber) { by ->
@@ -468,7 +474,7 @@ fun CounterSalePane(
                         if (id != null) onInvoice(id)
                     }
                 })
-            RecentReturns(returns.take(6), words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
+            RecentReturns(returns, words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
             }
         }
 
@@ -733,7 +739,7 @@ private fun RecentReturns(rows: List<com.innovation313.roshankhata.data.ReturnSu
 
 /** The thermal receipt for a ticket — the lines ThermalReceipt prints or saves as a picture. */
 object SaleReceipt {
-    fun lines(words: Words, shop: String, s: SaleWithLines, currency: String, party: PartyWithBalance?,
+    fun lines(words: Words, shop: String, s: SaleWithLines, currency: String, balance: Double?,
               points: com.innovation313.roshankhata.data.Loyalty.OnReceipt? = null): List<ThermalReceipt.Line> {
         val sale = s.sale
         val out = ArrayList<ThermalReceipt.Line>()
@@ -771,7 +777,7 @@ object SaleReceipt {
             out += ThermalReceipt.Line(m + ": " + Format.money(p.amount) + (p.reference?.let { "  $it" } ?: ""), 18f)
         }
         if (sale.creditAmount > 0.005) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)
-        party?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(it.balance), 18f) }
+        balance?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(it), 18f) }
         // Loyalty (21 Oct 2026): spent, earned, held now.
         points?.let { pt ->
             if (pt.used > 0.0) out += ThermalReceipt.Line(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue)), 18f)

@@ -50,6 +50,8 @@ class CounterSaleActivity : BaseActivity() {
     private var parties by mutableStateOf<List<PartyWithBalance>>(emptyList())
     private var onHand by mutableStateOf<Map<Long, Double?>>(emptyMap())
     private var heldCount by mutableStateOf(0)
+    /** Raised once a ticket is written: the payment step closes then (23 Oct 2026, the review). */
+    private var postedTick by mutableStateOf(0)
     private var message by mutableStateOf<String?>(null)
     private var scaleRule by mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.Rule())
 
@@ -90,6 +92,7 @@ class CounterSaleActivity : BaseActivity() {
                         onHold = { hold() },
                         onShowHeld = { showHeld() },
                         onComplete = { if (viewer) toast(R.string.viewer_on_note) else complete() },
+                        postedTick = postedTick,
                         scaleRule = scaleRule,
                         loyaltyBalanceOf = { id -> withContext(Dispatchers.IO) { dao.loyaltyBalance(id) } }
                     )
@@ -97,6 +100,20 @@ class CounterSaleActivity : BaseActivity() {
             }
         }
         reload()
+    }
+
+    /**
+     * After a ticket (23 Oct 2026, the review): the shelf, the held count and
+     * the one customer's balance, read alone — not every customer's balance
+     * again. Products and the book's settings do not change with a sale.
+     */
+    private fun refreshAfterSale(partyId: Long?, balance: Double?) {
+        lifecycleScope.launch {
+            val stock = withContext(Dispatchers.IO) { runCatching { Counter.onHand(dao) }.getOrDefault(emptyMap()) }
+            val heldNow = withContext(Dispatchers.IO) { dao.heldSalesOnce().size }
+            onHand = stock; heldCount = heldNow
+            if (partyId != null && balance != null) parties = parties.map { if (it.id == partyId) it.copy(balance = balance) else it }
+        }
     }
 
     private fun reload() {
@@ -150,6 +167,11 @@ class CounterSaleActivity : BaseActivity() {
             }
             val drawer = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.printer_drawer); isChecked = printer.drawer }
             val drawerHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.printer_drawer_help); textSize = 13f }
+            // Tickets print on the printer chosen last without asking (23 Oct 2026, the review); it is changed here.
+            val choosePrinter = com.google.android.material.button.MaterialButton(this@CounterSaleActivity).apply {
+                setText(R.string.print_choose)
+                setOnClickListener { com.innovation313.roshankhata.ui.TextReceipt.choosePrinter(this@CounterSaleActivity, lifecycleScope) }
+            }
             fun heading(res: Int) = android.widget.TextView(this@CounterSaleActivity).apply {
                 setText(res); textSize = 15f; setTypeface(typeface, android.graphics.Typeface.BOLD)
                 setPadding(0, (16 * resources.displayMetrics.density).toInt(), 0, 0)
@@ -191,7 +213,7 @@ class CounterSaleActivity : BaseActivity() {
             val pad = (20 * resources.displayMetrics.density).toInt()
             val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
                 orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, pad / 2)
-                listOf(box, help, head, wide, logo, drawer, drawerHelp,
+                listOf(box, help, head, wide, logo, drawer, drawerHelp, choosePrinter,
                     heading(R.string.loyalty_section), perHundred, pointValue, loyaltyHelp,
                     heading(R.string.scale_section), prefix, pricedLabel, decimalsLabel, decimalsGroup, example, scaleHelp).forEach { addView(it) }
             }
@@ -318,7 +340,8 @@ class CounterSaleActivity : BaseActivity() {
                 posted.map { id ->
                     runCatching {
                         val sale = book.saleWithLines(id)!!
-                        Triple(sale, sale.sale.partyId?.let { pid -> book.partiesWithBalanceOnce().firstOrNull { it.id == pid } },
+                        // The customer's balance alone (23 Oct 2026, the review: the whole book's balances were summed for it).
+                        Triple(sale, sale.sale.partyId?.let { pid -> book.liveBalance(pid) },
                             com.innovation313.roshankhata.data.Loyalty.onReceipt(book, sale.sale))
                     }.getOrNull()
                 }
@@ -332,12 +355,13 @@ class CounterSaleActivity : BaseActivity() {
             if (isFinishing || isDestroyed) return@launch
             result.onSuccess { receipt ->
                     message = null
-                    reload()
-                    if (receipt == null) return@onSuccess
-                    val (sale, party, points) = receipt
+                    postedTick++
+                    if (receipt == null) { reload(); return@onSuccess }
+                    val (sale, balance, points) = receipt
+                    refreshAfterSale(sale.sale.partyId, balance)
                     val words = AndroidWords(this@CounterSaleActivity)
                     val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
-                    val text = SaleReceiptText.build(words, shop, sale, party?.balance, points)
+                    val text = SaleReceiptText.build(words, shop, sale, balance, points)
                     // The change to hand back, in the title (21 Oct 2026).
                     val title = getString(R.string.pos_posted, sale.sale.saleNumber) +
                         (if (change > 0.005) "  ·  " + getString(R.string.pos_change) + " " + com.innovation313.roshankhata.ui.Format.money(change) else "")
@@ -351,7 +375,7 @@ class CounterSaleActivity : BaseActivity() {
                         .setNeutralButton(R.string.print_receipt) { _, _ ->
                             // Paid at least partly in cash: the drawer opens as the ticket prints (when it is set to).
                             val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
-                            com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash)
+                            com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash, direct = true)
                         }
                         .setNegativeButton(R.string.close, null)
                         .show()
@@ -380,15 +404,18 @@ class CounterSaleActivity : BaseActivity() {
         if (draft.posting || draft.lines.isEmpty()) return
         draft.posting = true
         // As complete(): written where a rebuilt screen cannot cancel it, the till cleared once it is held.
-        val ticket = draft
+        val till = draft
+        // The ticket is taken here, on the main thread, before anything is written (23 Oct 2026, the review:
+        // the draft was read on the IO thread and then wiped, so a line scanned meanwhile was lost).
+        val ticket = Counter.holdTicket(till)
         val book = dao
         val work = com.innovation313.roshankhata.data.AppScope.async {
             try {
                 runCatching { Counter.hold(book, ticket) }.also { r ->
-                    if (r.isSuccess) withContext(Dispatchers.Main) { ticket.clear() }
+                    if (r.isSuccess) withContext(Dispatchers.Main) { till.clearAfter(ticket) }
                 }
             } finally {
-                withContext(NonCancellable + Dispatchers.Main) { ticket.posting = false }
+                withContext(NonCancellable + Dispatchers.Main) { till.posting = false }
             }
         }
         lifecycleScope.launch {

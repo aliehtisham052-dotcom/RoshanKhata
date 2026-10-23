@@ -26,6 +26,7 @@ import com.innovation313.roshankhata.ui.amountInWords
 import com.innovation313.roshankhata.ui.Reminder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -67,6 +68,8 @@ class InvoicesActivity : BaseActivity() {
         val rv: RecyclerView = findViewById(R.id.rvInvoices)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+        // The newest page first, more as the owner scrolls (23 Oct 2026, the review: every row was read).
+        com.innovation313.roshankhata.ui.GrowingList.attach(rv, listLimit) { listShown }
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddInvoice).setOnClickListener {
             startActivity(Intent(this, InvoiceEditorActivity::class.java))
@@ -78,9 +81,14 @@ class InvoicesActivity : BaseActivity() {
         observe()
     }
 
+    private val listLimit = kotlinx.coroutines.flow.MutableStateFlow(com.innovation313.roshankhata.data.ListWindow.PAGE)
+    private var listShown = 0
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun observe() {
         lifecycleScope.launch {
-            dao.observeInvoices().collectLatest { list ->
+            listLimit.flatMapLatest { dao.observeInvoicePage(it) }.collectLatest { list ->
+                listShown = list.size
                 adapter.submit(list)
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             }

@@ -3571,4 +3571,5 @@
     <string name="live_phone_relay_ask">Dua ponsel hanya bertemu melalui relai internet. Mengirim buku ini ke ponsel lain menyalakan “Juga lewat internet” untuk buku ini. Jika ponsel lain tidak menerima buku ini, sakelarnya kembali seperti semula.</string>
     <string name="live_pair_left_business">Pemasangan ponsel datang saat usaha “%1$s” terbuka, dan sekarang usaha lain yang terbuka: pemasangan itu dilepas agar tidak menggantikan buku ini. Untuk memasangkan, buka “%1$s” lalu pindai kodenya lagi di ponsel.</string>
     <string name="live_wake_off">Relai tidak dapat membangunkan ponsel ini saat aplikasi tertutup: perubahan dari perangkat lain masuk saat aplikasi dibuka.</string>
+    <string name="staff_name_taken">Sudah ada staf dengan nama ini. Tambahkan pembeda, misalnya nama ayah.</string>
 </resources>
