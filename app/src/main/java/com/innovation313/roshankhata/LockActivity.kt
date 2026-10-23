@@ -44,6 +44,11 @@ class LockActivity : BaseActivity() {
                     BiometricPrompt.ERROR_NO_BIOMETRICS,
                     BiometricPrompt.ERROR_HW_UNAVAILABLE,
                     BiometricPrompt.ERROR_HW_NOT_PRESENT -> {
+                        // A sensor that is only busy (HW_UNAVAILABLE can pass in a moment) on a phone that still has
+                        // a screen lock is no reason to open the book: only a phone with no screen lock at all is let in.
+                        val secure = (getSystemService(android.content.Context.KEYGUARD_SERVICE) as? android.app.KeyguardManager)
+                            ?.isDeviceSecure ?: true
+                        if (secure && code != BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) { finishAffinity(); return }
                         android.widget.Toast.makeText(
                             this@LockActivity,
                             if (code == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL || code == BiometricPrompt.ERROR_NO_BIOMETRICS)
