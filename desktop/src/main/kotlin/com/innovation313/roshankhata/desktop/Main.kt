@@ -141,12 +141,20 @@ private fun clearOldNativeCopies() {
 
 /** A small window while the book is checked and opened, or why it could not be (21 Oct 2026). */
 @Composable
-private fun OpeningWindow(words: Words, failed: Boolean, onClose: () -> Unit) {
+private fun OpeningWindow(
+    words: Words,
+    failed: Boolean,
+    onClose: () -> Unit,
+    /** Why it could not be opened, for support (R85); shown small under the sentence. */
+    detail: String? = null,
+    /** Another business to open instead (R28): its button's words and what it does. */
+    other: Pair<String, () -> Unit>? = null
+) {
     Window(
         onCloseRequest = onClose,
         title = words.text(W.app_name),
         icon = painterResource("roshan_khata_icon.png"),
-        state = rememberWindowState(width = 460.dp, height = if (failed) 300.dp else 180.dp, position = androidx.compose.ui.window.WindowPosition(Alignment.Center))
+        state = rememberWindowState(width = 460.dp, height = if (failed) 340.dp else 180.dp, position = androidx.compose.ui.window.WindowPosition(Alignment.Center))
     ) {
         RoshanTheme(dark = false) {
             val c = LocalRoshanColors.current
@@ -160,7 +168,11 @@ private fun OpeningWindow(words: Words, failed: Boolean, onClose: () -> Unit) {
                     Text(words.text(W.book_opening), color = c.ink, fontSize = 15.sp)
                 } else {
                     Text(words.text(W.book_cannot_open), color = c.ink, fontSize = 15.sp)
-                    TextButton(onClose) { Text(words.text(W.close)) }
+                    detail?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 3) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        other?.let { (label, open) -> TextButton(open) { Text(label) } }
+                        TextButton(onClose) { Text(words.text(W.close)) }
+                    }
                 }
             }
         }
@@ -173,6 +185,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // closes the old book (DisposableEffect) before the new one is used.
     val businesses = remember { Businesses(home) }
     var active by remember { mutableStateOf(businesses.activeId()) }
+    // The business open before the last switch: offered when the new one cannot be opened (R28, 23 Oct 2026).
+    var previous by remember { mutableStateOf<Long?>(null) }
     val settings = remember(active) { FileShopSettings(businesses.settingsFile(active)).also { it.refreshDisplay() } }
     // Once a day, a checked copy of the open book (the phone's Snapshots); a failure never stops the app.
     val dailyDir = remember(active) { DailyCopies.dir(home, active) }
@@ -196,6 +210,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // exactly as it is, and the window says so.
     var opened by remember(active) { mutableStateOf<BookHealth.Opened?>(null) }
     var openFailed by remember(active) { mutableStateOf(false) }
+    var openError by remember(active) { mutableStateOf<Throwable?>(null) }
     var emptyButSetAside by remember(active) { mutableStateOf(false) }
     LaunchedEffect(active) {
         val outside = appPrefs.backupFolder()?.let { DailyCopies.outside(it, active) }
@@ -207,11 +222,30 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                 o to empty
             }
         }
-        result.onSuccess { (o, empty) -> emptyButSetAside = empty; opened = o }.onFailure { openFailed = true }
+        result.onSuccess { (o, empty) ->
+            // Kept as the one to open next time only once it opened (R28): a switch to a book that cannot be
+            // opened was saved first, and every start then opened it, failed and closed.
+            if (businesses.activeId() != active) runCatching { withContext(Dispatchers.IO) { businesses.switchTo(active) } }
+            emptyButSetAside = empty; opened = o
+        }.onFailure { e ->
+            // The reason is kept (R85): errors.log, so Report a problem can send it.
+            withContext(Dispatchers.IO) { runCatching { CrashLog.write(home, "Opening the book ${businesses.dbFile(active).name}", e) } }
+            openError = e
+            openFailed = true
+        }
     }
     val book = opened
     if (book == null) {
-        OpeningWindow(words, failed = openFailed, onClose = { exitApplication() })
+        val back = previous ?: (if (active != 1L) 1L else null)
+        OpeningWindow(
+            words, failed = openFailed, onClose = { exitApplication() },
+            detail = openError?.let { e -> (e.cause ?: e).let { it.message ?: it.javaClass.simpleName } },
+            other = back?.takeIf { openFailed && it != active && businesses.list().any { b -> b.id == it } }?.let { id ->
+                val name = FileShopSettings(businesses.settingsFile(id)).businessName()
+                    ?: businesses.list().firstOrNull { it.id == id }?.name ?: words.text(W.app_name)
+                (words.text(W.business_switch_open) + " " + name) to { previous = null; active = id }
+            }
+        )
         return
     }
     val db = book.db
@@ -244,7 +278,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     // Light, dark or as Windows is: the phone's Theme choice, kept for every shop on this computer.
     var theme by remember { mutableStateOf(appPrefs.theme()) }
     var textSize by remember { mutableStateOf(appPrefs.textSize()) }
-    var invoiceFields by remember { mutableStateOf(appPrefs.invoiceFields()) }
+    var invoiceFields by remember(active) { mutableStateOf(appPrefs.invoiceFields(active)) }
     // App Lock: with a PIN set, nothing of the book is composed until it is typed (LockScreen).
     // A counter computer opens on its own sign-in (CounterGate), a PIN already: App Lock is not asked as well.
     var unlocked by remember { mutableStateOf(!appPrefs.hasPin() || com.innovation313.roshankhata.data.Access.counterMode) }
@@ -290,6 +324,26 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             kotlinx.coroutines.delay(60L * 60 * 1000)
             runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
             if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
+        }
+    }
+    // A business switch (R76, 23 Oct 2026): the book being left gets its closing copies first, here and in the
+    // outside folder, as on closing the app — switching used to cancel the hourly and after-sale copies and write
+    // nothing, so up to an hour of that shop's work was in no copy. Then whoever was signed in is signed out
+    // (shop A's manager is not a manager in shop B, 22 Oct) and the other book opens; it is kept as the one to
+    // open next time only once it opened (R28).
+    var switchingTo by remember { mutableStateOf<Long?>(null) }
+    switchingTo?.let { to ->
+        LaunchedEffect(to) {
+            withContext(kotlinx.coroutines.NonCancellable + Dispatchers.IO) {
+                kotlinx.coroutines.withTimeoutOrNull(90_000) {
+                    runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
+                    outsideDir?.let { dir -> runCatching { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } }
+                }
+            }
+            com.innovation313.roshankhata.data.Access.signOut()
+            previous = active
+            switchingTo = null
+            active = to
         }
     }
     // Keyboard shortcuts for the counter (Phase 9a): the open page fills these in.
@@ -348,14 +402,14 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         textSize = textSize,
                         onTextSize = { level -> appPrefs.setTextSize(level); textSize = level },
                         invoiceFields = invoiceFields,
-                        onInvoiceFields = { f -> appPrefs.setInvoiceFields(f); invoiceFields = f },
+                        onInvoiceFields = { f -> appPrefs.setInvoiceFields(f, active); invoiceFields = f },
                         rtl = rtl,
                         words = words,
                         businesses = businesses,
                         activeBusiness = active,
                         // Another shop's book: whoever was signed in here is not signed in there (22 Oct 2026, the review:
                         // shop A's manager stayed a manager in shop B, and B's sales carried A's staff name).
-                        onSwitch = { id -> if (id != active) com.innovation313.roshankhata.data.Access.signOut(); businesses.switchTo(id); active = id },
+                        onSwitch = { id -> if (id != active) switchingTo = id },
                         dailyDir = dailyDir,
                         images = images,
                         home = home,
@@ -557,6 +611,11 @@ private fun Book(
             val with = if (st?.on == true) st.peers.firstOrNull()?.let { p -> p.name?.takeIf { it.isNotBlank() } ?: p.device.take(6) } else null
             liveWith = with
             runCatching { businesses.setLive(activeBusiness, with) }
+            // Which live book this business keeps (R29): another business offered the same book is sent here.
+            if (st != null) {
+                val keeps = if (st.on) withContext(Dispatchers.IO) { runCatching { LiveSync.identity(db.syncSql())?.book }.getOrNull() } else null
+                runCatching { businesses.setBook(activeBusiness, keeps) }
+            }
             kotlinx.coroutines.delay(3000)
         }
     }
@@ -674,8 +733,13 @@ private fun Book(
             }
         }
     }
-    if (choosingBusiness) BusinessesDialog(businesses, activeBusiness, onSwitch = { choosingBusiness = false; onSwitch(it) }, onClose = { choosingBusiness = false })
     var shop by remember { mutableStateOf(shopName()) }
+    if (choosingBusiness) BusinessesDialog(
+        businesses, activeBusiness, onSwitch = { choosingBusiness = false; onSwitch(it) }, onClose = { choosingBusiness = false },
+        // The open business is renamed through the app's own settings, and its header follows at once (R27).
+        settingsOf = { id -> if (id == activeBusiness) settings else FileShopSettings(businesses.settingsFile(id)) },
+        onRenamed = { id -> if (id == activeBusiness) shop = shopName() }
+    )
     // The header's backup action, reached from the bell's row too (set where the action is built).
     var backupHook by remember { mutableStateOf({}) }
     fun backupNowLater() = backupHook()
@@ -993,7 +1057,7 @@ private fun Book(
                                                 file.writeText(BookExport.customersCsv(parties, headers), Charsets.UTF_8)
                                                 dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name)
                                             }
-                                        }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+                                        }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
                                     }
                                 } }, enabled = parties.isNotEmpty(), contentPadding = compactButton) { Text(word(W.export_excel), color = c.brandGreenText, fontSize = 13.sp, maxLines = 1) }
                                 // Bringing customers and their balances in changes the book: a cashier waits for a
@@ -1208,6 +1272,7 @@ private fun Book(
           // What this restore would take away, in figures, and a tick before Replace (21 Oct 2026).
           val loss = rememberLoss(dao, p.data)
           var agreed by remember(p) { mutableStateOf(false) }
+          val heldBy = p.live?.let { o -> businesses.holderOf(o.book, except = activeBusiness) }
           AlertDialog(
             // A live pairing's question is not lost to a click outside it: it comes back at once (23 Oct 2026,
             // the second review: the phone waited 15 minutes for an answer nobody could give).
@@ -1221,7 +1286,14 @@ private fun Book(
                     // replaced the first in silence; one book is one phone and one computer — a second phone joins
                     // as its own business).
                     val other = p.live?.let { o -> livePeers.firstOrNull { it.device != o.device } }
-                    if (other != null) Text(
+                    // The phone's book is kept live by another business here (R29, 23 Oct 2026): that business is
+                    // opened instead; joining or replacing here would make two businesses of one book.
+                    if (heldBy != null) Text(
+                        word(W.live_pair_other_business, FileShopSettings(businesses.settingsFile(heldBy)).businessName()
+                            ?: businesses.list().firstOrNull { it.id == heldBy }?.name ?: heldBy.toString()),
+                        color = c.owedToMe, fontWeight = FontWeight.SemiBold
+                    )
+                    else if (other != null) Text(
                         word(W.live_pair_other_phone, other.name?.takeIf { it.isNotBlank() } ?: words.text(W.live_title)),
                         color = c.owedToMe, fontWeight = FontWeight.SemiBold
                     )
@@ -1243,9 +1315,15 @@ private fun Book(
                 // Or keep this book and add only what the copy has that it lacks.
                 // Not for a live pairing: the two devices must start from the very same book.
                 if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null }) { Text(word(W.merge_button)) }
+                // The business that already keeps this book, opened (R29); nothing here is joined or replaced.
+                if (heldBy != null) TextButton(enabled = !busy, onClick = {
+                    LiveDesk.offers.value = null
+                    picked = null
+                    onSwitch(heldBy)
+                }) { Text(word(W.business_switch_open)) }
                 // Nothing here is removed: the phone's book becomes a business of its own and that business joins.
                 // Not when this computer already keeps this very book: then it is Replace (this copy made the phone's again).
-                p.live?.takeIf { it.book != thisBook }?.let { offer ->
+                p.live?.takeIf { it.book != thisBook && heldBy == null }?.let { offer ->
                     TextButton(enabled = !busy, onClick = {
                         // Its own name, with the phone's after it, so the two books never read alike in the list.
                         val name = (p.data.businessName?.takeIf { it.isNotBlank() } ?: words.text(W.live_title)) +
@@ -1257,7 +1335,7 @@ private fun Book(
                         onSwitch(b.id)
                     }) { Text(word(W.live_join_new_business)) }
                 }
-                TextButton(
+                if (heldBy == null) TextButton(
                     enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
                         busy = true
@@ -1297,7 +1375,7 @@ private fun Book(
                                     if (failure != null) {
                                         told = words.text(W.restore_warning_title) to
                                             if (p.live != null) words.text(W.live_join_failed, failure.message ?: failure.javaClass.simpleName)
-                                            else (failure.message ?: words.text(W.backup_failed))
+                                            else failText(words, failure)
                                     } else {
                                         if (p.live == null && !LiveDesk.windowOpen()) LiveDesk.stop()
                                         done = true
@@ -1306,7 +1384,7 @@ private fun Book(
                                     }
                                 }
                             } catch (e: Exception) {
-                                told = words.text(W.restore_warning_title) to (e.message ?: words.text(W.backup_failed))
+                                told = words.text(W.restore_warning_title) to failText(words, e)
                             } finally {
                                 busy = false
                                 picked = null
@@ -1370,7 +1448,7 @@ private fun Book(
         }
     }
     if (way != null && forParty != null) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { entryWay = null },
             onPreviewKeyEvent = escCloses { entryWay = null },
             title = word(if (way) W.you_gave else W.you_got),
@@ -1432,7 +1510,7 @@ private fun Book(
             text = { Text(word(com.innovation313.roshankhata.data.EntryOwner.wordFor(by))) },
             confirmButton = { TextButton({ editing = null }) { Text(word(W.ok)) } }
         )
-        else if (loaded != null && by != null) DialogWindow(
+        else if (loaded != null && by != null) AppDialog(
             onCloseRequest = { editing = null },
             onPreviewKeyEvent = escCloses { editing = null },
             title = word(W.edit),
@@ -1466,7 +1544,7 @@ private fun Book(
                             ThermalReceipt.Line(Format.dateTime(e.timestamp) + "  " + e.entryNumber, 18f, centre = true),
                             ThermalReceipt.Line(""),
                             ThermalReceipt.Line(Format.name(forParty?.name.orEmpty()), 24f, bold = true),
-                            forParty?.phone?.let { ThermalReceipt.Line(it, 18f) },
+                            forParty?.phone?.let { ThermalReceipt.Line(Format.ltr(it), 18f) },
                             ThermalReceipt.Line(words.text(if (e.isGiven) W.you_gave else W.you_got), 22f),
                             ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true),
                             item?.takeIf { !it.itemName.isNullOrBlank() }?.let { i ->
@@ -1629,7 +1707,7 @@ private fun Book(
         }
     }
     if (bin) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { bin = false },
             onPreviewKeyEvent = escCloses { bin = false },
             title = word(W.recycle_bin),
@@ -1696,7 +1774,7 @@ private fun Book(
     }
     if (addParty || editingParty != null) {
         val existing = editingParty
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { addParty = false; editingParty = null },
             onPreviewKeyEvent = escCloses { addParty = false; editingParty = null },
             title = word(if (existing == null) W.add_party else W.edit_party),
@@ -1718,7 +1796,8 @@ private fun Book(
                         }
                     },
                     onCancel = { addParty = false; editingParty = null },
-                    home = home
+                    home = home,
+                    businessId = activeBusiness
                 )
             }
         }
@@ -1759,7 +1838,7 @@ private fun Book(
             scope.launch {
                 told = words.text(W.import_csv) to runCatching {
                     withContext(Dispatchers.IO) { dao.importOpeningBalances(rows, words.text(W.pdf_stmt_opening)) }
-                }.map { words.text(W.import_csv_done, it) }.getOrElse { it.message ?: it.toString() }
+                }.map { words.text(W.import_csv_done, it) }.getOrElse { failText(words, it) }
                 reload++
             }
         }
@@ -1781,7 +1860,7 @@ private fun Book(
         )
     }
     if (choosingLanguage) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { choosingLanguage = false },
             onPreviewKeyEvent = escCloses { choosingLanguage = false },
             title = word(W.language),
@@ -1808,7 +1887,7 @@ private fun Book(
     // required (the owner, 20 Oct) — every unit, example and suggestion follows it.
     val tradeMandatory = Trades.of(settings.tradeKey()) == null
     if (choosingTrade) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { if (!tradeMandatory) choosingTrade = false },
             onPreviewKeyEvent = escCloses { if (!tradeMandatory) choosingTrade = false },
             title = word(W.trade_pick_title),
@@ -1871,7 +1950,7 @@ private fun Book(
     // The phone's first-run walkthrough, once, after the trade and the name are settled.
     var touring by remember { mutableStateOf(!appPrefs.tourSeen()) }
     if (touring && !choosingTrade && !namingShop) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { appPrefs.setTourSeen(); touring = false },
             onPreviewKeyEvent = escCloses { appPrefs.setTourSeen(); touring = false },
             title = word(W.app_name),
@@ -1883,12 +1962,12 @@ private fun Book(
     // Every PDF / Statement / Print button opens its sheet here first (1.8.4).
     PreviewHost()
     if (lockSettings) {
-        DialogWindow(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = fitW(520.dp), height = fitH(460.dp))) {
+        AppDialog(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = fitW(520.dp), height = fitH(460.dp))) {
             AppLockSettings(appPrefs) { lockSettings = false }
         }
     }
     if (showAlerts) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { showAlerts = false },
             onPreviewKeyEvent = escCloses { showAlerts = false },
             title = word(W.home_today),
@@ -1898,7 +1977,7 @@ private fun Book(
         }
     }
     if (choosingTextSize) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { choosingTextSize = false },
             onPreviewKeyEvent = escCloses { choosingTextSize = false },
             title = word(W.text_size),
@@ -1922,7 +2001,7 @@ private fun Book(
         }
     }
     if (choosingTheme) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { choosingTheme = false },
             onPreviewKeyEvent = escCloses { choosingTheme = false },
             title = word(W.theme),
@@ -1944,7 +2023,7 @@ private fun Book(
         }
     }
     if (about) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { about = false },
             onPreviewKeyEvent = escCloses { about = false },
             title = word(W.about_us),

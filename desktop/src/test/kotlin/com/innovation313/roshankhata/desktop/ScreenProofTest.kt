@@ -383,4 +383,55 @@ class ScreenProofTest {
             home.deleteRecursively()
         }
     }
+
+    /**
+     * A dialog window keeps the app's direction and text size (R13, 23 Oct
+     * 2026): a window of its own gets both from Swing, which said left to right
+     * for Sindhi and right to left for Roman Urdu. The scene here plays that
+     * wrong window (the opposite direction, scale 1); AppDialog's body
+     * (KeepAppLook) must still read the app's own, and is drawn as a proof.
+     */
+    @Test
+    fun `a dialog body keeps the app direction and text size in Sindhi and Roman Urdu`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val before = Locale.getDefault()
+        try {
+            for (tag in listOf("sd", "ur-Latn")) {
+                val locale = Locale.forLanguageTag(tag).also { Locale.setDefault(it) }
+                val rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(locale)
+                val app = if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr
+                val swings = if (rtl) LayoutDirection.Ltr else LayoutDirection.Rtl
+                val words = desktopWords(locale)
+                var seenDir: LayoutDirection? = null
+                var seenScale = 0f
+                val scene = ImageComposeScene(width = 620, height = 420, density = Density(1f)) {
+                    CompositionLocalProvider(LocalLayoutDirection provides swings) {
+                        RoshanTheme(dark = false) {
+                            ProvideWords(words) {
+                                KeepAppLook(app, 1.3f) {
+                                    seenDir = LocalLayoutDirection.current
+                                    seenScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
+                                    DialogFrame(words.text(com.innovation313.roshankhata.words.W.language), onClose = {}, footer = {}) {
+                                        androidx.compose.material3.Text(words.text(com.innovation313.roshankhata.words.W.businesses_title))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                try {
+                    scene.render(0); scene.render(16_000_000)
+                    val png = scene.render(1_000_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                    File(dir, "dialog-direction-$tag.png").writeBytes(png)
+                } finally { scene.close() }
+                org.junit.Assert.assertEquals("$tag: the dialog's direction", app, seenDir)
+                org.junit.Assert.assertEquals("$tag: the dialog's text size", 1.3f, seenScale, 0.0001f)
+            }
+            org.junit.Assert.assertTrue("Sindhi is right to left", com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(Locale.forLanguageTag("sd")))
+            org.junit.Assert.assertFalse("Roman Urdu is left to right", com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(Locale.forLanguageTag("ur-Latn")))
+        } finally {
+            Locale.setDefault(before)
+        }
+    }
 }

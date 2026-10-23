@@ -3547,4 +3547,8 @@
     <string name="drive_plan_fresh">%1$s: اس فون پر ایک دکان کے طور پر واپس آئے گی۔</string>
     <string name="drive_plan_live">%1$s دوسرے آلے کے ساتھ لائیو سنک ہوتی ہے۔ اسے بدلنے سے لائیو سنک رک جائے گا؛ بعد میں دونوں کو دوبارہ جوڑیں۔</string>
     <string name="drive_plan_unreadable">%1$s: ڈرائیو سے پڑھی نہیں جا سکی۔ اسے ویسا ہی چھوڑا جا رہا ہے۔</string>
+    <string name="live_pair_other_business">اس فون کا کھاتہ اس کمپیوٹر پر کاروبار «%1$s» میں پہلے ہی لائیو چل رہا ہے۔ وہی کاروبار کھولیں: یہاں دوسری کاپی اس سے الگ ہوتی جائے گی۔</string>
+    <string name="fc_look_in">یہاں دیکھیں:</string>
+    <string name="fc_folder_name">فولڈر:</string>
+    <string name="fc_files_of_type">فائل کی قسم:</string>
 </resources>

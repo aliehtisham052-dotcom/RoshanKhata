@@ -195,7 +195,7 @@ object Preview {
 fun PreviewHost() {
     val req = Preview.request ?: return
     androidx.compose.runtime.key(req) {
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { Preview.close() },
             onPreviewKeyEvent = escCloses { Preview.close() },
             title = req.title,

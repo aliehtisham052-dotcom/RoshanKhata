@@ -310,6 +310,11 @@ fun DailyCopiesPane(
 private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Unit) {
     val c = LocalRoshanColors.current
     val chooseTitle = word(W.auto_folder_choose)
+    // Swing's chooser has no words of its own in the app's languages (R57, 23 Oct 2026): ours are handed to it.
+    val chooserWords = ChooserWords(
+        cancel = word(W.cancel), lookIn = word(W.fc_look_in), folder = word(W.fc_folder_name), ofType = word(W.fc_files_of_type),
+        rtl = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
+    )
     var reachable by remember { mutableStateOf(true) }
     var last by remember { mutableStateOf<File?>(null) }
     LaunchedEffect(folder, dir) {
@@ -337,20 +342,35 @@ private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Un
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FillButton(chooseTitle, c.brandGreen) {
-                chooseFolder(chooseTitle, folder)?.let(onFolder)
+                chooseFolder(chooseTitle, folder, chooserWords)?.let(onFolder)
             }
             if (folder != null) FluentButton(word(W.auto_folder_stop), { onFolder(null) }, kind = ButtonKind.DANGER)
         }
     }
 }
 
+/** The folder picker's own words in the app's language, and its direction. */
+private class ChooserWords(val cancel: String, val lookIn: String, val folder: String, val ofType: String, val rtl: Boolean)
+
 /** Windows' own folder picker (FileDialog picks files only); null when cancelled. */
-private fun chooseFolder(title: String, current: File?): File? {
+private fun chooseFolder(title: String, current: File?, words: ChooserWords): File? {
     runCatching { javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName()) }
+    // Read by the chooser's look when it is built, so they are set first (the JDK has these labels in English only).
+    runCatching {
+        val ui = javax.swing.UIManager.getDefaults()
+        ui["FileChooser.cancelButtonText"] = words.cancel
+        ui["FileChooser.openButtonText"] = title
+        ui["FileChooser.saveButtonText"] = title
+        ui["FileChooser.lookInLabelText"] = words.lookIn
+        ui["FileChooser.fileNameLabelText"] = words.folder
+        ui["FileChooser.folderNameLabelText"] = words.folder
+        ui["FileChooser.filesOfTypeLabelText"] = words.ofType
+    }
     val chooser = javax.swing.JFileChooser(current ?: File(System.getProperty("user.home"))).apply {
         dialogTitle = title
         fileSelectionMode = javax.swing.JFileChooser.DIRECTORIES_ONLY
         isAcceptAllFileFilterUsed = false
+        applyComponentOrientation(if (words.rtl) java.awt.ComponentOrientation.RIGHT_TO_LEFT else java.awt.ComponentOrientation.LEFT_TO_RIGHT)
     }
     return if (chooser.showDialog(null, title) == javax.swing.JFileChooser.APPROVE_OPTION) chooser.selectedFile else null
 }

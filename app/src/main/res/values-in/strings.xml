@@ -3538,4 +3538,8 @@ Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyim
     <string name="drive_plan_fresh">%1$s: kembali sebagai toko di ponsel ini.</string>
     <string name="drive_plan_live">%1$s sinkron langsung dengan perangkat lain. Menggantinya menghentikan sinkron langsung; hubungkan keduanya lagi sesudahnya.</string>
     <string name="drive_plan_unreadable">%1$s: tidak dapat dibaca dari Drive. Dibiarkan apa adanya.</string>
+    <string name="live_pair_other_business">Buku ponsel ini sudah tersinkron langsung di usaha “%1$s” di komputer ini. Buka usaha itu: salinan kedua di sini lama-lama akan berbeda darinya.</string>
+    <string name="fc_look_in">Cari di:</string>
+    <string name="fc_folder_name">Folder:</string>
+    <string name="fc_files_of_type">Jenis file:</string>
 </resources>

@@ -183,7 +183,7 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
     val title = word(if (draft.existing == null) W.po_new else W.edit)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(760.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(760.dp))) {
         DialogFrame(title, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
@@ -232,7 +232,7 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
     var billNumber by remember { mutableStateOf("") }
     val total = got.sumOf { (Calc.evalAmount(it.qty) ?: 0.0) * (Calc.evalAmount(it.rate) ?: 0.0) }
     val title = word(W.po_receive)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(640.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(640.dp))) {
         DialogFrame(title, subtitle = o.order.orderNumber, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {

@@ -48,21 +48,21 @@ class ReportPrint(
     private fun Graphics2D.text(raw: String, x: Double, y: Double, end: Boolean = false) {
         // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
         val s = com.innovation313.roshankhata.data.Digits.forPrint(raw)
-        val w = fontMetrics.stringWidth(s)
+        val w = PrintFonts.width(this, s)
         val left = when {
             !rtl && !end -> x
             !rtl && end -> x - w
             rtl && !end -> pageW - x - w
             else -> pageW - x
         }
-        drawString(s, left.toFloat(), y.toFloat())
+        PrintFonts.draw(this, s, left.toFloat(), y.toFloat())
     }
 
     /** Cuts [s] to fit [width] points in the current font, with an ellipsis. */
     private fun Graphics2D.fit(s: String, width: Double): String {
-        if (fontMetrics.stringWidth(s) <= width) return s
+        if (PrintFonts.width(this, s) <= width) return s
         var t = s
-        while (t.isNotEmpty() && fontMetrics.stringWidth("$t…") > width) t = t.dropLast(1)
+        while (t.isNotEmpty() && PrintFonts.width(this, "$t…") > width) t = t.dropLast(1)
         return "$t…"
     }
 

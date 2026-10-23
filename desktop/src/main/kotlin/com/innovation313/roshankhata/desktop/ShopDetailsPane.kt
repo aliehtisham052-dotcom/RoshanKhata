@@ -100,7 +100,9 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
         val shown = if (label == W.invoice_bank_jazzcash_hint && country.wallets.isNotBlank()) word(W.wallet_hint_country, country.wallets) else word(label)
         FluentField(
             values.value[label].orEmpty(), { v -> values.value = values.value + (label to v); saved = false }, modifier,
-            label = shown, placeholder = hint?.let { word(it) }, singleLine = lines
+            label = shown, placeholder = hint?.let { word(it) }, singleLine = lines,
+            // A phone or wallet number stays left to right in an RTL window (R15, 23 Oct 2026).
+            ltr = label == W.bp_phone || label == W.invoice_bank_jazzcash_hint
         )
     }
     // The Figma Settings screen: the profile as one card of paired fields, the bank and
@@ -179,7 +181,7 @@ private fun ProfilePictures(images: ProfileImages) {
     var cropping by remember { mutableStateOf<Pair<ProfileImages.Kind, java.awt.image.BufferedImage>?>(null) }
     val chooseTitle = word(W.bp_add)
     cropping?.let { (kind, img) ->
-        androidx.compose.ui.window.DialogWindow(
+        AppDialog(
             onCloseRequest = { cropping = null },
             onPreviewKeyEvent = escCloses { cropping = null },
             title = word(W.adjust_crop_title),
