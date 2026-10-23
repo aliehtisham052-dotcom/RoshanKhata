@@ -411,7 +411,7 @@ fun CounterModeDialog(dao: KhataDao, turnOn: Boolean, onClose: () -> Unit) {
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(460.dp))) {
         if (settingPin) {
             OwnerPinFrame(dao, OwnerPinStart.NEW, onClose = { settingPin = false }) { settingPin = false; reloadTick++ }
-            return@DialogWindow
+            return@AppDialog
         }
         fun go() {
             val o = owner ?: return

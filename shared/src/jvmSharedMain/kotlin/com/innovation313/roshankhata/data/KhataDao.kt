@@ -1475,9 +1475,11 @@ interface KhataDao {
         // A close already filed under this day that belongs to another working day (23 Oct 2026, the review:
         // before the small hours counted to the day before, Friday's 00:20 close sat under Saturday) is moved
         // to its own day when that day is free, so this close never overwrites a different stretch's count.
+        // Only a close made in the small hours OF the very day it is filed under is such a one: a close saved
+        // later for an earlier day (an owner closing yesterday this afternoon, a test's fixed day) stays put.
         if (here != null) {
             val own = DayCloseMath.businessDayOf(here.closedAt)
-            if (own != close.day && dayCloseFor(own) == null) {
+            if (own == here.day - 1 && DayCloseMath.dayOf(here.closedAt) == here.day && dayCloseFor(own) == null) {
                 saveDayCloseRow(here.copy(day = own))
                 here = null
             }
