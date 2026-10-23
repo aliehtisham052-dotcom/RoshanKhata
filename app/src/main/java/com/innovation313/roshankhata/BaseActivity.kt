@@ -56,6 +56,37 @@ abstract class BaseActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Runs [action] once the phone may write to the public Downloads folder. Android 10 and up need no
+     * permission (MediaStore); on 7-9 the storage permission is asked here, at the moment of saving, and
+     * [action] runs whatever the answer — a refused permission makes its own save fail and say so, as
+     * before (23 Oct 2026, the review: on Android 7-9 no backup or report ever reached Downloads, because
+     * the permission was never declared or asked).
+     */
+    fun withDownloadsAccess(action: () -> Unit) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q ||
+            androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) { action(); return }
+        afterDownloadsAsk = action
+        androidx.core.app.ActivityCompat.requestPermissions(
+            this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQ_DOWNLOADS
+        )
+    }
+
+    private var afterDownloadsAsk: (() -> Unit)? = null
+
+    @Deprecated("ActivityCompat's request answers here")
+    @Suppress("DEPRECATION")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQ_DOWNLOADS) {
+            val then = afterDownloadsAsk
+            afterDownloadsAsk = null
+            then?.invoke()
+        }
+    }
+
     /** The text size this screen was built at; see onResume. */
     private var builtAtLevel = -1
 
@@ -145,6 +176,8 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private companion object {
+        /** The request code of the Downloads permission (Android 7-9). */
+        const val REQ_DOWNLOADS = 7313
         /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
         val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity")
         /** Away this long, App Lock asks again. */

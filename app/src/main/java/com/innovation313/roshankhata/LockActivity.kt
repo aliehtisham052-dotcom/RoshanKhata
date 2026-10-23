@@ -21,6 +21,7 @@ class LockActivity : BaseActivity() {
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        onBackPressedDispatcher.addCallback(this, backGuard)
 
         prompt()
     }
@@ -62,10 +63,15 @@ class LockActivity : BaseActivity() {
         BiometricPrompt(this, executor, callback).authenticate(info)
     }
 
-    @Deprecated("Back on the lock must not reveal the screen underneath")
-    @Suppress("DEPRECATION")
-    override fun onBackPressed() {
-        if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finishAffinity() else super.onBackPressed()
+    /**
+     * Back on the lock must not reveal the screen underneath. Through the dispatcher, not an onBackPressed
+     * override: on Android 16 an app targeting API 36 never gets onBackPressed (Google's Android 16 behaviour
+     * changes, checked 23 Oct 2026), so the old override let Back close the relock and show the ledger.
+     */
+    private val backGuard = object : androidx.activity.OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finishAffinity() else finish()
+        }
     }
 
     companion object {
