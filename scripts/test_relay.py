@@ -360,7 +360,11 @@ def main():
     # The live line (23 Oct 2026, Cloudflare only: the hostings answer 404 and the app keeps to rounds).
     STEP[0] = "live line"
     probe = Line(p + "live", token, a)
-    if probe.status == 404:
+    # Supabase's own gateway answers a WebSocket upgrade to a function with 502 before the function sees it
+    # (the deployed check, 23 Oct 2026): that is "no line" too. Only a Supabase address may say so; on the
+    # Worker a 502 stays a failure.
+    no_line = probe.status in (404, 426) or (probe.status == 502 and ".supabase.co" in BASE)
+    if no_line:
         probe.close()
         print("--   no live line on this relay (rounds only)")
     else:
