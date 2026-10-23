@@ -68,6 +68,13 @@ class ReportProblemActivity : BaseActivity() {
                 appendLine(getString(R.string.report_crash_included))
                 appendLine(it)
             }
+            // Live sync's notes, under their own heading: problems sync passed over and tried again, not
+            // crashes. Kinds and cleaned messages only (SyncLog): no names, amounts or keys.
+            com.innovation313.roshankhata.data.SyncLog.latestText(this@ReportProblemActivity)?.let {
+                appendLine()
+                appendLine(getString(R.string.report_sync_notes_included))
+                appendLine(it)
+            }
         }
 
         val intent = ProblemReport.compose(

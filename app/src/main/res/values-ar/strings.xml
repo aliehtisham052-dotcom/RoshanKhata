@@ -3785,4 +3785,5 @@
         <item quantity="other">منتهي الصلاحية \u00B7 قبل %1$d يوم</item>
     </plurals>
     <string name="voice_language_missing_phone">هذا الهاتف لا يحتوي على تلك اللغة. الاستماع بلغة الهاتف نفسه.</string>
+    <string name="report_sync_notes_included">— ملاحظات المزامنة المباشرة (ليست أعطالًا: مشكلات تجاوزتها المزامنة المباشرة وأعادت المحاولة؛ بلا أسماء أو مبالغ أو مفاتيح):</string>
 </resources>

@@ -3589,4 +3589,5 @@
         <item quantity="other">مدت ختم \u00B7 %1$d ڏينهن اڳ</item>
     </plurals>
     <string name="voice_language_missing_phone">هن فون ۾ اها ٻولي ناهي. فون جي پنهنجي ٻوليءَ ۾ ٻڌي رهيو آهي.</string>
+    <string name="report_sync_notes_included">— لائيو سنڪ نوٽس (ڪريش نه: اهي مسئلا جن کان پوءِ لائيو سنڪ ٻيهر ڪوشش ڪئي؛ ڪو نالو، رقم يا ڪنجي ناهي):</string>
 </resources>

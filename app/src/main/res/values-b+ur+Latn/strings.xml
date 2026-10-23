@@ -3561,4 +3561,5 @@
         <item quantity="other">EXPIRE HO CHUKA \u00B7 %1$d din pehle</item>
     </plurals>
     <string name="voice_language_missing_phone">Aap ke phone mein ye zaban maujood nahi. Phone ki apni zaban mein sun raha hai.</string>
+    <string name="report_sync_notes_included">— Live sync notes (crash nahi: woh masle jin ke baad live sync ne dobara koshish ki; koi naam, raqam ya key nahi):</string>
 </resources>

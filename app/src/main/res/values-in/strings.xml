@@ -3555,4 +3555,5 @@
         <item quantity="other">KEDALUWARSA \u00B7 %1$d hari lalu</item>
     </plurals>
     <string name="voice_language_missing_phone">Ponsel Anda tidak memiliki bahasa itu. Mendengarkan dalam bahasa ponsel sendiri.</string>
+    <string name="report_sync_notes_included">— Catatan sinkron langsung (bukan kerusakan: masalah yang dilewati sinkron langsung lalu dicoba lagi; tanpa nama, jumlah, atau kunci):</string>
 </resources>
