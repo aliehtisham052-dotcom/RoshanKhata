@@ -69,18 +69,24 @@ object LiveWire {
     private const val NONCE = 12
     private const val TAG_BITS = 128
 
-    /** What the computer's live QR says. */
-    data class Invite(val hosts: List<String>, val port: Int, val secret: String, val computer: String = "")
+    /**
+     * What a live QR says: where to send the book, the code's secret, the receiving device's name, and whether
+     * it is a phone (23 Oct 2026: a phone may take a book too; it serves no WiFi rounds after, so the two meet
+     * through the relay, and the sender learns the phone's yes from there).
+     */
+    data class Invite(val hosts: List<String>, val port: Int, val secret: String, val computer: String = "", val phone: Boolean = false)
 
     fun inviteText(i: Invite): String =
-        PREFIX + "h=" + i.hosts.joinToString(",") + "&p=" + i.port + "&k=" + i.secret + "&n=" + URLEncoder.encode(i.computer, "UTF-8")
+        PREFIX + "h=" + i.hosts.joinToString(",") + "&p=" + i.port + "&k=" + i.secret + "&n=" + URLEncoder.encode(i.computer, "UTF-8") +
+            (if (i.phone) "&t=phone" else "")
 
     fun parseInvite(text: String?): Invite? {
         val t = text?.trim() ?: return null
         if (!t.startsWith(PREFIX)) return null
         // Same shape as the one-off code, under its own prefix: one parser, one set of checks.
         val p = WifiSync.parsePairing(WifiSync.PREFIX + t.removePrefix(PREFIX)) ?: return null
-        return Invite(p.hosts, p.port, p.secret, p.computer)
+        val phone = t.removePrefix(PREFIX).split('&').any { it == "t=phone" }
+        return Invite(p.hosts, p.port, p.secret, p.computer, phone)
     }
 
     // ------------------------------------------------------------ sealing
@@ -183,9 +189,11 @@ object LiveWire {
         /** This pairing's own id: every round names it, so only the computer that said yes to it answers. */
         val pair: String? = null,
         /** On the computer: the code the phone shows for this pairing ([pairCode]), set as the offer is read. */
-        val code: String? = null
+        val code: String? = null,
+        /** The sender's other devices, as far as the copy holds of each ([LiveCrew.offerPeers]); null from an older phone. */
+        val peers: JSONObject? = null
     ) {
-        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c)
+        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c, peers)
     }
 
     /**
@@ -209,6 +217,7 @@ object LiveWire {
             put("book", o.book); put("key", o.key); put("dev", o.device); put("name", o.name); put("seq", o.seq)
             if (o.mark != null) put("mark", o.mark)
             if (o.pair != null) put("pair", o.pair)
+            if (o.peers != null && o.peers.length() > 0) put("peers", o.peers)
         }.toString().toByteArray(Charsets.UTF_8)
         return head + byteArrayOf('\n'.code.toByte())
     }
@@ -222,7 +231,9 @@ object LiveWire {
         Offer(
             o.getString("book"), key, o.getString("dev"), o.optString("name"), o.getLong("seq"), bytes.copyOfRange(nl + 1, bytes.size),
             o.optString("mark").takeIf { LiveSync.validMark(it) },
-            o.optString("pair").takeIf { it.length in 8..64 && it.all { c -> c in '0'..'9' || c in 'a'..'f' } }
+            o.optString("pair").takeIf { it.length in 8..64 && it.all { c -> c in '0'..'9' || c in 'a'..'f' } },
+            null,
+            o.optJSONObject("peers")
         )
     }.getOrNull()
 

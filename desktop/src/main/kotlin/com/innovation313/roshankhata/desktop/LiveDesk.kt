@@ -36,6 +36,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LiveCloud
 import com.innovation313.roshankhata.data.LiveControl
 import com.innovation313.roshankhata.data.LiveRound
+import com.innovation313.roshankhata.data.LiveCrew
 import com.innovation313.roshankhata.data.LiveLines
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.LiveWire
@@ -225,7 +226,10 @@ object LiveDesk {
                 // The kill switch is read here (every 6 h, on this thread) even while the phone is on the WiFi and the
                 // relay is not needed: the connection threads only read the cached word (23 Oct 2026).
                 runCatching { LiveControl.halted(now) }
-                wait = if (d == null || LiveCloud.base == null || now - lastWifi < WIFI_QUIET_MS) CLOUD_MS
+                // The phone on this WiFi talks to the computer directly — unless the book has other devices too (another
+                // phone away from the shop): each device sends only its own changes, so this one keeps the relay going.
+                val alone = d == null || runCatching { runBlocking { LiveSync.state(d.syncSql()).peers.size } }.getOrDefault(0) <= 1
+                wait = if (d == null || LiveCloud.base == null || (now - lastWifi < WIFI_QUIET_MS && alone)) CLOUD_MS
                 // Cloudflare first, then Supabase, then the owner's hosting (22 Oct 2026); the later ones read every few rounds.
                 else when (val r = runCatching { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = ++rounds % OTHERS_EVERY == 0) } }.getOrNull()) {
                     is LiveCloud.Result.Done -> {
@@ -377,10 +381,9 @@ object LiveDesk {
      */
     suspend fun join(book: KhataDatabase, home: File, file: String, offer: LiveWire.Offer) {
         val sql = book.syncSql()
-        LiveSync.enable(sql, install(home), name(), adopt = offer.book to offer.key, mark = offer.mark, marks = marks(home, file))
+        // The sender, and every other device it knew as far as the copy held of each (LiveCrew, 23 Oct 2026).
+        LiveCrew.join(sql, install(home), name(), offer, offer.peers, marks(home, file))
         NumberMark.mark = LiveSync.mark(sql)
-        LiveSync.putPeer(sql, offer.device, name = offer.name, sent = 0, recv = offer.seq, seen = System.currentTimeMillis())
-        LiveSync.setPeerPair(sql, offer.device, offer.pair)
         db = book
         this.home = home
         this.file = file

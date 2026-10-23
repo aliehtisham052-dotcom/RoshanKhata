@@ -3492,6 +3492,16 @@ Ise aap kabhi bhi isi screen se badal sakte hain.</string>
     <string name="live_status_failed">Live sync ruk gaya: %1$s</string>
     <string name="live_mismatch">Dono khate aapas mein nahi milte. Nayi copy ke liye dobara jorein.</string>
     <string name="live_sent">Bhej diya. Computer par haan dabayein taake us ka khata is phone ke khate se badal jaye.</string>
+    <string name="live_receive">Dukan ka khata is phone par lein</string>
+    <string name="live_receive_steps">Jis phone par dukan ka khata hai us par Backup → Live sync → Jorein kholein aur yeh code scan karein. Dono phone ek hi WiFi par hon. Yeh khirki 15 minute intezar karti hai.</string>
+    <string name="live_receive_offer">“%1$s” is phone ko dukan ka khata dena chahta hai.
+
+Code: %2$s — yahi chaar hindse us phone par bhi nazar aane chahiyein.
+
+Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone internet relay ke zariye ek hi khata mil kar rakhenge.</string>
+    <string name="live_receive_done">Ho gaya. Yeh phone ab dukan ka khata us ke doosre devices ke saath rakhta hai.</string>
+    <string name="live_receive_no_wifi">Yeh phone kisi WiFi par nahi hai. Dukan ke WiFi se jurein aur dobara koshish karein.</string>
+    <string name="live_sent_phone">Bhej diya. Doosre phone par haan dabayein taake woh yeh khata le le. Phir dono phone internet relay ke zariye milenge.</string>
     <string name="live_not_live_code">Yeh live sync ka code nahi. Computer par Live sync kholein aur wahan dikhne wala code scan karein.</string>
     <string name="live_pc_steps">Phone par Backup → Computer ke saath live sync → Computer se jorein kholein aur yeh code scan karein. Aap ki haan ke baad phone ka khata yahan naye business ke taur par khulega (is computer ka apna khata waisa hi rahega), aur phir dono ek jaise rahenge.</string>
     <string name="live_pc_none">Abhi koi phone nahi jura.</string>

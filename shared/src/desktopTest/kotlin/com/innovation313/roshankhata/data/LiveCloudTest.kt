@@ -397,6 +397,70 @@ class LiveCloudTest {
         assertEquals(1, phone.khataDao().allPartiesForBackup().count { it.name == "Second" })
     }
 
+    /**
+     * Three devices, one book (23 Oct 2026): the computer and the owner's phone sync; a new phone joins by taking
+     * the book from the owner's phone (as LiveReceive does) and answering through the relay. Every device's entry
+     * reaches the two others, the computer learns of the new phone from the owner's phone, and the three books
+     * end the same. The new phone was never paired with the computer.
+     */
+    @Test
+    fun `a third device joins through a phone and every device hears every other`() = runBlocking {
+        both(2)
+        val b = DesktopDatabase.open(dir.resolve("phone-b.db"))
+        try {
+            val aSql = phone.syncSql(); val cSql = pc.syncSql(); val bSql = b.syncSql()
+            b.khataDao().setSetting(BookSettings.LIVE_RELAY, "1")
+            phone.khataDao().insertParty(Party(name = "Before B"))
+            both(2)
+            // The owner's phone gives its book: the copy's view of its other devices, held until they know B.
+            val peersAtCopy = LiveCrew.offerPeers(aSql)
+            LiveCrew.holdForCopy(aSql, peersAtCopy)
+            val seq = LiveSync.lastSeq(aSql)
+            val text = java.io.StringWriter().also { BackupCodec.exportTo(phone.khataDao(), "Shop", JSONObject(), it) }.toString()
+            val (r, data) = BackupCodec.parseText(text)
+            assertTrue("$r", r is BackupCodec.ImportResult.Ok)
+            val aId = LiveSync.identity(aSql)!!
+            val pair = LiveSync.newHex(8)
+            val offer = LiveWire.Offer(aId.book, aId.key, aId.device, "Owner phone", seq, ByteArray(0), LiveSync.nextJoinerMark(aSql), pair, peers = peersAtCopy)
+            LiveRound.setPending(aSql, LiveRound.Target(listOf("192.168.1.9"), 47313, seq, "Munshi phone", pair = pair, phone = true), wasOff = false)
+            BackupCodec.restoreLedger(b.khataDao(), data!!)
+            LiveCrew.join(bSql, "install-b", "Munshi phone", offer, offer.peers)
+            assertEquals(2, LiveSync.state(bSql).peers.size)
+
+            suspend fun all(times: Int) = repeat(times) {
+                clock += 1000
+                for (s in listOf(aSql, cSql, bSql)) {
+                    val res = LiveCloud.round(s, relay, "https://relay.test", clock) { false }
+                    assertTrue("$res", res is LiveCloud.Result.Done)
+                }
+            }
+            // The computer writes while the new phone is still being heard of: nothing of it may be lost to B.
+            pc.khataDao().insertParty(Party(name = "From the computer"))
+            all(6)
+            // The owner's phone took B's yes through the relay; the computer took B from the owner's announcement.
+            assertTrue(LiveSync.state(aSql).peers.any { it.name == "Munshi phone" })
+            assertTrue(LiveSync.state(cSql).peers.any { it.name == "Munshi phone" })
+            assertEquals(null, LiveRound.pending(aSql))
+            b.khataDao().insertParty(Party(name = "From the munshi"))
+            phone.khataDao().insertParty(Party(name = "From the owner"))
+            all(8)
+            for (db in listOf(phone, pc, b)) {
+                val names = db.khataDao().allPartiesForBackup().map { it.name }
+                for (n in listOf("Before B", "From the computer", "From the munshi", "From the owner")) {
+                    assertEquals("$n on ${db === b}", 1, names.count { it == n })
+                }
+            }
+            assertEquals(LiveSync.fingerprint(aSql), LiveSync.fingerprint(cSql))
+            assertEquals(LiveSync.fingerprint(aSql), LiveSync.fingerprint(bSql))
+            // The holds went once every device knew B; nothing more is announced.
+            assertEquals(null, LiveCrew.joinsOut(aSql))
+            assertEquals(LiveSync.state(aSql).peers.first { it.device == LiveSync.identity(cSql)!!.device }.recv,
+                LiveCrew.ackFor(aSql, LiveSync.identity(cSql)!!.device, LiveSync.state(aSql).peers.first { it.device == LiveSync.identity(cSql)!!.device }.recv))
+        } finally {
+            b.close()
+        }
+    }
+
     @Test
     fun `a lost parcel is sent again and nothing arrives twice`() = runBlocking {
         both(1)

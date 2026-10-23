@@ -432,6 +432,12 @@
                     android:text="@string/live_join" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLiveReceive"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/live_receive" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLiveStop"
                     style="@style/BackupOutlineButton"
                     android:layout_marginTop="10dp"

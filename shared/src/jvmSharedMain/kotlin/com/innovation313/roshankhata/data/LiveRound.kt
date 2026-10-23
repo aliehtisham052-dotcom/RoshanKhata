@@ -40,9 +40,10 @@ object LiveRound {
     private const val P_PAIR = "live_p_pair"
     private const val P_SINCE = "live_p_since"
     private const val P_WAS_OFF = "live_p_wasoff"
+    private const val P_PHONE = "live_p_phone"
 
     private val TARGET = listOf(HOSTS, PORT, FROM, COMPUTER, PAIR, DEVICE)
-    private val PENDING = listOf(P_HOSTS, P_PORT, P_FROM, P_COMPUTER, P_PAIR, P_SINCE, P_WAS_OFF)
+    private val PENDING = listOf(P_HOSTS, P_PORT, P_FROM, P_COMPUTER, P_PAIR, P_SINCE, P_WAS_OFF, P_PHONE)
 
     /**
      * Where the phone's rounds go: the computer's addresses and port, the
@@ -52,7 +53,9 @@ object LiveRound {
      */
     data class Target(
         val hosts: List<String>, val port: Int, val from: Long, val computer: String?,
-        val pair: String? = null, val since: Long? = null, val device: String? = null
+        val pair: String? = null, val since: Long? = null, val device: String? = null,
+        /** A pairing with a phone (23 Oct 2026): it serves no WiFi rounds; its yes comes through the relay. */
+        val phone: Boolean = false
     )
 
     private suspend fun SyncTx.put(k: String, v: String?) {
@@ -104,6 +107,7 @@ object LiveRound {
         put(P_PAIR, t.pair)
         put(P_SINCE, now.toString())
         put(P_WAS_OFF, if (wasOff) "1" else null)
+        put(P_PHONE, if (t.phone) "1" else null)
     }
 
     suspend fun pending(sql: SyncSql): Target? = sql.read {
@@ -112,7 +116,7 @@ object LiveRound {
         val port = m[P_PORT]?.toIntOrNull() ?: return@read null
         val since = m[P_SINCE]?.toLongOrNull() ?: return@read null
         if (hosts.isEmpty()) return@read null
-        Target(hosts, port, m[P_FROM]?.toLongOrNull() ?: 0L, m[P_COMPUTER], m[P_PAIR]?.ifBlank { null }, since)
+        Target(hosts, port, m[P_FROM]?.toLongOrNull() ?: 0L, m[P_COMPUTER], m[P_PAIR]?.ifBlank { null }, since, phone = m[P_PHONE] == "1")
     }
 
     /** The pairing given up (not said yes to in time); true when live sync should go off again with it. */
@@ -124,12 +128,19 @@ object LiveRound {
 
     /**
      * The computer said yes ([device] answered the pending pairing): it is now
-     * the one computer of this phone's book. What this phone knew of any
-     * other goes; this one has read the phone's log up to the copy's line and
-     * nothing of its own yet.
+     * this phone's computer. The computer it had before (if another) goes; the
+     * book's other devices stay (23 Oct 2026: a shop may have several) and hear
+     * of the new one ([LiveCrew]). The new one has read the phone's log up to
+     * the copy's line and nothing of its own yet.
      */
-    private suspend fun confirm(sql: SyncSql, device: String, name: String?) = sql.write {
+    private suspend fun confirm(sql: SyncSql, device: String, name: String?) {
+        val from = confirmIn(sql, device, name)
+        LiveCrew.joined(sql, device, name, from)
+    }
+
+    private suspend fun confirmIn(sql: SyncSql, device: String, name: String?): Long = sql.write {
         val m = readKeys(PENDING)
+        val before = readKeys(listOf(DEVICE))[DEVICE]
         val from = m[P_FROM]?.toLongOrNull() ?: 0L
         put(HOSTS, m[P_HOSTS])
         put(PORT, m[P_PORT])
@@ -141,8 +152,10 @@ object LiveRound {
         exec("INSERT OR IGNORE INTO sync_peers (device) VALUES (?)", listOf(device))
         exec("UPDATE sync_peers SET sent = ?, recv = 0 WHERE device = ?", listOf(from, device))
         if (name != null) exec("UPDATE sync_peers SET name = ? WHERE device = ?", listOf(name, device))
-        exec("DELETE FROM sync_peers WHERE device <> ?", listOf(device))
+        // The computer this phone had before, if this is another one: replaced. Every other device stays.
+        if (before != null && before != device) exec("DELETE FROM sync_peers WHERE device = ?", listOf(before))
         for (k in PENDING) put(k, null)
+        from
     }
 
     /** Step 1, on the phone: what to send. Null when this phone does not sync a book. */
@@ -155,10 +168,15 @@ object LiveRound {
         val peer = if (pending != null) null else (t.device?.let { d -> peers.firstOrNull { it.device == d } } ?: peers.firstOrNull())
         val sent = peer?.sent ?: t.from
         val parcel = LiveSync.export(sql, sent)
+        val ack = peer?.let { LiveCrew.ackFor(sql, it.device, it.recv) } ?: 0L
+        val joins = LiveCrew.joinsOut(sql)
+        val knows = LiveCrew.knows(sql)
         return JSONObject().apply {
             put("dev", id.device); put("name", id.name)
-            put("ack", peer?.recv ?: 0L)
+            put("ack", ack)
             put("parcel", parcel.toJson())
+            joins?.let { put("joins", it) }
+            put("knows", org.json.JSONArray(knows))
             t.pair?.let { put("pair", it) }
             LiveSync.mark(sql)?.let { put("mark", it) }
             if (fingerprint && pending == null) put("fp", LiveSync.fingerprint(sql))
@@ -179,6 +197,9 @@ object LiveRound {
         if (want != got) return null
         val theirAck = request.getLong("ack")
         val parcel = LiveSync.Parcel.of(request.getJSONObject("parcel"))
+        // The book's other devices, as the phone knows them, before its changes are written (LiveCrew).
+        request.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
+        request.optJSONArray("knows")?.let { a -> LiveCrew.heard(sql, dev, (0 until a.length()).map { a.optString(it) }) }
         val reply = JSONObject().apply { put("dev", id.device); put("name", id.name) }
         val name = request.optString("name").takeIf { it.isNotBlank() }
         when (val r = LiveSync.applyFrom(sql, parcel, theirAck, now, name = name)) {
@@ -190,8 +211,10 @@ object LiveRound {
         val recv = LiveSync.state(sql).peers.firstOrNull { it.device == dev }?.recv ?: 0L
         // The phone asks for lines this computer already let go: its book went back to an older copy.
         val mine = try { LiveSync.export(sql, theirAck) } catch (e: LiveSync.Lost) { reply.put("refused", LOST); return reply }
-        reply.put("ack", recv)
+        reply.put("ack", LiveCrew.ackFor(sql, dev, recv))
         reply.put("parcel", mine.toJson())
+        LiveCrew.joinsOut(sql)?.let { reply.put("joins", it) }
+        reply.put("knows", org.json.JSONArray(LiveCrew.knows(sql)))
         LiveSync.mark(sql)?.let { reply.put("mark", it) }
         if (request.has("fp")) reply.put("fp", LiveSync.fingerprint(sql))
         return reply
@@ -227,6 +250,8 @@ object LiveRound {
         val t = target(sql)
         val theirAck = reply.getLong("ack")
         val parcel = LiveSync.Parcel.of(reply.getJSONObject("parcel"))
+        me?.let { m -> reply.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, m, it) } }
+        reply.optJSONArray("knows")?.let { a -> LiveCrew.heard(sql, dev, (0 until a.length()).map { a.optString(it) }) }
         var wrote = 0
         var refused: String? = null
         when (val r = LiveSync.applyFrom(sql, parcel, theirAck, now, name = name, host = host, port = t?.port)) {

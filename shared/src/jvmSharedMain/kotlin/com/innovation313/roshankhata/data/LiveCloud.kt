@@ -160,17 +160,23 @@ object LiveCloud {
     suspend fun message(sql: SyncSql, after: Long, page: Int = LiveSync.PAGE): JSONObject? {
         val id = LiveSync.identity(sql) ?: return null
         val acks = JSONObject()
-        LiveSync.state(sql).peers.forEach { acks.put(it.device, it.recv) }
+        // Held back toward a device that must still learn of a joiner (LiveCrew), so it keeps what the joiner needs.
+        for (p in LiveSync.state(sql).peers) acks.put(p.device, LiveCrew.ackFor(sql, p.device, p.recv))
         // What this device could not take from each other device (a gap): said back, so that device starts again there.
         val need = JSONObject()
         LiveSync.state(sql).peers.forEach { p ->
             val n = getMeta(sql, k("need_" + p.device, id.book))?.toLongOrNull()
             if (n != null) need.put(p.device, p.recv)
         }
+        val joins = LiveCrew.joinsOut(sql)
+        val pair = LiveCrew.pairSaid(sql)
         return JSONObject().apply {
             put("dev", id.device); put("name", id.name)
             put("acks", acks)
             if (need.length() > 0) put("need", need)
+            // The book's devices that joined lately, for the others to add (LiveCrew); a joiner's pairing, for its sender.
+            joins?.let { put("joins", it) }
+            pair?.let { put("pair", it) }
             put("parcel", LiveSync.export(sql, after, page).toJson())
         }
     }
@@ -187,7 +193,13 @@ object LiveCloud {
         val id = LiveSync.identity(sql) ?: return false
         val dev = msg.optString("dev")
         if (dev.isBlank() || dev == id.device) return false
-        if (LiveSync.state(sql).peers.none { it.device == dev }) return false
+        // Devices of this book announced by the sender (LiveCrew), before anything else of it is taken.
+        msg.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
+        if (LiveSync.state(sql).peers.none { it.device == dev }) {
+            // A phone this device sent the book to, saying yes through the relay (it serves no WiFi round to say it).
+            if (!LiveCrew.confirmFromRelay(sql, dev, msg.optString("name").takeIf { it.isNotBlank() }, msg.optString("pair"))) return false
+        }
+        msg.optJSONObject("acks")?.let { a -> LiveCrew.heard(sql, dev, a.keys().asSequence().toList()) }
         val theirAck = msg.optJSONObject("acks")?.optLong(id.device, -1L)?.takeIf { it >= 0 }
         val parcel = LiveSync.Parcel.of(msg.getJSONObject("parcel"))
         // Written, and the pointers moved, in one transaction with the WiFi rounds' (LiveSync.applyFrom).

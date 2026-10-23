@@ -3483,6 +3483,16 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="live_status_failed">Sinkron langsung berhenti: %1$s</string>
     <string name="live_mismatch">Kedua buku tidak cocok. Hubungkan lagi untuk membuat salinan baru.</string>
     <string name="live_sent">Terkirim. Di komputer, tekan ya agar bukunya diganti dengan buku ponsel ini.</string>
+    <string name="live_receive">Terima buku toko di ponsel ini</string>
+    <string name="live_receive_steps">Di ponsel yang memegang buku toko, buka Cadangan → Sinkron langsung → Hubungkan, lalu pindai kode ini. Kedua ponsel harus di WiFi yang sama. Jendela ini menunggu 15 menit.</string>
+    <string name="live_receive_offer">“%1$s” ingin memberikan buku toko ke ponsel ini.
+
+Kode: %2$s — empat angka yang sama harus tampil di ponsel itu.
+
+Buku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyimpan satu buku bersama melalui relai internet.</string>
+    <string name="live_receive_done">Selesai. Ponsel ini kini menyimpan buku toko bersama perangkat lainnya.</string>
+    <string name="live_receive_no_wifi">Ponsel ini tidak terhubung ke WiFi. Sambungkan ke WiFi toko lalu coba lagi.</string>
+    <string name="live_sent_phone">Terkirim. Di ponsel lain, tekan ya untuk menerima buku ini. Lalu kedua ponsel bertemu melalui relai internet.</string>
     <string name="live_not_live_code">Ini bukan kode sinkron langsung. Di komputer, buka Sinkron langsung dan pindai kode yang ditampilkan.</string>
     <string name="live_pc_steps">Di ponsel buka Cadangan → Sinkron langsung dengan komputer → Hubungkan ke komputer, lalu pindai kode ini. Setelah Anda setuju, buku ponsel dibuka di sini sebagai usaha baru (buku komputer ini sendiri tetap seperti apa adanya), dan sejak itu keduanya tetap sama.</string>
     <string name="live_pc_none">Belum ada ponsel yang terhubung.</string>
