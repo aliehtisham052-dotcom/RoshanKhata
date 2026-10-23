@@ -16,8 +16,12 @@ import base64
 import json
 import os
 import secrets
+import socket
+import ssl
+import struct
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "http://127.0.0.1:8098"
@@ -51,6 +55,68 @@ def call(method, path, token=None, device=None, body=None, how="both", ctype=Non
             return e.code, json.loads(raw)
         except ValueError:
             return e.code, {"raw": raw[:200].decode("latin-1")}
+
+
+class Line:
+    """A small WebSocket client (RFC 6455, text frames only) for the relay's live line; stdlib only."""
+
+    def __init__(self, path, token, device):
+        u = urllib.parse.urlsplit(BASE + path)
+        port = u.port or (443 if u.scheme == "https" else 80)
+        raw = socket.create_connection((u.hostname, port), timeout=20)
+        self.s = ssl.create_default_context().wrap_socket(raw, server_hostname=u.hostname) if u.scheme == "https" else raw
+        key = base64.b64encode(os.urandom(16)).decode()
+        req = ("GET %s HTTP/1.1\r\nHost: %s\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+               "Sec-WebSocket-Key: %s\r\nSec-WebSocket-Version: 13\r\nX-RK-Pass: %s\r\nX-Device: %s\r\n\r\n"
+               % (u.path, u.netloc, key, token, device))
+        self.s.sendall(req.encode())
+        head = b""
+        while b"\r\n\r\n" not in head:
+            chunk = self.s.recv(1)
+            if not chunk:
+                break
+            head += chunk
+        self.status = int(head.split(b" ", 2)[1]) if head.startswith(b"HTTP/") else 0
+        self.buf = b""
+
+    def send(self, obj):
+        data = json.dumps(obj).encode()
+        mask = os.urandom(4)
+        n = len(data)
+        hdr = bytes([0x81]) + (bytes([0x80 | n]) if n < 126 else bytes([0x80 | 126]) + struct.pack(">H", n) if n < 65536
+                                else bytes([0x80 | 127]) + struct.pack(">Q", n))
+        self.s.sendall(hdr + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(data)))
+
+    def _read(self, n):
+        while len(self.buf) < n:
+            chunk = self.s.recv(65536)
+            if not chunk:
+                raise EOFError("line closed")
+            self.buf += chunk
+        out, self.buf = self.buf[:n], self.buf[n:]
+        return out
+
+    def recv(self):
+        """The next text message as JSON; None when the line was closed."""
+        while True:
+            b0, b1 = self._read(2)
+            n = b1 & 0x7F
+            if n == 126:
+                n = struct.unpack(">H", self._read(2))[0]
+            elif n == 127:
+                n = struct.unpack(">Q", self._read(8))[0]
+            payload = self._read(n)
+            op = b0 & 0x0F
+            if op == 0x8:
+                return None
+            if op == 0x1:
+                return json.loads(payload)
+
+    def close(self):
+        try:
+            self.s.close()
+        except OSError:
+            pass
 
 
 def check(name, cond, detail=""):
@@ -157,6 +223,43 @@ def main():
     check("a round with a bad ack is refused", s == 400, (s, o))
     s, o = call("POST", p + "round", token, a, b"not json")
     check("a round that is not JSON is refused", s == 400, (s, o))
+
+    # The live line (23 Oct 2026, Cloudflare only: the hostings answer 404 and the app keeps to rounds).
+    STEP[0] = "live line"
+    probe = Line(p + "live", token, a)
+    if probe.status == 404:
+        probe.close()
+        print("--   no live line on this relay (rounds only)")
+    else:
+        check("a known device opens a live line", probe.status == 101, probe.status)
+        probe.close()
+        stranger = Line(p + "live", token, d)
+        check("a device that never said hello gets no line", stranger.status == 403, stranger.status)
+        stranger.close()
+        wrong = Line(p + "live", secrets.token_hex(32), a)
+        check("nor does a wrong pass", wrong.status == 403, wrong.status)
+        wrong.close()
+        la, lb = Line(p + "live", token, a), Line(p + "live", token, b)
+        la.send({"id": 1, "round": {"after": 0, "upTo": None, "parcel": None}})
+        o = la.recv()
+        check("a round over the line is answered with its id", o and o.get("id") == 1 and o.get("status") == 200 and o.get("ok"), o)
+        la.send({"id": 2, "round": {"after": 0, "upTo": None, "parcel": base64.b64encode(b"over the line").decode()}})
+        o = la.recv()
+        check("a parcel left over the line is numbered", o and o.get("id") == 2 and isinstance(o.get("seq"), int), o)
+        seq = o.get("seq") if o else None
+        n = lb.recv()
+        check("the other device's line is nudged at once", n == {"t": "new"}, n)
+        lb.send({"id": 7, "round": {"after": (seq or 1) - 1, "upTo": None, "parcel": None}})
+        o = lb.recv()
+        got = [base64.b64decode(x["body"]) for x in (o or {}).get("parcels", [])]
+        check("and takes the parcel over its own line", o and o.get("id") == 7 and b"over the line" in got, o)
+        la.send({"id": 3, "round": {"after": 0, "parcel": "%%%not-base64"}})
+        o = la.recv()
+        check("a bad parcel over the line is refused, the line stays", o and o.get("id") == 3 and o.get("status") == 400, o)
+        la.send({"id": 4, "round": {"after": 0}})
+        o = la.recv()
+        check("and the next round still works", o and o.get("id") == 4 and o.get("status") == 200, o)
+        la.close(); lb.close()
 
     s, o = call("POST", p + "wake", token, b, {"token": "f" * 40})
     check("a wake-up address is kept", s == 200 and o.get("wake") is True, (s, o))
