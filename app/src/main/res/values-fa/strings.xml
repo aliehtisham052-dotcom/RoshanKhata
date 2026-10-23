@@ -3575,4 +3575,8 @@
     <string name="drive_plan_fresh">%1$s: به‌عنوان یک فروشگاه در این گوشی برمی‌گردد.</string>
     <string name="drive_plan_live">%1$s با دستگاه دیگری همگام زنده است. جایگزین کردنش همگام‌سازی زنده را متوقف می‌کند؛ بعد از آن دو را دوباره وصل کنید.</string>
     <string name="drive_plan_unreadable">%1$s: از Drive خوانده نشد. همان‌طور که هست می‌ماند.</string>
+    <string name="live_pair_other_business">دفتر این گوشی هم‌اکنون در کسب‌وکار «%1$s» روی این رایانه به‌صورت زنده همگام است. همان کسب‌وکار را باز کنید: نسخهٔ دوم در اینجا کم‌کم با آن ناهمسان می‌شود.</string>
+    <string name="fc_look_in">جستجو در:</string>
+    <string name="fc_folder_name">پوشه:</string>
+    <string name="fc_files_of_type">نوع فایل:</string>
 </resources>

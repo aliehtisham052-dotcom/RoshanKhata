@@ -99,7 +99,7 @@ fun ItemGridPane(products: List<Product>, onHand: Map<Long, Double?>, draft: Cou
     }
     choosing?.let { g ->
         val title = word(W.pos_choose_variant, g.main.name)
-        DialogWindow(onCloseRequest = { choosing = null }, onPreviewKeyEvent = escCloses { choosing = null }, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH(480.dp))) {
+        AppDialog(onCloseRequest = { choosing = null }, onPreviewKeyEvent = escCloses { choosing = null }, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH(480.dp))) {
             DialogFrame(title, onClose = { choosing = null }, footer = { FluentButton(word(W.cancel), { choosing = null }, kind = ButtonKind.STANDARD) }) {
                 g.choices.forEachIndexed { i, p ->
                     Row(Modifier.fillMaxWidth().press { onPick(p); choosing = null }.padding(vertical = 10.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -132,8 +132,11 @@ fun CustomerDisplay(draft: CounterDraft, shopName: String, paymentQr: java.io.Fi
         size = DpSize(900.dp, 640.dp)
     )
     val qr = remember(paymentQr) { paymentQr?.takeIf { it.isFile }?.let { f -> runCatching { javax.imageio.ImageIO.read(f)?.toComposeImageBitmap() }.getOrNull() } }
+    // The app's direction and text size carried into the window of its own (R13, 23 Oct 2026).
+    val dir = androidx.compose.ui.platform.LocalLayoutDirection.current
+    val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
     Window(onCloseRequest = onClose, state = state, title = word(W.cd_title), onPreviewKeyEvent = escCloses(onClose)) {
-        CustomerScreen(draft, shopName, qr)
+        KeepAppLook(dir, fontScale) { CustomerScreen(draft, shopName, qr) }
     }
 }
 

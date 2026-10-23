@@ -133,7 +133,7 @@ fun CashbookPane(dao: KhataDao) {
     }
 
     adding?.let { way ->
-        DialogWindow(
+        AppDialog(
             onCloseRequest = { adding = null },
             onPreviewKeyEvent = escCloses { adding = null },
             title = word(if (way) W.cash_income else W.cash_expense),
@@ -343,7 +343,7 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
     }
     val title = word(W.z_title)
     val dateLine = Format.dateOnly(com.innovation313.roshankhata.data.DayCloseMath.startOf(day) + 12L * 60 * 60 * 1000)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         DialogFrame(title, subtitle = dateLine, onClose = onClose, footerStart = {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 // The earlier day: the chevron turned to point back (and mirrored again in RTL, as the next one is).
@@ -407,14 +407,14 @@ class LinesPrint(
     /** [s] starting at [x] from the reading side, or ending there when [end]. */
     private fun java.awt.Graphics2D.text(raw: String, x: Double, y: Double, end: Boolean = false) {
         val s = com.innovation313.roshankhata.data.Digits.forPrint(raw)
-        val w = fontMetrics.stringWidth(s)
+        val w = PrintFonts.width(this, s)
         val at = when {
             !rtl && !end -> x
             !rtl && end -> x - w
             rtl && !end -> pageW - x - w
             else -> pageW - x
         }
-        drawString(s, at.toFloat(), y.toFloat())
+        PrintFonts.draw(this, s, at.toFloat(), y.toFloat())
     }
 
     override fun print(g: java.awt.Graphics, pf: java.awt.print.PageFormat, pageIndex: Int): Int {

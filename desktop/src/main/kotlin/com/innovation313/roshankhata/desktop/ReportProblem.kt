@@ -118,7 +118,7 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
     }
     fun subject() = words.text(W.report_subject, words.text(kind))
 
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.report_problem), state = rememberDialogState(width = fitW(620.dp), height = fitH(760.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.report_problem), state = rememberDialogState(width = fitW(620.dp), height = fitH(760.dp))) {
         Box(Modifier.fillMaxSize().background(c.surface)) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(word(W.report_problem), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)

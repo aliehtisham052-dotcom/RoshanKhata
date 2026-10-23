@@ -3591,4 +3591,8 @@
     <string name="drive_plan_fresh">%1$s: এই ফোনে একটি দোকান হিসেবে ফিরে আসবে।</string>
     <string name="drive_plan_live">%1$s অন্য ডিভাইসের সাথে লাইভ সিঙ্ক হয়। এটি বদলালে লাইভ সিঙ্ক থেমে যাবে; পরে দুটোকে আবার যুক্ত করুন।</string>
     <string name="drive_plan_unreadable">%1$s: ড্রাইভ থেকে পড়া যায়নি। এটি যেমন আছে তেমনই রাখা হচ্ছে।</string>
+    <string name="live_pair_other_business">এই ফোনের খাতা এই কম্পিউটারে “%1$s” ব্যবসায় আগে থেকেই লাইভ চলছে। সেই ব্যবসাটি খুলুন: এখানে দ্বিতীয় কপি ধীরে ধীরে সেটি থেকে আলাদা হয়ে যাবে।</string>
+    <string name="fc_look_in">এখানে দেখুন:</string>
+    <string name="fc_folder_name">ফোল্ডার:</string>
+    <string name="fc_files_of_type">ফাইলের ধরন:</string>
 </resources>

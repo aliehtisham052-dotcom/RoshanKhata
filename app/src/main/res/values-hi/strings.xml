@@ -3591,4 +3591,8 @@
     <string name="drive_plan_fresh">%1$s: इस फ़ोन पर एक दुकान के रूप में वापस आएगी।</string>
     <string name="drive_plan_live">%1$s दूसरे डिवाइस के साथ लाइव सिंक होती है। इसे बदलने से लाइव सिंक रुक जाएगा; बाद में दोनों को फिर जोड़ें।</string>
     <string name="drive_plan_unreadable">%1$s: ड्राइव से पढ़ी नहीं जा सकी। इसे वैसा ही छोड़ा जा रहा है।</string>
+    <string name="live_pair_other_business">इस फ़ोन का खाता इस कंप्यूटर पर कारोबार “%1$s” में पहले से लाइव चल रहा है। वही कारोबार खोलें: यहाँ दूसरी कॉपी उससे अलग होती जाएगी।</string>
+    <string name="fc_look_in">यहाँ देखें:</string>
+    <string name="fc_folder_name">फ़ोल्डर:</string>
+    <string name="fc_files_of_type">फ़ाइल का प्रकार:</string>
 </resources>

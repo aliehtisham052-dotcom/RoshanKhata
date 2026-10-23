@@ -55,7 +55,7 @@ fun ImportPreviewDialog(
                     Row(Modifier.fillMaxWidth()) {
                         Column(Modifier.weight(1f)) {
                             Text(Format.name(r.name), color = c.ink, fontSize = 14.sp)
-                            r.phone?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
+                            r.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
                         }
                         Text(
                             Format.money(kotlin.math.abs(r.balance)),

@@ -3547,4 +3547,8 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="drive_plan_fresh">%1$s: is phone par ek dukaan ke taur par wapas aayegi.</string>
     <string name="drive_plan_live">%1$s doosre device ke saath live sync hoti hai. Ise badalne se live sync ruk jayega; baad mein dono ko dobara jorein.</string>
     <string name="drive_plan_unreadable">%1$s: Drive se parhi nahi ja saki. Ise waisa hi chhoda ja raha hai.</string>
+    <string name="live_pair_other_business">Is phone ka khata is computer par karobar “%1$s” mein pehle hi live chal raha hai. Wohi karobar kholein: yahan doosri copy us se alag hoti jayegi.</string>
+    <string name="fc_look_in">Yahan dekhein:</string>
+    <string name="fc_folder_name">Folder:</string>
+    <string name="fc_files_of_type">File ki qism:</string>
 </resources>
