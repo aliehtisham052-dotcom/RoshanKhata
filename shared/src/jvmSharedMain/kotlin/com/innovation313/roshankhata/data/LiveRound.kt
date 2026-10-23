@@ -41,9 +41,11 @@ object LiveRound {
     private const val P_SINCE = "live_p_since"
     private const val P_WAS_OFF = "live_p_wasoff"
     private const val P_PHONE = "live_p_phone"
+    // '1' when this pairing turned the relay on (a phone's pairing needs it): giving the pairing up turns it off again.
+    private const val P_RELAY_WAS_OFF = "live_p_relaywas"
 
     private val TARGET = listOf(HOSTS, PORT, FROM, COMPUTER, PAIR, DEVICE)
-    private val PENDING = listOf(P_HOSTS, P_PORT, P_FROM, P_COMPUTER, P_PAIR, P_SINCE, P_WAS_OFF, P_PHONE)
+    private val PENDING = listOf(P_HOSTS, P_PORT, P_FROM, P_COMPUTER, P_PAIR, P_SINCE, P_WAS_OFF, P_PHONE, P_RELAY_WAS_OFF)
 
     /**
      * Where the phone's rounds go: the computer's addresses and port, the
@@ -97,9 +99,12 @@ object LiveRound {
     /**
      * A pairing just taken by the computer, waiting for its owner's yes.
      * [wasOff]: this phone did not sync before it, so giving up on it turns
-     * live sync off again ([dropPending]).
+     * live sync off again ([dropPending]). [relayWasOff]: the relay was off
+     * until this pairing turned it on, so giving it up turns it off again.
      */
-    suspend fun setPending(sql: SyncSql, t: Target, wasOff: Boolean, now: Long = System.currentTimeMillis()) = sql.write {
+    suspend fun setPending(
+        sql: SyncSql, t: Target, wasOff: Boolean, now: Long = System.currentTimeMillis(), relayWasOff: Boolean = false
+    ) = sql.write {
         put(P_HOSTS, t.hosts.joinToString(","))
         put(P_PORT, t.port.toString())
         put(P_FROM, t.from.toString())
@@ -108,6 +113,7 @@ object LiveRound {
         put(P_SINCE, now.toString())
         put(P_WAS_OFF, if (wasOff) "1" else null)
         put(P_PHONE, if (t.phone) "1" else null)
+        put(P_RELAY_WAS_OFF, if (relayWasOff) "1" else null)
     }
 
     suspend fun pending(sql: SyncSql): Target? = sql.read {
@@ -119,11 +125,18 @@ object LiveRound {
         Target(hosts, port, m[P_FROM]?.toLongOrNull() ?: 0L, m[P_COMPUTER], m[P_PAIR]?.ifBlank { null }, since, phone = m[P_PHONE] == "1")
     }
 
-    /** The pairing given up (not said yes to in time); true when live sync should go off again with it. */
-    suspend fun dropPending(sql: SyncSql): Boolean = sql.write {
-        val wasOff = readKeys(listOf(P_WAS_OFF))[P_WAS_OFF] == "1"
+    /**
+     * The pairing no longer waits; true when live sync should go off again with it. [givenUp]: it was given
+     * up (not said yes to in time, or never reached the other device), so a relay that only this pairing
+     * turned on goes off again too (23 Oct 2026, the review's R11: the owner never chose it). A pairing that
+     * was said yes to keeps the relay (the two devices meet through it).
+     */
+    suspend fun dropPending(sql: SyncSql, givenUp: Boolean = false): Boolean = sql.write {
+        val m = readKeys(listOf(P_WAS_OFF, P_RELAY_WAS_OFF))
+        if (givenUp && m[P_RELAY_WAS_OFF] == "1")
+            exec("DELETE FROM book_settings WHERE `key` = ?", listOf(BookSettings.LIVE_RELAY))
         for (k in PENDING) put(k, null)
-        wasOff
+        m[P_WAS_OFF] == "1"
     }
 
     /**

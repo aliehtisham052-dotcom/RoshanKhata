@@ -163,7 +163,7 @@ abstract class BaseActivity : AppCompatActivity() {
             stoppedAt = 0L
             if (away > 0L && System.currentTimeMillis() - away > RELOCK_MS &&
                 javaClass.simpleName !in BEFORE_THE_BOOK &&
-                com.innovation313.roshankhata.data.AppLock.isEnabled(this)
+                com.innovation313.roshankhata.data.AppLock.required(this)
             ) {
                 startActivity(android.content.Intent(this, LockActivity::class.java).putExtra(LockActivity.EXTRA_RELOCK, true))
             }

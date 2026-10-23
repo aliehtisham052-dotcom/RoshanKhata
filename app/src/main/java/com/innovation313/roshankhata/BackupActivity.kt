@@ -375,8 +375,8 @@ class BackupActivity : BaseActivity() {
             LiveRunner.Status.Rejoin -> getString(R.string.live_status_rejoin)
             is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, bidi.unicodeWrap(liveWhy(s.why)))
         }
-        findViewById<android.widget.TextView>(R.id.tvLiveStatus).text =
-            if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
+        val shown = if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
+        findViewById<android.widget.TextView>(R.id.tvLiveStatus).text = shown
         val off = s == LiveRunner.Status.Off || s == LiveRunner.Status.Rejoin || s == LiveRunner.Status.NotAccepted
         findViewById<MaterialButton>(R.id.btnLiveStop).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
         findViewById<MaterialButton>(R.id.btnLiveDevices).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
@@ -386,6 +386,20 @@ class BackupActivity : BaseActivity() {
         if (!off) lifecycleScope.launch {
             val on = withContext(Dispatchers.IO) { runCatching { dao.settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) == "1" }.getOrDefault(false) }
             showRelay(on)
+            // Changes from the other device this book could not take yet, said here too (R52: only the computer's
+            // window said it). A day later they are given up into the conflicts list (Devices and conflicts).
+            val app = applicationContext
+            val held = withContext(Dispatchers.IO) { runCatching { LiveSync.state(KhataDatabase.get(app).syncSql()).held }.getOrDefault(0) }
+            // The relay cannot ring this phone (no Firebase key there, R70): said, instead of "fine" everywhere.
+            val wakeOff = on && withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.LiveCloud.wakeOff(KhataDatabase.get(app).syncSql()) }.getOrDefault(false)
+            }
+            val extra = listOfNotNull(
+                if (held > 0) Digits.string(resources, R.string.live_held, held) else null,
+                if (wakeOff) getString(R.string.live_wake_off) else null
+            )
+            val tv = findViewById<android.widget.TextView>(R.id.tvLiveStatus)
+            if (extra.isNotEmpty() && tv.text.toString() == shown) tv.text = (listOf(shown) + extra).joinToString("\n")
         }
     }
 
@@ -436,6 +450,16 @@ class BackupActivity : BaseActivity() {
                         .setPositiveButton(R.string.ok, null).show()
                     return@addOnSuccessListener
                 }
+                // A phone's code: two phones meet only through the internet relay, so the owner is asked before the
+                // relay is turned on for this book (23 Oct 2026, the review's R11: it was turned on, then said after).
+                if (invite.phone) {
+                    MaterialAlertDialogBuilder(this).setTitle(R.string.live_title)
+                        .setMessage(getString(R.string.live_phone_relay_ask) + "\n\n" + getString(R.string.live_relay_help))
+                        .setPositiveButton(R.string.ok) { _, _ -> joinComputer(invite) }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
+                    return@addOnSuccessListener
+                }
                 joinComputer(invite)
             }
             .addOnFailureListener {
@@ -480,6 +504,10 @@ class BackupActivity : BaseActivity() {
     private suspend fun pairWith(context: android.content.Context, invite: LiveWire.Invite): LiveWire.Sent? {
         val sql = KhataDatabase.get(context).syncSql()
         val wasOn = LiveSync.identity(sql) != null
+        // The relay as it was: a phone's pairing turns it on, and one that is not taken leaves it as it was (R11).
+        val relayWasOff = invite.phone && runCatching {
+            KhataDatabase.get(context).khataDao().settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) != "1"
+        }.getOrDefault(false)
         val sent: LiveWire.Sent? = try {
             val id = LiveSync.enable(sql, LiveRunner.install(context), LiveRunner.deviceName(), marks = LiveRunner.marks(context))
             val joinerMark = LiveSync.nextJoinerMark(sql)
@@ -509,7 +537,7 @@ class BackupActivity : BaseActivity() {
                     // The computer has the book; its owner has not said yes yet. The first round it answers
                     // makes it this phone's computer (LiveRound.take); until then any earlier one stays.
                     val hosts = listOf(outcome.host) + invite.hosts.filter { it != outcome.host }
-                    LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair, phone = invite.phone), wasOff = !wasOn)
+                    LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair, phone = invite.phone), wasOff = !wasOn, relayWasOff = relayWasOff)
                 }
                 outcome
             }
@@ -523,6 +551,9 @@ class BackupActivity : BaseActivity() {
         // Nothing reached the other device: the holds made for the copy go; and if this phone did not sync before, as it was.
         if (sent !is LiveWire.Sent.Taken) runCatching { com.innovation313.roshankhata.data.LiveCrew.dropCopyHold(sql) }
         if (sent !is LiveWire.Sent.Taken && !wasOn) runCatching { LiveSync.disable(sql) }
+        if (sent !is LiveWire.Sent.Taken && relayWasOff) runCatching {
+            KhataDatabase.get(context).khataDao().setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, null)
+        }
         com.innovation313.roshankhata.data.NumberMark.mark = runCatching { LiveSync.mark(sql) }.getOrNull()
         return sent
     }

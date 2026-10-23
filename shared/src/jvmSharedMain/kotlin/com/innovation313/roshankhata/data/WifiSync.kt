@@ -156,7 +156,23 @@ object WifiSync {
 
     private fun looksLikeIpv4(s: String): Boolean {
         val n = s.split('.')
-        return n.size == 4 && n.all { p -> p.isNotEmpty() && p.length <= 3 && p.all(Char::isDigit) && p.toInt() in 0..255 }
+        return n.size == 4 && n.all { p -> p.isNotEmpty() && p.length <= 3 && p.all(Char::isDigit) && p.toInt() in 0..255 } &&
+            onThisNetwork(n.map { it.toInt() })
+    }
+
+    /**
+     * Only an address on the shop's own network may come from a code: 10.*, 172.16-31.*,
+     * 192.168.*, link-local 169.254.*, and 127.* (this machine; the tests). Both makers of a
+     * code advertise site-local addresses only, so a code naming a public host was not made by
+     * this app — a poster or a forwarded picture would otherwise send the whole book (PIN
+     * hashes too) to a server on the internet, sealed with the secret that same code carries.
+     */
+    private fun onThisNetwork(o: List<Int>): Boolean = when (o[0]) {
+        10, 127 -> true
+        172 -> o[1] in 16..31
+        192 -> o[1] == 168
+        169 -> o[1] == 254
+        else -> false
     }
 
     private fun key(secret: String): SecretKeySpec {

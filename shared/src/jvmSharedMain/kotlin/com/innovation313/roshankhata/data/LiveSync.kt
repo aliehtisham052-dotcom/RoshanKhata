@@ -585,7 +585,9 @@ object LiveSync {
     /** Tables whose rows carry money: a conflict there is said in the bell, not only in the Live sync window. */
     val MONEY_TABLES = setOf("transactions", "cashbook", "cheques", "payment_plans", "installments", "sales", "sale_items",
         "sale_payments", "sale_returns", "sale_return_items", "supplier_bills", "bill_items", "entry_items", "invoices", "invoice_items",
-        "staff_payments", "stock_adjustments")
+        "staff_payments", "stock_adjustments",
+        // The drawer's counted cash (a day's close, a shift's), points spent as a discount, an order's rates (R128).
+        "day_close", "shifts", "loyalty", "purchase_orders", "purchase_order_items")
 
     /** Conflicts the owner has not looked at yet in a table that carries money (both devices changed the same row). */
     suspend fun moneyConflicts(sql: SyncSql): Int = sql.read {
@@ -1006,7 +1008,7 @@ object LiveSync {
     /** Changes kept aside, tried again now that more of the other book is here; how many landed. */
     private suspend fun SyncTx.retryHeld(mine: String, now: Long, cache: MutableMap<String, List<Col>>): Int {
         var wrote = 0
-        repeat(5) {
+        for (pass in 0 until 5) {
             val held = rows("SELECT tbl, uid, op, row, device, ack FROM sync_held ORDER BY at, tbl, uid", types = "TTTTTI")
             if (held.isEmpty()) return wrote
             var moved = 0
@@ -1019,10 +1021,28 @@ object LiveSync {
                     else -> {}
                 }
             }
-            if (moved == 0) return wrote
+            if (moved == 0) break
         }
+        giveUpHeld(now)
         return wrote
     }
+
+    /**
+     * A change still refused a day after it was first held is given up honestly (23 Oct 2026, the review's R52):
+     * it went on being retried in silence while its sender let the line go, and the two books differed for ever.
+     * It goes to sync_conflict as the other device's version this book did not take, where the Devices and
+     * conflicts screens list it and the bell counts it when it is money.
+     */
+    private suspend fun SyncTx.giveUpHeld(now: Long) {
+        val old = rows("SELECT tbl, uid, row, device FROM sync_held WHERE at < ?", listOf(now - HELD_GIVE_UP_MS), "TTTT")
+        for (h in old) {
+            keepAside(h[0] as String, h[1] as String, now, h[3] as String? ?: "", KEEP_MINE, h[2] as String?)
+            exec("DELETE FROM sync_held WHERE tbl = ? AND uid = ?", listOf(h[0], h[1]))
+        }
+    }
+
+    /** How long a change the book cannot take is tried again before it is given up ([giveUpHeld]). */
+    const val HELD_GIVE_UP_MS = 24 * 60 * 60_000L
 
     private fun jsonValue(o: JSONObject, name: String): Any? = if (!o.has(name) || o.isNull(name)) null else o.get(name)
 
@@ -1391,12 +1411,12 @@ object LiveSync {
      * SQLite itself (22 Oct 2026, the review: one query per row and one per
      * pointer held the phone's book for seconds every half hour).
      */
-    suspend fun fingerprint(sql: SyncSql): String = sql.read {
+    suspend fun fingerprint(sql: SyncSql): String {
         val d = MessageDigest.getInstance("SHA-256")
         val cache = HashMap<String, List<Col>>()
         for (t in SyncSchema.tables) {
             d.update(t.name.toByteArray(Charsets.UTF_8))
-            val cols = travelling(t, cache)
+            val cols = sql.read { travelling(t, cache) }
             val idCol = t.idColumn
             val at = cols.indexOfFirst { it.name == idCol }
             if (at < 0) continue
@@ -1405,13 +1425,22 @@ object LiveSync {
             var last: String? = null
             while (true) {
                 val after = last
-                val page = rows(
-                    "SELECT $select FROM `${t.name}` s WHERE s.`$idCol` IS NOT NULL" +
-                        (if (after != null) " AND s.`$idCol` > ?" else "") + " ORDER BY s.`$idCol` LIMIT $FINGER_PAGE",
-                    if (after != null) listOf(after) else emptyList(), types
-                )
+                // One page per transaction (23 Oct 2026, the review's R75): on the phone a read is Room's write
+                // transaction, and the whole walk in one held every save and every ticket for seconds. A row
+                // changed between pages may make one check differ; it is only believed while nothing is on its
+                // way, and a difference is looked at again five minutes later.
+                val page = sql.read {
+                    rows(
+                        "SELECT $select FROM `${t.name}` s WHERE s.`$idCol` IS NOT NULL" +
+                            (if (after != null) " AND s.`$idCol` > ?" else "") + " ORDER BY s.`$idCol` LIMIT $FINGER_PAGE",
+                        if (after != null) listOf(after) else emptyList(), types
+                    )
+                }
                 for (r in page) {
                     val u = r[at] as String
+                    // The settings that never travel (owner PIN, counter and owner-device keys) differ by device on
+                    // purpose: hashed, the two books could never match (23 Oct 2026, the review's R14).
+                    if (t.keyed && u in BookSettings.ACCESS_KEYS) continue
                     d.update(u.toByteArray(Charsets.UTF_8))
                     d.update(canonical(cols, r).toByteArray(Charsets.UTF_8))
                 }
@@ -1419,7 +1448,7 @@ object LiveSync {
                 last = page.last()[at] as String
             }
         }
-        d.digest().joinToString("") { "%02x".format(it) }
+        return d.digest().joinToString("") { "%02x".format(it) }
     }
 
     private const val FINGER_PAGE = 1000

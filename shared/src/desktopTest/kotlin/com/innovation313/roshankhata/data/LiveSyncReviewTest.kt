@@ -126,6 +126,14 @@ class LiveSyncReviewTest {
         val next = LiveSync.export(phoneSql, p.to)
         assertTrue(LiveSync.applyFrom(pcSql, next, theirAck = 0) is LiveSync.Applied.Done)
         assertTrue(pc.khataDao().allPartiesForBackup().any { it.name == "Bilal" })
+        // Still refused a day later: given up honestly, kept as a conflict the screens list (R52), not held for ever.
+        assertEquals(1, LiveSync.state(pcSql).held)
+        phone.khataDao().insertParty(Party(name = "Chand"))
+        val later = LiveSync.export(phoneSql, next.to)
+        val dayOn = System.currentTimeMillis() + LiveSync.HELD_GIVE_UP_MS + 60_000L
+        assertTrue(LiveSync.applyFrom(pcSql, later, theirAck = 0, now = dayOn) is LiveSync.Applied.Done)
+        assertEquals(0, LiveSync.state(pcSql).held)
+        assertEquals(listOf("products"), LiveSync.conflicts(pcSql).map { it.table })
     }
 
     @Test
@@ -382,5 +390,32 @@ class LiveSyncReviewTest {
             assertEquals(listOf("sale_items"), c.map { it.table })
             assertEquals(line, c.single().uid)
         }
+    }
+
+    @Test
+    fun `the settings that never travel do not make two equal books differ`() = runBlocking {
+        phone.khataDao().insertParty(Party(name = "Ali"))
+        pc.khataDao().setSetting(BookSettings.LIVE_RELAY, "1")
+        round()
+        round()
+        // The owner's counter PIN set on the phone alone, counter mode on the computer alone (R14).
+        phone.khataDao().setSetting(BookSettings.OWNER_PIN_HASH, "ab".repeat(32))
+        pc.khataDao().setSetting(BookSettings.COUNTER_USED, "1")
+        pc.khataDao().setSetting(BookSettings.OWNER_DEVICES, "pc-device")
+        round()
+        assertNull(pc.khataDao().settingValue(BookSettings.OWNER_PIN_HASH))
+        assertEquals(LiveSync.fingerprint(phoneSql), LiveSync.fingerprint(pcSql))
+        // A setting that does travel still counts: one side's alone is a difference.
+        pc.khataDao().setSetting(BookSettings.LIVE_RELAY, null)
+        assertNotEquals(LiveSync.fingerprint(phoneSql), LiveSync.fingerprint(pcSql))
+    }
+
+    @Test
+    fun `a conflict on the drawer, the points or an order reaches the bell`() {
+        // R128: these carry money too; a conflict there was settled in silence.
+        assertTrue(LiveSync.MONEY_TABLES.containsAll(listOf("day_close", "shifts", "loyalty", "purchase_orders", "purchase_order_items")))
+        // Every money table is one that syncs (a misspelt name would count nothing).
+        val synced = SyncSchema.tables.map { it.name }.toSet()
+        assertTrue((LiveSync.MONEY_TABLES - synced).toString(), synced.containsAll(LiveSync.MONEY_TABLES))
     }
 }

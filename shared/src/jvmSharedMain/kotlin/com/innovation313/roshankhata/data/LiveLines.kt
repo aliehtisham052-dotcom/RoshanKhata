@@ -118,26 +118,37 @@ object LiveLines {
         return status to reply
     }
 
+    /** One lock per line (R130): a slow handshake to one relay or for one book no longer holds every other road. */
+    private val opening = ConcurrentHashMap<String, Any>()
+
     private fun openLine(k: String, root: String, book: String, headers: Map<String, String>, now: Long): Open? {
         val m = maker ?: return null
         if (now < (retryAt[k] ?: 0L)) return null
-        synchronized(this) {
+        synchronized(opening.computeIfAbsent(k) { Any() }) {
             lines[k]?.takeIf { !it.closed }?.let { return it }
-            var holder: Open? = null
+            // The line's own [Open] once made; before that, a nudge still wakes the runner and an early close is
+            // remembered (R130: what came during the handshake was dropped, and a closed line kept as open).
+            val holder = java.util.concurrent.atomic.AtomicReference<Open?>(null)
+            val endedEarly = java.util.concurrent.atomic.AtomicBoolean(false)
             val line = try {
-                m.open(urlOf(root, book), headers, { text -> holder?.let { onText(it, text) } }, { _ -> holder?.let { onClosed(k, it) } })
+                m.open(
+                    urlOf(root, book), headers,
+                    { text -> onText(holder.get(), text) },
+                    { _ -> holder.get()?.let { onClosed(k, it) } ?: endedEarly.set(true) }
+                )
             } catch (e: NoLineHere) {
                 retryAt[k] = now + NO_LINE_MS
                 return null
             } catch (e: Exception) { null }
-            if (line == null) {
+            if (line == null || endedEarly.get()) {
+                if (line != null) runCatching { line.close() }
                 val wait = minOf((retryWait[k] ?: (RETRY_MS / 2)) * 2, RETRY_MAX_MS)
                 retryWait[k] = wait
                 retryAt[k] = now + wait
                 return null
             }
             val o = Open(line)
-            holder = o
+            holder.set(o)
             lines[k] = o
             retryWait.remove(k)
             retryAt.remove(k)
@@ -145,11 +156,11 @@ object LiveLines {
         }
     }
 
-    private fun onText(open: Open, text: String) {
+    private fun onText(open: Open?, text: String) {
         val o = runCatching { JSONObject(text) }.getOrNull() ?: return
         if (o.optString("t") == "new") { bump(); return }
         val id = o.optInt("id", 0)
-        if (id > 0) open.waiting.remove(id)?.complete(o)
+        if (id > 0) open?.waiting?.remove(id)?.complete(o)
     }
 
     /** The line ended (the relay closed it, the network went): waiting rounds get no answer; the next opens anew. */
@@ -178,6 +189,8 @@ object LiveLines {
     /** The lines of one book closed (a switch, a stop). */
     fun close(book: String) {
         for ((k, o) in lines.entries.toList()) if (k.split("|").getOrNull(1) == book) drop(k, o)
+        // A runner waiting for this book's news wakes now, as after closeAll (R55).
+        bump()
     }
 
     private fun bump() {

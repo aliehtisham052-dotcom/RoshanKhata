@@ -167,6 +167,12 @@ object LiveCloud {
         exec("INSERT OR REPLACE INTO sync_meta (k, v) VALUES (?, ?)", listOf(key, value))
     }
 
+    /** The relay said it cannot ring this phone (its Firebase key is not set, R70): wake-ups with the app closed are off. */
+    suspend fun wakeOff(sql: SyncSql): Boolean {
+        val id = LiveSync.identity(sql) ?: return false
+        return getMeta(sql, k("wake_off", id.book)) == "1"
+    }
+
     /** Whether this book's owner turned the relay on ([BookSettings.LIVE_RELAY]). */
     suspend fun allowed(sql: SyncSql): Boolean = sql.read {
         rows("SELECT value FROM book_settings WHERE `key` = ?", listOf(BookSettings.LIVE_RELAY), "T").firstOrNull()?.get(0) == "1"
@@ -259,6 +265,10 @@ object LiveCloud {
      */
     suspend fun takeCarried(sql: SyncSql, from: String, bodyB64: String, now: Long = System.currentTimeMillis()): Carried {
         val id = LiveSync.identity(sql) ?: return Carried.NOT_MINE
+        // The relay switched off for this book, or live sync stopped everywhere: a parcel pushed in anyway is not
+        // written (23 Oct 2026, the review's R53: this was the one road into the book that asked neither). The kill
+        // switch's last word, not a network read: this runs on Firebase's callback thread.
+        if (!allowed(sql) || LiveControl.haltedCached()) return Carried.NOT_MINE
         val sealedIn = runCatching { B64.decode(bodyB64) }.getOrNull() ?: return Carried.NOT_MINE
         val plain = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY) ?: return Carried.NOT_MINE
         val msg = runCatching { JSONObject(String(plain, Charsets.UTF_8)) }.getOrNull() ?: return Carried.NOT_MINE
@@ -460,11 +470,13 @@ object LiveCloud {
             // The others' messages, in order, from where this device last read.
             var took = 0
             var refusedWhy: String? = null
-            val list = got.getJSONArray("parcels")
+            // One parcel that does not read (not base64, no body) is passed over like one that will not open, and
+            // the cursor moves past it (23 Oct 2026, the review's R54: it threw at the same row every round for ever).
+            val list = got.optJSONArray("parcels") ?: org.json.JSONArray()
             for (i in 0 until list.length()) {
-                val p = list.getJSONObject(i)
-                val sealedIn = B64.decode(p.getString("body"))
-                val plainBytes = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY)
+                val p = list.optJSONObject(i) ?: continue
+                val sealedIn = runCatching { B64.decode(p.optString("body")) }.getOrNull()
+                val plainBytes = sealedIn?.let { LiveWire.open(id.key, it, LiveWire.Road.RELAY) }
                 if (plainBytes != null) {
                     val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()
                     // The relay's word on who sent it must be the sealed message's own: a parcel the relay
@@ -482,8 +494,11 @@ object LiveCloud {
                         lastRefusal?.let { refusedWhy = it }
                     }
                 }
-                after = maxOf(after, p.getLong("seq"))
-                setMeta(sql, k("after", id.book, tag), after.toString())
+                val seq = p.optLong("seq", -1L)
+                if (seq >= 0) {
+                    after = maxOf(after, seq)
+                    setMeta(sql, k("after", id.book, tag), after.toString())
+                }
             }
             // The whole page came: the relay says how far its book goes, and this device reads on from there instead of
             // having its own parcels passed over again every round (23 Oct 2026). A relay from before says nothing.
@@ -515,6 +530,16 @@ object LiveCloud {
             return Result.Done(took, sent, more)
         } catch (e: java.io.IOException) {
             return Result.Unreachable
+        } catch (e: org.json.JSONException) {
+            // An answer the relay should never give (not JSON's shape, a field missing): said as the relay's
+            // trouble, and passed over to the next relay by roundAll — not an exception read as "unreachable".
+            // The book's own failures (SQLite, the key's lock) still go up as before.
+            LiveTrouble.note("relay answer", e)
+            return Result.Refused("bad answer")
+        } catch (e: IllegalArgumentException) {
+            // Base64 or a number that does not read (NumberFormatException is one of these).
+            LiveTrouble.note("relay answer", e)
+            return Result.Refused("bad answer")
         }
     }
 
@@ -646,10 +671,14 @@ object LiveCloud {
     ): Boolean {
         val root = relay?.trimEnd('/') ?: return false
         val id = LiveSync.identity(sql) ?: return false
-        if (!allowed(sql)) return false
+        // Taking the address away is always allowed (R53): once the owner switched the relay off, the relay is told
+        // to stop ringing this phone — it kept the token and went on pushing until Google said it was gone.
+        if (address != null && !allowed(sql)) return false
         if (halted()) return false
         val told = getMeta(sql, k("wake", id.book))
         if ((told ?: "") == (address ?: "")) return true
+        // Nothing to take away from a relay this device never greeted (or left): no hello just to say so.
+        if (address == null && getMeta(sql, k("hello", id.book)) != id.device) return true
         val url = "$root/v1/b/${id.book}/"
         val pass = token(id.key, id.book, root)
         val headers = mapOf("authorization" to "RK $pass", "x-rk-pass" to pass, "x-device" to id.device.take(16).padEnd(16, '0'))
@@ -679,8 +708,19 @@ object LiveCloud {
                 setMeta(sql, k("hello", id.book), id.device)
                 val again = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
                 code = again.first
+                bytes = again.second
             }
             if (code != 200) return false
+            // A relay that keeps the address but cannot ring anyone (no Firebase key there, R70): not told — asked
+            // again after the runner's growing wait — and said on the phone's live card ([wakeOff]). A relay from
+            // before says nothing of it and is believed, as before.
+            val push = runCatching { JSONObject(String(bytes, Charsets.UTF_8)) }.getOrNull()
+                ?.takeIf { it.has("push") && !it.isNull("push") }?.optBoolean("push", true)
+            if (address != null && push == false) {
+                setMeta(sql, k("wake_off", id.book), "1")
+                return false
+            }
+            setMeta(sql, k("wake_off", id.book), "")
             setMeta(sql, k("wake", id.book), address ?: "")
             true
         } catch (e: java.io.IOException) {

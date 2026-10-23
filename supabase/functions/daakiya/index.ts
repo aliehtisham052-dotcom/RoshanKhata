@@ -199,7 +199,8 @@ async function handle(request: Request): Promise<Response> {
                       FROM rk_relay.books b2) s
                 WHERE b.book = s.book AND b.bytes <> s.n`;
     }
-    return json({ ok: true, live });
+    // "push": this relay sends no push itself (R70: said, as cloud/worker says whether it can).
+    return json({ ok: true, live, push: false });
   }
   if (!live) return refuse(503, "halted");
   const m = url.pathname.match(/\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round)$/);
@@ -330,7 +331,7 @@ async function handle(request: Request): Promise<Response> {
       case "wake": {
         const t = typeof o?.token === "string" && o.token.length > 20 && o.token.length < 4096 ? o.token : null;
         await tx`UPDATE rk_relay.devices SET fcm = ${t}, seen = ${now} WHERE book = ${book} AND device = ${device}`;
-        return json({ ok: true, wake: t != null });
+        return json({ ok: true, wake: t != null, push: false });
       }
       case "leave": {
         await tx`DELETE FROM rk_relay.devices WHERE book = ${book} AND device = ${device}`;

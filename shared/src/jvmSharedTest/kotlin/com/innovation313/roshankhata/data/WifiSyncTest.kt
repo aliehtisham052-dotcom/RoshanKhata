@@ -30,6 +30,11 @@ class WifiSyncTest {
         assertNull(WifiSync.parsePairing("rksync:1?h=not.an.ip&p=50123&k=$secret"))
         assertNull(WifiSync.parsePairing("rksync:1?h=192.168.1.20&p=0&k=$secret"))
         assertNull(WifiSync.parsePairing(null))
+        // A code naming a host on the internet is refused: only the shop's own network.
+        assertNull(WifiSync.parsePairing("rksync:1?h=8.8.8.8&p=50123&k=$secret"))
+        assertNull(WifiSync.parsePairing("rksync:1?h=172.32.0.1,192.169.1.1,169.253.1.1&p=50123&k=$secret"))
+        assertEquals(listOf("10.1.2.3", "172.16.0.9", "169.254.3.4", "127.0.0.1"),
+            WifiSync.parsePairing("rksync:1?h=8.8.8.8,10.1.2.3,172.16.0.9,169.254.3.4,127.0.0.1&p=50123&k=$secret")!!.hosts)
     }
 
     @Test

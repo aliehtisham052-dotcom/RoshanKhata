@@ -42,7 +42,7 @@ class GateActivity : BaseActivity() {
             return
         }
 
-        val locked = AppLock.isEnabled(this) && AppLock.isAvailable(this)
+        val locked = AppLock.required(this)
 
         // If the owner turned the lock on but has since removed their screen
         // lock, we cannot honour it — and pretending otherwise (silently

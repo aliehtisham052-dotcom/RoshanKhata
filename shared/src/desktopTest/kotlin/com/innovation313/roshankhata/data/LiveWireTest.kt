@@ -199,6 +199,9 @@ class LiveWireTest {
         val i = LiveWire.Invite(listOf("192.168.1.5"), LiveWire.PORT, LiveSync.newHex(32), "SHOP-PC")
         assertEquals(i, LiveWire.parseInvite(LiveWire.inviteText(i)))
         assertNull(LiveWire.parseInvite(WifiSync.pairingText(WifiSync.Pairing(i.hosts, i.port, i.secret))))
+        // A live, phone or give code naming a public host is refused like the one-off code.
+        for (t in listOf("", "&t=phone", "&t=give"))
+            assertNull(LiveWire.parseInvite(LiveWire.PREFIX + "h=203.0.113.7&p=" + i.port + "&k=" + i.secret + "&n=PC" + t))
         val o = LiveWire.Offer("b".repeat(32), LiveSync.newHex(32), "d1", "Phone", 7, "{\"version\": 14}".toByteArray())
         val back = LiveWire.decodeOffer(LiveWire.encodeOffer(o))!!
         assertEquals(o.book, back.book); assertEquals(o.key, back.key); assertEquals(o.seq, back.seq)

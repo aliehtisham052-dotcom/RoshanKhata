@@ -83,7 +83,8 @@ object PushWake {
     /** True when the relay knows the phone's address now, or there is nothing to tell. */
     suspend fun tell(context: Context, sql: SyncSql): Boolean {
         if (!available(context)) return true
-        if (!LiveCloud.allowed(sql)) return true
+        // The relay switched off (on this phone or the other device): the relay forgets this phone's address (R53).
+        if (!LiveCloud.allowed(sql)) return LiveCloud.tellWake(sql, null)
         val address = address(context) ?: return true
         return LiveCloud.tellWake(sql, address)
     }
@@ -109,7 +110,9 @@ object PushWake {
                         NumberMark.mark = LiveSync.mark(sql)
                     }
                     r == LiveCloud.Carried.ASK
-                } ?: true
+                // Timed out (the book was busy): no round on top of it — the two waits together outran Firebase's
+                // time for a message (R56); the next wake-up or the app's own rounds fetch it.
+                } ?: false
             }
         } catch (e: Exception) {
             true
@@ -127,7 +130,8 @@ object PushWake {
         val app = context.applicationContext
         try {
             runBlocking {
-                withTimeoutOrNull(15_000L) {
+                // 8 s: with a carried parcel's 10 s before it, still inside the ~20 s Firebase gives a message (R56).
+                withTimeoutOrNull(8_000L) {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
                     if (LiveSync.identity(sql) == null) return@withTimeoutOrNull

@@ -161,7 +161,12 @@ object LiveDesk {
         val offer: LiveWire.Offer,
         val file: File,
         val data: com.innovation313.roshankhata.data.BackupCodec.ParsedBackup,
-        val ok: com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok
+        val ok: com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok,
+        /**
+         * The book file open when it arrived (khata.db / khata_b<id>.db): the question is asked of that business only
+         * (23 Oct 2026, the review's R40: after a switch, a yes meant for one shop replaced another's book).
+         */
+        val bookFile: String? = null
     )
 
     /**
@@ -363,7 +368,8 @@ object LiveDesk {
                     if (d != null && LiveLines.anyOpen()) {
                         // News: the relay's nudge, or this computer writing something (its log grew).
                         val before = logged("the log's line", 0L) { runBlocking { LiveSync.lastSeq(d.syncSql()) } }
-                        LiveLines.waitForNews(wait, since) { runBlocking { LiveSync.lastSeq(d.syncSql()) } > before }
+                        // Its own log looked at every 5 s, not every second (R129), as on the phone.
+                        LiveLines.waitForNews(wait, since, checkMs = 5_000L) { runBlocking { LiveSync.lastSeq(d.syncSql()) } > before }
                     } else Thread.sleep(wait)
                 } catch (e: InterruptedException) { break }
             }
@@ -428,7 +434,7 @@ object LiveDesk {
             val arrived = o.file
             val f = if (arrived != null) PhoneSync.saveIncomingFile(h, arrived) else PhoneSync.saveIncoming(h, o.backup)
             val (r, d) = com.innovation313.roshankhata.data.BackupCodec.parseFile(f)
-            if (r is com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok && d != null) Incoming(o.withFile(null), f, d, r) else null
+            if (r is com.innovation313.roshankhata.data.BackupCodec.ImportResult.Ok && d != null) Incoming(o.withFile(null), f, d, r, file) else null
         } ?: return false
         pairSecret = null
         offers.value = read

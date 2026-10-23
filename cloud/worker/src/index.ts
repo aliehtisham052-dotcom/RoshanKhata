@@ -130,7 +130,8 @@ function refuse(status: number, why: string): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname === "/v1/health") return json({ ok: true, live: env.LIVE !== "0" });
+    // "push": whether this relay can ring a phone at all (its Firebase key is set) — R70: nothing said so before.
+    if (url.pathname === "/v1/health") return json({ ok: true, live: env.LIVE !== "0", push: canPush(env) });
     if (env.LIVE === "0") return refuse(503, "halted");
     const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round|live)$/);
     if (!m) return refuse(404, "no-such-path");
@@ -664,7 +665,9 @@ export class Daakiya extends DurableObject<Env> {
     const o = (await request.json().catch(() => null)) as { token?: string | null } | null;
     const t = typeof o?.token === "string" && o.token.length > 20 && o.token.length < 4096 ? o.token : null;
     this.sql.exec(`UPDATE devices SET fcm = ?, seen = ? WHERE device = ?`, t, now, device);
-    return json({ ok: true, wake: t != null });
+    // "wake": the address is kept; "push": this relay can send to it (without its Firebase key it keeps it and sends
+    // nothing, and the phone was told "done" — R70).
+    return json({ ok: true, wake: t != null, push: canPush(this.env) });
   }
 
   private async leave(device: string): Promise<Response> {
@@ -755,7 +758,11 @@ export class Daakiya extends DurableObject<Env> {
   private carried = new Map<string, { minute: number; n: number }>();
 
   private async wakeOthers(sender: string, now: number, live: Set<string> = new Set(), parcel?: { seq: number; body: Uint8Array }): Promise<void> {
-    if (!this.env.FCM_SERVICE_ACCOUNT || !this.env.FCM_PROJECT_ID) return;
+    if (!canPush(this.env)) {
+      // Said where `wrangler tail` shows it: a deploy without the key passes every other check.
+      console.warn("no FCM key: wake-ups and carried parcels are off");
+      return;
+    }
     const rows = this.sql.exec<{ device: string; fcm: string; woke: number }>(
       `SELECT device, fcm, woke FROM devices WHERE device != ? AND fcm IS NOT NULL`, sender,
     ).toArray();
@@ -822,6 +829,11 @@ async function accessToken(env: Env): Promise<string> {
  * devices can open — Google carries ciphertext); "gone" when the device's token is no longer valid. A carried
  * parcel lives a day at FCM (the relay keeps it seven), a wake-up ten minutes.
  */
+/** Whether this relay can send a push: both Firebase settings are there (R70). */
+function canPush(env: Env): boolean {
+  return !!(env.FCM_SERVICE_ACCOUNT && env.FCM_PROJECT_ID);
+}
+
 async function sendWake(env: Env, fcmToken: string, data: Record<string, string> = { t: "rk-wake" }): Promise<boolean | "gone"> {
   const ttl = data.t === "rk-parcel" ? "86400s" : "600s";
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${env.FCM_PROJECT_ID}/messages:send`, {
