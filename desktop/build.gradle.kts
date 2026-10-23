@@ -75,7 +75,7 @@ compose.desktop {
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0. The BUILD number is
             // stamped by CI (desktop.yml, the run number) so every MSI the owner downloads
             // installs over the last one: an MSI of the same version does not (21 Oct 2026).
-            packageVersion = "1.16.0"
+            packageVersion = "1.16.1"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
