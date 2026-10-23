@@ -194,7 +194,7 @@ private fun SignInFrame(dao: KhataDao, gate: Boolean, onDone: () -> Unit, onClos
 @Composable
 fun SignInDialog(dao: KhataDao, onClose: () -> Unit) {
     val title = word(W.access_who)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(520.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(520.dp))) {
         SignInFrame(dao, gate = false, onDone = onClose, onClose = onClose)
     }
 }
@@ -259,7 +259,7 @@ fun OverrideDialog(dao: KhataDao, what: String, ownerOnly: Boolean = false, onCl
         }
     }
     val title = word(if (ownerOnly) W.access_owner_needed_title else W.access_override_title)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(420.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(420.dp))) {
         DialogFrame(title, subtitle = what, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.access_sign_in), ::go, kind = ButtonKind.ACCENT, enabled = !busy && !nobody && pin.isNotEmpty())
@@ -382,7 +382,7 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
 @Composable
 fun OwnerPinDialog(dao: KhataDao, hasPin: Boolean, onClose: () -> Unit) {
     val title = word(W.access_owner_pin)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(460.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(460.dp))) {
         OwnerPinFrame(dao, if (hasPin) OwnerPinStart.CHANGE else OwnerPinStart.NEW, onClose = onClose, onSet = onClose)
     }
 }
@@ -406,7 +406,7 @@ fun CounterModeDialog(dao: KhataDao, turnOn: Boolean, onClose: () -> Unit) {
     var problem by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
     val title = word(W.access_counter_mode)
-    DialogWindow(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(460.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(460.dp))) {
         if (settingPin) {
             OwnerPinFrame(dao, OwnerPinStart.NEW, onClose = { settingPin = false }) { settingPin = false; reloadTick++ }
             return@DialogWindow

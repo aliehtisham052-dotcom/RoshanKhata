@@ -91,7 +91,7 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             (listOf(t.first) + t.second).forEach { row -> row.joinTo(csv, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }; csv.append("\r\n") }
             scope.launch {
                 told = runCatching { withContext(Dispatchers.IO) { file.writeText(csv.toString(), Charsets.UTF_8) } }
-                    .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+                    .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
             }
         }, kind = ButtonKind.STANDARD, enabled = table != null)
         FluentButton(word(W.ledger_pdf_button), {

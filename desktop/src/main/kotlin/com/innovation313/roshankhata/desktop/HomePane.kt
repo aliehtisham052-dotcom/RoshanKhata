@@ -113,7 +113,11 @@ fun HomePane(
     LaunchedEffect(Unit) { appear.animateTo(1f, tween(Motion.PAGE + 100)) }
     // The day as the title, weekday and month in the app's language (21 Oct 2026: DateWords has
     // every language's weekdays now; it read "Wednesday" on a Hindi screen before).
-    val dayName = remember { DateWords.formatter("EEEE, d MMMM").format(java.util.Date()) }
+    // Read again after More → Language and past midnight (R55, 23 Oct 2026: kept from the first draw, it stayed
+    // in the old language until Home was left).
+    val appWords = com.innovation313.roshankhata.words.LocalWords.current
+    val today = java.time.LocalDate.now()
+    val dayName = remember(appWords, today) { DateWords.formatter("EEEE, d MMMM").format(java.util.Date()) }
     Column(
         Modifier.fillMaxSize().background(Look.layerAlt)
             .graphicsLayer { alpha = appear.value; translationY = (1f - appear.value) * 12.dp.toPx() }
@@ -187,7 +191,7 @@ private fun TodayCard(today: List<EntryWithParty>, parties: List<PartyWithBalanc
           // the note then sits under the name instead of in its own column.
           val roomy = maxWidth >= 720.dp
           Column {
-            val time = remember { DateWords.formatter("h:mm a") }
+            val time = remember(com.innovation313.roshankhata.words.LocalWords.current) { DateWords.formatter("h:mm a") }
             TableHead(
                 if (roomy) listOf(word(W.home_col_time) to 78, word(W.customer) to 0, word(W.invoice_feature_note) to 0, word(W.you_got) to 92, word(W.you_gave) to 92)
                 else listOf(word(W.home_col_time) to 70, word(W.customer) to 0, word(W.you_got) to 88, word(W.you_gave) to 88),

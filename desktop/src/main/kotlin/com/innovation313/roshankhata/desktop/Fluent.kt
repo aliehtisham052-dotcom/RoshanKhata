@@ -198,7 +198,13 @@ fun FluentField(
      * Calc mode (21 Oct 2026): the running total under the box while it holds
      * a sum, worked out on Enter / "=" and when the cursor leaves.
      */
-    calc: com.innovation313.roshankhata.screens.CalcKind? = null
+    calc: com.innovation313.roshankhata.screens.CalcKind? = null,
+    /**
+     * Left to right whatever the page's direction (a phone number, R15 23 Oct
+     * 2026): digits alone take the paragraph's direction, so in an RTL window
+     * "0300 1234567" read "1234567 0300" while it was typed.
+     */
+    ltr: Boolean = false
 ) {
     val c = LocalRoshanColors.current
     val source = remember { MutableInteractionSource() }
@@ -226,7 +232,10 @@ fun FluentField(
                         modifier = Modifier.fillMaxWidth().then(
                             if (calc != null) Modifier.calcKeys({ value }, calc, onValueChange) else Modifier
                         ),
-                        textStyle = TextStyle(color = c.ink, fontSize = if (big) 22.sp else 14.sp, fontWeight = if (big) FontWeight.SemiBold else FontWeight.Normal),
+                        textStyle = TextStyle(
+                            color = c.ink, fontSize = if (big) 22.sp else 14.sp, fontWeight = if (big) FontWeight.SemiBold else FontWeight.Normal,
+                            textDirection = if (ltr) androidx.compose.ui.text.style.TextDirection.Ltr else androidx.compose.ui.text.style.TextDirection.Unspecified
+                        ),
                         cursorBrush = SolidColor(Look.accent),
                         singleLine = singleLine,
                         interactionSource = source,

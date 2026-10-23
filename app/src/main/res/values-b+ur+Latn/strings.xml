@@ -3528,4 +3528,8 @@ Is phone ka apna khata dukan ke khate se badal jaye ga. Is ke baad phone interne
     <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
     <string name="live_relay_help">Jab phone dukan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
+    <string name="live_pair_other_business">Is phone ka khata is computer par karobar “%1$s” mein pehle hi live chal raha hai. Wohi karobar kholein: yahan doosri copy us se alag hoti jayegi.</string>
+    <string name="fc_look_in">Yahan dekhein:</string>
+    <string name="fc_folder_name">Folder:</string>
+    <string name="fc_files_of_type">File ki qism:</string>
 </resources>

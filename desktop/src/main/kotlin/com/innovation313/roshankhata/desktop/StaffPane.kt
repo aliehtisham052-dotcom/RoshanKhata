@@ -148,7 +148,8 @@ fun StaffPane(dao: KhataDao) {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Outlined(name, { name = it }, label = { Text(word(W.staff_name)) }, singleLine = true)
-                    Outlined(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true)
+                    Outlined(phone, { phone = it }, label = { Text(word(W.staff_phone)) }, singleLine = true,
+                        textStyle = androidx.compose.material3.LocalTextStyle.current.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr))
                     Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
                     if (mayEditLogin) {

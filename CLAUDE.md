@@ -602,6 +602,20 @@ real devices yet.
 - **Not done:** removing a stale device from the phone's screen (the
   computer's window has it); the hosting relay has no live line (rounds only).
 
+### The 23 Oct review report (kmp-desktop-15)
+
+- **Windows app:** every dialog window is `AppDialog` (Shell.kt; same arguments as DialogWindow), which
+  carries the app's direction and text size into the window (`KeepAppLook`, also on the customer's
+  screen) — a window of its own took Swing's. Business ids are never reused (`highest` in
+  businesses.properties, `leftoverMax`), and a delete removes the shop's daily copies, pictures,
+  `party_photos_b<id>`, card/poster settings and set-aside books, refuses while Windows holds the book,
+  and runs off the window's thread. Customer photos are per business (`Photos.partyDir`). A switch
+  writes the closing copies first and is saved only once the new book opened; a book that cannot open
+  offers the previous business and logs why (errors.log). A live offer of a book another business keeps
+  (`Businesses.book/holderOf`) opens that business instead of joining again. Invoice field switches are
+  per business (`_b<id>` keys in app.properties). Phone boxes are LTR (`FluentField(ltr = true)`), printed
+  sheets and receipts fall back per character (`PrintFonts.attributed`). CI only.
+
 ### The shared module (KMP)
 
 ```

@@ -256,7 +256,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
                     scope.launch {
                         told = withContext(Dispatchers.IO) {
                             runCatching { ImageIO.write(CardDraw.image(t, d), "png", file) }
-                                .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+                                .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
                         }
                     }
                 }

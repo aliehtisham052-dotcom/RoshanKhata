@@ -3528,4 +3528,8 @@
     <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
     <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation 313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
     <string name="live_relay">انٹرنیٹ سے بھی</string>
+    <string name="live_pair_other_business">اس فون کا کھاتہ اس کمپیوٹر پر کاروبار «%1$s» میں پہلے ہی لائیو چل رہا ہے۔ وہی کاروبار کھولیں: یہاں دوسری کاپی اس سے الگ ہوتی جائے گی۔</string>
+    <string name="fc_look_in">یہاں دیکھیں:</string>
+    <string name="fc_folder_name">فولڈر:</string>
+    <string name="fc_files_of_type">فائل کی قسم:</string>
 </resources>

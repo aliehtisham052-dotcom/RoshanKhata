@@ -70,7 +70,7 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
     var dueDate by remember(b.id) { mutableStateOf(b.dueDate) }
     var picking by remember { mutableStateOf<Int?>(null) }
     val amount = Calc.evalAmount(total)
-    DialogWindow(onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone), title = word(W.edit_bill), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
+    AppDialog(onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone), title = word(W.edit_bill), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         Column(
             Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -114,7 +114,7 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
 fun BillLineDialog(dao: KhataDao, billId: Long, existing: BillItem?, onDone: () -> Unit) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
-    DialogWindow(
+    AppDialog(
         onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone),
         title = word(if (existing == null) W.add_item else W.edit_item),
         state = rememberDialogState(width = fitW(560.dp), height = fitH(560.dp))
@@ -160,7 +160,7 @@ fun BatchBuyersDialog(dao: KhataDao, billItemId: Long, onClose: () -> Unit) {
                         Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(Format.name(b.partyName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                                b.phone?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
+                                b.phone?.takeIf { it.isNotBlank() }?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
                             }
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(b.quantity?.let { Format.qty(it, b.unit) } ?: "—", color = c.ink, fontSize = 14.sp)

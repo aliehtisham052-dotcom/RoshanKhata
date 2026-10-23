@@ -202,6 +202,45 @@ fun escCloses(close: () -> Unit): (androidx.compose.ui.input.key.KeyEvent) -> Bo
     } else false
 }
 
+/**
+ * Every dialog window of the app (23 Oct 2026, the review's R13): a
+ * DialogWindow whose body keeps the app's own direction and text size.
+ * A window of its own sets both again from Swing (the JDK's locale, fixed
+ * at the first window: Sindhi dialogs opened left to right, Roman Urdu ones
+ * mirrored, none followed More → Language or More → Text size), so the
+ * caller's values are carried in. Same arguments as DialogWindow.
+ */
+@Composable
+fun AppDialog(
+    onCloseRequest: () -> Unit,
+    state: androidx.compose.ui.window.DialogState = androidx.compose.ui.window.rememberDialogState(),
+    title: String = "",
+    onPreviewKeyEvent: (androidx.compose.ui.input.key.KeyEvent) -> Boolean = escCloses(onCloseRequest),
+    content: @Composable androidx.compose.ui.window.DialogWindowScope.() -> Unit
+) {
+    val dir = androidx.compose.ui.platform.LocalLayoutDirection.current
+    val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
+    androidx.compose.ui.window.DialogWindow(
+        onCloseRequest = onCloseRequest,
+        state = state,
+        title = title,
+        onPreviewKeyEvent = onPreviewKeyEvent
+    ) {
+        KeepAppLook(dir, fontScale) { content() }
+    }
+}
+
+/** The app's direction and text size inside a window of its own (dialogs, the customer's screen). */
+@Composable
+fun KeepAppLook(dir: androidx.compose.ui.unit.LayoutDirection, fontScale: Float, content: @Composable () -> Unit) {
+    val own = androidx.compose.ui.platform.LocalDensity.current
+    androidx.compose.runtime.CompositionLocalProvider(
+        androidx.compose.ui.platform.LocalLayoutDirection provides dir,
+        androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(own.density, fontScale),
+        content = content
+    )
+}
+
 /** "● Live · <device>": the book on the screen is the one kept live with that device (22 Oct 2026). */
 @Composable
 fun LiveBadge(with: String) {

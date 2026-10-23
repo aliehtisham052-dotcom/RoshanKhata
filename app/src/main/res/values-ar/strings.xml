@@ -3740,4 +3740,8 @@
     <string name="live_status_relay">مباشر مع %1$s عبر الإنترنت. آخر تحديث: %2$s</string>
     <string name="live_relay_help">حين يكون الهاتف بعيدًا عن واي فاي المتجر تمرّ تغييراته عبر مُرحِّل Innovation 313، مقفلةً بمفتاح هذا الدفتر نفسه: لا يستطيع المُرحِّل قراءتها، ولا يحتفظ بها أكثر من 7 أيام. مفتاح واحد للجهازين. حين يكون التطبيق مغلقًا، لا يفعل Firebase من Google سوى إخبار الهاتف بأن شيئًا ينتظر؛ ولا يحمل شيئًا من الدفتر.</string>
     <string name="live_relay">عبر الإنترنت أيضًا</string>
+    <string name="live_pair_other_business">دفتر هذا الهاتف متزامن مباشرةً بالفعل في النشاط التجاري «%1$s» على هذا الحاسوب. افتح ذلك النشاط: نسخة ثانية هنا ستختلف عنه شيئًا فشيئًا.</string>
+    <string name="fc_look_in">البحث في:</string>
+    <string name="fc_folder_name">المجلد:</string>
+    <string name="fc_files_of_type">نوع الملفات:</string>
 </resources>
