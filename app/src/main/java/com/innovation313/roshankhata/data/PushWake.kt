@@ -89,6 +89,35 @@ object PushWake {
     }
 
     /**
+     * A parcel carried inside the push ("rk-parcel"): written in on Firebase's background thread without a
+     * relay call; a round follows only when something before it is missing. While the app is on screen its own
+     * rounds already run (and its live line is nudged), so nothing here.
+     */
+    fun takeCarried(context: Context, from: String, body: String) {
+        if (LiveRunner.running) return
+        val app = context.applicationContext
+        val ask = try {
+            runBlocking {
+                withTimeoutOrNull(10_000L) {
+                    val db = KhataDatabase.get(app)
+                    val sql = db.syncSql()
+                    if (LiveSync.identity(sql) == null) return@withTimeoutOrNull false
+                    LiveSync.check(sql, LiveRunner.install(app), LiveRunner.marks(app))
+                    val r = LiveCloud.takeCarried(sql, from, body)
+                    if (r == LiveCloud.Carried.TOOK) {
+                        LiveSync.noteMark(sql, LiveRunner.marks(app))
+                        NumberMark.mark = LiveSync.mark(sql)
+                    }
+                    r == LiveCloud.Carried.ASK
+                } ?: true
+            }
+        } catch (e: Exception) {
+            true
+        }
+        if (ask) roundNow(app)
+    }
+
+    /**
      * What a wake-up does, on Firebase's own background thread: while the app
      * is on screen [LiveRunner] already runs, so nothing; otherwise a few
      * relay rounds for the open book, within Firebase's time for a message.

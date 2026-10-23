@@ -362,6 +362,42 @@ class LiveCloudTest {
     }
 
     @Test
+    fun `a parcel carried by the push is written in without a relay call, and a gap asks for a round`() = runBlocking {
+        both(2)
+        val pcDev = LiveSync.identity(pc.syncSql())!!.device.take(16).padEnd(16, '0')
+        // The computer leaves a parcel; the relay would put it in the push as base64.
+        pc.khataDao().insertParty(Party(name = "Carried"))
+        clock += 1000
+        LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false }
+        val first = relay.parcels.last()
+        val calls = relay.calls
+        assertEquals(LiveCloud.Carried.TOOK, LiveCloud.takeCarried(phone.syncSql(), pcDev, B64.encode(first.third), clock))
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Carried" })
+        assertEquals(calls, relay.calls)
+        // The relay is still the record: the next round reads it again and nothing lands twice.
+        both(2)
+        assertEquals(1, phone.khataDao().allPartiesForBackup().count { it.name == "Carried" })
+        // A parcel whose sender the relay misnames, or that another key sealed, is left alone.
+        assertEquals(LiveCloud.Carried.NOT_MINE, LiveCloud.takeCarried(phone.syncSql(), "ffffffffffffffff", B64.encode(first.third), clock))
+        assertEquals(LiveCloud.Carried.NOT_MINE, LiveCloud.takeCarried(phone.syncSql(), pcDev, B64.encode(ByteArray(64) { 3 }), clock))
+        // Two parcels, only the second carried (the first was lost on the way): a round is asked for.
+        relay.loseNext = true
+        pc.khataDao().insertParty(Party(name = "Lost on the way"))
+        clock += 1000
+        LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false }
+        pc.khataDao().insertParty(Party(name = "Second"))
+        clock += LiveCloud.RESEND_MS + 1
+        val beforeSeq = relay.seq
+        LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false }
+        val later = relay.parcels.last { it.first > beforeSeq }
+        val r = LiveCloud.takeCarried(phone.syncSql(), pcDev, B64.encode(later.third), clock)
+        assertTrue("$r", r != LiveCloud.Carried.NOT_MINE)
+        both(3)
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "Lost on the way" })
+        assertEquals(1, phone.khataDao().allPartiesForBackup().count { it.name == "Second" })
+    }
+
+    @Test
     fun `a lost parcel is sent again and nothing arrives twice`() = runBlocking {
         both(1)
         relay.loseNext = true
