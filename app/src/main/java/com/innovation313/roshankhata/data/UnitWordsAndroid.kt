@@ -31,8 +31,19 @@ fun UnitWords.choices(context: Context): List<String> {
  * always compared units without regard to letter case).
  */
 fun UnitWords.normalizeStored(db: SupportSQLiteDatabase) {
-    // The statements are shared with the computer (UnitWords.normalizeStatements, 23 Oct 2026).
-    for (sql in normalizeStatements()) {
-        runCatching { db.execSQL(sql) }
-    }
+    // The statements are shared with the computer (UnitWords.repairStored, 23 Oct 2026): one read first,
+    // then one transaction kept out of live sync's log.
+    repairStored(
+        needed = { sql -> db.query(sql).use { c -> c.moveToFirst() && c.getLong(0) != 0L } },
+        inTransaction = { body ->
+            db.beginTransaction()
+            try {
+                body()
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+        },
+        exec = { sql -> db.execSQL(sql) }
+    )
 }

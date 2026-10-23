@@ -48,6 +48,8 @@ export interface Env {
   PRUNE_EVERY_MS?: string;
   NEW_BOOKS_DAY?: string;
   MAX_BOOKS?: string;
+  /** Bytes every book of the account may hold together (default ACCOUNT_BYTES below). */
+  ACCOUNT_BYTES?: string;
 }
 
 /** A limit from the Worker's vars, else its default. */
@@ -65,8 +67,24 @@ const DAY_BYTES = 32 * 1024 * 1024;
 /** A device not seen this long is let go (its parcels too), so a lost phone stops pinning the book's parcels. */
 const DEVICE_IDLE_MS = 30 * 86_400_000;
 const PRUNE_EVERY_MS = 6 * 3600_000;
+/**
+ * Bytes all books of the account may hold together (23 Oct 2026, phase 2 of the review report): the free plan's
+ * SQL storage is 5 GB (4.66 GiB) for the whole account, and BOOK_BYTES alone still let anyone opening fresh books
+ * fill 100 books x 16 MiB a day. Past it the "!ledger" refuses new books and every book refuses parcels, 507 "full"
+ * (the hosting's word for its own store); taking and acknowledging still work, so devices empty what is there.
+ */
+const ACCOUNT_BYTES = 4 * 1024 * 1024 * 1024;
+/**
+ * A book tells the ledger its size only once it moved this much since it last did (and at its six-hourly alarm),
+ * never on every parcel: one ledger call per 64 KiB, where a busy counter leaves well under 1 MB a day.
+ */
+const REPORT_STEP = 64 * 1024;
+/** The ledger counts every book at no less than this: an empty SQLite database and its tables are tens of KB. */
+const BOOK_FLOOR = 64 * 1024;
+/** While the account is full, a book asks the ledger again at most this often whether there is room. */
+const FULL_RECHECK_MS = 10 * 60_000;
 /** Refusals of a parcel after which the round still answers the others' page (and keeps the ack). */
-const CAPACITY = new Set(["day-limit", "day-bytes", "book-full"]);
+const CAPACITY = new Set(["day-limit", "day-bytes", "book-full", "full"]);
 
 const MAX_PARCEL = 1024 * 1024;
 const TAKE_PAGE = 40;
@@ -124,15 +142,23 @@ export default {
     const want = action === "take" || action === "live" ? "GET" : "POST";
     if (request.method !== want) return refuse(405, "method");
     if (action === "live" && request.headers.get("upgrade")?.toLowerCase() !== "websocket") return refuse(426, "websocket");
+    let forward: Request = request;
     if (action === "hello") {
-      // One box for the whole Worker counts the books: a stranger opening boxes at will meets a limit
-      // before the plan's does (one extra request per hello only).
+      // One box for the whole Worker counts the books and their bytes: a stranger opening boxes at will meets a
+      // limit before the plan's does (one extra request per hello only).
       const ledger = env.BOOKS.get(env.BOOKS.idFromName("!ledger"));
       const ok = await ledger.fetch(new Request("https://ledger/" + book, { method: "POST" }));
       if (ok.status !== 200) return ok;
+      // The ledger's word on the account goes to the book with the hello, set here and only here (a device's own
+      // header of that name is overwritten or dropped): a book learns at each hello whether there is room.
+      const said = (await ok.json().catch(() => null)) as { full?: unknown } | null;
+      const headers = new Headers(request.headers);
+      if (typeof said?.full === "boolean") headers.set("x-rk-acct", said.full ? "full" : "room");
+      else headers.delete("x-rk-acct");
+      forward = new Request(request, { headers });
     }
     const stub = env.BOOKS.get(env.BOOKS.idFromName(book));
-    return stub.fetch(request);
+    return stub.fetch(forward);
   },
 
   /**
@@ -189,6 +215,8 @@ export class Daakiya extends DurableObject<Env> {
   /** Whether this object's tables are known to exist (they are made only by a book's first hello). */
   private tables = false;
   private ledgerReady = false;
+  /** When this object last asked the ledger about the account (in memory: a fresh instance asks at once). */
+  private lastAsk = 0;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
@@ -246,6 +274,51 @@ export class Daakiya extends DurableObject<Env> {
     this.addBytes(-n);
   }
 
+  /**
+   * What this book takes of the account's storage: SQLite's own size of this object where the runtime says it
+   * (tables, indexes and pages freed but kept, all of which the plan's storage holds), else its parcels' bytes.
+   */
+  private size(): number {
+    try {
+      const n = this.sql.databaseSize;
+      if (typeof n === "number" && Number.isFinite(n) && n > 0) return n;
+    } catch { /* an older runtime: the parcels' count below */ }
+    return Number(this.meta("bytes") ?? "0");
+  }
+
+  /** The ledger's word that the account is full, kept in a row only when it changes (a write is counted). */
+  private setAccountFull(full: boolean): void {
+    if (full === (this.meta("acct_full") === "1")) return;
+    if (full) this.setMeta("acct_full", "1");
+    else this.sql.exec(`DELETE FROM meta WHERE k = 'acct_full'`);
+  }
+
+  /**
+   * The book's size to the ledger, when it moved REPORT_STEP since it was last told (or at the alarm, [settle],
+   * whenever it differs), and again every FULL_RECHECK_MS while the account is full — so a book learns that room
+   * came back. The size sent is the whole figure, not a change: a report lost or sent twice changes nothing.
+   * Nothing is written when nothing moved: a quiet round still writes no row.
+   */
+  private async reportIfDue(now: number, settle = false): Promise<void> {
+    if (!this.haveTables(false)) return;
+    const book = this.meta("book");
+    if (!book) return;
+    const size = this.size();
+    const reported = Number(this.meta("reported") ?? "0");
+    const full = this.meta("acct_full") === "1";
+    const moved = Math.abs(size - reported) >= REPORT_STEP || (settle && size !== reported);
+    if (!moved && !(full && now - this.lastAsk >= FULL_RECHECK_MS)) return;
+    this.lastAsk = now;
+    const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
+    const res = await ledger.fetch(new Request(`https://ledger/size/${book}?bytes=${size}`, { method: "POST" })).catch(() => null);
+    if (!res || res.status !== 200) return;
+    const o = (await res.json().catch(() => null)) as { full?: unknown } | null;
+    // The book may have been emptied while the ledger answered: nothing is made again here.
+    if (!this.haveTables(false)) return;
+    if (size !== reported) this.setMeta("reported", String(size));
+    if (typeof o?.full === "boolean") this.setAccountFull(o.full);
+  }
+
   private meta(k: string): string | null {
     const r = this.sql.exec<{ v: string }>(`SELECT v FROM meta WHERE k = ?`, k).toArray();
     return r.length ? r[0].v : null;
@@ -257,7 +330,7 @@ export class Daakiya extends DurableObject<Env> {
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    if (url.hostname === "ledger") return this.ledger(url.pathname.slice(1), request.method);
+    if (url.hostname === "ledger") return this.ledger(url, request.method);
     const parts = url.pathname.split("/");
     const action = parts.pop()!;
     const book = parts.pop()!;
@@ -286,8 +359,15 @@ export class Daakiya extends DurableObject<Env> {
     if (!isKnown && action !== "hello") return refuse(403, "say-hello-first");
 
     await this.schedulePrune(now);
+    const res = await this.act(action, request, url, device, now);
+    // The account's count follows what this call stored or freed (a ledger call only once it moved 64 KiB).
+    await this.reportIfDue(now).catch(() => null);
+    return res;
+  }
+
+  private async act(action: string, request: Request, url: URL, device: string, now: number): Promise<Response> {
     switch (action) {
-      case "hello": return this.hello(device, now);
+      case "hello": return this.hello(device, now, request.headers.get("x-rk-acct"));
       case "send": return this.send(request, device, now);
       case "take": return this.take(url, device, now);
       case "ack": return this.ack(request, device, now);
@@ -303,31 +383,72 @@ export class Daakiya extends DurableObject<Env> {
    * The Worker's one count of books (the "!ledger" object): a book is counted on its first hello (POST) and
    * forgotten when its object empties (DELETE, from forget()). The total is kept in one row and the day's
    * count reads an index (23 Oct 2026, the review: two COUNT(*) scans of every book on each refused hello).
+   *
+   * Since 23 Oct (phase 2) it also keeps each book's size as the book last told it (POST size/<book>?bytes=n,
+   * from reportIfDue) and the account's sum of them, each book at no less than BOOK_FLOOR: past ACCOUNT_BYTES a
+   * new book is refused 507 "full", and every answer says {"full": true|false} for the book to keep.
    */
-  private ledger(book: string, method: string): Response {
+  private ledger(url: URL, method: string): Response {
     if (!this.ledgerReady) {
       this.sql.exec(`CREATE TABLE IF NOT EXISTS books (book TEXT PRIMARY KEY, at INTEGER NOT NULL)`);
       this.sql.exec(`CREATE INDEX IF NOT EXISTS books_at ON books (at)`);
       this.sql.exec(`CREATE TABLE IF NOT EXISTS counts (k TEXT PRIMARY KEY, n INTEGER NOT NULL)`);
+      // A ledger from before the sizes gains their column (an older book counts at the floor until it reports).
+      const made = this.sql.exec<{ sql: string }>(`SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'books'`).one().sql;
+      if (!/\bbytes\b/.test(made)) this.sql.exec(`ALTER TABLE books ADD COLUMN bytes INTEGER NOT NULL DEFAULT 0`);
       this.ledgerReady = true;
     }
-    const known = this.sql.exec(`SELECT 1 FROM books WHERE book = ?`, book).toArray().length > 0;
+    const cap = limit(this.env.ACCOUNT_BYTES, ACCOUNT_BYTES);
+    const path = url.pathname.slice(1);
+    if (path.startsWith("size/")) {
+      const book = path.slice(5);
+      const raw = Number(url.searchParams.get("bytes"));
+      if (!HEX32.test(book) || !Number.isFinite(raw) || raw < 0) return refuse(400, "bad-size");
+      const bytes = Math.floor(raw);
+      const row = this.sql.exec<{ bytes: number }>(`SELECT bytes FROM books WHERE book = ?`, book).toArray();
+      let total = this.ledgerBytes();
+      // A book the ledger does not hold (forgotten while its report was on the way) is not made again by it.
+      if (row.length && row[0].bytes !== bytes) {
+        total += Math.max(bytes, BOOK_FLOOR) - Math.max(row[0].bytes, BOOK_FLOOR);
+        this.sql.exec(`UPDATE books SET bytes = ? WHERE book = ?`, bytes, book);
+        this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, total));
+      }
+      return json({ ok: true, full: total >= cap });
+    }
+    const book = path;
+    const row = this.sql.exec<{ bytes: number }>(`SELECT bytes FROM books WHERE book = ?`, book).toArray();
+    const known = row.length > 0;
     if (method === "DELETE") {
       if (known) {
+        const total = this.ledgerBytes();
         this.sql.exec(`DELETE FROM books WHERE book = ?`, book);
         this.sql.exec(`UPDATE counts SET n = MAX(0, n - 1) WHERE k = 'books'`);
+        this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, total - Math.max(row[0].bytes, BOOK_FLOOR)));
       }
       return json({ ok: true });
     }
-    if (known) return json({ ok: true });
+    // A book already here may always say hello (its devices empty what it holds); it is told whether there is room.
+    if (known) return json({ ok: true, full: this.ledgerBytes() >= cap });
     const now = Date.now();
     const total = this.ledgerTotal();
     if (total >= limit(this.env.MAX_BOOKS, MAX_BOOKS)) return refuse(507, "full");
+    const bytes = this.ledgerBytes();
+    if (bytes + BOOK_FLOOR > cap) return refuse(507, "full");
     const today = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books WHERE at > ?`, now - 86_400_000).one().n;
     if (today >= limit(this.env.NEW_BOOKS_DAY, NEW_BOOKS_DAY)) return refuse(429, "new-books");
-    this.sql.exec(`INSERT INTO books (book, at) VALUES (?, ?)`, book, now);
+    this.sql.exec(`INSERT INTO books (book, at, bytes) VALUES (?, ?, 0)`, book, now);
     this.sql.exec(`UPDATE counts SET n = n + 1 WHERE k = 'books'`);
-    return json({ ok: true });
+    this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, bytes + BOOK_FLOOR);
+    return json({ ok: true, full: bytes + BOOK_FLOOR >= cap });
+  }
+
+  /** The account's bytes as the ledger counts them (each book at no less than BOOK_FLOOR); counted once from the rows. */
+  private ledgerBytes(): number {
+    const r = this.sql.exec<{ n: number }>(`SELECT n FROM counts WHERE k = 'bytes'`).toArray();
+    if (r.length) return r[0].n;
+    const n = this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(MAX(bytes, ?)), 0) AS n FROM books`, BOOK_FLOOR).one().n;
+    this.sql.exec(`INSERT INTO counts (k, n) VALUES ('bytes', ?)`, n);
+    return n;
   }
 
   /** The ledger's total; counted once from the rows for a ledger kept before the total was. */
@@ -339,7 +460,10 @@ export class Daakiya extends DurableObject<Env> {
     return n;
   }
 
-  private hello(device: string, now: number): Response {
+  private hello(device: string, now: number, acct: string | null): Response {
+    // The ledger's word on the account, which the Worker put on this hello (fetch above).
+    if (acct === "full") this.setAccountFull(true);
+    else if (acct === "room") this.setAccountFull(false);
     const devices = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM devices`).one().n;
     const isKnown = this.sql.exec(`SELECT 1 FROM devices WHERE device = ?`, device).toArray().length > 0;
     if (!isKnown && devices >= 8) return refuse(409, "too-many-devices");
@@ -367,6 +491,8 @@ export class Daakiya extends DurableObject<Env> {
   private put(body: Uint8Array, device: string, now: number): number | { status: number; why: string } {
     if (body.length === 0) return { status: 400, why: "empty" };
     if (body.length > MAX_PARCEL) return { status: 413, why: "too-big" };
+    // The account's storage is full (the ledger said so at this book's last report or hello): no new bytes.
+    if (this.meta("acct_full") === "1") return { status: 507, why: "full" };
     const day = utcDay(now);
     const countKey = "count:" + day;
     // "<parcels>/<bytes>" for the day (a value from before 23 Oct holds the parcels alone).
@@ -502,6 +628,7 @@ export class Daakiya extends DurableObject<Env> {
     // sweep never takes a book whose devices are simply quiet.
     this.touch(device, now, false);
     ws.send(JSON.stringify({ id, status: r.status, ...r.body }));
+    await this.reportIfDue(now).catch(() => null);
   }
 
   async webSocketClose(ws: WebSocket, code: number, reason: string): Promise<void> {
@@ -619,6 +746,8 @@ export class Daakiya extends DurableObject<Env> {
     // The byte count put right from the parcels themselves (a count kept by hand may drift).
     const bytes = this.sql.exec<{ b: number | null }>(`SELECT SUM(length(body)) AS b FROM parcels`).one().b ?? 0;
     if (bytes !== Number(this.meta("bytes") ?? "0")) this.setMeta("bytes", String(bytes));
+    // And the ledger's figure for this book put right too, whenever it differs.
+    await this.reportIfDue(now, true).catch(() => null);
     await this.ctx.storage.setAlarm(now + limit(this.env.PRUNE_EVERY_MS, PRUNE_EVERY_MS));
   }
 
