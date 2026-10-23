@@ -136,10 +136,17 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> 
     LaunchedEffect(server) {
         val s = server ?: run { status = words.text(W.wifi_pc_failed); return@LaunchedEffect }
         if (hosts.isEmpty()) return@LaunchedEffect
-        val book = withContext(Dispatchers.IO) { runCatching { WifiSync.receive(s, secret, { stopped }, give) }.getOrNull() }
-        if (book != null && !stopped) {
-            val file = withContext(Dispatchers.IO) { runCatching { PhoneSync.saveIncoming(home, book) }.getOrNull() }
-            if (file != null) onBook(file) else status = words.text(W.wifi_pc_failed)
+        // The book is written onto this computer's own folder as it arrives (23 Oct 2026), never held whole.
+        val spool = File(home, "from-phone")
+        val arrived = withContext(Dispatchers.IO) {
+            // A part left by a window closed mid-send, or a power cut, goes first.
+            runCatching { spool.listFiles { f -> f.name.startsWith("rk-phone-") && f.name.endsWith(".part") }?.forEach { it.delete() } }
+            runCatching { WifiSync.receive(s, secret, { stopped }, spool, give) }.getOrNull()
+        }
+        if (arrived != null && stopped) runCatching { arrived.delete() }
+        if (arrived != null && !stopped) {
+            val file = withContext(Dispatchers.IO) { runCatching { PhoneSync.saveIncomingFile(home, arrived) }.getOrNull() }
+            if (file != null) onBook(file) else { runCatching { arrived.delete() }; status = words.text(W.wifi_pc_failed) }
         }
     }
 
