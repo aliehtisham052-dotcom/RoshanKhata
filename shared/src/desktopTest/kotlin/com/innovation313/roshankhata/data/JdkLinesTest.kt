@@ -32,6 +32,8 @@ class JdkLinesTest {
         val socket = ServerSocket(0, 10, InetAddress.getLoopbackAddress())
         val seenHeaders = ConcurrentHashMap<String, String>()
         @Volatile var client: Socket? = null
+        /** Set when the test drops the line: nothing more is answered on any connection. */
+        @Volatile var dead = false
         val port get() = socket.localPort
 
         init {
@@ -68,6 +70,7 @@ class JdkLinesTest {
                 val mask = ByteArray(4).also { input.readFully(it) }
                 val payload = ByteArray(n.toInt()).also { input.readFully(it) }
                 for (i in payload.indices) payload[i] = (payload[i].toInt() xor mask[i % 4].toInt()).toByte()
+                if (dead) break
                 when (b0 and 0x0F) {
                     0x1 -> {
                         val o = JSONObject(String(payload))
@@ -90,7 +93,7 @@ class JdkLinesTest {
 
         fun nudge() { client?.let { send(it.getOutputStream(), "{\"t\":\"new\"}") } }
 
-        fun close() { runCatching { client?.close() }; runCatching { socket.close() } }
+        fun close() { dead = true; runCatching { client?.close() }; runCatching { socket.close() } }
     }
 
     private val servers = ArrayList<Server>()
@@ -148,7 +151,10 @@ class JdkLinesTest {
         val headers = mapOf("x-rk-pass" to "p".repeat(64), "x-device" to "cccccccccccccccc")
         assertNotNull(LiveLines.ask(root, book, headers, JSONObject().put("after", 1L)))
         server.close()
-        // The server is gone: no answer from the dropped line, and none can be opened.
+        // Whether the JDK has seen the line end yet or not, the round gets no answer from it (a held line times
+        // out and is let go of; a seen one is gone and none can be opened): the round then goes over HTTP.
+        val until = System.currentTimeMillis() + 5_000
+        while (LiveLines.isOpen(root, book) && System.currentTimeMillis() < until) Thread.sleep(50)
         assertNull(LiveLines.ask(root, book, headers, JSONObject().put("after", 2L)))
     }
 }

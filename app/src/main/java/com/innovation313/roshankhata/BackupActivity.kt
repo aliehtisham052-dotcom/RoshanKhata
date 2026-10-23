@@ -549,18 +549,12 @@ class BackupActivity : BaseActivity() {
             }
             if (isFinishing) { receive.close(); return@launch }
             val lost = loss.takeIf { !it.none }?.let { l ->
-                getString(R.string.restore_loss_intro) + "
-" +
+                getString(R.string.restore_loss_intro) + "\n" +
                     com.innovation313.roshankhata.data.RestoreCheck.lines(l, com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)) { Format.dateTime(it) }
-                        .joinToString("
-") { "• $it" } + "
-
-" + getString(R.string.restore_loss_kept)
+                        .joinToString("\n") { "• $it" } + "\n\n" + getString(R.string.restore_loss_kept)
             }
             val sender = arrived.offer.name.ifBlank { getString(R.string.live_title) }
-            val message = listOfNotNull(getString(R.string.live_receive_offer, sender, arrived.offer.code ?: "----"), lost).joinToString("
-
-")
+            val message = listOfNotNull(getString(R.string.live_receive_offer, sender, arrived.offer.code ?: "----"), lost).joinToString("\n\n")
             val b = MaterialAlertDialogBuilder(this@BackupActivity)
                 .setTitle(R.string.live_receive)
                 .setMessage(message)
