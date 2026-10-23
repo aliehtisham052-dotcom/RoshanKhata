@@ -47,6 +47,7 @@ object ImageReattach {
 
     /** After the restore: every picture renamed to its row's new id, or set aside. */
     suspend fun after(context: Context, dao: KhataDao, before: Before) {
+        // A failure is written down (23 Oct 2026, review R39): it used to be swallowed in silence.
         runCatching {
             val uidToNew = dao.entryUids().mapNotNull { r -> r.uid?.let { it to r.id } }.toMap()
             val newParties = parties(dao)
@@ -59,26 +60,94 @@ object ImageReattach {
                 before.partyKey[old]?.let { keyToNew[it] }
             }
             PartyPhoto.dropCaches()
+        }.onFailure { CrashLog.record(context, it) }
+    }
+
+    /**
+     * The plan of a move under way, beside the pictures: "original<TAB>target" a line. Named
+     * [PLAN] while the first step runs (no picture has a new name yet) and [STAGED] once every
+     * picture is "*.moving" and the second step may run.
+     */
+    private const val PLAN = "reattach.plan"
+    private const val STAGED = "reattach.staged"
+    private const val MOVING = ".moving"
+
+    /**
+     * A move a killed run left half done is finished (23 Oct 2026, review R39): every picture of
+     * every shop's folder had been renamed "*.moving" in the first step, and nothing ever renamed
+     * it back, so a restore cut short there hid every signature and customer photo for good.
+     * Cheap when there is nothing to do; from the app's start and before every move. Never throws.
+     */
+    fun recover(context: Context) {
+        runCatching {
+            context.filesDir.listFiles { f ->
+                f.isDirectory && (f.name.startsWith(EntrySignature.DIR) || f.name.startsWith("party_photos"))
+            }?.forEach { finish(it) }
+        }.onFailure { CrashLog.record(context, it) }
+    }
+
+    private fun readPlan(file: File): List<Pair<String, String>> = file.readLines().mapNotNull { l ->
+        val parts = l.split('\t')
+        if (parts.size == 2 && parts[0].isNotEmpty() && parts[1].isNotEmpty()) parts[0] to parts[1] else null
+    }
+
+    /**
+     * Runs or finishes [dir]'s plan if one is there. A "*.moving" with no plan (a build before the
+     * plan) cannot be told which row it now belongs to; it is set aside whole, never put on a row
+     * that may not be its own.
+     */
+    @Synchronized
+    internal fun finish(dir: File) {
+        val plan = File(dir, PLAN)
+        val staged = File(dir, STAGED)
+        if (plan.isFile && !staged.exists()) {
+            // Step one: while the plan is [PLAN] no picture has its new name yet, so a picture under
+            // an original name is one still to stage.
+            for ((original, _) in readPlan(plan)) {
+                val f = File(dir, original)
+                val tmp = File(dir, original + MOVING)
+                if (f.isFile && !tmp.exists()) f.renameTo(tmp)
+            }
+            if (!plan.renameTo(staged)) throw java.io.IOException("reattach plan not staged")
+        }
+        plan.delete()
+        if (staged.isFile) {
+            // Step two: each staged picture to its new name (or set aside); one already moved is passed.
+            for ((original, target) in readPlan(staged)) {
+                val tmp = File(dir, original + MOVING)
+                if (!tmp.isFile) continue
+                val to = File(dir, target)
+                to.parentFile?.mkdirs()
+                tmp.renameTo(to)
+            }
+            staged.delete()
+        }
+        val left = dir.listFiles { f -> f.isFile && f.name.endsWith(MOVING) }.orEmpty()
+        if (left.isNotEmpty()) {
+            val aside = File(dir, "unmatched-" + System.currentTimeMillis()).apply { mkdirs() }
+            for (f in left) f.renameTo(File(aside, f.name.removeSuffix(MOVING)))
         }
     }
 
-    /** Two steps, so a picture moving to an id another picture is leaving never overwrites it. */
-    private fun move(dir: File, pattern: Regex, name: String, newIdOf: (Long) -> Long?) {
+    /**
+     * Two steps, so a picture moving to an id another picture is leaving never overwrites it. The
+     * plan is on disk before the first rename and goes after the last ([finish] completes it when
+     * the run is killed between).
+     */
+    @Synchronized
+    internal fun move(dir: File, pattern: Regex, name: String, newIdOf: (Long) -> Long?) {
+        finish(dir)
         val files = dir.listFiles()?.mapNotNull { f -> pattern.find(f.name)?.groupValues?.get(1)?.toLongOrNull()?.let { f to it } } ?: return
         if (files.isEmpty()) return
-        val unmatched = File(dir, "unmatched-" + System.currentTimeMillis())
-        val staged = files.map { (f, old) ->
-            val tmp = File(dir, f.name + ".moving")
-            f.renameTo(tmp)
-            Triple(tmp, f.name, newIdOf(old))
+        val unmatched = "unmatched-" + System.currentTimeMillis()
+        val moves = files.map { (f, old) ->
+            val newId = newIdOf(old)
+            f.name to (if (newId != null) String.format(java.util.Locale.ROOT, name, newId) else unmatched + "/" + f.name)
         }
-        for ((tmp, oldName, newId) in staged) {
-            if (newId != null) {
-                tmp.renameTo(File(dir, String.format(java.util.Locale.ROOT, name, newId)))
-            } else {
-                unmatched.mkdirs()
-                tmp.renameTo(File(unmatched, oldName))
-            }
-        }
+        // Written whole and renamed into place: a plan is either all there or not there.
+        val planTmp = File(dir, PLAN + ".tmp")
+        planTmp.writeText(moves.joinToString("") { (from, to) -> from + "\t" + to + "\n" })
+        if (!planTmp.renameTo(File(dir, PLAN))) { planTmp.delete(); throw java.io.IOException("reattach plan not written") }
+        finish(dir)
     }
 }

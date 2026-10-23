@@ -278,7 +278,9 @@ class BusinessSwitchActivity : BaseActivity() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
-            VH(LayoutInflater.from(parent.context).inflate(R.layout.item_business, parent, false))
+            // A row inflated in code lets its fixed-height Open button grow like the screen's (R157).
+            VH(LayoutInflater.from(parent.context).inflate(R.layout.item_business, parent, false)
+                .also { com.innovation313.roshankhata.ui.TextFit.relax(it) })
 
         override fun getItemCount() = items.size
 

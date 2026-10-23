@@ -88,8 +88,10 @@ class ChequeAdapter(
 
         val (statusText, statusColour) = when (c.status) {
             ChequeStatus.PENDING -> R.string.cheque_pending to R.color.ink
-            ChequeStatus.CLEARED -> R.string.cheque_cleared to R.color.green_got
-            ChequeStatus.BOUNCED -> R.string.cheque_bounced to R.color.red_gave
+            // The text colours, night-aware (23 Oct 2026, review R99): the solid fills measured about
+            // 2.6:1 on the night page, and the word and its stripe are the cheque's whole news.
+            ChequeStatus.CLEARED -> R.string.cheque_cleared to R.color.green_got_text
+            ChequeStatus.BOUNCED -> R.string.cheque_bounced to R.color.red_gave_text
             else -> R.string.cheque_cancelled to R.color.text_muted
         }
         holder.tvStatus.setText(statusText)
@@ -97,8 +99,14 @@ class ChequeAdapter(
         holder.stripe.setBackgroundColor(ContextCompat.getColor(ctx, statusColour))
 
         // Settled cheques stay visible as a record, but faded — they are
-        // history, not something needing action.
-        holder.itemView.alpha = if (c.status == ChequeStatus.PENDING) 1f else 0.6f
+        // history, not something needing action. The name and details fade;
+        // the status word, its stripe and the amount keep full strength (R99:
+        // the whole row at 60% put a bounced cheque's word near 2:1 by night).
+        holder.itemView.alpha = 1f
+        val faded = if (c.status == ChequeStatus.PENDING) 1f else 0.75f
+        holder.tvParty.alpha = faded
+        holder.tvDetail.alpha = faded
+        holder.tvDue.alpha = faded
 
         holder.itemView.setOnClickListener { onClick(c) }
     }

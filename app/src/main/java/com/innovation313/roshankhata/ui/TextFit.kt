@@ -1,8 +1,10 @@
 package com.innovation313.roshankhata.ui
 
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import java.util.Locale
 
 /**
  * Lets a fixed-height button or label grow when the text in it has been made
@@ -25,6 +27,18 @@ import android.widget.TextView
  * wrap_content changes how its match_parent children measure, which is a
  * layout change of its own.
  *
+ * Android 15 and later, in Urdu, Sindhi, Arabic and Farsi (23 Oct review,
+ * R04): the dp heights were drawn against Android's COMPACT Arabic-script
+ * font. For an app targeting API 35+, `elegantTextHeight` is on by default
+ * on an Android 15+ phone, which swaps in the taller font with larger
+ * vertical bounds; for an app targeting 36 (this one) Android 16 ignores the
+ * attribute altogether, so there is no theme switch to turn the old metrics
+ * back (developer.android.com, "Android 15 features and changes list" and
+ * "Behavior changes: apps targeting Android 16"). So on those phones, in an
+ * Arabic-script language, the heights are relaxed at the normal size too.
+ * Roman Urdu (`ur-Latn`) is Latin and stays as designed, as do the other
+ * languages and every phone below Android 15 (still the compact font).
+ *
  * Call it on anything freshly inflated: [com.innovation313.roshankhata.BaseActivity]
  * does the screen itself; dialogs and rows inflated in code call it directly.
  */
@@ -32,8 +46,24 @@ object TextFit {
 
     fun relax(root: View?) {
         if (root == null) return
-        if (root.resources.configuration.fontScale <= 1.0f) return
+        val config = root.resources.configuration
+        val locale = if (config.locales.isEmpty) null else config.locales[0]
+        if (!needed(config.fontScale, Build.VERSION.SDK_INT, locale)) return
         walk(root)
+    }
+
+    /** Arabic-script languages of this app; Roman Urdu is excluded by its script. */
+    private val ARABIC_SCRIPT = setOf("ur", "sd", "ar", "fa")
+
+    /**
+     * Whether fixed heights must be allowed to grow: text larger than normal,
+     * or an Arabic-script language on Android 15+ (the elegant font's taller
+     * lines). Public for the unit test.
+     */
+    fun needed(fontScale: Float, sdk: Int, locale: Locale?): Boolean {
+        if (fontScale > 1.0f) return true
+        if (sdk < 35 || locale == null) return false
+        return locale.language in ARABIC_SCRIPT && locale.script != "Latn"
     }
 
     private fun walk(view: View) {

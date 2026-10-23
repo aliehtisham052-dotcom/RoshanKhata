@@ -16,6 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/etOpening"
             android:text="@string/dayclose_opening"
             android:textColor="@color/text_muted"
             android:textSize="13sp" />
@@ -55,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:labelFor="@+id/etCounted"
             android:text="@string/dayclose_counted"
             android:textColor="@color/text_muted"
             android:textSize="13sp" />
