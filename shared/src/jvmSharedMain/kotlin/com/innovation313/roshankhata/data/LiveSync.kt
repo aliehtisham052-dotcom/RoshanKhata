@@ -44,7 +44,11 @@ import java.security.SecureRandom
  *     back as a change of this device;
  *  6. a change already written once (its line is at or below what this
  *     device has read of the sender) is not written again: a parcel sent
- *     twice can no longer put an older row over a newer edit.
+ *     twice can no longer put an older row over a newer edit;
+ *  7. the goods lines of one entry, invoice or draft order are one set: when
+ *     both devices changed the same parent's lines, the device rule 3/4 picks
+ *     for the parent keeps its whole set on both, and every line of the other
+ *     set is kept in sync_conflict ([LINE_SETS], E8, 23 Oct 2026).
  */
 object LiveSync {
 
@@ -867,10 +871,13 @@ object LiveSync {
         var conflicts = 0
         // A change at or below what was read of the sender already landed (rule 6).
         var waiting: List<Change> = p.changes.filter { c -> c.seq == null || c.seq > recv }
+        // A parent's goods lines changed on both devices: one set is kept whole (E8, 23 Oct 2026).
+        val (setRules, setKept) = lineSetRules(waiting, p.device, mine, sentToThem, now, cache)
+        conflicts += setKept
         while (waiting.isNotEmpty()) {
             val next = ArrayList<Change>()
             for (c in waiting) {
-                when (val r = tryOne(c, p.device, mine, sentToThem, now, cache)) {
+                when (val r = tryOne(c, p.device, mine, sentToThem, now, cache, setRules[c.table + "\u0000" + c.uid])) {
                     One.Later -> next.add(c)
                     is One.Wrote -> { written++; if (r.conflict) conflicts++; unhold(c) }
                     One.Skipped -> unhold(c)
@@ -964,11 +971,18 @@ object LiveSync {
      * point at — rolled back the whole parcel, every round, for ever).
      */
     private suspend fun SyncTx.tryOne(
-        c: Change, from: String, mine: String, sentToThem: Long, now: Long, cache: MutableMap<String, List<Col>>
+        c: Change, from: String, mine: String, sentToThem: Long, now: Long, cache: MutableMap<String, List<Col>>,
+        setRule: String? = null
     ): One {
         exec("SAVEPOINT rk_one")
         val r = try {
-            applyOne(c, from, mine, sentToThem, now, cache)
+            when (setRule) {
+                // Their set is kept: their line is written as it stands, whatever this device did to it.
+                KEEP_THEIRS -> applyOne(c, from, mine, Long.MAX_VALUE, now, cache)
+                // This device's set is kept: their line is not written, and they are told this book's.
+                KEEP_MINE -> keepOwnLine(c, from, now, cache)
+                else -> applyOne(c, from, mine, sentToThem, now, cache)
+            }
         } catch (e: Exception) {
             if (!unwritable(e)) throw e
             One.Unwritable
@@ -1171,6 +1185,185 @@ object LiveSync {
         }
         exec("INSERT OR REPLACE INTO `$n` (`key`, value) VALUES (?, ?)", listOf(c.uid, value))
         return One.Wrote(false)
+    }
+
+    // ------------------------------------------------------------ line sets
+
+    /**
+     * Lines saved as one set with their parent (E8, 23 Oct 2026): every editor of these writes the whole set
+     * again — an entry's goods (updateEntryWithItems: the old lines removed, the new ones inserted), an
+     * invoice's items and a draft order's lines (the old ones put in the bin, the new ones inserted) — so each
+     * edit makes rows with new uids. Two devices that edited the same parent before a round each sent rows the
+     * other had never seen, nothing met as a conflict, and both sets stood on both books: the goods doubled
+     * while the fingerprints agreed. Table → (its pointer to the parent, the parent's table).
+     *
+     * Not here: bill_items (a bill's lines are added and corrected one at a time, in place by id —
+     * saveBillLine — so two lines added on two devices are both real), and the counter's sale and return lines
+     * (a posted document is never edited; a void or a return is a new row).
+     */
+    private val LINE_SETS: Map<String, Pair<String, String>> = mapOf(
+        "entry_items" to ("entryId" to "transactions"),
+        "invoice_items" to ("invoiceId" to "invoices"),
+        "purchase_order_items" to ("orderId" to "purchase_orders")
+    )
+
+    private const val KEEP_MINE = "mine"
+    private const val KEEP_THEIRS = "theirs"
+
+    /** A line noted in this device's log by hand, while sync_mute keeps the triggers quiet. */
+    private suspend fun SyncTx.note(table: String, uid: String, op: String) =
+        exec("INSERT INTO sync_log (tbl, uid, op) VALUES (?, ?, ?)", listOf(table, uid, op))
+
+    /** The two versions of a row say the same (numbers by value: 1 and 1.0 are one figure). [a]'s fields are read. */
+    private fun sameRow(a: JSONObject, b: JSONObject): Boolean {
+        for (k in a.keys().asSequence().toList()) {
+            if (k == "uid") continue
+            val x = jsonValue(a, k)
+            val y = jsonValue(b, k)
+            if (x == null && y == null) continue
+            if (x == null || y == null) return false
+            val xs = x.toString()
+            val ys = y.toString()
+            if (xs == ys) continue
+            val xd = xs.toDoubleOrNull()
+            val yd = ys.toDoubleOrNull()
+            if (xd != null && yd != null && xd == yd) continue
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Which device's set of lines stands, for a parent whose lines both devices changed: the parent row's own
+     * rule (rule 3/4 in [applyOne]) — put in the bin on one side only, the bin's side; else the higher device
+     * id. Decided alike on both devices, whichever of them takes the other's parcel first.
+     */
+    private suspend fun SyncTx.setKeeper(
+        parent: String, parentId: Long, changes: List<Change>, from: String, mine: String, sentToThem: Long,
+        cache: MutableMap<String, List<Col>>
+    ): String {
+        val byDevice = if (mine > from) KEEP_MINE else KEEP_THEIRS
+        val t = SyncSchema.table(parent) ?: return byDevice
+        val uid = rows("SELECT uid FROM `$parent` WHERE id = ?", listOf(parentId), "T").firstOrNull()?.get(0) as String?
+            ?: return byDevice
+        val theirs = changes.firstOrNull { it.table == parent && it.op == "U" && localUid(parent, it.uid) == uid }?.row
+            ?: return byDevice
+        if (!unseen(parent, uid, sentToThem)) return byDevice
+        val theirsInBin = inBin(theirs)
+        val mineInBin = inBin(rowOut(t, uid, cache))
+        return if (theirsInBin != mineInBin) (if (mineInBin) KEEP_MINE else KEEP_THEIRS) else byDevice
+    }
+
+    /**
+     * Before a parcel is written: each parent whose lines the parcel changes AND whose lines this device
+     * changed since the other last read its log has one set kept whole ([setKeeper]). Returns the rule for each
+     * of the parcel's lines under such a parent (by table and uid) and how many versions were kept aside.
+     *
+     * Their set kept: this device's own changed lines that their parcel does not carry are taken out here, kept
+     * in sync_conflict, and noted as removed (so a device that has one takes it out too); its own lines that
+     * their parcel does carry are kept aside where they differ, and their version is written ([tryOne]).
+     * This device's set kept: their lines are not written ([keepOwnLine]).
+     *
+     * Only one of the two devices may see the clash (the second to take a parcel already has the first's
+     * acknowledgement, so nothing is unseen there): what it decides reaches the other as plain changes, and
+     * the two books end the same. Lines one device alone changed meet no rule and travel as before.
+     */
+    private suspend fun SyncTx.lineSetRules(
+        changes: List<Change>, from: String, mine: String, sentToThem: Long, now: Long, cache: MutableMap<String, List<Col>>
+    ): Pair<Map<String, String>, Int> {
+        val byParent = LinkedHashMap<Pair<String, Long>, MutableList<Change>>()
+        for (c in changes) {
+            val (col, parent) = LINE_SETS[c.table] ?: continue
+            val parentId: Long? = if (c.op == "U") {
+                c.row?.let { jsonValue(it, col) }?.toString()?.let { idOf(parent, it) }
+            } else {
+                // A removal names only the line: its parent is read from the line while this book still has it.
+                rows("SELECT `$col` FROM `${c.table}` WHERE uid = ? LIMIT 1", listOf(c.uid), "I").firstOrNull()?.get(0) as Long?
+            }
+            if (parentId != null) byParent.getOrPut(c.table to parentId) { ArrayList() }.add(c)
+        }
+        if (byParent.isEmpty()) return emptyMap<String, String>() to 0
+        val rules = HashMap<String, String>()
+        var kept = 0
+        for ((key, theirs) in byParent) {
+            // In its own savepoint, as one change is (tryOne): a parent this cannot decide leaves its lines to the
+            // row rules, never the whole parcel refused every round.
+            exec("SAVEPOINT rk_set")
+            val decided = try {
+                decideSet(key.first, key.second, theirs, changes, from, mine, sentToThem, now, cache)
+            } catch (e: Exception) {
+                if (!unwritable(e)) throw e
+                exec(";ROLLBACK TO rk_set")
+                null
+            }
+            exec("RELEASE rk_set")
+            if (decided == null) continue
+            kept += decided.second
+            for (c in theirs) rules[c.table + "\u0000" + c.uid] = decided.first
+        }
+        return rules to kept
+    }
+
+    /**
+     * One parent of [lineSetRules]: null when this device did not change its lines (no clash), else which set
+     * stands and how many of this device's versions were kept aside.
+     */
+    private suspend fun SyncTx.decideSet(
+        table: String, parentId: Long, theirs: List<Change>, changes: List<Change>, from: String, mine: String,
+        sentToThem: Long, now: Long, cache: MutableMap<String, List<Col>>
+    ): Pair<String, Int>? {
+        val (col, parent) = LINE_SETS.getValue(table)
+        val t = SyncSchema.table(table) ?: return null
+        val own = rows(
+            "SELECT x.uid FROM `$table` x WHERE x.`$col` = ? AND x.uid IS NOT NULL AND EXISTS " +
+                "(SELECT 1 FROM sync_log l WHERE l.tbl = ? AND l.uid = x.uid AND l.seq > ?)",
+            listOf(parentId, table, sentToThem), "T"
+        ).map { it[0] as String }
+        if (own.isEmpty()) return null
+        val rule = setKeeper(parent, parentId, changes, from, mine, sentToThem, cache)
+        var kept = 0
+        if (rule == KEEP_THEIRS) {
+            for (u in own) {
+                val ownRow = rowOut(t, u, cache) ?: continue
+                val incoming = theirs.firstOrNull { it.uid == u }
+                if (incoming == null) {
+                    // A line of this device's set their set does not have: out, here and (noted) wherever it is.
+                    keepAside(table, u, now, from, KEEP_THEIRS, ownRow.toString())
+                    exec("DELETE FROM `$table` WHERE uid = ?", listOf(u))
+                    exec("DELETE FROM sync_pending WHERE tbl = ? AND uid = ?", listOf(table, u))
+                    note(table, u, "D")
+                    kept++
+                } else {
+                    val theirRow = incoming.row
+                    if (incoming.op == "D" || theirRow == null || !sameRow(ownRow, theirRow)) {
+                        keepAside(table, u, now, from, KEEP_THEIRS, ownRow.toString())
+                        kept++
+                    }
+                }
+            }
+        }
+        return rule to kept
+    }
+
+    /**
+     * One of their lines under a parent whose set this device keeps: not written. A line this book never had is
+     * noted as removed, so they take it out; a line this book has in another shape (or they removed) is noted
+     * again as it stands here, so they take this version back. Their version is kept in sync_conflict.
+     */
+    private suspend fun SyncTx.keepOwnLine(c: Change, from: String, now: Long, cache: MutableMap<String, List<Col>>): One {
+        val t = SyncSchema.table(c.table) ?: return One.Skipped
+        val ownRow = rowOut(t, c.uid, cache)
+        val theirRow = c.row
+        if (ownRow == null) {
+            if (c.op == "D" || theirRow == null) return One.Skipped
+            keepAside(c.table, c.uid, now, from, KEEP_MINE, theirRow.toString())
+            note(c.table, c.uid, "D")
+            return One.Wrote(true)
+        }
+        if (c.op == "U" && theirRow != null && sameRow(ownRow, theirRow)) return One.Skipped
+        keepAside(c.table, c.uid, now, from, KEEP_MINE, if (c.op == "U") theirRow?.toString() else null)
+        note(c.table, c.uid, "U")
+        return One.Wrote(true)
     }
 
     /** Pointers that waited for their row: written now that it is here. */
