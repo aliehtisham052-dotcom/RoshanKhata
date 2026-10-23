@@ -623,11 +623,30 @@ private fun Book(
     LaunchedEffect(Unit) { LiveSync.changes.drop(1).collect { reload++ } }
     // A phone that scanned the live code: its book (already read whole by LiveDesk) goes to the usual restore
     // confirmation, and stays there until the owner answers it (a lock or a sign-out in between shows it again).
+    // A pairing that came while another business was open is not asked of this one (R40): it is let go, and the
+    // owner told which business it came to (the phone gives up waiting on its own; scanning again starts afresh).
+    var offerLeft by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) {
         LiveDesk.offers.filterNotNull().collect { incoming ->
+            val came = incoming.bookFile
+            if (came != null && came != businesses.dbFile(activeBusiness).name) {
+                LiveDesk.offers.compareAndSet(incoming, null)
+                val there = businesses.list().firstOrNull { businesses.dbFile(it.id).name == came }
+                offerLeft = there?.let { b -> FileShopSettings(businesses.settingsFile(b.id)).businessName() ?: b.name }
+                    ?.takeIf { it.isNotBlank() } ?: words.text(W.app_name)
+                return@collect
+            }
             liveSync = false
             picked = Picked.Ready(incoming.file, incoming.data, incoming.ok, live = incoming.offer)
         }
+    }
+    offerLeft?.let { name ->
+        AlertDialog(
+            onDismissRequest = { offerLeft = null },
+            title = { Text(word(W.live_title)) },
+            text = { Text(word(W.live_pair_left_business, name)) },
+            confirmButton = { TextButton(onClick = { offerLeft = null }) { Text(word(W.ok)) } }
+        )
     }
     // This book's own sync id: a phone offering this very book is offered only Replace (22 Oct 2026, the review:
     // "join as a new business" made a second business with the same book, and both answered the phone).
@@ -1301,6 +1320,11 @@ private fun Book(
                     else if (thisBook != null) Text(word(W.restore_stops_live), color = c.ink, fontWeight = FontWeight.Medium)
                     // The four digits the phone shows for this pairing: yes only when they are the same (22 Oct 2026).
                     p.live?.code?.let { code -> Text(word(W.live_pair_code_check, code), color = c.ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp) }
+                    // Whose book this is and which one it replaces, when the two names differ (R40; the phone's rule).
+                    val copyShop = p.data.businessName?.trim()?.takeIf { it.isNotEmpty() }
+                    val openShop = shopName()?.trim()?.takeIf { it.isNotEmpty() }
+                    if (copyShop != null && openShop != null && !copyShop.equals(openShop, ignoreCase = true))
+                        Text(word(W.restore_business_mismatch, copyShop, openShop), color = c.owedToMe, fontWeight = FontWeight.SemiBold)
                     LossNote(loss, agreed) { agreed = it }
                     Text(
                         word(

@@ -266,6 +266,7 @@ def main():
 
     s, o = call("GET", "/v1/health")
     check("health answers", s == 200 and o.get("ok") is True and o.get("live") is True, (s, o))
+    check("health says whether it can push", isinstance(o.get("push"), bool), o)
 
     s, o = call("GET", p + "take?after=0", token, a)
     check("an unknown book is refused until a hello", s == 403 and o.get("why") == "say-hello-first", (s, o))
@@ -395,6 +396,7 @@ def main():
 
     s, o = call("POST", p + "wake", token, b, {"token": "f" * 40})
     check("a wake-up address is kept", s == 200 and o.get("wake") is True, (s, o))
+    check("and the answer says whether a push can come", isinstance(o.get("push"), bool), o)
     s, o = call("POST", p + "wake", token, b, {"token": None})
     check("and taken away", s == 200 and o.get("wake") is False, (s, o))
 

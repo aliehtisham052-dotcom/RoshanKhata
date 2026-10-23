@@ -40,10 +40,14 @@ object LiveGive {
         if (!wasOn) LiveSync.lockTrouble?.let { throw IOException("the key's lock does not answer: $it") }
         var file: File? = null
         var pair: String? = null
+        // The relay as it was: a give that fails or is never taken leaves it so (R11).
+        val relayWasOff = dao.settingValue(BookSettings.LIVE_RELAY) != "1"
+        var relayTurnedOn = false
         try {
             val id = LiveSync.enable(sql, install, name, marks = marks)
             val joinerMark = LiveSync.nextJoinerMark(sql)
             dao.setSetting(BookSettings.LIVE_RELAY, "1")
+            relayTurnedOn = relayWasOff
             val peersAtCopy = LiveCrew.offerPeers(sql)
             LiveCrew.holdForCopy(sql, peersAtCopy)
             // The book is taken after this line: whatever changes after it goes in the first rounds, and a row that
@@ -63,12 +67,14 @@ object LiveGive {
             // Waiting before the book leaves: the joiner's word can never come before the pairing it names.
             LiveRound.setPending(
                 sql, LiveRound.Target(listOf(host.ifBlank { "0.0.0.0" }), 0, seq, joiner.ifBlank { null }, pair = made, phone = true),
-                wasOff = !wasOn
+                wasOff = !wasOn, relayWasOff = relayWasOff
             )
             return Prepared(offer, f, wasOn)
         } catch (e: Throwable) {
             file?.delete()
             runCatching { undo(sql, wasOn, pair) }
+            // The pairing never came to wait (setPending is the last step), so its record cannot undo the relay.
+            if (relayTurnedOn) runCatching { dao.setSetting(BookSettings.LIVE_RELAY, null) }
             throw e
         }
     }
@@ -90,7 +96,7 @@ object LiveGive {
      * that did not sync before goes back to not syncing.
      */
     suspend fun undo(sql: SyncSql, wasOn: Boolean, pair: String?) {
-        if (pair != null && LiveRound.pending(sql)?.pair == pair) LiveRound.dropPending(sql)
+        if (pair != null && LiveRound.pending(sql)?.pair == pair) LiveRound.dropPending(sql, givenUp = true)
         LiveCrew.dropCopyHold(sql)
         if (!wasOn) LiveSync.disable(sql)
     }
@@ -104,7 +110,7 @@ object LiveGive {
         val pending = LiveRound.pending(sql) ?: return false
         if (!pending.phone || now - (pending.since ?: now) <= PENDING_MS) return false
         LiveCrew.dropCopyHold(sql)
-        if (!LiveRound.dropPending(sql)) return false
+        if (!LiveRound.dropPending(sql, givenUp = true)) return false
         // The book synced with nobody before: off again. The relay may have been greeted while it waited.
         if (LiveSync.state(sql).peers.isNotEmpty()) return false
         runCatching { leave() }

@@ -303,11 +303,14 @@ class LiveGiveTest {
         // Not yet: the wait is the phone's own fifteen minutes.
         assertFalse(LiveGive.expire(pcSql, System.currentTimeMillis()))
         assertNotNull(LiveRound.pending(pcSql))
+        assertEquals("1", pc.khataDao().settingValue(BookSettings.LIVE_RELAY))
         var left = 0
         assertTrue(LiveGive.expire(pcSql, System.currentTimeMillis() + LiveGive.PENDING_MS + 60_000L) { left++ })
         assertEquals(1, left)
         assertNull(LiveRound.pending(pcSql))
         assertNull(LiveSync.identity(pcSql))
+        // The relay only this give turned on is off again with it (R11): the owner never chose it.
+        assertNull(pc.khataDao().settingValue(BookSettings.LIVE_RELAY))
     }
 
     @Test
@@ -326,5 +329,7 @@ class LiveGiveTest {
         assertEquals(pcId.book, LiveSync.identity(pcSql)!!.book)
         assertEquals(1, LiveSync.state(pcSql).peers.size)
         assertEquals(0, dir.resolve("to-phone").listFiles()?.size ?: 0)
+        // The relay was off before this give, and the give turned it on: the phone's no turns it off again (R11).
+        assertNull(pc.khataDao().settingValue(BookSettings.LIVE_RELAY))
     }
 }

@@ -284,7 +284,8 @@ $halted = file_exists($store . '/halt');
 
 if (preg_match('#/v1/health$#', $path)) {
     sweep_idle($store, (int)floor(microtime(true) * 1000));
-    answer(200, ['ok' => true, 'live' => !$halted]);
+    // 'push': this relay sends no push itself (R70: said, as cloud/worker says whether it can).
+    answer(200, ['ok' => true, 'live' => !$halted, 'push' => false]);
 }
 if ($halted) refuse(503, 'halted');
 if (!preg_match('#/v1/b/([0-9a-f]{32})/(hello|send|take|ack|wake|leave|round)$#', $path, $m)) refuse(404, 'no-such-path');
@@ -414,7 +415,7 @@ try {
                 && strlen($o['token']) > 20 && strlen($o['token']) < 4096 ? $o['token'] : null;
             $db->prepare('UPDATE devices SET fcm = ?, seen = ? WHERE device = ?')->execute([$t, $now, $device]);
             $db->exec('COMMIT');
-            answer(200, ['ok' => true, 'wake' => $t !== null]);
+            answer(200, ['ok' => true, 'wake' => $t !== null, 'push' => false]);
         }
         case 'leave': {
             $db->prepare('DELETE FROM devices WHERE device = ?')->execute([$device]);

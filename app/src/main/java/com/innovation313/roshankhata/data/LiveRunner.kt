@@ -82,6 +82,17 @@ object LiveRunner {
     private var quietCloud = 0
     /** Relay rounds that failed in a row: each waits twice as long, up to about 13 minutes. */
     private var relayMisses = 0
+    /**
+     * While the relay is backing off and the computer does not answer on WiFi, the relay is asked again only from
+     * this time on; the WiFi round and the address search keep their own pace ([WIFI_RETRY_MS]) meanwhile.
+     */
+    private var relayRetryAt = 0L
+    /**
+     * The longest the WiFi road waits while a computer is this phone's target (23 Oct 2026, the review's R17: the
+     * relay's back-off, up to 13 minutes, parked the WiFi retry and the address search with it — back in the shop,
+     * the phone stayed unsynced for a quarter of an hour).
+     */
+    private const val WIFI_RETRY_MS = 60_000L
     private const val SEEK_EVERY_MS = 30_000L
     /** How often a round looks whether the relay must be told this phone's wake-up address (a cheap check). */
     private const val WAKE_TELL_MS = 60_000L
@@ -121,6 +132,7 @@ object LiveRunner {
         val app = context.applicationContext
         job = scope.launch {
             var checked: KhataDatabase? = null
+            var checkedBook: String? = null
             while (isActive) {
                 // Marked before the round: a nudge that lands while it runs still wakes the wait after it.
                 val since = LiveLines.newsMark()
@@ -133,9 +145,13 @@ object LiveRunner {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
                     if (checked !== db) {
+                        // Another book under the runner (a restore put a new file in place): the last book's live line
+                        // goes, so its nudges never wake this one (R55; a business switch restarts the runner anyway).
+                        checkedBook?.let { runCatching { LiveLines.close(it) } }
                         LiveSync.check(sql, install(app), marks(app))
                         markFrom(db, sql)
                         checked = db
+                        checkedBook = runCatching { LiveSync.identity(sql)?.book }.getOrNull()
                     }
                     sqlNow = sql
                     dbNow = db
@@ -158,7 +174,9 @@ object LiveRunner {
                 if (LiveLines.anyOpen() && s != null && d != null && KhataDatabase.isOpen(d)) {
                     val before = runCatching { LiveSync.lastSeq(s) }.getOrDefault(0L)
                     runInterruptible {
-                        LiveLines.waitForNews(wait, since) { !KhataDatabase.isOpen(d) || runBlocking { LiveSync.lastSeq(s) } > before }
+                        // Its own log looked at every 5 s, not every second (R129): on the phone each look is a Room
+                        // transaction, taken against the till; a row written here waits at most that for its round.
+                        LiveLines.waitForNews(wait, since, checkMs = 5_000L) { !KhataDatabase.isOpen(d) || runBlocking { LiveSync.lastSeq(s) } > before }
                     }
                 } else delay(wait)
             }
@@ -193,6 +211,7 @@ object LiveRunner {
         lastSeek = 0L
         quietCloud = 0
         relayMisses = 0
+        relayRetryAt = 0L
         wakeTellWait = WAKE_TELL_MS
         lastWakeTell = 0L
         sideAt = 0L
@@ -223,7 +242,7 @@ object LiveRunner {
         if (pending != null && now - (pending.since ?: now) > PENDING_MS) {
             // Not said yes to in time (cancelled there, or never seen): given up; off again if it was off before.
             LiveCrew.dropCopyHold(sql)
-            if (LiveRound.dropPending(sql)) {
+            if (LiveRound.dropPending(sql, givenUp = true)) {
                 LiveSync.disable(sql)
                 clearMark(db)
             }
@@ -289,6 +308,9 @@ object LiveRunner {
                 }
                 if (took.joined) fingerprintBad.value = false
                 quietCloud = 0
+                // A WiFi round that worked keeps the loop's short cadence: the relay's back-off starts again (R17).
+                relayMisses = 0
+                relayRetryAt = 0L
                 state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer)
                 // More than the computer in this book (another phone), or a phone's yes awaited: the relay too, so
                 // the devices away from this WiFi hear this phone's changes (each device sends only its own).
@@ -313,8 +335,17 @@ object LiveRunner {
                         return 200L
                     }
                 }
-                // Not on the shop's WiFi: the relay, when the owner turned it on for this book (Marhala 2).
-                relayRound(app, db, sql, peer?.name, target.computer, side = false)
+                // Not on the shop's WiFi: the relay, when the owner turned it on for this book (Marhala 2). A relay
+                // backing off is not asked before its time, but the WiFi is tried again within a minute (R17).
+                if (now < relayRetryAt) return minOf(relayRetryAt - now, WIFI_RETRY_MS)
+                val wait = relayRound(app, db, sql, peer?.name, target.computer, side = false)
+                if (relayMisses > 0 && wait > WIFI_RETRY_MS) {
+                    relayRetryAt = now + wait
+                    WIFI_RETRY_MS
+                } else {
+                    relayRetryAt = 0L
+                    wait
+                }
             }
         }
     }

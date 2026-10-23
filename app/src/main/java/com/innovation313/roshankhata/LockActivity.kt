@@ -36,14 +36,24 @@ class LockActivity : BaseActivity() {
             }
 
             override fun onAuthenticationError(code: Int, message: CharSequence) {
-                // The owner cancelled or backed out. Close the app rather than
-                // leaving them stranded on a dead screen — but never let them
-                // through, since that would make the lock decorative.
                 when (code) {
-                    BiometricPrompt.ERROR_NEGATIVE_BUTTON,
-                    BiometricPrompt.ERROR_USER_CANCELED,
-                    BiometricPrompt.ERROR_CANCELED -> finishAffinity()
-
+                    // The phone cannot ask at all (no screen lock any more, the sensor and its fallback not there):
+                    // the lock cannot be honoured, and saying so beats tearing the app down on every return — a
+                    // half-typed sale was lost each time (R98). As the front door has always done: told, let in.
+                    BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL,
+                    BiometricPrompt.ERROR_NO_BIOMETRICS,
+                    BiometricPrompt.ERROR_HW_UNAVAILABLE,
+                    BiometricPrompt.ERROR_HW_NOT_PRESENT -> {
+                        android.widget.Toast.makeText(
+                            this@LockActivity,
+                            if (code == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL || code == BiometricPrompt.ERROR_NO_BIOMETRICS)
+                                R.string.app_lock_no_screen_lock else R.string.app_lock_unavailable,
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                        if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
+                    }
+                    // The owner cancelled or backed out, or too many tries: the app closes rather than
+                    // leaving them on a dead screen — never let through, or the lock would be decorative.
                     else -> finishAffinity()
                 }
             }

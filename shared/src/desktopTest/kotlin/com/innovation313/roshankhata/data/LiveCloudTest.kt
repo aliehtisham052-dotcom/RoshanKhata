@@ -51,6 +51,12 @@ class LiveCloudTest {
         var dayFull = false
         /** A whole page says how far the book goes ("through"), as the relays do since 23 Oct 2026. */
         var sayThrough = false
+        /** The relay has no Firebase key: it keeps a wake-up address and says it can ring nobody ("push": false). */
+        var noPush = false
+        /** Parcels (by seq) whose body the relay gives back unreadable: not base64 at all. */
+        val junkBodies = HashSet<Long>()
+        fun bodyOf(p: Triple<Long, String, ByteArray>): String =
+            if (p.first in junkBodies) "%% not base64 %%" else Base64.getEncoder().encodeToString(p.third)
 
         override fun call(method: String, url: String, headers: Map<String, String>, body: ByteArray?): Pair<Int, ByteArray> {
             if (down) throw java.io.IOException("no internet")
@@ -76,7 +82,7 @@ class LiveCloudTest {
                     val after = url.substringAfter("after=").toLong()
                     val arr = JSONArray()
                     parcels.filter { it.first > after && it.second != dev }.forEach {
-                        arr.put(JSONObject().put("seq", it.first).put("from", it.second).put("body", Base64.getEncoder().encodeToString(it.third)))
+                        arr.put(JSONObject().put("seq", it.first).put("from", it.second).put("body", bodyOf(it)))
                     }
                     ok(JSONObject().put("parcels", arr).put("more", false))
                 }
@@ -103,7 +109,7 @@ class LiveCloudTest {
                     val after = o.getLong("after")
                     val arr = JSONArray()
                     parcels.filter { it.first > after && it.second != dev }.forEach {
-                        arr.put(JSONObject().put("seq", it.first).put("from", it.second).put("body", Base64.getEncoder().encodeToString(it.third)))
+                        arr.put(JSONObject().put("seq", it.first).put("from", it.second).put("body", bodyOf(it)))
                     }
                     val answer = JSONObject().put("seq", sent ?: JSONObject.NULL).put("parcels", arr).put("more", false)
                     if (sayThrough) answer.put("through", maxOf(after, seq))
@@ -112,7 +118,7 @@ class LiveCloudTest {
                 "wake" -> {
                     val o = JSONObject(String(body!!))
                     wakes[dev] = if (o.isNull("token")) null else o.getString("token")
-                    ok(JSONObject().put("wake", wakes[dev] != null))
+                    ok(JSONObject().put("wake", wakes[dev] != null).also { if (noPush) it.put("push", false) })
                 }
                 else -> no(404, "no-such-path")
             }
@@ -234,6 +240,52 @@ class LiveCloudTest {
         assertFalse(LiveCloud.tellWake(phone.syncSql(), "token-one-0123456789", relay, null) { false })
         assertEquals(0, relay.calls)
         assertTrue(relay.wakes.isEmpty())
+    }
+
+    @Test
+    fun `the relay switched off takes the wake-up address away, and a pushed parcel is not written`() = runBlocking {
+        both(2)
+        val sql = phone.syncSql()
+        val dev = LiveSync.identity(sql)!!.device.take(16).padEnd(16, '0')
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        assertEquals("token-one-0123456789", relay.wakes[dev])
+        phone.khataDao().setSetting(BookSettings.LIVE_RELAY, null)
+        // A new address is not told while off, but the old one is taken away (R53).
+        assertFalse(LiveCloud.tellWake(sql, "token-two-0123456789", relay, "https://relay.test") { false })
+        assertTrue(LiveCloud.tellWake(sql, null, relay, "https://relay.test") { false })
+        assertEquals(null, relay.wakes[dev])
+        // A parcel the computer left, pushed to the phone anyway, is not written while the switch is off.
+        pc.khataDao().insertParty(Party(name = "Pushed"))
+        clock += 1000
+        LiveCloud.round(pc.syncSql(), relay, "https://relay.test", clock) { false }
+        val pcDev = LiveSync.identity(pc.syncSql())!!.device.take(16).padEnd(16, '0')
+        assertEquals(LiveCloud.Carried.NOT_MINE, LiveCloud.takeCarried(sql, pcDev, B64.encode(relay.parcels.last().third), clock))
+        assertFalse(phone.khataDao().allPartiesForBackup().any { it.name == "Pushed" })
+    }
+
+    @Test
+    fun `a relay that cannot ring the phone is not taken as told, and says so`() = runBlocking {
+        val sql = phone.syncSql()
+        relay.noPush = true
+        // R70: the relay kept the address but has no Firebase key — not "told", and the phone can say why.
+        assertFalse(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        assertTrue(LiveCloud.wakeOff(sql))
+        relay.noPush = false
+        assertTrue(LiveCloud.tellWake(sql, "token-one-0123456789", relay, "https://relay.test") { false })
+        assertFalse(LiveCloud.wakeOff(sql))
+    }
+
+    @Test
+    fun `a parcel whose body does not read is passed over, and the relay road goes on`() = runBlocking {
+        both(2)
+        val pcDev = LiveSync.identity(pc.syncSql())!!.device.take(16).padEnd(16, '0')
+        // A parcel the relay gives back as something that is not base64 (R54): it threw at the same row every round.
+        relay.seq++
+        relay.parcels.add(Triple(relay.seq, pcDev, ByteArray(8)))
+        relay.junkBodies.add(relay.seq)
+        pc.khataDao().insertParty(Party(name = "After the junk"))
+        both(3)
+        assertTrue(phone.khataDao().allPartiesForBackup().any { it.name == "After the junk" })
     }
 
     @Test

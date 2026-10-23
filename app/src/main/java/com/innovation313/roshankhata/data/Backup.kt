@@ -320,8 +320,12 @@ object Backup {
      * old backup, or one taken before the owner set any details), the current
      * profile is LEFT ALONE rather than blanked — restoring "nothing" over a
      * shop's real name would be a silent loss, not a restore.
+     *
+     * [keepAccess]: false for a live pairing (the shop's book taken by this phone), which must be the
+     * other device's book exactly — its owner PIN, counter and owner-device keys too, as the computer's
+     * own pairing restore does. Every other restore keeps this phone's access keys a copy says nothing of.
      */
-    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup) {
+    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup, keepAccess: Boolean = true) {
         // A book replaced by a copy is no longer the book the computer keeps (22 Oct 2026, the review):
         // live sync pauses first, so the restore's own deletes and inserts are not sent there as changes
         // (they would have removed the computer's newer work); once the restore went through it stops,
@@ -335,7 +339,7 @@ object Backup {
         // The pictures kept by row id follow their rows to the copy's ids (ImageReattach).
         val before = ImageReattach.before(dao)
         try {
-            BackupCodec.restoreLedger(dao, data)
+            BackupCodec.restoreLedger(dao, data, keepAccess)
         } catch (e: Exception) {
             // Even when the restore was cancelled (23 Oct 2026, the review): a cancelled coroutine's
             // resume threw at once and left the book paused, then turned off at its next opening.

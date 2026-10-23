@@ -3574,4 +3574,7 @@
     <string name="live_receive_pc_refused">Computer ne apna khata nahi diya. Us ka code ek hi baar chalta hai, aur sirf tab jab us ki Live sync wali khirki khuli ho: wahan naya code banayein aur use scan karein.</string>
     <string name="live_receive_pc_unreachable">Computer tak nahi pohanch sake. Dekhein ke dono ek hi WiFi par hain, computer par Live sync wali khirki khuli hai, aur Windows ne Roshan Khata ko network ki ijazat di hai.</string>
     <string name="report_sync_notes_included">— Live sync notes (crash nahi: woh masle jin ke baad live sync ne dobara koshish ki; koi naam, raqam ya key nahi):</string>
+    <string name="live_phone_relay_ask">Do phone sirf internet relay ke zariye milte hain. Yeh khata doosre phone ko bhejne se iske liye “Internet se bhi” on ho jayega. Agar doosra phone khata na le to yeh switch pehle jaisa ho jayega.</string>
+    <string name="live_pair_left_business">Phone ka jor us waqt aaya jab karobar “%1$s” khula tha, aur ab doosra karobar khula hai: isay chhor diya gaya taake yeh is khate ki jagah na le. Jorne ke liye “%1$s” kholein aur phone par code dobara scan karein.</string>
+    <string name="live_wake_off">App band ho to relay is phone ko jaga nahin sakta: doosre device ki tabdeeliyan app khulne par aayengi.</string>
 </resources>

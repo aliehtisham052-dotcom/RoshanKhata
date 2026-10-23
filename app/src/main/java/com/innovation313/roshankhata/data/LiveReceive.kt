@@ -146,7 +146,9 @@ class LiveReceive(private val context: Context) {
             val app = context.applicationContext
             if (!Snapshots.keepNow(app)) return false
             val dao = KhataDatabase.get(app).khataDao()
-            Backup.restore(app, dao, arrived.data)
+            // The shop's book exactly, its access keys too (else this phone kept its own owner PIN and
+            // counter keys wherever the copy said nothing of them, and those never travel in live sync).
+            Backup.restore(app, dao, arrived.data, keepAccess = false)
             val sql = KhataDatabase.get(app).syncSql()
             LiveCrew.join(sql, LiveRunner.install(app), LiveRunner.deviceName(), arrived.offer, arrived.offer.peers, LiveRunner.marks(app))
             // A computer's book: the computer is this phone's WiFi road too, as when the phone joined it. Its first

@@ -3788,4 +3788,7 @@
     <string name="live_receive_pc_refused">The computer did not give its book. Its code works once, and only while its Live sync window is open: make a new code there and scan it.</string>
     <string name="live_receive_pc_unreachable">Could not reach the computer. Check that both are on the same WiFi, that its Live sync window is open, and that Windows allowed Roshan Khata on the network.</string>
     <string name="report_sync_notes_included">— Live sync notes (not crashes: problems live sync passed over and tried again; no names, amounts or keys):</string>
+    <string name="live_phone_relay_ask">Two phones meet only through the internet relay. Sending this book to the other phone turns “Also through the internet” on for it. If the other phone does not take the book, the switch goes back as it was.</string>
+    <string name="live_pair_left_business">A phone’s pairing came while the business “%1$s” was open, and another business is open now: it was let go, so it cannot replace this book. To pair, open “%1$s” and scan the code again on the phone.</string>
+    <string name="live_wake_off">The relay cannot wake this phone while the app is closed: the other device’s changes come in when the app is opened.</string>
 </resources>

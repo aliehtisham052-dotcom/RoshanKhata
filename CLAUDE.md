@@ -764,6 +764,21 @@ real devices yet.
   reported every 64 KiB moved and at the alarm, at least 64 KiB a book) and refuses new books and
   parcels 507 "full" past `ACCOUNT_BYTES` (4 GiB; the free plan's 5 GB is 4.66 GiB); Supabase keeps
   `books.bytes` and refuses past `RK_STORE_BYTES` (256 MiB). test_relay.py `--store` holds all three.
+- **Phase 3 — pairing, live sync, App Lock (p3-sync; CI only):** a code's hosts must be on the shop's own
+  network (`WifiSync.onThisNetwork`: 10/8, 172.16/12, 192.168/16, 169.254/16, 127/8 — one-off, live, phone and
+  give codes alike). A phone taking a shop's book restores with `keepAccess = false`. A phone's pairing asks
+  before turning the relay on (`live_phone_relay_ask`), and a pairing or give that is not taken puts it back
+  (`setPending(relayWasOff)`, `dropPending(givenUp = true)`). fingerprint skips `ACCESS_KEYS` and reads one
+  page per transaction. A WiFi round that worked clears the relay back-off; while the relay backs off the
+  WiFi is tried within a minute (`relayRetryAt`). A change held a day (`HELD_GIVE_UP_MS`) goes to
+  sync_conflict; the phone's live card says held changes and `live_wake_off`. Relays answer `push` (can
+  they ring a phone) in health and wake; `tellWake` takes a `push:false` as not told; a carried parcel needs
+  the relay switch on and no halt; taking the address away is always allowed. A bad parcel body is passed
+  over; a malformed answer is `Refused("bad answer")`. DPAPI: null only for 13 / NTE_BAD_DATA / NTE_BAD_KEY /
+  NTE_BAD_KEY_STATE, any other refusal throws. `AppLock.required` is the one App Lock decision; a prompt
+  that cannot run tells and lets in instead of `finishAffinity()`. A Windows pairing offer is asked only of
+  the business it came to (`Incoming.bookFile`, `live_pair_left_business`); both replace dialogs name the
+  two shops when they differ. MONEY_TABLES has day_close, shifts, loyalty and the order tables.
 
 ### The shared module (KMP)
 
