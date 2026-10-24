@@ -826,6 +826,18 @@ real devices yet.
   R102); strings.yml also fires on `shared/src/**` (R103); `*.whl` is ignored, the olefile wheel
   is gone (R154). Tests: CsvCellTest, PhoneSyncIncomingTest.
 
+### Khata Report redesign (24 Oct 2026, phone — the owner: "local si, generic si")
+
+- `LedgerReportActivity` after the owner's chosen mockup: period chips on the green band (Today, This
+  week, This month, All, Custom — Custom asks the first day then the last; week/month run open-ended),
+  opening on This month; a summary card hung 48dp into the band (a `Space` marker — ConstraintLayout
+  ignores negative margins) with the window pill, entry/party counts, a gave/got share bar and the two
+  totals; entries grouped by day (heading with Today/Yesterday and the day's count, rows with an
+  initial, time · note, amount and an I gave/I got tag); Share as the one primary button, Preview and
+  Download as icon buttons with tooltips. **No all-customers net and no per-day net** — removed before
+  because it belongs to nobody's account and disagreed with the PDF. No new strings (all reused).
+  Window survives rotation. CI only.
+
 ### The shared module (KMP)
 
 ```
