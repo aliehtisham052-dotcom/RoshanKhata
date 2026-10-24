@@ -113,11 +113,51 @@ object BatchReturnDialog {
             activity, "",
             listOf(
                 ChoiceSheet.buyers(activity.getString(R.string.batch_buyers_action)),
-                ChoiceSheet.sendBack(activity.getString(R.string.return_action))
+                ChoiceSheet.sendBack(activity.getString(R.string.return_action)),
+                ChoiceSheet.delete(activity.getString(R.string.expiry_write_off))
             )
         ) { i ->
-            if (i == 0) BatchBuyersDialog.show(activity, scope, dao, billItemId)
-            else show(activity, scope, dao, billItemId)
+            when (i) {
+                0 -> BatchBuyersDialog.show(activity, scope, dao, billItemId)
+                1 -> show(activity, scope, dao, billItemId)
+                else -> AccessUi.allowed(activity, dao, com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST,
+                    activity.getString(R.string.expiry_write_off)) { by -> writeOff(activity, scope, dao, billItemId, by) }
+            }
+        }
+    }
+
+    /**
+     * What is left of this batch thrown out (21 Oct 2026): the counter never
+     * sells an expired lot, so the lot is written off here and the shelf and
+     * the batch's own count follow. Asks first, saying how much.
+     */
+    private fun writeOff(activity: Activity, scope: LifecycleCoroutineScope, dao: KhataDao, billItemId: Long, allowedBy: String?) {
+        scope.launch {
+            val found = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { com.innovation313.roshankhata.data.Fefo.lotOf(dao, billItemId) }
+            if (found == null || found.second.left <= 0.0) {
+                android.widget.Toast.makeText(activity, R.string.expiry_nothing_left, android.widget.Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            val (product, lot) = found
+            val what = com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (com.innovation313.roshankhata.data.UnitWords.label(product.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" })
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+                .setTitle(R.string.expiry_write_off)
+                .setMessage(activity.getString(R.string.expiry_write_off_confirm, what, lot.batchNumber ?: product.name))
+                .setPositiveButton(R.string.expiry_write_off) { _, _ ->
+                    scope.launch {
+                        // Who allowed it goes to the DAO, which refuses a write-off nobody allowed (23 Oct 2026).
+                        val done = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            runCatching { com.innovation313.roshankhata.data.Fefo.writeOff(dao, billItemId, lot.batchNumber, allowedBy = allowedBy) }
+                        }
+                        android.widget.Toast.makeText(activity, when {
+                            done.isSuccess -> R.string.expiry_written_off
+                            done.exceptionOrNull() is com.innovation313.roshankhata.data.CounterRefused -> R.string.access_denied
+                            else -> R.string.save_failed_not_saved
+                        }, android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
     }
 }

@@ -48,7 +48,7 @@ import java.math.RoundingMode
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("entryId"), Index("productId"), Index("billItemId")]
+    indices = [Index("entryId"), Index("productId"), Index("billItemId"), Index("uid")]
 )
 data class EntryItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -85,7 +85,9 @@ data class EntryItem(
      */
     val crop: String? = null,
     val pest: String? = null,
-    val dose: String? = null
+    val dose: String? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 ) {
     companion object {
         /**

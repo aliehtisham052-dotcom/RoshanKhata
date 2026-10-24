@@ -34,6 +34,8 @@ object Businesses {
     private const val PREFS = "businesses"
     private const val KEY_LIST = "list"
     private const val KEY_ACTIVE = "active"
+    /** The highest id ever given out, kept past deletes so an id is never handed out twice. */
+    private const val KEY_HIGHEST = "highest_id"
 
     data class Business(
         val id: Long,
@@ -129,7 +131,11 @@ object Businesses {
     @Synchronized
     fun create(context: Context, name: String): Business {
         val all = list(context)
-        val id = (all.maxOf { it.id }) + 1
+        // Past every id this phone ever gave out, not only the ones still listed (21 Oct 2026, the
+        // critical review): a deleted shop's number went to the next new shop, and with it the old
+        // shop's daily copies, signatures and Drive backup name.
+        val id = maxOf(all.maxOf { it.id }, prefs(context).getLong(KEY_HIGHEST, 0L)) + 1
+        prefs(context).edit().putLong(KEY_HIGHEST, id).commit()
         val fresh = Business(id, name.trim(), "roshan_khata_b$id.db")
         save(context, all + fresh)
         BusinessProfile.setNameOf(context, id, name)
@@ -171,8 +177,13 @@ object Businesses {
      */
     fun switchTo(context: Context, id: Long) {
         require(list(context).any { it.id == id }) { "unknown business $id" }
+        val left = active(context).id
         prefs(context).edit().putLong(KEY_ACTIVE, id).commit()
+        // The shop being left gets its Drive backup by its own id, as the open shop does when the app
+        // leaves the screen (23 Oct 2026, the review, R21). Only enqueued here; never a reason to stop a switch.
+        if (left != id && !ViewerMode.isOn(context)) runCatching { AutoBackup.afterLeaving(context, left) }
         KhataDatabase.closeActive()
+        LiveRunner.bookChanged(context)
         // Photo caches are keyed by party id, and party ids repeat across
         // businesses — a warm cache would put one shop's faces on another's
         // customers. See PartyPhoto.dropCaches.
@@ -248,6 +259,19 @@ object Businesses {
         }
         val target = list(context).firstOrNull { it.id == id } ?: return
 
+        // Read from the book while it is still there (23 Oct 2026, the review): a book that synced
+        // through a relay says goodbye to it, as the computer's delete does, and the shop's bill
+        // photos are found so they can go with it (they live in the shared bills folder, named only
+        // in this file).
+        KhataDatabase.openOther(context, target)?.let { db ->
+            try {
+                leaveRelays(db)
+                runCatching { kotlinx.coroutines.runBlocking { BillPhoto.forgetShop(context, db.khataDao(), id) } }
+            } finally {
+                db.close()
+            }
+        }
+
         // The ledger itself. deleteDatabase() also removes SQLite's
         // -wal/-shm/-journal companions — the framework's own way of
         // removing a database, not a hand-rolled guess at which suffixes
@@ -263,10 +287,16 @@ object Businesses {
         // its own parties from 1 — so this shop's faces live in their own
         // folder and were never anywhere near Business 1's.
         File(context.filesDir, "party_photos_b$id").deleteRecursively()
+        // Its customers' signatures on entries, and the app's own saved backups of it (23 Oct 2026).
+        File(context.filesDir, "entry_signatures_b$id").deleteRecursively()
+        File(context.filesDir, Backup.internalDirName(id)).deleteRecursively()
 
         // Per-shop feature toggles that live in prefs files of their own.
         context.deleteSharedPreferences("biz_card_b$id")
         context.deleteSharedPreferences("invoice_feature_settings_b$id")
+        // Who was reminded when, and each customer's reminder step.
+        context.deleteSharedPreferences("reminder_log_b$id")
+        context.deleteSharedPreferences("reminder_ladder_b$id")
 
         // Bookkeeping that lives as SUFFIXED KEYS inside shared prefs files
         // rather than files of its own (those files are also Business 1's
@@ -275,9 +305,37 @@ object Businesses {
         // constants that only DriveBackup/BackupReminder truly own.
         DriveBackup.clearLocalState(context, id)
         BackupReminder.clear(context, id)
+        AlertNotes.clear(context, id)
+        // Its daily copies too (21 Oct 2026): left behind, they were offered as "your copies" of
+        // whichever shop came next. Named khata-b<id>-…db (Snapshots.list's rule).
+        File(context.filesDir, "snapshots").listFiles { f -> f.name.startsWith("khata-b$id-") }?.forEach { it.delete() }
+        // The highest id stays remembered, so this one is never given out again.
+        prefs(context).edit().putLong(KEY_HIGHEST, maxOf(prefs(context).getLong(KEY_HIGHEST, 0L), id)).commit()
 
         // The registry row itself, last.
         save(context, list(context).filterNot { it.id == id })
+    }
+
+    /**
+     * The relays are told this phone is done with [db]'s live book (best effort, at most 5 s): a
+     * shop deleted or erased here must not keep a computer leaving it parcels, and ringing, for a
+     * week. A book that never synced returns at once. Off the main thread.
+     */
+    fun leaveRelays(db: KhataDatabase) {
+        runCatching {
+            kotlinx.coroutines.runBlocking { kotlinx.coroutines.withTimeoutOrNull(5_000L) { LiveCloud.leaveAll(db.syncSql()) } }
+        }
+    }
+
+    /** [leaveRelays] for every shop on this phone, the open one through [KhataDatabase.get] (an erase). */
+    fun leaveRelaysAll(context: Context) {
+        val open = active(context)
+        runCatching { leaveRelays(KhataDatabase.get(context)) }
+        for (b in list(context)) {
+            if (b.id == open.id) continue
+            val db = runCatching { KhataDatabase.openOther(context, b) }.getOrNull() ?: continue
+            try { leaveRelays(db) } finally { runCatching { db.close() } }
+        }
     }
 
     private fun save(context: Context, all: List<Business>) {

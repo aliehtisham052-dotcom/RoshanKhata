@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- summary_give_bg is the soft green (night-aware), despite its name. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/summary_give_bg" />
+    <corners android:radius="14dp" />
+</shape>

@@ -73,6 +73,25 @@
                 app:icon="@drawable/ic_share"
                 app:iconTint="@color/gold_on_dark"
                 app:strokeColor="@color/header_tile_stroke" />
+
+            <!-- The list as a spreadsheet and back (POS Phase 2): a small more
+                 button beside Rate list, so the band keeps one line. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProductsMore"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:contentDescription="@string/products_export"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_more_vert"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/header_tile_stroke" />
         </LinearLayout>
 
         <!-- Find a product by name (13 Oct): a dealer stocks dozens. -->

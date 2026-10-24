@@ -24,4 +24,17 @@ class TileIconsTest {
             assertNotNull("${s.tile} has no colour (dark=$dark)", TileIcons.color(s.tile, dark))
         }
     }
+
+    @Test
+    fun `every trade has its phone icon and both colours, day and night`() {
+        for (dark in listOf(false, true)) for (key in Trades.KEYS) {
+            val low = key.lowercase()
+            val xml = TileIcons.xml("ic_trade_$low", dark)
+            assertNotNull("ic_trade_$low missing", xml)
+            assertFalse("ic_trade_$low has an unresolved colour", xml!!.contains("@color/") || xml.contains("@android:color/"))
+            assertNotNull("ic_trade_$low does not read", loadXmlImageVector(InputSource(StringReader(xml)), Density(1f)))
+            assertNotNull("trade_${low}_bg (dark=$dark)", TileIcons.color("trade_${low}_bg", dark))
+            assertNotNull("trade_${low}_fg (dark=$dark)", TileIcons.color("trade_${low}_fg", dark))
+        }
+    }
 }

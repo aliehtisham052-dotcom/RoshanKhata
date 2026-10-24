@@ -36,7 +36,14 @@ object Photos {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap?>?) = size > 300
     }
 
-    fun partyFile(home: File, partyId: Long) = File(home, "party_photos/party_$partyId.jpg")
+    /**
+     * One folder of faces per business (R26, 23 Oct 2026): party ids start at 1
+     * in every book, so shop B's customer 5 wrote over shop A's customer 5.
+     * Business 1 keeps the folder it always had (paths already stored stay
+     * right); the others are party_photos_b<id>, the phone's own naming.
+     */
+    fun partyDir(home: File, businessId: Long) = File(home, if (businessId == 1L) "party_photos" else "party_photos_b$businessId")
+    fun partyFile(home: File, businessId: Long, partyId: Long) = File(partyDir(home, businessId), "party_$partyId.jpg")
     fun billFile(home: File) = File(home, "bills/bill_${System.currentTimeMillis()}.jpg")
 
     /** The owner picks a picture; null when cancelled. */
@@ -109,6 +116,6 @@ fun PhotoDialog(title: String, path: String?, onClose: () -> Unit) {
                 else Text(word(W.bill_photo_missing))
             }
         },
-        confirmButton = { TextButton(onClose) { Text(word(W.close)) } }
+        confirmButton = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }
     )
 }

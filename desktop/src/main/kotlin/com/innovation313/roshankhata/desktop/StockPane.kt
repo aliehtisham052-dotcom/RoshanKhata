@@ -59,10 +59,10 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
     val expired = batches.count { it.hasExpired }
     val expiring = batches.count { b -> val e = b.expiryDate; e != null && !b.hasExpired && e <= cutoff }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) { PaneTitle(word(W.inspector_title), word(W.inspector_subtitle)) }
-            FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = batches.isNotEmpty()) {
+            FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = batches.isNotEmpty(), onClick = {
                 val rows = batches.map { b ->
                     listOf(
                         b.productName + (b.batchNumber?.let { "  ·  " + words.text(W.pdf_reg_batch, it) } ?: ""),
@@ -76,13 +76,12 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
                     ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                     words.text(W.inspector_title)
                 )
-            }
+            })
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(word(W.inspector_window_title), color = c.textMuted, fontSize = 12.sp)
             listOf(30 to W.inspector_window_30, 60 to W.inspector_window_60, 90 to W.inspector_window_90).forEach { (d, label) ->
-                if (d == window) FillButton(word(label), c.brandGreen) { window = d }
-                else TextButton({ window = d }) { Text(word(label), color = c.brandGreenText) }
+                FluentPill(word(label), d == window) { window = d }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -93,7 +92,7 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
         if (batches.isEmpty()) {
             Text(word(W.inspector_empty), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
         } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
+            LazyColumn(Modifier.fillMaxSize().card()) {
                 item {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
                         Text(word(W.inspector_col_product), Modifier.weight(1f), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -115,7 +114,7 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
                             fontSize = 14.sp, fontWeight = if (b.hasExpired || soon) FontWeight.Bold else FontWeight.Normal)
                         Text(Format.qty(b.remaining, b.unit), Modifier.width(110.dp), color = c.ink, fontSize = 14.sp, textAlign = TextAlign.End)
                     }
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }

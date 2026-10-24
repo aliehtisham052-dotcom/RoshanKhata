@@ -20,12 +20,9 @@ import java.awt.print.Printable
 object BookExport {
     fun customersCsv(parties: List<PartyWithBalance>, headers: List<String>): String {
         val sb = StringBuilder("﻿")
-        fun row(cells: List<String>) {
-            cells.joinTo(sb, ",") { "\"" + it.replace("\"", "\"\"") + "\"" }
-            sb.append("\r\n")
-        }
+        fun row(cells: List<String>) = com.innovation313.roshankhata.data.CsvCell.appendRow(sb, cells)
         row(headers)
-        parties.sortedBy { it.name.lowercase() }.forEach { p ->
+        com.innovation313.roshankhata.data.NameOrder.sortedBy(parties) { it.name }.forEach { p ->
             row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)))
         }
         return sb.toString()
@@ -34,6 +31,9 @@ object BookExport {
 
 class AllStatements(private val sheets: List<StatementPrint>) : Printable {
     private val starts: List<Int> = sheets.runningFold(0) { acc, s -> acc + s.pageCount() }
+
+    /** How many pages, without drawing any (21 Oct 2026: counting by drawing every page took minutes). */
+    fun pageCount(): Int = starts.last()
 
     override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
         val i = starts.indexOfLast { it <= pageIndex }.takeIf { it in sheets.indices } ?: return Printable.NO_SUCH_PAGE

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">روشن کھاتہ</string>
     <string name="welcome_title">آپ کا کھاتا، محفوظ</string>
-    <string name="welcome_body">روشن کھاتا آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
+    <string name="welcome_body">روشن کھاتہ آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
     <string name="welcome_note">منسلک کرنے سے صرف بیک اپ ممکن ہوتا ہے۔ آپ کا کھاتا تب محفوظ ہوتا ہے جب بیک اپ ہو جائے — خودکار بیک اپ آن کریں، یا کسی بھی وقت بیک اپ کریں۔</string>
     <string name="welcome_connect">Google کے ساتھ جاری رکھیں</string>
     <string name="welcome_skip">شاید بعد میں</string>
@@ -26,7 +26,7 @@
     <string name="coach_desc_nav_more">زکوٰۃ کیلکولیٹر، دکان کارڈ، بیک اپ، ایپ لاک، اور سیٹنگز۔</string>
         <string name="coach_title_bills">سپلائر بلز</string>
     <string name="coach_desc_bills">سپلائر سے جو خریدا اور جو ابھی دینا باقی ہے، وہ درج کریں۔</string>
-    <string name="coach_title_stock">ختم ہوتا اسٹاک</string>
+    <string name="coach_title_stock">ایکسپائر ہوتا اسٹاک</string>
     <string name="coach_desc_stock">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے۔</string>
     <string name="coach_title_insights">سیل انسائٹس</string>
     <string name="coach_desc_insights">دیکھیں کیا بک رہا ہے، کیا پڑا ہے، اور آپ کا پیسہ کہاں پھنسا ہے۔</string>
@@ -88,6 +88,9 @@
     <string name="home_sec_daily">ہر روز</string>
     <string name="home_sec_business">کاروبار</string>
     <string name="home_today">آج</string>
+    <string name="home_cash_in_hand">نقد ہاتھ میں</string>
+    <string name="home_quick_actions">فوری کام</string>
+    <string name="home_col_time">وقت</string>
     <string name="tile_bills">بل</string>
     <string name="tile_expiry">ایکسپائری</string>
     <string name="tile_card">کارڈ</string>
@@ -123,9 +126,7 @@
     <string name="add_party">پارٹی شامل کریں</string>
     <string name="add_party_duplicate_with_phone">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>
-    <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔
-
-پہلا گاہک شامل کریں اور اپنا کھاتہ شروع کریں۔</string>
+    <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔\n\nپہلا گاہک شامل کریں اور اپنا کھاتہ شروع کریں۔</string>
     <string name="no_entries_yet">ابھی کوئی اندراج نہیں۔</string>
 
     <string name="i_gave">میں نے دیا</string>
@@ -280,6 +281,18 @@
     <string name="no_entries_to_export">ابھی اسٹیٹمنٹ میں ڈالنے کے لیے کوئی اندراج نہیں۔</string>
 
     <string name="app_lock">ایپ لاک</string>
+    <string name="app_lock_pc_explain">اس کمپیوٹر پر روشن کھاتہ کے لیے PIN۔ یہ کاؤنٹر پر دوسروں کی نظر سے کھاتہ بچاتا ہے؛ فائل کو خود لاک نہیں کرتا، اس لیے اٹھتے وقت Windows بھی لاک کریں (Win + L)۔</string>
+    <string name="pc_pdf_save">پی ڈی ایف محفوظ کریں</string>
+    <string name="pc_pdf_open_folder">فولڈر کھولیں</string>
+    <string name="pc_pdf_making">پی ڈی ایف بن رہی ہے…</string>
+    <string name="pc_pdf_failed">پی ڈی ایف محفوظ نہیں ہو سکی: %1$s</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">4 سے 8 ہندسوں کا PIN چنیں</string>
+    <string name="lock_pin_again">وہی PIN دوبارہ لکھیں</string>
+    <string name="lock_pin_wrong">غلط PIN۔ دوبارہ کوشش کریں۔</string>
+    <string name="lock_pin_mismatch">دونوں PIN ایک جیسے نہیں ہیں۔</string>
+    <string name="lock_pin_wait">بہت زیادہ کوششیں۔ %1$d سیکنڈ انتظار کریں۔</string>
+    <string name="lock_unlock">کھولیں</string>
     <string name="lock_title">روشن کھاتہ کھولیں</string>
     <string name="lock_subtitle">آپ کا کھاتہ نجی ہے۔ تصدیق کریں کہ یہ آپ ہیں۔</string>
     <string name="app_lock_enabled">ایپ لاک آن ہے۔ ہر بار ایپ کھولنے پر تصدیق مانگی جائے گی۔</string>
@@ -484,7 +497,7 @@
     <string name="save_backup">بیک اپ محفوظ کریں</string>
 
     <string name="restore_warning_title">سب کچھ بدل دیں؟</string>
-    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n%7$d رسیدیں\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ واپس نہیں ہو سکتا۔</string>
+    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n%7$d رسیدیں\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ کھاتا پہلے روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور وہاں سے واپس ہو سکتا ہے۔</string>
     <string name="restore_replace">سب کچھ بدل دیں</string>
     <string name="restore_done">بحال ہو گیا</string>
     <string name="restore_failed">بحالی ناکام: %1$s</string>
@@ -563,13 +576,9 @@
         <item quantity="other">ڈرائیو پر %1$d کاروبار ملے</item>
     </plurals>
     <string name="drive_restore_all">سب بحال کریں</string>
-    <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:
-
-%1$s</string>
-    <string name="drive_restored_these">بحال ہو گئے:
-%1$s</string>
-    <string name="drive_restore_missed">بحال نہیں ہو سکے:
-%1$s</string>
+    <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:\n\n%1$s</string>
+    <string name="drive_restored_these">بحال ہو گئے:\n%1$s</string>
+    <string name="drive_restore_missed">بحال نہیں ہو سکے:\n%1$s</string>
     <string name="business_numbered">کاروبار %1$d</string>
     <string name="backup_for_business">بیک اپ ہو رہا ہے: %1$s</string>
     <string name="snapshots_title">روزانہ کاپیاں</string>
@@ -658,9 +667,9 @@
     <string name="bill_saved_credit">بل محفوظ ہو کر کھاتے میں درج ہو گیا</string>
     <string name="enter_supplier">براہِ کرم سپلائر چنیں</string>
     <string name="enter_product">براہِ کرم مصنوعات کا نام لکھیں</string>
-    <string name="bill_deleted">بل حذف ہو گیا۔ کھاتے کا اندراج رہے گا — مال واقعی آیا تھا اور رقم واقعی واجب ہے۔</string>
+    <string name="bill_deleted">بل حذف ہو گیا۔ اگر یہ ادھار کا بل تھا تو اس کا کھاتے کا اندراج بھی ری سائیکل بن میں چلا گیا — غلطی ہو تو 30 دن کے اندر وہاں سے واپس لا سکتے ہیں۔</string>
     <string name="delete_bill">بل حذف کریں</string>
-    <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے، لیکن کھاتے کا اندراج رہے گا۔ مال واقعی آیا تھا اور رقم واقعی واجب ہے — کاغذ حذف کرنے سے یہ واپس نہیں ہوتا۔</string>
+    <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے۔ اگر یہ ادھار کا بل ہے تو اس کا کھاتے کا اندراج (جو رقم آپ نے اس سپلائر کو دینی ہے) بھی ری سائیکل بن میں چلا جائے گا، اور واجب رقم اتنی کم ہو جائے گی۔ یہ اندراج 30 دن کے اندر ری سائیکل بن سے واپس لایا جا سکتا ہے۔</string>
     <string name="bill_actions">بل</string>
     <string name="view_items">چیزیں اور بیچ دیکھیں</string>
 
@@ -785,7 +794,7 @@
 
     <string name="report_problem">مسئلہ بتائیں</string>
     <string name="rate_app">ایپ کو ریٹنگ دیں</string>
-    <string name="rate_app_note">آپ کی ریٹنگ سے دوسرے دکانداروں تک یہ ایپ پہنچتی ہے۔ کوئی خرابی یا کمی ہو تو "مسئلہ بتائیں" استعمال کریں — وہ سیدھا ہم تک پہنچتا ہے۔</string>
+    <string name="rate_app_note">آپ کی ریٹنگ سے دوسرے دکانداروں تک یہ ایپ پہنچتی ہے۔ کوئی خرابی یا کمی ہو تو “مسئلہ بتائیں” استعمال کریں — وہ سیدھا ہم تک پہنچتا ہے۔</string>
     <string name="report_problem_sub">بتائیں کیا خراب ہوا</string>
     <string name="report_privacy">آپ کے گاہکوں کے نام، نمبر اور بیلنس کبھی نہیں بھیجے جاتے۔ رپورٹ کے ساتھ صرف ایپ ورژن اور فون ماڈل جاتا ہے \u2014 یہی خرابی ڈھونڈنے میں مدد دیتا ہے۔\n\nای میل آپ کی اپنی میل ایپ میں کھلتی ہے، اس لیے بھیجنے سے پہلے آپ دیکھ سکتے ہیں کہ کیا جا رہا ہے۔</string>
 
@@ -808,8 +817,8 @@
 
     <string name="hide_balance">بیلنس چھپائیں</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Innovation-313 کی پیشکش</string>
+    <string name="lock_tagline">Innovation-313 کی پیشکش</string>
     <string name="tap_to_start">جاری رکھنے کے لیے کہیں بھی چھوئیں</string>
 
     <string name="tap_to_continue">جاری رکھنے کے لیے چھوئیں</string>
@@ -830,9 +839,7 @@
     <string name="drive_auto_backup">خودکار بیک اپ</string>
     <string name="drive_auto_backup_hint">جب بھی کھاتے میں تبدیلی ہو، خود بیک اپ ہو جاتا ہے — وائی فائی پر زیادہ سے زیادہ ہر 30 منٹ، موبائل ڈیٹا پر ہر 6 گھنٹے۔ آپ کبھی بھی خود بھی بیک اپ لے سکتے ہیں۔</string>
     <string name="auto_backup_offer_title">خود بخود بیک اپ کریں؟</string>
-    <string name="auto_backup_offer_body">آپ کا اکاؤنٹ جڑ گیا ہے۔ روشن کھاتہ آپ کی کتاب خود اپ لوڈ کر سکتا ہے جب بھی اس میں تبدیلی ہو، تاکہ فون گم یا خراب ہونے پر آپ کا ریکارڈ ساتھ نہ جائے۔
-
-اسے آپ کبھی بھی اسی اسکرین سے بدل سکتے ہیں۔</string>
+    <string name="auto_backup_offer_body">آپ کا اکاؤنٹ جڑ گیا ہے۔ روشن کھاتہ آپ کی کتاب خود اپ لوڈ کر سکتا ہے جب بھی اس میں تبدیلی ہو، تاکہ فون گم یا خراب ہونے پر آپ کا ریکارڈ ساتھ نہ جائے۔\n\nاسے آپ کبھی بھی اسی اسکرین سے بدل سکتے ہیں۔</string>
     <string name="auto_backup_offer_yes">چالو کریں</string>
     <string name="auto_backup_offer_no">ابھی نہیں</string>
     <string name="drive_restore">ڈرائیو سے بحال کریں</string>
@@ -1095,7 +1102,7 @@
     <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
     <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
     <string name="notif_backup_failed_title">خودکار بیک اپ ناکام</string>
-    <string name="notif_backup_failed_body">روشن کھاتا ڈرائیو پر بیک اپ نہ کر سکا۔ انٹرنیٹ دیکھیں — یہ خود دوبارہ کوشش کرے گا۔</string>
+    <string name="notif_backup_failed_body">روشن کھاتہ ڈرائیو پر بیک اپ نہ کر سکا۔ انٹرنیٹ دیکھیں — یہ خود دوبارہ کوشش کرے گا۔</string>
 
     <!-- Business card -->
     <string name="biz_card">دکان کارڈ</string>
@@ -1129,7 +1136,7 @@
     <string name="faq_q_hide">کوئی پاس کھڑا ہو تو بیلنس چھپا سکتا ہوں؟</string>
     <string name="faq_a_hide">ہوم اسکرین پر بیلنس کے ساتھ آنکھ کے نشان پر ٹیپ کریں۔ دوبارہ ٹیپ کرنے تک ہر جگہ چھپا رہے گا۔</string>
     <string name="faq_q_percent">رقم والے خانے میں رعایت کا حساب لگا سکتا ہوں؟</string>
-    <string name="faq_a_percent">جی ہاں۔ سیدھا لکھ دیں — 1200-15%% کا جواب 1020 اور 500*32%% کا 160۔ یہ ہر رقم والے خانے اور کیلکولیٹر میں کام کرتا ہے۔</string>
+    <string name="faq_a_percent" formatted="false">جی ہاں۔ سیدھا لکھ دیں — 1200-15% کا جواب 1020 اور 500*32% کا 160۔ یہ ہر رقم والے خانے اور کیلکولیٹر میں کام کرتا ہے۔</string>
     <string name="faq_q_delete">غلطی سے گاہک ڈیلیٹ ہو گیا۔</string>
     <string name="faq_a_delete">ہوم اسکرین پر ری سائیکل بن۔ ڈیلیٹ کیے گئے گاہک اور اندراج وہیں رہتے ہیں اور واپس لائے جا سکتے ہیں۔</string>
     <string name="faq_q_language">زبان بعد میں بدل سکتا ہوں؟</string>
@@ -1517,7 +1524,7 @@
     <string name="pdf_biz_cheques">چیک جو ابھی کلیئر نہیں ہوئے</string>
     <string name="pdf_biz_cheques_note">یہ کلیئر ہونے تک رقم نہیں۔ یہ اوپر کے بیلنس میں شامل نہیں۔</string>
     <string name="pdf_biz_cheque">چیک</string>
-    <string name="pdf_biz_due"> \u00B7 مقررہ تاریخ </string>
+    <string name="pdf_biz_due">" \u00B7 مقررہ تاریخ "</string>
     <string name="pdf_biz_plans">جاری ادائیگی منصوبے</string>
     <string name="pdf_biz_paid_of">%2$s میں سے %1$s</string>
     <string name="pdf_biz_expiring">اسٹاک جو جلد ختم ہو رہا ہے</string>
@@ -1526,13 +1533,13 @@
         <item quantity="one">%1$d دن</item>
         <item quantity="other">%1$d دن</item>
     </plurals>
-    <string name="pdf_biz_batch">بیچ %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"بیچ %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">سیلز اینڈ پرچیز رجسٹر</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">مدت: %1$s</string>
     <string name="pdf_reg_note_1">یہ دکان کا اپنا ریکارڈ ہے جو اسے بتایا گیا، اوپر دی گئی مدت کے لیے۔</string>
-    <string name="pdf_reg_note_2">سیل وہ ادھار/مال والا اندراج ہے جس میں مال گیا \u2014 صرف نقد اور قرضِ حسنہ شمار نہیں ہوتے۔</string>
+    <string name="pdf_reg_note_2">سیل وہ ادھار/مال والا اندراج ہے جس میں مال گیا، یا کاؤنٹر سیل کا مال \u2014 صرف نقد اور قرضِ حسنہ شمار نہیں ہوتے۔</string>
     <string name="pdf_reg_sales_lines">اس مدت کی سیل لائنیں</string>
     <string name="pdf_reg_total_sales">کل سیل</string>
     <string name="pdf_reg_purchase_lines">اس مدت کی خرید لائنیں</string>
@@ -1592,7 +1599,6 @@
     <string name="pdf_insp_no_batches">اسٹاک میں کوئی بیچ نہیں۔ بیچ اور میعاد سپلائر بل پر درج ہوتی ہے۔</string>
     <string name="pdf_insp_missing_note">نیچے ہر پروڈکٹ اسٹاک میں ہے لیکن اس کے ایک یا زیادہ لیبل خانے کبھی درج نہیں ہوئے۔</string>
     <string name="pdf_insp_expired">میعاد ختم</string>
-    <string name="pdf_insp_expired_ago">میعاد ختم \u00B7 %1$d دن پہلے</string>
     <string name="pdf_insp_days_left">%1$d دن باقی</string>
     <string name="pdf_insp_units_differ">یونٹ مختلف</string>
     <string name="pdf_insp_company_tag">کمپنی</string>
@@ -1640,6 +1646,7 @@
     <string name="theme_light">روشن</string>
     <string name="theme_dark">تاریک</string>
     <string name="theme_system">فون کے مطابق</string>
+    <string name="theme_system_pc">کمپیوٹر کے مطابق</string>
     <string name="bp_section_identity">پہچان</string>
     <string name="bp_section_paid">ادائیگی وصول کرنا</string>
     <string name="bp_section_seals">مہر اور دستخط</string>
@@ -1687,7 +1694,7 @@
     <string name="bp_leave_keep">ترمیم جاری رکھیں</string>
     <string name="bp_phone">فون نمبر</string>
     <string name="bp_phone_help">انوائس پر چھپتا ہے تاکہ گاہک آپ کو فون کر سکیں۔</string>
-    <string name="bp_phone_hint">مثلاً 0300 1234567</string>
+    <string name="bp_phone_hint">مثلاً \u20660300 1234567\u2069</string>
     <string name="bp_logo">دکان کا لوگو</string>
     <string name="bp_logo_help">اختیاری — انوائس اور اسٹاک رجسٹر کے اوپر چھپتا ہے۔</string>
     <string name="bp_remove_logo">لوگو ہٹائیں</string>
@@ -1767,7 +1774,6 @@
     <string name="followup_queue_open">واٹس ایپ کھولیں</string>
     <string name="followup_queue_skip">چھوڑیں</string>
     <string name="followup_queue_stop">روکیں</string>
-    <string name="followup_queue_done">مکمل — آج %1$d یاد دہانیاں کھولی گئیں</string>
     <string name="followup_queue_title">%2$d میں سے %1$d</string>
     <string name="season_title">فصل کا حساب</string>
     <string name="season_subtitle">فصل کے لحاظ سے ادھار، نئی فصل پہلے</string>
@@ -1877,7 +1883,7 @@
     <string name="scheme_mark_claimed">کلیم مل گیا</string>
     <string name="scheme_unmark_claimed">کلیم ابھی نہیں ملا</string>
     <string name="scheme_delete">اسکیم حذف کریں</string>
-    <string name="scheme_delete_confirm">"%1$s" حذف کریں؟ آپ کے بل نہیں بدلیں گے۔</string>
+    <string name="scheme_delete_confirm">“%1$s” حذف کریں؟ آپ کے بل نہیں بدلیں گے۔</string>
     <string name="scheme_claim_hint">وصول رقم (کریڈٹ نوٹ / ریبیٹ)</string>
     <string name="scheme_need_name">اسکیم کا نام لکھیں</string>
     <string name="scheme_need_slab">کم از کم ایک ٹارگٹ اور اس کا انعام لکھیں</string>
@@ -2779,7 +2785,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">کارڈ کی زبان</string>
-    <string name="biz_card_language_note">اردو کارڈ پورا اردو میں اور دائیں سے بائیں ہوتا ہے۔ ہر زبان کا نام، مالک اور پتا الگ رہتا ہے؛ نمبر، ای میل اور ویب سائٹ دونوں پر ایک ہی ہیں۔</string>
+    <string name="biz_card_language_note">ہر زبان کا اپنا کارڈ بنتا ہے۔ اردو، سندھی، عربی اور فارسی کارڈ دائیں سے بائیں ہوتے ہیں۔ ہر زبان کا نام، مالک اور پتا الگ رہتا ہے؛ نمبر، ای میل اور ویب سائٹ ہر کارڈ پر ایک ہی ہیں۔</string>
     <string name="poster_step_design">ڈیزائن</string>
     <string name="poster_step_words">لکھائی</string>
     <string name="poster_step_send">بھیجیں</string>
@@ -2825,7 +2831,7 @@
     <string name="calc_khata_positive">کھاتے میں صرف صفر سے زیادہ رقم جا سکتی ہے۔</string>
     <string name="stat_bills">بل</string>
     <string name="stat_you_owe">آپ نے دینے ہیں</string>
-    <string name="stat_expiring">60 دن میں ختم</string>
+    <string name="stat_expiring">60 دن میں ایکسپائر</string>
     <string name="bills_add_first">پہلا بل درج کریں</string>
     <string name="sr_open_short">ریٹ ملائیں</string>
     <string name="products_search_hint">پروڈکٹ تلاش کریں</string>
@@ -2882,7 +2888,7 @@
     <string name="biz_card_ex_owner">مثلاً علی خان</string>
     <string name="biz_card_ex_address">مثلاً مین بازار، پسرور</string>
     <string name="biz_card_ex_tagline">مثلاً گھر تک ڈیلیوری</string>
-    <string name="biz_card_ex_phone">مثلاً 0300 1234567</string>
+    <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
     <string name="biz_card_ex_web">مثلاً ویب سائٹ یا فیس بک پیج</string>
     <string name="biz_card_ex_qr">مثلاً السلام علیکم، آپ کا کارڈ دیکھا</string>
@@ -2909,4 +2915,673 @@
     <string name="import_csv_go">انہیں لے آئیں</string>
     <string name="import_csv_done">گاہک شامل ہوئے: %1$d</string>
     <string name="import_csv_empty">اس فائل سے کوئی گاہک نہیں پڑھا جا سکا۔ اس میں کم از کم ناموں کا ایک کالم ہونا چاہیے۔</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">کمپیوٹر کو بھیجیں (وائی فائی)</string>
+    <string name="wifi_send_explain">کمپیوٹر پر روشن کھاتہ کھولیں اور “فون سے” دبائیں، پھر وہاں دکھنے والا کوڈ اسکین کریں۔ دونوں ایک ہی وائی فائی پر ہوں۔ کچھ بھی انٹرنیٹ پر نہیں جاتا۔</string>
+    <string name="wifi_send_button">کمپیوٹر کا کوڈ اسکین کریں</string>
+    <string name="wifi_send_not_computer">یہ روشن کھاتہ کمپیوٹر کا کوڈ نہیں ہے۔</string>
+    <string name="wifi_send_sending">کمپیوٹر کو بھیج رہے ہیں…</string>
+    <string name="wifi_send_done">بھیج دیا۔ کمپیوٹر پر دیکھ کر وہیں تصدیق کریں تو کھاتہ آ جائے گا۔</string>
+    <string name="wifi_send_refused">کمپیوٹر نے نہیں لیا۔ اس کی “فون سے” والی کھڑکی بند کر کے دوبارہ کھولیں اور نیا کوڈ اسکین کریں۔</string>
+    <string name="wifi_send_unreachable">کمپیوٹر تک نہیں پہنچ سکے۔ دیکھیں کہ دونوں ایک ہی وائی فائی پر ہیں، کمپیوٹر پر “فون سے” والی کھڑکی کھلی ہے، اور ونڈوز نے روشن کھاتہ کو نیٹ ورک کی اجازت دی ہے۔</string>
+    <string name="wifi_pc_button">فون سے</string>
+    <string name="wifi_pc_title">آپ کے فون سے، وائی فائی کے ذریعے</string>
+    <string name="wifi_pc_steps">فون پر: بیک اپ ← کمپیوٹر کا کوڈ اسکین کریں، اور اس کوڈ پر رکھیں۔ دونوں ایک ہی وائی فائی پر ہوں۔ کچھ بھی انٹرنیٹ پر نہیں جاتا، اور آپ کی ہاں کے بغیر یہاں کچھ نہیں بدلتا۔</string>
+    <string name="wifi_pc_waiting">فون کا انتظار ہے…</string>
+    <string name="wifi_pc_no_network">یہ کمپیوٹر کسی نیٹ ورک پر نہیں ہے۔ اسے دکان کے وائی فائی سے جوڑیں اور یہ کھڑکی دوبارہ کھولیں۔</string>
+    <string name="wifi_pc_firewall">اگر ونڈوز پوچھے تو روشن کھاتہ کو پرائیویٹ نیٹ ورک کی اجازت دیں۔</string>
+    <string name="wifi_pc_failed">سننا شروع نہیں ہو سکا۔ یہ کھڑکی بند کر کے دوبارہ کوشش کریں۔</string>
+    <string name="poster_save_picture">پوسٹر تصویر کے طور پر محفوظ کریں</string>
+    <string name="poster_desktop_flat">کمپیوٹر پر تصویریں سادہ (فلیٹ) بنتی ہیں؛ فون پر یہ تھری ڈی میں دکھتی ہیں۔</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">کمپیوٹر کی کتاب لیں</string>
+    <string name="wifi_take_asking">کمپیوٹر سے اس کی کتاب مانگ رہے ہیں…</string>
+    <string name="wifi_take_refused">کمپیوٹر نے اپنی کتاب نہیں دی۔ اس کی “فون سے” والی کھڑکی کھلی ہونی چاہیے؛ جو کوڈ وہ ابھی دکھا رہا ہے وہی اسکین کریں۔</string>
+    <string name="book_recovered_title">آپ کی کتاب درست کر دی گئی</string>
+    <string name="book_recovered_from">کتاب کی فائل خراب تھی اور پڑھی نہیں جا سکی۔ اسے %1$s کی بنی ہوئی نقل سے دوبارہ بنایا گیا ہے۔ اس نقل کے بعد لکھی گئی چیزیں اس میں نہیں ہیں۔</string>
+    <string name="book_recovered_none">کتاب کی فائل خراب تھی اور پڑھی نہیں جا سکی، اور اس کمپیوٹر پر کوئی محفوظ نقل بھی نہیں ملی۔ کتاب خالی شروع ہو رہی ہے: اپنے فون یا کسی فائل سے بیک اپ واپس لائیں۔</string>
+    <string name="book_corrupt_kept">خراب فائل حذف نہیں کی گئی، رکھ لی گئی ہے:\n%1$s</string>
+    <string name="update_available">نیا ورژن تیار ہے: %1$s</string>
+    <string name="update_open">ڈاؤن لوڈ کا صفحہ کھولیں</string>
+    <string name="auto_backup_note">جب تک ایپ کھلی رہتی ہے، آج کی نقل ہر گھنٹے دوبارہ لکھی جاتی ہے، یہاں اور باہر والے فولڈر میں۔</string>
+    <string name="receipt_save_picture">رسید تصویر کے طور پر محفوظ کریں</string>
+    <string name="report_open_mail">میری ای میل کھولیں</string>
+    <string name="report_copy">رپورٹ کاپی کریں</string>
+    <string name="report_copied">کاپی ہو گئی۔ اسے واٹس ایپ یا ای میل میں innovation313.support@gmail.com کو بھیج دیں۔</string>
+    <string name="report_no_mail_pc">اس کمپیوٹر پر کوئی ای میل پروگرام نہیں ہے۔ “رپورٹ کاپی کریں” دبائیں اور واٹس ایپ یا کسی بھی ای میل سے innovation313.support@gmail.com کو بھیج دیں۔</string>
+    <string name="report_pc_privacy">آپ کے گاہکوں کے نام، نمبر اور بقایا کبھی نہیں بھیجے جاتے۔ رپورٹ کے ساتھ صرف ایپ کا ورژن اور ونڈوز کا ورژن جاتا ہے — نیچے پورا دکھایا گیا ہے، اس کمپیوٹر سے کچھ جانے سے پہلے۔</string>
+
+    <!-- The counter (POS Phase 1, 21 Oct 2026) -->
+    <string name="pos_title">کاؤنٹر سیل</string>
+    <string name="pos_subtitle">آئٹم اسکین یا تلاش کریں، شامل کریں، ادائیگی لیں</string>
+    <string name="pos_search_hint">آئٹم کا نام یا بارکوڈ</string>
+    <string name="pos_scan">اسکین</string>
+    <string name="pos_walk_in">عام گاہک</string>
+    <string name="pos_choose_customer">گاہک چنیں</string>
+    <string name="pos_lines_empty">ابھی کوئی آئٹم نہیں — اوپر اسکین یا تلاش کریں</string>
+    <string name="pos_col_item">آئٹم</string>
+    <string name="pos_col_qty">مقدار</string>
+    <string name="pos_col_rate">ریٹ</string>
+    <string name="pos_col_total">کل</string>
+    <string name="pos_line_discount">لائن رعایت</string>
+    <string name="pos_subtotal">ذیلی کل</string>
+    <string name="pos_discount">رعایت</string>
+    <string name="pos_tax">ٹیکس %</string>
+    <string name="pos_round_off">راؤنڈ آف</string>
+    <string name="pos_grand_total">کل</string>
+    <string name="pos_paid">ابھی ادا</string>
+    <string name="pos_to_account">کھاتے میں</string>
+    <string name="pos_change">بقایا واپسی</string>
+    <string name="pos_add_payment">ادائیگی شامل کریں</string>
+    <string name="pos_pay_full_cash">سب نقد</string>
+    <string name="pos_reference_hint">حوالہ (ٹرانزیکشن نمبر، چیک نمبر)</string>
+    <string name="pos_hold">روکیں</string>
+    <string name="pos_held_tickets">روکے ہوئے بل (%1$d)</string>
+    <string name="pos_resume">جاری کریں</string>
+    <string name="pos_drop_held">روکا ہوا بل ہٹائیں</string>
+    <string name="pos_post">سیل مکمل کریں</string>
+    <string name="pos_post_and_print">مکمل اور پرنٹ</string>
+    <string name="pos_clear">بل صاف کریں</string>
+    <string name="pos_posted">سیل %1$s محفوظ ہو گئی</string>
+    <string name="pos_void">سیل منسوخ</string>
+    <string name="pos_void_reason">منسوخی کی وجہ</string>
+    <string name="pos_void_confirm">%1$s منسوخ کریں؟ اس کی کھاتہ اور کیش بک کی قطاریں ردی میں جائیں گی۔</string>
+    <string name="pos_voided">منسوخ</string>
+    <string name="pos_status_done">مکمل</string>
+    <string name="pos_status_void">منسوخ</string>
+    <string name="pos_status_held">روکا ہوا</string>
+    <string name="pos_today_count">آج %1$d سیلز</string>
+    <string name="pos_today_total">آج %1$s</string>
+    <string name="pos_recent">حالیہ سیلز</string>
+    <string name="pos_err_no_lines">کم از کم ایک آئٹم شامل کریں</string>
+    <string name="pos_err_quantity">مقدار صفر سے زیادہ ہونی چاہیے</string>
+    <string name="pos_err_rate">ریٹ منفی نہیں ہو سکتا</string>
+    <string name="pos_err_discount">رعایت لائن سے زیادہ ہے</string>
+    <string name="pos_err_payment">ادائیگی صفر سے زیادہ ہونی چاہیے</string>
+    <string name="pos_err_overpaid">کل سے زیادہ ادا کیا گیا</string>
+    <string name="pos_err_walk_in_unpaid">عام گاہک پوری ادائیگی کرتا ہے — یا باقی کے لیے گاہک چنیں</string>
+    <string name="pos_err_empty_name">آئٹم کا نام ضروری ہے</string>
+    <string name="pos_stock_low">صرف %1$s باقی</string>
+    <string name="pos_stock_negative">اسٹاک صفر سے نیچے چلا جائے گا</string>
+    <string name="pos_product_new">نیا آئٹم ”%1$s“ (پروڈکٹس میں نہیں)</string>
+    <string name="pos_barcode_unknown">اس بارکوڈ کا کوئی پروڈکٹ نہیں</string>
+    <string name="pos_receipt">رسید</string>
+    <string name="pos_customer_pays_later">باقی %1$s کے کھاتے میں</string>
+    <string name="cash_category_sale">سیل</string>
+    <string name="pos_sales_title">سیلز</string>
+    <string name="pos_keys_help">F2 آئٹم · F4 مقدار · F6 رعایت · F8 گاہک · F9 ادائیگی · F12 مکمل</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">بارکوڈ (اختیاری)</string>
+    <string name="product_cost_hint">خرید قیمت (اختیاری)</string>
+    <string name="product_low_stock_hint">اسٹاک اس پر خبردار کرے (اختیاری)</string>
+    <string name="product_barcode_taken">یہ بارکوڈ پہلے ہی %1$s پر ہے</string>
+    <string name="na_low_stock">%1$s آئٹمز کا اسٹاک کم ہے</string>
+    <string name="products_export">CSV ایکسپورٹ</string>
+    <string name="products_import">CSV امپورٹ</string>
+    <string name="products_labels">لیبل پرنٹ کریں</string>
+    <string name="products_import_plan">%1$d نئی پروڈکٹس، %2$d اپڈیٹ</string>
+    <string name="products_import_clash">%1$d قطاروں کا بارکوڈ کسی اور پروڈکٹ پر پہلے سے ہے — وہ کوڈ چھوڑ دیے جائیں گے</string>
+    <string name="products_import_none">اس فائل میں کوئی پروڈکٹ نہیں ملی</string>
+    <string name="products_imported">%1$d پروڈکٹس شامل، %2$d اپڈیٹ</string>
+    <string name="products_labels_assign">%1$d پروڈکٹس کا بارکوڈ نہیں — انہیں دکان کا اپنا (EAN-13) دے کر پرنٹ کریں؟</string>
+    <string name="products_labels_none">لیبل پرنٹ کرنے کے لیے کوئی پروڈکٹ نہیں</string>
+    <string name="label_sheet_title">بارکوڈ لیبل</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">واپسی</string>
+    <string name="pos_return_title">سامان واپس</string>
+    <string name="pos_return_reason">واپسی کی وجہ</string>
+    <string name="pos_return_refund">رقم واپسی</string>
+    <string name="pos_refund_account">کھاتے میں رکھیں</string>
+    <string name="pos_return_qty_help">بکا %1$s · اب تک واپس %2$s</string>
+    <string name="pos_return_posted">واپسی %1$s محفوظ ہو گئی</string>
+    <string name="pos_returns">واپسیاں</string>
+    <string name="pos_err_over_sold">جتنا بکا اس سے زیادہ واپس آ رہا ہے</string>
+    <string name="pos_err_walk_in_cash">عام گاہک کو پوری رقم نقد/بینک واپس ہوتی ہے</string>
+    <string name="pos_err_reason">وجہ ضروری ہے</string>
+    <string name="pos_err_refund">واپسی کی رقم سامان کی قیمت سے زیادہ ہے</string>
+    <string name="pos_return_no_receipt">رسید نہیں</string>
+    <string name="pos_exchange">تبادلہ: دوبارہ بیچیں</string>
+    <string name="pos_return_of">%1$s کی واپسی</string>
+    <string name="cash_category_return">واپسی</string>
+    <string name="pos_recent_sales">حالیہ سیلز</string>
+    <string name="pos_void_return">واپسی منسوخ</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">دن کی رپورٹ (Z)</string>
+    <string name="z_sales_count">سیلز</string>
+    <string name="z_sales_total">کل سیلز</string>
+    <string name="z_voids">منسوخ (%1$s)</string>
+    <string name="z_returns">واپسیاں (%1$s)</string>
+    <string name="z_cash_in">نقد آمد (کھاتہ + کیش بک)</string>
+    <string name="z_cash_out">نقد اخراج (کھاتہ + کیش بک)</string>
+    <string name="z_expected">گلے میں ہونا چاہیے</string>
+    <string name="z_variance">فرق</string>
+    <string name="z_profit">منافع (سیل − لاگت)</string>
+    <string name="dc_opening">ابتدائی نقد</string>
+    <string name="dc_counted">گنا گیا</string>
+    <string name="z_no_close">دن بند نہیں ہوا — فرق دیکھنے کے لیے گلا گنیں</string>
+    <string name="z_variance_reason">فرق کی وجہ لکھیں</string>
+    <string name="z_yesterday_open">کل کا گلا نہیں گنا گیا</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">کاؤنٹر لاگ ان</string>
+    <string name="staff_role_none">لاگ ان نہیں</string>
+    <string name="staff_role_manager">منیجر</string>
+    <string name="staff_role_cashier">کیشیئر</string>
+    <string name="staff_pin">پن (4–8 ہندسے)</string>
+    <string name="staff_pin_keep">پن وہی رکھنے کے لیے خالی چھوڑیں</string>
+    <string name="staff_pin_invalid">پن 4 سے 8 ہندسوں کا ہوتا ہے</string>
+    <string name="access_owner">مالک</string>
+    <string name="access_who">کاؤنٹر پر کون ہے؟</string>
+    <string name="access_sign_in">سائن ان</string>
+    <string name="access_sign_out">سائن آؤٹ</string>
+    <string name="access_wrong_pin">غلط پن</string>
+    <string name="access_override_title">منیجر کا پن درکار ہے</string>
+    <string name="access_override_help">کیشیئر یہ اکیلے نہیں کر سکتا۔ منیجر یا مالک اپنا پن ڈال کر اجازت دے۔</string>
+    <string name="access_denied">کیشیئر کے لیے اجازت نہیں</string>
+    <string name="access_discount_cap">کیشیئر منیجر کے بغیر زیادہ سے زیادہ %1$s رعایت دے سکتا ہے</string>
+    <string name="audit_title">کس نے کیا کیا</string>
+    <string name="audit_subtitle">ہر سیل، منسوخی، واپسی، قیمت کی تبدیلی، سائن ان اور بحالی — تازہ پہلے</string>
+    <string name="audit_empty">لاگ میں ابھی کچھ نہیں</string>
+    <string name="audit_sale_posted">سیل</string>
+    <string name="audit_sale_voided">سیل منسوخ</string>
+    <string name="audit_sale_held">بل روکا گیا</string>
+    <string name="audit_return_posted">واپسی</string>
+    <string name="audit_return_voided">واپسی منسوخ</string>
+    <string name="audit_discount_override">رعایت کی اجازت</string>
+    <string name="audit_manager_override">منیجر نے اجازت دی</string>
+    <string name="audit_price_changed">قیمت بدلی</string>
+    <string name="audit_sign_in">سائن ان</string>
+    <string name="audit_restore">کتاب بحال</string>
+    <string name="audit_export">ایکسپورٹ</string>
+    <string name="audit_by">%1$s نے</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">اسٹاک گنیں</string>
+    <string name="stock_count_help">شیلف پر جو ہے وہ لکھیں؛ صرف فرق لکھا جائے گا، ساتھ کتاب کا ہندسہ</string>
+    <string name="stock_counted_hint">گنا</string>
+    <string name="stock_adjust">اسٹاک درست کریں</string>
+    <string name="adjust_qty_hint">مقدار (+ اندر، − باہر)</string>
+    <string name="adjust_reason">وجہ</string>
+    <string name="adjust_reason_count">گنتی</string>
+    <string name="adjust_reason_damage">خراب</string>
+    <string name="adjust_reason_expired">ایکسپائر / پھینکا</string>
+    <string name="adjust_reason_theft">چوری / گم</string>
+    <string name="adjust_reason_other">دیگر</string>
+    <string name="stock_valuation">اسٹاک کی مالیت</string>
+    <string name="stock_valuation_known">%2$s میں سے %1$s پروڈکٹس کی لاگت معلوم</string>
+    <string name="stock_low_title">کم اسٹاک</string>
+    <string name="stock_adjustments">درستگیاں</string>
+    <string name="po_title">خرید آرڈر</string>
+    <string name="po_new">نیا آرڈر</string>
+    <string name="po_supplier">سپلائر</string>
+    <string name="po_send">واٹس ایپ پر بھیجیں</string>
+    <string name="po_mark_sent">بھیجا ہوا نشان</string>
+    <string name="po_receive">مال آ گیا</string>
+    <string name="po_close">آرڈر بند</string>
+    <string name="po_status_draft">مسودہ</string>
+    <string name="po_status_sent">بھیجا</string>
+    <string name="po_status_received">موصول</string>
+    <string name="po_status_closed">بند</string>
+    <string name="po_none">ابھی کوئی آرڈر نہیں</string>
+    <string name="po_lines_empty">آرڈر کے آئٹم شامل کریں</string>
+    <string name="po_message_head">آرڈر %1$s — %2$s</string>
+    <string name="po_from_low">کم اسٹاک کا آرڈر</string>
+    <string name="po_book">کتاب</string>
+    <string name="inventory_title">موجودہ اسٹاک</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">سیلز رپورٹ</string>
+    <string name="srep_by_day">دن کے لحاظ سے</string>
+    <string name="srep_by_item">آئٹم کے لحاظ سے</string>
+    <string name="srep_by_category">کیٹیگری کے لحاظ سے</string>
+    <string name="srep_by_customer">گاہک کے لحاظ سے</string>
+    <string name="srep_by_cashier">کیشیئر کے لحاظ سے</string>
+    <string name="srep_by_hour">گھنٹے کے لحاظ سے</string>
+    <string name="srep_tax">ٹیکس</string>
+    <string name="srep_profit">نفع و نقصان</string>
+    <string name="srep_dead">نہیں بک رہا</string>
+    <string name="srep_dead_help">شیلف پر ہے، %1$s دن سے نہیں بکا</string>
+    <string name="srep_col_count">سیلز</string>
+    <string name="srep_col_revenue">آمدن</string>
+    <string name="srep_col_profit">منافع</string>
+    <string name="srep_revenue">آمدن</string>
+    <string name="srep_returns">واپسیاں</string>
+    <string name="srep_cost">بکے مال کی لاگت</string>
+    <string name="srep_cost_known">آمدن کے %1$s کی لاگت معلوم</string>
+    <string name="srep_gross">مجموعی منافع</string>
+    <string name="srep_expenses">اخراجات (کیش بک)</string>
+    <string name="srep_net">خالص منافع</string>
+    <string name="srep_tax_rate">شرح</string>
+    <string name="srep_tax_base">قابلِ ٹیکس</string>
+    <string name="srep_tax_amount">ٹیکس</string>
+    <string name="srep_period_today">آج</string>
+    <string name="srep_period_week">اس ہفتے</string>
+    <string name="srep_period_month">اس مہینے</string>
+    <string name="srep_none">اس مدت میں کوئی سیل نہیں</string>
+    <string name="srep_no_category">بغیر کیٹیگری</string>
+    <string name="pos_credit_limit">کریڈٹ حد %1$s — اس سیل سے کھاتہ %2$s ہو جائے گا</string>
+
+    <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->
+    <string name="access_close_app">ایپ بند کریں</string>
+    <string name="access_forgot_pin">PIN بھول گئے؟</string>
+    <string name="access_recovery_code">ریکوری کوڈ</string>
+    <string name="access_recovery_ask">مالک کا PIN بناتے وقت جو ریکوری کوڈ دکھایا گیا تھا وہ لکھیں۔ پھر نیا PIN چنیں۔</string>
+    <string name="access_recovery_wrong">یہ ریکوری کوڈ درست نہیں۔</string>
+    <string name="access_owner_pin">مالک کا PIN</string>
+    <string name="access_owner_pin_help">مالک کا اپنا PIN، 6 سے 8 ہندسے۔ اس سے مالک کاؤنٹر پر سائن اِن کرتا ہے، وہ کام اجازت دیتا ہے جو کیشیئر اکیلا نہیں کر سکتا، اور کاؤنٹر موڈ بند کرتا ہے۔ صرف اس کا ہیش محفوظ ہوتا ہے، PIN کبھی نہیں۔</string>
+    <string name="access_owner_pin_invalid">مالک کا PIN 6 سے 8 ہندسوں کا ہوتا ہے</string>
+    <string name="access_owner_pin_short">آپ کا مالک PIN چھوٹا ہے۔ اسے 6 سے 8 ہندسوں کا کر دیں: چھوٹا PIN بیک اپ فائل سے چند منٹ میں معلوم کیا جا سکتا ہے۔</string>
+    <string name="access_recovery_title">آپ کا ریکوری کوڈ</string>
+    <string name="access_recovery_help">یہ کوڈ لکھ لیں اور کاؤنٹر سے دور رکھیں۔ اگر مالک کا PIN کبھی بھول جائے تو یہ کوڈ نیا PIN بنا دیتا ہے۔ یہ صرف ابھی دکھایا جا رہا ہے؛ نیا PIN نیا کوڈ دیتا ہے۔</string>
+    <string name="access_recovery_written">میں نے لکھ لیا ہے</string>
+    <string name="access_owner_pin_current">مالک کا موجودہ PIN</string>
+    <string name="access_owner_pin_needed">پہلے مالک کا PIN بنائیں۔ اس کے بغیر کوئی بھی مالک بن کر سائن اِن کر سکتا ہے۔</string>
+    <string name="access_owner_pin_set">مالک کا PIN بنائیں</string>
+    <string name="access_owner_pin_change">مالک کا PIN بدلیں</string>
+    <string name="access_counter_mode">کاؤنٹر موڈ</string>
+    <string name="access_counter_mode_help">اُس فون یا کمپیوٹر کے لیے جو عملہ استعمال کرتا ہے: یہ لاک ہو کر کھلتا ہے، ہر کوئی اپنے PIN سے سائن اِن کرتا ہے، اور صرف مالک کا PIN اسے بند کرتا ہے۔ مالک کے اپنے فون پر اسے بند رکھیں۔</string>
+    <string name="access_counter_off_help">اس ڈیوائس پر کاؤنٹر موڈ بند کریں؟ یہ دوبارہ مالک کی ڈیوائس کی طرح بغیر سائن اِن کے کھلے گی۔</string>
+    <string name="access_counter_turn_on">چالو کریں</string>
+    <string name="access_counter_turn_off">بند کریں</string>
+    <string name="access_counter_now_on">کاؤنٹر موڈ چالو ہے۔ یہ ڈیوائس اب لاک ہو کر کھلے گی۔</string>
+    <string name="access_counter_now_off">کاؤنٹر موڈ بند ہے۔</string>
+    <string name="access_counter_on_label">کاؤنٹر موڈ: چالو</string>
+    <string name="access_counter_off_label">کاؤنٹر موڈ: بند</string>
+    <string name="access_need_backup">بیک اپ اور ریسٹور</string>
+    <string name="access_need_settings">دکان کی سیٹنگز</string>
+    <string name="access_need_staff">عملہ اور ان کے لاگ اِن</string>
+    <string name="access_need_reports">دکان کی رپورٹیں اور حساب</string>
+    <string name="access_need_edit">پہلے سے لکھا ہوا بدلنا یا مٹانا</string>
+    <string name="access_counter_locked">یہ کاؤنٹر لاک ہے۔ جاری رکھنے کے لیے سائن اِن کریں۔</string>
+    <string name="access_owner_needed_title">مالک کا PIN درکار</string>
+    <string name="access_owner_needed_help">اس کی اجازت صرف مالک دے سکتا ہے۔ مالک اپنا PIN لکھے۔</string>
+    <string name="access_page_locked">اس صفحے کے لیے مینیجر یا مالک چاہیے</string>
+    <string name="access_signed_in_as">سائن اِن: %1$s</string>
+    <string name="audit_seal_ok">لاگ کی مہر سلامت — جانچی گئی قطاریں: %1$d</string>
+    <string name="audit_seal_broken">لاگ کی مہر قطار %1$d پر ٹوٹی ہے: ایپ کے باہر کوئی قطار بدلی یا ہٹائی گئی</string>
+    <string name="audit_stock_count">اسٹاک گنا گیا</string>
+    <string name="audit_stock_adjusted">اسٹاک درست کیا گیا</string>
+    <string name="audit_order_received">آرڈر وصول ہوا</string>
+    <string name="audit_owner_pin_set">مالک کا PIN بنایا گیا</string>
+    <string name="audit_owner_pin_adopted">مالک کا PIN اس کاؤنٹر سے لیا گیا</string>
+    <string name="audit_counter_on">کاؤنٹر موڈ چالو</string>
+    <string name="audit_counter_off">کاؤنٹر موڈ بند</string>
+    <string name="audit_pin_wait">بہت زیادہ غلط PIN</string>
+    <string name="audit_sign_out">سائن آؤٹ</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">اس سے یہاں کیا گیا کام ختم ہو جائے گا</string>
+    <string name="restore_loss_intro">یہ اس کھاتے میں ہیں اور کاپی میں نہیں۔ ریسٹور کے بعد یہ ختم ہو جائیں گے:</string>
+    <string name="restore_loss_entries">اندراجات: %1$d</string>
+    <string name="restore_loss_changed">کاپی کے بعد یہاں بدلے یا مٹائے گئے اندراجات: %1$d</string>
+    <string name="restore_loss_sales">کاؤنٹر سیلز: %1$d</string>
+    <string name="restore_loss_returns">واپسیاں: %1$d</string>
+    <string name="restore_loss_cash">کیش بک کی قطاریں: %1$d</string>
+    <string name="restore_loss_cheques">چیک: %1$d</string>
+    <string name="restore_loss_bills">سپلائر بل: %1$d</string>
+    <string name="restore_loss_invoices">انوائس: %1$d</string>
+    <string name="restore_loss_parties">گاہک اور سپلائر: %1$d</string>
+    <string name="restore_loss_other">کاپی کے بعد یہاں کی گئی اسٹاک گنتی، دن بندی، شفٹیں، پوائنٹس، آرڈر اور منسوخیاں: %1$d</string>
+    <string name="restore_loss_newest">یہاں سب سے نیا: %1$s · کاپی میں سب سے نیا: %2$s</string>
+    <string name="restore_loss_kept">کچھ بدلنے سے پہلے یہ کھاتا روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور واپس ہو سکتا ہے۔</string>
+    <string name="restore_loss_agree">میں سمجھتا ہوں کہ یہ ختم ہو جائیں گے</string>
+    <string name="restore_loss_counting">دیکھا جا رہا ہے کہ اس کھاتے میں کیا ہے جو کاپی میں نہیں…</string>
+    <string name="snapshot_before_restore">ریسٹور سے پہلے محفوظ · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">قیمتوں میں شامل ٹیکس</string>
+    <string name="pos_sell_by">%1$s کے حساب سے بیچیں</string>
+    <string name="pos_expired_stock">%1$s کا صرف ایکسپائر اسٹاک بچا ہے (ٹھیک: %2$s)۔ پرانا بیچ ایکسپائری میں ختم کریں، یا کم بیچیں۔</string>
+    <string name="counter_settings">کاؤنٹر سیٹنگز</string>
+    <string name="pos_next_pay">آگے: ادائیگی</string>
+    <string name="pos_how_1">1 · چیز کا نام لکھیں یا بارکوڈ اسکین کریں</string>
+    <string name="pos_how_2">2 · تعداد اور ریٹ دیکھ لیں</string>
+    <string name="pos_how_3">3 · عام گاہک پوری رقم دیتا ہے؛ چنے گئے گاہک کی باقی رقم اس کے کھاتے میں جاتی ہے</string>
+    <string name="counter_advanced">بڑی دکان کے اوزار</string>
+    <string name="counter_advanced_help">شفٹ، دن کی رپورٹ (Z)، پوائنٹس، ترازو، گاہک کی اسکرین اور ٹیکس۔ بند ہو تو کاؤنٹر سادہ رہتا ہے؛ پہلے سے محفوظ کچھ نہیں بدلتا۔</string>
+    <string name="counter_prices_include_tax">قیمتوں میں ٹیکس پہلے سے شامل ہے</string>
+    <string name="counter_prices_include_tax_help">چالو: پروڈکٹ کا ٹیکس اس کی قیمت کے اندر ہے، اور رسید بتاتی ہے کتنا۔ بند: کاؤنٹر پر اوپر سے جوڑا جاتا ہے۔ ہر پروڈکٹ کا ٹیکس % پروڈکٹ پر لکھا جاتا ہے۔</string>
+    <string name="expiry_write_off">ختم کریں</string>
+    <string name="expiry_write_off_confirm">%2$s کا %1$s ایکسپائر کے طور پر ختم کریں؟ اسٹاک اتنا کم ہو جائے گا، اور لاگ میں لکھا رہے گا کس نے کیا۔</string>
+    <string name="expiry_written_off">ختم کر دیا</string>
+    <string name="expiry_nothing_left">اس بیچ میں کچھ نہیں بچا</string>
+    <string name="expiry_left">بچا: %1$s</string>
+    <string name="product_pack_help">وہ پیک (کارٹن، بوری…) جس میں یہ پروڈکٹ خریدی یا بیچی بھی جاتی ہے، اور ایک پیک میں اس کی اپنی اکائی کتنی ہیں۔ اسٹاک اپنی اکائی میں گنا جاتا ہے۔</string>
+    <string name="product_pack_unit">پیک کا نام</string>
+    <string name="product_pack_size">ایک پیک میں کتنے</string>
+    <string name="product_pack_price">پیک کی قیمت</string>
+    <string name="product_tax_rate">ٹیکس %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">اے4 انوائس</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">شفٹیں</string>
+    <string name="shift_open">شفٹ شروع کریں</string>
+    <string name="shift_close">شفٹ بند کریں</string>
+    <string name="shift_float_help">پہلی فروخت سے پہلے دراز کی نقدی گنیں۔ شفٹ کا حساب اسی شخص کی اپنی نقد فروخت اور نقد واپسیوں سے ملایا جاتا ہے۔</string>
+    <string name="shift_opened_at">شروع %1$s</string>
+    <string name="shift_none">کوئی شفٹ کھلی نہیں</string>
+    <string name="shift_already_open">اس شخص کی ایک شفٹ پہلے سے کھلی ہے</string>
+    <string name="shift_open_now">ابھی کھلی</string>
+    <string name="shift_recent">حالیہ شفٹیں</string>
+    <string name="shift_hours">%1$s گھنٹے</string>
+    <string name="shift_week_hours">گھنٹے، پچھلے 7 دن</string>
+    <string name="shift_closed">شفٹ بند ہو گئی</string>
+    <string name="shift_of">شفٹ: %1$s</string>
+    <string name="shift_cash_sales">فروخت پر لی گئی نقدی</string>
+    <string name="shift_cash_refunds">واپسی پر لوٹائی گئی نقدی</string>
+    <string name="audit_shift_opened">شفٹ شروع ہوئی</string>
+    <string name="audit_shift_closed">شفٹ بند ہوئی</string>
+    <string name="printer_section">اس ڈیوائس کا رسید پرنٹر</string>
+    <string name="printer_width_80">80 ملی میٹر رول</string>
+    <string name="printer_logo">اوپر دکان کا لوگو</string>
+    <string name="printer_drawer">نقد فروخت پر کیش دراز کھولیں</string>
+    <string name="printer_drawer_help">رسید پرنٹر میں لگی کیش دراز کے لیے۔ جس پرنٹر کے ساتھ دراز نہ ہو وہ اسے نظر انداز کر دیتا ہے۔</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">تاریخیں چنیں</string>
+    <string name="srep_chart">وقت کے ساتھ فروخت</string>
+    <string name="srep_chart_top">سب سے زیادہ: %1$s</string>
+    <string name="aging_title">باقی رقم، مدت کے حساب سے</string>
+    <string name="aging_help">جو ابھی باقی ہے، اس حساب سے کہ کتنا عرصہ پہلے دیا گیا۔ ادائیگی پہلے پرانا حساب صاف کرتی ہے؛ 90 دن سے پرانی رقم پر فون ضرور کریں۔</string>
+    <string name="aging_0_30">0–30 دن</string>
+    <string name="aging_31_60">31–60 دن</string>
+    <string name="aging_61_90">61–90 دن</string>
+    <string name="aging_90">90 دن سے زیادہ</string>
+    <string name="aging_none">کوئی رقم باقی نہیں</string>
+    <string name="aging_oldest">سب سے پرانی: %1$s</string>
+    <string name="aging_total">کل</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">لائلٹی پوائنٹس</string>
+    <string name="loyalty_per_100">ہر 100 کی خریداری پر پوائنٹس</string>
+    <string name="loyalty_value">ایک پوائنٹ کی قیمت</string>
+    <string name="loyalty_help">کھاتے والا گاہک ہر بل پر پوائنٹس کماتا ہے اور بعد میں انہیں رعایت کے طور پر خرچ کرتا ہے۔ کوئی خانہ خالی چھوڑیں تو لائلٹی بند رہے گی۔</string>
+    <string name="loyalty_points">پوائنٹس: %1$s (قیمت %2$s)</string>
+    <string name="loyalty_use">پوائنٹس استعمال کریں</string>
+    <string name="loyalty_used">استعمال شدہ پوائنٹس: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">کمائے گئے پوائنٹس: %1$s · اب %2$s</string>
+    <string name="scale_section">ترازو کے لیبل</string>
+    <string name="scale_prefix">لیبل کا ابتدائیہ (20–29)</string>
+    <string name="scale_price">لیبل پر قیمت ہے (وزن نہیں)</string>
+    <string name="scale_help">ترازو کا لیبل 13 ہندسوں کا ہوتا ہے: ابتدائیہ، چیز کا 5 ہندسوں کا ترازو کوڈ، وزن گرام میں (یا قیمت) اور ایک جانچ ہندسہ۔ ترازو کوڈ پروڈکٹ کے بارکوڈ والے خانے میں لکھیں۔</string>
+    <string name="pos_items">اشیاء</string>
+    <string name="pos_ticket">بل</string>
+    <string name="pos_all">سب</string>
+    <string name="pos_choose_variant">%1$s: کون سا؟</string>
+    <string name="product_variant_of">کس پروڈکٹ کی قسم (مرکزی پروڈکٹ)</string>
+    <string name="product_variant">قسم (سائز، رنگ، ذائقہ)</string>
+    <string name="product_variant_help">اقسام اپنی الگ پروڈکٹس ہیں — اپنی قیمت، بارکوڈ اور اسٹاک — جو کاؤنٹر کی اشیاء والی جالی میں مرکزی پروڈکٹ کے نیچے اکٹھی دکھتی ہیں۔</string>
+    <string name="cd_title">گاہک کی اسکرین</string>
+    <string name="cd_help">گاہک کے لیے دوسری ونڈو: اشیاء، کل رقم اور دکان کا ادائیگی QR۔ اسے دوسرے مانیٹر پر گھسیٹ لیں۔</string>
+    <string name="cd_scan">ادائیگی کے لیے اسکین کریں</string>
+    <string name="cd_qr_note">QR میں رقم شامل نہیں: ادائیگی سے پہلے اپنے فون پر رقم دیکھ لیں۔</string>
+    <string name="cd_welcome">خوش آمدید</string>
+    <string name="cd_change">واپسی: %1$s</string>
+    <string name="transfer_title">اسٹاک دوسری دکان کو بھیجیں</string>
+    <string name="transfer_to">کس دکان کو</string>
+    <string name="transfer_help">سامان اس دکان کے اسٹاک سے نکل کر دوسری دکان کے اسٹاک میں آتا ہے، بارکوڈ سے ملا کر، ورنہ نام سے (جو پروڈکٹ وہاں نہ ہو وہ بنا دی جاتی ہے)۔ دونوں کھاتوں میں ایک ہی نمبر کی ایک ایک قطار رہتی ہے۔</string>
+    <string name="transfer_done">%1$s، %2$s کو بھیج دیا</string>
+    <string name="adjust_reason_transfer">منتقلی</string>
+    <string name="audit_transfer_out">اسٹاک دوسری دکان کو بھیجا</string>
+    <string name="audit_transfer_in">اسٹاک دوسری دکان سے آیا</string>
+    <string name="transfer_none">کوئی دوسری دکان نہیں۔ کاروبار میں ایک شامل کریں۔</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">صرف نیا شامل کریں</string>
+    <string name="merge_title">صرف نیا شامل کریں</string>
+    <string name="merge_help">اس کھاتے کی ہر چیز رہتی ہے اور کاپی کی وہ چیزیں شامل ہوتی ہیں جو یہاں نہیں — اندراجات، کیش بک، بل، واپسیاں، سپلائر بل، چیک، انوائس — ان کی اپنی ID سے ملا کر، رقم سے کبھی نہیں۔ یہاں کچھ بدلا یا ہٹایا نہیں جاتا۔</string>
+    <string name="merge_preview">شامل ہوں گے: %1$s کھاتہ اندراجات، %2$s کیش بک، %3$s کاؤنٹر بل، %4$s دیگر ریکارڈ؛ %5$s نئے گاہک، %6$s نئی پروڈکٹس۔</string>
+    <string name="merge_changed">%1$s قطاریں کاپی میں بھی بدلی یا ہٹائی گئیں: یہ کھاتہ اپنی رکھتا ہے۔</string>
+    <string name="merge_other_shop">کاپی کا نام %1$s ہے — دیکھ لیں کہ یہ اسی دکان کا کھاتہ ہے۔</string>
+    <string name="merge_done">کاپی سے %1$s قطاریں شامل ہوئیں (%2$s کے نمبر بدلے)۔</string>
+    <string name="merge_nothing">کاپی میں ایسا کچھ نہیں جو اس کھاتے میں نہ ہو۔</string>
+    <string name="merge_too_old">یہ کاپی پرانے ورژن کی ہے اور اس میں قطاروں کی ID نہیں: یہ صرف کھاتے کی جگہ لے سکتی ہے۔</string>
+    <string name="merge_unrelated">اس کاپی میں اس کھاتے سے کچھ مشترک نہیں — یہ کوئی اور کھاتہ ہے۔ یہ صرف اس کی جگہ لے سکتی ہے۔</string>
+    <string name="merge_not_carried">شامل نہیں ہوتے: قسط پلان، سیزن، اسکیمیں، حاضری اور دن کی بندش۔</string>
+    <string name="audit_book_merged">کاپی شامل کی گئی</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">کھاتہ کھل رہا ہے…</string>
+    <string name="book_cannot_open">کھاتہ نہیں کھل سکا، اور اس میں کچھ نہیں بدلا گیا۔ جو دوسرا پروگرام اسے استعمال کر رہا ہو اسے بند کریں (یا کمپیوٹر دوبارہ چلائیں)، پھر روشن کھاتہ دوبارہ کھولیں۔</string>
+    <string name="book_set_aside_note">خراب کھاتہ یہاں الگ رکھا گیا ہے، مٹایا نہیں گیا: %1$s</string>
+    <string name="restore_keep_failed">یہ کھاتہ پہلے محفوظ نہیں ہو سکا، اس لیے کچھ نہیں بدلا گیا۔ دیکھیں کہ ڈسک میں جگہ ہے، پھر دوبارہ کوشش کریں۔</string>
+    <string name="restore_loss_unknown">کیا ضائع ہوگا یہ گنا نہیں جا سکا۔ تبھی بدلیں جب آپ کو یقین ہو کہ یہی کاپی چاہیے۔</string>
+    <string name="clock_behind_title">کمپیوٹر کی تاریخ غلط لگتی ہے</string>
+    <string name="clock_behind_body">سب سے نئی روزانہ کاپی %1$s کی ہے، مگر یہ کمپیوٹر آج کی تاریخ %2$s بتا رہا ہے۔ ونڈوز میں صحیح تاریخ اور وقت لگائیں۔ تب تک کوئی پرانی کاپی نہیں مٹائی جائے گی۔</string>
+    <string name="pos_void_has_returns">اس سیل کا مال پہلے ہی واپس ہو چکا ہے۔ واپسی والی سیل منسوخ نہیں ہو سکتی؛ باقی مال کی واپسی کریں۔</string>
+    <string name="pos_void_day_closed">اس بِکری کا دن بند ہو چکا ہے۔ منسوخ کرنے کے بجائے واپسی کریں۔</string>
+    <string name="pos_err_rate_missing">ایک لائن کا ریٹ نہیں لکھا۔</string>
+    <string name="pos_err_tax">ٹیکس پڑھا نہیں جا سکا۔</string>
+    <string name="pos_err_payment_unread">ایک ادائیگی کی رقم پڑھی نہیں جا سکی۔</string>
+    <string name="pos_err_discount_unread">ایک رعایت پڑھی نہیں جا سکی۔</string>
+    <string name="pos_price_needs_pin">ریٹ لسٹ سے ہٹ کر ریٹ پر بیچنا</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">اندراج بدلا گیا</string>
+    <string name="audit_entry_deleted">اندراج مٹایا گیا</string>
+    <string name="audit_cash_added">کیش بک میں اندراج</string>
+    <string name="audit_cash_edited">کیش بک کا اندراج بدلا</string>
+    <string name="audit_cash_deleted">کیش بک کا اندراج مٹایا</string>
+    <string name="audit_party_deleted">گاہک مٹایا گیا</string>
+    <string name="audit_day_closed">دن بند کیا گیا</string>
+    <string name="audit_import">امپورٹ</string>
+    <string name="audit_bill_deleted">بل مٹایا گیا</string>
+    <string name="audit_bill_edited">بل بدلا گیا</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">اگلی ادائیگی کی تاریخ بدلیں</string>
+    <string name="plan_next_ask">%1$s کی اگلی ادائیگی کی تاریخ</string>
+    <string name="plan_next_clear">تاریخ ہٹائیں</string>
+    <string name="plan_next_saved">اگلی ادائیگی: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">لیبل کی قیمت میں اعشاریہ کے بعد کے ہندسے</string>
+    <string name="scale_price_example">01250 والا لیبل %1$s پڑھا جائے گا</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">جہاں بنا تھا وہیں بدلیں</string>
+    <string name="entry_linked_bill">یہ اندراج سپلائر بل نے لکھا ہے۔ بل بدلیں یا مٹائیں، کھاتہ خود ساتھ بدل جائے گا۔</string>
+    <string name="entry_linked_plan">یہ اندراج قسط پلان کی ادائیگی نے لکھا ہے۔ اسے قسط پلان سے بدلیں۔</string>
+    <string name="entry_linked_cheque">یہ اندراج کلیئر ہونے والے چیک نے لکھا ہے۔ اسے چیک والے صفحے سے بدلیں۔</string>
+    <string name="entry_linked_sale">یہ اندراج کاؤنٹر کی سیل نے لکھا ہے۔ سیل منسوخ کریں یا واپسی کریں۔</string>
+    <string name="entry_linked_return">یہ اندراج واپسی نے لکھا ہے۔ اس کے بجائے واپسی منسوخ کریں۔</string>
+    <string name="pos_return_void_day_closed">اس واپسی کا دن بند ہو چکا ہے، اس لیے یہ منسوخ نہیں ہو سکتی۔ اس کی جگہ سامان نئی بِکری میں لکھیں۔</string>
+    <string name="entries_linked_kept">یہ ویسے ہی رہے کیونکہ انہیں کسی بل، پلان، چیک، کاؤنٹر بِکری یا واپسی نے لکھا ہے (وہیں سے بدلیں): %1$d</string>
+    <string name="party_has_tickets">حذف نہیں ہوا: %1$s کے نام کاؤنٹر بِکری یا واپسی لکھی ہے۔ پہلے انہیں منسوخ کریں، یا گاہک کو رہنے دیں۔</string>
+    <string name="bin_emptied_kept">بن خالی کر دیا گیا۔ یہ گاہک رکھے گئے کیونکہ ان کے ابھی سپلائر بل، چیک، ادائیگی منصوبے یا کاؤنٹر سیل موجود ہیں: %1$d</string>
+    <string name="bin_party_kept">بن میں ہی رکھا گیا: اس گاہک کے ابھی سپلائر بل، چیک، ادائیگی منصوبے یا کاؤنٹر سیل موجود ہیں۔ ان کے لیے گاہک کو واپس لائیں۔</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">آپ کو ادا کیا</string>
+    <string name="pdf_stmt_you_supplied">آپ نے مال دیا</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">نام</string>
+    <string name="csv_col_category">کیٹیگری</string>
+    <string name="csv_col_company">کمپنی</string>
+    <string name="csv_col_unit">یونٹ</string>
+    <string name="csv_col_sale">قیمت فروخت</string>
+    <string name="csv_col_credit">ادھار قیمت</string>
+    <string name="csv_col_cost">لاگت</string>
+    <string name="csv_col_barcode">بارکوڈ</string>
+    <string name="csv_col_low">کم اسٹاک حد</string>
+    <string name="csv_col_type">قسم</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">ا–ے</string>
+    <string name="sort_glyph_za">ے–ا</string>
+    <string name="text_size_glyph">اب</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">محفوظ نہیں ہوا۔ کچھ بھی تبدیل نہیں ہوا۔ (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">چھپے کاغذ پر مقامی ہندسے</string>
+    <string name="print_native_digits_help">انوائس، اسٹیٹمنٹ اور رپورٹ اس زبان کے اپنے ہندسوں میں چھپیں گے۔ اسکرین اور جو آپ لکھیں وہ 0-9 ہی رہے گا۔</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">ملک</string>
+    <string name="bp_country_help">واٹس ایپ کا کنٹری کوڈ، ٹیکس نمبر کا نام، ہفتے کا پہلا دن اور کیلنڈر اسی سے طے ہوتے ہیں۔ رقمیں کبھی نہیں بدلتیں۔</string>
+    <string name="country_other">دیگر</string>
+    <string name="country_ask_title">آپ کی دکان کس ملک میں ہے؟</string>
+    <string name="country_ask_body">ایپ اسے واٹس ایپ نمبر، ٹیکس نمبر کے نام اور ہفتے کے لیے استعمال کرتی ہے۔ بعد میں بزنس پروفائل سے بدل سکتے ہیں۔</string>
+    <string name="poster_national_day">قومی دن</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">موبائل والٹ نمبر (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="one">%d دن باقی</item>
+        <item quantity="other">%d دن باقی</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="one">%d منتخب</item>
+        <item quantity="other">%d منتخب</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="one">%d ایکسپائر ہونے والا</item>
+        <item quantity="other">%d ایکسپائر ہونے والے</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="one">آج %d سیل</item>
+        <item quantity="other">آج %d سیلز</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="one">%d ڈیزائن</item>
+        <item quantity="other">%d ڈیزائن</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="one">بہت زیادہ کوششیں۔ %d سیکنڈ انتظار کریں۔</item>
+        <item quantity="other">بہت زیادہ کوششیں۔ %d سیکنڈ انتظار کریں۔</item>
+    </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">کمپیوٹر کے ساتھ لائیو سنک</string>
+    <string name="live_explain">فون اور کمپیوٹر ایک ہی کھاتہ رکھتے ہیں، جو ہر چند سیکنڈ میں تازہ ہوتا ہے جب دونوں دکان کے وائی فائی پر ہوں اور روشن کھاتہ کھلا ہو۔ جب تک «انٹرنیٹ سے بھی» آن نہ ہو، کچھ بھی انٹرنیٹ پر نہیں جاتا۔</string>
+    <string name="live_join">کمپیوٹر سے جوڑیں</string>
+    <string name="live_stop">لائیو سنک بند کریں</string>
+    <string name="live_stop_confirm">اس ڈیوائس پر لائیو سنک بند کریں؟ کھاتہ بالکل ویسا ہی رہے گا۔</string>
+    <string name="live_status_off">لائیو سنک بند ہے۔</string>
+    <string name="live_status_not_paired">لائیو سنک چالو ہے۔ ابھی کوئی کمپیوٹر نہیں جڑا۔</string>
+    <string name="live_status_waiting">کھاتہ کمپیوٹر تک پہنچ گیا۔ جوڑ مکمل کرنے کے لیے وہاں ہاں دبائیں۔</string>
+    <string name="live_status_live">%1$s کے ساتھ لائیو۔ آخری اپڈیٹ: %2$s</string>
+    <string name="live_status_unreachable">کمپیوٹر جواب نہیں دے رہا۔ کیا دونوں ایک ہی وائی فائی پر ہیں، اور کیا اس پر روشن کھاتہ کھلا ہے؟</string>
+    <string name="live_status_relay_down">دکان کے وائی فائی سے دور ہیں، اور انٹرنیٹ والے ریلے نے جواب نہیں دیا (%1$s)۔ فون کوشش کرتا رہے گا؛ دکان پر وائی فائی اس کے بغیر چلتا ہے۔</string>
+    <string name="live_pc_relay_ok">انٹرنیٹ والا ریلے: چل رہا ہے (آخری دور %1$s)۔</string>
+    <string name="live_pc_relay_down">انٹرنیٹ والا ریلے: جواب نہیں دے رہا (%1$s)۔ دکان پر وائی فائی اس کے بغیر چلتا ہے۔</string>
+    <string name="live_pair_other_phone">یہ کھاتہ پہلے ہی فون «%1$s» کے ساتھ چل رہا ہے۔ سب بدلنے سے وہ فون رک جائے گا۔ ایک کھاتہ = ایک فون اور ایک کمپیوٹر: دونوں فون رکھنے ہوں تو اس فون کو نئے کاروبار کے طور پر جوڑیں۔</string>
+    <string name="na_sync_conflict">%1$s اندراج دونوں آلات پر ایک ساتھ بدلے گئے</string>
+    <string name="na_sync_conflict_sub">رکھی گئی رقم شاید وہ نہ ہو جو آپ چاہتے تھے۔ لائیو سنک ← کیا بدلا دیکھیں۔</string>
+    <string name="live_status_update_both">دوسرے آلے پر ایپ کا نیا ورژن ہے (%1$s)۔ اس آلے کو اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_status_key_busy">اس آلے کے کی اسٹور نے جواب نہیں دیا (%1$s)۔ کچھ نہیں بدلا؛ تھوڑی دیر میں دوبارہ کوشش ہوگی۔</string>
+    <string name="na_sync_off">لائیو سنک رک گیا</string>
+    <string name="na_sync_off_sub">یہ کھاتہ بدل دیا گیا یا پرانی نقل پر واپس چلا گیا۔ دوسرے آلے سے دوبارہ جوڑیں۔</string>
+    <string name="live_status_halted">لائیو سنک فی الحال رکا ہوا ہے۔ آپ کا کھاتہ محفوظ ہے اور ہمیشہ کی طرح چلتا ہے۔</string>
+    <string name="live_status_failed">لائیو سنک رک گیا: %1$s</string>
+    <string name="live_mismatch">دونوں کھاتے آپس میں نہیں ملتے۔ نئی کاپی کے لیے دوبارہ جوڑیں۔</string>
+    <string name="live_sent">بھیج دیا۔ کمپیوٹر پر ہاں دبائیں تاکہ اس کا کھاتہ اس فون کے کھاتے سے بدل جائے۔</string>
+    <string name="live_receive">دکان کا کھاتہ اس فون پر لیں</string>
+    <string name="live_receive_steps">جس فون پر دکان کا کھاتہ ہے اس پر بیک اپ ← لائیو سنک ← جوڑیں کھولیں اور یہ کوڈ اسکین کریں۔ دونوں فون ایک ہی وائی فائی پر ہوں۔ یہ کھڑکی 15 منٹ انتظار کرتی ہے۔</string>
+    <string name="live_receive_offer">“%1$s” اس فون کو دکان کا کھاتہ دینا چاہتا ہے۔\n\nکوڈ: %2$s — یہی چار ہندسے اس فون پر بھی نظر آنے چاہئیں۔\n\nاس فون کا اپنا کھاتہ دکان کے کھاتے سے بدل جائے گا۔ اس کے بعد فون انٹرنیٹ ریلے کے ذریعے ایک ہی کھاتہ مل کر رکھیں گے۔</string>
+    <string name="live_receive_done">ہو گیا۔ یہ فون اب دکان کا کھاتہ اس کے دوسرے آلات کے ساتھ رکھتا ہے۔</string>
+    <string name="live_receive_no_wifi">یہ فون کسی وائی فائی پر نہیں ہے۔ دکان کے وائی فائی سے جڑیں اور دوبارہ کوشش کریں۔</string>
+    <string name="live_sent_phone">بھیج دیا۔ دوسرے فون پر ہاں دبائیں تاکہ وہ یہ کھاتہ لے لے۔ پھر دونوں فون انٹرنیٹ ریلے کے ذریعے ملیں گے۔</string>
+    <string name="live_not_live_code">یہ لائیو سنک کا کوڈ نہیں۔ کمپیوٹر پر لائیو سنک کھولیں اور وہاں دکھنے والا کوڈ اسکین کریں۔</string>
+    <string name="live_pc_steps">فون پر بیک اپ ← کمپیوٹر کے ساتھ لائیو سنک ← کمپیوٹر سے جوڑیں کھولیں اور یہ کوڈ اسکین کریں۔ آپ کی ہاں کے بعد فون کا کھاتہ یہاں نئے کاروبار کے طور پر کھلے گا (اس کمپیوٹر کا اپنا کھاتہ ویسا ہی رہے گا)، اور پھر دونوں ایک جیسے رہیں گے۔</string>
+    <string name="live_pc_none">ابھی کوئی فون نہیں جڑا۔</string>
+    <string name="live_conflicts">دونوں پر ایک ساتھ تبدیلی (ایک رکھی گئی، دوسری محفوظ کی گئی): %1$d</string>
+    <string name="live_pair_warning">یہ فون کا کھاتہ ہے۔ اس کمپیوٹر کا اپنا کھاتہ بالکل ویسا رکھنے کے لیے نئے کاروبار کے طور پر جوڑیں: فون کا کھاتہ اس کے ساتھ الگ کھلے گا اور یہاں سے کچھ نہیں مٹے گا۔ ”سب کچھ بدل دیں“ صرف تب دبائیں جب اس کمپیوٹر کا کھاتہ ضروری نہ ہو۔</string>
+    <string name="live_pair_code">جوڑنے کا کوڈ: %1$s۔ کمپیوٹر اپنی ہاں کے ساتھ یہی کوڈ دکھاتا ہے؛ وہاں ہاں صرف تب کہیں جب دونوں ایک جیسے ہوں۔</string>
+    <string name="live_pair_code_check">فون یہ کوڈ دکھا رہا ہے: %1$s۔ ہاں صرف تب کہیں جب فون پر بھی یہی کوڈ ہو۔</string>
+    <string name="live_join_new_business">نئے کاروبار کے طور پر جوڑیں</string>
+    <string name="live_devices">جڑے ہوئے آلات</string>
+    <string name="live_remove">ہٹائیں</string>
+    <string name="live_remove_confirm">%1$s کو ہٹائیں؟ یہ اس کمپیوٹر کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا۔</string>
+    <string name="live_needs_owner">کسی آلے کو لائیو سنک سے جوڑنے کے لیے مالک کا PIN چاہیے۔</string>
+    <string name="live_badge">لائیو · %1$s</string>
+    <string name="live_conflicts_show">دیکھیں کیا بدلا</string>
+    <string name="live_conflict_now">اب: %1$s</string>
+    <string name="live_conflict_saved">محفوظ رکھا: %1$s</string>
+    <string name="live_conflict_clear">دیکھ لیا، ہٹا دیں</string>
+    <string name="live_join_failed">فون کا جوڑ مکمل نہیں ہوا: %1$s۔ فون پر بیک اپ ← کمپیوٹر کے ساتھ لائیو سنک ← کمپیوٹر سے جوڑیں کھولیں اور کوڈ دوبارہ اسکین کریں۔</string>
+    <string name="restore_stops_live">یہ کھاتہ دوسرے آلے کے ساتھ لائیو سنک ہوتا ہے۔ اسے بدلنے سے لائیو سنک رک جائے گا؛ بعد میں دونوں کو دوبارہ جوڑیں۔</string>
+    <string name="live_held">دوسرے آلے کی تبدیلیاں جو اپنی چیز کا انتظار کر رہی ہیں (کوئی گاہک یا آئٹم جو ابھی یہاں نہیں): %1$d</string>
+    <string name="live_status_rejoin">لائیو سنک رک گیا کیونکہ یہ کھاتہ ریسٹور سے بدلا گیا یا کسی پرانی کاپی پر واپس گیا۔ دوبارہ سنک کے لیے کمپیوٹر سے پھر جوڑیں۔</string>
+    <string name="live_status_not_accepted">کمپیوٹر نے وقت پر ہاں نہیں کی۔ جوڑنے کے لیے اس کا لائیو سنک کوڈ دوبارہ اسکین کریں۔</string>
+    <string name="live_status_not_here">کمپیوٹر نے جواب دیا، مگر اس وقت یہ کھاتہ اس پر نہیں رکھا ہوا۔ کمپیوٹر پر اس کھاتے کا کاروبار کھولیں۔</string>
+    <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
+    <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation-313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
+    <string name="live_relay">انٹرنیٹ سے بھی</string>
+    <string name="wifi_take_too_big">کمپیوٹر کی کتاب اس فون کی میموری یا خالی جگہ کے لیے بہت بڑی ہے۔ دوسری ایپس بند کر کے دوبارہ کوشش کریں، یا کتاب بیک اپ فائل سے منتقل کریں۔</string>
+    <string name="live_devices_open">آلات اور ایک ساتھ تبدیلیاں</string>
+    <string name="live_devices_none">ابھی اس کھاتے میں کوئی دوسرا آلہ نہیں جڑا۔</string>
+    <string name="live_device_seen">آخری بار دیکھا گیا: %1$s</string>
+    <string name="live_device_never">ابھی کوئی رابطہ نہیں ہوا</string>
+    <string name="live_remove_confirm_phone">%1$s کو اس کھاتے سے ہٹائیں؟ یہ فون اس کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا؛ دوبارہ سنک کے لیے اسے پھر سے جوڑیں۔</string>
+    <string name="live_conflicts_none">کسی چیز میں دو آلات پر ایک ساتھ تبدیلی نہیں ہوئی۔</string>
+    <string name="live_why_other_computer">کسی دوسرے کمپیوٹر نے جواب دیا، وہ نہیں جس سے یہ فون جڑا ہے۔ کمپیوٹر کو دوبارہ جوڑیں</string>
+    <string name="live_why_other_book">دوسرے آلے پر کوئی اور کھاتہ ہے۔ اسے دوبارہ جوڑیں</string>
+    <string name="live_why_unknown_device">ایسے آلے سے تبدیلیاں آئیں جسے یہ کھاتہ نہیں جانتا۔ اسے دوبارہ جوڑیں</string>
+    <string name="live_why_unreachable">کوئی جواب نہیں ملا</string>
+    <string name="live_why_error">اس فون پر کوئی خرابی ہوئی۔ تھوڑی دیر میں دوبارہ کوشش ہوگی</string>
+    <string name="live_why_day_limit">ریلے پر آج کی حد پوری ہو گئی</string>
+    <string name="live_why_relay_full">ریلے اس وقت بھرا ہوا ہے</string>
+    <string name="drive_plan_replace">%1$s: اس فون پر %2$s کا کھاتہ اس سے بدل جائے گا۔</string>
+    <string name="drive_plan_new">%1$s: نئی دکان کے طور پر آئے گی۔ اس فون کی %2$s ایک الگ دکان ہے اور ویسی ہی رہے گی۔</string>
+    <string name="drive_plan_fresh">%1$s: اس فون پر ایک دکان کے طور پر واپس آئے گی۔</string>
+    <string name="drive_plan_live">%1$s دوسرے آلے کے ساتھ لائیو سنک ہوتی ہے۔ اسے بدلنے سے لائیو سنک رک جائے گا؛ بعد میں دونوں کو دوبارہ جوڑیں۔</string>
+    <string name="drive_plan_unreadable">%1$s: ڈرائیو سے پڑھی نہیں جا سکی۔ اسے ویسا ہی چھوڑا جا رہا ہے۔</string>
+    <string name="live_pair_other_business">اس فون کا کھاتہ اس کمپیوٹر پر کاروبار «%1$s» میں پہلے ہی لائیو چل رہا ہے۔ وہی کاروبار کھولیں: یہاں دوسری کاپی اس سے الگ ہوتی جائے گی۔</string>
+    <string name="fc_look_in">یہاں دیکھیں:</string>
+    <string name="fc_folder_name">فولڈر:</string>
+    <string name="fc_files_of_type">فائل کی قسم:</string>
+    <string name="pos_void_shift_closed">جس شفٹ میں یہ بِکری ہوئی تھی وہ گن کر بند ہو چکی ہے۔ منسوخ کرنے کے بجائے واپسی کریں۔</string>
+    <string name="pos_customer_binned">یہ گاہک ری سائیکل بِن میں ہے۔ پہلے گاہک کو واپس لائیں۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="pos_held_gone">یہ روکا ہوا ٹکٹ پہلے ہی بِک چکا ہے یا ہٹایا جا چکا ہے، شاید کسی اور آلے پر۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="pos_ticket_not_posted">یہ بِکری اب درج شدہ نہیں رہی (منسوخ یا ہٹا دی گئی)۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="pos_post_failed">بِکری محفوظ نہیں ہوئی۔ کچھ نہیں لکھا گیا؛ ٹکٹ ابھی کاؤنٹر پر ہے۔</string>
+    <string name="pos_hold_failed">ٹکٹ روکا نہیں جا سکا۔ یہ ابھی کاؤنٹر پر ہے۔</string>
+    <string name="pos_void_failed">بِکری منسوخ نہیں ہو سکی۔ کچھ بھی تبدیل نہیں ہوا۔</string>
+    <string name="pos_return_failed">واپسی محفوظ نہیں ہوئی۔ کچھ نہیں لکھا گیا۔</string>
+    <string name="book_merge_failed">کچھ شامل نہیں ہوا۔ یہ کھاتہ جوں کا توں ہے۔</string>
+    <string name="products_export_failed">سامان کی فائل نہیں بن سکی۔</string>
+    <string name="save_failed_storage_full">محفوظ نہیں ہوا: فون کی میموری بھر چکی ہے۔ کچھ جگہ خالی کریں، پھر دوبارہ درج کریں۔</string>
+    <string name="save_failed_not_saved">محفوظ نہیں ہوا: کوئی خرابی ہوئی۔ براہِ کرم دیکھ کر دوبارہ درج کریں۔</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d درستگی لکھی گئی</item>
+        <item quantity="other">%1$d درستگیاں لکھی گئیں</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">مکمل — آج %1$d یاد دہانی کھولی گئی</item>
+        <item quantity="other">مکمل — آج %1$d یاد دہانیاں کھولی گئیں</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">میعاد ختم \u00B7 %1$d دن پہلے</item>
+        <item quantity="other">میعاد ختم \u00B7 %1$d دن پہلے</item>
+    </plurals>
+    <string name="voice_language_missing_phone">آپ کے فون میں یہ زبان موجود نہیں۔ فون کی اپنی زبان میں سن رہا ہے۔</string>
+    <string name="live_give">یہ کھاتہ کسی فون کو دیں</string>
+    <string name="live_give_steps">نئے فون پر بیک اپ ← دکان کا کھاتہ اس فون پر لیں ← کمپیوٹر کا کوڈ اسکین کریں کھولیں اور یہ کوڈ اسکین کریں۔ دونوں ایک ہی وائی فائی پر ہوں۔ یہ کوڈ صرف ایک فون کے لیے ہے۔ کھاتے کا انٹرنیٹ ریلے چالو کر دیا جاتا ہے، تاکہ فون کھاتے کے باقی آلات سے بھی ملتا رہے۔</string>
+    <string name="live_give_sending">کھاتہ “%1$s” کو دیا جا رہا ہے…</string>
+    <string name="live_give_sent">کھاتہ “%1$s” کو پہنچ گیا۔\n\nکوڈ: %2$s — فون پر بھی یہی چار ہندسے نظر آئیں گے۔ وہاں مالک کی ہاں کے بعد، 15 منٹ کے اندر، فون اس کھاتے میں شامل ہو جائے گا۔</string>
+    <string name="live_give_failed">کھاتہ فون تک نہیں پہنچا۔ نیا کوڈ بنائیں اور دوبارہ اسکین کریں۔</string>
+    <string name="live_give_new_code">نیا کوڈ</string>
+    <string name="live_give_code_wrong_place">یہ کوڈ کمپیوٹر کا کھاتہ کسی فون کو دیتا ہے۔ اسے لینے کے لیے بیک اپ ← دکان کا کھاتہ اس فون پر لیں ← کمپیوٹر کا کوڈ اسکین کریں کھولیں۔</string>
+    <string name="live_receive_scan_pc">کمپیوٹر کا کوڈ اسکین کریں</string>
+    <string name="live_receive_not_give">یہ کمپیوٹر کا کھاتہ دینے والا کوڈ نہیں۔ کمپیوٹر پر مزید ← لائیو سنک ← یہ کھاتہ کسی فون کو دیں کھولیں اور وہاں دکھنے والا کوڈ اسکین کریں۔</string>
+    <string name="live_receive_offer_pc">“%1$s” (کمپیوٹر) اس فون کو دکان کا کھاتہ دینا چاہتا ہے۔\n\nکوڈ: %2$s — یہی چار ہندسے کمپیوٹر پر بھی نظر آنے چاہئیں۔\n\nاس فون کا اپنا کھاتہ دکان کے کھاتے سے بدل جائے گا۔ اس کے بعد یہ فون اور کمپیوٹر دکان کے وائی فائی اور انٹرنیٹ ریلے کے ذریعے ایک ہی کھاتہ مل کر رکھیں گے۔</string>
+    <string name="live_receive_pc_refused">کمپیوٹر نے اپنا کھاتہ نہیں دیا۔ اس کا کوڈ ایک ہی بار چلتا ہے، اور صرف تب جب اس کی لائیو سنک والی کھڑکی کھلی ہو: وہاں نیا کوڈ بنائیں اور اسے اسکین کریں۔</string>
+    <string name="live_receive_pc_unreachable">کمپیوٹر تک نہیں پہنچ سکے۔ دیکھیں کہ دونوں ایک ہی وائی فائی پر ہیں، کمپیوٹر پر لائیو سنک والی کھڑکی کھلی ہے، اور ونڈوز نے روشن کھاتہ کو نیٹ ورک کی اجازت دی ہے۔</string>
+    <string name="report_sync_notes_included">— لائیو سنک نوٹس (کریش نہیں: وہ مسائل جن کے بعد لائیو سنک نے دوبارہ کوشش کی؛ کوئی نام، رقم یا چابی نہیں):</string>
+    <string name="live_phone_relay_ask">دو فون صرف انٹرنیٹ ریلے کے ذریعے ملتے ہیں۔ یہ کھاتہ دوسرے فون کو بھیجنے سے اس کے لیے “انٹرنیٹ سے بھی” آن ہو جائے گا۔ اگر دوسرا فون کھاتہ نہ لے تو یہ سوئچ پہلے جیسا ہو جائے گا۔</string>
+    <string name="live_pair_left_business">فون کا جوڑ اس وقت آیا جب کاروبار “%1$s” کھلا تھا، اور اب دوسرا کاروبار کھلا ہے: اسے چھوڑ دیا گیا تاکہ یہ اس کھاتے کی جگہ نہ لے۔ جوڑنے کے لیے “%1$s” کھولیں اور فون پر کوڈ دوبارہ اسکین کریں۔</string>
+    <string name="live_wake_off">ایپ بند ہو تو ریلے اس فون کو جگا نہیں سکتا: دوسرے آلے کی تبدیلیاں ایپ کھلنے پر آئیں گی۔</string>
+    <string name="staff_name_taken">اس نام کا عملہ پہلے سے فہرست میں ہے۔ فرق کے لیے کچھ ساتھ لکھیں، جیسے والد کا نام۔</string>
 </resources>

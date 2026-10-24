@@ -50,14 +50,14 @@ fun InsightsPane(dao: KhataDao, reload: Int) {
     LaunchedEffect(reload) { data = withContext(Dispatchers.IO) { Insights.thisMonth(dao) } }
     val d = data ?: return
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         PaneTitle(word(W.insights_title), word(W.insights_subtitle))
         Text(word(W.insights_today) + "  ·  " + plural(WP.entries_today, d.todayCount, d.todayCount), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             TotalCard(word(W.insights_today_given), Format.money(d.todayGiven), c.owedToMe, Modifier.weight(1f))
             TotalCard(word(W.insights_today_received), Format.money(d.todayReceived), c.iOwe, Modifier.weight(1f))
         }
-        Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().card().padding(16.dp)) {
             Text(word(W.insights_total_sale), color = c.textMuted, fontSize = 13.sp)
             Text(Format.money(d.thisMonthTotal), color = c.ink, fontSize = 26.sp, fontWeight = FontWeight.Bold)
             val pct = d.changePercent
@@ -71,7 +71,7 @@ fun InsightsPane(dao: KhataDao, reload: Int) {
             )
         }
         // Twelve months as bars, the month just gone at the end; each bar wears its figure.
-        Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().card().padding(16.dp)) {
             Text(word(W.insights_monthly_title), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
             val max = d.monthlySales.maxOfOrNull { it.total } ?: 0.0
             if (max <= 0.0) {
@@ -92,14 +92,14 @@ fun InsightsPane(dao: KhataDao, reload: Int) {
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Column(Modifier.weight(1f).background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(Modifier.weight(1f).card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(word(W.insights_top_products), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 if (d.topProducts.isEmpty()) Text(word(W.insights_no_products), color = c.textMuted, fontSize = 13.sp)
                 d.topProducts.forEach { p ->
                     Row { Text(p.name, Modifier.weight(1f), color = c.ink, fontSize = 14.sp); Text(Format.qty(p.qty, p.unit), color = c.inkSoft, fontSize = 14.sp) }
                 }
             }
-            Column(Modifier.weight(1f).background(c.surface, RoundedCornerShape(14.dp)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(Modifier.weight(1f).card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(word(W.insights_top_customers), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 if (d.topCustomers.isEmpty()) Text(word(W.insights_no_sales), color = c.textMuted, fontSize = 13.sp)
                 d.topCustomers.forEach { cs ->

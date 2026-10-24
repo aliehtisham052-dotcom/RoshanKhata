@@ -6,6 +6,9 @@
 // an MSI by GitHub's Windows runner (desktop.yml); the MSI becomes an MSIX for
 // the Microsoft Store with Microsoft's free MSIX Packaging Tool.
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 plugins {
     kotlin("jvm")
@@ -22,7 +25,45 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
     // The business cards' QR (the phone's own library, pure Java).
     implementation("com.google.zxing:core:3.5.3")
+    // PDFs on the computer (1.8.4): every sheet kept as a file, its pages as pictures
+    // (PdfFiles). Apache 2.0, pure Java; brings fontbox, pdfbox-io and commons-logging.
+    implementation("org.apache.pdfbox:pdfbox:3.0.4")
     testImplementation("junit:junit:4.13.2")
+}
+
+// Only Windows' SQLite in the MSI (20 Oct): androidx.sqlite:sqlite-bundled carries its native
+// library for five systems (Linux x64/arm64, macOS x64/arm64, Windows x64), 4.7 MB of them never
+// loaded on Windows. On the Windows runner, which builds the MSI and runs the tests there, the
+// app's runtime classpath gets a copy of that jar with the other systems' natives left out;
+// every other jar passes through untouched. The Linux CI keeps the whole jar for its tests.
+abstract class WindowsOnlySqlite : TransformAction<TransformParameters.None> {
+    @get:InputArtifact abstract val input: Provider<FileSystemLocation>
+    override fun transform(outputs: TransformOutputs) {
+        val file = input.get().asFile
+        if (!file.name.startsWith("sqlite-bundled")) { outputs.file(input); return }
+        val out = outputs.file(file.nameWithoutExtension + "-windows.jar")
+        ZipInputStream(file.inputStream().buffered()).use { zin ->
+            ZipOutputStream(out.outputStream().buffered()).use { zout ->
+                while (true) {
+                    val e = zin.nextEntry ?: break
+                    val keep = !e.name.startsWith("natives/") || e.name == "natives/" || e.name.startsWith("natives/windows_x64")
+                    if (keep) { zout.putNextEntry(ZipEntry(e.name)); zin.copyTo(zout); zout.closeEntry() }
+                }
+            }
+        }
+    }
+}
+if (System.getProperty("os.name").orEmpty().startsWith("Windows")) {
+    val windowsNatives = Attribute.of("roshankhata.windowsNatives", Boolean::class.javaObjectType)
+    dependencies {
+        attributesSchema { attribute(windowsNatives) }
+        artifactTypes.getByName("jar") { attributes.attribute(windowsNatives, false) }
+        registerTransform(WindowsOnlySqlite::class) {
+            from.attribute(windowsNatives, false).attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "jar")
+            to.attribute(windowsNatives, true).attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "jar")
+        }
+    }
+    configurations.named("runtimeClasspath") { attributes.attribute(windowsNatives, true) }
 }
 
 compose.desktop {
@@ -31,19 +72,33 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi)
             packageName = "Roshan Khata"
-            // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0.
-            packageVersion = "1.6.0"
+            // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0. The BUILD number is
+            // stamped by CI (desktop.yml, the run number) so every MSI the owner downloads
+            // installs over the last one: an MSI of the same version does not (21 Oct 2026).
+            packageVersion = "1.17.1"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
             // java.sql for Room's driver plumbing; jdk.unsupported for SQLite's native loader.
-            modules("java.sql", "jdk.unsupported")
+            // jdk.localedata (21 Oct 2026, the critical review): without it the MSI's Java knew only
+            // English, and Urdu, Arabic, Sindhi... month and day names, AM/PM and the date picker came out
+            // in English. CI's full JDK always had it, so every test already ran with it.
+            // java.net.http (23 Oct 2026): live sync's line to the relay (JdkLines) is the JDK's own WebSocket.
+            // jdk.crypto.ec (23 Oct 2026, R06): the SunEC provider. On JDK 17 (the toolchain and the
+            // runner's JDK) EC is a module of its own that jlink adds only when named; without it TLS
+            // has no ECDHE suite and no key-share group, so every HTTPS/WSS call (relays, kill switch,
+            // update check, the live line) failed in the handshake. JDK 22+ moved it into java.base
+            // (JDK-8308398) and keeps the module as an empty, deprecated one. desktop.yml's
+            // "Packaged runtime check" runs RuntimeSelfCheck inside the app image's own Java.
+            modules("java.sql", "jdk.unsupported", "java.logging", "jdk.localedata", "java.net.http", "jdk.crypto.ec")
             windows {
                 menu = true
                 menuGroup = "Innovation 313"
                 shortcut = true
                 perUserInstall = true
-                dirChooser = true
+                // No folder question (21 Oct 2026): a per-user install into a folder of the
+                // owner's choosing was the one way the update could land beside the old copy.
+                dirChooser = false
                 // Fixed for ever: Windows recognises a newer MSI as an upgrade of this app by it.
                 upgradeUuid = "01886a20-ce3b-43ee-936c-7ee93f78839e"
                 // The book icon (the phone's launcher icon, 18 Oct).
@@ -57,7 +112,20 @@ compose.desktop {
 // time (never by hand), so the computer's sections wear the same pictures.
 val syncTileIcons by tasks.registering(Sync::class) {
     from(rootProject.file("app/src/main/res")) {
-        include("drawable/ic_tile_*.xml", "values/colors.xml", "values-night/colors.xml")
+        include(
+            "drawable/ic_tile_*.xml", "values/colors.xml", "values-night/colors.xml",
+            // The header's glyphs (20 Oct redesign): the shop, the bell, the eye, the phone.
+            "drawable/ic_storefront.xml", "drawable/ic_bell.xml", "drawable/ic_eye_open.xml",
+            "drawable/ic_eye_closed.xml", "drawable/ic_phone.xml", "drawable/ic_search.xml",
+            // The Fluent controls' glyphs (1.10.0): plus, more, print, PDF, calendar, close,
+            // check, chevron, the gave/got arrows, edit, share — the phone's own white glyphs.
+            "drawable/ic_add_plain.xml", "drawable/ic_more_vert.xml", "drawable/ic_print.xml",
+            "drawable/ic_pdf_doc.xml", "drawable/ic_calendar.xml", "drawable/ic_close.xml",
+            "drawable/ic_check_plain.xml", "drawable/ic_chevron_down.xml", "drawable/ic_chevron_right.xml",
+            "drawable/ic_arrow_gave.xml", "drawable/ic_arrow_got.xml", "drawable/ic_edit.xml", "drawable/ic_share.xml",
+            // The shop-type picker's twenty-five trade icons (TradeKit).
+            "drawable/ic_trade_*.xml"
+        )
     }
     into(layout.buildDirectory.dir("tileRes/tiles"))
 }
@@ -71,7 +139,9 @@ val syncPrintAssets by tasks.registering(Sync::class) {
             "sora_variable.ttf", "manrope_regular.ttf", "manrope_bold.ttf", "playfair_display_variable.ttf",
             "ibm_plex_mono_regular.ttf", "ibm_plex_mono_bold.ttf",
             // Urdu business cards are set in Nastaliq, as on the phone.
-            "noto_nastaliq_urdu.ttf"
+            "noto_nastaliq_urdu.ttf",
+            // The posters' Arabic-script greetings (عید مبارک), in calligraphy.
+            "aref_ruqaa_bold.ttf"
         )
         into("fonts")
     }

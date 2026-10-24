@@ -1,15 +1,18 @@
 package com.innovation313.roshankhata.desktop.invoice
 
 import com.innovation313.roshankhata.data.Currency
+import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.desktop.gfx.Bitmap
 import com.innovation313.roshankhata.desktop.gfx.Typeface
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.Words
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.Locale
 import javax.imageio.ImageIO
 
 /*
@@ -20,14 +23,44 @@ import javax.imageio.ImageIO
  * pointed here and at ..gfx; its calls keep their shape.
  */
 
-/** The words, the shop and its pictures, for one printing. */
-class Context(val words: Words, val settings: ShopSettings, val images: ProfileImages, val rtl: Boolean) {
+/**
+ * The words, the shop and its pictures, for one printing. [locale] is the
+ * language the words are in: the posters ask for it the Android way,
+ * `context.resources.configuration.locales[0]`.
+ */
+class Context(
+    val words: Words,
+    val settings: ShopSettings,
+    val images: ProfileImages,
+    val rtl: Boolean,
+    val locale: Locale = Locale.getDefault()
+) {
     fun getString(name: String, vararg args: Any): String = words.text(name, *args)
+    val resources = Resources(this)
 }
 
-/** `R.string.x` in the copied code names the same string as `W.x`. */
+/** As much of android.content.res.Resources as the copied code reads. */
+class Resources internal constructor(val context: Context) {
+    val configuration = Configuration(context.locale)
+    fun getString(name: String, vararg args: Any): String = context.getString(name, *args)
+}
+
+class Configuration internal constructor(locale: Locale) {
+    val locales = LocaleList(locale)
+}
+
+class LocaleList internal constructor(private val locale: Locale) {
+    operator fun get(index: Int): Locale? = if (index == 0) locale else null
+}
+
+/** The phone's `Digits.quantity(resources, R.plurals.x, n, args)`: the counted string, figures in 0-9. */
+fun Digits.quantity(res: Resources, name: String, quantity: Int, vararg args: Any): String =
+    res.context.words.plural(name, quantity, *args)
+
+/** `R.string.x` and `R.plurals.x` in the copied code name the same words as `W.x` and `WP.x`. */
 object R {
     val string = W
+    val plurals = WP
 }
 
 /**
@@ -79,8 +112,11 @@ object BusinessProfile {
     fun businessAddress(c: Context): String? = c.settings.businessAddress()?.takeIf { it.isNotBlank() }
     fun businessPhone(c: Context): String? = c.settings.businessPhone()?.takeIf { it.isNotBlank() }
     fun strn(c: Context): String? = c.settings.strn()?.takeIf { it.isNotBlank() }
-    fun taxLabel(c: Context): String =
-        if (c.settings.currency() == Currency.DEFAULT) "STRN" else c.getString(W.tax_number_label)
+    fun taxLabel(c: Context): String = when (val country = c.settings.country()) {
+        com.innovation313.roshankhata.data.ShopCountry.PAKISTAN -> "STRN"
+        com.innovation313.roshankhata.data.ShopCountry.OTHER -> c.getString(W.tax_number_label)
+        else -> country.taxIdName
+    }
     fun bankName(c: Context): String? = c.settings.bankName()?.takeIf { it.isNotBlank() }
     fun bankAccountTitle(c: Context): String? = c.settings.bankAccountTitle()?.takeIf { it.isNotBlank() }
     fun bankIban(c: Context): String? = c.settings.bankIban()?.takeIf { it.isNotBlank() }
@@ -113,6 +149,9 @@ object InvoiceFonts {
     fun ibmPlexMonoBold(c: Context) = load("ibm_plex_mono_bold", Typeface.MONOSPACE)
     fun nastaliq(c: Context) = load("noto_nastaliq_urdu", Typeface.DEFAULT)
     fun arefRuqaa(c: Context) = load("aref_ruqaa_bold", Typeface.DEFAULT_BOLD)
+
+    /** A bold variant of any of the above, synthesised, as the phone's InvoiceFonts.bold. */
+    fun bold(typeface: Typeface): Typeface = Typeface.create(typeface, Typeface.BOLD)
 
     /** True when every bundled face loaded (a test holds the build to it). */
     fun allPresent(): Boolean = listOf(

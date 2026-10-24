@@ -92,6 +92,9 @@
     <string name="home_sec_daily">Every day</string>
     <string name="home_sec_business">Business</string>
     <string name="home_today">Today</string>
+    <string name="home_cash_in_hand">Cash in hand</string>
+    <string name="home_quick_actions">Quick actions</string>
+    <string name="home_col_time">Time</string>
     <string name="tile_bills">Bills</string>
     <string name="tile_expiry">Expiry</string>
     <string name="tile_card">Card</string>
@@ -127,9 +130,7 @@
     <string name="add_party">Add Party</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
-    <string name="no_parties_yet">No customers yet.
-
-Add your first customer and start your khata.</string>
+    <string name="no_parties_yet">No customers yet.\n\nAdd your first customer and start your khata.</string>
     <string name="no_entries_yet">No entries yet.</string>
 
     <string name="i_gave">I Gave</string>
@@ -296,6 +297,18 @@ Add your first customer and start your khata.</string>
 
     <!-- App Lock -->
     <string name="app_lock">App Lock</string>
+    <string name="app_lock_pc_explain">A PIN for Roshan Khata on this computer. It keeps the ledger from other eyes at the counter; it does not lock the file itself, so also lock Windows (Win + L) when you step away.</string>
+    <string name="pc_pdf_save">Save PDF</string>
+    <string name="pc_pdf_open_folder">Open folder</string>
+    <string name="pc_pdf_making">Making the PDF…</string>
+    <string name="pc_pdf_failed">Could not save the PDF: %1$s</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">Choose a PIN of 4 to 8 digits</string>
+    <string name="lock_pin_again">Enter the same PIN again</string>
+    <string name="lock_pin_wrong">Wrong PIN. Try again.</string>
+    <string name="lock_pin_mismatch">The two PINs are not the same.</string>
+    <string name="lock_pin_wait">Too many tries. Wait %1$d seconds.</string>
+    <string name="lock_unlock">Unlock</string>
     <string name="lock_title">Unlock Roshan Khata</string>
     <string name="lock_subtitle">Your ledger is private. Confirm it is you.</string>
     <string name="app_lock_enabled">App Lock is on. You will be asked to confirm each time you open the app.</string>
@@ -508,7 +521,7 @@ Add your first customer and start your khata.</string>
     <string name="save_backup">Save backup</string>
 
     <string name="restore_warning_title">Replace everything?</string>
-    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n%7$d invoices\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis cannot be undone.</string>
+    <string name="restore_warning_message">Restoring will REPLACE everything currently in Roshan Khata with what is in this file:\n\n%1$d customers/suppliers\n%2$d ledger entries\n%3$d cheques\n%4$d cashbook entries\n%5$d payment plans\n%6$d supplier bills\n%7$d invoices\n\nWhatever is on this phone now will be gone. If you have entries here that are not in the backup, take a backup of THIS first.\n\nThis book is copied to Daily copies first, so the restore can be undone from there.</string>
     <string name="restore_replace">Replace everything</string>
     <string name="restore_done">Restored</string>
     <string name="restore_failed">Restore failed: %1$s</string>
@@ -590,13 +603,9 @@ Add your first customer and start your khata.</string>
         <item quantity="other">%1$d businesses on Drive</item>
     </plurals>
     <string name="drive_restore_all">Restore all</string>
-    <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:
-
-%1$s</string>
-    <string name="drive_restored_these">Restored:
-%1$s</string>
-    <string name="drive_restore_missed">Could not restore:
-%1$s</string>
+    <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:\n\n%1$s</string>
+    <string name="drive_restored_these">Restored:\n%1$s</string>
+    <string name="drive_restore_missed">Could not restore:\n%1$s</string>
     <string name="business_numbered">Business %1$d</string>
     <string name="backup_for_business">Backing up: %1$s</string>
     <string name="snapshots_title">Daily copies</string>
@@ -688,9 +697,9 @@ Add your first customer and start your khata.</string>
     <string name="bill_saved_credit">Bill saved and posted to your ledger</string>
     <string name="enter_supplier">Please choose a supplier</string>
     <string name="enter_product">Please enter a product name</string>
-    <string name="bill_deleted">Bill deleted. The ledger entry stays — the stock really did arrive and you really do owe for it.</string>
+    <string name="bill_deleted">Bill deleted. If it was a credit bill, its ledger entry went to the Recycle Bin with it — restore it from there within 30 days if this was a mistake.</string>
     <string name="delete_bill">Delete bill</string>
-    <string name="delete_bill_confirm">The bill and its batch records will be removed, but the ledger entry stays. The stock really did arrive and the money is really owed — deleting the paperwork does not undo that.</string>
+    <string name="delete_bill_confirm">The bill and its batch records will be removed. If it is a credit bill, its ledger entry (what you owe this supplier) also goes to the Recycle Bin, so the amount owed drops by this bill. You can restore the entry from the Recycle Bin within 30 days.</string>
     <string name="bill_actions">Bill</string>
     <string name="view_items">View items and batches</string>
 
@@ -870,9 +879,7 @@ Add your first customer and start your khata.</string>
     <string name="drive_auto_backup">Automatic backup</string>
     <string name="drive_auto_backup_hint">Backs up by itself whenever the book changes — at most every 30 minutes on Wi-Fi, every 6 hours on mobile data. You can still back up any time.</string>
     <string name="auto_backup_offer_title">Back up by itself?</string>
-    <string name="auto_backup_offer_body">Your account is connected. Roshan Khata can upload your book on its own whenever it changes, so a lost or broken phone does not take your records with it.
-
-You can change this any time from this screen.</string>
+    <string name="auto_backup_offer_body">Your account is connected. Roshan Khata can upload your book on its own whenever it changes, so a lost or broken phone does not take your records with it.\n\nYou can change this any time from this screen.</string>
     <string name="auto_backup_offer_yes">Turn it on</string>
     <string name="auto_backup_offer_no">Not now</string>
     <string name="drive_restore">Restore from Drive</string>
@@ -1172,7 +1179,7 @@ You can change this any time from this screen.</string>
     <string name="faq_q_hide">Can I hide the balance when someone is standing beside me?</string>
     <string name="faq_a_hide">Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.</string>
     <string name="faq_q_percent">Can I work out a discount inside the amount box?</string>
-    <string name="faq_a_percent">Yes. Type the sum straight in — 1200-15%% gives 1020, and 500*32%% gives 160. It works in every amount field and on the Calculator.</string>
+    <string name="faq_a_percent" formatted="false">Yes. Type the sum straight in — 1200-15% gives 1020, and 500*32% gives 160. It works in every amount field and on the Calculator.</string>
     <string name="faq_q_delete">I deleted a customer by mistake.</string>
     <string name="faq_a_delete">Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back.</string>
     <string name="faq_q_language">Can I change the language later?</string>
@@ -1569,7 +1576,7 @@ You can change this any time from this screen.</string>
     <string name="pdf_biz_cheques">Cheques not yet cleared</string>
     <string name="pdf_biz_cheques_note">These are not money until they clear. They are not in the balances above.</string>
     <string name="pdf_biz_cheque">Cheque</string>
-    <string name="pdf_biz_due"> \u00B7 due </string>
+    <string name="pdf_biz_due">" \u00B7 due "</string>
     <string name="pdf_biz_plans">Payment plans still running</string>
     <string name="pdf_biz_paid_of">%1$s of %2$s</string>
     <string name="pdf_biz_expiring">Stock expiring soon</string>
@@ -1578,14 +1585,14 @@ You can change this any time from this screen.</string>
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
-    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">Period: %1$s</string>
     <string name="pdf_reg_note_1">This is the shop\'s own record of what it was told, printed for the period above.</string>
-    <string name="pdf_reg_note_2">A sale is a credit/goods entry that carried goods \u2014 cash-only and qarz-e-hasna are not counted.</string>
+    <string name="pdf_reg_note_2">A sale is a credit/goods entry that carried goods, or the goods of a counter sale \u2014 cash-only and qarz-e-hasna are not counted.</string>
     <string name="pdf_reg_sales_lines">Sales lines in period</string>
     <string name="pdf_reg_total_sales">Total sales</string>
     <string name="pdf_reg_purchase_lines">Purchase lines in period</string>
@@ -1646,7 +1653,6 @@ You can change this any time from this screen.</string>
     <string name="pdf_insp_no_batches">No batches in stock. Batch and expiry are recorded on a supplier bill.</string>
     <string name="pdf_insp_missing_note">Each product below is in stock with one or more label fields never recorded.</string>
     <string name="pdf_insp_expired">EXPIRED</string>
-    <string name="pdf_insp_expired_ago">EXPIRED \u00B7 %1$d days ago</string>
     <string name="pdf_insp_days_left">%1$d days left</string>
     <string name="pdf_insp_units_differ">units differ</string>
     <string name="pdf_insp_company_tag">COMPANY</string>
@@ -1695,6 +1701,7 @@ You can change this any time from this screen.</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">Same as phone</string>
+    <string name="theme_system_pc">Same as computer</string>
     <string name="bp_section_identity">Identity</string>
     <string name="bp_section_paid">Getting paid</string>
     <string name="bp_section_seals">Stamp &amp; signature</string>
@@ -1822,7 +1829,6 @@ You can change this any time from this screen.</string>
     <string name="followup_queue_open">Open WhatsApp</string>
     <string name="followup_queue_skip">Skip</string>
     <string name="followup_queue_stop">Stop</string>
-    <string name="followup_queue_done">Done — %1$d reminders opened today</string>
     <string name="followup_queue_title">%1$d of %2$d</string>
     <string name="season_title">Fasal ka Hisaab</string>
     <string name="season_subtitle">Credit by crop season, newest first</string>
@@ -1932,7 +1938,7 @@ You can change this any time from this screen.</string>
     <string name="scheme_mark_claimed">Claim received</string>
     <string name="scheme_unmark_claimed">Claim not received yet</string>
     <string name="scheme_delete">Delete scheme</string>
-    <string name="scheme_delete_confirm">Delete "%1$s"? Your bills are not touched.</string>
+    <string name="scheme_delete_confirm">Delete “%1$s”? Your bills are not touched.</string>
     <string name="scheme_claim_hint">Amount received (credit note / rebate)</string>
     <string name="scheme_need_name">Give the scheme a name</string>
     <string name="scheme_need_slab">Enter at least one target and its reward</string>
@@ -2993,7 +2999,7 @@ You can change this any time from this screen.</string>
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">Card language</string>
-    <string name="biz_card_language_note">An Urdu card is wholly Urdu and reads right to left. Each language keeps its own name, owner and address; the numbers, email and website are the same on both.</string>
+    <string name="biz_card_language_note">Each language makes its own card. Urdu, Sindhi, Arabic and Farsi cards read right to left. Each language keeps its own name, owner and address; the numbers, email and website are the same on every card.</string>
     <string name="poster_step_design">Design</string>
     <string name="poster_step_words">Words</string>
     <string name="poster_step_send">Send</string>
@@ -3123,4 +3129,673 @@ You can change this any time from this screen.</string>
     <string name="import_csv_go">Bring them in</string>
     <string name="import_csv_done">Customers added: %1$d</string>
     <string name="import_csv_empty">No customers could be read from this file. It needs at least a column of names.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">Send to computer (WiFi)</string>
+    <string name="wifi_send_explain">On the computer, open Roshan Khata and press “From phone”, then scan the code it shows. Both must be on the same WiFi. Nothing goes to the internet.</string>
+    <string name="wifi_send_button">Scan the computer’s code</string>
+    <string name="wifi_send_not_computer">This is not a Roshan Khata computer code.</string>
+    <string name="wifi_send_sending">Sending to the computer…</string>
+    <string name="wifi_send_done">Sent. Check it on the computer and confirm there to load it.</string>
+    <string name="wifi_send_refused">The computer did not take it. Close its “From phone” window, open it again and scan the new code.</string>
+    <string name="wifi_send_unreachable">Could not reach the computer. Check that both are on the same WiFi, that its “From phone” window is open, and that Windows allowed Roshan Khata on the network.</string>
+    <string name="wifi_pc_button">From phone</string>
+    <string name="wifi_pc_title">From your phone, over WiFi</string>
+    <string name="wifi_pc_steps">On the phone: Backup → Scan the computer’s code, and point it at this code. Both must be on the same WiFi. Nothing goes to the internet, and nothing here is replaced until you say yes.</string>
+    <string name="wifi_pc_waiting">Waiting for the phone…</string>
+    <string name="wifi_pc_no_network">This computer is not on a network. Connect it to the shop’s WiFi and open this window again.</string>
+    <string name="wifi_pc_firewall">If Windows asks, allow Roshan Khata on private networks.</string>
+    <string name="wifi_pc_failed">Could not start listening. Close this window and try again.</string>
+    <string name="poster_save_picture">Save the poster as a picture</string>
+    <string name="poster_desktop_flat">On the computer the pictures are drawn flat; the phone shows them in 3D.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">Take the computer’s book</string>
+    <string name="wifi_take_asking">Asking the computer for its book…</string>
+    <string name="wifi_take_refused">The computer did not give its book. Its “From phone” window must be open; scan the code it shows now.</string>
+    <string name="book_recovered_title">Your book was repaired</string>
+    <string name="book_recovered_from">The book’s file was damaged and could not be read. It was rebuilt from the copy made on %1$s. Anything written after that copy is not in it.</string>
+    <string name="book_recovered_none">The book’s file was damaged and could not be read, and no saved copy could be found on this computer. The book starts empty: restore a backup from your phone or a file.</string>
+    <string name="book_corrupt_kept">The damaged file was kept, not deleted:\n%1$s</string>
+    <string name="update_available">A newer version is ready: %1$s</string>
+    <string name="update_open">Open the download page</string>
+    <string name="auto_backup_note">Today’s copy is rewritten every hour while the app is open, here and in the outside folder.</string>
+    <string name="receipt_save_picture">Save the receipt as a picture</string>
+    <string name="report_open_mail">Open my email</string>
+    <string name="report_copy">Copy the report</string>
+    <string name="report_copied">Copied. Paste it into WhatsApp or an email to innovation313.support@gmail.com.</string>
+    <string name="report_no_mail_pc">No email program is set up on this computer. Use “Copy the report” and paste it into WhatsApp or any email to innovation313.support@gmail.com.</string>
+    <string name="report_pc_privacy">Your customers’ names, numbers and balances are NEVER sent. Only the app version and your Windows version go with the report — shown below, in full, before anything leaves this computer.</string>
+
+    <!-- The counter (POS Phase 1, 21 Oct 2026) -->
+    <string name="pos_title">Counter sale</string>
+    <string name="pos_subtitle">Scan or search an item, add it, take the payment</string>
+    <string name="pos_search_hint">Item name or barcode</string>
+    <string name="pos_scan">Scan</string>
+    <string name="pos_walk_in">Walk-in customer</string>
+    <string name="pos_choose_customer">Choose customer</string>
+    <string name="pos_lines_empty">No items yet — scan or search above</string>
+    <string name="pos_col_item">Item</string>
+    <string name="pos_col_qty">Qty</string>
+    <string name="pos_col_rate">Rate</string>
+    <string name="pos_col_total">Total</string>
+    <string name="pos_line_discount">Line discount</string>
+    <string name="pos_subtotal">Subtotal</string>
+    <string name="pos_discount">Discount</string>
+    <string name="pos_tax">Tax %</string>
+    <string name="pos_round_off">Round off</string>
+    <string name="pos_grand_total">Total</string>
+    <string name="pos_paid">Paid now</string>
+    <string name="pos_to_account">To account</string>
+    <string name="pos_change">Change</string>
+    <string name="pos_add_payment">Add payment</string>
+    <string name="pos_pay_full_cash">All cash</string>
+    <string name="pos_reference_hint">Reference (transaction no., cheque no.)</string>
+    <string name="pos_hold">Hold</string>
+    <string name="pos_held_tickets">Held tickets (%1$d)</string>
+    <string name="pos_resume">Resume</string>
+    <string name="pos_drop_held">Drop held ticket</string>
+    <string name="pos_post">Complete sale</string>
+    <string name="pos_post_and_print">Complete &amp; print</string>
+    <string name="pos_clear">Clear ticket</string>
+    <string name="pos_posted">Sale %1$s saved</string>
+    <string name="pos_void">Void sale</string>
+    <string name="pos_void_reason">Reason for void</string>
+    <string name="pos_void_confirm">Void %1$s? Its khata and cashbook rows go to the bin.</string>
+    <string name="pos_voided">Voided</string>
+    <string name="pos_status_done">Done</string>
+    <string name="pos_status_void">Void</string>
+    <string name="pos_status_held">Held</string>
+    <string name="pos_today_count">%1$d sales today</string>
+    <string name="pos_today_total">Today %1$s</string>
+    <string name="pos_recent">Recent sales</string>
+    <string name="pos_err_no_lines">Add at least one item</string>
+    <string name="pos_err_quantity">Quantity must be above zero</string>
+    <string name="pos_err_rate">Rate cannot be negative</string>
+    <string name="pos_err_discount">Discount is more than the line</string>
+    <string name="pos_err_payment">Payment must be above zero</string>
+    <string name="pos_err_overpaid">Paid more than the total</string>
+    <string name="pos_err_walk_in_unpaid">A walk-in customer pays in full — or choose a customer for the rest</string>
+    <string name="pos_err_empty_name">An item needs a name</string>
+    <string name="pos_stock_low">Only %1$s left</string>
+    <string name="pos_stock_negative">Stock will go below zero</string>
+    <string name="pos_product_new">New item “%1$s” (not in products)</string>
+    <string name="pos_barcode_unknown">No product carries this barcode</string>
+    <string name="pos_receipt">Receipt</string>
+    <string name="pos_customer_pays_later">The rest goes to %1$s’s account</string>
+    <string name="cash_category_sale">Sale</string>
+    <string name="pos_sales_title">Sales</string>
+    <string name="pos_keys_help">F2 item · F4 qty · F6 discount · F8 customer · F9 pay · F12 complete</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">Barcode (optional)</string>
+    <string name="product_cost_hint">Cost price (optional)</string>
+    <string name="product_low_stock_hint">Warn at stock (optional)</string>
+    <string name="product_barcode_taken">That barcode is already on %1$s</string>
+    <string name="na_low_stock">%1$s items low on stock</string>
+    <string name="products_export">Export CSV</string>
+    <string name="products_import">Import CSV</string>
+    <string name="products_labels">Print labels</string>
+    <string name="products_import_plan">%1$d new products, %2$d updated</string>
+    <string name="products_import_clash">%1$d rows carry a barcode another product already has — those codes are skipped</string>
+    <string name="products_import_none">No products found in that file</string>
+    <string name="products_imported">%1$d products added, %2$d updated</string>
+    <string name="products_labels_assign">%1$d products have no barcode — give them one of the shop’s own (EAN-13) and print?</string>
+    <string name="products_labels_none">No products to print labels for</string>
+    <string name="label_sheet_title">Barcode labels</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">Return</string>
+    <string name="pos_return_title">Goods back</string>
+    <string name="pos_return_reason">Reason for return</string>
+    <string name="pos_return_refund">Refund</string>
+    <string name="pos_refund_account">Keep on account</string>
+    <string name="pos_return_qty_help">Sold %1$s · back so far %2$s</string>
+    <string name="pos_return_posted">Return %1$s saved</string>
+    <string name="pos_returns">Returns</string>
+    <string name="pos_err_over_sold">More than was sold is coming back</string>
+    <string name="pos_err_walk_in_cash">A walk-in customer is refunded in full, in money</string>
+    <string name="pos_err_reason">A reason is needed</string>
+    <string name="pos_err_refund">The refund is more than the goods are worth</string>
+    <string name="pos_return_no_receipt">No receipt</string>
+    <string name="pos_exchange">Exchange: sell again</string>
+    <string name="pos_return_of">Return of %1$s</string>
+    <string name="cash_category_return">Return</string>
+    <string name="pos_recent_sales">Recent sales</string>
+    <string name="pos_void_return">Void return</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">Day report (Z)</string>
+    <string name="z_sales_count">Sales</string>
+    <string name="z_sales_total">Sales total</string>
+    <string name="z_voids">Voided (%1$s)</string>
+    <string name="z_returns">Returns (%1$s)</string>
+    <string name="z_cash_in">Cash in (khata + cashbook)</string>
+    <string name="z_cash_out">Cash out (khata + cashbook)</string>
+    <string name="z_expected">Should be in drawer</string>
+    <string name="z_variance">Difference</string>
+    <string name="z_profit">Profit (sales − cost)</string>
+    <string name="dc_opening">Opening cash</string>
+    <string name="dc_counted">Counted</string>
+    <string name="z_no_close">The day was not closed — count the drawer to see the difference</string>
+    <string name="z_variance_reason">Give a reason for the difference</string>
+    <string name="z_yesterday_open">Yesterday’s drawer was not counted</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">Counter login</string>
+    <string name="staff_role_none">No login</string>
+    <string name="staff_role_manager">Manager</string>
+    <string name="staff_role_cashier">Cashier</string>
+    <string name="staff_pin">PIN (4–8 digits)</string>
+    <string name="staff_pin_keep">Leave blank to keep the PIN</string>
+    <string name="staff_pin_invalid">A PIN is 4 to 8 digits</string>
+    <string name="access_owner">Owner</string>
+    <string name="access_who">Who is at the counter?</string>
+    <string name="access_sign_in">Sign in</string>
+    <string name="access_sign_out">Sign out</string>
+    <string name="access_wrong_pin">Wrong PIN</string>
+    <string name="access_override_title">Manager’s PIN needed</string>
+    <string name="access_override_help">A cashier cannot do this alone. A manager or the owner types their PIN to allow it.</string>
+    <string name="access_denied">Not allowed for a cashier</string>
+    <string name="access_discount_cap">A cashier may give up to %1$s off without a manager</string>
+    <string name="audit_title">Who did what</string>
+    <string name="audit_subtitle">Every sale, void, return, price change, sign-in and restore — newest first</string>
+    <string name="audit_empty">Nothing in the log yet</string>
+    <string name="audit_sale_posted">Sale</string>
+    <string name="audit_sale_voided">Sale voided</string>
+    <string name="audit_sale_held">Ticket held</string>
+    <string name="audit_return_posted">Return</string>
+    <string name="audit_return_voided">Return voided</string>
+    <string name="audit_discount_override">Discount allowed</string>
+    <string name="audit_manager_override">Allowed by a manager</string>
+    <string name="audit_price_changed">Price changed</string>
+    <string name="audit_sign_in">Signed in</string>
+    <string name="audit_restore">Book restored</string>
+    <string name="audit_export">Exported</string>
+    <string name="audit_by">by %1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">Count stock</string>
+    <string name="stock_count_help">Type what is on the shelf; only the differences are written, each with the book figure beside it</string>
+    <string name="stock_counted_hint">Counted</string>
+    <string name="stock_adjust">Adjust stock</string>
+    <string name="adjust_qty_hint">Quantity (+ in, − out)</string>
+    <string name="adjust_reason">Reason</string>
+    <string name="adjust_reason_count">Count</string>
+    <string name="adjust_reason_damage">Damaged</string>
+    <string name="adjust_reason_expired">Expired / thrown out</string>
+    <string name="adjust_reason_theft">Theft / lost</string>
+    <string name="adjust_reason_other">Other</string>
+    <string name="stock_valuation">Stock value</string>
+    <string name="stock_valuation_known">%1$s of %2$s products have a cost</string>
+    <string name="stock_low_title">Low stock</string>
+    <string name="stock_adjustments">Corrections</string>
+    <string name="po_title">Purchase orders</string>
+    <string name="po_new">New order</string>
+    <string name="po_supplier">Supplier</string>
+    <string name="po_send">Send on WhatsApp</string>
+    <string name="po_mark_sent">Mark sent</string>
+    <string name="po_receive">Goods arrived</string>
+    <string name="po_close">Close order</string>
+    <string name="po_status_draft">Draft</string>
+    <string name="po_status_sent">Sent</string>
+    <string name="po_status_received">Received</string>
+    <string name="po_status_closed">Closed</string>
+    <string name="po_none">No orders yet</string>
+    <string name="po_lines_empty">Add the items to order</string>
+    <string name="po_message_head">Order %1$s — %2$s</string>
+    <string name="po_from_low">Order the low stock</string>
+    <string name="po_book">Book</string>
+    <string name="inventory_title">Stock on hand</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">Sales report</string>
+    <string name="srep_by_day">By day</string>
+    <string name="srep_by_item">By item</string>
+    <string name="srep_by_category">By category</string>
+    <string name="srep_by_customer">By customer</string>
+    <string name="srep_by_cashier">By cashier</string>
+    <string name="srep_by_hour">By hour</string>
+    <string name="srep_tax">Tax</string>
+    <string name="srep_profit">Profit &amp; loss</string>
+    <string name="srep_dead">Not selling</string>
+    <string name="srep_dead_help">On the shelf, not sold in %1$s days</string>
+    <string name="srep_col_count">Sales</string>
+    <string name="srep_col_revenue">Revenue</string>
+    <string name="srep_col_profit">Profit</string>
+    <string name="srep_revenue">Revenue</string>
+    <string name="srep_returns">Returns</string>
+    <string name="srep_cost">Cost of goods sold</string>
+    <string name="srep_cost_known">cost known for %1$s of revenue</string>
+    <string name="srep_gross">Gross profit</string>
+    <string name="srep_expenses">Expenses (cashbook)</string>
+    <string name="srep_net">Net profit</string>
+    <string name="srep_tax_rate">Rate</string>
+    <string name="srep_tax_base">Taxable</string>
+    <string name="srep_tax_amount">Tax</string>
+    <string name="srep_period_today">Today</string>
+    <string name="srep_period_week">This week</string>
+    <string name="srep_period_month">This month</string>
+    <string name="srep_none">No sales in this period</string>
+    <string name="srep_no_category">No category</string>
+    <string name="pos_credit_limit">Credit limit %1$s — this sale would take the account to %2$s</string>
+
+    <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->
+    <string name="access_close_app">Close the app</string>
+    <string name="access_forgot_pin">Forgot PIN?</string>
+    <string name="access_recovery_code">Recovery code</string>
+    <string name="access_recovery_ask">Type the recovery code shown when the owner PIN was set. Then choose a new PIN.</string>
+    <string name="access_recovery_wrong">That recovery code is not right.</string>
+    <string name="access_owner_pin">Owner PIN</string>
+    <string name="access_owner_pin_help">The owner\'s own PIN, 6 to 8 digits. It signs the owner in at a counter, allows what a cashier may not do alone, and turns Counter mode off. Only its hash is kept, never the PIN.</string>
+    <string name="access_owner_pin_invalid">The owner\'s PIN is 6 to 8 digits</string>
+    <string name="access_owner_pin_short">Your owner PIN is short. Change it to 6 to 8 digits: a short PIN can be guessed from a backup file in minutes.</string>
+    <string name="access_recovery_title">Your recovery code</string>
+    <string name="access_recovery_help">Write this code down and keep it away from the counter. If the owner PIN is ever forgotten, this code sets a new one. It is shown only now; a new PIN gives a new code.</string>
+    <string name="access_recovery_written">I have written it down</string>
+    <string name="access_owner_pin_current">Current owner PIN</string>
+    <string name="access_owner_pin_needed">Set the owner PIN first. Without it, anyone could sign in as the owner.</string>
+    <string name="access_owner_pin_set">Set owner PIN</string>
+    <string name="access_owner_pin_change">Change owner PIN</string>
+    <string name="access_counter_mode">Counter mode</string>
+    <string name="access_counter_mode_help">For a phone or computer that staff use: it opens locked, everyone signs in with their own PIN, and only the owner\'s PIN turns it off. Keep it off on the owner\'s own device.</string>
+    <string name="access_counter_off_help">Turn Counter mode off on this device? It will open as the owner\'s device again, with no sign-in.</string>
+    <string name="access_counter_turn_on">Turn on</string>
+    <string name="access_counter_turn_off">Turn off</string>
+    <string name="access_counter_now_on">Counter mode is on. This device now opens locked.</string>
+    <string name="access_counter_now_off">Counter mode is off.</string>
+    <string name="access_counter_on_label">Counter mode: on</string>
+    <string name="access_counter_off_label">Counter mode: off</string>
+    <string name="access_need_backup">Backups and restore</string>
+    <string name="access_need_settings">The shop\'s settings</string>
+    <string name="access_need_staff">Staff and their logins</string>
+    <string name="access_need_reports">The shop\'s reports and figures</string>
+    <string name="access_need_edit">Changing or deleting what is already written</string>
+    <string name="access_counter_locked">This counter is locked. Sign in to continue.</string>
+    <string name="access_owner_needed_title">Owner\'s PIN needed</string>
+    <string name="access_owner_needed_help">Only the owner can allow this. The owner types their PIN.</string>
+    <string name="access_page_locked">This page needs a manager or the owner</string>
+    <string name="access_signed_in_as">Signed in: %1$s</string>
+    <string name="audit_seal_ok">Log seal holds — rows checked: %1$d</string>
+    <string name="audit_seal_broken">Log seal broken at row %1$d: a row was changed or removed outside the app</string>
+    <string name="audit_stock_count">Stock counted</string>
+    <string name="audit_stock_adjusted">Stock adjusted</string>
+    <string name="audit_order_received">Order received</string>
+    <string name="audit_owner_pin_set">Owner PIN set</string>
+    <string name="audit_owner_pin_adopted">Owner PIN taken from this counter</string>
+    <string name="audit_counter_on">Counter mode on</string>
+    <string name="audit_counter_off">Counter mode off</string>
+    <string name="audit_pin_wait">Too many wrong PINs</string>
+    <string name="audit_sign_out">Signed out</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">This will take away work done here</string>
+    <string name="restore_loss_intro">These are in this book and not in the copy. After the restore they will be gone:</string>
+    <string name="restore_loss_entries">Entries: %1$d</string>
+    <string name="restore_loss_changed">Entries changed or deleted here since the copy: %1$d</string>
+    <string name="restore_loss_sales">Counter sales: %1$d</string>
+    <string name="restore_loss_returns">Returns: %1$d</string>
+    <string name="restore_loss_cash">Cashbook rows: %1$d</string>
+    <string name="restore_loss_cheques">Cheques: %1$d</string>
+    <string name="restore_loss_bills">Supplier bills: %1$d</string>
+    <string name="restore_loss_invoices">Invoices: %1$d</string>
+    <string name="restore_loss_parties">Customers and suppliers: %1$d</string>
+    <string name="restore_loss_other">Stock counts, day closes, shifts, points, orders and voids made here since the copy: %1$d</string>
+    <string name="restore_loss_newest">Newest here: %1$s · newest in the copy: %2$s</string>
+    <string name="restore_loss_kept">This book is copied to Daily copies before anything is replaced, so the restore can be undone.</string>
+    <string name="restore_loss_agree">I understand that these will be gone</string>
+    <string name="restore_loss_counting">Checking what this book has that the copy does not…</string>
+    <string name="snapshot_before_restore">Kept before a restore · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">Tax inside the prices</string>
+    <string name="pos_sell_by">Sell by %1$s</string>
+    <string name="pos_expired_stock">Only expired stock is left of %1$s (still good: %2$s). Write the old batch off in Expiry, or sell less.</string>
+    <string name="counter_settings">Counter settings</string>
+    <string name="pos_next_pay">Next: payment</string>
+    <string name="pos_how_1">1 · Type an item\'s name or scan its barcode</string>
+    <string name="pos_how_2">2 · Check the quantity and rate</string>
+    <string name="pos_how_3">3 · A walk-in customer pays in full; for a chosen customer the rest goes to their account</string>
+    <string name="counter_advanced">Big-shop tools</string>
+    <string name="counter_advanced_help">Shifts, the day report (Z), loyalty points, the weighing scale, the customer\'s screen and tax. Off keeps the counter simple; nothing already saved changes.</string>
+    <string name="counter_prices_include_tax">Prices already include tax</string>
+    <string name="counter_prices_include_tax_help">On: a product\'s tax is inside its price, and the receipt says how much. Off: it is added on top at the counter. Each product\'s tax % is set on the product.</string>
+    <string name="expiry_write_off">Write off</string>
+    <string name="expiry_write_off_confirm">Write off %1$s of %2$s as expired? The stock goes down by that much, and the log keeps who did it.</string>
+    <string name="expiry_written_off">Written off</string>
+    <string name="expiry_nothing_left">Nothing of this batch is left</string>
+    <string name="expiry_left">Left: %1$s</string>
+    <string name="product_pack_help">A pack (carton, bori…) the product is also bought or sold in, and how many of its own unit are in one. Stock is counted in its own unit.</string>
+    <string name="product_pack_unit">Pack name</string>
+    <string name="product_pack_size">How many in a pack</string>
+    <string name="product_pack_price">Pack price</string>
+    <string name="product_tax_rate">Tax %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">A4 invoice</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">Shifts</string>
+    <string name="shift_open">Open shift</string>
+    <string name="shift_close">Close shift</string>
+    <string name="shift_float_help">Count the cash in the drawer before the first sale. The shift is checked against this person\'s own cash sales and cash refunds.</string>
+    <string name="shift_opened_at">Opened %1$s</string>
+    <string name="shift_none">No shift open</string>
+    <string name="shift_already_open">A shift is already open for this person</string>
+    <string name="shift_open_now">Open now</string>
+    <string name="shift_recent">Recent shifts</string>
+    <string name="shift_hours">%1$s h</string>
+    <string name="shift_week_hours">Hours, last 7 days</string>
+    <string name="shift_closed">Shift closed</string>
+    <string name="shift_of">Shift: %1$s</string>
+    <string name="shift_cash_sales">Cash taken on sales</string>
+    <string name="shift_cash_refunds">Cash given back on returns</string>
+    <string name="audit_shift_opened">Shift opened</string>
+    <string name="audit_shift_closed">Shift closed</string>
+    <string name="printer_section">Receipt printer on this device</string>
+    <string name="printer_width_80">80 mm roll</string>
+    <string name="printer_logo">Shop logo at the top</string>
+    <string name="printer_drawer">Open the cash drawer on cash sales</string>
+    <string name="printer_drawer_help">For a cash drawer plugged into the receipt printer. A printer without one ignores it.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">Choose dates</string>
+    <string name="srep_chart">Sales over time</string>
+    <string name="srep_chart_top">Highest: %1$s</string>
+    <string name="aging_title">Dues by age</string>
+    <string name="aging_help">What is still owed, by how long ago it was given. A payment clears the oldest first; anything over 90 days needs a call.</string>
+    <string name="aging_0_30">0–30 days</string>
+    <string name="aging_31_60">31–60 days</string>
+    <string name="aging_61_90">61–90 days</string>
+    <string name="aging_90">Over 90 days</string>
+    <string name="aging_none">Nothing is owed</string>
+    <string name="aging_oldest">Oldest: %1$s</string>
+    <string name="aging_total">Total</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">Loyalty points</string>
+    <string name="loyalty_per_100">Points for every 100 spent</string>
+    <string name="loyalty_value">What one point is worth</string>
+    <string name="loyalty_help">A customer with an account earns points on every ticket and spends them later as a discount. Leave a box empty to keep loyalty off.</string>
+    <string name="loyalty_points">Points: %1$s (worth %2$s)</string>
+    <string name="loyalty_use">Use points</string>
+    <string name="loyalty_used">Points used: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">Points earned: %1$s · now %2$s</string>
+    <string name="scale_section">Weighing scale labels</string>
+    <string name="scale_prefix">Label prefix (20–29)</string>
+    <string name="scale_price">The label holds the price (not the weight)</string>
+    <string name="scale_help">A scale label is 13 digits: the prefix, the item\'s 5-digit scale code, the weight in grams (or the price) and a check digit. Put the scale code in the product\'s barcode box.</string>
+    <string name="pos_items">Items</string>
+    <string name="pos_ticket">Ticket</string>
+    <string name="pos_all">All</string>
+    <string name="pos_choose_variant">%1$s: which one?</string>
+    <string name="product_variant_of">Variant of (the main product)</string>
+    <string name="product_variant">Variant (size, colour, flavour)</string>
+    <string name="product_variant_help">Variants are their own products — own price, barcode and stock — shown together under the main product on the counter\'s item grid.</string>
+    <string name="cd_title">Customer screen</string>
+    <string name="cd_help">A second window for the customer: the items, the total and the shop\'s payment QR. Drag it to the second monitor.</string>
+    <string name="cd_scan">Scan to pay</string>
+    <string name="cd_qr_note">The QR does not carry the amount: check it on your phone before you pay.</string>
+    <string name="cd_welcome">Welcome</string>
+    <string name="cd_change">Change: %1$s</string>
+    <string name="transfer_title">Send stock to another shop</string>
+    <string name="transfer_to">To which shop</string>
+    <string name="transfer_help">The goods leave this shop\'s stock and arrive in the other shop\'s, matched by barcode, else by name (a product it does not have is added). Both books keep a row with the same number.</string>
+    <string name="transfer_done">%1$s sent to %2$s</string>
+    <string name="adjust_reason_transfer">Transfer</string>
+    <string name="audit_transfer_out">Stock sent to another shop</string>
+    <string name="audit_transfer_in">Stock received from another shop</string>
+    <string name="transfer_none">There is no other shop. Add one under Businesses.</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">Add what is new</string>
+    <string name="merge_title">Add only what is new</string>
+    <string name="merge_help">Keeps everything in this book and adds what the copy has that this book does not — entries, cashbook rows, tickets, returns, bills, cheques, invoices — matched by their own ID, never by amount. Nothing here is changed or removed.</string>
+    <string name="merge_preview">To add: %1$s khata entries, %2$s cashbook rows, %3$s counter tickets, %4$s other records; %5$s new customers, %6$s new products.</string>
+    <string name="merge_changed">%1$s rows were changed or deleted in the copy too: this book keeps its own.</string>
+    <string name="merge_other_shop">The copy is named %1$s — check it is this shop\'s book.</string>
+    <string name="merge_done">Added %1$s rows from the copy (%2$s renumbered).</string>
+    <string name="merge_nothing">The copy has nothing this book does not have.</string>
+    <string name="merge_too_old">This copy was made by an older version and carries no row IDs: it can only replace the book.</string>
+    <string name="merge_unrelated">This copy shares nothing with this book — it is another book. It can only replace this one.</string>
+    <string name="merge_not_carried">Not merged: payment plans, seasons, schemes, attendance and day closes.</string>
+    <string name="audit_book_merged">Copy merged in</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">Opening the book…</string>
+    <string name="book_cannot_open">The book could not be opened, and nothing in it was changed. Close any other program that may be using it (or restart the computer), then open Roshan Khata again.</string>
+    <string name="book_set_aside_note">A damaged book was set aside here, not deleted: %1$s</string>
+    <string name="restore_keep_failed">This book could not be kept first, so nothing was replaced. Check that the disk has free space and try again.</string>
+    <string name="restore_loss_unknown">What would be lost could not be counted. Replace only if you are sure this copy is the one you want.</string>
+    <string name="clock_behind_title">The computer\'s date looks wrong</string>
+    <string name="clock_behind_body">The newest daily copy is for %1$s, but this computer says today is %2$s. Set the right date and time in Windows. Until then no old copy is deleted.</string>
+    <string name="pos_void_has_returns">Goods from this sale have already been returned. A sale with returns cannot be voided; make a return for the rest instead.</string>
+    <string name="pos_void_day_closed">This sale\'s day has been closed. Make a return instead of voiding it.</string>
+    <string name="pos_err_rate_missing">A line has no rate.</string>
+    <string name="pos_err_tax">The tax could not be read.</string>
+    <string name="pos_err_payment_unread">A payment amount could not be read.</string>
+    <string name="pos_err_discount_unread">A discount could not be read.</string>
+    <string name="pos_price_needs_pin">Selling at a rate other than the price list</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">Entry changed</string>
+    <string name="audit_entry_deleted">Entry deleted</string>
+    <string name="audit_cash_added">Cashbook row added</string>
+    <string name="audit_cash_edited">Cashbook row changed</string>
+    <string name="audit_cash_deleted">Cashbook row deleted</string>
+    <string name="audit_party_deleted">Customer deleted</string>
+    <string name="audit_day_closed">Day closed</string>
+    <string name="audit_import">Imported</string>
+    <string name="audit_bill_deleted">Bill deleted</string>
+    <string name="audit_bill_edited">Bill changed</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">Change next payment day</string>
+    <string name="plan_next_ask">Next payment day for %1$s</string>
+    <string name="plan_next_clear">Remove the date</string>
+    <string name="plan_next_saved">Next payment: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">Digits after the decimal point in the label\'s price</string>
+    <string name="scale_price_example">A label showing 01250 is read as %1$s</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">Change it where it was made</string>
+    <string name="entry_linked_bill">A supplier bill wrote this entry. Change or delete the bill, and the khata follows.</string>
+    <string name="entry_linked_plan">A payment plan\'s instalment wrote this entry. Change it from Payment plans.</string>
+    <string name="entry_linked_cheque">A cleared cheque wrote this entry. Change it from Cheques.</string>
+    <string name="entry_linked_sale">A counter sale wrote this entry. Void the sale, or make a return.</string>
+    <string name="entry_linked_return">A return wrote this entry. Void the return instead.</string>
+    <string name="pos_return_void_day_closed">This return’s day has been closed, so it cannot be voided. Ring the goods up as a new sale instead.</string>
+    <string name="entries_linked_kept">Left as they were, because a bill, plan, cheque, counter sale or return wrote them (change them there): %1$d</string>
+    <string name="party_has_tickets">Not deleted: counter tickets or returns are written to %1$s. Void those first, or keep the customer.</string>
+    <string name="bin_emptied_kept">Bin emptied. Customers kept, because they still have supplier bills, cheques, payment plans or counter sales: %1$d</string>
+    <string name="bin_party_kept">Kept in the bin: this customer still has supplier bills, cheques, payment plans or counter sales. Restore the customer to deal with them.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">Paid to you</string>
+    <string name="pdf_stmt_you_supplied">You supplied</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">Name</string>
+    <string name="csv_col_category">Category</string>
+    <string name="csv_col_company">Company</string>
+    <string name="csv_col_unit">Unit</string>
+    <string name="csv_col_sale">Sale price</string>
+    <string name="csv_col_credit">Credit price</string>
+    <string name="csv_col_cost">Cost price</string>
+    <string name="csv_col_barcode">Barcode</string>
+    <string name="csv_col_low">Low stock</string>
+    <string name="csv_col_type">Type</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">A–Z</string>
+    <string name="sort_glyph_za">Z–A</string>
+    <string name="text_size_glyph">Aa</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">Not saved. Nothing was changed. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">Local digits on printed sheets</string>
+    <string name="print_native_digits_help">Invoices, statements and reports print figures in this language\'s own digits. The screen and anything you type stay 0-9.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">Country</string>
+    <string name="bp_country_help">Sets the WhatsApp dialling code, the tax number\'s name, the week\'s first day and the calendar. Figures never change.</string>
+    <string name="country_other">Other</string>
+    <string name="country_ask_title">Where is your shop?</string>
+    <string name="country_ask_body">The app uses this for WhatsApp numbers, the tax number\'s name and the week. You can change it later in Business Profile.</string>
+    <string name="poster_national_day">National day</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">Mobile wallet number (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="one">%d day left</item>
+        <item quantity="other">%d days left</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="one">%d expiring</item>
+        <item quantity="other">%d expiring</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="one">%d sale today</item>
+        <item quantity="other">%d sales today</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="one">%d design</item>
+        <item quantity="other">%d designs</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="one">Too many tries. Wait %d second.</item>
+        <item quantity="other">Too many tries. Wait %d seconds.</item>
+    </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">Live sync with the computer</string>
+    <string name="live_explain">The phone and the computer keep one book, updated every few seconds while both are on the shop’s WiFi and Roshan Khata is open. Nothing goes to the internet unless “Also through the internet” is turned on.</string>
+    <string name="live_join">Join the computer</string>
+    <string name="live_stop">Turn live sync off</string>
+    <string name="live_stop_confirm">Turn live sync off on this device? The book stays exactly as it is.</string>
+    <string name="live_status_off">Live sync is off.</string>
+    <string name="live_status_not_paired">Live sync is on. No computer has joined yet.</string>
+    <string name="live_status_waiting">The book reached the computer. Say yes there to finish joining.</string>
+    <string name="live_status_live">Live with %1$s. Last update: %2$s</string>
+    <string name="live_status_unreachable">The computer is not answering. Are both on the same WiFi, and is Roshan Khata open on it?</string>
+    <string name="live_status_relay_down">Away from the shop’s WiFi, and the relay on the internet did not answer (%1$s). The phone keeps trying; at the shop, WiFi works without it.</string>
+    <string name="live_pc_relay_ok">Relay on the internet: working (last round %1$s).</string>
+    <string name="live_pc_relay_down">Relay on the internet: not answering (%1$s). At the shop, WiFi works without it.</string>
+    <string name="live_pair_other_phone">This book already keeps its ledger with the phone “%1$s”. Replace stops that phone. One book is one phone and one computer: to keep both phones, join this one as a new business.</string>
+    <string name="na_sync_conflict">%1$s entries were changed on both devices at once</string>
+    <string name="na_sync_conflict_sub">The amount kept may not be the one you meant. See Live sync → What changed.</string>
+    <string name="live_status_update_both">The other device runs a newer version of the app (%1$s). Update this one; its changes wait until then.</string>
+    <string name="live_status_key_busy">This device’s key store did not answer (%1$s). Nothing was changed; it is tried again shortly.</string>
+    <string name="na_sync_off">Live sync stopped</string>
+    <string name="na_sync_off_sub">This book was replaced or went back to an older copy. Join the other device again.</string>
+    <string name="live_status_halted">Live sync is paused for now. Your book is safe and works as always.</string>
+    <string name="live_status_failed">Live sync stopped: %1$s</string>
+    <string name="live_mismatch">The two books do not match. Join again to make a fresh copy.</string>
+    <string name="live_sent">Sent. On the computer, say yes to replace its book with this phone’s.</string>
+    <string name="live_receive">Take a shop’s book on this phone</string>
+    <string name="live_receive_steps">On the phone that has the shop’s book, open Backup → Live sync → Join, and scan this code. Both phones must be on the same WiFi. This window waits 15 minutes.</string>
+    <string name="live_receive_offer">“%1$s” wants to give this phone the shop’s book.\n\nCode: %2$s — the same four digits must show on that phone.\n\nThis phone’s own book will be replaced by the shop’s. After this, the phones keep one book together through the internet relay.</string>
+    <string name="live_receive_done">Done. This phone now keeps the shop’s book together with its other devices.</string>
+    <string name="live_receive_no_wifi">This phone is not on a WiFi network. Join the shop’s WiFi and try again.</string>
+    <string name="live_sent_phone">Sent. On the other phone, say yes to take this book. The two phones then meet through the internet relay.</string>
+    <string name="live_not_live_code">This is not a live sync code. On the computer, open Live sync and scan the code it shows.</string>
+    <string name="live_pc_steps">On the phone open Backup → Live sync with the computer → Join the computer, and scan this code. After your yes, the phone’s book opens here as a new business (this computer’s own book stays as it is), and from then on the two stay the same.</string>
+    <string name="live_pc_none">No phone has joined yet.</string>
+    <string name="live_conflicts">Changed on both at once (one was kept, the other saved): %1$d</string>
+    <string name="live_pair_warning">This is the phone’s book. To keep this computer’s own book exactly as it is, join as a new business: the phone’s book opens beside it and nothing here is removed. Replace everything only if this computer’s book is not needed.</string>
+    <string name="live_pair_code">Pairing code: %1$s. The computer shows the same code beside its yes; say yes there only if the two are the same.</string>
+    <string name="live_pair_code_check">The phone shows the code %1$s. Say yes only if the phone shows this same code.</string>
+    <string name="live_join_new_business">Join as a new business</string>
+    <string name="live_devices">Joined devices</string>
+    <string name="live_remove">Remove</string>
+    <string name="live_remove_confirm">Remove %1$s? It stops syncing with this computer. Its own book stays as it is.</string>
+    <string name="live_needs_owner">Joining a device to live sync needs the owner’s PIN.</string>
+    <string name="live_badge">Live · %1$s</string>
+    <string name="live_conflicts_show">See what changed</string>
+    <string name="live_conflict_now">Now: %1$s</string>
+    <string name="live_conflict_saved">Saved aside: %1$s</string>
+    <string name="live_conflict_clear">Seen, clear it</string>
+    <string name="live_join_failed">Joining the phone did not finish: %1$s. On the phone, open Backup → Live sync with the computer → Join the computer, and scan the code again.</string>
+    <string name="restore_stops_live">This book syncs live with another device. Replacing it stops live sync; join the two again afterwards.</string>
+    <string name="live_held">Changes from the other device waiting for what they belong to (a customer or an item not here yet): %1$d</string>
+    <string name="live_status_rejoin">Live sync stopped because this book was replaced by a restore or went back to an older copy. To sync again, join the computer again.</string>
+    <string name="live_status_not_accepted">The computer did not say yes in time. To join, scan its live sync code again.</string>
+    <string name="live_status_not_here">The computer answered, but it is not keeping this book right now. Open this book’s business on the computer.</string>
+    <string name="live_status_relay">Live with %1$s through the internet. Last update: %2$s</string>
+    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation-313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
+    <string name="live_relay">Also through the internet</string>
+    <string name="wifi_take_too_big">The computer’s book is too big for this phone’s memory or free space. Close other apps and try again, or move the book with a backup file.</string>
+    <string name="live_devices_open">Devices and conflicts</string>
+    <string name="live_devices_none">No other device has joined this book yet.</string>
+    <string name="live_device_seen">Last seen: %1$s</string>
+    <string name="live_device_never">Not heard from yet</string>
+    <string name="live_remove_confirm_phone">Remove %1$s from this book? This phone stops syncing with it. Its own book stays as it is; to sync with it again, join it again.</string>
+    <string name="live_conflicts_none">Nothing was changed on two devices at once.</string>
+    <string name="live_why_other_computer">another computer answered, not the one this phone is joined to. Join the computer again</string>
+    <string name="live_why_other_book">the other device keeps a different book. Join it again</string>
+    <string name="live_why_unknown_device">changes came from a device this book does not know. Join it again</string>
+    <string name="live_why_unreachable">no answer</string>
+    <string name="live_why_error">something went wrong on this phone. It is tried again shortly</string>
+    <string name="live_why_day_limit">today’s limit at the relay was reached</string>
+    <string name="live_why_relay_full">the relay is full right now</string>
+    <string name="drive_plan_replace">%1$s: replaces the book of %2$s on this phone.</string>
+    <string name="drive_plan_new">%1$s: comes in as a new shop. This phone\'s %2$s is a different shop and is left as it is.</string>
+    <string name="drive_plan_fresh">%1$s: comes back as a shop on this phone.</string>
+    <string name="drive_plan_live">%1$s syncs live with another device. Replacing it stops live sync; join the two again afterwards.</string>
+    <string name="drive_plan_unreadable">%1$s: could not be read from Drive. It is left as it is.</string>
+    <string name="live_pair_other_business">This phone’s book is already kept live in the business “%1$s” on this computer. Open that business: a second copy here would drift apart from it.</string>
+    <string name="fc_look_in">Look in:</string>
+    <string name="fc_folder_name">Folder:</string>
+    <string name="fc_files_of_type">Files of type:</string>
+    <string name="pos_void_shift_closed">The shift this sale was rung up in has been closed and counted. Make a return instead of voiding it.</string>
+    <string name="pos_customer_binned">This customer is in the recycle bin. Restore the customer first. Nothing was written.</string>
+    <string name="pos_held_gone">This held ticket was already rung up or removed, perhaps on another device. Nothing was written.</string>
+    <string name="pos_ticket_not_posted">This sale is no longer a posted one (it was voided or removed). Nothing was written.</string>
+    <string name="pos_post_failed">The sale was not saved. Nothing was written; the ticket is still on the counter.</string>
+    <string name="pos_hold_failed">The ticket could not be held. It is still on the counter.</string>
+    <string name="pos_void_failed">The sale could not be voided. Nothing was changed.</string>
+    <string name="pos_return_failed">The return was not saved. Nothing was written.</string>
+    <string name="book_merge_failed">Nothing was added. This book is unchanged.</string>
+    <string name="products_export_failed">The products file could not be made.</string>
+    <string name="save_failed_storage_full">Not saved: the phone\'s storage is full. Free some space, then enter it again.</string>
+    <string name="save_failed_not_saved">Not saved: something went wrong. Please check and enter it again.</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d correction written</item>
+        <item quantity="other">%1$d corrections written</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">Done — %1$d reminder opened today</item>
+        <item quantity="other">Done — %1$d reminders opened today</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">EXPIRED \u00B7 %1$d day ago</item>
+        <item quantity="other">EXPIRED \u00B7 %1$d days ago</item>
+    </plurals>
+    <string name="voice_language_missing_phone">Your phone does not have that language. Listening in the phone\'s own language.</string>
+    <string name="live_give">Give this book to a phone</string>
+    <string name="live_give_steps">On the new phone open Backup → Take a shop’s book on this phone → Scan the computer’s code, and scan this code. Both must be on the same WiFi. The code works for one phone only. The book’s internet relay is turned on, so the phone also meets the book’s other devices.</string>
+    <string name="live_give_sending">Giving the book to “%1$s”…</string>
+    <string name="live_give_sent">The book went to “%1$s”.\n\nCode: %2$s — the phone shows the same four digits. It joins this book once its owner says yes there, within 15 minutes.</string>
+    <string name="live_give_failed">The book did not reach the phone. Make a new code and scan it again.</string>
+    <string name="live_give_new_code">New code</string>
+    <string name="live_give_code_wrong_place">This code gives the computer’s book to a phone. To take it, open Backup → Take a shop’s book on this phone → Scan the computer’s code.</string>
+    <string name="live_receive_scan_pc">Scan the computer’s code</string>
+    <string name="live_receive_not_give">This is not the computer’s give code. On the computer open More → Live sync → Give this book to a phone, and scan the code it shows.</string>
+    <string name="live_receive_offer_pc">“%1$s” (the computer) wants to give this phone the shop’s book.\n\nCode: %2$s — the same four digits must show on the computer.\n\nThis phone’s own book will be replaced by the shop’s. After this, this phone and the computer keep one book together, on the shop’s WiFi and through the internet relay.</string>
+    <string name="live_receive_pc_refused">The computer did not give its book. Its code works once, and only while its Live sync window is open: make a new code there and scan it.</string>
+    <string name="live_receive_pc_unreachable">Could not reach the computer. Check that both are on the same WiFi, that its Live sync window is open, and that Windows allowed Roshan Khata on the network.</string>
+    <string name="report_sync_notes_included">— Live sync notes (not crashes: problems live sync passed over and tried again; no names, amounts or keys):</string>
+    <string name="live_phone_relay_ask">Two phones meet only through the internet relay. Sending this book to the other phone turns “Also through the internet” on for it. If the other phone does not take the book, the switch goes back as it was.</string>
+    <string name="live_pair_left_business">A phone’s pairing came while the business “%1$s” was open, and another business is open now: it was let go, so it cannot replace this book. To pair, open “%1$s” and scan the code again on the phone.</string>
+    <string name="live_wake_off">The relay cannot wake this phone while the app is closed: the other device’s changes come in when the app is opened.</string>
+    <string name="staff_name_taken">Someone on the staff list already has this name. Add something to tell them apart, such as the father\'s name.</string>
 </resources>

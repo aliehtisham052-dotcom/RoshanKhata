@@ -55,6 +55,11 @@
                 android:textSize="13sp" />
         </RadioGroup>
 
+        <!-- The amount is written on the app's calculator pad (21 Oct): the
+             pad shows while this box has the focus, steps aside for the
+             phone's keyboard in the other boxes (CalcPad.bindAll). Its own
+             characters (− × ÷ %) must be in digits, or Android's digits
+             filter drops them as the pad adds them. -->
         <EditText
             android:id="@+id/etChequeAmount"
             android:textDirection="ltr"
@@ -65,7 +70,28 @@
             android:hint="@string/amount"
             android:importantForAutofill="no"
             android:inputType="phone"
-            android:digits="0123456789.+-*/%" />
+            android:digits="0123456789.+−×÷*/-%" />
+
+        <TextView
+            android:id="@+id/tvChequeAmountResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/chequeKeypad"
+            layout="@layout/view_calculator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPickDueDate"

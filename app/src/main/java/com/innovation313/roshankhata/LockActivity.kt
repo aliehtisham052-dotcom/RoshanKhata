@@ -21,6 +21,7 @@ class LockActivity : BaseActivity() {
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        onBackPressedDispatcher.addCallback(this, backGuard)
 
         prompt()
     }
@@ -30,18 +31,34 @@ class LockActivity : BaseActivity() {
 
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                openLedger()
+                // Asked again on coming back: the screen underneath is the owner's again.
+                if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
             }
 
             override fun onAuthenticationError(code: Int, message: CharSequence) {
-                // The owner cancelled or backed out. Close the app rather than
-                // leaving them stranded on a dead screen — but never let them
-                // through, since that would make the lock decorative.
                 when (code) {
-                    BiometricPrompt.ERROR_NEGATIVE_BUTTON,
-                    BiometricPrompt.ERROR_USER_CANCELED,
-                    BiometricPrompt.ERROR_CANCELED -> finishAffinity()
-
+                    // The phone cannot ask at all (no screen lock any more, the sensor and its fallback not there):
+                    // the lock cannot be honoured, and saying so beats tearing the app down on every return — a
+                    // half-typed sale was lost each time (R98). As the front door has always done: told, let in.
+                    BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL,
+                    BiometricPrompt.ERROR_NO_BIOMETRICS,
+                    BiometricPrompt.ERROR_HW_UNAVAILABLE,
+                    BiometricPrompt.ERROR_HW_NOT_PRESENT -> {
+                        // A sensor that is only busy (HW_UNAVAILABLE can pass in a moment) on a phone that still has
+                        // a screen lock is no reason to open the book: only a phone with no screen lock at all is let in.
+                        val secure = (getSystemService(android.content.Context.KEYGUARD_SERVICE) as? android.app.KeyguardManager)
+                            ?.isDeviceSecure ?: true
+                        if (secure && code != BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) { finishAffinity(); return }
+                        android.widget.Toast.makeText(
+                            this@LockActivity,
+                            if (code == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL || code == BiometricPrompt.ERROR_NO_BIOMETRICS)
+                                R.string.app_lock_no_screen_lock else R.string.app_lock_unavailable,
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                        if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
+                    }
+                    // The owner cancelled or backed out, or too many tries: the app closes rather than
+                    // leaving them on a dead screen — never let through, or the lock would be decorative.
                     else -> finishAffinity()
                 }
             }
@@ -59,6 +76,22 @@ class LockActivity : BaseActivity() {
             .build()
 
         BiometricPrompt(this, executor, callback).authenticate(info)
+    }
+
+    /**
+     * Back on the lock must not reveal the screen underneath. Through the dispatcher, not an onBackPressed
+     * override: on Android 16 an app targeting API 36 never gets onBackPressed (Google's Android 16 behaviour
+     * changes, checked 23 Oct 2026), so the old override let Back close the relock and show the ledger.
+     */
+    private val backGuard = object : androidx.activity.OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finishAffinity() else finish()
+        }
+    }
+
+    companion object {
+        /** Started over an open screen after time away: on success it only closes itself. */
+        const val EXTRA_RELOCK = "relock"
     }
 
     private fun openLedger() {

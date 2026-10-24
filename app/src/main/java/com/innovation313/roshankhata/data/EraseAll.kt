@@ -61,14 +61,23 @@ object EraseAll {
         // Close the open ledger first: deleting a database out from under a
         // live connection is the one order of operations that can corrupt
         // instead of remove.
-        KhataDatabase.closeActive()
-        PartyPhoto.dropCaches()
+        // Kept closed while the files go (22 Oct 2026, the review): the live sync loop must not
+        // open a book in the middle of this and keep a deleted file alive.
+        LiveRunner.stop()
+        // The relays forget this phone and its wake-up address goes (best effort, 23 Oct 2026): a computer must not
+        // keep leaving parcels, and ringing, for a phone that was erased.
+        // Every shop's book, not only the open one (23 Oct 2026, the review).
+        Businesses.leaveRelaysAll(context)
+        runCatching { PushWake.off(context) }
+        KhataDatabase.whileClosed {
+            PartyPhoto.dropCaches()
 
-        // Every database file, through the framework's own remover so the
-        // -wal/-shm companions go with each one. This catches every
-        // business's ledger and every daily-copy snapshot in one sweep,
-        // including businesses the registry may have forgotten.
-        context.databaseList()?.forEach { context.deleteDatabase(it) }
+            // Every database file, through the framework's own remover so the
+            // -wal/-shm companions go with each one. This catches every
+            // business's ledger and every daily-copy snapshot in one sweep,
+            // including businesses the registry may have forgotten.
+            context.databaseList()?.forEach { context.deleteDatabase(it) }
+        }
 
         // Files: photos, stamps, QRs, signatures, snapshots — everything.
         context.filesDir?.listFiles()?.forEach { it.deleteRecursively() }

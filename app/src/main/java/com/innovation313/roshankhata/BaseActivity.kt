@@ -27,10 +27,64 @@ abstract class BaseActivity : AppCompatActivity() {
     /** The last finger-down, for the paper plane's starting point (ui/Motion, 5 Oct). */
     override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
         if (ev.actionMasked == android.view.MotionEvent.ACTION_DOWN) {
+            // A tap that finds a counter session ended goes no further: the sign-in sheet comes instead.
+            if (sessionEnded()) return true
             com.innovation313.roshankhata.ui.Motion.lastTap = ev.rawX to ev.rawY
             com.innovation313.roshankhata.ui.Motion.lastTapAt = System.currentTimeMillis()
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
+        if (event.action == android.view.KeyEvent.ACTION_DOWN && sessionEnded()) return true
+        return super.dispatchKeyEvent(event)
+    }
+
+    /**
+     * Something was done on this screen (a tap, a key). On a counter, a
+     * manager's or the owner's session idle for five minutes ends here and
+     * the sign-in sheet comes back; true when it did, so the tap that found it
+     * ended does nothing else (22 Oct 2026, the review: one sign-in to change
+     * a price left the cashier with the owner's rights all day).
+     */
+    private fun sessionEnded(): Boolean {
+        val access = com.innovation313.roshankhata.data.Access
+        val wasIn = access.ownerIn || access.current != null
+        access.touch()
+        if (!wasIn || !access.locked || javaClass.simpleName in BEFORE_THE_BOOK) return false
+        com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
+        return true
+    }
+
+    /**
+     * Runs [action] once the phone may write to the public Downloads folder. Android 10 and up need no
+     * permission (MediaStore); on 7-9 the storage permission is asked here, at the moment of saving, and
+     * [action] runs whatever the answer — a refused permission makes its own save fail and say so, as
+     * before (23 Oct 2026, the review: on Android 7-9 no backup or report ever reached Downloads, because
+     * the permission was never declared or asked).
+     */
+    fun withDownloadsAccess(action: () -> Unit) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q ||
+            androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) { action(); return }
+        afterDownloadsAsk = action
+        androidx.core.app.ActivityCompat.requestPermissions(
+            this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQ_DOWNLOADS
+        )
+    }
+
+    private var afterDownloadsAsk: (() -> Unit)? = null
+
+    @Deprecated("ActivityCompat's request answers here")
+    @Suppress("DEPRECATION")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQ_DOWNLOADS) {
+            val then = afterDownloadsAsk
+            afterDownloadsAsk = null
+            then?.invoke()
+        }
     }
 
     /** The text size this screen was built at; see onResume. */
@@ -43,6 +97,8 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.innovation313.roshankhata.data.PrintDigits.load(this)
+        com.innovation313.roshankhata.ui.AppLanguage.remember(this)
         if (ViewerMode.isOn(this) && ViewerMode.ownerOnly(javaClass)) {
             Toast.makeText(this, R.string.viewer_refused, Toast.LENGTH_LONG).show()
             finish()
@@ -68,7 +124,66 @@ abstract class BaseActivity : AppCompatActivity() {
         if (builtAtLevel >= 0 && builtAtLevel != TextSize.level(this)) {
             builtAtLevel = TextSize.level(this)
             recreate()
+            return
         }
+        // A counter phone with nobody signed in shows nothing but the sign-in
+        // sheet (21 Oct 2026). The doors before the book are left alone.
+        // A manager's or the owner's session idle too long has ended first (22 Oct 2026, the review).
+        com.innovation313.roshankhata.data.Access.expireIfIdle()
+        if (javaClass.simpleName !in BEFORE_THE_BOOK) com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
+    }
+
+    /**
+     * A screen a cashier may not open alone (backups, settings, staff, the
+     * bin, the reports) stays hidden until a manager or the owner allows it,
+     * and closes if nobody does — checked here so there is no way in that
+     * forgot to ask.
+     */
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if (!isFinishing) com.innovation313.roshankhata.ui.AccessUi.gateScreen(this)
+    }
+
+    override fun onDestroy() {
+        com.innovation313.roshankhata.ui.AccessUi.screenGone(this)
+        super.onDestroy()
+    }
+
+    /**
+     * App Lock asks again when the app comes back after [RELOCK_MS] away
+     * (21 Oct 2026, the critical review): it was asked once when the app
+     * started, and a phone left unlocked on the counter showed the book to
+     * whoever picked it up hours later. Counted across every screen, so
+     * moving between the app's own screens is not "away".
+     */
+    override fun onStart() {
+        super.onStart()
+        if (startedScreens++ == 0) {
+            val away = stoppedAt
+            stoppedAt = 0L
+            if (away > 0L && System.currentTimeMillis() - away > RELOCK_MS &&
+                javaClass.simpleName !in BEFORE_THE_BOOK &&
+                com.innovation313.roshankhata.data.AppLock.required(this)
+            ) {
+                startActivity(android.content.Intent(this, LockActivity::class.java).putExtra(LockActivity.EXTRA_RELOCK, true))
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (--startedScreens <= 0) { startedScreens = 0; stoppedAt = System.currentTimeMillis() }
+    }
+
+    private companion object {
+        /** The request code of the Downloads permission (Android 7-9). */
+        const val REQ_DOWNLOADS = 7313
+        /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
+        val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity")
+        /** Away this long, App Lock asks again. */
+        const val RELOCK_MS = 5 * 60_000L
+        var startedScreens = 0
+        var stoppedAt = 0L
     }
 
     /** After setContentView: let fixed-height buttons grow if the text did. */

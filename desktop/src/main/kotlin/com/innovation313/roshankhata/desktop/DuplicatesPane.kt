@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,15 +66,15 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
     val doneWord = word(W.duplicate_dismissed)
     val failed = word(W.duplicate_merge_failed)
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.duplicate_customers), word(W.duplicate_customers_subtitle))
         Text(word(W.duplicate_note), color = c.textMuted, fontSize = 12.sp)
         if (groups.isEmpty()) {
-            Text(word(W.no_duplicates), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
+            EmptyState("ic_tile_bin", word(W.no_duplicates), word(W.duplicate_customers_subtitle), Modifier.weight(1f))
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(groups, key = { DuplicateDetector.groupKey(it.members) }) { g ->
-                    Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(14.dp)) {
+                    Column(Modifier.fillMaxWidth().card().padding(14.dp)) {
                         Text(
                             word(when (g.reason) {
                                 DuplicateDetector.Reason.NAME -> W.duplicate_reason_name
@@ -90,7 +89,7 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
                                 Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance), color = c.inkSoft, fontSize = 13.sp)
                             }
                         }
-                        TextButton({ reviewing = g; survivor = 0 }) { Text(word(W.duplicate_review_merge), color = c.brandGreenText) }
+                        FluentButton(word(W.duplicate_review_merge), { reviewing = g; survivor = 0 }, kind = ButtonKind.SUBTLE)
                     }
                 }
             }
@@ -110,7 +109,7 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
                         Column(
                             Modifier.fillMaxWidth().padding(top = 6.dp)
                                 .background(if (on) c.brandGreen else c.pageBg, RoundedCornerShape(10.dp))
-                                .clickable { survivor = i }.padding(10.dp)
+                                .press { survivor = i }.padding(10.dp)
                         ) {
                             Text(Format.name(m.name), color = if (on) Color.White else c.ink, fontWeight = FontWeight.Bold)
                             Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance),

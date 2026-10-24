@@ -67,12 +67,11 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
     val (all, undated) = data ?: return
     val o = CashFlow.outlook(all, undated, Payroll.dayOf(System.currentTimeMillis()), days)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.cf_title), word(W.cf_subtitle))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf(30, 60, 90).forEach { d ->
-                if (d == days) FillButton(word(W.cf_days, d.toString()), c.brandGreen) { days = d }
-                else TextButton({ days = d }) { Text(word(W.cf_days, d.toString()), color = c.brandGreenText) }
+                FluentPill(word(W.cf_days, d.toString()), d == days) { days = d }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -139,5 +138,5 @@ private fun Line(title: String, sub: String?, amount: String, colour: Color) {
         }
         Text(amount, color = colour, fontSize = 15.sp, fontWeight = FontWeight.Bold)
     }
-    HorizontalDivider(color = c.pageBg)
+    Rule()
 }

@@ -50,7 +50,8 @@ class ZakatActivity : BaseActivity() {
      * first — and doing that arithmetic in his head is how 66 was entered for
      * silver.
      */
-    private var perTola = true
+    /** Tola where metal is quoted so (PK, IN, BD), else grams (21 Oct 2026). */
+    private var perTola = com.innovation313.roshankhata.data.ShopCountry.current.tola
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
@@ -86,7 +87,7 @@ class ZakatActivity : BaseActivity() {
 
         toggleUnit = findViewById(R.id.toggleUnit)
         tvPriceWarning = findViewById(R.id.tvPriceWarning)
-        toggleUnit.check(R.id.btnPerTola)
+        toggleUnit.check(if (perTola) R.id.btnPerTola else R.id.btnPerGram)
         toggleUnit.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             perTola = checkedId == R.id.btnPerTola
@@ -112,6 +113,19 @@ class ZakatActivity : BaseActivity() {
         }
         etSilverPrice.addTextChangedListener(watcher)
         etCashStock.addTextChangedListener(watcher)
+
+        // The app's own calculator pad (21 Oct), pinned under the page while
+        // the price or the cash-and-stock box has the focus, typing into that
+        // one. The boxes are still read with evalPad, as before.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = findViewById(R.id.zakatScroll),
+            pad = findViewById(R.id.zakatKeypad),
+            fields = listOf(etSilverPrice, etCashStock),
+            results = mapOf(
+                etSilverPrice to findViewById<TextView>(R.id.tvPriceResult),
+                etCashStock to findViewById<TextView>(R.id.tvCashStockResult)
+            )
+        )
         cbIncludeDoubtful.setOnCheckedChangeListener { _, _ -> recalculate() }
 
         observeLedger()

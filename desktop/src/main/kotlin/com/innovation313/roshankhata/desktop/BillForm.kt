@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -77,30 +76,57 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
     val needSupplier = word(W.enter_supplier)
     val needAmount = word(W.enter_valid_amount)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(word(W.add_bill), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        val chosen = parties.firstOrNull { it.id == supplierId }
-        if (chosen != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(Format.name(chosen.name), Modifier.weight(1f), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                TextButton({ supplierId = null }) { Text(word(W.edit), color = c.brandGreenText) }
+    val chosen = parties.firstOrNull { it.id == supplierId }
+    fun saveNow() {
+        val typed = search.trim()
+        when {
+            supplierId == null && typed.isEmpty() -> problem = needSupplier
+            total == null -> problem = needAmount
+            else -> {
+                // A typed name that is already in the book is that party, not a twin.
+                val existing = supplierId ?: parties.firstOrNull { it.name.trim().equals(typed, ignoreCase = true) }?.id
+                onSave(
+                    NewBill(
+                        supplierId = existing,
+                        newSupplierName = if (existing == null) typed else null,
+                        billNumber = number.trim().ifEmpty { null },
+                        total = total,
+                        billDate = billDate,
+                        dueDate = dueDate,
+                        paidCash = paidCash,
+                        note = note.trim().ifEmpty { null },
+                        items = items
+                    )
+                )
             }
+        }
+    }
+    DialogFrame(
+        word(W.add_bill), word(W.bill_ledger_note).take(90),
+        onClose = onCancel,
+        footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+        footer = {
+            FluentButton(word(W.cancel), onCancel)
+            FluentButton(word(W.save), { saveNow() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+        }
+    ) {
+        if (chosen != null) {
+            PartyPicker(parties, supplierId, { supplierId = it; problem = null }, word(W.supplier), word(W.bill_supplier_hint), Modifier.fillMaxWidth())
             if (chosen.isCustomer) Text(word(W.bill_to_customer_warn, chosen.name), color = c.owedToMe, fontSize = 12.sp)
         } else {
-            OutlinedTextField(
-                search, { search = it; problem = null }, label = { Text(word(W.bill_supplier_hint)) },
-                singleLine = true, modifier = Modifier.fillMaxWidth()
-            )
+            // Typed, not only picked: a supplier not yet in the book is made on save (NewBill.newSupplierName).
+            FluentField(search, { search = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.supplier), placeholder = word(W.bill_supplier_hint), leadingIcon = "ic_search")
             val q = search.trim().lowercase()
             // Suppliers first: a bill is almost always from one.
             val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.sortedBy { it.isCustomer }.take(50)
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 160.dp).background(c.pageBg, RoundedCornerShape(10.dp))) {
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 160.dp).card()) {
                 items(shown, key = { it.id }) { p ->
                     Text(
                         Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
-                        Modifier.fillMaxWidth().clickable { supplierId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp),
+                        Modifier.fillMaxWidth().press { supplierId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp),
                         color = c.ink, fontSize = 14.sp
                     )
+                    Rule()
                 }
             }
             val typed = search.trim()
@@ -108,31 +134,31 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                 Text(word(W.bill_new_supplier_msg, typed), color = c.textMuted, fontSize = 12.sp)
             }
         }
-        OutlinedTextField(number, { number = it }, label = { Text(word(W.bill_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(totalText, { totalText = it; problem = null }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text(total?.let { Format.money(it) } ?: "", color = c.textMuted, fontSize = 14.sp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton({ picking = 0 }) { Text(word(W.pick_bill_date), color = c.brandGreenText) }
-            Text(Format.dateOnly(billDate), color = c.ink, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.width(20.dp))
-            TextButton({ picking = 1 }) { Text(word(W.bill_due_date), color = c.brandGreenText) }
-            Text(dueDate?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+            FluentField(totalText, { totalText = it; problem = null }, Modifier.weight(1.3f), label = word(W.bill_total_hint), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = total?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.bill_number_hint))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            DateBox(word(W.pick_bill_date), Format.dateOnly(billDate), word(W.pick_bill_date), { picking = 0 }, Modifier.weight(1f))
+            DateBox(word(W.bill_due_date), dueDate?.let { Format.dateOnly(it) }, word(W.bill_due_date), { picking = 1 }, Modifier.weight(1f))
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(paidCash, { paidCash = it })
-            Text(word(W.bill_paid_cash), color = c.ink, fontSize = 14.sp)
+            Column {
+                Text(word(W.bill_paid_cash), color = c.ink, fontSize = 14.sp)
+                Text(word(W.bill_paid_cash_help), color = c.textMuted, fontSize = 12.sp)
+            }
         }
-        Text(word(W.bill_paid_cash_help), color = c.textMuted, fontSize = 12.sp)
         // What Save will do to the khata, said before it is done.
         val who = chosen?.name ?: search.trim()
         if (!paidCash && total != null && who.isNotEmpty()) {
             Text(word(W.bill_credit_note, Format.money(total), who), color = c.owedToMe, fontSize = 13.sp)
         }
-        OutlinedTextField(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
+        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
 
-        Text(word(W.bill_items_title), Modifier.padding(top = 6.dp), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(word(W.bill_items_title), Modifier.padding(top = 6.dp), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         items.forEachIndexed { i, it ->
-            Row(Modifier.fillMaxWidth().background(c.pageBg, RoundedCornerShape(8.dp)).padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(it.productName, color = c.ink, fontWeight = FontWeight.Bold)
                     Text(
@@ -145,39 +171,10 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                         color = c.inkSoft, fontSize = 12.sp
                     )
                 }
-                TextButton({ items = items.filterIndexed { j, _ -> j != i } }) { Text(word(W.delete), color = c.owedToMe) }
+                FluentButton(word(W.delete), { items = items.filterIndexed { j, _ -> j != i } }, kind = ButtonKind.DANGER)
             }
         }
         ItemForm { items = items + it }
-
-        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onCancel) { Text(word(W.cancel)) }
-            FillButton(word(W.save), c.brandGreen) {
-                val typed = search.trim()
-                when {
-                    supplierId == null && typed.isEmpty() -> problem = needSupplier
-                    total == null -> problem = needAmount
-                    else -> {
-                        // A typed name that is already in the book is that party, not a twin.
-                        val existing = supplierId ?: parties.firstOrNull { it.name.trim().equals(typed, ignoreCase = true) }?.id
-                        onSave(
-                            NewBill(
-                                supplierId = existing,
-                                newSupplierName = if (existing == null) typed else null,
-                                billNumber = number.trim().ifEmpty { null },
-                                total = total,
-                                billDate = billDate,
-                                dueDate = dueDate,
-                                paidCash = paidCash,
-                                note = note.trim().ifEmpty { null },
-                                items = items
-                            )
-                        )
-                    }
-                }
-            }
-        }
     }
     picking?.let { which ->
         DayPicker(
@@ -194,7 +191,7 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.productName.orEmpty()) }
     var qty by remember { mutableStateOf(existing?.quantity?.let { Calc.trim(it) }.orEmpty()) }
-    var unit by remember { mutableStateOf(existing?.unit.orEmpty()) }
+    var unit by remember { mutableStateOf(com.innovation313.roshankhata.data.UnitWords.label(existing?.unit)) }
     var rate by remember { mutableStateOf(existing?.rate?.let { Calc.trim(it) }.orEmpty()) }
     var batch by remember { mutableStateOf(existing?.batchNumber.orEmpty()) }
     var expiry by remember { mutableStateOf(existing?.expiryDate) }
@@ -202,17 +199,17 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
     var problem by remember { mutableStateOf<String?>(null) }
     val needProduct = word(W.enter_product)
     val needQty = word(W.enter_valid_amount)
-    Column(Modifier.fillMaxWidth().background(c.pageBg, RoundedCornerShape(10.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        OutlinedTextField(name, { name = it; problem = null }, label = { Text(word(W.product_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Outlined(name, { name = it; problem = null }, label = { Text(word(W.product_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(qty, { qty = it; problem = null }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(unit, { unit = it }, label = { Text(word(W.unit_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(rate, { rate = it }, label = { Text(word(W.rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f))
+            Outlined(qty, { qty = it; problem = null }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+            Outlined(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
+            Outlined(rate, { rate = it }, label = { Text(word(W.rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         }
-        OutlinedTextField(batch, { batch = it }, label = { Text(word(W.batch_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Outlined(batch, { batch = it }, label = { Text(word(W.batch_number_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Text(word(W.batch_why), color = c.textMuted, fontSize = 11.sp)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton({ picking = true }) { Text(word(W.pick_expiry), color = c.brandGreenText) }
+            FluentButton(word(W.pick_expiry), { picking = true }, kind = ButtonKind.SUBTLE)
             Text(expiry?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
         }
         Text(word(W.expiry_why), color = c.textMuted, fontSize = 11.sp)
@@ -225,7 +222,7 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
                 else -> {
                     val line = BillItem(
                         billId = 0, productName = name.trim(), batchNumber = batch.trim().ifEmpty { null },
-                        expiryDate = expiry, quantity = q, unit = unit.trim().ifEmpty { null },
+                        expiryDate = expiry, quantity = q, unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit),
                         rate = Calc.evalAmount(rate)
                     )
                     onAdd(existing?.let { line.copy(id = it.id, billId = it.billId, note = it.note) } ?: line)

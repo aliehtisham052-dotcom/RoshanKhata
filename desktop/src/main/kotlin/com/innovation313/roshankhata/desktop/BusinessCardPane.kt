@@ -33,7 +33,11 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.innovation313.roshankhata.data.CardLanguage
 import com.innovation313.roshankhata.data.ShopSettings
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.innovation313.roshankhata.desktop.card.CardTemplates
 import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.invoice.Context
@@ -62,7 +66,8 @@ import javax.imageio.ImageIO
 /**
  * The phone's Business Card on the computer (Phase 10): the same twenty-four
  * designs (CardTemplates, generated from the phone's file and drawn on the
- * gfx stand-in), an English or an Urdu card, the shop's logo when it has one.
+ * gfx stand-in), in any of the app's nine languages (21 Oct 2026; Urdu, Sindhi,
+ * Arabic and Farsi drawn in the design's mirror), the shop's logo when it has one.
  * Saved as a picture to send, or printed as a sheet of ten at true size
  * (3.5 x 2 inches) to cut. Drawn on this computer; nothing is uploaded.
  */
@@ -112,7 +117,9 @@ private class CardPrefs(private val file: File) {
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".tmp")
         tmp.writer(Charsets.UTF_8).use { p.store(it, "Roshan Khata card") }
-        if (!tmp.renameTo(file)) { file.delete(); tmp.renameTo(file) }
+        // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
+        // the old one first — a power cut in between left neither.
+        replaceAtomically(tmp, file)
     }
 }
 
@@ -121,17 +128,23 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val prefs = remember(businessId) { CardPrefs(File(home, "card_b$businessId.properties")) }
-    var lang by remember(businessId) { mutableStateOf(prefs.get("lang", "en")) }
-    val ur = lang == "ur"
-    fun k(key: String) = if (ur) key + "_ur" else key
+    var lang by remember(businessId) { mutableStateOf(CardLanguage.of(prefs.get("lang", "")) ?: CardLanguage.forApp(Locale.getDefault())) }
+    fun k(key: String) = lang.key(key)
     // The card's own words, in the card's language (not the app's).
-    val cardWords = remember(lang) { desktopWords(Locale.forLanguageTag(lang)) }
+    val cardWords = remember(lang) { desktopWords(lang.locale) }
+    // English and Urdu are the shop's own two names (statements use them too);
+    // the other languages keep theirs with the card, a Latin one starting from the English.
+    fun storedName(): String = when (lang) {
+        CardLanguage.ENGLISH -> settings.businessName().orEmpty()
+        CardLanguage.URDU -> settings.businessNameUrdu().orEmpty()
+        else -> prefs.get(k("name"), if (lang.latin) settings.businessName().orEmpty() else "")
+    }
     remember(businessId) { CardTemplates.init(Context(words, settings, images, false)); 0 }
 
-    var name by remember(lang) { mutableStateOf((if (ur) settings.businessNameUrdu() else settings.businessName()).orEmpty()) }
+    var name by remember(lang) { mutableStateOf(storedName()) }
     var type by remember(lang) { mutableStateOf(prefs.get(k("type"))) }
     var owner by remember(lang) { mutableStateOf(prefs.get(k("owner"))) }
-    var address by remember(lang) { mutableStateOf(prefs.get(k("address"), if (ur) "" else settings.businessAddress().orEmpty())) }
+    var address by remember(lang) { mutableStateOf(prefs.get(k("address"), if (lang == CardLanguage.ENGLISH) settings.businessAddress().orEmpty() else "")) }
     var tagline by remember(lang) { mutableStateOf(prefs.get(k("tagline"))) }
     var qrMessage by remember(lang) { mutableStateOf(prefs.get(k("qr"), cardWords.text(W.biz_card_qr_message_default))) }
     var phone by remember { mutableStateOf(prefs.get("phone", settings.businessPhone().orEmpty())) }
@@ -152,14 +165,18 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
         footer = if (showMark) cardWords.text(W.made_with_app) else "",
         whatsapp = if (waSame) phone.trim() else whatsapp.trim(),
         email = email.trim(), web = web.trim(), tagline = tagline.trim(), qrMessage = qrMessage.trim(),
-        logo = logo, rtl = ur
+        logo = logo, rtl = lang.rtl, nastaliq = lang.nastaliq
     )
 
     fun save() {
-        if (ur) settings.setBusinessNameUrdu(name) else settings.setBusinessName(name)
+        val own = when (lang) {
+            CardLanguage.ENGLISH -> { settings.setBusinessName(name); emptyMap() }
+            CardLanguage.URDU -> { settings.setBusinessNameUrdu(name); emptyMap() }
+            else -> mapOf(k("name") to name.trim())
+        }
         prefs.set(
-            mapOf(
-                "lang" to lang, k("type") to type.trim(), k("owner") to owner.trim(), k("address") to address.trim(),
+            own + mapOf(
+                "lang" to lang.code, k("type") to type.trim(), k("owner") to owner.trim(), k("address") to address.trim(),
                 k("tagline") to tagline.trim(), k("qr") to qrMessage.trim(), "phone" to phone.trim(), "whatsapp" to whatsapp.trim(),
                 "wa_same" to waSame.toString(), "email" to email.trim(), "web" to web.trim(), "mark" to showMark.toString(),
                 "logo" to showLogo.toString(), "template" to template.toString()
@@ -171,22 +188,32 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
         delay(250)
         val d = data()
         val t = CardTemplates.byId(template)
-        picture = withContext(Dispatchers.Default) { runCatching { CardDraw.image(t, d, 900, 525).toComposeImageBitmap() }.getOrNull() }
+        picture = withContext(Dispatchers.Default) { runCatching { CardDraw.image(t, d, 1800, 1050).toComposeImageBitmap() }.getOrNull() }
     }
 
     Row(Modifier.fillMaxSize()) {
-        Column(Modifier.weight(0.42f).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.weight(0.42f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             PaneTitle(word(W.biz_card), word(W.biz_card_sub))
             Text(word(W.biz_card_language), color = c.ink, fontWeight = FontWeight.Bold)
-            TwoWay("English", "اردو", !ur) { english -> save(); lang = if (english) "en" else "ur" }
+            // One pill per language, each in its own script, in a row that scrolls.
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                CardLanguage.entries.forEach { l ->
+                    FluentPill(l.native, l == lang) { if (l != lang) { save(); lang = l } }
+                }
+            }
             Text(word(W.biz_card_language_note), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.biz_card_sec_own), color = c.ink, fontWeight = FontWeight.Bold)
-            Field(name, { name = it }, cardWords.text(W.biz_card_l_name), cardWords.text(W.biz_card_ex_name))
-            Field(type, { type = it }, cardWords.text(W.biz_card_l_type), cardWords.text(W.biz_card_ex_type))
-            Field(owner, { owner = it }, cardWords.text(W.biz_card_l_owner), cardWords.text(W.biz_card_ex_owner))
-            Field(address, { address = it }, cardWords.text(W.biz_card_l_address), cardWords.text(W.biz_card_ex_address))
-            Field(tagline, { tagline = it }, cardWords.text(W.biz_card_l_tagline), cardWords.text(W.biz_card_ex_tagline))
-            Field(qrMessage, { qrMessage = it }, cardWords.text(W.biz_card_l_qr), cardWords.text(W.biz_card_ex_qr))
+            // This language's own lines are typed in its direction, as on the phone.
+            CompositionLocalProvider(LocalLayoutDirection provides if (lang.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Field(name, { name = it }, cardWords.text(W.biz_card_l_name), cardWords.text(W.biz_card_ex_name))
+                    Field(type, { type = it }, cardWords.text(W.biz_card_l_type), cardWords.text(W.biz_card_ex_type))
+                    Field(owner, { owner = it }, cardWords.text(W.biz_card_l_owner), cardWords.text(W.biz_card_ex_owner))
+                    Field(address, { address = it }, cardWords.text(W.biz_card_l_address), cardWords.text(W.biz_card_ex_address))
+                    Field(tagline, { tagline = it }, cardWords.text(W.biz_card_l_tagline), cardWords.text(W.biz_card_ex_tagline))
+                    Field(qrMessage, { qrMessage = it }, cardWords.text(W.biz_card_l_qr), cardWords.text(W.biz_card_ex_qr))
+                }
+            }
             Text(word(W.biz_card_sec_shared), color = c.ink, fontWeight = FontWeight.Bold)
             Field(phone, { phone = it }, word(W.biz_card_l_call), word(W.biz_card_ex_phone))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -206,9 +233,12 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
             }
             Text(word(W.biz_card_note), color = c.textMuted, fontSize = 12.sp)
         }
-        Column(Modifier.weight(0.58f).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.weight(0.58f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             picture?.let {
-                Image(it, contentDescription = word(W.biz_card), modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth().aspectRatio(CardTemplates.W.toFloat() / CardTemplates.H))
+                // Drawn at twice the size it is shown, and only ever scaled down (21 Oct 2026: 900 px stretched over a
+                // 760 dp card on a 125% screen looked soft).
+                Image(it, contentDescription = word(W.biz_card), modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth().aspectRatio(CardTemplates.W.toFloat() / CardTemplates.H),
+                    filterQuality = androidx.compose.ui.graphics.FilterQuality.High)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 val saveTitle = word(W.biz_card_send_picture)
@@ -226,7 +256,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
                     scope.launch {
                         told = withContext(Dispatchers.IO) {
                             runCatching { ImageIO.write(CardDraw.image(t, d), "png", file) }
-                                .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { it.message ?: it.toString() }
+                                .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
                         }
                     }
                 }
@@ -237,7 +267,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
                     val t = CardTemplates.byId(template)
                     scope.launch {
                         // Drawn at print sharpness (1225 x 700 is 350 dots an inch at 3.5 x 2 inches).
-                        val card = withContext(Dispatchers.Default) { CardDraw.image(t, d, 1225, CardTemplates.H) }
+                        val card = withContext(Dispatchers.Default) { CardDraw.image(t, d, 2100, 1200) }
                         StatementPrint.show(CardSheet(card), words.text(W.biz_card))
                     }
                 }) { Text(word(W.print_short), color = c.brandGreenText) }
@@ -249,8 +279,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
                 CardTemplates.all.chunked(3).forEach { row ->
                     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { t ->
-                            if (t.id == template) FillButton(word(t.labelRes), c.brandGreen) {}
-                            else TextButton({ template = t.id; save() }) { Text(word(t.labelRes), color = c.brandGreenText) }
+                            FluentPill(word(t.labelRes), t.id == template) { template = t.id; save() }
                         }
                     }
                 }
@@ -262,7 +291,7 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
 
 @Composable
 private fun Field(value: String, onChange: (String) -> Unit, label: String, hint: String) {
-    OutlinedTextField(
+    Outlined(
         value, onChange, label = { Text(label) }, placeholder = { Text(hint) }, singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )

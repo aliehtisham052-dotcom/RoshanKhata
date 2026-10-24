@@ -146,7 +146,12 @@ class SchemesActivity : BaseActivity() {
                     .setTitle(R.string.scheme_delete)
                     .setMessage(getString(R.string.scheme_delete_confirm, s.name))
                     .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.scheme_delete) { _, _ -> AppScope.launch { dao.deleteScheme(s.id) } }
+                    // A scheme's delete is for whoever may change the book (21 Oct 2026, the critical review).
+                    .setPositiveButton(R.string.scheme_delete) { _, _ ->
+                        // edit(), not may(): may's retry must call may again, and gone() did not, so the
+                        // manager's one approval stayed for the next change anywhere (22 Oct 2026, the review).
+                        com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { AppScope.launch { dao.deleteScheme(s.id) } }
+                    }
                     .show()
             }
         }
@@ -158,16 +163,31 @@ class SchemesActivity : BaseActivity() {
             hint = getString(R.string.scheme_claim_hint)
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
         }
+        // The claim on the app's calculator pad (21 Oct): a credit note and
+        // the value of free bags are often added up on the spot. The running
+        // total and the pad sit under the box; the body scrolls, as with the
+        // pad it is taller than a short phone's dialog. Read with
+        // CalcPad.figure: a claim that brought nothing (0) is still allowed.
+        com.innovation313.roshankhata.ui.CalcPad.moneyBox(et)
+        val result = com.innovation313.roshankhata.ui.CalcPad.resultLine(this)
         val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
             setPadding(48, 16, 48, 0)
             addView(et)
+            addView(result)
         }
+        val pad = com.innovation313.roshankhata.ui.CalcPad.inflatePad(box)
+        box.addView(pad)
+        val body = android.widget.ScrollView(this).apply { addView(box) }
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = body, pad = pad, fields = listOf(et), results = mapOf(et to result)
+        )
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.scheme_mark_claimed)
-            .setView(box)
+            .setView(body)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Digits.parse(et.text.toString())
+                val amount = com.innovation313.roshankhata.ui.CalcPad.figure(et.text)
                 if (amount == null || amount < 0) {
                     Toast.makeText(this, R.string.scheme_claim_hint, Toast.LENGTH_SHORT).show()
                 } else AppScope.launch { dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }

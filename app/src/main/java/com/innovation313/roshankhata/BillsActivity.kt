@@ -239,7 +239,7 @@ class BillsActivity : BaseActivity() {
                 findViewById<TextView>(R.id.tvStatExpiring).text = "%,d".format(Digits.FIGURES, count)
                 if (count > 0) {
                     btnExpiring.visibility = View.VISIBLE
-                    btnExpiring.text = Digits.string(resources, R.string.expiring_badge, count)
+                    btnExpiring.text = Digits.quantity(resources, R.plurals.n_expiring, count, count)
                 } else {
                     btnExpiring.visibility = View.GONE
                 }
@@ -337,7 +337,7 @@ class BillsActivity : BaseActivity() {
 
         // Say what the bill is about to do to the ledger, before it does it.
         fun refreshEffect() {
-            val amount = Digits.parse(etTotal.text)
+            val amount = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
             val supplier = etSupplier.text.toString().trim()
 
             if (!cbPaidCash.isChecked && amount != null && amount > 0 && supplier.isNotEmpty()) {
@@ -357,6 +357,21 @@ class BillsActivity : BaseActivity() {
         etSupplier.setOnItemClickListener { _, _, _, _ -> refreshEffect() }
         if (restore != null) refreshEffect()
 
+        // The total on the app's own calculator pad (21 Oct). The pad keeps
+        // the focus in the box, so the ledger line also follows the typing
+        // rather than waiting for the focus to leave.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.billKeypad),
+            fields = listOf(etTotal),
+            results = mapOf(etTotal to view.findViewById<TextView>(R.id.tvBillTotalResult))
+        )
+        etTotal.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) = refreshEffect()
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
+
         val form = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.add_bill)
             .setView(view)
@@ -366,7 +381,7 @@ class BillsActivity : BaseActivity() {
                 collectItems(
                     supplierName = etSupplier.text.toString().trim(),
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = Digits.parse(etTotal.text),
+                    total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
                     dueDate = dueDate,
                     paidCash = cbPaidCash.isChecked,
@@ -377,7 +392,7 @@ class BillsActivity : BaseActivity() {
                 saveBill(
                     supplierName = etSupplier.text.toString().trim(),
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = Digits.parse(etTotal.text),
+                    total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
                     dueDate = dueDate,
                     paidCash = cbPaidCash.isChecked,
@@ -390,7 +405,7 @@ class BillsActivity : BaseActivity() {
             val draft = BillDraft(
                 supplierName = etSupplier.text.toString().trim(),
                 billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                total = Digits.parse(etTotal.text),
+                total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                 billDate = billDate,
                 dueDate = dueDate,
                 paidCash = cbPaidCash.isChecked,
@@ -1003,6 +1018,7 @@ class BillsActivity : BaseActivity() {
      * this is for.
      */
     private fun startEditBill(billSummary: BillSummary) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { startEditBill(billSummary) }) return
         lifecycleScope.launch {
             val existing = dao.getBill(billSummary.id) ?: return@launch
             showEditBillDialog(existing, billSummary.partyName)
@@ -1032,6 +1048,14 @@ class BillsActivity : BaseActivity() {
         etNumber.setText(existing.billNumber ?: "")
         etTotal.setText(Format.plain(existing.totalAmount))
         etNote.setText(existing.note ?: "")
+
+        // The corrected total on the app's own calculator pad (21 Oct).
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.billKeypad),
+            fields = listOf(etTotal),
+            results = mapOf(etTotal to view.findViewById<TextView>(R.id.tvBillTotalResult))
+        )
 
         var billDate = existing.billDate
         var dueDate = existing.dueDate
@@ -1068,7 +1092,7 @@ class BillsActivity : BaseActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
-                val total = Digits.parse(etTotal.text)
+                val total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
                 if (total == null || total <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
@@ -1098,33 +1122,20 @@ class BillsActivity : BaseActivity() {
         note: String?
     ) {
         AppScope.launch {
-            dao.updateBill(
+            // The bill and its khata entry in ONE transaction (21 Oct 2026, the critical review), the
+            // computer's own call: THE LEDGER IS THE MONEY, and a failure between the two writes left
+            // the bill and the khata saying different amounts. The entry's note is rebuilt as it was
+            // when the bill was first saved, so a corrected bill number shows in the ledger too.
+            dao.editSupplierBill(
                 existing.copy(
                     billNumber = billNumber,
                     totalAmount = total,
                     billDate = billDate,
                     dueDate = dueDate,
                     note = note
-                )
+                ),
+                billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
             )
-
-            // Keep the ledger entry in step — see this file's own THE LEDGER
-            // IS THE MONEY rule. A bill on credit points at one entry; if the
-            // amount here changes and that entry does not follow, there are
-            // two different answers to "what do I owe them?" and no way to
-            // tell which is true. The note is recomputed the same way it was
-            // built when the bill was first saved, so a corrected bill number
-            // is not left showing the old one in the ledger.
-            existing.ledgerEntryId?.let { entryId ->
-                dao.getEntry(entryId)?.let { entry ->
-                    dao.updateEntry(
-                        entry.copy(
-                            amount = total,
-                            note = billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
-                        )
-                    )
-                }
-            }
 
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
@@ -1230,6 +1241,7 @@ class BillsActivity : BaseActivity() {
      * if the total should change too, that is done from Edit Bill, not here.
      */
     private fun confirmDeleteItem(billId: Long, item: BillItem) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteItem(billId, item) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_item)
             .setMessage(getString(R.string.delete_item_confirm, item.productName))
@@ -1246,13 +1258,15 @@ class BillsActivity : BaseActivity() {
     }
 
     /**
-     * Deleting a bill removes the paperwork, NOT the ledger entry.
-     *
-     * The stock really did arrive and the money really is owed. Unwinding the
-     * ledger because a document was tidied away would erase a real debt to a
-     * real supplier — who would still, quite rightly, expect to be paid.
+     * Deleting a bill takes a credit bill's own ledger entry with it — to the
+     * Recycle Bin, not away for good. A debt with no bill behind it reads as a
+     * phantom amount owed, so the two leave together; the bin keeps the entry
+     * restorable for RecycleBinActivity.RETENTION_DAYS in case the delete was
+     * a mistake. The dialog and the toast say exactly this (they once claimed
+     * the entry stayed, which the code had stopped doing).
      */
     private fun confirmDeleteBill(bill: BillSummary) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteBill(bill) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_bill)
             .setMessage(R.string.delete_bill_confirm)

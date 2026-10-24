@@ -30,6 +30,8 @@ class AndroidShopSettings(private val context: Context) : ShopSettings {
     override fun setCurrency(value: String?) = BusinessProfile.setCurrency(context, value)
     override fun calendar() = BusinessProfile.calendar(context)
     override fun setCalendar(kind: ShopCalendar.Kind) = BusinessProfile.setCalendar(context, kind)
+    override fun country() = BusinessProfile.country(context)
+    override fun setCountry(country: ShopCountry) = BusinessProfile.setCountry(context, country)
     override fun tradeKey() = BusinessProfile.trade(context)
     override fun setTradeKey(key: String) = BusinessProfile.setTrade(context, Trade.of(key))
     override fun otherTradeName() = BusinessProfile.otherTradeName(context)

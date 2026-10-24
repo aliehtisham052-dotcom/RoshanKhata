@@ -179,12 +179,7 @@ object InspectorReport {
      */
     suspend fun gather(context: Context, dao: KhataDao, windowDays: Int): ReportData {
         val products = dao.productsOnce()
-        val stock = Stock.combine(
-            products = products,
-            bought = dao.boughtPerProduct(),
-            sold = dao.soldPerProduct(),
-            returned = dao.returnedPerProduct()
-        ).sortedBy { it.name.lowercase() }
+        val stock = NameOrder.sortedBy(Stock.of(dao)) { it.name }
 
         // Sold-out batches are dropped: a register of stock should list what is
         // on the shelf. What was bought and sold over a period is a purchase
@@ -241,12 +236,13 @@ object InspectorReport {
             .filter { !it.isUntouched }
             .groupBy { productsById[it.productId]?.company?.trim()?.takeIf { c -> c.isNotEmpty() } ?: noCompany }
             .toList()
-            .sortedWith(compareBy(
-                // The unlabelled group sits last, not jumbled into the alphabet.
-                { it.first == noCompany },
-                { it.first.lowercase() }
-            ))
-            .map { (company, list) -> company to list.sortedBy { it.name.lowercase() } }
+            .sortedWith { a, b ->
+                // The unlabelled group sits last, not jumbled into the alphabet; the
+                // rest in the reader's alphabet (lesson 30; 23 Oct review, R49).
+                compareValues(a.first == noCompany, b.first == noCompany).takeIf { it != 0 }
+                    ?: NameOrder.byName.compare(a.first, b.first)
+            }
+            .map { (company, list) -> company to NameOrder.sortedBy(list) { it.name } }
 
         val typeCounts = typeCounts(
             stock.filter { !it.isUntouched }.map { productsById[it.productId]?.productType },
@@ -840,11 +836,11 @@ object InspectorReport {
                 val isSoon = b.itemId in soonIds
                 val status: Cell = when {
                     isExpired -> Cell.Chip(
-                        b.daysLeft?.let { Digits.string(context.resources, R.string.pdf_insp_expired_ago, -it) }
+                        b.daysLeft?.let { Digits.quantity(context.resources, R.plurals.pdf_insp_expired_ago, -it, -it) }
                             ?: context.getString(R.string.pdf_insp_expired),
                         RED_FG, RED_BG
                     )
-                    isSoon -> Cell.Chip(Digits.string(context.resources, R.string.pdf_insp_days_left, b.daysLeft ?: 0), AMBER_FG, AMBER_BG)
+                    isSoon -> Cell.Chip((b.daysLeft ?: 0).let { Digits.quantity(context.resources, R.plurals.n_days_left, it, it) }, AMBER_FG, AMBER_BG)
                     exp == null -> Cell.Text(null, body)
                     else -> Cell.Chip(context.getString(R.string.pdf_insp_status_ok), OK_FG, OK_BG)
                 }

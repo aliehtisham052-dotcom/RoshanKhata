@@ -146,6 +146,16 @@ class ChequesActivity : BaseActivity() {
         val etBank: EditText = view.findViewById(R.id.etBankName)
         val etNote: EditText = view.findViewById(R.id.etChequeNote)
 
+        // The app's own calculator pad for the amount (21 Oct), shown while
+        // the amount has the focus; party, number, bank and note keep the
+        // phone's keyboard.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.chequeKeypad),
+            fields = listOf(etAmount),
+            results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvChequeAmountResult))
+        )
+
         etParty.setAdapter(
             ArrayAdapter(
                 this,
@@ -279,7 +289,7 @@ class ChequesActivity : BaseActivity() {
             ChoiceSheet.show(this, cheque.partyName, settledOptions) { which ->
                 when {
                     canReopen && which == 0 -> reopen(cheque)
-                    else -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
+                    else -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
                 }
             }
             return
@@ -301,11 +311,11 @@ class ChequesActivity : BaseActivity() {
 
         ChoiceSheet.show(this, getString(R.string.cheque_actions), options) { which ->
             when (which) {
-                0 -> showChequeDialog(cheque)
+                0 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { showChequeDialog(cheque) }
                 1 -> confirmCleared(cheque)
                 2 -> confirmBounced(cheque)
                 3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
-                4 -> lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() }
+                4 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
             }
         }
     }
@@ -349,33 +359,20 @@ class ChequesActivity : BaseActivity() {
             // A cheque received from a customer is money coming IN — it reduces
             // what they owe, so it is an "I Got". A cheque we issued is money
             // going OUT. Getting this backwards would invert the balance.
-            val entryId = dao.insertEntryNumbered(
-                LedgerEntry(
-                    partyId = cheque.partyId,
-                    amount = cheque.amount,
-                    isGiven = !cheque.isReceived,
-                    note = buildString {
-                        append(
-                            getString(
-                                R.string.cheque_note_prefix,
-                                cheque.chequeNumber?.let { "#$it" }.orEmpty()
-                            ).trim()
-                        )
-                        cheque.bankName?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
-                    },
-                    entryNumber = ""
+            val note = buildString {
+                append(
+                    getString(
+                        R.string.cheque_note_prefix,
+                        cheque.chequeNumber?.let { "#$it" }.orEmpty()
+                    ).trim()
                 )
-            )
-
-            dao.getCheque(cheque.id)?.let { existing ->
-                dao.updateCheque(
-                    existing.copy(
-                        status = ChequeStatus.CLEARED,
-                        settledAt = System.currentTimeMillis(),
-                        ledgerEntryId = entryId
-                    )
-                )
+                cheque.bankName?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
             }
+            // The entry and the cheque's new status in ONE transaction, and only while it is still
+            // pending (21 Oct 2026): two quick taps, or a tap after the computer's copy cleared it,
+            // posted the money twice. Null: nothing was posted.
+            val posted = dao.clearCheque(cheque.id, note)
+            if (posted == null) return@launch
 
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {

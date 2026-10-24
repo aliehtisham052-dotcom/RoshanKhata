@@ -50,12 +50,12 @@ fun ImportPreviewDialog(
                 if (skipped > 0) Text(word(W.import_csv_skipped, skipped), color = c.textMuted, fontSize = 13.sp)
                 Text(word(W.import_csv_sign), color = c.ink, fontSize = 13.sp)
                 TwoWay(word(W.import_csv_owes_me), word(W.import_csv_i_owe), owesMe) { owesMe = it }
-                HorizontalDivider(color = c.pageBg)
+                Rule()
                 rows.take(6).forEach { r ->
                     Row(Modifier.fillMaxWidth()) {
                         Column(Modifier.weight(1f)) {
                             Text(Format.name(r.name), color = c.ink, fontSize = 14.sp)
-                            r.phone?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
+                            r.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
                         }
                         Text(
                             Format.money(kotlin.math.abs(r.balance)),
@@ -68,6 +68,6 @@ fun ImportPreviewDialog(
             }
         },
         confirmButton = { TextButton({ onImport(rows) }, enabled = rows.isNotEmpty()) { Text(word(W.import_csv_go), color = c.brandGreenText) } },
-        dismissButton = { TextButton(onCancel) { Text(word(W.cancel)) } }
+        dismissButton = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }
     )
 }

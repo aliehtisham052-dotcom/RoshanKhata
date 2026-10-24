@@ -88,6 +88,9 @@
     <string name="home_sec_daily">Setiap hari</string>
     <string name="home_sec_business">Usaha</string>
     <string name="home_today">Hari ini</string>
+    <string name="home_cash_in_hand">Kas di tangan</string>
+    <string name="home_quick_actions">Tindakan cepat</string>
+    <string name="home_col_time">Waktu</string>
     <string name="tile_bills">Tagihan</string>
     <string name="tile_expiry">Kedaluwarsa</string>
     <string name="tile_card">Kartu</string>
@@ -123,9 +126,7 @@
     <string name="add_party">Tambah Kontak</string>
     <string name="add_party_duplicate_with_phone">Pelanggan serupa sudah ada: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Pelanggan serupa sudah ada: %1$s</string>
-    <string name="no_parties_yet">Belum ada pelanggan.
-
-Tambahkan pelanggan pertama dan mulai buku Anda.</string>
+    <string name="no_parties_yet">Belum ada pelanggan.\n\nTambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="no_entries_yet">Belum ada catatan.</string>
 
     <string name="i_gave">Saya Beri</string>
@@ -288,6 +289,18 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
 
     <!-- App Lock -->
     <string name="app_lock">Kunci Aplikasi</string>
+    <string name="app_lock_pc_explain">PIN untuk Roshan Khata di komputer ini. Menjaga buku dari mata orang lain di meja kasir; tidak mengunci berkasnya sendiri, jadi kunci juga Windows (Win + L) saat Anda pergi.</string>
+    <string name="pc_pdf_save">Simpan PDF</string>
+    <string name="pc_pdf_open_folder">Buka folder</string>
+    <string name="pc_pdf_making">Membuat PDF…</string>
+    <string name="pc_pdf_failed">PDF tidak dapat disimpan: %1$s</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">Pilih PIN 4 sampai 8 angka</string>
+    <string name="lock_pin_again">Masukkan PIN yang sama lagi</string>
+    <string name="lock_pin_wrong">PIN salah. Coba lagi.</string>
+    <string name="lock_pin_mismatch">Kedua PIN tidak sama.</string>
+    <string name="lock_pin_wait">Terlalu banyak percobaan. Tunggu %1$d detik.</string>
+    <string name="lock_unlock">Buka</string>
     <string name="lock_title">Buka Roshan Khata</string>
     <string name="lock_subtitle">Buku Anda bersifat pribadi. Pastikan ini memang Anda.</string>
     <string name="app_lock_enabled">Kunci Aplikasi aktif. Anda akan diminta konfirmasi setiap kali membuka aplikasi.</string>
@@ -497,7 +510,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="save_backup">Simpan cadangan</string>
 
     <string name="restore_warning_title">Ganti semuanya?</string>
-    <string name="restore_warning_message">Pemulihan akan MENGGANTI semua yang saat ini ada di Roshan Khata dengan isi berkas ini:\n\n%1$d pelanggan/pemasok\n%2$d catatan buku\n%3$d cek\n%4$d catatan buku kas\n%5$d rencana cicilan\n%6$d tagihan pemasok\n%7$d faktur\n\nApa pun yang ada di ponsel ini sekarang akan hilang. Jika ada catatan di sini yang tidak ada di cadangan, cadangkan dulu yang INI.\n\nTindakan ini tidak dapat dibatalkan.</string>
+    <string name="restore_warning_message">Pemulihan akan MENGGANTI semua yang saat ini ada di Roshan Khata dengan isi berkas ini:\n\n%1$d pelanggan/pemasok\n%2$d catatan buku\n%3$d cek\n%4$d catatan buku kas\n%5$d rencana cicilan\n%6$d tagihan pemasok\n%7$d faktur\n\nApa pun yang ada di ponsel ini sekarang akan hilang. Jika ada catatan di sini yang tidak ada di cadangan, cadangkan dulu yang INI.\n\nBuku ini disalin dulu ke Salinan harian, jadi pemulihan bisa dibatalkan dari sana.</string>
     <string name="restore_replace">Ganti semuanya</string>
     <string name="restore_done">Dipulihkan</string>
     <string name="restore_failed">Pemulihan gagal: %1$s</string>
@@ -578,9 +591,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
         <item quantity="other">%1$d usaha di Drive</item>
     </plurals>
     <string name="drive_restore_all">Pulihkan semua</string>
-    <string name="drive_restore_all_warning">Usaha berikut akan dipulihkan dari Drive, menggantikan apa pun yang ada di ponsel ini untuk masing-masing: %1$s</string>
-    <string name="drive_restored_these">Dipulihkan: %1$s</string>
-    <string name="drive_restore_missed">Tidak dapat dipulihkan: %1$s</string>
+    <string name="drive_restore_all_warning">Usaha berikut akan dipulihkan dari Drive, menggantikan apa pun yang ada di ponsel ini untuk masing-masing:\n\n%1$s</string>
+    <string name="drive_restored_these">Dipulihkan:\n%1$s</string>
+    <string name="drive_restore_missed">Tidak dapat dipulihkan:\n%1$s</string>
     <string name="business_numbered">Usaha %1$d</string>
     <string name="backup_for_business">Mencadangkan: %1$s</string>
     <string name="snapshots_title">Salinan harian</string>
@@ -667,9 +680,9 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="bill_saved_credit">Tagihan disimpan dan dicatat ke buku Anda</string>
     <string name="enter_supplier">Silakan pilih pemasok</string>
     <string name="enter_product">Masukkan nama produk</string>
-    <string name="bill_deleted">Tagihan dihapus. Catatan di buku tetap ada — stoknya memang sudah datang dan Anda memang berutang atasnya.</string>
+    <string name="bill_deleted">Tagihan dihapus. Jika ini tagihan kredit, catatan bukunya ikut masuk Tempat Sampah — pulihkan dari sana dalam 30 hari jika ini keliru.</string>
     <string name="delete_bill">Hapus tagihan</string>
-    <string name="delete_bill_confirm">Tagihan dan catatan batch-nya akan dihapus, tetapi catatan di buku tetap ada. Stoknya memang sudah datang dan uangnya memang terutang — menghapus dokumen tidak membatalkan hal itu.</string>
+    <string name="delete_bill_confirm">Tagihan dan catatan batch-nya akan dihapus. Jika ini tagihan kredit, catatan bukunya (utang Anda kepada pemasok ini) juga masuk Tempat Sampah, sehingga utang berkurang sebesar tagihan ini. Catatan itu bisa dipulihkan dari Tempat Sampah dalam 30 hari.</string>
     <string name="bill_actions">Tagihan</string>
     <string name="view_items">Lihat barang dan batch</string>
 
@@ -846,7 +859,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="drive_auto_backup">Cadangan otomatis</string>
     <string name="drive_auto_backup_hint">Mencadangkan sendiri setiap kali buku berubah — paling sering tiap 30 menit dengan Wi-Fi, tiap 6 jam dengan data seluler. Anda tetap bisa mencadangkan kapan saja.</string>
     <string name="auto_backup_offer_title">Cadangkan secara otomatis?</string>
-    <string name="auto_backup_offer_body">Akun Anda sudah terhubung. Roshan Khata dapat mengunggah buku Anda sendiri setiap kali ada perubahan, sehingga ponsel yang hilang atau rusak tidak membawa serta catatan Anda. Anda dapat mengubahnya kapan saja dari layar ini.</string>
+    <string name="auto_backup_offer_body">Akun Anda sudah terhubung. Roshan Khata dapat mengunggah buku Anda sendiri setiap kali ada perubahan, sehingga ponsel yang hilang atau rusak tidak membawa serta catatan Anda.\n\nAnda dapat mengubahnya kapan saja dari layar ini.</string>
     <string name="auto_backup_offer_yes">Aktifkan</string>
     <string name="auto_backup_offer_no">Nanti saja</string>
     <string name="drive_restore">Pulihkan dari Drive</string>
@@ -1138,7 +1151,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="faq_q_hide">Bisakah saldo disembunyikan saat ada orang di samping saya?</string>
     <string name="faq_a_hide">Ketuk ikon mata di samping saldo pada layar utama. Saldo tersembunyi di semua tempat sampai Anda mengetuknya lagi.</string>
     <string name="faq_q_percent">Bisakah saya menghitung diskon di dalam kolom jumlah?</string>
-    <string name="faq_a_percent">Bisa. Ketik hitungannya langsung — 1200-15%% menghasilkan 1020, dan 500*32%% menghasilkan 160. Ini berfungsi di setiap kolom jumlah dan di Kalkulator.</string>
+    <string name="faq_a_percent" formatted="false">Bisa. Ketik hitungannya langsung — 1200-15% menghasilkan 1020, dan 500*32% menghasilkan 160. Ini berfungsi di setiap kolom jumlah dan di Kalkulator.</string>
     <string name="faq_q_delete">Saya tidak sengaja menghapus pelanggan.</string>
     <string name="faq_a_delete">Tempat Sampah, di layar utama. Pelanggan dan catatan yang dihapus menunggu di sana dan bisa dikembalikan.</string>
     <string name="faq_q_language">Bisakah saya mengganti bahasa nanti?</string>
@@ -1524,7 +1537,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pdf_biz_cheques">Cek yang belum cair</string>
     <string name="pdf_biz_cheques_note">Ini belum menjadi uang sebelum cair. Tidak termasuk dalam saldo di atas.</string>
     <string name="pdf_biz_cheque">Cek</string>
-    <string name="pdf_biz_due"> \u00B7 jatuh tempo </string>
+    <string name="pdf_biz_due">" \u00B7 jatuh tempo "</string>
     <string name="pdf_biz_plans">Rencana cicilan yang masih berjalan</string>
     <string name="pdf_biz_paid_of">%1$s dari %2$s</string>
     <string name="pdf_biz_expiring">Stok segera kedaluwarsa</string>
@@ -1532,14 +1545,14 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <plurals name="pdf_biz_days_left">
         <item quantity="other">%1$d hari</item>
     </plurals>
-    <string name="pdf_biz_batch">Batch %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Register Penjualan &amp; Pembelian</string>
     <string name="pdf_reg_ntn">NPWP: %1$s</string>
     <string name="pdf_reg_period">Periode: %1$s</string>
     <string name="pdf_reg_note_1">Ini catatan toko sendiri atas apa yang diberitahukan kepadanya, dicetak untuk periode di atas.</string>
-    <string name="pdf_reg_note_2">Penjualan adalah catatan kredit/barang yang memuat barang \u2014 uang saja dan qardhul hasan tidak dihitung.</string>
+    <string name="pdf_reg_note_2">Penjualan adalah catatan kredit/barang yang memuat barang, atau barang penjualan kasir \u2014 uang saja dan qardhul hasan tidak dihitung.</string>
     <string name="pdf_reg_sales_lines">Baris penjualan pada periode</string>
     <string name="pdf_reg_total_sales">Total penjualan</string>
     <string name="pdf_reg_purchase_lines">Baris pembelian pada periode</string>
@@ -1600,7 +1613,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="pdf_insp_no_batches">Tidak ada batch tersedia. Batch dan kedaluwarsa dicatat pada tagihan pemasok.</string>
     <string name="pdf_insp_missing_note">Setiap produk di bawah ini ada stoknya dengan satu atau lebih kolom label yang tidak pernah dicatat.</string>
     <string name="pdf_insp_expired">KEDALUWARSA</string>
-    <string name="pdf_insp_expired_ago">KEDALUWARSA \u00B7 %1$d hari lalu</string>
     <string name="pdf_insp_days_left">sisa %1$d hari</string>
     <string name="pdf_insp_units_differ">satuan berbeda</string>
     <string name="pdf_insp_company_tag">PERUSAHAAN</string>
@@ -1648,6 +1660,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="theme_light">Terang</string>
     <string name="theme_dark">Gelap</string>
     <string name="theme_system">Ikuti ponsel</string>
+    <string name="theme_system_pc">Ikuti komputer</string>
     <string name="bp_section_identity">Identitas</string>
     <string name="bp_section_paid">Menerima pembayaran</string>
     <string name="bp_section_seals">Stempel &amp; tanda tangan</string>
@@ -1773,7 +1786,6 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="followup_queue_open">Buka WhatsApp</string>
     <string name="followup_queue_skip">Lewati</string>
     <string name="followup_queue_stop">Berhenti</string>
-    <string name="followup_queue_done">Selesai — %1$d pengingat dibuka hari ini</string>
     <string name="followup_queue_title">%1$d dari %2$d</string>
     <string name="season_title">Musim Tanam</string>
     <string name="season_subtitle">Utang per musim tanam, terbaru lebih dulu</string>
@@ -2776,7 +2788,7 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">Bahasa kartu</string>
-    <string name="biz_card_language_note">Kartu Urdu sepenuhnya berbahasa Urdu dan dibaca dari kanan ke kiri. Tiap bahasa punya nama, pemilik, dan alamatnya sendiri; nomor, email, dan situs web sama di keduanya.</string>
+    <string name="biz_card_language_note">Setiap bahasa punya kartunya sendiri. Kartu Urdu, Sindhi, Arab, dan Persia dibaca dari kanan ke kiri. Setiap bahasa menyimpan nama, pemilik, dan alamatnya sendiri; nomor, email, dan situs web sama di setiap kartu.</string>
     <string name="poster_step_design">Desain</string>
     <string name="poster_step_words">Kata-kata</string>
     <string name="poster_step_send">Kirim</string>
@@ -2906,4 +2918,664 @@ Tambahkan pelanggan pertama dan mulai buku Anda.</string>
     <string name="import_csv_go">Masukkan mereka</string>
     <string name="import_csv_done">Pelanggan ditambahkan: %1$d</string>
     <string name="import_csv_empty">Tidak ada pelanggan yang dapat dibaca dari file ini. File perlu setidaknya satu kolom nama.</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">Kirim ke komputer (WiFi)</string>
+    <string name="wifi_send_explain">Di komputer, buka Roshan Khata dan tekan “Dari ponsel”, lalu pindai kode yang muncul. Keduanya harus di WiFi yang sama. Tidak ada yang dikirim ke internet.</string>
+    <string name="wifi_send_button">Pindai kode komputer</string>
+    <string name="wifi_send_not_computer">Ini bukan kode komputer Roshan Khata.</string>
+    <string name="wifi_send_sending">Mengirim ke komputer…</string>
+    <string name="wifi_send_done">Terkirim. Periksa di komputer dan konfirmasi di sana untuk memuatnya.</string>
+    <string name="wifi_send_refused">Komputer tidak menerimanya. Tutup jendela “Dari ponsel”, buka lagi, lalu pindai kode yang baru.</string>
+    <string name="wifi_send_unreachable">Komputer tidak terjangkau. Pastikan keduanya di WiFi yang sama, jendela “Dari ponsel” di komputer terbuka, dan Windows mengizinkan Roshan Khata di jaringan.</string>
+    <string name="wifi_pc_button">Dari ponsel</string>
+    <string name="wifi_pc_title">Dari ponsel Anda, lewat WiFi</string>
+    <string name="wifi_pc_steps">Di ponsel: Cadangan → Pindai kode komputer, lalu arahkan ke kode ini. Keduanya harus di WiFi yang sama. Tidak ada yang dikirim ke internet, dan tidak ada yang diganti di sini sebelum Anda setuju.</string>
+    <string name="wifi_pc_waiting">Menunggu ponsel…</string>
+    <string name="wifi_pc_no_network">Komputer ini tidak terhubung ke jaringan. Hubungkan ke WiFi toko lalu buka jendela ini lagi.</string>
+    <string name="wifi_pc_firewall">Jika Windows bertanya, izinkan Roshan Khata di jaringan pribadi.</string>
+    <string name="wifi_pc_failed">Tidak bisa mulai mendengarkan. Tutup jendela ini dan coba lagi.</string>
+    <string name="poster_save_picture">Simpan poster sebagai gambar</string>
+    <string name="poster_desktop_flat">Di komputer gambar digambar datar; ponsel menampilkannya dalam 3D.</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">Ambil buku komputer</string>
+    <string name="wifi_take_asking">Meminta buku dari komputer…</string>
+    <string name="wifi_take_refused">Komputer tidak memberikan bukunya. Jendela “Dari ponsel” harus terbuka; pindai kode yang ditampilkannya sekarang.</string>
+    <string name="book_recovered_title">Buku Anda telah diperbaiki</string>
+    <string name="book_recovered_from">Berkas buku rusak dan tidak bisa dibaca. Buku dibangun ulang dari salinan yang dibuat pada %1$s. Apa pun yang ditulis setelah salinan itu tidak ada di dalamnya.</string>
+    <string name="book_recovered_none">Berkas buku rusak dan tidak bisa dibaca, dan tidak ada salinan tersimpan di komputer ini. Buku dimulai kosong: pulihkan cadangan dari ponsel atau berkas.</string>
+    <string name="book_corrupt_kept">Berkas yang rusak disimpan, tidak dihapus:\n%1$s</string>
+    <string name="update_available">Versi lebih baru siap: %1$s</string>
+    <string name="update_open">Buka halaman unduhan</string>
+    <string name="auto_backup_note">Salinan hari ini ditulis ulang setiap jam selama aplikasi terbuka, di sini dan di folder luar.</string>
+    <string name="receipt_save_picture">Simpan struk sebagai gambar</string>
+    <string name="report_open_mail">Buka email saya</string>
+    <string name="report_copy">Salin laporan</string>
+    <string name="report_copied">Tersalin. Tempel ke WhatsApp atau email ke innovation313.support@gmail.com.</string>
+    <string name="report_no_mail_pc">Tidak ada program email di komputer ini. Gunakan “Salin laporan” dan tempel ke WhatsApp atau email apa pun ke innovation313.support@gmail.com.</string>
+    <string name="report_pc_privacy">Nama, nomor, dan saldo pelanggan Anda TIDAK PERNAH dikirim. Hanya versi aplikasi dan versi Windows yang ikut — ditampilkan lengkap di bawah, sebelum apa pun meninggalkan komputer ini.</string>
+
+    <!-- The counter (POS Phase 1, 21 Oct 2026) -->
+    <string name="pos_title">Penjualan kasir</string>
+    <string name="pos_subtitle">Pindai atau cari barang, tambahkan, terima pembayaran</string>
+    <string name="pos_search_hint">Nama barang atau barcode</string>
+    <string name="pos_scan">Pindai</string>
+    <string name="pos_walk_in">Pelanggan umum</string>
+    <string name="pos_choose_customer">Pilih pelanggan</string>
+    <string name="pos_lines_empty">Belum ada barang — pindai atau cari di atas</string>
+    <string name="pos_col_item">Barang</string>
+    <string name="pos_col_qty">Jml</string>
+    <string name="pos_col_rate">Harga</string>
+    <string name="pos_col_total">Total</string>
+    <string name="pos_line_discount">Diskon baris</string>
+    <string name="pos_subtotal">Subtotal</string>
+    <string name="pos_discount">Diskon</string>
+    <string name="pos_tax">Pajak %</string>
+    <string name="pos_round_off">Pembulatan</string>
+    <string name="pos_grand_total">Total</string>
+    <string name="pos_paid">Dibayar sekarang</string>
+    <string name="pos_to_account">Ke akun</string>
+    <string name="pos_change">Kembalian</string>
+    <string name="pos_add_payment">Tambah pembayaran</string>
+    <string name="pos_pay_full_cash">Semua tunai</string>
+    <string name="pos_reference_hint">Referensi (no. transaksi, no. cek)</string>
+    <string name="pos_hold">Tahan</string>
+    <string name="pos_held_tickets">Nota ditahan (%1$d)</string>
+    <string name="pos_resume">Lanjutkan</string>
+    <string name="pos_drop_held">Hapus nota ditahan</string>
+    <string name="pos_post">Selesaikan penjualan</string>
+    <string name="pos_post_and_print">Selesaikan &amp; cetak</string>
+    <string name="pos_clear">Kosongkan nota</string>
+    <string name="pos_posted">Penjualan %1$s tersimpan</string>
+    <string name="pos_void">Batalkan penjualan</string>
+    <string name="pos_void_reason">Alasan pembatalan</string>
+    <string name="pos_void_confirm">Batalkan %1$s? Baris buku dan kas-nya masuk ke tempat sampah.</string>
+    <string name="pos_voided">Dibatalkan</string>
+    <string name="pos_status_done">Selesai</string>
+    <string name="pos_status_void">Batal</string>
+    <string name="pos_status_held">Ditahan</string>
+    <string name="pos_today_count">%1$d penjualan hari ini</string>
+    <string name="pos_today_total">Hari ini %1$s</string>
+    <string name="pos_recent">Penjualan terbaru</string>
+    <string name="pos_err_no_lines">Tambahkan minimal satu barang</string>
+    <string name="pos_err_quantity">Jumlah harus lebih dari nol</string>
+    <string name="pos_err_rate">Harga tidak boleh negatif</string>
+    <string name="pos_err_discount">Diskon melebihi baris</string>
+    <string name="pos_err_payment">Pembayaran harus lebih dari nol</string>
+    <string name="pos_err_overpaid">Dibayar melebihi total</string>
+    <string name="pos_err_walk_in_unpaid">Pelanggan umum membayar penuh — atau pilih pelanggan untuk sisanya</string>
+    <string name="pos_err_empty_name">Barang perlu nama</string>
+    <string name="pos_stock_low">Tinggal %1$s</string>
+    <string name="pos_stock_negative">Stok akan di bawah nol</string>
+    <string name="pos_product_new">Barang baru “%1$s” (tidak ada di produk)</string>
+    <string name="pos_barcode_unknown">Tidak ada produk dengan barcode ini</string>
+    <string name="pos_receipt">Struk</string>
+    <string name="pos_customer_pays_later">Sisanya ke akun %1$s</string>
+    <string name="cash_category_sale">Penjualan</string>
+    <string name="pos_sales_title">Penjualan</string>
+    <string name="pos_keys_help">F2 barang · F4 jml · F6 diskon · F8 pelanggan · F9 bayar · F12 selesai</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">Barcode (opsional)</string>
+    <string name="product_cost_hint">Harga beli (opsional)</string>
+    <string name="product_low_stock_hint">Peringatan saat stok (opsional)</string>
+    <string name="product_barcode_taken">Barcode itu sudah dipakai %1$s</string>
+    <string name="na_low_stock">%1$s barang stoknya menipis</string>
+    <string name="products_export">Ekspor CSV</string>
+    <string name="products_import">Impor CSV</string>
+    <string name="products_labels">Cetak label</string>
+    <string name="products_import_plan">%1$d produk baru, %2$d diperbarui</string>
+    <string name="products_import_clash">%1$d baris memakai barcode produk lain — kode itu dilewati</string>
+    <string name="products_import_none">Tidak ada produk di file itu</string>
+    <string name="products_imported">%1$d produk ditambahkan, %2$d diperbarui</string>
+    <string name="products_labels_assign">%1$d produk belum punya barcode — beri barcode toko (EAN-13) lalu cetak?</string>
+    <string name="products_labels_none">Tidak ada produk untuk dicetak labelnya</string>
+    <string name="label_sheet_title">Label barcode</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">Retur</string>
+    <string name="pos_return_title">Barang kembali</string>
+    <string name="pos_return_reason">Alasan retur</string>
+    <string name="pos_return_refund">Pengembalian uang</string>
+    <string name="pos_refund_account">Simpan di akun</string>
+    <string name="pos_return_qty_help">Terjual %1$s · sudah kembali %2$s</string>
+    <string name="pos_return_posted">Retur %1$s tersimpan</string>
+    <string name="pos_returns">Retur</string>
+    <string name="pos_err_over_sold">Yang kembali lebih banyak dari yang terjual</string>
+    <string name="pos_err_walk_in_cash">Pelanggan umum dikembalikan uangnya penuh, tunai</string>
+    <string name="pos_err_reason">Alasan diperlukan</string>
+    <string name="pos_err_refund">Pengembalian lebih besar dari nilai barang</string>
+    <string name="pos_return_no_receipt">Tanpa struk</string>
+    <string name="pos_exchange">Tukar: jual lagi</string>
+    <string name="pos_return_of">Retur %1$s</string>
+    <string name="cash_category_return">Retur</string>
+    <string name="pos_recent_sales">Penjualan terbaru</string>
+    <string name="pos_void_return">Batalkan retur</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">Laporan harian (Z)</string>
+    <string name="z_sales_count">Penjualan</string>
+    <string name="z_sales_total">Total penjualan</string>
+    <string name="z_voids">Dibatalkan (%1$s)</string>
+    <string name="z_returns">Retur (%1$s)</string>
+    <string name="z_cash_in">Kas masuk (buku + kas)</string>
+    <string name="z_cash_out">Kas keluar (buku + kas)</string>
+    <string name="z_expected">Seharusnya di laci</string>
+    <string name="z_variance">Selisih</string>
+    <string name="z_profit">Laba (penjualan − biaya)</string>
+    <string name="dc_opening">Kas awal</string>
+    <string name="dc_counted">Dihitung</string>
+    <string name="z_no_close">Hari belum ditutup — hitung laci untuk melihat selisih</string>
+    <string name="z_variance_reason">Beri alasan selisihnya</string>
+    <string name="z_yesterday_open">Laci kemarin belum dihitung</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">Login kasir</string>
+    <string name="staff_role_none">Tanpa login</string>
+    <string name="staff_role_manager">Manajer</string>
+    <string name="staff_role_cashier">Kasir</string>
+    <string name="staff_pin">PIN (4–8 digit)</string>
+    <string name="staff_pin_keep">Kosongkan untuk mempertahankan PIN</string>
+    <string name="staff_pin_invalid">PIN 4 sampai 8 digit</string>
+    <string name="access_owner">Pemilik</string>
+    <string name="access_who">Siapa di kasir?</string>
+    <string name="access_sign_in">Masuk</string>
+    <string name="access_sign_out">Keluar</string>
+    <string name="access_wrong_pin">PIN salah</string>
+    <string name="access_override_title">Perlu PIN manajer</string>
+    <string name="access_override_help">Kasir tidak bisa melakukan ini sendiri. Manajer atau pemilik mengetik PIN-nya untuk mengizinkan.</string>
+    <string name="access_denied">Tidak diizinkan untuk kasir</string>
+    <string name="access_discount_cap">Kasir boleh memberi diskon hingga %1$s tanpa manajer</string>
+    <string name="audit_title">Siapa melakukan apa</string>
+    <string name="audit_subtitle">Setiap penjualan, pembatalan, retur, perubahan harga, login dan pemulihan — terbaru dulu</string>
+    <string name="audit_empty">Belum ada catatan</string>
+    <string name="audit_sale_posted">Penjualan</string>
+    <string name="audit_sale_voided">Penjualan dibatalkan</string>
+    <string name="audit_sale_held">Nota ditahan</string>
+    <string name="audit_return_posted">Retur</string>
+    <string name="audit_return_voided">Retur dibatalkan</string>
+    <string name="audit_discount_override">Diskon diizinkan</string>
+    <string name="audit_manager_override">Diizinkan manajer</string>
+    <string name="audit_price_changed">Harga diubah</string>
+    <string name="audit_sign_in">Masuk</string>
+    <string name="audit_restore">Buku dipulihkan</string>
+    <string name="audit_export">Diekspor</string>
+    <string name="audit_by">oleh %1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">Hitung stok</string>
+    <string name="stock_count_help">Tulis yang ada di rak; hanya selisih yang dicatat, dengan angka buku di sampingnya</string>
+    <string name="stock_counted_hint">Dihitung</string>
+    <string name="stock_adjust">Sesuaikan stok</string>
+    <string name="adjust_qty_hint">Jumlah (+ masuk, − keluar)</string>
+    <string name="adjust_reason">Alasan</string>
+    <string name="adjust_reason_count">Penghitungan</string>
+    <string name="adjust_reason_damage">Rusak</string>
+    <string name="adjust_reason_expired">Kedaluwarsa / dibuang</string>
+    <string name="adjust_reason_theft">Hilang / dicuri</string>
+    <string name="adjust_reason_other">Lainnya</string>
+    <string name="stock_valuation">Nilai stok</string>
+    <string name="stock_valuation_known">%1$s dari %2$s produk punya harga beli</string>
+    <string name="stock_low_title">Stok menipis</string>
+    <string name="stock_adjustments">Koreksi</string>
+    <string name="po_title">Pesanan pembelian</string>
+    <string name="po_new">Pesanan baru</string>
+    <string name="po_supplier">Pemasok</string>
+    <string name="po_send">Kirim lewat WhatsApp</string>
+    <string name="po_mark_sent">Tandai terkirim</string>
+    <string name="po_receive">Barang tiba</string>
+    <string name="po_close">Tutup pesanan</string>
+    <string name="po_status_draft">Draf</string>
+    <string name="po_status_sent">Terkirim</string>
+    <string name="po_status_received">Diterima</string>
+    <string name="po_status_closed">Ditutup</string>
+    <string name="po_none">Belum ada pesanan</string>
+    <string name="po_lines_empty">Tambahkan barang yang dipesan</string>
+    <string name="po_message_head">Pesanan %1$s — %2$s</string>
+    <string name="po_from_low">Pesan stok yang menipis</string>
+    <string name="po_book">Buku</string>
+    <string name="inventory_title">Stok saat ini</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">Laporan penjualan</string>
+    <string name="srep_by_day">Per hari</string>
+    <string name="srep_by_item">Per barang</string>
+    <string name="srep_by_category">Per kategori</string>
+    <string name="srep_by_customer">Per pelanggan</string>
+    <string name="srep_by_cashier">Per kasir</string>
+    <string name="srep_by_hour">Per jam</string>
+    <string name="srep_tax">Pajak</string>
+    <string name="srep_profit">Laba rugi</string>
+    <string name="srep_dead">Tidak laku</string>
+    <string name="srep_dead_help">Ada di rak, tidak terjual %1$s hari</string>
+    <string name="srep_col_count">Penjualan</string>
+    <string name="srep_col_revenue">Pendapatan</string>
+    <string name="srep_col_profit">Laba</string>
+    <string name="srep_revenue">Pendapatan</string>
+    <string name="srep_returns">Retur</string>
+    <string name="srep_cost">Harga pokok penjualan</string>
+    <string name="srep_cost_known">biaya diketahui untuk %1$s pendapatan</string>
+    <string name="srep_gross">Laba kotor</string>
+    <string name="srep_expenses">Pengeluaran (buku kas)</string>
+    <string name="srep_net">Laba bersih</string>
+    <string name="srep_tax_rate">Tarif</string>
+    <string name="srep_tax_base">Kena pajak</string>
+    <string name="srep_tax_amount">Pajak</string>
+    <string name="srep_period_today">Hari ini</string>
+    <string name="srep_period_week">Minggu ini</string>
+    <string name="srep_period_month">Bulan ini</string>
+    <string name="srep_none">Tidak ada penjualan pada periode ini</string>
+    <string name="srep_no_category">Tanpa kategori</string>
+    <string name="pos_credit_limit">Batas kredit %1$s — penjualan ini membawa akun ke %2$s</string>
+
+    <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->
+    <string name="access_close_app">Tutup aplikasi</string>
+    <string name="access_forgot_pin">Lupa PIN?</string>
+    <string name="access_recovery_code">Kode pemulihan</string>
+    <string name="access_recovery_ask">Ketik kode pemulihan yang ditampilkan saat PIN pemilik dibuat, lalu pilih PIN baru.</string>
+    <string name="access_recovery_wrong">Kode pemulihan itu salah.</string>
+    <string name="access_owner_pin">PIN pemilik</string>
+    <string name="access_owner_pin_help">PIN milik pemilik sendiri, 6 sampai 8 angka. Dengan ini pemilik masuk di kasir, mengizinkan hal yang tidak boleh dilakukan kasir sendirian, dan mematikan Mode kasir. Hanya hash-nya yang disimpan, tidak pernah PIN-nya.</string>
+    <string name="access_owner_pin_invalid">PIN pemilik 6 sampai 8 angka</string>
+    <string name="access_owner_pin_short">PIN pemilik Anda pendek. Ubah menjadi 6 sampai 8 angka: PIN pendek dapat ditebak dari file cadangan dalam beberapa menit.</string>
+    <string name="access_recovery_title">Kode pemulihan Anda</string>
+    <string name="access_recovery_help">Catat kode ini dan simpan jauh dari kasir. Jika PIN pemilik terlupa, kode ini membuat PIN baru. Kode hanya ditampilkan sekarang; PIN baru memberi kode baru.</string>
+    <string name="access_recovery_written">Sudah saya catat</string>
+    <string name="access_owner_pin_current">PIN pemilik saat ini</string>
+    <string name="access_owner_pin_needed">Buat PIN pemilik dulu. Tanpanya, siapa pun bisa masuk sebagai pemilik.</string>
+    <string name="access_owner_pin_set">Buat PIN pemilik</string>
+    <string name="access_owner_pin_change">Ubah PIN pemilik</string>
+    <string name="access_counter_mode">Mode kasir</string>
+    <string name="access_counter_mode_help">Untuk ponsel atau komputer yang dipakai karyawan: terbuka dalam keadaan terkunci, setiap orang masuk dengan PIN sendiri, dan hanya PIN pemilik yang mematikannya. Biarkan mati di perangkat pemilik sendiri.</string>
+    <string name="access_counter_off_help">Matikan Mode kasir di perangkat ini? Perangkat akan terbuka lagi sebagai perangkat pemilik, tanpa masuk.</string>
+    <string name="access_counter_turn_on">Nyalakan</string>
+    <string name="access_counter_turn_off">Matikan</string>
+    <string name="access_counter_now_on">Mode kasir menyala. Perangkat ini sekarang terbuka terkunci.</string>
+    <string name="access_counter_now_off">Mode kasir mati.</string>
+    <string name="access_counter_on_label">Mode kasir: menyala</string>
+    <string name="access_counter_off_label">Mode kasir: mati</string>
+    <string name="access_need_backup">Cadangan dan pemulihan</string>
+    <string name="access_need_settings">Pengaturan toko</string>
+    <string name="access_need_staff">Karyawan dan login mereka</string>
+    <string name="access_need_reports">Laporan dan angka toko</string>
+    <string name="access_need_edit">Mengubah atau menghapus yang sudah tercatat</string>
+    <string name="access_counter_locked">Kasir ini terkunci. Masuk untuk melanjutkan.</string>
+    <string name="access_owner_needed_title">Perlu PIN pemilik</string>
+    <string name="access_owner_needed_help">Hanya pemilik yang dapat mengizinkan ini. Pemilik mengetik PIN-nya.</string>
+    <string name="access_page_locked">Halaman ini perlu manajer atau pemilik</string>
+    <string name="access_signed_in_as">Masuk: %1$s</string>
+    <string name="audit_seal_ok">Segel log utuh — baris diperiksa: %1$d</string>
+    <string name="audit_seal_broken">Segel log rusak di baris %1$d: ada baris yang diubah atau dihapus di luar aplikasi</string>
+    <string name="audit_stock_count">Stok dihitung</string>
+    <string name="audit_stock_adjusted">Stok disesuaikan</string>
+    <string name="audit_order_received">Pesanan diterima</string>
+    <string name="audit_owner_pin_set">PIN pemilik dibuat</string>
+    <string name="audit_owner_pin_adopted">PIN pemilik diambil dari kasir ini</string>
+    <string name="audit_counter_on">Mode kasir menyala</string>
+    <string name="audit_counter_off">Mode kasir mati</string>
+    <string name="audit_pin_wait">Terlalu banyak PIN salah</string>
+    <string name="audit_sign_out">Keluar</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">Ini akan menghapus pekerjaan yang dibuat di sini</string>
+    <string name="restore_loss_intro">Ini ada di buku ini dan tidak ada di salinan. Setelah pemulihan semuanya akan hilang:</string>
+    <string name="restore_loss_entries">Catatan: %1$d</string>
+    <string name="restore_loss_changed">Catatan yang diubah atau dihapus di sini sejak salinan: %1$d</string>
+    <string name="restore_loss_sales">Penjualan kasir: %1$d</string>
+    <string name="restore_loss_returns">Retur: %1$d</string>
+    <string name="restore_loss_cash">Baris buku kas: %1$d</string>
+    <string name="restore_loss_cheques">Cek: %1$d</string>
+    <string name="restore_loss_bills">Tagihan pemasok: %1$d</string>
+    <string name="restore_loss_invoices">Faktur: %1$d</string>
+    <string name="restore_loss_parties">Pelanggan dan pemasok: %1$d</string>
+    <string name="restore_loss_other">Hitung stok, tutup hari, shift, poin, pesanan, dan pembatalan yang dibuat di sini sejak salinan: %1$d</string>
+    <string name="restore_loss_newest">Terbaru di sini: %1$s · terbaru di salinan: %2$s</string>
+    <string name="restore_loss_kept">Buku ini disalin ke Salinan harian sebelum apa pun diganti, jadi pemulihan bisa dibatalkan.</string>
+    <string name="restore_loss_agree">Saya paham semua ini akan hilang</string>
+    <string name="restore_loss_counting">Memeriksa apa yang ada di buku ini dan tidak ada di salinan…</string>
+    <string name="snapshot_before_restore">Disimpan sebelum pemulihan · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">Pajak di dalam harga</string>
+    <string name="pos_sell_by">Jual per %1$s</string>
+    <string name="pos_expired_stock">Hanya stok kedaluwarsa yang tersisa dari %1$s (masih baik: %2$s). Hapus batch lama di Kedaluwarsa, atau jual lebih sedikit.</string>
+    <string name="counter_settings">Pengaturan kasir</string>
+    <string name="pos_next_pay">Lanjut: pembayaran</string>
+    <string name="pos_how_1">1 · Ketik nama barang atau pindai barcode-nya</string>
+    <string name="pos_how_2">2 · Periksa jumlah dan harganya</string>
+    <string name="pos_how_3">3 · Pelanggan umum membayar penuh; sisa pelanggan yang dipilih masuk ke catatannya</string>
+    <string name="counter_advanced">Alat toko besar</string>
+    <string name="counter_advanced_help">Shift, laporan harian (Z), poin loyalitas, timbangan, layar pelanggan, dan pajak. Jika mati, kasir tetap sederhana; tidak ada yang sudah tersimpan berubah.</string>
+    <string name="counter_prices_include_tax">Harga sudah termasuk pajak</string>
+    <string name="counter_prices_include_tax_help">Nyala: pajak produk ada di dalam harganya, dan struk menyebut berapa. Mati: pajak ditambahkan di kasir. Persen pajak tiap produk diatur di produknya.</string>
+    <string name="expiry_write_off">Hapus dari stok</string>
+    <string name="expiry_write_off_confirm">Hapus %1$s dari %2$s sebagai kedaluwarsa? Stok berkurang sebanyak itu, dan log mencatat siapa yang melakukannya.</string>
+    <string name="expiry_written_off">Sudah dihapus</string>
+    <string name="expiry_nothing_left">Batch ini sudah habis</string>
+    <string name="expiry_left">Sisa: %1$s</string>
+    <string name="product_pack_help">Kemasan (karton, karung…) tempat produk juga dibeli atau dijual, dan berapa satuannya sendiri dalam satu kemasan. Stok dihitung dalam satuannya sendiri.</string>
+    <string name="product_pack_unit">Nama kemasan</string>
+    <string name="product_pack_size">Isi per kemasan</string>
+    <string name="product_pack_price">Harga kemasan</string>
+    <string name="product_tax_rate">Pajak %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">Faktur A4</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">Shift</string>
+    <string name="shift_open">Buka shift</string>
+    <string name="shift_close">Tutup shift</string>
+    <string name="shift_float_help">Hitung uang tunai di laci sebelum penjualan pertama. Shift dicocokkan dengan penjualan tunai dan pengembalian tunai orang ini sendiri.</string>
+    <string name="shift_opened_at">Dibuka %1$s</string>
+    <string name="shift_none">Tidak ada shift yang terbuka</string>
+    <string name="shift_already_open">Orang ini sudah punya shift yang terbuka</string>
+    <string name="shift_open_now">Terbuka sekarang</string>
+    <string name="shift_recent">Shift terakhir</string>
+    <string name="shift_hours">%1$s jam</string>
+    <string name="shift_week_hours">Jam, 7 hari terakhir</string>
+    <string name="shift_closed">Shift ditutup</string>
+    <string name="shift_of">Shift: %1$s</string>
+    <string name="shift_cash_sales">Tunai dari penjualan</string>
+    <string name="shift_cash_refunds">Tunai dikembalikan untuk retur</string>
+    <string name="audit_shift_opened">Shift dibuka</string>
+    <string name="audit_shift_closed">Shift ditutup</string>
+    <string name="printer_section">Printer struk di perangkat ini</string>
+    <string name="printer_width_80">Gulungan 80 mm</string>
+    <string name="printer_logo">Logo toko di atas</string>
+    <string name="printer_drawer">Buka laci kas pada penjualan tunai</string>
+    <string name="printer_drawer_help">Untuk laci kas yang tersambung ke printer struk. Printer tanpa laci akan mengabaikannya.</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">Pilih tanggal</string>
+    <string name="srep_chart">Penjualan dari waktu ke waktu</string>
+    <string name="srep_chart_top">Tertinggi: %1$s</string>
+    <string name="aging_title">Tagihan menurut umur</string>
+    <string name="aging_help">Yang masih terutang, menurut berapa lama diberikan. Pembayaran melunasi yang paling lama dulu; yang lebih dari 90 hari perlu ditelepon.</string>
+    <string name="aging_0_30">0–30 hari</string>
+    <string name="aging_31_60">31–60 hari</string>
+    <string name="aging_61_90">61–90 hari</string>
+    <string name="aging_90">Lebih dari 90 hari</string>
+    <string name="aging_none">Tidak ada yang terutang</string>
+    <string name="aging_oldest">Terlama: %1$s</string>
+    <string name="aging_total">Total</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">Poin loyalitas</string>
+    <string name="loyalty_per_100">Poin per 100 belanja</string>
+    <string name="loyalty_value">Nilai satu poin</string>
+    <string name="loyalty_help">Pelanggan yang punya akun mendapat poin di setiap struk dan memakainya nanti sebagai diskon. Kosongkan salah satu kotak agar loyalitas tetap mati.</string>
+    <string name="loyalty_points">Poin: %1$s (senilai %2$s)</string>
+    <string name="loyalty_use">Pakai poin</string>
+    <string name="loyalty_used">Poin dipakai: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">Poin didapat: %1$s · sekarang %2$s</string>
+    <string name="scale_section">Label timbangan</string>
+    <string name="scale_prefix">Awalan label (20–29)</string>
+    <string name="scale_price">Label berisi harga (bukan berat)</string>
+    <string name="scale_help">Label timbangan berisi 13 digit: awalan, kode timbangan barang 5 digit, berat dalam gram (atau harga) dan digit cek. Isi kode timbangan di kotak barcode produk.</string>
+    <string name="pos_items">Barang</string>
+    <string name="pos_ticket">Struk</string>
+    <string name="pos_all">Semua</string>
+    <string name="pos_choose_variant">%1$s: yang mana?</string>
+    <string name="product_variant_of">Varian dari (produk utama)</string>
+    <string name="product_variant">Varian (ukuran, warna, rasa)</string>
+    <string name="product_variant_help">Varian adalah produk tersendiri — harga, barcode dan stok sendiri — yang ditampilkan bersama di bawah produk utama pada grid barang di kasir.</string>
+    <string name="cd_title">Layar pelanggan</string>
+    <string name="cd_help">Jendela kedua untuk pelanggan: barang, total dan QR pembayaran toko. Seret ke monitor kedua.</string>
+    <string name="cd_scan">Pindai untuk bayar</string>
+    <string name="cd_qr_note">QR tidak memuat jumlah: periksa jumlahnya di ponsel Anda sebelum membayar.</string>
+    <string name="cd_welcome">Selamat datang</string>
+    <string name="cd_change">Kembalian: %1$s</string>
+    <string name="transfer_title">Kirim stok ke toko lain</string>
+    <string name="transfer_to">Ke toko mana</string>
+    <string name="transfer_help">Barang keluar dari stok toko ini dan masuk ke stok toko lain, dicocokkan dengan barcode, jika tidak dengan nama (produk yang belum ada akan ditambahkan). Kedua buku menyimpan satu baris dengan nomor yang sama.</string>
+    <string name="transfer_done">%1$s dikirim ke %2$s</string>
+    <string name="adjust_reason_transfer">Transfer</string>
+    <string name="audit_transfer_out">Stok dikirim ke toko lain</string>
+    <string name="audit_transfer_in">Stok diterima dari toko lain</string>
+    <string name="transfer_none">Tidak ada toko lain. Tambahkan di Bisnis.</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">Tambah yang baru saja</string>
+    <string name="merge_title">Tambah yang baru saja</string>
+    <string name="merge_help">Semua isi buku ini tetap, dan yang ada di salinan tetapi tidak di sini ditambahkan — catatan, kas, struk, retur, tagihan pemasok, cek, faktur — dicocokkan dengan ID barisnya sendiri, tidak pernah dengan jumlah. Tidak ada yang diubah atau dihapus di sini.</string>
+    <string name="merge_preview">Akan ditambahkan: %1$s catatan, %2$s baris kas, %3$s struk kasir, %4$s catatan lain; %5$s pelanggan baru, %6$s produk baru.</string>
+    <string name="merge_changed">%1$s baris juga diubah atau dihapus di salinan: buku ini menyimpan miliknya sendiri.</string>
+    <string name="merge_other_shop">Salinan bernama %1$s — pastikan ini buku toko ini.</string>
+    <string name="merge_done">%1$s baris ditambahkan dari salinan (%2$s diberi nomor baru).</string>
+    <string name="merge_nothing">Salinan tidak berisi apa pun yang tidak ada di buku ini.</string>
+    <string name="merge_too_old">Salinan ini dari versi lama dan tidak membawa ID baris: hanya dapat menggantikan buku.</string>
+    <string name="merge_unrelated">Salinan ini tidak berbagi apa pun dengan buku ini — ini buku lain. Hanya dapat menggantikannya.</string>
+    <string name="merge_not_carried">Tidak digabung: rencana cicilan, musim, skema, kehadiran dan tutup hari.</string>
+    <string name="audit_book_merged">Salinan digabungkan</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">Membuka buku…</string>
+    <string name="book_cannot_open">Buku tidak dapat dibuka, dan tidak ada yang diubah di dalamnya. Tutup program lain yang mungkin memakainya (atau nyalakan ulang komputer), lalu buka Roshan Khata lagi.</string>
+    <string name="book_set_aside_note">Buku yang rusak disisihkan di sini, tidak dihapus: %1$s</string>
+    <string name="restore_keep_failed">Buku ini tidak dapat disimpan dulu, jadi tidak ada yang diganti. Pastikan disk masih punya ruang, lalu coba lagi.</string>
+    <string name="restore_loss_unknown">Apa yang akan hilang tidak dapat dihitung. Ganti hanya jika Anda yakin salinan inilah yang Anda inginkan.</string>
+    <string name="clock_behind_title">Tanggal komputer tampaknya salah</string>
+    <string name="clock_behind_body">Salinan harian terbaru untuk %1$s, tetapi komputer ini menyebut hari ini %2$s. Atur tanggal dan waktu yang benar di Windows. Sampai saat itu tidak ada salinan lama yang dihapus.</string>
+    <string name="pos_void_has_returns">Barang dari penjualan ini sudah dikembalikan. Penjualan yang punya retur tidak bisa dibatalkan; buat retur untuk sisanya.</string>
+    <string name="pos_void_day_closed">Hari penjualan ini sudah ditutup. Buat retur alih-alih membatalkannya.</string>
+    <string name="pos_err_rate_missing">Ada baris tanpa harga.</string>
+    <string name="pos_err_tax">Pajak tidak dapat dibaca.</string>
+    <string name="pos_err_payment_unread">Jumlah pembayaran tidak dapat dibaca.</string>
+    <string name="pos_err_discount_unread">Diskon tidak dapat dibaca.</string>
+    <string name="pos_price_needs_pin">Menjual dengan harga selain daftar harga</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">Catatan diubah</string>
+    <string name="audit_entry_deleted">Catatan dihapus</string>
+    <string name="audit_cash_added">Baris buku kas ditambah</string>
+    <string name="audit_cash_edited">Baris buku kas diubah</string>
+    <string name="audit_cash_deleted">Baris buku kas dihapus</string>
+    <string name="audit_party_deleted">Pelanggan dihapus</string>
+    <string name="audit_day_closed">Hari ditutup</string>
+    <string name="audit_import">Diimpor</string>
+    <string name="audit_bill_deleted">Tagihan dihapus</string>
+    <string name="audit_bill_edited">Tagihan diubah</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">Ubah tanggal pembayaran berikutnya</string>
+    <string name="plan_next_ask">Tanggal pembayaran berikutnya untuk %1$s</string>
+    <string name="plan_next_clear">Hapus tanggal</string>
+    <string name="plan_next_saved">Pembayaran berikutnya: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">Digit setelah koma pada harga label</string>
+    <string name="scale_price_example">Label bertuliskan 01250 dibaca %1$s</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">Ubah di tempat ia dibuat</string>
+    <string name="entry_linked_bill">Tagihan pemasok menulis catatan ini. Ubah atau hapus tagihannya, dan buku kas mengikuti.</string>
+    <string name="entry_linked_plan">Cicilan rencana pembayaran menulis catatan ini. Ubah dari Rencana pembayaran.</string>
+    <string name="entry_linked_cheque">Cek yang sudah cair menulis catatan ini. Ubah dari halaman Cek.</string>
+    <string name="entry_linked_sale">Penjualan kasir menulis catatan ini. Batalkan penjualan, atau buat retur.</string>
+    <string name="entry_linked_return">Retur menulis catatan ini. Batalkan returnya saja.</string>
+    <string name="pos_return_void_day_closed">Hari retur ini sudah ditutup, jadi tidak bisa dibatalkan. Catat barangnya sebagai penjualan baru saja.</string>
+    <string name="entries_linked_kept">Dibiarkan seperti semula karena tagihan, rencana, cek, penjualan kasir, atau retur yang menulisnya (ubah dari sana): %1$d</string>
+    <string name="party_has_tickets">Tidak dihapus: penjualan kasir atau retur tercatat atas nama %1$s. Batalkan dulu, atau biarkan pelanggannya.</string>
+    <string name="bin_emptied_kept">Tempat sampah dikosongkan. Pelanggan yang tetap disimpan karena masih punya tagihan pemasok, cek, rencana cicilan, atau penjualan kasir: %1$d</string>
+    <string name="bin_party_kept">Tetap di tempat sampah: pelanggan ini masih punya tagihan pemasok, cek, rencana cicilan, atau penjualan kasir. Pulihkan pelanggannya untuk mengurusnya.</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">Dibayar kepada Anda</string>
+    <string name="pdf_stmt_you_supplied">Anda memasok</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">Nama</string>
+    <string name="csv_col_category">Kategori</string>
+    <string name="csv_col_company">Merek</string>
+    <string name="csv_col_unit">Satuan</string>
+    <string name="csv_col_sale">Harga jual</string>
+    <string name="csv_col_credit">Harga kredit</string>
+    <string name="csv_col_cost">Harga modal</string>
+    <string name="csv_col_barcode">Barcode</string>
+    <string name="csv_col_low">Stok minimum</string>
+    <string name="csv_col_type">Jenis</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">A–Z</string>
+    <string name="sort_glyph_za">Z–A</string>
+    <string name="text_size_glyph">Aa</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">Tidak tersimpan. Tidak ada yang berubah. (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">Angka lokal pada cetakan</string>
+    <string name="print_native_digits_help">Faktur, laporan rekening, dan laporan dicetak dengan angka bahasa ini sendiri. Layar dan yang Anda ketik tetap 0-9.</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">Negara</string>
+    <string name="bp_country_help">Menentukan kode negara WhatsApp, nama nomor pajak, hari pertama minggu, dan kalender. Angka tidak pernah berubah.</string>
+    <string name="country_other">Lainnya</string>
+    <string name="country_ask_title">Di mana toko Anda?</string>
+    <string name="country_ask_body">Aplikasi memakainya untuk nomor WhatsApp, nama nomor pajak, dan minggu. Bisa diubah nanti di Profil Usaha.</string>
+    <string name="poster_national_day">Hari nasional</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">Nomor dompet digital (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="other">%d hari lagi</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="other">%d dipilih</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="other">%d hampir kedaluwarsa</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="other">%d penjualan hari ini</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="other">%d desain</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="other">Terlalu banyak percobaan. Tunggu %d detik.</item>
+    </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">Sinkron langsung dengan komputer</string>
+    <string name="live_explain">Ponsel dan komputer memegang satu buku yang diperbarui setiap beberapa detik selama keduanya di WiFi toko dan Roshan Khata terbuka. Tidak ada yang dikirim ke internet kecuali “Juga lewat internet” dinyalakan.</string>
+    <string name="live_join">Hubungkan ke komputer</string>
+    <string name="live_stop">Matikan sinkron langsung</string>
+    <string name="live_stop_confirm">Matikan sinkron langsung di perangkat ini? Bukunya tetap persis seperti sekarang.</string>
+    <string name="live_status_off">Sinkron langsung mati.</string>
+    <string name="live_status_not_paired">Sinkron langsung aktif. Belum ada komputer yang terhubung.</string>
+    <string name="live_status_waiting">Buku sudah sampai di komputer. Tekan ya di sana untuk menyelesaikan.</string>
+    <string name="live_status_live">Langsung dengan %1$s. Pembaruan terakhir: %2$s</string>
+    <string name="live_status_unreachable">Komputer tidak menjawab. Apakah keduanya di WiFi yang sama, dan Roshan Khata terbuka di sana?</string>
+    <string name="live_status_relay_down">Jauh dari WiFi toko, dan relai di internet tidak menjawab (%1$s). Ponsel terus mencoba; di toko, WiFi bekerja tanpanya.</string>
+    <string name="live_pc_relay_ok">Relai di internet: bekerja (putaran terakhir %1$s).</string>
+    <string name="live_pc_relay_down">Relai di internet: tidak menjawab (%1$s). Di toko, WiFi bekerja tanpanya.</string>
+    <string name="live_pair_other_phone">Buku ini sudah berjalan dengan ponsel “%1$s”. Mengganti akan menghentikan ponsel itu. Satu buku = satu ponsel dan satu komputer: untuk menyimpan kedua ponsel, gabungkan ponsel ini sebagai usaha baru.</string>
+    <string name="na_sync_conflict">%1$s catatan diubah di kedua perangkat sekaligus</string>
+    <string name="na_sync_conflict_sub">Jumlah yang disimpan mungkin bukan yang Anda maksud. Lihat Sinkron langsung → Apa yang berubah.</string>
+    <string name="live_status_update_both">Perangkat lain menjalankan versi aplikasi yang lebih baru (%1$s). Perbarui perangkat ini; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_status_key_busy">Penyimpanan kunci perangkat ini tidak menjawab (%1$s). Tidak ada yang berubah; dicoba lagi sebentar lagi.</string>
+    <string name="na_sync_off">Sinkron langsung berhenti</string>
+    <string name="na_sync_off_sub">Buku ini diganti atau kembali ke salinan lama. Hubungkan perangkat lain lagi.</string>
+    <string name="live_status_halted">Sinkron langsung dijeda untuk sementara. Buku Anda aman dan tetap berjalan seperti biasa.</string>
+    <string name="live_status_failed">Sinkron langsung berhenti: %1$s</string>
+    <string name="live_mismatch">Kedua buku tidak cocok. Hubungkan lagi untuk membuat salinan baru.</string>
+    <string name="live_sent">Terkirim. Di komputer, tekan ya agar bukunya diganti dengan buku ponsel ini.</string>
+    <string name="live_receive">Terima buku toko di ponsel ini</string>
+    <string name="live_receive_steps">Di ponsel yang memegang buku toko, buka Cadangan → Sinkron langsung → Hubungkan, lalu pindai kode ini. Kedua ponsel harus di WiFi yang sama. Jendela ini menunggu 15 menit.</string>
+    <string name="live_receive_offer">“%1$s” ingin memberikan buku toko ke ponsel ini.\n\nKode: %2$s — empat angka yang sama harus tampil di ponsel itu.\n\nBuku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel-ponsel menyimpan satu buku bersama melalui relai internet.</string>
+    <string name="live_receive_done">Selesai. Ponsel ini kini menyimpan buku toko bersama perangkat lainnya.</string>
+    <string name="live_receive_no_wifi">Ponsel ini tidak terhubung ke WiFi. Sambungkan ke WiFi toko lalu coba lagi.</string>
+    <string name="live_sent_phone">Terkirim. Di ponsel lain, tekan ya untuk menerima buku ini. Lalu kedua ponsel bertemu melalui relai internet.</string>
+    <string name="live_not_live_code">Ini bukan kode sinkron langsung. Di komputer, buka Sinkron langsung dan pindai kode yang ditampilkan.</string>
+    <string name="live_pc_steps">Di ponsel buka Cadangan → Sinkron langsung dengan komputer → Hubungkan ke komputer, lalu pindai kode ini. Setelah Anda setuju, buku ponsel dibuka di sini sebagai usaha baru (buku komputer ini sendiri tetap seperti apa adanya), dan sejak itu keduanya tetap sama.</string>
+    <string name="live_pc_none">Belum ada ponsel yang terhubung.</string>
+    <string name="live_conflicts">Diubah di keduanya bersamaan (satu dipakai, yang lain disimpan): %1$d</string>
+    <string name="live_pair_warning">Ini buku dari ponsel. Agar buku komputer ini tetap persis seperti sekarang, gabungkan sebagai usaha baru: buku ponsel dibuka di sampingnya dan tidak ada yang dihapus di sini. Pilih “Ganti semuanya” hanya jika buku komputer ini tidak diperlukan.</string>
+    <string name="live_pair_code">Kode pasangan: %1$s. Komputer menampilkan kode yang sama di samping persetujuannya; setujui di sana hanya jika keduanya sama.</string>
+    <string name="live_pair_code_check">Ponsel menampilkan kode %1$s. Setujui hanya jika ponsel menampilkan kode yang sama ini.</string>
+    <string name="live_join_new_business">Gabung sebagai usaha baru</string>
+    <string name="live_devices">Perangkat yang tergabung</string>
+    <string name="live_remove">Hapus</string>
+    <string name="live_remove_confirm">Hapus %1$s? Perangkat itu berhenti sinkron dengan komputer ini. Bukunya sendiri tetap seperti apa adanya.</string>
+    <string name="live_needs_owner">Menggabungkan perangkat ke sinkron langsung memerlukan PIN pemilik.</string>
+    <string name="live_badge">Langsung · %1$s</string>
+    <string name="live_conflicts_show">Lihat yang berubah</string>
+    <string name="live_conflict_now">Sekarang: %1$s</string>
+    <string name="live_conflict_saved">Disimpan terpisah: %1$s</string>
+    <string name="live_conflict_clear">Sudah dilihat, hapus</string>
+    <string name="live_join_failed">Menghubungkan ponsel tidak selesai: %1$s. Di ponsel buka Cadangan → Sinkron langsung dengan komputer → Hubungkan ke komputer, lalu pindai kodenya lagi.</string>
+    <string name="restore_stops_live">Buku ini sinkron langsung dengan perangkat lain. Menggantinya menghentikan sinkron langsung; hubungkan keduanya lagi sesudahnya.</string>
+    <string name="live_held">Perubahan dari perangkat lain yang menunggu pemiliknya (pelanggan atau barang yang belum ada di sini): %1$d</string>
+    <string name="live_status_rejoin">Sinkron langsung berhenti karena buku ini diganti lewat pemulihan atau kembali ke salinan lama. Untuk sinkron lagi, hubungkan ke komputer lagi.</string>
+    <string name="live_status_not_accepted">Komputer tidak menyetujui tepat waktu. Untuk menghubungkan, pindai lagi kode sinkron langsungnya.</string>
+    <string name="live_status_not_here">Komputer menjawab, tetapi saat ini tidak memegang buku ini. Buka usaha buku ini di komputer.</string>
+    <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
+    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation-313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
+    <string name="live_relay">Juga lewat internet</string>
+    <string name="wifi_take_too_big">Buku komputer terlalu besar untuk memori atau ruang kosong ponsel ini. Tutup aplikasi lain lalu coba lagi, atau pindahkan buku dengan file cadangan.</string>
+    <string name="live_devices_open">Perangkat dan perubahan bersamaan</string>
+    <string name="live_devices_none">Belum ada perangkat lain yang tergabung dengan buku ini.</string>
+    <string name="live_device_seen">Terakhir terlihat: %1$s</string>
+    <string name="live_device_never">Belum ada kabar</string>
+    <string name="live_remove_confirm_phone">Hapus %1$s dari buku ini? Ponsel ini berhenti sinkron dengannya. Bukunya sendiri tetap seperti apa adanya; untuk sinkron lagi, gabungkan lagi.</string>
+    <string name="live_conflicts_none">Tidak ada yang diubah di dua perangkat bersamaan.</string>
+    <string name="live_why_other_computer">komputer lain yang menjawab, bukan yang tergabung dengan ponsel ini. Gabungkan komputer lagi</string>
+    <string name="live_why_other_book">perangkat lain menyimpan buku yang berbeda. Gabungkan lagi</string>
+    <string name="live_why_unknown_device">perubahan datang dari perangkat yang tidak dikenal buku ini. Gabungkan lagi</string>
+    <string name="live_why_unreachable">tidak ada jawaban</string>
+    <string name="live_why_error">terjadi kesalahan di ponsel ini. Dicoba lagi sebentar lagi</string>
+    <string name="live_why_day_limit">batas hari ini di relai sudah tercapai</string>
+    <string name="live_why_relay_full">relai sedang penuh</string>
+    <string name="drive_plan_replace">%1$s: menggantikan buku %2$s di ponsel ini.</string>
+    <string name="drive_plan_new">%1$s: masuk sebagai toko baru. %2$s di ponsel ini adalah toko lain dan dibiarkan apa adanya.</string>
+    <string name="drive_plan_fresh">%1$s: kembali sebagai toko di ponsel ini.</string>
+    <string name="drive_plan_live">%1$s sinkron langsung dengan perangkat lain. Menggantinya menghentikan sinkron langsung; hubungkan keduanya lagi sesudahnya.</string>
+    <string name="drive_plan_unreadable">%1$s: tidak dapat dibaca dari Drive. Dibiarkan apa adanya.</string>
+    <string name="live_pair_other_business">Buku ponsel ini sudah tersinkron langsung di usaha “%1$s” di komputer ini. Buka usaha itu: salinan kedua di sini lama-lama akan berbeda darinya.</string>
+    <string name="fc_look_in">Cari di:</string>
+    <string name="fc_folder_name">Folder:</string>
+    <string name="fc_files_of_type">Jenis file:</string>
+    <string name="pos_void_shift_closed">Shift tempat penjualan ini dicatat sudah ditutup dan dihitung. Buat retur alih-alih membatalkannya.</string>
+    <string name="pos_customer_binned">Pelanggan ini ada di tempat sampah. Pulihkan pelanggan terlebih dahulu. Tidak ada yang ditulis.</string>
+    <string name="pos_held_gone">Tiket yang ditahan ini sudah dijual atau dihapus, mungkin di perangkat lain. Tidak ada yang ditulis.</string>
+    <string name="pos_ticket_not_posted">Penjualan ini sudah tidak tercatat (dibatalkan atau dihapus). Tidak ada yang ditulis.</string>
+    <string name="pos_post_failed">Penjualan tidak tersimpan. Tidak ada yang ditulis; tiket masih di kasir.</string>
+    <string name="pos_hold_failed">Tiket tidak dapat ditahan. Tiket masih di kasir.</string>
+    <string name="pos_void_failed">Penjualan tidak dapat dibatalkan. Tidak ada yang berubah.</string>
+    <string name="pos_return_failed">Retur tidak tersimpan. Tidak ada yang ditulis.</string>
+    <string name="book_merge_failed">Tidak ada yang ditambahkan. Buku ini tidak berubah.</string>
+    <string name="products_export_failed">File produk tidak dapat dibuat.</string>
+    <string name="save_failed_storage_full">Tidak tersimpan: penyimpanan ponsel penuh. Kosongkan sedikit ruang, lalu masukkan lagi.</string>
+    <string name="save_failed_not_saved">Tidak tersimpan: terjadi kesalahan. Silakan periksa dan masukkan lagi.</string>
+    <plurals name="stock_count_saved">
+        <item quantity="other">%1$d koreksi dicatat</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="other">Selesai — %1$d pengingat dibuka hari ini</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="other">KEDALUWARSA \u00B7 %1$d hari lalu</item>
+    </plurals>
+    <string name="voice_language_missing_phone">Ponsel Anda tidak memiliki bahasa itu. Mendengarkan dalam bahasa ponsel sendiri.</string>
+    <string name="live_give">Berikan buku ini ke ponsel</string>
+    <string name="live_give_steps">Di ponsel baru buka Cadangan → Terima buku toko di ponsel ini → Pindai kode komputer, lalu pindai kode ini. Keduanya harus di WiFi yang sama. Kode ini hanya untuk satu ponsel. Relai internet buku ini dinyalakan, sehingga ponsel juga bertemu perangkat lain dari buku ini.</string>
+    <string name="live_give_sending">Memberikan buku ke “%1$s”…</string>
+    <string name="live_give_sent">Buku sudah sampai ke “%1$s”.\n\nKode: %2$s — ponsel menampilkan empat angka yang sama. Ponsel bergabung ke buku ini setelah pemiliknya setuju di sana, dalam 15 menit.</string>
+    <string name="live_give_failed">Buku tidak sampai ke ponsel. Buat kode baru dan pindai lagi.</string>
+    <string name="live_give_new_code">Kode baru</string>
+    <string name="live_give_code_wrong_place">Kode ini memberikan buku komputer ke ponsel. Untuk menerimanya, buka Cadangan → Terima buku toko di ponsel ini → Pindai kode komputer.</string>
+    <string name="live_receive_scan_pc">Pindai kode komputer</string>
+    <string name="live_receive_not_give">Ini bukan kode pemberian dari komputer. Di komputer buka Lainnya → Sinkron langsung → Berikan buku ini ke ponsel, lalu pindai kode yang ditampilkan.</string>
+    <string name="live_receive_offer_pc">“%1$s” (komputer) ingin memberikan buku toko ke ponsel ini.\n\nKode: %2$s — empat angka yang sama harus tampil di komputer.\n\nBuku ponsel ini akan diganti dengan buku toko. Setelah itu, ponsel ini dan komputer menyimpan satu buku bersama, lewat WiFi toko dan relai internet.</string>
+    <string name="live_receive_pc_refused">Komputer tidak memberikan bukunya. Kodenya hanya berlaku sekali, dan hanya selama jendela Sinkron langsung terbuka: buat kode baru di sana lalu pindai.</string>
+    <string name="live_receive_pc_unreachable">Komputer tidak terjangkau. Pastikan keduanya di WiFi yang sama, jendela Sinkron langsung di komputer terbuka, dan Windows mengizinkan Roshan Khata di jaringan.</string>
+    <string name="report_sync_notes_included">— Catatan sinkron langsung (bukan kerusakan: masalah yang dilewati sinkron langsung lalu dicoba lagi; tanpa nama, jumlah, atau kunci):</string>
+    <string name="live_phone_relay_ask">Dua ponsel hanya bertemu melalui relai internet. Mengirim buku ini ke ponsel lain menyalakan “Juga lewat internet” untuk buku ini. Jika ponsel lain tidak menerima buku ini, sakelarnya kembali seperti semula.</string>
+    <string name="live_pair_left_business">Pemasangan ponsel datang saat usaha “%1$s” terbuka, dan sekarang usaha lain yang terbuka: pemasangan itu dilepas agar tidak menggantikan buku ini. Untuk memasangkan, buka “%1$s” lalu pindai kodenya lagi di ponsel.</string>
+    <string name="live_wake_off">Relai tidak dapat membangunkan ponsel ini saat aplikasi tertutup: perubahan dari perangkat lain masuk saat aplikasi dibuka.</string>
+    <string name="staff_name_taken">Sudah ada staf dengan nama ini. Tambahkan pembeda, misalnya nama ayah.</string>
 </resources>

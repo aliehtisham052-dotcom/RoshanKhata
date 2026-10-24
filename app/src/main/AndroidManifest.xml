@@ -33,6 +33,16 @@
         android:name="android.permission.READ_CONTACTS"
         android:maxSdkVersion="36" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!--
+      Android 7-9 only (23 Oct 2026): a backup or report saved to the public
+      Downloads folder needs this before Android 10 (from 10 MediaStore needs
+      nothing). Asked at the moment of saving (BaseActivity.withDownloadsAccess),
+      never at launch; without it the file still goes to the app's own copy and
+      the share sheet.
+    -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <!--
       Android 11 and up hides other apps from this one unless they are named.
@@ -42,6 +52,10 @@
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <!-- The recogniser's language list (RecognizerIntent.getVoiceDetailsIntent) is found through its WEB_SEARCH activity. -->
+        <intent>
+            <action android:name="android.speech.action.WEB_SEARCH" />
         </intent>
         <!--
           Android 11+ hides other apps from us unless we declare what we need
@@ -58,6 +72,7 @@
     <application
         android:name=".RoshanKhataApp"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="${appLabel}"
@@ -242,6 +257,12 @@
             android:exported="false"
             android:parentActivityName=".BackupActivity" />
 
+        <!-- Live sync's devices and conflicts on the phone (23 Oct 2026). -->
+        <activity
+            android:name=".LiveDevicesActivity"
+            android:exported="false"
+            android:parentActivityName=".BackupActivity" />
+
         <activity
             android:name=".BusinessCardActivity"
             android:exported="false"
@@ -270,6 +291,39 @@
         <activity
             android:name=".AboutActivity"
             android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".OrdersActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".ProductsActivity" />
+
+        <activity
+            android:name=".SalesReportActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".AuditActivity"
+            android:exported="false"
+            android:parentActivityName=".StaffActivity" />
+
+        <activity
+            android:name=".AgingActivity"
+            android:exported="false"
+            android:parentActivityName=".FollowUpActivity" />
+
+        <activity
+            android:name=".ShiftActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".CounterSaleActivity" />
+
+        <activity
+            android:name=".CounterSaleActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".MainActivity" />
 
         <activity
@@ -363,6 +417,24 @@
             <activity
             android:name=".InsightsActivity"
             android:exported="false" />
+
+        <!--
+          Live sync's wake-up (PushWake, 22 Oct 2026): Firebase Cloud Messaging
+          delivers the relay's one word "rk-wake" while the app is closed. Only
+          in a build that had the owner's google-services file. Auto-init stays
+          OFF: no token is made, and Google is not contacted, until a book's
+          owner turns the relay on (PushWake.address switches it on).
+        -->
+        <service
+            android:name=".data.WakeService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
 
     </application>
 

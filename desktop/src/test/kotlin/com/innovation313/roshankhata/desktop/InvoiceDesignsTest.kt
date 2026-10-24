@@ -42,7 +42,9 @@ class InvoiceDesignsTest {
             setBankAccountTitle("Al-Noor Agri Store")
             setTermsAndConditions("Goods once sold are not returned.")
         }
-        return Context(desktopWords(Locale.forLanguageTag(tag)), settings, ProfileImages(File(dir, "pictures")), rtl = tag == "ur")
+        val locale = Locale.forLanguageTag(tag)
+        // The app's own RTL rule (Main: BidiPort.isRtlLocale), so every language is drawn as the app draws it.
+        return Context(desktopWords(locale), settings, ProfileImages(File(dir, "pictures")), rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(locale), locale = locale)
     }
 
     private fun invoice(design: Int) = Invoice(
@@ -67,7 +69,8 @@ class InvoiceDesignsTest {
     fun `every one of the ten designs draws a page with the invoice on it`() {
         val dir = File("build/invoice-proof").apply { mkdirs() }
         assertEquals((1..10).toList(), InvoiceDesigns.NAMES.map { it.first })
-        for (tag in listOf("en", "ur")) {
+        // All nine of the app's languages (21 Oct 2026, the owner: check every language's mirror image).
+        for (tag in listOf("en", "ur", "ur-Latn", "sd", "ar", "fa", "hi", "bn", "id")) {
             val previous = Locale.getDefault()
             Locale.setDefault(Locale.forLanguageTag(tag))
             try {
@@ -78,7 +81,7 @@ class InvoiceDesignsTest {
                     val img = doc!!.picture(0, 1.5f)
                     val inked = ink(img)
                     assertTrue("design $design ($tag) looks empty: $inked", inked > 800)
-                    if (tag == "en" || design in listOf(1, 2, 10)) ImageIO.write(img, "png", File(dir, "invoice-$tag-$design.png"))
+                    ImageIO.write(img, "png", File(dir, "invoice-$tag-$design.png"))
                 }
             } finally {
                 Locale.setDefault(previous)

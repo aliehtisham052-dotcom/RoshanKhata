@@ -52,6 +52,9 @@ class CsvImportTest {
         assertEquals(1200.0, CsvImport.amount("1,200")!!, 0.0)
         assertEquals(-75.25, CsvImport.amount("-75.25")!!, 0.0)
         assertEquals(-300.0, CsvImport.amount("300-")!!, 0.0)
+        // The rupee's closing "/-" is not a minus.
+        assertEquals(1200.0, CsvImport.amount("Rs. 1,200/-")!!, 0.0)
+        assertEquals(-1200.0, CsvImport.amount("(Rs 1,200/-)")!!, 0.0)
         assertNull(CsvImport.amount("Ali"))
         assertNull(CsvImport.amount(""))
     }
@@ -62,5 +65,29 @@ class CsvImportTest {
         assertTrue(CsvImport.alreadyIn(CsvImport.Row("bilal ahmed", "+92 300 1112223", 5.0), book))
         assertTrue(CsvImport.alreadyIn(CsvImport.Row("Bilal Ahmed", null, 5.0), book))
         assertEquals(false, CsvImport.alreadyIn(CsvImport.Row("Bilal Ahmed", "0333 9998887", 5.0), book))
+    }
+
+    @Test
+    fun `the decimal mark is read from the figure - Indonesian sheets 23 Oct`() {
+        // A mark used twice groups; with both marks the last one is the decimal.
+        assertEquals(1500000.0, CsvImport.amount("1.500.000", groupDots = false)!!, 0.0)
+        assertEquals(1250.5, CsvImport.amount("1.250,50", groupDots = false)!!, 0.0)
+        assertEquals(1200.5, CsvImport.amount("Rs 1,200.50", groupDots = false)!!, 0.0)
+        assertEquals(150000.0, CsvImport.amount("1,50,000", groupDots = false)!!, 0.0)
+        // A lone comma: before three digits it groups, before one or two it is the decimal.
+        assertEquals(1200.0, CsvImport.amount("1,200/-", groupDots = false)!!, 0.0)
+        assertEquals(12.5, CsvImport.amount("12,5", groupDots = false)!!, 0.0)
+        // A lone dot before three digits groups only where dots group (or the cell says Rp).
+        assertEquals(15000.0, CsvImport.amount("15.000", groupDots = true)!!, 0.0)
+        assertEquals(15000.0, CsvImport.amount("Rp 15.000", groupDots = false)!!, 0.0)
+        assertEquals(1.125, CsvImport.amount("1.125", groupDots = false)!!, 0.0)
+        assertEquals(-500.0, CsvImport.amount("(500)", groupDots = true)!!, 0.0)
+    }
+
+    @Test
+    fun `a semicolon sheet groups with dots`() {
+        assertTrue(CsvImport.dotGroups("Nama;Harga\nBeras;15.000\n"))
+        val rows = ProductCsv.parse("Nama;Harga\nBeras;15.000\nGula;12,5\n")
+        assertEquals(listOf(15000.0, 12.5), rows.map { it.salePrice })
     }
 }

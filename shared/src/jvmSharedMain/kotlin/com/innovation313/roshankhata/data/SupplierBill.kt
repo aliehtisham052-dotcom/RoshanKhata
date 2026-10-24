@@ -32,7 +32,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId")]
+    indices = [Index("partyId"), Index("uid")]
 )
 data class SupplierBill(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -75,7 +75,16 @@ data class SupplierBill(
      * left null there — one picture, one owner. Absolute path under
      * filesDir/bills, re-pointed on an image restore like the entry's.
      */
-    val photoPath: String? = null
+    val photoPath: String? = null,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 )
 
 /** A cash bill's photo path, for the image backup and its restore. */
@@ -106,7 +115,7 @@ data class SupplierBillPhoto(val id: Long, val photoPath: String?)
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("billId"), Index("productId")]
+    indices = [Index("billId"), Index("productId"), Index("uid")]
 )
 data class BillItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -148,7 +157,9 @@ data class BillItem(
      */
     val productId: Long? = null,
 
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**

@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.string
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.data.quantity
@@ -24,7 +25,6 @@ import com.innovation313.roshankhata.ui.ProductAdapter
 import com.innovation313.roshankhata.ui.ProductDetailsDialog
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -52,6 +52,50 @@ class ProductsActivity : BaseActivity() {
     private lateinit var btnLink: MaterialButton
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
+
+    /** Export: the system's save sheet names the file, the list is written to it. */
+    private val saveCsv = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/csv")) { uri: android.net.Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching {
+                    val text = com.innovation313.roshankhata.data.ProductCsv.text(dao.productsOnce(),
+                        com.innovation313.roshankhata.data.ProductCsv.headers(com.innovation313.roshankhata.data.AndroidWords(this@ProductsActivity)))
+                    contentResolver.openOutputStream(uri)!!.use { it.write(text.toByteArray(Charsets.UTF_8)) }
+                }.isSuccess
+            }
+            Toast.makeText(this@ProductsActivity, if (ok) R.string.products_export else R.string.products_export_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Import: the rows are read and counted, the owner confirms, then one transaction writes them. */
+    private val pickCsv = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri: android.net.Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch {
+            val plan = withContext(Dispatchers.IO) {
+                runCatching {
+                    val text = contentResolver.openInputStream(uri)!!.use { it.readBytes().toString(Charsets.UTF_8) }
+                    val rows = com.innovation313.roshankhata.data.ProductCsv.parse(text)
+                    if (rows.isEmpty()) null else com.innovation313.roshankhata.data.ProductCsv.plan(rows, dao.productsOnce())
+                }.getOrNull()
+            }
+            if (plan == null) { Toast.makeText(this@ProductsActivity, R.string.products_import_none, Toast.LENGTH_LONG).show(); return@launch }
+            val lines = com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_import_plan, plan.toAdd.size, plan.toUpdate.size) +
+                (if (plan.barcodeClashes > 0) "\n\n" + com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_import_clash, plan.barcodeClashes) else "")
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(R.string.products_import)
+                .setMessage(lines)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    lifecycleScope.launch {
+                        val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
+                        Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_imported, added, updated), Toast.LENGTH_LONG).show()
+                        refresh()
+                    }
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +136,32 @@ class ProductsActivity : BaseActivity() {
         findViewById<View>(R.id.btnRateList).setOnClickListener {
             startActivity(Intent(this, RateListActivity::class.java))
         }
+        // The list as a spreadsheet and back (POS Phase 2).
+        findViewById<View>(R.id.btnProductsMore).setOnClickListener { v ->
+            android.widget.PopupMenu(this, v).apply {
+                menu.add(0, 1, 0, R.string.products_export)
+                menu.add(0, 2, 1, R.string.products_import)
+                menu.add(0, 3, 2, R.string.stock_count_title)
+                menu.add(0, 4, 3, R.string.stock_valuation)
+                menu.add(0, 5, 4, R.string.stock_adjust)
+                menu.add(0, 6, 5, R.string.po_title)
+                setOnMenuItemClickListener { item ->
+                    val perm = when (item.itemId) {
+                        1 -> com.innovation313.roshankhata.data.Access.Permission.EXPORT
+                        3, 5 -> com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST
+                        4, 6 -> null
+                        else -> com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT
+                    }
+                    // What a cashier may not do alone waits for a manager's PIN, as the counter's other
+                    // actions do (23 Oct 2026, the review: it was refused with a toast).
+                    if (perm == null || com.innovation313.roshankhata.data.Access.can(perm)) productsAction(item.itemId, null)
+                    else com.innovation313.roshankhata.ui.AccessUi.allowed(this@ProductsActivity, dao, perm, com.innovation313.roshankhata.ui.AccessUi.what(this@ProductsActivity, perm)) { by ->
+                        productsAction(item.itemId, by)
+                    }
+                    true
+                }
+            }.show()
+        }
         // An inspector visits agri and medical shops; the others keep the list only (4 Oct).
         if (!com.innovation313.roshankhata.data.TradeFeatures.inspectorReports(this)) {
             findViewById<View>(R.id.btnInspectorReport).visibility = View.GONE
@@ -114,15 +184,101 @@ class ProductsActivity : BaseActivity() {
         refresh()
     }
 
+    /** One of the more menu's actions; [by] is who gave their PIN for it (null: the user's own right). */
+    private fun productsAction(id: Int, by: String?) {
+        when (id) {
+            1 -> saveCsv.launch("RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv")
+            2 -> pickCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
+            3 -> countStock(by)
+            4 -> showValuation()
+            5 -> adjustStock(by)
+            6 -> startActivity(Intent(this, OrdersActivity::class.java))
+        }
+    }
+
+    /** A stock count (POS Phase 6): the shared form in a dialog; only the differences are written. */
+    private fun countStock(allowedBy: String?) {
+        lifecycleScope.launch {
+            val draft = com.innovation313.roshankhata.screens.CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) })
+            val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            val words = com.innovation313.roshankhata.data.AndroidWords(this@ProductsActivity)
+            val view = androidx.compose.ui.platform.ComposeView(this@ProductsActivity)
+            val dialog = MaterialAlertDialogBuilder(this@ProductsActivity).setTitle(R.string.stock_count_title).setView(view).create()
+            view.setContent {
+                com.innovation313.roshankhata.screens.RoshanTheme(dark = dark) {
+                    com.innovation313.roshankhata.words.ProvideWords(words) {
+                        com.innovation313.roshankhata.screens.StockCountForm(draft, onCancel = { dialog.dismiss() }, onSave = {
+                            lifecycleScope.launch {
+                                val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }, allowedBy = allowedBy) }.getOrDefault(0) }
+                                Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.quantity(resources, R.plurals.stock_count_saved, n, n), Toast.LENGTH_LONG).show()
+                                dialog.dismiss(); refresh()
+                            }
+                        })
+                    }
+                }
+            }
+            dialog.show()
+        }
+    }
+
+    /** One correction to the shelf (POS Phase 6): the product, the signed quantity, the reason, a note. */
+    private fun adjustStock(allowedBy: String?) {
+        lifecycleScope.launch {
+            val products = com.innovation313.roshankhata.data.NameOrder.sortedBy(withContext(Dispatchers.IO) { dao.productsOnce() }) { it.name }
+            if (products.isEmpty()) { Toast.makeText(this@ProductsActivity, R.string.no_products, Toast.LENGTH_LONG).show(); return@launch }
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(R.string.stock_adjust)
+                .setItems(products.map { it.name }.toTypedArray()) { _, i ->
+                    val p = products[i]
+                    val qty = android.widget.EditText(this@ProductsActivity).apply { hint = getString(R.string.adjust_qty_hint); inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL or android.text.InputType.TYPE_NUMBER_FLAG_SIGNED }
+                    val reasons = listOf(com.innovation313.roshankhata.data.AdjustReason.DAMAGE, com.innovation313.roshankhata.data.AdjustReason.EXPIRED, com.innovation313.roshankhata.data.AdjustReason.THEFT, com.innovation313.roshankhata.data.AdjustReason.OTHER)
+                    val labels = listOf(R.string.adjust_reason_damage, R.string.adjust_reason_expired, R.string.adjust_reason_theft, R.string.adjust_reason_other).map { getString(it) }
+                    val reason = android.widget.Spinner(this@ProductsActivity).apply { adapter = android.widget.ArrayAdapter(this@ProductsActivity, android.R.layout.simple_spinner_dropdown_item, labels) }
+                    val note = android.widget.EditText(this@ProductsActivity).apply { hint = getString(R.string.note_optional) }
+                    val box = android.widget.LinearLayout(this@ProductsActivity).apply {
+                        orientation = android.widget.LinearLayout.VERTICAL
+                        val pad = (20 * resources.displayMetrics.density).toInt(); setPadding(pad, pad / 2, pad, 0)
+                        addView(qty); addView(reason); addView(note)
+                    }
+                    MaterialAlertDialogBuilder(this@ProductsActivity)
+                        .setTitle(p.name)
+                        .setView(box)
+                        .setPositiveButton(R.string.save) { _, _ ->
+                            // Signed (21 Oct 2026): "+ in, − out", as the box says. Read as an amount, "−5"
+                            // for damaged goods came out as +5 and the shelf went UP.
+                            val q = com.innovation313.roshankhata.ui.Calc.evalPad(qty.text.toString()) ?: 0.0
+                            if (q == 0.0) { Toast.makeText(this@ProductsActivity, R.string.pos_err_quantity, Toast.LENGTH_LONG).show(); return@setPositiveButton }
+                            lifecycleScope.launch {
+                                withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasons[reason.selectedItemPosition], note.text.toString().trim().ifBlank { null }, allowedBy = allowedBy) } }
+                                refresh()
+                            }
+                        }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+    }
+
+    /** What the shelf is worth: cost price, else the last purchase rate; nothing guessed. */
+    private fun showValuation() {
+        lifecycleScope.launch {
+            val v = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Valuation.compute(dao) }
+            val lines = v.rows.filter { it.value != null }.sortedByDescending { it.value }.take(40).joinToString("\n") {
+                it.name + ": " + com.innovation313.roshankhata.ui.Calc.trim(it.onHand ?: 0.0) + (com.innovation313.roshankhata.data.UnitWords.label(it.unit).let { u -> if (u.isEmpty()) "" else " $u" }) + " × " + com.innovation313.roshankhata.ui.Format.money(it.cost ?: 0.0) + " = " + com.innovation313.roshankhata.ui.Format.money(it.value ?: 0.0)
+            }
+            MaterialAlertDialogBuilder(this@ProductsActivity)
+                .setTitle(getString(R.string.stock_valuation) + " · " + com.innovation313.roshankhata.ui.Format.money(v.total))
+                .setMessage(com.innovation313.roshankhata.data.Digits.string(resources, R.string.stock_valuation_known, v.known, v.rows.size) + "\n\n" + lines)
+                .setPositiveButton(R.string.close, null)
+                .show()
+        }
+    }
+
     private fun refresh() {
         lifecycleScope.launch {
-            val products = dao.observeProducts().first()
-            val stock = Stock.combine(
-                products = products,
-                bought = dao.boughtPerProduct(),
-                sold = dao.soldPerProduct(),
-                returned = dao.returnedPerProduct()
-            ).sortedBy { it.name.lowercase() }
+            val stock = com.innovation313.roshankhata.data.NameOrder.sortedBy(Stock.of(dao)) { it.name }
 
             allStock = stock
             show()

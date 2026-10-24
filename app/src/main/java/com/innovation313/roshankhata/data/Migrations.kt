@@ -712,7 +712,58 @@ val MIGRATION_30_31 = object : Migration(30, 31) {
     }
 }
 
-// KHATA_DB_VERSION (31) moved to the shared module with the database class (KMP Phase 3).
+/**
+ * v32 (21 Oct 2026): the counter (POS Phase 1). The SQL is the shared
+ * [Schema32] list, which the computer's migration runs as well, so the two
+ * books cannot drift.
+ */
+val MIGRATION_31_32 = object : Migration(31, 32) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema32.statements) db.execSQL(sql)
+    }
+}
+
+/** v33 (21 Oct 2026): returns (POS Phase 3), the shared [Schema33] list. */
+val MIGRATION_32_33 = object : Migration(32, 33) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema33.statements) db.execSQL(sql)
+    }
+}
+
+/** v34 (21 Oct 2026): staff logins (POS Phase 5), the shared [Schema34] list. */
+val MIGRATION_33_34 = object : Migration(33, 34) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema34.statements) db.execSQL(sql)
+    }
+}
+
+/** v35 (21 Oct 2026): stock adjustments and purchase orders (POS Phase 6), the shared [Schema35] list. */
+val MIGRATION_34_35 = object : Migration(34, 35) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema35.statements) db.execSQL(sql)
+    }
+}
+
+val MIGRATION_35_36 = object : Migration(35, 36) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema36.statements) db.execSQL(sql)
+    }
+}
+
+val MIGRATION_36_37 = object : Migration(36, 37) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema37.statements) db.execSQL(sql)
+    }
+}
+
+/** v38 (22 Oct 2026, live sync): a uid on every row a sync can carry, and an index on each, the shared [Schema38] list. */
+val MIGRATION_37_38 = object : Migration(37, 38) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema38.statements) db.execSQL(sql)
+    }
+}
+
+// KHATA_DB_VERSION (38) moved to the shared module with the database class (KMP Phase 3).
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -745,5 +796,12 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_27_28,
     MIGRATION_28_29,
     MIGRATION_29_30,
-    MIGRATION_30_31
+    MIGRATION_30_31,
+    MIGRATION_31_32,
+    MIGRATION_32_33,
+    MIGRATION_33_34,
+    MIGRATION_34_35,
+    MIGRATION_35_36,
+    MIGRATION_36_37,
+    MIGRATION_37_38
 )

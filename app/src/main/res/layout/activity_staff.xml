@@ -109,6 +109,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
+
+            <!-- Who did what (POS Phase 5): the audit log, under the people who did it. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAudit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/audit_title"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green_text"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/brand_green_text" />
+
+            <!-- The owner's PIN and counter mode (21 Oct 2026): the owner's own controls. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOwnerPin"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/access_owner_pin_set"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green_text"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/brand_green_text" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCounterMode"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/access_counter_off_label"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green_text"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/brand_green_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/access_counter_mode_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

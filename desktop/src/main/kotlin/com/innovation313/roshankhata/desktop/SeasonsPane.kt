@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,7 +63,7 @@ fun SeasonsPane(dao: KhataDao, parties: List<PartyWithBalance>, reload: Int) {
     val names = remember(parties) { parties.associate { it.id to it.name } }
     val summaries = SeasonBook.summaries(rows)
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         PaneTitle(word(W.season_title), word(W.season_subtitle))
         if (summaries.isEmpty()) {
             Text(word(W.season_empty), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
@@ -72,7 +71,7 @@ fun SeasonsPane(dao: KhataDao, parties: List<PartyWithBalance>, reload: Int) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(summaries) { s ->
                     Column(
-                        Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).clickable { open = s.season }.padding(16.dp),
+                        Modifier.fillMaxWidth().card().press { open = s.season }.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(seasonName(s.season), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)

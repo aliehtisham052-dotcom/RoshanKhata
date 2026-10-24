@@ -201,11 +201,47 @@ interface KhataDao {
      * back together rather than a scattering of parts.
      */
     @Transaction
-    suspend fun softDeleteParties(ids: List<Long>, now: Long = System.currentTimeMillis()) {
+    suspend fun softDeleteParties(ids: List<Long>, now: Long = System.currentTimeMillis()): List<Long> {
+        val kept = ArrayList<Long>()
         for (id in ids) {
+            // A customer with posted counter tickets or returns stays (22 Oct 2026, the review): binning him
+            // binned the tickets' khata rows, so their goods came back on the shelf while the tickets stayed
+            // sold in every report, and the 30-day purge then erased the rows. The tickets are voided first.
+            if (postedTicketsOf(id) > 0) { kept += id; continue }
             softDeleteEntriesOfParty(id, now)
             softDeleteParty(id, now)
+            // Who sent a customer to the bin (21 Oct 2026, the critical review).
+            log(AuditAction.PARTY_DELETED, Access.userName, "parties", id)
         }
+        return kept
+    }
+
+    /** Posted (not voided) counter tickets and returns of [partyId]. */
+    @Query(
+        """
+        SELECT (SELECT COUNT(*) FROM sales WHERE partyId = :partyId AND status = 'done' AND isDeleted = 0)
+             + (SELECT COUNT(*) FROM sale_returns WHERE partyId = :partyId AND status = 'done' AND isDeleted = 0)
+        """
+    )
+    suspend fun postedTicketsOf(partyId: Long): Int
+
+    /**
+     * The entries the owner picked, to the bin — all but those a bill, a
+     * plan, a cheque, a counter sale or a return wrote (22 Oct 2026, the
+     * review: the select-and-delete binned a ticket's own rows, and the
+     * purge then erased them while the ticket stayed sold). Those are left
+     * and counted; each one binned leaves an audit row. Returns how many
+     * were left.
+     */
+    @Transaction
+    suspend fun softDeleteOwnEntries(ids: List<Long>, now: Long = System.currentTimeMillis()): Int {
+        var left = 0
+        for (id in ids) {
+            if (entryOwner(id) != null) { left++; continue }
+            softDeleteEntry(id, now)
+            log(AuditAction.ENTRY_DELETED, Access.userName, "transactions", id)
+        }
+        return left
     }
 
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id = :id")
@@ -230,10 +266,30 @@ interface KhataDao {
     suspend fun restoreParty(id: Long)
 
     /** Restores only entries that were binned together with the party (same deletedAt window). */
-    @Query("UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE partyId = :partyId AND deletedAt = :deletedAt")
+    /*
+     * A row a voided ticket or return took back never comes back on its own
+     * (22 Oct 2026, the review): the bin offered it, and restoring the "I
+     * gave" of a voided sale charged the customer again and took its goods
+     * off the shelf a second time, while the ticket still read as void.
+     */
+    @Query(
+        """
+        UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE partyId = :partyId AND deletedAt = :deletedAt
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
     suspend fun restoreEntriesOfParty(partyId: Long, deletedAt: Long)
 
-    @Query("UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
+    @Query(
+        """
+        UPDATE transactions SET isDeleted = 0, deletedAt = NULL WHERE id = :id
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
     suspend fun restoreEntry(id: Long)
 
     /** An entry cannot live in an active ledger if its party is still in the bin. */
@@ -255,6 +311,9 @@ interface KhataDao {
         SELECT t.* FROM transactions t
         JOIN parties p ON p.id = t.partyId
         WHERE t.isDeleted = 1 AND p.isDeleted = 0
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = t.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = t.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = t.id OR r.refundEntryId = t.id))
         ORDER BY t.deletedAt DESC
         """
     )
@@ -288,16 +347,90 @@ interface KhataDao {
 
     // ---------- Recycle Bin: permanent purge ----------
 
-    @Query("DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff")
-    suspend fun purgeOldEntries(cutoff: Long)
+    /*
+     * Only entries binned on their own — their customer still in the book —
+     * are purged here (22 Oct 2026, the review). A customer's entries swept
+     * into the bin with him go when he goes (the cascade on partyId), never
+     * before: a customer the purge keeps (his bills, cheques, plans or
+     * counter tickets) lost every entry and kept his name, and came back
+     * from the bin with nothing owed.
+     */
+    @Query(
+        """
+        DELETE FROM transactions WHERE isDeleted = 1 AND deletedAt < :cutoff AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
+    suspend fun purgeOldEntryRows(cutoff: Long)
 
-    @Query("DELETE FROM parties WHERE isDeleted = 1 AND deletedAt < :cutoff")
+    /*
+     * The bin's 30-day purge. A voided ticket's or return's khata rows are
+     * not the bin's to erase (23 Oct 2026, the review: "delete nothing,
+     * reverse it" — emptying the bin wiped the khata side of every void), and
+     * the highest RK- number is noted first, so an entry purged from the top
+     * never gives its number out again ([keepEntryNumberHigh]).
+     */
+    @Transaction
+    suspend fun purgeOldEntries(cutoff: Long) {
+        keepEntryNumberHigh()
+        purgeOldEntryRows(cutoff)
+    }
+
+    /*
+     * A party is never purged while it still has cheques, payment plans or
+     * supplier bills (21 Oct 2026): those tables are deleted along with the
+     * party (ON DELETE CASCADE), and binning a party bins only its entries, so
+     * purging a supplier deleted his bills — and the stock they brought in —
+     * with no word. Such a party stays in the bin until those are dealt with.
+     */
+    @Query(
+        """
+        DELETE FROM parties WHERE isDeleted = 1 AND deletedAt < :cutoff
+        AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns sr WHERE sr.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM purchase_orders po WHERE po.partyId = parties.id)
+        """
+    )
     suspend fun purgeOldParties(cutoff: Long)
 
-    @Query("DELETE FROM transactions WHERE isDeleted = 1")
-    suspend fun purgeAllEntries()
+    /** Every entry binned on its own but a void's; a binned customer's go with him ([purgeOldEntries]). */
+    @Query(
+        """
+        DELETE FROM transactions WHERE isDeleted = 1 AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        """
+    )
+    suspend fun purgeAllEntryRows()
 
-    @Query("DELETE FROM parties WHERE isDeleted = 1")
+    /** Empty bin: as [purgeOldEntries], every date. */
+    @Transaction
+    suspend fun purgeAllEntries() {
+        keepEntryNumberHigh()
+        purgeAllEntryRows()
+    }
+
+    /** Customers in the bin: after emptying it, the ones kept by their bills, cheques, plans or counter tickets. */
+    @Query("SELECT COUNT(*) FROM parties WHERE isDeleted = 1")
+    suspend fun binnedPartyCount(): Int
+
+    @Query(
+        """
+        DELETE FROM parties WHERE isDeleted = 1
+        AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns sr WHERE sr.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM purchase_orders po WHERE po.partyId = parties.id)
+        """
+    )
     suspend fun purgeAllParties()
 
     /**
@@ -310,12 +443,33 @@ interface KhataDao {
      * takes its transactions with it automatically — the transactions table
      * declares onDelete = CASCADE on partyId — so no orphaned entries are
      * left behind, and no second call is needed.
+     *
+     * Returns how many went: 0 when the customer is kept (his bills,
+     * cheques, plans or counter tickets), so the screen says so rather
+     * than "deleted forever" (22 Oct 2026, the review).
      */
-    @Query("DELETE FROM parties WHERE id = :id AND isDeleted = 1")
-    suspend fun purgeParty(id: Long)
+    @Query(
+        """
+        DELETE FROM parties WHERE id = :id AND isDeleted = 1
+        AND NOT EXISTS (SELECT 1 FROM cheques c WHERE c.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM payment_plans pp WHERE pp.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills sb WHERE sb.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM sale_returns sr WHERE sr.partyId = parties.id)
+        AND NOT EXISTS (SELECT 1 FROM purchase_orders po WHERE po.partyId = parties.id)
+        """
+    )
+    suspend fun purgeParty(id: Long): Int
 
     @Query("DELETE FROM transactions WHERE id = :id AND isDeleted = 1")
-    suspend fun purgeEntry(id: Long)
+    suspend fun purgeEntryRow(id: Long)
+
+    /** One binned entry deleted for good from the bin; its number, if the highest, is not given out again. */
+    @Transaction
+    suspend fun purgeEntry(id: Long) {
+        keepEntryNumberHigh()
+        purgeEntryRow(id)
+    }
 
     // ---------- Totals ----------
 
@@ -530,7 +684,9 @@ interface KhataDao {
                 isGiven = !cheque.isReceived,
                 note = note,
                 entryNumber = "",
-                timestamp = now
+                timestamp = now,
+                // Marked as a cheque, so it is never counted as cash in the drawer (21 Oct 2026).
+                paymentMethod = PaymentMethod.CHEQUE
             )
         )
         updateCheque(cheque.copy(status = ChequeStatus.CLEARED, settledAt = now, ledgerEntryId = entryId))
@@ -544,6 +700,17 @@ interface KhataDao {
 
     @Query("SELECT * FROM cashbook WHERE isDeleted = 0 ORDER BY timestamp DESC")
     fun observeCashEntries(): Flow<List<CashEntry>>
+
+    /**
+     * The newest [limit] lines (23 Oct 2026, the review): the screens read a
+     * window that grows as the owner scrolls ([ListWindow]), not every line
+     * ever written; the in/out figures stay the whole table's sums.
+     */
+    @Query("SELECT * FROM cashbook WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun observeCashPage(limit: Int): Flow<List<CashEntry>>
+
+    @Query("SELECT COUNT(*) FROM cashbook WHERE isDeleted = 0")
+    fun observeCashCount(): Flow<Int>
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 1")
     fun observeCashIncome(): Flow<Double>
@@ -729,6 +896,69 @@ interface KhataDao {
      * payment reaches its total — the phone's PlansActivity.recordPayment,
      * which wrote these one after another. Returns the entry's id.
      */
+    /**
+     * [block] as ONE transaction (21 Oct 2026, the critical review): a backup
+     * reads some thirty tables one after another, and a sale posted between
+     * two of those reads left a copy whose lines named an entry it did not
+     * hold — a copy that then refused to restore. Every read inside sees the
+     * same book; a write from elsewhere waits the moment it takes.
+     */
+    @Transaction
+    suspend fun readAsOne(block: suspend () -> Unit) {
+        block()
+    }
+
+    /**
+     * What a khata entry belongs to, when another record wrote it (21 Oct 2026,
+     * the critical review): "bill", "plan", "cheque", "sale" or "return"; null
+     * for an entry of its own. Such an entry is changed from its owner — editing
+     * or deleting it from the khata left the bill, plan, cheque or ticket
+     * saying something else.
+     */
+    @Query(
+        """
+        SELECT CASE
+          WHEN EXISTS (SELECT 1 FROM supplier_bills WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'bill'
+          WHEN EXISTS (SELECT 1 FROM installments WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'plan'
+          WHEN EXISTS (SELECT 1 FROM cheques WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'cheque'
+          WHEN EXISTS (SELECT 1 FROM sales WHERE ledgerEntryId = :entryId AND isDeleted = 0 AND status = 'done')
+            OR EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.ledgerEntryId = :entryId AND s.isDeleted = 0 AND s.status = 'done') THEN 'sale'
+          WHEN EXISTS (SELECT 1 FROM sale_returns WHERE (ledgerEntryId = :entryId OR refundEntryId = :entryId) AND isDeleted = 0 AND status = 'done') THEN 'return'
+          ELSE NULL END
+        """
+    )
+    suspend fun entryOwner(entryId: Long): String?
+
+    /**
+     * The record that wrote a cashbook line ("sale" or "return"), or null
+     * when it is the owner's own (22 Oct 2026, the review: a counter
+     * ticket's cash line could be deleted from the cashbook, and the drawer
+     * then expected that much less while the ticket still read as paid).
+     */
+    @Query(
+        """
+        SELECT CASE
+          WHEN EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundCashId = :id AND r.isDeleted = 0 AND r.status = 'done') THEN 'return'
+          WHEN EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.cashEntryId = :id AND s.isDeleted = 0 AND s.status = 'done') THEN 'sale'
+          WHEN EXISTS (SELECT 1 FROM cashbook c WHERE c.id = :id AND c.saleId IS NOT NULL) THEN 'sale'
+          ELSE NULL END
+        """
+    )
+    suspend fun cashOwner(id: Long): String?
+
+    /** A cashbook line the owner wrote, to the bin with its audit row; false (nothing done) for one a ticket or a return wrote. */
+    @Transaction
+    suspend fun softDeleteOwnCashEntry(id: Long, amount: String? = null, now: Long = System.currentTimeMillis()): Boolean {
+        if (cashOwner(id) != null) return false
+        softDeleteCashEntry(id, now)
+        log(AuditAction.CASH_DELETED, Access.userName, "cashbook", id, amount)
+        return true
+    }
+
+    /** A plan's next payment day changed by the owner, or cleared with null (21 Oct 2026). */
+    @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
+    suspend fun setPlanNextDue(id: Long, due: Long?)
+
     @Transaction
     suspend fun recordPlanPayment(
         planId: Long,
@@ -737,10 +967,12 @@ interface KhataDao {
         paidBefore: Double,
         entryNote: String,
         note: String?,
-        now: Long = System.currentTimeMillis()
+        now: Long = System.currentTimeMillis(),
+        /** How the instalment came: Cash unless the owner says otherwise, as every "I got" (21 Oct 2026). */
+        method: String? = PaymentMethod.CASH
     ): Long {
         val entryId = insertEntryNumbered(
-            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now)
+            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now, paymentMethod = method)
         )
         insertInstallment(Installment(planId = planId, amount = amount, ledgerEntryId = entryId, paidAt = now, note = note))
         getPlan(planId)?.let { plan ->
@@ -756,15 +988,18 @@ interface KhataDao {
      * Returns how many parties were added.
      */
     @Transaction
-    suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis()): Int {
+    suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis(), user: String? = Access.userName): Int {
         rows.forEach { r ->
             val id = insertParty(Party(name = r.name, phone = r.phone, isCustomer = true))
             if (kotlin.math.abs(r.balance) >= 0.005) {
+                // Who brought them in, on each entry and in the log (22 Oct 2026, the review: they read as the owner's).
                 insertEntryNumbered(
-                    LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "", timestamp = now)
+                    LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "",
+                        timestamp = now, createdBy = user)
                 )
             }
         }
+        log(AuditAction.IMPORT, user, "parties", detail = rows.size.toString())
         return rows.size
     }
 
@@ -780,6 +1015,8 @@ interface KhataDao {
         bill.ledgerEntryId?.let { id ->
             getEntry(id)?.let { e -> updateEntry(e.copy(amount = bill.totalAmount, note = entryNote)) }
         }
+        // Who changed a bill, and to what (22 Oct 2026, the review: bills changed with nothing written down).
+        log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", bill.id, "%.2f".format(Digits.FIGURES, bill.totalAmount))
     }
 
     /**
@@ -791,7 +1028,9 @@ interface KhataDao {
     suspend fun saveBillLine(billId: Long, item: BillItem): Long {
         val product = findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
         val line = item.copy(billId = billId, productId = product.id)
-        return if (item.id == 0L) insertBillItem(line) else { updateBillItem(line); item.id }
+        val id = if (item.id == 0L) insertBillItem(line) else { updateBillItem(line); item.id }
+        log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", billId, "${item.productName} ${"%.2f".format(Digits.FIGURES, item.quantity)}")
+        return id
     }
 
     @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
@@ -837,8 +1076,10 @@ interface KhataDao {
      */
     @Transaction
     suspend fun deleteSupplierBill(id: Long, now: Long = System.currentTimeMillis()) {
-        getBill(id)?.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        val bill = getBill(id)
+        bill?.ledgerEntryId?.let { softDeleteEntry(it, now) }
         softDeleteBill(id, now)
+        log(AuditAction.BILL_DELETED, Access.userName, "supplier_bills", id, bill?.let { "%.2f".format(Digits.FIGURES, it.totalAmount) })
     }
 
     // ---------- Bill items (batch + expiry) ----------
@@ -920,7 +1161,9 @@ interface KhataDao {
     @Transaction
     suspend fun saveInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
         val numbered = if (invoice.invoiceNumber.isBlank()) {
-            invoice.copy(invoiceNumber = InvoiceNumber.next(totalInvoiceCount()))
+            // From the highest number ever used, not the count (21 Oct 2026, the critical review): with
+            // one invoice deleted or merged in, the count gave a number already on another invoice.
+            invoice.copy(invoiceNumber = InvoiceNumber.next(maxOf(totalInvoiceCount(), highestInvoiceNumber())))
         } else {
             invoice
         }
@@ -990,6 +1233,74 @@ interface KhataDao {
     )
     fun observeInvoices(): Flow<List<InvoiceSummary>>
 
+    /**
+     * The newest [limit] invoices for the list screens (23 Oct 2026, the
+     * review): the window grows as the owner scrolls ([ListWindow]). Each
+     * invoice's lines are summed once (the gross) and the total is the same
+     * arithmetic as [observeInvoices]; PerfReviewTest holds the two equal.
+     */
+    @Query(
+        """
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount,
+               (
+                 (CASE WHEN s.discountAmount IS NOT NULL THEN
+                    MAX(0, s.gross - MAX(0, s.discountAmount))
+                  ELSE
+                    s.gross * (1 - COALESCE(s.discountPercent, 0) / 100.0)
+                  END)
+                 * (1 + COALESCE(s.taxPercent, 0) / 100.0)
+                 + COALESCE(s.additionalChargeAmount, 0)
+               ) AS grandTotal
+        FROM (
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+                 i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
+                 (SELECT COUNT(*) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
+                 (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS gross
+          FROM invoices i
+          WHERE i.isDeleted = 0
+          ORDER BY i.invoiceDate DESC, i.id DESC
+          LIMIT :limit
+        ) s
+        ORDER BY s.invoiceDate DESC, s.id DESC
+        """
+    )
+    fun observeInvoicePage(limit: Int): Flow<List<InvoiceSummary>>
+
+    /** Every invoice dated on or after [from], summed the same way — this month's figure on Windows. */
+    @Query(
+        """
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount,
+               (
+                 (CASE WHEN s.discountAmount IS NOT NULL THEN
+                    MAX(0, s.gross - MAX(0, s.discountAmount))
+                  ELSE
+                    s.gross * (1 - COALESCE(s.discountPercent, 0) / 100.0)
+                  END)
+                 * (1 + COALESCE(s.taxPercent, 0) / 100.0)
+                 + COALESCE(s.additionalChargeAmount, 0)
+               ) AS grandTotal
+        FROM (
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+                 i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
+                 (SELECT COUNT(*) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
+                 (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS gross
+          FROM invoices i
+          WHERE i.isDeleted = 0
+            AND i.invoiceDate >= :from
+          ORDER BY i.invoiceDate DESC, i.id DESC
+        ) s
+        ORDER BY s.invoiceDate DESC, s.id DESC
+        """
+    )
+    fun observeInvoicesFrom(from: Long): Flow<List<InvoiceSummary>>
+
+    @Query("SELECT COUNT(*) FROM invoices WHERE isDeleted = 0")
+    fun observeInvoiceCount(): Flow<Int>
+
     @Query("UPDATE invoices SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteInvoice(id: Long, now: Long = System.currentTimeMillis())
 
@@ -1031,6 +1342,12 @@ interface KhataDao {
                    JOIN transactions t ON t.id = ei.entryId
                    WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
                      AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
+               ), 0) + COALESCE((
+                   SELECT SUM(si.quantity) FROM sale_items si
+                   JOIN sales s ON s.id = si.saleId
+                   WHERE si.billItemId = i.id AND si.isDeleted = 0 AND s.isDeleted = 0
+                     AND s.status = 'done' AND s.ledgerEntryId IS NULL
+                     AND (si.unit = i.unit OR (si.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch
         FROM bill_items i
         JOIN supplier_bills b ON b.id = i.billId
@@ -1078,7 +1395,22 @@ interface KhataDao {
     fun observeSchemes(): Flow<List<Scheme>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveScheme(s: Scheme): Long
+    suspend fun saveSchemeRow(s: Scheme): Long
+
+    @Query("SELECT uid FROM schemes WHERE id = :id")
+    suspend fun schemeUid(id: Long): String?
+
+    /**
+     * A scheme saved, new or edited. An edit keeps the row's own uid (22 Oct
+     * 2026, the review): the forms built the scheme afresh, and REPLACE gave
+     * the edited row a new identity, so a book kept live on two devices got
+     * a second copy of the scheme on the other one with every edit.
+     */
+    @Transaction
+    suspend fun saveScheme(s: Scheme): Long {
+        val keep = if (s.id != 0L) schemeUid(s.id) else null
+        return saveSchemeRow(if (keep != null) s.copy(uid = keep) else s)
+    }
 
     @Query("UPDATE schemes SET isDeleted = 1 WHERE id = :id")
     suspend fun deleteScheme(id: Long)
@@ -1147,7 +1479,17 @@ interface KhataDao {
     fun observeAttendanceBetween(from: Long, to: Long): Flow<List<StaffAttendance>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun markAttendance(mark: StaffAttendance)
+    suspend fun saveAttendanceRow(mark: StaffAttendance)
+
+    @Query("SELECT * FROM staff_attendance WHERE staffId = :staffId AND day = :day LIMIT 1")
+    suspend fun attendanceOn(staffId: Long, day: Long): StaffAttendance?
+
+    /** A day marked; marking the same day again changes that row, keeping its id and uid (as [saveScheme]). */
+    @Transaction
+    suspend fun markAttendance(mark: StaffAttendance) {
+        val here = attendanceOn(mark.staffId, mark.day)
+        saveAttendanceRow(if (here != null) mark.copy(id = here.id, uid = here.uid) else mark)
+    }
 
     @Query("DELETE FROM staff_attendance WHERE staffId = :staffId AND day = :day")
     suspend fun clearAttendance(staffId: Long, day: Long)
@@ -1160,6 +1502,14 @@ interface KhataDao {
 
     @Query("SELECT * FROM staff ORDER BY id")
     suspend fun allStaffForBackup(): List<Staff>
+
+    /**
+     * Another staff member, removed ones included, already has [name] (case
+     * and edge spaces aside; 23 Oct 2026, the review): shifts, cashier rows
+     * and audit rows are kept by name, so two of one name would share a drawer.
+     */
+    @Query("SELECT EXISTS(SELECT 1 FROM staff WHERE LOWER(TRIM(name)) = LOWER(TRIM(:name)) AND id != :exceptId)")
+    suspend fun staffNameTaken(name: String, exceptId: Long = 0): Boolean
 
     @Query("SELECT * FROM staff_attendance ORDER BY id")
     suspend fun allAttendanceForBackup(): List<StaffAttendance>
@@ -1190,14 +1540,53 @@ interface KhataDao {
     @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
     suspend fun lastDayClose(): DayClose?
 
+    @Query("SELECT * FROM day_close WHERE day = :day LIMIT 1")
+    suspend fun dayCloseFor(day: Long): DayClose?
+
     @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
     fun observeLastDayClose(): Flow<DayClose?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveDayClose(close: DayClose)
+    suspend fun saveDayCloseRow(close: DayClose)
+
+    /**
+     * A day closed; closing the same day again changes that row, keeping its
+     * id and uid (as [saveScheme]). Its audit row is written here, in the same
+     * transaction, and a second close of a day says what the first one counted
+     * (22 Oct 2026, the review: the first close's figures were gone with
+     * nothing but its count left anywhere).
+     */
+    @Transaction
+    suspend fun saveDayClose(close: DayClose, user: String? = Access.userName) {
+        var here = dayCloseFor(close.day)
+        // A close already filed under this day that belongs to another working day (23 Oct 2026, the review:
+        // before the small hours counted to the day before, Friday's 00:20 close sat under Saturday) is moved
+        // to its own day when that day is free, so this close never overwrites a different stretch's count.
+        // Only a close made in the small hours OF the very day it is filed under is such a one: a close saved
+        // later for an earlier day (an owner closing yesterday this afternoon, a test's fixed day) stays put.
+        if (here != null) {
+            val own = DayCloseMath.businessDayOf(here.closedAt)
+            if (own == here.day - 1 && DayCloseMath.dayOf(here.closedAt) == here.day && dayCloseFor(own) == null) {
+                saveDayCloseRow(here.copy(day = own))
+                here = null
+            }
+        }
+        saveDayCloseRow(if (here != null) close.copy(id = here.id, uid = here.uid) else close)
+        val said = auditAmount(close.counted) + (here?.let { " (" + auditAmount(it.counted) + " / " + auditAmount(it.difference) + ")" } ?: "")
+        log(AuditAction.DAY_CLOSED, user, "day_close", here?.id, said)
+    }
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND timestamp > :from AND timestamp <= :to")
     suspend fun cashbookTotalBetween(income: Boolean, from: Long, to: Long): Double
+
+    /**
+     * Cashbook money that moved in CASH, for the drawer count (v32): rows
+     * with no method (every row written before v32, and any the owner did
+     * not mark) count as cash, as they always have; a row marked bank, online
+     * or cheque (a walk-in's transfer at the counter) is not in the drawer.
+     */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND (paymentMethod IS NULL OR paymentMethod = 'cash') AND timestamp > :from AND timestamp <= :to")
+    suspend fun cashbookCashBetween(income: Boolean, from: Long, to: Long): Double
 
     /** Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' AND timestamp > :from AND timestamp <= :to")
@@ -1254,6 +1643,12 @@ interface KhataDao {
                    JOIN transactions t ON t.id = ei.entryId
                    WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
                      AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
+               ), 0) + COALESCE((
+                   SELECT SUM(si.quantity) FROM sale_items si
+                   JOIN sales s ON s.id = si.saleId
+                   WHERE si.billItemId = i.id AND si.isDeleted = 0 AND s.isDeleted = 0
+                     AND s.status = 'done' AND s.ledgerEntryId IS NULL
+                     AND (si.unit = i.unit OR (si.unit IS NULL AND i.unit IS NULL))
                ), 0) AS soldFromBatch,
                p.name AS partyName, b.billNumber AS billNumber, b.billDate AS billDate
         FROM bill_items i
@@ -1879,8 +2274,46 @@ interface KhataDao {
         // Staff (v29). Additive.
         staff: List<Staff> = emptyList(),
         attendance: List<StaffAttendance> = emptyList(),
-        staffPayments: List<StaffPayment> = emptyList()
+        staffPayments: List<StaffPayment> = emptyList(),
+        // The counter (v32). Additive.
+        sales: List<Sale> = emptyList(),
+        saleItems: List<SaleItem> = emptyList(),
+        salePayments: List<SalePayment> = emptyList(),
+        audit: List<AuditLog> = emptyList(),
+        // Returns (v33). Additive.
+        returns: List<SaleReturn> = emptyList(),
+        returnItems: List<SaleReturnItem> = emptyList(),
+        // Stock adjustments and purchase orders (v35). Additive.
+        adjustments: List<StockAdjustment> = emptyList(),
+        orders: List<PurchaseOrder> = emptyList(),
+        orderItems: List<PurchaseOrderItem> = emptyList(),
+        // Book settings, loyalty and shifts (v36). Additive.
+        settings: List<BookSetting> = emptyList(),
+        loyalty: List<LoyaltyEntry> = emptyList(),
+        shifts: List<Shift> = emptyList(),
+        /**
+         * Keep this book's owner PIN, recovery code and counter keys where the
+         * copy has none (22 Oct 2026, the review: a copy made before the owner
+         * had a PIN, restored on a counter, wiped the PIN and left nobody able
+         * to sign in as the owner). False for a live pairing, which must be
+         * the other device's book exactly.
+         */
+        keepAccess: Boolean = true
     ) {
+        val access = if (!keepAccess) emptyList() else BookSettings.ACCESS_KEYS.mapNotNull { k -> settingValue(k)?.let { BookSetting(k, it) } }
+        wipeSettings()
+        wipeLoyalty()
+        wipeShifts()
+        wipeOrderItems()
+        wipeOrders()
+        wipeAdjustments()
+        wipeReturnItems()
+        wipeReturns()
+        // Sale rows before the sale (cascade), the sale before its entries' saleId means anything.
+        wipeSalePayments()
+        wipeSaleItems()
+        wipeSales()
+        wipeAudit()
         // Children before parents on the way out. invoice_items cascades off
         // invoices, so items are wiped first; wiping invoices first would fire
         // the cascade and delete the items mid-step for no gain.
@@ -1928,6 +2361,25 @@ interface KhataDao {
         restoreStaff(staff)
         restoreAttendance(attendance)
         restoreStaffPayments(staffPayments)
+        restoreSales(sales)
+        restoreSaleItems(saleItems)
+        restoreSalePayments(salePayments)
+        restoreAudit(audit)
+        restoreReturns(returns)
+        restoreReturnItems(returnItems)
+        restoreAdjustments(adjustments)
+        restoreOrders(orders)
+        restoreOrderItems(orderItems)
+        restoreSettings(settings)
+        if (access.isNotEmpty()) {
+            val copyHasPin = settings.any { it.key == BookSettings.OWNER_PIN_HASH && it.value != null }
+            val keep = access.filter { k ->
+                if (k.key in BookSettings.OWNER_PIN_KEYS) !copyHasPin else settings.none { it.key == k.key }
+            }
+            if (keep.isNotEmpty()) restoreSettings(keep)
+        }
+        restoreLoyalty(loyalty)
+        restoreShifts(shifts)
     }
 
 
@@ -1944,18 +2396,28 @@ interface KhataDao {
     // 50,000 raised this month's "sales" by 50,000 and the 12-month chart
     // with it. The same rule the season and recall lists already follow.
 
-    /** Total value of sales between two timestamps. */
-    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM transactions t " +
+    // Not a sale (21 Oct 2026, the critical review): a Qarz-e-Hasna loan, and the cash handed back
+    // for a return (sale_returns.refundEntryId). And the counter's walk-in tickets ARE sales, though
+    // they never touch a customer's khata: they are added from the sales table.
+
+    /** Total value of sales between two timestamps: khata sales and the counter's walk-in tickets. */
+    @Query("SELECT (SELECT COALESCE(SUM(t.amount), 0) FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
-           "AND t.timestamp >= :from AND t.timestamp < :to")
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
+           "AND t.timestamp >= :from AND t.timestamp < :to) + " +
+           "(SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL " +
+           "AND timestamp >= :from AND timestamp < :to)")
     suspend fun salesTotalBetween(from: Long, to: Long): Double
 
-    /** How many sales (entry count) between two timestamps. */
-    @Query("SELECT COUNT(*) FROM transactions t " +
+    /** How many sales (entry count, and walk-in tickets) between two timestamps. */
+    @Query("SELECT (SELECT COUNT(*) FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
-           "AND t.timestamp >= :from AND t.timestamp < :to")
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
+           "AND t.timestamp >= :from AND t.timestamp < :to) + " +
+           "(SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL " +
+           "AND timestamp >= :from AND timestamp < :to)")
     suspend fun salesCountBetween(from: Long, to: Long): Int
 
     /**
@@ -1984,7 +2446,8 @@ interface KhataDao {
     /** Every sale and return line in [from, to), with what [Profit] needs to cost it. */
     @Query("SELECT ei.productId AS productId, ei.itemName AS itemName, ei.quantity AS quantity, " +
            "ei.unit AS unit, ei.rate AS rate, ei.isBonus AS isBonus, ei.billItemId AS billItemId, " +
-           "t.timestamp AS timestamp, t.isGiven AS isGiven " +
+           "t.timestamp AS timestamp, t.isGiven AS isGiven, t.amount AS entryAmount, " +
+           "(SELECT SUM(x.quantity * x.rate) FROM entry_items x WHERE x.entryId = t.id AND x.rate IS NOT NULL AND x.quantity IS NOT NULL) AS entryLinesTotal " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
            "WHERE t.isDeleted = 0 AND p.isCustomer = 1 " +
@@ -2025,7 +2488,8 @@ interface KhataDao {
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
     suspend fun topCustomersBetween(from: Long, to: Long, limit: Int): List<CustomerStat>
@@ -2074,7 +2538,9 @@ interface KhataDao {
         // ten entries, #3 purged, count = 9, next = RK-000010 — which exists.
         // The count is still consulted so a book whose entries were never
         // numbered in the RK- form keeps moving forward, never backward.
-        val next = maxOf(totalEntryCount(), highestEntryNumber())
+        // And past the highest ever purged (23 Oct 2026, the review: the bin emptied of the newest entries
+        // gave their RK- numbers out again — numbers already printed or sent on a receipt).
+        val next = maxOf(totalEntryCount(), highestEntryNumber(), settingValue(BookSettings.ENTRY_NUMBER_HIGH)?.toIntOrNull() ?: 0)
         return insertEntry(entry.copy(entryNumber = EntryNumber.next(next)))
     }
 
@@ -2088,6 +2554,14 @@ interface KhataDao {
         "FROM transactions WHERE entryNumber LIKE 'RK-%'"
     )
     suspend fun highestEntryNumber(): Int
+
+    /** The highest RK- number noted in the book's settings before anything is purged ([insertEntryNumbered] counts past it). */
+    @Transaction
+    suspend fun keepEntryNumberHigh() {
+        val high = highestEntryNumber()
+        val kept = settingValue(BookSettings.ENTRY_NUMBER_HIGH)?.toIntOrNull() ?: 0
+        if (high > kept) setSetting(BookSettings.ENTRY_NUMBER_HIGH, high.toString())
+    }
 
     // ---------- Goods lines (entry_items, v20) ----------
     //
@@ -2159,6 +2633,58 @@ interface KhataDao {
     suspend fun salesAdjustments(from: Long, to: Long): List<SaleRegisterRow>
 
     /**
+     * A walk-in counter ticket's lines, for the sales register (22 Oct 2026,
+     * the review: the register read only the khata, so a day of forty walk-in
+     * pesticide tickets printed three for an inspection). Each line with its
+     * batch, at its own money; [walkIn] names a ticket that carries no name.
+     */
+    @Query(
+        """
+        SELECT s.timestamp AS date, s.saleNumber AS refNumber,
+               COALESCE(NULLIF(TRIM(s.customerName), ''), :walkIn) AS partyName,
+               COALESCE(pr.name, si.itemName) AS itemName, bi.batchNumber AS batchNumber,
+               si.quantity AS quantity, si.unit AS unit, ROUND(si.quantity * si.rate - si.discount, 2) AS amount,
+               pr.company AS company, pr.registrationNumber AS registrationNumber
+        FROM sale_items si
+        JOIN sales s ON s.id = si.saleId
+        LEFT JOIN products pr ON pr.id = si.productId
+        LEFT JOIN bill_items bi ON bi.id = si.billItemId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL AND si.isDeleted = 0
+          AND s.timestamp >= :from AND s.timestamp <= :to
+        ORDER BY s.timestamp ASC, s.id ASC, si.lineNo ASC
+        """
+    )
+    suspend fun walkInSalesRegister(from: Long, to: Long, walkIn: String): List<SaleRegisterRow>
+
+    /** A walk-in ticket whose money differs from its lines (its discount, tax, round-off): one row with the difference. */
+    @Query(
+        """
+        SELECT s.timestamp AS date, s.saleNumber AS refNumber,
+               COALESCE(NULLIF(TRIM(s.customerName), ''), :walkIn) AS partyName,
+               NULL AS itemName, NULL AS batchNumber, NULL AS quantity, NULL AS unit,
+               ROUND(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, 2)), 2) AS amount,
+               NULL AS company, NULL AS registrationNumber
+        FROM sale_items si JOIN sales s ON s.id = si.saleId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL AND si.isDeleted = 0
+          AND s.timestamp >= :from AND s.timestamp <= :to
+        GROUP BY s.id
+        HAVING ABS(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, 2))) >= 0.005
+        ORDER BY s.timestamp ASC, s.id ASC
+        """
+    )
+    suspend fun walkInSalesAdjustments(from: Long, to: Long, walkIn: String): List<SaleRegisterRow>
+
+    /**
+     * The sales register's rows: the khata's sales and the walk-in tickets,
+     * each followed by its difference row ([adjustment] names it), in time order.
+     * The one call the phone's register and the computer's both make.
+     */
+    suspend fun registerSales(from: Long, to: Long, adjustment: String, walkIn: String): List<SaleRegisterRow> =
+        (salesRegister(from, to) + salesAdjustments(from, to).map { it.copy(itemName = adjustment) } +
+            walkInSalesRegister(from, to, walkIn) + walkInSalesAdjustments(from, to, walkIn).map { it.copy(itemName = adjustment) })
+            .sortedWith(compareBy({ it.date }, { it.refNumber }))
+
+    /**
      * The rate this customer was last charged for this product, and the unit
      * it was per — for a return, which goes back at the price it went out at.
      * Only real sales count: a free (bonus) line has no price, and a line
@@ -2227,7 +2753,8 @@ interface KhataDao {
     @Transaction
     suspend fun undoCashForSale(saleId: Long, gotId: Long) {
         softDeleteEntry(gotId)
-        purgeEntry(gotId)
+        // Not through the bin's purge: the "I got" was written a moment ago and never kept, as before.
+        purgeEntryRow(gotId)
         setPairedEntry(saleId, null)
     }
 
@@ -2301,7 +2828,10 @@ interface KhataDao {
         val ledgerId = entry?.let { insertEntryNumbered(it) }
         val billId = insertBill(bill.copy(ledgerEntryId = ledgerId))
         return items.map { item ->
-            val product = findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
+            // The product the line already names comes first (23 Oct 2026, the review: a purchase order's line
+            // for a product renamed since was received into a new product under the old name).
+            val product = item.productId?.let { productById(it) }?.takeIf { !it.isDeleted }
+                ?: findOrCreateProduct(name = item.productName, defaultUnit = item.unit)
             insertBillItem(item.copy(billId = billId, productId = product.id))
             product
         }
@@ -2350,6 +2880,21 @@ interface KhataDao {
     @Query("UPDATE payment_plans SET partyId = :survivorId WHERE partyId = :loserId")
     suspend fun reassignPlansToParty(loserId: Long, survivorId: Long)
 
+    @Query("UPDATE sales SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignSalesToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE sale_returns SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignReturnsToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE loyalty SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignLoyaltyToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE purchase_orders SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignOrdersToParty(loserId: Long, survivorId: Long)
+
+    @Query("UPDATE schemes SET partyId = :survivorId WHERE partyId = :loserId")
+    suspend fun reassignSchemesToParty(loserId: Long, survivorId: Long)
+
     /**
      * A customer entered twice, folded into one.
      *
@@ -2375,6 +2920,14 @@ interface KhataDao {
         reassignBillsToParty(loserId, survivorId)
         reassignChequesToParty(loserId, survivorId)
         reassignPlansToParty(loserId, survivorId)
+        // The counter's own rows follow too (22 Oct 2026, the review): tickets, returns, points, orders and
+        // schemes stayed on the binned duplicate, so a return went to a customer in the bin and the points
+        // were gone from the one kept.
+        reassignSalesToParty(loserId, survivorId)
+        reassignReturnsToParty(loserId, survivorId)
+        reassignLoyaltyToParty(loserId, survivorId)
+        reassignOrdersToParty(loserId, survivorId)
+        reassignSchemesToParty(loserId, survivorId)
         softDeleteParty(loserId, now)
     }
 
@@ -2422,4 +2975,1400 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreDismissedDuplicates(items: List<DismissedDuplicate>)
+
+    // ---------- Counter sales (POS Phase 1, v32) ----------
+    //
+    // A sale is posted in ONE transaction: its document, its lines, its
+    // payments, and every khata or cashbook row they become. Either the whole
+    // ticket stands or none of it does — a receipt handed over must never
+    // describe money the book does not hold, nor the other way round.
+
+    @Insert
+    suspend fun insertSale(sale: Sale): Long
+
+    @Insert
+    suspend fun insertSaleItems(items: List<SaleItem>)
+
+    @Insert
+    suspend fun insertSalePayment(payment: SalePayment): Long
+
+    @Update
+    suspend fun updateSale(sale: Sale)
+
+    @Insert
+    suspend fun insertAuditRow(row: AuditLog): Long
+
+    /** The seal of the newest row in the log (null for an empty log, or one whose newest row predates the seal). */
+    @Query("SELECT hash FROM audit_log ORDER BY id DESC LIMIT 1")
+    suspend fun lastAuditHash(): String?
+
+    /**
+     * One row in the log, sealed onto the row before it ([AuditChain],
+     * schema 36). Every audit write goes through here, so the chain has no
+     * gap a screen could open by writing around it.
+     */
+    @Transaction
+    suspend fun insertAudit(row: AuditLog): Long {
+        val fresh = row.copy(id = 0)
+        return insertAuditRow(fresh.copy(hash = AuditChain.hashOf(lastAuditHash(), fresh)))
+    }
+
+    @Query("SELECT * FROM sales WHERE id = :id")
+    suspend fun getSale(id: Long): Sale?
+
+    @Query("SELECT * FROM sale_items WHERE saleId = :saleId AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
+    suspend fun saleItems(saleId: Long): List<SaleItem>
+
+    @Query("SELECT * FROM sale_payments WHERE saleId = :saleId ORDER BY id ASC")
+    suspend fun salePayments(saleId: Long): List<SalePayment>
+
+    /** The whole ticket, for a receipt or a void. */
+    @Transaction
+    suspend fun saleWithLines(id: Long): SaleWithLines? {
+        val sale = getSale(id) ?: return null
+        return SaleWithLines(sale, saleItems(id), salePayments(id))
+    }
+
+    /**
+     * The largest S- number ever handed out, binned and voided tickets
+     * included: a number once printed is never printed again. Numbers are
+     * written with Latin digits, so the cast is exact.
+     */
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(saleNumber, 3) AS INTEGER)), 0) FROM sales WHERE saleNumber LIKE 'S-%'")
+    suspend fun highestSaleNumber(): Int
+
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status != 'held'
+        ORDER BY s.timestamp DESC, s.id DESC
+        """
+    )
+    fun observeSales(): Flow<List<SaleSummary>>
+
+    /**
+     * The newest [limit] tickets (23 Oct 2026, the review: the Windows counter
+     * read every ticket ever made, a COUNT per row, to show eight). The lines
+     * are counted only for the tickets shown.
+     */
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM (
+          SELECT * FROM sales WHERE isDeleted = 0 AND status != 'held'
+          ORDER BY timestamp DESC, id DESC LIMIT :limit
+        ) s
+        ORDER BY s.timestamp DESC, s.id DESC
+        """
+    )
+    fun observeRecentSales(limit: Int): Flow<List<SaleSummary>>
+
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status != 'held' AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.timestamp DESC, s.id DESC
+        """
+    )
+    suspend fun salesBetween(from: Long, to: Long): List<SaleSummary>
+
+    /** The tickets parked at the counter, oldest first. */
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status = 'held' ORDER BY s.timestamp ASC
+        """
+    )
+    fun observeHeldSales(): Flow<List<SaleSummary>>
+
+    @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'held'")
+    fun observeHeldCount(): Flow<Int>
+
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status = 'held' ORDER BY s.timestamp ASC
+        """
+    )
+    suspend fun heldSalesOnce(): List<SaleSummary>
+
+    /** Today's posted tickets: how many and what they came to, for the counter's head. */
+    @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
+    suspend fun doneSaleCount(from: Long, to: Long): Int
+
+    @Query("SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
+    suspend fun doneSaleTotal(from: Long, to: Long): Double
+
+    /** A live product by the code on its pack; null when none carries it. */
+    @Query("SELECT * FROM products WHERE barcode = :code AND isDeleted = 0 LIMIT 1")
+    suspend fun productByBarcode(code: String): Product?
+
+    /**
+     * The last rate the shop paid for this product, off its newest supplier
+     * bill line — the cost a sale's profit is measured against when the
+     * product carries no cost price of its own.
+     */
+    @Query(
+        "SELECT bi.rate FROM bill_items bi JOIN supplier_bills b ON b.id = bi.billId " +
+        "WHERE bi.productId = :productId AND bi.isDeleted = 0 AND b.isDeleted = 0 AND bi.rate IS NOT NULL " +
+        "ORDER BY b.billDate DESC, bi.id DESC LIMIT 1"
+    )
+    suspend fun lastPurchaseRate(productId: Long): Double?
+
+    /**
+     * Goods that left on WALK-IN counter sales, per product. A customer's
+     * sale is not here: its lines were copied onto its khata entry, which
+     * [soldPerProduct] already counts, and counting both would sell every
+     * bag twice. Held and voided tickets moved nothing.
+     */
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, MIN(i.unit) AS unit " +
+        "FROM sale_items i JOIN sales s ON s.id = i.saleId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' " +
+        "AND s.ledgerEntryId IS NULL GROUP BY i.productId"
+    )
+    suspend fun walkInSoldPerProduct(): List<Stock.ProductQty>
+
+    /**
+     * Ring a ticket up. [sale]'s figures are RECOMPUTED here from the lines
+     * (the screen's totals are shown, never trusted), the checks in
+     * [SaleMath.check] run again, and then, in this one transaction:
+     *
+     *  - the sale, its lines and its payments are written, numbered S-;
+     *  - a customer's sale becomes a khata "I gave" of the grand total with
+     *    the goods as its lines (so the ledger, the statement, the stock and
+     *    the season book all see it as they see any sale), and each payment
+     *    an "I got" paired to it, carrying its method;
+     *  - a walk-in's payments become cashbook income, each with its method;
+     *  - one audit row.
+     *
+     * Returns the sale's id. Throws [IllegalArgumentException] on a ticket
+     * that fails its checks — nothing is written, and the screen shows the
+     * problem it should already have caught.
+     */
+    @Transaction
+    suspend fun postSale(
+        sale: Sale,
+        items: List<SaleItem>,
+        payments: List<SalePayment>,
+        roundToWhole: Boolean = false,
+        /**
+         * Per line of [items], the batches it comes from ([Fefo]; null = as
+         * it is). The totals are worked out on the lines as rung up, then
+         * each line is written once per batch, its money split to the paisa.
+         */
+        batches: List<List<Fefo.Take>?>? = null,
+        /**
+         * Loyalty points the customer spends on this ticket (21 Oct 2026):
+         * their worth is already inside [Sale.discountAmount]. Checked here
+         * against the customer's points and the book's rule.
+         */
+        pointsUsed: Double = 0.0,
+        /**
+         * The held ticket this sale was rung up from: taken off the hook in
+         * the same transaction (22 Oct 2026, the review: a crash between the
+         * two left it on the list, to be rung up a second time).
+         */
+        heldId: Long? = null,
+        /**
+         * Audit rows the screen asked for (a manager's discount, a changed
+         * price): written here, against this sale, inside its transaction
+         * (22 Oct 2026, the review: written before, they named no sale and
+         * stayed when the ticket was then refused).
+         */
+        notes: List<AuditLog> = emptyList()
+    ): Long {
+        val lines = items.filter { !it.isDeleted }
+        val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent, roundToWhole)
+        val hasParty = sale.partyId != null
+        // Not to a customer in the recycle bin (22 Oct 2026, the review): his rows would count nowhere.
+        if (hasParty && getParty(sale.partyId!!)?.isDeleted != false)
+            throw CounterRefused(CounterRefused.Why.CUSTOMER_BINNED, "sale refused: the customer is in the recycle bin")
+        // The held ticket it came off must still be on the hook (23 Oct 2026, the review): two counters (or the
+        // phone and the computer) that both resumed one parked ticket each rang it up — charged twice, stock out twice.
+        heldId?.let { h ->
+            val held = getSale(h)
+            if (held == null || held.status != SaleStatus.HELD || held.isDeleted)
+                throw CounterRefused(CounterRefused.Why.HELD_GONE, "sale refused: the held ticket was already rung up or dropped")
+        }
+        SaleMath.check(lines, payments, totals.grandTotal, hasParty)?.let {
+            throw SaleMath.Refused(it)
+        }
+        val paid = SaleMath.paid(payments)
+        val number = SaleNumber.next(highestSaleNumber())
+        val gotIds = ArrayList<Long?>()
+        val cashIds = ArrayList<Long?>()
+
+        // Reserve the id first: the khata and cashbook rows point back at it.
+        val saleId = insertSale(
+            sale.copy(
+                id = 0, saleNumber = number, status = SaleStatus.DONE,
+                subtotal = totals.subtotal, discountAmount = totals.discount,
+                taxAmount = totals.tax, roundOff = totals.roundOff,
+                grandTotal = totals.grandTotal, paidTotal = paid,
+                ledgerEntryId = null, voidReason = null, voidedAt = null,
+                isDeleted = false, deletedAt = null
+            )
+        )
+        // Each line keeps its own tax (schema 36), worked out once, as the totals were;
+        // then each is written once per batch it comes from (FEFO), its money split exactly.
+        val lineTax = SaleMath.lineTaxes(lines, totals.discount, sale.taxPercent)
+        val written = lines.flatMapIndexed { i, l ->
+            val tax = lineTax[i].takeIf { it > 0.0 }
+            val takes = batches?.getOrNull(i)
+            if (takes == null) listOf(l.copy(taxAmount = tax)) else Fefo.split(l, takes, tax)
+        }
+        insertSaleItems(written.mapIndexed { i, l -> l.copy(id = 0, saleId = saleId, lineNo = i, isDeleted = false) })
+
+        if (hasParty) {
+            val partyId = sale.partyId!!
+            val ledgerId = insertEntryWithItems(
+                LedgerEntry(
+                    partyId = partyId, amount = totals.grandTotal, isGiven = true,
+                    note = sale.note?.takeIf { it.isNotBlank() }, entryNumber = "",
+                    timestamp = sale.timestamp, createdBy = sale.createdBy, saleId = saleId
+                ),
+                written.map { l ->
+                    EntryItem(
+                        entryId = 0, itemName = l.itemName, quantity = l.quantity, unit = l.unit,
+                        rate = l.rate, productId = l.productId, billItemId = l.billItemId
+                    )
+                }
+            )
+            payments.forEachIndexed { i, p ->
+                gotIds += insertEntryNumbered(
+                    LedgerEntry(
+                        partyId = partyId, amount = LineMath.round(p.amount), isGiven = false,
+                        note = p.reference?.takeIf { it.isNotBlank() }, entryNumber = "",
+                        timestamp = sale.timestamp + 1 + i, paymentMethod = p.method,
+                        pairedEntryId = ledgerId, createdBy = sale.createdBy, saleId = saleId
+                    )
+                )
+                cashIds += null
+            }
+            gotIds.firstOrNull { it != null }?.let { setPairedEntry(ledgerId, it) }
+            updateSale(getSale(saleId)!!.copy(ledgerEntryId = ledgerId))
+        } else {
+            payments.forEachIndexed { i, p ->
+                cashIds += insertCashEntry(
+                    CashEntry(
+                        amount = LineMath.round(p.amount), isIncome = true, category = CashCategory.SALE,
+                        note = p.reference?.takeIf { it.isNotBlank() } ?: number,
+                        timestamp = sale.timestamp + i, paymentMethod = p.method, saleId = saleId
+                    )
+                )
+                gotIds += null
+            }
+        }
+        payments.forEachIndexed { i, p ->
+            insertSalePayment(
+                p.copy(id = 0, saleId = saleId, amount = LineMath.round(p.amount),
+                    ledgerEntryId = gotIds[i], cashEntryId = cashIds[i])
+            )
+        }
+        // Loyalty (21 Oct 2026): the points spent (already in the discount) and the points earned.
+        if (hasParty) {
+            val partyId = sale.partyId!!
+            val rule = Loyalty.rule(this)
+            if (pointsUsed > 0.0) {
+                require(rule != null) { "sale refused: loyalty is off" }
+                require(pointsUsed <= loyaltyBalance(partyId) + 0.005) { "sale refused: not enough points" }
+                require(rule.value(pointsUsed) <= totals.discount + 0.005) { "sale refused: the points are not in the discount" }
+                insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = saleId, points = -LineMath.round(pointsUsed), timestamp = sale.timestamp, note = number))
+            }
+            rule?.earned(totals.grandTotal)?.takeIf { it > 0.0 }?.let {
+                insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = saleId, points = it, timestamp = sale.timestamp + 1, note = number))
+            }
+        } else require(pointsUsed <= 0.0) { "sale refused: points need a customer" }
+        insertAudit(
+            AuditLog(
+                user = sale.createdBy ?: Access.userName, action = AuditAction.SALE_POSTED, refTable = "sales", refId = saleId,
+                detail = "$number ${"%.2f".format(Digits.FIGURES, totals.grandTotal)}"
+            )
+        )
+        for (n in notes) insertAudit(n.copy(id = 0, refTable = "sales", refId = saleId, detail = listOfNotNull(number, n.detail).joinToString(" ")))
+        heldId?.let { dropHeldSale(it) }
+        return saleId
+    }
+
+    /**
+     * A posted ticket taken back. The sale is marked void with the reason
+     * (required), and every row it posted — the khata "I gave", each "I
+     * got", each cashbook line — goes to the bin, where the owner can still
+     * see it. Stock follows: a binned entry's lines are not counted, and a
+     * void sale's lines are not either. Nothing is erased. False if the sale
+     * is not a posted one.
+     */
+    @Transaction
+    suspend fun voidSale(saleId: Long, reason: String, user: String? = Access.userName, allowedBy: String? = null): Boolean {
+        Access.requireAllowed(Access.Permission.VOID, allowedBy)
+        val sale = getSale(saleId) ?: return false
+        if (sale.status != SaleStatus.DONE || sale.isDeleted) return false
+        if (voidRefusal(saleId) != null) return false
+        require(reason.isNotBlank()) { "a void needs its reason" }
+        val now = System.currentTimeMillis()
+        sale.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        for (p in salePayments(saleId)) {
+            p.ledgerEntryId?.let { softDeleteEntry(it, now) }
+            p.cashEntryId?.let { softDeleteCashEntry(it, now) }
+        }
+        updateSale(sale.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        // The points it earned and spent go with it (21 Oct 2026) — never below nothing (22 Oct 2026, the review:
+        // points earned here and already spent on another ticket left the customer at minus that much).
+        val before = sale.partyId?.let { loyaltyBalance(it) }
+        val net = loyaltyOfSale(saleId).sumOf { it.points }
+        dropLoyaltyOfSale(saleId)
+        if (sale.partyId != null && before != null) {
+            val after = LineMath.round(before - net)
+            if (after < 0.0) insertLoyalty(LoyaltyEntry(partyId = sale.partyId, points = -after, timestamp = now, note = sale.saleNumber))
+        }
+        insertAudit(
+            AuditLog(
+                user = user, action = AuditAction.SALE_VOIDED, refTable = "sales", refId = saleId,
+                detail = "${sale.saleNumber} ${reason.trim()}" + Access.allowedNote(allowedBy)
+            )
+        )
+        return true
+    }
+
+    /**
+     * Why [saleId] may not be voided, or null when it may (21 Oct 2026). A
+     * ticket with goods already back would give them back twice (the void
+     * bins the sale's own rows, the return's stay); a ticket from a day that
+     * has been closed would change that day's counted figures and leave
+     * today's drawer short — a return, dated today, is the way for both.
+     */
+    suspend fun voidRefusal(saleId: Long): SaleMath.VoidRefusal? {
+        val sale = getSale(saleId) ?: return SaleMath.VoidRefusal.NOT_DONE
+        if (sale.status != SaleStatus.DONE || sale.isDeleted) return SaleMath.VoidRefusal.NOT_DONE
+        if (liveReturnsOfSale(saleId) > 0) return SaleMath.VoidRefusal.HAS_RETURNS
+        if (dayClosesSince(sale.timestamp) > 0) return SaleMath.VoidRefusal.DAY_CLOSED
+        // Its shift is counted and closed (23 Oct 2026, the review): the void would take the cash out of
+        // today's drawer while neither shift's figure moved. A return, dated now, counts in the drawer that pays.
+        if (closedShiftsCovering(sale.createdBy, sale.timestamp) > 0) return SaleMath.VoidRefusal.SHIFT_CLOSED
+        return null
+    }
+
+    /** Closed shifts of [user] (null = the owner) that were open at [at]. */
+    @Query("SELECT COUNT(*) FROM shifts WHERE closedAt IS NOT NULL AND openedAt <= :at AND closedAt > :at AND ((:user IS NULL AND user IS NULL) OR user = :user)")
+    suspend fun closedShiftsCovering(user: String?, at: Long): Int
+
+    @Query("SELECT COUNT(*) FROM sale_returns WHERE saleId = :saleId AND isDeleted = 0 AND status = 'done'")
+    suspend fun liveReturnsOfSale(saleId: Long): Int
+
+    @Query("SELECT COUNT(*) FROM day_close WHERE closedAt >= :at")
+    suspend fun dayClosesSince(at: Long): Int
+
+    /**
+     * Park a ticket: the lines are kept, nothing is posted, no number is
+     * taken (a held ticket's number is given when it is rung up, so the S-
+     * series stays in the order sales were made). Returns the held row's id.
+     * [dropId] is the held ticket this one was resumed from: it comes off the
+     * hook in the same transaction (23 Oct 2026, the review: dropped after the
+     * insert, a failure between left two held tickets with the same goods).
+     */
+    @Transaction
+    suspend fun holdSale(sale: Sale, items: List<SaleItem>, dropId: Long? = null): Long {
+        val lines = items.filter { !it.isDeleted && it.itemName.isNotBlank() }
+        val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent)
+        val id = insertSale(
+            sale.copy(
+                id = 0, saleNumber = "", status = SaleStatus.HELD,
+                subtotal = totals.subtotal, discountAmount = totals.discount, taxAmount = totals.tax,
+                roundOff = 0.0, grandTotal = totals.grandTotal, paidTotal = 0.0,
+                ledgerEntryId = null, isDeleted = false, deletedAt = null
+            )
+        )
+        insertSaleItems(lines.mapIndexed { i, l -> l.copy(id = 0, saleId = id, lineNo = i, isDeleted = false) })
+        insertAudit(AuditLog(user = sale.createdBy, action = AuditAction.SALE_HELD, refTable = "sales", refId = id))
+        if (dropId != null && dropId != id) dropHeldSale(dropId)
+        return id
+    }
+
+    /** A held ticket taken off the hook (rung up, or dropped): it leaves the list for good. */
+    @Query("UPDATE sales SET isDeleted = 1, deletedAt = :now WHERE id = :id AND status = 'held'")
+    suspend fun dropHeldSale(id: Long, now: Long = System.currentTimeMillis())
+
+    /**
+     * A spreadsheet of products brought in (POS Phase 2): new names become
+     * products, known names are updated field by field, a barcode another
+     * product already carries is left off the row. One transaction. Returns
+     * (added, updated).
+     */
+    @Transaction
+    suspend fun importProducts(plan: ProductCsv.Plan): Pair<Int, Int> {
+        var added = 0; var updated = 0
+        for (r in plan.toAdd) {
+            val p = ProductCsv.newProduct(r)
+            val code = p.barcode?.takeIf { productByBarcode(it) == null }
+            if (productByKey(p.nameKey) != null) continue
+            insertProduct(p.copy(barcode = code)); added++
+        }
+        for ((have, r) in plan.toUpdate) {
+            val p = ProductCsv.apply(have, r)
+            val owner = p.barcode?.let { productByBarcode(it) }
+            val code = if (owner != null && owner.id != have.id) have.barcode else p.barcode
+            updateProduct(p.copy(barcode = code)); updated++
+        }
+        return added to updated
+    }
+
+    /**
+     * The shop's own EAN-13 for products without a code (POS Phase 2,
+     * labels): built from each product's id ([Barcodes.internalEan13]),
+     * written once, never to a product that already has one. Returns the
+     * products as they now stand.
+     */
+    @Transaction
+    suspend fun assignInternalBarcodes(ids: List<Long>): List<Product> {
+        val out = ArrayList<Product>()
+        for (id in ids) {
+            val p = productById(id) ?: continue
+            if (!p.barcode.isNullOrBlank()) { out += p; continue }
+            val code = Barcodes.internalEan13(id)
+            val coded = if (productByBarcode(code) == null) p.copy(barcode = code) else p
+            if (coded !== p) updateProduct(coded)
+            out += coded
+        }
+        return out
+    }
+
+    // Backup: a sale and its rows, and the audit trail, are the owner's record.
+    @Query("SELECT * FROM sales ORDER BY id")
+    suspend fun allSalesForBackup(): List<Sale>
+
+    @Query("SELECT * FROM sale_items ORDER BY id")
+    suspend fun allSaleItemsForBackup(): List<SaleItem>
+
+    @Query("SELECT * FROM sale_payments ORDER BY id")
+    suspend fun allSalePaymentsForBackup(): List<SalePayment>
+
+    @Query("SELECT * FROM audit_log ORDER BY id")
+    suspend fun allAuditForBackup(): List<AuditLog>
+
+    // A page at a time for the backup (22 Oct 2026, the review): the counter's tables grow with every
+    // ticket, and were built whole in memory on export and on restore.
+    @Query("SELECT * FROM sales WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun salesPageForBackup(after: Long, limit: Int): List<Sale>
+
+    @Query("SELECT * FROM sale_items WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun saleItemsPageForBackup(after: Long, limit: Int): List<SaleItem>
+
+    @Query("SELECT * FROM sale_payments WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun salePaymentsPageForBackup(after: Long, limit: Int): List<SalePayment>
+
+    @Query("SELECT * FROM audit_log WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun auditPageForBackup(after: Long, limit: Int): List<AuditLog>
+
+    @Query("SELECT * FROM cashbook WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun cashPageForBackup(after: Long, limit: Int): List<CashEntry>
+
+    @Query("SELECT * FROM audit_log ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    suspend fun latestAudit(limit: Int): List<AuditLog>
+
+    @Query("SELECT * FROM audit_log ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun observeAudit(limit: Int): Flow<List<AuditLog>>
+
+    /** Staff who can sign in: a role and a PIN set. */
+    @Query("SELECT * FROM staff WHERE isActive = 1 AND role IS NOT NULL AND pinHash IS NOT NULL ORDER BY name")
+    suspend fun loginStaffOnce(): List<Staff>
+
+    /** One row in the log, from anywhere a shopkeeper would want to answer for later. */
+    suspend fun log(action: String, user: String?, refTable: String? = null, refId: Long? = null, detail: String? = null): Long =
+        insertAudit(AuditLog(user = user, action = action, refTable = refTable, refId = refId, detail = detail))
+
+    @Query("DELETE FROM sale_payments")
+    suspend fun wipeSalePayments()
+
+    @Query("DELETE FROM sale_items")
+    suspend fun wipeSaleItems()
+
+    @Query("DELETE FROM sales")
+    suspend fun wipeSales()
+
+    @Query("DELETE FROM audit_log")
+    suspend fun wipeAudit()
+
+    @Insert
+    suspend fun restoreSales(items: List<Sale>)
+
+    @Insert
+    suspend fun restoreSaleItems(items: List<SaleItem>)
+
+    @Insert
+    suspend fun restoreSalePayments(items: List<SalePayment>)
+
+    @Insert
+    suspend fun restoreAudit(items: List<AuditLog>)
+
+    // ---------- Returns (POS Phase 3, v33) ----------
+
+    @Insert
+    suspend fun insertReturn(ret: SaleReturn): Long
+
+    @Insert
+    suspend fun insertReturnItems(items: List<SaleReturnItem>)
+
+    @Update
+    suspend fun updateReturn(ret: SaleReturn)
+
+    @Query("SELECT * FROM sale_returns WHERE id = :id")
+    suspend fun getReturn(id: Long): SaleReturn?
+
+    @Query("SELECT * FROM sale_return_items WHERE returnId = :id AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
+    suspend fun returnItems(id: Long): List<SaleReturnItem>
+
+    @Transaction
+    suspend fun returnWithLines(id: Long): SaleReturnWithLines? {
+        val r = getReturn(id) ?: return null
+        return SaleReturnWithLines(r, returnItems(id))
+    }
+
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(returnNumber, 3) AS INTEGER)), 0) FROM sale_returns WHERE returnNumber LIKE 'R-%'")
+    suspend fun highestReturnNumber(): Int
+
+    /** How much of each of a sale's lines has already come back (posted returns only). */
+    @Query(
+        "SELECT ri.saleItemId AS saleItemId, SUM(ri.quantity) AS qty FROM sale_return_items ri " +
+        "JOIN sale_returns r ON r.id = ri.returnId " +
+        "WHERE r.saleId = :saleId AND r.status = 'done' AND r.isDeleted = 0 AND ri.isDeleted = 0 AND ri.saleItemId IS NOT NULL " +
+        "GROUP BY ri.saleItemId"
+    )
+    suspend fun returnedOfSale(saleId: Long): List<ReturnedQty>
+
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.isDeleted = 0 ORDER BY r.timestamp DESC, r.id DESC
+        """
+    )
+    fun observeReturns(): Flow<List<ReturnSummary>>
+
+    /** The newest [limit] returns, as [observeReturns] orders them. */
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.isDeleted = 0 ORDER BY r.timestamp DESC, r.id DESC LIMIT :limit
+        """
+    )
+    fun observeRecentReturns(limit: Int): Flow<List<ReturnSummary>>
+
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to ORDER BY r.timestamp DESC, r.id DESC
+        """
+    )
+    suspend fun returnsBetween(from: Long, to: Long): List<ReturnSummary>
+
+    /** Goods that came back from WALK-INS on counter returns, per product (a customer's are on the khata "I got"). */
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, MIN(i.unit) AS unit " +
+        "FROM sale_return_items i JOIN sale_returns r ON r.id = i.returnId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' " +
+        "AND r.ledgerEntryId IS NULL GROUP BY i.productId"
+    )
+    suspend fun walkInReturnedPerProduct(): List<Stock.ProductQty>
+
+    /**
+     * Goods back over the counter. [ret]'s total is recomputed from the
+     * lines; the checks in [ReturnMath.check] run again (a line may not come
+     * back more times than it was sold); then, in this one transaction:
+     *
+     *  - the return and its lines are written, numbered R-;
+     *  - a customer's return becomes a khata "I got" of the total with the
+     *    goods as its lines (the stock and the statement see it as goods
+     *    back), and money handed back an "I gave" in that method; what is
+     *    not handed back stays as credit on the account;
+     *  - a walk-in's refund is cashbook money out with its method;
+     *  - one audit row.
+     *
+     * Throws IllegalArgumentException on a return that fails its checks.
+     */
+    @Transaction
+    suspend fun postReturn(ret: SaleReturn, items: List<SaleReturnItem>, allowedBy: String? = null): Long {
+        Access.requireAllowed(Access.Permission.RETURN, allowedBy)
+        val given = items.filter { !it.isDeleted }
+        // Only against a ticket still posted, read inside this transaction (22 Oct 2026, the review: a ticket
+        // voided meanwhile — on the other device, or another window — was refunded a second time).
+        val ticket = ret.saleId?.let { sid ->
+            val sale = getSale(sid)
+            if (sale == null || sale.status != SaleStatus.DONE || sale.isDeleted)
+                throw CounterRefused(CounterRefused.Why.NOT_POSTED, "return refused: the ticket is not a posted one")
+            sale
+        }
+        // Against a ticket, the ticket decides (23 Oct 2026, the review: the rates, the customer and the lines
+        // were the caller's word): the same customer as the sale, only the sale's own lines, each at what was
+        // paid for it ([ReturnMath.paidRate]) in the unit, product and batch it was sold in.
+        val soldItems = ticket?.let { saleItems(it.id) }.orEmpty()
+        val lines = if (ticket == null) given else {
+            if (ret.partyId != ticket.partyId)
+                throw CounterRefused(CounterRefused.Why.NOT_THIS_TICKET, "return refused: not the ticket's customer")
+            val byId = soldItems.associateBy { it.id }
+            given.map { l ->
+                val sold = l.saleItemId?.let { byId[it] }
+                    ?: throw CounterRefused(CounterRefused.Why.NOT_THIS_TICKET, "return refused: a line that is not the ticket's")
+                l.copy(rate = ReturnMath.paidRate(ticket, sold), unit = sold.unit, productId = sold.productId,
+                    billItemId = sold.billItemId, itemName = sold.itemName)
+            }
+        }
+        val total = ReturnMath.total(lines)
+        val hasParty = ret.partyId != null
+        if (hasParty && getParty(ret.partyId!!)?.isDeleted != false)
+            throw CounterRefused(CounterRefused.Why.CUSTOMER_BINNED, "return refused: the customer is in the recycle bin")
+        val refund = LineMath.round(ret.refundAmount)
+        val soldLeft: Map<Long, Double> = ticket?.let { sale ->
+            val back = returnedOfSale(sale.id).associate { it.saleItemId to it.qty }
+            soldItems.associate { it.id to it.quantity - (back[it.id] ?: 0.0) }
+        } ?: emptyMap()
+        ReturnMath.check(lines, ret.refundMethod, refund, total, hasParty, ret.reason, soldLeft)?.let {
+            throw ReturnMath.Refused(it)
+        }
+        val number = ReturnNumber.next(highestReturnNumber())
+        val id = insertReturn(
+            ret.copy(
+                id = 0, returnNumber = number, total = total, refundAmount = refund, status = SaleStatus.DONE,
+                reason = ret.reason.trim(), ledgerEntryId = null, refundEntryId = null, refundCashId = null,
+                voidReason = null, voidedAt = null, isDeleted = false, deletedAt = null
+            )
+        )
+        insertReturnItems(lines.mapIndexed { i, l -> l.copy(id = 0, returnId = id, lineNo = i, isDeleted = false) })
+        var ledgerId: Long? = null
+        var refundEntryId: Long? = null
+        var refundCashId: Long? = null
+        if (hasParty) {
+            val partyId = ret.partyId!!
+            ledgerId = insertEntryWithItems(
+                LedgerEntry(
+                    partyId = partyId, amount = total, isGiven = false, note = "$number · " + ret.reason.trim(),
+                    entryNumber = "", timestamp = ret.timestamp, createdBy = ret.createdBy, saleId = ret.saleId
+                ),
+                lines.map { l ->
+                    EntryItem(entryId = 0, itemName = l.itemName, quantity = l.quantity, unit = l.unit, rate = l.rate, productId = l.productId, billItemId = l.billItemId)
+                }
+            )
+            if (refund > 0.005 && ret.refundMethod != SaleReturn.ACCOUNT) {
+                refundEntryId = insertEntryNumbered(
+                    LedgerEntry(
+                        partyId = partyId, amount = refund, isGiven = true, note = number, entryNumber = "",
+                        timestamp = ret.timestamp + 1, paymentMethod = ret.refundMethod, pairedEntryId = ledgerId,
+                        createdBy = ret.createdBy, saleId = ret.saleId
+                    )
+                )
+            }
+        } else if (refund > 0.005) {
+            refundCashId = insertCashEntry(
+                CashEntry(
+                    amount = refund, isIncome = false, category = CashCategory.RETURN, note = number,
+                    timestamp = ret.timestamp, paymentMethod = ret.refundMethod, saleId = ret.saleId
+                )
+            )
+        }
+        updateReturn(getReturn(id)!!.copy(ledgerEntryId = ledgerId, refundEntryId = refundEntryId, refundCashId = refundCashId))
+        // Loyalty (21 Oct 2026): the returned part's share of what the ticket earned is taken back —
+        // never below nothing — and its share of the points spent on it comes back to the customer
+        // (until then a ticket paid partly in points refunded only the cash, and the points were lost).
+        ret.partyId?.let { partyId ->
+            val sale = ret.saleId?.let { getSale(it) }
+            if (sale != null && sale.grandTotal > 0.0) {
+                val own = loyaltyOfSale(sale.id).filter { it.note == sale.saleNumber }
+                val part = (total / sale.grandTotal).coerceIn(0.0, 1.0)
+                val earned = LineMath.round(own.filter { it.points > 0.0 }.sumOf { it.points } * part)
+                val spent = LineMath.round(-own.filter { it.points < 0.0 }.sumOf { it.points } * part)
+                val back = LineMath.round(minOf(earned, loyaltyBalance(partyId) + spent))
+                if (back > 0.0) insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = ret.saleId, points = -back, timestamp = ret.timestamp, note = number))
+                if (spent > 0.0) insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = ret.saleId, points = spent, timestamp = ret.timestamp + 1, note = number))
+            }
+        }
+        insertAudit(AuditLog(user = ret.createdBy, action = AuditAction.RETURN_POSTED, refTable = "sale_returns", refId = id,
+            detail = "$number ${"%.2f".format(Digits.FIGURES, total)}" + Access.allowedNote(allowedBy)))
+        return id
+    }
+
+    /**
+     * Why a return may not be voided, or null when it may: it is not a posted
+     * one, or its day has been closed (22 Oct 2026, the review — as a sale's
+     * void: the closed day's refund would vanish and today's drawer be over).
+     */
+    suspend fun returnVoidRefusal(id: Long): SaleMath.VoidRefusal? {
+        val r = getReturn(id) ?: return SaleMath.VoidRefusal.NOT_DONE
+        if (r.status != SaleStatus.DONE || r.isDeleted) return SaleMath.VoidRefusal.NOT_DONE
+        if (dayClosesSince(r.timestamp) > 0) return SaleMath.VoidRefusal.DAY_CLOSED
+        return null
+    }
+
+    /** A posted return taken back: its rows binned, its number kept. False unless it is a posted one whose day is open. */
+    @Transaction
+    suspend fun voidReturn(id: Long, reason: String, user: String? = Access.userName, allowedBy: String? = null): Boolean {
+        Access.requireAllowed(Access.Permission.VOID, allowedBy)
+        val r = getReturn(id) ?: return false
+        if (returnVoidRefusal(id) != null) return false
+        require(reason.isNotBlank()) { "a void needs its reason" }
+        val now = System.currentTimeMillis()
+        r.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        r.refundEntryId?.let { softDeleteEntry(it, now) }
+        r.refundCashId?.let { softDeleteCashEntry(it, now) }
+        updateReturn(r.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        // The points the return took back are given back.
+        r.partyId?.let { dropLoyaltyNoted(it, r.returnNumber) }
+        insertAudit(AuditLog(user = user, action = AuditAction.RETURN_VOIDED, refTable = "sale_returns", refId = id, detail = "${r.returnNumber} ${reason.trim()}" + Access.allowedNote(allowedBy)))
+        return true
+    }
+
+    @Query("SELECT * FROM sale_returns ORDER BY id")
+    suspend fun allReturnsForBackup(): List<SaleReturn>
+
+    @Query("SELECT * FROM sale_return_items ORDER BY id")
+    suspend fun allReturnItemsForBackup(): List<SaleReturnItem>
+
+    @Query("DELETE FROM sale_return_items")
+    suspend fun wipeReturnItems()
+
+    @Query("DELETE FROM sale_returns")
+    suspend fun wipeReturns()
+
+    @Insert
+    suspend fun restoreReturns(items: List<SaleReturn>)
+
+    @Insert
+    suspend fun restoreReturnItems(items: List<SaleReturnItem>)
+
+    // ---------- Stock adjustments and purchase orders (POS Phase 6, v35) ----------
+
+    @Insert
+    suspend fun insertAdjustment(a: StockAdjustment): Long
+
+    @Query("SELECT productId AS productId, SUM(quantity) AS qty, MIN(unit) AS unit FROM stock_adjustments WHERE isDeleted = 0 GROUP BY productId")
+    suspend fun adjustedPerProduct(): List<Stock.ProductQty>
+
+    @Query("SELECT * FROM stock_adjustments WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun observeAdjustments(limit: Int): Flow<List<StockAdjustment>>
+
+    /**
+     * A stock count written down (POS Phase 6): for every product counted,
+     * the difference between the shelf as the book had it and as it was
+     * found becomes one adjustment (reason count, book and counted figures
+     * kept on the row). Products whose count matches the book get no row.
+     * One transaction, one audit row. Returns how many rows were written.
+     */
+    @Transaction
+    suspend fun recordCount(counts: Map<Long, Double>, note: String?, user: String? = Access.userName, allowedBy: String? = null): Int {
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
+        val stock = Stock.of(this).associateBy { it.productId }
+        var n = 0
+        val now = System.currentTimeMillis()
+        for ((productId, counted) in counts) {
+            val s = stock[productId] ?: continue
+            // Where the book cannot say what it holds (units that do not convert) nothing is written: a count
+            // there was taken against 0, and the shelf went that far wrong once a pack was set (22 Oct 2026).
+            val book = s.onHand ?: continue
+            if (!counted.isFinite() || counted < 0.0) continue
+            val diff = LineMath.round(counted - book)
+            if (kotlin.math.abs(diff) < 0.0005) continue
+            insertAdjustment(StockAdjustment(productId = productId, timestamp = now, quantity = diff, unit = s.unit,
+                reason = AdjustReason.COUNT, note = note, bookQty = book, countedQty = counted, createdBy = user))
+            n++
+        }
+        insertAudit(AuditLog(user = user, action = AuditAction.STOCK_COUNT, detail = n.toString() + Access.allowedNote(allowedBy)))
+        return n
+    }
+
+    /**
+     * One correction with its reason (damage, expired, theft…), logged. With
+     * [billItemId] it is that batch's (an expired lot written off), in the
+     * batch's own [unit]; otherwise the product's, in its own unit.
+     */
+    @Transaction
+    suspend fun adjustStock(productId: Long, quantity: Double, reason: String, note: String?, user: String? = Access.userName,
+                            billItemId: Long? = null, unit: String? = null, allowedBy: String? = null): Long {
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
+        require(reason in AdjustReason.ALL) { "unknown reason" }
+        require(quantity != 0.0 && !quantity.isNaN()) { "nothing to adjust" }
+        val u = unit ?: productById(productId)?.defaultUnit
+        val id = insertAdjustment(StockAdjustment(productId = productId, quantity = quantity, unit = u, reason = reason, note = note, createdBy = user, billItemId = billItemId))
+        insertAudit(AuditLog(user = user, action = AuditAction.STOCK_ADJUSTED, refTable = "stock_adjustments", refId = id,
+            detail = "$reason ${"%.2f".format(Digits.FIGURES, quantity)}" + Access.allowedNote(allowedBy)))
+        return id
+    }
+
+    /**
+     * One side of a transfer between the owner's shops ([StockTransfer]):
+     * each line a stock row with the reason "transfer" and the transfer's
+     * number in its note, signed — out of this book when [out], into it
+     * otherwise — and one audit row naming the other shop.
+     */
+    @Transaction
+    suspend fun transferStock(number: String, lines: List<Pair<Long, Double>>, otherShop: String, out: Boolean, user: String? = Access.userName, now: Long = System.currentTimeMillis(),
+                              allowedBy: String? = null) {
+        Access.requireAllowed(Access.Permission.STOCK_ADJUST, allowedBy)
+        require(lines.isNotEmpty() && lines.all { it.second > 0.0 && !it.second.isNaN() }) { "nothing to transfer" }
+        for ((productId, qty) in lines) {
+            val p = productById(productId) ?: throw IllegalArgumentException("no such product")
+            insertAdjustment(StockAdjustment(productId = productId, quantity = if (out) -qty else qty, unit = p.defaultUnit, reason = AdjustReason.TRANSFER,
+                note = "$number · $otherShop", createdBy = user, timestamp = now))
+        }
+        insertAudit(AuditLog(user = user, action = if (out) AuditAction.TRANSFER_OUT else AuditAction.TRANSFER_IN, refTable = "stock_adjustments",
+            detail = "$number $otherShop ${lines.size}" + Access.allowedNote(allowedBy)))
+    }
+
+    /**
+     * The products a transfer brings, found in this book — the same barcode,
+     * else the same name — or added (prices and packs carried, no stock of
+     * their own). Their ids here, in the same order.
+     */
+    @Transaction
+    suspend fun productsForTransfer(incoming: List<Product>): List<Long> = incoming.map { p ->
+        // A name that matches a removed product brings it back, as findOrCreateProduct does.
+        p.barcode?.let { productByBarcode(it) }?.id
+            ?: productByKey(p.nameKey)?.let { found -> if (found.isDeleted) restoreProduct(found.id); found.id }
+            // Its own identity in this book (23 Oct 2026, the review): the sending book's uid, kept, gave a
+            // renamed product's second transfer a second row with the same uid, and live sync took the one for the other.
+            ?: insertProduct(p.copy(id = 0, uid = Uid.next(), barcode = p.barcode?.takeIf { productByBarcode(it) == null }, parentId = null, isDeleted = false, deletedAt = null))
+    }
+
+    @Insert
+    suspend fun insertOrder(o: PurchaseOrder): Long
+
+    @Insert
+    suspend fun insertOrderItems(items: List<PurchaseOrderItem>)
+
+    @Update
+    suspend fun updateOrder(o: PurchaseOrder)
+
+    @Query("SELECT * FROM purchase_orders WHERE id = :id")
+    suspend fun getOrder(id: Long): PurchaseOrder?
+
+    @Query("SELECT * FROM purchase_order_items WHERE orderId = :id AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
+    suspend fun orderItems(id: Long): List<PurchaseOrderItem>
+
+    @Query("UPDATE purchase_order_items SET isDeleted = 1 WHERE orderId = :id")
+    suspend fun softDeleteOrderItems(id: Long)
+
+    @Transaction
+    suspend fun orderWithLines(id: Long): PurchaseOrderWithLines? {
+        val o = getOrder(id) ?: return null
+        return PurchaseOrderWithLines(o, orderItems(id))
+    }
+
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(orderNumber, 4) AS INTEGER)), 0) FROM purchase_orders WHERE orderNumber LIKE 'PO-%'")
+    suspend fun highestOrderNumber(): Int
+
+    @Query(
+        """
+        SELECT o.id, o.orderNumber, o.partyId, p.name AS partyName, o.timestamp, o.status,
+               (SELECT COUNT(*) FROM purchase_order_items i WHERE i.orderId = o.id AND i.isDeleted = 0) AS itemCount
+        FROM purchase_orders o JOIN parties p ON p.id = o.partyId
+        WHERE o.isDeleted = 0 ORDER BY o.timestamp DESC, o.id DESC
+        """
+    )
+    fun observeOrders(): Flow<List<OrderSummary>>
+
+    /** A new order, numbered PO-, or a draft's lines replaced. Returns the id. */
+    @Transaction
+    suspend fun saveOrder(order: PurchaseOrder, items: List<PurchaseOrderItem>): Long {
+        val lines = items.filter { !it.isDeleted && it.itemName.isNotBlank() && it.quantity > 0.0 }
+        require(lines.isNotEmpty()) { "an order needs lines" }
+        val id = if (order.id == 0L) {
+            insertOrder(order.copy(orderNumber = OrderNumber.next(highestOrderNumber()), status = OrderStatus.DRAFT, billId = null, isDeleted = false))
+        } else {
+            val have = getOrder(order.id) ?: throw IllegalArgumentException("no such order")
+            require(have.status == OrderStatus.DRAFT) { "only a draft is edited" }
+            updateOrder(have.copy(partyId = order.partyId, note = order.note))
+            softDeleteOrderItems(order.id)
+            order.id
+        }
+        insertOrderItems(lines.mapIndexed { i, l -> l.copy(id = 0, orderId = id, lineNo = i, isDeleted = false) })
+        return id
+    }
+
+    @Query("UPDATE purchase_orders SET status = :status WHERE id = :id")
+    suspend fun setOrderStatus(id: Long, status: String)
+
+    @Query("UPDATE purchase_orders SET isDeleted = 1 WHERE id = :id AND status = 'draft'")
+    suspend fun dropDraftOrder(id: Long)
+
+    /**
+     * The goods arrived: the order becomes a supplier bill with the lines
+     * as received ([received]: per order line, the quantity and rate that
+     * came, batch and expiry where known), through [insertSupplierBill] —
+     * the same write a bill typed by hand makes — and the order is marked
+     * received with the bill's id. One transaction. Returns the bill's id.
+     */
+    @Transaction
+    suspend fun receiveOrder(orderId: Long, bill: SupplierBill, received: List<BillItem>, entry: LedgerEntry?): Long {
+        val o = getOrder(orderId) ?: throw IllegalArgumentException("no such order")
+        require(o.status == OrderStatus.DRAFT || o.status == OrderStatus.SENT) { "already received" }
+        insertSupplierBill(entry, bill.copy(partyId = o.partyId), received)
+        val billId = latestBillId()
+        updateOrder(o.copy(status = OrderStatus.RECEIVED, billId = billId))
+        insertAudit(AuditLog(user = Access.userName, action = AuditAction.ORDER_RECEIVED, refTable = "purchase_orders", refId = orderId, detail = o.orderNumber))
+        return billId
+    }
+
+    @Query("SELECT MAX(id) FROM supplier_bills")
+    suspend fun latestBillId(): Long
+
+    @Query("SELECT * FROM stock_adjustments ORDER BY id")
+    suspend fun allAdjustmentsForBackup(): List<StockAdjustment>
+
+    @Query("SELECT * FROM purchase_orders ORDER BY id")
+    suspend fun allOrdersForBackup(): List<PurchaseOrder>
+
+    @Query("SELECT * FROM purchase_order_items ORDER BY id")
+    suspend fun allOrderItemsForBackup(): List<PurchaseOrderItem>
+
+    @Query("DELETE FROM stock_adjustments")
+    suspend fun wipeAdjustments()
+
+    @Query("DELETE FROM purchase_order_items")
+    suspend fun wipeOrderItems()
+
+    @Query("DELETE FROM purchase_orders")
+    suspend fun wipeOrders()
+
+    @Insert
+    suspend fun restoreAdjustments(items: List<StockAdjustment>)
+
+    @Insert
+    suspend fun restoreOrders(items: List<PurchaseOrder>)
+
+    @Insert
+    suspend fun restoreOrderItems(items: List<PurchaseOrderItem>)
+
+    // ---------- The sales report (POS Phase 7) ----------
+
+    /** Every line of every posted ticket in [from, to), with its ticket's facts and the product's category. */
+    @Query(
+        """
+        SELECT s.id AS saleId, s.timestamp AS timestamp, s.customerName AS customerName, s.createdBy AS createdBy,
+               s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
+               i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded,
+               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.timestamp ASC, i.lineNo ASC
+        """
+    )
+    suspend fun soldLinesBetween(from: Long, to: Long): List<SoldLine>
+
+    /**
+     * What the goods that came back in [from, to) had cost, where their sale
+     * line knew its cost (21 Oct 2026): a bag returned is back on the shelf, so
+     * the report takes off the margin lost, not the whole refund as if the bag
+     * had vanished.
+     */
+    @Query(
+        """
+        SELECT COALESCE(SUM(ri.quantity * si.costRate), 0)
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
+        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND si.costRate IS NOT NULL
+          AND r.timestamp >= :from AND r.timestamp < :to
+        """
+    )
+    suspend fun returnedCostBetween(from: Long, to: Long): Double
+
+    /** Each line returned in [from, to) with the sold line it came back from ([ReturnedLine]; 22 Oct 2026, the review). */
+    @Query(
+        """
+        SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
+               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
+             JOIN sales s ON s.id = si.saleId
+        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to
+        """
+    )
+    suspend fun returnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
+
+    /** [soldLinesBetween] for walk-in tickets only (no customer, so no khata entry): Insights' profit (23 Oct 2026). */
+    @Query(
+        """
+        SELECT s.id AS saleId, s.timestamp AS timestamp, s.customerName AS customerName, s.createdBy AS createdBy,
+               s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
+               i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
+               i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded,
+               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
+        WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.partyId IS NULL
+          AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.timestamp ASC, i.lineNo ASC
+        """
+    )
+    suspend fun walkInSoldLinesBetween(from: Long, to: Long): List<SoldLine>
+
+    /** [returnedLinesBetween] for walk-in returns only (no customer): a customer's comes back through his khata. */
+    @Query(
+        """
+        SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
+               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
+             JOIN sales s ON s.id = si.saleId
+        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.partyId IS NULL
+          AND r.timestamp >= :from AND r.timestamp < :to
+        """
+    )
+    suspend fun walkInReturnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
+
+    /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND category != 'Return' AND timestamp > :from AND timestamp <= :to")
+    suspend fun cashbookExpensesBetween(from: Long, to: Long): Double
+
+    /** Products that left the shop since [since], over the counter or on the khata. */
+    @Query(
+        """
+        SELECT DISTINCT productId FROM (
+            SELECT i.productId AS productId FROM sale_items i JOIN sales s ON s.id = i.saleId
+            WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND i.productId IS NOT NULL AND s.timestamp >= :since
+            UNION
+            SELECT ei.productId AS productId FROM entry_items ei JOIN transactions t ON t.id = ei.entryId
+            WHERE t.isDeleted = 0 AND t.isGiven = 1 AND ei.productId IS NOT NULL AND t.timestamp >= :since
+        )
+        """
+    )
+    suspend fun productsSoldSince(since: Long): List<Long>
+
+    // ---------- Book settings, loyalty and shifts (schema 36) ----------
+
+    @Query("SELECT value FROM book_settings WHERE `key` = :key")
+    suspend fun settingValue(key: String): String?
+
+    @Query("SELECT value FROM book_settings WHERE `key` = :key")
+    fun observeSetting(key: String): Flow<String?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun putSetting(setting: BookSetting)
+
+    @Query("DELETE FROM book_settings WHERE `key` = :key")
+    suspend fun dropSetting(key: String)
+
+    /** A setting written, or removed when [value] is null. */
+    @Transaction
+    suspend fun setSetting(key: String, value: String?) {
+        if (value == null) dropSetting(key) else putSetting(BookSetting(key, value))
+    }
+
+    @Query("SELECT * FROM book_settings ORDER BY `key`")
+    suspend fun allSettingsForBackup(): List<BookSetting>
+
+    @Query("DELETE FROM book_settings")
+    suspend fun wipeSettings()
+
+    @Insert
+    suspend fun restoreSettings(items: List<BookSetting>)
+
+    @Insert
+    suspend fun insertLoyalty(row: LoyaltyEntry): Long
+
+    /** A customer's points: the sum of every live row, as every balance here is. */
+    @Query("SELECT COALESCE(SUM(points), 0) FROM loyalty WHERE partyId = :partyId AND isDeleted = 0")
+    suspend fun loyaltyBalance(partyId: Long): Double
+
+    @Query("SELECT * FROM loyalty WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC, id DESC")
+    suspend fun loyaltyOf(partyId: Long): List<LoyaltyEntry>
+
+    /** A voided sale's points, earned and spent, taken back. */
+    @Query("UPDATE loyalty SET isDeleted = 1 WHERE saleId = :saleId")
+    suspend fun dropLoyaltyOfSale(saleId: Long)
+
+    /** A return's points rows, by the return's number: a voided return undoes both what it took back and what it gave. */
+    @Query("UPDATE loyalty SET isDeleted = 1 WHERE partyId = :partyId AND note = :note")
+    suspend fun dropLoyaltyNoted(partyId: Long, note: String)
+
+    /** The points a ticket wrote (spent and earned), for its receipt. */
+    @Query("SELECT * FROM loyalty WHERE saleId = :saleId AND isDeleted = 0 ORDER BY id")
+    suspend fun loyaltyOfSale(saleId: Long): List<LoyaltyEntry>
+
+    /** A customer's points, as the counter shows them. */
+    @Query("SELECT COALESCE(SUM(points), 0) FROM loyalty WHERE partyId = :partyId AND isDeleted = 0")
+    fun observeLoyaltyBalance(partyId: Long): Flow<Double>
+
+    @Query("SELECT * FROM loyalty ORDER BY id")
+    suspend fun allLoyaltyForBackup(): List<LoyaltyEntry>
+
+    @Query("DELETE FROM loyalty")
+    suspend fun wipeLoyalty()
+
+    @Insert
+    suspend fun restoreLoyalty(items: List<LoyaltyEntry>)
+
+    @Insert
+    suspend fun insertShift(shift: Shift): Long
+
+    @Update
+    suspend fun updateShift(shift: Shift)
+
+    @Query("SELECT * FROM shifts WHERE id = :id")
+    suspend fun getShift(id: Long): Shift?
+
+    /** The shift [user] has open (null = the owner's), if any. */
+    @Query("SELECT * FROM shifts WHERE closedAt IS NULL AND ((:user IS NULL AND user IS NULL) OR user = :user) ORDER BY openedAt DESC LIMIT 1")
+    suspend fun openShiftOf(user: String?): Shift?
+
+    @Query("SELECT * FROM shifts WHERE closedAt IS NULL ORDER BY openedAt DESC")
+    fun observeOpenShifts(): Flow<List<Shift>>
+
+    @Query("SELECT * FROM shifts WHERE openedAt >= :from AND openedAt < :to ORDER BY openedAt DESC, id DESC")
+    suspend fun shiftsBetween(from: Long, to: Long): List<Shift>
+
+    @Query("SELECT * FROM shifts ORDER BY openedAt DESC, id DESC LIMIT :limit")
+    fun observeShifts(limit: Int): Flow<List<Shift>>
+
+    @Query("SELECT * FROM shifts ORDER BY id")
+    suspend fun allShiftsForBackup(): List<Shift>
+
+    @Query("DELETE FROM shifts")
+    suspend fun wipeShifts()
+
+    @Insert
+    suspend fun restoreShifts(items: List<Shift>)
+
+    /**
+     * The owner's PIN and recovery code, as hashes with their salts, in one
+     * transaction with its audit row ([Access.setOwnerPin] makes them).
+     */
+    @Transaction
+    suspend fun saveOwnerPin(pinHash: String, pinSalt: String, codeHash: String, codeSalt: String, user: String?) {
+        putSetting(BookSetting(BookSettings.OWNER_PIN_HASH, pinHash))
+        putSetting(BookSetting(BookSettings.OWNER_PIN_SALT, pinSalt))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_HASH, codeHash))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_SALT, codeSalt))
+        insertAudit(AuditLog(user = user ?: Access.OWNER, action = AuditAction.OWNER_PIN_SET))
+    }
+
+    /**
+     * A book on a counter with no owner PIN takes the one the counter keeps
+     * ([Access.ownerPin], 22 Oct 2026, the review): written only while the
+     * book still has none, with its audit row. True when it was written.
+     */
+    @Transaction
+    suspend fun adoptOwnerPin(pinHash: String, pinSalt: String, codeHash: String, codeSalt: String): Boolean {
+        if (settingValue(BookSettings.OWNER_PIN_HASH) != null) return false
+        putSetting(BookSetting(BookSettings.OWNER_PIN_HASH, pinHash))
+        putSetting(BookSetting(BookSettings.OWNER_PIN_SALT, pinSalt))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_HASH, codeHash))
+        putSetting(BookSetting(BookSettings.OWNER_RECOVERY_SALT, codeSalt))
+        insertAudit(AuditLog(user = Access.OWNER, action = AuditAction.OWNER_PIN_ADOPTED))
+        return true
+    }
+
+    // ---------- Stock per unit, batches and costs (schema 36) ----------
+    //
+    // The same sums as boughtPerProduct & co., one row per product AND unit as
+    // written, so Stock.combine can turn a product's pack into its own unit and
+    // see a unit it cannot convert, instead of SQL adding bags to kilos.
+
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, i.unit AS unit " +
+        "FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND b.isDeleted = 0 " +
+        "GROUP BY i.productId, i.unit"
+    )
+    suspend fun boughtPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, ei.unit AS unit " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY ei.productId, ei.unit"
+    )
+    suspend fun soldPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, ei.unit AS unit " +
+        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "JOIN parties p ON p.id = t.partyId " +
+        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
+        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "GROUP BY ei.productId, ei.unit"
+    )
+    suspend fun returnedPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, i.unit AS unit " +
+        "FROM sale_items i JOIN sales s ON s.id = i.saleId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' " +
+        "AND s.ledgerEntryId IS NULL GROUP BY i.productId, i.unit"
+    )
+    suspend fun walkInSoldPerProductUnit(): List<Stock.ProductQty>
+
+    @Query(
+        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, i.unit AS unit " +
+        "FROM sale_return_items i JOIN sale_returns r ON r.id = i.returnId " +
+        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' " +
+        "AND r.ledgerEntryId IS NULL GROUP BY i.productId, i.unit"
+    )
+    suspend fun walkInReturnedPerProductUnit(): List<Stock.ProductQty>
+
+    @Query("SELECT productId AS productId, SUM(quantity) AS qty, unit AS unit FROM stock_adjustments WHERE isDeleted = 0 GROUP BY productId, unit")
+    suspend fun adjustedPerProductUnit(): List<Stock.ProductQty>
+
+    /** A product's live batches (supplier bill lines), for [Fefo]: what came, in what unit, expiring when. */
+    @Query(
+        "SELECT i.id AS id, i.batchNumber AS batchNumber, i.expiryDate AS expiryDate, i.quantity AS quantity, i.unit AS unit, " +
+        "0.0 AS soldFromBatch FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0"
+    )
+    suspend fun batchesOfProduct(productId: Long): List<BatchOption>
+
+    /**
+     * Everything that moved against one of a product's batches, per batch and
+     * unit, signed as the shelf sees it: + went out (a khata sale, a walk-in's
+     * ticket), − came back (a khata return, a walk-in's return) or was written
+     * off (an adjustment of that batch, stored signed the other way round).
+     */
+    @Query(
+        """
+        SELECT ei.billItemId AS billItemId, SUM(CASE WHEN t.isGiven = 1 THEN ei.quantity ELSE -ei.quantity END) AS qty, ei.unit AS unit
+        FROM entry_items ei JOIN transactions t ON t.id = ei.entryId JOIN bill_items b ON b.id = ei.billItemId
+        WHERE b.productId = :productId AND t.isDeleted = 0 AND ei.quantity IS NOT NULL
+        GROUP BY ei.billItemId, ei.unit
+        UNION ALL
+        SELECT si.billItemId AS billItemId, SUM(si.quantity) AS qty, si.unit AS unit
+        FROM sale_items si JOIN sales s ON s.id = si.saleId JOIN bill_items b ON b.id = si.billItemId
+        WHERE b.productId = :productId AND si.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL
+        GROUP BY si.billItemId, si.unit
+        UNION ALL
+        SELECT ri.billItemId AS billItemId, -SUM(ri.quantity) AS qty, ri.unit AS unit
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN bill_items b ON b.id = ri.billItemId
+        WHERE b.productId = :productId AND ri.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' AND r.ledgerEntryId IS NULL
+        GROUP BY ri.billItemId, ri.unit
+        UNION ALL
+        SELECT a.billItemId AS billItemId, -SUM(a.quantity) AS qty, a.unit AS unit
+        FROM stock_adjustments a
+        WHERE a.productId = :productId AND a.billItemId IS NOT NULL AND a.isDeleted = 0
+        GROUP BY a.billItemId, a.unit
+        """
+    )
+    suspend fun batchMovesOfProduct(productId: Long): List<Fefo.Move>
+
+    /** Every rate a product was bought at, newest first, with its unit ([Cost.lastInOwnUnit]). */
+    @Query(
+        "SELECT i.quantity AS qty, i.unit AS unit, i.rate AS rate FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NOT NULL ORDER BY b.billDate DESC, i.id DESC"
+    )
+    suspend fun purchaseRatesNewestFirst(productId: Long): List<Cost.Purchase>
+
+    /** Every purchase of a product with a rate (supplier bill lines), for its average cost. */
+    @Query(
+        "SELECT i.quantity AS qty, i.unit AS unit, i.rate AS rate FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NOT NULL AND i.quantity > 0"
+    )
+    suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
+
+    // ---------- A copy merged in (BookMerge, 21 Oct 2026) ----------
+
+    @Query("SELECT id, uid FROM transactions") suspend fun entryUids(): List<IdUid>
+    @Query("SELECT id, uid FROM cashbook") suspend fun cashUids(): List<IdUid>
+    @Query("SELECT id, uid FROM cheques") suspend fun chequeUids(): List<IdUid>
+    @Query("SELECT id, uid FROM supplier_bills") suspend fun billUids(): List<IdUid>
+    @Query("SELECT id, uid FROM invoices") suspend fun invoiceUids(): List<IdUid>
+    @Query("SELECT id, uid FROM sales") suspend fun saleUids(): List<IdUid>
+    @Query("SELECT id, uid FROM sale_returns") suspend fun returnUids(): List<IdUid>
+    @Query("SELECT id, uid FROM stock_adjustments") suspend fun adjustmentUids(): List<IdUid>
+    @Query("SELECT id, uid FROM purchase_orders") suspend fun orderUids(): List<IdUid>
+    @Query("SELECT id, uid FROM staff_payments") suspend fun staffPaymentUids(): List<IdUid>
+    @Query("SELECT id, uid FROM loyalty") suspend fun loyaltyUids(): List<IdUid>
+    @Query("SELECT id, uid FROM shifts") suspend fun shiftUids(): List<IdUid>
+
+    @Insert
+    suspend fun insertSaleItem(item: SaleItem): Long
+
+    @Query("SELECT COUNT(*) FROM transactions WHERE entryNumber = :n") suspend fun entryNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM sales WHERE saleNumber = :n") suspend fun saleNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM sale_returns WHERE returnNumber = :n") suspend fun returnNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM purchase_orders WHERE orderNumber = :n") suspend fun orderNumberUsed(n: String): Int
+    @Query("SELECT COUNT(*) FROM invoices WHERE invoiceNumber = :n") suspend fun invoiceNumberUsed(n: String): Int
+
+    /** The largest INV- number in the book (invoices are otherwise numbered by their count). */
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTR(invoiceNumber, 5) AS INTEGER)), 0) FROM invoices WHERE invoiceNumber LIKE 'INV-%'")
+    suspend fun highestInvoiceNumber(): Int
+
+    /**
+     * Another copy of this book merged in: only what this book does not have
+     * yet, in one transaction ([BookMerge]). Throws when the copy is too old
+     * to carry row ids, is another shop's, or shares nothing with this book.
+     */
+    @Transaction
+    suspend fun mergeBook(there: BackupCodec.ParsedBackup, shopHere: String?, user: String? = Access.userName): BookMerge.Plan {
+        val done = BookMerge.apply(this, there, shopHere)
+        // The merge's own row in who-did-what (and what marks this a write for the viewer's DAO).
+        if (!done.none) insertAudit(AuditLog(user = user ?: Access.OWNER, action = AuditAction.BOOK_MERGED, detail = BookMerge.detail(done)))
+        return done
+    }
+
+    /** Every live khata entry as [Aging] needs it, newest first. */
+    @Query("SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC")
+    suspend fun agingMoves(): List<AgingMove>
+
+    /**
+     * Cash taken on [user]'s counter sales (null = the owner's) in [from, to): a shift's drawer ([ShiftMath]).
+     * [mark] ("-B", see [NumberMark]) keeps it to one device's tickets while the book syncs (23 Oct 2026, the
+     * review: the owner's phone sales were added to the drawer of his shift on the computer); "" = every device.
+     * A ticket with no letter (written while the book did not sync) counts on any device.
+     */
+    @Query(
+        "SELECT COALESCE(SUM(p.amount), 0) FROM sale_payments p JOIN sales s ON s.id = p.saleId " +
+        "WHERE s.isDeleted = 0 AND s.status = 'done' AND p.method = 'cash' AND s.timestamp >= :from AND s.timestamp < :to " +
+        "AND ((:user IS NULL AND s.createdBy IS NULL) OR s.createdBy = :user) " +
+        "AND (:mark = '' OR s.saleNumber LIKE '%' || :mark OR s.saleNumber NOT LIKE '%-%-%')"
+    )
+    suspend fun cashTakenBy(user: String?, from: Long, to: Long, mark: String = ""): Double
+
+    /** Cash handed back on [user]'s counter returns in [from, to); [mark] as in [cashTakenBy]. */
+    @Query(
+        "SELECT COALESCE(SUM(refundAmount), 0) FROM sale_returns WHERE isDeleted = 0 AND status = 'done' AND refundMethod = 'cash' " +
+        "AND timestamp >= :from AND timestamp < :to AND ((:user IS NULL AND createdBy IS NULL) OR createdBy = :user) " +
+        "AND (:mark = '' OR returnNumber LIKE '%' || :mark OR returnNumber NOT LIKE '%-%-%')"
+    )
+    suspend fun cashRefundedBy(user: String?, from: Long, to: Long, mark: String = ""): Double
+
+    /** A shift opened at the counter, with its audit row; refused when this person already has one open. */
+    @Transaction
+    suspend fun openShift(shift: Shift): Long {
+        require(openShiftOf(shift.user) == null) { "a shift is already open" }
+        val id = insertShift(shift.copy(id = 0, closedAt = null, counted = null, expected = null))
+        insertAudit(AuditLog(user = shift.user ?: Access.OWNER, action = AuditAction.SHIFT_OPENED, refTable = "shifts", refId = id,
+            detail = "%.2f".format(Digits.FIGURES, shift.openingFloat)))
+        return id
+    }
+
+    /**
+     * A shift closed with the cash counted: what the drawer should hold is
+     * worked out now ([ShiftMath.expected]) and kept beside the count; a
+     * difference needs its [note]. One audit row with the difference.
+     */
+    @Transaction
+    suspend fun closeShift(id: Long, counted: Double, note: String?, now: Long = System.currentTimeMillis()): Shift {
+        val shift = getShift(id) ?: throw IllegalArgumentException("no such shift")
+        require(shift.isOpen) { "already closed" }
+        val expected = ShiftMath.expected(this, shift, now)
+        require(!ShiftMath.needsReason(expected, counted, note)) { "a difference needs its reason" }
+        val closed = shift.copy(closedAt = now, counted = LineMath.round(counted), expected = expected, note = note?.trim()?.ifBlank { null })
+        updateShift(closed)
+        insertAudit(AuditLog(user = shift.user ?: Access.OWNER, action = AuditAction.SHIFT_CLOSED, refTable = "shifts", refId = id,
+            detail = "%.2f".format(Digits.FIGURES, closed.difference ?: 0.0)))
+        return closed
+    }
+
+    /** A sale's invoice ([SaleInvoice]) saved and remembered on the sale, in one transaction. */
+    @Transaction
+    suspend fun linkSaleInvoice(saleId: Long, invoice: Invoice, items: List<InvoiceItem>): Long {
+        val id = saveInvoiceWithItems(invoice, items)
+        getSale(saleId)?.let { updateSale(it.copy(invoiceId = id)) }
+        return id
+    }
+
+    /** Every row of the log in the order it was written, for [AuditChain.verify]. */
+    @Query("SELECT * FROM audit_log ORDER BY id")
+    suspend fun auditInOrder(): List<AuditLog>
 }
