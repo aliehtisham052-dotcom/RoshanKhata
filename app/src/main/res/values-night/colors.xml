@@ -166,4 +166,7 @@
     <color name="poster_soft_green">#1A2B21</color>
     <!-- An example inside an empty field (13 Oct): pale enough that it never reads as already typed. -->
     <color name="hint_pale">#8C8B84</color>
+    <!-- The Khata Report's gave/got share bar (24 Oct 2026): fills, so mid-tone at night. -->
+    <color name="lr_bar_gave">#D16565</color>
+    <color name="lr_bar_got">#4F8F68</color>
 </resources>
