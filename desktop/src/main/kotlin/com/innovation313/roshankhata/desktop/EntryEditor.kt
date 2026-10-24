@@ -290,7 +290,7 @@ fun EntryEditor(
  * back. A day is kept as its last minute. No late fee or markup goes with it.
  */
 @Composable
-private fun DueDialog(partyName: String, current: Long?, onPick: (Long?) -> Unit, onDismiss: () -> Unit) {
+internal fun DueDialog(partyName: String, current: Long?, onPick: (Long?) -> Unit, onDismiss: () -> Unit) {
     val c = LocalRoshanColors.current
     var other by remember { mutableStateOf(false) }
     val now = System.currentTimeMillis()

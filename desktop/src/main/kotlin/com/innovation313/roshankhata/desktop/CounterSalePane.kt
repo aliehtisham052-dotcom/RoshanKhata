@@ -111,8 +111,14 @@ fun CounterSalePane(
     var scaleRule by remember { mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.Rule()) }
     var grid by remember { mutableStateOf(false) }
     var showingCustomer by remember { mutableStateOf(false) }
+    // The big-shop tools (BookSettings.counterAdvanced, 24 Oct 2026): shifts, the day report, the customer's
+    // screen, the tax box. Hidden is only hidden: the gates and figures behind them do not change.
+    var advanced by remember { mutableStateOf(false) }
+    // "When will he pay?" for what goes to the chosen customer's account (the entry editor's DueDialog).
+    var choosingDue by remember { mutableStateOf(false) }
     LaunchedEffect(reload, tick, settingUp) {
         withContext(Dispatchers.IO) {
+            advanced = com.innovation313.roshankhata.data.BookSettings.counterAdvanced(dao)
             products = dao.productsOnce()
             onHand = runCatching { Counter.onHand(dao) }.getOrDefault(emptyMap())
             // The book's setting (schema 36): prices with their tax inside or not.
@@ -334,7 +340,8 @@ fun CounterSalePane(
 
     // The page's keys, handed over by the window while it is open.
     keys.page = { e: KeyEvent ->
-        if (e.type != KeyEventType.KeyDown) false else when {
+        // While the payment-day question is open the counter's keys wait (F12 would ring the ticket up under it).
+        if (e.type != KeyEventType.KeyDown || choosingDue) false else when {
             e.key == Key.F2 -> { searchFocus.requestFocus(); true }
             e.key == Key.F4 -> { if (draft.lines.isNotEmpty()) qtyFocus.requestFocus(); true }
             e.key == Key.F6 -> { discountFocus.requestFocus(); true }
@@ -356,17 +363,20 @@ fun CounterSalePane(
                 FluentButton(word(W.pos_clear), { draft.clear(); told = null }, kind = ButtonKind.SUBTLE, enabled = !draft.isEmpty)
             })
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                FluentPill(com.innovation313.roshankhata.data.Access.current?.let { Format.name(it.name) } ?: word(W.access_owner), com.innovation313.roshankhata.data.Access.current != null) { signingIn = true }
+                val access = com.innovation313.roshankhata.data.Access
+                // Who is at the counter: with the big-shop tools, or wherever counter mode is on or someone signed in.
+                if (advanced || access.counterMode || access.current != null)
+                    FluentPill(access.current?.let { Format.name(it.name) } ?: word(W.access_owner), access.current != null) { signingIn = true }
                 if (held.isNotEmpty()) FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
                 // The day's profit and the till's difference are the shop's figures (23 Oct 2026, the review).
-                FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.SUBTLE)
+                if (advanced) FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.SUBTLE)
                 // The shift on this counter: who has it open, or that none is (a counter in counter mode should have one).
-                FluentButton(
+                if (advanced || access.counterMode || myShift != null) FluentButton(
                     if (myShift != null) word(W.shift_title) else word(W.shift_none), { shifting = true },
-                    kind = if (myShift == null && com.innovation313.roshankhata.data.Access.counterMode) ButtonKind.STANDARD else ButtonKind.SUBTLE
+                    kind = if (myShift == null && access.counterMode) ButtonKind.STANDARD else ButtonKind.SUBTLE
                 )
                 FluentButton(word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } }, kind = ButtonKind.SUBTLE)
-                FluentButton(word(W.cd_title), { showingCustomer = !showingCustomer }, kind = if (showingCustomer) ButtonKind.STANDARD else ButtonKind.SUBTLE)
+                if (advanced || showingCustomer) FluentButton(word(W.cd_title), { showingCustomer = !showingCustomer }, kind = if (showingCustomer) ButtonKind.STANDARD else ButtonKind.SUBTLE)
             }
             Column(Modifier.fillMaxWidth()) {
                 FluentField(
@@ -412,8 +422,9 @@ fun CounterSalePane(
             ListCard(Modifier.fillMaxWidth().weight(if (grid) 0.45f else 1f)) {
                 WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.pos_col_qty) to 2f, word(W.pos_col_rate) to 2f, word(W.pos_discount) to 2f, word(W.pos_col_total) to 2f, "" to 1f), endAligned = setOf(4))
                 if (draft.lines.isEmpty()) {
+                    // An empty till says how the counter is used (24 Oct 2026, the phone's three lines).
                     Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                        Text(word(W.pos_lines_empty), color = c.textMuted, fontSize = 14.sp)
+                        com.innovation313.roshankhata.screens.CounterHowTo(Modifier.padding(24.dp))
                     }
                 } else {
                     LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
@@ -490,7 +501,15 @@ fun CounterSalePane(
                     parties.firstOrNull { it.id == draft.partyId }?.let { p ->
                         Text(Format.customerBalance(p.balance), color = c.inkSoft, fontSize = 12.sp)
                     }
-                    if (draft.remaining > 0.005) Text(words.text(W.pos_customer_pays_later, Format.name(name)), color = c.inkSoft, fontSize = 12.sp)
+                    if (draft.remaining > 0.005) {
+                        Text(words.text(W.pos_customer_pays_later, Format.name(name)), color = c.inkSoft, fontSize = 12.sp)
+                        // When the rest will be paid, as a khata entry asks (24 Oct 2026): it becomes his promised day.
+                        Text(
+                            draft.due?.let { words.text(W.entry_due_set, Format.dateOnly(it)) } ?: word(W.entry_due_none),
+                            Modifier.press { choosingDue = true }.padding(vertical = 4.dp),
+                            color = Look.accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold
+                        )
+                    }
                     // Loyalty (21 Oct 2026): the customer's points, and spending them on this ticket.
                     val rule = draft.loyalty
                     if (rule != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -503,7 +522,8 @@ fun CounterSalePane(
                 FigureRow(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FluentField(draft.discount, { draft.discount = it }, Modifier.weight(1f).focusRequester(discountFocus), label = word(W.pos_discount), prefix = currency, placeholder = "0", trailing = { KeyCap("F6") }, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-                    FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
+                    // Tax is a big-shop tool; a figure already typed (a held ticket) stays in sight either way.
+                    if (advanced || draft.taxPercent.isNotBlank()) FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
                 }
                 if (draft.pointsValue > 0.0) FigureRow(words.text(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue), Look.accent)
                 if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax), Format.money(draft.totals.tax))
@@ -562,6 +582,9 @@ fun CounterSalePane(
     }
     }
 
+    if (choosingDue) draft.partyName?.let { name ->
+        DueDialog(name, draft.due, onPick = { at -> draft.due = at; choosingDue = false }, onDismiss = { choosingDue = false })
+    }
     if (choosingParty) {
         AppDialog(onCloseRequest = { choosingParty = false }, onPreviewKeyEvent = escCloses { choosingParty = false }, title = word(W.pos_choose_customer), state = rememberDialogState(width = fitW(520.dp), height = fitH(480.dp))) {
             DialogFrame(word(W.pos_choose_customer), onClose = { choosingParty = false }, footer = {

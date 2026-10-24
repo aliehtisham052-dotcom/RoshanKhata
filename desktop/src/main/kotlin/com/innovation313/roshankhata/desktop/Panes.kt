@@ -64,13 +64,14 @@ enum class Group(val word: String) {
 enum class Section(val word: String, val icon: String, val tile: String, val group: Group) {
     HOME(W.nav_home, "ic_storefront", "brand_green", Group.HOME),
     KHATA(W.nav_khata, "ic_tile_khata", "tile_khata_bg", Group.DAILY),
-    COUNTER(W.pos_title, "ic_tile_invoice", "tile_cashbook_bg", Group.DAILY),
     CASHBOOK(W.nav_cashbook, "ic_tile_cashbook", "tile_cashbook_bg", Group.DAILY),
     CHEQUES(W.nav_cheques, "ic_tile_cheques", "tile_cheques_bg", Group.DAILY),
     BILLS(W.supplier_bills, "ic_tile_bills", "tile_bills_bg", Group.DAILY),
     PLANS(W.nav_plans, "ic_tile_plans", "tile_plans_bg", Group.DAILY),
     EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg", Group.DAILY),
     PRODUCTS(W.tile_products, "ic_tile_products", "tile_bills_bg", Group.BUSINESS),
+    // Beside the products it sells (24 Oct 2026: out of Every day, as on the phone's Home).
+    COUNTER(W.pos_title, "ic_tile_invoice", "tile_cashbook_bg", Group.BUSINESS),
     INVENTORY(W.inventory_title, "ic_tile_expiring", "tile_stock_bg", Group.BUSINESS),
     ORDERS(W.po_title, "ic_tile_bills", "tile_bills_bg", Group.BUSINESS),
     INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg", Group.BUSINESS),

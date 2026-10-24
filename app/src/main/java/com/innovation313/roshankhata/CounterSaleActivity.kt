@@ -54,6 +54,10 @@ class CounterSaleActivity : BaseActivity() {
     private var postedTick by mutableStateOf(0)
     private var message by mutableStateOf<String?>(null)
     private var scaleRule by mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.Rule())
+    /** The big-shop tools (BookSettings.counterAdvanced, 24 Oct 2026): shifts, who is at the counter, the tax box. */
+    private var advanced by mutableStateOf(false)
+    private var shiftItem: android.view.MenuItem? = null
+    private var whoItem: android.view.MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,14 +73,15 @@ class CounterSaleActivity : BaseActivity() {
                     getString(R.string.counter_settings)) { counterSettings() }
                 true
             }
-            // Shifts (21 Oct 2026): the float in, the cash counted out, per person.
-            menu.add(R.string.shift_title).setOnMenuItemClickListener { startActivity(Intent(this@CounterSaleActivity, ShiftActivity::class.java)); true }
-            // Who is at the counter (POS Phase 5).
-            menu.add(R.string.access_who).setOnMenuItemClickListener {
+            // Shifts (21 Oct 2026): the float in, the cash counted out, per person. A big-shop tool (24 Oct 2026).
+            shiftItem = menu.add(R.string.shift_title).setOnMenuItemClickListener { startActivity(Intent(this@CounterSaleActivity, ShiftActivity::class.java)); true }
+            // Who is at the counter (POS Phase 5): with the big-shop tools, or wherever counter mode is on.
+            whoItem = menu.add(R.string.access_who).setOnMenuItemClickListener {
                 com.innovation313.roshankhata.ui.AccessUi.signIn(this@CounterSaleActivity, dao) { message = com.innovation313.roshankhata.data.Access.userName ?: getString(R.string.access_owner) }
                 true
             }
         }
+        showTools()
 
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
             android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -94,7 +99,11 @@ class CounterSaleActivity : BaseActivity() {
                         onComplete = { if (viewer) toast(R.string.viewer_on_note) else complete() },
                         postedTick = postedTick,
                         scaleRule = scaleRule,
-                        loyaltyBalanceOf = { id -> withContext(Dispatchers.IO) { dao.loyaltyBalance(id) } }
+                        loyaltyBalanceOf = { id -> withContext(Dispatchers.IO) { dao.loyaltyBalance(id) } },
+                        advanced = advanced,
+                        // The promised day for what goes to the account: the khata entry's own question (DuePicker).
+                        onChooseDue = { draft.partyName?.let { name -> com.innovation313.roshankhata.ui.DuePicker.choose(this@CounterSaleActivity, com.innovation313.roshankhata.ui.Format.name(name), draft.due) { at -> draft.due = at } } },
+                        onShowRecent = { showRecent() }
                     )
                 }
             }
@@ -125,14 +134,23 @@ class CounterSaleActivity : BaseActivity() {
                     dao.heldSalesOnce().size,
                     com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX)),
                     com.innovation313.roshankhata.data.Loyalty.rule(dao),
-                    com.innovation313.roshankhata.data.ScaleCode.rule(dao)
+                    com.innovation313.roshankhata.data.ScaleCode.rule(dao),
+                    com.innovation313.roshankhata.data.BookSettings.counterAdvanced(dao)
                 )
             }
             products = loaded.products; parties = loaded.parties; onHand = loaded.onHand; heldCount = loaded.held
             draft.pricesIncludeTax = loaded.taxInside
             draft.loyalty = loaded.loyalty
             scaleRule = loaded.scale
+            advanced = loaded.advanced
+            showTools()
         }
+    }
+
+    /** The top bar's big-shop items follow the switch; who is at the counter also shows wherever counter mode is on. */
+    private fun showTools() {
+        shiftItem?.isVisible = advanced
+        whoItem?.isVisible = advanced || com.innovation313.roshankhata.data.Access.counterMode || com.innovation313.roshankhata.data.Access.current != null
     }
 
     /**
@@ -153,6 +171,7 @@ class CounterSaleActivity : BaseActivity() {
                     com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE_DECIMALS
                 ).associateWith { dao.settingValue(it) }
             }
+            val wasAdvanced = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.BookSettings.counterAdvanced(dao) }
             val printer = com.innovation313.roshankhata.ui.TextReceipt.settings(this@CounterSaleActivity)
             val hasLogo = com.innovation313.roshankhata.data.BusinessProfile.hasLogo(this@CounterSaleActivity)
             val box = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax); isChecked = on }
@@ -206,17 +225,29 @@ class CounterSaleActivity : BaseActivity() {
                 setOnCheckedChangeListener { g, checked -> decimals = g.findViewById<android.view.View>(checked)?.tag as? Int ?: decimals; showExample() }
             }
             showExample()
-            fun showDecimals() { listOf(decimalsLabel, decimalsGroup, example).forEach { it.visibility = if (pricedLabel.isChecked) android.view.View.VISIBLE else android.view.View.GONE } }
-            showDecimals()
-            pricedLabel.setOnCheckedChangeListener { _, _ -> showDecimals() }
             val scaleHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.scale_help); textSize = 13f }
             val pad = (20 * resources.displayMetrics.density).toInt()
+            // The big-shop tools' switch first (24 Oct 2026); tax, loyalty and the scale are shown only while it is on.
+            val tools = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.counter_advanced); isChecked = wasAdvanced }
+            val toolsHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.counter_advanced_help); textSize = 13f }
+            val loyaltyHead = heading(R.string.loyalty_section)
+            val scaleHead = heading(R.string.scale_section)
+            val bigShop = listOf(box, help, loyaltyHead, perHundred, pointValue, loyaltyHelp, scaleHead, prefix, pricedLabel, scaleHelp)
+            fun showBigShop() {
+                bigShop.forEach { it.visibility = if (tools.isChecked) android.view.View.VISIBLE else android.view.View.GONE }
+                listOf(decimalsLabel, decimalsGroup, example).forEach {
+                    it.visibility = if (tools.isChecked && pricedLabel.isChecked) android.view.View.VISIBLE else android.view.View.GONE
+                }
+            }
             val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
                 orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, pad / 2)
-                listOf(box, help, head, wide, logo, drawer, drawerHelp, choosePrinter,
-                    heading(R.string.loyalty_section), perHundred, pointValue, loyaltyHelp,
-                    heading(R.string.scale_section), prefix, pricedLabel, decimalsLabel, decimalsGroup, example, scaleHelp).forEach { addView(it) }
+                listOf(tools, toolsHelp, box, help, head, wide, logo, drawer, drawerHelp, choosePrinter,
+                    loyaltyHead, perHundred, pointValue, loyaltyHelp,
+                    scaleHead, prefix, pricedLabel, decimalsLabel, decimalsGroup, example, scaleHelp).forEach { addView(it) }
             }
+            showBigShop()
+            tools.setOnCheckedChangeListener { _, _ -> showBigShop() }
+            pricedLabel.setOnCheckedChangeListener { _, _ -> showBigShop() }
             val scroll = android.widget.ScrollView(this@CounterSaleActivity).apply { addView(view) }
             MaterialAlertDialogBuilder(this@CounterSaleActivity)
                 .setTitle(R.string.counter_settings)
@@ -226,6 +257,8 @@ class CounterSaleActivity : BaseActivity() {
                         com.innovation313.roshankhata.ui.TextReceipt.Settings(wide.isChecked, logo.isChecked, drawer.isChecked))
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
+                            // The owner's word on the big-shop tools, kept either way so the book's own guess no longer decides.
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.COUNTER_ADVANCED, if (tools.isChecked) "1" else "0")
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX, if (box.isChecked) "1" else null)
                             fun typed(e: android.widget.EditText) = e.text.toString().trim().takeIf { t -> (com.innovation313.roshankhata.data.Digits.parse(t) ?: 0.0) > 0.0 }
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100, typed(perHundred))
@@ -246,7 +279,8 @@ class CounterSaleActivity : BaseActivity() {
 
     private class Loaded(
         val products: List<Product>, val parties: List<PartyWithBalance>, val onHand: Map<Long, Double?>, val held: Int, val taxInside: Boolean,
-        val loyalty: com.innovation313.roshankhata.data.LoyaltyRule?, val scale: com.innovation313.roshankhata.data.ScaleCode.Rule
+        val loyalty: com.innovation313.roshankhata.data.LoyaltyRule?, val scale: com.innovation313.roshankhata.data.ScaleCode.Rule,
+        val advanced: Boolean
     )
 
     /** The camera as a scanner: a pack's barcode rings its product up; an unknown code says so. */

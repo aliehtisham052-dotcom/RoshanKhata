@@ -3266,6 +3266,12 @@
     <string name="pos_sell_by">%1$s جي حساب سان وڪرو</string>
     <string name="pos_expired_stock">%1$s جو رڳو ايڪسپائر اسٽاڪ بچيو آهي (ٺيڪ: %2$s). پراڻو بيچ ايڪسپائري ۾ ختم ڪريو، يا گهٽ وڪرو.</string>
     <string name="counter_settings">ڪائونٽر سيٽنگون</string>
+    <string name="pos_next_pay">اڳتي: ادائيگي</string>
+    <string name="pos_how_1">1 · شيءِ جو نالو لکو يا بارڪوڊ اسڪين ڪريو</string>
+    <string name="pos_how_2">2 · تعداد ۽ اگهه ڏسي وٺو</string>
+    <string name="pos_how_3">3 · عام گراهڪ پوري رقم ڏئي ٿو؛ چونڊيل گراهڪ جي باقي رقم سندس کاتي ۾ وڃي ٿي</string>
+    <string name="counter_advanced">وڏي دڪان جا اوزار</string>
+    <string name="counter_advanced_help">شفٽ، ڏينهن جي رپورٽ (Z)، پوائنٽس، ترازي، گراهڪ جي اسڪرين ۽ ٽيڪس. بند هجي ته ڪائونٽر سادو رهي ٿو؛ اڳ ۾ محفوظ ڪجهه به نٿو بدلجي.</string>
     <string name="counter_prices_include_tax">قيمتن ۾ ٽيڪس اڳ ۾ شامل آهي</string>
     <string name="counter_prices_include_tax_help">چالو: پراڊڪٽ جو ٽيڪس ان جي قيمت اندر آهي، ۽ رسيد ٻڌائي ٿي ڪيترو. بند: ڪائونٽر تي مٿان جوڙيو وڃي ٿو. هر پراڊڪٽ جو ٽيڪس % پراڊڪٽ تي لکيو وڃي ٿو.</string>
     <string name="expiry_write_off">ختم ڪريو</string>

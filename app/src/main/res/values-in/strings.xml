@@ -3241,6 +3241,12 @@
     <string name="pos_sell_by">Jual per %1$s</string>
     <string name="pos_expired_stock">Hanya stok kedaluwarsa yang tersisa dari %1$s (masih baik: %2$s). Hapus batch lama di Kedaluwarsa, atau jual lebih sedikit.</string>
     <string name="counter_settings">Pengaturan kasir</string>
+    <string name="pos_next_pay">Lanjut: pembayaran</string>
+    <string name="pos_how_1">1 · Ketik nama barang atau pindai barcode-nya</string>
+    <string name="pos_how_2">2 · Periksa jumlah dan harganya</string>
+    <string name="pos_how_3">3 · Pelanggan umum membayar penuh; sisa pelanggan yang dipilih masuk ke catatannya</string>
+    <string name="counter_advanced">Alat toko besar</string>
+    <string name="counter_advanced_help">Shift, laporan harian (Z), poin loyalitas, timbangan, layar pelanggan, dan pajak. Jika mati, kasir tetap sederhana; tidak ada yang sudah tersimpan berubah.</string>
     <string name="counter_prices_include_tax">Harga sudah termasuk pajak</string>
     <string name="counter_prices_include_tax_help">Nyala: pajak produk ada di dalam harganya, dan struk menyebut berapa. Mati: pajak ditambahkan di kasir. Persen pajak tiap produk diatur di produknya.</string>
     <string name="expiry_write_off">Hapus dari stok</string>

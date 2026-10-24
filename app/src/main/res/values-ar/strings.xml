@@ -3426,6 +3426,12 @@
     <string name="pos_sell_by">البيع بـ %1$s</string>
     <string name="pos_expired_stock">لم يبقَ من %1$s إلا مخزون منتهي الصلاحية (الصالح: %2$s). اشطب الدفعة القديمة من صفحة الصلاحية، أو بع كمية أقل.</string>
     <string name="counter_settings">إعدادات الكاشير</string>
+    <string name="pos_next_pay">التالي: الدفع</string>
+    <string name="pos_how_1">1 · اكتب اسم الصنف أو امسح الباركود</string>
+    <string name="pos_how_2">2 · راجع الكمية والسعر</string>
+    <string name="pos_how_3">3 · الزبون العابر يدفع المبلغ كاملًا؛ وللزبون المختار يُقيَّد الباقي في حسابه</string>
+    <string name="counter_advanced">أدوات المتاجر الكبيرة</string>
+    <string name="counter_advanced_help">الورديات، تقرير اليوم (Z)، نقاط الولاء، الميزان، شاشة الزبون والضريبة. عند الإيقاف يبقى الكاشير بسيطًا؛ ولا يتغير شيء محفوظ.</string>
     <string name="counter_prices_include_tax">الأسعار تشمل الضريبة</string>
     <string name="counter_prices_include_tax_help">تشغيل: ضريبة المنتج داخل سعره، والإيصال يذكر قيمتها. إيقاف: تُضاف فوق السعر عند الكاشير. نسبة ضريبة كل منتج تُحدد في المنتج نفسه.</string>
     <string name="expiry_write_off">شطب</string>
