@@ -3238,6 +3238,12 @@
     <string name="pos_sell_by">%1$s کے حساب سے بیچیں</string>
     <string name="pos_expired_stock">%1$s کا صرف ایکسپائر اسٹاک بچا ہے (ٹھیک: %2$s)۔ پرانا بیچ ایکسپائری میں ختم کریں، یا کم بیچیں۔</string>
     <string name="counter_settings">کاؤنٹر سیٹنگز</string>
+    <string name="pos_next_pay">آگے: ادائیگی</string>
+    <string name="pos_how_1">1 · چیز کا نام لکھیں یا بارکوڈ اسکین کریں</string>
+    <string name="pos_how_2">2 · تعداد اور ریٹ دیکھ لیں</string>
+    <string name="pos_how_3">3 · عام گاہک پوری رقم دیتا ہے؛ چنے گئے گاہک کی باقی رقم اس کے کھاتے میں جاتی ہے</string>
+    <string name="counter_advanced">بڑی دکان کے اوزار</string>
+    <string name="counter_advanced_help">شفٹ، دن کی رپورٹ (Z)، پوائنٹس، ترازو، گاہک کی اسکرین اور ٹیکس۔ بند ہو تو کاؤنٹر سادہ رہتا ہے؛ پہلے سے محفوظ کچھ نہیں بدلتا۔</string>
     <string name="counter_prices_include_tax">قیمتوں میں ٹیکس پہلے سے شامل ہے</string>
     <string name="counter_prices_include_tax_help">چالو: پروڈکٹ کا ٹیکس اس کی قیمت کے اندر ہے، اور رسید بتاتی ہے کتنا۔ بند: کاؤنٹر پر اوپر سے جوڑا جاتا ہے۔ ہر پروڈکٹ کا ٹیکس % پروڈکٹ پر لکھا جاتا ہے۔</string>
     <string name="expiry_write_off">ختم کریں</string>

@@ -89,7 +89,16 @@ fun CounterSaleScreen(
      * closes then, not when Complete is pressed (23 Oct 2026, the review: a
      * PIN request or a refusal dropped the cashier back on the item list).
      */
-    postedTick: Int = 0
+    postedTick: Int = 0,
+    /**
+     * The big-shop tools (BookSettings.counterAdvanced, 24 Oct 2026): off,
+     * the payment step has no tax box unless one is typed already.
+     */
+    advanced: Boolean = true,
+    /** "When will he pay?" for what goes to the chosen customer's account (null: not offered). */
+    onChooseDue: (() -> Unit)? = null,
+    /** The recent tickets (their return, void and invoice), offered on an empty till (null: not offered). */
+    onShowRecent: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     var paying by remember { mutableStateOf(false) }
@@ -160,8 +169,9 @@ fun CounterSaleScreen(
                     hasParty = draft.hasParty, onPick = { ring(it) }, modifier = Modifier.fillMaxWidth().weight(1f)
                 )
             } else if (draft.lines.isEmpty()) {
+                // An empty till says how the counter is used (24 Oct 2026, the owner could not tell).
                 Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                    Text(word(W.pos_lines_empty), color = c.textMuted, fontSize = 14.sp, modifier = Modifier.padding(24.dp))
+                    CounterHowTo(Modifier.padding(24.dp))
                 }
             } else {
                 LazyColumn(Modifier.fillMaxWidth().weight(1f), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -200,6 +210,8 @@ fun CounterSaleScreen(
             Row(Modifier.fillMaxWidth().background(c.surface).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (heldCount > 0) OutlinedButton(onClick = onShowHeld) { Text(word(W.pos_held_tickets, heldCount), color = c.ink) }
                 else if (draft.lines.isNotEmpty()) OutlinedButton(onClick = onHold) { Text(word(W.pos_hold), color = c.ink) }
+                // Recent sales in sight (24 Oct 2026: they were only in the top bar's menu, and never found).
+                else if (onShowRecent != null) OutlinedButton(onClick = onShowRecent, modifier = Modifier.testTag("posRecent")) { Text(word(W.pos_recent), color = c.ink, maxLines = 1) }
                 Column(Modifier.weight(1f)) {
                     Text(word(W.pos_grand_total), color = c.textMuted, fontSize = 12.sp)
                     Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1)
@@ -207,7 +219,7 @@ fun CounterSaleScreen(
                 Button(
                     onClick = { paying = true }, enabled = draft.lines.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.testTag("posPay")
-                ) { Text(word(W.pos_paid), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp) }
+                ) { Text(word(W.pos_next_pay), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1) }
             }
         } else {
             // ---- Step 2: who and how paid ----
@@ -242,7 +254,8 @@ fun CounterSaleScreen(
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     CalcField(draft.discount, { draft.discount = it }, Modifier.weight(1f), label = word(W.pos_discount))
-                    CalcField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), kind = CalcKind.PERCENT, label = word(W.pos_tax))
+                    // Tax is a big-shop tool; a figure already typed (a held ticket) stays in sight either way.
+                    if (advanced || draft.taxPercent.isNotBlank()) CalcField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), kind = CalcKind.PERCENT, label = word(W.pos_tax))
                 }
                 Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Figure(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
@@ -284,6 +297,12 @@ fun CounterSaleScreen(
                     OutlinedButton(onClick = { draft.addPayment(PaymentMethod.CASH) }, modifier = Modifier.weight(1f)) { Text(word(W.pos_add_payment), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
                 }
                 val rest = draft.remaining
+                // When the rest will be paid, as a khata entry asks (24 Oct 2026): it becomes the customer's promised day.
+                if (rest > 0.005 && draft.hasParty && onChooseDue != null) {
+                    TextButton(onClick = onChooseDue, modifier = Modifier.testTag("posDue")) {
+                        Text(draft.due?.let { word(W.entry_due_set, Format.dateOnly(it)) } ?: word(W.entry_due_none), color = c.brandGreenText, fontSize = 14.sp)
+                    }
+                }
                 when {
                     rest > 0.005 && draft.hasParty -> Figure(word(W.pos_to_account), Format.money(rest), c.owedToMe)
                     rest > 0.005 -> Text(word(W.pos_err_walk_in_unpaid), color = c.owedToMe, fontSize = 13.sp)
@@ -302,6 +321,19 @@ fun CounterSaleScreen(
                 ) { Text(word(W.pos_post), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp) }
             }
         }
+    }
+}
+
+/**
+ * How the counter is used, in three lines (24 Oct 2026, the owner: "na mujhe
+ * functions ka pata hai"): drawn on an empty till on both platforms.
+ */
+@Composable
+fun CounterHowTo(modifier: Modifier = Modifier) {
+    val c = LocalRoshanColors.current
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(word(W.pos_lines_empty), color = c.textMuted, fontSize = 14.sp)
+        listOf(W.pos_how_1, W.pos_how_2, W.pos_how_3).forEach { Text(word(it), color = c.inkSoft, fontSize = 14.sp) }
     }
 }
 

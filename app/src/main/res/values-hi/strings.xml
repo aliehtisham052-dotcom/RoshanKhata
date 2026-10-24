@@ -3288,6 +3288,12 @@
     <string name="pos_sell_by">%1$s के हिसाब से बेचें</string>
     <string name="pos_expired_stock">%1$s का सिर्फ़ एक्सपायर स्टॉक बचा है (ठीक: %2$s)। पुराना बैच एक्सपायरी में हटाएँ, या कम बेचें।</string>
     <string name="counter_settings">काउंटर सेटिंग्स</string>
+    <string name="pos_next_pay">आगे: भुगतान</string>
+    <string name="pos_how_1">1 · चीज़ का नाम लिखें या बारकोड स्कैन करें</string>
+    <string name="pos_how_2">2 · मात्रा और रेट देख लें</string>
+    <string name="pos_how_3">3 · आम ग्राहक पूरा पैसा देता है; चुने गए ग्राहक का बाकी उसके खाते में जाता है</string>
+    <string name="counter_advanced">बड़ी दुकान के औज़ार</string>
+    <string name="counter_advanced_help">शिफ्ट, दिन की रिपोर्ट (Z), पॉइंट्स, तराज़ू, ग्राहक की स्क्रीन और टैक्स। बंद हो तो काउंटर सादा रहता है; पहले से सहेजा कुछ नहीं बदलता।</string>
     <string name="counter_prices_include_tax">कीमतों में टैक्स पहले से शामिल है</string>
     <string name="counter_prices_include_tax_help">चालू: प्रोडक्ट का टैक्स उसकी कीमत के अंदर है, और रसीद बताती है कितना। बंद: काउंटर पर ऊपर से जोड़ा जाता है। हर प्रोडक्ट का टैक्स % प्रोडक्ट पर लिखा जाता है।</string>
     <string name="expiry_write_off">हटाएँ</string>

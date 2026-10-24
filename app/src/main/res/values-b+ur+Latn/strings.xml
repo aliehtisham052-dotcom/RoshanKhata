@@ -3238,6 +3238,12 @@
     <string name="pos_sell_by">%1$s ke hisaab se bechein</string>
     <string name="pos_expired_stock">%1$s ka sirf expire stock bacha hai (theek: %2$s). Purana batch Expiry mein khatam karein, ya kam bechein.</string>
     <string name="counter_settings">Counter settings</string>
+    <string name="pos_next_pay">Aage: payment</string>
+    <string name="pos_how_1">1 · Cheez ka naam likhein ya barcode scan karein</string>
+    <string name="pos_how_2">2 · Tadaad aur rate dekh lein</string>
+    <string name="pos_how_3">3 · Aam gahak poori raqam deta hai; chune gaye gahak ki baqi raqam us ke khate mein jati hai</string>
+    <string name="counter_advanced">Bari dukaan ke auzaar</string>
+    <string name="counter_advanced_help">Shift, din ki report (Z), points, tarazu, gahak ki screen aur tax. Band ho to counter saada rehta hai; pehle se mehfooz kuch nahi badalta.</string>
     <string name="counter_prices_include_tax">Qeematon mein tax pehle se shamil hai</string>
     <string name="counter_prices_include_tax_help">Chalu: product ka tax us ki qeemat ke andar hai, aur raseed batati hai kitna. Band: counter par upar se joda jata hai. Har product ka tax % product par likha jata hai.</string>
     <string name="expiry_write_off">Khatam karein</string>

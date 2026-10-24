@@ -3119,54 +3119,9 @@ class PartyDetailActivity : BaseActivity() {
 
     private fun showHarvestPromiseDialog() = chooseDueDate(harvestPromise) { saveHarvestPromise(it) }
 
-    /**
-     * When will this customer pay: a week, two weeks or a month from today,
-     * the next two harvest ends where the shop keeps seasons, any other day on
-     * the calendar, or — when one is set — taking it back. [onPick] gets the
-     * day (end of day) or null for "remove".
-     */
-    private fun chooseDueDate(current: Long?, onPick: (Long?) -> Unit) {
-        val now = System.currentTimeMillis()
-        fun endOfDayIn(days: Int) = java.util.Calendar.getInstance().apply {
-            add(java.util.Calendar.DAY_OF_YEAR, days)
-            set(java.util.Calendar.HOUR_OF_DAY, 23); set(java.util.Calendar.MINUTE, 59)
-            set(java.util.Calendar.SECOND, 59); set(java.util.Calendar.MILLISECOND, 0)
-        }.timeInMillis
-        val quick = listOf(7, 15, 30).map { d ->
-            getString(R.string.entry_due_in_days, String.format(Digits.latinIn(), "%d", d), Format.dateOnly(endOfDayIn(d))) to endOfDayIn(d)
-        }
-        val y = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-        val harvests = if (!TradeFeatures.seasons(this)) emptyList() else listOf(
-            SeasonBook.Season(SeasonBook.Crop.RABI, y - 1), SeasonBook.Season(SeasonBook.Crop.KHARIF, y),
-            SeasonBook.Season(SeasonBook.Crop.RABI, y), SeasonBook.Season(SeasonBook.Crop.KHARIF, y + 1)
-        ).map { it to SeasonBook.harvestEnd(it) }.filter { it.second > now }.sortedBy { it.second }.take(2)
-            .map { (s, at) -> getString(R.string.harvest_promise_option, SeasonText.name(this, s), Format.dateOnly(at)) to at }
-        val fixed = quick + harvests
-
-        val choices = fixed.mapIndexed { i, (label, _) ->
-            if (i < quick.size) ChoiceSheet.date(label)
-            else ChoiceSheet.Option(label, icon = R.drawable.ic_tile_season, iconTint = 0, tile = R.color.tile_plans_bg)
-        } + ChoiceSheet.date(getString(R.string.harvest_promise_other_date)) +
-            listOfNotNull(current?.let { ChoiceSheet.delete(getString(R.string.harvest_promise_remove)) })
-
-        ChoiceSheet.show(this, getString(R.string.harvest_promise_title, partyName), choices) { i ->
-            when {
-                i < fixed.size -> onPick(fixed[i].second)
-                i == fixed.size -> {
-                    val c = java.util.Calendar.getInstance()
-                    com.innovation313.roshankhata.ui.BrandDatePickerDialog(this, { _, yy, mm, dd ->
-                        val at = java.util.Calendar.getInstance().apply {
-                            clear(); set(yy, mm, dd, 23, 59, 59)
-                        }.timeInMillis
-                        onPick(at)
-                    }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
-                        .apply { datePicker.minDate = now }
-                        .show()
-                }
-                else -> onPick(null)
-            }
-        }
-    }
+    /** When will this customer pay ([DuePicker]: the counter's sale on account asks the same). */
+    private fun chooseDueDate(current: Long?, onPick: (Long?) -> Unit) =
+        com.innovation313.roshankhata.ui.DuePicker.choose(this, partyName, current, onPick)
 
     private fun saveHarvestPromise(at: Long?) {
         harvestPromise = at

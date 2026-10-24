@@ -130,9 +130,6 @@ class MainActivity : BaseActivity() {
         val daily = listOf(
             Feature(R.drawable.ic_tile_khata, R.string.nav_khata, KhataActivity::class.java,
                 R.color.tile_khata_bg, R.color.section_khata),
-            // The counter (POS Phase 1, 21 Oct): scan, ring up, take the money.
-            Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
-                R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_cashbook, R.string.nav_cashbook, CashbookActivity::class.java,
                 R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_cheques, R.string.nav_cheques, ChequesActivity::class.java,
@@ -160,6 +157,10 @@ class MainActivity : BaseActivity() {
             // Products keeps Supplier Bills' colour.
             Feature(R.drawable.ic_tile_products, R.string.tile_products, ProductsActivity::class.java,
                 R.color.tile_bills_bg, R.color.section_bills),
+            // The counter (POS Phase 1, 21 Oct) beside the products it sells: moved out of Every day on
+            // 24 Oct 2026 — the owner keeps his sales in Khata and did not use it daily.
+            Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
+                R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
                 R.color.tile_invoice_bg, R.color.tile_invoice_fg),
             Feature(R.drawable.ic_tile_price_list, R.string.rate_list_title, RateListActivity::class.java,

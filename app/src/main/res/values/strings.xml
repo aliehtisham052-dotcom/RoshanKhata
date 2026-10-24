@@ -3452,6 +3452,12 @@
     <string name="pos_sell_by">Sell by %1$s</string>
     <string name="pos_expired_stock">Only expired stock is left of %1$s (still good: %2$s). Write the old batch off in Expiry, or sell less.</string>
     <string name="counter_settings">Counter settings</string>
+    <string name="pos_next_pay">Next: payment</string>
+    <string name="pos_how_1">1 · Type an item\'s name or scan its barcode</string>
+    <string name="pos_how_2">2 · Check the quantity and rate</string>
+    <string name="pos_how_3">3 · A walk-in customer pays in full; for a chosen customer the rest goes to their account</string>
+    <string name="counter_advanced">Big-shop tools</string>
+    <string name="counter_advanced_help">Shifts, the day report (Z), loyalty points, the weighing scale, the customer\'s screen and tax. Off keeps the counter simple; nothing already saved changes.</string>
     <string name="counter_prices_include_tax">Prices already include tax</string>
     <string name="counter_prices_include_tax_help">On: a product\'s tax is inside its price, and the receipt says how much. Off: it is added on top at the counter. Each product\'s tax % is set on the product.</string>
     <string name="expiry_write_off">Write off</string>

@@ -114,6 +114,13 @@ class CounterDraft {
 
     var partyId by mutableStateOf<Long?>(null)
     var partyName by mutableStateOf<String?>(null)
+    /**
+     * When the customer will pay what goes to his account (24 Oct 2026, the
+     * owner: a sale on account at the counter had no "kab dega?", which a
+     * khata entry has). Null leaves his promised day as it is; once the
+     * ticket is written it becomes Party.harvestPromise, as the entry's does.
+     */
+    var due by mutableStateOf<Long?>(null)
     val lines = mutableStateListOf<Line>()
     var discount by mutableStateOf("")
     var taxPercent by mutableStateOf("")
@@ -224,7 +231,7 @@ class CounterDraft {
     val short: List<Line> get() = lines.filter { it.shortBy != null }
 
     fun setParty(id: Long?, name: String?) {
-        if (id != partyId) { pointsUsed = 0.0; pointsBalance = 0.0 }
+        if (id != partyId) { pointsUsed = 0.0; pointsBalance = 0.0; due = null }
         val before = lines.map { it to listRate(it) }
         partyId = id
         partyName = name
@@ -336,7 +343,7 @@ class CounterDraft {
     fun removePayment(p: Payment) { payments.remove(p) }
 
     fun clear() {
-        partyId = null; partyName = null
+        partyId = null; partyName = null; due = null
         lines.clear(); payments.clear()
         discount = ""; taxPercent = ""; note = ""; heldId = null
         pointsUsed = 0.0; pointsBalance = 0.0
@@ -352,7 +359,8 @@ class CounterDraft {
     fun snapshot(createdBy: String? = Access.userName, now: Long = System.currentTimeMillis(), notes: List<AuditLog> = emptyList()): Counter.Ticket =
         Counter.Ticket(
             sale = toSale(createdBy, now), items = toItems(), payments = toPayments(), roundToWhole = roundToWhole,
-            pointsUsed = if (hasParty) pointsUsed else 0.0, heldId = heldId, lines = lines.toList(), notes = notes, now = now
+            pointsUsed = if (hasParty) pointsUsed else 0.0, heldId = heldId, lines = lines.toList(), notes = notes, now = now,
+            due = due?.takeIf { hasParty && remaining > 0.005 }
         )
 
     /** After a ticket is posted: cleared, but for the lines rung up while it was being written — the next customer's. */
@@ -477,7 +485,9 @@ object Counter {
         val heldId: Long?,
         val lines: List<CounterDraft.Line>,
         val notes: List<AuditLog> = emptyList(),
-        val now: Long = System.currentTimeMillis()
+        val now: Long = System.currentTimeMillis(),
+        /** The customer's promised day for what went to his account ([CounterDraft.due]); null changes nothing. */
+        val due: Long? = null
     )
 
     /** [post] for a ticket already taken from its draft. */
@@ -522,8 +532,14 @@ object Counter {
             }
         }
         // The held ticket comes off the hook in the sale's own transaction, and its audit notes go with it.
-        return dao.postSale(ticket.sale, items, ticket.payments, ticket.roundToWhole, takes,
+        val id = dao.postSale(ticket.sale, items, ticket.payments, ticket.roundToWhole, takes,
             pointsUsed = ticket.pointsUsed, heldId = ticket.heldId, notes = ticket.notes)
+        // The promised day goes on the customer as a khata entry's does (Party.harvestPromise). It is not money,
+        // and the sale is already written: a failure here must never read as "not posted" (the cashier would
+        // ring the same goods up again), so it is passed over.
+        val partyId = ticket.sale.partyId
+        if (ticket.due != null && partyId != null) runCatching { dao.setHarvestPromise(partyId, ticket.due) }
+        return id
     }
 
     /**

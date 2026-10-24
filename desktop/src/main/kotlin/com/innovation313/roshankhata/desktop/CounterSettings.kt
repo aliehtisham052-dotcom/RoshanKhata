@@ -52,6 +52,8 @@ fun CounterSettingsDialog(
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var taxInside by remember { mutableStateOf(false) }
+    // The big-shop tools (24 Oct 2026): shifts, day report, loyalty, scale, customer's screen, tax.
+    var tools by remember { mutableStateOf(false) }
     var perHundred by remember { mutableStateOf("") }
     var pointValue by remember { mutableStateOf("") }
     var prefix by remember { mutableStateOf(com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX) }
@@ -66,6 +68,7 @@ fun CounterSettingsDialog(
     var receiptPrinter by remember { mutableStateOf(ThermalReceipt.lastPrinter) }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
+            tools = BookSettings.counterAdvanced(dao)
             taxInside = BookSettings.isOn(dao.settingValue(BookSettings.PRICES_INCLUDE_TAX))
             perHundred = dao.settingValue(BookSettings.LOYALTY_POINTS_PER_100).orEmpty()
             pointValue = dao.settingValue(BookSettings.LOYALTY_POINT_VALUE).orEmpty()
@@ -82,6 +85,8 @@ fun CounterSettingsDialog(
             FluentButton(word(W.save), {
                 scope.launch {
                     withContext(Dispatchers.IO) {
+                        // The owner's word on the big-shop tools, kept either way so the book's own guess no longer decides.
+                        dao.setSetting(BookSettings.COUNTER_ADVANCED, if (tools) "1" else "0")
                         dao.setSetting(BookSettings.PRICES_INCLUDE_TAX, if (taxInside) "1" else null)
                         // An empty or nothing box keeps loyalty off; a prefix outside 20–29 falls back to 21.
                         fun positive(t: String) = t.trim().takeIf { (com.innovation313.roshankhata.data.Digits.parse(it) ?: 0.0) > 0.0 }
@@ -99,10 +104,17 @@ fun CounterSettingsDialog(
             }, kind = ButtonKind.ACCENT, enabled = loaded)
         }) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Tick(taxInside, word(W.counter_prices_include_tax)) { taxInside = it }
-                Text(word(W.counter_prices_include_tax_help), color = c.textMuted, fontSize = 12.sp)
+                Tick(tools, word(W.counter_advanced)) { tools = it }
+                Text(word(W.counter_advanced_help), color = c.textMuted, fontSize = 12.sp)
             }
             Rule()
+            if (tools) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Tick(taxInside, word(W.counter_prices_include_tax)) { taxInside = it }
+                    Text(word(W.counter_prices_include_tax_help), color = c.textMuted, fontSize = 12.sp)
+                }
+                Rule()
+            }
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(word(W.printer_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 Tick(wide, word(W.printer_width_80)) { wide = it }
@@ -119,8 +131,9 @@ fun CounterSettingsDialog(
                     }
                 }
             }
-            Rule()
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            // Loyalty and the weighing scale are big-shop tools: shown while the switch is on.
+            if (tools) Rule()
+            if (tools) Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(word(W.loyalty_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     FluentField(perHundred, { perHundred = it }, Modifier.weight(1f), label = word(W.loyalty_per_100), placeholder = "0")
@@ -128,8 +141,8 @@ fun CounterSettingsDialog(
                 }
                 Text(word(W.loyalty_help), color = c.textMuted, fontSize = 12.sp)
             }
-            Rule()
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (tools) Rule()
+            if (tools) Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(word(W.scale_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 FluentField(prefix, { prefix = it.take(2) }, Modifier.width(220.dp), label = word(W.scale_prefix))
                 Tick(pricedLabel, word(W.scale_price)) { pricedLabel = it }

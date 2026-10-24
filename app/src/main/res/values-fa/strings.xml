@@ -3266,6 +3266,12 @@
     <string name="pos_sell_by">فروش به %1$s</string>
     <string name="pos_expired_stock">از %1$s فقط موجودی تاریخ‌گذشته مانده است (سالم: %2$s). بچ قدیمی را در صفحهٔ انقضا حذف کنید، یا کمتر بفروشید.</string>
     <string name="counter_settings">تنظیمات صندوق</string>
+    <string name="pos_next_pay">بعدی: پرداخت</string>
+    <string name="pos_how_1">1 · نام کالا را بنویسید یا بارکد را اسکن کنید</string>
+    <string name="pos_how_2">2 · تعداد و نرخ را بررسی کنید</string>
+    <string name="pos_how_3">3 · مشتری گذری کل مبلغ را می‌پردازد؛ باقی‌ماندهٔ مشتری انتخاب‌شده به حسابش می‌رود</string>
+    <string name="counter_advanced">ابزارهای فروشگاه بزرگ</string>
+    <string name="counter_advanced_help">شیفت‌ها، گزارش روز (Z)، امتیاز وفاداری، ترازو، صفحهٔ مشتری و مالیات. خاموش باشد صندوق ساده می‌ماند؛ چیزی از ذخیره‌شده‌ها تغییر نمی‌کند.</string>
     <string name="counter_prices_include_tax">قیمت‌ها مالیات را دارند</string>
     <string name="counter_prices_include_tax_help">روشن: مالیات کالا داخل قیمت آن است و رسید مقدارش را می‌گوید. خاموش: در صندوق روی قیمت افزوده می‌شود. درصد مالیات هر کالا روی خود کالا تعیین می‌شود.</string>
     <string name="expiry_write_off">حذف از موجودی</string>

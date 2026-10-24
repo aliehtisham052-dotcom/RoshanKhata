@@ -42,6 +42,32 @@ object BookSettings {
     /** Digits after the decimal point in a price label: "0".."3" (2 when unset), see [ScaleCode.Rule]. */
     const val SCALE_PRICE_DECIMALS = "scale_price_decimals"
 
+    /**
+     * The counter's big-shop tools (24 Oct 2026, the owner: "ye kya bala bana
+     * di"): shifts, the day report (Z), loyalty, the weighing scale, the
+     * customer's screen and the ticket's tax box. "1" shows them, "0" hides
+     * them, unset decides by the book ([counterAdvanced]). Hidden is only
+     * hidden: no figure, rule or permission changes with it.
+     */
+    const val COUNTER_ADVANCED = "counter_advanced"
+
+    /**
+     * Whether the counter shows its big-shop tools: the owner's word when he
+     * gave one, else on only for a book already using any of them — loyalty,
+     * prices with tax, a scale label rule, counter mode, staff with a counter
+     * role — so turning this in hides nothing a shop already relies on.
+     */
+    suspend fun counterAdvanced(dao: KhataDao): Boolean {
+        when (dao.settingValue(COUNTER_ADVANCED)) {
+            "1" -> return true
+            "0" -> return false
+        }
+        if (isOn(dao.settingValue(PRICES_INCLUDE_TAX)) || isOn(dao.settingValue(SCALE_PRICE)) || isOn(dao.settingValue(COUNTER_USED))) return true
+        if (dao.settingValue(SCALE_PREFIX) != null) return true
+        if (Loyalty.rule(dao) != null) return true
+        return runCatching { dao.allStaffForBackup().any { it.isActive && it.role != null } }.getOrDefault(false)
+    }
+
     /** "1" when the counter refuses to sell more than the shelf holds (else it warns). */
     const val BLOCK_NEGATIVE_STOCK = "block_negative_stock"
 
