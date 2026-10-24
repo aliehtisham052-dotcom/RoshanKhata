@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.data.quantity
+import com.innovation313.roshankhata.data.Digits
 
 import com.innovation313.roshankhata.ui.BrandDatePickerDialog
 import com.innovation313.roshankhata.ui.DateRangeFilter
@@ -301,8 +303,8 @@ class LedgerReportActivity : BaseActivity() {
         tvTotalGot.text = Format.money(got)
 
         val parties = entries.map { it.partyId }.distinct().size
-        tvCounts.text = resources.getQuantityString(R.plurals.pdf_stmt_entries, entries.size, entries.size) +
-            " \u00B7 " + resources.getQuantityString(R.plurals.customer_count, parties, parties)
+        tvCounts.text = Digits.quantity(resources, R.plurals.pdf_stmt_entries, entries.size, entries.size) +
+            " \u00B7 " + Digits.quantity(resources, R.plurals.customer_count, parties, parties)
 
         // The bar shows each side's share of the window's money; with no
         // money in the window there is nothing to share out.
@@ -467,7 +469,7 @@ class LedgerReportActivity : BaseActivity() {
                     else -> date
                 }
                 val n = perDay[d] ?: 0
-                holder.dayCount.text = resources.getQuantityString(R.plurals.pdf_stmt_entries, n, n)
+                holder.dayCount.text = Digits.quantity(resources, R.plurals.pdf_stmt_entries, n, n)
             }
 
             // One rounded group per day; a 1dp gap between rows lets the page
