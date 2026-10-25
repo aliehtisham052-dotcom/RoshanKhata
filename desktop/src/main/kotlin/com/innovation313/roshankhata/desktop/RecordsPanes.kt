@@ -93,6 +93,11 @@ fun BillsPane(
     var lineFor by remember { mutableStateOf<Pair<Long, com.innovation313.roshankhata.data.BillItem?>?>(null) }
     var deletingLine by remember { mutableStateOf<com.innovation313.roshankhata.data.BillItem?>(null) }
     var buyersOf by remember { mutableStateOf<Long?>(null) }
+    // A line going back to its supplier (the phone's BatchReturnDialog), and what was said after.
+    var returningLine by remember { mutableStateOf<Long?>(null) }
+    var said by remember { mutableStateOf<String?>(null) }
+    returningLine?.let { id -> BatchReturnDialog(dao, id, onClose = { returningLine = null }) { msg -> returningLine = null; said = msg; onLedgerChanged() } }
+    said?.let { TellDialog(word(W.return_title), it, onClose = { said = null }) }
     // A bill's photo: on a credit bill it rides on its ledger entry (billPhotoPath), on a cash bill on the bill.
     var photoOf by remember { mutableStateOf<Pair<String, String?>?>(null) }
     var photoVersion by remember { mutableStateOf(0) }
@@ -220,6 +225,7 @@ fun BillsPane(
                                     Text(detail, color = c.inkSoft, fontSize = 12.sp)
                                 }
                                 FluentButton(word(W.batch_buyers_action), { buyersOf = l.id }, kind = ButtonKind.SUBTLE)
+                                FluentButton(word(W.return_action), { Gates.edit { returningLine = l.id } }, kind = ButtonKind.SUBTLE)
                                 FluentButton(word(W.edit), { Gates.edit { lineFor = b.id to l } }, kind = ButtonKind.SUBTLE)
                                 FluentButton(word(W.delete), { Gates.edit { deletingLine = l } }, kind = ButtonKind.DANGER)
                             }
@@ -677,6 +683,7 @@ private fun RecordList(
 @Composable
 fun ExpiryPane(dao: KhataDao) {
     val c = LocalRoshanColors.current
+    val words = com.innovation313.roshankhata.words.LocalWords.current
     val cutoff = remember { System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS }
     var buyersOf by remember { mutableStateOf<Long?>(null) }
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
@@ -692,27 +699,34 @@ fun ExpiryPane(dao: KhataDao) {
     var writingOff by remember { mutableStateOf<com.innovation313.roshankhata.data.ExpiringBatch?>(null) }
     // Who gave their PIN for the write-off (null: the user's own right); the DAO refuses one nobody allowed.
     var writingOffBy by remember { mutableStateOf<String?>(null) }
+    // A lot going back to its supplier (the phone's chooser: who bought it, send it back, write it off), and what
+    // was said after.
+    var returning by remember { mutableStateOf<Long?>(null) }
+    var told by remember { mutableStateOf<String?>(null) }
+    returning?.let { id -> BatchReturnDialog(dao, id, onClose = { returning = null }) { said -> returning = null; told = said; tick++ } }
     fun leftWords(b: com.innovation313.roshankhata.data.ExpiringBatch): String =
         com.innovation313.roshankhata.ui.Calc.trim(b.quantity) + com.innovation313.roshankhata.data.UnitWords.label(b.unit).let { u -> if (u.isEmpty()) "" else " $u" }
     writingOff?.let { b ->
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { writingOff = null },
-            title = { Text(word(W.expiry_write_off)) },
-            text = { Text(word(W.expiry_write_off_confirm, leftWords(b), b.batchNumber?.takeIf { it.isNotBlank() } ?: b.productName)) },
-            confirmButton = {
-                androidx.compose.material3.TextButton({
-                    writingOff = null
-                    val by = writingOffBy
-                    // Fefo.writeOff reads the batch again as it writes: what is left at that moment goes, nothing more.
-                    scope.launch { withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Fefo.writeOff(dao, b.itemId, b.batchNumber, allowedBy = by) } }; tick++ }
-                }) { Text(word(W.expiry_write_off), color = c.owedToMe) }
+        AskDialog(
+            word(W.expiry_write_off), word(W.expiry_write_off_confirm, leftWords(b), b.batchNumber?.takeIf { it.isNotBlank() } ?: b.productName),
+            word(W.expiry_write_off), danger = true, subtitle = b.productName,
+            onConfirm = {
+                writingOff = null
+                val by = writingOffBy
+                // Fefo.writeOff reads the batch again as it writes: what is left at that moment goes, nothing more.
+                scope.launch {
+                    withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Fefo.writeOff(dao, b.itemId, b.batchNumber, allowedBy = by) } }
+                        .onFailure { told = failText(words, it) }
+                    tick++
+                }
             },
-            dismissButton = { androidx.compose.material3.TextButton({ writingOff = null }) { Text(word(W.cancel)) } }
+            onDismiss = { writingOff = null }
         )
     }
-    RecordList(word(W.expiring_stock), word(W.expiring_subtitle), false, word(W.no_expiring), emptyIcon = "ic_tile_expiring") {
-        item(key = "trace") { BatchTraceCard(dao) { buyersOf = it } }
-        if (batches.isEmpty()) item(key = "none") { Text(word(W.no_expiring), Modifier.padding(16.dp), color = c.textMuted, fontSize = 15.sp) }
+    // The trace above the list, never a card inside it, and the page's own empty state when nothing expires
+    // (25 Oct 2026, the audit: the empty state never showed, and the trace sat in the list as a card in a card).
+    RecordList(word(W.expiring_stock), told ?: word(W.expiring_subtitle), batches.isEmpty(), word(W.no_expiring), emptyIcon = "ic_tile_expiring",
+        head = { BatchTraceCard(dao) { buyersOf = it } }) {
         items(batches, key = { it.itemId }) { b ->
             Row(Modifier.fillMaxWidth().press { buyersOf = b.itemId }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
@@ -738,7 +752,10 @@ fun ExpiryPane(dao: KhataDao) {
                         color = if (b.daysLeft <= 0) c.owedToMe else c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold
                     )
                     Text(Format.dateOnly(b.expiryDate), color = c.textMuted, fontSize = 12.sp)
-                    if (b.hasExpired) {
+                    // Every lot can go back to its supplier or be written off, as the phone offers it; expired ones
+                    // say so in red above.
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FluentButton(word(W.return_action), { Gates.edit { returning = b.itemId } }, kind = ButtonKind.SUBTLE)
                         FluentButton(word(W.expiry_write_off), {
                             Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST) { by -> writingOffBy = by; writingOff = b }
                         }, kind = ButtonKind.DANGER)

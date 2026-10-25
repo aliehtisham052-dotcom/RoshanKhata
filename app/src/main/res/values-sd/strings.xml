@@ -3312,6 +3312,7 @@
     <string name="expiry_written_off">ختم ڪيو ويو</string>
     <string name="expiry_nothing_left">هن بيچ ۾ ڪجهه نه بچيو</string>
     <string name="expiry_left">بچيو: %1$s</string>
+    <string name="trace_came">آيو: %1$s</string>
     <string name="product_pack_help">اهو پيڪ (ڪارٽن، ٻوري…) جنهن ۾ هي پراڊڪٽ خريد يا وڪرو به ٿئي ٿي، ۽ هڪ پيڪ ۾ ان جا پنهنجا يونٽ ڪيترا آهن. اسٽاڪ پنهنجي يونٽ ۾ ڳڻيو وڃي ٿو.</string>
     <string name="product_pack_unit">پيڪ جو نالو</string>
     <string name="product_pack_size">هڪ پيڪ ۾ ڪيترا</string>

@@ -997,6 +997,16 @@ Businesses/Settings), each part with its proof pictures. CI only.
   Orders: marked sent only when WhatsApp opened; with no number the order is copied, said
   (`po_copied_no_number`) and left for Mark sent; goods received take each batch's expiry. Proofs:
   screen-laptop-bills-en, screen-laptop-products-ur. Not done: the phone's receive form has no expiry yet.
+- **Part 4b, Expiry, the register and labels:** Expiry's batch trace sits above the list (a card in a card
+  before) and the page's own empty state shows when nothing expires; the trace says what came and what is left
+  (`trace_came`, Fefo's figure), never one bare number. Every lot can be sent back to its supplier
+  (`BatchReturnDialog`, the phone's: goods given on the supplier's khata, tagged to the batch, up to what is
+  left in the bill's unit) or written off, as the phone offers it; Bills' lines can be sent back too. The stock
+  register is in the page frame with figure cards, re-reads when stock moves, and lists expired first, then
+  what expires in the window, then the rest by name (the PDF keeps the order). Barcode labels: each bar is one
+  exact rectangle over a run of modules (`LabelSheet.barRuns`, drawn unsmoothed) — columns cut to whole points
+  printed bars of one width one and two points wide; the price is placed first and the name takes the room
+  left. Not done: the phone's full inspector PDF on the computer.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
@@ -1010,7 +1020,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
 - Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture, pos_still_due,
   pos_drop_held_confirm, cheque_none_cleared, cheque_none_bounced, no_products_pc, no_matching_products,
-  inventory_subtitle, po_subtitle, po_copied_no_number (nine languages). Tests: ReminderTextTest (shared),
+  inventory_subtitle, po_subtitle, po_copied_no_number, trace_came (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
 

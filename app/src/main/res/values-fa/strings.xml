@@ -3312,6 +3312,7 @@
     <string name="expiry_written_off">حذف شد</string>
     <string name="expiry_nothing_left">از این بچ چیزی نمانده</string>
     <string name="expiry_left">مانده: %1$s</string>
+    <string name="trace_came">رسیده: %1$s</string>
     <string name="product_pack_help">بسته‌ای (کارتن، گونی…) که کالا با آن هم خرید یا فروش می‌شود، و چند تا از واحد خودش در یک بسته است. موجودی با واحد خودش شمرده می‌شود.</string>
     <string name="product_pack_unit">نام بسته</string>
     <string name="product_pack_size">چند تا در یک بسته</string>

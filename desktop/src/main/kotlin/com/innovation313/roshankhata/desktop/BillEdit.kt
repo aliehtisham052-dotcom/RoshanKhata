@@ -179,19 +179,26 @@ fun BatchBuyersDialog(dao: KhataDao, billItemId: Long, onClose: () -> Unit) {
 
 /**
  * Trace a batch (the phone's Expiring screen search): which supplier, which
- * bill, how much came in — the ORIGINAL quantity, as an inspector asks it.
- * A row opens who bought from that batch.
+ * bill, how much came in — the ORIGINAL quantity, as an inspector asks it —
+ * said as what came, beside what is left by the one rule (Marhala 4, the
+ * audit: one bare figure here and another in the list below read as two
+ * answers to one question). A row opens who bought from that batch.
  */
 @Composable
 fun BatchTraceCard(dao: KhataDao, onBuyers: (Long) -> Unit) {
     val c = LocalRoshanColors.current
     var query by remember { mutableStateOf("") }
     var found by remember { mutableStateOf<List<ExpiringBatch>?>(null) }
+    var left by remember { mutableStateOf<Map<Long, com.innovation313.roshankhata.data.Fefo.Lot>>(emptyMap()) }
     LaunchedEffect(query) {
         val q = query.trim()
         found = if (q.length < 2) null else {
             kotlinx.coroutines.delay(300)
-            withContext(Dispatchers.IO) { runCatching { dao.findByBatch(q) }.getOrDefault(emptyList()) }
+            withContext(Dispatchers.IO) {
+                runCatching { dao.findByBatch(q) }.getOrDefault(emptyList()).also { rows ->
+                    left = if (rows.isEmpty()) emptyMap() else runCatching { com.innovation313.roshankhata.data.Fefo.allLots(dao) }.getOrDefault(emptyMap())
+                }
+            }
         }
     }
     Column(Modifier.fillMaxWidth().card().padding(14.dp),
@@ -208,7 +215,8 @@ fun BatchTraceCard(dao: KhataDao, onBuyers: (Long) -> Unit) {
                         Text(b.productName + "  ·  " + word(W.batch_label, b.batchNumber.orEmpty()), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         Text(
                             (b.billNumber?.takeIf { it.isNotBlank() }?.let { word(W.from_supplier_bill, b.partyName, it) } ?: word(W.from_supplier, b.partyName)) +
-                                "  ·  " + Format.qty(b.quantity, b.unit),
+                                "  ·  " + word(W.trace_came, Format.qty(b.quantity, b.unit)) +
+                                (left[b.itemId]?.let { lot -> "  ·  " + word(W.expiry_left, Format.qty(lot.left, lot.unit ?: b.unit)) } ?: ""),
                             color = c.textMuted, fontSize = 12.sp
                         )
                     }
@@ -218,3 +226,94 @@ fun BatchTraceCard(dao: KhataDao, onBuyers: (Long) -> Unit) {
         }
     }
 }
+
+/**
+ * Send part of a batch back to its supplier (the phone's BatchReturnDialog, Marhala 4): written as what it is in
+ * the books — goods given on the supplier's own khata, the line tagged to this batch — so the batch's stock drops
+ * and what the shop owes him drops by the credit, with no second stock rule. Up to what is left of the batch by
+ * the one rule, in the bill line's own unit, at the bill's rate unless the owner changes it.
+ */
+@Composable
+fun BatchReturnDialog(dao: KhataDao, billItemId: Long, onClose: () -> Unit, onDone: (String) -> Unit) {
+    val c = LocalRoshanColors.current
+    val words = com.innovation313.roshankhata.words.LocalWords.current
+    val scope = rememberCoroutineScope()
+    var facts by remember(billItemId) { mutableStateOf<ReturnFacts?>(null) }
+    var read by remember(billItemId) { mutableStateOf(false) }
+    var qty by remember(billItemId) { mutableStateOf("") }
+    var rate by remember(billItemId) { mutableStateOf("") }
+    var problem by remember(billItemId) { mutableStateOf<String?>(null) }
+    var saving by remember { mutableStateOf(false) }
+    LaunchedEffect(billItemId) {
+        val f = withContext(Dispatchers.IO) {
+            runCatching {
+                val item = dao.getBillItem(billItemId) ?: return@runCatching null
+                val bill = dao.getBill(item.billId) ?: return@runCatching null
+                ReturnFacts(item, bill, dao.getParty(bill.partyId)?.name,
+                    com.innovation313.roshankhata.data.Fefo.leftInBillUnit(dao, item.id) ?: item.quantity)
+            }.getOrNull()
+        }
+        facts = f
+        read = true
+        if (f != null) { qty = Calc.trim(f.left); rate = f.item.rate?.let { Calc.trim(it) }.orEmpty() }
+    }
+    val q = Calc.evalAmount(qty)
+    val r = Calc.evalAmount(rate)
+    val total = com.innovation313.roshankhata.data.LineMath.lineTotal(q, r)
+    val title = word(W.return_title)
+    AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(500.dp), height = fitH(520.dp))) {
+        val f = facts
+        DialogFrame(
+            title,
+            subtitle = f?.let { it.item.productName + (it.item.batchNumber?.takeIf { b -> b.isNotBlank() }?.let { b -> "  ·  " + b } ?: "") },
+            onClose = onClose,
+            footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+            footer = {
+                FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+                if (f != null && f.left > 0.0) FluentButton(word(W.save), {
+                    when {
+                        q == null || q <= 0.0 || q > f.left + 1e-9 -> problem = words.text(W.return_bad_qty)
+                        r == null || r <= 0.0 || total == null || total <= 0.0 -> problem = words.text(W.return_bad_rate)
+                        else -> {
+                            saving = true
+                            scope.launch {
+                                val line = com.innovation313.roshankhata.data.EntryItem.ofGoods(f.item.productName, q, f.item.unit, f.item.productId, f.item.id, r)
+                                val done = withContext(Dispatchers.IO) {
+                                    runCatching {
+                                        dao.insertEntryWithItems(
+                                            com.innovation313.roshankhata.data.LedgerEntry(
+                                                partyId = f.bill.partyId, amount = total, isGiven = true,
+                                                note = words.text(W.return_note, f.item.productName, f.item.batchNumber ?: "—"), entryNumber = ""
+                                            ),
+                                            listOfNotNull(line)
+                                        )
+                                    }
+                                }
+                                saving = false
+                                done.onSuccess { onDone(words.text(W.return_saved)) }.onFailure { problem = failText(words, it) }
+                            }
+                        }
+                    }
+                }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = !saving)
+            }
+        ) {
+            when {
+                !read -> Text("…", color = c.textMuted)
+                f == null || f.left <= 0.0 -> Text(word(W.return_nothing_left), color = c.ink, fontSize = 14.sp)
+                else -> {
+                    Text(word(W.return_info, f.item.productName, f.item.batchNumber ?: "—", Format.qty(f.left, f.item.unit), f.supplier ?: "—"), color = c.inkSoft, fontSize = 13.sp)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        FluentField(qty, { qty = it; problem = null }, Modifier.weight(1f), label = word(W.return_qty_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                        FluentField(rate, { rate = it; problem = null }, Modifier.weight(1f), label = word(W.return_rate_hint),
+                            prefix = com.innovation313.roshankhata.data.Currency.symbol, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                    }
+                    total?.let { Text(word(W.return_total, Format.money(it)), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold) }
+                    Text(word(W.return_help), color = c.textMuted, fontSize = 12.sp)
+                }
+            }
+        }
+    }
+}
+
+/** What the return dialog read: the bill line, its bill, the supplier's name and what is left of it. */
+private class ReturnFacts(val item: BillItem, val bill: SupplierBill, val supplier: String?, val left: Double)

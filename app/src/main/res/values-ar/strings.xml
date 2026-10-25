@@ -3472,6 +3472,7 @@
     <string name="expiry_written_off">تم الشطب</string>
     <string name="expiry_nothing_left">لم يبقَ شيء من هذه الدفعة</string>
     <string name="expiry_left">المتبقي: %1$s</string>
+    <string name="trace_came">الوارد: %1$s</string>
     <string name="product_pack_help">عبوة (كرتونة، شوال…) يُشترى المنتج أو يُباع بها أيضًا، وكم من وحدته فيها. يُحسب المخزون بوحدته.</string>
     <string name="product_pack_unit">اسم العبوة</string>
     <string name="product_pack_size">كم في العبوة</string>

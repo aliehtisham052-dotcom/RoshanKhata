@@ -3498,6 +3498,7 @@
     <string name="expiry_written_off">Written off</string>
     <string name="expiry_nothing_left">Nothing of this batch is left</string>
     <string name="expiry_left">Left: %1$s</string>
+    <string name="trace_came">Came: %1$s</string>
     <string name="product_pack_help">A pack (carton, bori…) the product is also bought or sold in, and how many of its own unit are in one. Stock is counted in its own unit.</string>
     <string name="product_pack_unit">Pack name</string>
     <string name="product_pack_size">How many in a pack</string>

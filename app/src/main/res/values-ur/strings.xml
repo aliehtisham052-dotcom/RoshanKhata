@@ -3284,6 +3284,7 @@
     <string name="expiry_written_off">ختم کر دیا</string>
     <string name="expiry_nothing_left">اس بیچ میں کچھ نہیں بچا</string>
     <string name="expiry_left">بچا: %1$s</string>
+    <string name="trace_came">آیا: %1$s</string>
     <string name="product_pack_help">وہ پیک (کارٹن، بوری…) جس میں یہ پروڈکٹ خریدی یا بیچی بھی جاتی ہے، اور ایک پیک میں اس کی اپنی اکائی کتنی ہیں۔ اسٹاک اپنی اکائی میں گنا جاتا ہے۔</string>
     <string name="product_pack_unit">پیک کا نام</string>
     <string name="product_pack_size">ایک پیک میں کتنے</string>

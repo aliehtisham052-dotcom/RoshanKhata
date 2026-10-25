@@ -3334,6 +3334,7 @@
     <string name="expiry_written_off">हटा दिया</string>
     <string name="expiry_nothing_left">इस बैच में कुछ नहीं बचा</string>
     <string name="expiry_left">बचा: %1$s</string>
+    <string name="trace_came">आया: %1$s</string>
     <string name="product_pack_help">वह पैक (कार्टन, बोरी…) जिसमें यह प्रोडक्ट ख़रीदा या बेचा भी जाता है, और एक पैक में उसकी अपनी इकाई कितनी हैं। स्टॉक अपनी इकाई में गिना जाता है।</string>
     <string name="product_pack_unit">पैक का नाम</string>
     <string name="product_pack_size">एक पैक में कितने</string>
