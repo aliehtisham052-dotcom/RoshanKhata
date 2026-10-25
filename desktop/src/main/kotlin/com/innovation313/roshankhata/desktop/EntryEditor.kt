@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -174,12 +175,29 @@ fun EntryEditor(
     val goodsTotal = if (q != null && r != null) q * r else null
 
     // The form scrolls; its buttons stay in sight under it (25 Oct 2026, the audit: Save sat below the fold on a laptop).
+    // Its head stays on top (the owner's mockup, Marhala 2): which way on its tint, the party under it, the ✕ —
+    // the dialog's one title, so the dialog draws none of its own.
+    OwnDialogHead()
     Column(Modifier.fillMaxSize()) {
-        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            // The head (1.10.0, the New entry mockup): which way, the party under it, the amount big with
-            // its figure in words-of-money under it, the day beside it as a Fluent date box.
-            Text(word(if (isGiven) W.you_gave else W.you_got), color = if (isGiven) c.owedToMe else Look.accent, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-            Text(Format.name(partyName), color = c.inkSoft, fontSize = 13.sp)
+        Row(
+            Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 14.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            val way = if (isGiven) c.owedToMe else Look.accent
+            Box(Modifier.size(40.dp).background(if (isGiven) Look.getTint else Look.accentTint, Look.ctl), contentAlignment = Alignment.Center) {
+                Glyph(if (isGiven) "ic_arrow_gave" else "ic_arrow_got", way, 20)
+            }
+            Column(Modifier.weight(1f)) {
+                Text(word(if (isGiven) W.you_gave else W.you_got), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                Text(Format.name(partyName), color = c.inkSoft, fontSize = 13.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            }
+            Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = onCancel), contentAlignment = Alignment.Center) {
+                Glyph("ic_close", c.inkSoft, 14)
+            }
+        }
+        Rule()
+        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            // The amount big with its figure in words-of-money under it, the day beside it as a date box.
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
                 FluentField(
                     amountText, { amountText = it }, Modifier.weight(1.4f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true,

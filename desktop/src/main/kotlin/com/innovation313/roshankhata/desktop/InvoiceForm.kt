@@ -103,7 +103,8 @@ fun InvoiceForm(
     val t = InvoiceMath.totals(lines, discPercent, Calc.evalPercent(tax), Calc.evalPad(charge), Calc.evalPad(received), discMoney)
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        // Inside a dialog its head says it (one title, Marhala 2).
+        if (!inDialog()) Text(existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Outlined(customer, { customer = it; problem = null }, label = { Text(word(W.invoice_customer_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         val q = customer.trim().lowercase()
         if (q.isNotEmpty()) {

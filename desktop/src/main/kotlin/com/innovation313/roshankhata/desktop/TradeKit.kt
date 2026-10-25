@@ -164,7 +164,8 @@ fun TradePicker(
     var items by remember { mutableStateOf(otherItems.orEmpty()) }
     Column(Modifier.fillMaxSize().background(c.surface).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(word(if (current == null) W.trade_kicker_new else W.trade_kicker_change), color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-        Text(word(W.trade_pick_title), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        // Inside a dialog its head says it (one title, Marhala 2).
+        if (!inDialog()) Text(word(W.trade_pick_title), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
             val perRow = maxOf(2, ((maxWidth.value + 10) / 160).toInt())
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {

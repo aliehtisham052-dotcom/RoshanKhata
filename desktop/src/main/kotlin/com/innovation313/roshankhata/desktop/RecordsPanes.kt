@@ -435,7 +435,7 @@ fun InvoicesPane(
         }
     }
     editingInvoice?.let { (inv, lines) ->
-        AppDialog(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit), state = rememberDialogState(width = fitW(720.dp), height = fitH(860.dp))) {
+        AppDialog(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit) + "  ·  " + inv.invoiceNumber, state = rememberDialogState(width = fitW(720.dp), height = fitH(860.dp))) {
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,

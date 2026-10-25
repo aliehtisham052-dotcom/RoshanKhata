@@ -186,7 +186,6 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> 
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(word(W.wifi_pc_title), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(word(W.wifi_pc_steps), color = c.ink, fontSize = 14.sp)
                 qr?.let { Image(it, contentDescription = word(W.wifi_pc_title), modifier = Modifier.size(320.dp)) }
                 Text(status, color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Medium)

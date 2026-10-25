@@ -2050,6 +2050,8 @@ private fun Book(
             onCloseRequest = { if (!tradeMandatory) choosingTrade = false },
             onPreviewKeyEvent = escCloses { if (!tradeMandatory) choosingTrade = false },
             title = word(W.trade_pick_title),
+            // The first shop type must be chosen: no ✕ (Esc already did nothing then).
+            closable = !tradeMandatory,
             state = rememberDialogState(width = fitW(900.dp), height = fitH(760.dp))
         ) {
             TradePicker(
@@ -2067,8 +2069,8 @@ private fun Book(
     }
     var namingShop by remember { mutableStateOf(shop.isNullOrBlank()) }
     // No shortcut while a question in this window waits (R156, 23 Oct 2026): F2 or Ctrl+N stacked a form
-    // over "Delete these customers?". Every AlertDialog of this window is named here; the dialog windows
-    // (AppDialog) take their own keys and never reach this window's handler.
+    // over "Delete these customers?". Every AlertDialog of this window is named here; the app's dialogs
+    // (AppDialog, drawn in the window since Marhala 2) are counted by OpenDialogs, which KeyActions reads.
     // One lambda for this book's life: it reads the states themselves, so it always sees the current answer.
     val questionOpen: () -> Boolean = remember {
         {
@@ -2142,7 +2144,7 @@ private fun Book(
         AppDialog(
             onCloseRequest = { showAlerts = false },
             onPreviewKeyEvent = escCloses { showAlerts = false },
-            title = word(W.home_today),
+            title = word(W.na_title),
             state = rememberDialogState(width = fitW(520.dp), height = fitH(600.dp))
         ) {
             AlertsList(bookAlerts, extraAlerts) { s -> showAlerts = false; section = s }
@@ -2344,7 +2346,8 @@ class KeyActions {
 
     fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean {
         if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
-        if (busy()) return false
+        // The dialogs are drawn in this window since Marhala 2: their keys pass here first.
+        if (busy() || OpenDialogs.count > 0) return false
         if (page?.invoke(e) == true) return true
         val k = e.key
         val ctrl = e.isCtrlPressed
