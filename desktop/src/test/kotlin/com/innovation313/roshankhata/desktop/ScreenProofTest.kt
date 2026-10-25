@@ -79,6 +79,8 @@ class ScreenProofTest {
         width: Int = 1440, height: Int = 900, scale: Float = 1f,
         /** The language drawn, when not simply English or Urdu (21 Oct 2026: Arabic, Bengali, Indonesian proofs). */
         lang: String = if (ur) "ur" else "en",
+        /** The place open in the rail; a merged page's tabs show above it as in the window (Marhala 3). */
+        section: Section = Section.HOME,
         page: @androidx.compose.runtime.Composable () -> Unit = {
             HomePane(
                 parties, late = 2, alerts = alerts(), extra = emptyList(),
@@ -101,7 +103,7 @@ class ScreenProofTest {
                         // carrying the page's own head, then the page.
                         val head = androidx.compose.runtime.remember { PageHead() }
                         Row(Modifier.fillMaxSize().background(LocalRoshanColors.current.pageBg)) {
-                            SectionRail(Section.HOME, {}, badges = mapOf(Section.FOLLOWUP to 2), top = {
+                            SectionRail(section, {}, badges = mapOf(Section.FOLLOWUP to 2), top = {
                                 ShopCard(if (ur) "النور ایگری اسٹور" else "Al-Noor Agri Store", null, null, onProfile = {}, onSwitch = {})
                             })
                             Column(Modifier.weight(1f)) {
@@ -111,7 +113,12 @@ class ScreenProofTest {
                                     onBackup = {}, onPhone = {}, alerts = 3, onAlerts = {}, menu = emptyList(), onAddParty = {}
                                 )
                                 Box(Modifier.weight(1f).fillMaxWidth()) {
-                                    androidx.compose.runtime.CompositionLocalProvider(LocalPageHead provides head) { page() }
+                                    androidx.compose.runtime.CompositionLocalProvider(LocalPageHead provides head) {
+                                        Column(Modifier.fillMaxSize()) {
+                                            PageTabRow(section) {}
+                                            Box(Modifier.weight(1f).fillMaxWidth()) { page() }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -124,6 +131,10 @@ class ScreenProofTest {
             // rise and every eased colour (Motion.kt, 1.8.3) have finished before the picture.
             scene.render(0)
             scene.render(16_000_000)
+            // A page that reads the book off the window's thread (Expiry, the register, the sales report) gets
+            // real time to answer before the frames that are kept.
+            Thread.sleep(400)
+            scene.render(250_000_000)
             scene.render(500_000_000)
             val image = scene.render(1_000_000_000)
             val png = image.encodeToData(EncodedImageFormat.PNG)!!.bytes
@@ -246,6 +257,16 @@ class ScreenProofTest {
                 ),
                 listOf(com.innovation313.roshankhata.data.SalePayment(saleId = 0, method = com.innovation313.roshankhata.data.PaymentMethod.CASH, amount = 10000.0))
             )
+            // Batches for Stock & expiry (Marhala 3): the ticket above took 2 Confidor with no batch, so the lot that
+            // expires first shows 22 of its 24 — the one rule the counter, Expiry and the register share.
+            dao.insertSupplierBill(
+                null, com.innovation313.roshankhata.data.SupplierBill(partyId = sup, billNumber = "SB-1042", billDate = now - 20 * day, totalAmount = 0.0),
+                listOf(
+                    com.innovation313.roshankhata.data.BillItem(billId = 0, productName = "Confidor", batchNumber = "CF-2410", expiryDate = now + 18 * day, quantity = 24.0, unit = "bottle", rate = 700.0, productId = conf),
+                    com.innovation313.roshankhata.data.BillItem(billId = 0, productName = "Confidor", batchNumber = "CF-2502", expiryDate = now + 200 * day, quantity = 36.0, unit = "bottle", rate = 720.0, productId = conf),
+                    com.innovation313.roshankhata.data.BillItem(billId = 0, productName = "DAP", batchNumber = "DP-77", quantity = 40.0, unit = "bag", rate = 3300.0, productId = dap)
+                )
+            )
         }
         val words = desktopWords(Locale.ENGLISH)
         val partiesNow = kotlinx.coroutines.runBlocking { dao.partiesWithBalanceOnce() }
@@ -261,6 +282,16 @@ class ScreenProofTest {
             }
             shoot("screen-counter-en-dark", ur = false, dark = true, dir = dir, width = 1600, height = 900, scale = 1f) {
                 CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())
+            }
+            // Merged pages (Marhala 3): the tabs above the page, the rail marking the page that holds them.
+            shoot("screen-laptop-expiry-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.EXPIRY) {
+                ExpiryPane(dao)
+            }
+            shoot("screen-laptop-register-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.STOCK) {
+                StockPane(dao, desktopWords(Locale.forLanguageTag("ur")), rtl = true, shopName = "Al-Noor Agri Store", reload = 0)
+            }
+            shoot("screen-laptop-sales-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.SALES) {
+                SalesReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0)
             }
         } finally {
             db.close()
