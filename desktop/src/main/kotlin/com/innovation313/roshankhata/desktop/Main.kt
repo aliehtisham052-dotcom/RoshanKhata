@@ -1028,7 +1028,7 @@ private fun Book(
                     Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words) { reload++ } }
                     Section.PLANS -> Box(Modifier.fillMaxSize()) { PlansPane(dao, parties, words) { reload++ } }
                     Section.EXPIRY -> Box(Modifier.fillMaxSize()) { ExpiryPane(dao) }
-                    Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home, startAdding = newBill, onStarted = { newBill = false }) { reload++ } }
+                    Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home, startAdding = newBill, onStarted = { newBill = false }, onExpiry = { section = Section.EXPIRY }) { reload++ } }
                     Section.PRODUCTS -> Box(Modifier.fillMaxSize()) { ProductsPane(dao, words) }
                     Section.INVOICES -> Box(Modifier.fillMaxSize()) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields, openId = invoiceToOpen) }
                     Section.INSIGHTS -> Box(Modifier.fillMaxSize()) { InsightsPane(dao, reload) }

@@ -986,7 +986,7 @@
     <string name="na_plan_due">Instalment due today</string>
     <string name="na_plan_late">Instalment overdue</string>
     <string name="na_bill_due">Supplier bill due %1$s</string>
-    <string name="na_expiring">Stock expiring within 30 days: %1$s batches</string>
+    <string name="na_expiring">Stock expiring within 60 days: %1$s batches</string>
     <string name="na_backup">Last backup %1$s days ago</string>
     <string name="na_tag_today">Today</string>
     <string name="na_tag_late">Late</string>
@@ -1269,6 +1269,10 @@
     <string name="report_crash_included">— Technical crash record (saved automatically on your phone, included to help find the fault):</string>
     <string name="products_stock">Products &amp; stock</string>
     <string name="products_subtitle">What the shop deals in, and what is left</string>
+    <string name="no_products_pc">No products yet. A product is made the first time you name it on a supplier bill, or bring your list in with CSV import.</string>
+    <string name="no_matching_products">No products match your search.</string>
+    <string name="inventory_subtitle">What is on the shelf, and what it is worth</string>
+    <string name="po_subtitle">What you have asked suppliers for, and what has come</string>
     <string name="products_note">These figures only count entries that are tied to a product. Use the button below to tie the ones written before.</string>
     <string name="no_products">No products yet. Tie your existing entries below, or a product appears the first time you name one on a bill.</string>
     <string name="link_goods">Tie existing entries to products</string>
@@ -3360,6 +3364,7 @@
     <string name="po_supplier">Supplier</string>
     <string name="po_send">Send on WhatsApp</string>
     <string name="po_mark_sent">Mark sent</string>
+    <string name="po_copied_no_number">This supplier has no WhatsApp number. The order is copied: paste it where you send it, then press Mark sent.</string>
     <string name="po_receive">Goods arrived</string>
     <string name="po_close">Close order</string>
     <string name="po_status_draft">Draft</string>

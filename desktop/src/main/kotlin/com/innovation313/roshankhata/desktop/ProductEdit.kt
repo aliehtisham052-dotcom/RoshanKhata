@@ -84,10 +84,71 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     // Prices are the owner's and a manager's to change (POS Phase 5); a cashier sees them.
     val mayPrice = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
 
+    // A price, count or rate typed but not readable is said and not saved (25 Oct 2026, the audit: it was saved as
+    // "no price" in silence); a cleared box is still "no rate".
+    val unreadableWords = mapOf(
+        W.sale_price_hint to cash, W.credit_price_hint to credit, W.product_cost_hint to cost,
+        W.product_low_stock_hint to lowStock, W.product_pack_size to packSize, W.product_pack_price to packPrice
+    )
+    fun save() {
+        val bad = unreadableWords.entries.firstOrNull { (_, v) -> v.isNotBlank() && Calc.evalPad(v.trim()) == null }?.key
+            ?: W.product_tax_rate.takeIf { taxRate.isNotBlank() && Calc.evalPercent(taxRate.trim()) == null }
+        if (bad != null) { problem = words.text(W.enter_valid_amount) + " — " + words.text(bad); return }
+        val newName = name.trim()
+        if (newName.isEmpty()) { problem = needName; return }
+        fun typed(v: String) = v.trim().ifEmpty { null }
+        val updated = product.copy(
+            name = newName,
+            nameKey = ProductName.key(newName),
+            normalisedName = ProductName.normalised(newName),
+            company = typed(company),
+            defaultUnit = UnitWords.canonical(unit),
+            productType = typed(type),
+            technicalName = typed(technical),
+            formulation = typed(formulation),
+            registrationNumber = typed(registration),
+            // A cleared box is "no rate for this": null, not zero. Zero is a price.
+            salePrice = typed(cash)?.let { Calc.evalPad(it) },
+            creditPrice = typed(credit)?.let { Calc.evalPad(it) },
+            barcode = typed(barcode),
+            costPrice = typed(cost)?.let { Calc.evalPad(it) },
+            lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) },
+            // A pack needs both its name and how many are in it; half of one is no pack.
+            packUnit = typed(packUnit)?.takeIf { (typed(packSize)?.let { Calc.evalPad(it) } ?: 0.0) > 0.0 },
+            packSize = typed(packSize)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 && typed(packUnit) != null },
+            packPrice = typed(packPrice)?.let { Calc.evalPad(it) }?.takeIf { typed(packUnit) != null },
+            taxRate = typed(taxRate)?.let { Calc.evalPercent(it) }?.takeIf { it > 0.0 },
+            parentId = parentId,
+            variant = if (parentId != null) typed(variant) else null
+        )
+        scope.launch {
+            val clash = withContext(Dispatchers.IO) { dao.productByKey(updated.nameKey) }
+            val codeClash = withContext(Dispatchers.IO) { updated.barcode?.let { dao.productByBarcode(it) } }
+            if (clash != null && clash.id != product.id) {
+                problem = words.text(W.product_name_taken, clash.name)
+            } else if (codeClash != null && codeClash.id != product.id) {
+                problem = words.text(W.product_barcode_taken, codeClash.name)
+            } else {
+                withContext(Dispatchers.IO) {
+                    dao.updateProduct(updated)
+                    if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
+                        dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
+                            updated.name + ": " + listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " → " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/"))
+                    }
+                }
+                onClose()
+            }
+        }
+    }
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
-        Column(
-            Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        // The app's own frame (Marhala 4): one title and ✕, the fields, Cancel and Save always in sight at its foot.
+        DialogFrame(
+            product.name, subtitle = word(W.edit), onClose = onClose,
+            footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+            footer = {
+                FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+            }
         ) {
             Field(word(W.product_name), name) { name = it; problem = null }
             Field(word(W.company_optional), company) { company = it }
@@ -143,57 +204,6 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                 Field(word(W.technical_name_hint), technical) { technical = it }
                 Field(word(W.formulation_hint), formulation) { formulation = it }
                 Field(word(W.registration_number_hint), registration) { registration = it }
-            }
-            problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-                FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
-                FillButton(word(W.save), c.brandGreen) {
-                    val newName = name.trim()
-                    if (newName.isEmpty()) { problem = needName; return@FillButton }
-                    fun typed(v: String) = v.trim().ifEmpty { null }
-                    val updated = product.copy(
-                        name = newName,
-                        nameKey = ProductName.key(newName),
-                        normalisedName = ProductName.normalised(newName),
-                        company = typed(company),
-                        defaultUnit = UnitWords.canonical(unit),
-                        productType = typed(type),
-                        technicalName = typed(technical),
-                        formulation = typed(formulation),
-                        registrationNumber = typed(registration),
-                        // A cleared box is "no rate for this": null, not zero. Zero is a price.
-                        salePrice = typed(cash)?.let { Calc.evalPad(it) },
-                        creditPrice = typed(credit)?.let { Calc.evalPad(it) },
-                        barcode = typed(barcode),
-                        costPrice = typed(cost)?.let { Calc.evalPad(it) },
-                        lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) },
-                        // A pack needs both its name and how many are in it; half of one is no pack.
-                        packUnit = typed(packUnit)?.takeIf { (typed(packSize)?.let { Calc.evalPad(it) } ?: 0.0) > 0.0 },
-                        packSize = typed(packSize)?.let { Calc.evalPad(it) }?.takeIf { it > 0.0 && typed(packUnit) != null },
-                        packPrice = typed(packPrice)?.let { Calc.evalPad(it) }?.takeIf { typed(packUnit) != null },
-                        taxRate = typed(taxRate)?.let { Calc.evalPercent(it) }?.takeIf { it > 0.0 },
-                        parentId = parentId,
-                        variant = if (parentId != null) typed(variant) else null
-                    )
-                    scope.launch {
-                        val clash = withContext(Dispatchers.IO) { dao.productByKey(updated.nameKey) }
-                        val codeClash = withContext(Dispatchers.IO) { updated.barcode?.let { dao.productByBarcode(it) } }
-                        if (clash != null && clash.id != product.id) {
-                            problem = words.text(W.product_name_taken, clash.name)
-                        } else if (codeClash != null && codeClash.id != product.id) {
-                            problem = words.text(W.product_barcode_taken, codeClash.name)
-                        } else {
-                            withContext(Dispatchers.IO) {
-                                dao.updateProduct(updated)
-                                if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
-                                    dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
-                                        updated.name + ": " + listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " → " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/"))
-                                }
-                            }
-                            onClose()
-                        }
-                    }
-                }
             }
         }
     }

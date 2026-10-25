@@ -984,7 +984,7 @@
     <string name="na_plan_due">আজকের কিস্তি</string>
     <string name="na_plan_late">কিস্তি দেরি হয়েছে</string>
     <string name="na_bill_due">সরবরাহকারীর বিল %1$s তারিখে</string>
-    <string name="na_expiring">30 দিনে মেয়াদ শেষ হওয়া মাল: %1$s ব্যাচ</string>
+    <string name="na_expiring">60 দিনে মেয়াদ শেষ হওয়া মাল: %1$s ব্যাচ</string>
     <string name="na_backup">শেষ ব্যাকআপ %1$s দিন আগে</string>
     <string name="na_tag_today">আজ</string>
     <string name="na_tag_late">দেরি</string>
@@ -1266,6 +1266,10 @@
     <string name="report_crash_included">— কারিগরি ক্র্যাশ রেকর্ড (আপনার ফোনে নিজে থেকে সেভ হয়েছে, ত্রুটি খুঁজতে সাহায্যের জন্য যুক্ত):</string>
     <string name="products_stock">পণ্য ও স্টক</string>
     <string name="products_subtitle">দোকানে কী বিক্রি হয়, আর কতটা বাকি আছে</string>
+    <string name="no_products_pc">এখনো কোনো পণ্য নেই। সরবরাহকারীর বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়, অথবা CSV আমদানি দিয়ে আপনার তালিকা আনুন।</string>
+    <string name="no_matching_products">আপনার খোঁজের সাথে কোনো পণ্য মেলেনি।</string>
+    <string name="inventory_subtitle">তাকে কত মাল আছে, আর তার দাম কত</string>
+    <string name="po_subtitle">সরবরাহকারীদের কাছে কী চেয়েছেন, আর কী এসেছে</string>
     <string name="products_note">এই অঙ্কগুলো শুধু পণ্যের সঙ্গে যুক্ত এন্ট্রি গোনে। আগে লেখা এন্ট্রি যুক্ত করতে নিচের বোতাম ব্যবহার করুন।</string>
     <string name="no_products">এখনো কোনো পণ্য নেই। নিচে থেকে আগের এন্ট্রি যুক্ত করুন, অথবা বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়।</string>
     <string name="link_goods">আগের এন্ট্রি পণ্যের সঙ্গে যুক্ত করুন</string>
@@ -3196,6 +3200,7 @@
     <string name="po_supplier">সরবরাহকারী</string>
     <string name="po_send">WhatsApp-এ পাঠান</string>
     <string name="po_mark_sent">পাঠানো চিহ্নিত</string>
+    <string name="po_copied_no_number">এই সরবরাহকারীর হোয়াটসঅ্যাপ নম্বর নেই। অর্ডার কপি হয়েছে: যেখানে পাঠাবেন সেখানে পেস্ট করুন, তারপর পাঠানো চিহ্নিত চাপুন।</string>
     <string name="po_receive">মাল এসেছে</string>
     <string name="po_close">অর্ডার বন্ধ</string>
     <string name="po_status_draft">খসড়া</string>

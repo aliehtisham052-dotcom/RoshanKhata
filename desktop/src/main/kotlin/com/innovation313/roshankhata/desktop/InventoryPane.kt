@@ -97,7 +97,7 @@ fun InventoryPane(
     if (adjusting) AdjustDialog(dao, words, stockBy, onClose = { adjusting = false }) { told = it; tick++; onChanged() }
     if (sending && businesses != null) TransferDialog(dao, words, businesses, activeBusiness, stockBy, onClose = { sending = false }) { told = it; tick++; onChanged() }
 
-    FluentPage(word(W.inventory_title), told ?: word(W.products_subtitle), scroll = false, actions = {
+    FluentPage(word(W.inventory_title), told ?: word(W.inventory_subtitle), scroll = false, actions = {
         FluentButton(word(W.stock_count_title), {
             Gates.needBy(Access.Permission.STOCK_ADJUST) { by ->
                 stockBy = by
@@ -137,7 +137,7 @@ fun InventoryPane(
             }
         }
         else ListCard(Modifier.weight(1f)) {
-            WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.inspector_col_left) to 2f, word(W.product_cost_hint) to 2f, word(W.stock_valuation) to 2f), endAligned = setOf(1, 2, 3))
+            WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.inspector_col_left) to 2f, word(W.csv_col_cost) to 2f, word(W.stock_valuation) to 2f), endAligned = setOf(1, 2, 3))
             val rows = (v?.rows ?: emptyList()).let { r -> if (lowOnly) r.filter { it.isLow } else r }.sortedWith(compareBy<Valuation.Row> { !it.isLow }.thenBy(com.innovation313.roshankhata.data.NameOrder.byName) { it.name })
             if (rows.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.no_products), color = c.textMuted) }
             else LazyColumn(Modifier.fillMaxWidth().weight(1f)) {

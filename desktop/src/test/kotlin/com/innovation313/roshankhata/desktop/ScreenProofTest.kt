@@ -337,6 +337,9 @@ class ScreenProofTest {
             // The owner's shortest window, in Urdu: the head keeps its title, the four figures and the two buttons fit.
             shoot("screen-laptop-cashbook-short-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.CASHBOOK) { CashbookPane(dao) }
             shoot("screen-laptop-cheques-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.CHEQUES) { ChequesPane(dao, partiesNow, words) {} }
+            // Marhala 4: the bills' three figures (the phone's), and products with their own empty and search words.
+            shoot("screen-laptop-bills-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.BILLS) { BillsPane(dao, partiesNow, words, home) {} }
+            shoot("screen-laptop-products-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.PRODUCTS) { ProductsPane(dao, words) }
             shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
             shoot("screen-laptop-counter-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.COUNTER) {
                 CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())

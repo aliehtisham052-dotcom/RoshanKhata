@@ -102,7 +102,7 @@ fun OrdersPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl
     }
     receiving?.let { o -> ReceiveDialog(dao, o, words, onClose = { receiving = null }) { told = it; receiving = null; onChanged() } }
 
-    FluentPage(word(W.po_title), told ?: word(W.products_subtitle), scroll = false, actions = {
+    FluentPage(word(W.po_title), told ?: word(W.po_subtitle), scroll = false, actions = {
         FluentButton(word(W.po_from_low), { newOrder(true) }, kind = ButtonKind.STANDARD)
         FluentButton(word(W.po_new), { newOrder(false) }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
     }) {
@@ -121,7 +121,7 @@ fun OrdersPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl
                         OrderActions(dao, o, suppliers, words, rtl, shopName,
                             onEdit = { Gates.need(Access.Permission.STOCK_ADJUST) { scope.launch { val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch; editing = OrderDraft(full, withContext(Dispatchers.IO) { dao.productsOnce() }) } } },
                             onReceive = { Gates.need(Access.Permission.STOCK_ADJUST) { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } } },
-                            onChanged = { onChanged() })
+                            onChanged = { onChanged() }, onTell = { told = it })
                     }
                     Rule()
                 }
@@ -143,9 +143,12 @@ private fun statusWord(s: String): String = word(
 @Composable
 private fun OrderActions(
     dao: KhataDao, o: OrderSummary, suppliers: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?,
-    onEdit: () -> Unit, onReceive: () -> Unit, onChanged: () -> Unit
+    onEdit: () -> Unit, onReceive: () -> Unit, onChanged: () -> Unit,
+    /** What happened, said in the page's line (a send that did not open, an order copied for a supplier with no number). */
+    onTell: (String) -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
+    fun markSent() { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.SENT) }; onChanged() } }
     fun text(): String? {
         var out: String? = null
         kotlinx.coroutines.runBlocking { out = withContext(Dispatchers.IO) { dao.orderWithLines(o.id)?.let { orderText(words, shopName, it, o.partyName) } } }
@@ -154,12 +157,19 @@ private fun OrderActions(
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         if (o.status == OrderStatus.DRAFT || o.status == OrderStatus.SENT) {
             val number = suppliers.firstOrNull { it.id == o.partyId }?.phone?.let { WhatsAppNumber.of(it) }
+            // Marked sent only once WhatsApp opened with it (25 Oct 2026, the audit: with no number the order was
+            // copied and still marked sent). No number: copied, said, and left for Mark sent.
             FluentButton(word(W.po_send), {
                 val t = text() ?: return@FluentButton
-                if (number != null) runCatching { java.awt.Desktop.getDesktop().browse(URI("https://wa.me/$number?text=" + URLEncoder.encode(t, "UTF-8").replace("+", "%20"))) }
-                else runCatching { java.awt.Toolkit.getDefaultToolkit().systemClipboard.setContents(java.awt.datatransfer.StringSelection(t), null) }
-                scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.SENT) }; onChanged() }
+                if (number != null) {
+                    runCatching { java.awt.Desktop.getDesktop().browse(URI("https://wa.me/$number?text=" + URLEncoder.encode(t, "UTF-8").replace("+", "%20"))) }
+                        .onSuccess { markSent() }.onFailure { onTell(failText(words, it)) }
+                } else {
+                    runCatching { java.awt.Toolkit.getDefaultToolkit().systemClipboard.setContents(java.awt.datatransfer.StringSelection(t), null) }
+                        .onSuccess { onTell(words.text(W.po_copied_no_number)) }.onFailure { onTell(failText(words, it)) }
+                }
             }, kind = ButtonKind.SUBTLE, icon = "ic_share")
+            if (o.status == OrderStatus.DRAFT) FluentButton(word(W.po_mark_sent), { markSent() }, kind = ButtonKind.SUBTLE)
             IconAction("ic_print", word(W.pdf_preview), {
                 scope.launch {
                     val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch
@@ -227,8 +237,11 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
         var qty by mutableStateOf(Calc.trim(item.quantity))
         var rate by mutableStateOf(item.rate?.let { Calc.trim(it) }.orEmpty())
         var batch by mutableStateOf("")
+        // The batch's expiry as it arrived (25 Oct 2026, the audit: received goods could not carry one).
+        var expiry by mutableStateOf<Long?>(null)
     }
     val got = remember { o.items.map { Got(it) } }
+    var pickingFor by remember { mutableStateOf<Got?>(null) }
     var billNumber by remember { mutableStateOf("") }
     val total = got.sumOf { (Calc.evalAmount(it.qty) ?: 0.0) * (Calc.evalAmount(it.rate) ?: 0.0) }
     val title = word(W.po_receive)
@@ -240,7 +253,7 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
                     val items = got.mapNotNull { g ->
                         val q = Calc.evalAmount(g.qty) ?: return@mapNotNull null
                         if (q <= 0.0) null else BillItem(billId = 0, productName = g.item.itemName, quantity = q, unit = g.item.unit, rate = Calc.evalAmount(g.rate),
-                            batchNumber = g.batch.trim().ifBlank { null }, productId = g.item.productId)
+                            batchNumber = g.batch.trim().ifBlank { null }, expiryDate = g.expiry, productId = g.item.productId)
                     }
                     val bill = SupplierBill(partyId = o.order.partyId, billNumber = billNumber.trim().ifBlank { null }, totalAmount = com.innovation313.roshankhata.data.LineMath.round(total), note = o.order.orderNumber)
                     val entry = if (total > 0.0) com.innovation313.roshankhata.data.LedgerEntry(partyId = o.order.partyId, amount = com.innovation313.roshankhata.data.LineMath.round(total), isGiven = false, note = o.order.orderNumber, entryNumber = "") else null
@@ -256,6 +269,7 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
                     FluentField(g.qty, { g.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                     FluentField(g.rate, { g.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     FluentField(g.batch, { g.batch = it }, Modifier.weight(1f), label = word(W.pdf_reg_batch, ""))
+                    DateBox(word(W.expiry_date), g.expiry?.let { Format.dateOnly(it) }, word(W.pick_date), { pickingFor = g }, Modifier.weight(1.2f))
                 }
             }
             Row(Modifier.fillMaxWidth().padding(top = 12.dp)) {
@@ -264,4 +278,5 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
             }
         }
     }
+    pickingFor?.let { g -> DayPicker(g.expiry, onPick = { g.expiry = it; pickingFor = null }, onDismiss = { pickingFor = null }, title = g.item.itemName) }
 }

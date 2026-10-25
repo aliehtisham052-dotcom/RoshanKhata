@@ -965,7 +965,7 @@
     <string name="na_plan_due">Cicilan jatuh tempo hari ini</string>
     <string name="na_plan_late">Cicilan terlambat</string>
     <string name="na_bill_due">Nota pemasok jatuh tempo %1$s</string>
-    <string name="na_expiring">Stok kedaluwarsa dalam 30 hari: %1$s batch</string>
+    <string name="na_expiring">Stok kedaluwarsa dalam 60 hari: %1$s batch</string>
     <string name="na_backup">Cadangan terakhir %1$s hari lalu</string>
     <string name="na_tag_today">Hari ini</string>
     <string name="na_tag_late">Terlambat</string>
@@ -1238,6 +1238,10 @@
     <string name="report_crash_included">— Catatan teknis kerusakan (tersimpan otomatis di ponsel Anda, disertakan untuk membantu menemukan kesalahannya):</string>
     <string name="products_stock">Produk &amp; stok</string>
     <string name="products_subtitle">Apa yang dijual toko, dan berapa sisanya</string>
+    <string name="no_products_pc">Belum ada produk. Produk dibuat saat pertama kali Anda menuliskan namanya di tagihan pemasok, atau masukkan daftar Anda dengan Impor CSV.</string>
+    <string name="no_matching_products">Tidak ada produk yang cocok dengan pencarian Anda.</string>
+    <string name="inventory_subtitle">Apa yang ada di rak, dan berapa nilainya</string>
+    <string name="po_subtitle">Apa yang Anda pesan dari pemasok, dan apa yang sudah datang</string>
     <string name="products_note">Angka-angka ini hanya menghitung catatan yang terkait dengan suatu produk. Gunakan tombol di bawah untuk mengaitkan catatan yang ditulis sebelumnya.</string>
     <string name="no_products">Belum ada produk. Kaitkan catatan lama Anda di bawah, atau produk akan muncul saat pertama kali Anda menuliskannya di tagihan.</string>
     <string name="link_goods">Kaitkan catatan lama ke produk</string>
@@ -3149,6 +3153,7 @@
     <string name="po_supplier">Pemasok</string>
     <string name="po_send">Kirim lewat WhatsApp</string>
     <string name="po_mark_sent">Tandai terkirim</string>
+    <string name="po_copied_no_number">Pemasok ini tidak punya nomor WhatsApp. Pesanan sudah disalin: tempel di tempat Anda mengirimnya, lalu tekan Tandai terkirim.</string>
     <string name="po_receive">Barang tiba</string>
     <string name="po_close">Tutup pesanan</string>
     <string name="po_status_draft">Draf</string>

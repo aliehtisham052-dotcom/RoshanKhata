@@ -1020,7 +1020,7 @@
     <string name="na_plan_due">قسط مستحق اليوم</string>
     <string name="na_plan_late">قسط متأخر</string>
     <string name="na_bill_due">فاتورة مورّد تستحق %1$s</string>
-    <string name="na_expiring">بضاعة تنتهي خلال 30 يومًا: %1$s دفعة</string>
+    <string name="na_expiring">بضاعة تنتهي خلال 60 يومًا: %1$s دفعة</string>
     <string name="na_backup">آخر نسخة احتياطية قبل %1$s يومًا</string>
     <string name="na_tag_today">اليوم</string>
     <string name="na_tag_late">متأخر</string>
@@ -1338,6 +1338,10 @@
     <string name="report_crash_included">— سجل العطل التقني (محفوظ تلقائيًا على هاتفك، مُرفق للمساعدة في إيجاد الخلل):</string>
     <string name="products_stock">المنتجات والمخزون</string>
     <string name="products_subtitle">ما تبيعه الدكان، وما تبقى منه</string>
+    <string name="no_products_pc">لا توجد منتجات بعد. يُنشأ المنتج أول مرة تكتب اسمه في فاتورة مورّد، أو أدخل قائمتك عبر استيراد CSV.</string>
+    <string name="no_matching_products">لا توجد منتجات تطابق بحثك.</string>
+    <string name="inventory_subtitle">ما على الرف، وكم يساوي</string>
+    <string name="po_subtitle">ما طلبته من المورّدين، وما وصل</string>
     <string name="products_note">هذه الأرقام تحسب فقط القيود المرتبطة بمنتج. اربط ما كُتب سابقاً بالزر أدناه.</string>
     <string name="no_products">لا توجد منتجات بعد. اربط قيودك السابقة أدناه، أو سيظهر منتج أول مرة تسمّيه في فاتورة.</string>
     <string name="link_goods">اربط القيود السابقة بالمنتجات</string>
@@ -3334,6 +3338,7 @@
     <string name="po_supplier">المورّد</string>
     <string name="po_send">إرسال عبر واتساب</string>
     <string name="po_mark_sent">تعليم كمُرسَل</string>
+    <string name="po_copied_no_number">ليس لهذا المورّد رقم واتساب. نُسخ الطلب: الصقه حيث ترسله، ثم اضغط تعليم كمُرسَل.</string>
     <string name="po_receive">وصلت البضاعة</string>
     <string name="po_close">إغلاق الأمر</string>
     <string name="po_status_draft">مسودة</string>
