@@ -3233,6 +3233,7 @@
     <string name="srep_period_month">এই মাস</string>
     <string name="srep_none">এই সময়ে কোনো বিক্রি নেই</string>
     <string name="srep_no_category">বিভাগ নেই</string>
+    <string name="srep_no_goods">আইটেম নেই</string>
     <string name="pos_credit_limit">ক্রেডিট সীমা %1$s — এই বিক্রিতে খাতা %2$s হবে</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

@@ -3211,6 +3211,7 @@
     <string name="srep_period_month">هن مهيني</string>
     <string name="srep_none">هن عرصي ۾ ڪو وڪرو ناهي</string>
     <string name="srep_no_category">بنا قسم</string>
+    <string name="srep_no_goods">بنا شيءِ</string>
     <string name="pos_credit_limit">ڪريڊٽ حد %1$s — هن وڪري سان کاتو %2$s ٿي ويندو</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

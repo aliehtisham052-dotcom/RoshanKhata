@@ -3397,6 +3397,7 @@
     <string name="srep_period_month">This month</string>
     <string name="srep_none">No sales in this period</string>
     <string name="srep_no_category">No category</string>
+    <string name="srep_no_goods">No item</string>
     <string name="pos_credit_limit">Credit limit %1$s — this sale would take the account to %2$s</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

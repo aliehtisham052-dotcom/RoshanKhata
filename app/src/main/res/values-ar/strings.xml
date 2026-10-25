@@ -3371,6 +3371,7 @@
     <string name="srep_period_month">هذا الشهر</string>
     <string name="srep_none">لا مبيعات في هذه الفترة</string>
     <string name="srep_no_category">بلا فئة</string>
+    <string name="srep_no_goods">بلا صنف</string>
     <string name="pos_credit_limit">حد الائتمان %1$s — سيصل الحساب بهذا البيع إلى %2$s</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

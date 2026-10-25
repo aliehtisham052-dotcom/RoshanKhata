@@ -4036,6 +4036,30 @@ interface KhataDao {
     suspend fun soldLinesBetween(from: Long, to: Long): List<SoldLine>
 
     /**
+     * The khata's own sales in [from, to) (Marhala 3, 25 Oct 2026, the audit: the sales report counted the
+     * counter alone, so a shop that sells on its khata read "No sales"): each "I gave" to a customer that
+     * Sale Insights counts — not a Qarz-e-Hasna loan, not a return's refund — and that no posted ticket
+     * stands for (that ticket's own lines count it: [soldLinesBetween]'s rule, done and not binned), one row
+     * per goods line, or one row with no goods.
+     */
+    @Query(
+        """
+        SELECT t.id AS entryId, t.timestamp AS timestamp, t.amount AS amount, p.name AS partyName, t.createdBy AS createdBy,
+               ei.itemName AS itemName, ei.quantity AS quantity, ei.unit AS unit, ei.rate AS rate,
+               ei.isBonus AS isBonus, ei.productId AS productId, pr.category AS category
+        FROM transactions t JOIN parties p ON p.id = t.partyId
+        LEFT JOIN entry_items ei ON ei.entryId = t.id
+        LEFT JOIN products pr ON pr.id = ei.productId
+        WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0
+          AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL)
+          AND t.id NOT IN (SELECT ledgerEntryId FROM sales WHERE ledgerEntryId IS NOT NULL AND isDeleted = 0 AND status = 'done')
+          AND t.timestamp >= :from AND t.timestamp < :to
+        ORDER BY t.timestamp ASC, t.id ASC, ei.lineNo ASC
+        """
+    )
+    suspend fun khataSaleRowsBetween(from: Long, to: Long): List<KhataSaleRow>
+
+    /**
      * What the goods that came back in [from, to) had cost, where their sale
      * line knew its cost (21 Oct 2026): a bag returned is back on the shelf, so
      * the report takes off the margin lost, not the whole refund as if the bag
