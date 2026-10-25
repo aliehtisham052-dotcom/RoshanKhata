@@ -13,6 +13,9 @@ import java.awt.print.Printable
  * band, a heading, the columns' names, then the rows, [rowsPerPage] to a page.
  * The first column is text from the start side; the others are figures,
  * ending at their column's end. Mirrored for a right-to-left language.
+ * Figure columns are as wide as their widest figure (60 to 95 points), so
+ * the names keep the rest (25 Oct 2026, the audit: with five figure columns
+ * the dues report's names had 56 points — "Muhammad…").
  */
 class TablePrint(
     private val rtl: Boolean,
@@ -20,6 +23,8 @@ class TablePrint(
     private val heading: String,
     private val headers: List<String>,
     private val rows: List<List<String>>,
+    /** A last row in bold under a rule (the dues report's totals), on the last page; null for none. */
+    private val totals: List<String>? = null,
     private val pageWord: (page: Int, of: Int) -> String
 ) : Printable {
 
@@ -75,8 +80,9 @@ class TablePrint(
             g.text(pageWord(pageIndex + 1, pages()), pageW - margin, y, end = true)
         }
         y += 18
-        // Figure columns are 95 points wide each, ending at the far margin.
-        val ends = headers.indices.drop(1).map { i -> pageW - margin - (headers.size - 1 - i) * 95.0 }
+        // Figure columns as wide as their widest figure or name, ending at the far margin (measured once).
+        val widths = figureWidths ?: (1 until headers.size).map { widthOf(g, it) }.also { figureWidths = it }
+        val ends = columnEnds(widths)
         g.color = Color.BLACK
         g.font = Font(PrintFonts.family, Font.BOLD, 10)
         headers.forEachIndexed { i, h -> if (i == 0) g.text(h, margin, y) else g.text(h, ends[i - 1], y, end = true) }
@@ -85,7 +91,7 @@ class TablePrint(
         g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
         y += 16
         // The first column stops short of the first figure column, cut with an ellipsis.
-        val firstWidth = (ends.firstOrNull()?.let { it - 95.0 + 8.0 } ?: (pageW - margin)) - margin
+        val firstWidth = (ends.firstOrNull()?.let { it - widths.first() + 8.0 } ?: (pageW - margin)) - margin
         val from = pageIndex * rowsPerPage
         for (r in rows.subList(minOf(from, rows.size), minOf(rows.size, from + rowsPerPage))) {
             g.color = Color.BLACK
@@ -98,6 +104,47 @@ class TablePrint(
             g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
             y += 15
         }
+        // The totals under a darker rule, once, on the last page.
+        val sums = totals
+        if (sums != null && pageIndex == pages() - 1) {
+            g.color = Color.BLACK
+            g.drawLine(margin.toInt(), (y - 15).toInt(), (pageW - margin).toInt(), (y - 15).toInt())
+            sums.forEachIndexed { i, cell ->
+                g.font = Font(PrintFonts.family, Font.BOLD, 10)
+                if (i == 0) g.text(g.fit(cell, firstWidth), margin, y) else if (i - 1 < ends.size) g.text(cell, ends[i - 1], y, end = true)
+            }
+        }
         return Printable.PAGE_EXISTS
+    }
+
+    /** Column [i]'s width (a figure column): its widest header or cell in bold 10 pt, plus a gap, 60 to 95 points. */
+    private fun widthOf(g: Graphics2D, i: Int): Double {
+        val keep = g.font
+        g.font = Font(PrintFonts.family, Font.BOLD, 10)
+        val widest = (listOfNotNull(headers.getOrNull(i), totals?.getOrNull(i)) + rows.mapNotNull { it.getOrNull(i) })
+            .maxOfOrNull { PrintFonts.width(g, com.innovation313.roshankhata.data.Digits.forPrint(it)).toDouble() } ?: 0.0
+        g.font = keep
+        return (widest + 14.0).coerceIn(60.0, 95.0)
+    }
+
+    /** The names' column width on this sheet, as [print] lays it out (the tests read it). */
+    internal fun nameColumnWidth(g: Graphics2D): Double {
+        val widths = (1 until headers.size).map { widthOf(g, it) }
+        val ends = columnEnds(widths)
+        return (ends.firstOrNull()?.let { it - widths.first() + 8.0 } ?: (pageW - margin)) - margin
+    }
+
+    /** The figure columns' widths, measured on the first page drawn and kept for the rest. */
+    private var figureWidths: List<Double>? = null
+
+    /** Where each figure column ends, from the far margin back ([widths]: columns 1 to the last). */
+    private fun columnEnds(widths: List<Double>): List<Double> {
+        val ends = DoubleArray(widths.size)
+        var end = pageW - margin
+        for (k in widths.indices.reversed()) {
+            ends[k] = end
+            end -= widths[k]
+        }
+        return ends.toList()
     }
 }

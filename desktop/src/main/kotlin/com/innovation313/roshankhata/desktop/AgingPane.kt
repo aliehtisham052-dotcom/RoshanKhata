@@ -80,7 +80,10 @@ fun AgingPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
         }, kind = ButtonKind.STANDARD, enabled = rows.isNotEmpty())
         FluentButton(word(W.ledger_pdf_button), {
             StatementPrint.show(
-                TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.aging_title) + "  ·  " + side, head, cells) { p, of -> words.text(W.pdf_stmt_page, p, of) },
+                // With the totals under the names, as the page's cards show them (25 Oct 2026, the audit).
+                TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.aging_title) + "  ·  " + side, head, cells,
+                    totals = listOf(words.text(W.aging_total)) + totals.map { if (it > 0.0) Format.money(it) else "–" } + Format.money(totals.sum())
+                ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                 words.text(W.aging_title)
             )
         }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = rows.isNotEmpty())
