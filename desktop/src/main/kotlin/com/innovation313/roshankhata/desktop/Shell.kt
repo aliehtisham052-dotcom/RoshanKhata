@@ -72,30 +72,72 @@ val LocalPageHead = androidx.compose.runtime.staticCompositionLocalOf<PageHead?>
 /**
  * The shop at the top of the rail (the owner's mockup): its logo on the deep
  * green with a gold edge, its name, Profile · Switch shop under it, a chevron;
- * the device it syncs with live, when it does.
+ * the device it syncs with live, when it does. A click offers the two it names:
+ * the shop's profile and the other shops (25 Oct 2026, the audit: it only ever
+ * opened the list of businesses).
  */
 @Composable
-fun ShopCard(shopName: String, logo: ImageBitmap?, live: String?, onShop: () -> Unit) {
+fun ShopCard(shopName: String, logo: ImageBitmap?, live: String?, onProfile: () -> Unit, onSwitch: () -> Unit) {
     val c = LocalRoshanColors.current
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Look.layer)
-            .border(1.5.dp, Look.accent, RoundedCornerShape(16.dp))
-            .press(RoundedCornerShape(16.dp), onClick = onShop).padding(horizontal = 9.dp, vertical = 7.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(9.dp)
-    ) {
-        Box(
-            Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(Look.hero).border(2.dp, Look.goldEdge, RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
+    var open by remember { mutableStateOf(false) }
+    Box {
+        Row(
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Look.layer)
+                .border(1.5.dp, Look.accent, RoundedCornerShape(16.dp))
+                .press(RoundedCornerShape(16.dp)) { open = true }.padding(horizontal = 9.dp, vertical = 7.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(9.dp)
         ) {
-            if (logo != null) Image(logo, contentDescription = null, modifier = Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)), contentScale = ContentScale.Crop)
-            else Glyph("ic_storefront", Look.goldEdge, 19)
+            Box(
+                Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(Look.hero).border(2.dp, Look.goldEdge, RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (logo != null) Image(logo, contentDescription = null, modifier = Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)), contentScale = ContentScale.Crop)
+                else Glyph("ic_storefront", Look.goldEdge, 19)
+            }
+            Column(Modifier.weight(1f)) {
+                Text(shopName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(word(W.shop_sub_switch), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (live != null) { Spacer(Modifier.height(3.dp)); LiveBadge(live) }
+            }
+            Glyph("ic_chevron_down", c.inkSoft, 14)
         }
-        Column(Modifier.weight(1f)) {
-            Text(shopName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(word(W.shop_sub_switch), color = c.textMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (live != null) { Spacer(Modifier.height(3.dp)); LiveBadge(live) }
+        DropdownMenu(open, onDismissRequest = { open = false }, containerColor = Look.layer) {
+            DropdownMenuItem(text = { Text(word(W.business_profile), color = c.ink, fontSize = 14.sp) }, onClick = { open = false; onProfile() })
+            DropdownMenuItem(text = { Text(word(W.businesses_title), color = c.ink, fontSize = 14.sp) }, onClick = { open = false; onSwitch() })
         }
-        Glyph("ic_chevron_down", c.inkSoft, 14)
+    }
+}
+
+/**
+ * The header's backup: a cloud and two lines (the owner's mockup) — "Backed up" over when, or, once a
+ * week has passed or there was never one, how old it is in the warning colour over "Back up now".
+ * [compact] keeps only the cloud, its words as the hover tip.
+ */
+@Composable
+fun BackupChip(at: Long?, old: Boolean, compact: Boolean, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    val now = System.currentTimeMillis()
+    val days = at?.let { ((now - it) / (24L * 60 * 60 * 1000)).toInt() }
+    val top = when {
+        at == null -> word(W.summary_backup_never)
+        old -> com.innovation313.roshankhata.words.plural(com.innovation313.roshankhata.words.WP.summary_backup_days, days ?: 0, days ?: 0)
+        else -> word(W.header_backed_up)
+    }
+    val bottom = if (at == null || old) word(W.backup_now) else com.innovation313.roshankhata.ui.Format.dateTime(at)
+    val ink = if (at == null || old) Look.warn else Look.accent
+    val tint = if (at == null || old) Look.warnTint else Look.accentTint
+    Tip("$top · $bottom", show = compact) {
+        Row(
+            Modifier.height(40.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
+                .press(Look.ctl, onClick = onClick).padding(start = 6.dp, end = if (compact) 6.dp else 12.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(Modifier.size(28.dp).background(tint, Look.ctl), contentAlignment = Alignment.Center) { Glyph("ic_feature_backup", ink, 17) }
+            if (!compact) Column {
+                Text(top, color = if (at == null || old) Look.warn else c.textMuted, fontSize = 11.sp, maxLines = 1, softWrap = false)
+                Text(bottom, color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+            }
+        }
     }
 }
 
@@ -103,13 +145,15 @@ fun ShopCard(shopName: String, logo: ImageBitmap?, live: String?, onShop: () -> 
  * The window's top row (Marhala 2): the open page's title and its line on the
  * start side ([head]), its own actions, then the app's — the backup, the phone,
  * the bell, More and the one accent button, Add Party. Below [roomy] widths the
- * app's side buttons keep only their icons (their words as the hover tip).
+ * backup keeps only its cloud (its words as the hover tip).
  */
 @Composable
 fun AppHeader(
     head: PageHead?,
-    /** "Last backup …" with the time of the newest copy, or Back up now when there is none. */
-    backupLabel: String,
+    /** When the newest real backup was made (a "Back up now" file or the outside folder's copy), or null. */
+    backupAt: Long?,
+    /** A week or more since [backupAt], or never. */
+    backupOld: Boolean,
     onBackup: () -> Unit,
     onPhone: () -> Unit,
     alerts: Int,
@@ -119,7 +163,7 @@ fun AppHeader(
 ) {
     val c = LocalRoshanColors.current
     BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val roomy = maxWidth >= 1180.dp
+        val roomy = maxWidth >= 760.dp
         Row(
             Modifier.fillMaxWidth().background(Look.layerAlt).padding(start = 24.dp, end = 16.dp, top = 10.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -137,21 +181,16 @@ fun AppHeader(
                 ) { pageActions() }
                 Spacer(Modifier.width(4.dp))
             }
-            if (roomy) {
-                FluentButton(backupLabel, onBackup, icon = "ic_tile_backup")
-                FluentButton(word(W.wifi_pc_button), onPhone, icon = "ic_phone")
-            } else {
-                IconAction("ic_tile_backup", backupLabel, onBackup)
-                IconAction("ic_phone", word(W.wifi_pc_button), onPhone)
-            }
+            BackupChip(backupAt, backupOld, compact = !roomy, onClick = onBackup)
+            IconAction("ic_phone", word(W.wifi_pc_button), onPhone, size = 36)
             // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
             Box {
-                IconAction("ic_bell", word(W.na_title), onAlerts, filled = alerts > 0)
+                IconAction("ic_bell", word(W.na_title), onAlerts, filled = alerts > 0, size = 36)
                 Badge(alerts, Modifier.align(Alignment.TopEnd).offset(x = 5.dp, y = (-5).dp))
             }
             Box {
                 var open by remember { mutableStateOf(false) }
-                IconAction("ic_more_vert", word(W.more_options), { open = true })
+                IconAction("ic_more_vert", word(W.more_options), { open = true }, size = 36)
                 DropdownMenu(open, onDismissRequest = { open = false }, containerColor = Look.layer) {
                     menu.forEachIndexed { i, line ->
                         val go = line.onClick
@@ -172,7 +211,7 @@ fun AppHeader(
                 }
             }
             // The one filled button: a new party, as the phone's Khata button (Ctrl+N).
-            FluentButton(word(W.add_party), onAddParty, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+            FluentButton(word(W.add_party), onAddParty, kind = ButtonKind.ACCENT, icon = "ic_add_plain", tall = true)
         }
     }
 }
@@ -215,12 +254,6 @@ fun Glyph(icon: String, tint: Color, size: Int) {
     tileIcon(icon)?.let {
         Image(it, contentDescription = null, modifier = Modifier.size(size.dp).then(if (flip) Modifier.scale(-1f, 1f) else Modifier), colorFilter = ColorFilter.tint(tint))
     }
-}
-
-/** A section's own tile picture, small, without its tint behind it. */
-@Composable
-private fun TileGlyph(s: Section) {
-    tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(20.dp)) }
 }
 
 /** Esc closes a window, as every Windows dialog does; [close] is the window's own close. */

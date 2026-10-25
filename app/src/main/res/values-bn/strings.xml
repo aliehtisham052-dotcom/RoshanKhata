@@ -2395,6 +2395,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">প্রোফাইল</string>
     <string name="shop_sub_switch">প্রোফাইল · দোকান বদলান</string>
+    <string name="rail_sales_stock">বিক্রি ও স্টক</string>
+    <string name="rail_reports">রিপোর্ট</string>
+    <string name="header_backed_up">ব্যাকআপ হয়েছে</string>
     <string name="shop_add_name">আপনার দোকানের নাম লিখুন</string>
     <string name="shop_add_name_sub">ইনভয়েস ও স্টেটমেন্টে ছাপা হবে</string>
     <string name="shop_edit_profile">প্রোফাইল সম্পাদনা</string>

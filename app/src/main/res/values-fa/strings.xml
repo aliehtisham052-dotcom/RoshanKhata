@@ -2373,6 +2373,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">پروفایل</string>
     <string name="shop_sub_switch">پروفایل · تغییر فروشگاه</string>
+    <string name="rail_sales_stock">فروش و موجودی</string>
+    <string name="rail_reports">گزارش‌ها</string>
+    <string name="header_backed_up">آخرین پشتیبان</string>
     <string name="shop_add_name">نام فروشگاه را بنویسید</string>
     <string name="shop_add_name_sub">روی فاکتور و صورت‌حساب چاپ می‌شود</string>
     <string name="shop_edit_profile">ویرایش پروفایل</string>

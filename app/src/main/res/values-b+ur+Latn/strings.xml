@@ -2345,6 +2345,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">Profile</string>
     <string name="shop_sub_switch">Profile · Dukaan badlein</string>
+    <string name="rail_sales_stock">Farokht aur stock</string>
+    <string name="rail_reports">Reports</string>
+    <string name="header_backed_up">Backup hua</string>
     <string name="shop_add_name">Apni dukaan ka naam likhein</string>
     <string name="shop_add_name_sub">Invoice aur statement par chhapega</string>
     <string name="shop_edit_profile">Profile mein tabdeeli</string>

@@ -2480,6 +2480,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">Profile</string>
     <string name="shop_sub_switch">Profile · Switch shop</string>
+    <string name="rail_sales_stock">Sales &amp; stock</string>
+    <string name="rail_reports">Reports</string>
+    <string name="header_backed_up">Backed up</string>
     <string name="shop_add_name">Add your shop name</string>
     <string name="shop_add_name_sub">Printed on invoices and statements</string>
     <string name="shop_edit_profile">Edit profile</string>

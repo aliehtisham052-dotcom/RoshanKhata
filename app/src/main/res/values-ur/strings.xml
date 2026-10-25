@@ -2345,6 +2345,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">پروفائل</string>
     <string name="shop_sub_switch">پروفائل · دکان بدلیں</string>
+    <string name="rail_sales_stock">فروخت اور اسٹاک</string>
+    <string name="rail_reports">رپورٹس</string>
+    <string name="header_backed_up">بیک اپ ہوا</string>
     <string name="shop_add_name">اپنی دکان کا نام لکھیں</string>
     <string name="shop_add_name_sub">انوائس اور اسٹیٹمنٹ پر چھپے گا</string>
     <string name="shop_edit_profile">پروفائل میں تبدیلی</string>

@@ -94,12 +94,12 @@ class ScreenProofTest {
                         val head = androidx.compose.runtime.remember { PageHead() }
                         Row(Modifier.fillMaxSize().background(LocalRoshanColors.current.pageBg)) {
                             SectionRail(Section.HOME, {}, badges = mapOf(Section.FOLLOWUP to 2), top = {
-                                ShopCard(if (ur) "النور ایگری اسٹور" else "Al-Noor Agri Store", null, null) {}
+                                ShopCard(if (ur) "النور ایگری اسٹور" else "Al-Noor Agri Store", null, null, onProfile = {}, onSwitch = {})
                             })
                             Column(Modifier.weight(1f)) {
                                 AppHeader(
                                     head = head,
-                                    backupLabel = words.text(com.innovation313.roshankhata.words.W.backup_now),
+                                    backupAt = System.currentTimeMillis() - 3 * 60 * 60 * 1000L, backupOld = false,
                                     onBackup = {}, onPhone = {}, alerts = 3, onAlerts = {}, menu = emptyList(), onAddParty = {}
                                 )
                                 Box(Modifier.weight(1f).fillMaxWidth()) {
