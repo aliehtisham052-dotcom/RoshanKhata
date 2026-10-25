@@ -3187,6 +3187,8 @@
     <string name="pos_held_tickets">فواتير معلّقة (%1$d)</string>
     <string name="pos_resume">متابعة</string>
     <string name="pos_drop_held">حذف الفاتورة المعلّقة</string>
+    <string name="pos_drop_held_confirm">حذف هذه الفاتورة المعلّقة؟ لا يمكن استعادة ما سُجّل فيها.</string>
+    <string name="pos_still_due">المتبقي للتحصيل</string>
     <string name="pos_post">إتمام البيع</string>
     <string name="pos_post_and_print">إتمام وطباعة</string>
     <string name="pos_clear">مسح الفاتورة</string>

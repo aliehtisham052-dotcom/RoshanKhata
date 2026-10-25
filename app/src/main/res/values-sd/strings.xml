@@ -3027,6 +3027,8 @@
     <string name="pos_held_tickets">روڪيل بل (%1$d)</string>
     <string name="pos_resume">جاري ڪريو</string>
     <string name="pos_drop_held">روڪيل بل هٽايو</string>
+    <string name="pos_drop_held_confirm">هي روڪيل بل هٽايو؟ ان تي لکيل شيون ٻيهر نه ملنديون.</string>
+    <string name="pos_still_due">اڃا وصول ڪرڻو آهي</string>
     <string name="pos_post">وڪرو مڪمل ڪريو</string>
     <string name="pos_post_and_print">مڪمل ۽ پرنٽ</string>
     <string name="pos_clear">بل صاف ڪريو</string>

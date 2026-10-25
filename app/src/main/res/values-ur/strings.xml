@@ -2999,6 +2999,8 @@
     <string name="pos_held_tickets">روکے ہوئے بل (%1$d)</string>
     <string name="pos_resume">جاری کریں</string>
     <string name="pos_drop_held">روکا ہوا بل ہٹائیں</string>
+    <string name="pos_drop_held_confirm">یہ روکا ہوا بل ہٹائیں؟ اس پر لکھی چیزیں دوبارہ نہیں ملیں گی۔</string>
+    <string name="pos_still_due">ابھی وصول کرنا ہے</string>
     <string name="pos_post">سیل مکمل کریں</string>
     <string name="pos_post_and_print">مکمل اور پرنٹ</string>
     <string name="pos_clear">بل صاف کریں</string>

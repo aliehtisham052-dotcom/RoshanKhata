@@ -3027,6 +3027,8 @@
     <string name="pos_held_tickets">فاکتورهای معلق (%1$d)</string>
     <string name="pos_resume">ادامه</string>
     <string name="pos_drop_held">حذف فاکتور معلق</string>
+    <string name="pos_drop_held_confirm">این فاکتور معلق حذف شود؟ آنچه در آن ثبت شده برنمی‌گردد.</string>
+    <string name="pos_still_due">مانده برای دریافت</string>
     <string name="pos_post">تکمیل فروش</string>
     <string name="pos_post_and_print">تکمیل و چاپ</string>
     <string name="pos_clear">پاک کردن فاکتور</string>

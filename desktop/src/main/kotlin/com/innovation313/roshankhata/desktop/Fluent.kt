@@ -76,7 +76,12 @@ fun FluentButton(
     kind: ButtonKind = ButtonKind.STANDARD,
     icon: String? = null,
     enabled: Boolean = true,
-    tall: Boolean = false
+    tall: Boolean = false,
+    /**
+     * Something at the button's far end after its words (the counter's F12 key, Marhala 4): the button then
+     * fills the width it is given, the words at its start and this at its end.
+     */
+    trailing: (@Composable () -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     val fill = when (kind) {
@@ -110,6 +115,10 @@ fun FluentButton(
     ) {
         if (icon != null) Glyph(icon, if (enabled) words else c.textMuted, 16)
         Text(text, color = if (enabled) words else c.textMuted, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+        if (trailing != null) {
+            Spacer(Modifier.weight(1f))
+            trailing()
+        }
     }
 }
 

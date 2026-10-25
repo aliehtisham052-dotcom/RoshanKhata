@@ -2999,6 +2999,8 @@
     <string name="pos_held_tickets">Roke hue bill (%1$d)</string>
     <string name="pos_resume">Jari karein</string>
     <string name="pos_drop_held">Roka hua bill hatayein</string>
+    <string name="pos_drop_held_confirm">Yeh roka hua bill hatayein? Is par likhi cheezein dobara nahi milengi.</string>
+    <string name="pos_still_due">Abhi wasool karna hai</string>
     <string name="pos_post">Sale mukammal karein</string>
     <string name="pos_post_and_print">Mukammal aur print</string>
     <string name="pos_clear">Bill saaf karein</string>

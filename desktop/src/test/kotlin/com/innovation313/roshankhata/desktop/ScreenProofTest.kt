@@ -336,8 +336,20 @@ class ScreenProofTest {
             shoot("screen-laptop-cashbook-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { CashbookPane(dao) }
             shoot("screen-laptop-cheques-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { ChequesPane(dao, partiesNow, words) {} }
             shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
-            shoot("screen-laptop-counter-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+            shoot("screen-laptop-counter-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.COUNTER) {
                 CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())
+            }
+            // The owner's shortest window (1093 x 535 dp, the taskbar at the foot) with a ticket being rung up
+            // (Marhala 4): its lines, the discount in money, cash handed over and the change, the foot in sight.
+            val products = kotlinx.coroutines.runBlocking { dao.productsOnce() }
+            val ticket = com.innovation313.roshankhata.data.CounterDraft().apply {
+                products.firstOrNull { it.name == "DAP" }?.let { add(it, 40.0, qty = 2.0) }
+                products.firstOrNull { it.name == "Confidor" }?.let { add(it, 58.0, qty = 3.0) }
+                discount = "500"
+                addPayment(com.innovation313.roshankhata.data.PaymentMethod.CASH).amount = "10000"
+            }
+            shoot("screen-laptop-counter-short-en", ur = false, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.COUNTER) {
+                CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions(), draft = ticket)
             }
             shoot("screen-laptop-inventory-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
                 InventoryPane(dao, words, reload = 0) {}

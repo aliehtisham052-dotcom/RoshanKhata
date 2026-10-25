@@ -970,6 +970,13 @@ Businesses/Settings), each part with its proof pictures. CI only.
   before it is drawn; saved as a picture it is the code alone, `customer_qr_save_picture`); ⋮ → Select entries
   to delete ticks several (`EntryPick`, kept by the book) and bins them with `softDeleteOwnEntries` — what a
   bill, plan, cheque, ticket or return wrote stays, and is counted. Proof: screen-laptop-khata-pick-ur.
+- **Part 2, the counter on the laptop** (`CounterSalePane`, proof screen-laptop-counter-short-en at the owner's
+  1093 x 535): the settings are an icon in the head beside Hold and Clear; the row of counter tools shows only
+  when one of them does; Ticket / Items sit beside the item box. The total is said once, in the foot, always in
+  sight; the buttons are one row — Complete sale with its F12 on it (`FluentButton(trailing)`) and Complete &
+  print beside it (the printer alone on a laptop, `PrintAndComplete`, its words as the hover tip). The ticket's
+  discount shows in money under its box (a typed "10%" said nothing); a walk-in's unpaid rest is "Still to
+  collect" (`pos_still_due`), never "To account"; dropping a held ticket asks first (`pos_drop_held_confirm`).
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
@@ -981,7 +988,8 @@ Businesses/Settings), each part with its proof pictures. CI only.
   and a search with no match say so; the entry warning is titled for what it is (`confirmTitle`: twin entry or
   credit limit); an entry's day cannot be in the future (`DayPicker(latest)`, the editor clamps it).
   TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
-- Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture (nine languages). Tests: ReminderTextTest (shared),
+- Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture, pos_still_due,
+  pos_drop_held_confirm (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
 
