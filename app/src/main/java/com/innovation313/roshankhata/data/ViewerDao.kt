@@ -45,6 +45,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun updateCheque(cheque: Cheque): Unit = refused()
     override suspend fun softDeleteCheque(id: Long, now: Long): Unit = refused()
     override suspend fun clearCheque(chequeId: Long, note: String, now: Long): Long? = refused()
+    override suspend fun settleCheque(chequeId: Long, status: Int?, now: Long): Boolean = refused()
     override suspend fun insertCashEntry(entry: CashEntry): Long = refused()
     override suspend fun softDeleteCashEntry(id: Long, now: Long): Unit = refused()
     override suspend fun wipeEntries(): Unit = refused()

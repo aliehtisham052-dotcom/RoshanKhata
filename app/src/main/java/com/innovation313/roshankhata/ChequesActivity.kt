@@ -323,12 +323,10 @@ class ChequesActivity : BaseActivity() {
     /** Back to waiting. settledAt clears with the status — a pending cheque was never settled. */
     private fun reopen(cheque: ChequeWithParty) {
         lifecycleScope.launch {
-            AppScope.launch {
-                dao.getCheque(cheque.id)?.let { stored ->
-                    dao.updateCheque(stored.copy(status = ChequeStatus.PENDING, settledAt = null))
-                }
-            }.join()
-            Toast.makeText(this@ChequesActivity, R.string.cheque_reopened, Toast.LENGTH_SHORT).show()
+            // Only a bounced or cancelled cheque that never posted money goes back (25 Oct 2026, the audit).
+            var done = false
+            AppScope.launch { done = dao.settleCheque(cheque.id, null) }.join()
+            if (done) Toast.makeText(this@ChequesActivity, R.string.cheque_reopened, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -403,17 +401,11 @@ class ChequesActivity : BaseActivity() {
 
     private fun settle(cheque: ChequeWithParty, status: Int, messageRes: Int) {
         lifecycleScope.launch {
-            AppScope.launch {
-                dao.getCheque(cheque.id)?.let { existing ->
-                    dao.updateCheque(
-                        existing.copy(
-                            status = status,
-                            settledAt = System.currentTimeMillis()
-                        )
-                    )
-                }
-            }.join()
-            Toast.makeText(this@ChequesActivity, messageRes, Toast.LENGTH_SHORT).show()
+            // Only while it is still pending (25 Oct 2026, the audit): a cheque the computer cleared
+            // meanwhile is never marked bounced here, so its payment cannot be posted twice.
+            var done = false
+            AppScope.launch { done = dao.settleCheque(cheque.id, status) }.join()
+            if (done) Toast.makeText(this@ChequesActivity, messageRes, Toast.LENGTH_SHORT).show()
         }
     }
 }
