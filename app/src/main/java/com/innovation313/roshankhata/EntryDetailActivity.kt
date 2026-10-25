@@ -294,7 +294,18 @@ class EntryDetailActivity : BaseActivity() {
             findViewById<TextView>(R.id.tvPaymentMethod).text = method
         }
 
-        findViewById<TextView>(R.id.tvBalance).text = Format.money(e.amount)
+        // The balance this entry left (25 Oct 2026, the audit): the row said "Balance after" and printed
+        // the entry's own amount, so a customer who paid 5,000 of 50,000 was sent "Balance after: Rs 5,000".
+        // In the statement's words, his side, since this card is what the customer is sent (ReceiptBalance).
+        val tvBalance = findViewById<TextView>(R.id.tvBalance)
+        tvBalance.text = "…"
+        lifecycleScope.launch {
+            val after = runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().balanceAfterEntry(e) }.getOrNull()
+            if (isFinishing || isDestroyed) return@launch
+            tvBalance.text = after?.let {
+                com.innovation313.roshankhata.data.ReceiptBalance.text(com.innovation313.roshankhata.data.AndroidWords(this@EntryDetailActivity), it)
+            } ?: "—"
+        }
     }
 
     /**
