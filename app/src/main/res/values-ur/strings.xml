@@ -129,6 +129,7 @@
     <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>
     <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔\n\nپہلا گاہک شامل کریں اور اپنا کھاتہ شروع کریں۔</string>
     <string name="no_entries_yet">ابھی کوئی اندراج نہیں۔</string>
+    <string name="entries_no_match">آپ کی تلاش سے کوئی اندراج نہیں ملا۔</string>
 
     <string name="i_gave">میں نے دیا</string>
     <string name="i_got">میں نے لیا</string>

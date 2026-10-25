@@ -133,6 +133,7 @@
     <string name="add_party_duplicate_name_only">मिलता-जुलता ग्राहक पहले से है: %1$s</string>
     <string name="no_parties_yet">अभी कोई ग्राहक नहीं।\n\nपहला ग्राहक जोड़ें और अपना खाता शुरू करें।</string>
     <string name="no_entries_yet">अभी कोई एंट्री नहीं।</string>
+    <string name="entries_no_match">आपकी खोज से कोई एंट्री नहीं मिली।</string>
 
     <string name="i_gave">मैंने दिए</string>
     <string name="i_got">मुझे मिले</string>

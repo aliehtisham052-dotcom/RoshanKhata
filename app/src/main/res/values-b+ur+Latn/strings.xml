@@ -129,6 +129,7 @@
     <string name="add_party_duplicate_name_only">Milta-julta customer pehle se maujood hai: %1$s</string>
     <string name="no_parties_yet">Abhi koi gahak nahi.\n\nPehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="no_entries_yet">Abhi koi entry nahi.</string>
+    <string name="entries_no_match">Aap ki talaash se koi entry nahi mili.</string>
 
     <string name="i_gave">Main Ne Diya</string>
     <string name="i_got">Main Ne Liya</string>

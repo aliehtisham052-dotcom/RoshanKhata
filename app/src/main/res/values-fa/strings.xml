@@ -129,6 +129,7 @@
     <string name="add_party_duplicate_name_only">مشتری مشابه از قبل موجود است: %1$s</string>
     <string name="no_parties_yet">هنوز مشتری‌ای نیست.\n\nاولین مشتری را اضافه کنید و دفتر خود را شروع کنید.</string>
     <string name="no_entries_yet">هنوز ثبتی وجود ندارد.</string>
+    <string name="entries_no_match">ثبتی با جستجوی شما پیدا نشد.</string>
 
     <string name="i_gave">دادم</string>
     <string name="i_got">گرفتم</string>
