@@ -82,7 +82,7 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
             }
             StatementPrint.show(
                 TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.inspector_title) + "  ·  " + Format.dateOnly(System.currentTimeMillis()),
-                    listOf(words.text(W.inspector_col_product), words.text(W.inspector_col_expiry), words.text(W.inspector_col_left)), rows
+                    listOf(words.text(W.inspector_col_product), words.text(W.inspector_col_expiry), words.text(W.inspector_col_left)), rows, made = madeLine(words)
                 ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                 words.text(W.inspector_title)
             )

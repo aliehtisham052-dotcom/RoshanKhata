@@ -404,8 +404,8 @@ class InvoicePrint(
         g.scale(format.imageableWidth / pageW, format.imageableWidth / pageW)
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        val navy = Color(0x1B, 0x2A, 0x4A)
-        g.color = navy
+        // The phone's documents' green (Marhala 4, part 7: it was navy here).
+        g.color = PhoneSheet.BAND
         g.fillRect(0, 0, pageW.toInt(), 84)
         g.color = Color.WHITE
         g.font = Font(PrintFonts.family, Font.BOLD, 18)

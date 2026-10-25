@@ -110,8 +110,9 @@ class StatementPrint(
         else (kotlin.math.floor((bottom - y0 - ROW_BOTTOM) / ROW_H).toInt() + 1).coerceAtLeast(1)
     }
 
-    private val navy = Color(0x1B, 0x2A, 0x4A)
-    private val gold = Color(0xC9, 0xA2, 0x4A)
+    // The phone's statement's green and gold (Marhala 4, part 7: it was navy here).
+    private val navy = PhoneSheet.BAND
+    private val gold = PhoneSheet.GOLD
     private val red = Color(0xA3, 0x2D, 0x2D)
     private val green = Color(0x0A, 0x5A, 0x44)
     private val muted = Color(0x6B, 0x6B, 0x66)

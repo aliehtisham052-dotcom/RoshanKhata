@@ -176,7 +176,8 @@ private fun OrderActions(
                     StatementPrint.show(
                         TablePrint(rtl, shopName ?: words.text(W.app_name), o.orderNumber + "  ·  " + o.partyName + "  ·  " + Format.dateOnly(o.timestamp),
                             listOf(words.text(W.pos_col_item), words.text(W.pos_col_qty), words.text(W.pos_col_rate)),
-                            full.items.map { listOf(it.itemName, Calc.trim(it.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(it.unit).let { u -> if (u.isEmpty()) "" else " $u" }), it.rate?.let { r -> Format.money(r) } ?: "") }
+                            full.items.map { listOf(it.itemName, Calc.trim(it.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(it.unit).let { u -> if (u.isEmpty()) "" else " $u" }), it.rate?.let { r -> Format.money(r) } ?: "") },
+                            made = madeLine(words)
                         ) { p, of -> words.text(W.pdf_stmt_page, p, of) }, o.orderNumber)
                 }
             })

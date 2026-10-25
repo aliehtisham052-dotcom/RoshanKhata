@@ -1060,6 +1060,28 @@ Businesses/Settings), each part with its proof pictures. CI only.
   EntryInvoice, `sourceEntryId`). The entry flow's questions (twin/limit, linked, delete, a cash sale's other
   half) are the app's dialogs; `PickDialog` is a short list in the app's frame. Tests: ReceiptGoodsTest (the
   phone's GoodsTextTest's lines, on the computer); proof dialog-laptop-receipt-en.
+- **Part 7a, the Khata Report and the register (the phone's report screens and documents):** the Khata Report
+  is the phone's 24 Oct design — chips (Today, This week, This month, All, Custom: the first day, then the last,
+  `TwoDayPicker`; week and month run to now), opening on this month; a summary card (the window as a pill that
+  picks days, entries · customers · suppliers, a gave/got share bar, the two totals); the entries newest first
+  under day headings (Today · / Yesterday ·, the day's count), each with its face, time · number · note, the
+  amount and an I gave / I got tag. Still no all-parties net, for the window or a day. `ReportWindow` (with
+  `window()`), `dayAfter`/`dayBefore` (calendar days, never 24 h) and `TwoDayPicker` are shared with the register.
+  The register is in the page frame: chips without "all" (the phone's rule), two figure cards, each line with
+  what it was (item, quantity, batch, company, number; a purchase's rate, expiry and bill) under its section's
+  head, totals under each; it now needs REPORTS like the Khata Report (`Section.need`; the phone's register,
+  opened from Products, has no gate). **The phone's documents on paper** (`PhoneSheet`: a Printable that lays its
+  pages out once with a `Pen` — measured on a scrap picture, the phone's sizes, colours and page breaks — and
+  replays each page; mirrored for RTL): `ReportPrint` is the phone's LedgerReport (band with the period and when
+  it was made, the not-a-backup note, the summary, 20/30 pt rows in two money columns, the foot) and
+  `RegisterPrint` the phone's RegisterReport (the shop's address and tax number on the band by the phone's rule,
+  `identityLine`; the two notes wrapped; summary; two sections with continued heads; signature lines; "Generated
+  … · Page n" at every foot — the phone's only on the last). The download banner and watermark stay the phone's.
+  Every other printed table (`TablePrint`: price list, orders, sales report, stock register, dues by age) and the
+  customer statement and plain invoice are in the phone's green and gold now (they were navy), and the tables say
+  when they were made at every foot (`madeLine`) and hold 29 rows a page, so a totals line never lands at the
+  paper's edge. Tests: ReportPrintTest (the phone's page breaks), RegisterPrintTest; proofs
+  screen-laptop-report-en-dark, -report-short-ur, -salesregister-en and the statement-proof pictures.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview

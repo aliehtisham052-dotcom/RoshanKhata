@@ -71,7 +71,8 @@ fun Section.need(): Access.Permission? = when (this) {
     Section.SHOP -> Access.Permission.SETTINGS
     Section.DAILY -> Access.Permission.BACKUP
     Section.DUPLICATES -> Access.Permission.EDIT_BOOK
-    Section.SALES, Section.INSIGHTS, Section.CASHFLOW, Section.ZAKAT, Section.REPORT,
+    // The register too (25 Oct 2026, the audit): every sale and purchase with its money, as the Khata Report.
+    Section.SALES, Section.INSIGHTS, Section.CASHFLOW, Section.ZAKAT, Section.REPORT, Section.REGISTER,
     Section.BUY_RATES, Section.AUDIT, Section.AGING -> Access.Permission.REPORTS
     else -> null
 }
