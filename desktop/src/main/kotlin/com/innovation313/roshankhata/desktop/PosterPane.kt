@@ -40,6 +40,7 @@ import com.innovation313.roshankhata.desktop.poster.PosterDraw
 import com.innovation313.roshankhata.desktop.poster.PosterFields
 import com.innovation313.roshankhata.desktop.poster.PosterInput
 import com.innovation313.roshankhata.desktop.poster.PosterOccasion
+import com.innovation313.roshankhata.desktop.poster.PosterWords
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
@@ -81,6 +82,20 @@ internal fun posterMinutes(text: String): Int? {
 
 internal fun posterClock(minutes: Int): String = "%d:%02d".format(Locale.ROOT, minutes / 60, minutes % 60)
 
+/** Weekly holidays as kept ("1,6"), or null when never kept; days outside Calendar's 1..7 are dropped. */
+internal fun posterDays(text: String?): Set<Int>? =
+    text?.split(',')?.mapNotNull { it.trim().toIntOrNull() }?.filter { it in 1..7 }?.toSet()
+
+/** Two times side by side: from and to (a break, the Ramazan day or night, the shop's hours). */
+@Composable
+private fun TimePair(from: String, onFrom: (String) -> Unit, to: String, onTo: (String) -> Unit, fromHint: String, toHint: String,
+                     fromLabel: String = word(W.poster_opens), toLabel: String = word(W.poster_closes)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.weight(1f)) { PosterField(from, onFrom, fromLabel, fromHint) }
+        Column(Modifier.weight(1f)) { PosterField(to, onTo, toLabel, toHint) }
+    }
+}
+
 /**
  * The phone's Poster & Status on the computer: the same eleven designs
  * (generated from the phone's files, drawn on the gfx stand-in), in any of
@@ -113,6 +128,20 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
     var opens by remember(businessId) { mutableStateOf(prefs.get("opens") ?: posterClock(d.opens)) }
     var closes by remember(businessId) { mutableStateOf(prefs.get("closes") ?: posterClock(d.closes)) }
     var prayerBreak by remember(businessId) { mutableStateOf(flag("prayerBreak", d.prayerBreak)) }
+    // The times and reasons the phone lets the owner set (25 Oct 2026, the audit: on Windows the Closed, Hours and
+    // Ramazan posters printed the defaults — 9:00, a 1:00 to 2:30 break, the country's weekly day off).
+    var reason by remember(businessId) { mutableStateOf(prefs.get("reason") ?: d.reason) }
+    var reasonText by remember(businessId) { mutableStateOf(prefs.get("reasonText").orEmpty()) }
+    var reopen by remember(businessId) { mutableStateOf(prefs.get("reopen") ?: d.reopen) }
+    var reopenAt by remember(businessId) { mutableStateOf(prefs.get("reopenAt") ?: posterClock(d.reopenAt)) }
+    var breakFrom by remember(businessId) { mutableStateOf(prefs.get("breakFrom") ?: posterClock(d.breakFrom)) }
+    var breakTo by remember(businessId) { mutableStateOf(prefs.get("breakTo") ?: posterClock(d.breakTo)) }
+    var holidays by remember(businessId) { mutableStateOf(posterDays(prefs.get("holidays")) ?: d.holidays) }
+    var dayFrom by remember(businessId) { mutableStateOf(prefs.get("dayFrom") ?: posterClock(d.dayFrom)) }
+    var dayTo by remember(businessId) { mutableStateOf(prefs.get("dayTo") ?: posterClock(d.dayTo)) }
+    var afterTaraweeh by remember(businessId) { mutableStateOf(flag("afterTaraweeh", d.afterTaraweeh)) }
+    var nightFrom by remember(businessId) { mutableStateOf(prefs.get("nightFrom") ?: posterClock(d.nightFrom)) }
+    var nightTo by remember(businessId) { mutableStateOf(prefs.get("nightTo") ?: posterClock(d.nightTo)) }
     var offerPercent by remember(businessId) { mutableStateOf(prefs.get("offerPercent") ?: d.offerPercent.toString()) }
     var offerDays by remember(businessId) { mutableStateOf(prefs.get("offerDays") ?: d.offerDays.toString()) }
     var showLogo by remember(businessId) { mutableStateOf(flag("showLogo", d.showLogo)) }
@@ -133,6 +162,10 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
         eidDays = eidDays.trim().toIntOrNull()?.coerceIn(0, 10) ?: 0,
         ramazanHours = ramazanHours, urgentPhone = urgentPhone,
         opens = posterMinutes(opens) ?: d.opens, closes = posterMinutes(closes) ?: d.closes, prayerBreak = prayerBreak,
+        reason = reason, reasonText = reasonText.trim(), reopen = reopen, reopenAt = posterMinutes(reopenAt) ?: d.reopenAt,
+        breakFrom = posterMinutes(breakFrom) ?: d.breakFrom, breakTo = posterMinutes(breakTo) ?: d.breakTo, holidays = holidays,
+        dayFrom = posterMinutes(dayFrom) ?: d.dayFrom, dayTo = posterMinutes(dayTo) ?: d.dayTo, afterTaraweeh = afterTaraweeh,
+        nightFrom = posterMinutes(nightFrom) ?: d.nightFrom, nightTo = posterMinutes(nightTo) ?: d.nightTo,
         offerPercent = offerPercent.trim().toIntOrNull()?.coerceIn(1, 90) ?: d.offerPercent,
         offerDays = offerDays.trim().toIntOrNull()?.coerceIn(0, 30) ?: 0,
         showLogo = showLogo, showPhone = showPhone, showAddress = showAddress, showEmail = showEmail,
@@ -165,13 +198,17 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
                 "urgentPhone" to urgentPhone.toString(), "opens" to opens, "closes" to closes,
                 "prayerBreak" to prayerBreak.toString(), "offerPercent" to offerPercent, "offerDays" to offerDays,
                 "showLogo" to showLogo.toString(), "showPhone" to showPhone.toString(), "showAddress" to showAddress.toString(),
-                "showEmail" to showEmail.toString(), "onWhatsapp" to onWhatsapp.toString(), "showMark" to showMark.toString()
+                "showEmail" to showEmail.toString(), "onWhatsapp" to onWhatsapp.toString(), "showMark" to showMark.toString(),
+                "reason" to reason, "reasonText" to reasonText, "reopen" to reopen, "reopenAt" to reopenAt,
+                "breakFrom" to breakFrom, "breakTo" to breakTo, "holidays" to holidays.sorted().joinToString(","),
+                "dayFrom" to dayFrom, "dayTo" to dayTo, "afterTaraweeh" to afterTaraweeh.toString(), "nightFrom" to nightFrom, "nightTo" to nightTo
             )
         )
     }
 
     LaunchedEffect(occasion, lang, title, message, items, eidDays, ramazanHours, urgentPhone, opens, closes, prayerBreak,
-        offerPercent, offerDays, showLogo, showPhone, showAddress, showEmail, onWhatsapp, showMark, logo, shop) {
+        offerPercent, offerDays, showLogo, showPhone, showAddress, showEmail, onWhatsapp, showMark, logo, shop,
+        reason, reasonText, reopen, reopenAt, breakFrom, breakTo, holidays, dayFrom, dayTo, afterTaraweeh, nightFrom, nightTo) {
         delay(300)
         val ctx = context()
         val inp = input()
@@ -213,14 +250,52 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             when (occasion) {
                 PosterOccasion.NEW_STOCK -> PosterField(items, { items = it }, word(W.poster_items_label), posterWords.text(W.poster_item_hint))
                 PosterOccasion.EID_FITR -> PosterField(eidDays, { eidDays = it.filter(Char::isDigit).take(2) }, word(W.poster_eid_days))
-                PosterOccasion.RAMAZAN -> Tick(ramazanHours, word(W.poster_ramazan_toggle)) { ramazanHours = it }
-                PosterOccasion.CLOSED -> Tick(urgentPhone, word(W.poster_urgent_phone)) { urgentPhone = it }
+                PosterOccasion.RAMAZAN -> {
+                    Tick(ramazanHours, word(W.poster_ramazan_toggle)) { ramazanHours = it }
+                    if (ramazanHours) {
+                        Text(word(W.poster_day_label), color = c.ink, fontWeight = FontWeight.SemiBold)
+                        TimePair(dayFrom, { dayFrom = it }, dayTo, { dayTo = it }, "10:00", "17:00")
+                        Text(word(W.poster_night_label), color = c.ink, fontWeight = FontWeight.SemiBold)
+                        Tick(afterTaraweeh, word(W.poster_after_taraweeh)) { afterTaraweeh = it }
+                        if (afterTaraweeh) PosterField(nightTo, { nightTo = it }, word(W.poster_closes), "1:00")
+                        else TimePair(nightFrom, { nightFrom = it }, nightTo, { nightTo = it }, "21:30", "1:00")
+                    }
+                }
+                PosterOccasion.CLOSED -> {
+                    // The choices in the app's own words, as the phone's chips (the poster prints its own language).
+                    val ctx = Context(words, settings, images, posterLang.rtl, Locale.getDefault())
+                    Text(word(W.poster_reason_label), color = c.ink, fontWeight = FontWeight.SemiBold)
+                    PillRow(Modifier.fillMaxWidth()) {
+                        (PosterFields.Reason.values().map { it.key } + PosterFields.CUSTOM_REASON).forEach { key ->
+                            val label = if (key == PosterFields.CUSTOM_REASON) word(W.poster_write_own) else PosterWords.reason(ctx, key) ?: key
+                            FluentPill(label, reason == key) { reason = if (reason == key) "" else key }
+                        }
+                    }
+                    if (reason == PosterFields.CUSTOM_REASON) PosterField(reasonText, { reasonText = it }, word(W.poster_reason_hint))
+                    Text(word(W.poster_opens_again), color = c.ink, fontWeight = FontWeight.SemiBold)
+                    PillRow(Modifier.fillMaxWidth()) {
+                        (PosterFields.Reopen.values().map { it.key } + "").forEach { key ->
+                            FluentPill(PosterWords.reopenDay(ctx, key) ?: word(W.poster_not_said), reopen == key) { reopen = key }
+                        }
+                    }
+                    if (reopen.isNotEmpty()) PosterField(reopenAt, { reopenAt = it }, word(W.poster_opens), "9:00")
+                    Tick(urgentPhone, word(W.poster_urgent_phone)) { urgentPhone = it }
+                }
                 PosterOccasion.HOURS -> {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Column(Modifier.weight(1f)) { PosterField(opens, { opens = it }, word(W.poster_opens), "9:00") }
-                        Column(Modifier.weight(1f)) { PosterField(closes, { closes = it }, word(W.poster_closes), "20:00") }
+                    TimePair(opens, { opens = it }, closes, { closes = it }, "9:00", "20:00", word(W.poster_opens), word(W.poster_closes))
+                    Text(word(W.poster_weekly_holiday), color = c.ink, fontWeight = FontWeight.SemiBold)
+                    // The choices in the app's own words, as the phone's chips (the poster prints its own language).
+                    val ctx = Context(words, settings, images, posterLang.rtl, Locale.getDefault())
+                    PillRow(Modifier.fillMaxWidth()) {
+                        PosterWords.WEEK.forEach { day ->
+                            // Not every day can be a holiday: one stays open (the phone's rule).
+                            FluentPill(PosterWords.day(ctx, day, short = true), day in holidays) {
+                                holidays = if (day in holidays) holidays - day else if (holidays.size >= 6) holidays else holidays + day
+                            }
+                        }
                     }
                     Tick(prayerBreak, word(W.poster_prayer_break_toggle)) { prayerBreak = it }
+                    if (prayerBreak) TimePair(breakFrom, { breakFrom = it }, breakTo, { breakTo = it }, "13:00", "14:30", word(W.poster_friday_break), word(W.poster_to))
                 }
                 PosterOccasion.OFFER -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Column(Modifier.weight(1f)) { PosterField(offerPercent, { offerPercent = it.filter(Char::isDigit).take(2) }, word(W.poster_offer_percent) + " %") }
