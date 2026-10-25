@@ -195,6 +195,8 @@ open class Paint(flags: Int = 0) {
     var style: Style = Style.FILL
     var pathEffect: PathEffect? = null
     var letterSpacing: Float = 0f
+    /** OpenType features the phone asks for ("tnum", tabular figures); kept, not applied — Java2D's text layout has no switch for them. */
+    var fontFeatureSettings: String? = null
     var isFilterBitmap: Boolean = flags and FILTER_BITMAP_FLAG != 0
     var strokeCap: Cap = Cap.BUTT
     var strokeJoin: Join = Join.MITER
@@ -224,7 +226,7 @@ open class Paint(flags: Int = 0) {
         isAntiAlias = other.isAntiAlias; color = other.color; textSize = other.textSize; textAlign = other.textAlign
         typeface = other.typeface; isFakeBoldText = other.isFakeBoldText; shader = other.shader
         strokeWidth = other.strokeWidth; style = other.style; pathEffect = other.pathEffect
-        letterSpacing = other.letterSpacing; isFilterBitmap = other.isFilterBitmap; strokeCap = other.strokeCap
+        letterSpacing = other.letterSpacing; fontFeatureSettings = other.fontFeatureSettings; isFilterBitmap = other.isFilterBitmap; strokeCap = other.strokeCap
         strokeJoin = other.strokeJoin; maskFilter = other.maskFilter; textLocale = other.textLocale
         setShadowLayer(other.shadowRadius, other.shadowDx, other.shadowDy, other.shadowColor)
     }
