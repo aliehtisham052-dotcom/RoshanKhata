@@ -124,7 +124,11 @@ private class CardPrefs(private val file: File) {
 }
 
 @Composable
-fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, businessId: Long, words: Words) {
+fun BusinessCardPane(
+    settings: ShopSettings, images: ProfileImages, home: File, businessId: Long, words: Words,
+    /** The shop's own name changed here: the window's header reads it again. */
+    onShopName: () -> Unit = {}
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val prefs = remember(businessId) { CardPrefs(File(home, "card_b$businessId.properties")) }
@@ -169,10 +173,21 @@ fun BusinessCardPane(settings: ShopSettings, images: ProfileImages, home: File, 
     )
 
     fun save() {
+        // The shop's own two names live in Business Profile (owner-only SETTINGS): the card writes them only
+        // for someone allowed to change them, and never a blank one (25 Oct 2026, the audit: a box left
+        // empty was saved on a language or design click, and the shop's name was erased).
+        val typed = name.trim()
+        val mayRename = typed.isNotEmpty() && com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.SETTINGS)
         val own = when (lang) {
-            CardLanguage.ENGLISH -> { settings.setBusinessName(name); emptyMap() }
-            CardLanguage.URDU -> { settings.setBusinessNameUrdu(name); emptyMap() }
-            else -> mapOf(k("name") to name.trim())
+            CardLanguage.ENGLISH -> {
+                if (mayRename && typed != settings.businessName()) { settings.setBusinessName(typed); onShopName() }
+                emptyMap()
+            }
+            CardLanguage.URDU -> {
+                if (mayRename && typed != settings.businessNameUrdu()) settings.setBusinessNameUrdu(typed)
+                emptyMap()
+            }
+            else -> mapOf(k("name") to typed)
         }
         prefs.set(
             own + mapOf(

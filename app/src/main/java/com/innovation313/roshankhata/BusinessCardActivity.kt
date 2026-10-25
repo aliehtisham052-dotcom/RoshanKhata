@@ -412,10 +412,16 @@ class BusinessCardActivity : BaseActivity() {
 
     private fun save() {
         val prefs = getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
+        // The shop's own two names live in Business Profile: never written blank, and only by someone
+        // allowed to change them (25 Oct 2026, the audit: a box left empty was saved on leaving the
+        // screen, and the shop's name was erased).
+        val typed = etBizName.text.toString().trim()
+        val mayRename = typed.isNotEmpty() &&
+            com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.SETTINGS)
         when (cardLang) {
-            CardLanguage.ENGLISH -> BusinessProfile.setBusinessName(this, etBizName.text.toString())
-            CardLanguage.URDU -> BusinessProfile.setBusinessNameUrdu(this, etBizName.text.toString())
-            else -> prefs.edit().putString(k(KEY_NAME), etBizName.text.toString().trim()).apply()
+            CardLanguage.ENGLISH -> if (mayRename) BusinessProfile.setBusinessName(this, typed)
+            CardLanguage.URDU -> if (mayRename) BusinessProfile.setBusinessNameUrdu(this, typed)
+            else -> prefs.edit().putString(k(KEY_NAME), typed).apply()
         }
         prefs.edit()
             .putString(k(KEY_TYPE), etType.text.toString().trim())
