@@ -913,6 +913,37 @@ windows (1093 x 535 and 1043 x 590 dp), day and night, English and Urdu.
 - Strings (nine languages): rail_sales_stock, rail_reports, header_backed_up, home_shop_today,
   home_recent, home_todays_entries, home_gave_got_count, home_promised_today.
 
+### The Windows audit, part 3: pages that do one job, one rule each (Marhala 3, 25 Oct 2026, MSI 1.19.x)
+
+CI only; the proofs draw the merged pages (screen-laptop-expiry-en, -register-ur, -sales-en).
+
+- **Merged pages** (`PageTabs`, `PageTabRow`, Panes.kt): Supplier bills · Purchase rates · Company
+  schemes; Follow-up · Dues by age; Products & prices (Products · Price list); Stock & expiry (Stock on
+  hand · Expiry · Stock register); Sales report · Sale Insights; Khata Report · Register; Staff · Who
+  did what. The first of each list is the page the rail names and opens; the others leave the rail and
+  show as pills above the page (34 places, 25 rows). A tab is still its own `Section`, so the bell, Home
+  and the gates reach it and the rail marks its page (`PageTabs.hostOf`). Purchase orders keep their own
+  row, as the owner's mockup draws the rail (the Doc's table had them under Products). Low stock opens
+  Stock on hand. PageTabsTest.
+- **"What was sold", one rule** (`KhataSales`, `KhataDao.khataSaleRowsBetween`): the sales report counts
+  the khata's sales too — every customer "I gave" Sale Insights counts (not Qarz-e-Hasna, not a refund,
+  not a supplier's) that no done ticket stands for — so its revenue equals `salesTotalBetween`. A sale's
+  amount is spread over its goods by value (under the value a discount, over it a line of "No item",
+  `srep_no_goods`); a lone unpriced line takes it all; who wrote it is the cashier view's name; a line's
+  cost is its product's (`Cost.perUnit`). SalesRuleTest.
+- **"What is left of a batch", one rule** (`Fefo.lotsOf`; `allLots`, `register`, `expiring`,
+  `observeExpiringCount`, `options`, `leftInBillUnit`): the counter, Expiry and its write-off, the
+  stock register (both platforms, and the phone's PDF), the bell, Home's chip, the bills banner, the
+  khata's batch picker and the return to a supplier all read Fefo's figure — the bill line less what
+  was sold from it, came back or was written off, packs in the product's own unit, never more than the
+  shelf (an untagged sale comes off the batch that expires first). Gone from the DAO, so nothing can
+  read them: `batchOptionsForProduct`, `observeExpiringBatches`, `observeExpiringCount` (each took off
+  only tagged khata sales, or those and walk-ins, in the bill's own unit); `allBatchesOnce` is
+  `batchRowsOnce` and subtracts nothing. Pages re-read on `observeBatchMoves` (a tick over every table
+  that moves stock). A write-off is written in the unit the lot is counted in. The phone's register
+  note (`pdf_insp_how_*`, nine languages) says how the figure is made instead of "not more than".
+  BatchRuleTest.
+
 ### The shared module (KMP)
 
 ```
