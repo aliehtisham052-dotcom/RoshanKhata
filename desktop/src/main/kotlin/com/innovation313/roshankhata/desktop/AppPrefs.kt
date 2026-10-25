@@ -75,6 +75,19 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /**
+     * When a business's book was last saved as a backup file ("Back up now"), or
+     * null (25 Oct 2026, the audit). The daily copies on this computer's own disk
+     * are not a backup of that disk, so they never count as one.
+     */
+    fun lastSavedBackup(businessId: Long): Long? = props.getProperty(KEY_LAST_BACKUP + "_b" + businessId)?.toLongOrNull()
+
+    @Synchronized
+    fun setLastSavedBackup(businessId: Long, at: Long) {
+        props.setProperty(KEY_LAST_BACKUP + "_b" + businessId, at.toString())
+        save()
+    }
+
     /** The day (yyyy-MM-dd) the daily reminder was last shown (Reminders). */
     fun remindedDay(): String? = props.getProperty(KEY_REMINDED)
 
@@ -177,6 +190,7 @@ class AppPrefs(private val file: File) {
 
     private companion object {
         const val KEY_LANGUAGE = "app_language"
+        const val KEY_LAST_BACKUP = "last_saved_backup"
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"

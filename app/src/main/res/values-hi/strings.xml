@@ -1141,6 +1141,7 @@
     </plurals>
     <string name="notif_backup_title">बैकअप की याद</string>
     <string name="notif_backup_body">आख़िरी बैकअप को एक हफ़्ते से ज़्यादा हो गया। आपका रिकॉर्ड सिर्फ़ इसी फ़ोन में है।</string>
+    <string name="notif_backup_body_pc">आख़िरी बैकअप को एक हफ़्ते से ज़्यादा हो गया। आपका रिकॉर्ड सिर्फ़ इसी कंप्यूटर में है।</string>
     <string name="notif_backup_failed_title">ऑटोमैटिक बैकअप नहीं हुआ</string>
     <string name="notif_backup_failed_body">रोशन खाता Drive पर बैकअप नहीं ले सका। इंटरनेट देखें — यह अपने आप दोबारा कोशिश करेगा।</string>
 

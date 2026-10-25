@@ -1129,6 +1129,7 @@
     </plurals>
     <string name="notif_backup_title">بيڪ اپ جي يادگيري</string>
     <string name="notif_backup_body">آخري بيڪ اپ کي هفتي کان وڌيڪ ٿي ويو. توهان جو رڪارڊ رڳو هن فون تي آهي.</string>
+    <string name="notif_backup_body_pc">آخري بيڪ اپ کي هفتي کان وڌيڪ ٿي ويو. توهان جو رڪارڊ رڳو هن ڪمپيوٽر تي آهي.</string>
     <string name="notif_backup_failed_title">پاڻمرادو بيڪ اپ ناڪام</string>
     <string name="notif_backup_failed_body">روشن کاتو ڊرائيو تي بيڪ اپ نه ڪري سگهيو. انٽرنيٽ جانچيو — اهو پاڻ ٻيهر ڪوشش ڪندو.</string>
 

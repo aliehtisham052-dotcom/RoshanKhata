@@ -98,11 +98,15 @@ fun CounterSalePane(
     hasLogo: Boolean = false,
     onPrinter: (ThermalReceipt.Settings) -> Unit = {},
     /** The shop's payment QR picture (Business Profile), for the customer's screen. */
-    paymentQr: java.io.File? = null
+    paymentQr: java.io.File? = null,
+    /**
+     * The open ticket, kept by the window (25 Oct 2026, the audit): a click on the rail, a bell
+     * row or F1 used to throw away a half-rung ticket with the page. One per open business.
+     */
+    draft: CounterDraft = remember { CounterDraft() }
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
-    val draft = remember { CounterDraft() }
     var products by remember { mutableStateOf<List<Product>>(emptyList()) }
     var onHand by remember { mutableStateOf<Map<Long, Double?>>(emptyMap()) }
     var tick by remember { mutableStateOf(0) }

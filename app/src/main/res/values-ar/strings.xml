@@ -1201,6 +1201,7 @@
     </plurals>
     <string name="notif_backup_title">تذكير النسخ الاحتياطي</string>
     <string name="notif_backup_body">مضى أكثر من أسبوع على آخر نسخة احتياطية. سجلاتك على هذا الهاتف فقط.</string>
+    <string name="notif_backup_body_pc">مضى أكثر من أسبوع على آخر نسخة احتياطية. سجلاتك على هذا الحاسوب فقط.</string>
     <string name="notif_backup_failed_title">فشل النسخ الاحتياطي التلقائي</string>
     <string name="notif_backup_failed_body">تعذّر على روشن كهاتا النسخ إلى درايف. تحقق من الإنترنت — سيحاول تلقائيًا مرة أخرى.</string>
 
