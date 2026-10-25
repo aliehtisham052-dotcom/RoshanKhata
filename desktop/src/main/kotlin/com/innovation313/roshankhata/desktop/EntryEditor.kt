@@ -62,6 +62,16 @@ class EntryDraft(
 )
 
 /**
+ * The rate type an entry is saved with (25 Oct 2026, the audit). A sale's
+ * goods rate says cash or credit, and a ticked "paid now" is a cash sale even
+ * with no goods line, so its cash "I got" is written with it. It used to be
+ * written only when a goods line had a rate: a customer who paid on the spot
+ * then read as owing what he had paid. Anything else keeps what it had.
+ */
+fun entryRateType(isSale: Boolean, goodsHaveRate: Boolean, cashRate: Boolean, paidNow: Boolean, kept: String?): String? =
+    if (isSale && (goodsHaveRate || paidNow)) (if (cashRate) RateType.CASH else RateType.CREDIT) else kept
+
+/**
  * A khata entry on the computer, with what the phone's entry dialog has
  * (KMP Phase 8a): the amount (sums allowed), the date it happened (today
  * by default; an entry written the next morning keeps its real day), the
@@ -248,7 +258,9 @@ fun EntryEditor(
                         billItemId = if (isSale) batchId?.takeIf { id -> batches.any { b -> b.id == id } || id == existingItem?.billItemId } else null
                     )
                 }
-                val rateType = if (isSale && goods?.rate != null) (if (cashRate) RateType.CASH else RateType.CREDIT) else base.rateType
+                // Ticked "paid now" (a new cash sale): its "I got" is written even when no goods line has a rate.
+                val tickedPaid = existing == null && isSale && cashRate && paidNow
+                val rateType = entryRateType(isSale, goods?.rate != null, cashRate, tickedPaid, base.rateType)
                 onSave(
                     EntryDraft(
                         base.copy(
@@ -262,7 +274,7 @@ fun EntryEditor(
                             rateType = rateType
                         ),
                         goods,
-                        paidNow = existing == null && isSale && cashRate && paidNow,
+                        paidNow = tickedPaid,
                         due = due,
                         dueTouched = dueTouched
                     )
