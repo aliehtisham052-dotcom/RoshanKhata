@@ -492,7 +492,7 @@ fun CounterSalePane(
             // Every ticket of the last 60 days, searchable, as the phone's list reaches (25 Oct 2026, the
             // audit: a return or void could reach only the last 8 tickets here).
             if (allTickets) AllTicketsDialog(dao, words, onClose = { allTickets = false },
-                onVoid = { s -> allTickets = false; voidSale(s) }, onReturn = { s -> allTickets = false; returnSale(s) }, onInvoice = invoiceSale)
+                onVoid = { s -> allTickets = false; voidSale(s) }, onReturn = { s -> allTickets = false; returnSale(s) }, onInvoice = { s -> allTickets = false; invoiceSale(s) })
             Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             RecentSales(recent, words, onVoid = voidSale, onReturn = returnSale, onInvoice = invoiceSale, onMore = { allTickets = true })
             RecentReturns(returns, words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
