@@ -838,6 +838,31 @@ real devices yet.
   because it belongs to nobody's account and disagreed with the PDF. No new strings (all reused).
   Window survives rotation. CI only.
 
+### The Windows audit, part 1 (25 Oct 2026, kmp-desktop-15 — the owner: "implement one by one")
+
+The 216-point audit of every Windows screen (Claude Doc "Roshan Khata Windows — Deep Analysis aur Fix
+Plan", mockups on the Design canvas). Part 1 is the money and safety fixes, one commit each, MSI 1.17.2;
+parts 2–4 (the phone's look, merged pages, page by page) wait for the owner. CI only.
+
+- Entry form: a ticked "paid now" writes its cash "I got" with no goods line (`entryRateType`); an edit
+  keeps the goods lines the form does not show (`editedLine`, `otherItems`). Invoice discount as % or
+  money (`invoiceDiscount`). Z report and sales report: a loss carries its minus.
+- Home's cash card is the drawer by Close the day's rule (`drawerByTheBooks`: last count + cash in −
+  cash out since), never the cashbook's all-method net.
+- Every balance says its side (`balanceSideWord`, shared): customer page, receipt, statement dialog,
+  CSV import (two figures), delete forever (the binned balance first), deleting a business (its sign).
+- The restore question scrolls. The week-old backup reminder counts only "Back up now" files
+  (`AppPrefs.lastSavedBackup`, per business) and copies in the outside folder (`notif_backup_body_pc`).
+  The counter's open ticket belongs to the window (`CounterDraft` in Book), not the page.
+- Cheques (both platforms): `settleCheque`, one transaction — bounced/cancelled only from pending, back
+  to pending only from bounced/cancelled with no ledger entry; clearing is `clearCheque` alone.
+- Business card (both): a blank box never overwrites the shop's name; only SETTINGS renames it.
+- Stock adjust says a failure; a bill or invoice line typed but not added stops Save
+  (`line_editor_busy`); Khata Report's export asks EXPORT and is audited; Schemes' edit, claim and
+  delete ask EDIT_BOOK; the default scale prefix "21" is stored as nothing and is no scale in use.
+- Zakat (both, nine languages): the price label names metal and unit (`*_price_hint_tola`);
+  `nisab_help` lost its per-gram sentence and shows only for silver.
+
 ### The shared module (KMP)
 
 ```
@@ -1108,6 +1133,16 @@ Each of these cost a build or a bug.
     `KhataDatabase.isOpen(db)` before writing a round in; Room reopens a
     closed database on the next write, so a stale handle would have reopened
     the old file beside the restored one.
+50. **A box's label follows every choice that changes its meaning.** The
+    Zakat price box said "per gram" under a "Per tola" toggle; a gram's price
+    read as a tola's put the nisab 11.66 times too low.
+51. **A copy on the same disk is not a backup.** The computer's daily copies
+    (written on opening, every hour, after sales) counted as backups, so the
+    week-old reminder could never come.
+52. **A status changes only from the state that allows it, in the DAO.** A
+    screen that wrote a status over whatever the row held let a stale dialog
+    mark a cheque the other device had cleared as bounced; reopened and
+    cleared again, it posted the payment twice.
 
 ---
 
