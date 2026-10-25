@@ -3240,6 +3240,7 @@
     <string name="restore_loss_agree">میں سمجھتا ہوں کہ یہ ختم ہو جائیں گے</string>
     <string name="restore_loss_counting">دیکھا جا رہا ہے کہ اس کھاتے میں کیا ہے جو کاپی میں نہیں…</string>
     <string name="snapshot_before_restore">ریسٹور سے پہلے محفوظ · %1$s</string>
+    <string name="snapshot_before_merge">نیا شامل کرنے سے پہلے محفوظ · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">قیمتوں میں شامل ٹیکس</string>

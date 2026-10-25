@@ -96,6 +96,16 @@ object DailyCopies {
 
     private fun isLabelled(f: File) = f.name.length > "yyyy-MM-dd.txt".length
 
+    /** What a copy is: a day's own, or one kept before a restore or a merge (its label in the name). */
+    enum class Kind { DAY, BEFORE_RESTORE, BEFORE_MERGE }
+
+    /** A copy's kind from its name ("<day>-before-restore-<ms>.txt", "<day>-before-merge-<ms>.txt"). */
+    fun kindOf(f: File): Kind = when {
+        f.name.drop(10).startsWith("-before-restore") -> Kind.BEFORE_RESTORE
+        f.name.drop(10).startsWith("-before-merge") -> Kind.BEFORE_MERGE
+        else -> Kind.DAY
+    }
+
     private val byNewest: Comparator<File> =
         compareByDescending<File> { dayOf(it) }.thenByDescending { it.lastModified() }
 
@@ -216,7 +226,17 @@ fun DailyCopiesPane(
                 items(copies, key = { it.name }) { f ->
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(Format.dateTime(f.lastModified()), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            // A copy kept before a restore or a merge says so, as the phone's list (25 Oct 2026, the audit:
+                            // it read like any other day, and going back to it undid the restore unknowingly).
+                            val at = Format.dateTime(f.lastModified())
+                            Text(
+                                when (DailyCopies.kindOf(f)) {
+                                    DailyCopies.Kind.BEFORE_RESTORE -> word(W.snapshot_before_restore, at)
+                                    DailyCopies.Kind.BEFORE_MERGE -> word(W.snapshot_before_merge, at)
+                                    DailyCopies.Kind.DAY -> at
+                                },
+                                color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold
+                            )
                             Text(word(W.snapshot_size_kb, (f.length() / 1024).toInt()), color = c.textMuted, fontSize = 12.sp)
                         }
                         FluentButton(word(W.snapshot_restore_action), { asking = f }, kind = ButtonKind.SUBTLE)

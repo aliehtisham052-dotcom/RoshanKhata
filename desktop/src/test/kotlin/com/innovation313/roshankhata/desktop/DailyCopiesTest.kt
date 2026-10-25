@@ -92,4 +92,12 @@ class DailyCopiesTest {
             stick.deleteRecursively()
         }
     }
+
+    @Test
+    fun `a copy kept before a restore or a merge says what it is`() {
+        // The page read them like any other day (25 Oct 2026, the audit).
+        assertEquals(DailyCopies.Kind.DAY, DailyCopies.kindOf(java.io.File("2026-10-25.txt")))
+        assertEquals(DailyCopies.Kind.BEFORE_RESTORE, DailyCopies.kindOf(java.io.File("2026-10-25-before-restore-1793000000000.txt")))
+        assertEquals(DailyCopies.Kind.BEFORE_MERGE, DailyCopies.kindOf(java.io.File("2026-10-25-before-merge-1793000000000.txt")))
+    }
 }

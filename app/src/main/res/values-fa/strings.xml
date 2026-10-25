@@ -3268,6 +3268,7 @@
     <string name="restore_loss_agree">می‌دانم که این‌ها از بین می‌روند</string>
     <string name="restore_loss_counting">در حال بررسی آنچه در این دفتر هست و در نسخه نیست…</string>
     <string name="snapshot_before_restore">نگه‌داشته پیش از بازگردانی · %1$s</string>
+    <string name="snapshot_before_merge">نگه‌داشته پیش از افزودن موارد تازه · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">مالیات داخل قیمت‌ها</string>

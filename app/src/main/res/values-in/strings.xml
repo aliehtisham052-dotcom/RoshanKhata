@@ -3243,6 +3243,7 @@
     <string name="restore_loss_agree">Saya paham semua ini akan hilang</string>
     <string name="restore_loss_counting">Memeriksa apa yang ada di buku ini dan tidak ada di salinan…</string>
     <string name="snapshot_before_restore">Disimpan sebelum pemulihan · %1$s</string>
+    <string name="snapshot_before_merge">Disimpan sebelum menambah yang baru · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">Pajak di dalam harga</string>

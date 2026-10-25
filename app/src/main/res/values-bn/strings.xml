@@ -3290,6 +3290,7 @@
     <string name="restore_loss_agree">আমি বুঝেছি যে এগুলো মুছে যাবে</string>
     <string name="restore_loss_counting">এই খাতায় কী আছে যা কপিতে নেই, দেখা হচ্ছে…</string>
     <string name="snapshot_before_restore">রিস্টোরের আগে রাখা · %1$s</string>
+    <string name="snapshot_before_merge">নতুন যোগ করার আগে রাখা · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">দামের ভেতরে থাকা কর</string>
