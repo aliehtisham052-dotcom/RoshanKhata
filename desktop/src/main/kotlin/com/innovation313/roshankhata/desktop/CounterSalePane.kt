@@ -834,9 +834,12 @@ private fun SaleRows(rows: List<SaleSummary>, onVoid: (SaleSummary) -> Unit, onR
     val c = LocalRoshanColors.current
     rows.forEachIndexed { i, s ->
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(Format.ltr(s.saleNumber), Modifier.width(96.dp), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-            Text(s.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(Format.dateTime(s.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+            // Who, over the ticket's number and when (Marhala 4, the audit: on the laptop the name had 7 dp beside
+            // a fixed number column and the full date).
+            Column(Modifier.weight(1f)) {
+                Text(s.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(Format.ltr(s.saleNumber) + "  \u00b7  " + whenWords(s.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
             Text(Format.money(s.grandTotal), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
             when (s.status) {
                 SaleStatus.VOID -> Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
@@ -861,9 +864,10 @@ private fun RecentReturns(rows: List<com.innovation313.roshankhata.data.ReturnSu
         ListHead(word(W.pos_returns))
         rows.forEachIndexed { i, r ->
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(Format.ltr(r.returnNumber), Modifier.width(96.dp), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                Text(listOfNotNull(r.saleNumber?.let { Format.ltr(it) }, r.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in)).joinToString(" · "), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(Format.dateTime(r.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                Column(Modifier.weight(1f)) {
+                    Text(r.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(listOfNotNull(Format.ltr(r.returnNumber), r.saleNumber?.let { Format.ltr(it) }, whenWords(r.timestamp)).joinToString("  \u00b7  "), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
                 Text(Format.money(r.total), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 if (r.status == SaleStatus.VOID) Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
                 else FluentButton(word(W.pos_void), { onVoid(r) }, kind = ButtonKind.SUBTLE)
