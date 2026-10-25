@@ -145,7 +145,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             occasion = occasion, title = title.trim(), message = message.trim(), shopName = shop.trim(),
             phone = if (f.showPhone) settings.businessPhone()?.trim()?.takeIf { it.isNotEmpty() } else null,
             address = if (f.showAddress) settings.businessAddress()?.trim()?.takeIf { it.isNotEmpty() } else null,
-            logo = logo, mark = if (f.showMark) posterWords.text(W.made_with_app) else null, fields = f,
+            logo = logo, mark = if (f.showMark && com.innovation313.roshankhata.data.Branding.ON_POSTERS_AND_CARDS) posterWords.text(W.made_with_app) else null, fields = f,
             email = if (f.showEmail) settings.businessEmail()?.trim()?.takeIf { it.isNotEmpty() } else null,
             whatsapp = f.onWhatsapp
         )
@@ -235,7 +235,8 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             Tick(onWhatsapp, word(W.poster_chip_whatsapp)) { onWhatsapp = it }
             Tick(showAddress, word(W.poster_chip_address)) { showAddress = it }
             Tick(showEmail, word(W.poster_chip_email)) { showEmail = it }
-            Tick(showMark, word(W.poster_show_mark)) { showMark = it }
+            // Off for now (Branding: the owner, 12 Oct 2026), so the switch is not offered, as on the phone.
+            if (com.innovation313.roshankhata.data.Branding.ON_POSTERS_AND_CARDS) Tick(showMark, word(W.poster_show_mark)) { showMark = it }
             if (settings.businessPhone().isNullOrBlank()) Text(word(W.poster_no_phone), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.poster_desktop_flat), color = c.textMuted, fontSize = 12.sp)
         }
