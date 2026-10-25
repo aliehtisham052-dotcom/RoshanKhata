@@ -79,7 +79,8 @@ fun periodWindow(p: ReportPeriod, now: Long = System.currentTimeMillis(), custom
 @Composable
 fun reportRows(r: SalesReport, view: ReportView): Pair<List<String>, List<List<String>>> {
     fun rows(list: List<SalesReport.Row>, blank: String) = list.map { row ->
-        listOf(row.key.ifEmpty { blank }, row.count.toString(), Calc.trim(row.quantity), Format.money(row.revenue), row.profit?.let { Format.money(it) } ?: "–")
+        // An item sold at a loss shows its minus (25 Oct 2026, the audit), as the P&L view's totals do.
+        listOf(row.key.ifEmpty { blank }, row.count.toString(), Calc.trim(row.quantity), Format.money(row.revenue), row.profit?.let { Format.signedIfNegative(it) } ?: "–")
     }
     val head = listOf("", word(W.srep_col_count), word(W.pos_col_qty), word(W.srep_col_revenue), word(W.srep_col_profit))
     return when (view) {

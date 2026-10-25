@@ -125,7 +125,8 @@ data class ZReport(
         counted?.let { out += words.text(W.dc_counted) to money(it) }
         // Short or over, said with its sign (the money format drops it).
         variance?.let { out += words.text(W.z_variance) to (if (it < -0.005) "\u2212 " else if (it > 0.005) "+ " else "") + money(it) }
-        profit?.let { out += words.text(W.z_profit) to money(it) }
+        // A loss carries its minus (25 Oct 2026, the audit: a day's loss printed as a positive profit).
+        profit?.let { out += words.text(W.z_profit) to (if (it < -0.005) "− " else "") + money(it) }
         return out
     }
 }
