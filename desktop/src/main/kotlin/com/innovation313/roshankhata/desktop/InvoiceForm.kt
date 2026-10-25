@@ -74,7 +74,10 @@ fun InvoiceForm(
     var phone by remember { mutableStateOf(existing?.customerPhone.orEmpty()) }
     var date by remember { mutableStateOf(existing?.invoiceDate ?: System.currentTimeMillis()) }
     var lines by remember { mutableStateOf(existingLines) }
-    var discount by remember { mutableStateOf(pad(existing?.discountPercent)) }
+    // The discount as a % or in money, as on the phone (25 Oct 2026, the audit): a phone invoice's
+    // Rs discount was left out of this form's total while the list and the print took it off.
+    var discountInMoney by remember { mutableStateOf(existing?.discountAmount != null) }
+    var discount by remember { mutableStateOf(pad(existing?.discountAmount ?: existing?.discountPercent)) }
     var tax by remember { mutableStateOf(pad(existing?.taxPercent)) }
     var chargeLabel by remember { mutableStateOf(existing?.additionalChargeLabel.orEmpty()) }
     var charge by remember { mutableStateOf(pad(existing?.additionalChargeAmount)) }
@@ -82,7 +85,7 @@ fun InvoiceForm(
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var due by remember { mutableStateOf(existing?.dueDate) }
     var pickingDue by remember { mutableStateOf(false) }
-    val showDiscount = fields.discount || existing?.discountPercent != null
+    val showDiscount = fields.discount || existing?.discountPercent != null || existing?.discountAmount != null
     val showTax = fields.tax || existing?.taxPercent != null
     val showCharge = fields.charge || existing?.additionalChargeAmount != null
     val showReceived = fields.received || existing?.receivedAmount != null
@@ -94,7 +97,8 @@ fun InvoiceForm(
     var problem by remember { mutableStateOf<String?>(null) }
     val needCustomer = word(W.invoice_customer_required)
     val needItem = word(W.invoice_needs_item)
-    val t = InvoiceMath.totals(lines, Calc.evalPercent(discount), Calc.evalPercent(tax), Calc.evalPad(charge), Calc.evalPad(received))
+    val (discPercent, discMoney) = invoiceDiscount(discount, discountInMoney, lines.sumOf { it.lineTotal })
+    val t = InvoiceMath.totals(lines, discPercent, Calc.evalPercent(tax), Calc.evalPad(charge), Calc.evalPad(received), discMoney)
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -132,12 +136,12 @@ fun InvoiceForm(
         // The design: the phone's ten, stepped through with ‹ ›, and the first page as it will print.
         DesignStepper(shown = templateId, saved = null, onShow = { templateId = it })
         if (preview != null) {
-            androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, tax, chargeLabel, charge, received, note) {
+            androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, discountInMoney, tax, chargeLabel, charge, received, note) {
                 kotlinx.coroutines.delay(400)
                 val draft = (existing ?: Invoice(customerName = "")).copy(
                     templateId = templateId, customerName = customer.trim().ifEmpty { "\u2014" }, customerPhone = phone.trim().ifEmpty { null },
                     invoiceDate = date, taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
-                    discountPercent = Calc.evalPercent(discount)?.takeIf { it != 0.0 },
+                    discountPercent = discPercent, discountAmount = discMoney,
                     additionalChargeLabel = chargeLabel.trim().ifEmpty { null }, additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
                     receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 }, note = note.trim().ifEmpty { null },
                     dueDate = due,
@@ -167,8 +171,18 @@ fun InvoiceForm(
         }
         InvoiceLineForm { lines = lines + it; problem = null }
 
+        if (showDiscount) Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(word(W.invoice_discount_label), color = c.inkSoft, fontSize = 13.sp)
+            FluentPill("%", !discountInMoney) { discountInMoney = false }
+            FluentPill(com.innovation313.roshankhata.data.Currency.symbol, discountInMoney) { discountInMoney = true }
+        }
         if (showDiscount || showTax) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (showDiscount) Outlined(discount, { discount = it }, label = { Text(word(W.invoice_discount_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
+            if (showDiscount) Outlined(
+                discount, { discount = it },
+                label = { Text(word(W.invoice_discount_label) + if (discountInMoney) " (" + com.innovation313.roshankhata.data.Currency.symbol + ")" else " %") },
+                singleLine = true, modifier = Modifier.weight(1f),
+                calc = if (discountInMoney) com.innovation313.roshankhata.screens.CalcKind.MONEY else com.innovation313.roshankhata.screens.CalcKind.PERCENT
+            )
             if (showTax) Outlined(tax, { tax = it }, label = { Text(word(W.invoice_tax_label) + " %") }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
         }
         if (showCharge) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -203,7 +217,9 @@ fun InvoiceForm(
                             customerPhone = phone.trim().ifEmpty { null },
                             invoiceDate = date,
                             taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
-                            discountPercent = Calc.evalPercent(discount)?.takeIf { it != 0.0 },
+                            // One kind of discount is kept: the other is cleared (the phone's save rule).
+                            discountPercent = discPercent,
+                            discountAmount = discMoney,
                             additionalChargeLabel = chargeLabel.trim().ifEmpty { null },
                             additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
                             receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 },
@@ -219,6 +235,16 @@ fun InvoiceForm(
     if (picking) DayPicker(date, onPick = { date = it; picking = false }, onDismiss = { picking = false })
     if (pickingDue) DayPicker(due ?: date, onPick = { due = it; pickingDue = false }, onDismiss = { pickingDue = false })
 }
+
+/**
+ * The form's discount as the invoice keeps it, (percent, money), never both
+ * (25 Oct 2026, the audit; the phone's InvoiceEditor rule). A money discount
+ * may be written as a share of the items ("10%" off 2,500 is 250). Empty or
+ * zero is no discount.
+ */
+fun invoiceDiscount(typed: String, inMoney: Boolean, subtotal: Double): Pair<Double?, Double?> =
+    if (inMoney) null to Calc.evalDiscount(typed, subtotal)?.takeIf { it != 0.0 }
+    else Calc.evalPercent(typed)?.takeIf { it != 0.0 } to null
 
 /** The phone's Invoice settings: which optional fields the invoice form shows. Applies at once, no Save. */
 @Composable
