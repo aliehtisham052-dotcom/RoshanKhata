@@ -808,6 +808,14 @@ private fun Book(
         reminded = true
         runCatching { Reminders.daily(appPrefs, words, alerts, lastBackupAt) }
     }
+    // The Live sync window, from More or a bell row: the backup right, and the owner's own PIN when one is set,
+    // since joining a device hands it the whole book (22 Oct 2026).
+    fun openLiveSync() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) {
+        scope.launch {
+            val pin = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Access.ownerPin(dao) }.getOrNull() }
+            if (pin == null) liveSync = true else liveAsk = true
+        }
+    }
     var reporting by remember { mutableStateOf(false) }
     // The bell's rows beyond the ledger's own: the backup's age and a newer version (the phone's HomeAlerts adds the same).
     val backupOld = lastBackupAt == null || System.currentTimeMillis() - lastBackupAt!! > Reminders.BACKUP_WEEK_MS
@@ -815,7 +823,13 @@ private fun Book(
         if (backupOld) ExtraAlert(Section.DAILY, words.text(W.notif_backup_title),
             lastBackupAt?.let { words.text(W.na_backup, ((System.currentTimeMillis() - it) / (24L * 60 * 60 * 1000)).toInt()) } ?: words.text(W.notif_backup_body_pc)) { backupNowLater() } else null,
         newerVersion?.let { v -> ExtraAlert(Section.HELP, words.text(W.update_available, v), words.text(W.update_open)) { UpdateCheck.openPage() } }
-    )
+    ) + alerts.filter { it.kind == com.innovation313.roshankhata.data.LedgerAlerts.Kind.SYNC }.map { a ->
+        // Live sync's rows (conflicts, sync off) open the Live sync window, where they are dealt with
+        // (25 Oct 2026, the audit: they opened Daily copies, which knows nothing of them).
+        ExtraAlert(Section.DAILY, a.title, listOfNotNull(a.sub.takeIf { it.isNotEmpty() }, a.tag).joinToString(" · ")) { showAlerts = false; openLiveSync() }
+    }
+    // The ledger's own rows, each opening its page; live sync's went to extraAlerts above.
+    val bookAlerts = alerts.filter { it.kind != com.innovation313.roshankhata.data.LedgerAlerts.Kind.SYNC }
 
     Column(Modifier.fillMaxSize().background(Look.base)) {
         // What needs the owner today, as the phone's Home: cheques due, stock expiring
@@ -877,21 +891,14 @@ private fun Book(
             backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
             onBackup = { backupNow() },
             onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
-            alerts = alerts.size + extraAlerts.size,
+            alerts = bookAlerts.size + extraAlerts.size,
             onAlerts = { showAlerts = true },
             // The phone's More sheet, in its groups: Data, Display, Help.
             menu = listOf(
                 MenuLine(word(W.settings_group_data), null),
                 MenuLine(word(W.restore_from_file)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { restoreFromFile() } },
                 // Joining a device hands it the whole book: the owner's own PIN, whoever is signed in (22 Oct 2026).
-                MenuLine(word(W.live_title)) {
-                    Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) {
-                        scope.launch {
-                            val pin = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Access.ownerPin(dao) }.getOrNull() }
-                            if (pin == null) liveSync = true else liveAsk = true
-                        }
-                    }
-                },
+                MenuLine(word(W.live_title)) { openLiveSync() },
                 MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
                 MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
                 MenuLine(word(W.snapshots_title)) { section = Section.DAILY },
@@ -936,7 +943,7 @@ private fun Book(
                 else when (page) {
                     Section.HOME -> Box(Modifier.fillMaxSize()) {
                         HomePane(
-                            parties = parties, late = late, alerts = alerts, extra = extraAlerts,
+                            parties = parties, late = late, alerts = bookAlerts, extra = extraAlerts,
                             figuresOf = { homeFigures(dao) }, reload = reload, shopName = shop,
                             onOpen = { section = it },
                             onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
@@ -2078,7 +2085,7 @@ private fun Book(
             title = word(W.home_today),
             state = rememberDialogState(width = fitW(520.dp), height = fitH(600.dp))
         ) {
-            AlertsList(alerts, extraAlerts) { s -> showAlerts = false; section = s }
+            AlertsList(bookAlerts, extraAlerts) { s -> showAlerts = false; section = s }
         }
     }
     if (choosingTextSize) {
