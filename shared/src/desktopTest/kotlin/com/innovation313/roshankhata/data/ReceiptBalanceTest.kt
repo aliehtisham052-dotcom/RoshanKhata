@@ -74,7 +74,7 @@ class ReceiptBalanceTest {
     }
 
     @Test
-    fun `the customer's words: he pays, he receives, or nothing is left`() {
+    fun `the customer's words say he pays, he receives, or nothing is left`() {
         val names = object : Words {
             override fun text(name: String, vararg args: Any) = name
             override fun plural(name: String, count: Int, vararg args: Any) = name
