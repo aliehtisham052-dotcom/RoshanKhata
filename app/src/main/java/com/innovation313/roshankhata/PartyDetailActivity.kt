@@ -18,6 +18,7 @@ import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.DateRangeFilter

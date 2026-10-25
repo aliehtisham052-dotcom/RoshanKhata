@@ -133,6 +133,8 @@ val syncTileIcons by tasks.registering(Sync::class) {
             // The Khata page's tools (Marhala 4): WhatsApp, Filter, Order, Excel, choosing several.
             "drawable/ic_action_whatsapp.xml", "drawable/ic_filter_sliders.xml", "drawable/ic_sort_arrows.xml",
             "drawable/ic_download.xml", "drawable/ic_check_circle.xml",
+            // Invoices (Marhala 4, part 5): delete beside the invoice's other actions.
+            "drawable/ic_delete.xml",
             // The shop-type picker's twenty-five trade icons (TradeKit).
             "drawable/ic_trade_*.xml"
         )

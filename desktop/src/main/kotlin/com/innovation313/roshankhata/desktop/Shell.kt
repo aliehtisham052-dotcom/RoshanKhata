@@ -296,11 +296,32 @@ fun deskTypography(base: androidx.compose.material3.Typography = androidx.compos
     )
 }
 
-/** Esc closes a window, as every Windows dialog does; [close] is the window's own close. */
+/**
+ * Esc closes a window, as every Windows dialog does; [close] is the window's own close. Something small
+ * open inside it ([EscFirst]: a product box's suggestions) is closed first, and the dialog stays.
+ */
 fun escCloses(close: () -> Unit): (androidx.compose.ui.input.key.KeyEvent) -> Boolean = { e ->
     if (e.type == androidx.compose.ui.input.key.KeyEventType.KeyDown && e.key == androidx.compose.ui.input.key.Key.Escape) {
-        close(); true
+        if (!EscFirst.take()) close()
+        true
     } else false
+}
+
+/**
+ * What Esc closes before the dialog it is in (25 Oct 2026): a suggestion list ([SuggestBox]) sits in a
+ * popup that never takes the keys, so the dialog's own Esc came first and threw a half-written invoice
+ * away to close a list. The newest one open is closed; the dialog's Esc works again once none is open.
+ */
+object EscFirst {
+    private val open = ArrayList<() -> Unit>()
+    fun push(close: () -> Unit) { open.add(close) }
+    fun pop(close: () -> Unit) { open.remove(close) }
+    /** Closes the newest one open and says so; false when none is. */
+    fun take(): Boolean {
+        val last = open.removeLastOrNull() ?: return false
+        last()
+        return true
+    }
 }
 
 /**

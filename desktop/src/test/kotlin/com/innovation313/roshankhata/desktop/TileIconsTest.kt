@@ -50,7 +50,7 @@ class TileIconsTest {
         assertNotNull("tiles/drawable is not on the classpath", dir)
         assertTrue("tiles/drawable is not a folder: $dir", dir!!.protocol == "file")
         val names = java.io.File(dir.toURI()).listFiles { f -> f.name.endsWith(".xml") }!!.map { it.name.removeSuffix(".xml") }.sorted()
-        for (needed in listOf("ic_action_whatsapp", "ic_filter_sliders", "ic_sort_arrows", "ic_download", "ic_check_circle", "ic_truck", "ic_people")) {
+        for (needed in listOf("ic_action_whatsapp", "ic_filter_sliders", "ic_sort_arrows", "ic_download", "ic_check_circle", "ic_truck", "ic_people", "ic_delete")) {
             assertTrue("$needed was not copied", needed in names)
         }
         for (dark in listOf(false, true)) for (n in names) {

@@ -723,6 +723,7 @@
     <string name="view">Lihat</string>
     <string name="invoice_share_pdf">Bagikan sebagai PDF</string>
     <string name="invoice_send_whatsapp">Kirim lewat WhatsApp</string>
+    <string name="invoice_whatsapp_pc">Tersimpan sebagai PDF dan foldernya terbuka: %1$s\n\nObrolan WhatsApp pelanggan terbuka lewat browser Anda. Seret file ke obrolan, atau lampirkan di sana dengan tombol +.</string>
     <string name="invoice_template_teal">Teal Corporate — faktur usaha lengkap</string>
     <string name="number_words_language" translatable="false">id</string>
     <string name="invoice_swipe_designs">Geser untuk melihat desain lain — %1$d dari %2$d</string>

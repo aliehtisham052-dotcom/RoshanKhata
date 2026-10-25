@@ -2,13 +2,19 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +61,10 @@ import java.awt.print.Printable
  * charge, what was received, a note — totals worked live by the phone's
  * shared InvoiceMath. An invoice never touches the ledger, as on the phone.
  * Numbered INV- on save (KhataDao.saveInvoiceWithItems).
+ *
+ * Marhala 4 (25 Oct 2026, the audit): in the app's frame — Save, Cancel and the total in its foot, always
+ * in sight (they were at the end of a long scroll) — with the design and its live picture beside the form
+ * when the dialog is wide, and the line's name box suggesting the shop's products as the phone's does.
  */
 @Composable
 fun InvoiceForm(
@@ -66,7 +77,9 @@ fun InvoiceForm(
     /** The chosen design drawn with what is typed so far (its first page), or null. */
     preview: (suspend (Invoice, List<InvoiceItem>) -> java.awt.image.BufferedImage?)? = null,
     /** The optional fields the shop uses (Invoice settings); one already filled on this invoice always shows. */
-    fields: InvoiceFields = InvoiceFields()
+    fields: InvoiceFields = InvoiceFields(),
+    /** The shop's products, offered in the line's name box (the phone's SmartSuggest); null offers none. */
+    products: ProductShelf? = null
 ) {
     val c = LocalRoshanColors.current
     fun pad(v: Double?) = v?.takeIf { it != 0.0 }?.let { Calc.trim(it) }.orEmpty()
@@ -102,10 +115,50 @@ fun InvoiceForm(
     val (discPercent, discMoney) = invoiceDiscount(discount, discountInMoney, lines.sumOf { it.lineTotal })
     val t = InvoiceMath.totals(lines, discPercent, Calc.evalPercent(tax), Calc.evalPad(charge), Calc.evalPad(received), discMoney)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        // Inside a dialog its head says it (one title, Marhala 2).
-        if (!inDialog()) Text(existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Outlined(customer, { customer = it; problem = null }, label = { Text(word(W.invoice_customer_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    // The invoice as typed: what Save keeps, and (with a stand-in name and number) what the picture shows.
+    fun built(forPicture: Boolean): Invoice {
+        val inv = (existing ?: Invoice(customerName = "")).copy(
+            templateId = templateId,
+            customerName = customer.trim().let { if (forPicture) it.ifEmpty { "\u2014" } else it },
+            customerPhone = phone.trim().ifEmpty { null },
+            invoiceDate = date,
+            taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
+            // One kind of discount is kept: the other is cleared (the phone's save rule).
+            discountPercent = discPercent,
+            discountAmount = discMoney,
+            additionalChargeLabel = chargeLabel.trim().ifEmpty { null },
+            additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
+            receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 },
+            note = note.trim().ifEmpty { null },
+            dueDate = due
+        )
+        return if (forPicture) inv.copy(invoiceNumber = existing?.invoiceNumber ?: "INV-\u2026") else inv
+    }
+    fun save() {
+        when {
+            customer.isBlank() -> problem = needCustomer
+            lineBusy -> problem = needLine
+            lines.isEmpty() -> problem = needItem
+            else -> onSave(built(forPicture = false), lines)
+        }
+    }
+    if (preview != null) {
+        androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, discountInMoney, tax, chargeLabel, charge, received, note) {
+            kotlinx.coroutines.delay(400)
+            val draft = built(forPicture = true)
+            picture = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                runCatching { preview(draft, lines) }.getOrNull()?.toComposeImageBitmap()
+            }
+        }
+    }
+
+    // Everything typed, top to bottom; the frame's foot keeps Save and the total in sight.
+    val form: @Composable ColumnScope.() -> Unit = {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Outlined(customer, { customer = it; problem = null }, label = { Text(word(W.invoice_customer_hint)) }, singleLine = true, modifier = Modifier.weight(1.4f))
+            Outlined(phone, { phone = it }, label = { Text(word(W.invoice_phone_hint)) }, singleLine = true, modifier = Modifier.weight(1f),
+                textStyle = androidx.compose.material3.LocalTextStyle.current.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr))
+        }
         val q = customer.trim().lowercase()
         if (q.isNotEmpty()) {
             val hits = parties.filter { NameSearch.matches(it.name, it.phone, q) && it.name != customer }.take(30)
@@ -113,7 +166,7 @@ fun InvoiceForm(
                 LazyColumn(Modifier.fillMaxWidth().heightIn(max = 130.dp).background(Look.subtle, Look.ctl)) {
                     items(hits, key = { it.id }) { p ->
                         Text(
-                            Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
+                            Format.name(p.name) + (p.phone?.takeIf { !samePhone(it, p.name) }?.let { "  ·  " + Format.ltr(it) } ?: ""),
                             Modifier.fillMaxWidth().press { customer = p.name; phone = p.phone.orEmpty() }.padding(horizontal = 12.dp, vertical = 8.dp),
                             color = c.ink, fontSize = 14.sp
                         )
@@ -121,58 +174,26 @@ fun InvoiceForm(
                 }
             }
         }
-        Outlined(phone, { phone = it }, label = { Text(word(W.invoice_phone_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
-            textStyle = androidx.compose.material3.LocalTextStyle.current.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            FluentButton(word(W.pick_invoice_date), { picking = true }, kind = ButtonKind.SUBTLE)
-            Text(Format.dateOnly(date), color = c.ink, fontWeight = FontWeight.Bold)
-        }
-        // The phone's optional due date: printed on the designs that carry one.
-        if (showDue) Row(verticalAlignment = Alignment.CenterVertically) {
-            FluentButton(word(W.invoice_due_date_hint), { pickingDue = true }, kind = ButtonKind.SUBTLE)
-            due?.let { d ->
-                Text(Format.dateOnly(d), color = c.ink, fontWeight = FontWeight.Bold)
-                TextButton({ due = null }) { Text("\u2715", color = c.textMuted) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Bottom) {
+            DateBox(word(W.date_label), Format.dateOnly(date), word(W.pick_date), { picking = true }, Modifier.weight(1f))
+            // The phone's optional due date: printed on the designs that carry one.
+            if (showDue) {
+                DateBox(word(W.invoice_due_date_hint), due?.let { Format.dateOnly(it) }, word(W.pick_date), { pickingDue = true }, Modifier.weight(1f))
+                if (due != null) IconAction("ic_close", word(W.filter_clear), { due = null })
             }
         }
 
-        // The design: the phone's ten, stepped through with ‹ ›, and the first page as it will print.
-        DesignStepper(shown = templateId, saved = null, onShow = { templateId = it })
-        if (preview != null) {
-            androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, discountInMoney, tax, chargeLabel, charge, received, note) {
-                kotlinx.coroutines.delay(400)
-                val draft = (existing ?: Invoice(customerName = "")).copy(
-                    templateId = templateId, customerName = customer.trim().ifEmpty { "\u2014" }, customerPhone = phone.trim().ifEmpty { null },
-                    invoiceDate = date, taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
-                    discountPercent = discPercent, discountAmount = discMoney,
-                    additionalChargeLabel = chargeLabel.trim().ifEmpty { null }, additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
-                    receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 }, note = note.trim().ifEmpty { null },
-                    dueDate = due,
-                    invoiceNumber = existing?.invoiceNumber ?: "INV-\u2026"
-                )
-                picture = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-                    runCatching { preview(draft, lines) }.getOrNull()?.toComposeImageBitmap()
-                }
-            }
-            picture?.let {
-                androidx.compose.foundation.Image(
-                    it, contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp).background(Look.subtle, Look.ctl).padding(6.dp),
-                    filterQuality = androidx.compose.ui.graphics.FilterQuality.High
-                )
-            }
-        }
-
+        Text(word(W.invoice_items_label), Modifier.padding(top = 6.dp), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         lines.forEachIndexed { i, l ->
             Row(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(l.itemName, color = c.ink, fontWeight = FontWeight.Bold)
                     Text(word(W.bill_item_figures, Format.qty(l.quantity, l.unit), Format.money(l.rate), Format.money(l.lineTotal)), color = c.inkSoft, fontSize = 12.sp)
                 }
-                TextButton({ lines = lines.filterIndexed { j, _ -> j != i } }) { Text(word(W.delete), color = c.owedToMe) }
+                FluentButton(word(W.delete), { lines = lines.filterIndexed { j, _ -> j != i } }, kind = ButtonKind.DANGER)
             }
         }
-        InvoiceLineForm(onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { lines = lines + it; problem = null }
+        InvoiceLineForm(products, onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { lines = lines + it; problem = null }
 
         if (showDiscount) Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(word(W.invoice_discount_label), color = c.inkSoft, fontSize = 13.sp)
@@ -206,32 +227,58 @@ fun InvoiceForm(
                 SumLine(word(W.invoice_sum_balance), Format.money(t.balanceDue), bold = true)
             }
         }
-        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
-            FillButton(word(W.save), c.brandGreen) {
-                when {
-                    customer.isBlank() -> problem = needCustomer
-                    lineBusy -> problem = needLine
-                    lines.isEmpty() -> problem = needItem
-                    else -> onSave(
-                        (existing ?: Invoice(customerName = "")).copy(
-                            templateId = templateId,
-                            customerName = customer.trim(),
-                            customerPhone = phone.trim().ifEmpty { null },
-                            invoiceDate = date,
-                            taxPercent = Calc.evalPercent(tax)?.takeIf { it != 0.0 },
-                            // One kind of discount is kept: the other is cleared (the phone's save rule).
-                            discountPercent = discPercent,
-                            discountAmount = discMoney,
-                            additionalChargeLabel = chargeLabel.trim().ifEmpty { null },
-                            additionalChargeAmount = Calc.evalPad(charge)?.takeIf { it != 0.0 },
-                            receivedAmount = Calc.evalPad(received)?.takeIf { it != 0.0 },
-                            note = note.trim().ifEmpty { null },
-                            dueDate = due
-                        ),
-                        lines
-                    )
+    }
+    // The design (the phone's ten, stepped through with ‹ ›) and its first page as it will print. [fill]: the
+    // page beside the form, scrolling in the height left; else under the form, its top shown.
+    val design: @Composable ColumnScope.(Boolean) -> Unit = { fill ->
+        Text(word(W.invoice_preview_label), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        DesignStepper(shown = templateId, saved = null, onShow = { templateId = it })
+        if (preview != null) {
+            val pic = picture
+            Box((if (fill) Modifier.weight(1f).fillMaxWidth() else Modifier.fillMaxWidth().heightIn(max = 520.dp)).clip(Look.ctl).background(Look.subtle).border(1.dp, Look.strokeCard, Look.ctl)) {
+                if (pic == null) {
+                    androidx.compose.material3.LinearProgressIndicator(Modifier.fillMaxWidth().align(Alignment.TopCenter))
+                } else {
+                    Column(if (fill) Modifier.fillMaxSize().verticalScroll(rememberScrollState()) else Modifier.fillMaxWidth()) {
+                        androidx.compose.foundation.Image(
+                            pic, contentDescription = null,
+                            modifier = Modifier.fillMaxWidth().padding(6.dp),
+                            contentScale = androidx.compose.ui.layout.ContentScale.FillWidth,
+                            filterQuality = androidx.compose.ui.graphics.FilterQuality.High
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    DialogFrame(
+        title = existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice),
+        onClose = onCancel,
+        scroll = false,
+        footerStart = {
+            val said = problem
+            if (said != null) Text(said, color = c.owedToMe, fontSize = 13.sp, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            else Text(word(W.invoice_sum_total) + "  " + Format.money(t.grandTotal), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+        },
+        footer = {
+            FluentButton(word(W.cancel), onCancel)
+            FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+        }
+    ) {
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            // Beside the form once the dialog has room for both (the laptop's 1093 dp window has), else below it.
+            val wide = maxWidth >= 860.dp
+            val sideWidth = maxWidth * 0.42f
+            if (wide) {
+                Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                    Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()).padding(bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp), content = form)
+                    Column(Modifier.width(sideWidth).fillMaxHeight().padding(bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { design(true) }
+                }
+            } else {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    form()
+                    design(false)
                 }
             }
         }
@@ -286,7 +333,7 @@ private fun SumLine(label: String, value: String, bold: Boolean = false) {
 }
 
 @Composable
-private fun InvoiceLineForm(onBusy: (Boolean) -> Unit = {}, onAdd: (InvoiceItem) -> Unit) {
+private fun InvoiceLineForm(products: ProductShelf?, onBusy: (Boolean) -> Unit = {}, onAdd: (InvoiceItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf("") }
     var qty by remember { mutableStateOf("1") }
@@ -296,7 +343,12 @@ private fun InvoiceLineForm(onBusy: (Boolean) -> Unit = {}, onAdd: (InvoiceItem)
     val busy = name.isNotBlank() || rate.isNotBlank()
     androidx.compose.runtime.LaunchedEffect(busy) { onBusy(busy) }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-        Outlined(name, { name = it }, label = { Text(word(W.invoice_item_name_hint)) }, singleLine = true, modifier = Modifier.weight(2f))
+        // The shop's products as the name is typed (the phone's SmartSuggest). A pick fills the name, and the
+        // product's own unit when none is typed; its two prices (cash, udhaar) stay the owner's to choose.
+        SuggestBox(name, { name = it }, products, word(W.invoice_item_name_hint), Modifier.weight(2f), onPick = { item ->
+            name = item.value
+            if (unit.isBlank()) products?.product(item.value)?.defaultUnit?.takeIf { it.isNotBlank() }?.let { unit = com.innovation313.roshankhata.data.UnitWords.label(it) }
+        })
         Outlined(qty, { qty = it }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
         Outlined(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
         Outlined(rate, { rate = it }, label = { Text(word(W.invoice_item_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)

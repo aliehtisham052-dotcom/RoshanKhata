@@ -120,7 +120,7 @@ fun BillLineDialog(dao: KhataDao, billId: Long, existing: BillItem?, onDone: () 
         state = rememberDialogState(width = fitW(560.dp), height = fitH(560.dp))
     ) {
         Column(Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp)) {
-            ItemForm(existing) { line ->
+            ItemForm(existing, products = rememberProductShelf(dao)) { line ->
                 scope.launch {
                     withContext(Dispatchers.IO) { dao.saveBillLine(billId, line) }
                     onDone()
@@ -149,32 +149,30 @@ fun BatchBuyersDialog(dao: KhataDao, billItemId: Long, onClose: () -> Unit) {
         }
     }
     val (item, buyers, untagged) = loaded ?: return
-    AlertDialog(
-        onDismissRequest = onClose,
-        title = { Text(word(W.batch_buyers_title, item.productName, item.batchNumber?.takeIf { it.isNotBlank() } ?: "—")) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                if (buyers.isEmpty()) Text(word(W.batch_buyers_none), color = c.textMuted)
-                LazyColumn(Modifier.heightIn(max = 380.dp)) {
-                    items(buyers, key = { it.partyId }) { b ->
-                        Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Column(Modifier.weight(1f)) {
-                                Text(Format.name(b.partyName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                                b.phone?.takeIf { it.isNotBlank() }?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
-                            }
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(b.quantity?.let { Format.qty(it, b.unit) } ?: "—", color = c.ink, fontSize = 14.sp)
-                                Text(Format.dateOnly(b.lastAt), color = c.textMuted, fontSize = 12.sp)
-                            }
+    // In the app's frame (Marhala 4, the audit: Material's dialog, its list in a fixed 380 dp).
+    val title = word(W.batch_buyers_title, item.productName, item.batchNumber?.takeIf { it.isNotBlank() } ?: "—")
+    AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(560.dp))) {
+        DialogFrame(title, onClose = onClose, scroll = false, footer = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }) {
+            if (buyers.isEmpty()) Text(word(W.batch_buyers_none), color = c.textMuted)
+            if (untagged > 0) Text(plural(WP.batch_buyers_untagged, untagged, untagged), color = c.owedToMe, fontSize = 13.sp)
+            LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
+                items(buyers, key = { it.partyId }) { b ->
+                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Avatar(b.partyName, 32, id = b.partyId)
+                        Column(Modifier.weight(1f)) {
+                            Text(Format.name(b.partyName), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            b.phone?.takeIf { it.isNotBlank() }?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
                         }
-                        Rule()
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(b.quantity?.let { Format.qty(it, b.unit) } ?: "—", color = c.ink, fontSize = 14.sp)
+                            Text(Format.dateOnly(b.lastAt), color = c.textMuted, fontSize = 12.sp)
+                        }
                     }
+                    Rule()
                 }
-                if (untagged > 0) Text(plural(WP.batch_buyers_untagged, untagged, untagged), color = c.owedToMe, fontSize = 13.sp)
             }
-        },
-        confirmButton = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }
-    )
+        }
+    }
 }
 
 /**

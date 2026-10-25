@@ -1007,6 +1007,29 @@ Businesses/Settings), each part with its proof pictures. CI only.
   exact rectangle over a run of modules (`LabelSheet.barRuns`, drawn unsmoothed) — columns cut to whole points
   printed bars of one width one and two points wide; the price is placed first and the name takes the room
   left. Not done: the phone's full inspector PDF on the computer.
+- **Part 5, Invoices (and the group's Plans):** the list is narrow (36%, 280–380 dp) and the open invoice keeps
+  its head (face, name, number · date · due, the total, received and still due) and its actions in one block —
+  PDF, then WhatsApp, Edit and Delete as icons, the design stepper in the same row (`DesignStepper(modifier)`) —
+  with every page of its design under them in the height left (`InvoicePages` over `Sheets`, the sheet Print
+  sends: a design, else the plain layout; each page drawn at the pane's own width, 1.5–3 px a point, when it
+  scrolls into sight). The counts are said once (the pills), the head's Add invoice is the one way in, delete
+  is the app's titled question, faces wear the khata's colours when one party has that name. **WhatsApp on the
+  computer** (`sendOnWhatsApp`, the phone's sendPdfToCustomer as far as Windows goes): the PDF is saved
+  (`PdfFiles`) and shown chosen in Explorer (`showInFolder`: `explorer /select,` and the path as two arguments —
+  one argument is quoted whole by Java, a form Explorer does not take), the chat opened by the number alone
+  (wa.me, no name or amount through the browser), and the owner told to drag the file in or attach it with +
+  (`invoice_whatsapp_pc`; WhatsApp's own help names drag and drop — pasting a file is not claimed). The form is
+  in the app's frame (Save, Cancel and the total in its foot) with the design and its live picture beside it
+  when the dialog is 860 dp or wider. **Product suggestions, one rule on both** (`SmartSuggest` moved to :shared
+  with `Shelf`, `asSuggestions`, `withStarters(starters, label)`; the phone keeps the dropdown as the extension
+  `SmartSuggest.attach` and `withStarters(context)` in ui/SmartSuggestAndroid.kt): the invoice's and the bill's
+  line boxes are `SuggestBox` over `rememberProductShelf(dao)` — the best six, company · unit, a pick fills the
+  name and the product's unit when none is typed (never a price: cash or udhaar is the owner's to choose). Esc
+  closes the list before the dialog (`EscFirst`, consulted by `escCloses`): the list's popup never takes the
+  keys. Plans: Mark complete asks the owner's rule and then the owner, in figures (paid, left); its actions,
+  the payment and the new plan are in the app's frame, the party picked with `PartyPicker` (whose chosen chip
+  now says the balance's side). Bills', Products' and Who-bought dialogs are the app's too. Proofs:
+  screen-laptop-invoices-short-en, screen-laptop-invoices-ur, dialog-laptop-invoice-en; ProductShelfTest.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
@@ -1020,7 +1043,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
 - Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture, pos_still_due,
   pos_drop_held_confirm, cheque_none_cleared, cheque_none_bounced, no_products_pc, no_matching_products,
-  inventory_subtitle, po_subtitle, po_copied_no_number, trace_came (nine languages). Tests: ReminderTextTest (shared),
+  inventory_subtitle, po_subtitle, po_copied_no_number, trace_came, invoice_whatsapp_pc (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
 
@@ -1090,9 +1113,9 @@ app/src/main/java/com/innovation313/roshankhata/
 app/src/test/java/.../data/VoiceEntryTest.kt   What the microphone may conclude
 ```
 
-VoiceEntry, DriveFeature, Calc and NameSearch now live in `:shared`
+VoiceEntry, DriveFeature, Calc, NameSearch and SmartSuggest's ranking now live in `:shared`
 (`shared/src/jvmSharedMain/...`, same packages); their tests are in
-`shared/src/jvmSharedTest`.
+`shared/src/jvmSharedTest` (SmartSuggestTest stays in the app's tests, which run it against the shared code).
 
 ---
 

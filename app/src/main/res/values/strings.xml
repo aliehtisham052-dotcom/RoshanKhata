@@ -740,6 +740,7 @@
     <string name="view">View</string>
     <string name="invoice_share_pdf">Share as PDF</string>
     <string name="invoice_send_whatsapp">Send on WhatsApp</string>
+    <string name="invoice_whatsapp_pc">Saved as a PDF, and its folder is open: %1$s\n\nThe customer\'s WhatsApp chat opens through your browser. Drag the file into the chat, or attach it there with the + button.</string>
     <string name="invoice_template_teal">Teal Corporate — full business invoice</string>
     <string name="number_words_language" translatable="false">en</string>
     <string name="invoice_swipe_designs">Swipe to see more designs — %1$d of %2$d</string>

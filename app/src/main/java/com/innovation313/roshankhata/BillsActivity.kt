@@ -41,6 +41,7 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.SupplierBill
 import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.BillAdapter
