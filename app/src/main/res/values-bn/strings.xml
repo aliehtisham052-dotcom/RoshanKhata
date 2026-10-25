@@ -3294,7 +3294,10 @@
     <string name="access_page_locked">এই পাতার জন্য ম্যানেজার বা মালিক লাগবে</string>
     <string name="access_page_owner_only">এই পাতার জন্য মালিক লাগবে</string>
     <string name="access_signed_in_as">সাইন ইন: %1$s</string>
-    <string name="audit_seal_ok">%1$dটি সারি যাচাই করা হয়েছে: অ্যাপের বাইরে কোনো সারি বদলানো বা সরানো হয়নি</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$dটি সারি যাচাই করা হয়েছে: অ্যাপের বাইরে এটি বদলানো বা সরানো হয়নি</item>
+        <item quantity="other">%1$dটি সারি যাচাই করা হয়েছে: অ্যাপের বাইরে কোনো সারি বদলানো বা সরানো হয়নি</item>
+    </plurals>
     <string name="audit_seal_broken">সারি %1$d অ্যাপের বাইরে বদলানো বা সরানো হয়েছে</string>
     <string name="audit_stock_count">স্টক গোনা হয়েছে</string>
     <string name="audit_stock_adjusted">স্টক ঠিক করা হয়েছে</string>

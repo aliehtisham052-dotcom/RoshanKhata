@@ -3458,7 +3458,10 @@
     <string name="access_page_locked">This page needs a manager or the owner</string>
     <string name="access_page_owner_only">This page needs the owner</string>
     <string name="access_signed_in_as">Signed in: %1$s</string>
-    <string name="audit_seal_ok">%1$d rows checked: none was changed or removed outside the app</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$d row checked: it was not changed or removed outside the app</item>
+        <item quantity="other">%1$d rows checked: none was changed or removed outside the app</item>
+    </plurals>
     <string name="audit_seal_broken">Row %1$d was changed or removed outside the app</string>
     <string name="audit_stock_count">Stock counted</string>
     <string name="audit_stock_adjusted">Stock adjusted</string>

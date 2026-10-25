@@ -3244,7 +3244,10 @@
     <string name="access_page_locked">Is safhe ke liye manager ya malik chahiye</string>
     <string name="access_page_owner_only">Is safhe ke liye malik chahiye</string>
     <string name="access_signed_in_as">Sign in: %1$s</string>
-    <string name="audit_seal_ok">%1$d qataarein jaanchi gayin: app ke bahar koi qataar badli ya hatayi nahi gayi</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$d qataar jaanchi gayi: app ke bahar ye badli ya hatayi nahi gayi</item>
+        <item quantity="other">%1$d qataarein jaanchi gayin: app ke bahar koi qataar badli ya hatayi nahi gayi</item>
+    </plurals>
     <string name="audit_seal_broken">Qataar %1$d app ke bahar badli ya hatayi gayi hai</string>
     <string name="audit_stock_count">Stock gina gaya</string>
     <string name="audit_stock_adjusted">Stock durust kiya gaya</string>

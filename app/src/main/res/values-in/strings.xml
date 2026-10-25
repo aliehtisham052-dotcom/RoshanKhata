@@ -3247,7 +3247,9 @@
     <string name="access_page_locked">Halaman ini perlu manajer atau pemilik</string>
     <string name="access_page_owner_only">Halaman ini perlu pemilik</string>
     <string name="access_signed_in_as">Masuk: %1$s</string>
-    <string name="audit_seal_ok">%1$d baris diperiksa: tidak ada baris yang diubah atau dihapus di luar aplikasi</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="other">%1$d baris diperiksa: tidak ada baris yang diubah atau dihapus di luar aplikasi</item>
+    </plurals>
     <string name="audit_seal_broken">Baris %1$d diubah atau dihapus di luar aplikasi</string>
     <string name="audit_stock_count">Stok dihitung</string>
     <string name="audit_stock_adjusted">Stok disesuaikan</string>

@@ -3294,7 +3294,10 @@
     <string name="access_page_locked">इस पेज के लिए मैनेजर या मालिक चाहिए</string>
     <string name="access_page_owner_only">इस पेज के लिए मालिक चाहिए</string>
     <string name="access_signed_in_as">साइन इन: %1$s</string>
-    <string name="audit_seal_ok">%1$d पंक्तियाँ जाँची गईं: ऐप के बाहर कोई पंक्ति बदली या हटाई नहीं गई</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$d पंक्ति जाँची गई: ऐप के बाहर यह बदली या हटाई नहीं गई</item>
+        <item quantity="other">%1$d पंक्तियाँ जाँची गईं: ऐप के बाहर कोई पंक्ति बदली या हटाई नहीं गई</item>
+    </plurals>
     <string name="audit_seal_broken">पंक्ति %1$d ऐप के बाहर बदली या हटाई गई है</string>
     <string name="audit_stock_count">स्टॉक गिना गया</string>
     <string name="audit_stock_adjusted">स्टॉक ठीक किया गया</string>
