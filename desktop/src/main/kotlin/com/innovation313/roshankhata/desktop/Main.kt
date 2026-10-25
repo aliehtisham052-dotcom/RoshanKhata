@@ -604,6 +604,9 @@ private fun Book(
         images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { javax.imageio.ImageIO.read(it) }
     }.getOrNull()
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
+    // An entry shown as its receipt (Marhala 4, part 6b: a click opened its editor), and a sale becoming an invoice.
+    var viewing by remember { mutableStateOf<LedgerEntry?>(null) }
+    var invoiceFrom by remember { mutableStateOf<Pair<LedgerEntry, List<com.innovation313.roshankhata.data.EntryItem>>?>(null) }
     var bin by remember { mutableStateOf(false) }
     // The phone's book over WiFi (Backup → Send to computer on the phone): the QR window is open.
     var phoneSync by remember { mutableStateOf(false) }
@@ -1229,7 +1232,7 @@ private fun Book(
                                     onStatement = { statementFor = party },
                                     onEdit = { Gates.edit { scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } } } },
                                     onDelete = { Gates.edit { deletingParty = party } },
-                                    onEntry = { editing = it },
+                                    onEntry = { viewing = it },
                                     onPromise = { promising = party to facts.promiseAt },
                                     promiseInMenu = LocalTrade.current.seasons,
                                     onQr = { qrFor = party },
@@ -1532,6 +1535,38 @@ private fun Book(
             reload++
         }
     }
+    /** The entry on the thermal printer (Phase 9e): the receipt the customer holds, every goods line on it. */
+    fun printReceipt(e: LedgerEntry, loaded: List<com.innovation313.roshankhata.data.EntryItem>) {
+        scope.launch {
+                        // The balance this entry left, not today's (25 Oct 2026, the audit): an old receipt or a part
+                        // payment printed whatever the account stood at when the button was pressed.
+                        val after = withContext(Dispatchers.IO) { runCatching { dao.balanceAfterEntry(e) }.getOrNull() }
+                        // Every goods line goes on the receipt (25 Oct 2026, the audit: only the first one did).
+                        val goodsLines = loaded.filter { !it.itemName.isNullOrBlank() }.map { i ->
+                            ThermalReceipt.Line(
+                                listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }) },
+                                    i.rate?.let { r -> "@ " + Format.money(r) }, words.text(W.bonus_tag).takeIf { i.isBonus }).joinToString("  "), 20f
+                            )
+                        }
+                        receipt = ThermalReceipt.Job(listOfNotNull(
+                            ThermalReceipt.Line(shopName() ?: words.text(W.app_name), 26f, bold = true, centre = true),
+                            ThermalReceipt.Line(Format.dateTime(e.timestamp) + "  " + e.entryNumber, 18f, centre = true),
+                            ThermalReceipt.Line(""),
+                            ThermalReceipt.Line(Format.name(forParty?.name.orEmpty()), 24f, bold = true),
+                            forParty?.phone?.let { ThermalReceipt.Line(Format.ltr(it), 18f) },
+                            ThermalReceipt.Line(words.text(if (e.isGiven) W.you_gave else W.you_got), 22f),
+                            ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true)
+                        ) + goodsLines + listOfNotNull(
+                            e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
+                            ThermalReceipt.Line(""),
+                            // The customer reads this: his side in his own words, never a bare figure (ReceiptBalance).
+                            after?.let { b ->
+                                ThermalReceipt.Line(words.text(W.balance_label) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.text(words, b), 22f, bold = true)
+                            },
+                            ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
+                        ))
+        }
+    }
     if (way != null && forParty != null) {
         AppDialog(
             onCloseRequest = { entryWay = null },
@@ -1573,13 +1608,8 @@ private fun Book(
         }
     }
     confirming?.let { (d, text) ->
-        AlertDialog(
-            onDismissRequest = { confirming = null },
-            title = { Text(word(confirmTitle)) },
-            text = { Text(text) },
-            confirmButton = { TextButton({ saveNew(d) }) { Text(word(W.twin_entry_add)) } },
-            dismissButton = { TextButton({ confirming = null }) { Text(word(W.cancel)) } }
-        )
+        // The app's question (Marhala 4, part 6b: the entry flow's dialogs were Material's).
+        AskDialog(word(confirmTitle), text, word(W.twin_entry_add), onConfirm = { saveNew(d) }, onDismiss = { confirming = null }, height = 360)
     }
     editing?.let { e ->
         var items by remember(e.id) { mutableStateOf<List<com.innovation313.roshankhata.data.EntryItem>?>(null) }
@@ -1595,12 +1625,7 @@ private fun Book(
         }
         val loaded = items
         val by = owner
-        if (by != null && by.isNotEmpty()) AlertDialog(
-            onDismissRequest = { editing = null },
-            title = { Text(word(W.entry_linked_title)) },
-            text = { Text(word(com.innovation313.roshankhata.data.EntryOwner.wordFor(by))) },
-            confirmButton = { TextButton({ editing = null }) { Text(word(W.ok)) } }
-        )
+        if (by != null && by.isNotEmpty()) TellDialog(word(W.entry_linked_title), word(com.innovation313.roshankhata.data.EntryOwner.wordFor(by)), { editing = null })
         else if (loaded != null && by != null) AppDialog(
             onCloseRequest = { editing = null },
             onPreviewKeyEvent = escCloses { editing = null },
@@ -1630,94 +1655,94 @@ private fun Book(
                     } },
                     onCancel = { editing = null },
                     onDelete = { Gates.edit { deleting = e; editing = null } },
-                    onPrint = { scope.launch {
-                        // The balance this entry left, not today's (25 Oct 2026, the audit): an old receipt or a part
-                        // payment printed whatever the account stood at when the button was pressed.
-                        val after = withContext(Dispatchers.IO) { runCatching { dao.balanceAfterEntry(e) }.getOrNull() }
-                        // Every goods line goes on the receipt (25 Oct 2026, the audit: only the first one did).
-                        val goodsLines = loaded.filter { !it.itemName.isNullOrBlank() }.map { i ->
-                            ThermalReceipt.Line(
-                                listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }) },
-                                    i.rate?.let { r -> "@ " + Format.money(r) }, words.text(W.bonus_tag).takeIf { i.isBonus }).joinToString("  "), 20f
-                            )
+                    onPrint = { printReceipt(e, loaded) }
+                )
+            }
+        }
+    }
+    viewing?.let { v ->
+        EntryReceiptDialog(
+            dao = dao, entryId = v.id, partyName = forParty?.name.orEmpty(), home = home, businessId = activeBusiness, reload = reload,
+            onClose = { viewing = null },
+            onEdit = { e -> viewing = null; editing = e },
+            onDelete = { e -> Gates.edit { viewing = null; deleting = e } },
+            onPrint = { e, items -> printReceipt(e, items) },
+            onInvoice = { e, id ->
+                // The invoice made from this sale opens on its page; else a new one starts from the sale (the phone's way).
+                if (id != null) { viewing = null; invoiceToOpen = id; section = Section.INVOICES }
+                else scope.launch { invoiceFrom = e to withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id) } }
+            },
+            onChanged = { reload++ }
+        )
+    }
+    invoiceFrom?.let { (e, items) ->
+        val party = forParty
+        AppDialog(onCloseRequest = { invoiceFrom = null }, onPreviewKeyEvent = escCloses { invoiceFrom = null }, title = word(W.add_invoice), state = rememberDialogState(width = fitW(1100.dp), height = fitH(900.dp))) {
+            Box(Modifier.fillMaxSize()) {
+                InvoiceForm(
+                    parties = parties,
+                    // A khata sale as a NEW invoice (the phone's EntryInvoice): the customer, the day and the goods,
+                    // every field still the owner's until Save; the invoice remembers the sale it came from.
+                    start = com.innovation313.roshankhata.data.Invoice(customerName = party?.name.orEmpty(), customerPhone = party?.phone, invoiceDate = e.timestamp, sourceEntryId = e.id),
+                    startLines = com.innovation313.roshankhata.data.EntryInvoice.rows(e, items),
+                    preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl), inv, lines)?.picture(0, 3f) },
+                    fields = invoiceFields,
+                    products = rememberProductShelf(dao),
+                    onSave = { inv, lines ->
+                        invoiceFrom = null
+                        scope.launch {
+                            val id = withContext(Dispatchers.IO) { dao.saveInvoiceWithItems(inv, lines) }
+                            viewing = null
+                            invoiceToOpen = id
+                            section = Section.INVOICES
                         }
-                        receipt = ThermalReceipt.Job(listOfNotNull(
-                            ThermalReceipt.Line(shopName() ?: words.text(W.app_name), 26f, bold = true, centre = true),
-                            ThermalReceipt.Line(Format.dateTime(e.timestamp) + "  " + e.entryNumber, 18f, centre = true),
-                            ThermalReceipt.Line(""),
-                            ThermalReceipt.Line(Format.name(forParty?.name.orEmpty()), 24f, bold = true),
-                            forParty?.phone?.let { ThermalReceipt.Line(Format.ltr(it), 18f) },
-                            ThermalReceipt.Line(words.text(if (e.isGiven) W.you_gave else W.you_got), 22f),
-                            ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true)
-                        ) + goodsLines + listOfNotNull(
-                            e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
-                            ThermalReceipt.Line(""),
-                            // The customer reads this: his side in his own words, never a bare figure (ReceiptBalance).
-                            after?.let { b ->
-                                ThermalReceipt.Line(words.text(W.balance_label) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.text(words, b), 22f, bold = true)
-                            },
-                            ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
-                        ))
-                    } }
+                    },
+                    onCancel = { invoiceFrom = null }
                 )
             }
         }
     }
     deleting?.let { e ->
-        AlertDialog(
-            onDismissRequest = { deleting = null },
-            title = { Text(word(W.delete_entry_title)) },
-            text = { Text(word(W.delete_entry_confirm)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        deleting = null
-                        scope.launch {
-                            // Half of a cash sale: ask about the other half, as the phone does.
-                            val pair = withContext(Dispatchers.IO) {
-                                e.pairedEntryId?.let { dao.getEntry(it) }?.takeIf { !it.isDeleted }
-                            }
-                            if (pair != null) {
-                                halves = e to pair
-                            } else {
-                                withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount)) }
-                                reload++
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                ) { Text(word(W.delete)) }
-            },
-            dismissButton = { TextButton({ deleting = null }) { Text(word(W.cancel)) } }
-        )
-    }
-    halves?.let { (e, pair) ->
-        AlertDialog(
-            onDismissRequest = { halves = null },
-            title = { Text(word(W.delete_pair_title)) },
-            text = { Text(word(W.delete_pair_message, pair.entryNumber)) },
-            confirmButton = {
-                TextButton({
-                    halves = null
-                    scope.launch {
-                        withContext(Dispatchers.IO) {
-                            dao.softDeleteEntry(e.id); dao.softDeleteEntry(pair.id)
-                            dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount)); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id)
-                        }
-                        reload++
+        AskDialog(
+            word(W.delete_entry_title), word(W.delete_entry_confirm), word(W.delete), danger = true,
+            onConfirm = {
+                deleting = null
+                scope.launch {
+                    // Half of a cash sale: ask about the other half, as the phone does.
+                    val pair = withContext(Dispatchers.IO) {
+                        e.pairedEntryId?.let { dao.getEntry(it) }?.takeIf { !it.isDeleted }
                     }
-                }) { Text(word(W.delete_pair_both)) }
-            },
-            dismissButton = {
-                TextButton({
-                    halves = null
-                    scope.launch {
+                    if (pair != null) {
+                        halves = e to pair
+                    } else {
                         withContext(Dispatchers.IO) { dao.softDeleteEntry(e.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount)) }
                         reload++
                     }
-                }) { Text(word(W.delete_pair_one)) }
-            }
+                }
+            },
+            onDismiss = { deleting = null }
         )
+    }
+    halves?.let { (e, pair) ->
+        fun deleteHalves(both: Boolean) {
+            halves = null
+            scope.launch {
+                withContext(Dispatchers.IO) {
+                    dao.softDeleteEntry(e.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount))
+                    if (both) { dao.softDeleteEntry(pair.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id) }
+                }
+                reload++
+            }
+        }
+        AppDialog(onCloseRequest = { halves = null }, title = word(W.delete_pair_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(300.dp))) {
+            DialogFrame(word(W.delete_pair_title), onClose = { halves = null }, footer = {
+                FluentButton(word(W.cancel), { halves = null }, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.delete_pair_one), { deleteHalves(both = false) }, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.delete_pair_both), { deleteHalves(both = true) }, kind = ButtonKind.DANGER)
+            }) {
+                Text(word(W.delete_pair_message, pair.entryNumber), color = c.ink, fontSize = 14.sp)
+            }
+        }
     }
     if (deletingMany) {
         val gone = parties.filter { it.id in chosenIds }

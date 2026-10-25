@@ -447,7 +447,7 @@ private fun figure(v: Double, signed: Boolean = false): String {
 }
 
 @Composable
-private fun methodWords(m: String): String = word(
+internal fun methodWords(m: String): String = word(
     when (m) {
         PaymentMethod.CASH -> W.payment_method_cash
         PaymentMethod.BANK -> W.payment_method_bank

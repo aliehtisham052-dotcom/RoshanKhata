@@ -464,6 +464,25 @@ class ScreenProofTest {
                 val f = File(dir, "dialog-laptop-entry-en.png").also { it.writeBytes(png) }
                 assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
             } finally { entryForm.close() }
+            // The same sale as its receipt (Marhala 4, part 6b, the phone's entry screen): goods priced, the discount
+            // said, the advice under its item, the balance it left in the customer's words, an agri shop's season.
+            val receiptCard = ImageComposeScene(width = 700, height = 900, density = Density(1.25f)) {
+                DeskTheme(dark = false) {
+                    ProvideWords(words) {
+                        EntryReceiptCard(
+                            dao, sale.first.id, aslam.name, home, 1L, reload = 0,
+                            onClose = {}, onEdit = {}, onDelete = {}, onPrint = { _, _ -> }, onInvoice = { _, _ -> }, onChanged = {}
+                        )
+                    }
+                }
+            }
+            try {
+                receiptCard.render(0); receiptCard.render(16_000_000)
+                repeat(3) { n -> Thread.sleep(400); receiptCard.render(250_000_000L + n * 100_000_000L) }
+                val png = receiptCard.render(1_500_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                val f = File(dir, "dialog-laptop-receipt-en.png").also { it.writeBytes(png) }
+                assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
+            } finally { receiptCard.close() }
         } finally {
             db.close()
             home.deleteRecursively()

@@ -1048,6 +1048,18 @@ Businesses/Settings), each part with its proof pictures. CI only.
   entry number per business, `entry_signatures[_b<id>]/sig_<id>.png`, deleted with its business; kept on this
   computer only, said by `sig_hint_pc`). "When will he pay?" is the app's dialog. Tests: EntryLineEditTest
   (rewritten for the list), BusinessesTest; proof dialog-laptop-entry-en.
+- **Part 6b, the entry as its receipt (the Doc's "Entry detail"):** a click on an entry shows its receipt
+  (`EntryReceiptDialog`/`EntryReceiptCard`, the phone's EntryDetailActivity — it opened the editor at once): way
+  and amount on the khata's colour, the party, number and time; the goods as the receipt says them
+  (`ReceiptGoods`, moved to :shared from the phone's GoodsText, which now calls it — one text on both), the note,
+  how it was paid, the balance it left (ReceiptBalance); an agri sale's season with Change (`setEntrySeason`) and
+  the dealer's spray advice per item (`AdviceDialog`, `setLineAdvice`; `TradeKit.sprayAdvice`); the bill's photo
+  (opens large) and the signature, taken or changed here. Edit, Delete (an entry another record wrote says
+  where to change it), Print (the thermal receipt, `printReceipt`, shared with the editor), and Invoice: the one
+  made from this sale opens on its page, else a new one starts from the sale (`InvoiceForm(start, startLines)`,
+  EntryInvoice, `sourceEntryId`). The entry flow's questions (twin/limit, linked, delete, a cash sale's other
+  half) are the app's dialogs; `PickDialog` is a short list in the app's frame. Tests: ReceiptGoodsTest (the
+  phone's GoodsTextTest's lines, on the computer); proof dialog-laptop-receipt-en.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
