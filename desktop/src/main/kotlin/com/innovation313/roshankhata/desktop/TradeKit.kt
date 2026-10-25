@@ -63,6 +63,9 @@ data class TradeKit(val key: String = "AGRI", val ownItems: List<String> = empty
     /** Crop seasons, the season row on a sale, the season choices for a promised day (TradeFeatures.seasons). */
     val seasons: Boolean get() = key == "AGRI" && com.innovation313.roshankhata.data.ShopCountry.current.seasons
 
+    /** The dealer's spray advice on a sale's items (crop, pest, dose): an agri shop's, as on the phone (TradeFeatures.sprayAdvice). */
+    val sprayAdvice: Boolean get() = key == "AGRI"
+
     /** The inspector's stock report and in/out register (TradeFeatures.inspectorReports). */
     val inspector: Boolean get() = key == "AGRI" || key == "MEDICAL"
 

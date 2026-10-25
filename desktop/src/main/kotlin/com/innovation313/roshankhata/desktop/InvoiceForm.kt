@@ -79,14 +79,21 @@ fun InvoiceForm(
     /** The optional fields the shop uses (Invoice settings); one already filled on this invoice always shows. */
     fields: InvoiceFields = InvoiceFields(),
     /** The shop's products, offered in the line's name box (the phone's SmartSuggest); null offers none. */
-    products: ProductShelf? = null
+    products: ProductShelf? = null,
+    /**
+     * A NEW invoice started from something (a khata sale, the phone's EntryInvoice): its customer, phone, day and
+     * the sale it came from, and its lines — everything still the owner's to change until Save.
+     */
+    start: Invoice? = null,
+    startLines: List<InvoiceItem> = emptyList()
 ) {
     val c = LocalRoshanColors.current
     fun pad(v: Double?) = v?.takeIf { it != 0.0 }?.let { Calc.trim(it) }.orEmpty()
-    var customer by remember { mutableStateOf(existing?.customerName.orEmpty()) }
-    var phone by remember { mutableStateOf(existing?.customerPhone.orEmpty()) }
-    var date by remember { mutableStateOf(existing?.invoiceDate ?: System.currentTimeMillis()) }
-    var lines by remember { mutableStateOf(existingLines) }
+    val from = existing ?: start
+    var customer by remember { mutableStateOf(from?.customerName.orEmpty()) }
+    var phone by remember { mutableStateOf(from?.customerPhone.orEmpty()) }
+    var date by remember { mutableStateOf(from?.invoiceDate ?: System.currentTimeMillis()) }
+    var lines by remember { mutableStateOf(if (existing != null) existingLines else startLines) }
     // The discount as a % or in money, as on the phone (25 Oct 2026, the audit): a phone invoice's
     // Rs discount was left out of this form's total while the list and the print took it off.
     var discountInMoney by remember { mutableStateOf(existing?.discountAmount != null) }
@@ -117,7 +124,7 @@ fun InvoiceForm(
 
     // The invoice as typed: what Save keeps, and (with a stand-in name and number) what the picture shows.
     fun built(forPicture: Boolean): Invoice {
-        val inv = (existing ?: Invoice(customerName = "")).copy(
+        val inv = (existing ?: start ?: Invoice(customerName = "")).copy(
             templateId = templateId,
             customerName = customer.trim().let { if (forPicture) it.ifEmpty { "\u2014" } else it },
             customerPhone = phone.trim().ifEmpty { null },
