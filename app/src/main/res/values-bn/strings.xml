@@ -1110,6 +1110,7 @@
     <string name="sig_retake">স্বাক্ষর বদলান</string>
     <string name="sig_title">এখানে স্বাক্ষর করুন</string>
     <string name="sig_hint">গ্রাহক আঙুল দিয়ে স্বাক্ষর করবেন। এটি শুধু এই ফোন ও আপনার ব্যাকআপে থাকবে।</string>
+    <string name="sig_hint_pc">গ্রাহক মাউস দিয়ে বা টাচ স্ক্রিনে স্বাক্ষর করেন। শুধু এই কম্পিউটারেই থাকে: ব্যাকআপ ফাইলে ছবি যায় না।</string>
     <string name="sig_clear">মুছুন</string>
     <string name="sig_empty">আগে স্বাক্ষর করুন</string>
     <string name="sig_label">গ্রাহকের স্বাক্ষর</string>

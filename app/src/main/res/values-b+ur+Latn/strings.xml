@@ -1070,6 +1070,7 @@
     <string name="sig_retake">Dastakhat badlein</string>
     <string name="sig_title">Yahan dastakhat karein</string>
     <string name="sig_hint">Gahak ungli se dastakhat kare. Ye sirf is phone aur aap ke backup mein rahenge.</string>
+    <string name="sig_hint_pc">Gahak mouse se ya touch screen par dastakhat karta hai. Sirf isi computer par rehta hai: backup file mein tasveerein nahi jaatin.</string>
     <string name="sig_clear">Mitayen</string>
     <string name="sig_empty">Pehle dastakhat karein</string>
     <string name="sig_label">Gahak ke dastakhat</string>

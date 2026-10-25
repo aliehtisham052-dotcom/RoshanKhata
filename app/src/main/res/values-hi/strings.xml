@@ -1110,6 +1110,7 @@
     <string name="sig_retake">दस्तख़त बदलें</string>
     <string name="sig_title">यहाँ दस्तख़त करें</string>
     <string name="sig_hint">ग्राहक उँगली से दस्तख़त करे। ये सिर्फ़ इस फ़ोन और आपके बैकअप में रहेंगे।</string>
+    <string name="sig_hint_pc">ग्राहक माउस से या टच स्क्रीन पर दस्तख़त करता है। सिर्फ़ इसी कंप्यूटर पर रहता है: बैकअप फ़ाइल में तस्वीरें नहीं जातीं।</string>
     <string name="sig_clear">मिटाएँ</string>
     <string name="sig_empty">पहले दस्तख़त करें</string>
     <string name="sig_label">ग्राहक के दस्तख़त</string>

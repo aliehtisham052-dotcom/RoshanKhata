@@ -1070,6 +1070,7 @@
     <string name="sig_retake">دستخط بدلیں</string>
     <string name="sig_title">یہاں دستخط کریں</string>
     <string name="sig_hint">گاہک انگلی سے دستخط کرے۔ یہ صرف اس فون اور آپ کے بیک اپ میں رہیں گے۔</string>
+    <string name="sig_hint_pc">گاہک ماؤس سے یا ٹچ اسکرین پر دستخط کرتا ہے۔ صرف اسی کمپیوٹر پر رہتا ہے: بیک اپ فائل میں تصویریں نہیں جاتیں۔</string>
     <string name="sig_clear">مٹائیں</string>
     <string name="sig_empty">پہلے دستخط کریں</string>
     <string name="sig_label">گاہک کے دستخط</string>

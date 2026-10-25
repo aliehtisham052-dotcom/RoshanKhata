@@ -433,6 +433,37 @@ class ScreenProofTest {
                 val f = File(dir, "dialog-laptop-invoice-en.png").also { it.writeBytes(png) }
                 assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
             } finally { form.close() }
+            // The entry form with the phone's list of goods (Marhala 4, part 6): an edited sale of two items, its
+            // amount at a discount said in words, as the laptop's dialog holds it (600 x 503 dp).
+            val aslam = partiesNow.first { it.name == "Muhammad Aslam" }
+            val sale = kotlinx.coroutines.runBlocking {
+                val goods = listOf(
+                    com.innovation313.roshankhata.data.EntryItem(entryId = 0, itemName = "DAP", quantity = 2.0, unit = "bag", rate = 3700.0),
+                    com.innovation313.roshankhata.data.EntryItem(entryId = 0, itemName = "Confidor", quantity = 3.0, unit = "bottle", rate = 875.0, crop = "Cotton", pest = "Whitefly", dose = "250 ml per acre")
+                )
+                val id = dao.insertEntryWithItems(com.innovation313.roshankhata.data.LedgerEntry(partyId = aslam.id, amount = 9900.0, isGiven = true, entryNumber = "", timestamp = now - 30 * 60 * 1000, rateType = com.innovation313.roshankhata.data.RateType.CREDIT), goods)
+                dao.getEntry(id)!! to dao.itemsOfEntry(id).sortedBy { it.lineNo }
+            }
+            val entryForm = ImageComposeScene(width = 750, height = 629, density = Density(1.25f)) {
+                DeskTheme(dark = false) {
+                    ProvideWords(words) {
+                        androidx.compose.foundation.layout.Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
+                            EntryEditor(
+                                partyId = aslam.id, partyName = aslam.name, isGiven = true,
+                                existing = sale.first, existingItems = sale.second,
+                                onSave = {}, onCancel = {}, isCustomer = true, dao = dao
+                            )
+                        }
+                    }
+                }
+            }
+            try {
+                entryForm.render(0); entryForm.render(16_000_000)
+                repeat(3) { n -> Thread.sleep(400); entryForm.render(250_000_000L + n * 100_000_000L) }
+                val png = entryForm.render(1_500_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                val f = File(dir, "dialog-laptop-entry-en.png").also { it.writeBytes(png) }
+                assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
+            } finally { entryForm.close() }
         } finally {
             db.close()
             home.deleteRecursively()

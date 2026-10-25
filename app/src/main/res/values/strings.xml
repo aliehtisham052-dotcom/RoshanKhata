@@ -1113,6 +1113,7 @@
     <string name="sig_retake">Change signature</string>
     <string name="sig_title">Sign here</string>
     <string name="sig_hint">The customer signs with a finger. Kept on this phone and in your backup only.</string>
+    <string name="sig_hint_pc">The customer signs with the mouse or on a touch screen. Kept on this computer only: the backup file carries no pictures.</string>
     <string name="sig_clear">Clear</string>
     <string name="sig_empty">Please sign first</string>
     <string name="sig_label">Customer\'s signature</string>
