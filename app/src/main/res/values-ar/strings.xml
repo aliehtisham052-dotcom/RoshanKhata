@@ -145,6 +145,7 @@
     <string name="add_party_duplicate_name_only">يوجد عميل مشابه بالفعل: %1$s</string>
     <string name="no_parties_yet">لا عملاء بعد.\n\nأضف أول عميل وابدأ دفترك.</string>
     <string name="no_entries_yet">لا قيود بعد.</string>
+    <string name="entries_no_match">لا يوجد قيد يطابق بحثك.</string>
 
     <string name="i_gave">أعطيت</string>
     <string name="i_got">استلمت</string>

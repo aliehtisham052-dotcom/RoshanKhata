@@ -129,6 +129,7 @@
     <string name="add_party_duplicate_name_only">ملندڙ ڪسٽمر اڳ ۾ ئي موجود آهي: %1$s</string>
     <string name="no_parties_yet">اڃا ڪو گراهڪ ناهي.\n\nپهريون گراهڪ شامل ڪريو ۽ پنهنجو کاتو شروع ڪريو.</string>
     <string name="no_entries_yet">اڃا ڪا داخلا ناهي.</string>
+    <string name="entries_no_match">توهان جي ڳولا سان ڪا داخلا نه ملي.</string>
 
     <string name="i_gave">مون ڏنا</string>
     <string name="i_got">مون ورتا</string>

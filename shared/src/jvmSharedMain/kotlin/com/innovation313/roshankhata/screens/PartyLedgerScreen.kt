@@ -54,7 +54,9 @@ fun PartyLedgerScreen(
     onDeleteParty: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     /** Opens the customer's details to edit (the caller shows the form). */
-    onEditParty: (() -> Unit)? = null
+    onEditParty: (() -> Unit)? = null,
+    /** The words when [entries] is empty: none yet, or none matching the caller's search (W names). */
+    emptyWord: String = W.no_entries_yet
 ) {
     val c = LocalRoshanColors.current
     Column(modifier.fillMaxSize().background(c.pageBg)) {
@@ -104,7 +106,7 @@ fun PartyLedgerScreen(
         }
         if (entries.isEmpty()) {
             Text(
-                word(W.no_entries_yet),
+                word(emptyWord),
                 Modifier.fillMaxWidth().weight(1f).padding(32.dp),
                 color = c.textMuted, fontSize = 15.sp
             )

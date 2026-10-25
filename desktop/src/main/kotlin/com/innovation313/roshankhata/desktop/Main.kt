@@ -1226,7 +1226,11 @@ private fun Book(
                         val party = parties.firstOrNull { it.id == selected }
                         Box(Modifier.weight(0.58f).fillMaxSize()) {
                             if (party != null) Column(Modifier.fillMaxSize()) {
-                                val entries by remember(party.id, reload) { dao.observeEntries(party.id) }.collectAsState(emptyList())
+                                // With their goods lines, so the search finds what was sold (25 Oct 2026, the audit: the box
+                                // said "Notes or goods" and searched notes only).
+                                val withItems by remember(party.id, reload) { dao.observeEntriesWithItems(party.id) }.collectAsState(emptyList())
+                                val entries = remember(withItems) { withItems.map { it.entry } }
+                                val goodsOf = remember(withItems) { withItems.associate { w -> w.entry.id to w.items.mapNotNull { it.itemName }.joinToString(" ") } }
                                 // The phone's reminder bar: a WhatsApp reminder to a customer who owes, in the
                                 // phone's own gentle words and with the day they promised, if any.
                                 val number = party.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
@@ -1273,12 +1277,8 @@ private fun Book(
                                     FilterPill(word(W.sort_newest), !oldestFirst) { oldestFirst = false }
                                     FilterPill(word(W.sort_oldest), oldestFirst) { oldestFirst = true }
                                 }
-                                val eq = entryQuery.trim().lowercase()
                                 val shownEntries = entries
-                                    .filter { e ->
-                                        eq.isEmpty() || (e.note?.lowercase()?.contains(eq) == true) ||
-                                            e.entryNumber.lowercase().contains(eq) || Format.money(e.amount).contains(eq)
-                                    }
+                                    .filter { e -> entryMatches(e, goodsOf[e.id], entryQuery) }
                                     .let { list -> if (oldestFirst) list.sortedBy { it.timestamp } else list.sortedByDescending { it.timestamp } }
                                 PartyLedgerScreen(
                                     name = party.name,
@@ -1293,7 +1293,8 @@ private fun Book(
                                         Gates.edit { scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } } }
                                     },
                                     onStatement = { statementFor = party },
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    emptyWord = if (entryQuery.isNotBlank() && entries.isNotEmpty()) W.entries_no_match else W.no_entries_yet
                                 )
                             }
                         }
@@ -2370,4 +2371,18 @@ private fun seasonRecord(dao: KhataDao, party: PartyWithBalance, reload: Int): S
     }
     return listOfNotNull(promise?.let { word(W.harvest_promise_header, Format.dateOnly(it)) })
         .plus(seasons).joinToString("  \u00b7  ")
+}
+
+/**
+ * A customer's entry against the page's search (the phone's rule): its note,
+ * its goods, its number or its amount; Urdu, Persian or Hindi digits typed are
+ * read as 0-9. Goods since 25 Oct 2026 (the audit: the box said "Notes or
+ * goods" and searched notes only).
+ */
+internal fun entryMatches(e: com.innovation313.roshankhata.data.LedgerEntry, goods: String?, query: String): Boolean {
+    val q = com.innovation313.roshankhata.data.Digits.toLatin(query.trim()).lowercase()
+    if (q.isEmpty()) return true
+    return e.note?.lowercase()?.contains(q) == true || goods?.lowercase()?.contains(q) == true ||
+        e.entryNumber.lowercase().contains(q) || Format.money(e.amount).contains(q) ||
+        com.innovation313.roshankhata.ui.Calc.trim(e.amount).contains(q)
 }

@@ -133,6 +133,7 @@
     <string name="add_party_duplicate_name_only">একই রকম গ্রাহক আগে থেকেই আছে: %1$s</string>
     <string name="no_parties_yet">এখনও কোনো গ্রাহক নেই।\n\nপ্রথম গ্রাহক যোগ করুন আর আপনার খাতা শুরু করুন।</string>
     <string name="no_entries_yet">এখনো কোনো এন্ট্রি নেই।</string>
+    <string name="entries_no_match">আপনার খোঁজের সাথে কোনো এন্ট্রি মেলেনি।</string>
 
     <string name="i_gave">আমি দিয়েছি</string>
     <string name="i_got">আমি পেয়েছি</string>

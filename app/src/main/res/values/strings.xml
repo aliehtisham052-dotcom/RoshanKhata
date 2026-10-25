@@ -133,6 +133,7 @@
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
     <string name="no_parties_yet">No customers yet.\n\nAdd your first customer and start your khata.</string>
     <string name="no_entries_yet">No entries yet.</string>
+    <string name="entries_no_match">No entry matches your search.</string>
 
     <string name="i_gave">I Gave</string>
     <string name="i_got">I Got</string>
