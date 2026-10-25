@@ -62,6 +62,7 @@
     <string name="coach_desc_followup">Jin ke zimme aap ka hai, purana qarz pehle — har ek par ek-tap WhatsApp yaad-dehani.</string>
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Apna khata mehfooz tareeqe se apni Google Drive par rakhein.</string>
+    <string name="coach_desc_backup_pc">Rozana aap ke khate ki ek copy isi computer par rakhi jati hai. Rozana copies mein is ki doosri jagah chunein: USB ya aap ka Google Drive folder.</string>
         <string name="coach_title_settings">Business Settings</string>
     <string name="coach_desc_settings">Aap ki dukaan ka naam, rabta aur tarjeehat — ek baar set karein, har jagah istemal hongi.</string>
         <string name="calculator">Calculator</string>

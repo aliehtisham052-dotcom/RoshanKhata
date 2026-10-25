@@ -78,6 +78,7 @@
     <string name="coach_desc_followup">كل المدينين، الأقدم أولاً — مع تذكير واتساب بنقرة واحدة لكل منهم.</string>
     <string name="coach_title_backup">النسخ الاحتياطي</string>
     <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
+    <string name="coach_desc_backup_pc">تُحفظ نسخة من دفترك على هذا الحاسوب كل يوم. اختر لها مكانًا ثانيًا في النسخ اليومية: ذاكرة USB أو مجلد درايف الخاص بك.</string>
         <string name="coach_title_settings">إعدادات العمل</string>
     <string name="coach_desc_settings">اسم متجرك وبيانات الاتصال وتفضيلاتك — تُضبط مرة وتُستخدم في كل مكان.</string>
         <string name="calculator">آلة حاسبة</string>
