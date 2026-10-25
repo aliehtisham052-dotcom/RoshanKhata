@@ -49,6 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.word
 
 /*
  * Fluent controls (1.10.0): the Figma mockups of 20 Oct drawn as Windows 11
@@ -516,6 +519,23 @@ fun FigureCard(label: String, amount: String, color: Color, modifier: Modifier =
         Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
         under?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
     }
+}
+
+/** When something was, said shortly as the mockup does (Home's dealings, the backup chip): Today 9:40 AM, Yesterday 5:15 PM, Thu 4:10 PM, 12 Oct 6:20 PM. */
+@Composable
+fun whenWords(at: Long): String {
+    val appWords = com.innovation313.roshankhata.words.LocalWords.current
+    val zone = java.time.ZoneId.systemDefault()
+    val day = java.time.Instant.ofEpochMilli(at).atZone(zone).toLocalDate()
+    val today = java.time.LocalDate.now(zone)
+    val time = remember(appWords) { DateWords.formatter("h:mm a") }.format(java.util.Date(at))
+    val dayWord = when {
+        day == today -> word(W.range_today)
+        day == today.minusDays(1) -> word(W.range_yesterday)
+        day.isAfter(today.minusDays(7)) -> remember(appWords) { DateWords.formatter("EEE") }.format(java.util.Date(at))
+        else -> remember(appWords) { DateWords.formatter("d MMM") }.format(java.util.Date(at))
+    }
+    return "$dayWord $time"
 }
 
 /** A quiet note line under a head: 12 sp, muted. */

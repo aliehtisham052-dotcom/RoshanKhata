@@ -186,22 +186,21 @@ fun HomePane(
             // dealings above and the other two beside each other, else one under the other.
             val w = maxWidth
             val recent = figures?.recent ?: emptyList()
-            val todayCount = figures?.today?.size ?: 0
             when {
                 w >= 760.dp -> Row(Modifier.fillMaxWidth().height(androidx.compose.foundation.layout.IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    RecentCard(recent, todayCount, hidden, onCustomer, onOpen, Modifier.weight(1.2f).fillMaxHeight())
+                    RecentCard(recent, hidden, onCustomer, onOpen, Modifier.weight(1.2f).fillMaxHeight())
                     NeedsALook(alerts, extra, late, onOpen, Modifier.weight(1f).fillMaxHeight())
                     QuickActions(onGave, onGot, onStatement, onNewBill, onOpen, Modifier.weight(0.95f).fillMaxHeight())
                 }
                 w >= 560.dp -> Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    RecentCard(recent, todayCount, hidden, onCustomer, onOpen, Modifier.fillMaxWidth())
+                    RecentCard(recent, hidden, onCustomer, onOpen, Modifier.fillMaxWidth())
                     Row(Modifier.fillMaxWidth().height(androidx.compose.foundation.layout.IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                         NeedsALook(alerts, extra, late, onOpen, Modifier.weight(1f).fillMaxHeight())
                         QuickActions(onGave, onGot, onStatement, onNewBill, onOpen, Modifier.weight(1f).fillMaxHeight())
                     }
                 }
                 else -> Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    RecentCard(recent, todayCount, hidden, onCustomer, onOpen, Modifier.fillMaxWidth())
+                    RecentCard(recent, hidden, onCustomer, onOpen, Modifier.fillMaxWidth())
                     NeedsALook(alerts, extra, late, onOpen, Modifier.fillMaxWidth())
                     QuickActions(onGave, onGot, onStatement, onNewBill, onOpen, Modifier.fillMaxWidth())
                 }
@@ -332,23 +331,6 @@ private fun HeroFigure(label: String, figure: String, under: String, modifier: M
     }
 }
 
-/** When an entry was made, as the mockup says it: Today 9:40 AM, Yesterday 5:15 PM, Thu 4:10 PM, 12 Oct 6:20 PM. */
-@Composable
-private fun whenWords(at: Long): String {
-    val appWords = com.innovation313.roshankhata.words.LocalWords.current
-    val zone = java.time.ZoneId.systemDefault()
-    val day = java.time.Instant.ofEpochMilli(at).atZone(zone).toLocalDate()
-    val today = java.time.LocalDate.now(zone)
-    val time = remember(appWords) { DateWords.formatter("h:mm a") }.format(java.util.Date(at))
-    val dayWord = when {
-        day == today -> word(W.range_today)
-        day == today.minusDays(1) -> word(W.range_yesterday)
-        day.isAfter(today.minusDays(7)) -> remember(appWords) { DateWords.formatter("EEE") }.format(java.util.Date(at))
-        else -> remember(appWords) { DateWords.formatter("d MMM") }.format(java.util.Date(at))
-    }
-    return "$dayWord $time"
-}
-
 /**
  * The book's last dealings (the mockup's left card): each with its party's
  * initials, name, when and the note, the amount in its side's colour with You
@@ -356,13 +338,12 @@ private fun whenWords(at: Long): String {
  * a click away. A click opens the party.
  */
 @Composable
-private fun RecentCard(recent: List<EntryWithParty>, todayCount: Int, hidden: Boolean, onCustomer: (Long) -> Unit, onOpen: (Section) -> Unit, modifier: Modifier) {
+private fun RecentCard(recent: List<EntryWithParty>, hidden: Boolean, onCustomer: (Long) -> Unit, onOpen: (Section) -> Unit, modifier: Modifier) {
     val c = LocalRoshanColors.current
     Column(modifier.clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)) {
         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(word(W.home_recent), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
-            Text(plural(WP.entries_today, todayCount, todayCount), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
-            Spacer(Modifier.weight(1f))
+            // The title takes the row (today's count is on the green card above).
+            Text(word(W.home_recent), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
             Row(
                 Modifier.clip(Look.ctl).press(Look.ctl) { onOpen(Section.REPORT) }.padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)
