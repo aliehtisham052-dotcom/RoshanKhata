@@ -72,6 +72,41 @@ fun entryRateType(isSale: Boolean, goodsHaveRate: Boolean, cashRate: Boolean, pa
     if (isSale && (goodsHaveRate || paidNow)) (if (cashRate) RateType.CASH else RateType.CREDIT) else kept
 
 /**
+ * The form's goods line as it is saved (25 Oct 2026, the audit). An edit starts
+ * from the line it had, so what the form does not show stays: the free (bonus)
+ * mark and the dealer's spray advice (crop, pest, dose) were wiped by every edit
+ * on the computer. The product stays linked only while the name is unchanged.
+ * A line the phone wrote with no name (a product or a quantity only) is kept,
+ * with what the form changed, because the form has no name to show for it; a
+ * name the owner cleared removes the line. A rebuilt named line gets a new uid,
+ * as every editor's lines do (LiveSync's line sets).
+ */
+fun editedLine(
+    existing: EntryItem?, entryId: Long, name: String, quantity: Double?, unit: String?, rate: Double?, billItemId: Long?
+): EntryItem? {
+    val typed = name.trim()
+    return when {
+        typed.isNotEmpty() -> (existing ?: EntryItem(entryId = entryId)).copy(
+            id = 0, entryId = entryId, itemName = typed, quantity = quantity, unit = unit, rate = rate,
+            productId = existing?.takeIf { it.itemName == typed }?.productId,
+            billItemId = billItemId,
+            uid = com.innovation313.roshankhata.data.Uid.next()
+        )
+        existing != null && existing.itemName.isNullOrBlank() ->
+            existing.copy(id = 0, entryId = entryId, quantity = quantity, unit = unit, rate = rate, billItemId = billItemId)
+        else -> null
+    }
+}
+
+/** One goods line as a short text: name, quantity with its unit, rate, and the free mark. */
+fun goodsLineText(line: EntryItem, freeWord: String): String = listOfNotNull(
+    line.itemName?.trim()?.takeIf { it.isNotEmpty() },
+    line.quantity?.let { q -> Calc.trim(q) + com.innovation313.roshankhata.data.UnitWords.label(line.unit).let { u -> if (u.isEmpty()) "" else " $u" } },
+    line.rate?.let { "@ " + Format.money(it) },
+    freeWord.takeIf { line.isBonus }
+).joinToString("  ·  ")
+
+/**
  * A khata entry on the computer, with what the phone's entry dialog has
  * (KMP Phase 8a): the amount (sums allowed), the date it happened (today
  * by default; an entry written the next morning keeps its real day), the
@@ -96,7 +131,12 @@ fun EntryEditor(
     /** The batches a sale of this item may be drawn from (bill lines with stock), soonest-expiring first. */
     batchesFor: (suspend (String) -> List<BatchOption>)? = null,
     /** The customer's promised payment day (Party.harvestPromise), shown on the due button. */
-    promise: Long? = null
+    promise: Long? = null,
+    /**
+     * The entry's other goods lines (an edit of an entry the phone wrote with several):
+     * shown as they are and kept as they are; the form edits the first line only.
+     */
+    otherItems: List<EntryItem> = emptyList()
 ) {
     val c = LocalRoshanColors.current
     var amountText by remember { mutableStateOf(existing?.amount?.let { Calc.trim(it) }.orEmpty()) }
@@ -167,8 +207,14 @@ fun EntryEditor(
             FluentField(rate, { rate = it }, Modifier.weight(1f), placeholder = word(W.entry_rate_hint), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         }
         SuggestionRow(trade.units(), unit) { unit = it }
-        // Quantity x rate is offered, never forced: a discount is the owner's to write.
-        if (goodsTotal != null && goodsTotal > 0 && goodsTotal != amount) {
+        if (otherItems.isNotEmpty()) {
+            // The other lines stay as the phone wrote them (25 Oct 2026, the audit): shown, never dropped.
+            Text(word(W.entry_items_count, otherItems.size + 1), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+            otherItems.forEach { o -> Text(goodsLineText(o, word(W.bonus_tag)), color = c.ink, fontSize = 13.sp) }
+        }
+        // Quantity x rate is offered, never forced: a discount is the owner's to write. Not with other
+        // lines on the entry: one line's total offered as the amount cut a several-item sale in one click.
+        if (otherItems.isEmpty() && goodsTotal != null && goodsTotal > 0 && goodsTotal != amount) {
             TextButton({ amountText = Calc.trim(goodsTotal) }) {
                 Text(word(W.amount) + ": " + Format.money(goodsTotal), color = c.brandGreenText)
             }
@@ -251,13 +297,11 @@ fun EntryEditor(
             FillButton(word(W.save), if (isGiven) c.gaveFill else Look.accent, enabled = amount != null) {
                 val a = amount ?: return@FillButton
                 val base = existing ?: LedgerEntry(partyId = partyId, amount = a, isGiven = isGiven, entryNumber = "")
-                val goods = item.trim().takeIf { it.isNotEmpty() }?.let {
-                    EntryItem(
-                        id = 0, entryId = existing?.id ?: 0, itemName = it, quantity = q,
-                        unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit), rate = r, productId = existingItem?.takeIf { e -> e.itemName == it }?.productId,
-                        billItemId = if (isSale) batchId?.takeIf { id -> batches.any { b -> b.id == id } || id == existingItem?.billItemId } else null
-                    )
-                }
+                val goods = editedLine(
+                    existingItem, entryId = existing?.id ?: 0, name = item, quantity = q,
+                    unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit), rate = r,
+                    billItemId = if (isSale) batchId?.takeIf { id -> batches.any { b -> b.id == id } || id == existingItem?.billItemId } else null
+                )
                 // Ticked "paid now" (a new cash sale): its "I got" is written even when no goods line has a rate.
                 val tickedPaid = existing == null && isSale && cashRate && paidNow
                 val rateType = entryRateType(isSale, goods?.rate != null, cashRate, tickedPaid, base.rateType)
