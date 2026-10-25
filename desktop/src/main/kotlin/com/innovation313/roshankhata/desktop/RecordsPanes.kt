@@ -266,30 +266,33 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     var told by remember { mutableStateOf<String?>(null) }
     var importPlan by remember { mutableStateOf<com.innovation313.roshankhata.data.ProductCsv.Plan?>(null) }
     var assignCodes by remember { mutableStateOf<List<com.innovation313.roshankhata.data.Product>?>(null) }
-    fun printLabels(list: List<com.innovation313.roshankhata.data.Product>) {
-        if (!com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)) { told = words.text(W.access_denied); return }
-        if (list.isEmpty()) { told = words.text(W.products_labels_none); return }
+    // A cashier is asked for a manager's PIN, as every other gated action asks (Marhala 4, part 9 — the audit:
+    // these three said "access denied" and stopped).
+    fun printLabels(list: List<com.innovation313.roshankhata.data.Product>) = Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) labels@{
+        if (list.isEmpty()) { told = words.text(W.products_labels_none); return@labels }
         StatementPrint.show(LabelSheet(list), words.text(W.label_sheet_title))
     }
-    fun exportCsv() {
-        if (!com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.EXPORT)) { told = words.text(W.access_denied); return }
+    fun exportCsv() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) export@{
         val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.products_export), java.awt.FileDialog.SAVE)
         startIn(dialog, "Documents")
         dialog.file = "RoshanKhata_Products_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
         dialog.isVisible = true
-        val name = dialog.file ?: return
+        val name = dialog.file ?: return@export
         val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
         scope.launch {
-            told = runCatching { withContext(Dispatchers.IO) { file.writeText(com.innovation313.roshankhata.data.ProductCsv.text(products, com.innovation313.roshankhata.data.ProductCsv.headers(words)), Charsets.UTF_8) } }
-                .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
+            told = runCatching {
+                withContext(Dispatchers.IO) {
+                    file.writeText(com.innovation313.roshankhata.data.ProductCsv.text(products, com.innovation313.roshankhata.data.ProductCsv.headers(words)), Charsets.UTF_8)
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name) }
+                }
+            }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
         }
     }
-    fun importCsv() {
-        if (!com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) { told = words.text(W.access_denied); return }
+    fun importCsv() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT) pick@{
         val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.products_import), java.awt.FileDialog.LOAD)
         startIn(dialog, "Downloads")
         dialog.isVisible = true
-        val name = dialog.file ?: return
+        val name = dialog.file ?: return@pick
         val file = java.io.File(dialog.directory, name)
         scope.launch {
             val rows = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ProductCsv.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList()) }
@@ -306,7 +309,8 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                     importPlan = null
                     scope.launch {
                         val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
-                        withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, detail = words.text(W.products_imported, added, updated)) }
+                        // Written down as the import it was (the audit: it read "Price changed").
+                        withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.IMPORT, com.innovation313.roshankhata.data.Access.userName, detail = words.text(W.products_imported, added, updated)) }
                         told = words.text(W.products_imported, added, updated)
                     }
                 }, kind = ButtonKind.ACCENT)

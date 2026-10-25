@@ -638,6 +638,8 @@
     <string name="snapshots_title">النسخ اليومية</string>
     <string name="snapshots_subtitle">يحتفظ التطبيق بنسخة من دفتر هذا النشاط كل يوم، لآخر سبعة أيام. إذا حدث خطأ ما، يمكنك العودة إلى أي منها.</string>
     <string name="snapshots_empty">لا توجد نسخ بعد. تُنشأ أول نسخة في المرة القادمة التي تفتح فيها الدفتر.</string>
+    <string name="snapshots_here_pc">على هذا الحاسوب</string>
+    <string name="auto_folder_copies">في المجلد المختار</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">العودة إلى هذا اليوم؟</string>
     <string name="snapshot_restore_action">استعادة</string>
@@ -3426,9 +3428,10 @@
     <string name="access_owner_needed_title">مطلوب رمز المالك</string>
     <string name="access_owner_needed_help">لا يسمح بهذا إلا المالك. يكتب المالك رمزه.</string>
     <string name="access_page_locked">هذه الصفحة تحتاج مديرًا أو المالك</string>
+    <string name="access_page_owner_only">هذه الصفحة تحتاج المالك</string>
     <string name="access_signed_in_as">مسجّل الدخول: %1$s</string>
-    <string name="audit_seal_ok">ختم السجل سليم — الصفوف المفحوصة: %1$d</string>
-    <string name="audit_seal_broken">ختم السجل مكسور عند الصف %1$d: صف تغيّر أو حُذف خارج التطبيق</string>
+    <string name="audit_seal_ok">فُحص %1$d صفًا: لم يتغيّر أي صف ولم يُحذف خارج التطبيق</string>
+    <string name="audit_seal_broken">الصف %1$d تغيّر أو حُذف خارج التطبيق</string>
     <string name="audit_stock_count">جرد المخزون</string>
     <string name="audit_stock_adjusted">تعديل المخزون</string>
     <string name="audit_order_received">استلام طلبية</string>

@@ -617,6 +617,8 @@
     <string name="snapshots_title">Daily copies</string>
     <string name="snapshots_subtitle">The app keeps a copy of this business\'s ledger every day, for the last seven days. If something goes wrong, you can go back to any of them.</string>
     <string name="snapshots_empty">No copies yet. The first one is made the next time you open the ledger.</string>
+    <string name="snapshots_here_pc">On this computer</string>
+    <string name="auto_folder_copies">In the chosen folder</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">Go back to this day?</string>
     <string name="snapshot_restore_action">Restore</string>
@@ -3452,9 +3454,10 @@
     <string name="access_owner_needed_title">Owner\'s PIN needed</string>
     <string name="access_owner_needed_help">Only the owner can allow this. The owner types their PIN.</string>
     <string name="access_page_locked">This page needs a manager or the owner</string>
+    <string name="access_page_owner_only">This page needs the owner</string>
     <string name="access_signed_in_as">Signed in: %1$s</string>
-    <string name="audit_seal_ok">Log seal holds — rows checked: %1$d</string>
-    <string name="audit_seal_broken">Log seal broken at row %1$d: a row was changed or removed outside the app</string>
+    <string name="audit_seal_ok">%1$d rows checked: none was changed or removed outside the app</string>
+    <string name="audit_seal_broken">Row %1$d was changed or removed outside the app</string>
     <string name="audit_stock_count">Stock counted</string>
     <string name="audit_stock_adjusted">Stock adjusted</string>
     <string name="audit_order_received">Order received</string>

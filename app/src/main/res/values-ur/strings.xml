@@ -590,6 +590,8 @@
     <string name="snapshots_title">روزانہ کاپیاں</string>
     <string name="snapshots_subtitle">ایپ اس کاروبار کے کھاتے کی کاپی روزانہ بناتی ہے، پچھلے سات دن کی۔ کچھ خراب ہو جائے تو آپ کسی بھی دن پر واپس جا سکتے ہیں۔</string>
     <string name="snapshots_empty">ابھی کوئی کاپی نہیں۔ پہلی کاپی اگلی بار کھاتہ کھولنے پر بنے گی۔</string>
+    <string name="snapshots_here_pc">اسی کمپیوٹر پر</string>
+    <string name="auto_folder_copies">چنے ہوئے فولڈر میں</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">اس دن پر واپس جائیں؟</string>
     <string name="snapshot_restore_action">بحال کریں</string>
@@ -3238,9 +3240,10 @@
     <string name="access_owner_needed_title">مالک کا PIN درکار</string>
     <string name="access_owner_needed_help">اس کی اجازت صرف مالک دے سکتا ہے۔ مالک اپنا PIN لکھے۔</string>
     <string name="access_page_locked">اس صفحے کے لیے مینیجر یا مالک چاہیے</string>
+    <string name="access_page_owner_only">اس صفحے کے لیے مالک چاہیے</string>
     <string name="access_signed_in_as">سائن اِن: %1$s</string>
-    <string name="audit_seal_ok">لاگ کی مہر سلامت — جانچی گئی قطاریں: %1$d</string>
-    <string name="audit_seal_broken">لاگ کی مہر قطار %1$d پر ٹوٹی ہے: ایپ کے باہر کوئی قطار بدلی یا ہٹائی گئی</string>
+    <string name="audit_seal_ok">%1$d قطاریں جانچی گئیں: ایپ کے باہر کوئی قطار بدلی یا ہٹائی نہیں گئی</string>
+    <string name="audit_seal_broken">قطار %1$d ایپ کے باہر بدلی یا ہٹائی گئی ہے</string>
     <string name="audit_stock_count">اسٹاک گنا گیا</string>
     <string name="audit_stock_adjusted">اسٹاک درست کیا گیا</string>
     <string name="audit_order_received">آرڈر وصول ہوا</string>

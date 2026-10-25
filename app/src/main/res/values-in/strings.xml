@@ -605,6 +605,8 @@
     <string name="snapshots_title">Salinan harian</string>
     <string name="snapshots_subtitle">Aplikasi menyimpan salinan buku usaha ini setiap hari, untuk tujuh hari terakhir. Jika terjadi masalah, Anda bisa kembali ke salah satunya.</string>
     <string name="snapshots_empty">Belum ada salinan. Salinan pertama dibuat saat Anda membuka buku berikutnya.</string>
+    <string name="snapshots_here_pc">Di komputer ini</string>
+    <string name="auto_folder_copies">Di folder yang dipilih</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">Kembali ke hari ini?</string>
     <string name="snapshot_restore_action">Pulihkan</string>
@@ -3241,9 +3243,10 @@
     <string name="access_owner_needed_title">Perlu PIN pemilik</string>
     <string name="access_owner_needed_help">Hanya pemilik yang dapat mengizinkan ini. Pemilik mengetik PIN-nya.</string>
     <string name="access_page_locked">Halaman ini perlu manajer atau pemilik</string>
+    <string name="access_page_owner_only">Halaman ini perlu pemilik</string>
     <string name="access_signed_in_as">Masuk: %1$s</string>
-    <string name="audit_seal_ok">Segel log utuh — baris diperiksa: %1$d</string>
-    <string name="audit_seal_broken">Segel log rusak di baris %1$d: ada baris yang diubah atau dihapus di luar aplikasi</string>
+    <string name="audit_seal_ok">%1$d baris diperiksa: tidak ada baris yang diubah atau dihapus di luar aplikasi</string>
+    <string name="audit_seal_broken">Baris %1$d diubah atau dihapus di luar aplikasi</string>
     <string name="audit_stock_count">Stok dihitung</string>
     <string name="audit_stock_adjusted">Stok disesuaikan</string>
     <string name="audit_order_received">Pesanan diterima</string>

@@ -451,30 +451,39 @@ fun roleWord(role: String?): String = word(
     }
 )
 
-/** The audit log (POS Phase 5): who did what, newest first, and whether its seal holds. Read-only. */
+/**
+ * The audit log (POS Phase 5; Marhala 4, part 9 — the phone's rows): who did what, newest first, each with who
+ * did it and what it was in the app's words (the shared [auditDetail]: a stock correction's reason, a guessed
+ * PIN's account by name, a merge in figures — the computer showed "staff:12" and "damage -3.00"), and whether
+ * the log is whole, said plainly on its own card. Read-only.
+ */
 @Composable
 fun AuditPane(dao: KhataDao) {
     val c = LocalRoshanColors.current
     val rows by remember { dao.observeAudit(500) }.collectAsState(emptyList())
+    val staff by remember { dao.observeStaff() }.collectAsState(emptyList())
     var seal by remember { mutableStateOf<AuditChain.Result?>(null) }
     LaunchedEffect(rows.size) { seal = withContext(Dispatchers.IO) { AuditChain.verify(dao.auditInOrder()) } }
     FluentPage(word(W.audit_title), word(W.audit_subtitle), scroll = false) {
         seal?.let { s ->
             Text(
                 if (s.intact) word(W.audit_seal_ok, s.sealed) else word(W.audit_seal_broken, s.brokenAt ?: 0L),
-                color = if (s.intact) c.iOwe else c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold
+                Modifier.fillMaxWidth().background(if (s.intact) Look.accentTint else Look.getTint, Look.card).padding(horizontal = 16.dp, vertical = 10.dp),
+                color = if (s.intact) Look.accent else c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold
             )
         }
         if (rows.isEmpty()) EmptyState("ic_tile_insights", word(W.audit_empty), null, Modifier.weight(1f))
         else ListCard(Modifier.weight(1f)) {
-            WeightedHead(listOf(word(W.date_label) to 3f, word(W.audit_title) to 3f, word(W.staff_name) to 2f, word(W.note_optional) to 4f))
             LazyColumn(Modifier.fillMaxWidth()) {
                 items(rows, key = { it.id }) { a ->
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(Format.dateTime(a.timestamp), Modifier.weight(3f), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
-                        Text(auditWord(a), Modifier.weight(3f), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner), Modifier.weight(2f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(a.detail.orEmpty(), Modifier.weight(4f), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(Modifier.weight(1f)) {
+                            Text(auditWord(a), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            val who = a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner)
+                            Text(listOfNotNull(word(W.audit_by, who), com.innovation313.roshankhata.screens.auditDetail(a, staff)).joinToString(" \u00b7 "),
+                                color = c.inkSoft, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        }
+                        Text(Format.dateTime(a.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
                     }
                     Rule()
                 }

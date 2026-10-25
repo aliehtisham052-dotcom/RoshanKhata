@@ -617,6 +617,8 @@
     <string name="snapshots_title">रोज़ की कॉपियाँ</string>
     <string name="snapshots_subtitle">ऐप इस बिज़नेस के खाते की हर दिन एक कॉपी रखता है, पिछले सात दिनों की। कुछ गड़बड़ हो तो किसी भी कॉपी पर लौट सकते हैं।</string>
     <string name="snapshots_empty">अभी कोई कॉपी नहीं। पहली कॉपी अगली बार खाता खोलने पर बनेगी।</string>
+    <string name="snapshots_here_pc">इसी कंप्यूटर पर</string>
+    <string name="auto_folder_copies">चुने हुए फ़ोल्डर में</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">इस दिन पर लौटें?</string>
     <string name="snapshot_restore_action">रीस्टोर</string>
@@ -3288,9 +3290,10 @@
     <string name="access_owner_needed_title">मालिक का PIN चाहिए</string>
     <string name="access_owner_needed_help">इसकी अनुमति सिर्फ़ मालिक दे सकता है। मालिक अपना PIN लिखे।</string>
     <string name="access_page_locked">इस पेज के लिए मैनेजर या मालिक चाहिए</string>
+    <string name="access_page_owner_only">इस पेज के लिए मालिक चाहिए</string>
     <string name="access_signed_in_as">साइन इन: %1$s</string>
-    <string name="audit_seal_ok">लॉग की मुहर सलामत — जाँची गई पंक्तियाँ: %1$d</string>
-    <string name="audit_seal_broken">लॉग की मुहर पंक्ति %1$d पर टूटी है: ऐप के बाहर कोई पंक्ति बदली या हटाई गई</string>
+    <string name="audit_seal_ok">%1$d पंक्तियाँ जाँची गईं: ऐप के बाहर कोई पंक्ति बदली या हटाई नहीं गई</string>
+    <string name="audit_seal_broken">पंक्ति %1$d ऐप के बाहर बदली या हटाई गई है</string>
     <string name="audit_stock_count">स्टॉक गिना गया</string>
     <string name="audit_stock_adjusted">स्टॉक ठीक किया गया</string>
     <string name="audit_order_received">ऑर्डर मिला</string>

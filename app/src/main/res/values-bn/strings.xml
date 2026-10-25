@@ -617,6 +617,8 @@
     <string name="snapshots_title">দৈনিক কপি</string>
     <string name="snapshots_subtitle">অ্যাপ এই ব্যবসার খাতার প্রতিদিন একটি কপি রাখে, গত সাত দিনের। কিছু ভুল হলে যেকোনো কপিতে ফিরে যেতে পারেন।</string>
     <string name="snapshots_empty">এখনো কোনো কপি নেই। পরের বার খাতা খুললে প্রথমটি তৈরি হবে।</string>
+    <string name="snapshots_here_pc">এই কম্পিউটারে</string>
+    <string name="auto_folder_copies">বেছে নেওয়া ফোল্ডারে</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">এই দিনে ফিরে যাবেন?</string>
     <string name="snapshot_restore_action">রিস্টোর</string>
@@ -3288,9 +3290,10 @@
     <string name="access_owner_needed_title">মালিকের PIN লাগবে</string>
     <string name="access_owner_needed_help">শুধু মালিক এর অনুমতি দিতে পারেন। মালিক নিজের PIN লিখুন।</string>
     <string name="access_page_locked">এই পাতার জন্য ম্যানেজার বা মালিক লাগবে</string>
+    <string name="access_page_owner_only">এই পাতার জন্য মালিক লাগবে</string>
     <string name="access_signed_in_as">সাইন ইন: %1$s</string>
-    <string name="audit_seal_ok">লগের সিল অটুট — যাচাই করা সারি: %1$d</string>
-    <string name="audit_seal_broken">লগের সিল সারি %1$d-এ ভাঙা: অ্যাপের বাইরে কোনো সারি বদলানো বা সরানো হয়েছে</string>
+    <string name="audit_seal_ok">%1$dটি সারি যাচাই করা হয়েছে: অ্যাপের বাইরে কোনো সারি বদলানো বা সরানো হয়নি</string>
+    <string name="audit_seal_broken">সারি %1$d অ্যাপের বাইরে বদলানো বা সরানো হয়েছে</string>
     <string name="audit_stock_count">স্টক গোনা হয়েছে</string>
     <string name="audit_stock_adjusted">স্টক ঠিক করা হয়েছে</string>
     <string name="audit_order_received">অর্ডার পাওয়া গেছে</string>

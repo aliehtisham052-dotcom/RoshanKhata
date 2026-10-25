@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -206,42 +207,58 @@ fun DailyCopiesPane(
     val scope = rememberCoroutineScope()
     var version by remember { mutableIntStateOf(0) }
     var copies by remember { mutableStateOf<List<File>>(emptyList()) }
+    // The chosen folder's own copies too (Marhala 4, part 9 — the audit: only this computer's were listed, so a
+    // copy kept on the USB stick or in Drive could not be gone back to from here). Read when the page opens.
+    var outside by remember { mutableStateOf<List<File>>(emptyList()) }
     var asking by remember { mutableStateOf<File?>(null) }
     var notice by remember { mutableStateOf<Pair<String, String>?>(null) }
-    LaunchedEffect(version) { copies = withContext(Dispatchers.IO) { DailyCopies.list(dir) } }
+    LaunchedEffect(version, outsideDir) {
+        copies = withContext(Dispatchers.IO) { DailyCopies.list(dir) }
+        outside = withContext(Dispatchers.IO) { runCatching { outsideDir?.takeIf { it.isDirectory }?.let { DailyCopies.list(it) } }.getOrNull().orEmpty() }
+    }
     val restoredTitle = word(W.snapshot_restored_title)
     val damagedTitle = word(W.snapshot_unhealthy_title)
     val damagedBody = word(W.snapshot_unhealthy_body)
     val failed = word(W.snapshot_restore_failed)
     val keepFailed = word(W.restore_keep_failed)
 
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        PaneTitle(word(W.snapshots_title), word(W.snapshots_subtitle))
+    @Composable
+    fun CopyRow(f: File) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.weight(1f)) {
+                // A copy kept before a restore or a merge says so, as the phone's list (25 Oct 2026, the audit:
+                // it read like any other day, and going back to it undid the restore unknowingly).
+                val at = Format.dateTime(f.lastModified())
+                Text(
+                    when (DailyCopies.kindOf(f)) {
+                        DailyCopies.Kind.BEFORE_RESTORE -> word(W.snapshot_before_restore, at)
+                        DailyCopies.Kind.BEFORE_MERGE -> word(W.snapshot_before_merge, at)
+                        DailyCopies.Kind.DAY -> at
+                    },
+                    color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
+                )
+                Text(word(W.snapshot_size_kb, (f.length() / 1024).toInt()), color = c.textMuted, fontSize = 12.sp)
+            }
+            FluentButton(word(W.snapshot_restore_action), { asking = f }, kind = ButtonKind.STANDARD)
+        }
+        Rule()
+    }
+
+    FluentPage(word(W.snapshots_title), word(W.snapshots_subtitle), scroll = false) {
         Text(word(W.auto_backup_note), color = c.textMuted, fontSize = 13.sp)
         OutsideFolderCard(outsideFolder, outsideDir, onFolder)
-        if (copies.isEmpty()) {
-            Text(word(W.snapshots_empty), color = c.textMuted, fontSize = 15.sp)
-        } else {
-            LazyColumn(Modifier.fillMaxSize().card()) {
-                items(copies, key = { it.name }) { f ->
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            // A copy kept before a restore or a merge says so, as the phone's list (25 Oct 2026, the audit:
-                            // it read like any other day, and going back to it undid the restore unknowingly).
-                            val at = Format.dateTime(f.lastModified())
-                            Text(
-                                when (DailyCopies.kindOf(f)) {
-                                    DailyCopies.Kind.BEFORE_RESTORE -> word(W.snapshot_before_restore, at)
-                                    DailyCopies.Kind.BEFORE_MERGE -> word(W.snapshot_before_merge, at)
-                                    DailyCopies.Kind.DAY -> at
-                                },
-                                color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold
-                            )
-                            Text(word(W.snapshot_size_kb, (f.length() / 1024).toInt()), color = c.textMuted, fontSize = 12.sp)
-                        }
-                        FluentButton(word(W.snapshot_restore_action), { asking = f }, kind = ButtonKind.SUBTLE)
-                    }
-                    Rule()
+        if (copies.isEmpty() && outside.isEmpty()) {
+            EmptyState("ic_feature_backup", word(W.snapshots_empty), null, Modifier.weight(1f))
+        } else ListCard(Modifier.weight(1f)) {
+            LazyColumn(Modifier.fillMaxSize()) {
+                if (outside.isNotEmpty()) item(key = "here") { CopiesHead(word(W.snapshots_here_pc)) }
+                if (copies.isEmpty()) item(key = "none-here") {
+                    Text(word(W.snapshots_empty), Modifier.padding(horizontal = 16.dp, vertical = 10.dp), color = c.textMuted, fontSize = 13.sp)
+                }
+                items(copies, key = { "h/" + it.name }) { f -> CopyRow(f) }
+                if (outside.isNotEmpty()) {
+                    item(key = "there") { CopiesHead(word(W.auto_folder_copies)) }
+                    items(outside, key = { "o/" + it.name }) { f -> CopyRow(f) }
                 }
             }
         }
@@ -258,67 +275,68 @@ fun DailyCopiesPane(
         LaunchedEffect(f) {
             live = withContext(Dispatchers.IO) { sync?.let { runCatching { com.innovation313.roshankhata.data.LiveSync.identity(it) != null }.getOrNull() } ?: false }
         }
-        AlertDialog(
-            onDismissRequest = { asking = null },
-            title = { Text(word(W.snapshot_restore_title)) },
-            text = {
+        fun restore() {
+            asking = null
+            scope.launch {
+                val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(f) }
+                notice = if (result !is BackupCodec.ImportResult.Ok || data == null) {
+                    damagedTitle to damagedBody
+                } else runCatching {
+                    // Today's book is copied and kept first, so going back can be undone; no copy,
+                    // no restore (21 Oct 2026: a failed copy was passed over in silence).
+                    DailyCopies.makeToday(dao, settings, dir, label = "before-restore-" + System.currentTimeMillis())
+                        ?: error(keepFailed)
+                    // Not cancelled half way by the page closing (23 Oct 2026, the review), as Main.kt's restore:
+                    // a cancelled resume left the book paused, then turned off at its next opening.
+                    withContext(kotlinx.coroutines.NonCancellable + Dispatchers.IO) {
+                        // Live sync pauses first, so the restore's own writes are not sent to the phone as
+                        // changes (22 Oct 2026, the review: they removed the phone's newer work); it stops once
+                        // the restore went through (the two must be joined again), and a failure changes nothing.
+                        val door = sync
+                        val wasLive = door != null && runCatching { com.innovation313.roshankhata.data.LiveSync.pause(door) }.getOrDefault(false)
+                        try {
+                            BackupCodec.restoreLedger(dao, data)
+                        } catch (e: Exception) {
+                            if (wasLive && door != null) runCatching { com.innovation313.roshankhata.data.LiveSync.resume(door) }
+                            throw e
+                        }
+                        if (wasLive && door != null) {
+                            com.innovation313.roshankhata.data.LiveSync.disable(door, com.innovation313.roshankhata.data.LiveSync.OFF_RESTORED)
+                            com.innovation313.roshankhata.data.NumberMark.mark = null
+                        }
+                        data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
+                    }
+                    onRestored()
+                    restoredTitle to ""
+                }.getOrElse { e -> damagedTitle to (if (e is IllegalStateException) e.message ?: failed else failed) }
+                version++
+            }
+        }
+        val title = word(W.snapshot_restore_title)
+        AppDialog(onCloseRequest = { asking = null }, onPreviewKeyEvent = escCloses { asking = null }, title = title,
+            state = rememberDialogState(width = fitW(560.dp), height = fitH(520.dp))) {
+            DialogFrame(title, subtitle = Format.dateTime(f.lastModified()), onClose = { asking = null }, footer = {
+                FluentButton(word(W.cancel), { asking = null }, kind = ButtonKind.STANDARD)
+                // A copy that does not read is still offered: the restore says it is damaged.
+                FluentButton(word(W.snapshot_restore_action), { restore() }, kind = ButtonKind.DANGER, enabled = parsed == null || mayReplace(loss, agreed))
+            }) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     if (data != null) LossNote(loss, agreed) { agreed = it }
                     if (live) Text(word(W.restore_stops_live), color = c.ink, fontWeight = FontWeight.Medium)
-                    Text(word(W.snapshot_restore_warning, Format.dateTime(f.lastModified())))
+                    Text(word(W.snapshot_restore_warning, Format.dateTime(f.lastModified())), color = c.ink, fontSize = 14.sp)
                 }
-            },
-            confirmButton = {
-                TextButton(
-                    // A copy that does not read is still offered: the restore below says it is damaged.
-                    enabled = parsed == null || mayReplace(loss, agreed),
-                    onClick = {
-                        asking = null
-                        scope.launch {
-                            val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(f) }
-                            notice = if (result !is BackupCodec.ImportResult.Ok || data == null) {
-                                damagedTitle to damagedBody
-                            } else runCatching {
-                                // Today's book is copied and kept first, so going back can be undone; no copy,
-                                // no restore (21 Oct 2026: a failed copy was passed over in silence).
-                                DailyCopies.makeToday(dao, settings, dir, label = "before-restore-" + System.currentTimeMillis())
-                                    ?: error(keepFailed)
-                                // Not cancelled half way by the page closing (23 Oct 2026, the review), as Main.kt's restore:
-                                // a cancelled resume left the book paused, then turned off at its next opening.
-                                withContext(kotlinx.coroutines.NonCancellable + Dispatchers.IO) {
-                                    // Live sync pauses first, so the restore's own writes are not sent to the phone as
-                                    // changes (22 Oct 2026, the review: they removed the phone's newer work); it stops once
-                                    // the restore went through (the two must be joined again), and a failure changes nothing.
-                                    val door = sync
-                                    val wasLive = door != null && runCatching { com.innovation313.roshankhata.data.LiveSync.pause(door) }.getOrDefault(false)
-                                    try {
-                                        BackupCodec.restoreLedger(dao, data)
-                                    } catch (e: Exception) {
-                                        if (wasLive && door != null) runCatching { com.innovation313.roshankhata.data.LiveSync.resume(door) }
-                                        throw e
-                                    }
-                                    if (wasLive && door != null) {
-                                        com.innovation313.roshankhata.data.LiveSync.disable(door, com.innovation313.roshankhata.data.LiveSync.OFF_RESTORED)
-                                        com.innovation313.roshankhata.data.NumberMark.mark = null
-                                    }
-                                    data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
-                                }
-                                onRestored()
-                                restoredTitle to ""
-                            }.getOrElse { e -> damagedTitle to (if (e is IllegalStateException) e.message ?: failed else failed) }
-                            version++
-                        }
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                ) { Text(word(W.snapshot_restore_action)) }
-            },
-            dismissButton = { TextButton({ asking = null }) { Text(word(W.cancel)) } }
-        )
+            }
+        }
     }
-    notice?.let { (title, body) ->
-        AlertDialog(onDismissRequest = { notice = null }, title = { Text(title) }, text = { if (body.isNotEmpty()) Text(body) },
-            confirmButton = { TextButton({ notice = null }) { Text(word(W.ok)) } })
-    }
+    notice?.let { (title, body) -> TellDialog(title, body, { notice = null }) }
+}
+
+/** A group's head in the copies list. */
+@Composable
+private fun CopiesHead(text: String) {
+    Text(text, Modifier.fillMaxWidth().background(Look.layerAlt).padding(horizontal = 16.dp, vertical = 8.dp),
+        color = LocalRoshanColors.current.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+    Rule()
 }
 
 /**
