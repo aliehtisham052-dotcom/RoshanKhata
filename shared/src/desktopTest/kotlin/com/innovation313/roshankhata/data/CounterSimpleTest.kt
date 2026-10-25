@@ -78,6 +78,15 @@ class CounterSimpleTest {
     }
 
     @Test
+    fun `a stored default scale prefix is not a scale in use`() = runBlocking {
+        // Every counter-settings save wrote "21" until 25 Oct 2026; such a book opened with the tools on.
+        dao.setSetting(BookSettings.SCALE_PREFIX, ScaleCode.DEFAULT_PREFIX)
+        assertFalse(BookSettings.counterAdvanced(dao))
+        dao.setSetting(BookSettings.SCALE_PREFIX, "23")
+        assertTrue("a shop's own prefix is a scale it uses", BookSettings.counterAdvanced(dao))
+    }
+
+    @Test
     fun `the big-shop tools follow the owner's word, else what the book already uses`() = runBlocking {
         assertFalse("a fresh book's counter is simple", BookSettings.counterAdvanced(dao))
         dao.setSetting(BookSettings.LOYALTY_POINTS_PER_100, "1")

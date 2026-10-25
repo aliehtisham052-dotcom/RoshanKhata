@@ -106,13 +106,17 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
             title = { Text(s.name) },
             text = {
                 Column {
+                    // A change to what is written asks a cashier for a manager's PIN, as the phone does
+                    // (25 Oct 2026, the audit: anyone at the till could edit, claim or delete a scheme).
                     listOf<Pair<String, () -> Unit>>(
-                        word(W.scheme_edit) to { form = s },
+                        word(W.scheme_edit) to { Gates.edit { form = s } },
                         (if (s.claimedAmount == null) word(W.scheme_mark_claimed) else word(W.scheme_unmark_claimed)) to {
-                            if (s.claimedAmount == null) claiming = s
-                            else scope.launch { withContext(Dispatchers.IO) { dao.setSchemeClaim(s.id, null, null) } }
+                            Gates.edit {
+                                if (s.claimedAmount == null) claiming = s
+                                else scope.launch { withContext(Dispatchers.IO) { dao.setSchemeClaim(s.id, null, null) } }
+                            }
                         },
-                        word(W.scheme_delete) to { deleting = s }
+                        word(W.scheme_delete) to { Gates.edit { deleting = s } }
                     ).forEach { (label, go) ->
                         Text(label, Modifier.fillMaxWidth().press { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
                     }
@@ -128,8 +132,9 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
             title = { Text(word(W.scheme_mark_claimed)) },
             text = { Outlined(amount, { amount = it }, label = { Text(word(W.scheme_claim_hint)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY) },
             confirmButton = {
-                TextButton(enabled = Calc.evalAmount(amount) != null, onClick = {
-                    val v = Calc.evalAmount(amount) ?: return@TextButton
+                // A claim of nothing is a claim too (the phone allows 0): the scheme stops reading "Claim due".
+                TextButton(enabled = Calc.evalPad(amount)?.takeIf { it >= 0.0 } != null, onClick = {
+                    val v = Calc.evalPad(amount)?.takeIf { it >= 0.0 } ?: return@TextButton
                     scope.launch { withContext(Dispatchers.IO) { dao.setSchemeClaim(s.id, v, System.currentTimeMillis()) } }
                     claiming = null
                 }) { Text(word(W.save)) }

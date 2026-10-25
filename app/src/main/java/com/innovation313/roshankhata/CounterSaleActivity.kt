@@ -264,7 +264,8 @@ class CounterSaleActivity : BaseActivity() {
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100, typed(perHundred))
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINT_VALUE, typed(pointValue))
                             val p = com.innovation313.roshankhata.data.Digits.toLatin(prefix.text.toString().trim())
-                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) })
+                            // The default is kept as nothing (25 Oct 2026): a stored "21" read as a scale in use.
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) && it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX })
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE, if (pricedLabel.isChecked) "1" else null)
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE_DECIMALS,
                                 decimals.takeIf { it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_DECIMALS }?.toString())

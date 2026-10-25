@@ -1813,9 +1813,18 @@ private fun Book(
                     }
                 },
                 onPurgeParty = { p ->
-                    purging = Pair(words.text(W.delete_party_forever_confirm, p.name), suspend {
-                        if (dao.purgeParty(p.id) > 0) null else words.text(W.bin_party_kept)
-                    })
+                    // The money first, as on the phone (25 Oct 2026, the audit): a customer who still owes,
+                    // or is owed, is never deleted forever without the figure in front of the owner.
+                    scope.launch {
+                        val bal = withContext(Dispatchers.IO) { runCatching { dao.binnedPartyBalance(p.id) }.getOrNull() }
+                        val ask = words.text(W.delete_party_forever_confirm, p.name)
+                        val money = bal?.takeIf { Money.isNotZero(it) }?.let { b ->
+                            "\n\n" + words.text(if (Money.isPositive(b)) W.bin_party_owed_to_me else W.bin_party_i_owe, Format.money(b))
+                        }.orEmpty()
+                        purging = Pair(ask + money, suspend {
+                            if (dao.purgeParty(p.id) > 0) null else words.text(W.bin_party_kept)
+                        })
+                    }
                 },
                 onPurgeEntry = { e -> purging = Pair(words.text(W.delete_entry_forever_confirm, e.entryNumber), suspend { dao.purgeEntry(e.id); null }) },
                 onEmpty = {
