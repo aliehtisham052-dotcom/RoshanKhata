@@ -212,7 +212,7 @@ fun BusinessCardPane(
             PaneTitle(word(W.biz_card), word(W.biz_card_sub))
             Text(word(W.biz_card_language), color = c.ink, fontWeight = FontWeight.Bold)
             // One pill per language, each in its own script, in a row that scrolls.
-            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            PillRow(Modifier.fillMaxWidth()) {
                 CardLanguage.entries.forEach { l ->
                     FluentPill(l.native, l == lang) { if (l != lang) { save(); lang = l } }
                 }
