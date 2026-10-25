@@ -88,6 +88,19 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /**
+     * Whether the money totals show as dots (25 Oct 2026, the audit): hidden until the owner opens
+     * them with the eye, then remembered — the phone's BalancePrivacy, so a customer at the counter
+     * sees dots, not the shop's position. One choice for Home and Khata.
+     */
+    fun balancesHidden(): Boolean = props.getProperty(KEY_TOTALS_HIDDEN)?.let { it == "true" } ?: true
+
+    @Synchronized
+    fun setBalancesHidden(hidden: Boolean) {
+        props.setProperty(KEY_TOTALS_HIDDEN, hidden.toString())
+        save()
+    }
+
     /** The day (yyyy-MM-dd) the daily reminder was last shown (Reminders). */
     fun remindedDay(): String? = props.getProperty(KEY_REMINDED)
 
@@ -191,6 +204,7 @@ class AppPrefs(private val file: File) {
     private companion object {
         const val KEY_LANGUAGE = "app_language"
         const val KEY_LAST_BACKUP = "last_saved_backup"
+        const val KEY_TOTALS_HIDDEN = "totals_hidden"
         const val KEY_BACKUP_FOLDER = "backup_folder"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"

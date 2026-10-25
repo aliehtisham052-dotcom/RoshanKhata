@@ -686,6 +686,9 @@ private fun Book(
     var lastBackupAt by remember { mutableStateOf<Long?>(null) }
     // The counter's open ticket lives as long as this business's window, not the page (25 Oct 2026, the audit).
     val counterDraft = remember { com.innovation313.roshankhata.data.CounterDraft() }
+    // The money totals as dots until the eye opens them, remembered (25 Oct 2026, the audit; the phone's BalancePrivacy).
+    var totalsHidden by remember { mutableStateOf(appPrefs.balancesHidden()) }
+    val setTotalsHidden = { v: Boolean -> totalsHidden = v; runCatching { appPrefs.setBalancesHidden(v) }; Unit }
     // Ctrl+F: the Khata page's search box takes the typing.
     var searchTick by remember { mutableIntStateOf(0) }
     val searchFocus = remember { androidx.compose.ui.focus.FocusRequester() }
@@ -940,7 +943,8 @@ private fun Book(
                             onCustomer = { id -> selected = id; section = Section.KHATA },
                             onAddParty = { addParty = true },
                             // You got: the Khata page with its F3 (the page fills keys.got in once it is open).
-                            onGot = { section = Section.KHATA }
+                            onGot = { section = Section.KHATA },
+                            hidden = totalsHidden, onHidden = setTotalsHidden
                         )
                     }
                     Section.COUNTER -> Box(Modifier.fillMaxSize()) {
@@ -991,14 +995,14 @@ private fun Book(
                     Section.CARD -> Box(Modifier.fillMaxSize()) { BusinessCardPane(settings, images, home, activeBusiness, words) { shop = shopName() } }
                     Section.POSTER -> Box(Modifier.fillMaxSize()) { PosterPane(settings, images, home, activeBusiness, words) }
                     Section.KHATA -> Column(Modifier.fillMaxSize()) {
-                        // The page's head (1.10.0): the count and the two totals in one line, Add Party on the end side.
-                        val allGet = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                        val allGive = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+                        // The page's head: the count, the eye, Add Party. The totals live once, in the two cards below,
+                        // for the open tab (25 Oct 2026, the audit: the head said the whole book's under the same words).
                         PageHeader(
                             word(W.nav_khata),
-                            plural(WP.customer_count, parties.size, parties.size) + " · " + word(W.you_will_get) + " " + Format.money(allGet) + " · " + word(W.you_will_give) + " " + Format.money(allGive),
+                            plural(WP.customer_count, parties.size, parties.size),
                             Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
                         ) {
+                            IconAction(if (totalsHidden) "ic_eye_closed" else "ic_eye_open", word(W.net_balance), { setTotalsHidden(!totalsHidden) })
                             FluentButton(word(W.add_party), { addParty = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
                         }
                         Row(Modifier.fillMaxSize()) {
@@ -1017,8 +1021,8 @@ private fun Book(
                             val get = ofType.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
                             val give = ofType.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
                             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Total(word(W.you_will_get), Format.money(get), c.owedToMe, Modifier.weight(1f))
-                                Total(word(W.you_will_give), Format.money(give), c.iOwe, Modifier.weight(1f))
+                                Total(word(W.you_will_get), if (totalsHidden) TOTALS_MASK else Format.money(get), c.owedToMe, Modifier.weight(1f))
+                                Total(word(W.you_will_give), if (totalsHidden) TOTALS_MASK else Format.money(give), c.iOwe, Modifier.weight(1f))
                             }
                             // Today's cheques and expiring stock: their chips, as on the phone's Home.
                             if (dueCheques > 0 || expiring > 0) {
