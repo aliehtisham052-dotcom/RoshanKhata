@@ -963,6 +963,13 @@ Businesses/Settings), each part with its proof pictures. CI only.
   edit, ⋮ delete; the entries' own search, days and order; the ledger in columns — what (goods, else how it
   was paid, else the note), I gave, I got, the balance after each (summed as decimals; what the shop owes
   carries its minus inside the left-to-right run) — under day headings. Nobody chosen: `NoPartyChosen`.
+- **The phone's customer page, the rest (part 1b):** the line under the name says s/o and the village
+  (`customerFacts`); a click on the balance copies the phone's ready line (`copy_balance_*`) and the side's
+  words say "Copied" a moment; the promised day's chip (and ⋮ → Promised day in agri shops, the phone's menu)
+  opens `DueDialog`; ⋮ → Customer QR shows the card (`CustomerQrDialog`: a missing code is made and saved
+  before it is drawn; saved as a picture it is the code alone, `customer_qr_save_picture`); ⋮ → Select entries
+  to delete ticks several (`EntryPick`, kept by the book) and bins them with `softDeleteOwnEntries` — what a
+  bill, plan, cheque, ticket or return wrote stays, and is counted. Proof: screen-laptop-khata-pick-ur.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
@@ -974,7 +981,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   and a search with no match say so; the entry warning is titled for what it is (`confirmTitle`: twin entry or
   credit limit); an entry's day cannot be in the future (`DayPicker(latest)`, the editor clamps it).
   TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
-- Strings: khata_pick_party, khata_choose_several (nine languages). Tests: ReminderTextTest (shared),
+- Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
 

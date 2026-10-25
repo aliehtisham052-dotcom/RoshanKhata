@@ -1328,6 +1328,7 @@
     </plurals>
     <string name="customer_qr">رمز QR للعميل</string>
     <string name="customer_qr_hint">امسحه في روشن كهاتا ليُفتح هذا الحساب. الرمز لا يحمل اسمًا ولا رقمًا ولا رصيدًا.</string>
+    <string name="customer_qr_save_picture">احفظ رمز QR كصورة</string>
     <string name="scan_customer_qr">مسح بطاقة العميل</string>
     <string name="qr_not_ours">هذا الرمز ليس بطاقة عميل في روشن كهاتا.</string>
     <string name="qr_no_customer">لا يوجد عميل في هذا الدفتر لهذه البطاقة.</string>

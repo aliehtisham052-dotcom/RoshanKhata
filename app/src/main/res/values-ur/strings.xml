@@ -1216,6 +1216,7 @@
     </plurals>
     <string name="customer_qr">گاہک کا کیو آر</string>
     <string name="customer_qr_hint">روشن کھاتہ میں اسکین کریں تو یہ کھاتہ کھل جائے گا۔ کوڈ میں نہ نام ہے، نہ نمبر، نہ حساب۔</string>
+    <string name="customer_qr_save_picture">کیو آر تصویر کے طور پر محفوظ کریں</string>
     <string name="scan_customer_qr">گاہک کا کارڈ اسکین کریں</string>
     <string name="qr_not_ours">یہ کوڈ روشن کھاتہ کے گاہک کا کارڈ نہیں۔</string>
     <string name="qr_no_customer">اس کارڈ کا کوئی گاہک اس کھاتے میں نہیں ملا۔</string>

@@ -745,6 +745,13 @@ private fun Book(
     // computer's count of reminders opened, per business (the ladder's steps).
     var reminding by remember { mutableStateOf<Pair<PartyWithBalance, Long?>?>(null) }
     val reminders = remember(activeBusiness) { ReminderStore.forBusiness(home, activeBusiness) }
+    // The open account's other tools (the phone's customer menu): its promised day being chosen (the party and
+    // the day it has), its QR card, and several of its entries chosen to delete — cleared when another opens.
+    var promising by remember { mutableStateOf<Pair<PartyWithBalance, Long?>?>(null) }
+    var qrFor by remember { mutableStateOf<PartyWithBalance?>(null) }
+    var pickingEntries by remember(selected) { mutableStateOf(false) }
+    var pickedEntries by remember(selected) { mutableStateOf(emptySet<Long>()) }
+    var deletingEntries by remember { mutableStateOf<List<Long>?>(null) }
     // F2 you gave, F3 you got (on the open customer), Ctrl+N new customer, Ctrl+P statement,
     // F1 the Khata page. Each does only what its button does.
     keys.gave = { if (selected != null) { section = Section.KHATA; entryWay = true } }
@@ -1208,9 +1215,9 @@ private fun Book(
                             else {
                                 // With their goods lines, so the search finds what was sold (25 Oct 2026, the audit).
                                 val withItems by remember(party.id, reload) { dao.observeEntriesWithItems(party.id) }.collectAsState(emptyList())
-                                val chips = customerChips(dao, party, reload)
+                                val facts = customerFacts(dao, party, reload)
                                 CustomerPane(
-                                    party, Photos.bitmap(party.photoPath, 120), withItems, chips.first, chips.second,
+                                    party, Photos.bitmap(party.photoPath, 120), withItems, facts.identity, facts.promise, facts.seasons,
                                     onGave = { entryWay = true },
                                     onGot = { entryWay = false },
                                     // The phone's rule: a settled account has nothing to remind of; the date quoted is a
@@ -1223,6 +1230,18 @@ private fun Book(
                                     onEdit = { Gates.edit { scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } } } },
                                     onDelete = { Gates.edit { deletingParty = party } },
                                     onEntry = { editing = it },
+                                    onPromise = { promising = party to facts.promiseAt },
+                                    promiseInMenu = LocalTrade.current.seasons,
+                                    onQr = { qrFor = party },
+                                    pick = if (!pickingEntries) null else EntryPick(
+                                        pickedEntries,
+                                        onToggle = { id -> pickedEntries = if (id in pickedEntries) pickedEntries - id else pickedEntries + id },
+                                        onAll = { ids -> pickedEntries = ids.toSet() },
+                                        // Binning entries changes the book: a cashier waits for a manager's PIN, as on the phone.
+                                        onDelete = { if (pickedEntries.isNotEmpty()) Gates.edit { deletingEntries = pickedEntries.toList() } },
+                                        onCancel = { pickingEntries = false; pickedEntries = emptySet() }
+                                    ),
+                                    onPickEntries = { pickingEntries = true; pickedEntries = emptySet() },
                                     modifier = Modifier.weight(1f).fillMaxHeight()
                                 )
                             }
@@ -1231,6 +1250,45 @@ private fun Book(
                         // The reminder read over before WhatsApp opens (the phone's preview, the ladder's step).
                         reminding?.let { (p, promised) ->
                             ReminderDialog(p.id, p.name, p.phone, p.balance, promised, shopName(), reminders) { reminding = null }
+                        }
+                        // The promised day from the page (the phone's menu and chip): 7/15/30 days, the next harvests,
+                        // another day, or taken back. Follow-up and the reminder's words read it.
+                        promising?.let { (p, at) ->
+                            DueDialog(p.name, at, onPick = { day ->
+                                promising = null
+                                scope.launch {
+                                    withContext(Dispatchers.IO) { runCatching { dao.setHarvestPromise(p.id, day) } }
+                                        .onFailure { told = words.text(W.harvest_promise_menu) to failText(words, it) }
+                                    reload++
+                                }
+                            }, onDismiss = { promising = null })
+                        }
+                        qrFor?.let { p -> CustomerQrDialog(dao, p.id, p.name) { qrFor = null } }
+                        // Several entries to the bin, named with their count (the phone's question). Entries a bill,
+                        // a plan, a cheque, a counter ticket or a return wrote stay, and are said.
+                        deletingEntries?.let { ids ->
+                            AlertDialog(
+                                onDismissRequest = { deletingEntries = null },
+                                title = { Text(word(W.delete_entry_title)) },
+                                text = { Text(plural(WP.delete_selected_entries_confirm, ids.size, ids.size)) },
+                                confirmButton = {
+                                    TextButton({
+                                        deletingEntries = null
+                                        scope.launch {
+                                            val left = withContext(Dispatchers.IO) { runCatching { dao.softDeleteOwnEntries(ids) } }
+                                            pickingEntries = false
+                                            pickedEntries = emptySet()
+                                            told = left.fold(
+                                                { n -> if (n > 0) words.text(W.entry_linked_title) to words.text(W.entries_linked_kept, n)
+                                                       else words.text(W.recycle_bin) to words.text(W.moved_to_bin) },
+                                                { words.text(W.delete) to failText(words, it) }
+                                            )
+                                            reload++
+                                        }
+                                    }) { Text(word(W.delete), color = c.owedToMe) }
+                                },
+                                dismissButton = { TextButton({ deletingEntries = null }) { Text(word(W.cancel)) } }
+                            )
                         }
                     }
                 }
@@ -1988,7 +2046,8 @@ private fun Book(
     val questionOpen: () -> Boolean = remember {
         {
             picked != null || done || confirming != null || editing != null || deleting != null || halves != null ||
-                deletingMany || deletingParty != null || told != null || backedUp != null || clockBehind != null || namingShop
+                deletingMany || deletingParty != null || told != null || backedUp != null || clockBehind != null || namingShop ||
+                promising != null || deletingEntries != null
         }
     }
     keys.busy = questionOpen
@@ -2286,18 +2345,19 @@ private fun lateCount(dao: KhataDao): kotlinx.coroutines.flow.Flow<Int> =
         .flowOn(Dispatchers.Default)
 
 /**
- * The open customer's promised day and last seasons, in the phone's words
- * (PartyDetail.refreshSeasonRecord, SeasonText.record): customers only, the
- * three newest seasons, "cleared by harvest", "cleared N days after" or "due".
+ * The open party's line under the name (father's name, village), its promised
+ * day and last seasons, in the phone's words (PartyDetail.loadParty,
+ * refreshSeasonRecord, SeasonText.record): seasons for customers only, the
+ * three newest, "cleared by harvest", "cleared N days after" or "due".
  */
 @Composable
-private fun customerChips(dao: KhataDao, party: PartyWithBalance, reload: Int): Pair<String?, List<String>> {
+private fun customerFacts(dao: KhataDao, party: PartyWithBalance, reload: Int): CustomerFacts {
     var rows by remember(party.id, reload) { mutableStateOf<List<com.innovation313.roshankhata.data.SeasonBook.PartySeason>>(emptyList()) }
-    var promise by remember(party.id, reload) { mutableStateOf<Long?>(null) }
+    var row by remember(party.id, reload) { mutableStateOf<Party?>(null) }
     LaunchedEffect(party.id, reload) {
         withContext(Dispatchers.IO) {
             val p = dao.getParty(party.id)
-            promise = p?.harvestPromise
+            row = p
             rows = if (p?.isCustomer == true) runCatching {
                 com.innovation313.roshankhata.data.SeasonBook.book(dao.seasonLinesOf(party.id))
             }.getOrDefault(emptyList()) else emptyList()
@@ -2312,8 +2372,17 @@ private fun customerChips(dao: KhataDao, party: PartyWithBalance, reload: Int): 
             if (d > 0) plural(WP.season_rec_after, d, n, d) else word(W.season_rec_before, n)
         }
     }
-    return promise?.let { word(W.harvest_promise_header, Format.dateOnly(it)) } to seasons
+    // "s/o Muhammad · Khichi", whichever parts are known (the phone's line under the name).
+    val identity = listOfNotNull(
+        row?.fatherName?.trim()?.takeIf { it.isNotEmpty() }?.let { word(W.son_of_prefix, Format.isolate(it)) },
+        row?.village?.trim()?.takeIf { it.isNotEmpty() }?.let { Format.isolate(it) }
+    ).joinToString("  \u00b7  ").ifEmpty { null }
+    val promiseAt = row?.harvestPromise
+    return CustomerFacts(identity, promiseAt, promiseAt?.let { word(W.harvest_promise_header, Format.dateOnly(it)) }, seasons)
 }
+
+/** What the account's head says beyond the list's row: who he is, the promised day (and its moment), the seasons. */
+private class CustomerFacts(val identity: String?, val promiseAt: Long?, val promise: String?, val seasons: List<String>)
 
 /** The Khata head's line: customers and suppliers counted apart (25 Oct 2026, the audit: suppliers were "customers"). */
 @Composable

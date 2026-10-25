@@ -1259,6 +1259,7 @@
     </plurals>
     <string name="customer_qr">Customer QR</string>
     <string name="customer_qr_hint">Scan this in Roshan Khata to open this ledger. The code carries no name, number or balance.</string>
+    <string name="customer_qr_save_picture">Save the QR as a picture</string>
     <string name="scan_customer_qr">Scan customer card</string>
     <string name="qr_not_ours">That code is not a Roshan Khata customer card.</string>
     <string name="qr_no_customer">No customer here answers to that card.</string>

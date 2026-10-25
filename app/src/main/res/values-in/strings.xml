@@ -1228,6 +1228,7 @@
     </plurals>
     <string name="customer_qr">QR Pelanggan</string>
     <string name="customer_qr_hint">Pindai ini di Roshan Khata untuk membuka buku ini. Kode ini tidak memuat nama, nomor, atau saldo.</string>
+    <string name="customer_qr_save_picture">Simpan QR sebagai gambar</string>
     <string name="scan_customer_qr">Pindai kartu pelanggan</string>
     <string name="qr_not_ours">Kode itu bukan kartu pelanggan Roshan Khata.</string>
     <string name="qr_no_customer">Tidak ada pelanggan di sini yang cocok dengan kartu itu.</string>

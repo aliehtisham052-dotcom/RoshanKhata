@@ -209,10 +209,14 @@ class ScreenProofTest {
         val khataSide = shoot("screen-laptop-side-khata-en", ur = false, dark = false, dir = dir, width = 1304, height = 738, scale = 1.25f, section = Section.KHATA) {
             KhataProof(ur = false)
         }
+        // Several entries being chosen to delete (the phone's select mode): the bar and the ticks, in Urdu.
+        val khataPick = shoot("screen-laptop-khata-pick-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.KHATA) {
+            KhataProof(ur = true, picked = setOf(4L, 2L))
+        }
         val stepper = shoot("screen-laptop-stepper-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
             Box(Modifier.fillMaxWidth(0.5f)) { DesignStepper(shown = 3, saved = 1, onShow = {}, onApply = {}) }
         }
-        for (f in listOf(home, homeSide, homeUr, khata, khataDark, khataSide)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
+        for (f in listOf(home, homeSide, homeUr, khata, khataDark, khataSide, khataPick)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
         assertTrue("${stepper.name} looks empty", stepper.length() > 2_000)
     }
 
@@ -221,7 +225,7 @@ class ScreenProofTest {
      * mockup's 340 dp and the chosen account beside it (the page itself lives in Main's Book, with its state).
      */
     @androidx.compose.runtime.Composable
-    private fun KhataProof(ur: Boolean) {
+    private fun KhataProof(ur: Boolean, picked: Set<Long>? = null) {
         val day = 24L * 60 * 60 * 1000
         val t = now - 2 * 60 * 60 * 1000
         val parties = listOf(
@@ -266,9 +270,13 @@ class ScreenProofTest {
                 }
                 CustomerPane(
                     parties.first(), null, entries,
+                    identity = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.son_of_prefix, if (ur) "محمد کریم" else "Muhammad Kareem") +
+                        "  \u00b7  " + (if (ur) "چک 12" else "Chak 12"),
                     promise = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.harvest_promise_header, "15 Nov"),
                     seasons = listOf("Rabi 2025"),
                     onGave = {}, onGot = {}, onRemind = {}, onStatement = {}, onEdit = {}, onDelete = {}, onEntry = {},
+                    onPromise = {}, promiseInMenu = true, onQr = {},
+                    pick = picked?.let { EntryPick(it, onToggle = {}, onAll = {}, onDelete = {}, onCancel = {}) }, onPickEntries = {},
                     modifier = Modifier.weight(1f)
                 )
             }

@@ -1256,6 +1256,7 @@
     </plurals>
     <string name="customer_qr">গ্রাহক QR</string>
     <string name="customer_qr_hint">এই খাতা খুলতে রোশন খাতায় এটি স্ক্যান করুন। কোডে কোনো নাম, নম্বর বা ব্যালেন্স থাকে না।</string>
+    <string name="customer_qr_save_picture">QR ছবি হিসেবে সংরক্ষণ করুন</string>
     <string name="scan_customer_qr">গ্রাহক কার্ড স্ক্যান করুন</string>
     <string name="qr_not_ours">এই কোড রোশন খাতার গ্রাহক কার্ড নয়।</string>
     <string name="qr_no_customer">এখানে কোনো গ্রাহক এই কার্ডের সঙ্গে মেলে না।</string>

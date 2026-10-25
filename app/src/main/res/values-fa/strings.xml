@@ -1244,6 +1244,7 @@
     </plurals>
     <string name="customer_qr">کد QR مشتری</string>
     <string name="customer_qr_hint">در روشن خاتا اسکن کنید تا این دفتر باز شود. کد نه نام دارد، نه شماره، نه مانده‌حساب.</string>
+    <string name="customer_qr_save_picture">ذخیرهٔ کد QR به‌صورت تصویر</string>
     <string name="scan_customer_qr">اسکن کارت مشتری</string>
     <string name="qr_not_ours">این کد کارتِ مشتریِ روشن خاتا نیست.</string>
     <string name="qr_no_customer">هیچ مشتری‌ای در این دفتر با این کارت یافت نشد.</string>
