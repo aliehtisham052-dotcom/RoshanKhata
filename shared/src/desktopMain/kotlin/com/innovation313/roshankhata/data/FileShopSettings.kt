@@ -79,9 +79,10 @@ class FileShopSettings(private val file: File) : ShopSettings {
      */
     fun copyRegionFrom(from: FileShopSettings) {
         if (from === this) return
+        // Present is chosen, even blank: "Other" is stored as an empty country code (the phone's rule, contains()).
         val pairs = listOf(ShopSettings.Keys.COUNTRY, ShopSettings.Keys.CURRENCY, ShopSettings.Keys.CALENDAR).mapNotNull { k ->
-            val v = from.props.getProperty(k)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
-            if (props.getProperty(k).isNullOrBlank()) k to v else null
+            val v = from.props.getProperty(k) ?: return@mapNotNull null
+            if (!props.containsKey(k)) k to v else null
         }
         if (pairs.isNotEmpty()) put(*pairs.toTypedArray())
     }
