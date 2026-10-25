@@ -200,7 +200,7 @@
     <string name="zakat_disclaimer">Ye sahulat sirf rehnumai ke liye hai. Zakat ki fiqhi tafseel ahem hai — nisab ka miyaar, mashkook qarzon ka hukm, qamari saal, aur kaun si adaigiyan minha hongi, in sab mein ulama ki raaye mukhtalif hai. Roshan Khata mufti nahi hai. Hatmi hukm kisi mustanad aalim se zaroor lein.</string>
 
     <string name="nisab_section">Nisab</string>
-    <string name="nisab_help">Yahan nisab chandi ke miyaar (612.36 gram) par rakha gaya hai — ye mauqif aam taur par ghareebon ke haq mein zyada mohtat samjha jata hai. Aaj ki chandi ki fi gram qeemat likhein.</string>
+    <string name="nisab_help">Yahan nisab chandi ke miyaar (612.36 gram) par rakha gaya hai — ye mauqif aam taur par ghareebon ke haq mein zyada mohtat samjha jata hai.</string>
     <string name="silver_price_hint">Chandi ki qeemat fi gram</string>
     <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Nisab maloom karne ke liye qeemat likhein</string>
@@ -987,6 +987,8 @@
     <string name="nisab_silver">Chandi</string>
     <string name="nisab_gold">Sona</string>
     <string name="gold_price_hint">Sone ki qeemat fi gram</string>
+    <string name="silver_price_hint_tola">Chandi ki qeemat fi tola</string>
+    <string name="gold_price_hint_tola">Sone ki qeemat fi tola</string>
     <string name="nisab_silver_note">Chandi ka nisab: 612.36 gram (52.5 tola) chandi. Ye kam hadd hai, is liye zyada logon par Zakat aati hai \u2014 ye mauqif aam taur par ghareebon ke haq mein zyada mohtat samjha jata hai.</string>
     <string name="nisab_gold_note">Sone ka nisab: 87.48 gram (7.5 tola) sona. Ye oonchi hadd hai, is liye kam logon par Zakat aati hai. Kaun sa miyaar aap par lagoo hai, aalim se tasdeeq karein.</string>
     <string name="per_tola">Fi tola</string>

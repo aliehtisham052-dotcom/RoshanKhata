@@ -203,7 +203,7 @@
     <string name="zakat_disclaimer">هي اوزار صرف رهنمائي لاءِ آهي. زڪوات ۾ حقيقي فقهي تفصيل آهن — نصاب جو معيار، مشڪوڪ قرضن جو حڪم، قمري سال، ۽ ڪهڙيون ذميواريون ڪٽجن ٿيون — اهي عالمن ۾ مختلف آهن. روشن کاتو مفتي ناهي. مهرباني ڪري آخري حڪم ڪنهن اهل عالم کان وٺو.</string>
 
     <string name="nisab_section">نصاب</string>
-    <string name="nisab_help">نصاب هتي چانديءَ جي معيار (612.36 گرام) تي رکيل آهي — اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو. اڄ جي چانديءَ جي في گرام قيمت لکو.</string>
+    <string name="nisab_help">نصاب هتي چانديءَ جي معيار (612.36 گرام) تي رکيل آهي — اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو.</string>
     <string name="silver_price_hint">چانديءَ جي في گرام قيمت</string>
     <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">نصاب ڳڻڻ لاءِ قيمت لکو</string>
@@ -1015,6 +1015,8 @@
     <string name="nisab_silver">چاندي</string>
     <string name="nisab_gold">سون</string>
     <string name="gold_price_hint">سون جي في گرام قيمت</string>
+    <string name="silver_price_hint_tola">چانديءَ جي في تولہ قيمت</string>
+    <string name="gold_price_hint_tola">سون جي في تولہ قيمت</string>
     <string name="nisab_silver_note">چانديءَ جو نصاب: 612.36 گرام (52.5 تولا) چاندي. هي هيٺين حد آهي، تنهنڪري وڌيڪ ماڻهن تي زڪوات واجب ٿئي ٿي \u2014 اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو.</string>
     <string name="nisab_gold_note">سون جو نصاب: 87.48 گرام (7.5 تولا) سون. هي مٿين حد آهي، تنهنڪري گهٽ ماڻهن تي زڪوات واجب ٿئي ٿي. ڪهڙو معيار توهان تي لاڳو آهي، اهو ڪنهن عالم کان پڪو ڪريو.</string>
     <string name="per_tola">في تولہ</string>

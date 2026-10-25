@@ -228,7 +228,7 @@
     <string name="zakat_disclaimer">هذه الأداة للاسترشاد فقط. للزكاة تفاصيل فقهية مهمة — معيار النصاب، وحكم الديون المشكوك فيها، والحول القمري، وما يُخصم من الالتزامات، كلها مما تختلف فيه آراء العلماء. روشن كهاتا ليس مفتيًا. خذ الحكم النهائي من عالم موثوق.</string>
 
     <string name="nisab_section">النصاب</string>
-    <string name="nisab_help">النصاب هنا على معيار الفضة (612.36 غرامًا)، وهو الرأي الأحوط لحق الفقراء غالبًا. أدخل سعر غرام الفضة اليوم.</string>
+    <string name="nisab_help">النصاب هنا على معيار الفضة (612.36 غرامًا)، وهو الرأي الأحوط لحق الفقراء غالبًا.</string>
     <string name="silver_price_hint">سعر غرام الفضة</string>
     <string name="nisab_value">النصاب = %1$s</string>
     <string name="nisab_enter_price">أدخل السعر لحساب النصاب</string>
@@ -1063,6 +1063,8 @@
     <string name="nisab_silver">الفضة</string>
     <string name="nisab_gold">الذهب</string>
     <string name="gold_price_hint">سعر غرام الذهب</string>
+    <string name="silver_price_hint_tola">سعر تولة الفضة</string>
+    <string name="gold_price_hint_tola">سعر تولة الذهب</string>
     <string name="nisab_silver_note">نصاب الفضة: 612.36 غرامًا (52.5 تولة). هذا الحد الأدنى، فتجب الزكاة على أكثر الناس \u2014 وهو الرأي الأحوط لحق الفقراء غالبًا.</string>
     <string name="nisab_gold_note">نصاب الذهب: 87.48 غرامًا (7.5 تولة). هذا الحد الأعلى، فتجب الزكاة على أقل الناس. تأكد أي معيار يلزمك عند عالم.</string>
     <string name="per_tola">للتولة</string>
