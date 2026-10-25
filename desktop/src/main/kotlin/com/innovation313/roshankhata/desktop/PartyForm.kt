@@ -59,7 +59,8 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     val similar = DuplicateDetector.matchExisting(name.trim(), phone.trim().ifEmpty { null }, others)
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(word(if (existing == null) W.add_party else W.edit_party), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+        // Inside a dialog its head says it (one title, Marhala 2).
+        if (!inDialog()) Text(word(if (existing == null) W.add_party else W.edit_party), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
         TwoWay(word(W.customer), word(W.supplier), customer) { customer = it }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FluentField(name, { name = it }, Modifier.weight(1f), label = word(W.name))

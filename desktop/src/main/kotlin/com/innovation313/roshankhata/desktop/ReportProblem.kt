@@ -121,7 +121,6 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.report_problem), state = rememberDialogState(width = fitW(620.dp), height = fitH(760.dp))) {
         Box(Modifier.fillMaxSize().background(c.surface)) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(word(W.report_problem), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(word(W.report_problem_sub), color = c.textMuted, fontSize = 13.sp)
                 Text(word(W.report_what_kind), color = c.ink, fontWeight = FontWeight.Bold)
                 kinds.forEach { k ->

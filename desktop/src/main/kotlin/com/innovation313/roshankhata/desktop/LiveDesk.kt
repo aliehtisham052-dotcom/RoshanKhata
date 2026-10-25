@@ -602,7 +602,6 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(word(W.live_title), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(word(W.live_explain), color = c.textMuted, fontSize = 13.sp)
                 val g = giving
                 if (g is LiveDesk.Giving.Idle) {

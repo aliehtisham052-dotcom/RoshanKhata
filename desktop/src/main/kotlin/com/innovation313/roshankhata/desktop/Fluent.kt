@@ -480,6 +480,8 @@ fun DialogFrame(
     body: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
     val c = LocalRoshanColors.current
+    // This frame's head is the dialog's one title and ✕ (Marhala 2): the dialog draws none of its own.
+    OwnDialogHead()
     Column(Modifier.fillMaxSize().background(Look.layer)) {
         Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 16.dp, top = 18.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {

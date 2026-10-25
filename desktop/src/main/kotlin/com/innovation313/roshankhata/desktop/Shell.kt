@@ -49,6 +49,11 @@ import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 
 /** One line of the header's More menu; a null [onClick] is a group's heading. */
 class MenuLine(val text: String, val onClick: (() -> Unit)?)
@@ -295,12 +300,48 @@ fun escCloses(close: () -> Unit): (androidx.compose.ui.input.key.KeyEvent) -> Bo
 }
 
 /**
- * Every dialog window of the app (23 Oct 2026, the review's R13): a
- * DialogWindow whose body keeps the app's own direction and text size.
- * A window of its own sets both again from Swing (the JDK's locale, fixed
- * at the first window: Sindhi dialogs opened left to right, Roman Urdu ones
- * mirrored, none followed More → Language or More → Text size), so the
- * caller's values are carried in. Same arguments as DialogWindow.
+ * How many of the app's dialogs are open now. They are drawn inside the window
+ * (Marhala 2), so a key typed in one passes the window's own shortcuts first:
+ * KeyActions does nothing while any is open (F2 in an entry form opened a
+ * second one; with a window of its own the dialog took its keys itself).
+ */
+object OpenDialogs {
+    var count by androidx.compose.runtime.mutableIntStateOf(0)
+        private set
+    fun opened() { count++ }
+    fun closed() { count = (count - 1).coerceAtLeast(0) }
+}
+
+/** What a dialog's body tells its frame: it draws its own head (a DialogFrame, or a form with its own). */
+class DialogChrome { var ownHead by mutableStateOf(false) }
+
+val LocalDialogChrome = androidx.compose.runtime.staticCompositionLocalOf<DialogChrome?> { null }
+
+/**
+ * Said by a body that draws its own title and ✕ (DialogFrame, the entry form): the dialog then draws
+ * none, so there is one title and one ✕. Outside a dialog it does nothing.
+ */
+@Composable
+fun OwnDialogHead() {
+    val chrome = LocalDialogChrome.current ?: return
+    androidx.compose.runtime.DisposableEffect(chrome) { chrome.ownHead = true; onDispose { chrome.ownHead = false } }
+}
+
+/** True inside one of the app's dialogs, whose head names the dialog: a form there leaves its own title out. */
+@Composable
+fun inDialog(): Boolean = LocalDialogChrome.current != null
+
+/**
+ * Every dialog of the app (Marhala 2, 25 Oct 2026, the owner's mockup): a card
+ * in the window over a dimmed page — one title and one ✕, the phone's corners
+ * and colours — instead of a window of its own, which put Windows' title bar
+ * and ✕ over the dialog's own (the audit: two titles, two ✕, a hundred dp of
+ * chrome) and could open off the laptop's screen. [state]'s size is the card's,
+ * kept inside the window; [title] heads a body that has no head of its own
+ * ([OwnDialogHead]); [closable] false hides the ✕ of a question that must be
+ * answered (the first shop type). Esc closes, as before. The card shares the
+ * window's direction and text size, so nothing is carried in (R13 needed
+ * KeepAppLook for a window of its own).
  */
 @Composable
 fun AppDialog(
@@ -308,17 +349,54 @@ fun AppDialog(
     state: androidx.compose.ui.window.DialogState = androidx.compose.ui.window.rememberDialogState(),
     title: String = "",
     onPreviewKeyEvent: (androidx.compose.ui.input.key.KeyEvent) -> Boolean = escCloses(onCloseRequest),
-    content: @Composable androidx.compose.ui.window.DialogWindowScope.() -> Unit
+    closable: Boolean = true,
+    content: @Composable () -> Unit
 ) {
-    val dir = androidx.compose.ui.platform.LocalLayoutDirection.current
-    val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
-    androidx.compose.ui.window.DialogWindow(
-        onCloseRequest = onCloseRequest,
-        state = state,
-        title = title,
-        onPreviewKeyEvent = onPreviewKeyEvent
+    val chrome = remember { DialogChrome() }
+    androidx.compose.runtime.DisposableEffect(Unit) { OpenDialogs.opened(); onDispose { OpenDialogs.closed() } }
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onCloseRequest,
+        properties = androidx.compose.ui.window.DialogProperties(
+            dismissOnBackPress = true,
+            // A form's typing is never thrown away by a click beside it.
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false,
+            usePlatformInsets = true,
+            useSoftwareKeyboardInset = true,
+            scrimColor = Color.Black.copy(alpha = 0.42f)
+        )
     ) {
-        KeepAppLook(dir, fontScale) { content() }
+        val focus = remember { androidx.compose.ui.focus.FocusRequester() }
+        androidx.compose.runtime.LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+        BoxWithConstraints(Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+            val want = state.size
+            val w = if (want.width.value.isFinite()) minOf(want.width, maxWidth) else maxWidth
+            val h = if (want.height.value.isFinite()) minOf(want.height, maxHeight) else maxHeight
+            Column(
+                Modifier.size(w, h)
+                    .shadow(24.dp, Look.card, clip = false)
+                    .clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)
+                    .onPreviewKeyEvent(onPreviewKeyEvent)
+                    .focusRequester(focus).focusable()
+            ) {
+                if (!chrome.ownHead) DialogHead(title, if (closable) onCloseRequest else null)
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    androidx.compose.runtime.CompositionLocalProvider(LocalDialogChrome provides chrome) { content() }
+                }
+            }
+        }
+    }
+}
+
+/** The head of a dialog whose body has none: its title and the ✕, as DialogFrame draws them. */
+@Composable
+private fun DialogHead(title: String, onClose: (() -> Unit)?) {
+    val c = LocalRoshanColors.current
+    Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp, top = 14.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, Modifier.weight(1f), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        if (onClose != null) Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = onClose), contentAlignment = Alignment.Center) {
+            Glyph("ic_close", c.inkSoft, 14)
+        }
     }
 }
 
