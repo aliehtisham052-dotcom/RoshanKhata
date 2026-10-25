@@ -299,6 +299,7 @@
     <string name="pc_pdf_failed">ذخیره PDF ممکن نشد: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">یک PIN چهار تا هشت رقمی انتخاب کنید</string>
+    <string name="lock_pin_new_long">یک PIN شش تا هشت رقمی انتخاب کنید</string>
     <string name="lock_pin_again">همان PIN را دوباره وارد کنید</string>
     <string name="lock_pin_wrong">PIN اشتباه است. دوباره تلاش کنید.</string>
     <string name="lock_pin_mismatch">دو PIN یکسان نیستند.</string>

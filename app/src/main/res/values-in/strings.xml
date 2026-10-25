@@ -298,6 +298,7 @@
     <string name="pc_pdf_failed">PDF tidak dapat disimpan: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">Pilih PIN 4 sampai 8 angka</string>
+    <string name="lock_pin_new_long">Pilih PIN 6 sampai 8 angka</string>
     <string name="lock_pin_again">Masukkan PIN yang sama lagi</string>
     <string name="lock_pin_wrong">PIN salah. Coba lagi.</string>
     <string name="lock_pin_mismatch">Kedua PIN tidak sama.</string>

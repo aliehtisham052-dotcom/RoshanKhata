@@ -78,7 +78,12 @@ import kotlinx.coroutines.withContext
 @Composable
 fun OrdersScreen(
     dao: KhataDao, shopName: String?, onSend: (phone: String?, text: String) -> Unit, modifier: Modifier = Modifier,
-    onNeed: ((Access.Permission, () -> Unit) -> Unit)? = null
+    onNeed: ((Access.Permission, () -> Unit) -> Unit)? = null,
+    /**
+     * The platform's day picker, for a received batch's expiry (Marhala 4: the phone's receive form had none, so a
+     * lot that came in through an order never reached Expiry). Null hides the box.
+     */
+    pickDay: ((startAt: Long, onPicked: (Long) -> Unit) -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -127,7 +132,7 @@ fun OrdersScreen(
         return
     }
     receiving?.let { o ->
-        ReceiveEditor(o, onCancel = { receiving = null }) { items, billNumber, total ->
+        ReceiveEditor(o, pickDay, onCancel = { receiving = null }) { items, billNumber, total ->
             scope.launch {
                 val bill = SupplierBill(partyId = o.order.partyId, billNumber = billNumber, totalAmount = LineMath.round(total), note = o.order.orderNumber)
                 val entry = if (total > 0.0) LedgerEntry(partyId = o.order.partyId, amount = LineMath.round(total), isGiven = false, note = o.order.orderNumber, entryNumber = "") else null
@@ -238,12 +243,17 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, on
 }
 
 @Composable
-private fun ReceiveEditor(o: PurchaseOrderWithLines, onCancel: () -> Unit, onSave: (items: List<BillItem>, billNumber: String?, total: Double) -> Unit) {
+private fun ReceiveEditor(
+    o: PurchaseOrderWithLines, pickDay: ((Long, (Long) -> Unit) -> Unit)?, onCancel: () -> Unit,
+    onSave: (items: List<BillItem>, billNumber: String?, total: Double) -> Unit
+) {
     val c = LocalRoshanColors.current
     class Got(val item: PurchaseOrderItem) {
         var qty by mutableStateOf(Calc.trim(item.quantity))
         var rate by mutableStateOf(item.rate?.let { Calc.trim(it) }.orEmpty())
         var batch by mutableStateOf("")
+        /** The batch's expiry as it arrived; none for goods that do not expire. */
+        var expiry by mutableStateOf<Long?>(null)
     }
     val got = remember { o.items.map { Got(it) } }
     var billNumber by remember { mutableStateOf("") }
@@ -259,6 +269,14 @@ private fun ReceiveEditor(o: PurchaseOrderWithLines, onCancel: () -> Unit, onSav
                     CalcField(g.rate, { g.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
                     OutlinedTextField(g.batch, { g.batch = it }, Modifier.weight(1f), label = { Text(word(W.pdf_reg_batch, "")) }, singleLine = true)
                 }
+                if (pickDay != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // The expiry opens on today (the phone's bill line rule: the urgent lot is the one two months out,
+                    // not a year away); a chosen day can be taken back.
+                    OutlinedButton(onClick = { pickDay(g.expiry ?: System.currentTimeMillis()) { g.expiry = it } }) {
+                        Text(g.expiry?.let { word(W.bill_scan_expiry, Format.dateOnly(it)) } ?: word(W.expiry_date), color = c.ink)
+                    }
+                    if (g.expiry != null) TextButton(onClick = { g.expiry = null }) { Text(word(W.filter_clear), color = c.inkSoft) }
+                }
             }
         }
         Row(Modifier.fillMaxWidth()) {
@@ -271,7 +289,7 @@ private fun ReceiveEditor(o: PurchaseOrderWithLines, onCancel: () -> Unit, onSav
             Button(onClick = {
                 val items = got.mapNotNull { g ->
                     val q = Calc.evalAmount(g.qty) ?: return@mapNotNull null
-                    if (q <= 0.0) null else BillItem(billId = 0, productName = g.item.itemName, quantity = q, unit = g.item.unit, rate = Calc.evalAmount(g.rate), batchNumber = g.batch.trim().ifBlank { null }, productId = g.item.productId)
+                    if (q <= 0.0) null else BillItem(billId = 0, productName = g.item.itemName, quantity = q, unit = g.item.unit, rate = Calc.evalAmount(g.rate), batchNumber = g.batch.trim().ifBlank { null }, expiryDate = g.expiry, productId = g.item.productId)
                 }
                 onSave(items, billNumber.trim().ifBlank { null }, total)
             }, enabled = got.any { (Calc.evalAmount(it.qty) ?: 0.0) > 0.0 }, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) { Text(word(W.save), color = Color.White, fontWeight = FontWeight.Bold) }

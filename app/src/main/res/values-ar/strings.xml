@@ -322,6 +322,7 @@
     <string name="pc_pdf_failed">تعذّر حفظ ملف PDF: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">اختر رمز PIN من 4 إلى 8 أرقام</string>
+    <string name="lock_pin_new_long">اختر رمز PIN من 6 إلى 8 أرقام</string>
     <string name="lock_pin_again">أدخل الرمز نفسه مرة أخرى</string>
     <string name="lock_pin_wrong">رمز خاطئ. حاول مرة أخرى.</string>
     <string name="lock_pin_mismatch">الرمزان غير متطابقين.</string>

@@ -306,6 +306,7 @@
     <string name="pc_pdf_failed">PDF सेव नहीं हो सकी: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 से 8 अंकों का PIN चुनें</string>
+    <string name="lock_pin_new_long">6 से 8 अंकों का PIN चुनें</string>
     <string name="lock_pin_again">वही PIN दोबारा लिखें</string>
     <string name="lock_pin_wrong">गलत PIN। दोबारा कोशिश करें।</string>
     <string name="lock_pin_mismatch">दोनों PIN एक जैसे नहीं हैं।</string>

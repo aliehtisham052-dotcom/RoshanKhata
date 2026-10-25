@@ -135,12 +135,13 @@ fun AppLockSettings(prefs: AppPrefs, onDone: () -> Unit) {
     var problem by remember { mutableStateOf<String?>(null) }
     val wrongPin = word(W.lock_pin_wrong)
     val mismatch = word(W.lock_pin_mismatch)
-    val tooShort = word(W.lock_pin_new)
+    // 6 to 8 digits, the owner PIN's rule (the owner, 25 Oct 2026); an older shorter one still opens.
+    val tooShort = word(W.lock_pin_new_long)
     fun go() {
         if (on) {
             if (prefs.pinMatches(first)) { prefs.clearPin(); onDone() } else { problem = wrongPin; first = "" }
         } else when {
-            !PinHash.valid(first) -> problem = tooShort
+            !PinHash.validOwner(first) -> problem = tooShort
             first != second -> { problem = mismatch; second = "" }
             else -> { prefs.setPin(first); onDone() }
         }
@@ -151,7 +152,7 @@ fun AppLockSettings(prefs: AppPrefs, onDone: () -> Unit) {
         if (on) {
             PinField(first, word(W.lock_pin_label), { first = it; problem = null }, ::go)
         } else {
-            PinField(first, word(W.lock_pin_new), { first = it; problem = null }, ::go)
+            PinField(first, word(W.lock_pin_new_long), { first = it; problem = null }, ::go)
             PinField(second, word(W.lock_pin_again), { second = it; problem = null }, ::go)
         }
         problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
