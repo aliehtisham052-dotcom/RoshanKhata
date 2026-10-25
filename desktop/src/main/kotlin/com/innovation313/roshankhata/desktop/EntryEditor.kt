@@ -125,14 +125,16 @@ fun EntryEditor(
     /** The customer's promised payment day (Party.harvestPromise), shown on the due button. */
     promise: Long? = null,
     /** The entry's signature as kept on this computer (an edit), or null. */
-    signature: java.awt.image.BufferedImage? = null
+    signature: java.awt.image.BufferedImage? = null,
+    /** A new entry's amount brought from elsewhere (the calculator's "Add to a khata"), or null. */
+    startAmount: Double? = null
 ) {
     val c = LocalRoshanColors.current
     val words = com.innovation313.roshankhata.words.LocalWords.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     val isSale = isGiven && isCustomer
     val isReturn = !isGiven && isCustomer
-    var amountText by remember { mutableStateOf(existing?.amount?.let { Calc.trim(it) }.orEmpty()) }
+    var amountText by remember { mutableStateOf((existing?.amount ?: startAmount)?.let { Calc.trim(it) }.orEmpty()) }
     var at by remember { mutableStateOf(existing?.timestamp ?: System.currentTimeMillis()) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var qarz by remember { mutableStateOf(existing?.isQarzeHasna ?: false) }

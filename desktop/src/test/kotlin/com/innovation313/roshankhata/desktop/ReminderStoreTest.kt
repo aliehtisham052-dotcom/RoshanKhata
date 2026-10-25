@@ -33,4 +33,23 @@ class ReminderStoreTest {
             home.deleteRecursively()
         }
     }
+
+    @Test
+    fun `a customer reminded today on this computer is known to be reminded today`() {
+        // Follow-up's "to remind today" never went down on Windows (25 Oct 2026, the audit).
+        val home = Files.createTempDirectory("rk-reminded").toFile()
+        try {
+            val utc = java.util.TimeZone.getTimeZone("UTC")
+            val day = 24L * 60 * 60 * 1000
+            val store = ReminderStore.forBusiness(home, 1L)
+            store.record(7L, 5_000.0, now = 100 * day + 9 * 3_600_000L)
+            store.record(8L, 2_000.0, now = 99 * day + 20 * 3_600_000L)
+            assertEquals(setOf(7L), store.openedToday(now = 100 * day + 18 * 3_600_000L, tz = utc))
+            assertEquals(emptySet<Long>(), store.openedToday(now = 101 * day, tz = utc))
+            // Kept across openings, as the ladder is.
+            assertEquals(setOf(7L), ReminderStore.forBusiness(home, 1L).openedToday(now = 100 * day + 23 * 3_600_000L, tz = utc))
+        } finally {
+            home.deleteRecursively()
+        }
+    }
 }

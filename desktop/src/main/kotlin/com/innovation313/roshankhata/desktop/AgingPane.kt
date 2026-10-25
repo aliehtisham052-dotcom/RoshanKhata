@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -60,24 +61,30 @@ fun AgingPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
     val cells = rows.map { row -> listOf(Format.name(row.name)) + row.buckets.map { if (it > 0.0) Format.money(it) else "–" } + Format.money(row.balance) }
     val side = word(if (owedToMe) W.i_have_to_get else W.i_have_to_give)
 
-    FluentPage(word(W.aging_title), told ?: side, scroll = false, actions = {
-        FluentButton(word(W.export_excel), {
-            if (!Access.can(Access.Permission.EXPORT)) { told = words.text(W.access_denied); return@FluentButton }
-            val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.export_excel), java.awt.FileDialog.SAVE)
-            startIn(dialog, "Documents")
-            dialog.file = "RoshanKhata_Dues_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
-            dialog.isVisible = true
-            val name = dialog.file ?: return@FluentButton
-            val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
-            // Figures plain in the file (no currency sign), so Excel adds them up.
-            val plain = rows.map { row -> listOf(row.name) + row.buckets.map { "%.2f".format(java.util.Locale.US, it) } + "%.2f".format(java.util.Locale.US, row.balance) }
-            val csv = StringBuilder("﻿")
-            (listOf(head) + plain).forEach { line -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, line) }
-            scope.launch {
-                told = runCatching { withContext(Dispatchers.IO) { file.writeText(csv.toString(), Charsets.UTF_8) } }
-                    .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
-            }
-        }, kind = ButtonKind.STANDARD, enabled = rows.isNotEmpty())
+    // A refused export asks a manager's PIN, and the file is written down in who did what (25 Oct 2026, the
+    // audit: "access denied" and nothing else); its note comes as a dialog, not in place of the page's line.
+    fun exportCsv() = Gates.need(Access.Permission.EXPORT) export@{
+        val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.export_excel), java.awt.FileDialog.SAVE)
+        startIn(dialog, "Documents")
+        dialog.file = "RoshanKhata_Dues_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
+        dialog.isVisible = true
+        val name = dialog.file ?: return@export
+        val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
+        // Figures plain in the file (no currency sign), so Excel adds them up.
+        val plain = rows.map { row -> listOf(row.name) + row.buckets.map { "%.2f".format(java.util.Locale.US, it) } + "%.2f".format(java.util.Locale.US, row.balance) }
+        val csv = StringBuilder("\ufeff")
+        (listOf(head) + plain).forEach { line -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, line) }
+        scope.launch {
+            told = runCatching {
+                withContext(Dispatchers.IO) {
+                    file.writeText(csv.toString(), Charsets.UTF_8)
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, Access.userName, detail = file.name) }
+                }
+            }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
+        }
+    }
+    FluentPage(word(W.aging_title), side, scroll = false, actions = {
+        FluentButton(word(W.export_excel), { exportCsv() }, kind = ButtonKind.STANDARD, icon = "ic_download", enabled = rows.isNotEmpty())
         FluentButton(word(W.ledger_pdf_button), {
             StatementPrint.show(
                 // With the totals under the names, as the page's cards show them (25 Oct 2026, the audit).
@@ -89,14 +96,18 @@ fun AgingPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
             )
         }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = rows.isNotEmpty())
     }) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FluentPill(word(W.i_have_to_get), owedToMe) { owedToMe = true }
             FluentPill(word(W.i_have_to_give), !owedToMe) { owedToMe = false }
+            Spacer(Modifier.weight(1f))
+            // The whole of it, which the four cards share out (25 Oct 2026, the audit: no total on the page).
+            Text(word(W.aging_total) + "  " + Format.money(totals.sum()), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
         }
         Text(word(W.aging_help), color = c.textMuted, fontSize = 12.sp)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             totals.forEachIndexed { i, t ->
-                FigureCard(bucketWords[i], Format.money(t), if (i == Aging.BUCKETS - 1 && t > 0.0) c.owedToMe else c.ink, Modifier.weight(1f), tint = agingColor(i).copy(alpha = 0.18f))
+                // Each card wears its bar's colour: the key to the bars below (the audit: none was given).
+                FigureCard(bucketWords[i], Format.money(t), if (i == Aging.BUCKETS - 1 && t > 0.0) c.owedToMe else c.ink, Modifier.weight(1f), swatch = agingColor(i))
             }
         }
         if (totals.sum() > 0.0) AgingBar(totals, Modifier.fillMaxWidth())
@@ -129,4 +140,5 @@ fun AgingPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
             }
         }
     }
+    told?.let { text -> TellDialog(word(W.export_excel), text, { told = null }) }
 }

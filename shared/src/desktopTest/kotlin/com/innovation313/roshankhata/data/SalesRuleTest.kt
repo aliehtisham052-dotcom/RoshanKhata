@@ -44,6 +44,24 @@ class SalesRuleTest {
         EntryItem(entryId = 0, itemName = name, quantity = qty, unit = unit, rate = rate, isBonus = bonus, productId = product)
 
     @Test
+    fun `Sale Insights' best sellers count the counter's walk-ins too`() = runBlocking {
+        // 25 Oct 2026, the audit: top products read the khata alone, so a counter shop's best seller was missing.
+        val aslam = dao.insertParty(Party(name = "Aslam"))
+        gave(aslam, 6_000.0, listOf(item("Urea", 2.0, 3_000.0)))
+        dao.postSale(Sale(timestamp = now, subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+            listOf(SaleItem(saleId = 0, itemName = "Rice", quantity = 4.0, unit = "bag", rate = 1_650.0)),
+            listOf(SalePayment(saleId = 0, method = PaymentMethod.CASH, amount = 6_600.0)))
+        // A customer's ticket is his khata entry's goods: counted there, once.
+        dao.postSale(Sale(partyId = aslam, customerName = "Aslam", timestamp = now, subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0),
+            listOf(SaleItem(saleId = 0, itemName = "Urea", quantity = 1.0, unit = "bag", rate = 3_000.0)), emptyList())
+        val top = dao.topProductsBetween(now - 60_000, now + 60_000, 5)
+        assertEquals(listOf("Rice", "Urea"), top.map { it.name })
+        assertEquals(4.0, top[0].qty, 0.001)
+        assertEquals("two khata lines, the ticket's among them", 3.0, top[1].qty, 0.001)
+        assertEquals(2, top[1].lines)
+    }
+
+    @Test
     fun `the sales report and Sale Insights count the same sales`() = runBlocking {
         val aslam = dao.insertParty(Party(name = "Aslam"))
         val bilal = dao.insertParty(Party(name = "Bilal"))

@@ -381,6 +381,27 @@ class ScreenProofTest {
             shoot("screen-laptop-sales-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.SALES) {
                 SalesReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0)
             }
+            // Marhala 4, part 7: the report and tool pages in the page frame.
+            shoot("screen-laptop-insights-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.INSIGHTS, waits = 3) {
+                InsightsPane(dao, reload = 0)
+            }
+            shoot("screen-laptop-cashflow-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.CASHFLOW, waits = 3) {
+                CashFlowPane(dao, reload = 0)
+            }
+            shoot("screen-laptop-followup-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.FOLLOWUP, waits = 2) {
+                FollowUpPane(dao, partiesNow, words, "Al-Noor Agri Store", ReminderStore.forBusiness(home, 1L))
+            }
+            shoot("screen-laptop-aging-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.AGING, waits = 3) {
+                AgingPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) {}
+            }
+            shoot("screen-laptop-zakat-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.ZAKAT, waits = 2) {
+                ZakatPane(dao)
+            }
+            CalcMemory.text = "12500+3700*2"
+            shoot("screen-laptop-calculator-short-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.CALC) {
+                CalculatorPane(onKhata = {})
+            }
+            CalcMemory.text = ""
             // Invoices (Marhala 4, part 5): the list narrow, the open invoice's head and actions in one block, its
             // pages in the height left — at the owner's shortest window, and in Urdu; the form beside its picture.
             val lines = listOf(
