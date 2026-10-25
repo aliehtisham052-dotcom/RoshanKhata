@@ -157,6 +157,7 @@ fun CounterSalePane(
     // Only the tickets and returns shown (23 Oct 2026, the review: every one ever made was read, again after
     // each ticket); Room re-reads them when sales or returns change, so no re-subscribe on tick.
     val recent by remember { dao.observeRecentSales(8) }.collectAsState(emptyList())
+    var allTickets by remember { mutableStateOf(false) }
 
     var query by remember { mutableStateOf("") }
     var told by remember { mutableStateOf<String?>(null) }
@@ -469,26 +470,31 @@ fun CounterSalePane(
             }
             // The day's tickets and returns in their own scrolling strip, so on a laptop they never
             // squeeze the ticket being rung up (21 Oct 2026, the critical review).
-            Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            RecentSales(recent, words,
-                onVoid = { s -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { by -> voidingBy = by; voiding = s } },
-                onReturn = { s ->
-                    allowed(com.innovation313.roshankhata.data.Access.Permission.RETURN, words.text(W.pos_return) + " " + s.saleNumber) { by ->
-                        returningBy = by
-                        scope.launch {
-                            val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
-                            val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
-                            returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
-                        }
-                    }
-                },
-                // The ticket as an A4 invoice for the customer's own books (21 Oct 2026).
-                onInvoice = { s ->
+            val voidSale = { s: SaleSummary -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void) + " " + s.saleNumber) { by -> voidingBy = by; voiding = s } }
+            val returnSale = { s: SaleSummary ->
+                allowed(com.innovation313.roshankhata.data.Access.Permission.RETURN, words.text(W.pos_return) + " " + s.saleNumber) { by ->
+                    returningBy = by
                     scope.launch {
-                        val id = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.SaleInvoice.of(dao, s.id, words) }
-                        if (id != null) onInvoice(id)
+                        val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
+                        val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
+                        returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
                     }
-                })
+                }
+            }
+            // The ticket as an A4 invoice for the customer's own books (21 Oct 2026).
+            val invoiceSale = { s: SaleSummary ->
+                scope.launch {
+                    val id = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.SaleInvoice.of(dao, s.id, words) }
+                    if (id != null) onInvoice(id)
+                }
+                Unit
+            }
+            // Every ticket of the last 60 days, searchable, as the phone's list reaches (25 Oct 2026, the
+            // audit: a return or void could reach only the last 8 tickets here).
+            if (allTickets) AllTicketsDialog(dao, words, onClose = { allTickets = false },
+                onVoid = { s -> allTickets = false; voidSale(s) }, onReturn = { s -> allTickets = false; returnSale(s) }, onInvoice = invoiceSale)
+            Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            RecentSales(recent, words, onVoid = voidSale, onReturn = returnSale, onInvoice = invoiceSale, onMore = { allTickets = true })
             RecentReturns(returns, words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
             }
         }
@@ -715,31 +721,86 @@ private fun methodWord(m: String): String = word(
     }
 )
 
-/** Today's last few tickets under the counter, with the void. */
+/** Today's last few tickets under the counter, with the void; [onMore] opens every ticket of 60 days. */
 @Composable
-private fun RecentSales(rows: List<SaleSummary>, words: Words, onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit, onInvoice: (SaleSummary) -> Unit) {
-    val c = LocalRoshanColors.current
+private fun RecentSales(
+    rows: List<SaleSummary>, words: Words, onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit, onInvoice: (SaleSummary) -> Unit,
+    onMore: (() -> Unit)? = null
+) {
     if (rows.isEmpty()) return
+    val more: (@Composable () -> Unit)? = onMore?.let { go -> @Composable { FluentButton(word(W.pos_all_tickets), go, kind = ButtonKind.SUBTLE) } }
     ListCard(Modifier.fillMaxWidth()) {
-        ListHead(word(W.pos_recent))
-        rows.forEachIndexed { i, s ->
-            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(Format.ltr(s.saleNumber), Modifier.width(96.dp), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                Text(s.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(Format.dateTime(s.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
-                Text(Format.money(s.grandTotal), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                when (s.status) {
-                    SaleStatus.VOID -> Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
-                    else -> Tag(word(W.pos_status_done), Look.accent, Look.accentTint)
-                }
-                if (s.status == SaleStatus.DONE) {
-                    IconAction("ic_tile_invoice", word(W.pos_make_invoice), { onInvoice(s) })
-                    IconAction("ic_arrow_got", word(W.pos_return), { onReturn(s) })
-                    IconAction("ic_close", word(W.pos_void), { onVoid(s) })
-                } else Spacer(Modifier.width(8.dp))
+        ListHead(word(W.pos_recent), endContent = more)
+        SaleRows(rows, onVoid, onReturn, onInvoice)
+    }
+}
+
+/**
+ * Every ticket of the last [SALE_DAYS] days, newest first, found by its
+ * number or the customer's name (25 Oct 2026, the audit: the counter's strip
+ * reached only the last 8, the phone's list 20 of 60 days). Read once when
+ * opened; a void or return closes it and goes through the counter's own gate.
+ */
+@Composable
+private fun AllTicketsDialog(
+    dao: com.innovation313.roshankhata.data.KhataDao, words: Words, onClose: () -> Unit,
+    onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit, onInvoice: (SaleSummary) -> Unit
+) {
+    val c = LocalRoshanColors.current
+    var all by remember { mutableStateOf<List<SaleSummary>?>(null) }
+    var query by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        val now = System.currentTimeMillis()
+        all = withContext(Dispatchers.IO) { runCatching { dao.salesBetween(now - SALE_DAYS * 24L * 60 * 60 * 1000, now + 60_000) }.getOrDefault(emptyList()) }
+    }
+    val shown = remember(all, query) { all?.let { ticketsMatching(it, query).take(SALE_ROWS) } }
+    val title = words.text(W.pos_all_tickets)
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(760.dp), height = fitH(620.dp))) {
+        DialogFrame(title, onClose = onClose, footer = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }) {
+            FluentField(query, { query = it }, Modifier.fillMaxWidth(), placeholder = word(W.pos_ticket_search), leadingIcon = "ic_search")
+            when {
+                shown == null -> Text("…", color = c.textMuted)
+                shown.isEmpty() -> Text(word(W.pos_tickets_none), color = c.textMuted, fontSize = 13.sp)
+                else -> ListCard(Modifier.fillMaxWidth()) { SaleRows(shown, onVoid, onReturn, onInvoice) }
             }
-            if (i < rows.lastIndex) Rule()
         }
+    }
+}
+
+/** The tickets whose number or customer holds [query] (any case, any digits); all of them for a blank one. */
+internal fun ticketsMatching(rows: List<SaleSummary>, query: String): List<SaleSummary> {
+    val q = com.innovation313.roshankhata.data.Digits.toLatin(query.trim()).lowercase()
+    if (q.isEmpty()) return rows
+    return rows.filter { s -> s.saleNumber.lowercase().contains(q) || (s.customerName?.lowercase()?.contains(q) == true) }
+}
+
+/** How far back the counter's ticket list reaches, as the phone's (CounterSaleActivity.showRecent). */
+internal const val SALE_DAYS = 60L
+
+/** At most this many rows on screen at once; the search reaches the rest. */
+private const val SALE_ROWS = 60
+
+/** Tickets as rows: number, customer, time, total, status, and a done ticket's invoice, return and void. */
+@Composable
+private fun SaleRows(rows: List<SaleSummary>, onVoid: (SaleSummary) -> Unit, onReturn: (SaleSummary) -> Unit, onInvoice: (SaleSummary) -> Unit) {
+    val c = LocalRoshanColors.current
+    rows.forEachIndexed { i, s ->
+        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(Format.ltr(s.saleNumber), Modifier.width(96.dp), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+            Text(s.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(Format.dateTime(s.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+            Text(Format.money(s.grandTotal), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+            when (s.status) {
+                SaleStatus.VOID -> Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
+                else -> Tag(word(W.pos_status_done), Look.accent, Look.accentTint)
+            }
+            if (s.status == SaleStatus.DONE) {
+                IconAction("ic_tile_invoice", word(W.pos_make_invoice), { onInvoice(s) })
+                IconAction("ic_arrow_got", word(W.pos_return), { onReturn(s) })
+                IconAction("ic_close", word(W.pos_void), { onVoid(s) })
+            } else Spacer(Modifier.width(8.dp))
+        }
+        if (i < rows.lastIndex) Rule()
     }
 }
 

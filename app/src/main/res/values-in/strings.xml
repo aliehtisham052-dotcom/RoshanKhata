@@ -3001,6 +3001,9 @@
     <string name="pos_today_count">%1$d penjualan hari ini</string>
     <string name="pos_today_total">Hari ini %1$s</string>
     <string name="pos_recent">Penjualan terbaru</string>
+    <string name="pos_all_tickets">Semua penjualan (60 hari terakhir)</string>
+    <string name="pos_ticket_search">Nomor nota atau nama pelanggan</string>
+    <string name="pos_tickets_none">Tidak ada penjualan yang cocok dalam 60 hari terakhir.</string>
     <string name="pos_err_no_lines">Tambahkan minimal satu barang</string>
     <string name="pos_err_quantity">Jumlah harus lebih dari nol</string>
     <string name="pos_err_rate">Harga tidak boleh negatif</string>

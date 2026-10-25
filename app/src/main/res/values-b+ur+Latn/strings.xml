@@ -2998,6 +2998,9 @@
     <string name="pos_today_count">Aaj %1$d sales</string>
     <string name="pos_today_total">Aaj %1$s</string>
     <string name="pos_recent">Haliya sales</string>
+    <string name="pos_all_tickets">Tamam sales (pichle 60 din)</string>
+    <string name="pos_ticket_search">Bill number ya gahak ka naam</string>
+    <string name="pos_tickets_none">Pichle 60 din mein aisi koi sale nahi mili.</string>
     <string name="pos_err_no_lines">Kam az kam ek item shamil karein</string>
     <string name="pos_err_quantity">Miqdar sifar se zyada honi chahiye</string>
     <string name="pos_err_rate">Rate manfi nahi ho sakta</string>

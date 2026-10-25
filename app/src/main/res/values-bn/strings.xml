@@ -3048,6 +3048,9 @@
     <string name="pos_today_count">আজ %1$d বিক্রি</string>
     <string name="pos_today_total">আজ %1$s</string>
     <string name="pos_recent">সাম্প্রতিক বিক্রি</string>
+    <string name="pos_all_tickets">সব বিক্রি (গত 60 দিন)</string>
+    <string name="pos_ticket_search">বিল নম্বর বা ক্রেতার নাম</string>
+    <string name="pos_tickets_none">গত 60 দিনে এমন কোনো বিক্রি পাওয়া যায়নি।</string>
     <string name="pos_err_no_lines">অন্তত একটি আইটেম যোগ করুন</string>
     <string name="pos_err_quantity">পরিমাণ শূন্যের বেশি হতে হবে</string>
     <string name="pos_err_rate">দর ঋণাত্মক হতে পারে না</string>

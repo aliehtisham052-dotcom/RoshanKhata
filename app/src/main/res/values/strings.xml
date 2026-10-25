@@ -3212,6 +3212,9 @@
     <string name="pos_today_count">%1$d sales today</string>
     <string name="pos_today_total">Today %1$s</string>
     <string name="pos_recent">Recent sales</string>
+    <string name="pos_all_tickets">All sales (last 60 days)</string>
+    <string name="pos_ticket_search">Bill number or customer</string>
+    <string name="pos_tickets_none">No sale in the last 60 days matches.</string>
     <string name="pos_err_no_lines">Add at least one item</string>
     <string name="pos_err_quantity">Quantity must be above zero</string>
     <string name="pos_err_rate">Rate cannot be negative</string>

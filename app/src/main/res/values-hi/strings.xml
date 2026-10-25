@@ -3048,6 +3048,9 @@
     <string name="pos_today_count">आज %1$d बिक्री</string>
     <string name="pos_today_total">आज %1$s</string>
     <string name="pos_recent">हाल की बिक्री</string>
+    <string name="pos_all_tickets">सभी बिक्री (पिछले 60 दिन)</string>
+    <string name="pos_ticket_search">बिल नंबर या ग्राहक का नाम</string>
+    <string name="pos_tickets_none">पिछले 60 दिनों में ऐसी कोई बिक्री नहीं मिली।</string>
     <string name="pos_err_no_lines">कम से कम एक आइटम जोड़ें</string>
     <string name="pos_err_quantity">मात्रा शून्य से अधिक होनी चाहिए</string>
     <string name="pos_err_rate">दर ऋणात्मक नहीं हो सकती</string>
