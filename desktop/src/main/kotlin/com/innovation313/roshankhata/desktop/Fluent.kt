@@ -60,8 +60,9 @@ import com.innovation313.roshankhata.ui.Format
 enum class ButtonKind { ACCENT, STANDARD, SUBTLE, DANGER }
 
 /**
- * A Fluent button: 32 tall, 4 dp corners, bold 14 sp words, an optional glyph
- * ([icon], one of the phone's white glyphs) before them.
+ * A button: 32 tall (40 [tall]), the phone's 8 dp corners, bold 14 sp words,
+ * an optional glyph ([icon], one of the phone's white glyphs) before them. The
+ * accent one is the phone's deep green with a gold edge.
  */
 @Composable
 fun FluentButton(
@@ -90,7 +91,14 @@ fun FluentButton(
         modifier.heightIn(min = if (tall) 40.dp else 32.dp)
             .clip(Look.ctl)
             .background(eased(if (enabled) fill else Look.subtle))
-            .then(if (kind == ButtonKind.STANDARD) Modifier.border(1.dp, Look.edge, Look.ctl) else Modifier)
+            // The phone's primary button: deep green with its gold edge (the owner's mockup, 25 Oct 2026).
+            .then(
+                when {
+                    kind == ButtonKind.STANDARD -> Modifier.border(1.dp, Look.edge, Look.ctl)
+                    kind == ButtonKind.ACCENT && enabled -> Modifier.border(1.5.dp, Look.goldEdge, Look.ctl)
+                    else -> Modifier
+                }
+            )
             .press(Look.ctl, wash = wash, enabled = enabled, onClick = onClick)
             .padding(start = if (icon != null) 10.dp else 14.dp, end = 14.dp),
         verticalAlignment = Alignment.CenterVertically,

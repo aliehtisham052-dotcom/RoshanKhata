@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -110,64 +111,69 @@ fun isDark(): Boolean = LocalRoshanColors.current.pageBg == RoshanPalette.dark.p
  */
 object Look {
     /** Dividers and card edges: quiet on purpose, they only group (no contrast rule for decoration). */
-    val line: Color @Composable get() = if (isDark()) Color(0xFF3A3A3A) else Color(0xFFE6E6E6)
+    val line: Color @Composable get() = if (isDark()) Color(0xFF2E3431) else Color(0xFFECEAE4)
     /**
      * The edge of something to click (a pill, an outlined button): at least 3:1 on the
      * page, the card and the rail (WCAG 1.4.11; 1.28:1 before 1.8.3). LookContrastTest holds it.
-     * Fluent's own control edge is lighter; this one keeps the rule.
      */
     val edge: Color @Composable get() = if (isDark()) LookPalette.EDGE_DARK else LookPalette.EDGE_LIGHT
-    /** A chosen pill's fill and its words: brand green by day; by night the light green, 8.9:1 on the card. */
+    /** A chosen pill's fill and its words: the phone's deep green by day; by night the light green, 8.9:1 on the card. */
     val pickedFill: Color @Composable get() = if (isDark()) LookPalette.PICKED_DARK else LookPalette.PICKED_LIGHT
     val onPicked: Color @Composable get() = if (isDark()) LookPalette.ON_PICKED_DARK else Color.White
     /** What a hovered control is washed with (Motion.kt's [press]). */
     val hover: Color @Composable get() = if (isDark()) Color.White.copy(alpha = 0.08f) else Color.Black.copy(alpha = 0.05f)
     /** The open section and the chosen row (brand_green_soft, day and night). */
-    val chosen: Color @Composable get() = if (isDark()) Color(0xFF1E3A2C) else Color(0xFFE6F4EC)
+    val chosen: Color @Composable get() = if (isDark()) Color(0xFF1E3A2C) else Color(0xFFE6F0EA)
     val rail: Color @Composable get() = if (isDark()) LookPalette.RAIL_DARK else LookPalette.RAIL_LIGHT
+    /** The rail's edge against the page (the mockup's pale green line). */
+    val railEdge: Color @Composable get() = if (isDark()) Color(0xFF26302A) else Color(0xFFD3E1D7)
+    /** The rail's group names: a dark olive by day, a pale green by night (6.5:1 and 9:1 on the rail). */
+    val groupText: Color @Composable get() = if (isDark()) Color(0xFF9CC5A8) else Color(0xFF3F6032)
     /** The Net balance card: brand_green_dark with the gold label, as on the phone. */
     val hero = Color(0xFF134228)
     val heroLabel = Color(0xFFE9C46A)
     val gold = Color(0xFFD4A02A)
+    /** The phone's gold edge round its chosen and primary controls (the approved mockup of 25 Oct 2026). */
+    val goldEdge = Color(0xFFF3C552)
 
-    // ---- Fluent surfaces (1.10.0, the Figma mockups of 20 Oct: Windows 11's layering) ----
-    /** The page behind everything (Mica): a shade darker than the cards. */
-    val base: Color @Composable get() = if (isDark()) Color(0xFF202020) else Color(0xFFF3F3F3)
+    // ---- Surfaces: the phone's own (25 Oct 2026, the owner's chosen mockup; RoshanPalette's page and card) ----
+    /** The page behind everything: the phone's warm off-white by day. */
+    val base: Color @Composable get() = if (isDark()) Color(0xFF121513) else Color(0xFFF7F6F2)
     /** A card or dialog (layer). */
-    val layer: Color @Composable get() = if (isDark()) Color(0xFF2B2B2B) else Color(0xFFFFFFFF)
-    /** The content area behind the cards (layer-alt): between base and layer. */
-    val layerAlt: Color @Composable get() = if (isDark()) Color(0xFF262626) else Color(0xFFFAFAFA)
-    /** A quiet fill: an unchosen pill, a table's header row, the selected rail item. */
-    val subtle: Color @Composable get() = if (isDark()) Color(0xFF353535) else Color(0xFFEDEDED)
+    val layer: Color @Composable get() = if (isDark()) Color(0xFF1E2220) else Color(0xFFFFFFFF)
+    /** The content area behind the cards: the page colour, as on the phone. */
+    val layerAlt: Color @Composable get() = if (isDark()) Color(0xFF171A18) else Color(0xFFF7F6F2)
+    /** A quiet fill: an unchosen pill, a table's header row. */
+    val subtle: Color @Composable get() = if (isDark()) Color(0xFF2A2F2C) else Color(0xFFF1EFE9)
     /** A text box's fill. */
-    val control: Color @Composable get() = if (isDark()) Color(0xFF2E2E2E) else Color(0xFFFFFFFF)
+    val control: Color @Composable get() = if (isDark()) Color(0xFF232825) else Color(0xFFFFFFFF)
     /** A card's 1 px edge (decoration, under the contrast rule's floor on purpose). */
-    val strokeCard: Color @Composable get() = if (isDark()) Color(0xFF1A1A1A) else Color(0xFFE3E3E3)
-    /** The accent: brand green by day, the light green by night (RoshanPalette's brandGreen / brandGreenText). */
-    val accent: Color @Composable get() = if (isDark()) Color(0xFF5FD9A3) else Color(0xFF1A7F50)
-    val onAccent: Color @Composable get() = if (isDark()) Color(0xFF0B2A1C) else Color.White
+    val strokeCard: Color @Composable get() = if (isDark()) Color(0xFF2E3431) else Color(0xFFE5E3DC)
+    /** The accent: the phone's deep green by day, the light green by night. */
+    val accent: Color @Composable get() = if (isDark()) Color(0xFF7FD1A3) else Color(0xFF1B5E3A)
+    val onAccent: Color @Composable get() = if (isDark()) Color(0xFF0B2A1A) else Color.White
     /** Tints behind an icon or a figure: green, red (will get), blue (will give), amber (a warning). */
-    val accentTint: Color @Composable get() = if (isDark()) Color(0xFF1E3A2C) else Color(0xFFE6F4EC)
-    val getTint: Color @Composable get() = if (isDark()) Color(0xFF3A2824) else Color(0xFFFCEBEE)
-    val giveTint: Color @Composable get() = if (isDark()) Color(0xFF1A3238) else Color(0xFFE8F1FA)
-    val warnTint: Color @Composable get() = if (isDark()) Color(0xFF3A3222) else Color(0xFFFBF3DE)
+    val accentTint: Color @Composable get() = if (isDark()) Color(0xFF1E3A2C) else Color(0xFFE6F0EA)
+    val getTint: Color @Composable get() = if (isDark()) Color(0xFF3A2824) else Color(0xFFFBEAE6)
+    val giveTint: Color @Composable get() = if (isDark()) Color(0xFF1A3238) else Color(0xFFE8EDF2)
+    val warnTint: Color @Composable get() = if (isDark()) Color(0xFF3A3222) else Color(0xFFF3EEDD)
     /** The blue of "you will give" on the mockups (RoshanPalette's iOwe is a teal; the figures keep that, the tints use this). */
     val give: Color @Composable get() = if (isDark()) Color(0xFF7CC9D8) else Color(0xFF0F6CBD)
-    val warn: Color @Composable get() = if (isDark()) Color(0xFFF2C66D) else Color(0xFF9A6B00)
-    /** Fluent's corners: 4 for a control, 8 for a card or dialog. */
-    val ctl = RoundedCornerShape(4.dp)
-    val card = RoundedCornerShape(8.dp)
+    val warn: Color @Composable get() = if (isDark()) Color(0xFFF2C66D) else Color(0xFF7A5C10)
+    /** The phone's corners: 8 for a control, 12 for a card or dialog. */
+    val ctl = RoundedCornerShape(8.dp)
+    val card = RoundedCornerShape(12.dp)
 }
 
 /** Look's measured colours as plain values, for LookContrastTest. */
 object LookPalette {
     val EDGE_LIGHT = Color(0xFF858585)
     val EDGE_DARK = Color(0xFF8C8C8C)
-    val PICKED_LIGHT = Color(0xFF1A7F50)
+    val PICKED_LIGHT = Color(0xFF1B5E3A)
     val PICKED_DARK = Color(0xFF7FD1A3)
     val ON_PICKED_DARK = Color(0xFF0B2A1A)
-    val RAIL_LIGHT = Color(0xFFF3F3F3)
-    val RAIL_DARK = Color(0xFF202020)
+    val RAIL_LIGHT = Color(0xFFF2F4EF)
+    val RAIL_DARK = Color(0xFF161917)
 }
 
 /** The phone's tile picture on its own tint, [size] across. */
@@ -194,8 +200,12 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
     val c = LocalRoshanColors.current
     var moreOpen by remember { mutableStateOf(false) }
     // Scrolls: twenty-eight sections outgrow a 768-row laptop at 125% display scale.
+    // The phone's rail (the owner's mockup, 25 Oct 2026): its own pale green ground with an edge, a scrollbar
+    // that says there is more below, the chosen row deep green with a gold edge.
+    val railScroll = rememberScrollState()
+    Box(modifier.width(212.dp).fillMaxHeight().background(Look.rail)) {
     Column(
-        modifier.width(224.dp).fillMaxHeight().background(Look.base).verticalScroll(rememberScrollState())
+        Modifier.fillMaxSize().verticalScroll(railScroll)
             .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Group.entries.forEach { g ->
@@ -220,11 +230,17 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
                 else -> Text(
                     word(g.word).uppercase(),
                     Modifier.padding(start = 12.dp, top = 12.dp, bottom = 4.dp),
-                    color = c.textMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp
+                    color = Look.groupText, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp
                 )
             }
             inGroup.forEach { s -> RailRow(s, s == current, badges[s] ?: 0) { onPick(s) } }
         }
+    }
+    androidx.compose.foundation.VerticalScrollbar(
+        androidx.compose.foundation.rememberScrollbarAdapter(railScroll),
+        Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(end = 1.dp)
+    )
+    Box(Modifier.align(Alignment.CenterEnd).width(1.dp).fillMaxHeight().background(Look.railEdge))
     }
 }
 
@@ -235,15 +251,13 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
         Modifier.fillMaxWidth()
             .padding(vertical = 1.dp)
             .clip(Look.ctl)
-            .background(eased(if (on) Look.subtle else Color.Transparent))
-            .press(Look.ctl, onClick = onClick)
+            .background(eased(if (on) Look.pickedFill else Color.Transparent))
+            .then(if (on) Modifier.border(1.5.dp, Look.goldEdge, Look.ctl) else Modifier)
+            .press(Look.ctl, wash = if (on) Color.Black.copy(alpha = 0.12f) else Look.hover, onClick = onClick)
             .height(36.dp)
-            .padding(end = 10.dp),
+            .padding(start = 10.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // The selection bar: 3 x 16 dp of accent on the start side, as every Windows 11 app.
-        Box(Modifier.width(3.dp).height(16.dp).background(eased(if (on) Look.accent else Color.Transparent), RoundedCornerShape(2.dp)))
-        Spacer(Modifier.width(9.dp))
         // The phone's tile picture, small, on its own tint (a tinted silhouette made a blob: the
         // tile vectors carry their rounded ground, so one colour fills the whole square).
         if (s == Section.HOME) {
@@ -255,7 +269,7 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
         Text(
             word(s.word),
             Modifier.weight(1f),
-            color = c.ink,
+            color = if (on) Look.onPicked else c.ink,
             fontSize = 14.sp,
             fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 1,
@@ -264,7 +278,7 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
         if (badge > 0) {
             Text(
                 if (badge > 9999) "9999+" else badge.toString(),
-                color = if (s == Section.FOLLOWUP) c.owedToMe else c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold
+                color = if (on) Look.onPicked else if (s == Section.FOLLOWUP) c.owedToMe else c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold
             )
         }
     }
