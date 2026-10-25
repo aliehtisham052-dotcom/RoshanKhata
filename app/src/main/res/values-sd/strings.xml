@@ -1244,6 +1244,7 @@
     </plurals>
     <string name="customer_qr">گراهڪ جو QR</string>
     <string name="customer_qr_hint">روشن کاتي ۾ اسڪين ڪريو ته هي کاتو کلي ويندو. ڪوڊ ۾ نه نالو آهي، نه نمبر، نه حساب.</string>
+    <string name="customer_qr_save_picture">QR تصوير طور محفوظ ڪريو</string>
     <string name="scan_customer_qr">گراهڪ جو ڪارڊ اسڪين ڪريو</string>
     <string name="qr_not_ours">هي ڪوڊ روشن کاتي جي گراهڪ جو ڪارڊ ناهي.</string>
     <string name="qr_no_customer">هن ڪارڊ جو ڪو گراهڪ هن کاتي ۾ نه مليو.</string>

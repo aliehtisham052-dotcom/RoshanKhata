@@ -1256,6 +1256,7 @@
     </plurals>
     <string name="customer_qr">ग्राहक QR</string>
     <string name="customer_qr_hint">यह खाता खोलने के लिए इसे रोशन खाता में स्कैन करें। कोड में कोई नाम, नंबर या बैलेंस नहीं होता।</string>
+    <string name="customer_qr_save_picture">QR को तस्वीर के रूप में सहेजें</string>
     <string name="scan_customer_qr">ग्राहक कार्ड स्कैन करें</string>
     <string name="qr_not_ours">यह कोड रोशन खाता का ग्राहक कार्ड नहीं है।</string>
     <string name="qr_no_customer">यहाँ कोई ग्राहक इस कार्ड से नहीं मिलता।</string>

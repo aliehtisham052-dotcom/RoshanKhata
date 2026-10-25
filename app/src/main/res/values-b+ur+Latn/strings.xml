@@ -1216,6 +1216,7 @@
     </plurals>
     <string name="customer_qr">Gaahak ka QR</string>
     <string name="customer_qr_hint">Roshan Khata mein scan karein to yeh khata khul jayega. Code mein na naam hai, na number, na hisaab.</string>
+    <string name="customer_qr_save_picture">QR tasveer ke taur par mehfooz karein</string>
     <string name="scan_customer_qr">Gaahak ka card scan karein</string>
     <string name="qr_not_ours">Yeh code Roshan Khata ke gaahak ka card nahi.</string>
     <string name="qr_no_customer">Is card ka koi gaahak is khatay mein nahi mila.</string>
