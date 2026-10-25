@@ -369,6 +369,8 @@
     <string name="cheque_cleared">وصول‌شده</string>
     <string name="cheque_bounced">برگشتی</string>
     <string name="cheque_cancelled">باطل‌شده</string>
+    <string name="cheque_none_cleared">هنوز چکی وصول نشده است</string>
+    <string name="cheque_none_bounced">هیچ چک برگشتی یا باطل‌شده‌ای نیست</string>
 
     <string name="due_today">سررسید امروز</string>
     <plurals name="due_in_days">

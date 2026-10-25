@@ -471,9 +471,9 @@ private fun AccountChip(text: String, ink: Color, tint: Color, icon: String?, on
     }
 }
 
-/** I gave / I got: the way's colour, its arrow, its words and its key. */
+/** I gave / I got (and the cashbook's Money in / out): the way's colour, its arrow, its words and its key, if any. */
 @Composable
-private fun WayButton(text: String, key: String, icon: String, fill: Color, modifier: Modifier, onClick: () -> Unit) {
+internal fun WayButton(text: String, key: String?, icon: String, fill: Color, modifier: Modifier, onClick: () -> Unit) {
     Row(
         modifier.height(40.dp).clip(RoundedCornerShape(12.dp)).background(fill)
             .press(RoundedCornerShape(12.dp), wash = Color.White.copy(alpha = 0.12f), onClick = onClick).padding(horizontal = 10.dp),
@@ -482,9 +482,11 @@ private fun WayButton(text: String, key: String, icon: String, fill: Color, modi
         Glyph(icon, Color.White, 16)
         Spacer(Modifier.width(8.dp))
         Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
-        Spacer(Modifier.width(8.dp))
-        Text(key, Modifier.border(1.dp, Color.White.copy(alpha = 0.45f), RoundedCornerShape(5.dp)).padding(horizontal = 5.dp),
-            color = Color.White.copy(alpha = 0.85f), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+        if (key != null) {
+            Spacer(Modifier.width(8.dp))
+            Text(key, Modifier.border(1.dp, Color.White.copy(alpha = 0.45f), RoundedCornerShape(5.dp)).padding(horizontal = 5.dp),
+                color = Color.White.copy(alpha = 0.85f), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+        }
     }
 }
 

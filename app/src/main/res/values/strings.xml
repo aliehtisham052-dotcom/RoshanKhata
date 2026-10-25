@@ -376,6 +376,8 @@
     <string name="cheque_cleared">Cleared</string>
     <string name="cheque_bounced">Bounced</string>
     <string name="cheque_cancelled">Cancelled</string>
+    <string name="cheque_none_cleared">No cleared cheques yet</string>
+    <string name="cheque_none_bounced">No bounced or cancelled cheques</string>
 
     <string name="due_today">Due today</string>
     <plurals name="due_in_days">

@@ -82,31 +82,49 @@ fun CashbookPane(dao: KhataDao) {
     if (closing) DayCloseDialog(dao) { closing = false }
     var reporting by remember { mutableStateOf(false) }
     if (reporting) ZReportDialog(dao) { reporting = false }
+    // The day report is a big-shop tool, as on the counter (25 Oct 2026, the audit: it showed with the tools off).
+    var advanced by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        advanced = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookSettings.counterAdvanced(dao) }.getOrDefault(false) }
+    }
 
     val last by remember { dao.observeLastDayClose() }.collectAsState(null)
+    // What should be in the drawer, by Close the day's rule — Home's "Cash in hand" and the day close's own
+    // figure (25 Oct 2026, the audit: the cashbook's net, in every method, was a third "cash" that agreed with
+    // neither). Read again when the cashbook or the last count changes.
+    var drawer by remember { mutableStateOf<Double?>(null) }
+    LaunchedEffect(income, expense, last, lineCount) {
+        drawer = withContext(Dispatchers.IO) { runCatching { drawerByTheBooks(dao).first }.getOrNull() }
+    }
     FluentPage(
         word(W.cashbook),
         last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.cashbook_subtitle),
         scroll = false,
         actions = {
             // The day's profit and the till's difference are the shop's figures (23 Oct 2026, the review).
-            FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.STANDARD, icon = "ic_print")
+            if (advanced) FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.STANDARD, icon = "ic_print")
             FluentButton(word(W.dayclose_button), { closing = true }, icon = "ic_check_plain")
-            FluentButton(word(W.cash_expense), { adding = false }, icon = "ic_arrow_gave", kind = ButtonKind.DANGER)
-            FluentButton(word(W.cash_income), { adding = true }, icon = "ic_arrow_got", kind = ButtonKind.ACCENT)
         }
     ) {
         val net = income - expense
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            FigureCard(word(W.cash_in), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
-            FigureCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
+        // The cashbook's own sums say "money" (every method); the drawer's figure is the one that says cash.
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FigureCard(word(W.cash_income), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
+            FigureCard(word(W.cash_expense), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
             // With its sign (21 Oct 2026): more out than in printed as a plain, positive figure.
             FigureCard(word(W.cash_net), Format.signedTotal(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_tile_cashbook", tint = Look.subtle)
+            FigureCard(
+                word(W.z_expected), drawer?.let { Format.signedIfNegative(it) } ?: "…", c.ink, Modifier.weight(1f),
+                under = if (last == null) word(W.dayclose_never) else null, icon = "ic_check_plain", tint = Look.warnTint
+            )
+        }
+        // Money in and out as the phone's two coloured buttons (Marhala 4: in the head they pushed its title off).
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            WayButton(word(W.cash_income), null, "ic_arrow_got", c.brandGreen, Modifier.weight(1f)) { adding = true }
+            WayButton(word(W.cash_expense), null, "ic_arrow_gave", c.gaveFill, Modifier.weight(1f)) { adding = false }
         }
         if (entries.isEmpty()) {
-            EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f)) {
-                FluentButton(word(W.cash_income), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
-            }
+            EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f))
         } else ListCard(Modifier.weight(1f)) {
             ListHead(word(W.cashbook), lineCount.toString())
             TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32), endAligned = setOf(2))
@@ -166,33 +184,23 @@ fun CashbookPane(dao: KhataDao) {
         }
     }
     deleting?.let { e ->
-        AlertDialog(
-            onDismissRequest = { deleting = null },
-            title = { Text(word(W.delete_cash_entry)) },
-            text = { Text(word(W.delete_cash_confirm)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        deleting = null
-                        scope.launch {
-                            // Checked again inside the delete's own transaction, with its audit row.
-                            val done = withContext(Dispatchers.IO) { runCatching { dao.softDeleteOwnCashEntry(e.id, auditAmount(e.amount)) }.getOrDefault(false) }
-                            if (!done) ownedBy = "sale"
-                        }
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                ) { Text(word(W.delete)) }
+        AskDialog(
+            word(W.delete_cash_entry), word(W.delete_cash_confirm), word(W.delete),
+            subtitle = e.category + " · " + (if (e.isIncome) "+ " else "− ") + Format.money(e.amount),
+            danger = true,
+            onConfirm = {
+                deleting = null
+                scope.launch {
+                    // Checked again inside the delete's own transaction, with its audit row.
+                    val done = withContext(Dispatchers.IO) { runCatching { dao.softDeleteOwnCashEntry(e.id, auditAmount(e.amount)) }.getOrDefault(false) }
+                    if (!done) ownedBy = "sale"
+                }
             },
-            dismissButton = { TextButton({ deleting = null }) { Text(word(W.cancel)) } }
+            onDismiss = { deleting = null }
         )
     }
     ownedBy?.let { owner ->
-        AlertDialog(
-            onDismissRequest = { ownedBy = null },
-            title = { Text(word(W.entry_linked_title)) },
-            text = { Text(word(if (owner == "return") W.entry_linked_return else W.entry_linked_sale)) },
-            confirmButton = { TextButton({ ownedBy = null }) { Text(word(W.ok)) } }
-        )
+        TellDialog(word(W.entry_linked_title), word(if (owner == "return") W.entry_linked_return else W.entry_linked_sale), onClose = { ownedBy = null })
     }
 }
 
@@ -282,15 +290,52 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
         lastCounted?.let { opening = Calc.trim(it) }
         figures = fig
     }
-    val f = figures ?: return
-    val open = Calc.evalPad(opening) ?: 0.0
-    val expected = com.innovation313.roshankhata.data.DayCloseMath.expected(open, f.cbIn + f.kIn, f.cbOut + f.kOut)
-    val count = Calc.evalPad(counted)
-    AlertDialog(
-        onDismissRequest = onClose,
-        title = { Text(word(W.dayclose_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    // The app's own dialog (Marhala 4): one title and ✕, the figures, and Save waited for — the save ran in the
+    // dialog's own scope and was cancelled as the dialog closed, so a count could be lost (25 Oct 2026, the audit).
+    val words = com.innovation313.roshankhata.words.LocalWords.current
+    var saving by remember { mutableStateOf(false) }
+    val close = { if (!saving) onClose() }
+    AppDialog(onCloseRequest = close, title = word(W.dayclose_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
+        val f = figures
+        if (f == null) {
+            DialogFrame(word(W.dayclose_title), onClose = close, footer = { FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD) }) {
+                Text("…", color = c.textMuted)
+            }
+        } else {
+            val open = Calc.evalPad(opening) ?: 0.0
+            val expected = com.innovation313.roshankhata.data.DayCloseMath.expected(open, f.cbIn + f.kIn, f.cbOut + f.kOut)
+            val count = Calc.evalPad(counted)
+            DialogFrame(
+                word(W.dayclose_title),
+                onClose = close,
+                footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+                footer = {
+                    FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD, enabled = !saving)
+                    FluentButton(word(W.save), {
+                        val n = count ?: run { problem = needCount; return@FluentButton }
+                        // A drawer that does not match the books needs its reason written down (POS Phase 4).
+                        if (kotlin.math.abs(com.innovation313.roshankhata.data.DayCloseMath.difference(n, expected)) >= 0.005 && note.isBlank()) {
+                            problem = needReason; return@FluentButton
+                        }
+                        val row = com.innovation313.roshankhata.data.DayClose(
+                            // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
+                            day = com.innovation313.roshankhata.data.DayCloseMath.businessDayOf(f.now),
+                            opening = open,
+                            cashIn = com.innovation313.roshankhata.data.LineMath.round(f.cbIn + f.kIn),
+                            cashOut = com.innovation313.roshankhata.data.LineMath.round(f.cbOut + f.kOut),
+                            counted = n,
+                            note = note.trim().ifEmpty { null },
+                            closedAt = f.now
+                        )
+                        saving = true
+                        scope.launch {
+                            val saved = withContext(Dispatchers.IO) { runCatching { dao.saveDayClose(row) } }
+                            saving = false
+                            saved.onSuccess { onClose() }.onFailure { problem = failText(words, it) }
+                        }
+                    }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = !saving)
+                }
+            ) {
                 FluentField(opening, { opening = it }, Modifier.fillMaxWidth(), label = word(W.dayclose_opening), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected)),
                     color = c.inkSoft, fontSize = 13.sp)
@@ -307,33 +352,10 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                         color = if (com.innovation313.roshankhata.data.Money.isPositive(-d)) c.owedToMe else c.iOwe, fontWeight = FontWeight.Bold
                     )
                 }
-                FluentField(note, { note = it }, Modifier.fillMaxWidth(), placeholder = word(W.dayclose_note_hint))
-                problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
+                FluentField(note, { note = it; problem = null }, Modifier.fillMaxWidth(), placeholder = word(W.dayclose_note_hint))
             }
-        },
-        confirmButton = {
-            TextButton({
-                val n = count ?: run { problem = needCount; return@TextButton }
-                // A drawer that does not match the books needs its reason written down (POS Phase 4).
-                if (kotlin.math.abs(com.innovation313.roshankhata.data.DayCloseMath.difference(n, expected)) >= 0.005 && note.isBlank()) {
-                    problem = needReason; return@TextButton
-                }
-                val close = com.innovation313.roshankhata.data.DayClose(
-                    // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
-                    day = com.innovation313.roshankhata.data.DayCloseMath.businessDayOf(f.now),
-                    opening = open,
-                    cashIn = com.innovation313.roshankhata.data.LineMath.round(f.cbIn + f.kIn),
-                    cashOut = com.innovation313.roshankhata.data.LineMath.round(f.cbOut + f.kOut),
-                    counted = n,
-                    note = note.trim().ifEmpty { null },
-                    closedAt = f.now
-                )
-                scope.launch { withContext(Dispatchers.IO) { dao.saveDayClose(close) } }
-                onClose()
-            }) { Text(word(W.save)) }
-        },
-        dismissButton = { FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD) }
-    )
+        }
+    }
 }
 
 private class DayFigures(val now: Long, val cbIn: Double, val cbOut: Double, val kIn: Double, val kOut: Double)

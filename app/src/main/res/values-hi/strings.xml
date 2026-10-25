@@ -376,6 +376,8 @@
     <string name="cheque_cleared">क्लियर</string>
     <string name="cheque_bounced">बाउंस</string>
     <string name="cheque_cancelled">रद्द</string>
+    <string name="cheque_none_cleared">अभी कोई चेक क्लियर नहीं हुआ</string>
+    <string name="cheque_none_bounced">कोई चेक बाउंस या रद्द नहीं हुआ</string>
 
     <string name="due_today">आज की तारीख़ का</string>
     <plurals name="due_in_days">

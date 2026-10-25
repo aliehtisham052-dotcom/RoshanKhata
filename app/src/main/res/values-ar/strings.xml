@@ -390,6 +390,8 @@
     <string name="cheque_cleared">مصروف</string>
     <string name="cheque_bounced">مرتجع</string>
     <string name="cheque_cancelled">ملغى</string>
+    <string name="cheque_none_cleared">لا توجد شيكات مصروفة بعد</string>
+    <string name="cheque_none_bounced">لا توجد شيكات مرتجعة أو ملغاة</string>
 
     <string name="due_today">يستحق اليوم</string>
     <plurals name="due_in_days">

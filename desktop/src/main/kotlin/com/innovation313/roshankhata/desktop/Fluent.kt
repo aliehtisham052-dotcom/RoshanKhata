@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.data.DateWords
@@ -289,7 +290,7 @@ fun FluentField(
 
 /** The initials of a name on a tinted disc, [size] across; [index] picks one of four tints. */
 @Composable
-fun Avatar(name: String, size: Int = 36, index: Int = 0, rounded: Boolean = false) {
+fun Avatar(name: String, size: Int = 36, index: Int = 0, rounded: Boolean = false, id: Long? = null) {
     val c = LocalRoshanColors.current
     val tints = listOf(
         Look.accentTint to Look.accent,
@@ -297,7 +298,9 @@ fun Avatar(name: String, size: Int = 36, index: Int = 0, rounded: Boolean = fals
         Look.getTint to c.owedToMe,
         Look.warnTint to Look.warn
     )
-    val (fill, ink) = tints[((index % tints.size) + tints.size) % tints.size]
+    // [id]: the party's own colours, the Khata list's (Marhala 4, the audit: by the row's place they moved as a
+    // list was sorted or filtered); [index] only where there is no party.
+    val (fill, ink) = if (id != null) Look.avatar(id) else tints[((index % tints.size) + tints.size) % tints.size]
     // [rounded]: the phone's soft square (the owner's mockup of 25 Oct 2026) instead of a circle.
     Box(Modifier.size(size.dp).background(fill, if (rounded) RoundedCornerShape((size * 0.3f).dp) else CircleShape), contentAlignment = Alignment.Center) {
         Text(Format.initials(name), color = ink, fontSize = (size * 0.36).sp, fontWeight = FontWeight.SemiBold)
@@ -721,3 +724,38 @@ fun fitW(w: androidx.compose.ui.unit.Dp): androidx.compose.ui.unit.Dp =
 private fun usableScreen(): java.awt.Rectangle =
     runCatching { java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds }
         .getOrDefault(java.awt.Rectangle(0, 0, 1366, 728))
+
+/**
+ * A question in the app's own dialog (Marhala 4, the audit: 58 questions were Material's, some with no title):
+ * the dialog's one title and ✕, the question, Cancel and the one answer — red when it removes or undoes.
+ */
+@Composable
+fun AskDialog(
+    title: String,
+    text: String,
+    confirm: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    subtitle: String? = null,
+    danger: Boolean = false,
+    height: Int = 280
+) {
+    AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(height.dp))) {
+        DialogFrame(title, subtitle = subtitle, onClose = onDismiss, footer = {
+            FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD)
+            FluentButton(confirm, onConfirm, kind = if (danger) ButtonKind.DANGER else ButtonKind.ACCENT)
+        }) {
+            Text(text, color = LocalRoshanColors.current.ink, fontSize = 14.sp)
+        }
+    }
+}
+
+/** Something said in the app's own dialog, with one OK (Marhala 4: the Material ones had no frame of the app's). */
+@Composable
+fun TellDialog(title: String, text: String, onClose: () -> Unit, height: Int = 260) {
+    AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(height.dp))) {
+        DialogFrame(title, onClose = onClose, footer = { FluentButton(word(W.ok), onClose, kind = ButtonKind.ACCENT) }) {
+            Text(text, color = LocalRoshanColors.current.ink, fontSize = 14.sp)
+        }
+    }
+}

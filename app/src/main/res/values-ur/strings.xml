@@ -358,6 +358,8 @@
     <string name="cheque_cleared">کلیئر</string>
     <string name="cheque_bounced">باؤنس</string>
     <string name="cheque_cancelled">منسوخ</string>
+    <string name="cheque_none_cleared">ابھی کوئی چیک کلیئر نہیں ہوا</string>
+    <string name="cheque_none_bounced">کوئی چیک باؤنس یا منسوخ نہیں ہوا</string>
 
     <string name="due_today">آج واجب</string>
     <plurals name="due_in_days">

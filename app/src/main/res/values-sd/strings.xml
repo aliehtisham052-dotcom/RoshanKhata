@@ -369,6 +369,8 @@
     <string name="cheque_cleared">ڪليئر ٿيل</string>
     <string name="cheque_bounced">بائونس ٿيل</string>
     <string name="cheque_cancelled">منسوخ ٿيل</string>
+    <string name="cheque_none_cleared">اڃا ڪو چيڪ ڪليئر نه ٿيو آهي</string>
+    <string name="cheque_none_bounced">ڪو چيڪ بائونس يا منسوخ نه ٿيو آهي</string>
 
     <string name="due_today">اڄ مقرر</string>
     <plurals name="due_in_days">
