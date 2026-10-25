@@ -3347,6 +3347,7 @@
     <string name="srep_gross">إجمالي الربح</string>
     <string name="srep_expenses">المصروفات (الصندوق)</string>
     <string name="srep_net">صافي الربح</string>
+    <string name="srep_net_unknown">يظهر صافي الربح عندما يُعرف سعر التكلفة لكل صنف مُباع. أضفه في البضائع.</string>
     <string name="srep_tax_rate">النسبة</string>
     <string name="srep_tax_base">الخاضع للضريبة</string>
     <string name="srep_tax_amount">الضريبة</string>

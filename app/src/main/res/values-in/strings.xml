@@ -3162,6 +3162,7 @@
     <string name="srep_gross">Laba kotor</string>
     <string name="srep_expenses">Pengeluaran (buku kas)</string>
     <string name="srep_net">Laba bersih</string>
+    <string name="srep_net_unknown">Laba bersih tampil setelah harga modal setiap barang yang terjual diketahui. Isi di Barang.</string>
     <string name="srep_tax_rate">Tarif</string>
     <string name="srep_tax_base">Kena pajak</string>
     <string name="srep_tax_amount">Pajak</string>

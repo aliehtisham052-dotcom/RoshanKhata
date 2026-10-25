@@ -3187,6 +3187,7 @@
     <string name="srep_gross">مجموعي نفعو</string>
     <string name="srep_expenses">خرچ (ڪيش بڪ)</string>
     <string name="srep_net">خالص نفعو</string>
+    <string name="srep_net_unknown">خالص نفعي لاءِ هر وڪريل شيءِ جي لاڳت گهرجي. لاڳت مال ۾ لکو.</string>
     <string name="srep_tax_rate">شرح</string>
     <string name="srep_tax_base">قابلِ ٽيڪس</string>
     <string name="srep_tax_amount">ٽيڪس</string>

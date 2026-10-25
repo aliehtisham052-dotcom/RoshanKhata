@@ -3373,6 +3373,7 @@
     <string name="srep_gross">Gross profit</string>
     <string name="srep_expenses">Expenses (cashbook)</string>
     <string name="srep_net">Net profit</string>
+    <string name="srep_net_unknown">Net profit shows once the cost price of every item sold is known. Add it in Products.</string>
     <string name="srep_tax_rate">Rate</string>
     <string name="srep_tax_base">Taxable</string>
     <string name="srep_tax_amount">Tax</string>

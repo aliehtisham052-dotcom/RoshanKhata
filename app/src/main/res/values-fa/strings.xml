@@ -3187,6 +3187,7 @@
     <string name="srep_gross">سود ناخالص</string>
     <string name="srep_expenses">هزینه‌ها (صندوق)</string>
     <string name="srep_net">سود خالص</string>
+    <string name="srep_net_unknown">سود خالص وقتی نمایش داده می‌شود که قیمت خرید هر کالای فروخته‌شده مشخص باشد. آن را در کالا وارد کنید.</string>
     <string name="srep_tax_rate">نرخ</string>
     <string name="srep_tax_base">مشمول مالیات</string>
     <string name="srep_tax_amount">مالیات</string>

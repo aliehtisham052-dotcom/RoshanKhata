@@ -3159,6 +3159,7 @@
     <string name="srep_gross">مجموعی منافع</string>
     <string name="srep_expenses">اخراجات (کیش بک)</string>
     <string name="srep_net">خالص منافع</string>
+    <string name="srep_net_unknown">خالص منافع تب دکھے گا جب ہر بکے ہوئے مال کی لاگت معلوم ہو۔ لاگت مال میں لکھیں۔</string>
     <string name="srep_tax_rate">شرح</string>
     <string name="srep_tax_base">قابلِ ٹیکس</string>
     <string name="srep_tax_amount">ٹیکس</string>

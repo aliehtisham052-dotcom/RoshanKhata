@@ -3159,6 +3159,7 @@
     <string name="srep_gross">Majmui munafa</string>
     <string name="srep_expenses">Akhrajat (cashbook)</string>
     <string name="srep_net">Khalis munafa</string>
+    <string name="srep_net_unknown">Khalis munafa tab dikhega jab har bike hue maal ki laagat maloom ho. Laagat Maal mein likhein.</string>
     <string name="srep_tax_rate">Sharah</string>
     <string name="srep_tax_base">Qabil-e-tax</string>
     <string name="srep_tax_amount">Tax</string>
