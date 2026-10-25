@@ -107,6 +107,9 @@ suspend fun homeFigures(dao: KhataDao): HomeFigures = withContext(Dispatchers.IO
     )
 }
 
+/** The phone's BalancePrivacy.MASK: hidden money shows as these dots, never its length. */
+internal const val TOTALS_MASK = "\u2022 \u2022 \u2022 \u2022 \u2022 \u2022"
+
 /**
  * Home (1.10.0, the Figma mockup of 20 Oct, the colourful one): the day as the
  * page's title, three figure cards — what the shop will get, will give, and
@@ -128,16 +131,21 @@ fun HomePane(
     onAction: (HomeAction) -> Unit,
     onCustomer: (Long) -> Unit,
     onAddParty: () -> Unit,
-    onGot: () -> Unit
+    onGot: () -> Unit,
+    /**
+     * The eye (25 Oct 2026, the audit): the window keeps it, hidden until the owner opens it and
+     * remembered after (AppPrefs.balancesHidden, the phone's BalancePrivacy). The proof test shows figures.
+     */
+    hidden: Boolean = false,
+    onHidden: (Boolean) -> Unit = {}
 ) {
     val c = LocalRoshanColors.current
     val get = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
     val give = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
     val owing = parties.count { Money.isPositive(it.balance) }
     val owed = parties.count { Money.isNegative(it.balance) }
-    var hidden by remember { mutableStateOf(false) }
     // The phone's own mask (BalancePrivacy.MASK): no figure, not even its length.
-    val masked = "• • • • • •"
+    val masked = TOTALS_MASK
     fun shown(v: Double) = if (hidden) masked else Format.money(v)
     var figures by remember { mutableStateOf<HomeFigures?>(null) }
     LaunchedEffect(reload) { figures = figuresOf() }
@@ -158,7 +166,7 @@ fun HomePane(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         PageHeader(dayName, shopName ?: word(W.app_name)) {
-            IconAction(if (hidden) "ic_eye_closed" else "ic_eye_open", word(W.net_balance), { hidden = !hidden })
+            IconAction(if (hidden) "ic_eye_closed" else "ic_eye_open", word(W.net_balance), { onHidden(!hidden) })
         }
 
         // The three figures: will get (red), will give (blue), and what should be in the drawer (green).
