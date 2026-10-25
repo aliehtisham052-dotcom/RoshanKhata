@@ -185,7 +185,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             PaneTitle(word(W.poster_title), word(W.poster_subtitle))
             Text(word(W.poster_language), color = c.ink, fontWeight = FontWeight.Bold)
             // One pill per language, each in its own script, in a row that scrolls.
-            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            PillRow(Modifier.fillMaxWidth()) {
                 CardLanguage.entries.forEach { l ->
                     FluentPill(l.native, l == posterLang) { if (l != posterLang) { save(); posterLang = l } }
                 }

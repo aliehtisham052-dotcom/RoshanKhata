@@ -74,7 +74,8 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
         }, onDismiss = { picking = null })
     }
     val r = report
-    var roomy by remember { mutableStateOf(true) }
+    var chartShown by remember { mutableStateOf(true) }
+    var chartTouched by remember { mutableStateOf(false) }
     val table = r?.let { reportRows(it, view) }
     val heading = word(view.wordKey) + "  ·  " + com.innovation313.roshankhata.screens.periodLabel(period, custom)
     FluentPage(word(W.sales_report_title), told ?: heading, scroll = false, actions = {
@@ -111,8 +112,11 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
                 DateBox(null, (last ?: first)?.let { Format.dateOnly(it) }, word(W.report_end_date), { picking = false }, Modifier.width(170.dp))
             }
         }
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        PillRow(Modifier.fillMaxWidth()) {
             ReportView.values().forEach { v -> FluentPill(word(v.wordKey), view == v) { view = v } }
+            // The chart is the owner's to show or hide; it steps aside by itself only until he chooses (25 Oct 2026,
+            // the audit: once aside on a laptop it never came back).
+            if (r != null && r.revenue > 0.0) FluentPill(word(W.srep_chart), chartShown) { chartTouched = true; chartShown = !chartShown }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FigureCard(word(W.srep_revenue), r?.let { Format.money(it.revenue) } ?: "…", c.ink, Modifier.weight(1f))
@@ -127,11 +131,11 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
         // The chart (21 Oct 2026): a bar per hour, day or month of the window, from the same lines.
         // On a laptop's short window the chart steps aside once the table would get too little room
         // (21 Oct 2026: at 1366x768 the table was squeezed to nothing). Once aside, it stays aside.
-        if (r != null && r.revenue > 0.0 && roomy) {
+        if (r != null && r.revenue > 0.0 && chartShown) {
             com.innovation313.roshankhata.screens.SalesChart(r.bars(), Modifier.fillMaxWidth().card().padding(14.dp), height = 96.dp)
         }
         val density = androidx.compose.ui.platform.LocalDensity.current
-        ListCard(Modifier.weight(1f).onSizeChanged { if (roomy && with(density) { it.height.toDp() } < 220.dp) roomy = false }) {
+        ListCard(Modifier.weight(1f).onSizeChanged { if (!chartTouched && chartShown && with(density) { it.height.toDp() } < 220.dp) chartShown = false }) {
             if (table == null || table.second.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.srep_none), color = c.textMuted) }
             else {
                 val (head, rows) = table

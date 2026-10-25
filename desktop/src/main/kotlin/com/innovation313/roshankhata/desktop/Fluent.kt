@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -577,6 +578,25 @@ fun PartyPicker(
                     if (i < shown.lastIndex) Rule()
                 }
             }
+        }
+    }
+}
+
+/**
+ * A row of pills that scrolls sideways, with Windows' own scrollbar under it
+ * while it does not fit (25 Oct 2026, the audit: the language, country and
+ * report pills ran off the edge with no sign that more were there).
+ */
+@Composable
+fun PillRow(modifier: Modifier = Modifier, content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit) {
+    val state = rememberScrollState()
+    Column(modifier) {
+        Row(Modifier.fillMaxWidth().horizontalScroll(state), horizontalArrangement = Arrangement.spacedBy(6.dp), content = content)
+        if (state.maxValue in 1 until Int.MAX_VALUE) {
+            androidx.compose.foundation.HorizontalScrollbar(
+                androidx.compose.foundation.rememberScrollbarAdapter(state),
+                Modifier.fillMaxWidth().padding(top = 3.dp)
+            )
         }
     }
 }

@@ -129,7 +129,7 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
             Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
                 Text(word(W.bp_country), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 val locale = java.util.Locale.getDefault()
-                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                PillRow(Modifier.fillMaxWidth()) {
                     com.innovation313.roshankhata.data.ShopCountry.choices(locale).forEach { ctry ->
                         val name = if (ctry == com.innovation313.roshankhata.data.ShopCountry.OTHER) word(W.country_other) else ctry.displayName(locale)
                         FluentPill(name, ctry == country) {
@@ -148,7 +148,7 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
                 FluentField(currency, { currency = it; saved = false }, Modifier.weight(1f), label = word(W.bp_currency), help = word(W.bp_currency_help))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     Text(word(W.bp_calendar), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    PillRow(Modifier.fillMaxWidth()) {
                         ShopCalendar.Kind.values().forEach { k ->
                             FluentPill(word(calendarWord(k)), calendar == k) { calendar = k; saved = false }
                         }
