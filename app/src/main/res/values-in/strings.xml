@@ -1137,6 +1137,7 @@
     <string name="biz_card_template">Desain</string>
     <string name="biz_card_share">Bagikan kartu</string>
     <string name="biz_card_note">Kartu digambar di ponsel Anda dan dibagikan sebagai gambar. Tidak ada yang diunggah.</string>
+    <string name="biz_card_note_pc">Kartu digambar di komputer ini lalu disimpan sebagai gambar atau dicetak. Tidak ada yang diunggah.</string>
     <string name="biz_card_show_mark">Tampilkan “Roshan Khata” di kartu</string>
     <string name="biz_card_show_logo">Logo toko di kartu</string>
     <string name="biz_card_logo_none">Belum ada logo. Tambahkan di Profil →</string>
@@ -1728,6 +1729,7 @@
     <string name="bp_logo">Logo toko</string>
     <string name="bp_logo_help">Opsional — dicetak di bagian atas faktur dan register stok.</string>
     <string name="bp_remove_logo">Hapus logo</string>
+    <string name="pic_delete_body_pc">Gambar ini hanya ada di komputer ini: file cadangan tidak membawa gambar. Setelah dihapus, gambar ini tidak dapat dikembalikan.</string>
     <string name="bp_logo_saved">Logo disimpan</string>
     <string name="bp_logo_save_failed">Logo tidak dapat disimpan. Coba gambar lain.</string>
 
@@ -2922,6 +2924,7 @@
     <string name="biz_card_ex_web">mis. situs web atau halaman Facebook</string>
     <string name="biz_card_ex_qr">mis. Assalamualaikum, saya lihat kartu Anda</string>
     <string name="biz_card_send_picture">Kirim kartu sebagai gambar</string>
+    <string name="biz_card_save_picture">Simpan kartu sebagai gambar</string>
     <string name="drive_signed_in_ok">✓ Masuk sebagai %1$s. Buku Anda kini dapat dicadangkan ke Google Drive Anda.</string>
     <string name="entry_due_none">Jatuh tempo: tambahkan tanggal</string>
     <string name="entry_due_set">Jatuh tempo: %1$s</string>

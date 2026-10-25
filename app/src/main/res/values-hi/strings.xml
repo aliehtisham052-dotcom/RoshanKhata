@@ -1162,6 +1162,7 @@
     <string name="biz_card_template">डिज़ाइन</string>
     <string name="biz_card_share">कार्ड शेयर करें</string>
     <string name="biz_card_note">कार्ड आपके फ़ोन पर बनता है और तस्वीर के रूप में शेयर होता है। कुछ भी अपलोड नहीं होता।</string>
+    <string name="biz_card_note_pc">कार्ड इसी कंप्यूटर पर बनता है और तस्वीर के रूप में सहेजा या प्रिंट किया जाता है। कुछ भी अपलोड नहीं होता।</string>
     <string name="biz_card_show_mark">कार्ड पर “रोशन खाता” दिखाएँ</string>
     <string name="biz_card_show_logo">कार्ड पर दुकान का लोगो</string>
     <string name="biz_card_logo_none">अभी लोगो नहीं है। प्रोफ़ाइल में जोड़ें →</string>
@@ -1764,6 +1765,7 @@
     <string name="bp_logo">दुकान का लोगो</string>
     <string name="bp_logo_help">ज़रूरी नहीं — इनवॉइस और स्टॉक रजिस्टर के ऊपर छपता है।</string>
     <string name="bp_remove_logo">लोगो हटाएँ</string>
+    <string name="pic_delete_body_pc">यह तस्वीर सिर्फ़ इसी कंप्यूटर पर है: बैकअप फ़ाइल में तस्वीरें नहीं जातीं। मिटाने के बाद यह वापस नहीं आ सकती।</string>
     <string name="bp_logo_saved">लोगो सेव हो गया</string>
     <string name="bp_logo_save_failed">लोगो सेव नहीं हो सका। दूसरी तस्वीर आज़माएँ।</string>
 
@@ -2969,6 +2971,7 @@
     <string name="biz_card_ex_web">जैसे वेबसाइट या फ़ेसबुक पेज</string>
     <string name="biz_card_ex_qr">जैसे अस्सलामु अलैकुम, आपका कार्ड देखा</string>
     <string name="biz_card_send_picture">कार्ड तस्वीर की शक्ल में भेजें</string>
+    <string name="biz_card_save_picture">कार्ड को तस्वीर के रूप में सहेजें</string>
     <string name="drive_signed_in_ok">✓ %1$s से साइन इन हो गया। अब आपका खाता आपकी Google Drive में बैकअप हो सकता है।</string>
     <string name="entry_due_none">भुगतान की तारीख़: तारीख़ जोड़ें</string>
     <string name="entry_due_set">भुगतान की तारीख़: %1$s</string>

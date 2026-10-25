@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -291,8 +294,14 @@ private fun PreviewContent(req: Preview.Request) {
             }
         } else {
             val density = LocalDensity.current.density
+            // Wider than the window when zoomed in, the pages scroll sideways too (Marhala 4, part 8 — the audit:
+            // past about 140% the page was cut at the window's edge with no way to see the rest).
+            androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+            val widest = ((0 until s.count).maxOfOrNull { s.width(it) } ?: 595f) * zoom
+            val across = maxOf(maxWidth, (widest + 32f).dp)
+            Box(Modifier.fillMaxSize().horizontalScroll(androidx.compose.foundation.rememberScrollState())) {
             LazyColumn(
-                Modifier.fillMaxSize(),
+                Modifier.width(across).fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp)
@@ -319,6 +328,8 @@ private fun PreviewContent(req: Preview.Request) {
                         Text(word(W.pdf_stmt_page, i + 1, s.count), color = c.textMuted, fontSize = 12.sp)
                     }
                 }
+            }
+            }
             }
         }
     }

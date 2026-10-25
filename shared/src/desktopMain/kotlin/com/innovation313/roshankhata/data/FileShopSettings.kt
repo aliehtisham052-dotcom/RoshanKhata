@@ -71,6 +71,21 @@ class FileShopSettings(private val file: File) : ShopSettings {
     override fun photoOnStatement() = props.getProperty(ShopSettings.Keys.PHOTO_ON_STATEMENT) == "true"
     override fun setPhotoOnStatement(enabled: Boolean) = put(ShopSettings.Keys.PHOTO_ON_STATEMENT to enabled.toString())
 
+    /**
+     * A new shop starts where the open one is (the phone's BusinessProfile.copyRegion, 23 Oct 2026; Marhala 4,
+     * part 8 — the audit: a new business on the computer started as Pakistan): its country, currency sign and
+     * calendar, so a second shop in Dhaka is not silently +92, Rs, STRN and Rabi/Kharif. Only what [from] has,
+     * never over a choice this shop already made; the owner changes any of it in the new shop's Profile.
+     */
+    fun copyRegionFrom(from: FileShopSettings) {
+        if (from === this) return
+        val pairs = listOf(ShopSettings.Keys.COUNTRY, ShopSettings.Keys.CURRENCY, ShopSettings.Keys.CALENDAR).mapNotNull { k ->
+            val v = from.props.getProperty(k)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            if (props.getProperty(k).isNullOrBlank()) k to v else null
+        }
+        if (pairs.isNotEmpty()) put(*pairs.toTypedArray())
+    }
+
     /** The computer prints from ShopCalendar.current and Currency.symbol: set them from the file. */
     override fun refreshDisplay() {
         ShopCalendar.current = calendar()

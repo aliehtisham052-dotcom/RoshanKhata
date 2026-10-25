@@ -1150,6 +1150,7 @@
     <string name="biz_card_template">ڊيزائن</string>
     <string name="biz_card_share">ڪارڊ شيئر ڪريو</string>
     <string name="biz_card_note">ڪارڊ توهان جي فون تي ٺهي ٿو ۽ تصوير طور شيئر ٿئي ٿو. ڪجهه به اپلوڊ نٿو ٿئي.</string>
+    <string name="biz_card_note_pc">ڪارڊ هن ڪمپيوٽر تي ٺهي ٿو ۽ تصوير طور محفوظ يا پرنٽ ٿئي ٿو. ڪجهه به اپلوڊ نٿو ٿئي.</string>
     <string name="biz_card_show_mark">ڪارڊ تي “روشن کاتو” ڏيکاريو</string>
     <string name="biz_card_show_logo">ڪارڊ تي دڪان جو لوگو</string>
     <string name="biz_card_logo_none">اڃا لوگو ناهي. پروفائل ۾ لڳايو ←</string>
@@ -1742,6 +1743,7 @@
     <string name="bp_logo">دڪان جو لوگو</string>
     <string name="bp_logo_help">اختياري — انوائس ۽ اسٽاڪ رجسٽر جي مٿان ڇپجي ٿو.</string>
     <string name="bp_remove_logo">لوگو هٽايو</string>
+    <string name="pic_delete_body_pc">هي تصوير رڳو هن ڪمپيوٽر تي آهي: بيڪ اپ فائل ۾ تصويرون نه ٿيون وڃن. هٽائڻ کان پوءِ اها واپس نه ٿي اچي سگهي.</string>
     <string name="bp_logo_saved">لوگو محفوظ ٿي ويو</string>
     <string name="bp_logo_save_failed">لوگو محفوظ نه ٿي سگهيو. ٻي تصوير آزمايو.</string>
 
@@ -2947,6 +2949,7 @@
     <string name="biz_card_ex_web">مثال ويب سائيٽ يا فيس بڪ پيج</string>
     <string name="biz_card_ex_qr">مثال السلام عليڪم، توهان جو ڪارڊ ڏٺو</string>
     <string name="biz_card_send_picture">ڪارڊ تصوير طور موڪليو</string>
+    <string name="biz_card_save_picture">ڪارڊ تصوير طور محفوظ ڪريو</string>
     <string name="drive_signed_in_ok">✓ %1$s سان سائن اِن ٿي ويو. هاڻي توهان جو کاتو توهان جي گوگل ڊرائيو ۾ بيڪ اپ ٿي سگهي ٿو.</string>
     <string name="entry_due_none">ادائگي جي تاريخ: شامل ڪريو</string>
     <string name="entry_due_set">ادائگي جي تاريخ: %1$s</string>

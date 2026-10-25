@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
@@ -200,6 +201,11 @@ fun BusinessCardPane(
         )
     }
 
+    // What was typed is kept when the owner leaves the page (Marhala 4, part 8 — the audit: it was saved only on a
+    // language or design click, a picture or a print, so leaving lost it). The newest save, with the newest boxes.
+    val saveOnLeave = androidx.compose.runtime.rememberUpdatedState { if (name.isNotBlank()) save() }
+    androidx.compose.runtime.DisposableEffect(businessId) { onDispose { runCatching { saveOnLeave.value() } } }
+
     LaunchedEffect(template, lang, name, type, owner, address, tagline, qrMessage, phone, whatsapp, waSame, email, web, showMark, logo) {
         delay(250)
         val d = data()
@@ -232,9 +238,9 @@ fun BusinessCardPane(
             }
             Text(word(W.biz_card_sec_shared), color = c.ink, fontWeight = FontWeight.Bold)
             Field(phone, { phone = it }, word(W.biz_card_l_call), word(W.biz_card_ex_phone))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.clip(Look.ctl).press(Look.ctl) { waSame = !waSame }, verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(waSame, { waSame = it })
-                Text(word(W.biz_card_l_wa_same), color = c.ink, fontSize = 14.sp)
+                Text(word(W.biz_card_l_wa_same), Modifier.padding(end = 8.dp), color = c.ink, fontSize = 14.sp)
             }
             if (!waSame) Field(whatsapp, { whatsapp = it }, word(W.biz_card_l_whatsapp), word(W.biz_card_ex_phone))
             Field(email, { email = it }, word(W.biz_card_l_email), word(W.biz_card_ex_email))
@@ -247,7 +253,7 @@ fun BusinessCardPane(
                 Checkbox(showLogo, { showLogo = it }, enabled = images.has(ProfileImages.Kind.LOGO))
                 Text(word(if (images.has(ProfileImages.Kind.LOGO)) W.biz_card_show_logo else W.biz_card_logo_none), color = c.ink, fontSize = 14.sp)
             }
-            Text(word(W.biz_card_note), color = c.textMuted, fontSize = 12.sp)
+            Text(word(W.biz_card_note_pc), color = c.textMuted, fontSize = 12.sp)
         }
         Column(Modifier.weight(0.58f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             picture?.let {
@@ -257,16 +263,16 @@ fun BusinessCardPane(
                     filterQuality = androidx.compose.ui.graphics.FilterQuality.High)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                val saveTitle = word(W.biz_card_send_picture)
+                val saveTitle = word(W.biz_card_save_picture)
                 val enterName = word(W.biz_card_enter_name)
-                FillButton(saveTitle, c.brandGreen) {
-                    if (name.isBlank()) { told = enterName; return@FillButton }
+                FluentButton(saveTitle, kind = ButtonKind.ACCENT, icon = "ic_download", onClick = save@{
+                    if (name.isBlank()) { told = enterName; return@save }
                     save()
                     val dialog = FileDialog(null as Frame?, saveTitle, FileDialog.SAVE)
                     startIn(dialog, "Pictures")
                     dialog.file = "RoshanKhata_Card.png"
                     dialog.isVisible = true
-                    val file = dialog.file?.let { File(dialog.directory, if (it.endsWith(".png", true)) it else "$it.png") } ?: return@FillButton
+                    val file = dialog.file?.let { File(dialog.directory, if (it.endsWith(".png", true)) it else "$it.png") } ?: return@save
                     val d = data()
                     val t = CardTemplates.byId(template)
                     scope.launch {
@@ -275,9 +281,9 @@ fun BusinessCardPane(
                                 .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
                         }
                     }
-                }
-                TextButton({
-                    if (name.isBlank()) { told = enterName; return@TextButton }
+                })
+                FluentButton(word(W.print_short), kind = ButtonKind.STANDARD, icon = "ic_print", onClick = print@{
+                    if (name.isBlank()) { told = enterName; return@print }
                     save()
                     val d = data()
                     val t = CardTemplates.byId(template)
@@ -286,9 +292,8 @@ fun BusinessCardPane(
                         val card = withContext(Dispatchers.Default) { CardDraw.image(t, d, 2100, 1200) }
                         StatementPrint.show(CardSheet(card), words.text(W.biz_card))
                     }
-                }) { Text(word(W.print_short), color = c.brandGreenText) }
+                })
             }
-            told?.let { Text(it, color = c.textMuted, fontSize = 13.sp) }
             Text(word(W.biz_card_template), color = c.ink, fontWeight = FontWeight.Bold)
             // The designs by name, the chosen one filled, as the phone's picker.
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -303,6 +308,7 @@ fun BusinessCardPane(
             Spacer(Modifier.padding(bottom = 20.dp))
         }
     }
+    told?.let { text -> TellDialog(word(W.biz_card), text, { told = null }) }
 }
 
 @Composable
