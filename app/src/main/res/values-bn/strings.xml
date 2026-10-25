@@ -66,6 +66,7 @@
     <string name="coach_desc_followup">যাদের কাছে পাওনা, সবচেয়ে পুরোনো আগে — প্রত্যেকের জন্য এক ট্যাপে WhatsApp রিমাইন্ডার।</string>
     <string name="coach_title_backup">ব্যাকআপ</string>
     <string name="coach_desc_backup">আপনার খাতা নিজের Google Drive-এ নিরাপদে রাখুন।</string>
+    <string name="coach_desc_backup_pc">প্রতিদিন আপনার খাতার একটি কপি এই কম্পিউটারে রাখা হয়। দৈনিক কপি-তে এর জন্য দ্বিতীয় জায়গা বেছে নিন: USB বা আপনার Google Drive ফোল্ডার।</string>
         <string name="coach_title_settings">ব্যবসার সেটিংস</string>
     <string name="coach_desc_settings">দোকানের নাম, যোগাযোগ ও পছন্দ — একবার দিন, সব জায়গায় কাজে লাগবে।</string>
         <string name="calculator">ক্যালকুলেটর</string>

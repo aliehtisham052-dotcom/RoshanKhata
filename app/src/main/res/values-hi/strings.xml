@@ -66,6 +66,7 @@
     <string name="coach_desc_followup">जिन पर आपका बकाया है, सबसे पुराना पहले — हर एक पर एक टैप में WhatsApp रिमाइंडर।</string>
     <string name="coach_title_backup">बैकअप</string>
     <string name="coach_desc_backup">अपना खाता अपनी Google Drive में सुरक्षित रखें।</string>
+    <string name="coach_desc_backup_pc">रोज़ आपके खाते की एक कॉपी इसी कंप्यूटर पर रखी जाती है। रोज़ की कॉपियाँ में इसकी दूसरी जगह चुनें: USB या आपका Google Drive फ़ोल्डर।</string>
         <string name="coach_title_settings">बिज़नेस सेटिंग्स</string>
     <string name="coach_desc_settings">आपकी दुकान का नाम, संपर्क और पसंद — एक बार भरें, हर जगह काम आए।</string>
         <string name="calculator">कैलकुलेटर</string>

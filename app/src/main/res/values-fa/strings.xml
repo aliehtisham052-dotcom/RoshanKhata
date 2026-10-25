@@ -62,6 +62,7 @@
     <string name="coach_desc_followup">همه بدهکاران، قدیمی‌ترین بدهی اول — با یادآوری واتساپ تک‌ضربه‌ای روی هر کدام.</string>
     <string name="coach_title_backup">پشتیبان‌گیری</string>
     <string name="coach_desc_backup">دفتر خود را با خیال راحت در گوگل درایو خودتان ذخیره کنید.</string>
+    <string name="coach_desc_backup_pc">هر روز یک نسخه از دفتر شما روی همین رایانه نگه داشته می‌شود. در نسخه‌های روزانه جای دومی برایش انتخاب کنید: فلش USB یا پوشه گوگل درایو خودتان.</string>
         <string name="coach_title_settings">تنظیمات کسب‌وکار</string>
     <string name="coach_desc_settings">نام مغازه، اطلاعات تماس و ترجیحات شما — یک بار تنظیم، همه‌جا استفاده.</string>
         <string name="calculator">ماشین‌حساب</string>

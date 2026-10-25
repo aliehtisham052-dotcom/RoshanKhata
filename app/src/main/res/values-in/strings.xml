@@ -62,6 +62,7 @@
     <string name="coach_desc_followup">Semua yang berutang kepada Anda, utang terlama lebih dulu — dengan pengingat WhatsApp sekali ketuk untuk masing-masing.</string>
     <string name="coach_title_backup">Cadangan</string>
     <string name="coach_desc_backup">Simpan buku Anda dengan aman ke Google Drive Anda sendiri.</string>
+    <string name="coach_desc_backup_pc">Setiap hari salinan buku Anda disimpan di komputer ini. Di Salinan harian, pilih tempat kedua untuknya: flashdisk USB atau folder Google Drive Anda.</string>
         <string name="coach_title_settings">Pengaturan Usaha</string>
     <string name="coach_desc_settings">Nama, kontak, dan preferensi toko Anda — diatur sekali, dipakai di mana saja.</string>
         <string name="calculator">Kalkulator</string>

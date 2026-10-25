@@ -62,6 +62,7 @@
     <string name="coach_desc_followup">جن کے ذمے آپ کا ہے، پرانا قرض پہلے — ہر ایک پر ایک ٹیپ واٹس ایپ یاد دہانی۔</string>
     <string name="coach_title_backup">بیک اپ</string>
     <string name="coach_desc_backup">اپنا کھاتہ محفوظ طریقے سے اپنے گوگل ڈرائیو پر رکھیں۔</string>
+    <string name="coach_desc_backup_pc">روزانہ آپ کے کھاتے کی ایک کاپی اسی کمپیوٹر پر رکھی جاتی ہے۔ روزانہ کاپیاں میں اس کی دوسری جگہ چنیں: USB یا آپ کا گوگل ڈرائیو فولڈر۔</string>
         <string name="coach_title_settings">کاروباری سیٹنگز</string>
     <string name="coach_desc_settings">آپ کی دکان کا نام، رابطہ اور ترجیحات — ایک بار سیٹ کریں، ہر جگہ استعمال ہوں گی۔</string>
         <string name="calculator">کیلکولیٹر</string>

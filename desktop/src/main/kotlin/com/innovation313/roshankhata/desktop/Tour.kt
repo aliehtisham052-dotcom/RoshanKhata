@@ -53,7 +53,8 @@ fun TourWindowContent(onDone: () -> Unit) {
         Step(Section.INSIGHTS, W.coach_title_insights, W.coach_desc_insights),
         Step(Section.CALC, W.coach_title_calc, W.coach_desc_calc),
         Step(Section.CARD, W.coach_title_bizcard, W.coach_desc_bizcard),
-        Step(Section.DAILY, W.coach_title_backup, W.coach_desc_backup)
+        // The computer's own backup: its daily copies and a second folder, not the phone's Google Drive sign-in (25 Oct 2026, the audit).
+        Step(Section.DAILY, W.coach_title_backup, W.coach_desc_backup_pc)
     ).filter { trade.shows(it.section) }
     var at by remember { mutableIntStateOf(0) }
     val s = steps[at]

@@ -66,6 +66,7 @@
     <string name="coach_desc_followup">Everyone who owes you, oldest debts first — with a one-tap WhatsApp reminder on each.</string>
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Save your ledger safely to your own Google Drive.</string>
+    <string name="coach_desc_backup_pc">Every day a copy of your ledger is kept on this computer. In Daily copies, choose a second place for it: a USB stick or your Google Drive folder.</string>
         <string name="coach_title_settings">Business Settings</string>
     <string name="coach_desc_settings">Your shop\'s name, contact and preferences — set once, used everywhere.</string>
         <string name="calculator">Calculator</string>
