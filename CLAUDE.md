@@ -1101,6 +1101,21 @@ Businesses/Settings), each part with its proof pictures. CI only.
   (`CalcMemory`), and "Add to a khata" asks whose and which way, then opens that customer's entry filled in
   (`EntryEditor(startAmount)`; nothing above zero goes nowhere, `calc_khata_positive`). Proofs: screen-laptop-
   insights-en, -cashflow-ur, -followup-en, -aging-en, -zakat-en, -calculator-short-ur.
+- **Part 8, Business Profile, card and poster:** the profile is in the phone's four parts with their own help —
+  Identity (names, phone, email with the phone's "a shop email is better than your personal one", address, the
+  logo, country, currency, calendar), Getting paid (bank, wallet, the payment QR), Invoice & statement (tax number,
+  terms), Stamp & signature (it said "Business Profile" twice and titled cards "Bank name" and "Shop logo"). What is
+  typed and not saved waits while the app is open (`ProfileDraft`, per business's settings): coming back finds it,
+  said as "Unsaved changes" with Discard beside Save (the phone asks before leaving; the computer's pages are
+  left by the rail, so the draft waits instead). A picture is deleted only after the owner is told no backup holds
+  it (`pic_delete_body_pc`, nine languages). The card and the poster keep what was typed when the page is left
+  (`DisposableEffect` + `rememberUpdatedState`: they saved only on a language or design click, a picture or a
+  print); the card says the computer's words (`biz_card_note_pc`, `biz_card_save_picture`); the poster's Save sits
+  above a preview that fits the height left (it was under a 711 dp picture); tick labels tick their boxes. A new
+  business takes the open one's country, currency sign and calendar (`FileShopSettings.copyRegionFrom`, the phone's
+  copyRegion; ShopRegionTest). The PDF preview scrolls sideways when zoomed past the window (it cut the page).
+  Not changed, the owner's to decide: the poster ticks email by default and the card starts from the profile's
+  email (the phone does both) — with a personal email in the profile it reaches posters and cards.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview

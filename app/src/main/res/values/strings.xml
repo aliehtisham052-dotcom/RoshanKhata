@@ -1165,6 +1165,7 @@
     <string name="biz_card_template">Design</string>
     <string name="biz_card_share">Share card</string>
     <string name="biz_card_note">The card is drawn on your phone and shared as an image. Nothing is uploaded.</string>
+    <string name="biz_card_note_pc">The card is drawn on this computer and saved as a picture or printed. Nothing is uploaded.</string>
     <string name="biz_card_show_mark">Show “Roshan Khata” on the card</string>
     <string name="biz_card_show_logo">Shop logo on the card</string>
     <string name="biz_card_logo_none">No logo yet. Add one in Profile →</string>
@@ -1769,6 +1770,7 @@
     <string name="bp_logo">Shop logo</string>
     <string name="bp_logo_help">Optional — printed at the top of invoices and the stock register.</string>
     <string name="bp_remove_logo">Remove logo</string>
+    <string name="pic_delete_body_pc">This picture is kept only on this computer: the backup file carries no pictures. Once deleted, it cannot be brought back.</string>
     <string name="bp_logo_saved">Logo saved</string>
     <string name="bp_logo_save_failed">Could not save the logo. Try another picture.</string>
 
@@ -3133,6 +3135,7 @@
     <string name="biz_card_ex_web">e.g. yourshop.com or a Facebook page</string>
     <string name="biz_card_ex_qr">e.g. Assalam o alaikum, I saw your card</string>
     <string name="biz_card_send_picture">Send the card as a picture</string>
+    <string name="biz_card_save_picture">Save the card as a picture</string>
     <string name="drive_signed_in_ok">✓ Signed in as %1$s. Your books can now back up to your Google Drive.</string>
     <string name="entry_due_none">Payment due: add a date</string>
     <string name="entry_due_set">Payment due: %1$s</string>

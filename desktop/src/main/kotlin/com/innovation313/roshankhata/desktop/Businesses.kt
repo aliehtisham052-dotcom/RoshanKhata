@@ -284,8 +284,12 @@ fun BusinessesDialog(
             FillButton(word(W.business_add), c.brandGreen) {
                 if (newName.isBlank()) { problem = needName; return@FillButton }
                 val b = businesses.create(newName)
-                // The new shop's own name in its own settings, so statements print it.
-                FileShopSettings(businesses.settingsFile(b.id)).setBusinessName(newName)
+                // The new shop's own name in its own settings, so statements print it; its country, currency and
+                // calendar start as the open shop's (the phone's copyRegion).
+                FileShopSettings(businesses.settingsFile(b.id)).apply {
+                    setBusinessName(newName)
+                    runCatching { copyRegionFrom(FileShopSettings(businesses.settingsFile(businesses.activeId()))) }
+                }
                 newName = ""
                 onSwitch(b.id)
             }

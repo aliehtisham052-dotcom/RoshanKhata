@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
@@ -206,6 +207,11 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
         )
     }
 
+    // What was set is kept when the owner leaves the page (Marhala 4, part 8 — the audit: it was saved only on a
+    // language or occasion click or a saved picture, so leaving lost it). The newest save, with the newest boxes.
+    val saveOnLeave = androidx.compose.runtime.rememberUpdatedState { save() }
+    androidx.compose.runtime.DisposableEffect(businessId) { onDispose { runCatching { saveOnLeave.value() } } }
+
     LaunchedEffect(occasion, lang, title, message, items, eidDays, ramazanHours, urgentPhone, opens, closes, prayerBreak,
         offerPercent, offerDays, showLogo, showPhone, showAddress, showEmail, onWhatsapp, showMark, logo, shop,
         reason, reasonText, reopen, reopenAt, breakFrom, breakTo, holidays, dayFrom, dayTo, afterTaraweeh, nightFrom, nightTo) {
@@ -315,22 +321,20 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             if (settings.businessPhone().isNullOrBlank()) Text(word(W.poster_no_phone), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.poster_desktop_flat), color = c.textMuted, fontSize = 12.sp)
         }
-        Column(Modifier.weight(0.54f).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
+        // The button first and the poster in the height left (the audit: under a 711 dp preview, Save was off a
+        // laptop's screen).
+        Column(Modifier.weight(0.54f).fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            picture?.let {
-                Image(it, contentDescription = word(W.poster_title),
-                    modifier = Modifier.width(400.dp).heightIn(max = 712.dp).aspectRatio(PosterDraw.WIDTH.toFloat() / PosterDraw.HEIGHT))
-            }
             val saveTitle = word(W.poster_save_picture)
             val needShop = word(W.poster_shop_needed)
-            FillButton(saveTitle, c.brandGreen) {
-                if (shop.isBlank()) { told = needShop; return@FillButton }
+            FluentButton(saveTitle, kind = ButtonKind.ACCENT, icon = "ic_download", onClick = save@{
+                if (shop.isBlank()) { told = needShop; return@save }
                 save()
                 val dialog = FileDialog(null as Frame?, saveTitle, FileDialog.SAVE)
                 startIn(dialog, "Pictures")
                 dialog.file = "RoshanKhata_Poster_${occasion.key}.png"
                 dialog.isVisible = true
-                val file = dialog.file?.let { File(dialog.directory, if (it.endsWith(".png", true)) it else "$it.png") } ?: return@FillButton
+                val file = dialog.file?.let { File(dialog.directory, if (it.endsWith(".png", true)) it else "$it.png") } ?: return@save
                 val ctx = context()
                 val inp = input()
                 scope.launch {
@@ -339,11 +343,18 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
                             .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
                     }
                 }
+            })
+            androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.TopCenter) {
+                val ratio = PosterDraw.WIDTH.toFloat() / PosterDraw.HEIGHT
+                // As tall as the room allows, never wider than the column or 400 dp.
+                val w = minOf(maxWidth, maxHeight * ratio, 400.dp)
+                picture?.let {
+                    Image(it, contentDescription = word(W.poster_title), modifier = Modifier.width(w).aspectRatio(ratio))
+                }
             }
-            told?.let { Text(it, color = c.textMuted, fontSize = 13.sp) }
-            Spacer(Modifier.padding(bottom = 20.dp))
         }
     }
+    told?.let { text -> TellDialog(word(W.poster_title), text, { told = null }) }
 }
 
 /** A finished poster shrunk for the screen, smoothly (the saved one is full size). */
@@ -365,11 +376,12 @@ private fun PosterField(value: String, onChange: (String) -> Unit, label: String
     )
 }
 
+/** A tick box whose words tick it too (the audit: only the box itself could be clicked). */
 @Composable
 private fun Tick(on: Boolean, label: String, enabled: Boolean = true, onChange: (Boolean) -> Unit) {
     val c = LocalRoshanColors.current
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.clip(Look.ctl).press(Look.ctl, enabled = enabled) { onChange(!on) }, verticalAlignment = Alignment.CenterVertically) {
         Checkbox(on, onChange, enabled = enabled)
-        Text(label, color = c.ink, fontSize = 14.sp)
+        Text(label, Modifier.padding(end = 8.dp), color = if (enabled) c.ink else c.textMuted, fontSize = 14.sp)
     }
 }

@@ -1122,6 +1122,7 @@
     <string name="biz_card_template">Design</string>
     <string name="biz_card_share">Card share karein</string>
     <string name="biz_card_note">Card aap ke phone par banta hai aur tasveer ke taur par share hota hai. Kuch bhi upload nahi hota.</string>
+    <string name="biz_card_note_pc">Card isi computer par banta hai aur tasveer ke taur par mehfooz ya print hota hai. Kuch bhi upload nahi hota.</string>
     <string name="biz_card_show_mark">Card par “Roshan Khata” dikhayein</string>
     <string name="biz_card_show_logo">Card par dukaan ka logo</string>
     <string name="biz_card_logo_none">Abhi logo nahi hai. Profile mein lagayein →</string>
@@ -1714,6 +1715,7 @@
     <string name="bp_logo">Dukaan ka logo</string>
     <string name="bp_logo_help">Ikhtiyari — invoice aur stock register ke upar chhapta hai.</string>
     <string name="bp_remove_logo">Logo hatayein</string>
+    <string name="pic_delete_body_pc">Yeh tasveer sirf isi computer par hai: backup file mein tasveerein nahi jaatin. Delete karne ke baad yeh wapas nahi aa sakti.</string>
     <string name="bp_logo_saved">Logo save ho gaya</string>
     <string name="bp_logo_save_failed">Logo save nahi ho saka. Koi aur tasveer try karein.</string>
 
@@ -2919,6 +2921,7 @@
     <string name="biz_card_ex_web">Maslan website ya Facebook page</string>
     <string name="biz_card_ex_qr">Maslan Assalam o alaikum, aap ka card dekha</string>
     <string name="biz_card_send_picture">Card tasveer ki shakal mein bhejein</string>
+    <string name="biz_card_save_picture">Card tasveer ke taur par mehfooz karein</string>
     <string name="drive_signed_in_ok">✓ %1$s se sign in ho gaya. Ab aap ka khata aap ki Google Drive mein backup ho sakta hai.</string>
     <string name="entry_due_none">Adaigi ki tareekh: shamil karein</string>
     <string name="entry_due_set">Adaigi ki tareekh: %1$s</string>

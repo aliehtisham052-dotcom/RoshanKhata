@@ -1162,6 +1162,7 @@
     <string name="biz_card_template">ডিজাইন</string>
     <string name="biz_card_share">কার্ড শেয়ার করুন</string>
     <string name="biz_card_note">কার্ড আপনার ফোনেই আঁকা হয় এবং ছবি হিসেবে শেয়ার হয়। কিছুই আপলোড হয় না।</string>
+    <string name="biz_card_note_pc">কার্ড এই কম্পিউটারেই আঁকা হয় এবং ছবি হিসেবে সংরক্ষণ বা প্রিন্ট করা হয়। কিছুই আপলোড হয় না।</string>
     <string name="biz_card_show_mark">কার্ডে “রোশন খাতা” দেখান</string>
     <string name="biz_card_show_logo">কার্ডে দোকানের লোগো</string>
     <string name="biz_card_logo_none">এখনো লোগো নেই। প্রোফাইলে যোগ করুন →</string>
@@ -1764,6 +1765,7 @@
     <string name="bp_logo">দোকানের লোগো</string>
     <string name="bp_logo_help">ঐচ্ছিক — ইনভয়েস ও স্টক রেজিস্টারের ওপরে ছাপা হয়।</string>
     <string name="bp_remove_logo">লোগো সরান</string>
+    <string name="pic_delete_body_pc">এই ছবিটি শুধু এই কম্পিউটারেই আছে: ব্যাকআপ ফাইলে ছবি যায় না। মুছে ফেলার পর এটি আর ফিরিয়ে আনা যাবে না।</string>
     <string name="bp_logo_saved">লোগো সেভ হয়েছে</string>
     <string name="bp_logo_save_failed">লোগো সেভ করা যায়নি। অন্য ছবি দিয়ে চেষ্টা করুন।</string>
 
@@ -2969,6 +2971,7 @@
     <string name="biz_card_ex_web">যেমন ওয়েবসাইট বা ফেসবুক পেজ</string>
     <string name="biz_card_ex_qr">যেমন আসসালামু আলাইকুম, আপনার কার্ড দেখেছি</string>
     <string name="biz_card_send_picture">কার্ড ছবি হিসেবে পাঠান</string>
+    <string name="biz_card_save_picture">কার্ডটি ছবি হিসেবে সংরক্ষণ করুন</string>
     <string name="drive_signed_in_ok">✓ %1$s দিয়ে সাইন ইন হয়েছে। এখন আপনার খাতা আপনার Google Drive-এ ব্যাকআপ হতে পারে।</string>
     <string name="entry_due_none">পরিশোধের তারিখ: তারিখ যোগ করুন</string>
     <string name="entry_due_set">পরিশোধের তারিখ: %1$s</string>

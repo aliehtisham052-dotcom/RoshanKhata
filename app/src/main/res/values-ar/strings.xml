@@ -1222,6 +1222,7 @@
     <string name="biz_card_template">التصميم</string>
     <string name="biz_card_share">مشاركة البطاقة</string>
     <string name="biz_card_note">تُرسم البطاقة على هاتفك وتُشارَك كصورة. لا يُرفع أي شيء.</string>
+    <string name="biz_card_note_pc">تُرسم البطاقة على هذا الحاسوب وتُحفظ كصورة أو تُطبع. لا يُرفع أي شيء.</string>
     <string name="biz_card_show_mark">إظهار “روشن كهاتا” على البطاقة</string>
     <string name="biz_card_show_logo">شعار المتجر على البطاقة</string>
     <string name="biz_card_logo_none">لا يوجد شعار بعد. أضفه من الملف الشخصي ←</string>
@@ -1858,6 +1859,7 @@
     <string name="bp_logo">شعار المتجر</string>
     <string name="bp_logo_help">اختياري — يُطبع أعلى الفواتير وسجل المخزون.</string>
     <string name="bp_remove_logo">إزالة الشعار</string>
+    <string name="pic_delete_body_pc">هذه الصورة على هذا الحاسوب فقط: ملف النسخة الاحتياطية لا يحمل الصور. بعد حذفها لا يمكن استعادتها.</string>
     <string name="bp_logo_saved">تم حفظ الشعار</string>
     <string name="bp_logo_save_failed">تعذّر حفظ الشعار. جرّب صورة أخرى.</string>
 
@@ -3107,6 +3109,7 @@
     <string name="biz_card_ex_web">مثلاً موقعك أو صفحة فيسبوك</string>
     <string name="biz_card_ex_qr">مثلاً السلام عليكم، رأيت بطاقتك</string>
     <string name="biz_card_send_picture">أرسل البطاقة كصورة</string>
+    <string name="biz_card_save_picture">احفظ البطاقة كصورة</string>
     <string name="drive_signed_in_ok">✓ تم تسجيل الدخول باسم %1$s. يمكن الآن نسخ دفاترك احتياطيًا إلى Google Drive الخاص بك.</string>
     <string name="entry_due_none">تاريخ السداد: أضف تاريخًا</string>
     <string name="entry_due_set">تاريخ السداد: %1$s</string>

@@ -1150,6 +1150,7 @@
     <string name="biz_card_template">طرح</string>
     <string name="biz_card_share">اشتراک کارت</string>
     <string name="biz_card_note">کارت روی گوشی شما ساخته و به‌صورت تصویر به اشتراک گذاشته می‌شود. چیزی بارگذاری نمی‌شود.</string>
+    <string name="biz_card_note_pc">کارت روی همین رایانه ساخته و به‌صورت تصویر ذخیره یا چاپ می‌شود. چیزی بارگذاری نمی‌شود.</string>
     <string name="biz_card_show_mark">نمایش «روشن خاتا» روی کارت</string>
     <string name="biz_card_show_logo">لوگوی مغازه روی کارت</string>
     <string name="biz_card_logo_none">هنوز لوگویی ندارید. در پروفایل اضافه کنید ←</string>
@@ -1742,6 +1743,7 @@
     <string name="bp_logo">لوگوی فروشگاه</string>
     <string name="bp_logo_help">اختیاری — بالای فاکتورها و دفتر موجودی چاپ می‌شود.</string>
     <string name="bp_remove_logo">حذف لوگو</string>
+    <string name="pic_delete_body_pc">این تصویر فقط روی همین رایانه است: فایل پشتیبان تصویرها را نمی‌برد. پس از حذف، دیگر برنمی‌گردد.</string>
     <string name="bp_logo_saved">لوگو ذخیره شد</string>
     <string name="bp_logo_save_failed">لوگو ذخیره نشد. تصویر دیگری را امتحان کنید.</string>
 
@@ -2947,6 +2949,7 @@
     <string name="biz_card_ex_web">مثلاً وب‌سایت یا صفحه فیسبوک</string>
     <string name="biz_card_ex_qr">مثلاً سلام، کارت شما را دیدم</string>
     <string name="biz_card_send_picture">ارسال کارت به صورت تصویر</string>
+    <string name="biz_card_save_picture">ذخیرهٔ کارت به‌صورت تصویر</string>
     <string name="drive_signed_in_ok">✓ با %1$s وارد شدید. اکنون دفاتر شما می‌توانند در Google Drive شما پشتیبان‌گیری شوند.</string>
     <string name="entry_due_none">تاریخ پرداخت: افزودن تاریخ</string>
     <string name="entry_due_set">تاریخ پرداخت: %1$s</string>

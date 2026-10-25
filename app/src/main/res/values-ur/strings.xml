@@ -1122,6 +1122,7 @@
     <string name="biz_card_template">ڈیزائن</string>
     <string name="biz_card_share">کارڈ شیئر کریں</string>
     <string name="biz_card_note">کارڈ آپ کے فون پر بنتا ہے اور تصویر کے طور پر شیئر ہوتا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا۔</string>
+    <string name="biz_card_note_pc">کارڈ اسی کمپیوٹر پر بنتا ہے اور تصویر کے طور پر محفوظ یا پرنٹ ہوتا ہے۔ کچھ بھی اپ لوڈ نہیں ہوتا۔</string>
     <string name="biz_card_show_mark">کارڈ پر “روشن کھاتہ” دکھائیں</string>
     <string name="biz_card_show_logo">کارڈ پر دکان کا لوگو</string>
     <string name="biz_card_logo_none">ابھی لوگو نہیں ہے۔ پروفائل میں لگائیں ←</string>
@@ -1714,6 +1715,7 @@
     <string name="bp_logo">دکان کا لوگو</string>
     <string name="bp_logo_help">اختیاری — انوائس اور اسٹاک رجسٹر کے اوپر چھپتا ہے۔</string>
     <string name="bp_remove_logo">لوگو ہٹائیں</string>
+    <string name="pic_delete_body_pc">یہ تصویر صرف اسی کمپیوٹر پر ہے: بیک اپ فائل میں تصویریں نہیں جاتیں۔ حذف کرنے کے بعد یہ واپس نہیں آ سکتی۔</string>
     <string name="bp_logo_saved">لوگو محفوظ ہو گیا</string>
     <string name="bp_logo_save_failed">لوگو محفوظ نہیں ہو سکا۔ کوئی اور تصویر آزمائیں۔</string>
 
@@ -2919,6 +2921,7 @@
     <string name="biz_card_ex_web">مثلاً ویب سائٹ یا فیس بک پیج</string>
     <string name="biz_card_ex_qr">مثلاً السلام علیکم، آپ کا کارڈ دیکھا</string>
     <string name="biz_card_send_picture">کارڈ تصویر کی شکل میں بھیجیں</string>
+    <string name="biz_card_save_picture">کارڈ تصویر کے طور پر محفوظ کریں</string>
     <string name="drive_signed_in_ok">✓ %1$s سے سائن اِن ہو گیا۔ اب آپ کا کھاتہ آپ کی گوگل ڈرائیو میں بیک اپ ہو سکتا ہے۔</string>
     <string name="entry_due_none">ادائیگی کی تاریخ: شامل کریں</string>
     <string name="entry_due_set">ادائیگی کی تاریخ: %1$s</string>
