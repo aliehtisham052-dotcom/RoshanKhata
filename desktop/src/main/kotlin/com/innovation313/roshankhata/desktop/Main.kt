@@ -811,6 +811,15 @@ private fun Book(
         reminded = true
         runCatching { Reminders.daily(appPrefs, words, alerts, lastBackupAt) }
     }
+    // The second place for the daily copies, looked at once a minute: a stick pulled out or a Drive folder gone
+    // stops those copies, and the bell says so (25 Oct 2026, the audit: a failed copy left the bell silent).
+    var outsideMissing by remember { mutableStateOf(false) }
+    LaunchedEffect(outsideFolder) {
+        while (true) {
+            outsideMissing = outsideFolder?.let { f -> withContext(Dispatchers.IO) { !f.isDirectory } } ?: false
+            kotlinx.coroutines.delay(60_000)
+        }
+    }
     // The Live sync window, from More or a bell row: the backup right, and the owner's own PIN when one is set,
     // since joining a device hands it the whole book (22 Oct 2026).
     fun openLiveSync() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) {
@@ -825,7 +834,8 @@ private fun Book(
     val extraAlerts = listOfNotNull(
         if (backupOld) ExtraAlert(Section.DAILY, words.text(W.notif_backup_title),
             lastBackupAt?.let { words.text(W.na_backup, ((System.currentTimeMillis() - it) / (24L * 60 * 60 * 1000)).toInt()) } ?: words.text(W.notif_backup_body_pc)) { backupNowLater() } else null,
-        newerVersion?.let { v -> ExtraAlert(Section.HELP, words.text(W.update_available, v), words.text(W.update_open)) { UpdateCheck.openPage() } }
+        newerVersion?.let { v -> ExtraAlert(Section.HELP, words.text(W.update_available, v), words.text(W.update_open)) { UpdateCheck.openPage() } },
+        if (outsideMissing) ExtraAlert(Section.DAILY, words.text(W.auto_folder_title), words.text(W.auto_folder_missing)) { showAlerts = false; section = Section.DAILY } else null
     ) + alerts.filter { it.kind == com.innovation313.roshankhata.data.LedgerAlerts.Kind.SYNC }.map { a ->
         // Live sync's rows (conflicts, sync off) open the Live sync window, where they are dealt with
         // (25 Oct 2026, the audit: they opened Daily copies, which knows nothing of them).
