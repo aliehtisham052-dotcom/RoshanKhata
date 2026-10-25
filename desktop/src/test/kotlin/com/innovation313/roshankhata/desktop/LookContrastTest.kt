@@ -41,6 +41,28 @@ class LookContrastTest {
         atLeast(4.5, "words on the dark chosen fill", LookPalette.ON_PICKED_DARK, LookPalette.PICKED_DARK)
     }
 
+    private fun over(base: Color, wash: Color, alpha: Float) = Color(
+        red = base.red * (1 - alpha) + wash.red * alpha,
+        green = base.green * (1 - alpha) + wash.green * alpha,
+        blue = base.blue * (1 - alpha) + wash.blue * alpha
+    )
+
+    @Test
+    fun `the green card's words, its pills and the rail's group names read`() {
+        // Marhala 2 (25 Oct 2026): Home's deep green card, its two pills (10% white over it), its three
+        // figures (7% white), and the rail's group names, by day and by night.
+        val hero = Look.hero
+        val pill = over(hero, Color.White, 0.10f)
+        val tile = over(hero, Color.White, 0.07f)
+        atLeast(4.5, "white on the green card", Color.White, hero)
+        atLeast(4.5, "NET BALANCE in gold", Look.heroLabel, hero)
+        atLeast(4.5, "the softer words on a figure", over(tile, Color.White, 0.74f), tile)
+        atLeast(4.5, "I have to get on its pill", LookPalette.HERO_GET, pill)
+        atLeast(4.5, "I have to give on its pill", LookPalette.HERO_GIVE, pill)
+        atLeast(4.5, "group names on the light rail", LookPalette.GROUP_TEXT_LIGHT, LookPalette.RAIL_LIGHT)
+        atLeast(4.5, "group names on the dark rail", LookPalette.GROUP_TEXT_DARK, LookPalette.RAIL_DARK)
+    }
+
     @Test
     fun `text keeps its contrast under the hover wash`() {
         // The wash (Look.hover) laid over the card: ink must still read at 4.5:1 or better.

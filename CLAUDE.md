@@ -841,8 +841,9 @@ real devices yet.
 ### The Windows audit, part 1 (25 Oct 2026, kmp-desktop-15 — the owner: "implement one by one")
 
 The 216-point audit of every Windows screen (Claude Doc "Roshan Khata Windows — Deep Analysis aur Fix
-Plan", mockups on the Design canvas). Part 1 is the money and safety fixes, one commit each, MSI 1.17.2;
-parts 2–4 (the phone's look, merged pages, page by page) wait for the owner. CI only.
+Plan", mockups on the Design canvas). Part 1 is the money and safety fixes, one commit each, MSI 1.17.x
+(CI stamps the run number: 1.17.216 was the last); part 2 (the phone's look) follows; parts 3–4 (merged
+pages, page by page) wait. CI only.
 
 - Entry form: a ticked "paid now" writes its cash "I got" with no goods line (`entryRateType`); an edit
   keeps the goods lines the form does not show (`editedLine`, `otherItems`). Invoice discount as % or
@@ -862,6 +863,55 @@ parts 2–4 (the phone's look, merged pages, page by page) wait for the owner. C
   delete ask EDIT_BOOK; the default scale prefix "21" is stored as nothing and is no scale in use.
 - Zakat (both, nine languages): the price label names metal and unit (`*_price_hint_tola`);
   `nisab_help` lost its per-gram sentence and shows only for silver.
+- The High list (same day): a receipt's "Balance after" is the balance that entry left, in the
+  customer's words (`balanceAfterEntry`, `ReceiptBalance`, both platforms); the sales report's net is a
+  dash until every item sold has a cost (`grossOrNull`/`netOrNull`); the counter keeps its total and
+  buttons in sight on a laptop and finds any ticket of 60 days (`ticketsMatching`); the eye's choice is
+  kept (`AppPrefs.balancesHidden`, hidden by default); the Live sync window tells live, quiet, stale
+  and never-heard devices apart (`peerState`); daily copies say which were kept before a restore or
+  merge (`DailyCopies.kindOf`); Business Profile keeps a Jalali calendar (`calendarWord`); printed
+  tables size their figure columns (`TablePrint.columnEnds`) and the dues PDF has its totals; posters'
+  closed/hours/Ramazan times are the owner's (`posterDays`); the "Made with" mark follows
+  `Branding.ON_POSTERS_AND_CARDS`; an entry's search finds its goods (`entryMatches`).
+
+### The Windows audit, part 2: the phone's look (Marhala 2, 25 Oct 2026, MSI 1.18.x)
+
+The owner's chosen mockup (Design canvas "Roshan Khata Windows — Naya Design": Home, Khata, the entry
+dialog) in place of 1.10.0's Fluent face. CI only; ScreenProofTest draws it at the owner's two real
+windows (1093 x 535 and 1043 x 590 dp), day and night, English and Urdu.
+
+- **Colours and corners** (`Look`, `LookPalette`): the phone's warm page and white cards, the deep
+  green #1B5E3A as accent and chosen fill, a gold #F3C552 edge on chosen and primary controls
+  (`Look.goldEdge`), 8/12 dp corners. LookContrastTest measures the green card's words and pills and
+  the rail's group names too.
+- **One top row** (`PageHead`/`LocalPageHead`, `AppHeader`): a page's `PageHeader`/`PaneTitle` writes
+  its title, line and buttons there; the window draws them beside the backup chip (`BackupChip`: a
+  cloud, "Backed up" over a short when, or the age in amber over Back up now), the phone, the bell, ⋮
+  and the one Add party. The page's buttons take at most 42% of the row (`widthIn`, never an unfilled
+  weight — lesson 53). More (⋮) holds only what the rail does not (Data, Business, Display,
+  Security, Help).
+- **The rail** (`SectionRail`, `Group`, `Section`): the shop's card on top (Business Profile or
+  Businesses), Home, EVERY DAY, SALES & STOCK, then Reports, Tools and More folded behind a row with
+  their count (`GroupRow`; a group opens when one of its pages is chosen from anywhere). Every place
+  wears its own picture: the phone's two-tone tile, else one of its one-colour glyphs in the tile's
+  hue (`Section.ink`, `PictureBadge`); fifteen more phone drawables are copied at build time;
+  TileIconsTest refuses a picture worn twice.
+- **Home** (`HomePane`): the day and "Your shop today"; the deep green Net balance card (`HeroCard`:
+  net with its sign, the eye, I have to get / give pills, and the drawer, today's entries and today's
+  promises — `HomeFigures.promisedToday` from `observePromises`); Recent dealings (the last eight
+  entries, `recentEntries`, `whenWords`); Notifications with each page's picture (`LookRow` draws
+  `TileBadge`, no one-colour blobs); six quick actions (You gave · F2 / You got · F3 / Statement ask
+  whose first — `HomePick`; Add bill opens Supplier bills with its form — `BillsPane(startAdding)`).
+- **Type** (`DeskTheme`/`deskTypography`): Material's sizes without its fixed line heights and
+  tracking; every window and the proofs use it (lesson 55).
+- **Dialogs** (`AppDialog`): a card inside the window over a dimmed page (Compose's in-window
+  `Dialog`, `DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)`), one
+  title and one ✕: a body with its own head says `OwnDialogHead()` (DialogFrame, the entry form);
+  others get the dialog's title; forms leave their own title out `inDialog()`. `closable = false` for
+  a question that must be answered. Window shortcuts wait while any is open (`OpenDialogs`, lesson 54).
+  `KeepAppLook` stays for the customer's second-screen window only.
+- Strings (nine languages): rail_sales_stock, rail_reports, header_backed_up, home_shop_today,
+  home_recent, home_todays_entries, home_gave_got_count, home_promised_today.
 
 ### The shared module (KMP)
 
@@ -1143,6 +1193,20 @@ Each of these cost a build or a bug.
     screen that wrote a status over whatever the row held let a stale dialog
     mark a cheque the other device had cleared as bounced; reopened and
     cleared again, it posted the payment twice.
+53. **A weight that does not fill still takes its share.** In a Row,
+    `weight(1f, fill = false)` reserves its part of the space even for an
+    empty child: Home's day was cut to "Sunday, 25 Oct…" beside no buttons
+    at all. A part that should take only what it needs gets `widthIn(max)`.
+54. **A dialog drawn in the window passes its keys through the window
+    first.** The window's `onPreviewKeyEvent` runs before the scene, so F2
+    typed in an in-window dialog opened a second form; `KeyActions` waits
+    while `OpenDialogs.count > 0`.
+55. **Material's bodyLarge line height is every Text's.** A Text that sets
+    only `fontSize` keeps bodyLarge's 24 sp line: 13 sp rows stood 24 sp
+    tall. Set the type scale once (`DeskTheme`), not text by text.
+56. **A two-tone tile painted in one colour is a blob.** The phone's
+    `ic_tile_*` draw themselves (two tones); only its one-colour glyphs
+    (`ic_feature_*`, `ic_qr_scan`…) are tinted (`PictureBadge`, `Section.ink`).
 
 ---
 
