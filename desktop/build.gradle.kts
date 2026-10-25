@@ -75,7 +75,7 @@ compose.desktop {
             // MSI versions are MAJOR.MINOR.BUILD with MAJOR above 0. The BUILD number is
             // stamped by CI (desktop.yml, the run number) so every MSI the owner downloads
             // installs over the last one: an MSI of the same version does not (21 Oct 2026).
-            packageVersion = "1.19.0"
+            packageVersion = "1.20.0"
             vendor = "Innovation 313"
             description = "Roshan Khata - the shopkeeper's udhar khata"
             copyright = "Innovation 313"
@@ -130,6 +130,9 @@ val syncTileIcons by tasks.registering(Sync::class) {
             "drawable/ic_feature_stock.xml", "drawable/ic_feature_insights.xml", "drawable/ic_truck.xml",
             "drawable/ic_list_all.xml", "drawable/ic_people.xml", "drawable/ic_seal_stamp.xml",
             "drawable/ic_shield_check.xml", "drawable/ic_tune.xml", "drawable/ic_feature_backup.xml",
+            // The Khata page's tools (Marhala 4): WhatsApp, Filter, Order, Excel, choosing several.
+            "drawable/ic_action_whatsapp.xml", "drawable/ic_filter_sliders.xml", "drawable/ic_sort_arrows.xml",
+            "drawable/ic_download.xml", "drawable/ic_check_circle.xml",
             // The shop-type picker's twenty-five trade icons (TradeKit).
             "drawable/ic_trade_*.xml"
         )

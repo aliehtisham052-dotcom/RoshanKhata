@@ -417,6 +417,8 @@
     <string name="sort_amount_low">Raqam (kam se zyada)</string>
 
     <string name="no_matching_parties">Aap ki talash se koi gahak ya supplier nahi milta.</string>
+    <string name="khata_pick_party">Yahan khata dekhne ke liye list mein se kisi ko chunein.</string>
+    <string name="khata_choose_several">Kai chunein (delete karne ke liye)</string>
     <string name="no_matching_entries">Aap ki talash se koi entry nahi milti.</string>
     <string name="showing_filtered">%2$d mein se %1$d dikhaye ja rahe hain</string>
     <string name="running_balance_note">Rawan balance khate ki apni tarteeb par chalta hai, is liye aap jaise bhi tarteeb dein ya talash karein, ye durust rehta hai.</string>

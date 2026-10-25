@@ -16,7 +16,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -35,9 +38,10 @@ import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.word
-import java.net.URI
-import java.net.URLEncoder
 import java.util.TimeZone
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Follow-up on the computer (KMP Phase 7o): who owes the shop, in the
@@ -47,8 +51,12 @@ import java.util.TimeZone
  * the phone's polite reminder ready; nothing is sent until the owner sends it.
  */
 @Composable
-fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, shopName: String?) {
+fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, shopName: String?, reminders: ReminderStore) {
     val c = LocalRoshanColors.current
+    // The reminder read over before WhatsApp opens, at the ladder's next step (Marhala 4, as on the Khata page),
+    // with the date the phone's reminder quotes: a plan's next due day, else the promised harvest day.
+    var reminding by remember { mutableStateOf<Pair<PartyWithBalance, Long?>?>(null) }
+    val scope = rememberCoroutineScope()
     val points by remember { dao.observeOwingLedgerPoints() }.collectAsState(emptyList())
     val promiseRows by remember { dao.observePromises() }.collectAsState(emptyList())
     val now = System.currentTimeMillis()
@@ -98,29 +106,14 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
                     Text(Format.money(p.balance), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     val number = p.phone?.let { WhatsAppNumber.of(it) }
                     TextButton(enabled = number != null, onClick = {
-                        val text = reminderText(words, p.name, p.balance, promises[p.id], shopName)
-                        runCatching {
-                            java.awt.Desktop.getDesktop().browse(URI("https://wa.me/$number?text=" + URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
-                        }
-                    }) { Text(if (number != null) word(W.promo_send) else "–", color = c.brandGreenText) }
+                        scope.launch { reminding = p to withContext(Dispatchers.IO) { runCatching { dao.reminderDateForParty(p.id) }.getOrNull() } }
+                    }) {
+                        Text(if (number != null) word(W.promo_send) else "–", color = c.brandGreenText)
+                    }
                 }
                 Rule()
             }
         }
     }
-}
-
-/**
- * The phone's first, gentle reminder (Reminder.buildMessage, step 1): the
- * amount, the date they agreed when there is one (never an invented date),
- * and the shop's name. The phone's firmer second and third steps and its
- * payment-details block are not on the computer yet.
- */
-fun reminderText(words: Words, name: String, balance: Double, promised: Long?, shopName: String?): String {
-    // The figure and the names sealed in their own direction, as the phone's (21 Oct 2026).
-    val amount = Format.ltr(Format.money(balance))
-    val who = Format.isolate(name)
-    val body = if (promised != null) words.text(W.reminder_they_owe_by_date, who, amount, Format.dateOnly(promised))
-    else words.text(W.reminder_they_owe, who, amount)
-    return body + if (shopName.isNullOrBlank()) "" else "\n\n— " + Format.isolate(shopName)
+    reminding?.let { (p, promised) -> ReminderDialog(p.id, p.name, p.phone, p.balance, promised, shopName, reminders) { reminding = null } }
 }

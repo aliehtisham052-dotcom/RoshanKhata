@@ -104,7 +104,7 @@ class Businesses(private val home: File) {
      * business before KEY_HIGHEST was kept still has that shop's copies, pictures or settings lying there.
      */
     fun leftoverMax(): Long {
-        val top = Regex("""^(?:khata_b(\d+)\.db.*|shop_b(\d+)\.properties.*|card_b(\d+)\.properties.*|poster_b(\d+)\.properties.*|party_photos_b(\d+))$""")
+        val top = Regex("""^(?:khata_b(\d+)\.db.*|shop_b(\d+)\.properties.*|card_b(\d+)\.properties.*|poster_b(\d+)\.properties.*|party_photos_b(\d+)|reminders_b(\d+)\.properties.*)$""")
         val inHome = home.listFiles()?.mapNotNull { f -> top.find(f.name)?.groupValues?.drop(1)?.firstOrNull { it.isNotEmpty() }?.toLongOrNull() }.orEmpty()
         val folder = Regex("""^b(\d+)$""")
         val inDirs = listOf("daily", "profile").flatMap { d ->
@@ -166,7 +166,8 @@ class Businesses(private val home: File) {
         // Everything else that is this business's by its number.
         val sameName = { f: File -> f.name.startsWith(db.name + ".corrupt-") || f.name.startsWith(db.name + ".recovering") }
         home.listFiles()?.filter(sameName)?.forEach { it.delete() }
-        listOf(settingsFile(id), File(settingsFile(id).path + ".tmp"), File(home, "card_b$id.properties"), File(home, "poster_b$id.properties"))
+        listOf(settingsFile(id), File(settingsFile(id).path + ".tmp"), File(home, "card_b$id.properties"), File(home, "poster_b$id.properties"),
+            File(home, "reminders_b$id.properties"), File(home, "reminders_b$id.properties.tmp"))
             .forEach { it.delete() }
         listOf(DailyCopies.dir(home, id), File(home, "profile/b$id"), Photos.partyDir(home, id)).forEach { it.deleteRecursively() }
         // The highest id stays remembered, so this one is never given out again.

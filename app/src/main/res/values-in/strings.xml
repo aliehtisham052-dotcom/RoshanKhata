@@ -425,6 +425,8 @@
     <string name="sort_amount_low">Jumlah (kecil ke besar)</string>
 
     <string name="no_matching_parties">Tidak ada pelanggan atau pemasok yang cocok dengan pencarian Anda.</string>
+    <string name="khata_pick_party">Pilih seseorang di daftar untuk melihat bukunya di sini.</string>
+    <string name="khata_choose_several">Pilih beberapa (untuk dihapus)</string>
     <string name="no_matching_entries">Tidak ada catatan yang cocok dengan pencarian Anda.</string>
     <string name="showing_filtered">Menampilkan %1$d dari %2$d</string>
     <string name="running_balance_note">Saldo berjalan mengikuti urutan buku itu sendiri, jadi tetap benar bagaimanapun Anda mengurutkan atau mencari.</string>

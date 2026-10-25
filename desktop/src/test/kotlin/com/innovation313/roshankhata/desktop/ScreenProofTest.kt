@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.ImageComposeScene
@@ -197,28 +199,80 @@ class ScreenProofTest {
         val home = shoot("screen-laptop-home-en", ur = false, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f)
         val homeSide = shoot("screen-laptop-side-home-en", ur = false, dark = false, dir = dir, width = 1304, height = 738, scale = 1.25f)
         val homeUr = shoot("screen-laptop-home-ur-dark", ur = true, dark = true, dir = dir, width = 1366, height = 669, scale = 1.25f)
-        val khata = shoot("screen-laptop-khata-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
-            Column(Modifier.fillMaxSize()) {
-                Box(Modifier.fillMaxWidth(0.42f)) {
-                    KhataControls(
-                        type = PartyType.ALL, onType = {}, side = PartySide.ALL, onSide = {},
-                        sort = PartySort.RECENT, onSort = {}, whenFilter = PartyWhen.ALL, onWhen = {},
-                        selecting = false, onSelecting = {}
-                    )
-                }
-                Box(Modifier.fillMaxWidth(0.5f)) { DesignStepper(shown = 3, saved = 1, onShow = {}, onApply = {}) }
-            }
+        // The Khata page as the mockup draws it (Marhala 4): the list and the chosen account, at both windows.
+        val khata = shoot("screen-laptop-khata-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.KHATA) {
+            KhataProof(ur = true)
         }
-        val khataDark = shoot("screen-laptop-khata-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) {
-            Box(Modifier.fillMaxWidth(0.42f)) {
-                KhataControls(
-                    type = PartyType.CUSTOMERS, onType = {}, side = PartySide.TO_GET, onSide = {},
-                    sort = PartySort.RECENT, onSort = {}, whenFilter = PartyWhen.ALL, onWhen = {},
-                    selecting = false, onSelecting = {}
+        val khataDark = shoot("screen-laptop-khata-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.KHATA) {
+            KhataProof(ur = false)
+        }
+        val khataSide = shoot("screen-laptop-side-khata-en", ur = false, dark = false, dir = dir, width = 1304, height = 738, scale = 1.25f, section = Section.KHATA) {
+            KhataProof(ur = false)
+        }
+        val stepper = shoot("screen-laptop-stepper-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
+            Box(Modifier.fillMaxWidth(0.5f)) { DesignStepper(shown = 3, saved = 1, onShow = {}, onApply = {}) }
+        }
+        for (f in listOf(home, homeSide, homeUr, khata, khataDark, khataSide)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
+        assertTrue("${stepper.name} looks empty", stepper.length() > 2_000)
+    }
+
+    /**
+     * The Khata page from made-up parties and entries, as the window lays it out: the list's pieces in the
+     * mockup's 340 dp and the chosen account beside it (the page itself lives in Main's Book, with its state).
+     */
+    @androidx.compose.runtime.Composable
+    private fun KhataProof(ur: Boolean) {
+        val day = 24L * 60 * 60 * 1000
+        val t = now - 2 * 60 * 60 * 1000
+        val parties = listOf(
+            PartyWithBalance(1, if (ur) "اسلم کریم" else "Aslam Kareem", "03000000101", true, null, 8_450.0, lastActivity = t),
+            PartyWithBalance(2, if (ur) "بلال احمد" else "Bilal Ahmed", "03330000202", true, null, 3_900.0, lastActivity = t - day),
+            PartyWithBalance(3, if (ur) "حاجی یوسف" else "Haji Yousaf", "03450000303", true, null, 1_900.0, lastActivity = t - 3 * day),
+            PartyWithBalance(4, "Sample Seeds Co.", null, false, null, 0.0, lastActivity = t - 4 * day),
+            PartyWithBalance(5, if (ur) "رانا ساجد" else "Rana Sajid", "03010000505", true, null, -2_000.0, lastActivity = t - 6 * day)
+        )
+        val entries = listOf(
+            com.innovation313.roshankhata.data.EntryWithItems(
+                com.innovation313.roshankhata.data.LedgerEntry(id = 4, partyId = 1, amount = 4_550.0, isGiven = true, entryNumber = "RK-000214", timestamp = t),
+                listOf(com.innovation313.roshankhata.data.EntryItem(id = 1, entryId = 4, itemName = "Urea", quantity = 1.0, unit = "bag", rate = 4_550.0))
+            ),
+            com.innovation313.roshankhata.data.EntryWithItems(
+                com.innovation313.roshankhata.data.LedgerEntry(id = 3, partyId = 1, amount = 8_800.0, isGiven = false, entryNumber = "RK-000213",
+                    timestamp = t - 30 * 60 * 1000, paymentMethod = com.innovation313.roshankhata.data.PaymentMethod.CASH), emptyList()
+            ),
+            com.innovation313.roshankhata.data.EntryWithItems(
+                com.innovation313.roshankhata.data.LedgerEntry(id = 2, partyId = 1, amount = 12_100.0, isGiven = true, entryNumber = "RK-000188", timestamp = t - 3 * day),
+                listOf(com.innovation313.roshankhata.data.EntryItem(id = 2, entryId = 2, itemName = "DAP", quantity = 1.0, unit = "bag", rate = 12_100.0))
+            ),
+            com.innovation313.roshankhata.data.EntryWithItems(
+                com.innovation313.roshankhata.data.LedgerEntry(id = 1, partyId = 1, amount = 600.0, isGiven = true, note = "Spray pump repair", entryNumber = "RK-000151", timestamp = t - 9 * day),
+                emptyList()
+            )
+        )
+        androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize().padding(start = androidx.compose.ui.unit.Dp(16f), end = androidx.compose.ui.unit.Dp(16f), top = androidx.compose.ui.unit.Dp(4f), bottom = androidx.compose.ui.unit.Dp(14f))) {
+            val listWidth = (maxWidth * 0.38f).coerceIn(androidx.compose.ui.unit.Dp(300f), androidx.compose.ui.unit.Dp(400f))
+            Row(Modifier.fillMaxSize(), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(androidx.compose.ui.unit.Dp(12f))) {
+                Column(Modifier.width(listWidth), verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(androidx.compose.ui.unit.Dp(10f))) {
+                    PartyTabs(PartyType.ALL, mapOf(PartyType.ALL to 5, PartyType.CUSTOMERS to 4, PartyType.SUPPLIERS to 1), {})
+                    KhataTotals(get = 14_250.0, give = 2_000.0, hidden = false, side = PartySide.ALL, onSide = {})
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(androidx.compose.ui.unit.Dp(8f))) {
+                        FluentField(value = "", onValueChange = {}, placeholder = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.search_parties),
+                            leadingIcon = "ic_search", trailing = { KeyCap("Ctrl F") }, modifier = Modifier.weight(1f))
+                        KhataFindTools(PartySide.ALL, {}, PartyWhen.ALL, {}, PartySort.RECENT, {})
+                    }
+                    KhataInfoRow(parties, PartySort.RECENT, canStatements = true, canExport = true, onStatements = {}, onExcel = {}, onImport = {}, onChoose = {})
+                    parties.forEach { p -> PartyCard(p, null, open = p.id == 1L, selecting = false, ticked = false, onClick = {}, onTick = {}) }
+                }
+                CustomerPane(
+                    parties.first(), null, entries,
+                    promise = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.harvest_promise_header, "15 Nov"),
+                    seasons = listOf("Rabi 2025"),
+                    onGave = {}, onGot = {}, onRemind = {}, onStatement = {}, onEdit = {}, onDelete = {}, onEntry = {},
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
-        for (f in listOf(home, homeSide, homeUr, khata, khataDark)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
     }
 
     /**

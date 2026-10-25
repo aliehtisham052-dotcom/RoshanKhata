@@ -56,31 +56,13 @@ object Reminder {
         /** When this chase's first reminder went, for step 2's "first sent on". */
         firstSentAt: Long? = null
     ): String {
-        // The figure and the names sealed in their own direction (21 Oct 2026): in an Urdu or
-        // Arabic sentence "Ali (Shop 2)" and "Rs 5,000" were reordered piece by piece. In an
-        // English sentence the wrapper adds nothing, so an SMS stays as short as it was.
-        val amount = Format.ltr(Format.money(balance))
-        val partyName = Format.isolate(partyName)
+        // The words are the shared ReminderText's (Marhala 4, 25 Oct 2026): the computer's customer page
+        // and Follow-up say the same at each step. The figure and the names are sealed in their own
+        // direction there; in an English sentence the wrapper adds nothing, so an SMS stays as short.
         val from = if (businessName.isNullOrBlank()) "" else "\n\n— " + Format.isolate(businessName)
-
-        val body = if (Money.isPositive(balance) && step >= com.innovation313.roshankhata.data.ReminderLadder.SERIOUS) {
-            context.getString(R.string.reminder_step3, partyName, amount)
-        } else if (Money.isPositive(balance) && step == com.innovation313.roshankhata.data.ReminderLadder.PLAIN) {
-            context.getString(R.string.reminder_step2, partyName, amount, Format.dateOnly(firstSentAt ?: System.currentTimeMillis()))
-        } else if (Money.isPositive(balance)) {
-            // They owe me.
-            if (promisedDate != null) {
-                context.getString(
-                    R.string.reminder_they_owe_by_date,
-                    partyName, amount, Format.dateOnly(promisedDate)
-                )
-            } else {
-                context.getString(R.string.reminder_they_owe, partyName, amount)
-            }
-        } else {
-            // I owe them — a courtesy note, not a demand.
-            context.getString(R.string.reminder_i_owe, partyName, amount)
-        }
+        val body = com.innovation313.roshankhata.data.ReminderText.body(
+            com.innovation313.roshankhata.data.AndroidWords(context), partyName, balance, promisedDate, step, firstSentAt
+        )
 
         // How to pay, only on a reminder that asks for money (2 Oct).
         val pay = if (Money.isPositive(balance)) paymentBlock(context) else ""

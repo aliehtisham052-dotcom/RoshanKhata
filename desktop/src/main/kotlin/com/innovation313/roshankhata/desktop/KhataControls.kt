@@ -1,38 +1,10 @@
 package com.innovation313.roshankhata.desktop
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
-import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.words.W
-import com.innovation313.roshankhata.words.word
 
 /** The Khata list's three tabs, as the phone's typeTabs. */
 enum class PartyType(val word: String) {
@@ -120,92 +92,3 @@ fun byType(parties: List<PartyWithBalance>, type: PartyType): List<PartyWithBala
 /** A pill that is filled when chosen: the phone's tabs and filter chips (Fluent's, 1.10.0). */
 @Composable
 fun FilterPill(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(text, on, onClick = onClick)
-
-/**
- * Above the Khata list: the type tabs, the side pills, the sort menu and the
- * Select switch for deleting several at once (the phone's long-press).
- */
-@Composable
-fun KhataControls(
-    type: PartyType,
-    onType: (PartyType) -> Unit,
-    side: PartySide,
-    onSide: (PartySide) -> Unit,
-    sort: PartySort,
-    onSort: (PartySort) -> Unit,
-    whenFilter: PartyWhen,
-    onWhen: (PartyWhen) -> Unit,
-    selecting: Boolean,
-    onSelecting: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Three short lines, never a wrapped word and nothing hidden off the edge (the owner's
-    // laptop, 20 Oct; the list column there is about 370 dp): the tabs and delete, the side
-    // pills, then date and order. A line still too narrow scrolls sideways rather than
-    // breaking a label into letters.
-    androidx.compose.foundation.layout.Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            PartyType.entries.forEach { t -> FilterPill(word(t.word), t == type) { onType(t) } }
-            Spacer(Modifier.width(10.dp))
-            FilterPill(word(if (selecting) W.cancel else W.delete), selecting) { onSelecting(!selecting) }
-        }
-        Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            // A second click on the chosen side clears it, as the phone's chips do.
-            PartySide.entries.filter { it != PartySide.ALL }.forEach { s ->
-                FilterPill(word(s.word), s == side) { onSide(if (s == side) PartySide.ALL else s) }
-            }
-        }
-        Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box {
-                var open by remember { mutableStateOf(false) }
-                MenuChip((if (whenFilter == PartyWhen.ALL) word(W.filter_by_date) else word(whenFilter.word)) + " \u25BE", whenFilter != PartyWhen.ALL) { open = true }
-                DropdownMenu(open, onDismissRequest = { open = false }) {
-                    PartyWhen.entries.forEach { w ->
-                        DropdownMenuItem(text = { Choice(word(w.word), w == whenFilter) }, onClick = { open = false; onWhen(w) })
-                    }
-                }
-            }
-            Box {
-                var open by remember { mutableStateOf(false) }
-                MenuChip(word(W.sort_by) + " \u25BE", sort != PartySort.RECENT) { open = true }
-                DropdownMenu(open, onDismissRequest = { open = false }) {
-                    PartySort.entries.forEach { s ->
-                        DropdownMenuItem(text = { Choice(word(s.word), s == sort) }, onClick = { open = false; onSort(s) })
-                    }
-                }
-            }
-        }
-    }
-}
-
-/** A menu opener in the pills' row: a quiet pill, tinted when a choice is active. */
-@Composable
-private fun MenuChip(text: String, active: Boolean, onClick: () -> Unit) {
-    val c = LocalRoshanColors.current
-    Text(
-        text,
-        Modifier.clip(androidx.compose.foundation.shape.CircleShape).background(eased(if (active) Look.accentTint else Look.subtle))
-            .press(androidx.compose.foundation.shape.CircleShape, onClick = onClick).padding(horizontal = 12.dp, vertical = 6.dp),
-        color = if (active) c.brandGreenText else c.ink, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false
-    )
-}
-
-/** A menu line, ticked when it is the current choice. */
-@Composable
-private fun Choice(text: String, on: Boolean) {
-    val c = LocalRoshanColors.current
-    Text(
-        (if (on) "\u2713  " else "     ") + text,
-        color = if (on) c.brandGreenText else c.ink, fontSize = 14.sp,
-        fontWeight = if (on) FontWeight.Bold else FontWeight.Normal
-    )
-}

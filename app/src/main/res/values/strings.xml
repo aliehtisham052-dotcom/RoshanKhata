@@ -436,6 +436,8 @@
     <string name="sort_amount_low">Amount (low to high)</string>
 
     <string name="no_matching_parties">No customers or suppliers match your search.</string>
+    <string name="khata_pick_party">Choose someone on the list to see their account here.</string>
+    <string name="khata_choose_several">Choose several (to delete)</string>
     <string name="no_matching_entries">No entries match your search.</string>
     <string name="showing_filtered">Showing %1$d of %2$d</string>
     <string name="running_balance_note">Running balance follows the ledger\'s own order, so it stays correct however you sort or search.</string>

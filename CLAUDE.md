@@ -944,6 +944,40 @@ CI only; the proofs draw the merged pages (screen-laptop-expiry-en, -register-ur
   note (`pdf_insp_how_*`, nine languages) says how the figure is made instead of "not more than".
   BatchRuleTest.
 
+### The Windows audit, part 4: every page in the new design (Marhala 4, 25 Oct 2026, MSI 1.20.x)
+
+Page by page in the Doc's order (Khata → Counter → Cashbook/Cheques → Bills/Products/Stock → Invoices →
+Reports/Zakat/Calculator → Profile/Card/Poster → Staff/Daily copies/Who did what → Live sync/From phone/
+Businesses/Settings), each part with its proof pictures. CI only.
+
+- **Part 1, Khata** (`KhataList.kt`, `KhataCustomer.kt`, `ReminderDialog.kt`; the shared `PartyLedgerScreen`
+  page is gone, its file keeps only `balanceSideWord`/`balanceColour`): the list at the mockup's width beside
+  the account (38% of the page, 300–400 dp). All · Customers · Suppliers with counts (`PartyTabs`); the two
+  totals are also the side filter (`KhataTotals`, the phone's tap); the search with Filter (side, days) and
+  Order menus (`KhataFindTools`); the phone's summary line (order, who needs a reminder, settled) with every
+  statement, Excel (now a customer/supplier column, `customersCsv(typeOf)`), import and choose several
+  (`KhataInfoRow`); choosing several is its own bar, Delete red and Cancel quiet (`KhataSelectBar`), and says
+  "moved to the bin"; parties as cards, the initials' colour the party's id's (`Look.avatar`, six pairs, all
+  ≥ 4.5:1 in LookContrastTest). The account (`CustomerPane`): face, name, phone · type, the balance in its
+  side's words; the promised day and season record as chips; I gave · F2, I got · F3, WhatsApp, statement,
+  edit, ⋮ delete; the entries' own search, days and order; the ledger in columns — what (goods, else how it
+  was paid, else the note), I gave, I got, the balance after each (summed as decimals; what the shop owes
+  carries its minus inside the left-to-right run) — under day headings. Nobody chosen: `NoPartyChosen`.
+- **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
+  ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
+  books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
+  (`ReminderDialog`): the ladder's next step (Gentle / Plain / Serious, the owner may pick another), the words
+  editable, the date the phone quotes (`reminderDateForParty`: a plan's next due day, else the harvest
+  promise); a settled account is told "nothing outstanding"; no number, or no WhatsApp on the computer, is
+  said (the button did nothing before). Only a reminder to someone who owes climbs a step.
+- The audit's smaller points: the head counts customers and suppliers apart (`khataCountLine`); an empty book
+  and a search with no match say so; the entry warning is titled for what it is (`confirmTitle`: twin entry or
+  credit limit); an entry's day cannot be in the future (`DayPicker(latest)`, the editor clamps it).
+  TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
+- Strings: khata_pick_party, khata_choose_several (nine languages). Tests: ReminderTextTest (shared),
+  ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
+  screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
+
 ### The shared module (KMP)
 
 ```
@@ -951,7 +985,8 @@ shared/src/
   jvmSharedMain/   Kotlin that may use the JDK; Android and the computer share it
     data/          KhataDatabase (Room, @ConstructedBy), KhataDao, entities,
                    BackupCodec (the backup format), ShopSettings, Format...
-    screens/       Shared Compose screens: About, PartyLedger, EntryForm, RoshanTheme
+    screens/       Shared Compose screens: About, EntryForm, RoshanTheme (PartyLedgerScreen.kt
+                   keeps only the balance's side word and colour since Marhala 4)
     words/         Words: the app's strings for shared screens (W / WP / WA names)
   androidMain/     The phone's side of each door (android.icu, JsonReader, BidiFormatter)
   desktopMain/     The computer's side (java.time Hijri, Gson, BidiPort, FileShopSettings,

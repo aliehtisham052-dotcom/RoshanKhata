@@ -429,6 +429,8 @@
     <string name="sort_amount_low">مبلغ (کم به زیاد)</string>
 
     <string name="no_matching_parties">هیچ مشتری یا تأمین‌کننده‌ای با جستجوی شما مطابقت ندارد.</string>
+    <string name="khata_pick_party">برای دیدن حساب، یک نفر را از فهرست انتخاب کنید.</string>
+    <string name="khata_choose_several">انتخاب چند مورد (برای حذف)</string>
     <string name="no_matching_entries">هیچ ثبتی با جستجوی شما مطابقت ندارد.</string>
     <string name="showing_filtered">نمایش %1$d از %2$d</string>
     <string name="running_balance_note">مانده تجمعی از ترتیب خود دفتر پیروی می‌کند، پس با هر مرتب‌سازی یا جستجویی درست می‌ماند.</string>
