@@ -128,19 +128,19 @@ fun BackupChip(at: Long?, old: Boolean, compact: Boolean, onClick: () -> Unit) {
         old -> com.innovation313.roshankhata.words.plural(com.innovation313.roshankhata.words.WP.summary_backup_days, days ?: 0, days ?: 0)
         else -> word(W.header_backed_up)
     }
-    val bottom = if (at == null || old) word(W.backup_now) else com.innovation313.roshankhata.ui.Format.dateTime(at)
+    val bottom = if (at == null || old) word(W.backup_now) else whenWords(at)
     val ink = if (at == null || old) Look.warn else Look.accent
     val tint = if (at == null || old) Look.warnTint else Look.accentTint
     Tip("$top · $bottom", show = compact) {
         Row(
-            Modifier.height(40.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
-                .press(Look.ctl, onClick = onClick).padding(start = 6.dp, end = if (compact) 6.dp else 12.dp),
+            Modifier.heightIn(min = 40.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
+                .press(Look.ctl, onClick = onClick).padding(start = 6.dp, end = if (compact) 6.dp else 12.dp, top = 3.dp, bottom = 3.dp),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Box(Modifier.size(28.dp).background(tint, Look.ctl), contentAlignment = Alignment.Center) { Glyph("ic_feature_backup", ink, 17) }
             if (!compact) Column {
-                Text(top, color = if (at == null || old) Look.warn else c.textMuted, fontSize = 11.sp, maxLines = 1, softWrap = false)
-                Text(bottom, color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                Text(top, color = if (at == null || old) Look.warn else c.textMuted, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1, softWrap = false)
+                Text(bottom, color = c.ink, fontSize = 13.sp, lineHeight = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
             }
         }
     }
@@ -178,10 +178,11 @@ fun AppHeader(
                 head?.title?.let { Text(it, color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 head?.subtitle?.let { Text(it, color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             }
-            // The page's own actions: as much room as they need, never more than the title keeps.
+            // The page's own actions: the room they need, at most 42% of the row (a weight here reserved half the
+            // row even for no buttons, and Home's day was cut to "Sunday, 25 Oct…" on the laptop).
             head?.actions?.let { pageActions ->
                 Row(
-                    Modifier.weight(1f, fill = false).horizontalScroll(rememberScrollState()),
+                    Modifier.widthIn(max = maxWidth * 0.42f).horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) { pageActions() }
                 Spacer(Modifier.width(4.dp))
