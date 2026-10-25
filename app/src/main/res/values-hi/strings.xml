@@ -3049,6 +3049,8 @@
     <string name="pos_held_tickets">रोके गए बिल (%1$d)</string>
     <string name="pos_resume">जारी करें</string>
     <string name="pos_drop_held">रोका बिल हटाएँ</string>
+    <string name="pos_drop_held_confirm">यह रोका बिल हटाएँ? इस पर लिखी चीज़ें दोबारा नहीं मिलेंगी।</string>
+    <string name="pos_still_due">अभी वसूल करना है</string>
     <string name="pos_post">बिक्री पूरी करें</string>
     <string name="pos_post_and_print">पूरी करें और प्रिंट</string>
     <string name="pos_clear">बिल साफ़ करें</string>

@@ -3049,6 +3049,8 @@
     <string name="pos_held_tickets">আটকে রাখা বিল (%1$d)</string>
     <string name="pos_resume">চালিয়ে যান</string>
     <string name="pos_drop_held">আটকে রাখা বিল বাদ দিন</string>
+    <string name="pos_drop_held_confirm">এই আটকে রাখা বিলটি বাদ দেবেন? এতে লেখা জিনিস আর ফেরত পাওয়া যাবে না।</string>
+    <string name="pos_still_due">এখনো আদায় করতে হবে</string>
     <string name="pos_post">বিক্রি সম্পন্ন করুন</string>
     <string name="pos_post_and_print">সম্পন্ন ও প্রিন্ট</string>
     <string name="pos_clear">বিল মুছুন</string>

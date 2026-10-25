@@ -3002,6 +3002,8 @@
     <string name="pos_held_tickets">Nota ditahan (%1$d)</string>
     <string name="pos_resume">Lanjutkan</string>
     <string name="pos_drop_held">Hapus nota ditahan</string>
+    <string name="pos_drop_held_confirm">Hapus nota ditahan ini? Isinya tidak bisa dikembalikan.</string>
+    <string name="pos_still_due">Masih harus diterima</string>
     <string name="pos_post">Selesaikan penjualan</string>
     <string name="pos_post_and_print">Selesaikan &amp; cetak</string>
     <string name="pos_clear">Kosongkan nota</string>

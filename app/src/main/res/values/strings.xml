@@ -3213,6 +3213,8 @@
     <string name="pos_held_tickets">Held tickets (%1$d)</string>
     <string name="pos_resume">Resume</string>
     <string name="pos_drop_held">Drop held ticket</string>
+    <string name="pos_drop_held_confirm">Drop this held ticket? What was rung up on it cannot be brought back.</string>
+    <string name="pos_still_due">Still to collect</string>
     <string name="pos_post">Complete sale</string>
     <string name="pos_post_and_print">Complete &amp; print</string>
     <string name="pos_clear">Clear ticket</string>

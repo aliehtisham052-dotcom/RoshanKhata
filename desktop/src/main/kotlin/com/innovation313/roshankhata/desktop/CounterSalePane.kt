@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
@@ -171,6 +173,8 @@ fun CounterSalePane(
     var voidingReturnBy by remember { mutableStateOf<String?>(null) }
     val returns by remember { dao.observeRecentReturns(6) }.collectAsState(emptyList())
     var showHeld by remember { mutableStateOf(false) }
+    // A held ticket about to be dropped: asked first.
+    var dropping by remember { mutableStateOf<SaleSummary?>(null) }
     var reporting by remember { mutableStateOf(false) }
     if (reporting) ZReportDialog(dao, onReceipt = { onReceipt(ThermalReceipt.Job(it)) }) { reporting = false }
     // Who is at the counter (POS Phase 5), and the manager's PIN for what a cashier may not do alone.
@@ -367,37 +371,51 @@ fun CounterSalePane(
     Row(Modifier.fillMaxSize().padding(horizontal = if (narrow) 16.dp else 24.dp, vertical = 18.dp), horizontalArrangement = Arrangement.spacedBy(if (narrow) 12.dp else 16.dp)) {
         // ---- The start side: the item box and the ticket ----
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // The counter's settings sit with Hold and Clear in the head (Marhala 4, the laptop: alone on a row of
+            // their own they took a line of the ticket).
             PageHeader(word(W.pos_title), word(W.pos_keys_help), actions = {
                 FluentButton(word(W.pos_hold), { hold() }, kind = ButtonKind.STANDARD, enabled = draft.lines.isNotEmpty())
                 FluentButton(word(W.pos_clear), { draft.clear(); told = null }, kind = ButtonKind.SUBTLE, enabled = !draft.isEmpty)
+                IconAction("ic_tune", word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } })
             })
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                val access = com.innovation313.roshankhata.data.Access
-                // Who is at the counter: with the big-shop tools, or wherever counter mode is on or someone signed in.
-                if (advanced || access.counterMode || access.current != null)
-                    FluentPill(access.current?.let { Format.name(it.name) } ?: word(W.access_owner), access.current != null) { signingIn = true }
+            val access = com.innovation313.roshankhata.data.Access
+            // Who is at the counter: with the big-shop tools, or wherever counter mode is on or someone signed in.
+            val showWho = advanced || access.counterMode || access.current != null
+            val showShift = advanced || access.counterMode || myShift != null
+            // The row of the counter's own tools, only when one of them is there to show.
+            if (showWho || held.isNotEmpty() || advanced || showShift || showingCustomer) Row(
+                Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showWho) FluentPill(access.current?.let { Format.name(it.name) } ?: word(W.access_owner), access.current != null) { signingIn = true }
                 if (held.isNotEmpty()) FluentButton(words.text(W.pos_held_tickets, held.size), { showHeld = true }, kind = ButtonKind.STANDARD)
                 // The day's profit and the till's difference are the shop's figures (23 Oct 2026, the review).
                 if (advanced) FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.SUBTLE)
                 // The shift on this counter: who has it open, or that none is (a counter in counter mode should have one).
-                if (advanced || access.counterMode || myShift != null) FluentButton(
+                if (showShift) FluentButton(
                     if (myShift != null) word(W.shift_title) else word(W.shift_none), { shifting = true },
                     kind = if (myShift == null && access.counterMode) ButtonKind.STANDARD else ButtonKind.SUBTLE
                 )
-                FluentButton(word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } }, kind = ButtonKind.SUBTLE)
                 if (advanced || showingCustomer) FluentButton(word(W.cd_title), { showingCustomer = !showingCustomer }, kind = if (showingCustomer) ButtonKind.STANDARD else ButtonKind.SUBTLE)
             }
             Column(Modifier.fillMaxWidth()) {
-                FluentField(
-                    query, { query = it }, Modifier.fillMaxWidth().focusRequester(searchFocus)
-                        .onPreviewKeyEvent { e ->
-                            if (e.type != KeyEventType.KeyDown) false
-                            else if (e.key == Key.Enter) { enterQuery(); true }
-                            else if (e.key == Key.Escape) { query = ""; true } else false
-                        },
-                    placeholder = word(W.pos_search_hint), leadingIcon = "ic_search",
-                    trailing = { KeyCap("F2") }
-                )
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FluentField(
+                        query, { query = it }, Modifier.weight(1f).focusRequester(searchFocus)
+                            .onPreviewKeyEvent { e ->
+                                if (e.type != KeyEventType.KeyDown) false
+                                else if (e.key == Key.Enter) { enterQuery(); true }
+                                else if (e.key == Key.Escape) { query = ""; true } else false
+                            },
+                        placeholder = word(W.pos_search_hint), leadingIcon = "ic_search",
+                        trailing = { KeyCap("F2") }
+                    )
+                    // The ticket or the item grid, beside the box (Marhala 4: on a row of their own they took a line).
+                    if (products.isNotEmpty()) {
+                        FluentPill(word(W.pos_ticket) + if (draft.lines.isNotEmpty()) " (" + draft.lines.size + ")" else "", !grid) { grid = false }
+                        FluentPill(word(W.pos_items), grid) { grid = true }
+                    }
+                }
                 if (matches.isNotEmpty()) {
                     Column(Modifier.fillMaxWidth().padding(top = 4.dp).heightIn(max = 260.dp).card().verticalScroll(rememberScrollState())) {
                         matches.forEachIndexed { i, p ->
@@ -421,10 +439,6 @@ fun CounterSalePane(
                         }
                     }
                 }
-            }
-            if (products.isNotEmpty()) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FluentPill(word(W.pos_ticket) + if (draft.lines.isNotEmpty()) " (" + draft.lines.size + ")" else "", !grid) { grid = false }
-                FluentPill(word(W.pos_items), grid) { grid = true }
             }
             // The item grid over the ticket: tiles to tap, the lines still in sight under them.
             if (grid) ItemGridPane(products, onHand, draft, onPick = { ring(it) }, modifier = Modifier.fillMaxWidth().weight(0.55f))
@@ -540,17 +554,14 @@ fun CounterSalePane(
                     // Tax is a big-shop tool; a figure already typed (a held ticket) stays in sight either way.
                     if (advanced || draft.taxPercent.isNotBlank()) FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
                 }
+                // The ticket's discount in money (25 Oct 2026, the audit: "10%" typed showed no figure anywhere).
+                if (draft.handDiscount > 0.005) FigureRow(word(W.pos_discount), "−" + Format.money(draft.handDiscount), Look.accent)
                 if (draft.pointsValue > 0.0) FigureRow(words.text(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue), Look.accent)
                 if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax), Format.money(draft.totals.tax))
                 if (draft.totals.taxIncluded > 0.0) FigureRow(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(word(W.pos_round_off), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp)
                     FluentPill(if (draft.totals.roundOff != 0.0) Format.money(draft.totals.roundOff) else "0", draft.roundToWhole) { draft.roundToWhole = !draft.roundToWhole }
-                }
-                Rule()
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = totalSize(Format.money(draft.totals.grandTotal)), fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 }
             } }
             FluentCard { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -577,28 +588,29 @@ fun CounterSalePane(
                 val rest = draft.remaining
                 when {
                     rest > 0.005 && draft.hasParty -> FigureRow(word(W.pos_to_account), Format.money(rest), c.owedToMe)
-                    rest > 0.005 -> FigureRow(word(W.pos_to_account), Format.money(rest), c.textMuted)
+                    // A walk-in has no account to put it on: it is still to be taken (25 Oct 2026, the audit: "To account").
+                    rest > 0.005 -> FigureRow(word(W.pos_still_due), Format.money(rest), c.owedToMe)
                     rest < -0.005 -> FigureRow(word(W.pos_change), Format.money(-rest), c.iOwe)
                 }
             } }
         }
-            // The foot stays in sight: on a short window the total once more, then what is wrong, then the buttons.
-            if (short) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            // The foot, always in sight (Marhala 4, the laptop): the total — said once, here, never twice — then what
+            // is wrong, then one row of buttons: Complete sale with its key, and Complete & print beside it (on a
+            // laptop the printer alone, its words as the hover tip: the two stacked took 100 dp of the payments).
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = totalSize(Format.money(draft.totals.grandTotal)), fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
             }
             val problem = draft.problem
             told?.let { Text(it, color = if (problem == null) c.inkSoft else c.owedToMe, fontSize = 13.sp) }
             if (problem != null && draft.lines.isNotEmpty()) Text(problemWords(problem), color = c.textMuted, fontSize = 12.sp)
-            // Two wide buttons side by side on a desktop; one under the other on a laptop (1093 dp cut "Complete s").
-            if (narrow) Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FluentButton(word(W.pos_post), { complete(false) }, Modifier.fillMaxWidth(), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null && !draft.posting, tall = true)
-                FluentButton(word(W.pos_post_and_print), { complete(true) }, Modifier.fillMaxWidth(), kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null && !draft.posting, tall = true)
-            } else Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FluentButton(word(W.pos_post), { complete(false) }, Modifier.weight(1f), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = problem == null && !draft.posting, tall = true)
-                FluentButton(word(W.pos_post_and_print), { complete(true) }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = problem == null && !draft.posting, tall = true)
+            val ready = problem == null && !draft.posting
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FluentButton(word(W.pos_post), { complete(false) }, Modifier.weight(1f), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = ready, tall = true,
+                    trailing = { ButtonKey("F12", ready) })
+                if (narrow) PrintAndComplete(ready) { complete(true) }
+                else FluentButton(word(W.pos_post_and_print), { complete(true) }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = ready, tall = true)
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { KeyCap("F12") }
         }
     }
     }
@@ -637,10 +649,28 @@ fun CounterSalePane(
                                 showHeld = false
                             }
                         }, kind = ButtonKind.ACCENT)
-                        IconAction("ic_close", word(W.pos_drop_held), { scope.launch { withContext(Dispatchers.IO) { dao.dropHeldSale(h.id) }; tick++ } })
+                        // Asked first (25 Oct 2026, the audit: one click lost the ticket for good).
+                        IconAction("ic_close", word(W.pos_drop_held), { dropping = h })
                     }
                     if (i < held.lastIndex) Rule()
                 }
+            }
+        }
+    }
+    dropping?.let { h ->
+        AppDialog(onCloseRequest = { dropping = null }, onPreviewKeyEvent = escCloses { dropping = null }, title = word(W.pos_drop_held), state = rememberDialogState(width = fitW(460.dp), height = fitH(260.dp))) {
+            DialogFrame(word(W.pos_drop_held), subtitle = (h.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in)) + " · " + Format.money(h.grandTotal),
+                onClose = { dropping = null }, footer = {
+                    FluentButton(word(W.cancel), { dropping = null }, kind = ButtonKind.STANDARD)
+                    FluentButton(word(W.pos_drop_held), {
+                        dropping = null
+                        scope.launch {
+                            withContext(Dispatchers.IO) { runCatching { dao.dropHeldSale(h.id) } }.onFailure { told = counterFail(it) }
+                            tick++
+                        }
+                    }, kind = ButtonKind.DANGER)
+                }) {
+                Text(word(W.pos_drop_held_confirm), color = c.ink, fontSize = 14.sp)
             }
         }
     }
@@ -892,5 +922,26 @@ object SaleReceipt {
         out += ThermalReceipt.Line("")
         out += ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
         return out
+    }
+}
+
+/** A key's cap on a filled button (the counter's F12): in the button's own colour, muted while it is off. */
+@Composable
+private fun ButtonKey(text: String, enabled: Boolean) {
+    val ink = if (enabled) Look.onAccent else LocalRoshanColors.current.textMuted
+    Text(text, Modifier.border(1.dp, ink.copy(alpha = 0.5f), Look.ctl).padding(horizontal = 5.dp, vertical = 1.dp),
+        color = ink.copy(alpha = 0.9f), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+}
+
+/** Complete & print as the printer alone (a laptop's narrow till): its words are the hover tip. */
+@Composable
+private fun PrintAndComplete(enabled: Boolean, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    HoverTip(word(W.pos_post_and_print)) {
+        Box(
+            Modifier.width(52.dp).height(40.dp).clip(Look.ctl).background(if (enabled) Look.control else Look.subtle)
+                .border(1.dp, Look.edge, Look.ctl).press(Look.ctl, enabled = enabled, onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) { Glyph("ic_print", if (enabled) c.ink else c.textMuted, 18) }
     }
 }
