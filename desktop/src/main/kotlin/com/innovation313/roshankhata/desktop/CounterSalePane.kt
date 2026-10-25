@@ -360,6 +360,10 @@ fun CounterSalePane(
 
     androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
     val narrow = maxWidth < 1000.dp
+    // A laptop's short window (1366x768 at 125%, about 590 dp under the header): the recent strip shrinks
+    // and the end side keeps its button in sight (25 Oct 2026, the audit: the ticket had one line, Complete sale
+    // sat below the fold).
+    val short = maxHeight < 700.dp
     Row(Modifier.fillMaxSize().padding(horizontal = if (narrow) 16.dp else 24.dp, vertical = 18.dp), horizontalArrangement = Arrangement.spacedBy(if (narrow) 12.dp else 16.dp)) {
         // ---- The start side: the item box and the ticket ----
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -493,14 +497,15 @@ fun CounterSalePane(
             // audit: a return or void could reach only the last 8 tickets here).
             if (allTickets) AllTicketsDialog(dao, words, onClose = { allTickets = false },
                 onVoid = { s -> allTickets = false; voidSale(s) }, onReturn = { s -> allTickets = false; returnSale(s) }, onInvoice = { s -> allTickets = false; invoiceSale(s) })
-            Column(Modifier.fillMaxWidth().heightIn(max = if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.fillMaxWidth().heightIn(max = if (short) 112.dp else if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             RecentSales(recent, words, onVoid = voidSale, onReturn = returnSale, onInvoice = invoiceSale, onMore = { allTickets = true })
             RecentReturns(returns, words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
             }
         }
 
         // ---- The end side: who, how much, how paid, the button ----
-        Column(Modifier.width(if (narrow) 300.dp else 360.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.width(if (narrow) 300.dp else 360.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             FluentCard { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 CardTitle(word(W.customer), end = { KeyCap("F8") })
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -545,14 +550,14 @@ fun CounterSalePane(
                 Rule()
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = totalSize(Format.money(draft.totals.grandTotal)), fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 }
             } }
             FluentCard { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 CardTitle(word(W.pos_paid), end = { KeyCap("F9") })
                 draft.payments.forEach { p ->
                     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        PillRow(Modifier.fillMaxWidth()) {
                             PaymentMethod.ALL.forEach { m ->
                                 FluentPill(methodWord(m), p.method == m) { p.method = m }
                             }
@@ -576,6 +581,12 @@ fun CounterSalePane(
                     rest < -0.005 -> FigureRow(word(W.pos_change), Format.money(-rest), c.iOwe)
                 }
             } }
+        }
+            // The foot stays in sight: on a short window the total once more, then what is wrong, then the buttons.
+            if (short) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = totalSize(Format.money(draft.totals.grandTotal)), fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+            }
             val problem = draft.problem
             told?.let { Text(it, color = if (problem == null) c.inkSoft else c.owedToMe, fontSize = 13.sp) }
             if (problem != null && draft.lines.isNotEmpty()) Text(problemWords(problem), color = c.textMuted, fontSize = 12.sp)
@@ -720,6 +731,13 @@ private fun methodWord(m: String): String = word(
         else -> W.payment_method_online
     }
 )
+
+/** The grand total's size: smaller for a long figure, so "Rs 1,234,567" is never cut (25 Oct 2026, the audit). */
+internal fun totalSize(figure: String): androidx.compose.ui.unit.TextUnit = when {
+    figure.length > 13 -> 18.sp
+    figure.length > 10 -> 22.sp
+    else -> 26.sp
+}
 
 /** Today's last few tickets under the counter, with the void; [onMore] opens every ticket of 60 days. */
 @Composable
