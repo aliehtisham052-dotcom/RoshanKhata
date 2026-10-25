@@ -333,8 +333,10 @@ class ScreenProofTest {
         val words = desktopWords(Locale.ENGLISH)
         val partiesNow = kotlinx.coroutines.runBlocking { dao.partiesWithBalanceOnce() }
         try {
-            shoot("screen-laptop-cashbook-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { CashbookPane(dao) }
-            shoot("screen-laptop-cheques-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) { ChequesPane(dao, partiesNow, words) {} }
+            shoot("screen-laptop-cashbook-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.CASHBOOK) { CashbookPane(dao) }
+            // The owner's shortest window, in Urdu: the head keeps its title, the four figures and the two buttons fit.
+            shoot("screen-laptop-cashbook-short-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.CASHBOOK) { CashbookPane(dao) }
+            shoot("screen-laptop-cheques-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.CHEQUES) { ChequesPane(dao, partiesNow, words) {} }
             shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
             shoot("screen-laptop-counter-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.COUNTER) {
                 CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())

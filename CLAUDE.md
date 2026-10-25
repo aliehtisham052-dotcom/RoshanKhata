@@ -977,6 +977,15 @@ Businesses/Settings), each part with its proof pictures. CI only.
   print beside it (the printer alone on a laptop, `PrintAndComplete`, its words as the hover tip). The ticket's
   discount shows in money under its box (a typed "10%" said nothing); a walk-in's unpaid rest is "Still to
   collect" (`pos_still_due`), never "To account"; dropping a held ticket asks first (`pos_drop_held_confirm`).
+- **Part 3, Cashbook and Cheques:** the cashbook's head keeps only Close the day (and the day report with the
+  big-shop tools on, as on the counter); Money in / Money out are the phone's two coloured buttons above the
+  list (`WayButton`, now shared in the module); its figures say Money in, Money out, Net and Should be in drawer
+  — `drawerByTheBooks`, Home's and the day close's own figure, so no third "cash" disagrees. Close the day is the
+  app's dialog and waits for its save (the save ran in the dialog's scope and was cancelled with it), saying a
+  failure. Cheques: each tab's empty words are its own (`cheque_none_cleared`, `cheque_none_bounced`); the form
+  says the cheque rule whole in its body; the actions, Clear and Bounce are the app's dialogs; faces take the
+  party's colours (`Avatar(id)`). New shared dialogs: `AskDialog` (a question, its answer red when it removes)
+  and `TellDialog` (one OK). Proofs: screen-laptop-cashbook-short-ur, the pages' own rail marks.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
@@ -989,7 +998,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   credit limit); an entry's day cannot be in the future (`DayPicker(latest)`, the editor clamps it).
   TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
 - Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture, pos_still_due,
-  pos_drop_held_confirm (nine languages). Tests: ReminderTextTest (shared),
+  pos_drop_held_confirm, cheque_none_cleared, cheque_none_bounced (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
 

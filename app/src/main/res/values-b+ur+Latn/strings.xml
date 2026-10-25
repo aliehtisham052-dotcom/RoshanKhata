@@ -358,6 +358,8 @@
     <string name="cheque_cleared">Clear</string>
     <string name="cheque_bounced">Bounce</string>
     <string name="cheque_cancelled">Mansookh</string>
+    <string name="cheque_none_cleared">Abhi koi cheque clear nahi hua</string>
+    <string name="cheque_none_bounced">Koi cheque bounce ya mansookh nahi hua</string>
 
     <string name="due_today">Aaj wajib</string>
     <plurals name="due_in_days">

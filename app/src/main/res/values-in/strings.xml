@@ -368,6 +368,8 @@
     <string name="cheque_cleared">Cair</string>
     <string name="cheque_bounced">Ditolak</string>
     <string name="cheque_cancelled">Dibatalkan</string>
+    <string name="cheque_none_cleared">Belum ada cek yang cair</string>
+    <string name="cheque_none_bounced">Tidak ada cek yang ditolak atau dibatalkan</string>
 
     <string name="due_today">Jatuh tempo hari ini</string>
     <plurals name="due_in_days">
