@@ -18,6 +18,34 @@ class CsvImportTest {
     }
 
     @Test
+    fun `the app's own export reads back in all nine languages, its type column too`() {
+        // 25 Oct 2026: the Arabic phone header "رقم الهاتف" holds "رقم", the Urdu word for an amount, and was
+        // taken for the balance column; the export's fourth column (customer or supplier) is passed over.
+        val heads = listOf(
+            listOf("Name", "Phone number", "Net balance", "Customer / Supplier"),
+            listOf("نام", "فون نمبر", "کل بیلنس", "گاہک / سپلائر"),
+            listOf("Naam", "Phone number", "Kul balance", "Gahak / Supplier"),
+            listOf("نالو", "فون نمبر", "خالص بيلنس", "گراهڪ / سپلائر"),
+            listOf("الاسم", "رقم الهاتف", "الرصيد الصافي", "عميل / مورّد"),
+            listOf("نام", "شمارهٔ تلفن", "مانده خالص", "مشتری / تأمین‌کننده"),
+            listOf("नाम", "फ़ोन नंबर", "कुल बैलेंस", "ग्राहक / सप्लायर"),
+            listOf("নাম", "ফোন নম্বর", "নিট ব্যালেন্স", "গ্রাহক / সরবরাহকারী"),
+            listOf("Nama", "Nomor telepon", "Saldo bersih", "Pelanggan / Pemasok")
+        )
+        for (h in heads) {
+            val sb = StringBuilder("\uFEFF")
+            CsvCell.appendRow(sb, h)
+            CsvCell.appendRow(sb, listOf("Ali", "0300 1234567", "2000", h[3].substringBefore(" /")))
+            CsvCell.appendRow(sb, listOf("Seeds Co.", "", "-150.5", h[3].substringAfter("/ ")))
+            assertEquals(
+                h[1],
+                listOf(CsvImport.Row("Ali", "0300 1234567", 2000.0), CsvImport.Row("Seeds Co.", null, -150.5)),
+                CsvImport.parse(sb.toString())
+            )
+        }
+    }
+
+    @Test
     fun `semicolons, rupee signs and thousands separators`() {
         val csv = "Customer Name;Mobile;Due Amount\nBilal;03001112223;Rs 1,200.50\nAkram;;(500)\n"
         assertEquals(

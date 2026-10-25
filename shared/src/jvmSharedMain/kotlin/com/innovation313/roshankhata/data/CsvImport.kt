@@ -49,7 +49,11 @@ object CsvImport {
             if (!hasHeader) null
             else first.indices.firstOrNull { i -> i !in taken && words.any { first[i].contains(it) } }
 
-        var balanceCol = find(BALANCE_WORDS, emptySet())
+        // A header that names the phone is never the balance's (25 Oct 2026): Arabic writes the phone's column
+        // "رقم الهاتف", the phone's number, and "رقم" is also the Urdu for an amount — the app's own Arabic
+        // export came back with the phone numbers as balances.
+        val phoneHeads = if (hasHeader) first.indices.filter { i -> PHONE_WORDS.any { first[i].contains(it) } }.toSet() else emptySet()
+        var balanceCol = find(BALANCE_WORDS, phoneHeads)
         var phoneCol = find(PHONE_WORDS, setOfNotNull(balanceCol))
         var nameCol = find(NAME_WORDS, setOfNotNull(balanceCol, phoneCol))
 
