@@ -81,14 +81,9 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
 
     fun settle(ch: ChequeWithParty, status: Int?) {
         scope.launch {
-            withContext(Dispatchers.IO) {
-                dao.getCheque(ch.id)?.let { stored ->
-                    dao.updateCheque(
-                        if (status == null) stored.copy(status = ChequeStatus.PENDING, settledAt = null)
-                        else stored.copy(status = status, settledAt = System.currentTimeMillis())
-                    )
-                }
-            }
+            // Only from the state that allows it, in one transaction (25 Oct 2026, the audit): a cheque the
+            // phone cleared meanwhile is never marked bounced here, so its payment cannot be posted twice.
+            withContext(Dispatchers.IO) { runCatching { dao.settleCheque(ch.id, status) } }
         }
     }
 

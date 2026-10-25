@@ -693,6 +693,31 @@ interface KhataDao {
         return entryId
     }
 
+    /**
+     * A cheque marked by hand (25 Oct 2026, the audit): bounced or cancelled
+     * only while it is still pending, and back to pending ([status] null) only
+     * from bounced or cancelled when it never posted a payment. The screens
+     * wrote the status over whatever the row held: with live sync, a dialog
+     * opened before the other device cleared the cheque marked it bounced, its
+     * payment stayed, and back to pending + cleared posted it a second time.
+     * Clearing is [clearCheque] alone. One transaction; false = nothing changed.
+     */
+    @Transaction
+    suspend fun settleCheque(chequeId: Long, status: Int?, now: Long = System.currentTimeMillis()): Boolean {
+        val cheque = getCheque(chequeId) ?: return false
+        if (cheque.isDeleted) return false
+        if (status == null) {
+            val reopenable = (cheque.status == ChequeStatus.BOUNCED || cheque.status == ChequeStatus.CANCELLED) && cheque.ledgerEntryId == null
+            if (!reopenable) return false
+            updateCheque(cheque.copy(status = ChequeStatus.PENDING, settledAt = null))
+            return true
+        }
+        if (status != ChequeStatus.BOUNCED && status != ChequeStatus.CANCELLED) return false
+        if (cheque.status != ChequeStatus.PENDING) return false
+        updateCheque(cheque.copy(status = status, settledAt = now))
+        return true
+    }
+
     // ---------- Cashbook ----------
 
     @Insert
