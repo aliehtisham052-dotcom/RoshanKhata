@@ -660,12 +660,22 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                         else -> {}
                     }
                     Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    val now = System.currentTimeMillis()
                     peers.forEach { p ->
                         val name = p.name?.takeIf { it.isNotBlank() } ?: "—"
+                        // "Live" only for a device heard within its daily heartbeat (25 Oct 2026, the audit: a phone
+                        // silent for weeks was shown green and "Live"); else when it was last seen, red past a week.
+                        val heard = p.seen?.let { Format.dateTime(it) }
+                        val (line, colour) = when (peerState(p.seen, now)) {
+                            PeerState.LIVE -> word(W.live_status_live, name, heard ?: "—") to c.brandGreenText
+                            PeerState.QUIET -> (name + "  ·  " + word(W.live_device_seen, heard ?: "—")) to c.ink
+                            PeerState.STALE -> (name + "  ·  " + word(W.live_device_seen, heard ?: "—")) to c.owedToMe
+                            PeerState.NEVER -> (name + "  ·  " + word(W.live_device_never)) to c.textMuted
+                        }
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                word(W.live_status_live, name, p.seen?.let { Format.dateTime(it) } ?: "—"),
-                                color = c.brandGreenText, fontSize = 14.sp, fontWeight = FontWeight.Medium,
+                                line,
+                                color = colour, fontSize = 14.sp, fontWeight = FontWeight.Medium,
                                 modifier = Modifier.weight(1f)
                             )
                             FluentButton(word(W.live_remove), { removing = p.device to name }, kind = ButtonKind.SUBTLE)
@@ -751,4 +761,20 @@ private fun tableWord(table: String): String = when (table) {
     "products" -> word(W.tile_products)
     "staff" -> word(W.staff_title)
     else -> table
+}
+
+/** How a joined device stands in the Live sync window, by when it was last heard. */
+internal enum class PeerState { LIVE, QUIET, STALE, NEVER }
+
+/**
+ * Live within a day and two hours (a device says something at least daily,
+ * [com.innovation313.roshankhata.data.LiveCloud.HEARTBEAT_MS]); quiet up to a
+ * week; stale past [com.innovation313.roshankhata.data.LiveCloud.STALE_MS],
+ * when the others stop holding their changes for it.
+ */
+internal fun peerState(seen: Long?, now: Long): PeerState = when {
+    seen == null -> PeerState.NEVER
+    now - seen <= com.innovation313.roshankhata.data.LiveCloud.HEARTBEAT_MS + 2 * 3_600_000L -> PeerState.LIVE
+    now - seen <= com.innovation313.roshankhata.data.LiveCloud.STALE_MS -> PeerState.QUIET
+    else -> PeerState.STALE
 }
