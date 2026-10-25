@@ -1007,7 +1007,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   what expires in the window, then the rest by name (the PDF keeps the order). Barcode labels: each bar is one
   exact rectangle over a run of modules (`LabelSheet.barRuns`, drawn unsmoothed) — columns cut to whole points
   printed bars of one width one and two points wide; the price is placed first and the name takes the room
-  left. Not done: the phone's full inspector PDF on the computer.
+  left. The phone's full inspector PDF came to the computer after part 10.
 - **Part 5, Invoices (and the group's Plans):** the list is narrow (36%, 280–380 dp) and the open invoice keeps
   its head (face, name, number · date · due, the total, received and still due) and its actions in one block —
   PDF, then WhatsApp, Edit and Delete as icons, the design stepper in the same row (`DesignStepper(modifier)`) —
@@ -1165,7 +1165,12 @@ Businesses/Settings), each part with its proof pictures. CI only.
   (`PinHash.validOwner`, `lock_pin_new_long`; a shorter one set before still opens — AppLockTest); the poster's
   email tick and the card's email stay as the phone has them. The phone's "goods received" form has the batch's
   expiry per line (`OrdersScreen(pickDay)`: the phone passes BrandDatePickerDialog; the shared editor hides the
-  box without it) — a lot that came in through an order never reached Expiry (CounterReviewTest). Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
+  box without it) — a lot that came in through an order never reached Expiry (CounterReviewTest). **The phone's
+  inspector document on the computer:** `scripts/gen_desktop_inspector.py` copies InspectorReport.kt to
+  `desktop/.../invoice/` as the invoices are copied (Context.kt gained `Digits.string` and `BusinessProfile.taxLine`,
+  PdfRtl `isRtl`; the strings job checks it with --check); the stock register's PDF button opens it in the app's
+  preview (`StockPane(designs)`, `DocumentPrint`). InspectorReportTest draws it (proofs inspector-en, -ur).
+  The register's short table stays for a page with no designs. Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
   -schemes-ur, -seasons-en, -duplicates-en.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the

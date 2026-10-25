@@ -19,6 +19,9 @@ import java.util.WeakHashMap
 object PdfRtl {
     private val mirrored: MutableMap<Canvas, Float> = Collections.synchronizedMap(WeakHashMap())
 
+    /** The phone's `PdfRtl.isRtl(context)`: the page's own direction. */
+    fun isRtl(context: Context): Boolean = context.rtl
+
     fun startPage(context: Context, doc: PdfDocument, info: PdfDocument.PageInfo): PdfDocument.Page {
         val page = doc.startPage(info)
         if (context.rtl) {
