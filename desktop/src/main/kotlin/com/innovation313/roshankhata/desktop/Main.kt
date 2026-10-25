@@ -1597,7 +1597,10 @@ private fun Book(
                     } },
                     onCancel = { editing = null },
                     onDelete = { Gates.edit { deleting = e; editing = null } },
-                    onPrint = {
+                    onPrint = { scope.launch {
+                        // The balance this entry left, not today's (25 Oct 2026, the audit): an old receipt or a part
+                        // payment printed whatever the account stood at when the button was pressed.
+                        val after = withContext(Dispatchers.IO) { runCatching { dao.balanceAfterEntry(e) }.getOrNull() }
                         // Every goods line goes on the receipt (25 Oct 2026, the audit: only the first one did).
                         val goodsLines = loaded.filter { !it.itemName.isNullOrBlank() }.map { i ->
                             ThermalReceipt.Line(
@@ -1616,19 +1619,13 @@ private fun Book(
                         ) + goodsLines + listOfNotNull(
                             e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
                             ThermalReceipt.Line(""),
-                            // The customer reads this: his side in his own words, never a bare figure (25 Oct 2026, the audit).
-                            forParty?.let { p ->
-                                ThermalReceipt.Line(
-                                    when {
-                                        Money.isPositive(p.balance) -> words.text(W.pdf_stmt_you_will_pay) + ": " + Format.money(p.balance)
-                                        Money.isNegative(p.balance) -> words.text(W.pdf_stmt_you_will_receive) + ": " + Format.money(p.balance)
-                                        else -> words.text(W.pdf_stmt_settled)
-                                    }, 22f, bold = true
-                                )
+                            // The customer reads this: his side in his own words, never a bare figure (ReceiptBalance).
+                            after?.let { b ->
+                                ThermalReceipt.Line(words.text(W.balance_label) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.text(words, b), 22f, bold = true)
                             },
                             ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
                         ))
-                    }
+                    } }
                 )
             }
         }

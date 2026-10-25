@@ -2831,6 +2831,39 @@ interface KhataDao {
     suspend fun liveBalance(partyId: Long): Double
 
     /**
+     * A party's balance through one entry, in the ledger's own order: by time,
+     * then in the order the rows were written — the running balance the
+     * customer's page shows beside that line.
+     */
+    @Query(
+        """
+        SELECT COALESCE(SUM(CASE WHEN isGiven = 1 THEN amount ELSE -amount END), 0) FROM transactions
+        WHERE partyId = :partyId AND isDeleted = 0
+          AND (timestamp < :timestamp OR (timestamp = :timestamp AND id <= :entryId))
+        """
+    )
+    suspend fun balanceThrough(partyId: Long, timestamp: Long, entryId: Long): Double
+
+    /**
+     * What a receipt's "Balance after" says (25 Oct 2026, the audit): the
+     * party's balance right after [entry]. The phone's receipt printed the
+     * entry's own amount there, and the computer's today's balance, so an old
+     * receipt or a part payment told the customer a wrong figure. A sale paid
+     * there and then counts its payment too (the paired "I got" written right
+     * after it), so a cash sale's receipt does not say he still owes what he
+     * has just paid.
+     */
+    @Transaction
+    suspend fun balanceAfterEntry(entry: LedgerEntry): Double {
+        val laterPair = entry.pairedEntryId?.let { getEntry(it) }?.takeIf {
+            !it.isDeleted && it.partyId == entry.partyId &&
+                (it.timestamp > entry.timestamp || (it.timestamp == entry.timestamp && it.id > entry.id))
+        }
+        val last = laterPair ?: entry
+        return balanceThrough(entry.partyId, last.timestamp, last.id)
+    }
+
+    /**
      * A new supplier bill, as ONE all-or-nothing write.
      *
      * A credit bill is three things: the debt (a ledger entry, [entry]; null
