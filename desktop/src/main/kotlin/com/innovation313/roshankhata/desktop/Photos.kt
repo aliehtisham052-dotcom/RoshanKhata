@@ -3,15 +3,14 @@ package com.innovation313.roshankhata.desktop
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
 import java.awt.FileDialog
@@ -45,6 +44,65 @@ object Photos {
     fun partyDir(home: File, businessId: Long) = File(home, if (businessId == 1L) "party_photos" else "party_photos_b$businessId")
     fun partyFile(home: File, businessId: Long, partyId: Long) = File(partyDir(home, businessId), "party_$partyId.jpg")
     fun billFile(home: File) = File(home, "bills/bill_${System.currentTimeMillis()}.jpg")
+
+    /**
+     * A merged-away customer's face goes to the one who stays (the phone's PartyPhoto.transferOnMerge; Marhala 4, the
+     * audit: on the computer it stayed with the binned record), only when that one has none on this computer. File work
+     * after the merge's own transaction; harmless to repeat. The binned record keeps its old path, read as missing.
+     */
+    suspend fun moveOnMerge(dao: com.innovation313.roshankhata.data.KhataDao, home: File, businessId: Long, loserIds: List<Long>, survivorId: Long) {
+        val keep = dao.getParty(survivorId) ?: return
+        if (keep.photoPath?.let { File(it).isFile } == true) return
+        for (loserId in loserIds) {
+            val from = dao.getParty(loserId)?.photoPath?.let { File(it) }?.takeIf { it.isFile } ?: continue
+            val to = partyFile(home, businessId, survivorId)
+            to.parentFile?.mkdirs()
+            if (to.exists() && !to.delete()) return
+            if (from.renameTo(to)) {
+                synchronized(cache) { cache.keys.removeAll { it.startsWith(to.path) || it.startsWith(from.path) } }
+                dao.updateParty(keep.copy(photoPath = to.absolutePath))
+                return
+            }
+        }
+    }
+
+    /** The pictures a book points at: its entries' and supplier bills' photos and its customers' faces. */
+    suspend fun referenced(dao: com.innovation313.roshankhata.data.KhataDao): Set<String> =
+        (dao.entriesWithBillPhoto().map { it.billPhotoPath } + dao.supplierBillsWithPhoto().map { it.photoPath } + dao.partyPhotoPaths())
+            .filterNotNull().filter { it.isNotBlank() }.toSet()
+
+    /**
+     * A permanent delete, then the pictures it left with no row pointing at them (the phone's BillPhoto.purgingOrphans;
+     * Marhala 4, the audit: the computer's bin left them on disk). Compared by the paths this book pointed at before and
+     * after, so a cascade (a customer taking his entries with him) is covered. A picture [others] still points at stays —
+     * the bills folder is every business's — and nothing goes when another book cannot be read ([others] gives null).
+     * Only a picture this app wrote is ever deleted ([ours]): a path that came in a backup may point anywhere.
+     */
+    suspend fun <T> purgingOrphans(
+        dao: com.innovation313.roshankhata.data.KhataDao, home: File, others: suspend () -> Set<String>?, block: suspend () -> T
+    ): T {
+        val before = referenced(dao)
+        val result = block()
+        val gone = before - referenced(dao)
+        if (gone.isNotEmpty()) {
+            val elsewhere = runCatching { others() }.getOrNull() ?: return result
+            for (path in gone - elsewhere) {
+                val f = File(path)
+                if (f.isFile && ours(home, f)) runCatching {
+                    if (f.delete()) synchronized(cache) { cache.keys.removeAll { it.startsWith(f.path) } }
+                }
+            }
+        }
+        return result
+    }
+
+    /** True for a picture this app keeps for a book on this computer: in its bills folder or a business's faces folder. */
+    internal fun ours(home: File, f: File): Boolean {
+        val root = runCatching { home.canonicalFile }.getOrNull() ?: return false
+        val dir = runCatching { f.canonicalFile.parentFile }.getOrNull() ?: return false
+        if (dir.parentFile != root) return false
+        return dir.name == "bills" || dir.name == "party_photos" || dir.name.startsWith("party_photos_b")
+    }
 
     /** The owner picks a picture; null when cancelled. */
     fun pick(title: String): File? {
@@ -107,15 +165,13 @@ object Photos {
 @Composable
 fun PhotoDialog(title: String, path: String?, onClose: () -> Unit) {
     val bmp = Photos.bitmap(path, 1400)
-    AlertDialog(
-        onDismissRequest = onClose,
-        title = { Text(title) },
-        text = {
-            Box(Modifier.fillMaxWidth()) {
-                if (bmp != null) Image(bmp, contentDescription = title, modifier = Modifier.fillMaxWidth().heightIn(max = 620.dp))
-                else Text(word(W.bill_photo_missing))
+    // In the app's frame (Marhala 4), the picture as large as the window allows, whole (never cropped).
+    AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(900.dp), height = fitH(760.dp))) {
+        DialogFrame(title, onClose = onClose, scroll = false, footer = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }) {
+            Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                if (bmp != null) Image(bmp, contentDescription = title, modifier = Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Fit)
+                else Text(word(W.bill_photo_missing), color = com.innovation313.roshankhata.screens.LocalRoshanColors.current.inkSoft)
             }
-        },
-        confirmButton = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }
-    )
+        }
+    }
 }

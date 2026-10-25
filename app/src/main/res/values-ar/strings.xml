@@ -606,6 +606,7 @@
     <string name="business_delete">حذف النشاط التجاري</string>
     <string name="business_delete_confirm_title">حذف %1$s؟</string>
     <string name="business_delete_confirm_body">%1$d عملاء، الرصيد %2$s. سيُحذف نهائيًا من هذا الهاتف كل قيد وصورة وفاتورة في هذا النشاط. النسخة الاحتياطية على درايف، إن وُجدت، تبقى كما هي. لا يمكن التراجع.</string>
+    <string name="business_delete_confirm_body_pc">%1$d عملاء، الرصيد %2$s. سيُحذف نهائيًا من هذا الحاسوب كل قيد وصورة وفاتورة في هذا النشاط، ونسخه اليومية. النسخ في المجلد المختار (ذاكرة USB أو درايف)، إن وُجدت، تبقى كما هي. لا يمكن التراجع.</string>
     <string name="business_delete_type_hint">اكتب «%1$s» للتأكيد</string>
     <string name="business_delete_done">تم حذف %1$s</string>
     <string name="erase_all_button">مسح كل البيانات</string>
@@ -1265,6 +1266,7 @@
     <string name="about_what">دفتر حسابات لطاولة المتجر. حسابات العملاء، النقد اليومي، الشيكات، فواتير الموردين والأقساط — محفوظة كما تُحفظ على الورق، وباللغة التي يُدار بها المتجر. متجر واحد أو عدة متاجر، لكل منها دفتره الخاص.</string>
     <string name="about_privacy_title">حساباتك تبقى لك</string>
     <string name="about_privacy_body">كل شيء محفوظ على هذا الهاتف. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. والنسخة الاحتياطية تذهب إلى درايف الخاص بك — لا إلينا.</string>
+    <string name="about_privacy_body_pc">كل شيء محفوظ على هذا الحاسوب. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. وتبقى النسخ الاحتياطية على هذا الحاسوب وفي المجلد الذي تختاره، مثل ذاكرة فلاش أو مجلد غوغل درايف — وليس لدينا.</string>
     <string name="about_privacy_policy">سياسة الخصوصية</string>
     <string name="about_maker">من إنتاج Innovation-313</string>
     <string name="party_exists">%1$s موجود بالفعل في دفترك — يتم فتحه الآن.</string>

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.width
@@ -26,12 +25,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -177,8 +171,8 @@ private fun OpeningWindow(
                     Text(words.text(W.book_cannot_open), color = c.ink, fontSize = 15.sp)
                     detail?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 3) }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        other?.let { (label, open) -> TextButton(open) { Text(label) } }
-                        TextButton(onClose) { Text(words.text(W.close)) }
+                        FluentButton(words.text(W.close), onClose, kind = ButtonKind.STANDARD)
+                        other?.let { (label, open) -> FluentButton(label, open, kind = ButtonKind.ACCENT) }
                     }
                 }
             }
@@ -429,12 +423,10 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                     // An owner's PIN from before six digits were asked: a longer one, once the owner is in (22 Oct 2026).
                     var changingOwnerPin by remember { mutableStateOf(false) }
                     if (com.innovation313.roshankhata.data.Access.ownerPinShort && !com.innovation313.roshankhata.data.Access.locked && !changingOwnerPin) {
-                        AlertDialog(
-                            onDismissRequest = { com.innovation313.roshankhata.data.Access.ownerPinShort = false },
-                            title = { Text(word(W.access_owner_pin)) },
-                            text = { Text(word(W.access_owner_pin_short)) },
-                            confirmButton = { TextButton({ changingOwnerPin = true }) { Text(word(W.access_owner_pin_change)) } },
-                            dismissButton = { TextButton({ com.innovation313.roshankhata.data.Access.ownerPinShort = false }) { Text(word(W.cancel)) } }
+                        AskDialog(
+                            word(W.access_owner_pin), word(W.access_owner_pin_short), word(W.access_owner_pin_change),
+                            onConfirm = { changingOwnerPin = true },
+                            onDismiss = { com.innovation313.roshankhata.data.Access.ownerPinShort = false }
                         )
                     }
                     if (changingOwnerPin) OwnerPinDialog(db.khataDao(), hasPin = true) {
@@ -442,28 +434,18 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         com.innovation313.roshankhata.data.Access.ownerPinShort = false
                     }
                     liveFailed?.let { why ->
-                        AlertDialog(
-                            onDismissRequest = { liveFailed = null },
-                            title = { Text(word(W.live_title)) },
-                            text = { Text(word(W.live_join_failed, why)) },
-                            confirmButton = { TextButton({ liveFailed = null }) { Text(word(W.ok)) } }
-                        )
+                        TellDialog(word(W.live_title), word(W.live_join_failed, why), { liveFailed = null })
                     }
                     if (!recoveryTold) {
                         // The book was damaged and rebuilt (or could not be): said once, before any work.
                         // Or it is empty while a book set aside earlier still sits beside it (21 Oct 2026).
                         val from = book.recoveredFrom
-                        AlertDialog(
-                            onDismissRequest = { recoveryTold = true },
-                            title = { Text(word(W.book_recovered_title)) },
-                            text = {
-                                Text(
-                                    if (book.corruptKept == null && emptyButSetAside) words.text(W.book_set_aside_note, book.setAside.first().absolutePath)
-                                    else (if (from != null) words.text(W.book_recovered_from, Format.dateTime(from.lastModified()))
-                                    else words.text(W.book_recovered_none)) + "\n\n" + words.text(W.book_corrupt_kept, book.corruptKept?.absolutePath.orEmpty())
-                                )
-                            },
-                            confirmButton = { TextButton({ recoveryTold = true }) { Text(word(W.ok)) } }
+                        TellDialog(
+                            word(W.book_recovered_title),
+                            if (book.corruptKept == null && emptyButSetAside) words.text(W.book_set_aside_note, book.setAside.first().absolutePath)
+                            else (if (from != null) words.text(W.book_recovered_from, Format.dateTime(from.lastModified()))
+                            else words.text(W.book_recovered_none)) + "\n\n" + words.text(W.book_corrupt_kept, book.corruptKept?.absolutePath.orEmpty()),
+                            { recoveryTold = true }, height = 340
                         )
                     }
                 }
@@ -651,12 +633,7 @@ private fun Book(
         }
     }
     offerLeft?.let { name ->
-        AlertDialog(
-            onDismissRequest = { offerLeft = null },
-            title = { Text(word(W.live_title)) },
-            text = { Text(word(W.live_pair_left_business, name)) },
-            confirmButton = { TextButton(onClick = { offerLeft = null }) { Text(word(W.ok)) } }
-        )
+        TellDialog(word(W.live_title), word(W.live_pair_left_business, name), { offerLeft = null }, height = 300)
     }
     // This book's own sync id: a phone offering this very book is offered only Replace (22 Oct 2026, the review:
     // "join as a new business" made a second business with the same book, and both answered the phone).
@@ -735,12 +712,7 @@ private fun Book(
         }
     }
     clockBehind?.let { newestDay ->
-        AlertDialog(
-            onDismissRequest = { clockBehind = null },
-            title = { Text(word(W.clock_behind_title)) },
-            text = { Text(words.text(W.clock_behind_body, newestDay, Format.dateOnly(System.currentTimeMillis()))) },
-            confirmButton = { TextButton({ clockBehind = null }) { Text(word(W.ok)) } }
-        )
+        TellDialog(word(W.clock_behind_title), words.text(W.clock_behind_body, newestDay, Format.dateOnly(System.currentTimeMillis())), { clockBehind = null }, height = 320)
     }
     var choosingBusiness by remember { mutableStateOf(false) }
     // An invoice just made from a counter sale, opened on the Invoices page.
@@ -1049,9 +1021,9 @@ private fun Book(
                     Section.SCHEMES -> Box(Modifier.fillMaxSize()) { SchemesPane(dao, reload) }
                     Section.CASHFLOW -> Box(Modifier.fillMaxSize()) { CashFlowPane(dao, reload) }
                     Section.BUY_RATES -> Box(Modifier.fillMaxSize()) { SupplierRatesPane(dao, reload) }
-                    Section.DUPLICATES -> Box(Modifier.fillMaxSize()) { DuplicatesPane(dao, parties) { reload++ } }
-                    Section.SEASONS -> Box(Modifier.fillMaxSize()) { SeasonsPane(dao, parties, reload) }
-                    Section.HELP -> Box(Modifier.fillMaxSize()) { HelpPane(words) }
+                    Section.DUPLICATES -> Box(Modifier.fillMaxSize()) { DuplicatesPane(dao, parties, home, activeBusiness) { reload++ } }
+                    Section.SEASONS -> Box(Modifier.fillMaxSize()) { SeasonsPane(dao, parties, reload) { id -> selected = id; section = Section.KHATA } }
+                    Section.HELP -> Box(Modifier.fillMaxSize()) { HelpPane(words) { reporting = true } }
                     Section.REGISTER -> Box(Modifier.fillMaxSize()) { RegisterPane(dao, words, rtl, shop, reload, settings) }
                     Section.STOCK -> Box(Modifier.fillMaxSize()) { StockPane(dao, words, rtl, shop, reload) }
                     Section.DAILY -> Box(Modifier.fillMaxSize()) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder, sync = db.syncSql()) { shop = shopName(); reload++ } }
@@ -1275,12 +1247,11 @@ private fun Book(
                         // Several entries to the bin, named with their count (the phone's question). Entries a bill,
                         // a plan, a cheque, a counter ticket or a return wrote stay, and are said.
                         deletingEntries?.let { ids ->
-                            AlertDialog(
-                                onDismissRequest = { deletingEntries = null },
-                                title = { Text(word(W.delete_entry_title)) },
-                                text = { Text(plural(WP.delete_selected_entries_confirm, ids.size, ids.size)) },
-                                confirmButton = {
-                                    TextButton({
+                            AskDialog(
+                                word(W.delete_entry_title), plural(WP.delete_selected_entries_confirm, ids.size, ids.size), word(W.delete),
+                                danger = true,
+                                onDismiss = { deletingEntries = null },
+                                onConfirm = {
                                         deletingEntries = null
                                         scope.launch {
                                             val left = withContext(Dispatchers.IO) { runCatching { dao.softDeleteOwnEntries(ids) } }
@@ -1293,9 +1264,7 @@ private fun Book(
                                             )
                                             reload++
                                         }
-                                    }) { Text(word(W.delete), color = c.owedToMe) }
-                                },
-                                dismissButton = { TextButton({ deletingEntries = null }) { Text(word(W.cancel)) } }
+                                }
                             )
                         }
                     }
@@ -1321,11 +1290,7 @@ private fun Book(
         )
     }
     when (val p = picked) {
-        is Picked.Refused -> AlertDialog(
-            onDismissRequest = { picked = null },
-            confirmButton = { TextButton({ picked = null }) { Text(word(W.ok)) } },
-            text = { Text(word(W.restore_failed, p.why)) }
-        )
+        is Picked.Refused -> TellDialog(word(W.restore_from_file), word(W.restore_failed, p.why), { picked = null })
         is Picked.Ready -> {
           // Whatever the answer, a book that came from a phone is not left on disk (R41, 23 Oct 2026);
           // a backup file the owner chose himself is never touched (forgetIncoming checks the folder).
@@ -1334,16 +1299,26 @@ private fun Book(
           val loss = rememberLoss(dao, p.data)
           var agreed by remember(p) { mutableStateOf(false) }
           val heldBy = p.live?.let { o -> businesses.holderOf(o.book, except = activeBusiness) }
-          AlertDialog(
-            // A live pairing's question is not lost to a click outside it: it comes back at once (23 Oct 2026,
-            // the second review: the phone waited 15 minutes for an answer nobody could give).
-            onDismissRequest = { if (!busy && p.live == null) { picked = null; letGo() } },
-            title = { Text(word(W.restore_warning_title)) },
-            text = {
+          // Cancel, the ✕ and Esc are one answer (Marhala 4: the app's dialog). A click beside it never closes it, so a
+          // live pairing's question is not lost to one (23 Oct 2026, the second review: the phone waited 15 minutes
+          // for an answer nobody could give); nothing is answered while the restore runs.
+          val cancel = {
+              if (!busy) {
+                  // A live pairing said no to: let go here (the phone gives up waiting on its own).
+                  if (p.live != null) LiveDesk.offers.value = null
+                  picked = null
+                  letGo()
+              }
+          }
+          val askTitle = word(W.restore_warning_title)
+          AppDialog(onCloseRequest = cancel, title = askTitle, state = rememberDialogState(width = fitW(660.dp), height = fitH(620.dp))) {
+          DialogFrame(
+            askTitle, onClose = cancel, scroll = false,
+            body = {
               // The question scrolls, with a bar to say so (25 Oct 2026, the audit): on a laptop the
               // counts of what is replaced and the tick that allows Replace were cut off below the window.
               val restoreScroll = rememberScrollState()
-              Box(Modifier.heightIn(max = 340.dp)) {
+              Box(Modifier.weight(1f).fillMaxWidth()) {
                 Column(Modifier.verticalScroll(restoreScroll).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // A live pairing (22 Oct 2026): keeping this book and opening the phone's beside it comes first.
                     if (p.live != null) Text(word(W.live_pair_warning), color = c.ink, fontWeight = FontWeight.Medium)
@@ -1385,22 +1360,24 @@ private fun Book(
                 )
               }
             },
-            confirmButton = {
-              Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            footerStart = {
                 // Or keep this book and add only what the copy has that it lacks.
                 // Not for a live pairing: the two devices must start from the very same book.
-                if (p.live == null) TextButton(enabled = !busy, onClick = { merging = p.data; picked = null; letGo() }) { Text(word(W.merge_button)) }
+                if (p.live == null) FluentButton(word(W.merge_button), { merging = p.data; picked = null; letGo() }, kind = ButtonKind.STANDARD, enabled = !busy)
+            },
+            footer = {
+                FluentButton(word(W.cancel), cancel, kind = ButtonKind.STANDARD, enabled = !busy)
                 // The business that already keeps this book, opened (R29); nothing here is joined or replaced.
-                if (heldBy != null) TextButton(enabled = !busy, onClick = {
+                if (heldBy != null) FluentButton(word(W.business_switch_open), {
                     LiveDesk.offers.value = null
                     picked = null
                     letGo()
                     onSwitch(heldBy)
-                }) { Text(word(W.business_switch_open)) }
+                }, kind = ButtonKind.ACCENT, enabled = !busy)
                 // Nothing here is removed: the phone's book becomes a business of its own and that business joins.
                 // Not when this computer already keeps this very book: then it is Replace (this copy made the phone's again).
                 p.live?.takeIf { it.book != thisBook && heldBy == null }?.let { offer ->
-                    TextButton(enabled = !busy, onClick = {
+                    FluentButton(word(W.live_join_new_business), {
                         // Its own name, with the phone's after it, so the two books never read alike in the list.
                         val name = (p.data.businessName?.takeIf { it.isNotBlank() } ?: words.text(W.live_title)) +
                             offer.name.takeIf { it.isNotBlank() }?.let { " ($it)" }.orEmpty()
@@ -1410,9 +1387,11 @@ private fun Book(
                         picked = null
                         letGo()
                         onSwitch(b.id)
-                    }) { Text(word(W.live_join_new_business)) }
+                    }, kind = ButtonKind.ACCENT, enabled = !busy)
                 }
-                if (heldBy == null) TextButton(
+                if (heldBy == null) FluentButton(
+                    word(W.restore_replace),
+                    kind = ButtonKind.DANGER,
                     enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
                         busy = true
@@ -1468,30 +1447,15 @@ private fun Book(
                                 letGo()
                             }
                         }
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                ) { Text(word(W.restore_replace)) }
-              }
-            },
-            dismissButton = {
-                TextButton(enabled = !busy, onClick = {
-                    // A live pairing said no to: let go here (the phone gives up waiting on its own).
-                    if (p.live != null) LiveDesk.offers.value = null
-                    picked = null
-                    letGo()
-                }) { Text(word(W.cancel)) }
+                    }
+                )
             }
           )
+          }
         }
         null -> {}
     }
-    if (done) {
-        AlertDialog(
-            onDismissRequest = { done = false },
-            confirmButton = { TextButton({ done = false }) { Text(word(W.ok)) } },
-            text = { Text(word(W.restore_file_no_images)) }
-        )
-    }
+    if (done) TellDialog(word(W.restore_done), word(W.restore_file_no_images), { done = false }, height = 300)
     val way = entryWay
     val forParty = parties.firstOrNull { it.id == selected }
     // A new entry asks twice before it saves, as the phone does: the same amount the
@@ -1752,21 +1716,16 @@ private fun Book(
     if (deletingMany) {
         val gone = parties.filter { it.id in chosenIds }
         val owing = gone.filter { !Money.isZero(it.balance) }
-        AlertDialog(
-            onDismissRequest = { deletingMany = false },
-            title = { Text(plural(WP.delete_parties_title, gone.size, gone.size)) },
-            text = {
-                Text(
-                    plural(WP.delete_parties_confirm, gone.size, gone.size) + if (owing.isEmpty()) "" else "\n\n" + plural(
-                        WP.delete_parties_owing, owing.size, owing.size,
-                        Format.money(owing.filter { Money.isPositive(it.balance) }.sumOf { it.balance }),
-                        Format.money(owing.filter { Money.isNegative(it.balance) }.sumOf { -it.balance })
-                    )
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
+        AskDialog(
+            plural(WP.delete_parties_title, gone.size, gone.size),
+            plural(WP.delete_parties_confirm, gone.size, gone.size) + if (owing.isEmpty()) "" else "\n\n" + plural(
+                WP.delete_parties_owing, owing.size, owing.size,
+                Format.money(owing.filter { Money.isPositive(it.balance) }.sumOf { it.balance }),
+                Format.money(owing.filter { Money.isNegative(it.balance) }.sumOf { -it.balance })
+            ),
+            word(W.delete), danger = true, height = if (owing.isEmpty()) 280 else 340,
+            onDismiss = { deletingMany = false },
+            onConfirm = {
                         deletingMany = false
                         scope.launch {
                             // The phone's bulk delete: every one and their entries, one timestamp, one transaction.
@@ -1780,21 +1739,14 @@ private fun Book(
                             else told = words.text(W.recycle_bin) to words.text(W.moved_to_bin)
                             reload++
                         }
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                ) { Text(word(W.delete)) }
-            },
-            dismissButton = { TextButton({ deletingMany = false }) { Text(word(W.cancel)) } }
+            }
         )
     }
     deletingParty?.let { p ->
-        AlertDialog(
-            onDismissRequest = { deletingParty = null },
-            title = { Text(word(W.delete_party_title)) },
-            text = { Text(word(W.delete_party_confirm, p.name)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
+        AskDialog(
+            word(W.delete_party_title), word(W.delete_party_confirm, p.name), word(W.delete), danger = true,
+            onDismiss = { deletingParty = null },
+            onConfirm = {
                         deletingParty = null
                         scope.launch {
                             // The phone's delete: the customer and their entries, one timestamp, one transaction.
@@ -1804,11 +1756,7 @@ private fun Book(
                             else selected = null
                             reload++
                         }
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                ) { Text(word(W.delete)) }
-            },
-            dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
+            }
         )
     }
     carry?.let { amount ->
@@ -1942,25 +1890,35 @@ private fun Book(
                     })
                 }
             )
+            // What the other businesses' books point at, so a purge here never takes one of their pictures (the bills
+            // folder is every business's); null when one of them cannot be read — then no picture is removed.
+            suspend fun picturesOfOtherBooks(): Set<String>? = runCatching {
+                val out = HashSet<String>()
+                for (b in businesses.list()) {
+                    if (b.id == activeBusiness) continue
+                    val f = businesses.dbFile(b.id)
+                    if (!f.isFile) continue
+                    val other = com.innovation313.roshankhata.data.DesktopDatabase.open(f)
+                    try { out += Photos.referenced(other.khataDao()) } finally { other.close() }
+                }
+                out
+            }.getOrNull()
             purging?.let { (text, go) ->
-                AlertDialog(
-                    onDismissRequest = { purging = null },
-                    title = { Text(word(W.delete_forever)) },
-                    text = { Text(text) },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                purging = null
-                                scope.launch {
-                                    val said = withContext(Dispatchers.IO) { runCatching { go() }.getOrElse { words.text(W.backup_failed) } }
-                                    reload++
-                                    if (said != null) told = words.text(W.delete_forever) to said
-                                }
-                            },
-                            colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                        ) { Text(word(W.delete_forever)) }
-                    },
-                    dismissButton = { TextButton({ purging = null }) { Text(word(W.cancel)) } }
+                AskDialog(
+                    word(W.delete_forever), text, word(W.delete_forever), danger = true, height = 300,
+                    onDismiss = { purging = null },
+                    onConfirm = {
+                        purging = null
+                        scope.launch {
+                            // A failure says what went wrong (it said "backup failed" for a delete). The pictures the
+                            // purge leaves with no row go too, unless another business's book points at them.
+                            val said = withContext(Dispatchers.IO) {
+                                runCatching { Photos.purgingOrphans(dao, home, { picturesOfOtherBooks() }) { go() } }.getOrElse { failText(words, it) }
+                            }
+                            reload++
+                            if (said != null) told = words.text(W.delete_forever) to said
+                        }
+                    }
                 )
             }
         }
@@ -2042,20 +2000,10 @@ private fun Book(
         }
     }
     told?.let { (title, text) ->
-        AlertDialog(
-            onDismissRequest = { told = null },
-            title = { Text(title) },
-            confirmButton = { TextButton({ told = null }) { Text(word(W.ok)) } },
-            text = { Text(text) }
-        )
+        TellDialog(title, text, { told = null }, height = if (text.length > 160) 340 else 260)
     }
     backedUp?.let { text ->
-        AlertDialog(
-            onDismissRequest = { backedUp = null },
-            title = { Text(word(W.backup_done_title)) },
-            confirmButton = { TextButton({ backedUp = null }) { Text(word(W.ok)) } },
-            text = { Text(text) }
-        )
+        TellDialog(word(W.backup_done_title), text, { backedUp = null }, height = 320)
     }
     if (choosingLanguage) {
         AppDialog(
@@ -2108,8 +2056,9 @@ private fun Book(
     }
     var namingShop by remember { mutableStateOf(shop.isNullOrBlank()) }
     // No shortcut while a question in this window waits (R156, 23 Oct 2026): F2 or Ctrl+N stacked a form
-    // over "Delete these customers?". Every AlertDialog of this window is named here; the app's dialogs
-    // (AppDialog, drawn in the window since Marhala 2) are counted by OpenDialogs, which KeyActions reads.
+    // over "Delete these customers?". Every question is the app's dialog now (Marhala 4: the last Material
+    // AlertDialogs went), counted by OpenDialogs, which KeyActions reads; their states stay named here too,
+    // so a question shown any other way later still shuts the keys.
     // One lambda for this book's life: it reads the states themselves, so it always sees the current answer.
     val questionOpen: () -> Boolean = remember {
         {
@@ -2129,37 +2078,35 @@ private fun Book(
         var country by remember {
             mutableStateOf(com.innovation313.roshankhata.data.ShopCountry.guess(locale.country.ifBlank { null }, settings.currency(), locale.toLanguageTag()))
         }
-        AlertDialog(
-            onDismissRequest = { namingShop = false },
-            title = { Text(word(W.shop_name_title)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Outlined(
-                        typed, { typed = it }, singleLine = true,
-                        label = { Text(word(W.shop_name_field)) }, placeholder = { Text(word(W.shop_name_hint)) }
-                    )
-                    Text(word(W.country_ask_title), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        com.innovation313.roshankhata.data.ShopCountry.choices(locale).forEach { ctry ->
-                            val name = if (ctry == com.innovation313.roshankhata.data.ShopCountry.OTHER) word(W.country_other) else ctry.displayName(locale)
-                            FluentPill(name, ctry == country) { country = ctry }
-                        }
+        val save = {
+            if (typed.isNotBlank()) {
+                settings.setBusinessName(typed.trim())
+                settings.setCountry(country)
+                if (settings.currency() == com.innovation313.roshankhata.data.Currency.DEFAULT && country != com.innovation313.roshankhata.data.ShopCountry.OTHER) settings.setCurrency(country.currencySign)
+                if (country.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN && settings.calendar() == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN) settings.setCalendar(country.calendar)
+                settings.refreshDisplay()
+                shop = shopName()
+                namingShop = false
+            }
+        }
+        val skip = { namingShop = false }
+        val askTitle = word(W.shop_name_title)
+        // In the app's frame (Marhala 4): the name box, then the country as pills; Skip leaves both for later.
+        AppDialog(onCloseRequest = skip, title = askTitle, state = rememberDialogState(width = fitW(560.dp), height = fitH(340.dp))) {
+            DialogFrame(askTitle, onClose = skip, footer = {
+                FluentButton(word(W.welcome_skip), skip, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.save), save, kind = ButtonKind.ACCENT, enabled = typed.isNotBlank())
+            }) {
+                FluentField(typed, { typed = it }, Modifier.fillMaxWidth(), label = word(W.shop_name_field), placeholder = word(W.shop_name_hint))
+                Text(word(W.country_ask_title), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    com.innovation313.roshankhata.data.ShopCountry.choices(locale).forEach { ctry ->
+                        val name = if (ctry == com.innovation313.roshankhata.data.ShopCountry.OTHER) word(W.country_other) else ctry.displayName(locale)
+                        FluentPill(name, ctry == country) { country = ctry }
                     }
                 }
-            },
-            confirmButton = {
-                TextButton(enabled = typed.isNotBlank(), onClick = {
-                    settings.setBusinessName(typed.trim())
-                    settings.setCountry(country)
-                    if (settings.currency() == com.innovation313.roshankhata.data.Currency.DEFAULT && country != com.innovation313.roshankhata.data.ShopCountry.OTHER) settings.setCurrency(country.currencySign)
-                    if (country.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN && settings.calendar() == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN) settings.setCalendar(country.calendar)
-                    settings.refreshDisplay()
-                    shop = shopName()
-                    namingShop = false
-                }) { Text(word(W.save)) }
-            },
-            dismissButton = { TextButton({ namingShop = false }) { Text(word(W.welcome_skip)) } }
-        )
+            }
+        }
     }
     // The phone's first-run walkthrough, once, after the trade and the name are settled.
     var touring by remember { mutableStateOf(!appPrefs.tourSeen()) }
@@ -2247,6 +2194,7 @@ private fun Book(
                 icon = painterResource("roshan_khata_icon.png"),
                 versionName = System.getProperty("jpackage.app-version") ?: "1.0.0",
                 supportEmail = "innovation313.support@gmail.com",
+                privacyBody = word(W.about_privacy_body_pc),
                 onPrivacyPolicy = {
                     runCatching {
                         java.awt.Desktop.getDesktop()
@@ -2277,63 +2225,56 @@ private fun StatementRangeDialog(
     var from by remember { mutableStateOf<Long?>(null) }
     var till by remember { mutableStateOf<Long?>(null) }
     var picking by remember { mutableStateOf<Boolean?>(null) }
-    val day = 24L * 60 * 60 * 1000
     val bad = from != null && till != null && till!! < from!!
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text(word(W.pdf_stmt_title, partyName)) },
-        text = {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TextButton({ picking = true }) { Text(from?.let { Format.dateOnly(it) } ?: word(W.pick_start_date), color = c.brandGreenText) }
-                    Text("\u2013", color = c.textMuted)
-                    TextButton({ picking = false }) { Text(till?.let { Format.dateOnly(it) } ?: word(W.pick_end_date), color = c.brandGreenText) }
+    // The last day's whole day, by the calendar (never 24 h: dayAfter, the Khata Report's rule).
+    val window: LongRange? = from?.let { f -> till?.let { t -> f until dayAfter(t) } }
+    val title = word(W.pdf_stmt_title, partyName)
+    AppDialog(onCloseRequest = onCancel, title = title, state = rememberDialogState(width = fitW(540.dp), height = fitH(500.dp))) {
+        DialogFrame(title, onClose = onCancel, footerStart = {
+            // Back to the whole ledger.
+            FluentButton(word(W.range_all), { from = null; till = null }, kind = ButtonKind.SUBTLE, enabled = from != null || till != null)
+        }, footer = {
+            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.ledger_pdf_button), {
+                val w = window
+                if (w == null) onPrint(null, null) else onPrint(w.first, w.last)
+            }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = !bad)
+        }) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                DateBox(word(W.report_start_date), from?.let { Format.dateOnly(it) }, word(W.pick_start_date), { picking = true }, Modifier.weight(1f))
+                DateBox(word(W.report_end_date), till?.let { Format.dateOnly(it) }, word(W.pick_end_date), { picking = false }, Modifier.weight(1f))
+            }
+            Text(
+                if (from == null || till == null) word(W.range_label_all) else word(W.range_label, Format.dateOnly(from!!), Format.dateOnly(till!!)),
+                color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium
+            )
+            if (bad) Text(word(W.invalid_range), color = c.owedToMe, fontSize = 13.sp)
+            // The phone's Report screen (ReportActivity): what was given and got in the window and
+            // its net, then the closing balance of the WHOLE account — a part-period total is not
+            // what the customer owes.
+            if (!bad) {
+                val inWindow = entries.filter { window == null || it.timestamp in window }
+                val gave = inWindow.filter { it.isGiven }.sumOf { it.amount }
+                val got = inWindow.filter { !it.isGiven }.sumOf { it.amount }
+                val closing = entries.sumOf { if (it.isGiven) it.amount else -it.amount }
+                Column(Modifier.fillMaxWidth().card().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (window != null && inWindow.isEmpty()) {
+                        Text(word(W.no_entries_in_range), color = c.textMuted, fontSize = 14.sp)
+                    } else {
+                        Row { Text(word(W.i_gave), Modifier.weight(1f), color = c.inkSoft, fontSize = 14.sp); Text(Format.money(gave), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+                        Row { Text(word(W.i_got), Modifier.weight(1f), color = c.inkSoft, fontSize = 14.sp); Text(Format.money(got), color = c.iOwe, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+                        Rule()
+                        // With the side in words (25 Oct 2026, the audit): a bare "- Rs 5,000" read as money owed out.
+                        Row { Text(word(W.net_change), Modifier.weight(1f), color = c.inkSoft, fontSize = 14.sp); Text(Format.money(gave - got) + "  ·  " + word(com.innovation313.roshankhata.screens.balanceSideWord(gave - got)), color = balanceColour(gave - got), fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+                    }
                 }
                 Text(
-                    if (from == null || till == null) word(W.range_label_all) else word(W.range_label, Format.dateOnly(from!!), Format.dateOnly(till!!)),
-                    color = c.ink
+                    word(if (window == null) W.closing_note_all else W.closing_note_range, Format.money(closing) + " · " + word(com.innovation313.roshankhata.screens.balanceSideWord(closing))),
+                    color = c.ink, fontSize = 13.sp
                 )
-                if (bad) Text(word(W.invalid_range), color = c.owedToMe)
-                // The phone's Report screen (ReportActivity): what was given and got in the window and
-                // its net, then the closing balance of the WHOLE account — a part-period total is not
-                // what the customer owes.
-                if (!bad) {
-                    val f = from; val t = till
-                    val window = if (f == null || t == null) null else f..(t + day - 1)
-                    val inWindow = entries.filter { window == null || it.timestamp in window }
-                    val gave = inWindow.filter { it.isGiven }.sumOf { it.amount }
-                    val got = inWindow.filter { !it.isGiven }.sumOf { it.amount }
-                    val closing = entries.sumOf { if (it.isGiven) it.amount else -it.amount }
-                    androidx.compose.foundation.layout.Spacer(Modifier.height(10.dp))
-                    if (window != null && inWindow.isEmpty()) {
-                        Text(word(W.no_entries_in_range), color = c.textMuted)
-                    } else {
-                        Row { Text(word(W.i_gave), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(gave), color = c.owedToMe, fontWeight = FontWeight.Bold) }
-                        Row { Text(word(W.i_got), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(got), color = c.iOwe, fontWeight = FontWeight.Bold) }
-                        // With the side in words (25 Oct 2026, the audit): a bare "- Rs 5,000" read as money owed out.
-                        Row { Text(word(W.net_change), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(gave - got) + "  ·  " + word(com.innovation313.roshankhata.screens.balanceSideWord(gave - got)), color = balanceColour(gave - got), fontWeight = FontWeight.Bold) }
-                    }
-                    androidx.compose.foundation.layout.Spacer(Modifier.height(8.dp))
-                    Text(
-                        word(if (window == null) W.closing_note_all else W.closing_note_range, Format.money(closing) + " · " + word(com.innovation313.roshankhata.screens.balanceSideWord(closing))),
-                        color = c.ink, fontSize = 13.sp
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(enabled = !bad, onClick = {
-                val f = from; val t = till
-                if (f == null || t == null) onPrint(null, null) else onPrint(f, t + day - 1)
-            }) { Text(word(W.ledger_pdf_button)) }
-        },
-        dismissButton = {
-            Row {
-                TextButton({ from = null; till = null }) { Text(word(W.range_all)) }
-                FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
             }
         }
-    )
+    }
     picking?.let { start ->
         DayPicker(if (start) from else till, onPick = { d -> if (start) from = d else till = d; picking = null }, onDismiss = { picking = null })
     }

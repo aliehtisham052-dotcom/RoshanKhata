@@ -582,6 +582,7 @@
     <string name="business_delete">ڪاروبار ختم ڪريو</string>
     <string name="business_delete_confirm_title">%1$s ختم ڪجي؟</string>
     <string name="business_delete_confirm_body">%1$d گراهڪ، بيلنس %2$s. هن ڪاروبار جي هر داخلا، تصوير ۽ رسيد هن فون مان هميشه لاءِ ختم ڪري ڇڏبي. جيڪڏهن ڊرائيو بيڪ اپ موجود آهي ته ان کي هٿ نه لڳايو ويندو. اهو واپس نه ٿو ٿي سگهي.</string>
+    <string name="business_delete_confirm_body_pc">%1$d گراهڪ، بيلنس %2$s. هن ڪاروبار جي هر داخلا، تصوير ۽ رسيد، ۽ ان جون روزانيون ڪاپيون، هن ڪمپيوٽر مان هميشه لاءِ ختم ڪيون وينديون. چونڊيل فولڊر (USB يا گوگل ڊرائيو) جون ڪاپيون، جيڪڏهن هجن، ته انهن کي هٿ نه لڳايو ويندو. اهو واپس نه ٿو ٿي سگهي.</string>
     <string name="business_delete_type_hint">تصديق لاءِ «%1$s» لکو</string>
     <string name="business_delete_done">%1$s ختم ٿي ويو</string>
     <string name="erase_all_button">سمورو ڊيٽا ميساريو</string>
@@ -1193,6 +1194,7 @@
     <string name="about_what">دڪان جي ڪائونٽر لاءِ کاتو. گراهڪن جا حساب، روزانو نقد، چيڪ، سپلائر بل ۽ قسطون — جيئن ڪاغذ تي رکيا وڃن ٿا تيئن، ۽ ان ٻولي ۾ جنهن ۾ دڪان هلي ٿو. هڪ دڪان هجي يا ڪيتريون، هر هڪ جو پنهنجو کاتو.</string>
     <string name="about_privacy_title">توهان جا حساب توهان جا ئي رهندا</string>
     <string name="about_privacy_body">سڀ ڪجهه هن فون تي محفوظ آهي. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو قرض ڪڏهن به نه ٿا ڏسون. بيڪ اپ به توهان جي پنهنجي گوگل ڊرائيو تي وڃي ٿو — اسان وٽ نه.</string>
+    <string name="about_privacy_body_pc">سڀ ڪجهه هن ڪمپيوٽر تي محفوظ آهي. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو قرض ڪڏهن به نه ٿا ڏسون. بيڪ اپ هن ڪمپيوٽر تي ۽ توهان جي چونڊيل فولڊر ۾ رهن ٿا، جيئن يو ايس بي يا گوگل ڊرائيو جو فولڊر — اسان وٽ نه.</string>
     <string name="about_privacy_policy">رازداري پاليسي</string>
     <string name="about_maker">Innovation-313 پاران ٺاهيل</string>
     <string name="party_exists">%1$s اڳ ۾ ئي توهان جي کاتي ۾ آهي — کوليو پيو وڃي.</string>

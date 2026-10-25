@@ -68,7 +68,8 @@ private fun PinBox(value: String, onChange: (String) -> Unit, label: String, hel
     FluentField(
         value, { typed -> onChange(typed.filter { it in '0'..'9' }.take(8)) },
         Modifier.fillMaxWidth(), label = label, help = help, password = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        // Enter goes (Marhala 4): the action is named Done, so the keyboard's Enter runs it on Windows too.
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = androidx.compose.ui.text.input.ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onEnter() })
     )
 }
@@ -360,6 +361,7 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
             0 -> if (recover) {
                 Text(word(W.access_recovery_ask), color = c.inkSoft, fontSize = 13.sp)
                 FluentField(proof, { proof = it.uppercase().take(12); problem = null }, Modifier.fillMaxWidth(), label = word(W.access_recovery_code), help = problem,
+                    keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { prove() }))
             } else {
                 PinBox(proof, { proof = it; problem = null }, word(W.access_owner_pin_current), problem, ::prove)

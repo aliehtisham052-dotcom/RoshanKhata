@@ -1,22 +1,13 @@
 package com.innovation313.roshankhata.desktop
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,12 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.Party
@@ -40,6 +30,7 @@ import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.plural
@@ -68,6 +59,14 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
     var claiming by remember { mutableStateOf<Scheme?>(null) }
     var deleting by remember { mutableStateOf<Scheme?>(null) }
 
+    var loaded by remember { mutableStateOf(false) }
+    val words = LocalWords.current
+    // A write that fails is said (Marhala 4: a claim, an unclaim, a delete or a save failed in silence).
+    var told by remember { mutableStateOf<String?>(null) }
+    fun write(job: suspend () -> Unit) {
+        scope.launch { runCatching { withContext(Dispatchers.IO) { job() } }.onFailure { told = failText(words, it) } }
+    }
+
     LaunchedEffect(schemes, reload) {
         withContext(Dispatchers.IO) {
             val sup = dao.suppliersOnce()
@@ -80,97 +79,79 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
                 SchemeRow(s, SchemeMath.progress(s, bought), unpriced, s.partyId?.let { names[it] })
             }
         }
+        loaded = true
     }
 
     val now = System.currentTimeMillis()
     val due = rows.count { SchemeMath.status(it.scheme, it.progress, now) == SchemeMath.Status.CLAIM_DUE }
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) {
-                PaneTitle(word(W.schemes_title), if (due > 0) plural(WP.schemes_claims_due, due, due) else word(W.schemes_subtitle))
-            }
-            FillButton(word(W.schemes_add), c.brandGreen) { adding = true }
-        }
+    // In the page frame (Marhala 4): Add in the head, the claims due as its line, the schemes as cards.
+    FluentPage(word(W.schemes_title), if (due > 0) plural(WP.schemes_claims_due, due, due) else word(W.schemes_subtitle), scroll = false, actions = {
+        FluentButton(word(W.schemes_add), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+    }) {
         if (rows.isEmpty()) {
-            Text(word(W.schemes_empty), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
+            if (loaded) EmptyState("ic_tile_bills", word(W.schemes_empty), word(W.schemes_subtitle), Modifier.weight(1f))
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(Modifier.fillMaxWidth().weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(rows, key = { it.scheme.id }) { r -> SchemeCard(r, now) { acting = r.scheme } }
             }
         }
     }
 
     acting?.let { s ->
-        AlertDialog(
-            onDismissRequest = { acting = null },
-            title = { Text(s.name) },
-            text = {
-                Column {
-                    // A change to what is written asks a cashier for a manager's PIN, as the phone does
-                    // (25 Oct 2026, the audit: anyone at the till could edit, claim or delete a scheme).
-                    listOf<Pair<String, () -> Unit>>(
-                        word(W.scheme_edit) to { Gates.edit { form = s } },
-                        (if (s.claimedAmount == null) word(W.scheme_mark_claimed) else word(W.scheme_unmark_claimed)) to {
-                            Gates.edit {
-                                if (s.claimedAmount == null) claiming = s
-                                else scope.launch { withContext(Dispatchers.IO) { dao.setSchemeClaim(s.id, null, null) } }
-                            }
-                        },
-                        word(W.scheme_delete) to { Gates.edit { deleting = s } }
-                    ).forEach { (label, go) ->
-                        Text(label, Modifier.fillMaxWidth().press { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
-                    }
+        // A change to what is written asks a cashier for a manager's PIN, as the phone does
+        // (25 Oct 2026, the audit: anyone at the till could edit, claim or delete a scheme).
+        val actions = listOf<Pair<String, () -> Unit>>(
+            word(W.scheme_edit) to { Gates.edit { form = s } },
+            (if (s.claimedAmount == null) word(W.scheme_mark_claimed) else word(W.scheme_unmark_claimed)) to {
+                Gates.edit {
+                    if (s.claimedAmount == null) claiming = s
+                    else write { dao.setSchemeClaim(s.id, null, null) }
                 }
             },
-            confirmButton = { TextButton({ acting = null }) { Text(word(W.cancel)) } }
+            word(W.scheme_delete) to { Gates.edit { deleting = s } }
         )
+        PickDialog(s.name, actions.map { it.first }, onPick = { i -> acting = null; actions[i].second() }, onDismiss = { acting = null })
     }
     claiming?.let { s ->
         var amount by remember(s) { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { claiming = null },
-            title = { Text(word(W.scheme_mark_claimed)) },
-            text = { Outlined(amount, { amount = it }, label = { Text(word(W.scheme_claim_hint)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY) },
-            confirmButton = {
-                // A claim of nothing is a claim too (the phone allows 0): the scheme stops reading "Claim due".
-                TextButton(enabled = Calc.evalPad(amount)?.takeIf { it >= 0.0 } != null, onClick = {
-                    val v = Calc.evalPad(amount)?.takeIf { it >= 0.0 } ?: return@TextButton
-                    scope.launch { withContext(Dispatchers.IO) { dao.setSchemeClaim(s.id, v, System.currentTimeMillis()) } }
-                    claiming = null
-                }) { Text(word(W.save)) }
-            },
-            dismissButton = { TextButton({ claiming = null }) { Text(word(W.cancel)) } }
-        )
+        // A claim of nothing is a claim too (the phone allows 0): the scheme stops reading "Claim due". Read as the
+        // phone's CalcPad.figure reads it: the pad's sum as a size, never a sign.
+        val value = Calc.evalPad(amount)?.let { kotlin.math.abs(it) }?.takeIf { !it.isNaN() && !it.isInfinite() }
+        val close = { claiming = null }
+        val save = {
+            if (value != null) {
+                val at = System.currentTimeMillis()
+                write { dao.setSchemeClaim(s.id, value, at) }
+                claiming = null
+            }
+        }
+        val title = word(W.scheme_mark_claimed)
+        AppDialog(onCloseRequest = close, title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(300.dp))) {
+            DialogFrame(title, subtitle = s.name, onClose = close, footer = {
+                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.save), save, kind = ButtonKind.ACCENT, enabled = value != null)
+            }) {
+                FluentField(amount, { amount = it }, Modifier.fillMaxWidth(), label = word(W.scheme_claim_hint), big = true,
+                    calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            }
+        }
     }
     deleting?.let { s ->
-        AlertDialog(
-            onDismissRequest = { deleting = null },
-            text = { Text(word(W.scheme_delete_confirm, s.name)) },
-            confirmButton = {
-                TextButton({
-                    scope.launch { withContext(Dispatchers.IO) { dao.deleteScheme(s.id) } }
-                    deleting = null
-                }) { Text(word(W.scheme_delete), color = c.owedToMe) }
-            },
-            dismissButton = { TextButton({ deleting = null }) { Text(word(W.cancel)) } }
+        AskDialog(
+            word(W.scheme_delete), word(W.scheme_delete_confirm, s.name), word(W.scheme_delete), danger = true,
+            onDismiss = { deleting = null },
+            onConfirm = { deleting = null; write { dao.deleteScheme(s.id) } }
         )
     }
     if (adding || form != null) {
         val existing = form
-        AppDialog(
-            onCloseRequest = { adding = false; form = null },
-            onPreviewKeyEvent = escCloses { adding = false; form = null },
-            title = word(if (existing == null) W.schemes_add else W.scheme_edit),
-            state = rememberDialogState(width = fitW(560.dp), height = fitH(820.dp))
-        ) {
-            Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
-                SchemeForm(existing, suppliers, onSave = { s ->
-                    adding = false; form = null
-                    scope.launch { withContext(Dispatchers.IO) { dao.saveScheme(s) } }
-                }, onCancel = { adding = false; form = null })
-            }
+        val close = { adding = false; form = null }
+        val title = word(if (existing == null) W.schemes_add else W.scheme_edit)
+        AppDialog(onCloseRequest = close, title = title, state = rememberDialogState(width = fitW(600.dp), height = fitH(820.dp))) {
+            SchemeForm(title, existing, suppliers, onSave = { s -> close(); write { dao.saveScheme(s) } }, onCancel = close)
         }
     }
+    told?.let { TellDialog(word(W.schemes_title), it, { told = null }) }
 }
 
 private class SchemeRow(val scheme: Scheme, val progress: SchemeMath.Progress, val unpriced: Int, val supplier: String?)
@@ -227,14 +208,15 @@ private fun SchemeCard(r: SchemeRow, now: Long, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Scheme) -> Unit, onCancel: () -> Unit) {
+private fun SchemeForm(title: String, existing: Scheme?, suppliers: List<Party>, onSave: (Scheme) -> Unit, onCancel: () -> Unit) {
     val c = LocalRoshanColors.current
     val day = 24L * 60 * 60 * 1000
     var name by remember { mutableStateOf(existing?.name.orEmpty()) }
     var partyId by remember { mutableStateOf(existing?.partyId) }
     var company by remember { mutableStateOf(existing?.company.orEmpty()) }
     var start by remember { mutableStateOf(existing?.startDate ?: com.innovation313.roshankhata.data.Payroll.dayOf(System.currentTimeMillis())) }
-    var end by remember { mutableStateOf(existing?.endDate ?: (com.innovation313.roshankhata.data.Payroll.dayOf(System.currentTimeMillis() + 90 * day) + day - 1)) }
+    // The last day's whole day, by the calendar (dayAfter: never 24 h).
+    var end by remember { mutableStateOf(existing?.endDate ?: (dayAfter(com.innovation313.roshankhata.data.Payroll.dayOf(System.currentTimeMillis() + 90 * day)) - 1)) }
     var byQty by remember { mutableStateOf(existing?.measure == SchemeMath.BY_QTY) }
     var unit by remember { mutableStateOf(UnitWords.label(existing?.unit)) }
     var kind by remember { mutableStateOf(existing?.rewardKind ?: SchemeMath.PERCENT) }
@@ -242,92 +224,105 @@ private fun SchemeForm(existing: Scheme?, suppliers: List<Party>, onSave: (Schem
     val rewards = remember { mutableStateOf(listOf(existing?.reward1, existing?.reward2, existing?.reward3).map { it?.let(Calc::trim).orEmpty() }) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var picking by remember { mutableStateOf<Boolean?>(null) }
+    var pickingSupplier by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needName = word(W.scheme_need_name)
     val needSlab = word(W.scheme_need_slab)
     val badDates = word(W.scheme_bad_dates)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Outlined(name, { name = it }, label = { Text(word(W.scheme_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text(word(W.supplier), color = c.ink, fontWeight = FontWeight.Bold)
-        // Any supplier, or one: chosen from the suppliers in the book.
-        Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(6.dp)) {
-            (listOf<Party?>(null) + suppliers).forEach { sp ->
-                val on = sp?.id == partyId
-                Text(
-                    sp?.let { Format.name(it.name) } ?: word(W.scheme_any_supplier),
-                    Modifier.fillMaxWidth().background(if (on) c.brandGreen else androidx.compose.ui.graphics.Color.Transparent, RoundedCornerShape(8.dp))
-                        .press { partyId = sp?.id }.padding(horizontal = 10.dp, vertical = 7.dp),
-                    color = if (on) androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 14.sp
+    fun save() {
+        val slabs = (0..2).mapNotNull { i ->
+            val t = Calc.evalAmount(targets.value[i]); val r = Calc.evalAmount(rewards.value[i])
+            if (t != null && r != null) t to r else null
+        }.sortedBy { it.first }
+        when {
+            name.isBlank() -> problem = needName
+            slabs.isEmpty() -> problem = needSlab
+            end < start -> problem = badDates
+            else -> onSave(
+                Scheme(
+                    id = existing?.id ?: 0,
+                    name = name.trim(),
+                    partyId = partyId,
+                    company = company.trim().ifEmpty { null },
+                    startDate = start,
+                    endDate = end,
+                    measure = if (byQty) SchemeMath.BY_QTY else SchemeMath.BY_VALUE,
+                    unit = if (byQty) UnitWords.canonical(unit) else null,
+                    rewardKind = kind,
+                    target1 = slabs[0].first, reward1 = slabs[0].second,
+                    target2 = slabs.getOrNull(1)?.first, reward2 = slabs.getOrNull(1)?.second,
+                    target3 = slabs.getOrNull(2)?.first, reward3 = slabs.getOrNull(2)?.second,
+                    claimedAmount = existing?.claimedAmount,
+                    claimedAt = existing?.claimedAt,
+                    note = note.trim().ifEmpty { null },
+                    createdAt = existing?.createdAt ?: System.currentTimeMillis()
                 )
-            }
+            )
         }
-        Outlined(company, { company = it }, label = { Text(word(W.scheme_company_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton({ picking = true }) { Text(word(W.scheme_from, Format.dateOnly(start)), color = c.brandGreenText) }
-            TextButton({ picking = false }) { Text(word(W.scheme_to, Format.dateOnly(end)), color = c.brandGreenText) }
+    }
+
+    // In the app's frame (Marhala 4): boxes with their labels above, the supplier and the days as choice boxes,
+    // what is wrong said beside Save, where it is seen without scrolling.
+    DialogFrame(title, onClose = onCancel, footerStart = {
+        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+    }, footer = {
+        FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+        FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT)
+    }) {
+        FluentField(name, { name = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.scheme_name_hint))
+        // Any supplier, or one of the book's: chosen from a list, not laid out whole in the form.
+        ChoiceBox(word(W.supplier), suppliers.firstOrNull { it.id == partyId }?.let { Format.name(it.name) }, word(W.scheme_any_supplier),
+            { pickingSupplier = true }, Modifier.fillMaxWidth())
+        FluentField(company, { company = it }, Modifier.fillMaxWidth(), label = word(W.scheme_company_hint))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            DateBox(word(W.report_start_date), Format.dateOnly(start), "", { picking = true }, Modifier.weight(1f))
+            DateBox(word(W.report_end_date), Format.dateOnly(end), "", { picking = false }, Modifier.weight(1f))
         }
-        Text(word(W.scheme_measure), color = c.ink, fontWeight = FontWeight.Bold)
-        TwoWay(word(W.scheme_by_value), word(W.scheme_by_qty), !byQty) { value -> byQty = !value; if (!value && kind == SchemeMath.PERCENT) kind = SchemeMath.AMOUNT }
-        if (byQty) Outlined(unit, { unit = it }, label = { Text(word(W.scheme_unit_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text(word(W.scheme_reward), color = c.ink, fontWeight = FontWeight.Bold)
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            // A percentage needs a rupee base: only on a value scheme, as on the phone.
-            listOfNotNull(
-                if (!byQty) SchemeMath.PERCENT to W.scheme_reward_percent else null,
-                SchemeMath.AMOUNT to W.scheme_reward_amount,
-                SchemeMath.UNITS to W.scheme_reward_units
-            ).forEach { (k, label) ->
-                FluentPill(word(label), k == kind) { kind = k }
-            }
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            SchemeHead(word(W.scheme_measure))
+            TwoWay(word(W.scheme_by_value), word(W.scheme_by_qty), !byQty) { value -> byQty = !value; if (!value && kind == SchemeMath.PERCENT) kind = SchemeMath.AMOUNT }
         }
-        Text(word(W.scheme_slabs), color = c.ink, fontWeight = FontWeight.Bold)
-        (0..2).forEach { i ->
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Outlined(targets.value[i], { v -> targets.value = targets.value.toMutableList().also { it[i] = v } },
-                    label = { Text(word(W.scheme_target_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
-                Outlined(rewards.value[i], { v -> rewards.value = rewards.value.toMutableList().also { it[i] = v } },
-                    label = { Text(word(W.scheme_reward_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
-            }
-        }
-        Outlined(note, { note = it }, label = { Text(word(W.scheme_note_hint)) }, modifier = Modifier.fillMaxWidth())
-        problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
-            FillButton(word(W.save), c.brandGreen) {
-                val slabs = (0..2).mapNotNull { i ->
-                    val t = Calc.evalAmount(targets.value[i]); val r = Calc.evalAmount(rewards.value[i])
-                    if (t != null && r != null) t to r else null
-                }.sortedBy { it.first }
-                when {
-                    name.isBlank() -> problem = needName
-                    slabs.isEmpty() -> problem = needSlab
-                    end < start -> problem = badDates
-                    else -> onSave(
-                        Scheme(
-                            id = existing?.id ?: 0,
-                            name = name.trim(),
-                            partyId = partyId,
-                            company = company.trim().ifEmpty { null },
-                            startDate = start,
-                            endDate = end,
-                            measure = if (byQty) SchemeMath.BY_QTY else SchemeMath.BY_VALUE,
-                            unit = if (byQty) UnitWords.canonical(unit) else null,
-                            rewardKind = kind,
-                            target1 = slabs[0].first, reward1 = slabs[0].second,
-                            target2 = slabs.getOrNull(1)?.first, reward2 = slabs.getOrNull(1)?.second,
-                            target3 = slabs.getOrNull(2)?.first, reward3 = slabs.getOrNull(2)?.second,
-                            claimedAmount = existing?.claimedAmount,
-                            claimedAt = existing?.claimedAt,
-                            note = note.trim().ifEmpty { null },
-                            createdAt = existing?.createdAt ?: System.currentTimeMillis()
-                        )
-                    )
+        if (byQty) FluentField(unit, { unit = it }, Modifier.fillMaxWidth(), label = word(W.scheme_unit_hint))
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            SchemeHead(word(W.scheme_reward))
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                // A percentage needs a rupee base: only on a value scheme, as on the phone.
+                listOfNotNull(
+                    if (!byQty) SchemeMath.PERCENT to W.scheme_reward_percent else null,
+                    SchemeMath.AMOUNT to W.scheme_reward_amount,
+                    SchemeMath.UNITS to W.scheme_reward_units
+                ).forEach { (k, label) ->
+                    FluentPill(word(label), k == kind) { kind = k }
                 }
             }
         }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SchemeHead(word(W.scheme_slabs))
+            (0..2).forEach { i ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FluentField(targets.value[i], { v -> targets.value = targets.value.toMutableList().also { it[i] = v }; problem = null }, Modifier.weight(1f),
+                        label = word(W.scheme_target_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                    FluentField(rewards.value[i], { v -> rewards.value = rewards.value.toMutableList().also { it[i] = v }; problem = null }, Modifier.weight(1f),
+                        label = word(W.scheme_reward_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                }
+            }
+        }
+        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.scheme_note_hint), singleLine = false)
     }
     picking?.let { isStart ->
-        DayPicker(if (isStart) start else end, onPick = { d -> if (isStart) start = d else end = d + day - 1; picking = null }, onDismiss = { picking = null })
+        DayPicker(if (isStart) start else end, onPick = { d -> if (isStart) start = d else end = dayAfter(d) - 1; picking = null }, onDismiss = { picking = null })
     }
+    if (pickingSupplier) {
+        val labels = listOf(word(W.scheme_any_supplier)) + suppliers.map { Format.name(it.name) }
+        val chosen = if (partyId == null) 0 else suppliers.indexOfFirst { it.id == partyId } + 1
+        PickDialog(word(W.supplier), labels, chosen, onPick = { i -> partyId = if (i == 0) null else suppliers[i - 1].id; pickingSupplier = false },
+            onDismiss = { pickingSupplier = false })
+    }
+}
+
+/** A small head over a group of choices in the scheme form, as a box's label reads. */
+@Composable
+private fun SchemeHead(text: String) {
+    Text(text, color = LocalRoshanColors.current.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
 }

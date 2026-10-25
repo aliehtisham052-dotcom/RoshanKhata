@@ -526,6 +526,35 @@ class ScreenProofTest {
                 val f = File(dir, "dialog-laptop-receipt-en.png").also { it.writeBytes(png) }
                 assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
             } finally { receiptCard.close() }
+            // Marhala 4, part 10: Help in the page frame (the shortcuts with Ctrl+F, Report a problem as one window, the
+            // support address, the version); Schemes, Seasons and Duplicates on the frame with their cards. Drawn last,
+            // so the proofs above keep their book.
+            val partTen = mutableListOf<File>()
+            partTen += shoot("screen-laptop-help-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.HELP) {
+                HelpPane(words) {}
+            }
+            kotlinx.coroutines.runBlocking {
+                dao.saveScheme(com.innovation313.roshankhata.data.Scheme(
+                    name = "Rabi DAP target", startDate = now - 30 * day, endDate = now + 60 * day,
+                    measure = com.innovation313.roshankhata.data.SchemeMath.BY_QTY, unit = "bag",
+                    rewardKind = com.innovation313.roshankhata.data.SchemeMath.AMOUNT, target1 = 100.0, reward1 = 5000.0, target2 = 200.0, reward2 = 12000.0
+                ))
+            }
+            partTen += shoot("screen-laptop-schemes-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.SCHEMES, waits = 2) {
+                SchemesPane(dao, 0)
+            }
+            partTen += shoot("screen-laptop-seasons-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.SEASONS, waits = 2) {
+                SeasonsPane(dao, partiesNow, 0)
+            }
+            // The same customer written twice (one name, one number): the duplicates page's group.
+            val twice = kotlinx.coroutines.runBlocking {
+                dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Muhammad Aslam", phone = "03000000001", isCustomer = true))
+                dao.partiesWithBalanceOnce()
+            }
+            partTen += shoot("screen-laptop-duplicates-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.DUPLICATES, waits = 2) {
+                DuplicatesPane(dao, twice) {}
+            }
+            for (f in partTen) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
         } finally {
             db.close()
             home.deleteRecursively()

@@ -589,6 +589,7 @@
     <string name="business_delete">ব্যবসা মুছুন</string>
     <string name="business_delete_confirm_title">%1$s মুছবেন?</string>
     <string name="business_delete_confirm_body">%1$d গ্রাহক, ব্যালেন্স %2$s। এই ব্যবসার প্রতিটি এন্ট্রি, ছবি ও ইনভয়েস এই ফোন থেকে স্থায়ীভাবে মুছে যাবে। Drive ব্যাকআপ থাকলে তা অক্ষত থাকবে। এটি আর ফেরানো যাবে না।</string>
+    <string name="business_delete_confirm_body_pc">%1$d গ্রাহক, ব্যালেন্স %2$s। এই ব্যবসার প্রতিটি এন্ট্রি, ছবি ও ইনভয়েস, আর এর দৈনিক কপি, এই কম্পিউটার থেকে স্থায়ীভাবে মুছে যাবে। বেছে নেওয়া ফোল্ডারের (USB বা Google Drive) কপি থাকলে তা অক্ষত থাকবে। এটি আর ফেরানো যাবে না।</string>
     <string name="business_delete_type_hint">নিশ্চিত করতে “%1$s” লিখুন</string>
     <string name="business_delete_done">%1$s মুছে ফেলা হয়েছে</string>
     <string name="erase_all_button">সব ডেটা মুছুন</string>
@@ -1205,6 +1206,7 @@
     <string name="about_what">দোকানের কাউন্টারের খাতা। গ্রাহকের হিসাব, প্রতিদিনের নগদ, চেক, সরবরাহকারীর বিল ও কিস্তি — কাগজে যেভাবে রাখা হয় সেভাবেই, যে ভাষায় দোকান চলে সেই ভাষায়। একটি দোকান বা কয়েকটি, প্রতিটির নিজস্ব খাতা।</string>
     <string name="about_privacy_title">আপনার হিসাব আপনারই থাকে</string>
     <string name="about_privacy_body">সবকিছু এই ফোনেই রাখা হয়। আমরা আপনার গ্রাহক, তাদের নম্বর বা কারও দেনা কখনো দেখি না। ব্যাকআপ যায় আপনার নিজের Google Drive-এ — আমাদের কাছে নয়।</string>
+    <string name="about_privacy_body_pc">সবকিছু এই কম্পিউটারেই রাখা হয়। আমরা আপনার গ্রাহক, তাদের নম্বর বা কারও দেনা কখনো দেখি না। ব্যাকআপ থাকে এই কম্পিউটারে আর আপনার বেছে নেওয়া ফোল্ডারে, যেমন USB বা Google Drive-এর ফোল্ডার — আমাদের কাছে নয়।</string>
     <string name="about_privacy_policy">গোপনীয়তা নীতি</string>
     <string name="about_maker">Innovation-313-এর তৈরি</string>
     <string name="party_exists">%1$s আগে থেকেই আপনার খাতায় আছে — সেটি খোলা হচ্ছে।</string>

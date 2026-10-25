@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,38 +119,46 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
     }
     fun subject() = words.text(W.report_subject, words.text(kind))
 
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.report_problem), state = rememberDialogState(width = fitW(620.dp), height = fitH(760.dp))) {
-        Box(Modifier.fillMaxSize().background(c.surface)) {
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(word(W.report_problem_sub), color = c.textMuted, fontSize = 13.sp)
+    val empty = word(W.report_empty)
+    val noMail = word(W.report_no_mail_pc)
+    // In the app's frame (Marhala 4, part 10): the two ways out in its foot, always in sight.
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.report_problem), state = rememberDialogState(width = fitW(640.dp), height = fitH(760.dp))) {
+        DialogFrame(word(W.report_problem), subtitle = word(W.report_problem_sub), onClose = onClose, footerStart = {
+            // What Copy or Open mail did, beside the buttons, where it is seen (not at the foot of the scrolling body).
+            told?.let { Text(it, color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 2) }
+        }, footer = {
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.report_copy), {
+                if (text.isBlank()) told = empty
+                else {
+                    runCatching { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(subject() + "\n\n" + body()), null) }
+                    told = words.text(W.report_copied)
+                }
+            }, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.report_open_mail), {
+                if (text.isBlank()) told = empty
+                else {
+                    val uri = "mailto:innovation313.support@gmail.com?subject=" + enc(subject()) + "&body=" + enc(body())
+                    told = if (runCatching { java.awt.Desktop.getDesktop().mail(URI(uri)) }.isSuccess) null else noMail
+                }
+            }, kind = ButtonKind.ACCENT)
+        }) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(word(W.report_what_kind), color = c.ink, fontWeight = FontWeight.Bold)
                 kinds.forEach { k ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // The words choose too, not only the round button.
+                    Row(Modifier.clip(Look.ctl).press(Look.ctl) { kind = k }, verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(kind == k, { kind = k })
-                        Text(word(k), color = c.ink, fontSize = 14.sp)
+                        Text(word(k), Modifier.padding(end = 8.dp), color = c.ink, fontSize = 14.sp)
                     }
                 }
                 Text(word(W.report_describe), color = c.ink, fontWeight = FontWeight.Bold)
-                Outlined(text, { text = it }, placeholder = { Text(word(W.report_hint)) }, minLines = 4, modifier = Modifier.fillMaxWidth().heightIn(min = 110.dp))
+                Outlined(text, { text = it; told = null }, placeholder = { Text(word(W.report_hint)) }, minLines = 4, modifier = Modifier.fillMaxWidth().heightIn(min = 110.dp))
                 Text(word(W.report_pc_privacy), color = c.textMuted, fontSize = 12.sp)
-                Text(pcContext() + (crash?.let { "\n" + words.text(W.report_crash_included) + "\n" + it.take(1200) } ?: ""),
-                    color = c.textMuted, fontSize = 11.sp)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    val empty = word(W.report_empty)
-                    val noMail = word(W.report_no_mail_pc)
-                    FillButton(word(W.report_open_mail), c.brandGreen) {
-                        if (text.isBlank()) { told = empty; return@FillButton }
-                        val uri = "mailto:innovation313.support@gmail.com?subject=" + enc(subject()) + "&body=" + enc(body())
-                        told = if (runCatching { java.awt.Desktop.getDesktop().mail(URI(uri)) }.isSuccess) null else noMail
-                    }
-                    TextButton({
-                        if (text.isBlank()) { told = empty; return@TextButton }
-                        runCatching { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(subject() + "\n\n" + body()), null) }
-                        told = words.text(W.report_copied)
-                    }) { Text(word(W.report_copy), color = c.brandGreenText) }
-                    FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
-                }
-                told?.let { Text(it, color = c.textMuted, fontSize = 13.sp) }
+                // Everything that will be sent, as it will be sent (the audit: 1,200 letters of the error were shown
+                // and up to 6,000 went).
+                Text(pcContext() + (crash?.let { "\n" + words.text(W.report_crash_included) + "\n" + it } ?: ""),
+                    Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(10.dp), color = c.textMuted, fontSize = 11.sp)
             }
         }
     }
