@@ -93,7 +93,8 @@ fun CounterSettingsDialog(
                         dao.setSetting(BookSettings.LOYALTY_POINTS_PER_100, positive(perHundred))
                         dao.setSetting(BookSettings.LOYALTY_POINT_VALUE, positive(pointValue))
                         val p = com.innovation313.roshankhata.data.Digits.toLatin(prefix.trim())
-                        dao.setSetting(BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) })
+                        // The default is kept as nothing (25 Oct 2026): a stored "21" read as a scale in use.
+                        dao.setSetting(BookSettings.SCALE_PREFIX, p.takeIf { it.length == 2 && it.startsWith("2") && it.all(Char::isDigit) && it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX })
                         dao.setSetting(BookSettings.SCALE_PRICE, if (pricedLabel) "1" else null)
                         dao.setSetting(BookSettings.SCALE_PRICE_DECIMALS, decimals.takeIf { it != com.innovation313.roshankhata.data.ScaleCode.DEFAULT_DECIMALS }?.toString())
                     }

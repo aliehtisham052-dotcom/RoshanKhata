@@ -84,12 +84,15 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
         ).joinToString("  ")
     }
 
-    fun exportCsv() {
+    // Every customer's entries leave the book: EXPORT asked and the audit log told, as the Khata page's
+    // own export does (25 Oct 2026, the audit: the page needed only REPORTS, so a cashier let in by a
+    // manager's PIN could carry the whole book's entries off).
+    fun exportCsv() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) export@{
         val dialog = FileDialog(null as Frame?, words.text(W.export_excel), FileDialog.SAVE)
         startIn(dialog, "Documents")
         dialog.file = "RoshanKhata_Report_" + SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(Date()) + ".csv"
         dialog.isVisible = true
-        val name = dialog.file ?: return
+        val name = dialog.file ?: return@export
         val file = File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
         val rows = entries
         scope.launch {
@@ -97,6 +100,7 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
                 withContext(Dispatchers.IO) {
                     val headers = listOf(W.date_label, W.name, W.note_label, W.i_gave, W.i_got).map { words.text(it) }
                     file.writeText(LedgerCsv.text(rows, headers), Charsets.UTF_8)
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name) }
                 }
                 words.text(W.report_saved_to, file.absolutePath)
             }.getOrElse { words.text(W.ledger_report_failed) }

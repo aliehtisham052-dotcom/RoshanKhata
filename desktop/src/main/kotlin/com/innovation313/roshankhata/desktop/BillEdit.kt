@@ -81,7 +81,8 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
             Outlined(total, { total = it }, label = { Text(word(W.bill_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Text(amount?.let { Format.money(it) } ?: word(W.enter_valid_amount), color = if (amount == null) c.owedToMe else c.textMuted, fontSize = 13.sp)
             TextButton({ picking = 0 }) { Text(word(W.bill_date_set, Format.dateOnly(billDate)), color = c.brandGreenText) }
-            TextButton({ picking = 1 }) { Text(dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) } ?: word(W.pick_due_date), color = c.brandGreenText) }
+            // The bill's own words (25 Oct 2026, the audit: the button read "Pick the date on the cheque").
+            TextButton({ picking = 1 }) { Text(dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) } ?: word(W.bill_due_date), color = c.brandGreenText) }
             Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
             Text(word(W.edit_bill_cash_locked), color = c.textMuted, fontSize = 12.sp)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

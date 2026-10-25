@@ -63,7 +63,10 @@ object BookSettings {
             "0" -> return false
         }
         if (isOn(dao.settingValue(PRICES_INCLUDE_TAX)) || isOn(dao.settingValue(SCALE_PRICE)) || isOn(dao.settingValue(COUNTER_USED))) return true
-        if (dao.settingValue(SCALE_PREFIX) != null) return true
+        // A prefix other than the default is a scale in use. The default "21" is not: every save of the
+        // counter's settings wrote it (25 Oct 2026, the audit), so books saved before the switch existed
+        // opened with the big-shop tools on.
+        if (dao.settingValue(SCALE_PREFIX)?.trim()?.takeIf { it != ScaleCode.DEFAULT_PREFIX } != null) return true
         if (Loyalty.rule(dao) != null) return true
         return runCatching { dao.allStaffForBackup().any { it.isActive && it.role != null } }.getOrDefault(false)
     }
