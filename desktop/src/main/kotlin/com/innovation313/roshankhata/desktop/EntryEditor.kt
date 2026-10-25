@@ -173,122 +173,125 @@ fun EntryEditor(
     val r = Calc.evalAmount(rate)
     val goodsTotal = if (q != null && r != null) q * r else null
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        // The head (1.10.0, the New entry mockup): which way, the party under it, the amount big with
-        // its figure in words-of-money under it, the day beside it as a Fluent date box.
-        Text(word(if (isGiven) W.you_gave else W.you_got), color = if (isGiven) c.owedToMe else Look.accent, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-        Text(Format.name(partyName), color = c.inkSoft, fontSize = 13.sp)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
-            FluentField(
-                amountText, { amountText = it }, Modifier.weight(1.4f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true,
-                help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Text(word(W.date_label), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                Row(
-                    Modifier.fillMaxWidth().height(48.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
-                        .press(Look.ctl) { picking = true }.padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(Format.dateOnly(at), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1)
-                    Glyph("ic_calendar", c.inkSoft, 16)
+    // The form scrolls; its buttons stay in sight under it (25 Oct 2026, the audit: Save sat below the fold on a laptop).
+    Column(Modifier.fillMaxSize()) {
+        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            // The head (1.10.0, the New entry mockup): which way, the party under it, the amount big with
+            // its figure in words-of-money under it, the day beside it as a Fluent date box.
+            Text(word(if (isGiven) W.you_gave else W.you_got), color = if (isGiven) c.owedToMe else Look.accent, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            Text(Format.name(partyName), color = c.inkSoft, fontSize = 13.sp)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+                FluentField(
+                    amountText, { amountText = it }, Modifier.weight(1.4f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true,
+                    help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Text(word(W.date_label), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                    Row(
+                        Modifier.fillMaxWidth().height(48.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
+                            .press(Look.ctl) { picking = true }.padding(horizontal = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(Format.dateOnly(at), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1)
+                        Glyph("ic_calendar", c.inkSoft, 16)
+                    }
                 }
             }
-        }
 
-        Text(word(W.goods_section), color = c.ink, fontWeight = FontWeight.Bold)
-        // The shop's own words (TradeVocab): a dairy's form says milk and litre, not urea and bag.
-        val trade = LocalTrade.current
-        Text(trade.goodsHelp(), color = c.textMuted, fontSize = 12.sp)
-        FluentField(item, { item = it }, Modifier.fillMaxWidth(), placeholder = trade.itemHint())
-        if (item.isBlank()) SuggestionRow(trade.starters(), item) { item = it }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FluentField(qty, { qty = it }, Modifier.weight(1f), placeholder = word(W.quantity_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
-            FluentField(unit, { unit = it }, Modifier.weight(1f), placeholder = trade.unitHint())
-            FluentField(rate, { rate = it }, Modifier.weight(1f), placeholder = word(W.entry_rate_hint), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-        }
-        SuggestionRow(trade.units(), unit) { unit = it }
-        if (otherItems.isNotEmpty()) {
-            // The other lines stay as the phone wrote them (25 Oct 2026, the audit): shown, never dropped.
-            Text(word(W.entry_items_count, otherItems.size + 1), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-            otherItems.forEach { o -> Text(goodsLineText(o, word(W.bonus_tag)), color = c.ink, fontSize = 13.sp) }
-        }
-        // Quantity x rate is offered, never forced: a discount is the owner's to write. Not with other
-        // lines on the entry: one line's total offered as the amount cut a several-item sale in one click.
-        if (otherItems.isEmpty() && goodsTotal != null && goodsTotal > 0 && goodsTotal != amount) {
-            TextButton({ amountText = Calc.trim(goodsTotal) }) {
-                Text(word(W.amount) + ": " + Format.money(goodsTotal), color = c.brandGreenText)
+            Text(word(W.goods_section), color = c.ink, fontWeight = FontWeight.Bold)
+            // The shop's own words (TradeVocab): a dairy's form says milk and litre, not urea and bag.
+            val trade = LocalTrade.current
+            Text(trade.goodsHelp(), color = c.textMuted, fontSize = 12.sp)
+            FluentField(item, { item = it }, Modifier.fillMaxWidth(), placeholder = trade.itemHint())
+            if (item.isBlank()) SuggestionRow(trade.starters(), item) { item = it }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FluentField(qty, { qty = it }, Modifier.weight(1f), placeholder = word(W.quantity_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                FluentField(unit, { unit = it }, Modifier.weight(1f), placeholder = trade.unitHint())
+                FluentField(rate, { rate = it }, Modifier.weight(1f), placeholder = word(W.entry_rate_hint), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             }
-        }
-        if (isSale && batches.isNotEmpty()) {
-            Box {
-                val chosen = batches.firstOrNull { it.id == batchId }
-                TextButton({ batchMenu = true }) {
-                    Text(
-                        chosen?.let { word(W.batch_chosen, it.batchNumber?.takeIf { b -> b.isNotBlank() } ?: word(W.batch_none)) } ?: word(W.pick_batch),
-                        color = c.brandGreenText
-                    )
+            SuggestionRow(trade.units(), unit) { unit = it }
+            if (otherItems.isNotEmpty()) {
+                // The other lines stay as the phone wrote them (25 Oct 2026, the audit): shown, never dropped.
+                Text(word(W.entry_items_count, otherItems.size + 1), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                otherItems.forEach { o -> Text(goodsLineText(o, word(W.bonus_tag)), color = c.ink, fontSize = 13.sp) }
+            }
+            // Quantity x rate is offered, never forced: a discount is the owner's to write. Not with other
+            // lines on the entry: one line's total offered as the amount cut a several-item sale in one click.
+            if (otherItems.isEmpty() && goodsTotal != null && goodsTotal > 0 && goodsTotal != amount) {
+                TextButton({ amountText = Calc.trim(goodsTotal) }) {
+                    Text(word(W.amount) + ": " + Format.money(goodsTotal), color = c.brandGreenText)
                 }
-                DropdownMenu(batchMenu, { batchMenu = false }) {
-                    batches.forEach { b ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    listOfNotNull(
-                                        b.batchNumber?.takeIf { it.isNotBlank() } ?: word(W.batch_none),
-                                        b.expiryDate?.let { word(W.expiry_date) + ": " + Format.dateOnly(it) },
-                                        word(W.batch_remaining, Format.qty(b.remaining, b.unit))
-                                    ).joinToString("  ·  ")
-                                )
-                            },
-                            onClick = { batchId = b.id; batchMenu = false }
+            }
+            if (isSale && batches.isNotEmpty()) {
+                Box {
+                    val chosen = batches.firstOrNull { it.id == batchId }
+                    TextButton({ batchMenu = true }) {
+                        Text(
+                            chosen?.let { word(W.batch_chosen, it.batchNumber?.takeIf { b -> b.isNotBlank() } ?: word(W.batch_none)) } ?: word(W.pick_batch),
+                            color = c.brandGreenText
                         )
                     }
-                    DropdownMenuItem(text = { Text(word(W.pick_batch_clear)) }, onClick = { batchId = null; batchMenu = false })
+                    DropdownMenu(batchMenu, { batchMenu = false }) {
+                        batches.forEach { b ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        listOfNotNull(
+                                            b.batchNumber?.takeIf { it.isNotBlank() } ?: word(W.batch_none),
+                                            b.expiryDate?.let { word(W.expiry_date) + ": " + Format.dateOnly(it) },
+                                            word(W.batch_remaining, Format.qty(b.remaining, b.unit))
+                                        ).joinToString("  ·  ")
+                                    )
+                                },
+                                onClick = { batchId = b.id; batchMenu = false }
+                            )
+                        }
+                        DropdownMenuItem(text = { Text(word(W.pick_batch_clear)) }, onClick = { batchId = null; batchMenu = false })
+                    }
                 }
             }
-        }
-        if (isSale) {
-            // Fixed at the sale and never recalculated (LedgerEntry.rateType).
-            TwoWay(word(W.rate_type_credit), word(W.rate_type_cash), !cashRate) { credit -> cashRate = !credit; if (credit) paidNow = false }
-            if (existing == null && cashRate) {
+            if (isSale) {
+                // Fixed at the sale and never recalculated (LedgerEntry.rateType).
+                TwoWay(word(W.rate_type_credit), word(W.rate_type_cash), !cashRate) { credit -> cashRate = !credit; if (credit) paidNow = false }
+                if (existing == null && cashRate) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(paidNow, { paidNow = it })
+                        Text(word(W.cash_paid_now), color = c.ink, fontSize = 14.sp)
+                    }
+                }
+            }
+            FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
+            if (isSale && !paidNow) {
+                // When the money is due: a week, a fortnight, a month, the next harvest ends, or any day.
+                TextButton({ choosingDue = true }) {
+                    Text(due?.let { word(W.entry_due_set, Format.dateOnly(it)) } ?: word(W.entry_due_none), color = c.brandGreenText)
+                }
+            }
+
+            if (!isGiven) {
+                // How it was paid: null unless chosen, as on the phone. The day's cash count
+                // (Cashbook, Close the day) counts only khata money marked Cash.
+                Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(
+                        PaymentMethod.CASH to W.payment_method_cash, PaymentMethod.BANK to W.payment_method_bank,
+                        PaymentMethod.CHEQUE to W.payment_method_cheque, PaymentMethod.ONLINE to W.payment_method_online
+                    ).forEach { (m, label) ->
+                        FluentPill(word(label), m == method) { method = if (m == method) null else m }
+                    }
+                }
+            }
+            if (isGiven) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(paidNow, { paidNow = it })
-                    Text(word(W.cash_paid_now), color = c.ink, fontSize = 14.sp)
+                    Checkbox(qarz, { qarz = it })
+                    Text(word(W.qarze_hasna), color = c.ink, fontSize = 14.sp)
                 }
+                Text(word(W.qarze_hasna_help), color = c.textMuted, fontSize = 12.sp)
+                Text(word(W.recovery_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                TwoWay(word(W.recovery_certain), word(W.recovery_doubtful), !doubtful) { certain -> doubtful = !certain }
             }
         }
-        FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
-        if (isSale && !paidNow) {
-            // When the money is due: a week, a fortnight, a month, the next harvest ends, or any day.
-            TextButton({ choosingDue = true }) {
-                Text(due?.let { word(W.entry_due_set, Format.dateOnly(it)) } ?: word(W.entry_due_none), color = c.brandGreenText)
-            }
-        }
-
-        if (!isGiven) {
-            // How it was paid: null unless chosen, as on the phone. The day's cash count
-            // (Cashbook, Close the day) counts only khata money marked Cash.
-            Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                listOf(
-                    PaymentMethod.CASH to W.payment_method_cash, PaymentMethod.BANK to W.payment_method_bank,
-                    PaymentMethod.CHEQUE to W.payment_method_cheque, PaymentMethod.ONLINE to W.payment_method_online
-                ).forEach { (m, label) ->
-                    FluentPill(word(label), m == method) { method = if (m == method) null else m }
-                }
-            }
-        }
-        if (isGiven) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(qarz, { qarz = it })
-                Text(word(W.qarze_hasna), color = c.ink, fontSize = 14.sp)
-            }
-            Text(word(W.qarze_hasna_help), color = c.textMuted, fontSize = 12.sp)
-            Text(word(W.recovery_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            TwoWay(word(W.recovery_certain), word(W.recovery_doubtful), !doubtful) { certain -> doubtful = !certain }
-        }
-
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Rule()
+        Row(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             if (onDelete != null) FluentButton(word(W.delete), onDelete, kind = ButtonKind.DANGER)
             // The saved entry on the thermal printer (Phase 9e); a new one is printed once saved.
             if (onPrint != null) FluentButton(word(W.print_receipt), onPrint, icon = "ic_print")
