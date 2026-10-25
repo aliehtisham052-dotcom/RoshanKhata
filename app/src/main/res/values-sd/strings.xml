@@ -299,6 +299,7 @@
     <string name="pc_pdf_failed">PDF محفوظ نه ٿي سگهي: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 کان 8 انگن جو PIN چونڊيو</string>
+    <string name="lock_pin_new_long">6 کان 8 انگن جو PIN چونڊيو</string>
     <string name="lock_pin_again">ساڳيو PIN ٻيهر لکو</string>
     <string name="lock_pin_wrong">غلط PIN. ٻيهر ڪوشش ڪريو.</string>
     <string name="lock_pin_mismatch">ٻئي PIN هڪجهڙا ناهن.</string>

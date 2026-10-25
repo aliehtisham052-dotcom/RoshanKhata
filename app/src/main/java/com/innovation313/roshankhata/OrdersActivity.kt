@@ -38,6 +38,16 @@ class OrdersActivity : BaseActivity() {
                     }, onNeed = { p, then ->
                         // A cashier's order waits for a manager's PIN (23 Oct 2026, the review).
                         com.innovation313.roshankhata.ui.AccessUi.allowed(this@OrdersActivity, dao, p, com.innovation313.roshankhata.ui.AccessUi.what(this@OrdersActivity, p)) { then() }
+                    }, pickDay = { startAt, onPicked ->
+                        // A received batch's expiry, on the app's own calendar (the bill line's picker).
+                        val cal = java.util.Calendar.getInstance().apply { timeInMillis = startAt }
+                        com.innovation313.roshankhata.ui.BrandDatePickerDialog(
+                            this@OrdersActivity,
+                            { _, y, m, d ->
+                                onPicked(java.util.Calendar.getInstance().apply { set(y, m, d, 0, 0, 0); set(java.util.Calendar.MILLISECOND, 0) }.timeInMillis)
+                            },
+                            cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)
+                        ).show()
                     })
                 }
             }

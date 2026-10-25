@@ -290,6 +290,7 @@
     <string name="pc_pdf_failed">پی ڈی ایف محفوظ نہیں ہو سکی: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 سے 8 ہندسوں کا PIN چنیں</string>
+    <string name="lock_pin_new_long">6 سے 8 ہندسوں کا PIN چنیں</string>
     <string name="lock_pin_again">وہی PIN دوبارہ لکھیں</string>
     <string name="lock_pin_wrong">غلط PIN۔ دوبارہ کوشش کریں۔</string>
     <string name="lock_pin_mismatch">دونوں PIN ایک جیسے نہیں ہیں۔</string>

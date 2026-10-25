@@ -370,9 +370,14 @@ class CounterReviewTest {
         val order = dao.saveOrder(PurchaseOrder(partyId = engro), listOf(PurchaseOrderItem(orderId = 0, productId = karate, itemName = "Karate", quantity = 10.0, unit = "bottle", rate = 500.0)))
         val renamed = "Karate 5EC"
         dao.updateProduct(dao.productById(karate)!!.copy(name = renamed, nameKey = ProductName.key(renamed), normalisedName = ProductName.normalised(renamed)))
-        val received = dao.orderItems(order).map { BillItem(billId = 0, productName = it.itemName, quantity = it.quantity, unit = it.unit, rate = it.rate, productId = it.productId) }
+        // With the batch and its expiry as they arrived (Marhala 4: the phone's receive form carries them too).
+        val expiry = System.currentTimeMillis() + 400L * 24 * 60 * 60 * 1000
+        val received = dao.orderItems(order).map { BillItem(billId = 0, productName = it.itemName, quantity = it.quantity, unit = it.unit, rate = it.rate, batchNumber = "K-77", expiryDate = expiry, productId = it.productId) }
         val billId = dao.receiveOrder(order, SupplierBill(partyId = engro, totalAmount = 5000.0), received, null)
-        assertEquals(karate, dao.billItems(billId).single().productId)
+        val line = dao.billItems(billId).single()
+        assertEquals(karate, line.productId)
+        assertEquals("K-77", line.batchNumber)
+        assertEquals(expiry, line.expiryDate)
         assertEquals(1, dao.productsOnce().size)
     }
 

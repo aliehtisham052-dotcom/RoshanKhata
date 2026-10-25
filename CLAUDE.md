@@ -1160,7 +1160,12 @@ Businesses/Settings), each part with its proof pictures. CI only.
   (`about_privacy_body_pc`, AboutScreen's `privacyBody`), not this phone and Drive. Language, text size and theme
   are one pick list each with the one in use marked (`PickDialog`; `textSizes` draws each size in its own size). Enter
   runs a one-line FluentField's Done exactly once (`enterRunsDone`, the key taken before the box sees it): whether
-  Compose's own Enter reaches onDone depends on the IME action a box names, and the PIN boxes named none. Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
+  Compose's own Enter reaches onDone depends on the IME action a box names, and the PIN boxes named none.
+- **After part 10 (the owner's answers, 25 Oct):** App Lock's PIN is 6 to 8 digits like the owner's counter PIN
+  (`PinHash.validOwner`, `lock_pin_new_long`; a shorter one set before still opens — AppLockTest); the poster's
+  email tick and the card's email stay as the phone has them. The phone's "goods received" form has the batch's
+  expiry per line (`OrdersScreen(pickDay)`: the phone passes BrandDatePickerDialog; the shared editor hides the
+  box without it) — a lot that came in through an order never reached Expiry (CounterReviewTest). Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
   -schemes-ur, -seasons-en, -duplicates-en.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the

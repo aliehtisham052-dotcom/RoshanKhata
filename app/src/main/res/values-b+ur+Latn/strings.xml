@@ -290,6 +290,7 @@
     <string name="pc_pdf_failed">PDF mehfooz nahi ho saki: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">4 se 8 hindson ka PIN chunein</string>
+    <string name="lock_pin_new_long">6 se 8 hindson ka PIN chunein</string>
     <string name="lock_pin_again">Wohi PIN dobara likhein</string>
     <string name="lock_pin_wrong">Ghalat PIN. Dobara koshish karein.</string>
     <string name="lock_pin_mismatch">Dono PIN ek jaise nahi hain.</string>

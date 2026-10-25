@@ -306,6 +306,7 @@
     <string name="pc_pdf_failed">Could not save the PDF: %1$s</string>
     <string name="lock_pin_label">PIN</string>
     <string name="lock_pin_new">Choose a PIN of 4 to 8 digits</string>
+    <string name="lock_pin_new_long">Choose a PIN of 6 to 8 digits</string>
     <string name="lock_pin_again">Enter the same PIN again</string>
     <string name="lock_pin_wrong">Wrong PIN. Try again.</string>
     <string name="lock_pin_mismatch">The two PINs are not the same.</string>

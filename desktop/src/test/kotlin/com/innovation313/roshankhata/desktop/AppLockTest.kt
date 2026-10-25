@@ -34,4 +34,19 @@ class AppLockTest {
         assertFalse(PinHash.valid("123456789"))
         assertFalse(PinHash.valid("12a4"))
     }
+
+    @Test
+    fun `app lock takes a new PIN of 6 to 8 digits only, and an older short one still opens`() {
+        // The owner PIN's rule, the owner's choice (25 Oct 2026); a 4-digit App Lock set before still unlocks.
+        assertFalse(PinHash.validOwner("1234"))
+        assertTrue(PinHash.validOwner("123456"))
+        assertTrue(PinHash.validOwner("12345678"))
+        assertFalse(PinHash.validOwner("123456789"))
+        val dir = Files.createTempDirectory("rk-lock-old").toFile()
+        try {
+            val file = File(dir, "app.properties")
+            AppPrefs(file).setPin("1234")
+            assertTrue(AppPrefs(file).pinMatches("1234"))
+        } finally { dir.deleteRecursively() }
+    }
 }
