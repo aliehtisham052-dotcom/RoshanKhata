@@ -97,7 +97,12 @@ fun CalculatorPane(onKhata: ((Double) -> Unit)? = null) {
     }
     FluentPage(word(W.calculator), null) {
         // Laid out for the window it is in (25 Oct 2026, the audit: on a laptop the bottom row — % C ⌫ = —
-        // and Copy were cut off, with 400 dp empty beside the pad).
+        // and Copy were cut off, with 400 dp empty beside the pad). Left to right in every language, as the
+        // phone's display and keypad are (layoutDirection="ltr"): in Urdu the pad was mirrored (÷ 9 8 7) and a
+        // typed "12500+3700*2" read "2*12500+3700".
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr
+        ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val wide = maxWidth >= 760.dp
             val keyHeight = if (wide) 54.dp else 48.dp
@@ -138,6 +143,7 @@ fun CalculatorPane(onKhata: ((Double) -> Unit)? = null) {
                     CalcPad(keys, keyHeight, press, Modifier.fillMaxWidth())
                 }
             }
+        }
         }
     }
     if (refused) TellDialog(word(W.calculator), word(W.calc_khata_positive), { refused = false })

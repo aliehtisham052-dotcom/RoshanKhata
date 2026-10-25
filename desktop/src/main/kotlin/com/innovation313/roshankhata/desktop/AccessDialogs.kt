@@ -46,6 +46,7 @@ import com.innovation313.roshankhata.screens.auditActionWord
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
@@ -469,7 +470,7 @@ fun AuditPane(dao: KhataDao) {
     FluentPage(word(W.audit_title), word(W.audit_subtitle), scroll = false) {
         seal?.let { s ->
             Text(
-                if (s.intact) word(W.audit_seal_ok, s.sealed) else word(W.audit_seal_broken, s.brokenAt ?: 0L),
+                if (s.intact) plural(WP.audit_seal_ok_rows, s.sealed, s.sealed) else word(W.audit_seal_broken, s.brokenAt ?: 0L),
                 Modifier.fillMaxWidth().background(if (s.intact) Look.accentTint else Look.getTint, Look.card).padding(horizontal = 16.dp, vertical = 10.dp),
                 color = if (s.intact) Look.accent else c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold
             )

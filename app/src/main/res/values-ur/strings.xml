@@ -3244,7 +3244,10 @@
     <string name="access_page_locked">اس صفحے کے لیے مینیجر یا مالک چاہیے</string>
     <string name="access_page_owner_only">اس صفحے کے لیے مالک چاہیے</string>
     <string name="access_signed_in_as">سائن اِن: %1$s</string>
-    <string name="audit_seal_ok">%1$d قطاریں جانچی گئیں: ایپ کے باہر کوئی قطار بدلی یا ہٹائی نہیں گئی</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$d قطار جانچی گئی: ایپ کے باہر یہ بدلی یا ہٹائی نہیں گئی</item>
+        <item quantity="other">%1$d قطاریں جانچی گئیں: ایپ کے باہر کوئی قطار بدلی یا ہٹائی نہیں گئی</item>
+    </plurals>
     <string name="audit_seal_broken">قطار %1$d ایپ کے باہر بدلی یا ہٹائی گئی ہے</string>
     <string name="audit_stock_count">اسٹاک گنا گیا</string>
     <string name="audit_stock_adjusted">اسٹاک درست کیا گیا</string>

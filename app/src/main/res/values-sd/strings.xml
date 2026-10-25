@@ -3272,7 +3272,10 @@
     <string name="access_page_locked">هن صفحي لاءِ مئنيجر يا مالڪ گهرجي</string>
     <string name="access_page_owner_only">هن صفحي لاءِ مالڪ گهرجي</string>
     <string name="access_signed_in_as">سائن ان: %1$s</string>
-    <string name="audit_seal_ok">%1$d قطارون جانچيون ويون: ايپ کان ٻاهر ڪا به قطار بدلي يا هٽائي نه وئي</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$d قطار جانچي وئي: ايپ کان ٻاهر اها بدلي يا هٽائي نه وئي</item>
+        <item quantity="other">%1$d قطارون جانچيون ويون: ايپ کان ٻاهر ڪا به قطار بدلي يا هٽائي نه وئي</item>
+    </plurals>
     <string name="audit_seal_broken">قطار %1$d ايپ کان ٻاهر بدلي يا هٽائي وئي آهي</string>
     <string name="audit_stock_count">اسٽاڪ ڳڻيو ويو</string>
     <string name="audit_stock_adjusted">اسٽاڪ درست ڪيو ويو</string>

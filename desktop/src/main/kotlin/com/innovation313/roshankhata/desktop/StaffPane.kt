@@ -81,13 +81,23 @@ fun StaffPane(dao: KhataDao) {
     }
 
     FluentPage(word(W.staff_title), word(W.staff_subtitle), scroll = false, actions = {
-        FluentButton(word(if (hasOwnerPin == true) W.access_owner_pin_change else W.access_owner_pin_set), { ownerPinOpen = true }, kind = ButtonKind.STANDARD)
-        FluentButton(
-            word(if (com.innovation313.roshankhata.data.Access.counterMode) W.access_counter_on_label else W.access_counter_off_label),
-            { counterOpen = true }, kind = ButtonKind.STANDARD
-        )
         FluentButton(word(W.staff_add), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
     }) {
+        // The counter's two locks in a row of their own (Marhala 4 — the proof: in Urdu the head held three buttons
+        // and the third, Add staff, was cut off at the window's edge).
+        Row(
+            Modifier.fillMaxWidth().card().padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Glyph("ic_shield_check", Look.accent, 18)
+            Text(word(W.access_who), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold,
+                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            FluentButton(word(if (hasOwnerPin == true) W.access_owner_pin_change else W.access_owner_pin_set), { ownerPinOpen = true }, kind = ButtonKind.STANDARD)
+            FluentButton(
+                word(if (com.innovation313.roshankhata.data.Access.counterMode) W.access_counter_on_label else W.access_counter_off_label),
+                { counterOpen = true }, kind = ButtonKind.STANDARD
+            )
+        }
         Row(Modifier.fillMaxWidth().card().padding(horizontal = 8.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             MonthStep(word(W.staff_prev_month), back = true) { shift(-1) }
             Text(DateWords.format("MMMM yyyy", from), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold,

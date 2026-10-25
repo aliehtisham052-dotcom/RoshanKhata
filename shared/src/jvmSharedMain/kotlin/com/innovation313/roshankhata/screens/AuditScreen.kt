@@ -31,6 +31,8 @@ import com.innovation313.roshankhata.data.AuditLog
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.plural
+import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -54,7 +56,7 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
         seal?.let { s ->
             item(key = "seal") {
                 Text(
-                    if (s.intact) word(W.audit_seal_ok, s.sealed) else word(W.audit_seal_broken, s.brokenAt ?: 0L),
+                    if (s.intact) plural(WP.audit_seal_ok_rows, s.sealed, s.sealed) else word(W.audit_seal_broken, s.brokenAt ?: 0L),
                     Modifier.fillMaxWidth().padding(bottom = 8.dp),
                     color = if (s.intact) c.iOwe else c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold
                 )

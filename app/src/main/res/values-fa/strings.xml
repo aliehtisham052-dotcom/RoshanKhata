@@ -3272,7 +3272,10 @@
     <string name="access_page_locked">این صفحه مدیر یا مالک لازم دارد</string>
     <string name="access_page_owner_only">این صفحه مالک لازم دارد</string>
     <string name="access_signed_in_as">وارد شده: %1$s</string>
-    <string name="audit_seal_ok">%1$d ردیف بررسی شد: هیچ ردیفی بیرون از برنامه تغییر نکرده یا حذف نشده</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$d ردیف بررسی شد: هیچ ردیفی بیرون از برنامه تغییر نکرده یا حذف نشده</item>
+        <item quantity="other">%1$d ردیف بررسی شد: هیچ ردیفی بیرون از برنامه تغییر نکرده یا حذف نشده</item>
+    </plurals>
     <string name="audit_seal_broken">ردیف %1$d بیرون از برنامه تغییر کرده یا حذف شده است</string>
     <string name="audit_stock_count">شمارش موجودی</string>
     <string name="audit_stock_adjusted">اصلاح موجودی</string>
