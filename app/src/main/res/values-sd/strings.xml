@@ -3026,6 +3026,9 @@
     <string name="pos_today_count">اڄ %1$d وڪرا</string>
     <string name="pos_today_total">اڄ %1$s</string>
     <string name="pos_recent">تازا وڪرا</string>
+    <string name="pos_all_tickets">سڀ وڪرا (گذريل 60 ڏينهن)</string>
+    <string name="pos_ticket_search">بل نمبر يا گراهڪ جو نالو</string>
+    <string name="pos_tickets_none">گذريل 60 ڏينهن ۾ اهڙو ڪو وڪرو نه مليو.</string>
     <string name="pos_err_no_lines">گهٽ ۾ گهٽ هڪ شيءِ شامل ڪريو</string>
     <string name="pos_err_quantity">مقدار ٻڙي کان وڌيڪ هجڻ گهرجي</string>
     <string name="pos_err_rate">اگهه منفي نٿو ٿي سگهي</string>

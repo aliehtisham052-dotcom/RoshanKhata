@@ -3186,6 +3186,9 @@
     <string name="pos_today_count">%1$d مبيعات اليوم</string>
     <string name="pos_today_total">اليوم %1$s</string>
     <string name="pos_recent">آخر المبيعات</string>
+    <string name="pos_all_tickets">كل المبيعات (آخر 60 يومًا)</string>
+    <string name="pos_ticket_search">رقم الفاتورة أو اسم الزبون</string>
+    <string name="pos_tickets_none">لا توجد عملية بيع مطابقة في آخر 60 يومًا.</string>
     <string name="pos_err_no_lines">أضف صنفًا واحدًا على الأقل</string>
     <string name="pos_err_quantity">يجب أن تكون الكمية أكبر من صفر</string>
     <string name="pos_err_rate">لا يمكن أن يكون السعر سالبًا</string>

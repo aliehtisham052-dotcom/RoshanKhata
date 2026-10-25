@@ -2998,6 +2998,9 @@
     <string name="pos_today_count">آج %1$d سیلز</string>
     <string name="pos_today_total">آج %1$s</string>
     <string name="pos_recent">حالیہ سیلز</string>
+    <string name="pos_all_tickets">تمام سیلز (پچھلے 60 دن)</string>
+    <string name="pos_ticket_search">بل نمبر یا گاہک کا نام</string>
+    <string name="pos_tickets_none">پچھلے 60 دن میں ایسی کوئی سیل نہیں ملی۔</string>
     <string name="pos_err_no_lines">کم از کم ایک آئٹم شامل کریں</string>
     <string name="pos_err_quantity">مقدار صفر سے زیادہ ہونی چاہیے</string>
     <string name="pos_err_rate">ریٹ منفی نہیں ہو سکتا</string>

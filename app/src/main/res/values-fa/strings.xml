@@ -3026,6 +3026,9 @@
     <string name="pos_today_count">%1$d فروش امروز</string>
     <string name="pos_today_total">امروز %1$s</string>
     <string name="pos_recent">فروش‌های اخیر</string>
+    <string name="pos_all_tickets">همه فروش‌ها (60 روز اخیر)</string>
+    <string name="pos_ticket_search">شماره فاکتور یا نام مشتری</string>
+    <string name="pos_tickets_none">در 60 روز اخیر فروشی با این مشخصات نیست.</string>
     <string name="pos_err_no_lines">دست‌کم یک کالا اضافه کنید</string>
     <string name="pos_err_quantity">تعداد باید بیشتر از صفر باشد</string>
     <string name="pos_err_rate">قیمت نمی‌تواند منفی باشد</string>
