@@ -1,9 +1,12 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,8 +24,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.BusinessDeleteSummary
@@ -228,115 +233,117 @@ fun BusinessesDialog(
     val needName = word(W.business_name_needed)
     var problem by remember { mutableStateOf<String?>(null) }
 
+    // A business with no name yet reads as the app's own name, in the owner's language (it was English).
+    val unnamed = word(W.app_name)
     fun shown(b: Businesses.Business): String =
-        settingsOf(b.id).businessName() ?: b.name ?: "Roshan Khata"
+        settingsOf(b.id).businessName() ?: b.name?.takeIf { it.isNotBlank() } ?: unnamed
 
+    fun add() {
+        if (newName.isBlank()) { problem = needName; return }
+        val b = businesses.create(newName)
+        // The new shop's own name in its own settings, so statements print it; its country, currency and
+        // calendar start as the open shop's (the phone's copyRegion).
+        FileShopSettings(businesses.settingsFile(b.id)).apply {
+            setBusinessName(newName)
+            runCatching { copyRegionFrom(FileShopSettings(businesses.settingsFile(businesses.activeId()))) }
+        }
+        newName = ""
+        onSwitch(b.id)
+    }
+
+    // In the app's frame (Marhala 4, part 10 — the audit: the rows were cramped, the add box's label was its hint,
+    // and rename and delete were Material's dialogs).
     AppDialog(
         onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose),
         title = word(W.businesses_title),
-        state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))
+        state = rememberDialogState(width = fitW(620.dp), height = fitH(660.dp))
     ) {
-        Column(
-            Modifier.fillMaxSize().background(c.surface).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            list.forEach { b ->
-                val on = b.id == active
-                Row(
-                    Modifier.fillMaxWidth()
-                        .background(if (on) c.brandGreen.copy(alpha = 0.25f) else c.pageBg, RoundedCornerShape(10.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(shown(b), Modifier.weight(1f), color = c.ink,
-                        fontWeight = FontWeight.Bold)
-                    // The book that syncs live with a phone, told apart from the computer's own at a glance (22 Oct 2026).
-                    businesses.live(b.id)?.let { with -> LiveBadge(with) }
-                    if (!on) FluentButton(word(W.business_switch_open), { onSwitch(b.id) }, kind = ButtonKind.SUBTLE)
-                    TextButton({ renaming = b }) {
-                        Text(word(W.business_rename), color = c.ink)
-                    }
-                    if (businesses.canDelete(b.id)) TextButton(enabled = !busy, onClick = {
-                        scope.launch {
-                            // A damaged, foreign or newer book must still be deletable (R75, 23 Oct 2026): its
-                            // error used to escape here, so the question never came and the window could close.
-                            val summary = withContext(Dispatchers.IO) {
-                                runCatching {
-                                    // Opened on its own and closed again: never the open book's instance.
-                                    val db = DesktopDatabase.open(businesses.dbFile(b.id))
-                                    try { db.khataDao().deleteSummary() } finally { db.close() }
-                                }
+        DialogFrame(word(W.businesses_title), onClose = onClose, footer = {
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+        }) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                list.forEach { b ->
+                    val on = b.id == active
+                    val name = shown(b)
+                    Row(
+                        Modifier.fillMaxWidth().clip(Look.card)
+                            .background(if (on) Look.accentTint else Look.layer, Look.card)
+                            .border(1.dp, if (on) Look.accent else Look.strokeCard, Look.card)
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Avatar(name, 36, id = b.id)
+                        Column(Modifier.weight(1f)) {
+                            Text(name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                                if (on) Tag(word(W.business_current), Look.accent, Look.layer)
+                                // The book that syncs live with a phone, told apart from the computer's own at a glance (22 Oct 2026).
+                                businesses.live(b.id)?.let { with -> LiveBadge(with) }
                             }
-                            unreadable = summary.exceptionOrNull()?.let { failText(words, it) }
-                            deleting = b to summary.getOrNull()
                         }
-                    }) {
-                        Text(word(W.business_delete), color = c.owedToMe)
+                        if (!on) FluentButton(word(W.business_switch_open), { onSwitch(b.id) }, kind = ButtonKind.STANDARD)
+                        IconAction("ic_edit", word(W.business_rename), { renaming = b })
+                        if (businesses.canDelete(b.id)) IconAction("ic_delete", word(W.business_delete), {
+                            if (busy) return@IconAction
+                            scope.launch {
+                                // A damaged, foreign or newer book must still be deletable (R75, 23 Oct 2026): its
+                                // error used to escape here, so the question never came and the window could close.
+                                val summary = withContext(Dispatchers.IO) {
+                                    runCatching {
+                                        // Opened on its own and closed again: never the open book's instance.
+                                        val db = DesktopDatabase.open(businesses.dbFile(b.id))
+                                        try { db.khataDao().deleteSummary() } finally { db.close() }
+                                    }
+                                }
+                                unreadable = summary.exceptionOrNull()?.let { failText(words, it) }
+                                deleting = b to summary.getOrNull()
+                            }
+                        }, tint = c.owedToMe)
                     }
                 }
-            }
-            Outlined(
-                newName, { newName = it; problem = null }, singleLine = true,
-                label = { Text(word(W.business_name_hint)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-            problem?.let { Text(it, color = c.owedToMe) }
-            FillButton(word(W.business_add), c.brandGreen) {
-                if (newName.isBlank()) { problem = needName; return@FillButton }
-                val b = businesses.create(newName)
-                // The new shop's own name in its own settings, so statements print it; its country, currency and
-                // calendar start as the open shop's (the phone's copyRegion).
-                FileShopSettings(businesses.settingsFile(b.id)).apply {
-                    setBusinessName(newName)
-                    runCatching { copyRegionFrom(FileShopSettings(businesses.settingsFile(businesses.activeId()))) }
+                Spacer(Modifier.height(6.dp))
+                // A new business: its name, then Add (the label names the box; the example stays its hint).
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FluentField(newName, { newName = it; problem = null }, Modifier.weight(1f), label = word(W.business_add),
+                        placeholder = word(W.business_name_hint),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { add() }))
+                    FluentButton(word(W.business_add), { add() }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
                 }
-                newName = ""
-                onSwitch(b.id)
+                problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
             }
         }
     }
 
     renaming?.let { b ->
         var name by remember(b) { mutableStateOf(shown(b)) }
-        AlertDialog(
-            onDismissRequest = { renaming = null },
-            title = { Text(word(W.business_rename)) },
-            text = { Outlined(name, { name = it }, singleLine = true) },
-            confirmButton = {
-                TextButton(enabled = name.isNotBlank(), onClick = {
+        val close = { renaming = null }
+        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = word(W.business_rename),
+            state = rememberDialogState(width = fitW(460.dp), height = fitH(280.dp))) {
+            DialogFrame(word(W.business_rename), onClose = close, footer = {
+                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.save), {
                     businesses.rename(b.id, name)
                     settingsOf(b.id).setBusinessName(name)
                     renaming = null; version++
                     onRenamed(b.id)
-                }) { Text(word(W.save)) }
-            },
-            dismissButton = { TextButton({ renaming = null }) { Text(word(W.cancel)) } }
-        )
+                }, kind = ButtonKind.ACCENT, enabled = name.isNotBlank())
+            }) {
+                FluentField(name, { name = it }, Modifier.fillMaxWidth(), label = word(W.business_name_hint))
+            }
+        }
     }
 
     deleting?.let { (b, summary) ->
         val name = shown(b)
         var typed by remember(b) { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { if (!busy) deleting = null },
-            title = { Text(word(W.business_delete_confirm_title, name)) },
-            text = {
-                Column {
-                    if (summary != null) Text(
-                        word(W.business_delete_confirm_body,
-                            summary.partyCount,
-                            // Which way that shop's net runs, in that shop's own sign (25 Oct 2026, the audit;
-                            // the phone's rule of 23 Oct): it printed unsigned, in the open shop's currency.
-                            word(com.innovation313.roshankhata.screens.balanceSideWord(summary.netBalance)) + " " +
-                                Format.money(summary.netBalance, settingsOf(b.id).currency()))
-                    )
-                    else unreadable?.let { Text(it, color = c.owedToMe) }
-                    Outlined(typed, { typed = it }, singleLine = true,
-                        label = { Text(word(W.business_delete_type_hint, name)) })
-                }
-            },
-            confirmButton = {
-                TextButton(enabled = !busy && typed.trim() == name.trim(), onClick = {
+        val close = { if (!busy) deleting = null }
+        val title = word(W.business_delete_confirm_title, name)
+        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title,
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(420.dp))) {
+            DialogFrame(title, onClose = close, footer = {
+                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD, enabled = !busy)
+                FluentButton(word(W.delete_forever), {
                     // Off the window's thread (R43/R75): it may open the book and say goodbye to the relays.
                     busy = true
                     scope.launch {
@@ -345,9 +352,24 @@ fun BusinessesDialog(
                         busy = false
                         deleting = null; version++
                     }
-                }) { Text(word(W.delete_forever), color = c.owedToMe) }
-            },
-            dismissButton = { TextButton(enabled = !busy, onClick = { deleting = null }) { Text(word(W.cancel)) } }
-        )
+                }, kind = ButtonKind.DANGER, enabled = !busy && typed.trim() == name.trim())
+            }) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    // The computer's own words: this computer and its daily copies, the chosen folder left alone
+                    // (the phone's said "this phone" and "Drive backup").
+                    if (summary != null) Text(
+                        word(W.business_delete_confirm_body_pc,
+                            summary.partyCount,
+                            // Which way that shop's net runs, in that shop's own sign (25 Oct 2026, the audit;
+                            // the phone's rule of 23 Oct): it printed unsigned, in the open shop's currency.
+                            word(com.innovation313.roshankhata.screens.balanceSideWord(summary.netBalance)) + " " +
+                                Format.money(summary.netBalance, settingsOf(b.id).currency())),
+                        color = c.ink, fontSize = 14.sp
+                    )
+                    else unreadable?.let { Text(it, color = c.owedToMe, fontSize = 14.sp) }
+                    FluentField(typed, { typed = it }, Modifier.fillMaxWidth(), label = word(W.business_delete_type_hint, name))
+                }
+            }
+        }
     }
 }

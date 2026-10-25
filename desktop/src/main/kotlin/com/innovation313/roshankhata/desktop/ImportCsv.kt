@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.CsvImport
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
@@ -44,10 +42,13 @@ fun ImportPreviewDialog(
     val c = LocalRoshanColors.current
     var owesMe by remember { mutableStateOf(true) }
     val rows = if (owesMe) fresh else fresh.map { it.copy(balance = -it.balance) }
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text(word(W.import_csv)) },
-        text = {
+    val title = word(W.import_csv)
+    // In the app's frame (Marhala 4): the figures and the sign's choice first, Import the one accent button.
+    AppDialog(onCloseRequest = onCancel, title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(600.dp))) {
+        DialogFrame(title, onClose = onCancel, footer = {
+            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.import_csv_go), { onImport(rows) }, kind = ButtonKind.ACCENT, enabled = rows.isNotEmpty())
+        }) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // Two figures, never one net (25 Oct 2026, the audit): what comes in to collect and what
                 // comes in owed out, each with its side, so flipping the file's sign shows on screen.
@@ -78,8 +79,6 @@ fun ImportPreviewDialog(
                 }
                 if (rows.size > 6) Text("…", color = c.textMuted)
             }
-        },
-        confirmButton = { TextButton({ onImport(rows) }, enabled = rows.isNotEmpty()) { Text(word(W.import_csv_go), color = c.brandGreenText) } },
-        dismissButton = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }
-    )
+        }
+    }
 }

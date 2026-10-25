@@ -1,11 +1,18 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.EscPos
@@ -170,24 +177,39 @@ object ThermalReceipt {
         set(value) { runCatching { if (value == null) lastFile.delete() else lastFile.writeText(value, Charsets.UTF_8) } }
 }
 
-/** The printers Windows knows, the one used last on top. */
+/**
+ * The printers Windows knows, the one used last on top and marked; Save as picture on the start side. In the
+ * app's frame (Marhala 4): each printer a row with its glyph, as PickDialog draws a choice.
+ */
 @Composable
 fun PrinterChoiceDialog(names: List<String>, onCancel: () -> Unit, onSavePicture: (() -> Unit)? = null, onPick: (String) -> Unit) {
     val c = LocalRoshanColors.current
     val last = ThermalReceipt.lastPrinter
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text(word(W.print_choose)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                if (names.isEmpty()) Text(word(W.print_failed), color = c.owedToMe, fontSize = 14.sp)
-                names.sortedByDescending { it == last }.forEach { n ->
-                    TextButton({ onPick(n) }) { Text(n, color = if (n == last) c.brandGreenText else c.ink, fontSize = 15.sp) }
+    val title = word(W.print_choose)
+    val shown = names.sortedByDescending { it == last }
+    AppDialog(onCloseRequest = onCancel, title = title,
+        state = androidx.compose.ui.window.rememberDialogState(width = fitW(480.dp), height = fitH((210 + 49 * shown.size.coerceAtLeast(1)).dp))) {
+        DialogFrame(title, onClose = onCancel, footerStart = {
+            if (onSavePicture != null) FluentButton(word(W.receipt_save_picture), onSavePicture, kind = ButtonKind.STANDARD, icon = "ic_download")
+        }, footer = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }) {
+            if (shown.isEmpty()) Text(word(W.print_failed), color = c.owedToMe, fontSize = 14.sp)
+            Column {
+                shown.forEachIndexed { i, n ->
+                    val on = n == last
+                    Row(
+                        Modifier.fillMaxWidth().clip(Look.ctl)
+                            .background(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent)
+                            .press(Look.ctl) { onPick(n) }.padding(horizontal = 8.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Glyph("ic_print", if (on) Look.accent else c.inkSoft, 16)
+                        Text(n, Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        if (on) Glyph("ic_check_plain", Look.accent, 16)
+                    }
+                    if (i < shown.lastIndex) Rule()
                 }
-                if (onSavePicture != null) TextButton(onSavePicture) { Text(word(W.receipt_save_picture), color = c.brandGreenText, fontSize = 15.sp) }
             }
-        },
-        confirmButton = {},
-        dismissButton = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }
-    )
+        }
+    }
 }

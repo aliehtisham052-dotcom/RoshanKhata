@@ -565,7 +565,16 @@ fun Tag(text: String, color: Color, tint: Color) {
 
 /** A day shown in a Fluent box with the calendar glyph; a click opens the picker. [tall] matches a big amount box beside it. */
 @Composable
-fun DateBox(label: String?, value: String?, placeholder: String, onClick: () -> Unit, modifier: Modifier = Modifier, tall: Boolean = false) {
+fun DateBox(label: String?, value: String?, placeholder: String, onClick: () -> Unit, modifier: Modifier = Modifier, tall: Boolean = false) =
+    ChoiceBox(label, value, placeholder, onClick, modifier, tall, icon = "ic_calendar")
+
+/**
+ * A choice shown in a Fluent box (a supplier, a day): the label above, what is chosen — else [placeholder], muted —
+ * and the [icon] at the end; a click opens the list or the picker (Marhala 4: the scheme form's whole supplier
+ * list stood open in the form).
+ */
+@Composable
+fun ChoiceBox(label: String?, value: String?, placeholder: String, onClick: () -> Unit, modifier: Modifier = Modifier, tall: Boolean = false, icon: String = "ic_chevron_down") {
     val c = LocalRoshanColors.current
     Column(modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
         label?.let { Text(it, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1) }
@@ -575,7 +584,7 @@ fun DateBox(label: String?, value: String?, placeholder: String, onClick: () -> 
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(value ?: placeholder, Modifier.weight(1f), color = if (value != null) c.ink else c.textMuted, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Glyph("ic_calendar", c.inkSoft, 16)
+            Glyph(icon, c.inkSoft, if (icon == "ic_calendar") 16 else 14)
         }
     }
 }

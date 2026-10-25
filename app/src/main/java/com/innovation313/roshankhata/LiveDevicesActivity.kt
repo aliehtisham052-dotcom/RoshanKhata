@@ -117,10 +117,12 @@ class LiveDevicesActivity : BaseActivity() {
             card.findViewById<TextView>(R.id.tvConflictTitle).text =
                 tableWord(v.table) + "  ·  " + Digits.toLatin(Format.dateTime(v.at))
             val fields = card.findViewById<LinearLayout>(R.id.conflictFields)
+            // In the owner's words, not the book's column names and stored values (Marhala 4, part 10).
+            val words = com.innovation313.roshankhata.data.AndroidWords(this)
             for ((field, now, other) in v.fields.take(8)) {
-                fields.addView(line(field, muted, 12f))
-                fields.addView(line(getString(R.string.live_conflict_now, now ?: "—"), ink, 14f))
-                fields.addView(line(getString(R.string.live_conflict_saved, other ?: "—"), saved, 14f))
+                fields.addView(line(com.innovation313.roshankhata.data.ConflictWords.field(words, field), muted, 12f))
+                fields.addView(line(getString(R.string.live_conflict_now, com.innovation313.roshankhata.data.ConflictWords.value(words, field, now) ?: "—"), ink, 14f))
+                fields.addView(line(getString(R.string.live_conflict_saved, com.innovation313.roshankhata.data.ConflictWords.value(words, field, other) ?: "—"), saved, 14f))
             }
             card.findViewById<MaterialButton>(R.id.btnConflictClear).setOnClickListener {
                 lifecycleScope.launch {

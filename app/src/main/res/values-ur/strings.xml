@@ -562,6 +562,7 @@
     <string name="business_delete">کاروبار حذف کریں</string>
     <string name="business_delete_confirm_title">%1$s حذف کریں؟</string>
     <string name="business_delete_confirm_body">%1$d گاہک، بیلنس %2$s۔ اس کاروبار کی ہر اندراج، تصویر اور رسید اس فون سے ہمیشہ کے لیے حذف کر دی جائے گی۔ اگر ڈرائیو بیک اپ موجود ہے تو اسے چھیڑا نہیں جائے گا۔ یہ واپس نہیں ہو سکتا۔</string>
+    <string name="business_delete_confirm_body_pc">%1$d گاہک، بیلنس %2$s۔ اس کاروبار کی ہر اندراج، تصویر اور رسید، اور اس کی روزانہ کاپیاں، اس کمپیوٹر سے ہمیشہ کے لیے حذف کر دی جائیں گی۔ چنے ہوئے فولڈر (USB یا گوگل ڈرائیو) کی کاپیاں، اگر ہوں، چھیڑی نہیں جائیں گی۔ یہ واپس نہیں ہو سکتا۔</string>
     <string name="business_delete_type_hint">تصدیق کے لیے ”%1$s“ لکھیں</string>
     <string name="business_delete_done">%1$s حذف ہو گیا</string>
     <string name="erase_all_button">سارا ڈیٹا مٹائیں</string>
@@ -1165,6 +1166,7 @@
     <string name="about_what">دکان کے کاؤنٹر کا کھاتہ۔ گاہکوں کے حساب، روزانہ نقد، چیک، سپلائر بلز اور قسطیں — جیسے کاغذ پر رکھے جاتے ہیں ویسے، اور اسی زبان میں جس میں دکان چلتی ہے۔ ایک دکان ہو یا کئی، ہر ایک کا اپنا کھاتہ۔</string>
     <string name="about_privacy_title">آپ کا حساب آپ ہی کا رہتا ہے</string>
     <string name="about_privacy_body">سب کچھ اسی فون پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ بھی آپ ہی کی گوگل ڈرائیو پر جاتا ہے — ہمارے پاس نہیں۔</string>
+    <string name="about_privacy_body_pc">سب کچھ اسی کمپیوٹر پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ اسی کمپیوٹر پر اور آپ کے چنے ہوئے فولڈر میں رہتے ہیں، جیسے یو ایس بی یا گوگل ڈرائیو کا فولڈر — ہمارے پاس نہیں۔</string>
     <string name="about_privacy_policy">پرائیویسی پالیسی</string>
     <string name="about_maker">Innovation-313 کی تیار کردہ</string>
     <string name="party_exists">%1$s پہلے سے آپ کے کھاتے میں ہے — کھولا جا رہا ہے۔</string>

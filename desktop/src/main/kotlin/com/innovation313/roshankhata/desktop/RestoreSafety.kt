@@ -101,10 +101,23 @@ fun MergeDialog(
         }
     }
     val p = plan
-    androidx.compose.material3.AlertDialog(
-        onDismissRequest = { if (!busy) onClose() },
-        title = { Text(word(W.merge_title)) },
-        text = {
+    val close = { if (!busy) onClose() }
+    val title = word(W.merge_title)
+    // In the app's frame (Marhala 4); nothing closes it while the merge runs.
+    AppDialog(onCloseRequest = close, title = title, state = androidx.compose.ui.window.rememberDialogState(width = fitW(560.dp), height = fitH(480.dp))) {
+        DialogFrame(title, onClose = close, footer = {
+            FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD, enabled = !busy)
+            if (p != null && !p.none && refused == null) FluentButton(word(W.merge_button), {
+                busy = true
+                scope.launch {
+                    val result = withContext(Dispatchers.IO) { runCatching { keepFirst(); dao.mergeBook(data, shopHere) } }
+                    busy = false
+                    result.onSuccess { done -> onDone(words.text(W.merge_done, done.rows, done.renumbered)) }
+                        .onFailure { onDone(failText(words, it)) }
+                    onClose()
+                }
+            }, kind = ButtonKind.ACCENT, enabled = !busy)
+        }) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 when {
                     refused != null -> Text(refused!!, color = c.owedToMe, fontSize = 14.sp)
@@ -116,19 +129,6 @@ fun MergeDialog(
                     }
                 }
             }
-        },
-        confirmButton = {
-            if (p != null && !p.none && refused == null) FluentButton(word(W.merge_button), {
-                busy = true
-                scope.launch {
-                    val result = withContext(Dispatchers.IO) { runCatching { keepFirst(); dao.mergeBook(data, shopHere) } }
-                    busy = false
-                    result.onSuccess { done -> onDone(words.text(W.merge_done, done.rows, done.renumbered)) }
-                        .onFailure { onDone(failText(words, it)) }
-                    onClose()
-                }
-            }, kind = ButtonKind.ACCENT, enabled = !busy)
-        },
-        dismissButton = { FluentButton(word(W.cancel), { if (!busy) onClose() }, kind = ButtonKind.STANDARD) }
-    )
+        }
+    }
 }

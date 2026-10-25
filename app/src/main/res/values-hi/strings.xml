@@ -589,6 +589,7 @@
     <string name="business_delete">बिज़नेस मिटाएँ</string>
     <string name="business_delete_confirm_title">%1$s मिटाएँ?</string>
     <string name="business_delete_confirm_body">%1$d ग्राहक, बैलेंस %2$s। इस बिज़नेस की हर एंट्री, फ़ोटो और इनवॉइस इस फ़ोन से हमेशा के लिए हट जाएगी। Drive बैकअप, अगर है, वैसा ही रहेगा। इसे वापस नहीं किया जा सकता।</string>
+    <string name="business_delete_confirm_body_pc">%1$d ग्राहक, बैलेंस %2$s। इस बिज़नेस की हर एंट्री, फ़ोटो और इनवॉइस, और इसकी रोज़ की कॉपियाँ, इस कंप्यूटर से हमेशा के लिए हट जाएँगी। चुने हुए फ़ोल्डर (USB या Google Drive) की कॉपियाँ, अगर हैं, वैसी ही रहेंगी। इसे वापस नहीं किया जा सकता।</string>
     <string name="business_delete_type_hint">पुष्टि के लिए “%1$s” लिखें</string>
     <string name="business_delete_done">%1$s मिटा दिया</string>
     <string name="erase_all_button">सारा डेटा मिटाएँ</string>
@@ -1205,6 +1206,7 @@
     <string name="about_what">दुकान के काउंटर का खाता। ग्राहकों के हिसाब, रोज़ का नकद, चेक, सप्लायर बिल और किस्तें — वैसे ही जैसे काग़ज़ पर रखे जाते हैं, उसी भाषा में जिसमें दुकान चलती है। एक दुकान हो या कई, हर एक का अपना खाता।</string>
     <string name="about_privacy_title">आपका हिसाब आपका ही रहता है</string>
     <string name="about_privacy_body">सब कुछ इसी फ़ोन में रखा जाता है। हम आपके ग्राहक, उनके नंबर या किसी का बकाया कभी नहीं देखते। बैकअप आपकी अपनी Google Drive में जाता है — हमारे पास नहीं।</string>
+    <string name="about_privacy_body_pc">सब कुछ इसी कंप्यूटर में रखा जाता है। हम आपके ग्राहक, उनके नंबर या किसी का बकाया कभी नहीं देखते। बैकअप इसी कंप्यूटर में और आपके चुने हुए फ़ोल्डर में रहते हैं, जैसे USB या Google Drive का फ़ोल्डर — हमारे पास नहीं।</string>
     <string name="about_privacy_policy">प्राइवेसी पॉलिसी</string>
     <string name="about_maker">Innovation-313 द्वारा बनाया गया</string>
     <string name="party_exists">%1$s पहले से आपके खाते में है — उसे खोला जा रहा है।</string>

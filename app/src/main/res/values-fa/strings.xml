@@ -582,6 +582,7 @@
     <string name="business_delete">حذف کسب‌وکار</string>
     <string name="business_delete_confirm_title">%1$s حذف شود؟</string>
     <string name="business_delete_confirm_body">%1$d مشتری، مانده %2$s. همه ثبت‌ها، عکس‌ها و فاکتورهای این کسب‌وکار برای همیشه از این گوشی حذف می‌شود. پشتیبان درایو، اگر وجود داشته باشد، دست‌نخورده می‌ماند. این کار قابل بازگشت نیست.</string>
+    <string name="business_delete_confirm_body_pc">%1$d مشتری، مانده %2$s. همه ثبت‌ها، عکس‌ها و فاکتورهای این کسب‌وکار، و نسخه‌های روزانه‌اش، برای همیشه از این رایانه حذف می‌شود. نسخه‌های پوشهٔ انتخاب‌شده (فلش USB یا گوگل درایو)، اگر باشند، دست‌نخورده می‌مانند. این کار قابل بازگشت نیست.</string>
     <string name="business_delete_type_hint">برای تأیید «%1$s» را بنویسید</string>
     <string name="business_delete_done">%1$s حذف شد</string>
     <string name="erase_all_button">پاک‌کردن همه داده‌ها</string>
@@ -1193,6 +1194,7 @@
     <string name="about_what">دفتری برای پیشخوان مغازه. حساب مشتریان، نقدی روزانه، چک‌ها، فاکتورهای تأمین‌کننده و اقساط — همان‌طور که روی کاغذ نگه داشته می‌شوند، و به زبانی که مغازه با آن اداره می‌شود. یک مغازه یا چند تا، هرکدام دفتر خودش.</string>
     <string name="about_privacy_title">حساب‌های شما مال خودتان می‌ماند</string>
     <string name="about_privacy_body">همه چیز روی همین گوشی ذخیره می‌شود. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم. پشتیبان هم به درایو خودتان می‌رود — نه به ما.</string>
+    <string name="about_privacy_body_pc">همه چیز روی همین رایانه ذخیره می‌شود. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم. پشتیبان‌ها روی همین رایانه و در پوشه‌ای که انتخاب می‌کنید، مثل فلش یا پوشهٔ گوگل درایو، می‌مانند — نه نزد ما.</string>
     <string name="about_privacy_policy">سیاست حریم خصوصی</string>
     <string name="about_maker">ساخته‌شده توسط Innovation-313</string>
     <string name="party_exists">%1$s از قبل در دفتر شما هست — باز می‌شود.</string>

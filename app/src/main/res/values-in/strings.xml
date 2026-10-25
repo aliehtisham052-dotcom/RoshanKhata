@@ -578,6 +578,7 @@
     <string name="business_delete">Hapus usaha</string>
     <string name="business_delete_confirm_title">Hapus %1$s?</string>
     <string name="business_delete_confirm_body">%1$d pelanggan, saldo %2$s. Semua catatan, foto, dan faktur di usaha ini akan dihapus permanen dari ponsel ini. Cadangan di Drive, jika ada, tidak disentuh. Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="business_delete_confirm_body_pc">%1$d pelanggan, saldo %2$s. Semua catatan, foto, dan faktur di usaha ini, beserta salinan hariannya, akan dihapus permanen dari komputer ini. Salinan di folder yang dipilih (flashdisk USB atau Google Drive), jika ada, tidak disentuh. Tindakan ini tidak dapat dibatalkan.</string>
     <string name="business_delete_type_hint">Ketik “%1$s” untuk konfirmasi</string>
     <string name="business_delete_done">%1$s dihapus</string>
     <string name="erase_all_button">Hapus semua data</string>
@@ -1180,6 +1181,7 @@
     <string name="about_what">Buku catatan untuk meja kasir toko. Akun pelanggan, kas harian, cek, tagihan pemasok, dan cicilan — dicatat seperti di atas kertas, dalam bahasa yang dipakai di toko. Satu toko, atau beberapa, masing-masing dengan bukunya sendiri.</string>
     <string name="about_privacy_title">Catatan Anda tetap milik Anda</string>
     <string name="about_privacy_body">Semuanya disimpan di ponsel ini. Kami tidak pernah melihat pelanggan Anda, nomor mereka, atau utang siapa pun. Cadangan masuk ke Google Drive Anda sendiri — bukan ke kami.</string>
+    <string name="about_privacy_body_pc">Semuanya disimpan di komputer ini. Kami tidak pernah melihat pelanggan Anda, nomor mereka, atau utang siapa pun. Cadangan tetap ada di komputer ini dan di folder yang Anda pilih, seperti USB atau folder Google Drive — bukan di kami.</string>
     <string name="about_privacy_policy">Kebijakan privasi</string>
     <string name="about_maker">Dibuat oleh Innovation-313</string>
     <string name="party_exists">%1$s sudah ada di buku Anda — sedang dibuka.</string>

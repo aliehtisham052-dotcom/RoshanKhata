@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -179,21 +180,21 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> 
         }
     }
 
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.wifi_pc_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(820.dp))) {
-        Box(Modifier.fillMaxSize().background(c.surface)) {
-            Column(
-                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+    // In the app's frame (Marhala 4, part 10): its title once, Close in the foot.
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.wifi_pc_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(760.dp))) {
+        DialogFrame(word(W.wifi_pc_title), onClose = onClose, footer = {
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+        }) {
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(word(W.wifi_pc_steps), color = c.ink, fontSize = 14.sp)
-                qr?.let { Image(it, contentDescription = word(W.wifi_pc_title), modifier = Modifier.size(320.dp)) }
-                Text(status, color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                qr?.let { Image(it, contentDescription = word(W.wifi_pc_title), modifier = Modifier.size(280.dp)) }
+                // Waiting or done in the accent; a failure or no network in red.
+                val bad = status == words.text(W.wifi_pc_failed) || status == words.text(W.wifi_pc_no_network)
+                Text(status, color = if (bad) c.owedToMe else Look.accent, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 if (hosts.isNotEmpty() && server != null) {
-                    Text(hosts.joinToString("  ·  ") + "  :" + server.localPort, color = c.textMuted, fontSize = 12.sp)
+                    Text(hosts.joinToString("  \u00b7  ") + "  :" + server.localPort, color = c.textMuted, fontSize = 12.sp)
                 }
                 Text(word(W.wifi_pc_firewall), color = c.textMuted, fontSize = 12.sp)
-                FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
             }
         }
     }

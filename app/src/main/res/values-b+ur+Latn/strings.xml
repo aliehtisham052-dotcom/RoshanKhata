@@ -562,6 +562,7 @@
     <string name="business_delete">Business delete karein</string>
     <string name="business_delete_confirm_title">%1$s delete karein?</string>
     <string name="business_delete_confirm_body">%1$d customers, balance %2$s. Is business ki har entry, photo aur invoice is phone se hamesha ke liye hata di jayegi. Agar Drive backup maujood hai to use chheda nahi jayega. Ye wapas nahi ho sakta.</string>
+    <string name="business_delete_confirm_body_pc">%1$d customers, balance %2$s. Is business ki har entry, photo aur invoice, aur is ki rozana copies, is computer se hamesha ke liye hata di jayengi. Chune hue folder (USB ya Google Drive) ki copies, agar hon, chheri nahi jayengi. Ye wapas nahi ho sakta.</string>
     <string name="business_delete_type_hint">Confirm karne ke liye \"%1$s\" likhein</string>
     <string name="business_delete_done">%1$s delete ho gaya</string>
     <string name="erase_all_button">Sara data mitayein</string>
@@ -1165,6 +1166,7 @@
     <string name="about_what">Dukaan ke counter ka khata. Gahakon ke hisaab, rozana nakad, cheques, supplier bills aur qisten — jaise kaghaz par rakhe jate hain waise, aur usi zubaan mein jis mein dukaan chalti hai. Ek dukaan ho ya kai, har ek ka apna khata.</string>
     <string name="about_privacy_title">Aap ka hisaab aap hi ka rehta hai</string>
     <string name="about_privacy_body">Sab kuch isi phone par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup bhi aap hi ki Google Drive par jata hai — hamare paas nahi.</string>
+    <string name="about_privacy_body_pc">Sab kuch isi computer par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup isi computer par aur aap ke chune hue folder mein rehte hain, jaise USB ya Google Drive ka folder — hamare paas nahi.</string>
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="about_maker">Innovation-313 ki tayyar karda</string>
     <string name="party_exists">%1$s pehle se aap ke khaate mein hai — khola ja raha hai.</string>

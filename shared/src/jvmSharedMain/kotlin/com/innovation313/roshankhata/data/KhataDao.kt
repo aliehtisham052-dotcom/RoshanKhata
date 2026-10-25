@@ -2834,6 +2834,10 @@ interface KhataDao {
     @Query("UPDATE supplier_bills SET photoPath = :path WHERE id = :id")
     suspend fun setSupplierBillPhotoPath(id: Long, path: String)
 
+    /** Customers' and suppliers' faces, binned ones included: what the computer's bin compares before and after a purge. */
+    @Query("SELECT photoPath FROM parties WHERE photoPath IS NOT NULL AND photoPath != ''")
+    suspend fun partyPhotoPaths(): List<String>
+
     @Query("UPDATE supplier_bills SET photoPath = NULL WHERE id = :id")
     suspend fun clearSupplierBillPhoto(id: Long)
 

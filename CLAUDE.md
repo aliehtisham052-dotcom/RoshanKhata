@@ -192,8 +192,9 @@ No account, no server, no ads. Everything stays on the phone.
   pane on `.card()`, `Rule()`, 14 sp semibold rows, Fluent pills for its
   choices and subtle/danger buttons for its text buttons. ScreenProofTest
   also draws Cashbook, Cheques and the Report from a small temporary book.
-  Still Material-shaped: the AlertDialogs (confirmations, small forms) and
-  the DialogWindows not yet on DialogFrame (bill, scheme, staff, product).
+  Still Material-shaped then: the AlertDialogs (confirmations, small forms) and
+  the DialogWindows not yet on DialogFrame (bill, scheme, staff, product) —
+  all on the app's dialogs since Marhala 4 (part 10, 25 Oct 2026).
   Not on Windows: the posters' 3D heroes and video, voice entry
   (no free offline Urdu recognition), Google Drive sign-in (the backup
   folder can be a Google Drive for Desktop folder instead).
@@ -1132,6 +1133,33 @@ Businesses/Settings), each part with its proof pictures. CI only.
   PIN instead of "access denied", the export is written in who did what, and an import is logged as an import (it
   read "Price changed"). Proofs: screen-laptop-staff-ur, -audit-en, -daily-en. Not changed: App Lock's PIN stays 4–8
   digits while the owner's counter PIN is 6–8 (the owner's to decide; App Lock's hash never leaves this computer).
+- **Part 10, Live sync, From phone, Businesses, Help — and the last Material dialogs:** the Live sync window is in
+  the app's frame: once the book syncs, where it stands comes first (the devices with when each was heard, the relay,
+  held changes, conflicts) and the code to join or give after; Stop asks first (`live_stop_confirm`) and removing a
+  device is the app's question; a conflict's fields and values read in the owner's words on both platforms
+  (`ConflictWords`, shared: an amount as money, a day as a date, I gave / I got — it showed "timestamp 1761212345678").
+  From phone and Report a problem are in the frame (the report shows everything it sends, the whole error, and says
+  what Copy or Open mail did beside the buttons; a kind's words choose it too). Help is a page frame: Ctrl+F among the
+  shortcuts, Report a problem as the one window (the page's second, weaker form is gone), the support address written
+  out, the version. Businesses: each business a card (face, name, This one, the live badge, Open, rename, delete), the
+  add box labelled and Enter adds; rename and delete are the app's dialogs, delete in the computer's words
+  (`business_delete_confirm_body_pc`); a business with no name reads as the app's name in the owner's language.
+  **No Material AlertDialog is left on Windows:** every notice and question is `TellDialog`/`AskDialog`, titled
+  (several had no title); the restore question is `AppDialog` + `DialogFrame` (its own scroll with the bar, Merge at
+  the start, Cancel, ✕ and Esc one answer, nothing answered while the restore runs); the shop's name, the statement's
+  window (two date boxes, the phone's figures on a card, the last day by the calendar — `dayAfter`), the import
+  preview, a photo, the merge, the printer choice (the one used last marked) are in the frame. Schemes, Seasons and
+  Duplicates are page frames: Schemes has Add in the head and its form in the frame, the supplier chosen from a list
+  (`ChoiceBox`, the date box's shape, + `PickDialog`; the whole list stood open in the form), a claim read as the
+  phone reads it (the sum's size, 0 allowed), and its writes say a failure; a season's owing list opens the customer,
+  as the phone's does; a merge moves the merged-away customer's face to the one kept (`Photos.moveOnMerge`, the
+  phone's transferOnMerge). The bin deletes the pictures a purge leaves with no row pointing at them
+  (`Photos.purgingOrphans`, the phone's BillPhoto rule, `partyPhotoPaths`): never one another business's book points
+  at, nothing when another book cannot be read, and only files in the app's bills and faces folders (`Photos.ours`) —
+  a path that came in a backup may point anywhere. About says this computer and its chosen folder
+  (`about_privacy_body_pc`, AboutScreen's `privacyBody`), not this phone and Drive. The PIN, recovery and business
+  boxes name Enter's action Done. Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
+  -schemes-ur, -seasons-en, -duplicates-en.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview

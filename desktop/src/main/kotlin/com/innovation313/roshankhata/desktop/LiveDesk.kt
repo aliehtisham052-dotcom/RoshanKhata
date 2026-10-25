@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -578,171 +579,177 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
     }
 
     removing?.let { (device, name) ->
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { removing = null },
-            text = { Text(word(W.live_remove_confirm, name)) },
-            confirmButton = {
-                androidx.compose.material3.TextButton({
-                    removing = null
-                    scope.launch {
-                        state = withContext(Dispatchers.IO) {
-                            runCatching { LiveForget.device(book.syncSql(), device); LiveSync.state(book.syncSql()) }.getOrNull()
-                        }
-                    }
-                }) { Text(word(W.live_remove), color = c.owedToMe) }
-            },
-            dismissButton = { androidx.compose.material3.TextButton({ removing = null }) { Text(word(W.cancel)) } }
-        )
+        AskDialog(word(W.live_remove), word(W.live_remove_confirm, name), word(W.live_remove), onConfirm = {
+            removing = null
+            scope.launch {
+                state = withContext(Dispatchers.IO) {
+                    runCatching { LiveForget.device(book.syncSql(), device); LiveSync.state(book.syncSql()) }.getOrNull()
+                }
+            }
+        }, onDismiss = { removing = null }, danger = true)
     }
+    // Turning live sync off asks first, as the phone does (Marhala 4, part 10 — the audit: one click stopped it).
+    var stopping by remember { mutableStateOf(false) }
+    if (stopping) AskDialog(word(W.live_stop), word(W.live_stop_confirm), word(W.live_stop), onConfirm = {
+        stopping = false
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                runCatching { LiveCloud.leaveAll(book.syncSql()) }
+                runCatching { LiveSync.disable(book.syncSql()) }
+            }
+            NumberMark.mark = null
+            LiveDesk.stop()
+            onClose()
+        }
+    }, onDismiss = { stopping = false }, danger = true)
 
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.live_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(860.dp))) {
-        Box(Modifier.fillMaxSize().background(c.surface)) {
-            Column(
-                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(word(W.live_explain), color = c.textMuted, fontSize = 13.sp)
-                val g = giving
-                if (g is LiveDesk.Giving.Idle) {
-                    Text(word(W.live_pc_steps), color = c.ink, fontSize = 14.sp)
-                    qr?.let { Image(it, contentDescription = word(W.live_title), modifier = Modifier.size(300.dp)) }
-                    if (export != null && port != null && hosts.isNotEmpty()) {
-                        FluentButton(word(W.live_give), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
-                    }
-                } else {
-                    Text(word(W.live_give), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    Text(word(W.live_give_steps), color = c.ink, fontSize = 14.sp)
-                    giveQr?.let { Image(it, contentDescription = word(W.live_give), modifier = Modifier.size(300.dp)) }
-                    when (g) {
-                        is LiveDesk.Giving.Sending -> Text(
-                            word(W.live_give_sending, Format.isolate(g.name.ifBlank { "—" })), color = c.ink, fontSize = 14.sp
-                        )
-                        is LiveDesk.Giving.Sent -> Text(
-                            word(W.live_give_sent, Format.isolate(g.name.ifBlank { "—" }), g.code),
-                            color = c.brandGreenText, fontSize = 15.sp, fontWeight = FontWeight.Medium
-                        )
-                        LiveDesk.Giving.Failed -> Text(word(W.live_give_failed), color = c.owedToMe, fontSize = 14.sp)
-                        else -> {}
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if ((g is LiveDesk.Giving.Sent || g == LiveDesk.Giving.Failed) && export != null) {
-                            FluentButton(word(W.live_give_new_code), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
-                        }
-                        if (g !is LiveDesk.Giving.Sending) FluentButton(word(W.back), { LiveDesk.closeGive() }, kind = ButtonKind.SUBTLE)
-                    }
+    val s = state
+    val peers = s?.peers.orEmpty()
+    // The QR to join or to give, with its steps. First while nothing is joined; after the devices once they are
+    // (the audit: a syncing book opened on the code, its devices and their state below the fold).
+    val joinPart: @Composable () -> Unit = {
+        Column(Modifier.fillMaxWidth().card().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            val g = giving
+            if (g is LiveDesk.Giving.Idle) {
+                Text(word(W.live_pc_steps), color = c.ink, fontSize = 14.sp)
+                qr?.let { Image(it, contentDescription = word(W.live_title), modifier = Modifier.size(260.dp)) }
+                if (export != null && port != null && hosts.isNotEmpty()) {
+                    FluentButton(word(W.live_give), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
                 }
-                if (!opening && (port == null || hosts.isEmpty())) Text(word(W.wifi_pc_no_network), color = c.owedToMe, fontSize = 14.sp)
-                else if (port != null) Text(hosts.joinToString("  ·  ") + "  :" + port, color = c.textMuted, fontSize = 12.sp)
-                val s = state
-                val peers = s?.peers.orEmpty()
-                val lock = LiveSync.lockTrouble
-                if (s != null && s.on && s.identity == null && lock != null) Text(
-                    word(W.live_status_key_busy, lock), color = c.owedToMe, fontSize = 15.sp, fontWeight = FontWeight.Medium
-                )
-                else if (s == null || !s.on) Text(
-                    word(if (s?.offWhy == LiveSync.OFF_RESTORED) W.live_status_rejoin else W.live_status_off),
-                    color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium
-                )
-                else if (peers.isEmpty()) Text(word(W.live_pc_none), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                else {
-                    // The relay road, as it stands: live, off, or down with the relay's own word.
-                    val rs by LiveDesk.relayState.collectAsState()
-                    if (relay) when (val r = rs) {
-                        is LiveDesk.RelayState.Live -> Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = c.brandGreenText, fontSize = 13.sp)
-                        // The kill switch is its own sentence; a reason code in the owner's language (LiveWhy, as the phone).
-                        is LiveDesk.RelayState.Down -> Text(
-                            if (r.why == LiveDesk.HALTED) word(W.live_status_halted)
-                            else word(W.live_pc_relay_down, Format.isolate(com.innovation313.roshankhata.data.LiveWhy.text(com.innovation313.roshankhata.words.LocalWords.current, r.why))),
-                            color = c.owedToMe, fontSize = 13.sp
-                        )
-                        else -> {}
-                    }
-                    Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                    val now = System.currentTimeMillis()
-                    peers.forEach { p ->
-                        val name = p.name?.takeIf { it.isNotBlank() } ?: "—"
-                        // "Live" only for a device heard within its daily heartbeat (25 Oct 2026, the audit: a phone
-                        // silent for weeks was shown green and "Live"); else when it was last seen, red past a week.
-                        val heard = p.seen?.let { Format.dateTime(it) }
-                        val (line, colour) = when (peerState(p.seen, now)) {
-                            PeerState.LIVE -> word(W.live_status_live, name, heard ?: "—") to c.brandGreenText
-                            PeerState.QUIET -> (name + "  ·  " + word(W.live_device_seen, heard ?: "—")) to c.ink
-                            PeerState.STALE -> (name + "  ·  " + word(W.live_device_seen, heard ?: "—")) to c.owedToMe
-                            PeerState.NEVER -> (name + "  ·  " + word(W.live_device_never)) to c.textMuted
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                line,
-                                color = colour, fontSize = 14.sp, fontWeight = FontWeight.Medium,
-                                modifier = Modifier.weight(1f)
-                            )
-                            FluentButton(word(W.live_remove), { removing = p.device to name }, kind = ButtonKind.SUBTLE)
-                        }
-                    }
+            } else {
+                Text(word(W.live_give), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text(word(W.live_give_steps), color = c.ink, fontSize = 14.sp)
+                giveQr?.let { Image(it, contentDescription = word(W.live_give), modifier = Modifier.size(260.dp)) }
+                when (g) {
+                    is LiveDesk.Giving.Sending -> Text(
+                        word(W.live_give_sending, Format.isolate(g.name.ifBlank { "—" })), color = c.ink, fontSize = 14.sp
+                    )
+                    is LiveDesk.Giving.Sent -> Text(
+                        word(W.live_give_sent, Format.isolate(g.name.ifBlank { "—" }), g.code),
+                        color = Look.accent, fontSize = 15.sp, fontWeight = FontWeight.Medium
+                    )
+                    LiveDesk.Giving.Failed -> Text(word(W.live_give_failed), color = c.owedToMe, fontSize = 14.sp)
+                    else -> {}
                 }
-                if (s != null && s.on) {
-                    // Also through the internet: the owner's choice, said plainly (22 Oct 2026, the review).
-                    Row(
-                        Modifier.fillMaxWidth().press {
-                            val next = !relay
-                            relay = next
-                            scope.launch {
-                                withContext(Dispatchers.IO) {
-                                    runCatching { book.khataDao().setSetting(BookSettings.LIVE_RELAY, if (next) "1" else null) }
-                                }
-                            }
-                        },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        androidx.compose.material3.Checkbox(relay, onCheckedChange = null)
-                        Text(word(W.live_relay), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                    Text(word(W.live_relay_help), color = c.textMuted, fontSize = 12.sp)
-                    if (s.held > 0) Text(word(W.live_held, s.held), color = c.owedToMe, fontSize = 13.sp)
-                }
-                if ((s?.conflicts ?: 0) > 0) {
-                    Text(word(W.live_conflicts, s!!.conflicts), color = c.textMuted, fontSize = 13.sp)
-                    FluentButton(word(W.live_conflicts_show), {
-                        scope.launch { views = withContext(Dispatchers.IO) { runCatching { LiveSync.conflictViews(book.syncSql()) }.getOrDefault(emptyList()) } }
-                    }, kind = ButtonKind.STANDARD)
-                }
-                // What changed on both at once: each field as it is now and as the other version had it.
-                views.forEach { v ->
-                    Column(
-                        Modifier.fillMaxWidth().background(c.pageBg, androidx.compose.foundation.shape.RoundedCornerShape(8.dp)).padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(tableWord(v.table) + "  ·  " + Format.dateTime(v.at), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                        v.fields.take(8).forEach { (field, now, saved) ->
-                            Text(field, color = c.textMuted, fontSize = 12.sp)
-                            Text(word(W.live_conflict_now, now ?: "—"), color = c.ink, fontSize = 13.sp)
-                            Text(word(W.live_conflict_saved, saved ?: "—"), color = c.owedToMe, fontSize = 13.sp)
-                        }
-                        FluentButton(word(W.live_conflict_clear), {
-                            scope.launch {
-                                withContext(Dispatchers.IO) { runCatching { LiveSync.clearConflict(book.syncSql(), v.id) } }
-                                views = views.filter { it.id != v.id }
-                                state = withContext(Dispatchers.IO) { runCatching { LiveSync.state(book.syncSql()) }.getOrNull() }
-                            }
-                        }, kind = ButtonKind.SUBTLE)
-                    }
-                }
-                Text(word(W.wifi_pc_firewall), color = c.textMuted, fontSize = 12.sp)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (s?.on == true) FluentButton(word(W.live_stop), {
+                    if ((g is LiveDesk.Giving.Sent || g == LiveDesk.Giving.Failed) && export != null) {
+                        FluentButton(word(W.live_give_new_code), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
+                    }
+                    if (g !is LiveDesk.Giving.Sending) FluentButton(word(W.back), { LiveDesk.closeGive() }, kind = ButtonKind.SUBTLE)
+                }
+            }
+            if (!opening && (port == null || hosts.isEmpty())) Text(word(W.wifi_pc_no_network), color = c.owedToMe, fontSize = 14.sp)
+            else if (port != null) Text(hosts.joinToString("  \u00b7  ") + "  :" + port, color = c.textMuted, fontSize = 12.sp)
+            Text(word(W.wifi_pc_firewall), color = c.textMuted, fontSize = 12.sp)
+        }
+    }
+    // Where the book stands: on or off, the relay, the devices with when each was heard, conflicts.
+    val statusPart: @Composable () -> Unit = {
+        Column(Modifier.fillMaxWidth().card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            val lock = LiveSync.lockTrouble
+            if (s != null && s.on && s.identity == null && lock != null) Text(
+                word(W.live_status_key_busy, lock), color = c.owedToMe, fontSize = 15.sp, fontWeight = FontWeight.Medium
+            )
+            else if (s == null || !s.on) Text(
+                word(if (s?.offWhy == LiveSync.OFF_RESTORED) W.live_status_rejoin else W.live_status_off),
+                color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium
+            )
+            else if (peers.isEmpty()) Text(word(W.live_pc_none), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+            else {
+                // The relay road, as it stands: live, off, or down with the relay's own word.
+                val rs by LiveDesk.relayState.collectAsState()
+                if (relay) when (val r = rs) {
+                    is LiveDesk.RelayState.Live -> Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = Look.accent, fontSize = 13.sp)
+                    // The kill switch is its own sentence; a reason code in the owner's language (LiveWhy, as the phone).
+                    is LiveDesk.RelayState.Down -> Text(
+                        if (r.why == LiveDesk.HALTED) word(W.live_status_halted)
+                        else word(W.live_pc_relay_down, Format.isolate(com.innovation313.roshankhata.data.LiveWhy.text(com.innovation313.roshankhata.words.LocalWords.current, r.why))),
+                        color = c.owedToMe, fontSize = 13.sp
+                    )
+                    else -> {}
+                }
+                Text(word(W.live_devices), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                val now = System.currentTimeMillis()
+                peers.forEach { p ->
+                    val name = p.name?.takeIf { it.isNotBlank() } ?: "—"
+                    // "Live" only for a device heard within its daily heartbeat (25 Oct 2026, the audit: a phone
+                    // silent for weeks was shown green and "Live"); else when it was last seen, red past a week.
+                    val heard = p.seen?.let { Format.dateTime(it) }
+                    val (line, colour) = when (peerState(p.seen, now)) {
+                        PeerState.LIVE -> word(W.live_status_live, name, heard ?: "—") to Look.accent
+                        PeerState.QUIET -> (name + "  \u00b7  " + word(W.live_device_seen, heard ?: "—")) to c.ink
+                        PeerState.STALE -> (name + "  \u00b7  " + word(W.live_device_seen, heard ?: "—")) to c.owedToMe
+                        PeerState.NEVER -> (name + "  \u00b7  " + word(W.live_device_never)) to c.textMuted
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Avatar(name, 30)
+                        Text(line, color = colour, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                        FluentButton(word(W.live_remove), { removing = p.device to name }, kind = ButtonKind.SUBTLE)
+                    }
+                }
+            }
+            if (s != null && s.on) {
+                // Also through the internet: the owner's choice, said plainly (22 Oct 2026, the review).
+                Row(
+                    Modifier.fillMaxWidth().clip(Look.ctl).press(Look.ctl) {
+                        val next = !relay
+                        relay = next
                         scope.launch {
                             withContext(Dispatchers.IO) {
-                                runCatching { LiveCloud.leaveAll(book.syncSql()) }
-                                runCatching { LiveSync.disable(book.syncSql()) }
+                                runCatching { book.khataDao().setSetting(BookSettings.LIVE_RELAY, if (next) "1" else null) }
                             }
-                            NumberMark.mark = null
-                            LiveDesk.stop()
-                            onClose()
                         }
-                    }, kind = ButtonKind.DANGER)
-                    FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+                    },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.material3.Checkbox(relay, onCheckedChange = null)
+                    Text(word(W.live_relay), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 }
+                Text(word(W.live_relay_help), color = c.textMuted, fontSize = 12.sp)
+                if (s.held > 0) Text(word(W.live_held, s.held), color = c.owedToMe, fontSize = 13.sp)
+            }
+            if ((s?.conflicts ?: 0) > 0) {
+                Text(word(W.live_conflicts, s!!.conflicts), color = c.textMuted, fontSize = 13.sp)
+                FluentButton(word(W.live_conflicts_show), {
+                    scope.launch { views = withContext(Dispatchers.IO) { runCatching { LiveSync.conflictViews(book.syncSql()) }.getOrDefault(emptyList()) } }
+                }, kind = ButtonKind.STANDARD)
+            }
+            // What changed on both at once: each field as it is now and as the other version had it, in the
+            // owner's words (ConflictWords, shared with the phone: it showed the book's column names and values).
+            val words = com.innovation313.roshankhata.words.LocalWords.current
+            views.forEach { v ->
+                Column(
+                    Modifier.fillMaxWidth().background(Look.subtle, Look.card).padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(tableWord(v.table) + "  \u00b7  " + Format.dateTime(v.at), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    v.fields.take(8).forEach { (field, now, saved) ->
+                        Text(com.innovation313.roshankhata.data.ConflictWords.field(words, field), color = c.textMuted, fontSize = 12.sp)
+                        Text(word(W.live_conflict_now, com.innovation313.roshankhata.data.ConflictWords.value(words, field, now) ?: "—"), color = c.ink, fontSize = 13.sp)
+                        Text(word(W.live_conflict_saved, com.innovation313.roshankhata.data.ConflictWords.value(words, field, saved) ?: "—"), color = c.owedToMe, fontSize = 13.sp)
+                    }
+                    FluentButton(word(W.live_conflict_clear), {
+                        scope.launch {
+                            withContext(Dispatchers.IO) { runCatching { LiveSync.clearConflict(book.syncSql(), v.id) } }
+                            views = views.filter { it.id != v.id }
+                            state = withContext(Dispatchers.IO) { runCatching { LiveSync.state(book.syncSql()) }.getOrNull() }
+                        }
+                    }, kind = ButtonKind.SUBTLE)
+                }
+            }
+        }
+    }
+
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = word(W.live_title), state = rememberDialogState(width = fitW(620.dp), height = fitH(860.dp))) {
+        DialogFrame(word(W.live_title), onClose = onClose, footerStart = {
+            if (s?.on == true) FluentButton(word(W.live_stop), { stopping = true }, kind = ButtonKind.DANGER)
+        }, footer = {
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+        }) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(word(W.live_explain), color = c.textMuted, fontSize = 13.sp)
+                if (s != null && s.on && peers.isNotEmpty()) { statusPart(); joinPart() }
+                else { joinPart(); statusPart() }
             }
         }
     }
