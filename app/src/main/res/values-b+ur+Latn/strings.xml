@@ -3240,6 +3240,7 @@
     <string name="restore_loss_agree">Main samajhta hoon ke yeh khatam ho jayenge</string>
     <string name="restore_loss_counting">Dekha ja raha hai ke is khate mein kya hai jo copy mein nahi…</string>
     <string name="snapshot_before_restore">Restore se pehle mehfooz · %1$s</string>
+    <string name="snapshot_before_merge">Naya shamil karne se pehle mehfooz · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">Qeematon mein shamil tax</string>

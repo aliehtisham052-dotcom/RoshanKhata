@@ -3268,6 +3268,7 @@
     <string name="restore_loss_agree">مان سمجهان ٿو ته اهي ختم ٿي ويندا</string>
     <string name="restore_loss_counting">ڏٺو پيو وڃي ته هن کاتي ۾ ڇا آهي جيڪو ڪاپي ۾ ناهي…</string>
     <string name="snapshot_before_restore">ريسٽور کان اڳ محفوظ · %1$s</string>
+    <string name="snapshot_before_merge">نئون شامل ڪرڻ کان اڳ محفوظ · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">قيمتن ۾ شامل ٽيڪس</string>

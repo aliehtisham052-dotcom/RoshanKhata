@@ -3428,6 +3428,7 @@
     <string name="restore_loss_agree">أفهم أن هذه ستزول</string>
     <string name="restore_loss_counting">جارٍ فحص ما في هذا الدفتر وليس في النسخة…</string>
     <string name="snapshot_before_restore">حُفظت قبل استعادة · %1$s</string>
+    <string name="snapshot_before_merge">حُفظت قبل إضافة الجديد · %1$s</string>
 
     <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
     <string name="pos_tax_included">الضريبة ضمن الأسعار</string>
