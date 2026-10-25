@@ -61,4 +61,15 @@ class LabelSheetTest {
         assertTrue(cut, kept.isNotEmpty() && !Character.isHighSurrogate(kept.last()))
         g.dispose()
     }
+
+    @Test
+    fun `each bar is one run of the code's own modules`() {
+        // Marhala 4, the audit: columns cut to whole points made bars of one width print one and two points wide.
+        // Each bar is now one rectangle over a run of the matrix's dark modules; an EAN-13 has thirty of them.
+        val m = com.google.zxing.oned.EAN13Writer().encode("5012345678900", com.google.zxing.BarcodeFormat.EAN_13, 0, 1)
+        val runs = LabelSheet(emptyList()).barRuns(m)
+        assertEquals(30, runs.size)
+        assertEquals((0 until m.width).count { m[it, 0] }, runs.sumOf { it.second - it.first })
+        assertTrue(runs.all { (a, b) -> b > a && (a == 0 || !m[a - 1, 0]) && (b == m.width || !m[b, 0]) })
+    }
 }

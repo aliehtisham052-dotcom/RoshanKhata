@@ -62,30 +62,33 @@ class LabelSheet(private val products: List<Product>, private val copies: Int = 
         // draws it, a character at a time (PrintFonts.attributed, 23 Oct 2026): one face printed it as boxes.
         g.font = Font(PrintFonts.family, Font.BOLD, 8)
         val fm = g.fontMetrics
-        val name = fitted(g, p.name, labelW - 2 * pad)
+        // The price first, at the far end; the name takes what room is left (25 Oct 2026, the audit: a long name
+        // was fitted to the whole label and the price, the figure a shelf label is for, was left off).
+        val priceText = p.salePrice?.let { Format.money(it) }
+        val priceW = priceText?.let { PrintFonts.width(g, it) } ?: 0.0
+        val name = fitted(g, p.name, labelW - 2 * pad - (if (priceText != null) priceW + pad else 0.0))
         val nameW = PrintFonts.width(g, name)
         val nameX = if (rtl) x + labelW - pad - nameW else x + pad
         PrintFonts.draw(g, name, nameX.toFloat(), (y + pad + fm.ascent).toFloat())
-        // The price on the end side of the name line.
-        p.salePrice?.let { price ->
-            val text = Format.money(price)
-            val w = PrintFonts.width(g, text)
-            if (nameW + w + 3 * pad < labelW) {
-                val priceX = if (rtl) x + pad else x + labelW - pad - w
-                PrintFonts.draw(g, text, priceX.toFloat(), (y + pad + fm.ascent).toFloat())
-            }
+        priceText?.let { text ->
+            val priceX = if (rtl) x + pad else x + labelW - pad - priceW
+            PrintFonts.draw(g, text, priceX.toFloat(), (y + pad + fm.ascent).toFloat())
         }
-        // The bars: as wide as the label allows, the code's digits under them.
+        // The bars: as wide as the label allows, the code's digits under them. One module is one column of the
+        // code's own matrix, every bar one rectangle at its exact place, drawn without smoothing so the printer
+        // sets each edge at its own dots (25 Oct 2026, the audit: each column was cut to a whole point and widened
+        // to one, so bars that should match came out one and two points wide — a scanner reads those widths).
         val code = p.barcode ?: return
-        val matrix = encode(code, ((labelW - 2 * pad) * 4).toInt(), 1) ?: return
+        val matrix = encode(code, 0, 1) ?: return
         val barsTop = y + pad + fm.height + 1
         val barsH = labelH - (barsTop - y) - pad - 8
         val scale = (labelW - 2 * pad) / matrix.width
-        for (col in 0 until matrix.width) {
-            if (matrix[col, 0]) {
-                g.fillRect((x + pad + col * scale).toInt(), barsTop.toInt(), kotlin.math.ceil(scale).toInt().coerceAtLeast(1), barsH.toInt())
-            }
+        val smoothing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING)
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF)
+        for ((from, until) in barRuns(matrix)) {
+            g.fill(java.awt.geom.Rectangle2D.Double(x + pad + from * scale, barsTop, (until - from) * scale, barsH))
         }
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, smoothing)
         g.font = Font(Font.MONOSPACED, Font.PLAIN, 7)
         val cw = g.fontMetrics.stringWidth(code)
         g.drawString(code, (x + (labelW - cw) / 2).toFloat(), (y + labelH - pad).toFloat())
@@ -100,6 +103,20 @@ class LabelSheet(private val products: List<Product>, private val copies: Int = 
             cut = cut.substring(0, cut.offsetByCodePoints(cut.length, -1))
         }
         return cut.trimEnd() + "…"
+    }
+
+    /** The code's dark modules as runs [from, until) of matrix columns: each run one bar. */
+    internal fun barRuns(matrix: BitMatrix): List<Pair<Int, Int>> {
+        val out = mutableListOf<Pair<Int, Int>>()
+        var col = 0
+        while (col < matrix.width) {
+            if (matrix[col, 0]) {
+                val from = col
+                while (col < matrix.width && matrix[col, 0]) col++
+                out += from to col
+            } else col++
+        }
+        return out
     }
 
     private fun encode(code: String, width: Int, height: Int): BitMatrix? = runCatching {

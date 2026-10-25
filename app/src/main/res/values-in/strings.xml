@@ -3287,6 +3287,7 @@
     <string name="expiry_written_off">Sudah dihapus</string>
     <string name="expiry_nothing_left">Batch ini sudah habis</string>
     <string name="expiry_left">Sisa: %1$s</string>
+    <string name="trace_came">Masuk: %1$s</string>
     <string name="product_pack_help">Kemasan (karton, karung…) tempat produk juga dibeli atau dijual, dan berapa satuannya sendiri dalam satu kemasan. Stok dihitung dalam satuannya sendiri.</string>
     <string name="product_pack_unit">Nama kemasan</string>
     <string name="product_pack_size">Isi per kemasan</string>

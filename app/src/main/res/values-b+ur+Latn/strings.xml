@@ -3284,6 +3284,7 @@
     <string name="expiry_written_off">Khatam kar diya</string>
     <string name="expiry_nothing_left">Is batch mein kuch nahi bacha</string>
     <string name="expiry_left">Bacha: %1$s</string>
+    <string name="trace_came">Aaya: %1$s</string>
     <string name="product_pack_help">Woh pack (carton, bori…) jis mein yeh product khareedi ya bechi bhi jati hai, aur ek pack mein us ki apni unit kitni hain. Stock apni unit mein gina jata hai.</string>
     <string name="product_pack_unit">Pack ka naam</string>
     <string name="product_pack_size">Ek pack mein kitne</string>

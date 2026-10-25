@@ -3334,6 +3334,7 @@
     <string name="expiry_written_off">বাদ দেওয়া হয়েছে</string>
     <string name="expiry_nothing_left">এই ব্যাচের কিছুই বাকি নেই</string>
     <string name="expiry_left">বাকি: %1$s</string>
+    <string name="trace_came">এসেছে: %1$s</string>
     <string name="product_pack_help">যে প্যাকে (কার্টন, বস্তা…) পণ্যটি কেনা বা বিক্রিও হয়, আর এক প্যাকে তার নিজের এককের কয়টি থাকে। স্টক তার নিজের এককে গোনা হয়।</string>
     <string name="product_pack_unit">প্যাকের নাম</string>
     <string name="product_pack_size">এক প্যাকে কয়টি</string>
