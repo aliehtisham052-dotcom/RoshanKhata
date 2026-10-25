@@ -2403,6 +2403,8 @@
     <string name="home_todays_entries">आज की एंट्रियाँ</string>
     <string name="home_gave_got_count">%1$d दिए · %2$d मिले</string>
     <string name="home_promised_today">आज का वादा</string>
+    <string name="rail_products_prices">माल और भाव</string>
+    <string name="rail_stock_expiry">स्टॉक और एक्सपायरी</string>
     <string name="shop_add_name">अपनी दुकान का नाम लिखें</string>
     <string name="shop_add_name_sub">इनवॉइस और स्टेटमेंट पर छपेगा</string>
     <string name="shop_edit_profile">प्रोफ़ाइल बदलें</string>

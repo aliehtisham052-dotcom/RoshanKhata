@@ -2403,6 +2403,8 @@
     <string name="home_todays_entries">আজকের এন্ট্রি</string>
     <string name="home_gave_got_count">%1$d দিয়েছি · %2$d পেয়েছি</string>
     <string name="home_promised_today">আজকের প্রতিশ্রুতি</string>
+    <string name="rail_products_prices">পণ্য ও দাম</string>
+    <string name="rail_stock_expiry">স্টক ও মেয়াদ</string>
     <string name="shop_add_name">আপনার দোকানের নাম লিখুন</string>
     <string name="shop_add_name_sub">ইনভয়েস ও স্টেটমেন্টে ছাপা হবে</string>
     <string name="shop_edit_profile">প্রোফাইল সম্পাদনা</string>

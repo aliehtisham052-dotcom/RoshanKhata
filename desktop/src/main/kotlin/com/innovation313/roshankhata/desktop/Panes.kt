@@ -106,6 +106,51 @@ enum class Section(val word: String, val icon: String, val tile: String, val gro
     SHOP(W.business_profile, "ic_storefront", "tile_settings_bg", Group.MORE, ink = "fi_green_b")
 }
 
+/**
+ * Pages that do one job, shown as one page with tabs (Marhala 3, the audit's table: "pages that do each
+ * other's work"; the rail went from 34 rows to 25). The first of each list is the page the rail names
+ * and opens; the others are its tabs and leave the rail. A tab is still a Section of its own, so the bell,
+ * Home and the gates reach it as before: opening one shows its page with that tab chosen.
+ */
+object PageTabs {
+    private val groups: List<List<Section>> = listOf(
+        listOf(Section.BILLS, Section.BUY_RATES, Section.SCHEMES),
+        listOf(Section.FOLLOWUP, Section.AGING),
+        listOf(Section.PRODUCTS, Section.RATES),
+        listOf(Section.INVENTORY, Section.EXPIRY, Section.STOCK),
+        listOf(Section.SALES, Section.INSIGHTS),
+        listOf(Section.REPORT, Section.REGISTER),
+        listOf(Section.STAFF, Section.AUDIT)
+    )
+
+    /** The page that holds [s]: its first tab, or [s] itself when it stands alone. */
+    fun hostOf(s: Section): Section = groups.firstOrNull { s in it }?.first() ?: s
+
+    /** The tabs of the page that holds [s], in order (one item when it stands alone). */
+    fun of(s: Section): List<Section> = groups.firstOrNull { s in it } ?: listOf(s)
+
+    /** True when [s] has a row of its own in the rail. */
+    fun inRail(s: Section): Boolean = hostOf(s) == s
+
+    /** What the rail calls the page that [host] opens: the merged pages by what they hold now. */
+    fun railWord(host: Section): String = when (host) {
+        Section.PRODUCTS -> W.rail_products_prices
+        Section.INVENTORY -> W.rail_stock_expiry
+        else -> host.word
+    }
+}
+
+/** The tabs of a merged page above it, as pills; the open one chosen. Nothing for a page that stands alone. */
+@Composable
+fun PageTabRow(current: Section, onPick: (Section) -> Unit) {
+    val trade = LocalTrade.current
+    val tabs = PageTabs.of(current).filter { trade.shows(it) }
+    if (tabs.size < 2) return
+    PillRow(Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 4.dp)) {
+        tabs.forEach { t -> FluentPill(word(t.word), t == current) { if (t != current) onPick(t) } }
+    }
+}
+
 /** True when the app is drawn dark: the owner's Theme choice, not only the computer's. */
 @Composable
 fun isDark(): Boolean = LocalRoshanColors.current.pageBg == RoshanPalette.dark.pageBg
@@ -224,7 +269,9 @@ fun SectionRail(
     top: @Composable () -> Unit = {}
 ) {
     val opened = remember { androidx.compose.runtime.mutableStateMapOf<Group, Boolean>() }
-    androidx.compose.runtime.LaunchedEffect(current) { if (current.group.folds) opened[current.group] = true }
+    // The open page is a merged page's tab (Marhala 3): the rail marks the page that holds it.
+    val shown = PageTabs.hostOf(current)
+    androidx.compose.runtime.LaunchedEffect(shown) { if (shown.group.folds) opened[shown.group] = true }
     // Scrolls: thirty-four places outgrow a 768-row laptop at 125% display scale.
     // The phone's rail (the owner's mockup, 25 Oct 2026): its own pale green ground with an edge, a scrollbar
     // that says there is more below, the chosen row deep green with a gold edge.
@@ -237,7 +284,7 @@ fun SectionRail(
                 val trade = LocalTrade.current
                 var firstFold = true
                 Group.entries.forEach { g ->
-                    val inGroup = Section.entries.filter { it.group == g && trade.shows(it) }
+                    val inGroup = Section.entries.filter { it.group == g && trade.shows(it) && PageTabs.inRail(it) }
                     if (inGroup.isEmpty()) return@forEach
                     when {
                         g == Group.HOME -> {}
@@ -245,7 +292,7 @@ fun SectionRail(
                             // One quiet line above the folded groups, as the mockup.
                             if (firstFold) { Spacer(Modifier.height(6.dp)); HorizontalDivider(color = Look.line); Spacer(Modifier.height(4.dp)); firstFold = false }
                             val open = opened[g] == true
-                            GroupRow(g, inGroup.size, open, holdsOpenPage = !open && current.group == g) { opened[g] = !open }
+                            GroupRow(g, inGroup.size, open, holdsOpenPage = !open && shown.group == g) { opened[g] = !open }
                             if (!open) return@forEach
                         }
                         else -> Text(
@@ -257,7 +304,7 @@ fun SectionRail(
                     }
                     inGroup.forEach { s ->
                         // A folded group's pages sit a step in from its row.
-                        Box(if (g.folds) Modifier.padding(start = 10.dp) else Modifier) { RailRow(s, s == current, badges[s] ?: 0) { onPick(s) } }
+                        Box(if (g.folds) Modifier.padding(start = 10.dp) else Modifier) { RailRow(s, s == shown, badges[s] ?: 0) { onPick(s) } }
                     }
                 }
                 }
@@ -290,7 +337,7 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
         TileBadge(s, 22, 14)
         Spacer(Modifier.width(12.dp))
         Text(
-            word(s.word),
+            word(PageTabs.railWord(s)),
             Modifier.weight(1f),
             color = if (on) Look.onPicked else c.ink,
             fontSize = 14.sp,

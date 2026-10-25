@@ -2353,6 +2353,8 @@
     <string name="home_todays_entries">Aaj ki entries</string>
     <string name="home_gave_got_count">%1$d diye · %2$d liye</string>
     <string name="home_promised_today">Aaj ka wada</string>
+    <string name="rail_products_prices">Maal aur rate</string>
+    <string name="rail_stock_expiry">Stock aur expiry</string>
     <string name="shop_add_name">Apni dukaan ka naam likhein</string>
     <string name="shop_add_name_sub">Invoice aur statement par chhapega</string>
     <string name="shop_edit_profile">Profile mein tabdeeli</string>
