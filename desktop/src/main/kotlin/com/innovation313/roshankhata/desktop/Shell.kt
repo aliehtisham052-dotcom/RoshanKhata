@@ -169,6 +169,9 @@ fun AppHeader(
     val c = LocalRoshanColors.current
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val roomy = maxWidth >= 760.dp
+        // Read here: inside the Row below, BoxWithConstraints' maxWidth is not reachable (both scopes are layout
+        // scopes, and Kotlin's DSL marker hides the outer one — the 1.18 build failed on it).
+        val actionsMax = maxWidth * 0.42f
         Row(
             Modifier.fillMaxWidth().background(Look.layerAlt).padding(start = 24.dp, end = 16.dp, top = 10.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -182,7 +185,7 @@ fun AppHeader(
             // row even for no buttons, and Home's day was cut to "Sunday, 25 Oct…" on the laptop).
             head?.actions?.let { pageActions ->
                 Row(
-                    Modifier.widthIn(max = maxWidth * 0.42f).horizontalScroll(rememberScrollState()),
+                    Modifier.widthIn(max = actionsMax).horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) { pageActions() }
                 Spacer(Modifier.width(4.dp))
