@@ -1575,9 +1575,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 Safha %2$d / %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 Safha %2$d</string>
     <string name="pdf_insp_not_backup">Ye register parhne aur print karne ke liye hai \u2014 backup NAHI hai.</string>
-    <string name="pdf_insp_how_to_read">Parhne ka tareeqa: miqdaar \u201Cis se zyada nahi\u201D hoti hai.</string>
-    <string name="pdf_insp_how_1">Jo sale kisi batch se nahi jori gayi, wo us batch ko kam nahi karti, is liye</string>
-    <string name="pdf_insp_how_2">dikhaya gaya stock shelf se zyada ho sakta hai. Dash ka matlab kabhi darj nahi hua.</string>
+    <string name="pdf_insp_how_to_read">Parhne ka tareeqa: har batch mein jo bacha hai, hisaab ke mutabiq.</string>
+    <string name="pdf_insp_how_1">Yani bill par jo aaya, us mein se jo bika, wapas aaya ya khatam kiya gaya, wo nikaal kar.</string>
+    <string name="pdf_insp_how_2">Jo sale kisi batch se nahi jori gayi, wo us batch se kam hoti hai jo sab se pehle expire ho, is liye batches ka jor kabhi shelf se zyada nahi hota. Dash ka matlab kabhi darj nahi hua.</string>
     <string name="pdf_insp_sum_products">Kitaab par maujood products</string>
     <string name="pdf_insp_sum_batches">Stock mein batches</string>
     <string name="pdf_insp_sum_expired">Expire ho chuke, abhi bhi stock mein</string>

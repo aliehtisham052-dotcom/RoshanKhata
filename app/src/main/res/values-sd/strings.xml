@@ -1603,9 +1603,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحو %2$d / %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 صفحو %2$d</string>
     <string name="pdf_insp_not_backup">هي رجسٽر پڙهڻ ۽ ڇاپڻ لاءِ آهي \u2014 بيڪ اپ ناهي.</string>
-    <string name="pdf_insp_how_to_read">پڙهڻ جو طريقو: مقدار \u201Cان کان وڌيڪ ناهي\u201D ٿيندي آهي.</string>
-    <string name="pdf_insp_how_1">جيڪا سيل ڪنهن بيچ سان نه ڳنڍي وئي، اها ان بيچ کي گهٽ نه ڪندي، انڪري</string>
-    <string name="pdf_insp_how_2">ڏيکاريل اسٽاڪ شيلف کان وڌيڪ ٿي سگهي ٿو. ڊيش جو مطلب ڪڏهن درج نه ٿيو.</string>
+    <string name="pdf_insp_how_to_read">پڙهڻ جو طريقو: هر بيچ ۾ جيڪو بچيو آهي، حساب موجب.</string>
+    <string name="pdf_insp_how_1">يعني بل تي جيڪو آيو، ان مان جيڪو وڪاميو، واپس آيو يا ختم ڪيو ويو، سو ڪڍي.</string>
+    <string name="pdf_insp_how_2">جيڪا سيل ڪنهن بيچ سان نه ڳنڍي وئي، اها ان بيچ مان گهٽ ٿئي ٿي جنهن جي مدت سڀ کان پهرين ختم ٿئي، انڪري بيچن جو جوڙ ڪڏهن به شيلف کان وڌيڪ نه ٿيندو. ڊيش جو مطلب ڪڏهن درج نه ٿيو.</string>
     <string name="pdf_insp_sum_products">ڪتاب تي موجود پراڊڪٽس</string>
     <string name="pdf_insp_sum_batches">اسٽاڪ ۾ بيچ</string>
     <string name="pdf_insp_sum_expired">مدت ختم، اڃا اسٽاڪ ۾</string>

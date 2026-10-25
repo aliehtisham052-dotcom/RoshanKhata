@@ -1589,9 +1589,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 Halaman %2$d dari %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 Halaman %2$d</string>
     <string name="pdf_insp_not_backup">Ini register untuk dibaca dan dicetak \u2014 BUKAN cadangan.</string>
-    <string name="pdf_insp_how_to_read">Cara membaca: jumlah adalah angka \u201Ctidak lebih dari\u201D.</string>
-    <string name="pdf_insp_how_1">Penjualan tanpa tanda batch tidak mengurangi batch itu di sini, jadi stok</string>
-    <string name="pdf_insp_how_2">tertera bisa melebihi stok di rak. Strip berarti tidak pernah dicatat.</string>
+    <string name="pdf_insp_how_to_read">Cara membaca: tiap batch menunjukkan sisanya menurut catatan.</string>
+    <string name="pdf_insp_how_1">Yaitu yang datang pada tagihannya, dikurangi yang terjual darinya, dikembalikan, atau dihapus dari stok.</string>
+    <string name="pdf_insp_how_2">Penjualan tanpa tanda batch diambil dari batch yang paling dulu kedaluwarsa, jadi jumlah semua batch tidak pernah melebihi stok di rak. Strip berarti tidak pernah dicatat.</string>
     <string name="pdf_insp_sum_products">Produk dalam pembukuan</string>
     <string name="pdf_insp_sum_batches">Batch tersedia</string>
     <string name="pdf_insp_sum_expired">Kedaluwarsa, masih ada stok</string>

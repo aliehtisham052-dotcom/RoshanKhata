@@ -1624,9 +1624,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 পৃষ্ঠা %2$d / %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 পৃষ্ঠা %2$d</string>
     <string name="pdf_insp_not_backup">এটি পড়া ও ছাপানোর রেজিস্টার \u2014 ব্যাকআপ নয়।</string>
-    <string name="pdf_insp_how_to_read">কীভাবে পড়বেন: পরিমাণগুলো \u201Cএর বেশি নয়\u201D ধরনের অঙ্ক।</string>
-    <string name="pdf_insp_how_1">যে বিক্রি কোনো ব্যাচের সঙ্গে যুক্ত নয় তা এখানে সেই ব্যাচ কমায় না, তাই</string>
-    <string name="pdf_insp_how_2">দেখানো স্টক তাকের চেয়ে বেশি হতে পারে। ড্যাশ মানে কখনো লেখা হয়নি।</string>
+    <string name="pdf_insp_how_to_read">কীভাবে পড়বেন: প্রতিটি ব্যাচে হিসাব অনুযায়ী যা বাকি আছে।</string>
+    <string name="pdf_insp_how_1">অর্থাৎ বিলে যা এসেছিল, তা থেকে যা বিক্রি হয়েছে, ফেরত এসেছে বা বাদ দেওয়া হয়েছে তা বাদ দিয়ে।</string>
+    <string name="pdf_insp_how_2">যে বিক্রি কোনো ব্যাচের সঙ্গে যুক্ত নয় তা সেই ব্যাচ থেকে কমে যার মেয়াদ সবার আগে শেষ হয়, তাই ব্যাচগুলোর যোগফল কখনো তাকের চেয়ে বেশি হয় না। ড্যাশ মানে কখনো লেখা হয়নি।</string>
     <string name="pdf_insp_sum_products">খাতায় থাকা পণ্য</string>
     <string name="pdf_insp_sum_batches">স্টকে থাকা ব্যাচ</string>
     <string name="pdf_insp_sum_expired">মেয়াদ শেষ, তবুও স্টকে</string>

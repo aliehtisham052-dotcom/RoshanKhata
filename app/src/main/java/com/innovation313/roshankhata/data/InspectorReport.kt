@@ -33,13 +33,17 @@ import java.util.Locale
  * registration number is far worse than one that admits a blank.
  *
  * THE ONE FIGURE THAT NEEDS A CAVEAT, AND IT IS PRINTED ON THE PAGE. What is
- * left of a batch is the bill line minus the sales TAGGED to that exact batch,
- * in the same unit — the identical rule the expiry screen uses, kept identical
- * on purpose, because two screens disagreeing about one batch is worse than
- * either being approximate. An untagged sale subtracts from nothing, so a
- * remaining figure can only ever be too HIGH. The owner signs his name under
- * this, so the document says that in plain words instead of leaving him to
- * discover it in front of an inspector.
+ * left of a batch is the one rule's (Fefo, Marhala 3, 25 Oct 2026 — the
+ * counter, the Expiry screen, the bell and the computer's register read it
+ * too, because two screens disagreeing about one batch is worse than either
+ * being approximate): the bill line less what was sold from it, came back or
+ * was written off, a pack counted in the product's own unit, and never more
+ * than the shelf — a sale not tagged to a batch is taken from the batch that
+ * expires first. Until then this register took off only tagged sales in the
+ * same unit: a lot written off, or a carton sold by the bottle, still showed
+ * whole. The owner signs his name under this, so the document says how the
+ * figure is made in plain words instead of leaving him to discover it in
+ * front of an inspector.
  *
  * LAYOUT (redesigned 30 Sep 2026, from the owner's approved mockup and a
  * study of how Tally, Zoho Inventory, Vyapar and batch-expiry ERPs lay out a
@@ -184,7 +188,9 @@ object InspectorReport {
         // Sold-out batches are dropped: a register of stock should list what is
         // on the shelf. What was bought and sold over a period is a purchase
         // and sales register — a different document, and not this one.
-        val live = dao.allBatchesOnce().filter { it.remaining > 0 }
+        // What is left of each is the one rule's (Fefo.register, Marhala 3, 25 Oct 2026), read against the
+        // same shelf as the stock table above it: the counter, Expiry and this register say the same.
+        val live = Fefo.register(dao, stock.associate { it.productId to it.onHand })
 
         val cutoff = System.currentTimeMillis() + windowDays * DAY_MS
         val expired = live.filter { it.hasExpired }

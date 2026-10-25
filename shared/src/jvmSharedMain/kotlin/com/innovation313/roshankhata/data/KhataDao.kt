@@ -1369,37 +1369,6 @@ interface KhataDao {
     suspend fun allPartiesForInvoice(): List<PartyNameAndPhone>
 
     /**
-     * Every batch of this product a sale could be tagged to, soonest-expiring
-     * first — the same ordering ExpiringActivity uses, because selling the
-     * batch that runs out soonest first is the point of tracking batches at
-     * all. [BatchOption.soldFromBatch] is summed from transactions already
-     * tagged to that exact bill_items row.
-     */
-    @Query(
-        """
-        SELECT i.id AS id, i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
-               i.quantity AS quantity, i.unit AS unit,
-               COALESCE((
-                   SELECT SUM(ei.quantity) FROM entry_items ei
-                   JOIN transactions t ON t.id = ei.entryId
-                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
-               ), 0) + COALESCE((
-                   SELECT SUM(si.quantity) FROM sale_items si
-                   JOIN sales s ON s.id = si.saleId
-                   WHERE si.billItemId = i.id AND si.isDeleted = 0 AND s.isDeleted = 0
-                     AND s.status = 'done' AND s.ledgerEntryId IS NULL
-                     AND (si.unit = i.unit OR (si.unit IS NULL AND i.unit IS NULL))
-               ), 0) AS soldFromBatch
-        FROM bill_items i
-        JOIN supplier_bills b ON b.id = i.billId
-        WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0
-        ORDER BY i.expiryDate ASC
-        """
-    )
-    suspend fun batchOptionsForProduct(productId: Long): List<BatchOption>
-
-    /**
      * Who bought from this exact batch (bill_items row), biggest buyer first
      * (2 Oct) — for a recall, a fake batch or a crop complaint. Only live
      * sales tagged to the batch; [untaggedSalesOfProduct] says how many were
@@ -1647,19 +1616,11 @@ interface KhataDao {
     suspend fun setLineAdvice(id: Long, crop: String?, pest: String?, dose: String?)
 
     /**
-     * Every batch in the shop, of every product, with what is left of it.
-     *
-     * The batch-wise stock register an inspection asks for. This is
-     * [batchOptionsForProduct] widened to the whole book, and widened on
-     * purpose rather than called once per product: a dealer with two hundred
-     * products would mean two hundred queries and a report that takes visible
-     * seconds to build, on a phone, while someone is standing at the counter
-     * waiting for it.
-     *
-     * The unit rule is copied exactly from [batchOptionsForProduct] and must
-     * stay that way: a sale only subtracts from a batch when it is tagged to
-     * that batch AND counted in the same unit. Two screens disagreeing about
-     * what is left of a batch is worse than either figure being approximate.
+     * Every live batch in the shop, of every product, as its bill wrote it: what came, not what is left
+     * (Marhala 3, 25 Oct 2026). What is left of each is the one rule's ([Fefo.register], [Fefo.allLots]):
+     * the register, Expiry, the bell and the counter all read it, so no query here subtracts anything
+     * ([InspectorBatch.soldFromBatch] is 0). Until then this query took off the tagged khata and walk-in
+     * sales in the same unit only, so a batch written off, returned or sold in packs still showed its stock.
      *
      * The product columns come from a LEFT JOIN, so a bill line that was never
      * linked to a product row still appears — with its own typed
@@ -1680,18 +1641,7 @@ interface KhataDao {
                pr.formulation AS formulation,
                i.batchNumber AS batchNumber, i.expiryDate AS expiryDate,
                i.quantity AS quantity, i.unit AS unit, i.rate AS rate,
-               COALESCE((
-                   SELECT SUM(ei.quantity) FROM entry_items ei
-                   JOIN transactions t ON t.id = ei.entryId
-                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
-               ), 0) + COALESCE((
-                   SELECT SUM(si.quantity) FROM sale_items si
-                   JOIN sales s ON s.id = si.saleId
-                   WHERE si.billItemId = i.id AND si.isDeleted = 0 AND s.isDeleted = 0
-                     AND s.status = 'done' AND s.ledgerEntryId IS NULL
-                     AND (si.unit = i.unit OR (si.unit IS NULL AND i.unit IS NULL))
-               ), 0) AS soldFromBatch,
+               0.0 AS soldFromBatch,
                p.name AS partyName, b.billNumber AS billNumber, b.billDate AS billDate
         FROM bill_items i
         JOIN supplier_bills b ON b.id = i.billId
@@ -1703,7 +1653,7 @@ interface KhataDao {
                  i.expiryDate ASC
         """
     )
-    suspend fun allBatchesOnce(): List<InspectorBatch>
+    suspend fun batchRowsOnce(): List<InspectorBatch>
 
     /**
      * The sales register for a period — every "I Gave" ledger entry that
@@ -1784,74 +1734,6 @@ interface KhataDao {
         """
     )
     suspend fun purchaseRegister(from: Long, to: Long): List<PurchaseRegisterRow>
-
-    /**
-     * Batches at or near expiry — showing what is LEFT of each, not what
-     * arrived.
-     *
-     * Soonest first, expired ones at the very top — those are the ones already
-     * costing money, and burying them under merely-approaching stock would get
-     * the order exactly backwards.
-     *
-     * The quantity is the bill line minus every sale TAGGED to this exact
-     * batch, under the same unit rule as Stock.combine: a sale in a different
-     * unit does not subtract, because inventing a conversion would be
-     * inventing stock. A batch with nothing left is dropped entirely — a
-     * warning about stock that is no longer on the shelf trains the owner to
-     * ignore the screen, and then it is ignored on the day it matters. The
-     * honest caveat runs the other way too: an UNTAGGED sale subtracts
-     * nothing, so the figure shown is "at most this much", never less than
-     * the truth.
-     *
-     * Only stock that actually has an expiry date recorded can appear here.
-     * That is a real limit and the screen says so: the app can only warn about
-     * what it was told.
-     */
-    @Query(
-        """
-        SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
-               (i.quantity - COALESCE((
-                   SELECT SUM(ei.quantity) FROM entry_items ei
-                   JOIN transactions t ON t.id = ei.entryId
-                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
-               ), 0)) AS quantity,
-               i.unit, p.name AS partyName, b.billNumber
-        FROM bill_items i
-        JOIN supplier_bills b ON b.id = i.billId
-        JOIN parties p ON p.id = b.partyId
-        WHERE i.isDeleted = 0 AND b.isDeleted = 0
-          AND i.expiryDate IS NOT NULL
-          AND i.expiryDate <= :cutoff
-          AND i.quantity > COALESCE((
-                   SELECT SUM(ei.quantity) FROM entry_items ei
-                   JOIN transactions t ON t.id = ei.entryId
-                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
-               ), 0)
-        ORDER BY i.expiryDate ASC
-        """
-    )
-    fun observeExpiringBatches(cutoff: Long): Flow<List<ExpiringBatch>>
-
-    /** For the home badge: how many batches need attention right now. */
-    @Query(
-        """
-        SELECT COUNT(*)
-        FROM bill_items i
-        JOIN supplier_bills b ON b.id = i.billId
-        WHERE i.isDeleted = 0 AND b.isDeleted = 0
-          AND i.expiryDate IS NOT NULL
-          AND i.expiryDate <= :cutoff
-          AND i.quantity > COALESCE((
-                   SELECT SUM(ei.quantity) FROM entry_items ei
-                   JOIN transactions t ON t.id = ei.entryId
-                   WHERE ei.billItemId = i.id AND t.isGiven = 1 AND t.isDeleted = 0
-                     AND (ei.unit = i.unit OR (ei.unit IS NULL AND i.unit IS NULL))
-               ), 0)
-        """
-    )
-    fun observeExpiringCount(cutoff: Long): Flow<Int>
 
     /**
      * Trace a batch back to where it came from — for an inspector, or a bad
@@ -2256,6 +2138,11 @@ interface KhataDao {
     )
     fun observePromises(): Flow<List<PartyPromise>>
 
+    /**
+     * The batches dated on or before [cutoff], as their bills wrote them (what came). What is left of each,
+     * and which still hold anything, is [Fefo.expiring]'s (Marhala 3: the bell counted every dated batch here,
+     * sold out or written off).
+     */
     @Query(
         """
         SELECT i.id AS itemId, i.productName, i.batchNumber, i.expiryDate,
@@ -4349,6 +4236,49 @@ interface KhataDao {
         """
     )
     suspend fun batchMovesOfProduct(productId: Long): List<Fefo.Move>
+
+    /**
+     * [batchMovesOfProduct] for every batch of the book at once (Marhala 3, 25 Oct 2026): the one rule's
+     * movements read in one query for a page that shows many products' batches (the register, Expiry, the
+     * bell), never once per product. The same four parts with the same signs, keyed by the batch alone.
+     */
+    @Query(
+        """
+        SELECT ei.billItemId AS billItemId, SUM(CASE WHEN t.isGiven = 1 THEN ei.quantity ELSE -ei.quantity END) AS qty, ei.unit AS unit
+        FROM entry_items ei JOIN transactions t ON t.id = ei.entryId
+        WHERE ei.billItemId IS NOT NULL AND t.isDeleted = 0 AND ei.quantity IS NOT NULL
+        GROUP BY ei.billItemId, ei.unit
+        UNION ALL
+        SELECT si.billItemId AS billItemId, SUM(si.quantity) AS qty, si.unit AS unit
+        FROM sale_items si JOIN sales s ON s.id = si.saleId
+        WHERE si.billItemId IS NOT NULL AND si.isDeleted = 0 AND s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL
+        GROUP BY si.billItemId, si.unit
+        UNION ALL
+        SELECT ri.billItemId AS billItemId, -SUM(ri.quantity) AS qty, ri.unit AS unit
+        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId
+        WHERE ri.billItemId IS NOT NULL AND ri.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' AND r.ledgerEntryId IS NULL
+        GROUP BY ri.billItemId, ri.unit
+        UNION ALL
+        SELECT a.billItemId AS billItemId, -SUM(a.quantity) AS qty, a.unit AS unit
+        FROM stock_adjustments a
+        WHERE a.billItemId IS NOT NULL AND a.isDeleted = 0
+        GROUP BY a.billItemId, a.unit
+        """
+    )
+    suspend fun allBatchMoves(): List<Fefo.Move>
+
+    /**
+     * Changes whenever a bill, a sale, a return, a count or a product changes (Marhala 3): what is left of a
+     * batch is worked out in code ([Fefo]), so a page that shows it reads it again on each of these. The
+     * figure itself means nothing; Room runs this again whenever one of its tables is written.
+     */
+    @Query(
+        "SELECT (SELECT COUNT(*) FROM bill_items) + (SELECT COUNT(*) FROM supplier_bills) + (SELECT COUNT(*) FROM entry_items) + " +
+            "(SELECT COUNT(*) FROM transactions) + (SELECT COUNT(*) FROM sale_items) + (SELECT COUNT(*) FROM sales) + " +
+            "(SELECT COUNT(*) FROM sale_return_items) + (SELECT COUNT(*) FROM sale_returns) + " +
+            "(SELECT COUNT(*) FROM stock_adjustments) + (SELECT COUNT(*) FROM products)"
+    )
+    fun observeBatchMoves(): Flow<Long>
 
     /** Every rate a product was bought at, newest first, with its unit ([Cost.lastInOwnUnit]). */
     @Query(

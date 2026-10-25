@@ -1629,9 +1629,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 Page %2$d of %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 Page %2$d</string>
     <string name="pdf_insp_not_backup">This is a register to read and print \u2014 it is NOT a backup.</string>
-    <string name="pdf_insp_how_to_read">How to read this: quantities are \u201Cnot more than\u201D figures.</string>
-    <string name="pdf_insp_how_1">A sale not tagged to a batch does not reduce that batch here, so stock</string>
-    <string name="pdf_insp_how_2">shown can be higher than the shelf. A dash means never recorded.</string>
+    <string name="pdf_insp_how_to_read">How to read this: each batch shows what is left of it, by the books.</string>
+    <string name="pdf_insp_how_1">That is what came on its bill, less what was sold from it, came back or was written off.</string>
+    <string name="pdf_insp_how_2">A sale not tagged to a batch is taken from the batch that expires first, so the batches never add up to more than the shelf. A dash means never recorded.</string>
     <string name="pdf_insp_sum_products">Products on the books</string>
     <string name="pdf_insp_sum_batches">Batches in stock</string>
     <string name="pdf_insp_sum_expired">Expired, still in stock</string>

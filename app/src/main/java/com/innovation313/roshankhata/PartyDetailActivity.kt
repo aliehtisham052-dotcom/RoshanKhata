@@ -1458,7 +1458,8 @@ class PartyDetailActivity : BaseActivity() {
             lifecycleScope.launch {
                 val product = dao.productByKey(ProductName.key(typed))
                 // Batches are what a SALE is drawn from; a return offers none.
-                val options = if (isGiven) product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+                // What is left of each batch as the counter would say it (Fefo.options, Marhala 3).
+                val options = if (isGiven) product?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
                     else emptyList()
                 val last = if (isReturn() && product != null) dao.lastSaleRate(partyId, product.id) else null
                 val lastCr = if (isSale() && product != null) dao.lastSaleRate(partyId, product.id, RateType.CREDIT) else null

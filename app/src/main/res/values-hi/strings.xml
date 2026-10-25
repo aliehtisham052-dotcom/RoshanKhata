@@ -1624,9 +1624,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 पेज %2$d / %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 पेज %2$d</string>
     <string name="pdf_insp_not_backup">यह पढ़ने और छापने का रजिस्टर है \u2014 बैकअप नहीं।</string>
-    <string name="pdf_insp_how_to_read">कैसे पढ़ें: मात्राएँ \u201Cइससे ज़्यादा नहीं\u201D वाले आँकड़े हैं।</string>
-    <string name="pdf_insp_how_1">जो बिक्री किसी बैच से नहीं जुड़ी वह यहाँ उस बैच को नहीं घटाती, इसलिए</string>
-    <string name="pdf_insp_how_2">दिखा स्टॉक शेल्फ़ से ज़्यादा हो सकता है। डैश यानी कभी नहीं लिखा।</string>
+    <string name="pdf_insp_how_to_read">कैसे पढ़ें: हर बैच में जो बचा है, हिसाब के अनुसार।</string>
+    <string name="pdf_insp_how_1">यानी बिल पर जो आया, उसमें से जो बिका, वापस आया या हटाया गया, वह घटाकर।</string>
+    <string name="pdf_insp_how_2">जो बिक्री किसी बैच से नहीं जुड़ी वह उस बैच से घटती है जो सबसे पहले एक्सपायर हो, इसलिए बैचों का जोड़ कभी शेल्फ़ से ज़्यादा नहीं होता। डैश यानी कभी नहीं लिखा।</string>
     <string name="pdf_insp_sum_products">खाते में दर्ज प्रोडक्ट</string>
     <string name="pdf_insp_sum_batches">स्टॉक में बैच</string>
     <string name="pdf_insp_sum_expired">एक्सपायर, फिर भी स्टॉक में</string>

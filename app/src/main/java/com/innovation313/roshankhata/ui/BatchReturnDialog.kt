@@ -33,9 +33,9 @@ object BatchReturnDialog {
             val item = dao.getBillItem(billItemId) ?: return@launch
             val bill = dao.getBill(item.billId) ?: return@launch
             val supplier = dao.getParty(bill.partyId)
-            val remaining = item.productId
-                ?.let { pid -> dao.batchOptionsForProduct(pid).firstOrNull { it.id == item.id }?.remaining }
-                ?: item.quantity
+            // What is left by the one rule (Marhala 3), in the bill line's own unit: the return is written in it,
+            // at the bill's rate. A line no product is linked to counts its own tagged movements too.
+            val remaining = com.innovation313.roshankhata.data.Fefo.leftInBillUnit(dao, item.id) ?: item.quantity
             if (activity.isFinishing || activity.isDestroyed) return@launch
             if (remaining <= 0.0) {
                 Toast.makeText(activity, R.string.return_nothing_left, Toast.LENGTH_SHORT).show()

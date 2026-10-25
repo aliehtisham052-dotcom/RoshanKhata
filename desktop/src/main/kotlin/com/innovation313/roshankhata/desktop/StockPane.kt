@@ -52,7 +52,9 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
     var batches by remember { mutableStateOf<List<InspectorBatch>>(emptyList()) }
     var window by remember { mutableStateOf(60) }
     LaunchedEffect(reload) {
-        batches = withContext(Dispatchers.IO) { dao.allBatchesOnce().filter { it.remaining > 0 } }
+        // What is left of each batch by the one rule (Fefo.register, Marhala 3): written off, returned and
+        // sold in packs taken off too, never more than the shelf; a batch with nothing left is not listed.
+        batches = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.Fefo.register(dao) }
             .sortedWith(compareBy({ it.productName.lowercase() }, { it.expiryDate ?: Long.MAX_VALUE }))
     }
     val cutoff = System.currentTimeMillis() + window * 24L * 60 * 60 * 1000

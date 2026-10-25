@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.data.ExpiryWindow
+import com.innovation313.roshankhata.data.Fefo
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.ExpiringAdapter
 import kotlinx.coroutines.flow.collectLatest
@@ -50,8 +51,12 @@ class ExpiringActivity : BaseActivity() {
 
         val cutoff = System.currentTimeMillis() + ExpiryWindow.WARN_MS
 
+        // Each batch with what is left of it by the one rule (Fefo.expiring, Marhala 3, 25 Oct 2026: sold at the
+        // counter or on the khata, back, written off, never more than the shelf), read again whenever stock
+        // moves — a write-off from this screen included. A batch with nothing left is not listed.
         lifecycleScope.launch {
-            dao.observeExpiringBatches(cutoff).collectLatest { list ->
+            dao.observeBatchMoves().collectLatest {
+                val list = runCatching { Fefo.expiring(dao, cutoff) }.getOrNull() ?: return@collectLatest
                 adapter.submit(list)
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             }
