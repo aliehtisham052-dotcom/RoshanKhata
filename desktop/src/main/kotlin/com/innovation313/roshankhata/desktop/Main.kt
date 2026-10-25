@@ -163,7 +163,7 @@ private fun OpeningWindow(
         icon = painterResource("roshan_khata_icon.png"),
         state = rememberWindowState(width = 460.dp, height = if (failed) 340.dp else 180.dp, position = androidx.compose.ui.window.WindowPosition(Alignment.Center))
     ) {
-        RoshanTheme(dark = false) {
+        DeskTheme(dark = false) {
             val c = LocalRoshanColors.current
             Column(
                 Modifier.fillMaxSize().background(c.surface).padding(24.dp),
@@ -383,7 +383,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
         state = rememberWindowState(placement = WindowPlacement.Maximized, width = 1100.dp, height = 740.dp)
     ) {
         val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
-        RoshanTheme(dark = when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true }) {
+        DeskTheme(dark = when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true }) {
             ProvideWords(words) {
                 // The owner's text size on top of Windows' own scale, as the phone multiplies its own.
                 val screen = androidx.compose.ui.platform.LocalDensity.current
@@ -686,9 +686,11 @@ private fun Book(
     var lastBackupAt by remember { mutableStateOf<Long?>(null) }
     // The counter's open ticket lives as long as this business's window, not the page (25 Oct 2026, the audit).
     val counterDraft = remember { com.innovation313.roshankhata.data.CounterDraft() }
-    // Home's "You got": the customer is chosen in a small window first.
-    var gotPicking by remember { mutableStateOf(false) }
-    var gotFor by remember { mutableStateOf<Long?>(null) }
+    // Home's You gave, You got and Statement: the customer is chosen in a small window first.
+    var picking by remember { mutableStateOf<HomePick?>(null) }
+    var pickedFor by remember { mutableStateOf<Long?>(null) }
+    // Home's "Add bill": Supplier bills opens with a new bill's form.
+    var newBill by remember { mutableStateOf(false) }
     // The money totals as dots until the eye opens them, remembered (25 Oct 2026, the audit; the phone's BalancePrivacy).
     var totalsHidden by remember { mutableStateOf(appPrefs.balancesHidden()) }
     val setTotalsHidden = { v: Boolean -> totalsHidden = v; runCatching { appPrefs.setBalancesHidden(v) }; Unit }
@@ -974,14 +976,15 @@ private fun Book(
                     Section.HOME -> Box(Modifier.fillMaxSize()) {
                         HomePane(
                             parties = parties, late = late, alerts = bookAlerts, extra = extraAlerts,
-                            figuresOf = { homeFigures(dao) }, reload = reload, shopName = shop,
+                            figuresOf = { homeFigures(dao) }, reload = reload,
                             onOpen = { section = it },
-                            onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
                             onCustomer = { id -> selected = id; section = Section.KHATA },
-                            onAddParty = { addParty = true },
-                            // You got: whose money came in, asked first (the open customer offered), then the entry
-                            // (25 Oct 2026, the audit: it only opened the Khata page, and only F3 there wrote the entry).
-                            onGot = { gotFor = selected; gotPicking = true },
+                            // You gave, You got, Statement: whose, asked first (the open customer offered), then the entry
+                            // or the statement (25 Oct 2026, the audit: You got only opened the Khata page).
+                            onGave = { pickedFor = selected; picking = HomePick.GAVE },
+                            onGot = { pickedFor = selected; picking = HomePick.GOT },
+                            onStatement = { pickedFor = selected; picking = HomePick.STATEMENT },
+                            onNewBill = { newBill = true; section = Section.BILLS },
                             hidden = totalsHidden, onHidden = setTotalsHidden
                         )
                     }
@@ -1009,7 +1012,7 @@ private fun Book(
                     Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words) { reload++ } }
                     Section.PLANS -> Box(Modifier.fillMaxSize()) { PlansPane(dao, parties, words) { reload++ } }
                     Section.EXPIRY -> Box(Modifier.fillMaxSize()) { ExpiryPane(dao) }
-                    Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home) { reload++ } }
+                    Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home, startAdding = newBill, onStarted = { newBill = false }) { reload++ } }
                     Section.PRODUCTS -> Box(Modifier.fillMaxSize()) { ProductsPane(dao, words) }
                     Section.INVOICES -> Box(Modifier.fillMaxSize()) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields, openId = invoiceToOpen) }
                     Section.INSIGHTS -> Box(Modifier.fillMaxSize()) { InsightsPane(dao, reload) }
@@ -1791,18 +1794,26 @@ private fun Book(
             dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
         )
     }
-    if (gotPicking) {
-        val close = { gotPicking = false }
-        val title = word(W.you_got)
+    picking?.let { pick ->
+        val close = { picking = null }
+        val title = word(pick.word)
         AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(520.dp))) {
             DialogFrame(title, onClose = close, footer = {
                 FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
                 FluentButton(title, {
-                    val id = gotFor
-                    if (id != null) { selected = id; section = Section.KHATA; entryWay = false; gotPicking = false }
-                }, kind = ButtonKind.ACCENT, enabled = gotFor != null)
+                    val id = pickedFor
+                    if (id != null) {
+                        picking = null
+                        selected = id
+                        when (pick) {
+                            HomePick.GAVE -> { section = Section.KHATA; entryWay = true }
+                            HomePick.GOT -> { section = Section.KHATA; entryWay = false }
+                            HomePick.STATEMENT -> parties.firstOrNull { it.id == id }?.let { statementFor = it }
+                        }
+                    }
+                }, kind = ButtonKind.ACCENT, enabled = pickedFor != null)
             }) {
-                PartyPicker(parties, gotFor, { gotFor = it }, word(W.customer), word(W.search_parties), Modifier.fillMaxWidth())
+                PartyPicker(parties, pickedFor, { pickedFor = it }, word(W.customer), word(W.search_parties), Modifier.fillMaxWidth())
             }
         }
     }

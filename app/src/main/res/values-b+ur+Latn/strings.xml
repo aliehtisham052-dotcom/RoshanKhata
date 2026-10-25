@@ -2348,6 +2348,11 @@
     <string name="rail_sales_stock">Farokht aur stock</string>
     <string name="rail_reports">Reports</string>
     <string name="header_backed_up">Backup hua</string>
+    <string name="home_shop_today">Aaj aap ki dukaan</string>
+    <string name="home_recent">Haaliya len den</string>
+    <string name="home_todays_entries">Aaj ki entries</string>
+    <string name="home_gave_got_count">%1$d diye · %2$d liye</string>
+    <string name="home_promised_today">Aaj ka wada</string>
     <string name="shop_add_name">Apni dukaan ka naam likhein</string>
     <string name="shop_add_name_sub">Invoice aur statement par chhapega</string>
     <string name="shop_edit_profile">Profile mein tabdeeli</string>

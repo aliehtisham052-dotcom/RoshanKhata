@@ -49,16 +49,24 @@ class ScreenProofTest {
         PartyWithBalance(6, "Khalid Javed", "03000000006", true, null, 12400.0, now - 6 * day)
     )
 
-    /** Made-up cash sums and today's entries, so the table and the third card are drawn. */
-    private fun figures() = HomeFigures(
-        cashIn = 184500.0, cashOut = 61200.0, drawer = 23400.0,
-        today = listOf(
+    /** Made-up cash sums, today's and the last entries and a promise, so every card of Home is drawn. */
+    private fun figures(): HomeFigures {
+        val today = listOf(
             com.innovation313.roshankhata.data.EntryWithParty(1, 1, "Muhammad Aslam", 12500.0, false, "Cash received", "E-1", now - 20 * 60 * 1000),
-            com.innovation313.roshankhata.data.EntryWithParty(2, 2, "Ghulam Rasool", 2400.0, true, "Maize seed 10 kg", "E-2", now - 90 * 60 * 1000),
-            com.innovation313.roshankhata.data.EntryWithParty(3, 4, "Sample Seeds Co.", 20000.0, false, "Payment by cheque", "E-3", now - 3 * 60 * 60 * 1000),
-            com.innovation313.roshankhata.data.EntryWithParty(4, 5, "Allah Ditta", 3200.0, true, "Wheat seed 2 bags", "E-4", now - 5 * 60 * 60 * 1000)
+            com.innovation313.roshankhata.data.EntryWithParty(2, 2, "Ghulam Rasool", 2400.0, true, "Maize seed 10 kg", "E-2", now - 90 * 60 * 1000)
         )
-    )
+        return HomeFigures(
+            cashIn = 184500.0, cashOut = 61200.0, drawer = 23400.0,
+            today = today,
+            recent = today + listOf(
+                com.innovation313.roshankhata.data.EntryWithParty(3, 4, "Sample Seeds Co.", 20000.0, false, "Payment by cheque", "E-3", now - day - 3 * 60 * 60 * 1000),
+                com.innovation313.roshankhata.data.EntryWithParty(4, 5, "Allah Ditta", 3200.0, true, "Wheat seed 2 bags", "E-4", now - 2 * day),
+                com.innovation313.roshankhata.data.EntryWithParty(5, 6, "Khalid Javed", 6400.0, true, "DAP 2 bags", "E-5", now - 4 * day),
+                com.innovation313.roshankhata.data.EntryWithParty(6, 3, "Haji Bashir Ahmad", 9000.0, false, "Cash", "E-6", now - 9 * day)
+            ),
+            promisedToday = setOf(5L)
+        )
+    }
 
     private fun alerts() = listOf(
         LedgerAlerts.Alert(LedgerAlerts.Kind.CHEQUE, "Cheque", "Ghulam Rasool"),
@@ -74,8 +82,8 @@ class ScreenProofTest {
         page: @androidx.compose.runtime.Composable () -> Unit = {
             HomePane(
                 parties, late = 2, alerts = alerts(), extra = emptyList(),
-                figuresOf = { figures() }, reload = 0, shopName = "Al-Noor Agri Store",
-                onOpen = {}, onAction = {}, onCustomer = {}, onAddParty = {}, onGot = {}
+                figuresOf = { figures() }, reload = 0,
+                onOpen = {}, onCustomer = {}, onGave = {}, onGot = {}, onStatement = {}, onNewBill = {}
             )
         }
     ): File {
@@ -86,7 +94,7 @@ class ScreenProofTest {
         val locale = Locale.forLanguageTag(lang).also { Locale.setDefault(it) }
         val words = desktopWords(locale)
         val scene = ImageComposeScene(width = width, height = height, density = Density(scale)) {
-            RoshanTheme(dark = dark) {
+            DeskTheme(dark = dark) {
                 ProvideWords(words) {
                     CompositionLocalProvider(LocalLayoutDirection provides if (ur) LayoutDirection.Rtl else LayoutDirection.Ltr) {
                         // The window as Main draws it (Marhala 2): the rail with the shop on top, then the top row
@@ -173,7 +181,11 @@ class ScreenProofTest {
     fun `laptop size draws without wrapping`() {
         Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
         val dir = File("build/screen-proof").apply { mkdirs() }
-        val home = shoot("screen-laptop-home-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f)
+        // The owner's two real windows (the plan, 25 Oct 2026): taskbar along the bottom, 1093 x 535 dp, and
+        // along the side, 1043 x 590 dp — at Windows' 125%, so 1366 x 669 and 1304 x 738 pixels.
+        val home = shoot("screen-laptop-home-en", ur = false, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f)
+        val homeSide = shoot("screen-laptop-side-home-en", ur = false, dark = false, dir = dir, width = 1304, height = 738, scale = 1.25f)
+        val homeUr = shoot("screen-laptop-home-ur-dark", ur = true, dark = true, dir = dir, width = 1366, height = 669, scale = 1.25f)
         val khata = shoot("screen-laptop-khata-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f) {
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.fillMaxWidth(0.42f)) {
@@ -195,7 +207,7 @@ class ScreenProofTest {
                 )
             }
         }
-        for (f in listOf(home, khata, khataDark)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
+        for (f in listOf(home, homeSide, homeUr, khata, khataDark)) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
     }
 
     /**
@@ -284,7 +296,7 @@ class ScreenProofTest {
         val words = desktopWords(Locale.ENGLISH)
         fun frame(name: String, scroll: Boolean = false, body: @androidx.compose.runtime.Composable () -> Unit): File {
             val scene = ImageComposeScene(width = 620, height = 720, density = Density(1f)) {
-                RoshanTheme(dark = false) { ProvideWords(words) { DialogFrame(name, onClose = {}, scroll = scroll, footer = {}) { body() } } }
+                DeskTheme(dark = false) { ProvideWords(words) { DialogFrame(name, onClose = {}, scroll = scroll, footer = {}) { body() } } }
             }
             try {
                 scene.render(0); scene.render(16_000_000)
@@ -377,7 +389,7 @@ class ScreenProofTest {
                 }
             )
             val scene = ImageComposeScene(width = 1280, height = 720, density = Density(1f)) {
-                RoshanTheme(dark = false) { ProvideWords(words) { CustomerScreen(draft, "Al-Noor Agri Store", qr) } }
+                DeskTheme(dark = false) { ProvideWords(words) { CustomerScreen(draft, "Al-Noor Agri Store", qr) } }
             }
             val customer = try {
                 scene.render(0); scene.render(16_000_000)
@@ -413,7 +425,7 @@ class ScreenProofTest {
                 var seenScale = 0f
                 val scene = ImageComposeScene(width = 620, height = 420, density = Density(1f)) {
                     CompositionLocalProvider(LocalLayoutDirection provides swings) {
-                        RoshanTheme(dark = false) {
+                        DeskTheme(dark = false) {
                             ProvideWords(words) {
                                 KeepAppLook(app, 1.3f) {
                                     seenDir = LocalLayoutDirection.current

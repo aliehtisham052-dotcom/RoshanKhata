@@ -256,6 +256,37 @@ fun Glyph(icon: String, tint: Color, size: Int) {
     }
 }
 
+/**
+ * The shared theme with the computer's type (Marhala 2, 25 Oct 2026, the audit): Material's styles
+ * keep their sizes, not their fixed line heights and tracking. bodyLarge's 24 sp line made every 12-14 sp
+ * line on the computer 24 sp tall — a laptop showed two or three rows of a list — and its 0.5 sp tracking
+ * pulled Arabic-script words apart. Each line now takes its font's own height, so Urdu's taller letters
+ * keep their room. Dialog windows inherit it from the window that opens them.
+ */
+@Composable
+fun DeskTheme(dark: Boolean, content: @Composable () -> Unit) {
+    com.innovation313.roshankhata.screens.RoshanTheme(dark = dark) {
+        val type = remember { deskTypography() }
+        androidx.compose.material3.MaterialTheme(
+            colorScheme = androidx.compose.material3.MaterialTheme.colorScheme,
+            typography = type,
+            content = content
+        )
+    }
+}
+
+/** Material's type scale with each line's height left to its font and no added tracking (see [DeskTheme]). */
+fun deskTypography(base: androidx.compose.material3.Typography = androidx.compose.material3.Typography()): androidx.compose.material3.Typography {
+    fun androidx.compose.ui.text.TextStyle.own() = copy(lineHeight = androidx.compose.ui.unit.TextUnit.Unspecified, letterSpacing = 0.sp)
+    return base.copy(
+        displayLarge = base.displayLarge.own(), displayMedium = base.displayMedium.own(), displaySmall = base.displaySmall.own(),
+        headlineLarge = base.headlineLarge.own(), headlineMedium = base.headlineMedium.own(), headlineSmall = base.headlineSmall.own(),
+        titleLarge = base.titleLarge.own(), titleMedium = base.titleMedium.own(), titleSmall = base.titleSmall.own(),
+        bodyLarge = base.bodyLarge.own(), bodyMedium = base.bodyMedium.own(), bodySmall = base.bodySmall.own(),
+        labelLarge = base.labelLarge.own(), labelMedium = base.labelMedium.own(), labelSmall = base.labelSmall.own()
+    )
+}
+
 /** Esc closes a window, as every Windows dialog does; [close] is the window's own close. */
 fun escCloses(close: () -> Unit): (androidx.compose.ui.input.key.KeyEvent) -> Boolean = { e ->
     if (e.type == androidx.compose.ui.input.key.KeyEventType.KeyDown && e.key == androidx.compose.ui.input.key.Key.Escape) {

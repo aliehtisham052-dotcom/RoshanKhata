@@ -2398,6 +2398,11 @@
     <string name="rail_sales_stock">বিক্রি ও স্টক</string>
     <string name="rail_reports">রিপোর্ট</string>
     <string name="header_backed_up">ব্যাকআপ হয়েছে</string>
+    <string name="home_shop_today">আজ আপনার দোকান</string>
+    <string name="home_recent">সাম্প্রতিক লেনদেন</string>
+    <string name="home_todays_entries">আজকের এন্ট্রি</string>
+    <string name="home_gave_got_count">%1$d দিয়েছি · %2$d পেয়েছি</string>
+    <string name="home_promised_today">আজকের প্রতিশ্রুতি</string>
     <string name="shop_add_name">আপনার দোকানের নাম লিখুন</string>
     <string name="shop_add_name_sub">ইনভয়েস ও স্টেটমেন্টে ছাপা হবে</string>
     <string name="shop_edit_profile">প্রোফাইল সম্পাদনা</string>

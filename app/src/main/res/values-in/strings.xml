@@ -2354,6 +2354,11 @@
     <string name="rail_sales_stock">Penjualan &amp; stok</string>
     <string name="rail_reports">Laporan</string>
     <string name="header_backed_up">Dicadangkan</string>
+    <string name="home_shop_today">Toko Anda hari ini</string>
+    <string name="home_recent">Transaksi terbaru</string>
+    <string name="home_todays_entries">Catatan hari ini</string>
+    <string name="home_gave_got_count">%1$d diberi · %2$d diterima</string>
+    <string name="home_promised_today">Dijanjikan hari ini</string>
     <string name="shop_add_name">Tulis nama toko Anda</string>
     <string name="shop_add_name_sub">Dicetak di faktur dan laporan</string>
     <string name="shop_edit_profile">Ubah profil</string>
