@@ -1593,7 +1593,16 @@ private fun Book(
                         ) + goodsLines + listOfNotNull(
                             e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
                             ThermalReceipt.Line(""),
-                            forParty?.let { p -> ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(p.balance), 22f, bold = true) },
+                            // The customer reads this: his side in his own words, never a bare figure (25 Oct 2026, the audit).
+                            forParty?.let { p ->
+                                ThermalReceipt.Line(
+                                    when {
+                                        Money.isPositive(p.balance) -> words.text(W.pdf_stmt_you_will_pay) + ": " + Format.money(p.balance)
+                                        Money.isNegative(p.balance) -> words.text(W.pdf_stmt_you_will_receive) + ": " + Format.money(p.balance)
+                                        else -> words.text(W.pdf_stmt_settled)
+                                    }, 22f, bold = true
+                                )
+                            },
                             ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
                         ))
                     }
@@ -2172,11 +2181,12 @@ private fun StatementRangeDialog(
                     } else {
                         Row { Text(word(W.i_gave), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(gave), color = c.owedToMe, fontWeight = FontWeight.Bold) }
                         Row { Text(word(W.i_got), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(got), color = c.iOwe, fontWeight = FontWeight.Bold) }
-                        Row { Text(word(W.net_change), Modifier.weight(1f), color = c.inkSoft); Text(Format.customerBalance(gave - got), color = balanceColour(gave - got), fontWeight = FontWeight.Bold) }
+                        // With the side in words (25 Oct 2026, the audit): a bare "- Rs 5,000" read as money owed out.
+                        Row { Text(word(W.net_change), Modifier.weight(1f), color = c.inkSoft); Text(Format.money(gave - got) + "  ·  " + word(com.innovation313.roshankhata.screens.balanceSideWord(gave - got)), color = balanceColour(gave - got), fontWeight = FontWeight.Bold) }
                     }
                     androidx.compose.foundation.layout.Spacer(Modifier.height(8.dp))
                     Text(
-                        word(if (window == null) W.closing_note_all else W.closing_note_range, Format.customerBalance(closing)),
+                        word(if (window == null) W.closing_note_all else W.closing_note_range, Format.money(closing) + " · " + word(com.innovation313.roshankhata.screens.balanceSideWord(closing))),
                         color = c.ink, fontSize = 13.sp
                     )
                 }

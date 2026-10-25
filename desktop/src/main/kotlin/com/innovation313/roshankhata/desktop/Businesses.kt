@@ -319,7 +319,11 @@ fun BusinessesDialog(
                 Column {
                     if (summary != null) Text(
                         word(W.business_delete_confirm_body,
-                            summary.partyCount, Format.money(summary.netBalance))
+                            summary.partyCount,
+                            // Which way that shop's net runs, in that shop's own sign (25 Oct 2026, the audit;
+                            // the phone's rule of 23 Oct): it printed unsigned, in the open shop's currency.
+                            word(com.innovation313.roshankhata.screens.balanceSideWord(summary.netBalance)) + " " +
+                                Format.money(summary.netBalance, settingsOf(b.id).currency()))
                     )
                     else unreadable?.let { Text(it, color = c.owedToMe) }
                     Outlined(typed, { typed = it }, singleLine = true,

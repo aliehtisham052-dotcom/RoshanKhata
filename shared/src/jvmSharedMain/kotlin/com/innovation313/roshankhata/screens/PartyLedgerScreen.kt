@@ -86,11 +86,20 @@ fun PartyLedgerScreen(
             }
             Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(word(W.net_balance), Modifier.weight(1f), color = c.textMuted, fontSize = 14.sp)
-                Text(
-                    Format.customerBalance(balance),
-                    Modifier.testTag("ledgerBalance"),
-                    color = balanceColour(balance), fontSize = 24.sp, fontWeight = FontWeight.Bold
-                )
+                // The figure says which way it runs in words, as the phone's customer page does
+                // (25 Oct 2026, the audit: "- Rs 5,000" alone read as money the shop owes).
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        Format.customerBalance(balance),
+                        Modifier.testTag("ledgerBalance"),
+                        color = balanceColour(balance), fontSize = 24.sp, fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        word(balanceSideWord(balance)),
+                        Modifier.testTag("ledgerBalanceSide"),
+                        color = balanceColour(balance), fontSize = 13.sp, fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
         if (entries.isEmpty()) {
@@ -150,6 +159,18 @@ private fun EntryRow(e: LedgerEntry, onEntry: ((LedgerEntry) -> Unit)?) {
         }
     }
     HorizontalDivider(color = c.pageBg)
+}
+
+/**
+ * Which way a party's balance runs, as a word's name (25 Oct 2026, the audit):
+ * "You will get" for money to collect, "You will give" for money owed out,
+ * "Settled" at zero — the phone's customer page words. Every place that shows a
+ * balance without its side (a receipt, an import, a delete question) says it.
+ */
+fun balanceSideWord(balance: Double): String = when {
+    Money.isPositive(balance) -> W.you_will_get
+    Money.isNegative(balance) -> W.you_will_give
+    else -> W.settled
 }
 
 /** The list's and the page's balance colour: red to collect, green owed out, plain when settled. */
