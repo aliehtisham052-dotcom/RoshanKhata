@@ -1556,7 +1556,7 @@ private fun Book(
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
                     partyId = e.partyId, partyName = forParty?.name.orEmpty(), isGiven = e.isGiven,
-                    existing = e, existingItem = loaded.firstOrNull(),
+                    existing = e, existingItem = loaded.firstOrNull(), otherItems = loaded.drop(1),
                     isCustomer = partyRow?.isCustomer ?: true, batchesFor = batchesFor, promise = partyRow?.harvestPromise,
                     onSave = { d -> Gates.edit {
                         scope.launch {
@@ -1575,7 +1575,13 @@ private fun Book(
                     onCancel = { editing = null },
                     onDelete = { Gates.edit { deleting = e; editing = null } },
                     onPrint = {
-                        val item = loaded.firstOrNull()
+                        // Every goods line goes on the receipt (25 Oct 2026, the audit: only the first one did).
+                        val goodsLines = loaded.filter { !it.itemName.isNullOrBlank() }.map { i ->
+                            ThermalReceipt.Line(
+                                listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }) },
+                                    i.rate?.let { r -> "@ " + Format.money(r) }, words.text(W.bonus_tag).takeIf { i.isBonus }).joinToString("  "), 20f
+                            )
+                        }
                         receipt = ThermalReceipt.Job(listOfNotNull(
                             ThermalReceipt.Line(shopName() ?: words.text(W.app_name), 26f, bold = true, centre = true),
                             ThermalReceipt.Line(Format.dateTime(e.timestamp) + "  " + e.entryNumber, 18f, centre = true),
@@ -1583,13 +1589,8 @@ private fun Book(
                             ThermalReceipt.Line(Format.name(forParty?.name.orEmpty()), 24f, bold = true),
                             forParty?.phone?.let { ThermalReceipt.Line(Format.ltr(it), 18f) },
                             ThermalReceipt.Line(words.text(if (e.isGiven) W.you_gave else W.you_got), 22f),
-                            ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true),
-                            item?.takeIf { !it.itemName.isNullOrBlank() }?.let { i ->
-                                ThermalReceipt.Line(
-                                    listOfNotNull(i.itemName, i.quantity?.let { q -> com.innovation313.roshankhata.ui.Calc.trim(q) + (com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }) },
-                                        i.rate?.let { r -> "@ " + Format.money(r) }).joinToString("  "), 20f
-                                )
-                            },
+                            ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true)
+                        ) + goodsLines + listOfNotNull(
                             e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
                             ThermalReceipt.Line(""),
                             forParty?.let { p -> ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(p.balance), 22f, bold = true) },
