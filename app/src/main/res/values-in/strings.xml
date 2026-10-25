@@ -3186,6 +3186,7 @@
     <string name="srep_period_month">Bulan ini</string>
     <string name="srep_none">Tidak ada penjualan pada periode ini</string>
     <string name="srep_no_category">Tanpa kategori</string>
+    <string name="srep_no_goods">Tanpa barang</string>
     <string name="pos_credit_limit">Batas kredit %1$s — penjualan ini membawa akun ke %2$s</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

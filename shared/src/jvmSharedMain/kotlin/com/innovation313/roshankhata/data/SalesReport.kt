@@ -47,6 +47,87 @@ data class SoldLine(
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
 }
 
+/** One khata sale's goods line, or the sale alone when it has none ([KhataDao.khataSaleRowsBetween]). */
+data class KhataSaleRow(
+    val entryId: Long,
+    val timestamp: Long,
+    val amount: Double,
+    val partyName: String,
+    /** Who wrote the entry (the signed-in name, null for the owner) — the report's by-cashier view. */
+    val createdBy: String?,
+    val itemName: String?,
+    val quantity: Double?,
+    val unit: String?,
+    val rate: Double?,
+    val isBonus: Boolean?,
+    val productId: Long?,
+    val category: String?
+)
+
+/**
+ * The khata's sales as the report's lines (Marhala 3, 25 Oct 2026, "kya bika" by one rule): each sale's
+ * amount — what Sale Insights counts — spread over its goods. Priced goods take their share of it (an
+ * amount under the goods' value is a discount spread over them; one over it leaves the rest as a line of
+ * no item); a lone goods line with no rate takes the whole amount; free goods and goods with no rate count
+ * their quantity at nothing (several unpriced lines cannot be told apart, so their money is a line of no
+ * item); a sale with no goods is one line of no item ("" — the views word it, srep_no_goods). A line's cost
+ * is its product's ([Cost.perUnit]) in the product's own unit, else unknown.
+ * Each sale is its own ticket in the counts (a negative id, never a counter ticket's).
+ */
+object KhataSales {
+    suspend fun lines(dao: KhataDao, rows: List<KhataSaleRow>): List<SoldLine> {
+        val unitCost = HashMap<Long, Pair<Product?, Double?>>()
+        suspend fun costRate(r: KhataSaleRow, qty: Double): Double? {
+            val id = r.productId ?: return null
+            if (qty <= 0.0) return null
+            val (product, perUnit) = unitCost.getOrPut(id) { dao.productById(id).let { p -> p to Cost.perUnit(dao, p) } }
+            if (product == null || perUnit == null) return null
+            val (base, baseUnit) = Units.toBase(product, qty, r.unit)
+            val own = Units.norm(product.defaultUnit)
+            // A quantity in a unit the product cannot be counted in has no cost here (lesson: never a rate in another unit).
+            if (own != null && Units.norm(baseUnit) != null && Units.norm(baseUnit) != own) return null
+            return perUnit * base / qty
+        }
+        val out = ArrayList<SoldLine>()
+        for ((entryId, rs) in rows.groupBy { it.entryId }) {
+            val head = rs.first()
+            val amount = head.amount
+            fun line(r: KhataSaleRow?, qty: Double, rate: Double, cost: Double?, sub: Double? = null, off: Double? = null) = SoldLine(
+                saleId = -entryId, timestamp = head.timestamp, customerName = head.partyName, createdBy = head.createdBy, taxPercent = null,
+                productId = r?.productId, itemName = r?.itemName?.trim().orEmpty(), category = r?.category,
+                quantity = qty, unit = r?.unit, rate = rate, discount = 0.0, costRate = cost,
+                saleSubtotal = sub, saleDiscount = off
+            )
+            // A sale with no goods comes back from the LEFT JOIN as one row with no line at all.
+            val goods = rs.filter { it.itemName != null || it.quantity != null || it.rate != null }
+            val sold = goods.filter { it.isBonus != true }
+            val priced = sold.filter { (it.quantity ?: 0.0) > 0.0 && (it.rate ?: 0.0) > 0.0 }
+            val value = priced.sumOf { it.quantity!! * it.rate!! }
+            when {
+                goods.isEmpty() -> out += line(null, 1.0, amount, null)
+                priced.isEmpty() && sold.size == 1 && (sold[0].quantity ?: 0.0) > 0.0 -> {
+                    val r = sold[0]
+                    val q = r.quantity!!
+                    out += line(r, q, amount / q, costRate(r, q))
+                    goods.filter { it.isBonus == true }.forEach { b -> out += line(b, b.quantity ?: 0.0, 0.0, costRate(b, b.quantity ?: 0.0)) }
+                }
+                else -> {
+                    // The goods' own value first; an amount under it is a discount spread over the priced lines.
+                    val off = if (value > 0.0 && amount < value) value - amount else 0.0
+                    goods.forEach { r ->
+                        val q = r.quantity ?: 0.0
+                        if (r in priced) out += line(r, q, r.rate!!, costRate(r, q), sub = value, off = off)
+                        else out += line(r, q, 0.0, costRate(r, q))
+                    }
+                    val rest = LineMath.round(amount - value)
+                    if (rest > 0.0) out += line(null, 1.0, rest, null)
+                }
+            }
+        }
+        return out
+    }
+}
+
 /**
  * A line that came back, with the sold line it came back from (22 Oct 2026,
  * the review): the share of what that line brought in, and what it had cost
@@ -197,7 +278,9 @@ class SalesReport(
         const val DAILY_BARS = 62
 
         suspend fun compute(dao: KhataDao, from: Long, to: Long): SalesReport {
-            val lines = dao.soldLinesBetween(from, to)
+            // The counter's tickets and the khata's own sales (Marhala 3): what Sale Insights counts, line by line.
+            val lines = (dao.soldLinesBetween(from, to) + KhataSales.lines(dao, dao.khataSaleRowsBetween(from, to)))
+                .sortedBy { it.timestamp }
             val expenses = dao.cashbookExpensesBetween(from - 1, to - 1)
             val returns = dao.returnsBetween(from, to).filter { it.status == SaleStatus.DONE }.sumOf { it.total }
             // Dead stock: on the shelf, and not sold over the counter or the khata in DEAD_DAYS.

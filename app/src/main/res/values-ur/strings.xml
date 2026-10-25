@@ -3183,6 +3183,7 @@
     <string name="srep_period_month">اس مہینے</string>
     <string name="srep_none">اس مدت میں کوئی سیل نہیں</string>
     <string name="srep_no_category">بغیر کیٹیگری</string>
+    <string name="srep_no_goods">بغیر آئٹم</string>
     <string name="pos_credit_limit">کریڈٹ حد %1$s — اس سیل سے کھاتہ %2$s ہو جائے گا</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

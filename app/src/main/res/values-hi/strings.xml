@@ -3233,6 +3233,7 @@
     <string name="srep_period_month">इस महीने</string>
     <string name="srep_none">इस अवधि में कोई बिक्री नहीं</string>
     <string name="srep_no_category">बिना श्रेणी</string>
+    <string name="srep_no_goods">बिना आइटम</string>
     <string name="pos_credit_limit">क्रेडिट सीमा %1$s — इस बिक्री से खाता %2$s हो जाएगा</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

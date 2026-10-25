@@ -3211,6 +3211,7 @@
     <string name="srep_period_month">این ماه</string>
     <string name="srep_none">در این بازه فروشی نیست</string>
     <string name="srep_no_category">بدون دسته</string>
+    <string name="srep_no_goods">بدون کالا</string>
     <string name="pos_credit_limit">سقف اعتبار %1$s — با این فروش حساب به %2$s می‌رسد</string>
 
     <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->

@@ -85,7 +85,8 @@ fun reportRows(r: SalesReport, view: ReportView): Pair<List<String>, List<List<S
     val head = listOf("", word(W.srep_col_count), word(W.pos_col_qty), word(W.srep_col_revenue), word(W.srep_col_profit))
     return when (view) {
         ReportView.DAY -> head to rows(r.byDay, "")
-        ReportView.ITEM -> head to rows(r.byItem, "")
+        // A khata sale written without its goods (Marhala 3: the khata counts now) says so.
+        ReportView.ITEM -> head to rows(r.byItem, word(W.srep_no_goods))
         ReportView.CATEGORY -> head to rows(r.byCategory, word(W.srep_no_category))
         ReportView.CUSTOMER -> head to rows(r.byCustomer, word(W.pos_walk_in))
         ReportView.CASHIER -> head to rows(r.byCashier, word(W.access_owner))
