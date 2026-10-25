@@ -51,7 +51,7 @@ class ScreenProofTest {
 
     /** Made-up cash sums and today's entries, so the table and the third card are drawn. */
     private fun figures() = HomeFigures(
-        cashIn = 184500.0, cashOut = 61200.0,
+        cashIn = 184500.0, cashOut = 61200.0, drawer = 23400.0,
         today = listOf(
             com.innovation313.roshankhata.data.EntryWithParty(1, 1, "Muhammad Aslam", 12500.0, false, "Cash received", "E-1", now - 20 * 60 * 1000),
             com.innovation313.roshankhata.data.EntryWithParty(2, 2, "Ghulam Rasool", 2400.0, true, "Maize seed 10 kg", "E-2", now - 90 * 60 * 1000),

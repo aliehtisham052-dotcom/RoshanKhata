@@ -37,6 +37,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.data.DayClose
+import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerAlerts
@@ -60,17 +62,48 @@ enum class HomeAction(val word: String, val icon: String, val tile: String) {
 }
 
 /** What the Home's figures and table are read from, beyond the party list the window already holds. */
-class HomeFigures(val cashIn: Double, val cashOut: Double, val today: List<EntryWithParty>)
+class HomeFigures(
+    val cashIn: Double,
+    val cashOut: Double,
+    val today: List<EntryWithParty>,
+    /**
+     * What should be in the drawer, by Close the day's own rule: the last count plus
+     * the cash that came in, less the cash that went out, since (cashbook rows in cash
+     * or unmarked, khata entries marked Cash). Null when it could not be read.
+     */
+    val drawer: Double? = null,
+    /** The last count of the drawer, or null when it was never counted. */
+    val lastCount: DayClose? = null
+)
 
-/** The book's figures for Home: the cashbook's two sums and today's entries, newest first. */
+/**
+ * What should be in the drawer now (25 Oct 2026, the audit): Home's "Cash in
+ * hand" was the cashbook's all-time net in every method, bank and online
+ * included and khata cash left out, so it never matched the drawer.
+ */
+suspend fun drawerByTheBooks(dao: KhataDao, now: Long = System.currentTimeMillis()): Pair<Double, DayClose?> {
+    val last = dao.lastDayClose()
+    val from = last?.closedAt ?: 0L
+    val expected = DayCloseMath.expected(
+        last?.counted ?: 0.0,
+        dao.cashbookCashBetween(true, from, now) + dao.khataCashBetween(false, from, now),
+        dao.cashbookCashBetween(false, from, now) + dao.khataCashBetween(true, from, now)
+    )
+    return expected to last
+}
+
+/** The book's figures for Home: the cashbook's two sums, the drawer by the books and today's entries, newest first. */
 suspend fun homeFigures(dao: KhataDao): HomeFigures = withContext(Dispatchers.IO) {
     val start = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
     }.timeInMillis
+    val drawer = runCatching { drawerByTheBooks(dao) }.getOrNull()
     HomeFigures(
         cashIn = runCatching { dao.cashIncomeOnce() }.getOrDefault(0.0),
         cashOut = runCatching { dao.cashExpenseOnce() }.getOrDefault(0.0),
-        today = runCatching { dao.entriesInRange(start, start + 24L * 60 * 60 * 1000 - 1) }.getOrDefault(emptyList()).sortedByDescending { it.timestamp }
+        today = runCatching { dao.entriesInRange(start, start + 24L * 60 * 60 * 1000 - 1) }.getOrDefault(emptyList()).sortedByDescending { it.timestamp },
+        drawer = drawer?.first,
+        lastCount = drawer?.second
     )
 }
 
@@ -128,8 +161,9 @@ fun HomePane(
             IconAction(if (hidden) "ic_eye_closed" else "ic_eye_open", word(W.net_balance), { hidden = !hidden })
         }
 
-        // The three figures: will get (red), will give (blue), cash in hand (green).
-        val cash = (figures?.cashIn ?: 0.0) - (figures?.cashOut ?: 0.0)
+        // The three figures: will get (red), will give (blue), and what should be in the drawer (green).
+        val drawer = figures?.drawer
+        val cash = drawer ?: 0.0
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             StatCard(
                 word(W.you_will_get), shown(get),
@@ -140,11 +174,17 @@ fun HomePane(
                 word(W.you_will_give), shown(give), plural(WP.supplier_count, owed, owed),
                 Look.give, Look.giveTint, "ic_arrow_gave", Modifier.weight(1f)
             ) { onOpen(Section.KHATA) }
-            // A shortfall carries its minus and the "give" colour (21 Oct 2026): more out than in
-            // printed as a green, positive "cash in hand".
+            // A shortfall carries its minus and the "give" colour (21 Oct 2026). The figure is the drawer by
+            // Close the day's rule (25 Oct 2026): cash only, since the last count; "…" while reading, "—" if it failed.
+            val last = figures?.lastCount
             StatCard(
-                word(W.home_cash_in_hand), if (hidden) masked else Format.signedIfNegative(cash),
-                word(W.cash_in) + " " + shown(figures?.cashIn ?: 0.0) + " · " + word(W.cash_out) + " " + shown(figures?.cashOut ?: 0.0),
+                word(W.z_expected),
+                when { hidden -> masked; figures == null -> "…"; drawer == null -> "—"; else -> Format.signedIfNegative(drawer) },
+                when {
+                    figures == null -> ""
+                    last == null -> word(W.dayclose_never)
+                    else -> word(W.dayclose_last, Format.dateOnly(last.closedAt), if (hidden) masked else Format.signedTotal(last.difference))
+                },
                 if (cash < 0) c.owedToMe else Look.accent, if (cash < 0) Look.getTint else Look.accentTint, "ic_tile_cashbook", Modifier.weight(1f)
             ) { onOpen(Section.CASHBOOK) }
         }
