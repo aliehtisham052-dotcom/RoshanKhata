@@ -207,7 +207,7 @@
     <string name="zakat_disclaimer">এই টুল শুধু সহায়ক। যাকাতে ফিকহের আসল খুঁটিনাটি আছে — নিসাবের মাপকাঠি, সন্দেহজনক পাওনার হিসাব, চান্দ্র বছর, আর কোন দেনা বাদ দেওয়া যায়, এসব বিষয়ে আলেমদের মত ভিন্ন। রোশন খাতা মুফতি নয়। চূড়ান্ত হুকুম একজন যোগ্য আলেমের কাছ থেকে নিন।</string>
 
     <string name="nisab_section">নিসাব</string>
-    <string name="nisab_help">এখানে নিসাব রুপার মাপে (612.36 গ্রাম) ধরা হয়েছে, যা সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়। আজকের রুপার দাম প্রতি গ্রাম লিখুন।</string>
+    <string name="nisab_help">এখানে নিসাব রুপার মাপে (612.36 গ্রাম) ধরা হয়েছে, যা সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়।</string>
     <string name="silver_price_hint">রুপার দাম প্রতি গ্রাম</string>
     <string name="nisab_value">নিসাব = %1$s</string>
     <string name="nisab_enter_price">নিসাব বের করতে দাম লিখুন</string>
@@ -1027,6 +1027,8 @@
     <string name="nisab_silver">রুপা</string>
     <string name="nisab_gold">সোনা</string>
     <string name="gold_price_hint">সোনার দাম প্রতি গ্রাম</string>
+    <string name="silver_price_hint_tola">রুপার দাম প্রতি তোলা</string>
+    <string name="gold_price_hint_tola">সোনার দাম প্রতি তোলা</string>
     <string name="nisab_silver_note">রুপার নিসাব: 612.36 গ্রাম (52.5 তোলা) রুপা। এটি নিচের সীমা, তাই বেশি মানুষের ওপর যাকাত আসে \u2014 সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়।</string>
     <string name="nisab_gold_note">সোনার নিসাব: 87.48 গ্রাম (7.5 তোলা) সোনা। এটি ওপরের সীমা, তাই কম মানুষের ওপর যাকাত আসে। আপনার জন্য কোন মাপ প্রযোজ্য তা একজন আলেমের কাছ থেকে নিশ্চিত করুন।</string>
     <string name="per_tola">প্রতি তোলা</string>

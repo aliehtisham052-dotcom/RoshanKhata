@@ -200,7 +200,7 @@
     <string name="zakat_disclaimer">Alat ini hanya sebagai rujukan. Zakat memiliki rincian fikih yang nyata — standar nisab, perlakuan piutang yang diragukan, tahun hijriah, dan kewajiban mana yang boleh dikurangkan, semuanya berbeda di antara para ulama. Roshan Khata bukan mufti. Mohon ambil ketetapan akhir dari ulama yang berkompeten.</string>
 
     <string name="nisab_section">Nisab</string>
-    <string name="nisab_help">Nisab di sini ditetapkan dengan standar perak (612,36 g), pendapat yang umumnya dianggap lebih berhati-hati terhadap hak fakir miskin. Masukkan harga perak per gram hari ini.</string>
+    <string name="nisab_help">Nisab di sini ditetapkan dengan standar perak (612,36 g), pendapat yang umumnya dianggap lebih berhati-hati terhadap hak fakir miskin.</string>
     <string name="silver_price_hint">Harga perak per gram</string>
     <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Masukkan harga untuk menghitung nisab</string>
@@ -1008,6 +1008,8 @@
     <string name="nisab_silver">Perak</string>
     <string name="nisab_gold">Emas</string>
     <string name="gold_price_hint">Harga emas per gram</string>
+    <string name="silver_price_hint_tola">Harga perak per tola</string>
+    <string name="gold_price_hint_tola">Harga emas per tola</string>
     <string name="nisab_silver_note">Nisab perak: 612,36 g (52,5 tola) perak. Ini ambang yang lebih rendah, sehingga lebih banyak orang wajib zakat \u2014 pendapat yang umumnya dianggap lebih berhati-hati terhadap hak fakir miskin.</string>
     <string name="nisab_gold_note">Nisab emas: 87,48 g (7,5 tola) emas. Ini ambang yang lebih tinggi, sehingga lebih sedikit orang wajib zakat. Pastikan kepada ulama standar mana yang berlaku bagi Anda.</string>
     <string name="per_tola">Per tola</string>

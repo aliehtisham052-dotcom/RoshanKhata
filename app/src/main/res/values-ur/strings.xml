@@ -200,7 +200,7 @@
     <string name="zakat_disclaimer">یہ سہولت صرف رہنمائی کے لیے ہے۔ زکوٰۃ کی فقہی تفصیل اہم ہے — نصاب کا معیار، مشکوک قرضوں کا حکم، قمری سال، اور کون سی ادائیگیاں منہا ہوں گی، ان سب میں علماء کی آراء مختلف ہیں۔ روشن کھاتہ مفتی نہیں ہے۔ حتمی حکم کسی مستند عالم سے ضرور لیں۔</string>
 
     <string name="nisab_section">نصاب</string>
-    <string name="nisab_help">یہاں نصاب چاندی کے معیار (612.36 گرام) پر رکھا گیا ہے — یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔ آج کی چاندی کی فی گرام قیمت لکھیں۔</string>
+    <string name="nisab_help">یہاں نصاب چاندی کے معیار (612.36 گرام) پر رکھا گیا ہے — یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔</string>
     <string name="silver_price_hint">چاندی کی قیمت فی گرام</string>
     <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">نصاب معلوم کرنے کے لیے قیمت لکھیں</string>
@@ -987,6 +987,8 @@
     <string name="nisab_silver">چاندی</string>
     <string name="nisab_gold">سونا</string>
     <string name="gold_price_hint">سونے کی قیمت فی گرام</string>
+    <string name="silver_price_hint_tola">چاندی کی قیمت فی تولہ</string>
+    <string name="gold_price_hint_tola">سونے کی قیمت فی تولہ</string>
     <string name="nisab_silver_note">چاندی کا نصاب: 612.36 گرام (52.5 تولہ) چاندی۔ یہ کم حد ہے، اس لیے زیادہ لوگوں پر زکوٰۃ آتی ہے \u2014 یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔</string>
     <string name="nisab_gold_note">سونے کا نصاب: 87.48 گرام (7.5 تولہ) سونا۔ یہ اونچی حد ہے، اس لیے کم لوگوں پر زکوٰۃ آتی ہے۔ کون سا معیار آپ پر لاگو ہے، عالم سے تصدیق کریں۔</string>
     <string name="per_tola">فی تولہ</string>

@@ -203,7 +203,7 @@
     <string name="zakat_disclaimer">این ابزار فقط برای راهنمایی است. زکات جزئیات فقهی واقعی دارد — معیار نصاب، حکم طلب‌های مشکوک، سال قمری، و اینکه کدام بدهی‌ها کسر می‌شود، میان علما متفاوت است. روشن خاتا مفتی نیست. لطفاً حکم نهایی را از عالم واجد شرایط بگیرید.</string>
 
     <string name="nisab_section">نصاب</string>
-    <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (612.36 گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود. قیمت امروز هر گرم نقره را وارد کنید.</string>
+    <string name="nisab_help">نصاب در اینجا بر پایه معیار نقره (612.36 گرم) تنظیم شده — دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
     <string name="silver_price_hint">قیمت هر گرم نقره</string>
     <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">برای محاسبه نصاب، قیمت را وارد کنید</string>
@@ -1015,6 +1015,8 @@
     <string name="nisab_silver">نقره</string>
     <string name="nisab_gold">طلا</string>
     <string name="gold_price_hint">قیمت هر گرم طلا</string>
+    <string name="silver_price_hint_tola">قیمت هر توله نقره</string>
+    <string name="gold_price_hint_tola">قیمت هر توله طلا</string>
     <string name="nisab_silver_note">نصاب نقره: 612.36 گرم (52.5 توله) نقره. این آستانه پایین‌تر است، پس زکات بر افراد بیشتری واجب می‌شود \u2014 دیدگاهی که معمولاً برای حق فقرا محتاطانه‌تر دانسته می‌شود.</string>
     <string name="nisab_gold_note">نصاب طلا: 87.48 گرم (7.5 توله) طلا. این آستانه بالاتر است، پس زکات بر افراد کمتری واجب می‌شود. اینکه کدام معیار بر شما صدق می‌کند را از عالم بپرسید.</string>
     <string name="per_tola">هر توله</string>

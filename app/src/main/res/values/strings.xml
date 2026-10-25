@@ -207,7 +207,7 @@
     <string name="zakat_disclaimer">This tool is only a reference. Zakat has real fiqhi detail — the nisab standard, how doubtful debts are treated, the lunar year, and which liabilities may be deducted all differ between scholars. Roshan Khata is not a mufti. Please take the final ruling from a qualified scholar.</string>
 
     <string name="nisab_section">Nisab</string>
-    <string name="nisab_help">Nisab is set here against the silver standard (612.36 g), the position generally taken as more careful toward the rights of the poor. Enter today\'s silver price per gram.</string>
+    <string name="nisab_help">Nisab is set here against the silver standard (612.36 g), the position generally taken as more careful toward the rights of the poor.</string>
     <string name="silver_price_hint">Silver price per gram</string>
     <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Enter the price to calculate nisab</string>
@@ -1030,6 +1030,8 @@
     <string name="nisab_silver">Silver</string>
     <string name="nisab_gold">Gold</string>
     <string name="gold_price_hint">Gold price per gram</string>
+    <string name="silver_price_hint_tola">Silver price per tola</string>
+    <string name="gold_price_hint_tola">Gold price per tola</string>
     <string name="nisab_silver_note">Silver nisab: 612.36 g (52.5 tola) of silver. This is the lower threshold, so more people owe Zakat \u2014 the position generally taken as more careful toward the rights of the poor.</string>
     <string name="nisab_gold_note">Gold nisab: 87.48 g (7.5 tola) of gold. This is the higher threshold, so fewer people owe Zakat. Confirm which standard applies to you with a scholar.</string>
     <string name="per_tola">Per tola</string>

@@ -67,12 +67,13 @@ fun ZakatPane(dao: KhataDao) {
             PaneTitle(word(W.zakat_calculator), word(W.zakat_subtitle))
 
             ZakatHeading(word(W.nisab_section))
-            Text(word(W.nisab_help), color = c.textMuted, fontSize = 12.sp)
+            // The silver standard's own words, said only while silver is the standard chosen.
+            if (!gold) Text(word(W.nisab_help), color = c.textMuted, fontSize = 12.sp)
             TwoWay(word(W.nisab_silver), word(W.nisab_gold), !gold) { silver -> gold = !silver }
             TwoWay(word(W.per_tola), word(W.per_gram), perTola) { perTola = it }
             Outlined(
                 value = priceText, onValueChange = { priceText = it }, singleLine = true,
-                label = { Text(word(if (gold) W.gold_price_hint else W.silver_price_hint)) },
+                label = { Text(word(zakatPriceLabel(gold, perTola))) },
                 modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
             Text(word(W.price_help), color = c.textMuted, fontSize = 12.sp)
             if (Zakat.priceLooksOff(price, gold = gold, perTola = perTola)) {
@@ -124,6 +125,19 @@ fun ZakatPane(dao: KhataDao) {
             Text(word(W.zakat_footer_note), color = c.textMuted, fontSize = 12.sp)
         }
     }
+}
+
+/**
+ * The price box's label: the metal and the unit the two choices name (25 Oct
+ * 2026, the audit). It said "per gram" while "Per tola" was chosen — the
+ * default in Pakistan — and a gram's price read as a tola's puts the nisab
+ * 11.66 times too low, so Zakat looked due on wealth below it.
+ */
+internal fun zakatPriceLabel(gold: Boolean, perTola: Boolean): String = when {
+    gold && perTola -> W.gold_price_hint_tola
+    gold -> W.gold_price_hint
+    perTola -> W.silver_price_hint_tola
+    else -> W.silver_price_hint
 }
 
 @Composable

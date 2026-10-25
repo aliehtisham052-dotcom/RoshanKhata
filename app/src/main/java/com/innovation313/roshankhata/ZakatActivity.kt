@@ -76,9 +76,7 @@ class ZakatActivity : BaseActivity() {
         toggleNisab.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             useGold = checkedId == R.id.btnGold
-            etSilverPrice.setHint(
-                if (useGold) R.string.gold_price_hint else R.string.silver_price_hint
-            )
+            showPriceWords()
             tvNisabStandardNote.setText(
                 if (useGold) R.string.nisab_gold_note else R.string.nisab_silver_note
             )
@@ -91,8 +89,10 @@ class ZakatActivity : BaseActivity() {
         toggleUnit.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             perTola = checkedId == R.id.btnPerTola
+            showPriceWords()
             recalculate()
         }
+        showPriceWords()
 
         etCashStock = findViewById(R.id.etCashStock)
         cbIncludeDoubtful = findViewById(R.id.cbIncludeDoubtful)
@@ -129,6 +129,26 @@ class ZakatActivity : BaseActivity() {
         cbIncludeDoubtful.setOnCheckedChangeListener { _, _ -> recalculate() }
 
         observeLedger()
+    }
+
+    /**
+     * The price box names the metal and the unit the two toggles chose (25 Oct
+     * 2026, the audit): it said "per gram" under "Per tola" — the default in
+     * Pakistan — and a gram's price read as a tola's puts the nisab 11.66
+     * times too low. The silver standard's own words show only while silver
+     * is the standard chosen.
+     */
+    private fun showPriceWords() {
+        etSilverPrice.setHint(
+            when {
+                useGold && perTola -> R.string.gold_price_hint_tola
+                useGold -> R.string.gold_price_hint
+                perTola -> R.string.silver_price_hint_tola
+                else -> R.string.silver_price_hint
+            }
+        )
+        findViewById<TextView>(R.id.tvNisabHelp).visibility =
+            if (useGold) android.view.View.GONE else android.view.View.VISIBLE
     }
 
     private fun observeLedger() {
