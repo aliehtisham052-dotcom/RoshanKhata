@@ -47,6 +47,22 @@ class ReminderStore(private val file: File) {
         }
     }
 
+    /**
+     * The customers a reminder was opened for today on this computer (the phone's ReminderLog.openedToday):
+     * Follow-up moves them to the foot and stops counting them as "to remind today" (25 Oct 2026, the audit:
+     * on Windows that count never went down).
+     */
+    @Synchronized
+    fun openedToday(now: Long = System.currentTimeMillis(), tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Set<Long> {
+        fun dayOf(t: Long) = Math.floorDiv(t + tz.getOffset(t), 24L * 60 * 60 * 1000)
+        val today = dayOf(now)
+        return props.stringPropertyNames().mapNotNull { key ->
+            val id = key.toLongOrNull() ?: return@mapNotNull null
+            val s = ReminderLadder.decode(props.getProperty(key)) ?: return@mapNotNull null
+            id.takeIf { dayOf(s.lastAt) == today }
+        }.toSet()
+    }
+
     companion object {
         fun forBusiness(home: File, businessId: Long) = ReminderStore(File(home, "reminders_b$businessId.properties"))
     }

@@ -2352,15 +2352,24 @@ interface KhataDao {
     /**
      * Top products by quantity sold in a period. Only entries that actually
      * named a product and gave a quantity count — a bare cash sale has no
-     * product to rank.
+     * product to rank. The counter's walk-in tickets count too (25 Oct 2026,
+     * the audit: a shop selling at the counter saw its best sellers missing);
+     * a customer's ticket is already his khata entry's goods, counted once.
      */
-    @Query("SELECT ei.itemName AS name, SUM(ei.quantity) AS qty, ei.unit AS unit, COUNT(*) AS lines " +
+    @Query("SELECT name, SUM(qty) AS qty, unit, SUM(lines) AS lines FROM (" +
+           "SELECT ei.itemName AS name, ei.quantity AS qty, ei.unit AS unit, 1 AS lines " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
            "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "AND ei.itemName IS NOT NULL AND ei.itemName != '' AND ei.quantity IS NOT NULL " +
-           "GROUP BY ei.itemName, ei.unit ORDER BY qty DESC LIMIT :limit")
+           "UNION ALL " +
+           "SELECT i.itemName AS name, i.quantity AS qty, i.unit AS unit, 1 AS lines " +
+           "FROM sale_items i JOIN sales s ON s.id = i.saleId " +
+           "WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.partyId IS NULL " +
+           "AND s.timestamp >= :from AND s.timestamp < :to " +
+           "AND i.itemName IS NOT NULL AND i.itemName != '' AND i.quantity IS NOT NULL" +
+           ") GROUP BY name, unit ORDER BY qty DESC LIMIT :limit")
     suspend fun topProductsBetween(from: Long, to: Long, limit: Int): List<ProductStat>
 
     // ---------- Profit (read-only; the arithmetic lives in [Profit]) ----------

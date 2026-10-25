@@ -78,23 +78,29 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
     var chartTouched by remember { mutableStateOf(false) }
     val table = r?.let { reportRows(it, view) }
     val heading = word(view.wordKey) + "  ·  " + com.innovation313.roshankhata.screens.periodLabel(period, custom)
-    FluentPage(word(W.sales_report_title), told ?: heading, scroll = false, actions = {
-        FluentButton(word(W.export_excel), {
-            if (!Access.can(Access.Permission.EXPORT)) { told = words.text(W.access_denied); return@FluentButton }
-            val t = table ?: return@FluentButton
-            val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.export_excel), java.awt.FileDialog.SAVE)
-            startIn(dialog, "Documents")
-            dialog.file = "RoshanKhata_Sales_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
-            dialog.isVisible = true
-            val name = dialog.file ?: return@FluentButton
-            val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
-            val csv = StringBuilder("﻿")
-            (listOf(t.first) + t.second).forEach { row -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, row) }
-            scope.launch {
-                told = runCatching { withContext(Dispatchers.IO) { file.writeText(csv.toString(), Charsets.UTF_8) } }
-                    .map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
-            }
-        }, kind = ButtonKind.STANDARD, enabled = table != null)
+    // A refused export asks a manager's PIN as every other export does, and the file is written down in who did
+    // what (25 Oct 2026, the audit: it said "access denied" and nothing else); what it says comes as a note, not
+    // in place of the page's line for good.
+    fun exportCsv(t: Pair<List<String>, List<List<String>>>) = Gates.need(Access.Permission.EXPORT) export@{
+        val dialog = java.awt.FileDialog(null as java.awt.Frame?, words.text(W.export_excel), java.awt.FileDialog.SAVE)
+        startIn(dialog, "Documents")
+        dialog.file = "RoshanKhata_Sales_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv"
+        dialog.isVisible = true
+        val name = dialog.file ?: return@export
+        val file = java.io.File(dialog.directory, if (name.endsWith(".csv", true)) name else "$name.csv")
+        val csv = StringBuilder("\ufeff")
+        (listOf(t.first) + t.second).forEach { row -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, row) }
+        scope.launch {
+            told = runCatching {
+                withContext(Dispatchers.IO) {
+                    file.writeText(csv.toString(), Charsets.UTF_8)
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, Access.userName, detail = file.name) }
+                }
+            }.map { words.text(W.report_saved_to, file.absolutePath) }.getOrElse { failText(words, it) }
+        }
+    }
+    FluentPage(word(W.sales_report_title), heading, scroll = false, actions = {
+        FluentButton(word(W.export_excel), { table?.let { exportCsv(it) } }, kind = ButtonKind.STANDARD, icon = "ic_download", enabled = table != null)
         FluentButton(word(W.ledger_pdf_button), {
             val t = table ?: return@FluentButton
             StatementPrint.show(
@@ -156,4 +162,5 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             }
         }
     }
+    told?.let { text -> TellDialog(word(W.export_excel), text, { told = null }) }
 }

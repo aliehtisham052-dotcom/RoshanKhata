@@ -1082,6 +1082,25 @@ Businesses/Settings), each part with its proof pictures. CI only.
   when they were made at every foot (`madeLine`) and hold 29 rows a page, so a totals line never lands at the
   paper's edge. Tests: ReportPrintTest (the phone's page breaks), RegisterPrintTest; proofs
   screen-laptop-report-en-dark, -report-short-ur, -salesregister-en and the statement-proof pictures.
+- **Part 7b, the other report and tool pages:** Sale Insights is in the page frame with the rest of the phone's
+  screen: today's three figures, this month against last, the profit card (`Profit.thisMonth`/`lastMonth`: the
+  figure with its minus, after expenses, last month's, the share of sales it stands on, a dash and what it needs
+  when nothing is known), twelve months as bars that carry shape only with the chosen month's figure under them
+  (the best first; a click chooses — the bars' English "L"/"k" are gone), top products, top profit and top
+  customers ranked with bars, the profit note. **Top products count the counter's walk-ins** (`topProductsBetween`,
+  shared, so the phone too; a customer's ticket is his khata entry's goods, counted once; SalesRuleTest). Cash flow
+  and Follow-up are in the frame (cash flow's first short week on a red card, none on green; Follow-up's due/late
+  line in red, not green). **Reminded today, on the computer:** `ReminderStore.openedToday` (the ladder's last
+  opening is today) moves a customer to the foot and out of "to remind today", as the phone's ReminderLog does
+  (ReminderStoreTest). The sales report's and the dues page's Excel ask a manager's PIN when refused
+  (`Gates.need(EXPORT)`, it said "access denied"), are written in who did what, and say where the file went in a
+  dialog (the note used to replace the page's line for good); the dues page says its total and each card wears its
+  bar's colour (`FigureCard(swatch)`). Zakat follows the phone's order — the disclaimer above everything, the nisab,
+  cash and stock, the ledger — with the phone's dark result card beside the questions on a wide window; the
+  doubtful-debts label toggles its box. The calculator keeps its sum and the last three sums while the app is open
+  (`CalcMemory`), and "Add to a khata" asks whose and which way, then opens that customer's entry filled in
+  (`EntryEditor(startAmount)`; nothing above zero goes nowhere, `calc_khata_positive`). Proofs: screen-laptop-
+  insights-en, -cashflow-ur, -followup-en, -aging-en, -zakat-en, -calculator-short-ur.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview

@@ -692,6 +692,11 @@ private fun Book(
     // Home's You gave, You got and Statement: the customer is chosen in a small window first.
     var picking by remember { mutableStateOf<HomePick?>(null) }
     var pickedFor by remember { mutableStateOf<Long?>(null) }
+    // The calculator's answer on its way to a khata (Marhala 4, part 7, the phone's "Add to a khata"): whose is
+    // asked first, then that customer's entry opens filled in with it ([entryAmount]); nothing is saved until he saves.
+    var carry by remember { mutableStateOf<Double?>(null) }
+    var entryAmount by remember { mutableStateOf<Double?>(null) }
+    LaunchedEffect(entryWay) { if (entryWay == null) entryAmount = null }
     // Home's "Add bill": Supplier bills opens with a new bill's form.
     var newBill by remember { mutableStateOf(false) }
     // The money totals as dots until the eye opens them, remembered (25 Oct 2026, the audit; the phone's BalancePrivacy).
@@ -1040,7 +1045,7 @@ private fun Book(
                     Section.STAFF -> Box(Modifier.fillMaxSize()) { StaffPane(dao) }
                     Section.FOLLOWUP -> Box(Modifier.fillMaxSize()) { FollowUpPane(dao, parties, words, shop, reminders) }
                     Section.AGING -> Box(Modifier.fillMaxSize()) { AgingPane(dao, words, rtl, shop, reload) { id -> selected = id; section = Section.KHATA } }
-                    Section.CALC -> Box(Modifier.fillMaxSize()) { CalculatorPane() }
+                    Section.CALC -> Box(Modifier.fillMaxSize()) { CalculatorPane(onKhata = { v -> pickedFor = selected; carry = v }) }
                     Section.SCHEMES -> Box(Modifier.fillMaxSize()) { SchemesPane(dao, reload) }
                     Section.CASHFLOW -> Box(Modifier.fillMaxSize()) { CashFlowPane(dao, reload) }
                     Section.BUY_RATES -> Box(Modifier.fillMaxSize()) { SupplierRatesPane(dao, reload) }
@@ -1577,7 +1582,7 @@ private fun Book(
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
                     partyId = forParty.id, partyName = forParty.name, isGiven = way,
-                    existing = null,
+                    existing = null, startAmount = entryAmount,
                     isCustomer = partyRow?.isCustomer ?: true, dao = dao, promise = partyRow?.harvestPromise,
                     onSave = { d ->
                         scope.launch {
@@ -1805,6 +1810,28 @@ private fun Book(
             },
             dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
         )
+    }
+    carry?.let { amount ->
+        val close = { carry = null }
+        val title = word(W.calc_add_to_khata)
+        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(520.dp))) {
+            // The phone opens the form on "you gave"; here the owner says which, as Home's two buttons do.
+            fun open(gave: Boolean) {
+                val id = pickedFor ?: return
+                carry = null
+                selected = id
+                section = Section.KHATA
+                entryAmount = amount
+                entryWay = gave
+            }
+            DialogFrame(title, subtitle = Format.money(amount), onClose = close, footer = {
+                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.you_got), { open(false) }, kind = ButtonKind.STANDARD, enabled = pickedFor != null)
+                FluentButton(word(W.you_gave), { open(true) }, kind = ButtonKind.ACCENT, enabled = pickedFor != null)
+            }) {
+                PartyPicker(parties, pickedFor, { pickedFor = it }, word(W.customer), word(W.search_parties), Modifier.fillMaxWidth())
+            }
+        }
     }
     picking?.let { pick ->
         val close = { picking = null }

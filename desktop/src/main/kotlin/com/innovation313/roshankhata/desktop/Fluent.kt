@@ -521,11 +521,14 @@ fun DialogFrame(
 
 /** A line of a figure in a card: its label small, the figure in its colour, a count or note under it. */
 @Composable
-fun FigureCard(label: String, amount: String, color: Color, modifier: Modifier = Modifier, under: String? = null, icon: String? = null, tint: Color? = null) {
+fun FigureCard(label: String, amount: String, color: Color, modifier: Modifier = Modifier, under: String? = null, icon: String? = null, tint: Color? = null,
+    /** A small square of this colour before the label: the key to a chart's colours (dues by age). */
+    swatch: Color? = null) {
     val c = LocalRoshanColors.current
     Column(modifier.clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card).padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (icon != null) Box(Modifier.size(26.dp).background(tint ?: Look.subtle, Look.ctl), contentAlignment = Alignment.Center) { Glyph(icon, color, 14) }
+            if (swatch != null) Box(Modifier.size(12.dp).background(swatch, RoundedCornerShape(3.dp)))
             Text(label, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
