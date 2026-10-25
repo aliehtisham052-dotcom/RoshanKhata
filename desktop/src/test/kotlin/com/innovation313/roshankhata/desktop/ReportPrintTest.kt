@@ -14,9 +14,9 @@ import java.util.Locale
 import javax.imageio.ImageIO
 
 /**
- * The Khata Report drawn as a printer draws it, in English and Urdu. The
- * pictures go beside the statement's (build/statement-proof) onto the
- * desktop-test pre-release, to be looked at (CLAUDE.md lesson 16).
+ * The Khata Report drawn as a printer draws it, in English and Urdu — the phone's document (Marhala 4,
+ * part 7). The pictures go beside the statement's (build/statement-proof) onto the desktop-test
+ * pre-release, to be looked at (CLAUDE.md lesson 16).
  */
 class ReportPrintTest {
 
@@ -58,11 +58,30 @@ class ReportPrintTest {
         }
     }
 
+    private fun plain(n: Int) = entries(n).map { it.copy(note = null) }
+
     @Test
-    fun `thirty rows to a page, totals on the last`() {
-        assertEquals(1, render("en", emptyList()).size)
-        assertEquals(1, render("en", entries(30)).size)
-        assertEquals(2, render("en", entries(31)).size)
+    fun `the phone's page breaks - 24 rows under the summary, 32 on each page after`() {
+        // Marhala 4, part 7: the phone's LedgerReport layout — band, the not-a-backup note, the summary,
+        // then 20-point rows down to 60 points above the foot.
+        assertEquals("an empty report is one page", 1, render("en", emptyList()).size)
+        assertEquals(1, render("en", plain(24)).size)
+        assertEquals(2, render("en", plain(25)).size)
+        assertEquals(2, render("en", plain(56)).size)
+        assertEquals(3, render("en", plain(57)).size)
+    }
+
+    @Test
+    fun `the preview counts the pages the printer prints`() {
+        val previous = Locale.getDefault()
+        Locale.setDefault(Locale.ENGLISH)
+        try {
+            val r = ReportPrint(desktopWords(Locale.ENGLISH), false, "Bhatti Traders", "All", entries(90))
+            assertEquals(render("en", entries(90)).size, r.pageCount())
+            assertEquals(r.pageCount(), Sheets.of(r).count)
+        } finally {
+            Locale.setDefault(previous)
+        }
     }
 
     @Test

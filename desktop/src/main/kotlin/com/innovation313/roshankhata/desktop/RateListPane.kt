@@ -71,7 +71,7 @@ fun RateListPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?) {
                 }
                 StatementPrint.show(
                     TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.rate_list_heading_default) +
-                        (company?.let { "  ·  $it" } ?: ""), headers, table) { p, of -> words.text(W.pdf_stmt_page, p, of) },
+                        (company?.let { "  ·  $it" } ?: ""), headers, table, made = madeLine(words)) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                     words.text(W.rate_list_title)
                 )
             })

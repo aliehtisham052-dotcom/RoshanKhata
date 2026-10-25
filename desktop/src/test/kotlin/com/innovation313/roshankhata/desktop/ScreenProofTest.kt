@@ -345,7 +345,11 @@ class ScreenProofTest {
             // Marhala 4: the bills' three figures (the phone's), and products with their own empty and search words.
             shoot("screen-laptop-bills-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.BILLS) { BillsPane(dao, partiesNow, words, home) {} }
             shoot("screen-laptop-products-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.PRODUCTS) { ProductsPane(dao, words) }
-            shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
+            // Marhala 4, part 7: the phone's 24 Oct report — the period chips, the summary card, the days.
+            shoot("screen-laptop-report-en-dark", ur = false, dark = true, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.REPORT, waits = 3) { ReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0, parties = partiesNow) }
+            shoot("screen-laptop-report-short-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.REPORT, waits = 3) { ReportPane(dao, words, rtl = true, shopName = "Al-Noor Agri Store", reload = 0, parties = partiesNow) }
+            // The sales and purchase register in the page frame: chips, the two figures, each line with what it was.
+            shoot("screen-laptop-salesregister-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.REGISTER, waits = 3) { RegisterPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) }
             shoot("screen-laptop-counter-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.COUNTER) {
                 CounterSalePane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", currency = "Rs", reload = 0, onChanged = {}, onReceipt = {}, keys = KeyActions())
             }

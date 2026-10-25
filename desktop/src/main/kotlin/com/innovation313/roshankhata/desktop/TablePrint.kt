@@ -10,12 +10,15 @@ import java.awt.print.Printable
 
 /**
  * A plain A4 table for printing (a price list, any list): the shop in the
- * band, a heading, the columns' names, then the rows, [rowsPerPage] to a page.
+ * band, a heading, the columns' names, then the rows, [ROWS_PER_PAGE] to a page.
  * The first column is text from the start side; the others are figures,
  * ending at their column's end. Mirrored for a right-to-left language.
  * Figure columns are as wide as their widest figure (60 to 95 points), so
  * the names keep the rest (25 Oct 2026, the audit: with five figure columns
  * the dues report's names had 56 points — "Muhammad…").
+ * In the phone's documents' green and gold (Marhala 4, part 7: it was navy), with when it was made and the
+ * page at every foot ([made]); a page holds 29 rows so a totals line and the foot always fit under them (a
+ * full page of 32 put the totals at the paper's edge).
  */
 class TablePrint(
     private val rtl: Boolean,
@@ -25,16 +28,21 @@ class TablePrint(
     private val rows: List<List<String>>,
     /** A last row in bold under a rule (the dues report's totals), on the last page; null for none. */
     private val totals: List<String>? = null,
+    /** "Roshan Khata · Generated …" for every page's foot ([madeLine]); null for none. */
+    private val made: String? = null,
     private val pageWord: (page: Int, of: Int) -> String
 ) : Printable {
 
     private val pageW = 595.0
+    private val pageH = 842.0
     private val margin = 36.0
-    private val rowsPerPage = 32
-    private val navy = Color(0x1B, 0x2A, 0x4A)
     private val line = Color(0xE4, 0xE2, 0xDC)
 
-    private fun pages() = maxOf(1, (rows.size + rowsPerPage - 1) / rowsPerPage)
+    companion object {
+        const val ROWS_PER_PAGE = 29
+    }
+
+    private fun pages() = maxOf(1, (rows.size + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE)
 
     private fun Graphics2D.text(raw: String, x: Double, y: Double, end: Boolean = false) {
         // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
@@ -65,21 +73,24 @@ class TablePrint(
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
-        g.color = navy
-        g.fillRect(0, 0, pageW.toInt(), 70)
+        g.color = PhoneSheet.BAND
+        g.fillRect(0, 0, pageW.toInt(), 74)
         g.color = Color.WHITE
-        g.font = Font(PrintFonts.family, Font.BOLD, 18)
-        g.text(shopName, margin, 30.0)
+        g.font = Font(PrintFonts.family, Font.BOLD, 20)
+        g.text(g.fit(shopName, pageW - 2 * margin), margin, 32.0)
+        g.color = PhoneSheet.GOLD
         g.font = Font(PrintFonts.family, Font.PLAIN, 11)
-        g.text(heading, margin, 52.0)
+        g.text(g.fit(heading, pageW - 2 * margin), margin, 54.0)
 
-        var y = 92.0
-        if (pages() > 1) {
-            g.color = Color.GRAY
+        // The foot: when it was made, and the page when there are more.
+        val foot = listOfNotNull(made, if (pages() > 1) pageWord(pageIndex + 1, pages()) else null).joinToString(" \u00b7 ")
+        if (foot.isNotEmpty()) {
+            g.color = PhoneSheet.GREY
             g.font = Font(PrintFonts.family, Font.PLAIN, 9)
-            g.text(pageWord(pageIndex + 1, pages()), pageW - margin, y, end = true)
+            g.text(foot, margin, pageH - 34.0)
         }
-        y += 18
+
+        var y = 118.0
         // Figure columns as wide as their widest figure or name, ending at the far margin (measured once).
         val widths = figureWidths ?: (1 until headers.size).map { widthOf(g, it) }.also { figureWidths = it }
         val ends = columnEnds(widths)
@@ -92,8 +103,8 @@ class TablePrint(
         y += 16
         // The first column stops short of the first figure column, cut with an ellipsis.
         val firstWidth = (ends.firstOrNull()?.let { it - widths.first() + 8.0 } ?: (pageW - margin)) - margin
-        val from = pageIndex * rowsPerPage
-        for (r in rows.subList(minOf(from, rows.size), minOf(rows.size, from + rowsPerPage))) {
+        val from = pageIndex * ROWS_PER_PAGE
+        for (r in rows.subList(minOf(from, rows.size), minOf(rows.size, from + ROWS_PER_PAGE))) {
             g.color = Color.BLACK
             r.forEachIndexed { i, cell ->
                 g.font = Font(PrintFonts.family, if (i == 0) Font.PLAIN else Font.BOLD, 10)

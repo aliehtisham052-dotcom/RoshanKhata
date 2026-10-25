@@ -98,7 +98,7 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
         FluentButton(word(W.ledger_pdf_button), {
             val t = table ?: return@FluentButton
             StatementPrint.show(
-                TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.sales_report_title) + "  ·  " + heading, t.first, t.second) { p, of -> words.text(W.pdf_stmt_page, p, of) },
+                TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.sales_report_title) + "  ·  " + heading, t.first, t.second, made = madeLine(words)) { p, of -> words.text(W.pdf_stmt_page, p, of) },
                 words.text(W.sales_report_title)
             )
         }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = table != null)
