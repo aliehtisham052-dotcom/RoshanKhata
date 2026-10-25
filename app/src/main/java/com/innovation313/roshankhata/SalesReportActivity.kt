@@ -66,9 +66,10 @@ class SalesReportActivity : BaseActivity() {
             getString(R.string.srep_col_count) + ": " + r.saleCount + "\n" +
             getString(R.string.srep_returns) + ": " + Format.money(r.returnsTotal) + "\n" +
             getString(R.string.srep_cost) + ": " + Format.money(r.cost) + "\n" +
-            getString(R.string.srep_gross) + ": " + Format.signedIfNegative(r.grossProfit) + "\n" +
+            getString(R.string.srep_gross) + ": " + (r.grossOrNull?.let { Format.signedIfNegative(it) } ?: "–") + "\n" +
             getString(R.string.srep_expenses) + ": " + Format.money(r.expenses) + "\n" +
-            getString(R.string.srep_net) + ": " + Format.signedIfNegative(r.netProfit) + "\n\n" +
+            // Only when every item sold has its cost (25 Oct 2026, the audit; SalesReport.costComplete).
+            getString(R.string.srep_net) + ": " + (r.netOrNull?.let { Format.signedIfNegative(it) } ?: ("–\n" + getString(R.string.srep_net_unknown))) + "\n\n" +
             r.byItem.take(15).joinToString("\n") { it.key + ": " + Format.money(it.revenue) }
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.sales_report_title)))
     }

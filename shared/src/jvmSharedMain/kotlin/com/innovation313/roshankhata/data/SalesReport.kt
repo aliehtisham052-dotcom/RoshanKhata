@@ -137,6 +137,20 @@ class SalesReport(
     /** Gross profit less the cashbook's expenses in the window (the walk-ins' refunds are not expenses — they are the returns). */
     val netProfit: Double get() = LineMath.round(grossProfit - expenses)
 
+    /**
+     * Every line sold has a known cost (25 Oct 2026, the audit). Only then is
+     * a net figure the shop's own: the expenses are the whole shop's, while
+     * the gross covers only the goods whose cost is known — with no cost
+     * known at all, "Net profit" was the expenses alone, as a loss.
+     */
+    val costComplete: Boolean get() = lines.all { it.cost != null }
+
+    /** The gross, or null when goods sold and none of them has a known cost (a 0 there reads as "no profit"). */
+    val grossOrNull: Double? get() = if (lines.isNotEmpty() && lines.none { it.cost != null }) null else grossProfit
+
+    /** The net, or null until every line sold has its cost ([costComplete]). */
+    val netOrNull: Double? get() = if (costComplete) netProfit else null
+
     /** One bar of the report's chart: its label, where its slice of time starts, and what sold in it. */
     data class Bar(val label: String, val from: Long, val revenue: Double)
 

@@ -3209,6 +3209,7 @@
     <string name="srep_gross">মোট লাভ</string>
     <string name="srep_expenses">ব্যয় (ক্যাশবুক)</string>
     <string name="srep_net">নিট লাভ</string>
+    <string name="srep_net_unknown">নিট লাভ দেখাতে প্রতিটি বিক্রিত পণ্যের কেনা দাম দরকার। তা পণ্য-তে লিখুন।</string>
     <string name="srep_tax_rate">হার</string>
     <string name="srep_tax_base">করযোগ্য</string>
     <string name="srep_tax_amount">কর</string>

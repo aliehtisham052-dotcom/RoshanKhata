@@ -3209,6 +3209,7 @@
     <string name="srep_gross">सकल मुनाफ़ा</string>
     <string name="srep_expenses">खर्च (कैशबुक)</string>
     <string name="srep_net">शुद्ध मुनाफ़ा</string>
+    <string name="srep_net_unknown">शुद्ध मुनाफ़ा तभी दिखेगा जब हर बिके माल की लागत पता हो। लागत माल में लिखें।</string>
     <string name="srep_tax_rate">दर</string>
     <string name="srep_tax_base">कर योग्य</string>
     <string name="srep_tax_amount">कर</string>

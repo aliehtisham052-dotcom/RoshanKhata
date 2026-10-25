@@ -92,13 +92,16 @@ fun reportRows(r: SalesReport, view: ReportView): Pair<List<String>, List<List<S
         ReportView.HOUR -> head to rows(r.byHour, "")
         ReportView.TAX -> listOf(word(W.srep_tax_rate), word(W.srep_tax_base), word(W.srep_tax_amount)) to
             r.tax.map { (rate, base, tax) -> listOf(Calc.trim(rate) + "%", Format.money(base), Format.money(tax)) }
-        ReportView.PROFIT -> listOf("", "") to listOf(
+        // A profit is shown only where the costs behind it are known (25 Oct 2026, the audit: with no cost
+        // known, "Net profit" was the expenses alone, shown as a loss).
+        ReportView.PROFIT -> listOf("", "") to listOfNotNull(
             listOf(word(W.srep_revenue), Format.money(r.revenue)),
             listOf(word(W.srep_returns), "−" + Format.money(r.returnsTotal)),
             listOf(word(W.srep_cost) + " (" + word(W.srep_cost_known, Format.money(r.costKnownRevenue)) + ")", "−" + Format.money(r.cost)),
-            listOf(word(W.srep_gross), Format.signedIfNegative(r.grossProfit)),
+            listOf(word(W.srep_gross), r.grossOrNull?.let { Format.signedIfNegative(it) } ?: "–"),
             listOf(word(W.srep_expenses), "−" + Format.money(r.expenses)),
-            listOf(word(W.srep_net), Format.signedIfNegative(r.netProfit))
+            listOf(word(W.srep_net), r.netOrNull?.let { Format.signedIfNegative(it) } ?: "–"),
+            if (r.costComplete) null else listOf(word(W.srep_net_unknown), "")
         )
         ReportView.DEAD -> listOf(word(W.srep_dead_help, SalesReport.DEAD_DAYS.toString())) to r.deadStock.map { listOf(it) }
     }

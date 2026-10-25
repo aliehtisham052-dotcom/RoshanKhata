@@ -118,8 +118,11 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
             FigureCard(word(W.srep_revenue), r?.let { Format.money(it.revenue) } ?: "…", c.ink, Modifier.weight(1f))
             FigureCard(word(W.srep_col_count), r?.saleCount?.toString() ?: "…", c.inkSoft, Modifier.weight(1f))
             // A loss carries its minus (21 Oct 2026: it printed as a red positive figure).
-            FigureCard(word(W.srep_net), r?.let { Format.signedIfNegative(it.netProfit) } ?: "…", if ((r?.netProfit ?: 0.0) < 0) c.owedToMe else Look.accent, Modifier.weight(1f),
-                under = r?.let { words.text(W.srep_cost_known, Format.money(it.costKnownRevenue)) })
+            // A net only when every item sold has its cost (25 Oct 2026, the audit: with none known it was the
+            // expenses alone, shown as a loss); else a dash and what it needs.
+            val net = r?.netOrNull
+            FigureCard(word(W.srep_net), if (r == null) "…" else net?.let { Format.signedIfNegative(it) } ?: "–", if ((net ?: 0.0) < 0) c.owedToMe else Look.accent, Modifier.weight(1f),
+                under = r?.let { if (it.costComplete) words.text(W.srep_cost_known, Format.money(it.costKnownRevenue)) else words.text(W.srep_net_unknown) })
         }
         // The chart (21 Oct 2026): a bar per hour, day or month of the window, from the same lines.
         // On a laptop's short window the chart steps aside once the table would get too little room
