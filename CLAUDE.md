@@ -1030,6 +1030,24 @@ Businesses/Settings), each part with its proof pictures. CI only.
   the payment and the new plan are in the app's frame, the party picked with `PartyPicker` (whose chosen chip
   now says the balance's side). Bills', Products' and Who-bought dialogs are the app's too. Proofs:
   screen-laptop-invoices-short-en, screen-laptop-invoices-ur, dialog-laptop-invoice-en; ProductShelfTest.
+- **Part 6a, the entry form (the Khata step's rows the first pass left: the phone's dialog_add_entry):** the
+  goods are a list on every account (`GoodsList`, EntryGoods.kt): an item added from the boxes, a row clicked
+  back into them to correct and put back in its place (Cancel puts it back unchanged; its spray advice, product
+  and batch ride with it — `boxesLine`), ✕ removes; the whole list is saved (`EntryDraft.items`, Main writes it
+  whole — the phone's other lines were only shown). The name box suggests the shop's products (`SuggestBox`);
+  a customer's sale fills the Rate box from the product's price for Credit or Cash (`offeredRate`, RateOffer —
+  never over a rate the owner typed; a switch re-prices only the product's rates) and says when that price is
+  not set or is per another unit, with this customer's last price for the chip (`lastSaleRate`); a customer's
+  return takes the price he was last charged, per the same unit; a return of more than he holds is asked
+  first (`netGoodsWithParty`). The amount follows the items' total until the owner writes his own
+  (`followedAmount`, the phone's two flags), the difference said (`lines_amount_less/more`) and the total
+  offered back. "Last time's items" on a new sale (today's prices, no batches). The time of day beside the date
+  (`TimeOfDayDialog`, the shop's clock, never ahead of now). A loan (Qarz-e-Hasna) cannot carry goods. The bill's
+  photo is chosen on the form and copied in only when the entry is written (`EntryDraft.billPhoto`,
+  `photoPathOf`). The customer's signature (`SignatureDialog`: mouse or touch, `EntrySignatures` — filed by
+  entry number per business, `entry_signatures[_b<id>]/sig_<id>.png`, deleted with its business; kept on this
+  computer only, said by `sig_hint_pc`). "When will he pay?" is the app's dialog. Tests: EntryLineEditTest
+  (rewritten for the list), BusinessesTest; proof dialog-laptop-entry-en.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
@@ -1043,7 +1061,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   TileIconsTest now reads every glyph copied from the phone, not only the rail's pictures.
 - Strings: khata_pick_party, khata_choose_several, customer_qr_save_picture, pos_still_due,
   pos_drop_held_confirm, cheque_none_cleared, cheque_none_bounced, no_products_pc, no_matching_products,
-  inventory_subtitle, po_subtitle, po_copied_no_number, trace_came, invoice_whatsapp_pc (nine languages). Tests: ReminderTextTest (shared),
+  inventory_subtitle, po_subtitle, po_copied_no_number, trace_came, invoice_whatsapp_pc, sig_hint_pc (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
 

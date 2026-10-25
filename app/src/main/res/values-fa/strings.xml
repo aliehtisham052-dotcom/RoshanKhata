@@ -1098,6 +1098,7 @@
     <string name="sig_retake">تغییر امضا</string>
     <string name="sig_title">اینجا امضا کنید</string>
     <string name="sig_hint">مشتری با انگشت امضا می‌کند. فقط روی این گوشی و در پشتیبان شما می‌ماند.</string>
+    <string name="sig_hint_pc">مشتری با ماوس یا روی صفحه لمسی امضا می‌کند. فقط روی همین رایانه می‌ماند: فایل پشتیبان تصویرها را نمی‌برد.</string>
     <string name="sig_clear">پاک کردن</string>
     <string name="sig_empty">اول امضا کنید</string>
     <string name="sig_label">امضای مشتری</string>

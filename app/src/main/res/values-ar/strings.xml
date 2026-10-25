@@ -1158,6 +1158,7 @@
     <string name="sig_retake">تغيير التوقيع</string>
     <string name="sig_title">وقّع هنا</string>
     <string name="sig_hint">يوقّع العميل بإصبعه. يبقى على هذا الهاتف وفي نسختك الاحتياطية فقط.</string>
+    <string name="sig_hint_pc">يوقّع العميل بالفأرة أو على شاشة لمس. يُحفظ على هذا الحاسوب فقط: ملف النسخة الاحتياطية لا يحمل الصور.</string>
     <string name="sig_clear">مسح</string>
     <string name="sig_empty">وقّع أولًا</string>
     <string name="sig_label">توقيع العميل</string>

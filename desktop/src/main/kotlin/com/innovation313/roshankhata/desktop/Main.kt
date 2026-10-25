@@ -1495,10 +1495,20 @@ private fun Book(
     // The open party's own row: its promised payment day (Party.harvestPromise).
     var partyRow by remember { mutableStateOf<Party?>(null) }
     LaunchedEffect(forParty?.id, reload) { partyRow = forParty?.let { p -> withContext(Dispatchers.IO) { dao.getParty(p.id) } } }
-    val batchesFor: suspend (String) -> List<com.innovation313.roshankhata.data.BatchOption> = { name ->
-        withContext(Dispatchers.IO) {
-            // What is left of each batch as the counter would say it (Fefo.options, Marhala 3).
-            dao.productByKey(com.innovation313.roshankhata.data.ProductName.key(name))?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
+    /**
+     * The bill's picture chosen on the form, copied in as the entry is written (Marhala 4, part 6): a form that is
+     * cancelled leaves nothing behind. The path the entry keeps, or what it had when nothing new was chosen.
+     */
+    fun photoPathOf(d: EntryDraft): String? = d.billPhoto?.let { src ->
+        val target = Photos.billFile(home)
+        if (Photos.save(src, target)) target.absolutePath else d.entry.billPhotoPath
+    } ?: d.entry.billPhotoPath
+    /** The customer's signature with the entry it belongs to, once that entry has its number. */
+    fun keepSignature(entryId: Long, d: EntryDraft) {
+        runCatching {
+            val picture = d.signature
+            if (picture != null && (d.signatureChanged || d.entry.id == 0L)) EntrySignatures.save(home, activeBusiness, entryId, picture)
+            else if (d.signatureChanged && picture == null) EntrySignatures.delete(home, activeBusiness, entryId)
         }
     }
     /** After an entry is written: the promised day kept only while money is owed (the phone's saveEntry rule). */
@@ -1510,7 +1520,8 @@ private fun Book(
         val before = forParty?.balance ?: 0.0
         scope.launch {
             withContext(Dispatchers.IO) {
-                val id = dao.insertEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item)))
+                val id = dao.insertEntryWithItems(d.entry.copy(billPhotoPath = photoPathOf(d)), d.items.map { linked(dao, it) ?: it })
+                keepSignature(id, d)
                 // Ticked on the form: the money came with the goods, so its cash "I got" is written, paired.
                 val gotId = if (d.paidNow && d.entry.isGiven && d.entry.rateType == com.innovation313.roshankhata.data.RateType.CASH)
                     dao.recordCashForSale(id) else null
@@ -1526,13 +1537,13 @@ private fun Book(
             onCloseRequest = { entryWay = null },
             onPreviewKeyEvent = escCloses { entryWay = null },
             title = word(if (way) W.you_gave else W.you_got),
-            state = rememberDialogState(width = fitW(520.dp), height = fitH(760.dp))
+            state = rememberDialogState(width = fitW(600.dp), height = fitH(800.dp))
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
                     partyId = forParty.id, partyName = forParty.name, isGiven = way,
-                    existing = null, existingItem = null,
-                    isCustomer = partyRow?.isCustomer ?: true, batchesFor = batchesFor, promise = partyRow?.harvestPromise,
+                    existing = null,
+                    isCustomer = partyRow?.isCustomer ?: true, dao = dao, promise = partyRow?.harvestPromise,
                     onSave = { d ->
                         scope.launch {
                             val e = d.entry
@@ -1572,12 +1583,15 @@ private fun Book(
     }
     editing?.let { e ->
         var items by remember(e.id) { mutableStateOf<List<com.innovation313.roshankhata.data.EntryItem>?>(null) }
+        // The signature kept with this entry on this computer, read with its goods.
+        var signed by remember(e.id) { mutableStateOf<java.awt.image.BufferedImage?>(null) }
         // Which record wrote this entry, if any (21 Oct 2026): a bill's, a plan's, a cheque's or a
         // ticket's entry is changed there, so the two never disagree. "" = its own entry.
         var owner by remember(e.id) { mutableStateOf<String?>(null) }
         LaunchedEffect(e.id) {
             owner = withContext(Dispatchers.IO) { runCatching { dao.entryOwner(e.id) }.getOrNull() } ?: ""
-            items = withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id) }
+            items = withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id).sortedWith(compareBy({ it.lineNo }, { it.id })) }
+            signed = withContext(Dispatchers.IO) { EntrySignatures.load(home, activeBusiness, e.id) }
         }
         val loaded = items
         val by = owner
@@ -1591,19 +1605,21 @@ private fun Book(
             onCloseRequest = { editing = null },
             onPreviewKeyEvent = escCloses { editing = null },
             title = word(W.edit),
-            state = rememberDialogState(width = fitW(520.dp), height = fitH(760.dp))
+            state = rememberDialogState(width = fitW(600.dp), height = fitH(800.dp))
         ) {
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
                     partyId = e.partyId, partyName = forParty?.name.orEmpty(), isGiven = e.isGiven,
-                    existing = e, existingItem = loaded.firstOrNull(), otherItems = loaded.drop(1),
-                    isCustomer = partyRow?.isCustomer ?: true, batchesFor = batchesFor, promise = partyRow?.harvestPromise,
+                    existing = e, existingItems = loaded,
+                    isCustomer = partyRow?.isCustomer ?: true, dao = dao, promise = partyRow?.harvestPromise,
+                    signature = signed,
                     onSave = { d -> Gates.edit {
                         scope.launch {
                             withContext(Dispatchers.IO) {
-                                // The phone's edit: the entry and its goods lines, all or nothing.
-                                // Only the first line is on the form; any others the phone wrote stay.
-                                dao.updateEntryWithItems(d.entry, listOfNotNull(linked(dao, d.item)) + loaded.drop(1))
+                                // The phone's edit: the entry and its whole list of goods, all or nothing (every line is on the
+                                // form since Marhala 4, part 6).
+                                dao.updateEntryWithItems(d.entry.copy(billPhotoPath = photoPathOf(d)), d.items.map { linked(dao, it) ?: it })
+                                keepSignature(e.id, d)
                                 dao.audit(AuditActs.ENTRY_EDITED, "transactions", d.entry.id, auditAmount(d.entry.amount))
                                 val sign = { x: LedgerEntry -> if (x.isGiven) x.amount else -x.amount }
                                 if (d.dueTouched) keepPromise(e.partyId, d, (forParty?.balance ?: 0.0) - sign(e) + sign(d.entry))

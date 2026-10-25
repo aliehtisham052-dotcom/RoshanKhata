@@ -54,10 +54,11 @@ class BusinessesTest {
             java.io.File(DailyCopies.dir(home, 2), "2026-10-23.txt").apply { parentFile.mkdirs(); writeText("x") }
             java.io.File(home, "profile/b2/logo.png").apply { parentFile.mkdirs(); writeText("x") }
             java.io.File(Photos.partyDir(home, 2), "party_5.jpg").apply { parentFile.mkdirs(); writeText("x") }
+            EntrySignatures.file(home, 2, 41).apply { parentFile.mkdirs(); writeText("x") }
             java.io.File(home, "khata_b2.db.corrupt-2026-10-01_101010").writeText("x")
             b.delete(2)
             for (name in listOf("khata_b2.db", "shop_b2.properties", "card_b2.properties", "poster_b2.properties",
-                    "daily/b2", "profile/b2", "party_photos_b2", "khata_b2.db.corrupt-2026-10-01_101010")) {
+                    "daily/b2", "profile/b2", "party_photos_b2", "entry_signatures_b2", "khata_b2.db.corrupt-2026-10-01_101010")) {
                 assertFalse("$name is left behind", java.io.File(home, name).exists())
             }
             assertEquals("the next business takes a new number", 3L, b.create("Shop Three").id)

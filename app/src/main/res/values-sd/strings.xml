@@ -1098,6 +1098,7 @@
     <string name="sig_retake">صحيح بدلايو</string>
     <string name="sig_title">هتي صحيح ڪريو</string>
     <string name="sig_hint">گراهڪ آڱر سان صحيح ڪري. اها رڳو هن فون ۽ توهان جي بيڪ اپ ۾ رهندي.</string>
+    <string name="sig_hint_pc">گراهڪ مائوس سان يا ٽچ اسڪرين تي صحيح ڪري ٿو. صرف هن ڪمپيوٽر تي رهي ٿي: بيڪ اپ فائل ۾ تصويرون نه ٿيون وڃن.</string>
     <string name="sig_clear">ميٽيو</string>
     <string name="sig_empty">پهريان صحيح ڪريو</string>
     <string name="sig_label">گراهڪ جي صحيح</string>

@@ -1088,6 +1088,7 @@
     <string name="sig_retake">Ganti tanda tangan</string>
     <string name="sig_title">Tanda tangan di sini</string>
     <string name="sig_hint">Pelanggan menandatangani dengan jari. Hanya disimpan di ponsel ini dan cadangan Anda.</string>
+    <string name="sig_hint_pc">Pelanggan menandatangani dengan mouse atau di layar sentuh. Hanya tersimpan di komputer ini: file cadangan tidak membawa gambar.</string>
     <string name="sig_clear">Hapus</string>
     <string name="sig_empty">Tanda tangani dulu</string>
     <string name="sig_label">Tanda tangan pelanggan</string>
