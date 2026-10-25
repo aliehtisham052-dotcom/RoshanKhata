@@ -3,6 +3,10 @@ package com.innovation313.roshankhata.desktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,7 +46,6 @@ import java.awt.datatransfer.StringSelection
  */
 @Composable
 fun CalculatorPane() {
-    val c = LocalRoshanColors.current
     var text by remember { mutableStateOf("") }
     val result = Calc.evalPad(text)
     val keys = listOf(
@@ -52,40 +55,73 @@ fun CalculatorPane() {
         listOf("00", "0", ".", "+"),
         listOf("%", "C", "⌫", "=")
     )
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        PaneTitle(word(W.calculator), null)
-        Column(Modifier.width(420.dp).card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            // Enter or "=" from the keyboard works it out, as the pad's own "=" does (21 Oct 2026).
-            Outlined(text, { text = it }, singleLine = true,
-                modifier = Modifier.fillMaxWidth().calcKeys({ text }, com.innovation313.roshankhata.screens.CalcKind.MONEY) { text = it },
-                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 22.sp, textAlign = TextAlign.End))
-            Text(result?.let { Format.signedIfNegative(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 28.sp,
-                fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
-            keys.forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    row.forEach { k ->
-                        val op = k in listOf("÷", "×", "−", "+", "=", "%")
-                        Box(
-                            Modifier.weight(1f).height(54.dp)
-                                .background(if (k == "=") c.brandGreen else if (op) c.pageBg else c.pageBg.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
-                                .press {
-                                    text = when (k) {
-                                        "C" -> ""
-                                        "⌫" -> text.dropLast(1)
-                                        "=" -> result?.let { Calc.trim(it) } ?: text
-                                        else -> text + k
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(k, color = if (k == "=") androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 20.sp, fontWeight = FontWeight.Medium)
-                        }
+    // Laid out for the window it is in (25 Oct 2026, the audit: on a laptop the bottom row — % C ⌫ = —
+    // and Copy were cut off, with 400 dp empty beside the pad). Wide: the figure on the start side, the
+    // pad beside it; narrow: one column that scrolls.
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val wide = maxWidth >= 760.dp
+        val keyHeight = if (wide) 54.dp else 48.dp
+        val press = { k: String ->
+            text = when (k) {
+                "C" -> ""
+                "⌫" -> text.dropLast(1)
+                "=" -> result?.let { Calc.trim(it) } ?: text
+                else -> text + k
+            }
+        }
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PaneTitle(word(W.calculator), null)
+            if (wide) {
+                Row(Modifier.widthIn(max = 900.dp).card().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                    CalcDisplay(text, { text = it }, result, Modifier.weight(1f))
+                    CalcPad(keys, keyHeight, press, Modifier.width(380.dp))
+                }
+            } else {
+                Column(Modifier.widthIn(max = 420.dp).fillMaxWidth().card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    CalcDisplay(text, { text = it }, result, Modifier.fillMaxWidth())
+                    CalcPad(keys, keyHeight, press, Modifier.fillMaxWidth())
+                }
+            }
+        }
+    }
+}
+
+/** The sum being typed, its answer in the shop's money, and Copy. */
+@Composable
+private fun CalcDisplay(text: String, onText: (String) -> Unit, result: Double?, modifier: Modifier) {
+    val c = LocalRoshanColors.current
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // Enter or "=" from the keyboard works it out, as the pad's own "=" does (21 Oct 2026).
+        Outlined(text, onText, singleLine = true,
+            modifier = Modifier.fillMaxWidth().calcKeys({ text }, com.innovation313.roshankhata.screens.CalcKind.MONEY) { onText(it) },
+            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 22.sp, textAlign = TextAlign.End))
+        Text(result?.let { Format.signedIfNegative(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 28.sp,
+            fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
+        TextButton(enabled = result != null, onClick = {
+            result?.let { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(Calc.trim(it)), null) }
+        }) { Text(word(W.copy_details), color = c.brandGreenText) }
+    }
+}
+
+/** The phone's pad: five rows of four keys, each [keyHeight] tall. */
+@Composable
+private fun CalcPad(keys: List<List<String>>, keyHeight: androidx.compose.ui.unit.Dp, onKey: (String) -> Unit, modifier: Modifier) {
+    val c = LocalRoshanColors.current
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        keys.forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                row.forEach { k ->
+                    val op = k in listOf("÷", "×", "−", "+", "=", "%")
+                    Box(
+                        Modifier.weight(1f).height(keyHeight)
+                            .background(if (k == "=") c.brandGreen else if (op) c.pageBg else c.pageBg.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+                            .press { onKey(k) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(k, color = if (k == "=") androidx.compose.ui.graphics.Color.White else c.ink, fontSize = 20.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             }
-            TextButton(enabled = result != null, onClick = {
-                result?.let { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(Calc.trim(it)), null) }
-            }) { Text(word(W.copy_details), color = c.brandGreenText) }
         }
     }
 }
