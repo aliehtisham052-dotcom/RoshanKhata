@@ -69,7 +69,9 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
     val values = remember(version) { mutableStateOf(fields.mapValues { it.value.first }) }
     var currency by remember(version) { mutableStateOf(settings.currency()) }
     var country by remember(version) { mutableStateOf(settings.country()) }
-    var hijri by remember(version) { mutableStateOf(settings.calendar() == ShopCalendar.Kind.HIJRI) }
+    // All three of the phone's calendars (25 Oct 2026, the audit: a Gregorian/Hijri switch turned a
+    // Solar Hijri shop Gregorian on its next Save).
+    var calendar by remember(version) { mutableStateOf(settings.calendar()) }
 
     fun save() {
         val v = values.value
@@ -86,7 +88,7 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
         settings.setTermsAndConditions(v[W.invoice_terms])
         settings.setCurrency(currency)
         settings.setCountry(country)
-        settings.setCalendar(if (hijri) ShopCalendar.Kind.HIJRI else ShopCalendar.Kind.GREGORIAN)
+        settings.setCalendar(calendar)
         // Money signs and dates on screen and on paper follow at once.
         settings.refreshDisplay()
         version++
@@ -133,6 +135,8 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
                         FluentPill(name, ctry == country) {
                             if (ctry != country) {
                                 if (currency == com.innovation313.roshankhata.data.Currency.DEFAULT && ctry != com.innovation313.roshankhata.data.ShopCountry.OTHER) currency = ctry.currencySign
+                                // The phone's rule: a shop still on the default calendar takes the country's own.
+                                if (calendar == ShopCalendar.Kind.GREGORIAN && ctry.calendar != ShopCalendar.Kind.GREGORIAN) calendar = ctry.calendar
                                 country = ctry; saved = false
                             }
                         }
@@ -144,7 +148,11 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
                 FluentField(currency, { currency = it; saved = false }, Modifier.weight(1f), label = word(W.bp_currency), help = word(W.bp_currency_help))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     Text(word(W.bp_calendar), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    TwoWay(word(W.calendar_gregorian), word(W.calendar_hijri), !hijri) { gregorian -> hijri = !gregorian; saved = false }
+                    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        ShopCalendar.Kind.values().forEach { k ->
+                            FluentPill(word(calendarWord(k)), calendar == k) { calendar = k; saved = false }
+                        }
+                    }
                     Text(word(W.bp_calendar_help), color = c.textMuted, fontSize = 12.sp)
                 }
             }
@@ -241,4 +249,11 @@ private fun ProfilePictures(images: ProfileImages) {
         if (failed) Text(word(W.crop_save_failed), color = c.owedToMe, fontSize = 13.sp)
         if (unreadable) Text(word(W.crop_load_failed), color = c.owedToMe, fontSize = 13.sp)
     }
+}
+
+/** A calendar's name, as the phone's Business Profile says it. */
+internal fun calendarWord(kind: ShopCalendar.Kind): String = when (kind) {
+    ShopCalendar.Kind.GREGORIAN -> W.calendar_gregorian
+    ShopCalendar.Kind.HIJRI -> W.calendar_hijri
+    ShopCalendar.Kind.JALALI -> W.calendar_jalali
 }
