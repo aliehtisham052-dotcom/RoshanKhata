@@ -1144,6 +1144,7 @@
     </plurals>
     <string name="notif_backup_title">Backup reminder</string>
     <string name="notif_backup_body">Over a week since your last backup. Your records live only on this phone.</string>
+    <string name="notif_backup_body_pc">Over a week since your last backup. Your records live only on this computer.</string>
     <string name="notif_backup_failed_title">Automatic backup failed</string>
     <string name="notif_backup_failed_body">Roshan Khata could not back up to Drive. Check your internet — it will try again automatically.</string>
 

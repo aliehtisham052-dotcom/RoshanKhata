@@ -1141,6 +1141,7 @@
     </plurals>
     <string name="notif_backup_title">ব্যাকআপের তাগিদ</string>
     <string name="notif_backup_body">শেষ ব্যাকআপের পর এক সপ্তাহের বেশি হয়ে গেছে। আপনার রেকর্ড শুধু এই ফোনেই আছে।</string>
+    <string name="notif_backup_body_pc">শেষ ব্যাকআপের পর এক সপ্তাহের বেশি হয়ে গেছে। আপনার রেকর্ড শুধু এই কম্পিউটারেই আছে।</string>
     <string name="notif_backup_failed_title">অটোমেটিক ব্যাকআপ হয়নি</string>
     <string name="notif_backup_failed_body">রোশন খাতা Drive-এ ব্যাকআপ নিতে পারেনি। ইন্টারনেট দেখুন — এটি নিজে থেকে আবার চেষ্টা করবে।</string>
 

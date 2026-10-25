@@ -1101,6 +1101,7 @@
     </plurals>
     <string name="notif_backup_title">Backup ki yaad-dehani</string>
     <string name="notif_backup_body">Aakhri backup ko hafte se zyada ho gaya. Aap ka record sirf isi phone par hai.</string>
+    <string name="notif_backup_body_pc">Aakhri backup ko hafte se zyada ho gaya. Aap ka record sirf isi computer par hai.</string>
     <string name="notif_backup_failed_title">Khudkar backup nakaam</string>
     <string name="notif_backup_failed_body">Roshan Khata Drive par backup nahi kar saka. Internet dekhein — yeh khud dobara koshish karega.</string>
 

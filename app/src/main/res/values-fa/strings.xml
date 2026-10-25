@@ -1129,6 +1129,7 @@
     </plurals>
     <string name="notif_backup_title">یادآوری پشتیبان‌گیری</string>
     <string name="notif_backup_body">بیش از یک هفته از آخرین پشتیبان گذشته است. سوابق شما فقط روی همین گوشی است.</string>
+    <string name="notif_backup_body_pc">بیش از یک هفته از آخرین پشتیبان گذشته است. سوابق شما فقط روی همین رایانه است.</string>
     <string name="notif_backup_failed_title">پشتیبان‌گیری خودکار ناموفق شد</string>
     <string name="notif_backup_failed_body">روشن خاتا نتوانست در درایو پشتیبان بگیرد. اینترنت را بررسی کنید — دوباره به‌طور خودکار تلاش می‌کند.</string>
 

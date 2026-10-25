@@ -69,7 +69,7 @@ object Reminders {
         }
         val old = lastBackupAt == null || System.currentTimeMillis() - lastBackupAt > BACKUP_WEEK_MS
         if (old) {
-            show(appName, words.text(W.notif_backup_title), words.text(W.notif_backup_body))
+            show(appName, words.text(W.notif_backup_title), words.text(W.notif_backup_body_pc))
             said = true
         }
         if (said) prefs.setRemindedDay(day)

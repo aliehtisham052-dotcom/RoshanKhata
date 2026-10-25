@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -681,6 +684,8 @@ private fun Book(
     var showAlerts by remember { mutableStateOf(false) }
     // The newest backup this computer holds: a daily copy, or one saved by hand this session.
     var lastBackupAt by remember { mutableStateOf<Long?>(null) }
+    // The counter's open ticket lives as long as this business's window, not the page (25 Oct 2026, the audit).
+    val counterDraft = remember { com.innovation313.roshankhata.data.CounterDraft() }
     // Ctrl+F: the Khata page's search box takes the typing.
     var searchTick by remember { mutableIntStateOf(0) }
     val searchFocus = remember { androidx.compose.ui.focus.FocusRequester() }
@@ -777,9 +782,15 @@ private fun Book(
             }.getOrDefault(emptyList())
         }
     }
+    // The last real backup (25 Oct 2026, the audit): a "Back up now" file, or a copy in the outside folder
+    // (a USB stick, Google Drive for Desktop). The daily copies on this computer's own disk are written on
+    // opening, every hour and after sales, so counting them meant the week-old reminder could never come.
     LaunchedEffect(reload, outsideDir) {
         val newest = withContext(Dispatchers.IO) {
-            (DailyCopies.list(dailyDir) + (outsideDir?.let { DailyCopies.list(it) } ?: emptyList())).maxOfOrNull { it.lastModified() }
+            listOfNotNull(
+                appPrefs.lastSavedBackup(activeBusiness),
+                outsideDir?.let { DailyCopies.list(it) }?.maxOfOrNull { it.lastModified() }
+            ).maxOrNull()
         }
         if (newest != null && newest > (lastBackupAt ?: 0L)) lastBackupAt = newest
     }
@@ -799,7 +810,7 @@ private fun Book(
     val backupOld = lastBackupAt == null || System.currentTimeMillis() - lastBackupAt!! > Reminders.BACKUP_WEEK_MS
     val extraAlerts = listOfNotNull(
         if (backupOld) ExtraAlert(Section.DAILY, words.text(W.notif_backup_title),
-            lastBackupAt?.let { words.text(W.na_backup, ((System.currentTimeMillis() - it) / (24L * 60 * 60 * 1000)).toInt()) } ?: words.text(W.notif_backup_body)) { backupNowLater() } else null,
+            lastBackupAt?.let { words.text(W.na_backup, ((System.currentTimeMillis() - it) / (24L * 60 * 60 * 1000)).toInt()) } ?: words.text(W.notif_backup_body_pc)) { backupNowLater() } else null,
         newerVersion?.let { v -> ExtraAlert(Section.HELP, words.text(W.update_available, v), words.text(W.update_open)) { UpdateCheck.openPage() } }
     )
 
@@ -829,6 +840,8 @@ private fun Book(
                 backedUp = runCatching { backup(file) }
                     .map { size ->
                         lastBackupAt = System.currentTimeMillis()
+                        // Kept, so the header and the week-old reminder still know after a restart.
+                        runCatching { appPrefs.setLastSavedBackup(activeBusiness, lastBackupAt!!) }
                         withContext(Dispatchers.IO) { runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name) } }
                         words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt())
                     }
@@ -942,7 +955,8 @@ private fun Book(
                             },
                             printer = printer, hasLogo = images.has(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO),
                             onPrinter = { r -> appPrefs.setReceipt(r); printer = r },
-                            paymentQr = images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.QR).takeIf { it.isFile }
+                            paymentQr = images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.QR).takeIf { it.isFile },
+                            draft = counterDraft
                         )
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
@@ -1307,7 +1321,11 @@ private fun Book(
             onDismissRequest = { if (!busy && p.live == null) { picked = null; letGo() } },
             title = { Text(word(W.restore_warning_title)) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+              // The question scrolls, with a bar to say so (25 Oct 2026, the audit): on a laptop the
+              // counts of what is replaced and the tick that allows Replace were cut off below the window.
+              val restoreScroll = rememberScrollState()
+              Box(Modifier.heightIn(max = 340.dp)) {
+                Column(Modifier.verticalScroll(restoreScroll).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // A live pairing (22 Oct 2026): keeping this book and opening the phone's beside it comes first.
                     if (p.live != null) Text(word(W.live_pair_warning), color = c.ink, fontWeight = FontWeight.Medium)
                     // This book already keeps its ledger with another phone (22 Oct 2026, the review: a second phone
@@ -1342,6 +1360,11 @@ private fun Book(
                         )
                     )
                 }
+                androidx.compose.foundation.VerticalScrollbar(
+                    androidx.compose.foundation.rememberScrollbarAdapter(restoreScroll),
+                    Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+                )
+              }
             },
             confirmButton = {
               Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {

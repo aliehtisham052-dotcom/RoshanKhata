@@ -1101,6 +1101,7 @@
     </plurals>
     <string name="notif_backup_title">بیک اپ کی یاد دہانی</string>
     <string name="notif_backup_body">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی فون پر ہے۔</string>
+    <string name="notif_backup_body_pc">آخری بیک اپ کو ہفتے سے زیادہ ہو گیا۔ آپ کا ریکارڈ صرف اسی کمپیوٹر پر ہے۔</string>
     <string name="notif_backup_failed_title">خودکار بیک اپ ناکام</string>
     <string name="notif_backup_failed_body">روشن کھاتہ ڈرائیو پر بیک اپ نہ کر سکا۔ انٹرنیٹ دیکھیں — یہ خود دوبارہ کوشش کرے گا۔</string>
 

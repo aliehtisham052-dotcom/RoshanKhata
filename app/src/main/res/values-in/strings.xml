@@ -1116,6 +1116,7 @@
     </plurals>
     <string name="notif_backup_title">Pengingat cadangan</string>
     <string name="notif_backup_body">Sudah lebih dari seminggu sejak cadangan terakhir. Catatan Anda hanya ada di ponsel ini.</string>
+    <string name="notif_backup_body_pc">Sudah lebih dari seminggu sejak cadangan terakhir. Catatan Anda hanya ada di komputer ini.</string>
     <string name="notif_backup_failed_title">Cadangan otomatis gagal</string>
     <string name="notif_backup_failed_body">Roshan Khata tidak dapat mencadangkan ke Drive. Periksa internet Anda — akan dicoba lagi secara otomatis.</string>
 
