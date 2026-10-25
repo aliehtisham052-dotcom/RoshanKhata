@@ -2524,6 +2524,11 @@
     <string name="rail_sales_stock">المبيعات والمخزون</string>
     <string name="rail_reports">التقارير</string>
     <string name="header_backed_up">آخر نسخة</string>
+    <string name="home_shop_today">متجرك اليوم</string>
+    <string name="home_recent">آخر المعاملات</string>
+    <string name="home_todays_entries">قيود اليوم</string>
+    <string name="home_gave_got_count">أعطيت %1$d · استلمت %2$d</string>
+    <string name="home_promised_today">وعد بالسداد اليوم</string>
     <string name="shop_add_name">أضف اسم متجرك</string>
     <string name="shop_add_name_sub">يُطبع على الفواتير وكشوف الحساب</string>
     <string name="shop_edit_profile">تعديل الملف</string>

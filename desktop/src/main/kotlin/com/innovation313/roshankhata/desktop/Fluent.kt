@@ -22,6 +22,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -276,7 +277,7 @@ fun FluentField(
 
 /** The initials of a name on a tinted disc, [size] across; [index] picks one of four tints. */
 @Composable
-fun Avatar(name: String, size: Int = 36, index: Int = 0) {
+fun Avatar(name: String, size: Int = 36, index: Int = 0, rounded: Boolean = false) {
     val c = LocalRoshanColors.current
     val tints = listOf(
         Look.accentTint to Look.accent,
@@ -285,7 +286,8 @@ fun Avatar(name: String, size: Int = 36, index: Int = 0) {
         Look.warnTint to Look.warn
     )
     val (fill, ink) = tints[((index % tints.size) + tints.size) % tints.size]
-    Box(Modifier.size(size.dp).background(fill, CircleShape), contentAlignment = Alignment.Center) {
+    // [rounded]: the phone's soft square (the owner's mockup of 25 Oct 2026) instead of a circle.
+    Box(Modifier.size(size.dp).background(fill, if (rounded) RoundedCornerShape((size * 0.3f).dp) else CircleShape), contentAlignment = Alignment.Center) {
         Text(Format.initials(name), color = ink, fontSize = (size * 0.36).sp, fontWeight = FontWeight.SemiBold)
     }
 }

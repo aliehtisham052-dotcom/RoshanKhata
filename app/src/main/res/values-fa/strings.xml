@@ -2376,6 +2376,11 @@
     <string name="rail_sales_stock">فروش و موجودی</string>
     <string name="rail_reports">گزارش‌ها</string>
     <string name="header_backed_up">آخرین پشتیبان</string>
+    <string name="home_shop_today">مغازه شما امروز</string>
+    <string name="home_recent">معاملات اخیر</string>
+    <string name="home_todays_entries">ثبت‌های امروز</string>
+    <string name="home_gave_got_count">%1$d دادم · %2$d گرفتم</string>
+    <string name="home_promised_today">قول پرداخت امروز</string>
     <string name="shop_add_name">نام فروشگاه را بنویسید</string>
     <string name="shop_add_name_sub">روی فاکتور و صورت‌حساب چاپ می‌شود</string>
     <string name="shop_edit_profile">ویرایش پروفایل</string>

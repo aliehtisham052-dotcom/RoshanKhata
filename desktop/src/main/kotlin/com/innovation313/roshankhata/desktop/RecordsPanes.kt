@@ -70,12 +70,18 @@ import com.innovation313.roshankhata.words.word
  * own step with tests.
  */
 @Composable
-fun BillsPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home: java.io.File, onLedgerChanged: () -> Unit) {
+fun BillsPane(
+    dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home: java.io.File,
+    /** Open with a new bill's form (Home's Add bill); [onStarted] says it was opened, so it opens once. */
+    startAdding: Boolean = false, onStarted: () -> Unit = {},
+    onLedgerChanged: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val bills by remember { dao.observeBills() }.collectAsState(emptyList())
     var open by remember { mutableStateOf<Long?>(null) }
     var adding by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(startAdding) { if (startAdding) { adding = true; onStarted() } }
     var deletingBill by remember { mutableStateOf<BillSummary?>(null) }
     var editingBill by remember { mutableStateOf<BillSummary?>(null) }
     // A bill line being added (id 0 on a bill) or corrected, and a line whose buyers are asked for.

@@ -2348,6 +2348,11 @@
     <string name="rail_sales_stock">فروخت اور اسٹاک</string>
     <string name="rail_reports">رپورٹس</string>
     <string name="header_backed_up">بیک اپ ہوا</string>
+    <string name="home_shop_today">آج آپ کی دکان</string>
+    <string name="home_recent">حالیہ لین دین</string>
+    <string name="home_todays_entries">آج کے اندراجات</string>
+    <string name="home_gave_got_count">%1$d دیے · %2$d لیے</string>
+    <string name="home_promised_today">آج کا وعدہ</string>
     <string name="shop_add_name">اپنی دکان کا نام لکھیں</string>
     <string name="shop_add_name_sub">انوائس اور اسٹیٹمنٹ پر چھپے گا</string>
     <string name="shop_edit_profile">پروفائل میں تبدیلی</string>

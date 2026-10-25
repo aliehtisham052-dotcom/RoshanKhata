@@ -646,6 +646,23 @@ interface KhataDao {
     )
     suspend fun entriesInRange(from: Long, to: Long): List<EntryWithParty>
 
+    /**
+     * The book's last [limit] entries, newest first, with their party's name — the computer's Home
+     * "Recent dealings" (25 Oct 2026, the owner's mockup): never bare on a quiet morning.
+     */
+    @Query(
+        """
+        SELECT t.id, t.partyId, p.name AS partyName, t.amount, t.isGiven,
+               t.note, t.entryNumber, t.timestamp
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+        ORDER BY t.timestamp DESC, t.id DESC
+        LIMIT :limit
+        """
+    )
+    suspend fun recentEntries(limit: Int): List<EntryWithParty>
+
     /** Pending cheques already at or past their date — these are the urgent ones. */
     @Query(
         """
