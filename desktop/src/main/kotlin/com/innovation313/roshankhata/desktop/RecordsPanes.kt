@@ -652,45 +652,44 @@ private fun RecordList(
     }
 }
 
-/** Stock expiring within the phone's warning window (ExpiryWindow), soonest first; expired in red. */
+/**
+ * Stock expiring within the phone's warning window (ExpiryWindow), soonest first; expired in red. Each batch
+ * with what is left of it by the one rule (Fefo.expiring, Marhala 3: sold over the counter and the khata,
+ * back, written off, never more than the shelf) — the list, its figure and the write-off say the same, and a
+ * batch with nothing left is not on it.
+ */
 @Composable
 fun ExpiryPane(dao: KhataDao) {
     val c = LocalRoshanColors.current
     val cutoff = remember { System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS }
-    val batches by remember { dao.observeExpiringBatches(cutoff) }.collectAsState(emptyList())
     var buyersOf by remember { mutableStateOf<Long?>(null) }
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
-    // What is left of each batch (Fefo: sold over the counter and the khata, back, written off),
-    // and the write-off of an expired one (21 Oct 2026): the counter never sells it.
     val scope = rememberCoroutineScope()
+    // Read again whenever stock moves anywhere (a sale here or on the phone, a return, a count) and after a write-off.
+    var moved by remember { mutableStateOf(0) }
+    LaunchedEffect(Unit) { dao.observeBatchMoves().collect { moved++ } }
     var tick by remember { mutableStateOf(0) }
-    var lots by remember { mutableStateOf<Map<Long, Pair<com.innovation313.roshankhata.data.Product, com.innovation313.roshankhata.data.Fefo.Lot>>>(emptyMap()) }
-    LaunchedEffect(batches, tick) {
-        lots = withContext(Dispatchers.IO) {
-            // The book's stock once for the page, not once per batch (23 Oct 2026, the review); a failed read
-            // leaves each batch to read its own shelf, as before.
-            val shelf = if (batches.isEmpty()) null else runCatching { com.innovation313.roshankhata.data.Counter.onHand(dao) }.getOrNull()
-            batches.mapNotNull { b -> com.innovation313.roshankhata.data.Fefo.lotOf(dao, b.itemId, shelf)?.let { b.itemId to it } }.toMap()
-        }
+    var batches by remember { mutableStateOf<List<com.innovation313.roshankhata.data.ExpiringBatch>>(emptyList()) }
+    LaunchedEffect(moved, tick) {
+        batches = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Fefo.expiring(dao, cutoff) }.getOrNull() } ?: batches
     }
     var writingOff by remember { mutableStateOf<com.innovation313.roshankhata.data.ExpiringBatch?>(null) }
     // Who gave their PIN for the write-off (null: the user's own right); the DAO refuses one nobody allowed.
     var writingOffBy by remember { mutableStateOf<String?>(null) }
+    fun leftWords(b: com.innovation313.roshankhata.data.ExpiringBatch): String =
+        com.innovation313.roshankhata.ui.Calc.trim(b.quantity) + com.innovation313.roshankhata.data.UnitWords.label(b.unit).let { u -> if (u.isEmpty()) "" else " $u" }
     writingOff?.let { b ->
-        val found = lots[b.itemId]
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { writingOff = null },
             title = { Text(word(W.expiry_write_off)) },
-            text = {
-                Text(found?.let { (p, lot) -> word(W.expiry_write_off_confirm, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" }), lot.batchNumber ?: p.name) }
-                    ?: word(W.expiry_nothing_left))
-            },
+            text = { Text(word(W.expiry_write_off_confirm, leftWords(b), b.batchNumber?.takeIf { it.isNotBlank() } ?: b.productName)) },
             confirmButton = {
                 androidx.compose.material3.TextButton({
                     writingOff = null
                     val by = writingOffBy
+                    // Fefo.writeOff reads the batch again as it writes: what is left at that moment goes, nothing more.
                     scope.launch { withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Fefo.writeOff(dao, b.itemId, b.batchNumber, allowedBy = by) } }; tick++ }
-                }, enabled = (found?.second?.left ?: 0.0) > 0.0) { Text(word(W.expiry_write_off), color = c.owedToMe) }
+                }) { Text(word(W.expiry_write_off), color = c.owedToMe) }
             },
             dismissButton = { androidx.compose.material3.TextButton({ writingOff = null }) { Text(word(W.cancel)) } }
         )
@@ -704,7 +703,7 @@ fun ExpiryPane(dao: KhataDao) {
                     Text(b.productName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     Text(
                         (b.batchNumber?.takeIf { it.isNotBlank() }?.let { word(W.batch_label, it) } ?: word(W.batch_none)) +
-                            "  ·  " + Format.qty(b.quantity, b.unit),
+                            "  ·  " + word(W.expiry_left, leftWords(b)),
                         color = c.inkSoft, fontSize = 13.sp
                     )
                     Text(
@@ -723,16 +722,10 @@ fun ExpiryPane(dao: KhataDao) {
                         color = if (b.daysLeft <= 0) c.owedToMe else c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold
                     )
                     Text(Format.dateOnly(b.expiryDate), color = c.textMuted, fontSize = 12.sp)
-                    lots[b.itemId]?.let { (p, lot) ->
-                        Text(
-                            if (lot.left > 0.0) word(W.expiry_left, com.innovation313.roshankhata.ui.Calc.trim(lot.left) + (com.innovation313.roshankhata.data.UnitWords.label(p.defaultUnit).let { u -> if (u.isEmpty()) "" else " $u" })) else word(W.expiry_nothing_left),
-                            color = c.textMuted, fontSize = 12.sp
-                        )
-                        if (b.hasExpired && lot.left > 0.0) {
-                            FluentButton(word(W.expiry_write_off), {
-                                Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST) { by -> writingOffBy = by; writingOff = b }
-                            }, kind = ButtonKind.DANGER)
-                        }
+                    if (b.hasExpired) {
+                        FluentButton(word(W.expiry_write_off), {
+                            Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.STOCK_ADJUST) { by -> writingOffBy = by; writingOff = b }
+                        }, kind = ButtonKind.DANGER)
                     }
                 }
             }

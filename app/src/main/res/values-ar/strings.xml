@@ -1715,9 +1715,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحة %2$d من %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 صفحة %2$d</string>
     <string name="pdf_insp_not_backup">هذا سجل للقراءة والطباعة \u2014 وليس نسخة احتياطية.</string>
-    <string name="pdf_insp_how_to_read">كيف يُقرأ: الكميات أرقام «بحد أقصى».</string>
-    <string name="pdf_insp_how_1">البيع غير المربوط بدفعة لا ينقص تلك الدفعة هنا، لذا قد يكون</string>
-    <string name="pdf_insp_how_2">المخزون المعروض أكبر مما على الرف. الشرطة تعني لم يُسجل قط.</string>
+    <string name="pdf_insp_how_to_read">كيف يُقرأ: كل دفعة تُظهر ما تبقّى منها بحسب الدفاتر.</string>
+    <string name="pdf_insp_how_1">أي ما وصل في فاتورتها، مطروحًا منه ما بيع منها أو أُعيد أو شُطب.</string>
+    <string name="pdf_insp_how_2">البيع غير المربوط بدفعة يُخصم من الدفعة التي تنتهي صلاحيتها أولًا، لذا لا يزيد مجموع الدفعات أبدًا عمّا على الرف. الشرطة تعني لم يُسجل قط.</string>
     <string name="pdf_insp_sum_products">المنتجات في الدفاتر</string>
     <string name="pdf_insp_sum_batches">الدفعات في المخزون</string>
     <string name="pdf_insp_sum_expired">منتهية، ما زالت في المخزون</string>

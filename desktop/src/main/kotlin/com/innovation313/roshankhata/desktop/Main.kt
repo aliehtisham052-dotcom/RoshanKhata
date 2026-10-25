@@ -851,7 +851,8 @@ private fun Book(
         // inside the warning window, and customers paying later than their habit.
         val now = remember { System.currentTimeMillis() }
         val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
-        val expiring by remember { dao.observeExpiringCount(now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
+        // Batches that still hold something, by the one rule (Marhala 3): a sold-out or written-off lot no longer counts.
+        val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
         val late by remember(reload) { lateCount(dao) }.collectAsState(0)
         // The whole book out is gated wherever it is asked for — the header, Home's quick action,
         // the bell's row (21 Oct 2026: only the header's button asked a cashier for the PIN) — and
@@ -1538,7 +1539,8 @@ private fun Book(
     LaunchedEffect(forParty?.id, reload) { partyRow = forParty?.let { p -> withContext(Dispatchers.IO) { dao.getParty(p.id) } } }
     val batchesFor: suspend (String) -> List<com.innovation313.roshankhata.data.BatchOption> = { name ->
         withContext(Dispatchers.IO) {
-            dao.productByKey(com.innovation313.roshankhata.data.ProductName.key(name))?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+            // What is left of each batch as the counter would say it (Fefo.options, Marhala 3).
+            dao.productByKey(com.innovation313.roshankhata.data.ProductName.key(name))?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
         }
     }
     /** After an entry is written: the promised day kept only while money is owed (the phone's saveEntry rule). */

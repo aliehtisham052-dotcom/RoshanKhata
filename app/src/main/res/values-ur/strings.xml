@@ -1575,9 +1575,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحہ %2$d / %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 صفحہ %2$d</string>
     <string name="pdf_insp_not_backup">یہ رجسٹر پڑھنے اور پرنٹ کرنے کے لیے ہے \u2014 بیک اپ نہیں ہے۔</string>
-    <string name="pdf_insp_how_to_read">پڑھنے کا طریقہ: مقدار \u201Cاس سے زیادہ نہیں\u201D ہوتی ہے۔</string>
-    <string name="pdf_insp_how_1">جو سیل کسی بیچ سے نہ جوڑی گئی ہو وہ اس بیچ کو کم نہیں کرتی، اس لیے</string>
-    <string name="pdf_insp_how_2">دکھایا گیا اسٹاک شیلف سے زیادہ ہو سکتا ہے۔ ڈیش کا مطلب کبھی درج نہیں ہوا۔</string>
+    <string name="pdf_insp_how_to_read">پڑھنے کا طریقہ: ہر بیچ میں جو بچا ہے، حساب کے مطابق۔</string>
+    <string name="pdf_insp_how_1">یعنی بل پر جو آیا، اس میں سے جو بکا، واپس آیا یا ختم کیا گیا، وہ نکال کر۔</string>
+    <string name="pdf_insp_how_2">جو سیل کسی بیچ سے نہ جوڑی گئی ہو وہ اس بیچ سے کم ہوتی ہے جو سب سے پہلے ایکسپائر ہو، اس لیے بیچوں کا جوڑ کبھی شیلف سے زیادہ نہیں ہوتا۔ ڈیش کا مطلب کبھی درج نہیں ہوا۔</string>
     <string name="pdf_insp_sum_products">کتاب پر موجود پروڈکٹس</string>
     <string name="pdf_insp_sum_batches">اسٹاک میں بیچ</string>
     <string name="pdf_insp_sum_expired">میعاد ختم، اب بھی اسٹاک میں</string>

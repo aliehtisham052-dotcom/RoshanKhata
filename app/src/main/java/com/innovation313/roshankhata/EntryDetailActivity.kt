@@ -489,7 +489,8 @@ class EntryDetailActivity : BaseActivity() {
                 if (etItemName.text.toString().trim() != typed) return@launch
 
                 matchedProductId = product?.id
-                batchOptions = product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+                // What is left of each batch as the counter would say it (Fefo.options, Marhala 3).
+                batchOptions = product?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
 
                 if (batchOptions.isEmpty()) {
                     btnBatch.visibility = View.GONE
@@ -513,7 +514,7 @@ class EntryDetailActivity : BaseActivity() {
             // Nothing to prime: the goods fields are hidden (see above).
         } else if (e.isGiven && entryProductId != null) {
             lifecycleScope.launch {
-                val options = dao.batchOptionsForProduct(entryProductId)
+                val options = dao.productById(entryProductId)?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
                 batchOptions = options
                 if (options.isNotEmpty()) {
                     btnBatch.visibility = View.VISIBLE

@@ -1603,9 +1603,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحه %2$d از %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 صفحه %2$d</string>
     <string name="pdf_insp_not_backup">این دفتری برای خواندن و چاپ است \u2014 پشتیبان نیست.</string>
-    <string name="pdf_insp_how_to_read">روش خواندن: مقادیر «حداکثر» هستند.</string>
-    <string name="pdf_insp_how_1">فروشی که به یک بچ متصل نشده باشد آن بچ را کم نمی‌کند، بنابراین</string>
-    <string name="pdf_insp_how_2">موجودی نشان‌داده‌شده می‌تواند از قفسه بیشتر باشد. خط تیره یعنی هرگز ثبت نشده.</string>
+    <string name="pdf_insp_how_to_read">روش خواندن: هر بچ آنچه از آن مانده را طبق دفاتر نشان می‌دهد.</string>
+    <string name="pdf_insp_how_1">یعنی آنچه با فاکتورش آمد، منهای آنچه از آن فروخته شد، مرجوع شد یا از موجودی حذف شد.</string>
+    <string name="pdf_insp_how_2">فروشی که به یک بچ متصل نشده باشد از بچی کم می‌شود که زودتر منقضی می‌شود، بنابراین جمع بچ‌ها هرگز از قفسه بیشتر نمی‌شود. خط تیره یعنی هرگز ثبت نشده.</string>
     <string name="pdf_insp_sum_products">کالاهای ثبت‌شده</string>
     <string name="pdf_insp_sum_batches">بچ‌های موجود</string>
     <string name="pdf_insp_sum_expired">منقضی، هنوز موجود</string>
