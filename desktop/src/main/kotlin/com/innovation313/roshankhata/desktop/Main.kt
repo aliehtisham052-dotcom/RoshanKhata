@@ -895,12 +895,19 @@ private fun Book(
                 }
             }
         }
-        // The phone's Home header, made wide: the shop, then backup, phone, bell, More, Add Party.
-        AppHeader(
-            live = liveWith,
-            shopName = shop ?: word(W.app_name),
-            logo = Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
-            onShop = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
+        // Each open page's head, for the window's one top row (Marhala 2, the owner's mockup of 25 Oct 2026).
+        val pageHeads = remember { androidx.compose.runtime.mutableStateMapOf<Section, PageHead>() }
+        // The shop on top of the rail: its logo, its name, Profile · Switch shop.
+        val shopCard: @Composable () -> Unit = {
+            ShopCard(
+                shop ?: word(W.app_name),
+                Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
+                liveWith
+            ) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } }
+        }
+        // The top row: the open page's title and buttons, then backup, phone, bell, More, Add Party.
+        val header: @Composable () -> Unit = { AppHeader(
+            head = pageHeads[section],
             backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
             onBackup = { backupNow() },
             onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
@@ -936,19 +943,27 @@ private fun Book(
                 MenuLine(word(W.about_us)) { about = true }
             ),
             onAddParty = { addParty = true }
-        )
+        ) }
 
         Row(Modifier.fillMaxSize()) {
-            SectionRail(section, { section = it }, badges = mapOf(Section.FOLLOWUP to late))
+            SectionRail(section, { section = it }, badges = mapOf(Section.FOLLOWUP to late), top = shopCard)
+            Column(Modifier.weight(1f).fillMaxHeight()) {
+            header()
             // A page eases in over the last (Motion.PAGE ms) instead of snapping, as Windows' own apps do.
-            // The content area (Fluent's layer-alt, 1.10.0): a shade lighter than the base,
-            // its top start corner rounded against the rail, as Windows 11's own NavigationView.
+            // The content area: the phone's page colour, flat under the top row (Marhala 2).
             androidx.compose.animation.Crossfade(
                 section,
-                Modifier.weight(1f).fillMaxSize().clip(RoundedCornerShape(topStart = 8.dp)).background(Look.layerAlt)
-                    .border(1.dp, Look.strokeCard, RoundedCornerShape(topStart = 8.dp)),
+                Modifier.weight(1f).fillMaxWidth().background(Look.layerAlt),
                 androidx.compose.animation.core.tween(Motion.PAGE), label = "page"
             ) { page ->
+                // The page's head goes to the window's top row: a fresh one each time the page opens, so a page
+                // that writes none (a locked one) never shows another visit's title or buttons.
+                val head = remember { PageHead() }
+                DisposableEffect(head) {
+                    pageHeads[page] = head
+                    onDispose { if (pageHeads[page] === head) pageHeads.remove(page) }
+                }
+                CompositionLocalProvider(LocalPageHead provides head) {
                 // A page a cashier may not open alone shows what it needs until a manager or the owner allows it.
                 val need = page.need()
                 var allowedHere by remember(page) { mutableStateOf(false) }
@@ -1023,8 +1038,8 @@ private fun Book(
                             plural(WP.customer_count, parties.size, parties.size),
                             Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
                         ) {
+                            // Add Party is the top row's one accent button: not twice (25 Oct 2026, the audit's duplicates).
                             IconAction(if (totalsHidden) "ic_eye_closed" else "ic_eye_open", word(W.net_balance), { setTotalsHidden(!totalsHidden) })
-                            FluentButton(word(W.add_party), { addParty = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
                         }
                         Row(Modifier.fillMaxSize()) {
                         // The book on the left, as the phone's Khata list.
@@ -1311,6 +1326,8 @@ private fun Book(
                         }
                     }
                 }
+                }
+            }
             }
         }
     }

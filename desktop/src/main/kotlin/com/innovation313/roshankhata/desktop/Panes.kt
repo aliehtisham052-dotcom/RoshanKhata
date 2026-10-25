@@ -196,7 +196,11 @@ fun TileBadge(s: Section, size: Int = 34, glyph: Int = 22) {
  * count beside a section (Follow-up's late payers, Khata's parties).
  */
 @Composable
-fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier = Modifier, badges: Map<Section, Int> = emptyMap()) {
+fun SectionRail(
+    current: Section, onPick: (Section) -> Unit, modifier: Modifier = Modifier, badges: Map<Section, Int> = emptyMap(),
+    /** Fixed above the groups: the shop's card (Marhala 2). */
+    top: @Composable () -> Unit = {}
+) {
     val c = LocalRoshanColors.current
     var moreOpen by remember { mutableStateOf(false) }
     // Scrolls: twenty-eight sections outgrow a 768-row laptop at 125% display scale.
@@ -204,43 +208,46 @@ fun SectionRail(current: Section, onPick: (Section) -> Unit, modifier: Modifier 
     // that says there is more below, the chosen row deep green with a gold edge.
     val railScroll = rememberScrollState()
     Box(modifier.width(212.dp).fillMaxHeight().background(Look.rail)) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(railScroll)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-    ) {
-        Group.entries.forEach { g ->
-            val trade = LocalTrade.current
-            val inGroup = Section.entries.filter { it.group == g && trade.shows(it) }
-            when (g) {
-                Group.HOME -> {}
-                Group.MORE -> {
-                    val open = moreOpen || current.group == Group.MORE
-                    Spacer(Modifier.height(6.dp))
-                    HorizontalDivider(color = Look.line)
-                    Row(
-                        Modifier.fillMaxWidth().padding(top = 4.dp).clip(Look.ctl)
-                            .press(Look.ctl) { moreOpen = !open }.padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(word(g.word), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        Text(if (open) "\u25BE" else "${inGroup.size}  \u25B8", color = c.textMuted, fontSize = 12.sp)
+        Column(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 9.dp, top = 8.dp, bottom = 4.dp)) { top() }
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                Column(Modifier.fillMaxSize().verticalScroll(railScroll).padding(horizontal = 8.dp, vertical = 4.dp)) {
+                Group.entries.forEach { g ->
+                    val trade = LocalTrade.current
+                    val inGroup = Section.entries.filter { it.group == g && trade.shows(it) }
+                    when (g) {
+                        Group.HOME -> {}
+                        Group.MORE -> {
+                            val open = moreOpen || current.group == Group.MORE
+                            Spacer(Modifier.height(6.dp))
+                            HorizontalDivider(color = Look.line)
+                            Row(
+                                Modifier.fillMaxWidth().padding(top = 4.dp).clip(Look.ctl)
+                                    .press(Look.ctl) { moreOpen = !open }.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(word(g.word), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                Text(if (open) "\u25BE" else "${inGroup.size}  \u25B8", color = c.textMuted, fontSize = 12.sp)
+                            }
+                            if (!open) return@forEach
+                        }
+                        else -> Text(
+                            word(g.word).uppercase(),
+                            Modifier.padding(start = 12.dp, top = 12.dp, bottom = 4.dp),
+                            color = Look.groupText, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp
+                        )
                     }
-                    if (!open) return@forEach
+                    inGroup.forEach { s -> RailRow(s, s == current, badges[s] ?: 0) { onPick(s) } }
                 }
-                else -> Text(
-                    word(g.word).uppercase(),
-                    Modifier.padding(start = 12.dp, top = 12.dp, bottom = 4.dp),
-                    color = Look.groupText, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp
+                }
+                androidx.compose.foundation.VerticalScrollbar(
+                    androidx.compose.foundation.rememberScrollbarAdapter(railScroll),
+                    Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(end = 1.dp)
                 )
             }
-            inGroup.forEach { s -> RailRow(s, s == current, badges[s] ?: 0) { onPick(s) } }
         }
-    }
-    androidx.compose.foundation.VerticalScrollbar(
-        androidx.compose.foundation.rememberScrollbarAdapter(railScroll),
-        Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(end = 1.dp)
-    )
-    Box(Modifier.align(Alignment.CenterEnd).width(1.dp).fillMaxHeight().background(Look.railEdge))
+        // The rail's edge against the page, the whole height.
+        Box(Modifier.align(Alignment.CenterEnd).width(1.dp).fillMaxHeight().background(Look.railEdge))
     }
 }
 
@@ -333,6 +340,12 @@ fun TwoWay(first: String, second: String, firstOn: Boolean, onPick: (Boolean) ->
 /** A page's title and the line under it (Fluent's page head, 1.10.0). */
 @Composable
 fun PaneTitle(title: String, subtitle: String?) {
+    // Inside the window its top row draws the title (Marhala 2).
+    val head = LocalPageHead.current
+    if (head != null) {
+        androidx.compose.runtime.SideEffect { head.title = title; head.subtitle = subtitle; head.actions = null }
+        return
+    }
     val c = LocalRoshanColors.current
     Column {
         Text(title, color = c.ink, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
