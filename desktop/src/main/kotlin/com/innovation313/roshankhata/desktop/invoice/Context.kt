@@ -57,6 +57,9 @@ class LocaleList internal constructor(private val locale: Locale) {
 fun Digits.quantity(res: Resources, name: String, quantity: Int, vararg args: Any): String =
     res.context.words.plural(name, quantity, *args)
 
+/** The phone's `Digits.string(resources, R.string.x, args)`: a string with a figure in it, in 0-9. */
+fun Digits.string(res: Resources, name: String, vararg args: Any): String = res.context.words.text(name, *args)
+
 /** `R.string.x` and `R.plurals.x` in the copied code name the same words as `W.x` and `WP.x`. */
 object R {
     val string = W
@@ -112,6 +115,10 @@ object BusinessProfile {
     fun businessAddress(c: Context): String? = c.settings.businessAddress()?.takeIf { it.isNotBlank() }
     fun businessPhone(c: Context): String? = c.settings.businessPhone()?.takeIf { it.isNotBlank() }
     fun strn(c: Context): String? = c.settings.strn()?.takeIf { it.isNotBlank() }
+    /** The phone's taxLine: "NTN: x" by the Pakistani word, else the country's tax id name (the register's band). */
+    fun taxLine(c: Context, number: String, pakistanRes: String): String =
+        if (c.settings.country() == com.innovation313.roshankhata.data.ShopCountry.PAKISTAN) c.getString(pakistanRes, number)
+        else taxLabel(c) + ": " + number
     fun taxLabel(c: Context): String = when (val country = c.settings.country()) {
         com.innovation313.roshankhata.data.ShopCountry.PAKISTAN -> "STRN"
         com.innovation313.roshankhata.data.ShopCountry.OTHER -> c.getString(W.tax_number_label)

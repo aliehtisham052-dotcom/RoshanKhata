@@ -35,6 +35,7 @@ import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -47,7 +48,13 @@ import kotlinx.coroutines.withContext
  * its own drawing code and is not on the computer yet.
  */
 @Composable
-fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int) {
+fun StockPane(
+    dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int,
+    /** The words, shop and pictures the phone's inspector document draws with; the short table when null. */
+    designs: (() -> com.innovation313.roshankhata.desktop.invoice.Context)? = null
+) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var told by remember { mutableStateOf<String?>(null) }
     val c = LocalRoshanColors.current
     var batches by remember { mutableStateOf<List<InspectorBatch>>(emptyList()) }
     var window by remember { mutableStateOf(60) }
@@ -73,6 +80,18 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
 
     FluentPage(word(W.inspector_title), word(W.inspector_subtitle), scroll = false, actions = {
         FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = shown.isNotEmpty(), onClick = {
+            // The phone's full inspector document (InspectorReport, copied by gen_desktop_inspector.py): the
+            // masthead, six summary cards, current stock, batch and expiry, company-wise stock, the label checklist.
+            if (designs != null) {
+                scope.launch {
+                    val doc = withContext(Dispatchers.IO) {
+                        runCatching { com.innovation313.roshankhata.desktop.invoice.InspectorReport.build(designs(), dao, window) }.getOrNull()
+                    }
+                    if (doc == null) told = failText(words, IllegalStateException("inspector"))
+                    else StatementPrint.show(com.innovation313.roshankhata.desktop.invoice.DocumentPrint(doc), words.text(W.inspector_title))
+                }
+                return@FluentButton
+            }
             val rows = shown.map { b ->
                 listOf(
                     b.productName + (b.batchNumber?.let { "  ·  " + words.text(W.pdf_reg_batch, it) } ?: ""),
@@ -129,4 +148,5 @@ fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, relo
             }
         }
     }
+    told?.let { TellDialog(word(W.inspector_title), it, { told = null }) }
 }

@@ -1025,7 +1025,7 @@ private fun Book(
                     Section.SEASONS -> Box(Modifier.fillMaxSize()) { SeasonsPane(dao, parties, reload) { id -> selected = id; section = Section.KHATA } }
                     Section.HELP -> Box(Modifier.fillMaxSize()) { HelpPane(words) { reporting = true } }
                     Section.REGISTER -> Box(Modifier.fillMaxSize()) { RegisterPane(dao, words, rtl, shop, reload, settings) }
-                    Section.STOCK -> Box(Modifier.fillMaxSize()) { StockPane(dao, words, rtl, shop, reload) }
+                    Section.STOCK -> Box(Modifier.fillMaxSize()) { StockPane(dao, words, rtl, shop, reload, designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }) }
                     Section.DAILY -> Box(Modifier.fillMaxSize()) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder, sync = db.syncSql()) { shop = shopName(); reload++ } }
                     Section.REPORT -> Box(Modifier.fillMaxSize()) { ReportPane(dao, words, rtl, shop, reload, parties) }
                     Section.SHOP -> Box(Modifier.fillMaxSize()) { ShopDetailsPane(settings, images) { shop = shopName() } }

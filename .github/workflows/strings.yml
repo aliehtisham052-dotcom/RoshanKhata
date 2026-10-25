@@ -72,3 +72,5 @@ jobs:
         run: python3 scripts/gen_desktop_cards.py --check
       - name: The computer's posters are the phone's (generated copies up to date)
         run: python3 scripts/gen_desktop_poster.py --check
+      - name: The computer's stock register is the phone's (generated copy up to date)
+        run: python3 scripts/gen_desktop_inspector.py --check
