@@ -49,8 +49,9 @@ class ProductShelf(val products: List<Product>, starters: List<String>, starterL
 /** The open book's [ProductShelf], read when the form is first drawn; null until then (the box is a plain box). */
 @Composable
 fun rememberProductShelf(dao: KhataDao): ProductShelf? {
-    val trade = LocalTrade.current
-    val starters = remember(trade) { trade.starters() }
+    // The trade's words are read in composition (TradeKit's lists are @Composable): a new list each time,
+    // equal by content, so the read below runs once per book and trade.
+    val starters = LocalTrade.current.starters()
     val label = word(W.vocab_suggested)
     var shelf by remember(dao) { mutableStateOf<ProductShelf?>(null) }
     LaunchedEffect(dao, starters, label) {
