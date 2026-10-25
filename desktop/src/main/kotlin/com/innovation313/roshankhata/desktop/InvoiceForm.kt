@@ -97,6 +97,8 @@ fun InvoiceForm(
     var problem by remember { mutableStateOf<String?>(null) }
     val needCustomer = word(W.invoice_customer_required)
     val needItem = word(W.invoice_needs_item)
+    val needLine = word(W.line_editor_busy)
+    var lineBusy by remember { mutableStateOf(false) }
     val (discPercent, discMoney) = invoiceDiscount(discount, discountInMoney, lines.sumOf { it.lineTotal })
     val t = InvoiceMath.totals(lines, discPercent, Calc.evalPercent(tax), Calc.evalPad(charge), Calc.evalPad(received), discMoney)
 
@@ -169,7 +171,7 @@ fun InvoiceForm(
                 TextButton({ lines = lines.filterIndexed { j, _ -> j != i } }) { Text(word(W.delete), color = c.owedToMe) }
             }
         }
-        InvoiceLineForm { lines = lines + it; problem = null }
+        InvoiceLineForm(onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { lines = lines + it; problem = null }
 
         if (showDiscount) Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(word(W.invoice_discount_label), color = c.inkSoft, fontSize = 13.sp)
@@ -209,6 +211,7 @@ fun InvoiceForm(
             FillButton(word(W.save), c.brandGreen) {
                 when {
                     customer.isBlank() -> problem = needCustomer
+                    lineBusy -> problem = needLine
                     lines.isEmpty() -> problem = needItem
                     else -> onSave(
                         (existing ?: Invoice(customerName = "")).copy(
@@ -282,12 +285,15 @@ private fun SumLine(label: String, value: String, bold: Boolean = false) {
 }
 
 @Composable
-private fun InvoiceLineForm(onAdd: (InvoiceItem) -> Unit) {
+private fun InvoiceLineForm(onBusy: (Boolean) -> Unit = {}, onAdd: (InvoiceItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf("") }
     var qty by remember { mutableStateOf("1") }
     var unit by remember { mutableStateOf("") }
     var rate by remember { mutableStateOf("") }
+    // A line typed but not added yet: the invoice's Save waits for it (25 Oct 2026, the audit).
+    val busy = name.isNotBlank() || rate.isNotBlank()
+    androidx.compose.runtime.LaunchedEffect(busy) { onBusy(busy) }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         Outlined(name, { name = it }, label = { Text(word(W.invoice_item_name_hint)) }, singleLine = true, modifier = Modifier.weight(2f))
         Outlined(qty, { qty = it }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)

@@ -181,15 +181,19 @@ private fun AdjustDialog(dao: KhataDao, words: Words, allowedBy: String?, onClos
     // Signed (21 Oct 2026): "+ in, − out", as the box says. Read as an amount, "−5" for damaged
     // goods came out as +5 and the shelf went UP. evalPad keeps the sign; zero is nothing to adjust.
     val amount = Calc.evalPad(qty)?.takeIf { it != 0.0 }
+    // A refused or failed write is said, and the dialog stays (25 Oct 2026, the audit: it closed and
+    // reported the change as made either way).
+    var problem by remember { mutableStateOf<String?>(null) }
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(560.dp))) {
-        DialogFrame(title, onClose = onClose, footer = {
+        DialogFrame(title, onClose = onClose, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 12.sp) } }, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
                 val p = chosen ?: return@FluentButton
                 val a = amount ?: return@FluentButton
                 scope.launch {
-                    withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, a, reason, note.trim().ifBlank { null }, allowedBy = allowedBy) } }
-                    onClose(); done(p.name + " " + (if (a > 0) "+" else "") + Calc.trim(a))
+                    val result = withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, a, reason, note.trim().ifBlank { null }, allowedBy = allowedBy) } }
+                    result.onSuccess { onClose(); done(p.name + " " + (if (a > 0) "+" else "") + Calc.trim(a)) }
+                        .onFailure { problem = failText(words, it) }
                 }
             }, kind = ButtonKind.ACCENT, enabled = chosen != null && amount != null && amount != 0.0)
         }) {

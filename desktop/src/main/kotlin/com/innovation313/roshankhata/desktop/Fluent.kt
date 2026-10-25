@@ -572,7 +572,7 @@ fun PartyPicker(
                     ) {
                         Avatar(p.name, 26, i)
                         Text(Format.name(p.name), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        p.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
+                        p.phone?.takeIf { !samePhone(it, p.name) }?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
                     }
                     if (i < shown.lastIndex) Rule()
                 }

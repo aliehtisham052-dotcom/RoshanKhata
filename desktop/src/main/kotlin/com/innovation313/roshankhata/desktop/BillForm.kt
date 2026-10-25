@@ -72,9 +72,13 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
     var items by remember { mutableStateOf<List<BillItem>>(emptyList()) }
     var picking by remember { mutableStateOf<Int?>(null) } // 0 bill date, 1 due date
     var problem by remember { mutableStateOf<String?>(null) }
+    // A line typed in the item form but not added yet (25 Oct 2026, the audit: Save dropped it, with its
+    // stock, batch and expiry, in silence). The phone's rule: add it or clear it first.
+    var lineBusy by remember { mutableStateOf(false) }
     val total = Calc.evalAmount(totalText)
     val needSupplier = word(W.enter_supplier)
     val needAmount = word(W.enter_valid_amount)
+    val needLine = word(W.line_editor_busy)
 
     val chosen = parties.firstOrNull { it.id == supplierId }
     fun saveNow() {
@@ -82,6 +86,7 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
         when {
             supplierId == null && typed.isEmpty() -> problem = needSupplier
             total == null -> problem = needAmount
+            lineBusy -> problem = needLine
             else -> {
                 // A typed name that is already in the book is that party, not a twin.
                 val existing = supplierId ?: parties.firstOrNull { it.name.trim().equals(typed, ignoreCase = true) }?.id
@@ -102,7 +107,8 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
         }
     }
     DialogFrame(
-        word(W.add_bill), word(W.bill_ledger_note).take(90),
+        // The ledger note in full in the body, not cut mid-word as a subtitle (25 Oct 2026, the audit).
+        word(W.add_bill),
         onClose = onCancel,
         footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
         footer = {
@@ -110,6 +116,7 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
             FluentButton(word(W.save), { saveNow() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
         }
     ) {
+        Text(word(W.bill_ledger_note), color = c.textMuted, fontSize = 12.sp)
         if (chosen != null) {
             PartyPicker(parties, supplierId, { supplierId = it; problem = null }, word(W.supplier), word(W.bill_supplier_hint), Modifier.fillMaxWidth())
             if (chosen.isCustomer) Text(word(W.bill_to_customer_warn, chosen.name), color = c.owedToMe, fontSize = 12.sp)
@@ -122,7 +129,8 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
             LazyColumn(Modifier.fillMaxWidth().heightIn(max = 160.dp).card()) {
                 items(shown, key = { it.id }) { p ->
                     Text(
-                        Format.name(p.name) + (p.phone?.let { "  ·  " + Format.ltr(it) } ?: ""),
+                        // The number once: a party named by its own number does not show it twice (25 Oct 2026).
+                        Format.name(p.name) + (p.phone?.takeIf { !samePhone(it, p.name) }?.let { "  ·  " + Format.ltr(it) } ?: ""),
                         Modifier.fillMaxWidth().press { supplierId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp),
                         color = c.ink, fontSize = 14.sp
                     )
@@ -139,8 +147,9 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
             FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.bill_number_hint))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            DateBox(word(W.pick_bill_date), Format.dateOnly(billDate), word(W.pick_bill_date), { picking = 0 }, Modifier.weight(1f))
-            DateBox(word(W.bill_due_date), dueDate?.let { Format.dateOnly(it) }, word(W.bill_due_date), { picking = 1 }, Modifier.weight(1f))
+            // A label and a hint that are not the same words (25 Oct 2026, the audit).
+            DateBox(word(W.bill_date), Format.dateOnly(billDate), word(W.pick_date), { picking = 0 }, Modifier.weight(1f))
+            DateBox(word(W.bill_due_date), dueDate?.let { Format.dateOnly(it) }, word(W.pick_date), { picking = 1 }, Modifier.weight(1f))
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(paidCash, { paidCash = it })
@@ -174,7 +183,7 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                 FluentButton(word(W.delete), { items = items.filterIndexed { j, _ -> j != i } }, kind = ButtonKind.DANGER)
             }
         }
-        ItemForm { items = items + it }
+        ItemForm(onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { items = items + it }
     }
     picking?.let { which ->
         DayPicker(
@@ -185,9 +194,22 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
     }
 }
 
+/**
+ * A phone number that only repeats the name (a party saved under its own
+ * number, e.g. "+92 348 0000000" named "+92 348 0000000"): shown once.
+ */
+internal fun samePhone(phone: String, name: String): Boolean {
+    if (name.any { it.isLetter() }) return false
+    fun digits(s: String) = com.innovation313.roshankhata.data.Digits.toLatin(s).filter { it.isDigit() }
+    val p = digits(phone)
+    val n = digits(name)
+    if (p.isEmpty() || n.length < 7) return false
+    return p == n || (p.length >= 10 && n.length >= 10 && p.takeLast(10) == n.takeLast(10))
+}
+
 /** One line of the delivery: product, quantity, unit, rate, batch and expiry, with why the last two matter. */
 @Composable
-internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
+internal fun ItemForm(existing: BillItem? = null, onBusy: (Boolean) -> Unit = {}, onAdd: (BillItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.productName.orEmpty()) }
     var qty by remember { mutableStateOf(existing?.quantity?.let { Calc.trim(it) }.orEmpty()) }
@@ -195,6 +217,9 @@ internal fun ItemForm(existing: BillItem? = null, onAdd: (BillItem) -> Unit) {
     var rate by remember { mutableStateOf(existing?.rate?.let { Calc.trim(it) }.orEmpty()) }
     var batch by remember { mutableStateOf(existing?.batchNumber.orEmpty()) }
     var expiry by remember { mutableStateOf(existing?.expiryDate) }
+    // A new line typed but not added yet: the bill's Save waits for it (25 Oct 2026, the audit).
+    val busy = existing == null && (name.isNotBlank() || qty.isNotBlank() || rate.isNotBlank() || batch.isNotBlank() || expiry != null)
+    androidx.compose.runtime.LaunchedEffect(busy) { onBusy(busy) }
     var picking by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     val needProduct = word(W.enter_product)
