@@ -171,6 +171,12 @@ fun CardTitle(text: String, end: (@Composable () -> Unit)? = null) {
  */
 @Composable
 fun PageHeader(title: String, subtitle: String?, modifier: Modifier = Modifier, actions: @Composable () -> Unit = {}) {
+    // Inside the window its top row draws the head (Marhala 2): written there once composed, nothing here.
+    val head = LocalPageHead.current
+    if (head != null) {
+        androidx.compose.runtime.SideEffect { head.title = title; head.subtitle = subtitle; head.actions = actions }
+        return
+    }
     val c = LocalRoshanColors.current
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(Modifier.weight(1f)) {

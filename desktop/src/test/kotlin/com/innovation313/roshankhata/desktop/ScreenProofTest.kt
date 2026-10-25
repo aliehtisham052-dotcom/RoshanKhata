@@ -89,16 +89,22 @@ class ScreenProofTest {
             RoshanTheme(dark = dark) {
                 ProvideWords(words) {
                     CompositionLocalProvider(LocalLayoutDirection provides if (ur) LayoutDirection.Rtl else LayoutDirection.Ltr) {
-                        Column(Modifier.fillMaxSize().background(LocalRoshanColors.current.pageBg)) {
-                            AppHeader(
-                                shopName = if (ur) "النور ایگری اسٹور" else "Al-Noor Agri Store",
-                                logo = null, onShop = {},
-                                backupLabel = words.text(com.innovation313.roshankhata.words.W.backup_now),
-                                onBackup = {}, onPhone = {}, alerts = 3, onAlerts = {}, menu = emptyList(), onAddParty = {}
-                            )
-                            Row(Modifier.fillMaxSize()) {
-                                SectionRail(Section.HOME, {}, badges = mapOf(Section.FOLLOWUP to 2))
-                                Box(Modifier.weight(1f)) { page() }
+                        // The window as Main draws it (Marhala 2): the rail with the shop on top, then the top row
+                        // carrying the page's own head, then the page.
+                        val head = androidx.compose.runtime.remember { PageHead() }
+                        Row(Modifier.fillMaxSize().background(LocalRoshanColors.current.pageBg)) {
+                            SectionRail(Section.HOME, {}, badges = mapOf(Section.FOLLOWUP to 2), top = {
+                                ShopCard(if (ur) "النور ایگری اسٹور" else "Al-Noor Agri Store", null, null) {}
+                            })
+                            Column(Modifier.weight(1f)) {
+                                AppHeader(
+                                    head = head,
+                                    backupLabel = words.text(com.innovation313.roshankhata.words.W.backup_now),
+                                    onBackup = {}, onPhone = {}, alerts = 3, onAlerts = {}, menu = emptyList(), onAddParty = {}
+                                )
+                                Box(Modifier.weight(1f).fillMaxWidth()) {
+                                    androidx.compose.runtime.CompositionLocalProvider(LocalPageHead provides head) { page() }
+                                }
                             }
                         }
                     }
