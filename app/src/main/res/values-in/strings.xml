@@ -2359,6 +2359,8 @@
     <string name="home_todays_entries">Catatan hari ini</string>
     <string name="home_gave_got_count">%1$d diberi · %2$d diterima</string>
     <string name="home_promised_today">Dijanjikan hari ini</string>
+    <string name="rail_products_prices">Barang &amp; harga</string>
+    <string name="rail_stock_expiry">Stok &amp; kedaluwarsa</string>
     <string name="shop_add_name">Tulis nama toko Anda</string>
     <string name="shop_add_name_sub">Dicetak di faktur dan laporan</string>
     <string name="shop_edit_profile">Ubah profil</string>

@@ -2381,6 +2381,8 @@
     <string name="home_todays_entries">ثبت‌های امروز</string>
     <string name="home_gave_got_count">%1$d دادم · %2$d گرفتم</string>
     <string name="home_promised_today">قول پرداخت امروز</string>
+    <string name="rail_products_prices">کالا و قیمت‌ها</string>
+    <string name="rail_stock_expiry">موجودی و انقضا</string>
     <string name="shop_add_name">نام فروشگاه را بنویسید</string>
     <string name="shop_add_name_sub">روی فاکتور و صورت‌حساب چاپ می‌شود</string>
     <string name="shop_edit_profile">ویرایش پروفایل</string>

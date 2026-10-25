@@ -2381,6 +2381,8 @@
     <string name="home_todays_entries">اڄ جون داخلائون</string>
     <string name="home_gave_got_count">%1$d ڏنا · %2$d ورتا</string>
     <string name="home_promised_today">اڄ جو واعدو</string>
+    <string name="rail_products_prices">مال ۽ ريٽ</string>
+    <string name="rail_stock_expiry">اسٽاڪ ۽ ايڪسپائري</string>
     <string name="shop_add_name">پنهنجي دڪان جو نالو لکو</string>
     <string name="shop_add_name_sub">انوائس ۽ اسٽيٽمينٽ تي ڇپبو</string>
     <string name="shop_edit_profile">پروفائل ۾ تبديلي</string>

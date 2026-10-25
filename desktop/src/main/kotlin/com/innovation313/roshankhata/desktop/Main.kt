@@ -968,6 +968,10 @@ private fun Book(
                     onDispose { if (pageHeads[page] === head) pageHeads.remove(page) }
                 }
                 CompositionLocalProvider(LocalPageHead provides head) {
+                Column(Modifier.fillMaxSize()) {
+                // A merged page's tabs above it (Marhala 3): Supplier bills · Purchase rates · Company schemes, ...
+                PageTabRow(page) { section = it }
+                Box(Modifier.weight(1f).fillMaxWidth()) {
                 // A page a cashier may not open alone shows what it needs until a manager or the owner allows it.
                 val need = page.need()
                 var allowedHere by remember(page) { mutableStateOf(false) }
@@ -1331,6 +1335,8 @@ private fun Book(
                         }
                     }
                 }
+                }  // the page under its tabs
+                }  // the tabs and the page
                 }
             }
             }

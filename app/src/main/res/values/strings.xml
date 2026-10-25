@@ -2488,6 +2488,8 @@
     <string name="home_todays_entries">Today\'s entries</string>
     <string name="home_gave_got_count">%1$d gave · %2$d got</string>
     <string name="home_promised_today">Promised today</string>
+    <string name="rail_products_prices">Products &amp; prices</string>
+    <string name="rail_stock_expiry">Stock &amp; expiry</string>
     <string name="shop_add_name">Add your shop name</string>
     <string name="shop_add_name_sub">Printed on invoices and statements</string>
     <string name="shop_edit_profile">Edit profile</string>

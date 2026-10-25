@@ -476,7 +476,8 @@ fun alertSection(kind: LedgerAlerts.Kind): Section = when (kind) {
     LedgerAlerts.Kind.PLAN -> Section.PLANS
     LedgerAlerts.Kind.BILL -> Section.BILLS
     LedgerAlerts.Kind.EXPIRING -> Section.EXPIRY
-    LedgerAlerts.Kind.STOCK -> Section.PRODUCTS
+    // Low stock opens the stock (25 Oct 2026, the audit: Products shows no stock at all).
+    LedgerAlerts.Kind.STOCK -> Section.INVENTORY
     LedgerAlerts.Kind.DRAWER -> Section.CASHBOOK
     LedgerAlerts.Kind.CASHFLOW -> Section.CASHFLOW
     LedgerAlerts.Kind.SYNC -> Section.DAILY
