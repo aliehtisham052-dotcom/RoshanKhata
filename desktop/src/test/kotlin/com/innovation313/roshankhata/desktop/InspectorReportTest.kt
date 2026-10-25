@@ -49,8 +49,11 @@ class InspectorReportTest {
                 )
             }
             val dir = File("build/screen-proof").apply { mkdirs() }
+            val before = Locale.getDefault()
             for (ur in listOf(false, true)) {
                 val locale = Locale.forLanguageTag(if (ur) "ur" else "en")
+                // As the app runs: the document's dates read the default locale (the Urdu proof said "Oct 2026").
+                Locale.setDefault(locale)
                 val settings = FileShopSettings(File(home, "shop-$locale.properties")).apply {
                     setBusinessName(if (ur) "النور ایگری اسٹور" else "Al-Noor Agri Store"); setBusinessAddress("Main Bazaar, Sample Town"); setStrn("1234567-8")
                 }
@@ -66,6 +69,7 @@ class InspectorReportTest {
                 ImageIO.write(img, "png", f)
                 assertTrue("${f.name} looks empty", f.length() > 20_000)
             }
+            Locale.setDefault(before)
         } finally {
             db.close()
             home.deleteRecursively()
