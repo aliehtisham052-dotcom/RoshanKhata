@@ -341,7 +341,8 @@ private fun QuickActions(onAddParty: () -> Unit, onGot: () -> Unit, onOpen: (Sec
         Text(word(W.home_quick_actions), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         val tiles = listOf(
             Quick(word(W.add_party), "ic_tile_khata", Look.accent, Look.accentTint, onAddParty),
-            Quick(word(W.you_got), "ic_arrow_got", c.owedToMe, Look.getTint, onGot),
+            // Money in is green, as "You got" is everywhere else (25 Oct 2026, the audit: it was the red of money to collect).
+            Quick(word(W.you_got), "ic_arrow_got", Look.accent, Look.accentTint, onGot),
             Quick(word(W.pos_title), "ic_tile_invoice", Look.give, Look.giveTint) { onOpen(Section.COUNTER) },
             Quick(word(W.poster_title), "ic_tile_poster", Look.warn, Look.warnTint) { onOpen(Section.POSTER) },
             Quick(word(W.tile_backup), "ic_tile_backup", Look.accent, Look.accentTint) { onAction(HomeAction.BACKUP) },

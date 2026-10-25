@@ -686,6 +686,9 @@ private fun Book(
     var lastBackupAt by remember { mutableStateOf<Long?>(null) }
     // The counter's open ticket lives as long as this business's window, not the page (25 Oct 2026, the audit).
     val counterDraft = remember { com.innovation313.roshankhata.data.CounterDraft() }
+    // Home's "You got": the customer is chosen in a small window first.
+    var gotPicking by remember { mutableStateOf(false) }
+    var gotFor by remember { mutableStateOf<Long?>(null) }
     // The money totals as dots until the eye opens them, remembered (25 Oct 2026, the audit; the phone's BalancePrivacy).
     var totalsHidden by remember { mutableStateOf(appPrefs.balancesHidden()) }
     val setTotalsHidden = { v: Boolean -> totalsHidden = v; runCatching { appPrefs.setBalancesHidden(v) }; Unit }
@@ -949,8 +952,9 @@ private fun Book(
                             onAction = { a -> if (a == HomeAction.BACKUP) backupNow() else bin = true },
                             onCustomer = { id -> selected = id; section = Section.KHATA },
                             onAddParty = { addParty = true },
-                            // You got: the Khata page with its F3 (the page fills keys.got in once it is open).
-                            onGot = { section = Section.KHATA },
+                            // You got: whose money came in, asked first (the open customer offered), then the entry
+                            // (25 Oct 2026, the audit: it only opened the Khata page, and only F3 there wrote the entry).
+                            onGot = { gotFor = selected; gotPicking = true },
                             hidden = totalsHidden, onHidden = setTotalsHidden
                         )
                     }
@@ -1756,6 +1760,21 @@ private fun Book(
             },
             dismissButton = { TextButton({ deletingParty = null }) { Text(word(W.cancel)) } }
         )
+    }
+    if (gotPicking) {
+        val close = { gotPicking = false }
+        val title = word(W.you_got)
+        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(520.dp))) {
+            DialogFrame(title, onClose = close, footer = {
+                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                FluentButton(title, {
+                    val id = gotFor
+                    if (id != null) { selected = id; section = Section.KHATA; entryWay = false; gotPicking = false }
+                }, kind = ButtonKind.ACCENT, enabled = gotFor != null)
+            }) {
+                PartyPicker(parties, gotFor, { gotFor = it }, word(W.customer), word(W.search_parties), Modifier.fillMaxWidth())
+            }
+        }
     }
     if (liveAsk) OverrideDialog(dao, word(W.live_needs_owner), ownerOnly = true, onClose = { liveAsk = false }) { liveSync = true }
     // The window can also give this book to a new phone: written as a backup is, on this computer's own disk (LiveGive).
