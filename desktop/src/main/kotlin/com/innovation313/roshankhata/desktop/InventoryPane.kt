@@ -74,6 +74,9 @@ fun InventoryPane(
     var adjusting by remember { mutableStateOf(false) }
     var told by remember { mutableStateOf<String?>(null) }
     var lowOnly by remember { mutableStateOf(false) }
+    // The corrections are a view of their own, not a card under the table (25 Oct 2026, the audit: on a laptop it
+    // pressed the stock table down to one row).
+    var showCorrections by remember { mutableStateOf(false) }
     // A cashier's count, correction or transfer waits for a manager's PIN, as the rest of the counter does
     // (23 Oct 2026, the review: they were refused flatly); who gave it goes to the DAO as allowedBy.
     var stockBy by remember { mutableStateOf<String?>(null) }
@@ -115,10 +118,25 @@ fun InventoryPane(
             FigureCard(word(W.tile_products), v?.rows?.size?.toString() ?: "…", c.inkSoft, Modifier.weight(1f))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FluentPill(word(W.filter_type_all), !lowOnly) { lowOnly = false }
-            FluentPill(word(W.stock_low_title), lowOnly) { lowOnly = true }
+            FluentPill(word(W.filter_type_all), !lowOnly && !showCorrections) { lowOnly = false; showCorrections = false }
+            FluentPill(word(W.stock_low_title), lowOnly && !showCorrections) { lowOnly = true; showCorrections = false }
+            if (corrections.isNotEmpty()) FluentPill(word(W.stock_adjustments) + " (" + corrections.size + ")", showCorrections) { showCorrections = true }
         }
-        ListCard(Modifier.weight(1f)) {
+        if (showCorrections) ListCard(Modifier.weight(1f)) {
+            val names = (v?.rows ?: emptyList()).associate { it.productId to it.name }
+            LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
+                items(corrections, key = { it.id }) { a ->
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(Format.dateTime(a.timestamp), Modifier.width(130.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                        Text(names[a.productId] ?: a.productId.toString(), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(reasonWord(a.reason) + (a.note?.let { " · $it" } ?: ""), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text((if (a.quantity > 0) "+" else "") + Calc.trim(a.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(a.unit).let { u -> if (u.isEmpty()) "" else " $u" }), color = if (a.quantity < 0) c.owedToMe else c.iOwe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    }
+                    Rule()
+                }
+            }
+        }
+        else ListCard(Modifier.weight(1f)) {
             WeightedHead(listOf(word(W.pos_col_item) to 5f, word(W.inspector_col_left) to 2f, word(W.product_cost_hint) to 2f, word(W.stock_valuation) to 2f), endAligned = setOf(1, 2, 3))
             val rows = (v?.rows ?: emptyList()).let { r -> if (lowOnly) r.filter { it.isLow } else r }.sortedWith(compareBy<Valuation.Row> { !it.isLow }.thenBy(com.innovation313.roshankhata.data.NameOrder.byName) { it.name })
             if (rows.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { Text(word(W.no_products), color = c.textMuted) }
@@ -135,19 +153,6 @@ fun InventoryPane(
                     }
                     Rule()
                 }
-            }
-        }
-        if (corrections.isNotEmpty()) ListCard(Modifier.fillMaxWidth()) {
-            ListHead(word(W.stock_adjustments))
-            val names = (v?.rows ?: emptyList()).associate { it.productId to it.name }
-            corrections.take(6).forEachIndexed { i, a ->
-                Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(Format.dateTime(a.timestamp), Modifier.width(130.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
-                    Text(names[a.productId] ?: a.productId.toString(), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(reasonWord(a.reason) + (a.note?.let { " · $it" } ?: ""), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text((if (a.quantity > 0) "+" else "") + Calc.trim(a.quantity) + (com.innovation313.roshankhata.data.UnitWords.label(a.unit).let { u -> if (u.isEmpty()) "" else " $u" }), color = if (a.quantity < 0) c.owedToMe else c.iOwe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                }
-                if (i < minOf(corrections.size, 6) - 1) Rule()
             }
         }
     }
