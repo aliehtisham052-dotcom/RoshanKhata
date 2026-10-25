@@ -972,7 +972,7 @@
     <string name="na_plan_due">اڄ جي قسط</string>
     <string name="na_plan_late">قسط ليٽ آهي</string>
     <string name="na_bill_due">سپلائر جو بل %1$s تي ڊيو</string>
-    <string name="na_expiring">30 ڏينهن ۾ ختم ٿيندڙ مال: %1$s بيچ</string>
+    <string name="na_expiring">60 ڏينهن ۾ ختم ٿيندڙ مال: %1$s بيچ</string>
     <string name="na_backup">آخري بيڪ اپ %1$s ڏينهن اڳ</string>
     <string name="na_tag_today">اڄ</string>
     <string name="na_tag_late">دير</string>
@@ -1254,6 +1254,10 @@
     <string name="report_crash_included">— ٽيڪنيڪل ڪريش رڪارڊ (پاڻمرادو توهان جي فون تي محفوظ، خرابي ڳولڻ ۾ مدد لاءِ شامل):</string>
     <string name="products_stock">پراڊڪٽس ۽ اسٽاڪ</string>
     <string name="products_subtitle">دڪان ڇا وڪڻي ٿي، ۽ ڪيترو بچيو آهي</string>
+    <string name="no_products_pc">اڃا ڪو پراڊڪٽ ناهي. سپلائر بل تي پهريون ڀيرو نالو لکڻ سان پراڊڪٽ پاڻ ٺهي ٿو، يا CSV امپورٽ سان پنهنجي فهرست آڻيو.</string>
+    <string name="no_matching_products">ڳولا سان ڪو پراڊڪٽ نه مليو.</string>
+    <string name="inventory_subtitle">شيلف تي ڪيترو مال آهي، ۽ ان جي قيمت</string>
+    <string name="po_subtitle">سپلائرن کان ڇا گهرايو، ۽ ڇا اچي ويو</string>
     <string name="products_note">هي ڳڻپ رڳو انهن داخلائن جي آهي جيڪي ڪنهن پراڊڪٽ سان ڳنڍيل آهن. جيڪي اڳ لکجي چڪيون آهن، انهن کي هيٺين بٽڻ سان ڳنڍيو.</string>
     <string name="no_products">اڃا ڪو پراڊڪٽ ناهي. هيٺان پراڻيون داخلائون ڳنڍيو، يا جڏهن ڪنهن بل تي نالو لکندؤ ته پراڊڪٽ پاڻ ٺهي ويندو.</string>
     <string name="link_goods">پراڻيون داخلائون پراڊڪٽس سان ڳنڍيو</string>
@@ -3174,6 +3178,7 @@
     <string name="po_supplier">سپلائر</string>
     <string name="po_send">واٽس ايپ تي موڪليو</string>
     <string name="po_mark_sent">موڪليل نشان</string>
+    <string name="po_copied_no_number">هن سپلائر جو واٽس ايپ نمبر ناهي. آرڊر ڪاپي ٿي ويو آهي: جتي موڪلڻو هجي اتي پيسٽ ڪريو، پوءِ موڪليل نشان دٻايو.</string>
     <string name="po_receive">مال اچي ويو</string>
     <string name="po_close">آرڊر بند</string>
     <string name="po_status_draft">مسودو</string>

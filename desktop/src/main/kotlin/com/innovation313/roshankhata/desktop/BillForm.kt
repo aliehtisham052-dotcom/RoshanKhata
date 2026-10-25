@@ -140,6 +140,16 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
             val typed = search.trim()
             if (typed.isNotEmpty() && parties.none { it.name.trim().equals(typed, ignoreCase = true) }) {
                 Text(word(W.bill_new_supplier_msg, typed), color = c.textMuted, fontSize = 12.sp)
+                // A letter typed wrong ("Sincrop" for "Suncrop") must not quietly start a second khata for the same
+                // company: the closest supplier in the book is offered, never chosen for him (the phone's question).
+                val similar = remember(typed, parties) {
+                    com.innovation313.roshankhata.data.BillScan.similarKnown(typed, parties.filter { !it.isCustomer }.map { it.name })
+                        ?.let { name -> parties.firstOrNull { it.name == name } }
+                }
+                if (similar != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(word(W.bill_similar_supplier, Format.name(similar.name)), Modifier.weight(1f), color = c.owedToMe, fontSize = 12.5.sp)
+                    FluentButton(word(W.bill_use_existing, Format.name(similar.name)), { supplierId = similar.id; problem = null }, kind = ButtonKind.STANDARD)
+                }
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {

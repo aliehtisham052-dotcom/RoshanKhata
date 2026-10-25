@@ -74,11 +74,16 @@ fun BillsPane(
     dao: KhataDao, parties: List<PartyWithBalance>, words: Words, home: java.io.File,
     /** Open with a new bill's form (Home's Add bill); [onStarted] says it was opened, so it opens once. */
     startAdding: Boolean = false, onStarted: () -> Unit = {},
+    /** The expiring figure's click: Stock & expiry's Expiry tab. */
+    onExpiry: () -> Unit = {},
     onLedgerChanged: () -> Unit
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val bills by remember { dao.observeBills() }.collectAsState(emptyList())
+    // The phone's figures above the list (Marhala 4): how many bills, what is owed to the suppliers — each
+    // supplier's live balance counted once, as the phone counts it — and the batches expiring in the window.
+    val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
     var open by remember { mutableStateOf<Long?>(null) }
     var adding by remember { mutableStateOf(false) }
     androidx.compose.runtime.LaunchedEffect(startAdding) { if (startAdding) { adding = true; onStarted() } }
@@ -161,7 +166,16 @@ fun BillsPane(
             }
         }
     }
-    RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills), action = word(W.add_bill) to { adding = true }, emptyIcon = "ic_tile_bills") {
+    RecordList(word(W.supplier_bills), word(W.bill_ledger_note), bills.isEmpty(), word(W.no_bills), action = word(W.add_bill) to { adding = true }, emptyIcon = "ic_tile_bills",
+        head = {
+            val owed = bills.distinctBy { it.partyId }.sumOf { (-it.supplierBalance).coerceAtLeast(0.0) }
+            if (bills.isNotEmpty()) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FigureCard(word(W.stat_bills), "%,d".format(com.innovation313.roshankhata.data.Digits.FIGURES, bills.size), c.ink, Modifier.weight(1f), icon = "ic_tile_bills", tint = Look.subtle)
+                FigureCard(word(W.stat_you_owe), Format.money(owed), if (owed > 0.005) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
+                FigureCard(word(W.stat_expiring), "%,d".format(com.innovation313.roshankhata.data.Digits.FIGURES, expiring), if (expiring > 0) Look.warn else c.ink,
+                    Modifier.weight(1f).clip(Look.card).press(Look.card, onClick = onExpiry), icon = "ic_calendar", tint = Look.warnTint)
+            }
+        }) {
         items(bills, key = { it.id }) { b ->
             Column(Modifier.fillMaxWidth().press { open = if (open == b.id) null else b.id }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -321,7 +335,9 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         )
     }
     Column(Modifier.fillMaxSize()) {
-        RecordList(word(W.tile_products), told ?: word(W.products_subtitle), shown.isEmpty() && q.isNotEmpty(), word(W.no_products), emptyIcon = "ic_tile_products",
+        // An empty book says how products come; a search with nothing found says so (25 Oct 2026, the audit: the
+        // two were the other way round, and the phone's words pointed "below" at nothing on the computer).
+        RecordList(word(W.tile_products), told ?: word(W.products_subtitle), products.isEmpty(), word(W.no_products_pc), emptyIcon = "ic_tile_products",
             head = {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     FluentField(query, { query = it }, Modifier.weight(1f), placeholder = word(W.tile_products), leadingIcon = "ic_search")
@@ -333,7 +349,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                     FluentButton(word(W.products_import), { importCsv() }, kind = ButtonKind.STANDARD)
                 }
             }) {
-            if (shown.isEmpty()) item(key = "none") { Text(word(W.no_products), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp) }
+            if (shown.isEmpty()) item(key = "none") { Text(word(W.no_matching_products), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp) }
             items(shown, key = { it.id }) { p ->
                 Column(Modifier.fillMaxWidth().press { buyersOf = p }.padding(horizontal = 16.dp, vertical = 12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

@@ -984,7 +984,7 @@
     <string name="na_plan_due">आज की क़िस्त</string>
     <string name="na_plan_late">क़िस्त लेट है</string>
     <string name="na_bill_due">सप्लायर का बिल %1$s को ड्यू</string>
-    <string name="na_expiring">30 दिन में एक्सपायर होने वाला माल: %1$s बैच</string>
+    <string name="na_expiring">60 दिन में एक्सपायर होने वाला माल: %1$s बैच</string>
     <string name="na_backup">आख़िरी बैकअप %1$s दिन पहले</string>
     <string name="na_tag_today">आज</string>
     <string name="na_tag_late">देर</string>
@@ -1266,6 +1266,10 @@
     <string name="report_crash_included">— तकनीकी क्रैश रिकॉर्ड (आपके फ़ोन में अपने आप सेव हुआ, गड़बड़ ढूँढने में मदद के लिए शामिल):</string>
     <string name="products_stock">प्रोडक्ट और स्टॉक</string>
     <string name="products_subtitle">दुकान में क्या बिकता है, और कितना बचा है</string>
+    <string name="no_products_pc">अभी कोई प्रोडक्ट नहीं। सप्लायर बिल पर पहली बार नाम लिखते ही प्रोडक्ट अपने आप बन जाता है, या CSV आयात से अपनी सूची ले आएँ।</string>
+    <string name="no_matching_products">खोज से कोई प्रोडक्ट नहीं मिला।</string>
+    <string name="inventory_subtitle">शेल्फ़ पर कितना माल है, और उसकी कीमत</string>
+    <string name="po_subtitle">सप्लायरों से क्या मँगवाया, और क्या आ गया</string>
     <string name="products_note">ये आँकड़े सिर्फ़ वे एंट्रियाँ गिनते हैं जो किसी प्रोडक्ट से जुड़ी हैं। पहले लिखी एंट्रियों को जोड़ने के लिए नीचे का बटन दबाएँ।</string>
     <string name="no_products">अभी कोई प्रोडक्ट नहीं। नीचे से मौजूदा एंट्रियाँ जोड़ें, या बिल में पहली बार नाम लिखते ही प्रोडक्ट बन जाता है।</string>
     <string name="link_goods">मौजूदा एंट्रियों को प्रोडक्ट से जोड़ें</string>
@@ -3196,6 +3200,7 @@
     <string name="po_supplier">सप्लायर</string>
     <string name="po_send">WhatsApp पर भेजें</string>
     <string name="po_mark_sent">भेजा चिह्नित करें</string>
+    <string name="po_copied_no_number">इस सप्लायर का व्हाट्सऐप नंबर नहीं है। ऑर्डर कॉपी हो गया है: जहाँ भेजना हो वहाँ पेस्ट करें, फिर भेजा चिह्नित करें बटन दबाएँ।</string>
     <string name="po_receive">माल आ गया</string>
     <string name="po_close">ऑर्डर बंद</string>
     <string name="po_status_draft">ड्राफ़्ट</string>

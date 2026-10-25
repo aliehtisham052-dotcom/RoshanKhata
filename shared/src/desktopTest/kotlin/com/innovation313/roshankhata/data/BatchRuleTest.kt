@@ -61,7 +61,7 @@ class BatchRuleTest {
             null, SupplierBill(partyId = engro, billDate = now - 30 * day, totalAmount = 0.0),
             listOf(
                 BillItem(billId = 0, productName = "Confidor", batchNumber = "A", expiryDate = now + 10 * day, quantity = 2.0, unit = "carton", rate = 38_000.0, productId = confidorId),
-                BillItem(billId = 0, productName = "Confidor", batchNumber = "B", expiryDate = now + 60 * day, quantity = 30.0, unit = "bottle", rate = 950.0, productId = confidorId),
+                BillItem(billId = 0, productName = "Confidor", batchNumber = "B", expiryDate = now + 90 * day, quantity = 30.0, unit = "bottle", rate = 950.0, productId = confidorId),
                 BillItem(billId = 0, productName = "Karate", batchNumber = "OLD", expiryDate = now - 3 * day, quantity = 5.0, unit = "bottle", rate = 700.0, productId = karateId),
                 BillItem(billId = 0, productName = "Karate", batchNumber = "NEW", expiryDate = now + 20 * day, quantity = 12.0, unit = "bottle", rate = 700.0, productId = karateId),
                 BillItem(billId = 0, productName = "Mystery spray", batchNumber = "M", expiryDate = now + 15 * day, quantity = 10.0, unit = "bottle", rate = 500.0)
@@ -156,7 +156,8 @@ class BatchRuleTest {
             override fun list(name: String) = emptyList<String>()
         }
         suspend fun expiringRow() = LedgerAlerts.compute(words, dao, { it.toString() }).firstOrNull { it.kind == LedgerAlerts.Kind.EXPIRING }
-        // A, M and NEW expire within 30 days and hold something; OLD was written off (it counted before).
+        // A, M and NEW expire within the 60-day window (ExpiryWindow) and hold something; B is later; OLD was
+        // written off (it counted before).
         assertEquals("na_expiring:3", expiringRow()!!.title)
         // Write off what is left of M, sell the rest of A over the counter: the bell follows.
         dao.insertEntryWithItems(

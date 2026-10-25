@@ -944,7 +944,7 @@
     <string name="na_plan_due">آج کی قسط</string>
     <string name="na_plan_late">قسط لیٹ ہے</string>
     <string name="na_bill_due">سپلائر کا بل %1$s کو ڈیو</string>
-    <string name="na_expiring">30 دن میں ایکسپائر ہونے والا مال: %1$s بیچ</string>
+    <string name="na_expiring">60 دن میں ایکسپائر ہونے والا مال: %1$s بیچ</string>
     <string name="na_backup">آخری بیک اپ %1$s دن پہلے</string>
     <string name="na_tag_today">آج</string>
     <string name="na_tag_late">تاخیر</string>
@@ -1226,6 +1226,10 @@
     <string name="report_crash_included">— تکنیکی کریش ریکارڈ (خودکار طور پر آپ کے فون پر محفوظ، خرابی ڈھونڈنے میں مدد کے لیے شامل):</string>
     <string name="products_stock">پروڈکٹس اور اسٹاک</string>
     <string name="products_subtitle">دکان کیا بیچتی ہے، اور کتنا بچا ہے</string>
+    <string name="no_products_pc">ابھی کوئی پروڈکٹ نہیں۔ سپلائر بل پر پہلی بار نام لکھنے سے پروڈکٹ خود بن جاتی ہے، یا CSV امپورٹ سے اپنی فہرست لے آئیں۔</string>
+    <string name="no_matching_products">تلاش سے کوئی پروڈکٹ نہیں ملی۔</string>
+    <string name="inventory_subtitle">شیلف پر کتنا مال ہے، اور اس کی مالیت</string>
+    <string name="po_subtitle">سپلائرز سے کیا منگوایا، اور کیا آ گیا</string>
     <string name="products_note">یہ حساب صرف ان اندراجات کا ہے جو کسی پروڈکٹ سے جڑے ہیں۔ جو پہلے لکھے جا چکے ہیں، انہیں نیچے والے بٹن سے جوڑیں۔</string>
     <string name="no_products">ابھی کوئی پروڈکٹ نہیں۔ نیچے سے پرانے اندراجات جوڑیں، یا جب کسی بل پر نام لکھیں گے تو پروڈکٹ خود بن جائے گا۔</string>
     <string name="link_goods">پرانے اندراجات کو پروڈکٹس سے جوڑیں</string>
@@ -3146,6 +3150,7 @@
     <string name="po_supplier">سپلائر</string>
     <string name="po_send">واٹس ایپ پر بھیجیں</string>
     <string name="po_mark_sent">بھیجا ہوا نشان</string>
+    <string name="po_copied_no_number">اس سپلائر کا واٹس ایپ نمبر نہیں۔ آرڈر کاپی ہو گیا ہے: جہاں بھیجنا ہو وہاں پیسٹ کریں، پھر بھیجا ہوا نشان دبائیں۔</string>
     <string name="po_receive">مال آ گیا</string>
     <string name="po_close">آرڈر بند</string>
     <string name="po_status_draft">مسودہ</string>

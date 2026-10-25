@@ -944,7 +944,7 @@
     <string name="na_plan_due">Aaj ki qist</string>
     <string name="na_plan_late">Qist late hai</string>
     <string name="na_bill_due">Supplier ka bill %1$s ko due</string>
-    <string name="na_expiring">30 din mein expire hone wala maal: %1$s batch</string>
+    <string name="na_expiring">60 din mein expire hone wala maal: %1$s batch</string>
     <string name="na_backup">Aakhri backup %1$s din pehle</string>
     <string name="na_tag_today">Aaj</string>
     <string name="na_tag_late">Late</string>
@@ -1226,6 +1226,10 @@
     <string name="report_crash_included">— Technical crash record (khud-ba-khud aap ke phone par mehfooz, kharabi dhoondhne mein madad ke liye shamil):</string>
     <string name="products_stock">Products aur stock</string>
     <string name="products_subtitle">Dukaan kya bechti hai, aur kitna bacha hai</string>
+    <string name="no_products_pc">Abhi koi product nahi. Supplier bill par pehli baar naam likhne se product khud ban jata hai, ya CSV import se apni fehrist le aayein.</string>
+    <string name="no_matching_products">Talash se koi product nahi mila.</string>
+    <string name="inventory_subtitle">Shelf par kitna maal hai, aur us ki maliyat</string>
+    <string name="po_subtitle">Suppliers se kya mangwaya, aur kya aa gaya</string>
     <string name="products_note">Ye hisaab sirf un entries ka hai jo kisi product se juri hain. Jo pehle likhi ja chuki hain, unhein neeche wale button se jorein.</string>
     <string name="no_products">Abhi koi product nahi. Neeche se purani entries jorein, ya jab kisi bill par naam likhenge to product khud ban jayega.</string>
     <string name="link_goods">Purani entries ko products se jorein</string>
@@ -3146,6 +3150,7 @@
     <string name="po_supplier">Supplier</string>
     <string name="po_send">WhatsApp par bhejein</string>
     <string name="po_mark_sent">Bheja hua nishan</string>
+    <string name="po_copied_no_number">Is supplier ka WhatsApp number nahi. Order copy ho gaya hai: jahan bhejna ho wahan paste karein, phir Bheja hua nishan dabayein.</string>
     <string name="po_receive">Maal aa gaya</string>
     <string name="po_close">Order band</string>
     <string name="po_status_draft">Masooda</string>

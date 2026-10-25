@@ -62,8 +62,9 @@ object LedgerAlerts {
         // The shelf once, for the expiring batches and the low stock below.
         val low = runCatching { Stock.of(dao) }.getOrDefault(emptyList())
         // Batches that still hold something, by the one rule (Marhala 3, 25 Oct 2026: every dated batch was
-        // counted, sold out or written off, so the row never went away).
-        val expiring = runCatching { Fefo.expiring(dao, t0 + 30 * DAY, low.associate { it.productId to it.onHand }).size }.getOrDefault(0)
+        // counted, sold out or written off, so the row never went away), within the one window every page warns
+        // in (ExpiryWindow, 60 days: Marhala 4, the audit — the bell said 30 where Bills and Expiry said 60).
+        val expiring = runCatching { Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, low.associate { it.productId to it.onHand }).size }.getOrDefault(0)
         if (expiring > 0) out += Alert(Kind.EXPIRING, words.text(W.na_expiring, expiring.toString()), "")
         // Low stock (POS Phase 2): products at or under the level the owner set, where the shelf is known.
         val levels = dao.productsOnce().filter { it.lowStockLevel != null }.associate { it.id to it.lowStockLevel!! }
