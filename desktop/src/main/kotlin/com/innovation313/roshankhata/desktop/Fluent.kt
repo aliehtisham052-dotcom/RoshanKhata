@@ -26,6 +26,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -258,7 +261,7 @@ fun FluentField(
                     BasicTextField(
                         value = value,
                         onValueChange = onValueChange,
-                        modifier = Modifier.fillMaxWidth().then(
+                        modifier = Modifier.fillMaxWidth().then(enterRunsDone(singleLine, keyboardActions)).then(
                             if (calc != null) Modifier.calcKeys({ value }, calc, onValueChange) else Modifier
                         ),
                         textStyle = TextStyle(
@@ -285,6 +288,24 @@ fun FluentField(
         val sumLine = calc?.let { com.innovation313.roshankhata.screens.CalcText.line(value, it) }
         if (sumLine != null) Text(sumLine, color = Look.accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
         else help?.let { Text(it, color = c.textMuted, fontSize = 12.sp) }
+    }
+}
+
+/**
+ * Enter runs a one-line box's Done on the computer, exactly once (Marhala 4, part 10): whether Compose's own Enter
+ * reaches onDone depends on the IME action a box names, and the PIN boxes named none, so a typed PIN could wait for a
+ * click. The key is taken here, before the box sees it, so Done never runs twice. Boxes without a Done are untouched
+ * (a sum box works its sum out on Enter itself).
+ */
+private fun enterRunsDone(singleLine: Boolean, actions: KeyboardActions): Modifier {
+    val done = actions.onDone ?: return Modifier
+    if (!singleLine) return Modifier
+    val scope = object : androidx.compose.foundation.text.KeyboardActionScope {
+        override fun defaultKeyboardAction(imeAction: androidx.compose.ui.text.input.ImeAction) {}
+    }
+    return Modifier.onPreviewKeyEvent { e ->
+        val enter = e.key == androidx.compose.ui.input.key.Key.Enter || e.key == androidx.compose.ui.input.key.Key.NumPadEnter
+        if (enter && e.type == androidx.compose.ui.input.key.KeyEventType.KeyDown) { done.invoke(scope); true } else false
     }
 }
 

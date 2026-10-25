@@ -266,9 +266,12 @@ private fun ReceiptRow(label: String, value: String) {
     }
 }
 
-/** One choice from a short list (the phone's ChoiceSheet), in the app's frame; [chosen] marked. */
+/**
+ * One choice from a short list (the phone's ChoiceSheet), in the app's frame; [chosen] marked. [textSizes], when
+ * given, draws each line in its own size (the text size choice shows what each will look like).
+ */
 @Composable
-fun PickDialog(title: String, labels: List<String>, chosen: Int = -1, onPick: (Int) -> Unit, onDismiss: () -> Unit) {
+fun PickDialog(title: String, labels: List<String>, chosen: Int = -1, onPick: (Int) -> Unit, onDismiss: () -> Unit, textSizes: List<Float>? = null) {
     val c = LocalRoshanColors.current
     AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH((190 + 49 * labels.size).dp))) {
         DialogFrame(title, onClose = onDismiss, footer = { FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD) }) {
@@ -279,7 +282,7 @@ fun PickDialog(title: String, labels: List<String>, chosen: Int = -1, onPick: (I
                         Modifier.fillMaxWidth().clip(Look.ctl).background(if (on) Look.accentTint else Color.Transparent).press(Look.ctl) { onPick(i) }.padding(horizontal = 8.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(label, Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)
+                        Text(label, Modifier.weight(1f), color = c.ink, fontSize = (textSizes?.getOrNull(i) ?: 15f).sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)
                         if (on) Glyph("ic_check_plain", Look.accent, 16)
                     }
                     if (i < labels.lastIndex) Rule()

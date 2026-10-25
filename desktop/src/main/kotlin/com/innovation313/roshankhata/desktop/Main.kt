@@ -2005,26 +2005,16 @@ private fun Book(
     backedUp?.let { text ->
         TellDialog(word(W.backup_done_title), text, { backedUp = null }, height = 320)
     }
+    // The display choices as one pick list each, the one in use marked (Marhala 4, part 10 — the audit: a bare list,
+    // or a "✓" and spaces for a mark).
     if (choosingLanguage) {
-        AppDialog(
-            onCloseRequest = { choosingLanguage = false },
-            onPreviewKeyEvent = escCloses { choosingLanguage = false },
-            title = word(W.language),
-            state = rememberDialogState(width = fitW(360.dp), height = fitH(560.dp))
-        ) {
-            Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
-                AppLanguages.ALL.forEach { lang ->
-                    Text(
-                        lang.nativeName,
-                        Modifier.fillMaxWidth()
-                            .press { choosingLanguage = false; onLanguage(lang.tag) }
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        color = c.ink, fontSize = 18.sp
-                    )
-                    Rule()
-                }
-            }
-        }
+        val inUse = appPrefs.language() ?: java.util.Locale.getDefault().toLanguageTag()
+        PickDialog(
+            word(W.language), AppLanguages.ALL.map { it.nativeName },
+            chosen = AppLanguages.ALL.indexOfFirst { it.tag == inUse || (it.tag == "id" && inUse == "in") },
+            onPick = { k -> choosingLanguage = false; onLanguage(AppLanguages.ALL[k].tag) },
+            onDismiss = { choosingLanguage = false }
+        )
     }
     // The phone's first-run question (ShopNameActivity): until a name is written the app shows its
     // own name where the shop's belongs — header, invoices, statements, cards. Asked on each
@@ -2138,50 +2128,20 @@ private fun Book(
         }
     }
     if (choosingTextSize) {
-        AppDialog(
-            onCloseRequest = { choosingTextSize = false },
-            onPreviewKeyEvent = escCloses { choosingTextSize = false },
-            title = word(W.text_size),
-            state = rememberDialogState(width = fitW(360.dp), height = fitH(340.dp))
-        ) {
-            Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
-                TEXT_SIZE_WORDS.forEachIndexed { level, name ->
-                    Text(
-                        (if (level == textSize) "\u2713  " else "     ") + word(name),
-                        Modifier.fillMaxWidth()
-                            .press { choosingTextSize = false; onTextSize(level) }
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        color = if (level == textSize) c.brandGreenText else c.ink,
-                        // Each line in its own size, so the owner sees what it will look like.
-                        fontSize = (16 * TEXT_FACTORS[level]).sp,
-                        fontWeight = if (level == textSize) FontWeight.Bold else FontWeight.Normal
-                    )
-                    Rule()
-                }
-            }
-        }
+        // Each line in its own size, so the owner sees what it will look like.
+        PickDialog(
+            word(W.text_size), TEXT_SIZE_WORDS.map { word(it) }, chosen = textSize,
+            onPick = { level -> choosingTextSize = false; onTextSize(level) },
+            onDismiss = { choosingTextSize = false },
+            textSizes = TEXT_FACTORS.map { 15f * it }
+        )
     }
     if (choosingTheme) {
-        AppDialog(
-            onCloseRequest = { choosingTheme = false },
-            onPreviewKeyEvent = escCloses { choosingTheme = false },
-            title = word(W.theme),
-            state = rememberDialogState(width = fitW(360.dp), height = fitH(300.dp))
-        ) {
-            Column(Modifier.fillMaxSize().background(c.surface).padding(12.dp)) {
-                ThemeChoice.entries.forEach { t ->
-                    Text(
-                        (if (t == theme) "\u2713  " else "     ") + word(t.word),
-                        Modifier.fillMaxWidth()
-                            .press { choosingTheme = false; onTheme(t) }
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        color = if (t == theme) c.brandGreenText else c.ink, fontSize = 18.sp,
-                        fontWeight = if (t == theme) FontWeight.Bold else FontWeight.Normal
-                    )
-                    Rule()
-                }
-            }
-        }
+        PickDialog(
+            word(W.theme), ThemeChoice.entries.map { word(it.word) }, chosen = ThemeChoice.entries.indexOf(theme),
+            onPick = { k -> choosingTheme = false; onTheme(ThemeChoice.entries[k]) },
+            onDismiss = { choosingTheme = false }
+        )
     }
     if (about) {
         AppDialog(

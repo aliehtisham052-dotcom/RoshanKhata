@@ -1157,8 +1157,10 @@ Businesses/Settings), each part with its proof pictures. CI only.
   (`Photos.purgingOrphans`, the phone's BillPhoto rule, `partyPhotoPaths`): never one another business's book points
   at, nothing when another book cannot be read, and only files in the app's bills and faces folders (`Photos.ours`) —
   a path that came in a backup may point anywhere. About says this computer and its chosen folder
-  (`about_privacy_body_pc`, AboutScreen's `privacyBody`), not this phone and Drive. The PIN, recovery and business
-  boxes name Enter's action Done. Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
+  (`about_privacy_body_pc`, AboutScreen's `privacyBody`), not this phone and Drive. Language, text size and theme
+  are one pick list each with the one in use marked (`PickDialog`; `textSizes` draws each size in its own size). Enter
+  runs a one-line FluentField's Done exactly once (`enterRunsDone`, the key taken before the box sees it): whether
+  Compose's own Enter reaches onDone depends on the IME action a box names, and the PIN boxes named none. Tests: ConflictWordsTest (shared), BinPhotosTest; proofs screen-laptop-help-en,
   -schemes-ur, -seasons-en, -duplicates-en.
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
