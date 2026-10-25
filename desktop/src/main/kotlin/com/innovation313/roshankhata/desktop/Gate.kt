@@ -52,7 +52,11 @@ fun GateHost(dao: KhataDao, content: @Composable () -> Unit) {
     }
 }
 
-/** What a permission is, in words, for the PIN window. */
+/**
+ * What a permission is, in words, for the PIN window — each its own (Marhala 4, part 9 — the audit: the stock
+ * actions, voids, returns, discounts, prices and credit limits all read "Changing or deleting what is already
+ * written"); the counter's own words where the phone's counter uses them.
+ */
 @Composable
 fun whatWord(p: Access.Permission): String = word(
     when (p) {
@@ -61,7 +65,13 @@ fun whatWord(p: Access.Permission): String = word(
         Access.Permission.STAFF -> W.access_need_staff
         Access.Permission.REPORTS -> W.access_need_reports
         Access.Permission.EXPORT -> W.audit_export
-        else -> W.access_need_edit
+        Access.Permission.STOCK_ADJUST -> W.stock_adjust
+        Access.Permission.VOID -> W.pos_void
+        Access.Permission.RETURN -> W.pos_return
+        Access.Permission.DISCOUNT_ANY -> W.pos_discount
+        Access.Permission.PRICE_EDIT -> W.audit_price_changed
+        Access.Permission.CREDIT_OVER -> W.limit_warning_title
+        Access.Permission.EDIT_BOOK -> W.access_need_edit
     }
 )
 
@@ -84,7 +94,8 @@ fun Section.need(): Access.Permission? = when (this) {
 @Composable
 fun LockedPage(p: Access.Permission, onAllowed: () -> Unit) {
     Box(Modifier.fillMaxSize()) {
-        EmptyState("ic_tile_settings", word(W.access_page_locked), whatWord(p)) {
+        // An owner-only page says the owner, not "a manager or the owner" (Marhala 4, part 9, the audit).
+        EmptyState("ic_tile_settings", word(if (Access.ownerOnly(p)) W.access_page_owner_only else W.access_page_locked), whatWord(p)) {
             FluentButton(word(if (Access.ownerOnly(p)) W.access_owner_needed_title else W.access_override_title), { Gates.need(p, onAllowed) }, kind = ButtonKind.ACCENT)
         }
     }

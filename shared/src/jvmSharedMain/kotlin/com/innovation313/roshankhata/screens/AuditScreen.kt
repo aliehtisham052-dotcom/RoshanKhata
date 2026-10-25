@@ -83,7 +83,7 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
  * app itself writes are turned into words, and anything else shows as saved.
  */
 @Composable
-private fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staff>): String? {
+fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staff>): String? {
     val detail = a.detail?.takeIf { it.isNotBlank() } ?: return null
     return when (a.action) {
         AuditAction.STOCK_ADJUSTED -> {

@@ -402,6 +402,24 @@ class ScreenProofTest {
                 CalculatorPane(onKhata = {})
             }
             CalcMemory.text = ""
+            // Marhala 4, part 9: staff in the frame, who did what in the phone's words, daily copies with the folder's own.
+            kotlinx.coroutines.runBlocking {
+                dao.insertStaff(com.innovation313.roshankhata.data.Staff(name = "Nadeem Akhtar", monthlySalary = 25000.0, role = com.innovation313.roshankhata.data.Role.CASHIER))
+                dao.insertStaff(com.innovation313.roshankhata.data.Staff(name = "Bilal", monthlySalary = 18000.0))
+            }
+            shoot("screen-laptop-staff-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.STAFF, waits = 2) {
+                StaffPane(dao)
+            }
+            shoot("screen-laptop-audit-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.AUDIT, waits = 3) {
+                AuditPane(dao)
+            }
+            val daily = home.resolve("daily-proof").apply { mkdirs() }
+            val there = home.resolve("outside-proof").apply { mkdirs() }
+            listOf("2026-10-24.txt", "2026-10-23.txt", "2026-10-23-before-restore-1761200000000.txt").forEach { daily.resolve(it).writeText("{}") }
+            listOf("2026-10-22.txt").forEach { there.resolve(it).writeText("{}") }
+            shoot("screen-laptop-daily-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.DAILY, waits = 2) {
+                DailyCopiesPane(dao, com.innovation313.roshankhata.data.FileShopSettings(home.resolve("shop-proof.properties")), daily, there, there, onFolder = {}) {}
+            }
             // Invoices (Marhala 4, part 5): the list narrow, the open invoice's head and actions in one block, its
             // pages in the height left — at the owner's shortest window, and in Urdu; the form beside its picture.
             val lines = listOf(

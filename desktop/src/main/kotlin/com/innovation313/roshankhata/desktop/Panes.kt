@@ -497,18 +497,23 @@ fun PaneTitle(title: String, subtitle: String?) {
 fun DayPicker(
     initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () -> Unit, title: String? = null,
     /** The last day that may be chosen (a moment on it), or null for any day: an entry is never written ahead of today. */
-    latest: Long? = null
+    latest: Long? = null,
+    /** The first day that may be chosen (a moment on it), or null for any day: a month's attendance stays in that month. */
+    earliest: Long? = null
 ) {
     val zone = ZoneId.systemDefault()
     // The picker's days are UTC midnights; the last allowed one is the latest day's own date there.
     val lastUtc = latest?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() }
+    val firstUtc = earliest?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() }
     val state = rememberDatePickerState(
         initialSelectedDateMillis = (initial?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() } ?: LocalDate.now(zone))
             .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
         selectableDates = object : androidx.compose.material3.SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean = lastUtc == null || utcTimeMillis <= lastUtc
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+                (lastUtc == null || utcTimeMillis <= lastUtc) && (firstUtc == null || utcTimeMillis >= firstUtc)
             override fun isSelectableYear(year: Int): Boolean =
-                lastUtc == null || year <= Instant.ofEpochMilli(lastUtc).atZone(ZoneOffset.UTC).year
+                (lastUtc == null || year <= Instant.ofEpochMilli(lastUtc).atZone(ZoneOffset.UTC).year) &&
+                    (firstUtc == null || year >= Instant.ofEpochMilli(firstUtc).atZone(ZoneOffset.UTC).year)
         }
     )
     DatePickerDialog(

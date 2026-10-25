@@ -610,6 +610,8 @@
     <string name="snapshots_title">روزاني ڪاپيون</string>
     <string name="snapshots_subtitle">ايپ هن ڪاروبار جي کاتي جي ڪاپي روزانو ٺاهي ٿي، گذريل ست ڏينهن جي. ڪجهه خراب ٿي وڃي ته توهان ڪنهن به ڏينهن تي واپس وڃي سگهو ٿا.</string>
     <string name="snapshots_empty">اڃا ڪا ڪاپي ناهي. پهرين ڪاپي ايندڙ ڀيري کاتو کولڻ تي ٺهندي.</string>
+    <string name="snapshots_here_pc">هن ڪمپيوٽر تي</string>
+    <string name="auto_folder_copies">چونڊيل فولڊر ۾</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">هن ڏينهن تي واپس وڃو؟</string>
     <string name="snapshot_restore_action">بحال ڪريو</string>
@@ -3266,9 +3268,10 @@
     <string name="access_owner_needed_title">مالڪ جو PIN گهرجي</string>
     <string name="access_owner_needed_help">ان جي اجازت رڳو مالڪ ڏئي سگهي ٿو. مالڪ پنهنجو PIN لکي.</string>
     <string name="access_page_locked">هن صفحي لاءِ مئنيجر يا مالڪ گهرجي</string>
+    <string name="access_page_owner_only">هن صفحي لاءِ مالڪ گهرجي</string>
     <string name="access_signed_in_as">سائن ان: %1$s</string>
-    <string name="audit_seal_ok">لاگ جي مهر سلامت — جانچيل قطارون: %1$d</string>
-    <string name="audit_seal_broken">لاگ جي مهر قطار %1$d تي ٽٽل آهي: ايپ کان ٻاهر ڪا قطار بدلي يا هٽائي وئي</string>
+    <string name="audit_seal_ok">%1$d قطارون جانچيون ويون: ايپ کان ٻاهر ڪا به قطار بدلي يا هٽائي نه وئي</string>
+    <string name="audit_seal_broken">قطار %1$d ايپ کان ٻاهر بدلي يا هٽائي وئي آهي</string>
     <string name="audit_stock_count">اسٽاڪ ڳڻيو ويو</string>
     <string name="audit_stock_adjusted">اسٽاڪ درست ڪيو ويو</string>
     <string name="audit_order_received">آرڊر وصول ٿيو</string>

@@ -590,6 +590,8 @@
     <string name="snapshots_title">Rozana copies</string>
     <string name="snapshots_subtitle">App is business ke khate ki copy rozana banati hai, pichhle saat din ki. Kuch kharab ho jaye to aap kisi bhi din par wapas ja sakte hain.</string>
     <string name="snapshots_empty">Abhi koi copy nahi. Pehli copy agli baar khata kholne par banegi.</string>
+    <string name="snapshots_here_pc">Isi computer par</string>
+    <string name="auto_folder_copies">Chune hue folder mein</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">Is din par wapas jayein?</string>
     <string name="snapshot_restore_action">Bahal karein</string>
@@ -3238,9 +3240,10 @@
     <string name="access_owner_needed_title">Malik ka PIN darkaar</string>
     <string name="access_owner_needed_help">Is ki ijazat sirf malik de sakta hai. Malik apna PIN likhe.</string>
     <string name="access_page_locked">Is safhe ke liye manager ya malik chahiye</string>
+    <string name="access_page_owner_only">Is safhe ke liye malik chahiye</string>
     <string name="access_signed_in_as">Sign in: %1$s</string>
-    <string name="audit_seal_ok">Log ki mohar salamat — jaanchi gayi qataarein: %1$d</string>
-    <string name="audit_seal_broken">Log ki mohar qataar %1$d par tooti hai: app ke bahar koi qataar badli ya hatayi gayi</string>
+    <string name="audit_seal_ok">%1$d qataarein jaanchi gayin: app ke bahar koi qataar badli ya hatayi nahi gayi</string>
+    <string name="audit_seal_broken">Qataar %1$d app ke bahar badli ya hatayi gayi hai</string>
     <string name="audit_stock_count">Stock gina gaya</string>
     <string name="audit_stock_adjusted">Stock durust kiya gaya</string>
     <string name="audit_order_received">Order wusool hua</string>

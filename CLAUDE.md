@@ -1116,6 +1116,22 @@ Businesses/Settings), each part with its proof pictures. CI only.
   copyRegion; ShopRegionTest). The PDF preview scrolls sideways when zoomed past the window (it cut the page).
   Not changed, the owner's to decide: the poster ticks email by default and the card starts from the profile's
   email (the phone does both) — with a personal email in the profile it reaches posters and cards.
+- **Part 9, Staff, who did what and daily copies:** Staff is in the page frame — the owner's PIN, counter mode and
+  Add in the head (the counter-mode help is said once, in its window), the month's steps with chevrons that turn
+  with the language (`MonthStep`; "‹ Prev" pointed the wrong way in Urdu), each person a card with their face and
+  role, and the app's dialogs (add/edit, advance/salary, the day's mark, remove). A day is marked only within the
+  open month (`DayPicker(earliest, latest)`: one picked outside it was written where the page never shows it). Who
+  did what shows the phone's rows — the action, "by" whom and the detail in words through the shared `auditDetail`
+  (now public; the computer showed "staff:12", "damage -3.00"); its check line is plain words on both platforms
+  (`audit_seal_ok`/`_broken`: "N rows checked: none was changed or removed outside the app"; "seal" was jargon).
+  Daily copies are in the frame and also list the chosen folder's own copies, restorable the same way
+  (`snapshots_here_pc`, `auto_folder_copies`): a copy kept on the USB stick or in Drive could not be gone back to
+  from here; the restore question and the notices are the app's dialogs. The PIN window names what it guards
+  (`whatWord`: stock, void, return, discount, price, credit limit — all read "changing what is already written"); an
+  owner-only page says the owner (`access_page_owner_only`). Products' Excel, labels and CSV import ask a manager's
+  PIN instead of "access denied", the export is written in who did what, and an import is logged as an import (it
+  read "Price changed"). Proofs: screen-laptop-staff-ur, -audit-en, -daily-en. Not changed: App Lock's PIN stays 4–8
+  digits while the owner's counter PIN is 6–8 (the owner's to decide; App Lock's hash never leaves this computer).
 - **Reminders, one rule on both:** `ReminderLadder` and `ReminderText` live in :shared (the phone keeps its
   ladder in preferences, `ReminderLadderAndroid`; the computer in `reminders_b<id>.properties` beside the
   books, `ReminderStore`, deleted with its business). The computer's Khata and Follow-up open a preview
