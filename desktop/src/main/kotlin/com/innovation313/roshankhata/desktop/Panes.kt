@@ -134,7 +134,7 @@ object Look {
     /** The rail's edge against the page (the mockup's pale green line). */
     val railEdge: Color @Composable get() = if (isDark()) Color(0xFF26302A) else Color(0xFFD3E1D7)
     /** The rail's group names: a dark olive by day, a pale green by night (6.5:1 and 9:1 on the rail). */
-    val groupText: Color @Composable get() = if (isDark()) Color(0xFF9CC5A8) else Color(0xFF3F6032)
+    val groupText: Color @Composable get() = if (isDark()) LookPalette.GROUP_TEXT_DARK else LookPalette.GROUP_TEXT_LIGHT
     /** The Net balance card: brand_green_dark with the gold label, as on the phone. */
     val hero = Color(0xFF134228)
     val heroLabel = Color(0xFFE9C46A)
@@ -180,6 +180,11 @@ object LookPalette {
     val ON_PICKED_DARK = Color(0xFF0B2A1A)
     val RAIL_LIGHT = Color(0xFFF2F4EF)
     val RAIL_DARK = Color(0xFF161917)
+    val GROUP_TEXT_LIGHT = Color(0xFF3F6032)
+    val GROUP_TEXT_DARK = Color(0xFF9CC5A8)
+    /** Home's green card's halves: a soft red and a soft green, 5:1 and 5.9:1 on their pills (Marhala 2). */
+    val HERO_GET = Color(0xFFFFB4AD)
+    val HERO_GIVE = Color(0xFF9EE6B8)
 }
 
 /** The phone's tile picture on its own tint, [size] across. */

@@ -212,9 +212,9 @@ fun HomePane(
 /** The light words on the deep green card: the phone's white, and its softer second line. */
 private val OnHero = Color.White
 private val OnHeroSoft = Color.White.copy(alpha = 0.74f)
-/** "I have to get" and "I have to give" on the green: a soft red and a soft green, 5.7:1 and 7.9:1 on it. */
-private val HeroGet = Color(0xFFF6A5A0)
-private val HeroGive = Color(0xFF9EE6B8)
+/** "I have to get" and "I have to give" on the green (LookContrastTest measures them on the pill). */
+private val HeroGet = LookPalette.HERO_GET
+private val HeroGive = LookPalette.HERO_GIVE
 
 /**
  * The phone's Net balance card made wide (the mockup): NET BALANCE in gold, the
