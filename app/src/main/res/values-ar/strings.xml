@@ -461,6 +461,8 @@
     <string name="sort_amount_low">المبلغ (من الأدنى)</string>
 
     <string name="no_matching_parties">لا عملاء أو مورّدون يطابقون بحثك.</string>
+    <string name="khata_pick_party">اختر أحدًا من القائمة لترى حسابه هنا.</string>
+    <string name="khata_choose_several">تحديد عدة عناصر (للحذف)</string>
     <string name="no_matching_entries">لا قيود تطابق بحثك.</string>
     <string name="showing_filtered">عرض %1$d من %2$d</string>
     <string name="running_balance_note">الرصيد الجاري يتبع ترتيب الدفتر نفسه، فيبقى صحيحًا مهما رتبت أو بحثت.</string>

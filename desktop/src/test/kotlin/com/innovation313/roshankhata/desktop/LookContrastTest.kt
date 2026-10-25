@@ -64,6 +64,22 @@ class LookContrastTest {
     }
 
     @Test
+    fun `the Khata page's tools and the parties' initials read on their tints`() {
+        // Marhala 4 (25 Oct 2026): each tool's glyph and each party's initials sit on a tint of their own colour.
+        listOf(
+            Triple("violet", LookPalette.VIOLET_LIGHT to LookPalette.VIOLET_TINT_LIGHT, LookPalette.VIOLET_DARK to LookPalette.VIOLET_TINT_DARK),
+            Triple("slate", LookPalette.SLATE_LIGHT to LookPalette.SLATE_TINT_LIGHT, LookPalette.SLATE_DARK to LookPalette.SLATE_TINT_DARK),
+            Triple("clay", LookPalette.CLAY_LIGHT to LookPalette.CLAY_TINT_LIGHT, LookPalette.CLAY_DARK to LookPalette.CLAY_TINT_DARK),
+            Triple("leaf", LookPalette.LEAF_LIGHT to LookPalette.LEAF_TINT_LIGHT, LookPalette.LEAF_DARK to LookPalette.LEAF_TINT_DARK),
+            Triple("rose", LookPalette.ROSE_LIGHT to LookPalette.ROSE_TINT_LIGHT, LookPalette.ROSE_DARK to LookPalette.ROSE_TINT_DARK),
+            Triple("olive", LookPalette.OLIVE_LIGHT to LookPalette.OLIVE_TINT_LIGHT, LookPalette.OLIVE_DARK to LookPalette.OLIVE_TINT_DARK)
+        ).forEach { (name, day, night) ->
+            atLeast(4.5, "$name by day", day.first, day.second)
+            atLeast(4.5, "$name by night", night.first, night.second)
+        }
+    }
+
+    @Test
     fun `text keeps its contrast under the hover wash`() {
         // The wash (Look.hover) laid over the card: ink must still read at 4.5:1 or better.
         fun over(base: Color, wash: Color) = Color(

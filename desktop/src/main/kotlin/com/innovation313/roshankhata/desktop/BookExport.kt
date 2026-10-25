@@ -18,12 +18,17 @@ import java.awt.print.Printable
  * starting on its own page — one trip to the printer, or one PDF.
  */
 object BookExport {
-    fun customersCsv(parties: List<PartyWithBalance>, headers: List<String>): String {
+    fun customersCsv(
+        parties: List<PartyWithBalance>,
+        headers: List<String>,
+        /** A last column saying customer or supplier, in the reader's words (25 Oct 2026, the audit); none when null. */
+        typeOf: ((PartyWithBalance) -> String)? = null
+    ): String {
         val sb = StringBuilder("﻿")
         fun row(cells: List<String>) = com.innovation313.roshankhata.data.CsvCell.appendRow(sb, cells)
         row(headers)
         com.innovation313.roshankhata.data.NameOrder.sortedBy(parties) { it.name }.forEach { p ->
-            row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)))
+            row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)) + listOfNotNull(typeOf?.invoke(p)))
         }
         return sb.toString()
     }

@@ -352,12 +352,13 @@ fun EntryEditor(
         // The day changes; the time of day the entry was written stays.
         DayPicker(at, onPick = { day ->
             val keep = Calendar.getInstance().apply { timeInMillis = at }
+            // Never ahead of now (the phone's rule): today at a later hour than this one is now.
             at = Calendar.getInstance().apply {
                 timeInMillis = day
                 set(Calendar.HOUR_OF_DAY, keep.get(Calendar.HOUR_OF_DAY)); set(Calendar.MINUTE, keep.get(Calendar.MINUTE))
-            }.timeInMillis
+            }.timeInMillis.coerceAtMost(System.currentTimeMillis())
             picking = false
-        }, onDismiss = { picking = false })
+        }, onDismiss = { picking = false }, latest = System.currentTimeMillis())
     }
 }
 

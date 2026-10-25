@@ -436,6 +436,8 @@
     <string name="sort_amount_low">रकम (कम से ज़्यादा)</string>
 
     <string name="no_matching_parties">आपकी खोज से कोई ग्राहक या सप्लायर नहीं मिला।</string>
+    <string name="khata_pick_party">यहाँ खाता देखने के लिए सूची में से किसी को चुनें।</string>
+    <string name="khata_choose_several">कई चुनें (मिटाने के लिए)</string>
     <string name="no_matching_entries">आपकी खोज से कोई एंट्री नहीं मिली।</string>
     <string name="showing_filtered">%2$d में से %1$d दिख रहे हैं</string>
     <string name="running_balance_note">चलता बैलेंस खाते के अपने क्रम पर चलता है, इसलिए आप जैसे भी क्रम बदलें या खोजें, वह सही रहता है।</string>

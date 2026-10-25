@@ -429,6 +429,8 @@
     <string name="sort_amount_low">رقم (گهٽ کان وڌ)</string>
 
     <string name="no_matching_parties">توهان جي ڳولا سان ڪو گراهڪ يا سپلائر نٿو ملي.</string>
+    <string name="khata_pick_party">هتي کاتو ڏسڻ لاءِ فهرست مان ڪنهن کي چونڊيو.</string>
+    <string name="khata_choose_several">ڪيترائي چونڊيو (هٽائڻ لاءِ)</string>
     <string name="no_matching_entries">توهان جي ڳولا سان ڪا داخلا نٿي ملي.</string>
     <string name="showing_filtered">%2$d مان %1$d ڏيکاريل</string>
     <string name="running_balance_note">هلندڙ بيلنس کاتي جي پنهنجي ترتيب تي هلي ٿو، تنهنڪري ڪهڙي به ترتيب يا ڳولا ۾ صحيح رهي ٿو.</string>

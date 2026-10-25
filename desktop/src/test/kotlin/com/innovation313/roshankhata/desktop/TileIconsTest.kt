@@ -43,6 +43,25 @@ class TileIconsTest {
     }
 
     @Test
+    fun `every glyph copied from the phone reads, day and night`() {
+        // Marhala 4 (25 Oct 2026): the buttons' glyphs too, not only the rail's pictures — the Khata page's tools
+        // came from the phone's res folder, and one that did not read would be an empty button, silently.
+        val dir = TileIconsTest::class.java.classLoader.getResource("tiles/drawable")
+        assertNotNull("tiles/drawable is not on the classpath", dir)
+        assertTrue("tiles/drawable is not a folder: $dir", dir!!.protocol == "file")
+        val names = java.io.File(dir.toURI()).listFiles { f -> f.name.endsWith(".xml") }!!.map { it.name.removeSuffix(".xml") }.sorted()
+        for (needed in listOf("ic_action_whatsapp", "ic_filter_sliders", "ic_sort_arrows", "ic_download", "ic_check_circle", "ic_truck", "ic_people")) {
+            assertTrue("$needed was not copied", needed in names)
+        }
+        for (dark in listOf(false, true)) for (n in names) {
+            val xml = TileIcons.xml(n, dark)
+            assertNotNull("$n missing", xml)
+            assertFalse("$n has an unresolved colour", xml!!.contains("@color/") || xml.contains("@android:color/"))
+            assertNotNull("$n does not read", loadXmlImageVector(InputSource(StringReader(xml)), Density(1f)))
+        }
+    }
+
+    @Test
     fun `no two places in the rail wear the same picture`() {
         // 25 Oct 2026, the audit: eleven places shared a picture (Counter and Invoices, Staff and Who did what...).
         val pictures = Section.entries.map { it.icon } + Group.entries.mapNotNull { it.icon }

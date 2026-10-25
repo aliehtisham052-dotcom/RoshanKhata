@@ -436,6 +436,8 @@
     <string name="sort_amount_low">অঙ্ক (কম থেকে বেশি)</string>
 
     <string name="no_matching_parties">আপনার খোঁজে কোনো গ্রাহক বা সরবরাহকারী মেলেনি।</string>
+    <string name="khata_pick_party">এখানে হিসাব দেখতে তালিকা থেকে কাউকে বেছে নিন।</string>
+    <string name="khata_choose_several">কয়েকটি বেছে নিন (মুছতে)</string>
     <string name="no_matching_entries">আপনার খোঁজে কোনো এন্ট্রি মেলেনি।</string>
     <string name="showing_filtered">%2$d-এর মধ্যে %1$d দেখানো হচ্ছে</string>
     <string name="running_balance_note">চলতি ব্যালেন্স খাতার নিজস্ব ক্রম মেনে চলে, তাই যেভাবেই সাজান বা খুঁজুন, এটি ঠিক থাকে।</string>

@@ -211,6 +211,30 @@ object Look {
     /** The blue of "you will give" on the mockups (RoshanPalette's iOwe is a teal; the figures keep that, the tints use this). */
     val give: Color @Composable get() = if (isDark()) Color(0xFF7CC9D8) else Color(0xFF0F6CBD)
     val warn: Color @Composable get() = if (isDark()) Color(0xFFF2C66D) else Color(0xFF7A5C10)
+
+    // The mockup's tool and face colours (Marhala 4, 25 Oct 2026: the Khata page's tool buttons and the parties'
+    // initials), each an ink on its own tint, day and night; LookContrastTest measures every pair (4.5:1).
+    val tabTrack: Color @Composable get() = if (isDark()) Color(0xFF222826) else Color(0xFFECE9DF)
+    val violet: Color @Composable get() = if (isDark()) LookPalette.VIOLET_DARK else LookPalette.VIOLET_LIGHT
+    val violetTint: Color @Composable get() = if (isDark()) LookPalette.VIOLET_TINT_DARK else LookPalette.VIOLET_TINT_LIGHT
+    val slate: Color @Composable get() = if (isDark()) LookPalette.SLATE_DARK else LookPalette.SLATE_LIGHT
+    val slateTint: Color @Composable get() = if (isDark()) LookPalette.SLATE_TINT_DARK else LookPalette.SLATE_TINT_LIGHT
+    val clay: Color @Composable get() = if (isDark()) LookPalette.CLAY_DARK else LookPalette.CLAY_LIGHT
+    val clayTint: Color @Composable get() = if (isDark()) LookPalette.CLAY_TINT_DARK else LookPalette.CLAY_TINT_LIGHT
+    val leaf: Color @Composable get() = if (isDark()) LookPalette.LEAF_DARK else LookPalette.LEAF_LIGHT
+    val leafTint: Color @Composable get() = if (isDark()) LookPalette.LEAF_TINT_DARK else LookPalette.LEAF_TINT_LIGHT
+    val rose: Color @Composable get() = if (isDark()) LookPalette.ROSE_DARK else LookPalette.ROSE_LIGHT
+    val roseTint: Color @Composable get() = if (isDark()) LookPalette.ROSE_TINT_DARK else LookPalette.ROSE_TINT_LIGHT
+    val olive: Color @Composable get() = if (isDark()) LookPalette.OLIVE_DARK else LookPalette.OLIVE_LIGHT
+    val oliveTint: Color @Composable get() = if (isDark()) LookPalette.OLIVE_TINT_DARK else LookPalette.OLIVE_TINT_LIGHT
+
+    /** A party's own initials colours, by its id (never its place in a list): fill and ink. */
+    @Composable
+    fun avatar(id: Long): Pair<Color, Color> {
+        val all = listOf(accentTint to accent, violetTint to violet, clayTint to clay, slateTint to slate, oliveTint to olive, warnTint to warn)
+        return all[((id % all.size).toInt() + all.size) % all.size]
+    }
+
     /** The phone's corners: 8 for a control, 12 for a card or dialog. */
     val ctl = RoundedCornerShape(8.dp)
     val card = RoundedCornerShape(12.dp)
@@ -230,6 +254,19 @@ object LookPalette {
     /** Home's green card's halves: a soft red and a soft green, 5:1 and 5.9:1 on their pills (Marhala 2). */
     val HERO_GET = Color(0xFFFFB4AD)
     val HERO_GIVE = Color(0xFF9EE6B8)
+    // The Khata page's tools and faces (Marhala 4): ink on tint, 5.3:1 to 8.3:1 day and night.
+    val VIOLET_LIGHT = Color(0xFF514476); val VIOLET_TINT_LIGHT = Color(0xFFEDEAF2)
+    val VIOLET_DARK = Color(0xFFB9AEE0); val VIOLET_TINT_DARK = Color(0xFF2A2638)
+    val SLATE_LIGHT = Color(0xFF2F4C6B); val SLATE_TINT_LIGHT = Color(0xFFE8EDF2)
+    val SLATE_DARK = Color(0xFF9FBCE0); val SLATE_TINT_DARK = Color(0xFF1E2A36)
+    val CLAY_LIGHT = Color(0xFF8A4B2A); val CLAY_TINT_LIGHT = Color(0xFFF5EAE4)
+    val CLAY_DARK = Color(0xFFE0A784); val CLAY_TINT_DARK = Color(0xFF3A2A22)
+    val LEAF_LIGHT = Color(0xFF0F6E56); val LEAF_TINT_LIGHT = Color(0xFFE4EFE8)
+    val LEAF_DARK = Color(0xFF7FD1B9); val LEAF_TINT_DARK = Color(0xFF1C3329)
+    val ROSE_LIGHT = Color(0xFF8C3A3A); val ROSE_TINT_LIGHT = Color(0xFFF2E9E9)
+    val ROSE_DARK = Color(0xFFE89A9A); val ROSE_TINT_DARK = Color(0xFF3A2424)
+    val OLIVE_LIGHT = Color(0xFF3F6032); val OLIVE_TINT_LIGHT = Color(0xFFE9EFE3)
+    val OLIVE_DARK = Color(0xFFB5D19C); val OLIVE_TINT_DARK = Color(0xFF25301F)
 }
 
 /** The phone's tile picture on its own tint, [size] across. */
@@ -457,11 +494,22 @@ fun PaneTitle(title: String, subtitle: String?) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayPicker(initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () -> Unit, title: String? = null) {
+fun DayPicker(
+    initial: Long?, onPick: (startOfDay: Long) -> Unit, onDismiss: () -> Unit, title: String? = null,
+    /** The last day that may be chosen (a moment on it), or null for any day: an entry is never written ahead of today. */
+    latest: Long? = null
+) {
     val zone = ZoneId.systemDefault()
+    // The picker's days are UTC midnights; the last allowed one is the latest day's own date there.
+    val lastUtc = latest?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() }
     val state = rememberDatePickerState(
         initialSelectedDateMillis = (initial?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() } ?: LocalDate.now(zone))
-            .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+            .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
+        selectableDates = object : androidx.compose.material3.SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean = lastUtc == null || utcTimeMillis <= lastUtc
+            override fun isSelectableYear(year: Int): Boolean =
+                lastUtc == null || year <= Instant.ofEpochMilli(lastUtc).atZone(ZoneOffset.UTC).year
+        }
     )
     DatePickerDialog(
         onDismissRequest = onDismiss,

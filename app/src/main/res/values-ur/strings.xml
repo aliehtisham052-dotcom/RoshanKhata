@@ -417,6 +417,8 @@
     <string name="sort_amount_low">رقم (کم سے زیادہ)</string>
 
     <string name="no_matching_parties">آپ کی تلاش سے کوئی گاہک یا سپلائر نہیں ملتا۔</string>
+    <string name="khata_pick_party">یہاں کھاتہ دیکھنے کے لیے فہرست میں سے کسی کو چنیں۔</string>
+    <string name="khata_choose_several">کئی چنیں (حذف کرنے کے لیے)</string>
     <string name="no_matching_entries">آپ کی تلاش سے کوئی اندراج نہیں ملتا۔</string>
     <string name="showing_filtered">%2$d میں سے %1$d دکھائے جا رہے ہیں</string>
     <string name="running_balance_note">رواں بیلنس کھاتے کی اپنی ترتیب پر چلتا ہے، اس لیے آپ جیسے بھی ترتیب دیں یا تلاش کریں، یہ درست رہتا ہے۔</string>
