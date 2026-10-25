@@ -2521,6 +2521,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">الملف التعريفي</string>
     <string name="shop_sub_switch">الملف · تبديل المتجر</string>
+    <string name="rail_sales_stock">المبيعات والمخزون</string>
+    <string name="rail_reports">التقارير</string>
+    <string name="header_backed_up">آخر نسخة</string>
     <string name="shop_add_name">أضف اسم متجرك</string>
     <string name="shop_add_name_sub">يُطبع على الفواتير وكشوف الحساب</string>
     <string name="shop_edit_profile">تعديل الملف</string>

@@ -2373,6 +2373,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">پروفائل</string>
     <string name="shop_sub_switch">پروفائل · دڪان بدلايو</string>
+    <string name="rail_sales_stock">وڪرو ۽ اسٽاڪ</string>
+    <string name="rail_reports">رپورٽون</string>
+    <string name="header_backed_up">بيڪ اپ ٿيو</string>
     <string name="shop_add_name">پنهنجي دڪان جو نالو لکو</string>
     <string name="shop_add_name_sub">انوائس ۽ اسٽيٽمينٽ تي ڇپبو</string>
     <string name="shop_edit_profile">پروفائل ۾ تبديلي</string>

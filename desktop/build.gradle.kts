@@ -123,6 +123,13 @@ val syncTileIcons by tasks.registering(Sync::class) {
             "drawable/ic_pdf_doc.xml", "drawable/ic_calendar.xml", "drawable/ic_close.xml",
             "drawable/ic_check_plain.xml", "drawable/ic_chevron_down.xml", "drawable/ic_chevron_right.xml",
             "drawable/ic_arrow_gave.xml", "drawable/ic_arrow_got.xml", "drawable/ic_edit.xml", "drawable/ic_share.xml",
+            // The rail's own picture for every place (Marhala 2, 25 Oct 2026: eleven places shared one) and
+            // the header's backup cloud — the phone's two-tone menu icons and one-colour glyphs.
+            "drawable/ic_menu_home.xml", "drawable/ic_menu_help.xml", "drawable/ic_menu_duplicate.xml",
+            "drawable/ic_qr_scan.xml", "drawable/ic_register_sales.xml", "drawable/ic_register_stock.xml",
+            "drawable/ic_feature_stock.xml", "drawable/ic_feature_insights.xml", "drawable/ic_truck.xml",
+            "drawable/ic_list_all.xml", "drawable/ic_people.xml", "drawable/ic_seal_stamp.xml",
+            "drawable/ic_shield_check.xml", "drawable/ic_tune.xml", "drawable/ic_feature_backup.xml",
             // The shop-type picker's twenty-five trade icons (TradeKit).
             "drawable/ic_trade_*.xml"
         )

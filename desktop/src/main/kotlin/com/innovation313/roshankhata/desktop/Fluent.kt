@@ -109,18 +109,18 @@ fun FluentButton(
     }
 }
 
-/** A square 32 dp button holding one glyph; [tip] is its words for the hover tip. */
+/** A square button holding one glyph, 32 dp ([size] for the header's 36); [tip] is its words for the hover tip. */
 @Composable
-fun IconAction(icon: String, tip: String, onClick: () -> Unit, modifier: Modifier = Modifier, tint: Color? = null, filled: Boolean = false) {
+fun IconAction(icon: String, tip: String, onClick: () -> Unit, modifier: Modifier = Modifier, tint: Color? = null, filled: Boolean = false, size: Int = 32) {
     val c = LocalRoshanColors.current
     HoverTip(tip) {
         Box(
-            modifier.size(32.dp).clip(Look.ctl)
+            modifier.size(size.dp).clip(Look.ctl)
                 .background(if (filled) Look.accentTint else Look.control)
                 .border(1.dp, if (filled) Look.accent else Look.edge, Look.ctl)
                 .press(Look.ctl, onClick = onClick),
             contentAlignment = Alignment.Center
-        ) { Glyph(icon, tint ?: if (filled) Look.accent else c.inkSoft, 18) }
+        ) { Glyph(icon, tint ?: if (filled) Look.accent else c.inkSoft, if (size >= 36) 19 else 18) }
     }
 }
 

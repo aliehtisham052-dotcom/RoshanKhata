@@ -2351,6 +2351,9 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">Profil</string>
     <string name="shop_sub_switch">Profil · Ganti toko</string>
+    <string name="rail_sales_stock">Penjualan &amp; stok</string>
+    <string name="rail_reports">Laporan</string>
+    <string name="header_backed_up">Dicadangkan</string>
     <string name="shop_add_name">Tulis nama toko Anda</string>
     <string name="shop_add_name_sub">Dicetak di faktur dan laporan</string>
     <string name="shop_edit_profile">Ubah profil</string>

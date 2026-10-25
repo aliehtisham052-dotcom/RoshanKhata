@@ -902,26 +902,31 @@ private fun Book(
             ShopCard(
                 shop ?: word(W.app_name),
                 Photos.bitmap(images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).absolutePath, 96),
-                liveWith
-            ) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } }
+                liveWith,
+                onProfile = { section = Section.SHOP },
+                onSwitch = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } }
+            )
         }
         // The top row: the open page's title and buttons, then backup, phone, bell, More, Add Party.
         val header: @Composable () -> Unit = { AppHeader(
             head = pageHeads[section],
-            backupLabel = lastBackupAt?.let { word(W.business_last_backup, Format.dateTime(it)) } ?: word(W.backup_now),
+            backupAt = lastBackupAt,
+            backupOld = backupOld,
             onBackup = { backupNow() },
             onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
             alerts = bookAlerts.size + extraAlerts.size,
             onAlerts = { showAlerts = true },
-            // The phone's More sheet, in its groups: Data, Display, Help.
+            // What the rail does not hold, in the phone's groups (25 Oct 2026, the audit: the menu repeated the
+            // rail's Daily copies, Help and Business Profile, and filed the shop's own settings under Display).
             menu = listOf(
                 MenuLine(word(W.settings_group_data), null),
                 MenuLine(word(W.restore_from_file)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { restoreFromFile() } },
                 // Joining a device hands it the whole book: the owner's own PIN, whoever is signed in (22 Oct 2026).
                 MenuLine(word(W.live_title)) { openLiveSync() },
-                MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
                 MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
-                MenuLine(word(W.snapshots_title)) { section = Section.DAILY },
+                MenuLine(word(W.home_sec_business), null),
+                MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
+                MenuLine(word(W.trade_kicker_change)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingTrade = true } },
                 MenuLine(word(W.settings_group_display), null),
                 MenuLine(word(W.language)) { choosingLanguage = true },
                 MenuLine(word(W.theme)) { choosingTheme = true },
@@ -932,13 +937,10 @@ private fun Book(
                         appPrefs.setNativeDigits(nativeDigits)
                     })
                 else emptyArray<MenuLine>()),
-                MenuLine(word(W.business_profile)) { section = Section.SHOP },
-                MenuLine(word(W.trade_kicker_change)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingTrade = true } },
                 MenuLine(word(W.settings_group_security), null),
                 MenuLine(word(W.app_lock)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { lockSettings = true } },
                 MenuLine(com.innovation313.roshankhata.data.Access.current?.let { word(W.access_signed_in_as, it.name) } ?: word(W.access_who)) { signingIn = true },
                 MenuLine(word(W.settings_group_help), null),
-                MenuLine(word(W.help_support)) { section = Section.HELP },
                 MenuLine(word(W.report_problem)) { reporting = true },
                 MenuLine(word(W.about_us)) { about = true }
             ),

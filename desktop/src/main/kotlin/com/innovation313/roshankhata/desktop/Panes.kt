@@ -49,55 +49,61 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 /**
- * The rail's groups: the phone's Home sections in the phone's order (Every day,
- * Business, Tools), then what only the computer has, folded away under More.
+ * The rail's groups (Marhala 2, the owner's mockup of 25 Oct 2026): Home on its
+ * own, Every day and Sales & stock always open, then Reports, Tools and More
+ * folded ([folds]) behind one row each — their picture ([icon] on [tile], painted
+ * in [ink] when it is one of the phone's one-colour glyphs), name and count.
  */
-enum class Group(val word: String) {
+enum class Group(val word: String, val folds: Boolean = false, val icon: String? = null, val tile: String? = null, val ink: String? = null) {
     HOME(W.nav_home),
     DAILY(W.home_sec_daily),
-    BUSINESS(W.home_sec_business),
-    TOOLS(W.home_section_tools),
-    MORE(W.more_options)
+    SALES(W.rail_sales_stock),
+    REPORTS(W.rail_reports, folds = true, icon = "ic_pdf_doc", tile = "tile_insights_bg", ink = "fi_blue_b"),
+    TOOLS(W.home_section_tools, folds = true, icon = "ic_tune", tile = "tile_card_bg", ink = "fi_violet_b"),
+    MORE(W.more_options, folds = true, icon = "ic_tile_settings", tile = "tile_settings_bg")
 }
 
-/** The parts of the book the computer has, in the phone's Home order (MainActivity's three grids). */
-/** [icon] and [tile]: the phone's Home tile picture and its background colour for the same place. */
-enum class Section(val word: String, val icon: String, val tile: String, val group: Group) {
-    HOME(W.nav_home, "ic_storefront", "brand_green", Group.HOME),
+/**
+ * The parts of the book the computer has, in the rail's order (the owner's mockup of 25 Oct 2026).
+ * [icon] and [tile]: the phone's picture for the place and the tint behind it — its two-tone Home tile
+ * where it has one, else one of its one-colour glyphs painted in [ink] (the tile's own hue), so no two
+ * places wear the same picture (25 Oct 2026, the audit: eleven shared one).
+ */
+enum class Section(val word: String, val icon: String, val tile: String, val group: Group, val ink: String? = null) {
+    HOME(W.nav_home, "ic_menu_home", "tile_khata_bg", Group.HOME),
     KHATA(W.nav_khata, "ic_tile_khata", "tile_khata_bg", Group.DAILY),
     CASHBOOK(W.nav_cashbook, "ic_tile_cashbook", "tile_cashbook_bg", Group.DAILY),
     CHEQUES(W.nav_cheques, "ic_tile_cheques", "tile_cheques_bg", Group.DAILY),
     BILLS(W.supplier_bills, "ic_tile_bills", "tile_bills_bg", Group.DAILY),
+    FOLLOWUP(W.followup_title, "ic_tile_followup", "tile_followup_bg", Group.DAILY),
     PLANS(W.nav_plans, "ic_tile_plans", "tile_plans_bg", Group.DAILY),
-    EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg", Group.DAILY),
-    PRODUCTS(W.tile_products, "ic_tile_products", "tile_bills_bg", Group.BUSINESS),
-    // Beside the products it sells (24 Oct 2026: out of Every day, as on the phone's Home).
-    COUNTER(W.pos_title, "ic_tile_invoice", "tile_cashbook_bg", Group.BUSINESS),
-    INVENTORY(W.inventory_title, "ic_tile_expiring", "tile_stock_bg", Group.BUSINESS),
-    ORDERS(W.po_title, "ic_tile_bills", "tile_bills_bg", Group.BUSINESS),
-    INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg", Group.BUSINESS),
-    RATES(W.rate_list_title, "ic_tile_price_list", "tile_calc_bg", Group.BUSINESS),
-    BUY_RATES(W.sr_title, "ic_tile_supplier_rates", "tile_zakat_bg", Group.BUSINESS),
-    INSIGHTS(W.insights_title, "ic_tile_insights", "tile_insights_bg", Group.BUSINESS),
-    SALES(W.sales_report_title, "ic_tile_cashflow", "tile_insights_bg", Group.BUSINESS),
-    FOLLOWUP(W.followup_title, "ic_tile_followup", "tile_followup_bg", Group.BUSINESS),
-    AGING(W.aging_title, "ic_tile_followup", "tile_followup_bg", Group.BUSINESS),
-    CASHFLOW(W.cf_title, "ic_tile_cashflow", "tile_insights_bg", Group.BUSINESS),
-    SEASONS(W.season_title, "ic_tile_season", "tile_plans_bg", Group.BUSINESS),
+    COUNTER(W.pos_title, "ic_qr_scan", "tile_cashbook_bg", Group.SALES, ink = "fi_green_b"),
+    PRODUCTS(W.tile_products, "ic_tile_products", "tile_bills_bg", Group.SALES),
+    RATES(W.rate_list_title, "ic_tile_price_list", "tile_calc_bg", Group.SALES),
+    BUY_RATES(W.sr_title, "ic_tile_supplier_rates", "tile_zakat_bg", Group.SALES),
+    INVENTORY(W.inventory_title, "ic_feature_stock", "tile_stock_bg", Group.SALES, ink = "fi_orange_b"),
+    EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg", Group.SALES),
+    STOCK(W.inspector_title, "ic_register_stock", "tile_backup_bg", Group.SALES, ink = "fi_teal_b"),
+    ORDERS(W.po_title, "ic_truck", "tile_bills_bg", Group.SALES, ink = "fi_gold_b"),
+    INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg", Group.SALES),
+    REPORT(W.ledger_report_title, "ic_list_all", "tile_khata_bg", Group.REPORTS, ink = "fi_green_b"),
+    REGISTER(W.register_title, "ic_register_sales", "tile_invoice_bg", Group.REPORTS, ink = "fi_pink_b"),
+    SALES(W.sales_report_title, "ic_feature_insights", "tile_insights_bg", Group.REPORTS, ink = "fi_blue_b"),
+    INSIGHTS(W.insights_title, "ic_tile_insights", "tile_insights_bg", Group.REPORTS),
+    AGING(W.aging_title, "ic_calendar", "tile_followup_bg", Group.REPORTS, ink = "fi_green_b"),
+    CASHFLOW(W.cf_title, "ic_tile_cashflow", "tile_insights_bg", Group.REPORTS),
     CALC(W.calculator, "ic_tile_calc", "tile_calc_bg", Group.TOOLS),
-    CARD(W.biz_card, "ic_tile_card", "tile_card_bg", Group.TOOLS),
     ZAKAT(W.tile_zakat, "ic_tile_zakat", "tile_zakat_bg", Group.TOOLS),
+    CARD(W.biz_card, "ic_tile_card", "tile_card_bg", Group.TOOLS),
     POSTER(W.poster_title, "ic_tile_poster", "tile_plans_bg", Group.TOOLS),
-    STAFF(W.staff_title, "ic_tile_card", "tile_card_bg", Group.MORE),
-    SCHEMES(W.schemes_title, "ic_tile_products", "tile_plans_bg", Group.MORE),
-    STOCK(W.inspector_title, "ic_tile_expiring", "tile_stock_bg", Group.MORE),
-    REPORT(W.ledger_report_title, "ic_tile_backup", "tile_backup_bg", Group.MORE),
-    REGISTER(W.register_title, "ic_tile_price_list", "tile_invoice_bg", Group.MORE),
-    DUPLICATES(W.duplicate_customers, "ic_tile_bin", "tile_bin_bg", Group.MORE),
+    STAFF(W.staff_title, "ic_people", "tile_card_bg", Group.MORE, ink = "fi_violet_b"),
+    SCHEMES(W.schemes_title, "ic_seal_stamp", "tile_zakat_bg", Group.MORE, ink = "fi_gold_b"),
+    SEASONS(W.season_title, "ic_tile_season", "tile_plans_bg", Group.MORE),
+    DUPLICATES(W.duplicate_customers, "ic_menu_duplicate", "tile_card_bg", Group.MORE),
     DAILY(W.snapshots_title, "ic_tile_backup", "tile_backup_bg", Group.MORE),
-    AUDIT(W.audit_title, "ic_tile_card", "tile_card_bg", Group.MORE),
-    HELP(W.help_support, "ic_tile_insights", "tile_calc_bg", Group.MORE),
-    SHOP(W.business_profile, "ic_tile_settings", "tile_settings_bg", Group.MORE)
+    AUDIT(W.audit_title, "ic_shield_check", "tile_cheques_bg", Group.MORE, ink = "fi_teal_b"),
+    HELP(W.help_support, "ic_menu_help", "tile_insights_bg", Group.MORE),
+    SHOP(W.business_profile, "ic_storefront", "tile_settings_bg", Group.MORE, ink = "fi_green_b")
 }
 
 /** True when the app is drawn dark: the owner's Theme choice, not only the computer's. */
@@ -178,22 +184,33 @@ object LookPalette {
 
 /** The phone's tile picture on its own tint, [size] across. */
 @Composable
-fun TileBadge(s: Section, size: Int = 34, glyph: Int = 22) {
+fun TileBadge(s: Section, size: Int = 34, glyph: Int = 22) = PictureBadge(s.icon, s.tile, s.ink, size, glyph)
+
+/**
+ * A picture on its tint, [size] across: one of the phone's two-tone tiles as drawn, or, with [ink],
+ * one of its one-colour (white) glyphs painted in that colour (white on a pale tint would vanish).
+ */
+@Composable
+fun PictureBadge(icon: String, tile: String, ink: String?, size: Int, glyph: Int) {
     val c = LocalRoshanColors.current
+    val dark = isDark()
     Box(
-        Modifier.size(size.dp).background(TileIcons.color(s.tile, isDark()) ?: c.pageBg, RoundedCornerShape((size / 4).dp)),
+        Modifier.size(size.dp).background(TileIcons.color(tile, dark) ?: c.pageBg, RoundedCornerShape((size / 4).dp)),
         contentAlignment = Alignment.Center
     ) {
-        tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(glyph.dp)) }
+        if (ink != null) Glyph(icon, TileIcons.color(ink, dark) ?: c.ink, glyph)
+        else tileIcon(icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(glyph.dp)) }
     }
 }
 
 /**
- * The rail on the start side (1.10.0: Windows 11's NavigationView), grouped as
- * the phone's Home: Every day, Business, Tools; the computer's own pages under
- * More, folded until opened. Each row is 36 dp with the phone's tile glyph in
- * one colour and, when open, a 3 dp accent bar on its start side. [badges]: a
- * count beside a section (Follow-up's late payers, Khata's parties).
+ * The rail on the start side (Marhala 2, the owner's mockup of 25 Oct 2026):
+ * Home, then Every day and Sales & stock under their names, then Reports, Tools
+ * and More folded behind one row each (their picture, name and count). A folded
+ * group opens when one of its pages is chosen from anywhere (the bell, Home's
+ * actions) and the owner may fold it again; folded, it is marked while it holds
+ * the open page. Each row is 36 dp with the place's own picture; the open one is
+ * deep green with a gold edge. [badges]: a count beside a section.
  */
 @Composable
 fun SectionRail(
@@ -201,9 +218,9 @@ fun SectionRail(
     /** Fixed above the groups: the shop's card (Marhala 2). */
     top: @Composable () -> Unit = {}
 ) {
-    val c = LocalRoshanColors.current
-    var moreOpen by remember { mutableStateOf(false) }
-    // Scrolls: twenty-eight sections outgrow a 768-row laptop at 125% display scale.
+    val opened = remember { androidx.compose.runtime.mutableStateMapOf<Group, Boolean>() }
+    androidx.compose.runtime.LaunchedEffect(current) { if (current.group.folds) opened[current.group] = true }
+    // Scrolls: thirty-four places outgrow a 768-row laptop at 125% display scale.
     // The phone's rail (the owner's mockup, 25 Oct 2026): its own pale green ground with an edge, a scrollbar
     // that says there is more below, the chosen row deep green with a gold edge.
     val railScroll = rememberScrollState()
@@ -212,32 +229,31 @@ fun SectionRail(
             Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 9.dp, top = 8.dp, bottom = 4.dp)) { top() }
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 Column(Modifier.fillMaxSize().verticalScroll(railScroll).padding(horizontal = 8.dp, vertical = 4.dp)) {
+                val trade = LocalTrade.current
+                var firstFold = true
                 Group.entries.forEach { g ->
-                    val trade = LocalTrade.current
                     val inGroup = Section.entries.filter { it.group == g && trade.shows(it) }
-                    when (g) {
-                        Group.HOME -> {}
-                        Group.MORE -> {
-                            val open = moreOpen || current.group == Group.MORE
-                            Spacer(Modifier.height(6.dp))
-                            HorizontalDivider(color = Look.line)
-                            Row(
-                                Modifier.fillMaxWidth().padding(top = 4.dp).clip(Look.ctl)
-                                    .press(Look.ctl) { moreOpen = !open }.padding(horizontal = 12.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(word(g.word), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                                Text(if (open) "\u25BE" else "${inGroup.size}  \u25B8", color = c.textMuted, fontSize = 12.sp)
-                            }
+                    if (inGroup.isEmpty()) return@forEach
+                    when {
+                        g == Group.HOME -> {}
+                        g.folds -> {
+                            // One quiet line above the folded groups, as the mockup.
+                            if (firstFold) { Spacer(Modifier.height(6.dp)); HorizontalDivider(color = Look.line); Spacer(Modifier.height(4.dp)); firstFold = false }
+                            val open = opened[g] == true
+                            GroupRow(g, inGroup.size, open, holdsOpenPage = !open && current.group == g) { opened[g] = !open }
                             if (!open) return@forEach
                         }
                         else -> Text(
                             word(g.word).uppercase(),
                             Modifier.padding(start = 12.dp, top = 12.dp, bottom = 4.dp),
-                            color = Look.groupText, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp
+                            color = Look.groupText, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis
                         )
                     }
-                    inGroup.forEach { s -> RailRow(s, s == current, badges[s] ?: 0) { onPick(s) } }
+                    inGroup.forEach { s ->
+                        // A folded group's pages sit a step in from its row.
+                        Box(if (g.folds) Modifier.padding(start = 10.dp) else Modifier) { RailRow(s, s == current, badges[s] ?: 0) { onPick(s) } }
+                    }
                 }
                 }
                 androidx.compose.foundation.VerticalScrollbar(
@@ -265,13 +281,8 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
             .padding(start = 10.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // The phone's tile picture, small, on its own tint (a tinted silhouette made a blob: the
-        // tile vectors carry their rounded ground, so one colour fills the whole square).
-        if (s == Section.HOME) {
-            Box(Modifier.size(22.dp).background(Look.accent, RoundedCornerShape(5.dp)), contentAlignment = Alignment.Center) {
-                tileIcon(s.icon)?.let { Image(it, contentDescription = null, modifier = Modifier.size(14.dp)) }
-            }
-        } else TileBadge(s, 22, 14)
+        // The place's own picture, small, on its own tint.
+        TileBadge(s, 22, 14)
         Spacer(Modifier.width(12.dp))
         Text(
             word(s.word),
@@ -288,6 +299,40 @@ private fun RailRow(s: Section, on: Boolean, badge: Int, onClick: () -> Unit) {
                 color = if (on) Look.onPicked else if (s == Section.FOLLOWUP) c.owedToMe else c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold
             )
         }
+    }
+}
+
+/**
+ * A folded group's row (the mockup's Reports · Tools · More): its picture, its name, how many pages it
+ * holds and a chevron that turns down while open. [holdsOpenPage]: folded over the open page, it wears
+ * the chosen tint so the owner still sees where he is.
+ */
+@Composable
+private fun GroupRow(g: Group, count: Int, open: Boolean, holdsOpenPage: Boolean, onClick: () -> Unit) {
+    val c = LocalRoshanColors.current
+    Row(
+        Modifier.fillMaxWidth()
+            .padding(vertical = 1.dp)
+            .clip(Look.ctl)
+            .background(eased(if (holdsOpenPage) Look.chosen else Color.Transparent))
+            .press(Look.ctl, onClick = onClick)
+            .height(36.dp)
+            .padding(start = 10.dp, end = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PictureBadge(g.icon ?: "ic_tile_settings", g.tile ?: "tile_settings_bg", g.ink, 22, 14)
+        Spacer(Modifier.width(12.dp))
+        Text(
+            word(g.word), Modifier.weight(1f), color = c.ink, fontSize = 14.sp,
+            fontWeight = if (holdsOpenPage) FontWeight.SemiBold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            count.toString(),
+            Modifier.clip(RoundedCornerShape(10.dp)).background(Look.subtle).padding(horizontal = 7.dp, vertical = 1.dp),
+            color = c.inkSoft, fontSize = 11.sp, fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.width(6.dp))
+        Glyph(if (open) "ic_chevron_down" else "ic_chevron_right", c.inkSoft, 14)
     }
 }
 
