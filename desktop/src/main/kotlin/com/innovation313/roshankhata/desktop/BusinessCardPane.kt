@@ -166,7 +166,8 @@ fun BusinessCardPane(
     fun data() = CardTemplates.CardData(
         name = name.trim().ifEmpty { cardWords.text(W.biz_card_name_hint) },
         type = type.trim(), owner = owner.trim(), phone = phone.trim(), address = address.trim(),
-        footer = if (showMark) cardWords.text(W.made_with_app) else "",
+        // The app's name stays off cards for now (Branding: the owner, 12 Oct 2026); the phone's rule here too.
+        footer = if (showMark && com.innovation313.roshankhata.data.Branding.ON_POSTERS_AND_CARDS) cardWords.text(W.made_with_app) else "",
         whatsapp = if (waSame) phone.trim() else whatsapp.trim(),
         email = email.trim(), web = web.trim(), tagline = tagline.trim(), qrMessage = qrMessage.trim(),
         logo = logo, rtl = lang.rtl, nastaliq = lang.nastaliq
@@ -238,7 +239,7 @@ fun BusinessCardPane(
             if (!waSame) Field(whatsapp, { whatsapp = it }, word(W.biz_card_l_whatsapp), word(W.biz_card_ex_phone))
             Field(email, { email = it }, word(W.biz_card_l_email), word(W.biz_card_ex_email))
             Field(web, { web = it }, word(W.biz_card_l_web), word(W.biz_card_ex_web))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (com.innovation313.roshankhata.data.Branding.ON_POSTERS_AND_CARDS) Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(showMark, { showMark = it })
                 Text(word(W.biz_card_show_mark), color = c.ink, fontSize = 14.sp)
             }
