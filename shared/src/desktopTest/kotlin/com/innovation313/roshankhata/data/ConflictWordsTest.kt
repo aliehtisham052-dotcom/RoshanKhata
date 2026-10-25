@@ -21,8 +21,8 @@ class ConflictWordsTest {
         assertEquals("Date", ConflictWords.field(words, "timestamp"))
         assertEquals(Format.money(12_500.0), ConflictWords.value(words, "amount", "12500.0"))
         assertEquals(Format.dateTime(1_761_212_345_678L), ConflictWords.value(words, "timestamp", "1761212345678"))
-        assertEquals("I gave", ConflictWords.value(words, "isGiven", "1"))
-        assertEquals("I got", ConflictWords.value(words, "isGiven", "0"))
+        assertEquals("I Gave", ConflictWords.value(words, "isGiven", "1"))
+        assertEquals("I Got", ConflictWords.value(words, "isGiven", "0"))
     }
 
     @Test
