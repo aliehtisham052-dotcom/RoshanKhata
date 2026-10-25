@@ -176,6 +176,20 @@ object PdfFiles {
     }
 }
 
+/**
+ * Windows' Explorer at [file] with the file chosen, so it can be dragged into a chat or a mail (25 Oct
+ * 2026: an invoice for WhatsApp); its folder alone where that cannot run. Two arguments on purpose:
+ * Windows' own form is `explorer /select, "C:\path with spaces\file.pdf"`, and Java quotes only the path,
+ * for its spaces — one argument "/select,C:\…" would be quoted whole, a form Explorer does not take.
+ */
+fun showInFolder(file: File) {
+    Thread({
+        val windows = System.getProperty("os.name").orEmpty().startsWith("Windows", ignoreCase = true)
+        val chosen = windows && runCatching { ProcessBuilder("explorer.exe", "/select,", file.absolutePath).start() }.isSuccess
+        if (!chosen) runCatching { java.awt.Desktop.getDesktop().open(file.parentFile) }
+    }, "show-in-folder").start()
+}
+
 /** What the preview window shows: the sheet and its name. Set by [StatementPrint.show]. */
 object Preview {
     class Request(val printable: Printable, val title: String)

@@ -709,6 +709,7 @@
     <string name="view">دیکھیں</string>
     <string name="invoice_share_pdf">PDF کے طور پر بھیجیں</string>
     <string name="invoice_send_whatsapp">واٹس ایپ پر بھیجیں</string>
+    <string name="invoice_whatsapp_pc">پی ڈی ایف محفوظ ہو گئی اور اس کا فولڈر کھل گیا ہے: %1$s\n\nگاہک کی واٹس ایپ چیٹ آپ کے براؤزر کے ذریعے کھلتی ہے۔ فائل کھینچ کر چیٹ میں ڈالیں، یا وہاں + بٹن سے لگائیں۔</string>
     <string name="invoice_template_teal">ٹیل کارپوریٹ — مکمل بزنس انوائس</string>
     <string name="number_words_language" translatable="false">ur</string>
     <string name="invoice_swipe_designs">مزید ڈیزائن دیکھنے کے لیے سوائپ کریں — %2$d میں سے %1$d</string>

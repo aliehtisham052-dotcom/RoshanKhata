@@ -42,6 +42,7 @@ import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.Calc

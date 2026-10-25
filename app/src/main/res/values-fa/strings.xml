@@ -730,6 +730,7 @@
     <string name="view">مشاهده</string>
     <string name="invoice_share_pdf">اشتراک به‌صورت PDF</string>
     <string name="invoice_send_whatsapp">ارسال با واتساپ</string>
+    <string name="invoice_whatsapp_pc">به‌صورت PDF ذخیره شد و پوشه‌اش باز است: %1$s\n\nگفتگوی واتساپ مشتری از طریق مرورگر شما باز می‌شود. فایل را به داخل گفتگو بکشید، یا همان‌جا با دکمه + پیوست کنید.</string>
     <string name="invoice_template_teal">تیل کورپریت — فاکتور کامل تجاری</string>
     <string name="number_words_language" translatable="false">fa</string>
     <string name="invoice_swipe_designs">برای دیدن طرح‌های بیشتر بکشید — %1$d از %2$d</string>

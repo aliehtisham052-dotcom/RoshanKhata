@@ -709,6 +709,7 @@
     <string name="view">Dekhein</string>
     <string name="invoice_share_pdf">PDF ke taur par bhejein</string>
     <string name="invoice_send_whatsapp">WhatsApp par bhejein</string>
+    <string name="invoice_whatsapp_pc">PDF save ho gayi aur us ka folder khul gaya hai: %1$s\n\nGahak ki WhatsApp chat aap ke browser ke zariye khulti hai. File ko kheench kar chat mein daalein, ya wahan + button se lagayein.</string>
     <string name="invoice_template_teal">Teal Corporate — mukammal business invoice</string>
     <string name="number_words_language" translatable="false">ur-Latn</string>
     <string name="invoice_swipe_designs">Mazeed design dekhne ke liye swipe karein — %2$d mein se %1$d</string>

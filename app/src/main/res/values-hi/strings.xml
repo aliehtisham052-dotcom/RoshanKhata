@@ -739,6 +739,7 @@
     <string name="view">देखें</string>
     <string name="invoice_share_pdf">PDF के रूप में शेयर करें</string>
     <string name="invoice_send_whatsapp">WhatsApp पर भेजें</string>
+    <string name="invoice_whatsapp_pc">PDF के रूप में सेव हो गई और उसका फ़ोल्डर खुल गया है: %1$s\n\nग्राहक की WhatsApp चैट आपके ब्राउज़र से खुलती है। फ़ाइल को खींचकर चैट में डालें, या वहाँ + बटन से जोड़ें।</string>
     <string name="invoice_template_teal">टील कॉर्पोरेट — पूरा बिज़नेस इनवॉइस</string>
     <string name="number_words_language" translatable="false">hi</string>
     <string name="invoice_swipe_designs">और डिज़ाइन देखने के लिए स्वाइप करें — %2$d में से %1$d</string>

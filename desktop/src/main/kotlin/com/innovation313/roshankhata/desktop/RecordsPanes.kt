@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -126,32 +128,26 @@ fun BillsPane(
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
     deletingLine?.let { l ->
         // Soft, like everywhere: the batch record stays the answer to "which batch was this sale from".
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { deletingLine = null },
-            title = { Text(word(W.delete_item)) },
-            text = { Text(word(W.delete_item_confirm, l.productName)) },
-            confirmButton = {
-                androidx.compose.material3.TextButton({
-                    deletingLine = null
-                    scope.launch { withContext(Dispatchers.IO) { dao.softDeleteBillItem(l.id) } }
-                }) { Text(word(W.delete), color = c.owedToMe) }
+        AskDialog(
+            title = word(W.delete_item), text = word(W.delete_item_confirm, l.productName), confirm = word(W.delete), danger = true,
+            onConfirm = {
+                deletingLine = null
+                scope.launch { withContext(Dispatchers.IO) { dao.softDeleteBillItem(l.id) } }
             },
-            dismissButton = { androidx.compose.material3.TextButton({ deletingLine = null }) { Text(word(W.cancel)) } }
+            onDismiss = { deletingLine = null }
         )
     }
     deletingBill?.let { b ->
         // A credit bill's own "I owe them" entry goes to the Recycle Bin with it (the phone's rule).
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { deletingBill = null },
-            title = { Text(word(W.delete_bill)) },
-            text = { Text(Format.name(b.partyName) + "  \u00b7  " + Format.money(b.totalAmount) + (b.billNumber?.let { "  \u00b7  #$it" } ?: "")) },
-            confirmButton = {
-                androidx.compose.material3.TextButton({
-                    deletingBill = null; open = null
-                    scope.launch { withContext(Dispatchers.IO) { dao.deleteSupplierBill(b.id) }; onLedgerChanged() }
-                }) { Text(word(W.delete), color = c.owedToMe) }
+        AskDialog(
+            title = word(W.delete_bill),
+            text = Format.name(b.partyName) + "  \u00b7  " + Format.money(b.totalAmount) + (b.billNumber?.let { "  \u00b7  #$it" } ?: ""),
+            confirm = word(W.delete), danger = true,
+            onConfirm = {
+                deletingBill = null; open = null
+                scope.launch { withContext(Dispatchers.IO) { dao.deleteSupplierBill(b.id) }; onLedgerChanged() }
             },
-            dismissButton = { androidx.compose.material3.TextButton({ deletingBill = null }) { Text(word(W.cancel)) } }
+            onDismiss = { deletingBill = null }
         )
     }
     if (adding) {
@@ -159,6 +155,7 @@ fun BillsPane(
             Box(Modifier.fillMaxSize()) {
                 BillForm(
                     parties = parties,
+                    products = rememberProductShelf(dao),
                     onSave = { b ->
                         adding = false
                         scope.launch {
@@ -301,16 +298,10 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         }
     }
     importPlan?.let { plan ->
-        AlertDialog(
-            onDismissRequest = { importPlan = null },
-            title = { Text(word(W.products_import)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(words.text(W.products_import_plan, plan.toAdd.size, plan.toUpdate.size))
-                    if (plan.barcodeClashes > 0) Text(words.text(W.products_import_clash, plan.barcodeClashes), color = c.owedToMe, fontSize = 13.sp)
-                }
-            },
-            confirmButton = {
+        // In the app's frame (Marhala 4, the audit: Material's dialogs remained on this page).
+        AppDialog(onCloseRequest = { importPlan = null }, title = word(W.products_import), state = rememberDialogState(width = fitW(480.dp), height = fitH(300.dp))) {
+            DialogFrame(word(W.products_import), onClose = { importPlan = null }, footer = {
+                FluentButton(word(W.cancel), { importPlan = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), {
                     importPlan = null
                     scope.launch {
@@ -319,25 +310,23 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                         told = words.text(W.products_imported, added, updated)
                     }
                 }, kind = ButtonKind.ACCENT)
-            },
-            dismissButton = { FluentButton(word(W.cancel), { importPlan = null }, kind = ButtonKind.STANDARD) }
-        )
+            }) {
+                Text(words.text(W.products_import_plan, plan.toAdd.size, plan.toUpdate.size), color = c.ink, fontSize = 14.sp)
+                if (plan.barcodeClashes > 0) Text(words.text(W.products_import_clash, plan.barcodeClashes), color = c.owedToMe, fontSize = 13.sp)
+            }
+        }
     }
     assignCodes?.let { missing ->
-        AlertDialog(
-            onDismissRequest = { assignCodes = null },
-            title = { Text(word(W.products_labels)) },
-            text = { Text(words.text(W.products_labels_assign, missing.size)) },
-            confirmButton = {
-                FluentButton(word(W.products_labels), {
-                    assignCodes = null
-                    scope.launch {
-                        val coded = withContext(Dispatchers.IO) { dao.assignInternalBarcodes(missing.map { it.id }) }
-                        printLabels(shown.map { p -> coded.firstOrNull { it.id == p.id } ?: p })
-                    }
-                }, kind = ButtonKind.ACCENT)
+        AskDialog(
+            title = word(W.products_labels), text = words.text(W.products_labels_assign, missing.size), confirm = word(W.products_labels),
+            onConfirm = {
+                assignCodes = null
+                scope.launch {
+                    val coded = withContext(Dispatchers.IO) { dao.assignInternalBarcodes(missing.map { it.id }) }
+                    printLabels(shown.map { p -> coded.firstOrNull { it.id == p.id } ?: p })
+                }
             },
-            dismissButton = { FluentButton(word(W.cancel), { assignCodes = null }, kind = ButtonKind.STANDARD) }
+            onDismiss = { assignCodes = null }
         )
     }
     Column(Modifier.fillMaxSize()) {
@@ -411,39 +400,72 @@ fun InvoicesPane(
     var editingInvoice by remember { mutableStateOf<Pair<com.innovation313.roshankhata.data.Invoice, List<com.innovation313.roshankhata.data.InvoiceItem>>?>(null) }
     var deletingInvoice by remember { mutableStateOf<com.innovation313.roshankhata.data.InvoiceSummary?>(null) }
     deletingInvoice?.let { inv ->
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { deletingInvoice = null },
-            text = { Text(inv.invoiceNumber + "  \u00b7  " + word(W.delete_invoice_confirm)) },
-            confirmButton = {
-                androidx.compose.material3.TextButton({
-                    deletingInvoice = null
-                    scope.launch { withContext(Dispatchers.IO) { dao.softDeleteInvoice(inv.id) } }
-                }) { Text(word(W.delete), color = c.owedToMe) }
+        // The app's question, titled (Marhala 4, the audit: it was Material's, with no title).
+        AskDialog(
+            title = word(W.delete) + "  \u00b7  " + inv.invoiceNumber,
+            subtitle = Format.name(inv.customerName),
+            text = word(W.delete_invoice_confirm),
+            confirm = word(W.delete),
+            danger = true,
+            onConfirm = {
+                deletingInvoice = null
+                scope.launch { withContext(Dispatchers.IO) { dao.softDeleteInvoice(inv.id) } }
             },
-            dismissButton = { androidx.compose.material3.TextButton({ deletingInvoice = null }) { Text(word(W.cancel)) } }
+            onDismiss = { deletingInvoice = null }
         )
     }
+    var told by remember { mutableStateOf<String?>(null) }
+    told?.let { TellDialog(word(W.invoice_send_whatsapp), it, { told = null }, height = 320) }
+    // The invoice as the customer will hold it: the phone's design it was made with — the plain layout only
+    // if a design could not be drawn.
+    fun sheetOf(inv: com.innovation313.roshankhata.data.Invoice, lines: List<com.innovation313.roshankhata.data.InvoiceItem>): java.awt.print.Printable =
+        com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.let { com.innovation313.roshankhata.desktop.invoice.DocumentPrint(it) }
+            ?: InvoicePrint(words, rtl, shopName ?: words.text(W.app_name), shopLine, inv, lines)
     // Print an invoice by id: the saved row and its lines, as the customer will hold them.
     fun print(id: Long) {
         scope.launch {
             val pair = withContext(Dispatchers.IO) { dao.getInvoice(id)?.let { it to dao.invoiceItems(id) } } ?: return@launch
-            // The invoice in the design it was made with — the phone's own drawing; the plain
-            // layout only if a design could not be drawn.
-            val doc = withContext(Dispatchers.IO) { com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), pair.first, pair.second) }
-            StatementPrint.show(
-                doc?.let { com.innovation313.roshankhata.desktop.invoice.DocumentPrint(it) }
-                    ?: InvoicePrint(words, rtl, shopName ?: words.text(W.app_name), shopLine, pair.first, pair.second),
-                pair.first.invoiceNumber
-            )
+            val sheet = withContext(Dispatchers.IO) { sheetOf(pair.first, pair.second) }
+            StatementPrint.show(sheet, pair.first.invoiceNumber)
+        }
+    }
+    // The phone's "Send on WhatsApp" (InvoicesActivity.sendPdfToCustomer) as far as a computer goes: nothing
+    // here can attach a file to a chat, so the PDF is saved and shown chosen in its folder, to be dragged into
+    // the customer's chat — opened by his number alone, so no name or amount goes through the browser.
+    var sending by remember { mutableStateOf(false) }
+    fun sendOnWhatsApp(id: Long) {
+        if (sending) return
+        scope.launch {
+            val pair = withContext(Dispatchers.IO) { dao.getInvoice(id)?.let { it to dao.invoiceItems(id) } } ?: return@launch
+            val number = pair.first.customerPhone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
+            if (number == null) {
+                told = words.text(W.no_phone_number)
+                return@launch
+            }
+            sending = true
+            val saved = runCatching {
+                withContext(Preview.drawing) {
+                    val file = PdfFiles.next(pair.first.invoiceNumber)
+                    PdfFiles.write(Sheets.of(sheetOf(pair.first, pair.second)), file)
+                    file
+                }
+            }
+            sending = false
+            saved.onSuccess { file ->
+                showInFolder(file)
+                val chat = withContext(Dispatchers.IO) { runCatching { java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number")) } }
+                told = words.text(W.invoice_whatsapp_pc, file.absolutePath) + (chat.exceptionOrNull()?.let { "\n\n" + failText(words, it) } ?: "")
+            }.onFailure { told = words.text(W.pc_pdf_failed, it.message ?: it.toString()) }
         }
     }
     if (adding) {
-        AppDialog(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = fitW(720.dp), height = fitH(860.dp))) {
+        AppDialog(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = fitW(1100.dp), height = fitH(900.dp))) {
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
                     preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, SHARP) },
                     fields = fields,
+                    products = rememberProductShelf(dao),
                     onSave = { inv, lines ->
                         adding = false
                         scope.launch {
@@ -457,7 +479,7 @@ fun InvoicesPane(
         }
     }
     editingInvoice?.let { (inv, lines) ->
-        AppDialog(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit) + "  ·  " + inv.invoiceNumber, state = rememberDialogState(width = fitW(720.dp), height = fitH(860.dp))) {
+        AppDialog(onCloseRequest = { editingInvoice = null },onPreviewKeyEvent = escCloses { editingInvoice = null }, title = word(W.edit) + "  ·  " + inv.invoiceNumber, state = rememberDialogState(width = fitW(1100.dp), height = fitH(900.dp))) {
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
@@ -465,6 +487,7 @@ fun InvoicesPane(
                     existing = inv,
                     existingLines = lines,
                     fields = fields,
+                    products = rememberProductShelf(dao),
                     onSave = { updated, newLines ->
                         editingInvoice = null
                         scope.launch {
@@ -497,9 +520,14 @@ fun InvoicesPane(
             .collect { last -> invoiceLimit = com.innovation313.roshankhata.data.ListWindow.grown(invoiceLimit, invoices.size, last) }
     }
     val open = shown.firstOrNull { it.id == chosen } ?: shown.firstOrNull()
+    // A customer's face wears his khata's colours when the book has one party of that name (an invoice keeps
+    // only the name), else colours of its own from the name — never by the row's place (Marhala 4, the audit).
+    val faceIds = remember(parties) { parties.groupBy { it.name.trim().lowercase() }.mapValues { (_, same) -> same.singleOrNull()?.id } }
+    fun faceId(name: String): Long = faceIds[name.trim().lowercase()] ?: name.trim().lowercase().hashCode().toLong()
     FluentPage(
         word(W.nav_invoice),
-        word(W.range_this_month) + " " + Format.money(thisMonth.sumOf { it.grandTotal }) + " · " + thisMonth.size + "  ·  " + word(W.range_all) + " " + invoiceCount,
+        // This month's money; the counts are on the two pills (Marhala 4, the audit: they were said twice).
+        word(W.range_this_month) + " " + Format.money(thisMonth.sumOf { it.grandTotal }),
         scroll = false,
         actions = {
             FluentButton(word(W.invoice_settings_title), { settingFields = true }, icon = "ic_tile_settings")
@@ -507,115 +535,147 @@ fun InvoicesPane(
         }
     ) {
         if (invoices.isEmpty()) {
-            EmptyState("ic_tile_invoice", word(W.no_invoices), null, Modifier.weight(1f)) {
-                FluentButton(word(W.add_invoice), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
-            }
+            // The head's Add invoice is the one way in (it was offered twice).
+            EmptyState("ic_tile_invoice", word(W.no_invoices), null, Modifier.weight(1f))
             return@FluentPage
         }
-        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            ListCard(Modifier.weight(0.46f).fillMaxSize()) {
-                Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Chip(word(W.range_all) + " \u00b7 " + invoiceCount, !monthOnly) { monthOnly = false }
-                    Chip(word(W.range_this_month) + " \u00b7 " + thisMonth.size, monthOnly) { monthOnly = true }
-                }
-                Rule()
-                LazyColumn(Modifier.fillMaxSize(), state = invoiceListState) {
-                    itemsIndexed(shown, key = { _, it -> it.id }) { idx, i ->
-                        val on = i.id == open?.id
-                        Row(
-                            Modifier.fillMaxWidth().background(eased(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent))
-                                .press { chosen = i.id }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(Modifier.width(3.dp).height(22.dp).background(eased(if (on) Look.accent else androidx.compose.ui.graphics.Color.Transparent), Look.ctl))
-                            androidx.compose.foundation.layout.Spacer(Modifier.width(9.dp))
-                            Avatar(i.customerName, 34, idx)
-                            androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
-                            Column(Modifier.weight(1f)) {
-                                Text(Format.name(i.customerName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                                Text(Format.ltr(i.invoiceNumber) + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
+        androidx.compose.foundation.layout.BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+            // The list as narrow as its rows allow; the invoice gets the rest (Marhala 4, the audit: small and low).
+            val listWidth = (maxWidth * 0.36f).coerceIn(280.dp, 380.dp)
+            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                ListCard(Modifier.width(listWidth).fillMaxHeight()) {
+                    Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Chip(word(W.range_all) + " \u00b7 " + invoiceCount, !monthOnly) { monthOnly = false }
+                        Chip(word(W.range_this_month) + " \u00b7 " + thisMonth.size, monthOnly) { monthOnly = true }
+                    }
+                    Rule()
+                    LazyColumn(Modifier.fillMaxSize(), state = invoiceListState) {
+                        itemsIndexed(shown, key = { _, it -> it.id }) { _, i ->
+                            val on = i.id == open?.id
+                            Row(
+                                Modifier.fillMaxWidth().background(eased(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent))
+                                    .press { chosen = i.id }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(Modifier.width(3.dp).height(22.dp).background(eased(if (on) Look.accent else androidx.compose.ui.graphics.Color.Transparent), Look.ctl))
+                                androidx.compose.foundation.layout.Spacer(Modifier.width(9.dp))
+                                Avatar(i.customerName, 34, id = faceId(i.customerName))
+                                androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
+                                Column(Modifier.weight(1f)) {
+                                    Text(Format.name(i.customerName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                                    Text(Format.ltr(i.invoiceNumber) + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
+                                }
+                                Text(Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                             }
-                            Text(Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                            Rule()
                         }
-                        Rule()
+                    }
+                }
+                Column(Modifier.weight(1f).fillMaxHeight().card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (open != null) {
+                        // The saved row (what was received, if the owner recorded it) and its pages in its own design.
+                        var full by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
+                        var sheets by remember(open.id) { mutableStateOf<Sheets?>(null) }
+                        // The design on show: the saved one until the owner steps through the
+                        // phone's ten (only one could be seen before, 20 Oct); Apply keeps it.
+                        var look by remember(open.id) { mutableStateOf<Int?>(null) }
+                        LaunchedEffect(open.id, open.grandTotal, open.invoiceDate, look) {
+                            sheets = null
+                            val row = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } }
+                            full = row?.first
+                            // What Print and WhatsApp send: the design, else the plain layout (sheetOf).
+                            sheets = row?.let { (inv, lines) ->
+                                withContext(Preview.drawing) { runCatching { Sheets.of(sheetOf(inv.copy(templateId = look ?: inv.templateId), lines)) }.getOrNull() }
+                            }
+                        }
+                        // The head and every action stay in sight; the pages take the height left (Marhala 4: the
+                        // picture began under a head, a row of buttons and the stepper, its top third in view).
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Avatar(open.customerName, 40, id = faceId(open.customerName))
+                            Column(Modifier.weight(1f)) {
+                                Text(Format.name(open.customerName), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                                Text(
+                                    listOfNotNull(Format.ltr(open.invoiceNumber), Format.dateOnly(open.invoiceDate), full?.dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) }).joinToString("  \u00b7  "),
+                                    color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                            }
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(Format.money(open.grandTotal), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                                // Received is shown only when the owner recorded it on the invoice: nothing
+                                // recorded is not the same as nothing paid (Invoice.receivedAmount).
+                                full?.receivedAmount?.let { got ->
+                                    Text(word(W.invoice_received_line, Format.money(got)), color = c.iOwe, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                                    val due = open.grandTotal - got
+                                    if (Money.isPositive(due)) Text(word(W.invoice_balance_due_line, Format.money(due)), color = c.owedToMe, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                                }
+                            }
+                        }
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            FluentButton(word(W.ledger_pdf_button), { print(open.id) }, kind = ButtonKind.ACCENT, icon = "ic_print")
+                            IconAction("ic_action_whatsapp", word(W.invoice_send_whatsapp), { sendOnWhatsApp(open.id) })
+                            IconAction("ic_edit", word(W.edit), {
+                                Gates.edit { scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } } }
+                            })
+                            IconAction("ic_delete", word(W.delete), { Gates.edit { deletingInvoice = open } }, tint = c.owedToMe)
+                            full?.let { saved ->
+                                DesignStepper(
+                                    shown = look ?: saved.templateId,
+                                    saved = saved.templateId,
+                                    onShow = { look = it },
+                                    onApply = { t ->
+                                        scope.launch {
+                                            withContext(Dispatchers.IO) { dao.updateInvoice(saved.copy(templateId = t)) }
+                                            full = saved.copy(templateId = t)
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        if (sending) LinearProgressIndicator(Modifier.fillMaxWidth())
+                        Box(Modifier.weight(1f).fillMaxWidth().clip(Look.ctl).background(Look.subtle).border(1.dp, Look.strokeCard, Look.ctl)) {
+                            val pages = sheets
+                            if (pages != null) InvoicePages(pages, open.invoiceNumber)
+                            else LinearProgressIndicator(Modifier.fillMaxWidth().align(Alignment.TopCenter))
+                        }
                     }
                 }
             }
-            Column(
-                Modifier.weight(0.54f).fillMaxSize().card()
-                    .verticalScroll(rememberScrollState()).padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                if (open != null) {
-                    // The saved row (what was received, if the owner recorded it) and its picture in its own design.
-                    var full by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
-                    var picture by remember(open.id) { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
-                    // The design on show: the saved one until the owner steps through the
-                    // phone's ten (only one could be seen before, 20 Oct); Apply keeps it.
-                    var look by remember(open.id) { mutableStateOf<Int?>(null) }
-                    LaunchedEffect(open.id, open.grandTotal, open.invoiceDate, look) {
-                        picture = null
-                        withContext(Dispatchers.IO) {
-                            val inv = dao.getInvoice(open.id)
-                            full = inv
-                            picture = inv?.let { row ->
-                                runCatching {
-                                    com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), row.copy(templateId = look ?: row.templateId), dao.invoiceItems(open.id))
-                                        // Drawn sharp for the screen (21 Oct 2026, the owner: "very blurry"): it was
-                                        // one pixel per point, 595 px across, stretched over a pane twice that wide.
-                                        ?.picture(0, SHARP)?.toComposeImageBitmap()
-                                }.getOrNull()
-                            }
-                        }
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Avatar(open.customerName, 44, 0)
-                        Column(Modifier.weight(1f)) {
-                            Text(Format.name(open.customerName), color = c.ink, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                            Text(Format.ltr(open.invoiceNumber) + "  \u00b7  " + Format.dateOnly(open.invoiceDate), color = c.textMuted, fontSize = 12.sp)
-                        }
-                        Text(Format.money(open.grandTotal), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                    }
-                    // Received is shown only when the owner recorded it on the invoice: nothing
-                    // recorded is not the same as nothing paid (Invoice.receivedAmount).
-                    full?.receivedAmount?.let { got ->
-                        Text(word(W.invoice_received_line, Format.money(got)), color = c.iOwe, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        val due = open.grandTotal - got
-                        if (Money.isPositive(due)) Text(word(W.invoice_balance_due_line, Format.money(due)), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        FluentButton(word(W.ledger_pdf_button), { print(open.id) }, kind = ButtonKind.ACCENT, icon = "ic_print")
-                        FluentButton(word(W.edit), {
-                            Gates.edit { scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } } }
-                        }, icon = "ic_edit")
-                        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
-                        FluentButton(word(W.delete), { Gates.edit { deletingInvoice = open } }, kind = ButtonKind.DANGER)
-                    }
-                    full?.let { saved ->
-                        DesignStepper(
-                            shown = look ?: saved.templateId,
-                            saved = saved.templateId,
-                            onShow = { look = it },
-                            onApply = { t ->
-                                scope.launch {
-                                    withContext(Dispatchers.IO) { dao.updateInvoice(saved.copy(templateId = t)) }
-                                    full = saved.copy(templateId = t)
-                                }
-                            }
-                        )
-                    }
-                    val pic = picture
-                    if (pic == null) {
-                        LinearProgressIndicator(Modifier.fillMaxWidth())
-                    } else {
-                        androidx.compose.foundation.Image(
-                            pic, contentDescription = open.invoiceNumber,
-                            modifier = Modifier.fillMaxWidth().clip(Look.ctl).border(1.dp, Look.strokeCard, Look.ctl),
-                            contentScale = androidx.compose.ui.layout.ContentScale.FillWidth,
-                            filterQuality = androidx.compose.ui.graphics.FilterQuality.High
-                        )
-                    }
+        }
+    }
+}
+
+/**
+ * An invoice's pages, as many as its design drew (a long invoice's totals are on its second; only the first
+ * was shown), one under another, each drawn as sharp as the pane is wide when it scrolls into sight — 1.5 to
+ * 3 pixels a point (it was 3 whatever the pane, 18 MB a page). [sheets] is what Print and WhatsApp send.
+ */
+@Composable
+private fun InvoicePages(sheets: Sheets, title: String) {
+    val density = androidx.compose.ui.platform.LocalDensity.current.density
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+        val across = constraints.maxWidth - 16 * density
+        LazyColumn(
+            Modifier.fillMaxSize(),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(sheets.count) { i ->
+                val w = sheets.width(i)
+                val h = sheets.height(i)
+                val scale = (across / w).coerceIn(1.5f, 3f)
+                var picture by remember(sheets, i, scale) { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
+                LaunchedEffect(sheets, i, scale) {
+                    picture = withContext(Preview.drawing) { runCatching { sheets.picture(i, scale).toComposeImageBitmap() }.getOrNull() }
                 }
+                val shape = Modifier.fillMaxWidth().aspectRatio(w / h)
+                val pic = picture
+                if (pic == null) Box(shape.background(androidx.compose.ui.graphics.Color.White))
+                else androidx.compose.foundation.Image(
+                    pic, contentDescription = title, modifier = shape,
+                    contentScale = androidx.compose.ui.layout.ContentScale.FillWidth,
+                    filterQuality = androidx.compose.ui.graphics.FilterQuality.High
+                )
             }
         }
     }
@@ -627,13 +687,13 @@ fun InvoicesPane(
  * Apply when the one on show is not the saved one.
  */
 @Composable
-fun DesignStepper(shown: Int, saved: Int?, onShow: (Int) -> Unit, onApply: ((Int) -> Unit)? = null) {
+fun DesignStepper(shown: Int, saved: Int?, onShow: (Int) -> Unit, onApply: ((Int) -> Unit)? = null, modifier: Modifier = Modifier.fillMaxWidth()) {
     val c = LocalRoshanColors.current
     val names = com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.NAMES
     val at = names.indexOfFirst { it.first == shown }.coerceAtLeast(0)
     fun step(by: Int) = onShow(names[(at + by + names.size) % names.size].first)
     Row(
-        Modifier.fillMaxWidth().clip(Look.ctl).background(Look.subtle).padding(horizontal = 6.dp, vertical = 4.dp),
+        modifier.clip(Look.ctl).background(Look.subtle).padding(horizontal = 6.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         androidx.compose.material3.TextButton({ step(-1) }) { Text("‹", color = c.brandGreenText, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
@@ -790,31 +850,51 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
         adding = false
         scope.launch { withContext(Dispatchers.IO) { dao.insertPlan(plan) } }
     }, onCancel = { adding = false })
+    // Marking a plan complete changes what is written, so it asks the owner's rule and then the owner (Marhala
+    // 4, the audit: neither was asked).
+    var closing by remember { mutableStateOf<com.innovation313.roshankhata.data.PlanProgress?>(null) }
     acting?.let { p ->
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { acting = null },
-            title = { Text(if (p.isClosed) Format.name(p.partyName) else word(W.plan_actions)) },
-            text = {
+        // In the app's frame (Marhala 4, the audit: these were Material's dialogs).
+        val actions = buildList<Triple<String, Boolean, () -> Unit>> {
+            if (!p.isClosed) {
+                add(Triple(word(W.record_payment), false) { paying = p })
+                add(Triple(word(W.plan_next_change), false) { dating = p to (p.nextDueDate ?: com.innovation313.roshankhata.data.PlanSchedule.suggestNext(null)) })
+                if (p.nextDueDate != null) add(Triple(word(W.plan_next_clear), false) {
+                    scope.launch { withContext(Dispatchers.IO) { dao.setPlanNextDue(p.id, null) } }
+                })
+                add(Triple(word(W.close_plan), false) { Gates.edit { closing = p } })
+            }
+            add(Triple(word(W.delete_plan), true) { Gates.edit { deleting = p } })
+        }
+        AppDialog(onCloseRequest = { acting = null }, title = word(W.plan_actions), state = rememberDialogState(width = fitW(440.dp), height = fitH((190 + 49 * actions.size).dp))) {
+            DialogFrame(word(W.plan_actions), subtitle = Format.name(p.partyName), onClose = { acting = null }, footer = {
+                FluentButton(word(W.cancel), { acting = null }, kind = ButtonKind.STANDARD)
+            }) {
                 Column {
-                    val actions = buildList<Pair<String, () -> Unit>> {
-                        if (!p.isClosed) {
-                            add(word(W.record_payment) to { paying = p })
-                            add(word(W.plan_next_change) to { dating = p to (p.nextDueDate ?: com.innovation313.roshankhata.data.PlanSchedule.suggestNext(null)) })
-                            if (p.nextDueDate != null) add(word(W.plan_next_clear) to {
-                                scope.launch { withContext(Dispatchers.IO) { dao.setPlanNextDue(p.id, null) } }
-                            })
-                            add(word(W.close_plan) to {
-                                scope.launch { withContext(Dispatchers.IO) { dao.getPlan(p.id)?.let { dao.updatePlan(it.copy(isClosed = true, closedAt = System.currentTimeMillis())) } } }
-                            })
-                        }
-                        add(word(W.delete_plan) to { Gates.edit { deleting = p } })
-                    }
-                    actions.forEach { (label, go) ->
-                        Text(label, Modifier.fillMaxWidth().press { acting = null; go() }.padding(vertical = 12.dp), color = c.ink, fontSize = 16.sp)
+                    actions.forEachIndexed { i, (label, removes, go) ->
+                        Text(
+                            label,
+                            Modifier.fillMaxWidth().press(Look.ctl) { acting = null; go() }.padding(horizontal = 8.dp, vertical = 13.dp),
+                            color = if (removes) c.owedToMe else c.ink, fontSize = 15.sp, fontWeight = FontWeight.Medium
+                        )
+                        if (i < actions.lastIndex) Rule()
                     }
                 }
+            }
+        }
+    }
+    closing?.let { p ->
+        AskDialog(
+            title = word(W.close_plan),
+            subtitle = Format.name(p.partyName),
+            // What is being closed, said in figures: a plan with money left can still be marked complete.
+            text = word(W.plan_paid, Format.money(p.paidSoFar), Format.money(p.totalAmount)) + "  \u00b7  " + word(W.plan_remaining, Format.money(p.remaining)),
+            confirm = word(W.close_plan),
+            onConfirm = {
+                closing = null
+                scope.launch { withContext(Dispatchers.IO) { dao.getPlan(p.id)?.let { dao.updatePlan(it.copy(isClosed = true, closedAt = System.currentTimeMillis())) } } }
             },
-            confirmButton = { androidx.compose.material3.TextButton({ acting = null }) { Text(word(W.cancel)) } }
+            onDismiss = { closing = null }
         )
     }
     paying?.let { p ->
@@ -822,49 +902,41 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
         var note by remember(p.id) { mutableStateOf("") }
         val amount = com.innovation313.roshankhata.ui.Calc.evalAmount(amountText)
         val over = amount != null && amount > p.remaining
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { paying = null },
-            title = { Text(word(W.record_payment_title)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
-                    Outlined(amountText, { amountText = it }, label = { Text(word(W.amount)) }, singleLine = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-                    Text(amount?.let { Format.money(it) } ?: "", color = c.textMuted)
-                    Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, singleLine = true)
-                    // More than is left: said before Save, still posted in full if the owner goes ahead.
-                    if (over) Text(word(W.plan_overpay_warning, Format.money(p.remaining)), color = c.owedToMe, fontSize = 13.sp)
+        fun pay() {
+            val a = amount ?: return
+            val entryNote = note.trim().ifEmpty { words.text(W.plan_note_prefix) }
+            paying = null
+            scope.launch {
+                withContext(Dispatchers.IO) {
+                    dao.recordPlanPayment(p.id, p.partyId, a, p.paidSoFar, entryNote, note.trim().ifEmpty { null })
                 }
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(enabled = amount != null, onClick = {
-                    val a = amount ?: return@TextButton
-                    val entryNote = note.trim().ifEmpty { words.text(W.plan_note_prefix) }
-                    paying = null
-                    scope.launch {
-                        withContext(Dispatchers.IO) {
-                            dao.recordPlanPayment(p.id, p.partyId, a, p.paidSoFar, entryNote, note.trim().ifEmpty { null })
-                        }
-                        onLedgerChanged()
-                        // Still open: the next payment day, the suggestion already chosen (the phone's way).
-                        if (p.paidSoFar + a < p.totalAmount) dating = p to com.innovation313.roshankhata.data.PlanSchedule.suggestNext(p.nextDueDate)
-                    }
-                }) { Text(word(if (over) W.proceed_anyway else W.save)) }
-            },
-            dismissButton = { androidx.compose.material3.TextButton({ paying = null }) { Text(word(W.cancel)) } }
-        )
+                onLedgerChanged()
+                // Still open: the next payment day, the suggestion already chosen (the phone's way).
+                if (p.paidSoFar + a < p.totalAmount) dating = p to com.innovation313.roshankhata.data.PlanSchedule.suggestNext(p.nextDueDate)
+            }
+        }
+        AppDialog(onCloseRequest = { paying = null }, title = word(W.record_payment_title), state = rememberDialogState(width = fitW(480.dp), height = fitH(440.dp))) {
+            DialogFrame(word(W.record_payment_title), subtitle = Format.name(p.partyName), onClose = { paying = null }, footer = {
+                FluentButton(word(W.cancel), { paying = null }, kind = ButtonKind.STANDARD)
+                FluentButton(word(if (over) W.proceed_anyway else W.save), { pay() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = amount != null)
+            }) {
+                Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
+                FluentField(amountText, { amountText = it }, Modifier.fillMaxWidth(), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true,
+                    help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional))
+                // More than is left: said before Save, still posted in full if the owner goes ahead.
+                if (over) Text(word(W.plan_overpay_warning, Format.money(p.remaining)), color = c.owedToMe, fontSize = 13.sp)
+            }
+        }
     }
     deleting?.let { p ->
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { deleting = null },
-            title = { Text(word(W.delete_plan)) },
-            text = { Text(word(W.delete_plan_confirm)) },
-            confirmButton = {
-                androidx.compose.material3.TextButton({
-                    deleting = null
-                    scope.launch { withContext(Dispatchers.IO) { dao.softDeletePlan(p.id) } }
-                }) { Text(word(W.delete), color = c.owedToMe) }
+        AskDialog(
+            title = word(W.delete_plan), subtitle = Format.name(p.partyName), text = word(W.delete_plan_confirm), confirm = word(W.delete), danger = true, height = 320,
+            onConfirm = {
+                deleting = null
+                scope.launch { withContext(Dispatchers.IO) { dao.softDeletePlan(p.id) } }
             },
-            dismissButton = { androidx.compose.material3.TextButton({ deleting = null }) { Text(word(W.cancel)) } }
+            onDismiss = { deleting = null }
         )
     }
     RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans), action = word(W.add_plan) to { adding = true }, emptyIcon = "ic_tile_plans") {
@@ -1003,46 +1075,44 @@ private fun ProductBuyers(dao: KhataDao, words: Words, product: com.innovation31
         }
         buyers = withContext(Dispatchers.IO) { dao.customersWhoBought(product.id, w.from, w.to) }
     }
-    androidx.compose.material3.AlertDialog(
-        onDismissRequest = onClose,
-        title = { Text(product.name + "  \u00b7  " + word(W.promo_subtitle)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    listOf(W.window_same_season, W.window_last_year, W.window_ever).forEachIndexed { i, label ->
-                        FluentPill(word(label), i == choice) { choice = i }
-                    }
-                }
-                if (buyers.isEmpty()) Text(word(W.no_promo_customers), color = c.textMuted)
-                else LazyColumn(Modifier.heightIn(max = 420.dp)) {
-                    items(buyers, key = { it.id }) { b ->
-                        val number = b.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
-                        Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Column(Modifier.weight(1f)) {
-                                Text(Format.name(b.name), color = c.ink, fontWeight = FontWeight.Bold)
-                                b.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
-                            }
-                            androidx.compose.material3.TextButton(enabled = number != null, onClick = {
-                                val text = words.text(W.promo_message, b.name, product.name)
-                                runCatching {
-                                    java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
-                                        java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
-                                }
-                            }) { Text(word(W.promo_send), color = c.brandGreenText) }
-                        }
-                    }
+    // In the app's frame (Marhala 4, the audit): the list takes the dialog's height, faces in the party's colours.
+    val title = product.name + "  \u00b7  " + word(W.promo_subtitle)
+    AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(620.dp))) {
+        DialogFrame(title, onClose = onClose, scroll = false, footer = { FluentButton(word(W.ok), onClose, kind = ButtonKind.STANDARD) }) {
+            PillRow {
+                listOf(W.window_same_season, W.window_last_year, W.window_ever).forEachIndexed { i, label ->
+                    FluentPill(word(label), i == choice) { choice = i }
                 }
             }
-        },
-        confirmButton = { FluentButton(word(W.ok), onClose, kind = ButtonKind.STANDARD) }
-    )
+            if (buyers.isEmpty()) Text(word(W.no_promo_customers), color = c.textMuted)
+            else LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
+                items(buyers, key = { it.id }) { b ->
+                    val number = b.phone?.let { com.innovation313.roshankhata.data.WhatsAppNumber.of(it) }
+                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Avatar(b.name, 32, id = b.id)
+                        Column(Modifier.weight(1f)) {
+                            Text(Format.name(b.name), color = c.ink, fontWeight = FontWeight.Bold)
+                            b.phone?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp) }
+                        }
+                        FluentButton(word(W.promo_send), {
+                            val text = words.text(W.promo_message, b.name, product.name)
+                            runCatching {
+                                java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
+                                    java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
+                            }
+                        }, kind = ButtonKind.SUBTLE, icon = "ic_action_whatsapp", enabled = number != null)
+                    }
+                    Rule()
+                }
+            }
+        }
+    }
 }
 
 /** A new plan: who (from the book), the total to clear, each instalment, the next date, a note. Adds nothing to the balance. */
 @Composable
 private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovation313.roshankhata.data.PaymentPlan) -> Unit, onCancel: () -> Unit) {
     val c = LocalRoshanColors.current
-    var search by remember { mutableStateOf("") }
     var partyId by remember { mutableStateOf<Long?>(null) }
     var total by remember { mutableStateOf("") }
     var each by remember { mutableStateOf("") }
@@ -1052,54 +1122,41 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
     var problem by remember { mutableStateOf<String?>(null) }
     val needParty = word(W.select_party_first)
     val needAmount = word(W.enter_valid_amount)
-    AppDialog(onCloseRequest = onCancel, onPreviewKeyEvent = escCloses(onCancel), title = word(W.add_plan), state = rememberDialogState(width = fitW(520.dp), height = fitH(680.dp))) {
-        Column(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(word(W.plan_dialog_help), color = c.textMuted, fontSize = 12.sp)
-            val chosen = parties.firstOrNull { it.id == partyId }
-            if (chosen != null) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(Format.name(chosen.name) + "  \u00b7  " + Format.money(chosen.balance), Modifier.weight(1f), color = c.ink, fontWeight = FontWeight.Bold)
-                    FluentButton(word(W.edit), { partyId = null }, kind = ButtonKind.SUBTLE)
-                }
-            } else {
-                Outlined(search, { search = it }, label = { Text(word(W.cheque_party_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                val q = search.trim().lowercase()
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 150.dp).background(Look.subtle, Look.ctl)) {
-                    items(parties.filter { NameSearch.matches(it.name, it.phone, q) }.take(40), key = { it.id }) { p ->
-                        Text(Format.name(p.name) + "  \u00b7  " + Format.money(p.balance),
-                            Modifier.fillMaxWidth().press { partyId = p.id; problem = null }.padding(horizontal = 12.dp, vertical = 8.dp), color = c.ink, fontSize = 14.sp)
-                    }
-                }
-            }
-            Outlined(total, { total = it; problem = null }, label = { Text(word(W.plan_total_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-            Outlined(each, { each = it }, label = { Text(word(W.plan_installment_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                FluentButton(word(W.plan_pick_next_due), { picking = true }, kind = ButtonKind.SUBTLE)
-                Text(due?.let { Format.dateOnly(it) } ?: "", color = c.ink, fontWeight = FontWeight.Bold)
-            }
-            Outlined(note, { note = it }, label = { Text(word(W.note_optional)) }, modifier = Modifier.fillMaxWidth())
-            problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-                FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
-                FillButton(word(W.save), c.brandGreen) {
-                    val pid = partyId
-                    val t = com.innovation313.roshankhata.ui.Calc.evalAmount(total)
-                    when {
-                        pid == null -> problem = needParty
-                        t == null -> problem = needAmount
-                        else -> onSave(
-                            com.innovation313.roshankhata.data.PaymentPlan(
-                                partyId = pid, totalAmount = t,
-                                installmentAmount = com.innovation313.roshankhata.ui.Calc.evalAmount(each),
-                                nextDueDate = due, note = note.trim().ifEmpty { null }
-                            )
-                        )
-                    }
-                }
-            }
+    fun save() {
+        val pid = partyId
+        val t = com.innovation313.roshankhata.ui.Calc.evalAmount(total)
+        when {
+            pid == null -> problem = needParty
+            t == null -> problem = needAmount
+            else -> onSave(
+                com.innovation313.roshankhata.data.PaymentPlan(
+                    partyId = pid, totalAmount = t,
+                    installmentAmount = com.innovation313.roshankhata.ui.Calc.evalAmount(each),
+                    nextDueDate = due, note = note.trim().ifEmpty { null }
+                )
+            )
         }
-        if (picking) DayPicker(due, onPick = { due = it; picking = false }, onDismiss = { picking = false })
     }
+    // In the app's frame with Save in its foot (Marhala 4, the audit); the party is picked as on every form,
+    // his balance with its side's words (it was a bare figure, which way it ran unsaid).
+    AppDialog(onCloseRequest = onCancel, title = word(W.add_plan), state = rememberDialogState(width = fitW(560.dp), height = fitH(700.dp))) {
+        DialogFrame(word(W.add_plan), onClose = onCancel, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } }, footer = {
+            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
+        }) {
+            Text(word(W.plan_dialog_help), color = c.textMuted, fontSize = 12.sp)
+            PartyPicker(parties, partyId, { partyId = it; problem = null }, word(W.cheque_party_hint), word(W.cheque_party_hint), Modifier.fillMaxWidth())
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FluentField(total, { total = it; problem = null }, Modifier.weight(1f), label = word(W.plan_total_hint), prefix = com.innovation313.roshankhata.data.Currency.symbol,
+                    help = com.innovation313.roshankhata.ui.Calc.evalAmount(total)?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                FluentField(each, { each = it }, Modifier.weight(1f), label = word(W.plan_installment_hint), prefix = com.innovation313.roshankhata.data.Currency.symbol,
+                    help = com.innovation313.roshankhata.ui.Calc.evalAmount(each)?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            }
+            DateBox(word(W.plan_pick_next_due), due?.let { Format.dateOnly(it) }, word(W.pick_date), { picking = true }, Modifier.fillMaxWidth())
+            FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
+        }
+    }
+    if (picking) DayPicker(due, onPick = { due = it; picking = false }, onDismiss = { picking = false })
 }
 
 /** A figure on a white card: what it is, the amount, and how many. */

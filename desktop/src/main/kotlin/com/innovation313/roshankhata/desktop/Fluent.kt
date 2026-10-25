@@ -601,11 +601,15 @@ fun PartyPicker(
                 Modifier.fillMaxWidth().clip(Look.ctl).background(Look.accentTint).border(1.dp, Look.accent, Look.ctl).padding(start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Avatar(chosen.name, 28, 0)
+                Avatar(chosen.name, 28, id = chosen.id)
                 Column(Modifier.weight(1f)) {
                     Text(Format.name(chosen.name), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    // The balance with its side's words, as the khata says it (Marhala 4: "- Rs 5,000" said nothing of
+                    // which way it ran); a settled account says so.
+                    val side = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.screens.balanceSideWord(chosen.balance))
+                    val owed = if (com.innovation313.roshankhata.data.Money.isZero(chosen.balance)) side else Format.money(chosen.balance) + " " + side
                     Text(
-                        listOfNotNull(chosen.phone?.let { Format.ltr(it) }, Format.customerBalance(chosen.balance)).joinToString(" · "),
+                        listOfNotNull(chosen.phone?.takeIf { !samePhone(it, chosen.name) }?.let { Format.ltr(it) }, owed).joinToString(" · "),
                         color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
                     )
                 }
@@ -621,7 +625,7 @@ fun PartyPicker(
                         Modifier.fillMaxWidth().press { onPick(p.id) }.padding(horizontal = 10.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Avatar(p.name, 26, i)
+                        Avatar(p.name, 26, id = p.id)
                         Text(Format.name(p.name), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         p.phone?.takeIf { !samePhone(it, p.name) }?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
                     }

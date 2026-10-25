@@ -59,7 +59,13 @@ class NewBill(
  * Save), a note, and the delivery's lines with batch and expiry.
  */
 @Composable
-fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCancel: () -> Unit) {
+fun BillForm(
+    parties: List<PartyWithBalance>,
+    onSave: (NewBill) -> Unit,
+    onCancel: () -> Unit,
+    /** The shop's products, offered in the line's name box (the phone's SmartSuggest); null offers none. */
+    products: ProductShelf? = null
+) {
     val c = LocalRoshanColors.current
     var supplierId by remember { mutableStateOf<Long?>(null) }
     var search by remember { mutableStateOf("") }
@@ -193,7 +199,7 @@ fun BillForm(parties: List<PartyWithBalance>, onSave: (NewBill) -> Unit, onCance
                 FluentButton(word(W.delete), { items = items.filterIndexed { j, _ -> j != i } }, kind = ButtonKind.DANGER)
             }
         }
-        ItemForm(onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { items = items + it }
+        ItemForm(onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }, products = products) { items = items + it }
     }
     picking?.let { which ->
         DayPicker(
@@ -219,7 +225,7 @@ internal fun samePhone(phone: String, name: String): Boolean {
 
 /** One line of the delivery: product, quantity, unit, rate, batch and expiry, with why the last two matter. */
 @Composable
-internal fun ItemForm(existing: BillItem? = null, onBusy: (Boolean) -> Unit = {}, onAdd: (BillItem) -> Unit) {
+internal fun ItemForm(existing: BillItem? = null, onBusy: (Boolean) -> Unit = {}, products: ProductShelf? = null, onAdd: (BillItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.productName.orEmpty()) }
     var qty by remember { mutableStateOf(existing?.quantity?.let { Calc.trim(it) }.orEmpty()) }
@@ -235,7 +241,12 @@ internal fun ItemForm(existing: BillItem? = null, onBusy: (Boolean) -> Unit = {}
     val needProduct = word(W.enter_product)
     val needQty = word(W.enter_valid_amount)
     Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Outlined(name, { name = it; problem = null }, label = { Text(word(W.product_name_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        // The shop's products as the name is typed (the phone's bill form suggests them): a pick fills the name,
+        // and the product's own unit when none is typed.
+        SuggestBox(name, { name = it; problem = null }, products, word(W.product_name_hint), Modifier.fillMaxWidth(), onPick = { item ->
+            name = item.value; problem = null
+            if (unit.isBlank()) products?.product(item.value)?.defaultUnit?.takeIf { it.isNotBlank() }?.let { unit = com.innovation313.roshankhata.data.UnitWords.label(it) }
+        })
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Outlined(qty, { qty = it; problem = null }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
             Outlined(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))

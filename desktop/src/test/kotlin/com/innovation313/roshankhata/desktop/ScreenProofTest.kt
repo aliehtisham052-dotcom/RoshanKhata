@@ -28,6 +28,7 @@ import org.junit.Assume
 import org.junit.Test
 import java.io.File
 import java.util.Locale
+import kotlinx.coroutines.flow.first
 
 /**
  * The Windows window itself as a picture (20 Oct redesign): the header, the
@@ -83,6 +84,8 @@ class ScreenProofTest {
         lang: String = if (ur) "ur" else "en",
         /** The place open in the rail; a merged page's tabs show above it as in the window (Marhala 3). */
         section: Section = Section.HOME,
+        /** More real time for a page that draws off the window's thread in steps (an invoice: the book, then its pages). */
+        waits: Int = 1,
         page: @androidx.compose.runtime.Composable () -> Unit = {
             HomePane(
                 parties, late = 2, alerts = alerts(), extra = emptyList(),
@@ -135,10 +138,12 @@ class ScreenProofTest {
             scene.render(16_000_000)
             // A page that reads the book off the window's thread (Expiry, the register, the sales report) gets
             // real time to answer before the frames that are kept.
-            Thread.sleep(400)
-            scene.render(250_000_000)
-            scene.render(500_000_000)
-            val image = scene.render(1_000_000_000)
+            repeat(waits) { n ->
+                Thread.sleep(400)
+                scene.render(250_000_000L + n * 100_000_000L)
+            }
+            scene.render(500_000_000L + waits * 100_000_000L)
+            val image = scene.render(1_000_000_000L + waits * 100_000_000L)
             val png = image.encodeToData(EncodedImageFormat.PNG)!!.bytes
             return File(dir, "$name.png").also { it.writeBytes(png) }
         } finally {
@@ -372,6 +377,62 @@ class ScreenProofTest {
             shoot("screen-laptop-sales-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.SALES) {
                 SalesReportPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0)
             }
+            // Invoices (Marhala 4, part 5): the list narrow, the open invoice's head and actions in one block, its
+            // pages in the height left — at the owner's shortest window, and in Urdu; the form beside its picture.
+            val lines = listOf(
+                com.innovation313.roshankhata.data.InvoiceItem(invoiceId = 0, itemName = "DAP", quantity = 4.0, unit = "bag", rate = 3700.0),
+                com.innovation313.roshankhata.data.InvoiceItem(invoiceId = 0, itemName = "Confidor", quantity = 3.0, unit = "bottle", rate = 875.0),
+                com.innovation313.roshankhata.data.InvoiceItem(invoiceId = 0, itemName = "Wheat seed", quantity = 50.0, unit = "kg", rate = 190.0)
+            )
+            kotlinx.coroutines.runBlocking {
+                dao.saveInvoiceWithItems(com.innovation313.roshankhata.data.Invoice(customerName = "Ghulam Rasool", customerPhone = "03000000002", invoiceDate = now - 3 * day, templateId = 4), lines.take(1))
+                dao.saveInvoiceWithItems(com.innovation313.roshankhata.data.Invoice(customerName = "Muhammad Aslam", customerPhone = "03000000001", invoiceDate = now - 2 * 60 * 60 * 1000, templateId = 1, receivedAmount = 10000.0), lines)
+            }
+            fun designs(tag: String): com.innovation313.roshankhata.desktop.invoice.Context {
+                val shop = home.resolve("invoice-shop-$tag").apply { mkdirs() }
+                val settings = com.innovation313.roshankhata.data.FileShopSettings(shop.resolve("shop.properties")).apply {
+                    setBusinessName("Al-Noor Agri Store"); setBusinessAddress("Main Bazaar, Sample Town"); setBusinessPhone("0300 0000000")
+                }
+                val locale = Locale.forLanguageTag(tag)
+                return com.innovation313.roshankhata.desktop.invoice.Context(desktopWords(locale), settings, com.innovation313.roshankhata.desktop.invoice.ProfileImages(shop.resolve("pictures")),
+                    rtl = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(locale), locale = locale)
+            }
+            val enDesigns = designs("en")
+            val urDesigns = designs("ur")
+            val urWords = desktopWords(Locale.forLanguageTag("ur"))
+            val invoiceShots = listOf(
+                shoot("screen-laptop-invoices-short-en", ur = false, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.INVOICES, waits = 4) {
+                    InvoicesPane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", shopLine = "Main Bazaar, Sample Town", designs = { enDesigns })
+                },
+                shoot("screen-laptop-invoices-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.INVOICES, waits = 4) {
+                    InvoicesPane(dao, partiesNow, urWords, rtl = true, shopName = "النور ایگری اسٹور", shopLine = null, designs = { urDesigns })
+                }
+            )
+            for (f in invoiceShots) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
+            // The form as the laptop's dialog holds it (1093 dp window less its margins), wide enough for the picture beside.
+            val invoice = kotlinx.coroutines.runBlocking { dao.observeInvoicePage(5).first().first { it.customerName == "Muhammad Aslam" }.let { dao.getInvoice(it.id)!! to dao.invoiceItems(it.id) } }
+            val shelf = kotlinx.coroutines.runBlocking { ProductShelf(dao.productsOnce(), emptyList(), "") }
+            val form = ImageComposeScene(width = 1326, height = 629, density = Density(1.25f)) {
+                DeskTheme(dark = false) {
+                    ProvideWords(words) {
+                        InvoiceForm(
+                            parties = partiesNow, onSave = { _, _ -> }, onCancel = {},
+                            existing = invoice.first, existingLines = invoice.second,
+                            preview = { inv, l -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(enDesigns, inv, l)?.picture(0, 2f) },
+                            fields = InvoiceFields(received = true, dueDate = true),
+                            products = shelf
+                        )
+                    }
+                }
+            }
+            try {
+                form.render(0); form.render(16_000_000)
+                // The picture is drawn 0.4 s after the last change (the form's own wait), off the window's thread.
+                repeat(4) { n -> Thread.sleep(400); form.render(250_000_000L + n * 100_000_000L) }
+                val png = form.render(1_500_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                val f = File(dir, "dialog-laptop-invoice-en.png").also { it.writeBytes(png) }
+                assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
+            } finally { form.close() }
         } finally {
             db.close()
             home.deleteRecursively()
