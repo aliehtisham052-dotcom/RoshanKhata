@@ -1507,10 +1507,15 @@ Each of these cost a build or a bug.
 
 ## Where the project stands
 
-**Play Store publishing is the blocker.** Nothing else matters as much.
-Screenshots, bilingual listing, content rating, data safety form (no data
-collected until live sync's wake-up reaches Play: then "Device or other IDs"
-for app functionality, see Live sync), feature graphic, signed AAB.
+**Roshan Khata is public on Google Play** (`com.innovation313.roshankhata`:
+production access 16 Sep 2026, the first public release sent for review
+19 Sep; the owner confirmed it public on 28 Oct 2026). A review on 28 Oct
+called it unpublished from an old line here — read this section and the
+owner's memory before saying anything about the store. Every upload needs a
+higher versionCode (aab.yml refuses one not above the last). Data safety: no
+data collected until live sync's wake-up reaches Play; then "Device or other
+IDs" for app functionality (see Live sync). The Windows MSI is on the
+desktop-test pre-release (not signed yet).
 
 Use dummy data for store screenshots. Real customer names and numbers must not
 appear in a public listing.
