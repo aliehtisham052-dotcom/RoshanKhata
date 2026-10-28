@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     `:desktop`: sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,450 strings × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
+- About 2,685 strings and 57 plurals (counted 28 Oct 2026) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
 - Room database, version 38 (schema JSON checked in up to 31; CI writes the rest);
   backup format 15 (an entry's bill photo path, 22 Oct 2026)
@@ -1227,7 +1227,7 @@ Rules learned moving code there:
 
 ```
 app/src/main/java/com/innovation313/roshankhata/
-  MainActivity.kt           Home — 13 coloured tiles, walkthrough
+  MainActivity.kt           Home — the coloured tiles, walkthrough
   KhataActivity.kt          Ledger list — search, voice entry, filters
   PartyDetailActivity.kt    One customer — two-step full-screen entry dialog
   EntryDetailActivity.kt    Receipt + edit
@@ -1243,7 +1243,7 @@ app/src/main/java/com/innovation313/roshankhata/
     VoiceEntry.kt           Spoken sentence -> party, amount, direction
     BusinessProfile.kt      QR, signature, photo-on-statement setting
     PdfExport.kt            Statement PDF — signature, optional photo
-    DriveFeature.kt         ENABLED = false — the one line to flip
+    DriveFeature.kt         ENABLED = true since the Cloud setup — the one line to switch Drive off
     KhataDatabaseAndroid.kt get(context): migrations, the phone's file (DB itself in :shared)
   ui/
     CardTemplates.kt        12 business card designs
@@ -1535,8 +1535,9 @@ signed by Play's app-signing key, whose SHA-1 is in Play Console. A missing
 pair shows as "cannot sign in"; the Backup screen's sign-in dialog prints the
 running build's package and SHA-1 for exactly this.
 
-**Data import from other ledger apps** is agreed but unbuilt. Balance-only
-first: name, phone, current balance as one opening entry.
+**Data import from other ledger apps** is built on Windows only (`CsvImport`:
+name, phone, balance as one opening entry each, in one transaction); the phone
+has no such screen yet. Merging duplicate parties is built on both platforms.
 
-Smaller and deferred: merging duplicate parties, cashbook and cheque
-`createdAt` editing, a WhatsApp number on the Help screen.
+Smaller and deferred: cashbook and cheque `createdAt` editing, a WhatsApp
+number on the Help screen.
