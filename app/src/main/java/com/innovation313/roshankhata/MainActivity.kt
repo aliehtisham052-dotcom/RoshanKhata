@@ -157,12 +157,19 @@ class MainActivity : BaseActivity() {
             // Products keeps Supplier Bills' colour.
             Feature(R.drawable.ic_tile_products, R.string.tile_products, ProductsActivity::class.java,
                 R.color.tile_bills_bg, R.color.section_bills),
+            // The counter (POS Phase 1, 21 Oct) beside the products it sells: moved out of Every day on
+            // 24 Oct 2026 — the owner keeps his sales in Khata and did not use it daily.
+            Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
+                R.color.tile_cashbook_bg, R.color.section_cashbook),
             Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
                 R.color.tile_invoice_bg, R.color.tile_invoice_fg),
             Feature(R.drawable.ic_tile_price_list, R.string.rate_list_title, RateListActivity::class.java,
                 R.color.tile_calc_bg, R.color.tile_calc_fg),
             Feature(R.drawable.ic_tile_supplier_rates, R.string.sr_title, SupplierRatesActivity::class.java,
                 R.color.tile_zakat_bg, R.color.gold_accent),
+            // The sales report (POS Phase 7): what sold, to whom, at what profit.
+            Feature(R.drawable.ic_tile_cashflow, R.string.sales_report_title, SalesReportActivity::class.java,
+                R.color.tile_insights_bg, R.color.section_insights),
             Feature(R.drawable.ic_tile_insights, R.string.tile_insights, InsightsActivity::class.java,
                 R.color.tile_insights_bg, R.color.tile_insights_fg),
             Feature(R.drawable.ic_tile_followup, R.string.followup_title, FollowUpActivity::class.java,
@@ -477,10 +484,13 @@ class MainActivity : BaseActivity() {
             com.innovation313.roshankhata.data.HomeAlerts.Kind.PLAN to Chip(R.string.na_tag_late, R.color.tile_bills_bg, R.color.fi_gold_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BILL to Chip(R.string.tile_bills, R.color.tile_stock_bg, R.color.fi_orange_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.EXPIRING to Chip(R.string.tile_expiry, R.color.tile_bin_bg, R.color.fi_red_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.STOCK to Chip(R.string.tile_products, R.color.tile_bills_bg, R.color.fi_gold_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.DRAWER to Chip(R.string.nav_cashbook, R.color.tile_cashbook_bg, R.color.fi_teal_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP to Chip(R.string.today_backup, R.color.tile_backup_bg, R.color.fi_teal_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_FAILED to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
             com.innovation313.roshankhata.data.HomeAlerts.Kind.BACKUP_OTHER_PHONE to Chip(R.string.today_backup, R.color.tile_bin_bg, R.color.fi_red_b),
-            com.innovation313.roshankhata.data.HomeAlerts.Kind.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b)
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.CASHFLOW to Chip(R.string.today_gap, R.color.tile_insights_bg, R.color.fi_blue_b),
+            com.innovation313.roshankhata.data.HomeAlerts.Kind.SYNC to Chip(R.string.live_title, R.color.tile_bin_bg, R.color.fi_red_b)
         )
         val d = resources.displayMetrics.density
         alerts.groupBy { it.kind }.forEach { (kind, list) ->
@@ -716,7 +726,9 @@ class MainActivity : BaseActivity() {
             // each on its own figure, never a net across different people.
             // The two halves (to get / to give) and their change chips moved
             // to the Khata screen with the cards (7 Oct); Home shows the net.
-            tvNetBalance.text = Format.money(netBalance)
+            // The net carries its sign (21 Oct 2026): it was shown without one, so a shop that owes
+            // its suppliers more than its customers owe it read as being owed that much.
+            tvNetBalance.text = if (Money.isNegative(netBalance)) Format.signedIfNegative(netBalance) else Format.money(netBalance)
             shownNet = netBalance; shownGet = totalGet; shownGive = totalGive
         }
         ivEye.setImageResource(

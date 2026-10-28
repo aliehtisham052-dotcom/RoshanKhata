@@ -1,11 +1,18 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.EscPos
@@ -41,32 +48,62 @@ object ThermalReceipt {
     /** One line of the receipt: text, how big, bold, and whether it is the figure (centred, large). */
     class Line(val text: String, val size: Float = 22f, val bold: Boolean = false, val centre: Boolean = false)
 
+    /**
+     * A receipt on its way to the printer (21 Oct 2026): its lines, and
+     * whether the cash drawer opens with it — a counter sale paid at least
+     * partly in cash, when the drawer setting is on.
+     */
+    /**
+     * One receipt to print. [direct]: a counter ticket goes straight to the
+     * printer used last when Windows still has it (23 Oct 2026, the review: the
+     * busiest button asked which printer every time, while the drawer opened on
+     * the remembered one without asking); the counter's settings change it.
+     */
+    class Job(val lines: List<Line>, val cash: Boolean = false, val direct: Boolean = false)
+
+    /**
+     * This computer's receipt printer (21 Oct 2026, kept in app.properties —
+     * the printer belongs to the computer, not to the book): an 80 mm roll
+     * instead of 58 mm, the shop's logo at the top, and the cash drawer wired
+     * to the printer opened on a cash sale.
+     */
+    data class Settings(val wide: Boolean = false, val logo: Boolean = false, val drawer: Boolean = false) {
+        val width: Int get() = if (wide) EscPos.WIDTH_80MM else EscPos.WIDTH_58MM
+    }
+
     private const val MARGIN = 8
 
-    /** The receipt as black on white, [EscPos.WIDTH_58MM] dots across, as tall as it needs. */
-    fun image(lines: List<Line>, rtl: Boolean): BufferedImage {
-        val width = EscPos.WIDTH_58MM
+    /** The logo's box at the top of the roll: at most this tall, and 60% of the roll across. */
+    private const val LOGO_HEIGHT = 120
+
+    /**
+     * The receipt as black on white, [width] dots across (58 mm by default),
+     * as tall as it needs; the shop's [logo], when given, centred at the top
+     * and dithered ([EscPos.dither]) so a coloured logo prints as dots.
+     */
+    fun image(lines: List<Line>, rtl: Boolean, width: Int = EscPos.WIDTH_58MM, logo: BufferedImage? = null): BufferedImage {
         val frc = FontRenderContext(null, true, true)
         val wrap = width - 2 * MARGIN
         // Lay out first (wrapping long names and notes), then draw on a canvas of the right height.
         val laid = lines.flatMap { line ->
             if (line.text.isEmpty()) return@flatMap listOf<Pair<TextLayout?, Line>>(null to line)
-            val font = Font(Font.DIALOG, if (line.bold) Font.BOLD else Font.PLAIN, 1).deriveFont(line.size)
-            val text = AttributedString(line.text).apply {
-                addAttribute(TextAttribute.FONT, font)
-                addAttribute(TextAttribute.RUN_DIRECTION, if (rtl) TextAttribute.RUN_DIRECTION_RTL else TextAttribute.RUN_DIRECTION_LTR)
-            }
+            val font = Font(PrintFonts.family, if (line.bold) Font.BOLD else Font.PLAIN, 1).deriveFont(line.size)
+            // A face per run (R56): a name in another script than the app's prints, not as boxes.
+            val text = PrintFonts.attributed(com.innovation313.roshankhata.data.Digits.forPrint(line.text), font, rtl)
             val measurer = LineBreakMeasurer(text.iterator, frc)
             buildList<Pair<TextLayout?, Line>> { while (measurer.position < line.text.length) add(measurer.nextLayout(wrap.toFloat()) to line) }
         }
-        val height = MARGIN * 2 + laid.sumOf { (layout, line) -> lineHeight(layout, line) } + 8
+        val mark = logo?.let { printable(it, (width * 0.6).toInt(), LOGO_HEIGHT) }
+        val top = mark?.let { it.height + 10 } ?: 0
+        val height = MARGIN * 2 + top + laid.sumOf { (layout, line) -> lineHeight(layout, line) } + 8
         val img = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         val g = img.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF)
         g.color = Color.WHITE
         g.fillRect(0, 0, width, height)
+        mark?.let { g.drawImage(it, (width - it.width) / 2, MARGIN, null) }
         g.color = Color.BLACK
-        var y = MARGIN.toFloat()
+        var y = (MARGIN + top).toFloat()
         laid.forEach { (layout, line) ->
             if (layout == null) {
                 // An empty line is a rule across the roll.
@@ -92,12 +129,36 @@ object ThermalReceipt {
     private fun lineHeight(layout: TextLayout?, line: Line): Int =
         if (layout == null) 14 else kotlin.math.ceil(layout.ascent + layout.descent + layout.leading).toInt()
 
-    fun bytes(lines: List<Line>, rtl: Boolean): ByteArray {
-        val img = image(lines, rtl)
+    /** The logo scaled into [maxW] x [maxH] (never enlarged), on paper, then dithered to dots. */
+    fun printable(logo: BufferedImage, maxW: Int, maxH: Int): BufferedImage {
+        val scale = minOf(1.0, maxW.toDouble() / logo.width, maxH.toDouble() / logo.height)
+        val w = (logo.width * scale).toInt().coerceAtLeast(1)
+        val h = (logo.height * scale).toInt().coerceAtLeast(1)
+        val out = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
+        val g = out.createGraphics()
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+        g.drawImage(logo, 0, 0, w, h, null)
+        g.dispose()
+        val px = IntArray(w * h)
+        out.getRGB(0, 0, w, h, px, 0, w)
+        out.setRGB(0, 0, w, h, EscPos.dither(px, w, h), 0, w)
+        return out
+    }
+
+    /**
+     * The printer's bytes: the picture at the roll's width ([settings]), the
+     * logo on top when it is on and the shop has one, and the drawer's pulse
+     * first when [cash] and the drawer setting is on.
+     */
+    fun bytes(lines: List<Line>, rtl: Boolean, settings: Settings = Settings(), logo: BufferedImage? = null, cash: Boolean = false): ByteArray {
+        val img = image(lines, rtl, settings.width, logo.takeIf { settings.logo })
         val px = IntArray(img.width * img.height)
         img.getRGB(0, 0, img.width, img.height, px, 0, img.width)
-        return EscPos.raster(px, img.width, img.height)
+        return EscPos.withDrawer(EscPos.raster(px, img.width, img.height), cash && settings.drawer)
     }
+
+    /** The drawer opened with no receipt (a cash sale rung up without printing): its pulse alone. */
+    fun openDrawer(printer: String): Boolean = send(printer, EscPos.DRAWER_KICK)
 
     fun printers(): List<String> = PrintServiceLookup.lookupPrintServices(null, null).map { it.name }
 
@@ -116,23 +177,39 @@ object ThermalReceipt {
         set(value) { runCatching { if (value == null) lastFile.delete() else lastFile.writeText(value, Charsets.UTF_8) } }
 }
 
-/** The printers Windows knows, the one used last on top. */
+/**
+ * The printers Windows knows, the one used last on top and marked; Save as picture on the start side. In the
+ * app's frame (Marhala 4): each printer a row with its glyph, as PickDialog draws a choice.
+ */
 @Composable
-fun PrinterChoiceDialog(names: List<String>, onCancel: () -> Unit, onPick: (String) -> Unit) {
+fun PrinterChoiceDialog(names: List<String>, onCancel: () -> Unit, onSavePicture: (() -> Unit)? = null, onPick: (String) -> Unit) {
     val c = LocalRoshanColors.current
     val last = ThermalReceipt.lastPrinter
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text(word(W.print_choose)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                if (names.isEmpty()) Text(word(W.print_failed), color = c.owedToMe, fontSize = 14.sp)
-                names.sortedByDescending { it == last }.forEach { n ->
-                    TextButton({ onPick(n) }) { Text(n, color = if (n == last) c.brandGreenText else c.ink, fontSize = 15.sp) }
+    val title = word(W.print_choose)
+    val shown = names.sortedByDescending { it == last }
+    AppDialog(onCloseRequest = onCancel, title = title,
+        state = androidx.compose.ui.window.rememberDialogState(width = fitW(480.dp), height = fitH((210 + 49 * shown.size.coerceAtLeast(1)).dp))) {
+        DialogFrame(title, onClose = onCancel, footerStart = {
+            if (onSavePicture != null) FluentButton(word(W.receipt_save_picture), onSavePicture, kind = ButtonKind.STANDARD, icon = "ic_download")
+        }, footer = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }) {
+            if (shown.isEmpty()) Text(word(W.print_failed), color = c.owedToMe, fontSize = 14.sp)
+            Column {
+                shown.forEachIndexed { i, n ->
+                    val on = n == last
+                    Row(
+                        Modifier.fillMaxWidth().clip(Look.ctl)
+                            .background(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent)
+                            .press(Look.ctl) { onPick(n) }.padding(horizontal = 8.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Glyph("ic_print", if (on) Look.accent else c.inkSoft, 16)
+                        Text(n, Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        if (on) Glyph("ic_check_plain", Look.accent, 16)
+                    }
+                    if (i < shown.lastIndex) Rule()
                 }
             }
-        },
-        confirmButton = {},
-        dismissButton = { TextButton(onCancel) { Text(word(W.cancel)) } }
-    )
+        }
+    }
 }

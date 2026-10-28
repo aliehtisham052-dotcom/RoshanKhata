@@ -72,7 +72,8 @@ object BusinessReport {
             cashOut = dao.cashExpenseOnce(),
             pendingCheques = dao.pendingChequesOnce(),
             openPlans = dao.openPlansOnce(),
-            expiringBatches = dao.expiringBatchesOnce(cutoff)
+            // What is left by the one rule (Marhala 3): a batch sold out or written off is not on the report.
+            expiringBatches = Fefo.expiring(dao, cutoff)
         )
     }
 

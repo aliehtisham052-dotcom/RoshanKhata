@@ -80,6 +80,57 @@ object BusinessProfile {
     }
 
     /**
+     * A named shop's profile as [ShopSettings], open or not, for the Drive backup of a shop being
+     * left (23 Oct 2026, the review, R21): every getter reads [businessId]'s own file, exactly as the
+     * open shop's getters below read theirs, so a closed shop's backup can never carry the open
+     * shop's name, bank or terms. Read-only: a restore always goes through the open shop's
+     * [AndroidShopSettings], and a setter here throws rather than write a closed shop in silence.
+     */
+    fun settingsOf(context: Context, businessId: Long): ShopSettings = ProfileOf(prefsOf(context, businessId))
+
+    private class ProfileOf(private val p: android.content.SharedPreferences) : ShopSettings {
+        private fun text(key: String): String? = p.getString(key, null)?.takeIf { it.isNotBlank() }
+        private fun readOnly(): Nothing = throw UnsupportedOperationException("a closed shop's profile is read only")
+
+        override fun businessName() = text(KEY_BUSINESS_NAME)
+        override fun setBusinessName(value: String?) { readOnly() }
+        override fun businessNameUrdu() = text(KEY_BUSINESS_NAME_URDU)
+        override fun setBusinessNameUrdu(value: String?) { readOnly() }
+        override fun businessAddress() = text(KEY_BUSINESS_ADDRESS)
+        override fun setBusinessAddress(value: String?) { readOnly() }
+        override fun businessPhone() = text(KEY_BUSINESS_PHONE)
+        override fun setBusinessPhone(value: String?) { readOnly() }
+        override fun businessEmail() = text(KEY_BUSINESS_EMAIL)
+        override fun setBusinessEmail(value: String?) { readOnly() }
+        override fun bankName() = text(KEY_BANK_NAME)
+        override fun setBankName(value: String?) { readOnly() }
+        override fun bankAccountTitle() = text(KEY_BANK_TITLE)
+        override fun setBankAccountTitle(value: String?) { readOnly() }
+        override fun bankIban() = text(KEY_BANK_IBAN)
+        override fun setBankIban(value: String?) { readOnly() }
+        override fun bankJazzCash() = text(KEY_BANK_JAZZCASH)
+        override fun setBankJazzCash(value: String?) { readOnly() }
+        override fun termsAndConditions() = text(KEY_TERMS)
+        override fun setTermsAndConditions(value: String?) { readOnly() }
+        override fun strn() = text(KEY_STRN)
+        override fun setStrn(value: String?) { readOnly() }
+        override fun currency(): String = Currency.clean(p.getString(KEY_CURRENCY, null))
+        override fun setCurrency(value: String?) { readOnly() }
+        override fun calendar(): ShopCalendar.Kind = ShopCalendar.Kind.of(p.getString(KEY_CALENDAR, null))
+        override fun setCalendar(kind: ShopCalendar.Kind) { readOnly() }
+        override fun country(): ShopCountry = ShopCountry.of(p.getString(KEY_COUNTRY, null))
+        override fun setCountry(country: ShopCountry) { readOnly() }
+        override fun tradeKey() = text(KEY_TRADE)
+        override fun setTradeKey(key: String) { readOnly() }
+        override fun otherTradeName() = text(KEY_TRADE_OTHER_NAME)
+        override fun otherTradeItems() = text(KEY_TRADE_OTHER_ITEMS)
+        override fun setOtherTrade(name: String?, items: String?) { readOnly() }
+        override fun photoOnStatement() = p.getBoolean(KEY_PHOTO_ON_STATEMENT, false)
+        override fun setPhotoOnStatement(enabled: Boolean) { readOnly() }
+        override fun refreshDisplay() = Unit
+    }
+
+    /**
      * Where this business's identity images live. Business 1: the legacy
      * flat files. Any other: its own biz_b<id>/ folder, so two shops'
      * stamps, QRs, and signatures can never overwrite each other.
@@ -234,18 +285,29 @@ object BusinessProfile {
      * always printed; a shop in any other currency reads its own language's
      * "Tax No." (Indonesian: NPWP) rather than a Pakistani acronym.
      */
-    fun taxLabel(context: Context): String =
-        if (currency(context) == Currency.DEFAULT) "STRN"
-        else context.getString(com.innovation313.roshankhata.R.string.tax_number_label)
+    fun taxLabel(context: Context): String = taxName(country(context), context.getString(com.innovation313.roshankhata.R.string.tax_number_label))
+
+    /**
+     * What the shop's country calls its tax registration (21 Oct 2026):
+     * STRN in Pakistan, GSTIN in India, NPWP in Indonesia; a country the
+     * table does not know reads its language's "Tax No.".
+     */
+    fun taxName(country: ShopCountry, generic: String): String = when (country) {
+        ShopCountry.PAKISTAN -> "STRN"
+        ShopCountry.OTHER -> generic
+        else -> country.taxIdName
+    }
 
     /**
      * The register and inspector reports' tax line. A rupee shop keeps the
      * report's own "NTN/STRN: …" wording ([pakistanRes]); any other currency
      * prints its language's tax-number label instead of Pakistan's two.
      */
-    fun taxLine(context: Context, number: String, pakistanRes: Int): String =
-        if (currency(context) == Currency.DEFAULT) context.getString(pakistanRes, number)
-        else context.getString(com.innovation313.roshankhata.R.string.tax_number_label) + ": " + number
+    fun taxLine(context: Context, number: String, pakistanRes: Int): String {
+        val country = country(context)
+        return if (country == ShopCountry.PAKISTAN) context.getString(pakistanRes, number)
+        else taxName(country, context.getString(com.innovation313.roshankhata.R.string.tax_number_label)) + ": " + number
+    }
 
     // ---------- Currency sign (4 Oct 2026) ----------
 
@@ -255,6 +317,44 @@ object BusinessProfile {
 
     fun setCurrency(context: Context, value: String?) {
         prefs(context).edit().putString(KEY_CURRENCY, Currency.clean(value)).apply()
+    }
+
+    /** A named shop's sign, open or not (the delete confirmation shows a closed shop's balance). */
+    fun currencyOf(context: Context, businessId: Long): String =
+        Currency.clean(prefsOf(context, businessId).getString(KEY_CURRENCY, null))
+
+    /**
+     * A new shop starts where the open one is (23 Oct 2026, the review): its country, currency sign
+     * and calendar are carried over, so a second shop in Dhaka is not silently Pakistan (+92, Rs,
+     * STRN, Rabi/Kharif). Only what the source has is copied; the owner changes any of it in the
+     * new shop's Profile. Never over a choice the new shop already has.
+     */
+    fun copyRegion(context: Context, fromId: Long, toId: Long) {
+        if (fromId == toId) return
+        val from = prefsOf(context, fromId)
+        val to = prefsOf(context, toId)
+        val edit = to.edit()
+        for (k in listOf(KEY_COUNTRY, KEY_CURRENCY, KEY_CALENDAR)) {
+            val v = from.getString(k, null) ?: continue
+            if (!to.contains(k)) edit.putString(k, v)
+        }
+        edit.commit()
+    }
+
+    // ---------- Country (21 Oct 2026): see ShopCountry ----------
+
+    private const val KEY_COUNTRY = "country"
+
+    /** The shop's country; Pakistan for a book from before the setting existed. */
+    fun country(context: Context): ShopCountry =
+        ShopCountry.of(prefs(context).getString(KEY_COUNTRY, null))
+
+    /** Whether the owner (or a restore) ever chose one: a new shop is asked. */
+    fun hasCountry(context: Context): Boolean = prefs(context).contains(KEY_COUNTRY)
+
+    fun setCountry(context: Context, country: ShopCountry) {
+        prefs(context).edit().putString(KEY_COUNTRY, country.code).apply()
+        ShopCountry.current = country
     }
 
     // ---------- Calendar (5 Oct 2026): display only, see ShopCalendar ----------
@@ -513,6 +613,23 @@ object BusinessProfile {
 
     fun hasLogo(context: Context): Boolean =
         prefs(context).getBoolean(KEY_LOGO_SAVED, false) && logoFile(context).exists()
+
+    /**
+     * The logo for the header tile, decoded once and kept while the file is the
+     * same (21 Oct 2026, the critical review: it was decoded from disk on the
+     * main thread every time a screen came back). Never recycled by its user.
+     */
+    @Volatile private var headerLogo: Triple<String, Long, Bitmap>? = null
+
+    fun headerLogo(context: Context): Bitmap? {
+        if (!hasLogo(context)) return null
+        val f = logoFile(context)
+        val cached = headerLogo
+        if (cached != null && cached.first == f.absolutePath && cached.second == f.lastModified()) return cached.third
+        val bmp = loadLogo(context) ?: return null
+        headerLogo = Triple(f.absolutePath, f.lastModified(), bmp)
+        return bmp
+    }
 
     fun loadLogo(context: Context): Bitmap? {
         if (!hasLogo(context)) return null

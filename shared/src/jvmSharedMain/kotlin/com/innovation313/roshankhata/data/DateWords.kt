@@ -67,6 +67,25 @@ object DateWords {
         )
     )
 
+    /**
+     * Weekday names, Sunday first (21 Oct 2026): the computer's Home title
+     * read "Wednesday" on a Hindi, Bengali or Indonesian screen because the
+     * formatter is built on English symbols. Taken from Unicode's CLDR
+     * (JDK 21's tables), kept here so a phone without them prints the same.
+     */
+    private val WEEKDAYS: Map<String, Array<String>> = mapOf(
+        "ur" to arrayOf("اتوار", "پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ"),
+        "sd" to arrayOf("آچر", "سومر", "اڱارو", "اربع", "خميس", "جمعو", "ڇنڇر"),
+        "ar" to arrayOf("الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"),
+        "fa" to arrayOf("یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"),
+        "hi" to arrayOf("रविवार", "सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"),
+        "bn" to arrayOf("রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"),
+        "id" to arrayOf("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu")
+    )
+
+    /** Roman Urdu's days, as its posters write them; its months stay English. */
+    private val ROMAN_WEEKDAYS = arrayOf("Itwar", "Peer", "Mangal", "Budh", "Jumeraat", "Jumma", "Hafta")
+
     /** Before noon / after noon, where the language writes its own. */
     private val AM_PM: Map<String, Array<String>> = mapOf(
         "ar" to arrayOf("ص", "م"),
@@ -82,6 +101,22 @@ object DateWords {
         "hi" to arrayOf("पूर्वाह्न", "अपराह्न"),
         "bn" to arrayOf("পূর্বাহ্ণ", "অপরাহ্ণ")
     )
+
+    /**
+     * A weekday's whole name from the app's own tables (Calendar.SUNDAY = 1
+     * … Calendar.SATURDAY = 7), or null where the language has none here
+     * (English, which the phone's own tables always carry). For the poster
+     * (23 Oct 2026, the review): an older phone without Sindhi data printed
+     * Latin "Mon" in a Sindhi panel.
+     */
+    fun weekday(locale: Locale, calDay: Int): String? {
+        val roman = locale.language.equals("ur", ignoreCase = true) && locale.script.equals("Latn", ignoreCase = true)
+        val days = if (roman) ROMAN_WEEKDAYS else WEEKDAYS[keyOf(locale)]
+        return days?.getOrNull(calDay - 1)
+    }
+
+    /** Before noon and after noon in [locale]'s own words, or null where AM/PM is right. */
+    fun amPm(locale: Locale): Array<String>? = AM_PM[keyOf(locale)]?.copyOf()
 
     /**
      * Which table a locale reads from: its language, except that Roman Urdu
@@ -124,8 +159,17 @@ object DateWords {
      */
     fun formatter(pattern: String, locale: Locale = appLocale()): SimpleDateFormat {
         val key = keyOf(locale)
-        return formatterFor(localPunctuation(pattern, key), key)
+        val roman = locale.language == "ur" && locale.script.equals("Latn", ignoreCase = true)
+        return formatterFor(localPunctuation(clock(pattern), key), key, roman)
     }
+
+    /**
+     * The 24-hour clock where the shop's country writes it (Iran, Indonesia,
+     * Turkey, the UK; 21 Oct 2026): every "h:mm a" in the app becomes
+     * "HH:mm" there, in one place, so no screen or sheet has to know.
+     */
+    fun clock(pattern: String): String =
+        if (ShopCountry.current.clock24 && pattern.contains("h:mm a")) pattern.replace("h:mm a", "HH:mm") else pattern
 
     /**
      * Arabic-script languages write their own comma, "،" (U+060C). Every
@@ -140,18 +184,18 @@ object DateWords {
 
     private val ARABIC_COMMA = setOf("ur", "sd", "ar", "fa")
 
-    private fun formatterFor(pattern: String, key: String): SimpleDateFormat {
+    private fun formatterFor(pattern: String, key: String, roman: Boolean = false): SimpleDateFormat {
         val kind = ShopCalendar.current
         // The shop's calendar (5 Oct) applies to dates that name a DAY. A
         // pattern with no day ("MMM", "MMM yyyy", "h:mm a") labels a Gregorian
         // bucket — a month of the sales chart — or a time, and a Hijri name on
         // a Gregorian month would be a wrong label, so those stay as they are.
         if (kind != ShopCalendar.Kind.GREGORIAN && hasDay(pattern)) {
-            return cache.get()!!.getOrPut("$key|$pattern|${kind.key}") {
-                CalendarDateFormat(pattern, gregorian(pattern, key), kind, ShopCalendar.monthNames(kind, key))
+            return cache.get()!!.getOrPut("$key|$roman|$pattern|${kind.key}") {
+                CalendarDateFormat(pattern, gregorian(pattern, key, roman), kind, ShopCalendar.monthNames(kind, key))
             }
         }
-        return cache.get()!!.getOrPut("$key|$pattern") { gregorian(pattern, key) }
+        return cache.get()!!.getOrPut("$key|$roman|$pattern") { gregorian(pattern, key, roman) }
     }
 
     /** True when [pattern] has a day-of-month letter outside quotes. */
@@ -163,12 +207,19 @@ object DateWords {
         return false
     }
 
-    private fun gregorian(pattern: String, key: String): SimpleDateFormat =
+    private fun gregorian(pattern: String, key: String, roman: Boolean = false): SimpleDateFormat =
             SimpleDateFormat(pattern, Locale.ENGLISH).apply {
                 val names = MONTHS[key]
                 val amPm = AM_PM[key]
-                if (names != null || amPm != null) {
+                val days = if (roman) ROMAN_WEEKDAYS else WEEKDAYS[key]
+                if (names != null || amPm != null || days != null) {
                     dateFormatSymbols = DateFormatSymbols(Locale.ENGLISH).apply {
+                        if (days != null) {
+                            // Slot 0 is unused: the calendar counts Sunday as 1.
+                            val eight = Array(8) { i -> if (i == 0) "" else days[i - 1] }
+                            weekdays = eight
+                            shortWeekdays = eight
+                        }
                         if (names != null) {
                             // Thirteen slots: the calendar keeps one for a
                             // thirteenth month that this calendar never uses.

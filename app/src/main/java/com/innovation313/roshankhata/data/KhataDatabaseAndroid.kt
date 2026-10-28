@@ -68,6 +68,9 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     UnitWords.normalizeStored(db)
+                    // This book's letter in document numbers while it syncs live (NumberMark), read as it opens:
+                    // a business switch never keeps the last book's letter.
+                    NumberMark.mark = liveMarkOf(db, LiveRunner.install(context.applicationContext))
                 }
             })
             .build()
@@ -79,6 +82,9 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
         }
     }
 }
+
+/** Whether [db] is still the open book: false once a restore, a switch or an erase closed it (a round then stops). */
+fun KhataDatabase.Companion.isOpen(db: KhataDatabase): Boolean = KhataDatabaseHolder.instance === db
 
 /**
  * A SEPARATE, short-lived handle on ANOTHER business's file — never
@@ -116,4 +122,40 @@ fun KhataDatabase.Companion.closeActive() {
         KhataDatabaseHolder.instance = null
         KhataDatabaseHolder.instanceFile = null
     }
+    // Another book is about to be opened (a business switch, a restore, the viewer's copy):
+    // a sign-in belongs to the book it was made in.
+    Access.signOut()
 }
+
+/**
+ * [swap] with the book closed and nobody able to open it until [swap] is
+ * done: a file put back, or every file erased (22 Oct 2026, the review). The
+ * live sync loop opens the book every few seconds; landing between the close
+ * and the swap, it held the old file open, and every screen after the restore
+ * read and wrote a file that was no longer there. [get] waits on the same
+ * lock. [swap] must not call [get] itself.
+ */
+fun <T> KhataDatabase.Companion.whileClosed(swap: () -> T): T {
+    val result = synchronized(KhataDatabaseHolder) {
+        KhataDatabaseHolder.instance?.close()
+        KhataDatabaseHolder.instance = null
+        KhataDatabaseHolder.instanceFile = null
+        swap()
+    }
+    Access.signOut()
+    return result
+}
+
+/**
+ * The open book's letter in document numbers ([NumberMark]): its sync_meta's
+ * mark while live sync is on and the book is this phone's own (not a file from
+ * another device), else null. Read straight from the file as it opens.
+ */
+internal fun liveMarkOf(db: SupportSQLiteDatabase, install: String): String? = runCatching {
+    val hasMeta = db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sync_meta'").use { it.moveToFirst() }
+    if (!hasMeta) return@runCatching null
+    fun meta(k: String): String? = db.query("SELECT v FROM sync_meta WHERE k = ?", arrayOf<Any?>(k)).use { c ->
+        if (c.moveToFirst() && !c.isNull(0)) c.getString(0) else null
+    }
+    if (meta("on") == "1" && meta("install") == install) meta("mark") else null
+}.getOrNull()

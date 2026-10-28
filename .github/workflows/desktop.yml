@@ -15,6 +15,15 @@ on:
 permissions:
   contents: write
 
+# One run at a time puts files on the shared desktop-test release: four pushes
+# in a minute (20 Oct) ran side by side and two uploaded poster-ur-closed.png
+# at once, and GitHub refused the second (HTTP 422, "already exists") after
+# every test had passed. Later runs wait their turn; none is cancelled, so
+# every commit is still built and tested.
+concurrency:
+  group: desktop-test-release
+  cancel-in-progress: false
+
 jobs:
   msi:
     # Pinned, like the Android build: a runner image change should be chosen, not met.
@@ -35,6 +44,15 @@ jobs:
           cache-disabled: true
           gradle-version: 8.14.3
 
+      # Every MSI its own version (MAJOR.MINOR.<run number>), so Windows upgrades
+      # the one already installed instead of refusing "another version is installed".
+      - name: Stamp the build number
+        shell: bash
+        run: |
+          n=$(( GITHUB_RUN_NUMBER % 65535 ))
+          sed -i -E "s/packageVersion = \"([0-9]+)\.([0-9]+)\.[0-9]+\"/packageVersion = \"\1.\2.$n\"/" desktop/build.gradle.kts
+          grep -n 'packageVersion = ' desktop/build.gradle.kts
+
       - name: Computer-side tests, then the MSI
         shell: bash
         run: |
@@ -51,6 +69,31 @@ jobs:
           why=$(grep -A14 "What went wrong" /tmp/msi_output.txt | grep -v "^--$" | head -16 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
           [ -n "$why" ] && echo "::error title=What went wrong::$why"
           true
+
+      # R36 (23 Oct 2026): the tests above run on the runner's full JDK, so a module missing
+      # from desktop/build.gradle.kts's modules(...) was only ever found on the owner's laptop
+      # (java.logging, jdk.localedata, jdk.crypto.ec). This runs RuntimeSelfCheck with the app
+      # image's OWN trimmed Java (the runtime the MSI installs) and one real HTTPS handshake.
+      - name: Packaged runtime check
+        if: success()
+        shell: pwsh
+        run: |
+          # jpackage strips java.exe from the app's runtime, so the check runs through the app's own launcher
+          # (Main.kt hands "--runtime-self-check" to RuntimeSelfCheck before anything of the app opens).
+          $app = Get-ChildItem desktop/build/compose/binaries/main/app -Directory | Select-Object -First 1
+          if (-not $app) { Write-Output "::error::No app folder from createDistributable"; exit 1 }
+          $exe = Get-ChildItem $app.FullName -Filter *.exe | Select-Object -First 1
+          if (-not $exe) { Write-Output "::error::No launcher (.exe) in the app folder"; exit 1 }
+          $out = Join-Path $env:RUNNER_TEMP "runtime_check.txt"
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList "--runtime-self-check","--out",$out,"--net","https://github.com" -Wait -PassThru
+          if (-not (Test-Path $out)) { Write-Output "::error::The runtime check wrote nothing (exit $($p.ExitCode))"; exit 1 }
+          $text = Get-Content $out -Encoding UTF8
+          $text | ForEach-Object { Write-Output $_ }
+          $fails = $text | Where-Object { $_ -match '^FAIL|RUNTIME CHECK FAILED' }
+          if ($fails -or -not ($text -match 'RUNTIME CHECK PASSED')) {
+            Write-Output "::error title=The MSI's own Java cannot do what the app needs::$(($fails | Select-Object -First 20) -join ' | ')"
+            exit 1
+          }
 
       # The Store's package (MSIX), from the same app folder the MSI installs.
       # Identity values come from Partner Center once the name is reserved
@@ -103,10 +146,18 @@ jobs:
           gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
             --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
           gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
+          # What version this is, for the app's own update check (UpdateCheck reads it once a day).
+          ver=$(grep -oE 'packageVersion = "[0-9.]+"' desktop/build.gradle.kts | grep -oE '[0-9.]+')
+          printf '{"version": "%s", "commit": "%s"}\n' "$ver" "${GITHUB_SHA}" > version.json
+          gh release upload desktop-test version.json --clobber
           [ -f RoshanKhata-Windows-store.msix ] && gh release upload desktop-test RoshanKhata-Windows-store.msix --clobber
           # The statement pictures from StatementPrintTest, to look at (lesson 16).
           for f in desktop/build/statement-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           # The ten invoice designs from InvoiceDesignsTest, to look at as well.
           for f in desktop/build/invoice-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           for f in desktop/build/card-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          for f in desktop/build/poster-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          # The window itself (ScreenProofTest): Home in English and Urdu, light and dark.
+          for f in desktop/build/screen-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          for f in desktop/build/pdf-proof/*.pdf; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."

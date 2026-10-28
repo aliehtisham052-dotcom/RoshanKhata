@@ -35,6 +35,7 @@ import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -47,77 +48,105 @@ import kotlinx.coroutines.withContext
  * its own drawing code and is not on the computer yet.
  */
 @Composable
-fun StockPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int) {
+fun StockPane(
+    dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int,
+    /** The words, shop and pictures the phone's inspector document draws with; the short table when null. */
+    designs: (() -> com.innovation313.roshankhata.desktop.invoice.Context)? = null
+) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var told by remember { mutableStateOf<String?>(null) }
     val c = LocalRoshanColors.current
     var batches by remember { mutableStateOf<List<InspectorBatch>>(emptyList()) }
     var window by remember { mutableStateOf(60) }
-    LaunchedEffect(reload) {
-        batches = withContext(Dispatchers.IO) { dao.allBatchesOnce().filter { it.remaining > 0 } }
-            .sortedWith(compareBy({ it.productName.lowercase() }, { it.expiryDate ?: Long.MAX_VALUE }))
+    // Read again whenever stock moves anywhere (a sale here or on the phone, a return, a write-off), as Expiry is.
+    var moved by remember { mutableStateOf(0) }
+    LaunchedEffect(Unit) { dao.observeBatchMoves().collect { moved++ } }
+    LaunchedEffect(reload, moved) {
+        // What is left of each batch by the one rule (Fefo.register, Marhala 3): written off, returned and
+        // sold in packs taken off too, never more than the shelf; a batch with nothing left is not listed.
+        batches = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Fefo.register(dao) }.getOrNull() } ?: batches
     }
     val cutoff = System.currentTimeMillis() + window * 24L * 60 * 60 * 1000
+    // The phone's order (Marhala 4, the audit): expired first, then what expires within the window, soonest
+    // first, then the rest by name in the reader's alphabet. The printed sheet keeps the same order.
+    val shown = remember(batches, window) {
+        val (late, rest) = batches.partition { it.hasExpired }
+        val (soon, later) = rest.partition { b -> b.expiryDate?.let { it <= cutoff } == true }
+        late.sortedBy { it.expiryDate ?: Long.MAX_VALUE } + soon.sortedBy { it.expiryDate ?: Long.MAX_VALUE } +
+            com.innovation313.roshankhata.data.NameOrder.sortedBy(later) { it.productName }
+    }
     val expired = batches.count { it.hasExpired }
     val expiring = batches.count { b -> val e = b.expiryDate; e != null && !b.hasExpired && e <= cutoff }
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f)) { PaneTitle(word(W.inspector_title), word(W.inspector_subtitle)) }
-            FillButton(word(W.ledger_pdf_button), c.gaveFill, enabled = batches.isNotEmpty()) {
-                val rows = batches.map { b ->
-                    listOf(
-                        b.productName + (b.batchNumber?.let { "  ·  " + words.text(W.pdf_reg_batch, it) } ?: ""),
-                        b.expiryDate?.let { Format.dateOnly(it) } ?: "–",
-                        Format.qty(b.remaining, b.unit)
-                    )
+    FluentPage(word(W.inspector_title), word(W.inspector_subtitle), scroll = false, actions = {
+        FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = shown.isNotEmpty(), onClick = {
+            // The phone's full inspector document (InspectorReport, copied by gen_desktop_inspector.py): the
+            // masthead, six summary cards, current stock, batch and expiry, company-wise stock, the label checklist.
+            if (designs != null) {
+                scope.launch {
+                    val doc = withContext(Dispatchers.IO) {
+                        runCatching { com.innovation313.roshankhata.desktop.invoice.InspectorReport.build(designs(), dao, window) }.getOrNull()
+                    }
+                    if (doc == null) told = failText(words, IllegalStateException("inspector"))
+                    else StatementPrint.show(com.innovation313.roshankhata.desktop.invoice.DocumentPrint(doc), words.text(W.inspector_title))
                 }
-                StatementPrint.show(
-                    TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.inspector_title) + "  ·  " + Format.dateOnly(System.currentTimeMillis()),
-                        listOf(words.text(W.inspector_col_product), words.text(W.inspector_col_expiry), words.text(W.inspector_col_left)), rows
-                    ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
-                    words.text(W.inspector_title)
+                return@FluentButton
+            }
+            val rows = shown.map { b ->
+                listOf(
+                    b.productName + (b.batchNumber?.let { "  ·  " + words.text(W.pdf_reg_batch, it) } ?: ""),
+                    b.expiryDate?.let { Format.dateOnly(it) } ?: "–",
+                    Format.qty(b.remaining, b.unit)
                 )
             }
-        }
+            StatementPrint.show(
+                TablePrint(rtl, shopName ?: words.text(W.app_name), words.text(W.inspector_title) + "  ·  " + Format.dateOnly(System.currentTimeMillis()),
+                    listOf(words.text(W.inspector_col_product), words.text(W.inspector_col_expiry), words.text(W.inspector_col_left)), rows, made = madeLine(words)
+                ) { p, of -> words.text(W.pdf_stmt_page, p, of) },
+                words.text(W.inspector_title)
+            )
+        })
+    }) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(word(W.inspector_window_title), color = c.textMuted, fontSize = 12.sp)
             listOf(30 to W.inspector_window_30, 60 to W.inspector_window_60, 90 to W.inspector_window_90).forEach { (d, label) ->
-                if (d == window) FillButton(word(label), c.brandGreen) { window = d }
-                else TextButton({ window = d }) { Text(word(label), color = c.brandGreenText) }
+                FluentPill(word(label), d == window) { window = d }
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            TotalCard(word(W.inspector_count_batches), batches.size.toString(), c.ink, Modifier.weight(1f))
-            TotalCard(word(W.inspector_count_expired), expired.toString(), c.owedToMe, Modifier.weight(1f))
-            TotalCard(word(W.inspector_count_expiring), expiring.toString(), c.brandGreenText, Modifier.weight(1f))
+        // The page's figures as every page now shows them (FigureCard: the audit's two kinds of card).
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FigureCard(word(W.inspector_count_batches), batches.size.toString(), c.ink, Modifier.weight(1f), icon = "ic_register_stock", tint = Look.subtle)
+            FigureCard(word(W.inspector_count_expired), expired.toString(), if (expired > 0) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_calendar", tint = Look.getTint)
+            FigureCard(word(W.inspector_count_expiring), expiring.toString(), if (expiring > 0) Look.warn else c.ink, Modifier.weight(1f), icon = "ic_calendar", tint = Look.warnTint)
         }
-        if (batches.isEmpty()) {
-            Text(word(W.inspector_empty), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
-        } else {
-            LazyColumn(Modifier.fillMaxSize().background(c.surface, RoundedCornerShape(14.dp))) {
-                item {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                        Text(word(W.inspector_col_product), Modifier.weight(1f), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text(word(W.inspector_col_expiry), Modifier.width(120.dp), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text(word(W.inspector_col_left), Modifier.width(110.dp), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
-                    }
-                }
-                items(batches, key = { it.itemId }) { b ->
+        if (shown.isEmpty()) {
+            EmptyState("ic_register_stock", word(W.inspector_empty), null, Modifier.weight(1f))
+        } else ListCard(Modifier.weight(1f)) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Text(word(W.inspector_col_product), Modifier.weight(1f), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(word(W.inspector_col_expiry), Modifier.width(120.dp), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(word(W.inspector_col_left), Modifier.width(110.dp), color = c.textMuted, fontSize = 12.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
+            }
+            Rule()
+            LazyColumn(Modifier.fillMaxSize()) {
+                items(shown, key = { it.itemId }) { b ->
                     val e = b.expiryDate
                     val soon = e != null && !b.hasExpired && e <= cutoff
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(b.productName, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            Text(b.productName, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             Text(listOfNotNull(b.batchNumber?.let { word(W.pdf_reg_batch, it) }, b.company, b.partyName).joinToString("  ·  "),
                                 color = c.textMuted, fontSize = 12.sp)
                         }
                         Text(e?.let { Format.dateOnly(it) } ?: "–", Modifier.width(120.dp),
-                            color = when { b.hasExpired -> c.owedToMe; soon -> c.brandGreenText; else -> c.ink },
+                            color = when { b.hasExpired -> c.owedToMe; soon -> Look.warn; else -> c.ink },
                             fontSize = 14.sp, fontWeight = if (b.hasExpired || soon) FontWeight.Bold else FontWeight.Normal)
                         Text(Format.qty(b.remaining, b.unit), Modifier.width(110.dp), color = c.ink, fontSize = 14.sp, textAlign = TextAlign.End)
                     }
-                    HorizontalDivider(color = c.pageBg)
+                    Rule()
                 }
             }
         }
     }
+    told?.let { TellDialog(word(W.inspector_title), it, { told = null }) }
 }

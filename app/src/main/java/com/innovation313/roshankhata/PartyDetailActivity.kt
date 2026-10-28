@@ -1,16 +1,24 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.record
+import com.innovation313.roshankhata.data.state
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import com.innovation313.roshankhata.data.choices
 
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.data.quantity
+import com.innovation313.roshankhata.data.string
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
 import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.DateRangeFilter
@@ -112,6 +120,36 @@ class PartyDetailActivity : BaseActivity() {
         private const val STATE_CAMERA_PATH = "camera_path"
         private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
         private const val STATE_CAMERA_TARGET = "camera_target"
+        private const val STATE_PENDING_BILL = "pending_bill_photo"
+
+        /**
+         * The add-entry form as it stood (23 Oct 2026, the review, R41), a small Bundle of its own:
+         * put back by [reopenSavedForm] when the screen is rebuilt with the form open.
+         */
+        private const val STATE_ENTRY_FORM = "entry_form"
+        private const val F_GIVEN = "given"
+        private const val F_EDIT = "edit_id"
+        private const val F_AMOUNT = "amount"
+        private const val F_AMOUNT_OWN = "amount_own"
+        private const val F_AMOUNT_BY_ITEMS = "amount_by_items"
+        private const val F_NOTE = "note"
+        private const val F_TIME = "time"
+        private const val F_CASH = "rate_cash"
+        private const val F_LINES = "lines"
+        private const val F_ITEM = "item"
+        private const val F_QTY = "qty"
+        private const val F_UNIT = "unit"
+        private const val F_RATE = "rate"
+        private const val F_AUTO_RATE = "auto_rate"
+        private const val F_EDIT_INDEX = "edit_index"
+        private const val F_BATCH = "batch"
+        private const val F_RECOVERY = "recovery"
+        private const val F_METHOD = "method"
+        private const val F_QARZ = "qarz"
+        private const val F_PAID_NOW = "paid_now"
+        private const val F_DETAILS = "details_open"
+        private const val F_DUE = "due"
+        private const val F_DUE_TOUCHED = "due_touched"
 
         /**
          * A spoken entry, handed over from the ledger for the owner to check.
@@ -132,6 +170,21 @@ class PartyDetailActivity : BaseActivity() {
      * dialog reads it when Save is pressed.
      */
     private var pendingBillPhoto: String? = null
+
+    /**
+     * A bill photo that came back with no form open to take it (23 Oct 2026,
+     * the review): the screen was rebuilt while the camera was in front —
+     * turned, a scanner connecting, Android reclaiming it — and the form went
+     * with it. The photo is kept for the next new entry's form (its chip
+     * says it is there) instead of being deleted as a cancelled form's.
+     */
+    private var billPhotoKept = false
+
+    /** The add-entry form while it is open: dismissed with the screen, so its window is never leaked. */
+    private var entryDialog: androidx.appcompat.app.AlertDialog? = null
+
+    /** The open form's state as a Bundle, for [onSaveInstanceState] (R41); null with no form open. */
+    private var entryFormState: (() -> Bundle)? = null
 
     /**
      * The signature taken on the new-entry form (18 Oct). An entry has no
@@ -171,6 +224,8 @@ class PartyDetailActivity : BaseActivity() {
             // Replacing an earlier pick: the old file is nothing but bytes now.
             BillPhoto.delete(pendingBillPhoto)
             pendingBillPhoto = path
+            // No form to take it (this screen was rebuilt while the camera was up): kept for the next one.
+            billPhotoKept = entryDialog?.isShowing != true
             billButton?.setText(R.string.entry_bill_chip_done)
         }
     }
@@ -387,6 +442,10 @@ class PartyDetailActivity : BaseActivity() {
         scanFlow.restoreState(savedInstanceState, STATE_SCAN_CAMERA_PATH)
         cameraTarget = savedInstanceState?.getString(STATE_CAMERA_TARGET)
             ?.let { runCatching { PhotoTarget.valueOf(it) }.getOrNull() }
+        // A bill photo the form had before the screen was rebuilt: the form is gone, the photo is kept for the next.
+        savedInstanceState?.getString(STATE_PENDING_BILL)?.let { pendingBillPhoto = it; billPhotoKept = true }
+        // The form that was open, if one was (R41): reopened as it stood once the customer is read.
+        val savedForm = savedInstanceState?.getBundle(STATE_ENTRY_FORM)
         setContentView(R.layout.activity_party_detail)
         onBackPressedDispatcher.addCallback(this, selectionBack)
 
@@ -397,8 +456,10 @@ class PartyDetailActivity : BaseActivity() {
 
         // Arrived by voice: open the entry already filled in, once the screen
         // has settled and the balance is known.
+        // Only on the screen's first creation (R41): a rebuilt screen's form is the one it saved, open
+        // or closed, never the intent's again.
         val spokenAmount = intent.getDoubleExtra(EXTRA_VOICE_AMOUNT, 0.0)
-        if (spokenAmount > 0.0) {
+        if (spokenAmount > 0.0 && savedInstanceState == null) {
             val spokenGiven = intent.getBooleanExtra(EXTRA_VOICE_IS_GIVEN, true)
             findViewById<View>(android.R.id.content).post {
                 showAddEntryDialog(spokenGiven, prefillAmount = spokenAmount)
@@ -408,7 +469,7 @@ class PartyDetailActivity : BaseActivity() {
             finish()
             return
         }
-        intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L).takeIf { it > 0L }?.let { openEditor(it) }
+        if (savedInstanceState == null) intent.getLongExtra(EXTRA_EDIT_ENTRY_ID, 0L).takeIf { it > 0L }?.let { openEditor(it) }
 
         setSupportActionBar(findViewById<Toolbar>(R.id.detailToolbar))
         // The light header (P2, 7 Oct), as on Home and the Khata list: a
@@ -503,7 +564,13 @@ class PartyDetailActivity : BaseActivity() {
         etSearchEntries.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-            override fun afterTextChanged(s: Editable?) = renderEntries()
+            // Once typing pauses, not at every letter (21 Oct 2026: a customer with years of entries
+            // made each key wait for the whole list to be searched again).
+            private val later = Runnable { renderEntries() }
+            override fun afterTextChanged(s: Editable?) {
+                etSearchEntries.removeCallbacks(later)
+                etSearchEntries.postDelayed(later, 180)
+            }
         })
 
         val btnDateFilter = findViewById<MaterialButton>(R.id.btnFilterEntryDate)
@@ -521,6 +588,27 @@ class PartyDetailActivity : BaseActivity() {
 
         loadParty()
         observeEntries()
+        savedForm?.let { reopenSavedForm(it) }
+    }
+
+    /**
+     * The add-entry form the screen was rebuilt under, put back as it stood (23 Oct 2026, the review,
+     * R41). The customer and balance are read first, as the form needs them (name, due date, quick
+     * shares); an edit goes through [openEditor]'s checks again, as when it was first opened.
+     */
+    private fun reopenSavedForm(state: Bundle) {
+        lifecycleScope.launch {
+            val p = dao.getParty(partyId) ?: return@launch
+            partyName = p.name
+            partyIsCustomerAccount = p.isCustomer
+            harvestPromise = p.harvestPromise
+            creditLimit = p.creditLimit
+            currentBalance = dao.liveBalance(partyId)
+            if (isFinishing || isDestroyed || entryDialog?.isShowing == true) return@launch
+            val editId = state.getLong(F_EDIT, 0L)
+            if (editId > 0L) openEditor(editId, state)
+            else showAddEntryDialog(state.getBoolean(F_GIVEN, true), restore = state)
+        }
     }
 
     private fun loadParty() {
@@ -646,12 +734,18 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     /** Put an existing entry back on the full form. Its own customer only; never a binned one. */
-    private fun openEditor(entryId: Long) {
+    private fun openEditor(entryId: Long, restore: Bundle? = null) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { openEditor(entryId, restore) }) return
+        // An entry a bill, plan, cheque or ticket wrote is changed there (21 Oct 2026).
+        com.innovation313.roshankhata.ui.LinkedEntry.check(this, dao, entryId) { openEditorNow(entryId, restore) }
+    }
+
+    private fun openEditorNow(entryId: Long, restore: Bundle? = null) {
         lifecycleScope.launch {
             val e = dao.getEntry(entryId) ?: return@launch
             if (e.partyId != partyId || e.isDeleted) return@launch
             if (partyName.isEmpty()) dao.getParty(partyId)?.let { partyName = it.name }
-            showAddEntryDialog(e.isGiven, editing = EntryWithItems(e, dao.itemsOfEntry(entryId)))
+            showAddEntryDialog(e.isGiven, editing = EntryWithItems(e, dao.itemsOfEntry(entryId)), restore = restore)
         }
     }
 
@@ -665,7 +759,9 @@ class PartyDetailActivity : BaseActivity() {
     private fun showAddEntryDialog(
         isGiven: Boolean,
         prefillAmount: Double? = null,
-        editing: EntryWithItems? = null
+        editing: EntryWithItems? = null,
+        // The form as it stood before the screen was rebuilt (R41); null for every form the owner opens.
+        restore: Bundle? = null
     ) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
@@ -688,13 +784,20 @@ class PartyDetailActivity : BaseActivity() {
         etAmount.showSoftInputOnFocus = false
 
         // Fresh dialog, fresh attachment. Anything picked for a dialog that was
-        // then cancelled is a file nobody will ever look at.
-        BillPhoto.delete(pendingBillPhoto)
-        pendingBillPhoto = null
+        // then cancelled is a file nobody will ever look at — except a photo that
+        // came back to a rebuilt screen (billPhotoKept): that one is this form's.
+        // An edit has no bill chip, so a kept photo waits for a new entry.
+        val keptPhoto = billPhotoKept && pendingBillPhoto != null
+        if (!keptPhoto) {
+            BillPhoto.delete(pendingBillPhoto)
+            pendingBillPhoto = null
+        } else if (editing == null) {
+            billPhotoKept = false
+        }
         pendingSignature = null
 
         billButton = view.findViewById(R.id.btnAddBill)
-        billButton?.setText(R.string.entry_bill_chip)
+        billButton?.setText(if (keptPhoto && editing == null) R.string.entry_bill_chip_done else R.string.entry_bill_chip)
         // Photo only. The chip itself is wired further down, once the two
         // scans it can also offer exist (see "One chip, two ways in").
         fun pickPhotoOnly() {
@@ -735,24 +838,13 @@ class PartyDetailActivity : BaseActivity() {
 
         // The running total, shown as the sum is typed rather than waiting on
         // the equals key — the Calculator screen answers as you go, and this
-        // pad looked broken beside it.
+        // pad looked broken beside it. CalcPad, so the Edit dialog's pad
+        // shows the same.
         val tvResult = view.findViewById<android.widget.TextView>(R.id.tvAmountResult)
         // Set once the dialog exists (header, SAVE, preview); called on every
         // change to the amount alongside showResult().
         var onAmountChanged: () -> Unit = {}
-        fun showResult() {
-            val text = etAmount.text.toString()
-            // Nothing to total until there is arithmetic in the box: a plain
-            // "3500" repeated underneath as "Rs 3,500" is noise.
-            val isSum = text.any { it in "+-\u2212*\u00d7/\u00f7%" }
-            val value = if (isSum) Calc.evalPad(text) else null
-            if (value == null) {
-                tvResult.visibility = android.view.View.GONE
-            } else {
-                tvResult.text = Format.money(value)
-                tvResult.visibility = android.view.View.VISIBLE
-            }
-        }
+        fun showResult() = com.innovation313.roshankhata.ui.CalcPad.showTotal(etAmount, tvResult)
 
         etAmount.addTextChangedListener(object : android.text.TextWatcher {
             override fun afterTextChanged(s: android.text.Editable?) {
@@ -763,44 +855,13 @@ class PartyDetailActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, cc: Int) {}
         })
 
-        // Full calculator pad. Digits, 00, and the dot append; operators append;
-        // ⌫ deletes the last character; C clears; = evaluates in place.
-        fun append(ch: String) { etAmount.append(ch); etAmount.setSelection(etAmount.text.length) }
-        fun key(id: Int, ch: String) = view.findViewById<android.widget.Button>(id).setOnClickListener { append(ch) }
+        // Full calculator pad: digits, 00 and the dot append; operators
+        // append; ⌫ — on the pad, where the thumb is, and the small one inside
+        // the amount box — deletes the last character; C clears; = works the
+        // sum out in place. One binding with the Edit dialog's pad (CalcPad),
+        // so the two never become different calculators.
+        com.innovation313.roshankhata.ui.CalcPad.bind(view, etAmount)
 
-        key(R.id.calc0, "0"); key(R.id.calc00, "00"); key(R.id.calc1, "1")
-        key(R.id.calc2, "2"); key(R.id.calc3, "3"); key(R.id.calc4, "4")
-        key(R.id.calc5, "5"); key(R.id.calc6, "6"); key(R.id.calc7, "7")
-        key(R.id.calc8, "8"); key(R.id.calc9, "9"); key(R.id.calcDot, ".")
-        key(R.id.calcPlus, "+"); key(R.id.calcMinus, "\u2212")
-        key(R.id.calcTimes, "\u00d7"); key(R.id.calcDivide, "\u00f7")
-        key(R.id.calcPercent, "%")
-
-        view.findViewById<android.widget.Button>(R.id.calcClear).setOnClickListener {
-            etAmount.setText("")
-        }
-        // Two backspaces, one behaviour: the key on the pad, where the thumb
-        // is, and the small one inside the amount box.
-        val backspace = android.view.View.OnClickListener {
-            val t = etAmount.text
-            if (t.isNotEmpty()) etAmount.text.delete(t.length - 1, t.length)
-        }
-        view.findViewById<android.widget.Button>(R.id.calcBack).setOnClickListener(backspace)
-        view.findViewById<android.widget.Button>(R.id.calcBackKey).setOnClickListener(backspace)
-
-        view.findViewById<android.widget.Button>(R.id.calcEquals).setOnClickListener {
-            // evalPad, not eval: it translates the pad's × ÷ − and resolves a
-            // percentage before the arithmetic runs, so "1200-15%" comes out
-            // as 1020 rather than as nothing at all. Written back as a
-            // magnitude (abs), same as everywhere else this box is read —
-            // "7926-35554" must land back in the box as 27628, not -27628;
-            // a minus sign has no meaning in an amount field.
-            val result = Calc.evalPad(etAmount.text.toString())
-            if (result != null) {
-                etAmount.setText(Calc.trim(kotlin.math.abs(result)))
-                etAmount.setSelection(etAmount.text.length)
-            }
-        }
         // ---- Quick shares of the outstanding balance ----
         //
         // Only for money coming IN, and only when there is something owed to
@@ -1197,7 +1258,10 @@ class PartyDetailActivity : BaseActivity() {
             val showUpdate = isSale() && product != null && rateWasTyped() &&
                 typedRate != null && typedRate > 0.0 && typedRate != offeredRate &&
                 result !is RateOffer.Result.UnitMismatch
-            if (showUpdate && product != null && typedRate != null) {
+            // Making a typed rate the product's price is a price change (21 Oct 2026): offered only
+            // to whoever may change prices, as at the counter.
+            if (showUpdate && product != null && typedRate != null &&
+                com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) {
                 cbUpdateRate.text = getString(
                     R.string.update_product_rate,
                     product.name,
@@ -1346,7 +1410,10 @@ class PartyDetailActivity : BaseActivity() {
             refreshTotal()
         })
 
-        // Whether this is a customer decides everything sale-only above.
+        // Whether this is a customer decides everything sale-only above. A restored form finishes
+        // putting itself back once it is known ([onCustomerKnown], R41).
+        var customerKnown = false
+        var onCustomerKnown: () -> Unit = {}
         lifecycleScope.launch {
             partyIsCustomer = dao.getParty(partyId)?.isCustomer ?: false
             if (isSale() && editing == null) lastSaleEntry = dao.lastSaleWithItems(partyId)
@@ -1360,6 +1427,8 @@ class PartyDetailActivity : BaseActivity() {
             etRate.visibility = if (list) View.VISIBLE else View.GONE
             btnAddLine.visibility = if (list) View.VISIBLE else View.GONE
             refreshRateSuggestion()
+            customerKnown = true
+            onCustomerKnown()
         }
 
         /**
@@ -1392,7 +1461,8 @@ class PartyDetailActivity : BaseActivity() {
             lifecycleScope.launch {
                 val product = dao.productByKey(ProductName.key(typed))
                 // Batches are what a SALE is drawn from; a return offers none.
-                val options = if (isGiven) product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+                // What is left of each batch as the counter would say it (Fefo.options, Marhala 3).
+                val options = if (isGiven) product?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
                     else emptyList()
                 val last = if (isReturn() && product != null) dao.lastSaleRate(partyId, product.id) else null
                 val lastCr = if (isSale() && product != null) dao.lastSaleRate(partyId, product.id, RateType.CREDIT) else null
@@ -1614,6 +1684,10 @@ class PartyDetailActivity : BaseActivity() {
         val cgPaymentMethod: ChipGroup = view.findViewById(R.id.cgPaymentMethod)
         if (!isGiven) {
             view.findViewById<View>(R.id.paymentMethodSection).visibility = View.VISIBLE
+            // Money received is marked Cash unless the owner taps another way (21 Oct 2026, the owner:
+            // "the professional way"): an unmarked "I got" was left out of the drawer's count, and
+            // most money over a counter is cash. An entry being edited keeps what it had.
+            if (editing == null) cgPaymentMethod.check(R.id.chipCash)
         }
 
         // "Scan payment slip" (1 Oct): a JazzCash/Easypaisa screenshot or a
@@ -1736,6 +1810,58 @@ class PartyDetailActivity : BaseActivity() {
             amountOwn = lines.isNotEmpty() && !savedAtTotal
             renderLines()
             refreshRateSuggestion()
+        }
+
+        // ---- A form the screen was rebuilt under (23 Oct 2026, the review, R41): as it stood ----
+        // Over whatever the lines above put in (an edit's saved entry). The rate chip first, while the
+        // list is replaced right after; the amount's two flags before its figure, so the items do not
+        // take it over; the Rate box last, with the figure the app itself had put there, so a rate
+        // the owner typed stays his. Not put back: the signature drawn on the form (a picture, not
+        // state) and the two product offers' ticks (shown again, unticked, by the lookup).
+        if (restore != null) {
+            cgRateType.check(if (restore.getBoolean(F_CASH)) R.id.chipRateCash else R.id.chipRateCredit)
+            lines.clear()
+            lines.addAll(com.innovation313.roshankhata.ui.EntryFormLines.fromJson(restore.getString(F_LINES)))
+            etNote.setText(restore.getString(F_NOTE).orEmpty())
+            cbQarzeHasna.isChecked = restore.getBoolean(F_QARZ)
+            restore.getInt(F_RECOVERY, View.NO_ID).takeIf { it != View.NO_ID && isGiven }?.let { rgRecovery.check(it) }
+            if (!isGiven) {
+                when (restore.getString(F_METHOD)) {
+                    PaymentMethod.CASH -> cgPaymentMethod.check(R.id.chipCash)
+                    PaymentMethod.BANK -> cgPaymentMethod.check(R.id.chipBank)
+                    PaymentMethod.CHEQUE -> cgPaymentMethod.check(R.id.chipCheque)
+                    PaymentMethod.ONLINE -> cgPaymentMethod.check(R.id.chipOnline)
+                    else -> cgPaymentMethod.clearCheck()
+                }
+            }
+            amountOwn = restore.getBoolean(F_AMOUNT_OWN)
+            amountByItems = restore.getBoolean(F_AMOUNT_BY_ITEMS)
+            autoWriting = true
+            try {
+                etAmount.setText(restore.getString(F_AMOUNT).orEmpty())
+                etAmount.setSelection(etAmount.text.length)
+            } finally {
+                autoWriting = false
+            }
+            etItemName.setText(restore.getString(F_ITEM).orEmpty(), false)
+            etQuantity.setText(restore.getString(F_QTY).orEmpty())
+            etUnit.setText(restore.getString(F_UNIT).orEmpty(), false)
+            editingIndex = restore.getInt(F_EDIT_INDEX, -1).takeIf { it >= 0 }
+            pendingBatchId = restore.getLong(F_BATCH, 0L).takeIf { it > 0L }
+            autoRate = if (restore.containsKey(F_AUTO_RATE)) restore.getDouble(F_AUTO_RATE) else null
+            etRate.setText(restore.getString(F_RATE).orEmpty())
+            chosenTime = restore.getLong(F_TIME, chosenTime)
+            attachDate()
+            renderLines()
+            refreshRateSuggestion(fill = false)
+            // What waits on knowing this is a customer: the paid-now tick and the product in the boxes.
+            val afterLookup: () -> Unit = {
+                syncPaidNow()
+                if (cbPaidNow.visibility == View.VISIBLE) cbPaidNow.isChecked = restore.getBoolean(F_PAID_NOW)
+                if (etItemName.text.isNotBlank()) refreshBatchButton()
+                refreshRateSuggestion(fill = false)
+            }
+            if (customerKnown) afterLookup() else onCustomerKnown = afterLookup
         }
 
         // The Save button's action, set once the dialog exists below; the
@@ -1906,7 +2032,7 @@ class PartyDetailActivity : BaseActivity() {
                     paymentMethod = entry.paymentMethod,
                     rateType = rateType
                 )
-                AppScope.launch { dao.updateEntryWithItems(updated, items) }
+                AppScope.launch { dao.updateEntryWithItems(updated, items); dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount)) }
                 if (sigRow.changed) {
                     val sig = sigRow.current
                     val ctx = applicationContext
@@ -1922,6 +2048,9 @@ class PartyDetailActivity : BaseActivity() {
             }
 
             pendingSignature = sigRow.current
+            // The photo now belongs to this entry (23 Oct 2026, the review): left pending, the next form's
+            // "fresh attachment" deleted the file the saved entry points at.
+            pendingBillPhoto = null
 
             // Warn BEFORE writing, not after — a warning that arrives once
             // the entry is already in the ledger is just an accusation.
@@ -1930,10 +2059,52 @@ class PartyDetailActivity : BaseActivity() {
         }
 
         val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
+        entryDialog = dialog
+
+        // What onSaveInstanceState keeps of this form (R41): everything the owner put on it, as text
+        // and figures, read back by the restore block above.
+        val snapshot: () -> Bundle = {
+            val b = Bundle()
+            b.putBoolean(F_GIVEN, isGiven)
+            b.putLong(F_EDIT, editing?.entry?.id ?: 0L)
+            b.putString(F_AMOUNT, etAmount.text.toString())
+            b.putBoolean(F_AMOUNT_OWN, amountOwn)
+            b.putBoolean(F_AMOUNT_BY_ITEMS, amountByItems)
+            b.putString(F_NOTE, etNote.text.toString())
+            b.putLong(F_TIME, chosenTime)
+            b.putBoolean(F_CASH, chosenRateType() == RateType.CASH)
+            b.putString(F_LINES, com.innovation313.roshankhata.ui.EntryFormLines.toJson(lines))
+            b.putString(F_ITEM, etItemName.text.toString())
+            b.putString(F_QTY, etQuantity.text.toString())
+            b.putString(F_UNIT, etUnit.text.toString())
+            b.putString(F_RATE, etRate.text.toString())
+            autoRate?.let { b.putDouble(F_AUTO_RATE, it) }
+            editingIndex?.let { b.putInt(F_EDIT_INDEX, it) }
+            (selectedBatch?.id ?: pendingBatchId)?.let { b.putLong(F_BATCH, it) }
+            b.putInt(F_RECOVERY, rgRecovery.checkedRadioButtonId)
+            chosenPaymentMethod()?.let { b.putString(F_METHOD, it) }
+            b.putBoolean(F_QARZ, cbQarzeHasna.isChecked)
+            b.putBoolean(F_PAID_NOW, cbPaidNow.isChecked)
+            b.putBoolean(F_DETAILS, view.findViewById<View>(R.id.stepTwo).visibility == View.VISIBLE)
+            b.putBoolean(F_DUE_TOUCHED, entryDueTouched)
+            entryDue?.let { b.putLong(F_DUE, it) }
+            b
+        }
+        entryFormState = snapshot
+
         // A scan that comes back after the form is gone has nowhere to go.
         dialog.setOnDismissListener {
+            if (entryFormState === snapshot) entryFormState = null
             onScanUsed = null
             onPaymentScanUsed = null
+            // Closed by the owner (not with the screen, which lets go of it first in onDestroy): a photo
+            // no entry took is a cancelled form's, and goes now rather than onto the next entry.
+            if (entryDialog === dialog) {
+                entryDialog = null
+                BillPhoto.delete(pendingBillPhoto)
+                pendingBillPhoto = null
+                billPhotoKept = false
+            }
         }
 
         btnSupplierBill.setOnClickListener {
@@ -1975,6 +2146,11 @@ class PartyDetailActivity : BaseActivity() {
         // Cash flow already read — set right where the udhar is written.
         entryDue = harvestPromise
         entryDueTouched = false
+        // A day the owner chose on the form before the rebuild (R41) wins over the customer's saved one.
+        if (restore != null && restore.getBoolean(F_DUE_TOUCHED)) {
+            entryDueTouched = true
+            entryDue = if (restore.containsKey(F_DUE)) restore.getLong(F_DUE) else null
+        }
         val btnDue = view.findViewById<MaterialButton>(R.id.btnEntryDueDate)
         if (isGiven && partyIsCustomerAccount) {
             fun paintDue() {
@@ -2098,8 +2274,8 @@ class PartyDetailActivity : BaseActivity() {
                 more.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails() else openDetails()
                 }
-                // Editing opens on the items — that is what it is for.
-                if (editing != null) openDetails()
+                // Editing opens on the items — that is what it is for. A restored form opens where it was.
+                if (restore?.getBoolean(F_DETAILS) ?: (editing != null)) openDetails()
 
                 // With the details open the keypad is hidden and the system
                 // keyboard is suppressed on this field, so a tap on the amount
@@ -2145,6 +2321,11 @@ class PartyDetailActivity : BaseActivity() {
 
     /** Deleting an entry is reversible — it moves to the Recycle Bin. */
     private fun confirmDeleteEntry(entry: LedgerEntry) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteEntry(entry) }) return
+        com.innovation313.roshankhata.ui.LinkedEntry.check(this, dao, entry.id) { confirmDeleteEntryNow(entry) }
+    }
+
+    private fun confirmDeleteEntryNow(entry: LedgerEntry) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_entry_title)
             .setMessage(R.string.delete_entry_confirm)
@@ -2156,7 +2337,8 @@ class PartyDetailActivity : BaseActivity() {
                     val alsoPair = if (pair == null) false else askDeletePair(pair.entryNumber)
                     AppScope.launch {
                         dao.softDeleteEntry(entry.id)
-                        if (alsoPair && pair != null) dao.softDeleteEntry(pair.id)
+                        dao.audit(AuditActs.ENTRY_DELETED, "transactions", entry.id, auditAmount(entry.amount))
+                        if (alsoPair && pair != null) { dao.softDeleteEntry(pair.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id) }
                     }.join()
                     offerUndo(listOfNotNull(entry.id, pair?.id?.takeIf { alsoPair }))
                 }
@@ -2225,6 +2407,7 @@ class PartyDetailActivity : BaseActivity() {
      * every one of them lands in the Recycle Bin and can be restored.
      */
     private fun confirmDeleteSelectedEntries() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteSelectedEntries() }) return
         val ids = selectedEntryIds.toList()
         if (ids.isEmpty()) return
 
@@ -2236,9 +2419,19 @@ class PartyDetailActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    AppScope.launch { dao.softDeleteEntries(ids) }.join()
-                    Toast.makeText(this@PartyDetailActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
+                    // Entries a bill, plan, cheque, counter sale or return wrote are left, and said (22 Oct 2026, the review).
+                    var left = 0
+                    AppScope.launch { left = dao.softDeleteOwnEntries(ids) }.join()
                     exitSelectionMode()
+                    if (left > 0) {
+                        MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                            .setTitle(R.string.entry_linked_title)
+                            .setMessage(Digits.string(resources, R.string.entries_linked_kept, left))
+                            .setPositiveButton(R.string.ok, null)
+                            .show()
+                    } else {
+                        Toast.makeText(this@PartyDetailActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             .show()
@@ -2261,7 +2454,13 @@ class PartyDetailActivity : BaseActivity() {
             else -> getString(R.string.copy_balance_settled, partyName, Format.money(0.0))
         }
         val clip = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        clip.setPrimaryClip(android.content.ClipData.newPlainText("balance", line))
+        // Marked sensitive (21 Oct 2026): Android 13+ then hides the customer's balance from the
+        // copy preview and the keyboard's clipboard suggestions.
+        clip.setPrimaryClip(android.content.ClipData.newPlainText("balance", line).apply {
+            description.extras = android.os.PersistableBundle().apply {
+                putBoolean(if (android.os.Build.VERSION.SDK_INT >= 33) android.content.ClipDescription.EXTRA_IS_SENSITIVE else "android.content.extra.IS_SENSITIVE", true)
+            }
+        })
         Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show()
     }
 
@@ -2400,6 +2599,7 @@ class PartyDetailActivity : BaseActivity() {
                         r.runningBalance - if (r.entry.isGiven) r.entry.amount else -r.entry.amount
                     } ?: 0.0,
                     closingBalance = currentBalance,
+                    isCustomer = partyIsCustomerAccount,
                     businessName = BusinessProfile.businessName(this@PartyDetailActivity),
                     paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity),
                     // Only if the owner has turned it on. Off by default.
@@ -2844,6 +3044,10 @@ class PartyDetailActivity : BaseActivity() {
         val signature = pendingSignature
         pendingSignature = null
         val appContext = applicationContext
+        // The balance before this entry, read here and now (21 Oct 2026): read after the insert,
+        // the screen's own balance had sometimes already taken the entry in, and "balance after"
+        // counted it twice — a due date or a harvest promise then went by the wrong figure.
+        val before = currentBalance
         AppScope.launch {
             // Numbering, the entry and its goods lines all happen inside the
             // DAO's own transaction — see insertEntryNumbered for why the count
@@ -2858,7 +3062,6 @@ class PartyDetailActivity : BaseActivity() {
             val gotId = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)
                 dao.recordCashForSale(id) else null
             // Balance as it stands once this entry counts (positive = owed to me).
-            val before = currentBalance
             val after = if (gotId != null) before
                 else before + if (entry.isGiven) entry.amount else -entry.amount
             // Paid up: the harvest promise has been kept, so it goes (v28).
@@ -2920,54 +3123,9 @@ class PartyDetailActivity : BaseActivity() {
 
     private fun showHarvestPromiseDialog() = chooseDueDate(harvestPromise) { saveHarvestPromise(it) }
 
-    /**
-     * When will this customer pay: a week, two weeks or a month from today,
-     * the next two harvest ends where the shop keeps seasons, any other day on
-     * the calendar, or — when one is set — taking it back. [onPick] gets the
-     * day (end of day) or null for "remove".
-     */
-    private fun chooseDueDate(current: Long?, onPick: (Long?) -> Unit) {
-        val now = System.currentTimeMillis()
-        fun endOfDayIn(days: Int) = java.util.Calendar.getInstance().apply {
-            add(java.util.Calendar.DAY_OF_YEAR, days)
-            set(java.util.Calendar.HOUR_OF_DAY, 23); set(java.util.Calendar.MINUTE, 59)
-            set(java.util.Calendar.SECOND, 59); set(java.util.Calendar.MILLISECOND, 0)
-        }.timeInMillis
-        val quick = listOf(7, 15, 30).map { d ->
-            getString(R.string.entry_due_in_days, String.format(Digits.latinIn(), "%d", d), Format.dateOnly(endOfDayIn(d))) to endOfDayIn(d)
-        }
-        val y = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-        val harvests = if (!TradeFeatures.seasons(this)) emptyList() else listOf(
-            SeasonBook.Season(SeasonBook.Crop.RABI, y - 1), SeasonBook.Season(SeasonBook.Crop.KHARIF, y),
-            SeasonBook.Season(SeasonBook.Crop.RABI, y), SeasonBook.Season(SeasonBook.Crop.KHARIF, y + 1)
-        ).map { it to SeasonBook.harvestEnd(it) }.filter { it.second > now }.sortedBy { it.second }.take(2)
-            .map { (s, at) -> getString(R.string.harvest_promise_option, SeasonText.name(this, s), Format.dateOnly(at)) to at }
-        val fixed = quick + harvests
-
-        val choices = fixed.mapIndexed { i, (label, _) ->
-            if (i < quick.size) ChoiceSheet.date(label)
-            else ChoiceSheet.Option(label, icon = R.drawable.ic_tile_season, iconTint = 0, tile = R.color.tile_plans_bg)
-        } + ChoiceSheet.date(getString(R.string.harvest_promise_other_date)) +
-            listOfNotNull(current?.let { ChoiceSheet.delete(getString(R.string.harvest_promise_remove)) })
-
-        ChoiceSheet.show(this, getString(R.string.harvest_promise_title, partyName), choices) { i ->
-            when {
-                i < fixed.size -> onPick(fixed[i].second)
-                i == fixed.size -> {
-                    val c = java.util.Calendar.getInstance()
-                    com.innovation313.roshankhata.ui.BrandDatePickerDialog(this, { _, yy, mm, dd ->
-                        val at = java.util.Calendar.getInstance().apply {
-                            clear(); set(yy, mm, dd, 23, 59, 59)
-                        }.timeInMillis
-                        onPick(at)
-                    }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
-                        .apply { datePicker.minDate = now }
-                        .show()
-                }
-                else -> onPick(null)
-            }
-        }
-    }
+    /** When will this customer pay ([DuePicker]: the counter's sale on account asks the same). */
+    private fun chooseDueDate(current: Long?, onPick: (Long?) -> Unit) =
+        com.innovation313.roshankhata.ui.DuePicker.choose(this, partyName, current, onPick)
 
     private fun saveHarvestPromise(at: Long?) {
         harvestPromise = at
@@ -3133,6 +3291,7 @@ class PartyDetailActivity : BaseActivity() {
      * already has its own item in this menu.
      */
     private fun showEditPartyDialog() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { showEditPartyDialog() }) return
         lifecycleScope.launch {
             val party = dao.getParty(partyId) ?: return@launch
 
@@ -3190,6 +3349,7 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     private fun showCreditLimitDialog() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { showCreditLimitDialog() }) return
         val view = layoutInflater.inflate(R.layout.dialog_credit_limit, null)
         val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
         val tvOwed: TextView = view.findViewById(R.id.tvCurrentOwed)
@@ -3240,6 +3400,24 @@ class PartyDetailActivity : BaseActivity() {
         cameraPath?.let { outState.putString(STATE_CAMERA_PATH, it) }
         scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
         cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
+        pendingBillPhoto?.let { outState.putString(STATE_PENDING_BILL, it) }
+        // The open form itself (R41). Never fatal: a form that cannot be read is simply not put back.
+        if (entryDialog?.isShowing == true) {
+            entryFormState?.let { state -> runCatching { state() }.getOrNull()?.let { outState.putBundle(STATE_ENTRY_FORM, it) } }
+        }
+    }
+
+    override fun onDestroy() {
+        // The open form goes with the screen (23 Oct 2026, the review): a dialog left on a destroyed
+        // screen leaks its window. Its photo stays (onSaveInstanceState) when the screen is only rebuilt;
+        // when the owner leaves, a photo no entry took is nothing but bytes.
+        val leaving = isFinishing && !isChangingConfigurations
+        entryDialog?.let { d -> entryDialog = null; runCatching { d.dismiss() } }
+        if (leaving) {
+            BillPhoto.delete(pendingBillPhoto)
+            pendingBillPhoto = null
+        }
+        super.onDestroy()
     }
 
     /**

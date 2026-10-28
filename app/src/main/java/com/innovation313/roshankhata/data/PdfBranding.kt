@@ -278,6 +278,17 @@ object PdfBranding {
      *
      * Drawn at [top] across [width] and returns its bottom edge.
      */
+    /**
+     * The button's word in the document's language (21 Oct 2026, the owner's
+     * nine-language check: it read DOWNLOAD on an Urdu, Arabic or Hindi
+     * invoice). Capitals where the script has them; spaced letters only in
+     * Latin, since spacing breaks joined scripts apart.
+     */
+    private fun downloadWord(context: Context): String =
+        context.getString(com.innovation313.roshankhata.R.string.ledger_report_download).uppercase(java.util.Locale.ROOT)
+
+    private fun latin(word: String): Boolean = word.all { it.code < 0x0250 }
+
     fun drawDownloadBanner(
         context: Context,
         doc: PdfDocument,
@@ -318,7 +329,9 @@ object PdfBranding {
         val pill = RectF(right - 10f - pillW, top + (BANNER_HEIGHT - pillH) / 2f, right - 10f, top + (BANNER_HEIGHT + pillH) / 2f)
         canvas.drawRoundRect(pill, 10f, 10f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
         val label = paint(Color.WHITE, 8.5f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
-        PdfRtl.drawText(canvas, "DOWNLOAD", pill.centerX(), pill.centerY() + 3f, label)
+        val word = downloadWord(context)
+        if (!latin(word)) label.letterSpacing = 0f
+        PdfRtl.drawText(canvas, word, pill.centerX(), pill.centerY() + 3f, label)
 
         register(doc, canvas, band, context)
         return bottom
@@ -375,11 +388,12 @@ object PdfBranding {
                 strokeWidth = 0.6f; isAntiAlias = true
             }
         )
+        val word = downloadWord(context)
         PdfRtl.drawText(canvas,
-            "DOWNLOAD",
+            word,
             pill.centerX(), pill.centerY() + 2.5f,
             paint(BRAND_GREEN, 6.5f, bold = true).apply {
-                letterSpacing = 0.06f
+                letterSpacing = if (latin(word)) 0.06f else 0f
                 textAlign = Paint.Align.CENTER
             }
         )
@@ -417,9 +431,10 @@ object PdfBranding {
         drawBrandLine(canvas, cx, top + 14f, 7.5f, 7f, BRAND_GREEN, SOFT, centered = true)
         val pill = RectF(cx - 42f, top + 20f, cx + 42f, top + 35f)
         canvas.drawRoundRect(pill, 7.5f, 7.5f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
+        val word = downloadWord(context)
         PdfRtl.drawText(canvas,
-            "DOWNLOAD", cx, pill.centerY() + 2.6f,
-            paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = 0.08f; textAlign = Paint.Align.CENTER }
+            word, cx, pill.centerY() + 2.6f,
+            paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = if (latin(word)) 0.08f else 0f; textAlign = Paint.Align.CENTER }
         )
         register(doc, canvas, band, context)
         return bottom

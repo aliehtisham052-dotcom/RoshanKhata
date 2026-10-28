@@ -120,7 +120,7 @@ object DateRangeFilter {
         }.show()
     }
 
-    private fun today(): Range {
+    fun today(): Range {
         val c = Calendar.getInstance()
         return Range(
             dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
@@ -129,7 +129,7 @@ object DateRangeFilter {
         )
     }
 
-    private fun yesterday(): Range {
+    fun yesterday(): Range {
         val c = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }
         return Range(
             dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
@@ -138,9 +138,10 @@ object DateRangeFilter {
         )
     }
 
-    /** From the first day of this week to now, per the phone's own calendar. */
-    private fun thisWeek(): Range {
+    /** From the first day of this week to now; the week starts where the shop's country starts it (21 Oct 2026). */
+    fun thisWeek(): Range {
         val c = Calendar.getInstance().apply {
+            firstDayOfWeek = com.innovation313.roshankhata.data.ShopCountry.current.weekStart
             set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
         }
         return Range(
@@ -150,7 +151,7 @@ object DateRangeFilter {
         )
     }
 
-    private fun thisMonth(): Range {
+    fun thisMonth(): Range {
         val c = Calendar.getInstance()
         return Range(
             dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1),

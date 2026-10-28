@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -13,7 +14,7 @@ import androidx.room.PrimaryKey
  * The claim is tracked until the credit note or rebate actually arrives, so
  * no earned scheme is forgotten.
  */
-@Entity(tableName = "schemes")
+@Entity(tableName = "schemes", indices = [Index("uid")])
 data class Scheme(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
@@ -40,7 +41,9 @@ data class Scheme(
     val claimedAt: Long? = null,
     val note: String? = null,
     val isDeleted: Boolean = false,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 object SchemeMath {

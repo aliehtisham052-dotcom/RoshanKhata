@@ -1,21 +1,14 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,15 +20,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.DismissedDuplicate
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.DuplicateDetector
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +48,12 @@ import kotlinx.coroutines.withContext
  * duplicate" is remembered until the group itself changes.
  */
 @Composable
-fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: () -> Unit) {
+fun DuplicatesPane(
+    dao: KhataDao, parties: List<PartyWithBalance>,
+    /** Where this business keeps its customers' faces, so a merged-away one's goes to the one who stays. */
+    home: java.io.File? = null, businessId: Long = 1L,
+    onChanged: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var dismissed by remember { mutableStateOf<Set<String>>(emptySet()) }
@@ -66,16 +68,17 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
     }
     val doneWord = word(W.duplicate_dismissed)
     val failed = word(W.duplicate_merge_failed)
+    val words = LocalWords.current
 
-    Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        PaneTitle(word(W.duplicate_customers), word(W.duplicate_customers_subtitle))
+    // In the page frame (Marhala 4): the head and its line, the note, the groups as cards.
+    FluentPage(word(W.duplicate_customers), word(W.duplicate_customers_subtitle), scroll = false) {
         Text(word(W.duplicate_note), color = c.textMuted, fontSize = 12.sp)
         if (groups.isEmpty()) {
-            Text(word(W.no_duplicates), Modifier.padding(top = 24.dp), color = c.textMuted, fontSize = 15.sp)
+            EmptyState("ic_tile_khata", word(W.no_duplicates), word(W.duplicate_customers_subtitle), Modifier.weight(1f))
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(Modifier.fillMaxWidth().weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(groups, key = { DuplicateDetector.groupKey(it.members) }) { g ->
-                    Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(14.dp)).padding(14.dp)) {
+                    Column(Modifier.fillMaxWidth().card().padding(14.dp)) {
                         Text(
                             word(when (g.reason) {
                                 DuplicateDetector.Reason.NAME -> W.duplicate_reason_name
@@ -85,84 +88,91 @@ fun DuplicatesPane(dao: KhataDao, parties: List<PartyWithBalance>, onChanged: ()
                             color = c.textMuted, fontSize = 12.sp
                         )
                         g.members.forEach { m ->
-                            Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
-                                Text(Format.name(m.name), Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                                Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance), color = c.inkSoft, fontSize = 13.sp)
+                            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Avatar(m.name, size = 30, id = m.partyId)
+                                Text(Format.name(m.name), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance), color = c.inkSoft, fontSize = 13.sp, maxLines = 1, softWrap = false)
                             }
                         }
-                        TextButton({ reviewing = g; survivor = 0 }) { Text(word(W.duplicate_review_merge), color = c.brandGreenText) }
+                        FluentButton(word(W.duplicate_review_merge), { reviewing = g; survivor = 0 }, kind = ButtonKind.SUBTLE)
                     }
                 }
             }
         }
     }
 
-    // Step 1: which record survives. Nothing is written yet.
+    // Step 1: which record survives. Nothing is written yet. In the app's frame (Marhala 4), the chosen one
+    // marked as PickDialog marks it; "Not a duplicate" on the start side, as the phone's third answer.
     reviewing?.takeIf { !confirming }?.let { g ->
-        AlertDialog(
-            onDismissRequest = { reviewing = null },
-            title = { Text(word(W.duplicate_pick_primary_title)) },
-            text = {
-                Column {
-                    Text(word(W.duplicate_pick_primary_message), color = c.textMuted, fontSize = 13.sp)
-                    g.members.forEachIndexed { i, m ->
-                        val on = i == survivor
-                        Column(
-                            Modifier.fillMaxWidth().padding(top = 6.dp)
-                                .background(if (on) c.brandGreen else c.pageBg, RoundedCornerShape(10.dp))
-                                .clickable { survivor = i }.padding(10.dp)
-                        ) {
-                            Text(Format.name(m.name), color = if (on) Color.White else c.ink, fontWeight = FontWeight.Bold)
-                            Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance),
-                                color = if (on) Color.White else c.inkSoft, fontSize = 12.sp)
-                        }
-                    }
-                }
-            },
-            confirmButton = { TextButton({ confirming = true }) { Text(word(W.duplicate_next)) } },
-            dismissButton = {
-                TextButton({
+        val close = { reviewing = null }
+        val title = word(W.duplicate_pick_primary_title)
+        AppDialog(onCloseRequest = close, title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH((250 + 62 * g.members.size).dp))) {
+            DialogFrame(title, onClose = close, footerStart = {
+                FluentButton(word(W.duplicate_not_duplicate), {
                     val key = DuplicateDetector.groupKey(g.members)
                     reviewing = null
                     scope.launch {
-                        withContext(Dispatchers.IO) { dao.dismissDuplicate(DismissedDuplicate(key, System.currentTimeMillis())) }
+                        // Said when it could not be kept (it failed in silence before).
+                        notice = runCatching {
+                            withContext(Dispatchers.IO) { dao.dismissDuplicate(DismissedDuplicate(key, System.currentTimeMillis())) }
+                            doneWord
+                        }.getOrElse { failText(words, it) }
                         again++
-                        notice = doneWord
                     }
-                }) { Text(word(W.duplicate_not_duplicate)) }
+                }, kind = ButtonKind.SUBTLE)
+            }, footer = {
+                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.duplicate_next), { confirming = true }, kind = ButtonKind.ACCENT)
+            }) {
+                Text(word(W.duplicate_pick_primary_message), color = c.inkSoft, fontSize = 13.sp)
+                Column {
+                    g.members.forEachIndexed { i, m ->
+                        val on = i == survivor
+                        Row(
+                            Modifier.fillMaxWidth().clip(Look.ctl).background(if (on) Look.accentTint else Color.Transparent)
+                                .press(Look.ctl) { survivor = i }.padding(horizontal = 8.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Avatar(m.name, size = 32, id = m.partyId)
+                            Column(Modifier.weight(1f)) {
+                                Text(Format.name(m.name), color = c.ink, fontSize = 14.sp, fontWeight = if (on) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(Format.ltr(m.phone?.takeIf { it.isNotBlank() } ?: "—") + "  ·  " + Format.money(m.balance), color = c.inkSoft, fontSize = 12.sp, maxLines = 1)
+                            }
+                            if (on) Glyph("ic_check_plain", Look.accent, 16)
+                        }
+                        if (i < g.members.lastIndex) Rule()
+                    }
+                }
             }
-        )
+        }
     }
     // Step 2: a full account of what merging does, before it does it.
     if (confirming) {
         val g = reviewing
         if (g != null) {
             val keep = g.members[survivor]
-            AlertDialog(
-                onDismissRequest = { confirming = false },
-                title = { Text(word(W.duplicate_merge_confirm_title, keep.name)) },
-                text = { Text(word(W.duplicate_merge_confirm_message)) },
-                confirmButton = {
-                    val done = word(W.duplicate_merge_done, keep.name)
-                    TextButton(
-                        onClick = {
-                            confirming = false; reviewing = null
-                            scope.launch {
-                                notice = runCatching {
-                                    withContext(Dispatchers.IO) { dao.mergeParties(g.members.filter { it.partyId != keep.partyId }.map { it.partyId }, keep.partyId) }
-                                    done
-                                }.getOrElse { failed }
-                                onChanged()
+            val done = word(W.duplicate_merge_done, keep.name)
+            AskDialog(
+                word(W.duplicate_merge_confirm_title, keep.name), word(W.duplicate_merge_confirm_message), word(W.duplicate_merge_go),
+                danger = true, height = 380,
+                onDismiss = { confirming = false },
+                onConfirm = {
+                    confirming = false; reviewing = null
+                    scope.launch {
+                        notice = runCatching {
+                            withContext(Dispatchers.IO) {
+                                val losers = g.members.filter { it.partyId != keep.partyId }.map { it.partyId }
+                                dao.mergeParties(losers, keep.partyId)
+                                // The face follows the account; a picture that cannot move never fails the merge.
+                                if (home != null) runCatching { Photos.moveOnMerge(dao, home, businessId, losers, keep.partyId) }
                             }
-                        },
-                        colors = ButtonDefaults.textButtonColors(contentColor = c.owedToMe)
-                    ) { Text(word(W.duplicate_merge_go)) }
-                },
-                dismissButton = { TextButton({ confirming = false }) { Text(word(W.cancel)) } }
+                            done
+                        }.getOrElse { failed }
+                        onChanged()
+                    }
+                }
             )
         }
     }
-    notice?.let { n ->
-        AlertDialog(onDismissRequest = { notice = null }, confirmButton = { TextButton({ notice = null }) { Text(word(W.ok)) } }, text = { Text(n) })
-    }
+    notice?.let { n -> TellDialog(word(W.duplicate_customers), n, { notice = null }) }
 }

@@ -104,6 +104,31 @@ object NumberWords {
         "একানব্বই", "বিরানব্বই", "তিরানব্বই", "চুরানব্বই", "পঁচানব্বই", "ছিয়ানব্বই", "সাতানব্বই", "আটানব্বই", "নিরানব্বই"
     )
 
+    /**
+     * Sindhi, 0-99 (21 Oct 2026, the nine-language review: a Sindhi invoice
+     * printed its amount in words in English). From G. Stack's "A Grammar of
+     * the Sindhi Language", ch. IV "Of Numerals", as published in Sindhi
+     * script by the Sindhi Language Authority (library.sindhila.org), cross-
+     * checked with paheliyan.pk, Omniglot and the OUP "Sauwli Sindhi"
+     * textbook; modern spellings where they differ (9 نو; 11-18 without the
+     * nasal, as the textbook prints them; 19 اوڻيهه). 44, 54, 59, 69, 79,
+     * 82, 86 and 96 rest on the grammar alone - to be read by a Sindhi
+     * speaker before a release. Sindhi letters throughout (ڪ, ٽ, ڻ, ٻ), never
+     * Urdu's ک or ٹ.
+     */
+    private val sindhiOnes = arrayOf(
+        "ٻڙي", "هڪ", "ٻه", "ٽي", "چار", "پنج", "ڇهه", "ست", "اٺ", "نو",
+        "ڏهه", "يارهن", "ٻارهن", "تيرهن", "چوڏهن", "پندرهن", "سورهن", "سترهن", "ارڙهن", "اوڻيهه",
+        "ويهه", "ايڪيهه", "ٻاويهه", "ٽيويهه", "چوويهه", "پنجويهه", "ڇويهه", "ستاويهه", "اٺاويهه", "اڻٽيهه",
+        "ٽيهه", "ايڪٽيهه", "ٻٽيهه", "ٽيٽيهه", "چوٽيهه", "پنجٽيهه", "ڇٽيهه", "ستٽيهه", "اٺٽيهه", "اڻيتاليهه",
+        "چاليهه", "ايڪيتاليهه", "ٻائيتاليهه", "ٽيتاليهه", "چوئيتاليهه", "پنجيتاليهه", "ڇائيتاليهه", "ستيتاليهه", "اٺيتاليهه", "اڻونجاهه",
+        "پنجاهه", "ايڪونجاهه", "ٻاونجاهه", "ٽيونجاهه", "چوونجاهه", "پنجونجاهه", "ڇاونجاهه", "ستونجاهه", "اٺونجاهه", "اڻهٺ",
+        "سٺ", "ايڪهٺ", "ٻاهٺ", "ٽيهٺ", "چوهٺ", "پنجهٺ", "ڇاهٺ", "ستهٺ", "اٺهٺ", "اڻهتر",
+        "ستر", "ايڪهتر", "ٻاهتر", "ٽيهتر", "چوهتر", "پنجهتر", "ڇاهتر", "ستهتر", "اٺهتر", "اڻاسي",
+        "اسي", "ايڪاسي", "ٻياسي", "ٽياسي", "چوراسي", "پنجاسي", "ڇهاسي", "ستاسي", "اٺاسي", "اڻانوي",
+        "نوي", "ايڪانوي", "ٻيانوي", "ٽيانوي", "چورانوي", "پنجانوي", "ڇهانوي", "ستانوي", "اٺانوي", "نوانوي"
+    )
+
     private val englishOnes = arrayOf(
         "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
         "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
@@ -123,15 +148,26 @@ object NumberWords {
      */
     fun rupeesInWords(lang: String, amount: Double): String =
         when (lang) {
-            "ur" -> spell(amount, urduOnes, "کروڑ", "لاکھ", "ہزار", "سو", "روپے") { urduOnes[it] }
-            "ur-Latn" -> spell(amount, romanUrduOnes, "Crore", "Lakh", "Hazar", "Sou", "Rupay") { romanUrduOnes[it] }
-            "hi" -> rupeesInWordsHindi(amount)
+            "ur", "ur-Latn", "hi", "sd" -> southAsian(lang, amount, null)!!
             "bn" -> inWordsBengali(amount, "রুপি")
             "id" -> inWordsIndonesian(amount, "rupee")
             "fa" -> inWordsPersian(amount, "روپیه")
             "ar" -> inWordsArabic(amount, "روبية")
             else -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Rupees") { englishBelow100(it) }
         }
+
+    /**
+     * Urdu, Roman Urdu, Hindi and Sindhi counted in lakh and crore, ending in [unit],
+     * or in the language's own word for rupees when [unit] is null; null for
+     * any other language.
+     */
+    private fun southAsian(lang: String, amount: Double, unit: String?): String? = when (lang) {
+        "ur" -> spell(amount, urduOnes, "کروڑ", "لاکھ", "ہزار", "سو", unit ?: "روپے") { urduOnes[it] }
+        "ur-Latn" -> spell(amount, romanUrduOnes, "Crore", "Lakh", "Hazar", "Sou", unit ?: "Rupay") { romanUrduOnes[it] }
+        "hi" -> spell(amount, hindiOnes, "करोड़", "लाख", "हज़ार", "सौ", unit ?: "रुपये") { hindiOnes[it] }
+        "sd" -> spell(amount, sindhiOnes, "ڪروڙ", "لک", "هزار", "سؤ", unit ?: "روپيا") { sindhiOnes[it] }
+        else -> null
+    }
 
     /**
      * The invoice's "amount in words" for whatever sign the shop chose (4 Oct 2026).
@@ -182,12 +218,19 @@ object NumberWords {
                 }
             )
         }
+        val code = Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign
+        // Urdu, Roman Urdu, Hindi and Bengali keep their own words for any
+        // currency too (21 Oct 2026, the nine-language review: an Urdu
+        // invoice in dirhams printed "Five Thousand Two Hundred AED"), counted
+        // the way their readers count, ending in the currency's code.
+        if (sign != "Rs" && sign != "₹") {
+            if (lang == "bn") return inWordsBengali(amount, if (sign == "৳") "টাকা" else code)
+            southAsian(lang, amount, code)?.let { return it }
+        }
         return when (sign) {
             "Rs", "₹" -> rupeesInWords(lang, amount)
-            "৳" ->
-                if (lang == "bn") inWordsBengali(amount, "টাকা")
-                else spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Taka") { englishBelow100(it) }
-            else -> spellWestern(amount, Currency.CHOICES.firstOrNull { it.first == sign }?.second ?: sign)
+            "৳" -> spell(amount, englishOnes, "Crore", "Lakh", "Thousand", "Hundred", "Taka") { englishBelow100(it) }
+            else -> spellWestern(amount, code)
         }
     }
 

@@ -1,0 +1,37 @@
+# Roshan Khata's relay (Marhala 2). Not deployed by hand: .github/workflows/cloud-worker.yml
+# deploys it only when the owner runs it and CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are set.
+name = "roshan-khata-daakiya"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+# "0" turns the relay off for everyone (every call answers 503); the app's books are untouched.
+LIVE = "1"
+# Parcels older than this are forgotten even if a device never came back for them.
+KEEP_DAYS = "7"
+# Parcels one book may leave in a UTC day (a busy counter is a few hundred).
+DAY_LIMIT = "3000"
+# Also read when set (defaults in src/index.ts; the tests lower them with wrangler dev --var):
+#   BOOK_BYTES, DAY_BYTES, DEVICE_IDLE_MS, PRUNE_EVERY_MS, NEW_BOOKS_DAY, MAX_BOOKS, ACCOUNT_BYTES
+# The Firebase project whose messaging wakes a phone (not a secret: a project's name).
+FCM_PROJECT_ID = "roshan-khata"
+# Called once a day by the cron below, so the free Supabase relay is never paused (7 quiet days pause it).
+KEEP_ALIVE = "https://tcztkeyliletxshhkhnz.supabase.co/functions/v1/daakiya/v1/health"
+
+# Once a day at 04:23 UTC (09:23 in Pakistan): the KEEP_ALIVE call.
+[triggers]
+crons = ["23 4 * * *"]
+
+[[durable_objects.bindings]]
+name = "BOOKS"
+class_name = "Daakiya"
+
+# Workers Free supports only SQLite-backed Durable Objects (checked 22 Oct 2026, Cloudflare docs).
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Daakiya"]
+
+# Secrets (wrangler secret put, never in this file):
+#   FCM_SERVICE_ACCOUNT  the Firebase service account JSON, for a wake-up push (optional)
+#   KEEP_SECRET          sent as X-RK-Keep with the daily keep-alive call (the Supabase relay checks it)

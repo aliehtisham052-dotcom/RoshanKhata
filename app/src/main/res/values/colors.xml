@@ -303,7 +303,8 @@
     <color name="panel_bg">#F0EFEA</color>
     <color name="divider_grey">#E0E0E0</color>
     <color name="text_grey">#777777</color>
-    <color name="text_faint">#999999</color>
+    <!-- #767676: the faintest grey that still reads at 4.5:1 on white (#999 was 2.85:1, 21 Oct 2026). -->
+    <color name="text_faint">#767676</color>
 
     <!--
       Split out of ink / ink_soft / gold_accent, which are TEXT colours and
@@ -426,4 +427,7 @@
     <!-- The outline of a tile on a dark section header (13 Oct): opaque, so
          it measures 3.6:1 on the bills band, where a 25% white was 1.9:1. -->
     <color name="header_tile_stroke">#B9A86F</color>
+    <!-- The Khata Report's gave/got share bar (24 Oct 2026): fills, so mid-tone at night. -->
+    <color name="lr_bar_gave">#A32D2D</color>
+    <color name="lr_bar_got">#0F6E56</color>
 </resources>

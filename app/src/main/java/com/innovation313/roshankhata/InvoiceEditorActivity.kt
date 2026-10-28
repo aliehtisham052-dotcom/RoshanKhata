@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.TemplatePagerAdapter
@@ -49,6 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 
 /**
  * Making an invoice as a three-step walkthrough, in the owner's own order:
@@ -387,7 +389,8 @@ class InvoiceEditorActivity : BaseActivity() {
      */
     private fun showNextNumberHint() {
         lifecycleScope.launch {
-            val next = InvoiceNumber.next(dao.totalInvoiceCount())
+            // The same reading the save makes (the highest ever used, not only the count).
+            val next = InvoiceNumber.next(maxOf(dao.totalInvoiceCount(), dao.highestInvoiceNumber()))
             etInvoiceNumber.hint = getString(R.string.invoice_number_auto_hint, next)
         }
     }
@@ -667,12 +670,47 @@ class InvoiceEditorActivity : BaseActivity() {
 
         fun inMoney() = kind.checkedButtonId == R.id.btnDiscountAmount
 
+        // The money boxes on the app's own calculator pad (21 Oct), one pad
+        // pinned above Apply, typing into whichever has the focus. The
+        // discount takes it only while it is in money: "10" against the %
+        // switch is a rate, not a sum, and the phone's keyboard stays for it.
+        // Money boxes are read with CalcPad.figure, which works a sum out and
+        // keeps a zero ("None" received writes 0).
+        val padBinding = com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.moreKeypad),
+            fields = listOf(etDiscount, etChargeAmount, etReceived),
+            results = mapOf(
+                etDiscount to view.findViewById<TextView>(R.id.tvDiscountResult),
+                etChargeAmount to view.findViewById<TextView>(R.id.tvChargeResult),
+                etReceived to view.findViewById<TextView>(R.id.tvReceivedResult)
+            ),
+            usesPad = { it !== etDiscount || inMoney() }
+        )
+        // In % the phone's keyboard comes back for the discount: its number
+        // pad with the decimal point, as before. setRawInputType keeps the
+        // pad's characters in the box's digits filter (inputType = would not).
+        fun discountKeyboard() {
+            etDiscount.setRawInputType(
+                if (inMoney()) android.text.InputType.TYPE_CLASS_PHONE
+                else android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            )
+            if (etDiscount.isFocused) {
+                (getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
+                    ?.restartInput(etDiscount)
+            }
+        }
+        discountKeyboard()
+        fun discountValue(): Double? =
+            if (inMoney()) com.innovation313.roshankhata.ui.CalcPad.figure(etDiscount.text)
+            else Digits.parse(etDiscount.text)
+
         /** What the invoice would be with the sheet as it stands, before Apply. */
         fun trial(): Invoice {
             val base = draft()
-            val disc = if (useDiscount) Digits.parse(etDiscount.text) else null
+            val disc = if (useDiscount) discountValue() else null
             val label = if (useCharge) etChargeLabel.text.toString().trim().ifEmpty { null } else base.additionalChargeLabel
-            val charge = if (useCharge) Digits.parse(etChargeAmount.text) else base.additionalChargeAmount
+            val charge = if (useCharge) com.innovation313.roshankhata.ui.CalcPad.figure(etChargeAmount.text) else base.additionalChargeAmount
             val hasCharge = label != null && charge != null
             return base.copy(
                 discountPercent = if (!useDiscount) base.discountPercent else if (inMoney()) null else disc,
@@ -680,7 +718,7 @@ class InvoiceEditorActivity : BaseActivity() {
                 taxPercent = if (useTax) Digits.parse(etTax.text) else base.taxPercent,
                 additionalChargeLabel = if (hasCharge) label else null,
                 additionalChargeAmount = if (hasCharge) charge else null,
-                receivedAmount = if (useReceived) Digits.parse(etReceived.text) else base.receivedAmount,
+                receivedAmount = if (useReceived) com.innovation313.roshankhata.ui.CalcPad.figure(etReceived.text) else base.receivedAmount,
             )
         }
 
@@ -712,7 +750,7 @@ class InvoiceEditorActivity : BaseActivity() {
         }
         applyDiscountHint()
         kind.addOnButtonCheckedListener { _, _, checked ->
-            if (checked) { applyDiscountHint(); renderSum() }
+            if (checked) { applyDiscountHint(); discountKeyboard(); padBinding.refresh(); renderSum() }
         }
         val watcher = object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -735,16 +773,16 @@ class InvoiceEditorActivity : BaseActivity() {
             // than being read (and possibly cleared) from a view that was never
             // shown: turning Tax off should not erase a tax figure already set.
             if (useDiscount) {
-                val value = Digits.parse(etDiscount.text)
+                val value = discountValue()
                 if (inMoney()) { discountAmount = value; discountPercent = null }
                 else { discountPercent = value; discountAmount = null }
             }
             if (useTax) taxPercent = Digits.parse(etTax.text)
             if (useCharge) {
                 chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-                chargeAmount = Digits.parse(etChargeAmount.text)
+                chargeAmount = com.innovation313.roshankhata.ui.CalcPad.figure(etChargeAmount.text)
             }
-            if (useReceived) receivedAmount = Digits.parse(etReceived.text)
+            if (useReceived) receivedAmount = com.innovation313.roshankhata.ui.CalcPad.figure(etReceived.text)
             if (useNote) note = etNote.text.toString().trim().ifEmpty { null }
             refreshTotals()
             sheet.dismiss()
@@ -829,7 +867,7 @@ class InvoiceEditorActivity : BaseActivity() {
         designStrip = findViewById(R.id.designStrip)
         designStripScroll = findViewById(R.id.designStripScroll)
         findViewById<TextView>(R.id.tvDesignsCount).text =
-            Digits.string(resources, R.string.invoice_designs_count, templateIds.size)
+            Digits.quantity(resources, R.plurals.n_designs, templateIds.size, templateIds.size)
         val dp = resources.displayMetrics.density
         designStrip.removeAllViews()
         templateIds.forEachIndexed { index, _ ->
@@ -948,6 +986,9 @@ class InvoiceEditorActivity : BaseActivity() {
      * swipe. Cheap enough at today's two templates; if that stops being
      * true once more of the ten exist, this is the one place to revisit.
      */
+    /** The preview's scale: the screen's width over A4's 595 points, never more than 2, never below 1. */
+    private fun previewScale(): Float = (resources.displayMetrics.widthPixels / 595f).coerceIn(1f, 2f)
+
     private fun renderAllPreviews() {
         renderJob?.cancel()
         renderJob = lifecycleScope.launch {
@@ -956,8 +997,11 @@ class InvoiceEditorActivity : BaseActivity() {
             val items = validItems()
             val bitmaps = withContext(Dispatchers.IO) {
                 templateIds.map { id ->
+                    // Ten designs at once: drawn at the size a phone shows them, not twice A4's points
+                    // (21 Oct 2026, the critical review: ~80 MB of pictures closed the app on older phones).
                     InvoicePdfExport.renderPreviewBitmap(
-                        this@InvoiceEditorActivity, baseInvoice.copy(templateId = id), items
+                        this@InvoiceEditorActivity, baseInvoice.copy(templateId = id), items,
+                        scale = previewScale()
                     )
                 }
             }
@@ -976,6 +1020,9 @@ class InvoiceEditorActivity : BaseActivity() {
     // ---------- Save ----------
 
     private fun save() {
+        // Changing an invoice already written is changing the book (21 Oct 2026, the critical review).
+        if (intent.getLongExtra(EXTRA_INVOICE_ID, -1L) > 0 &&
+            !com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { save() }) return
         val items = validItems()
         val invoice = draft()
 

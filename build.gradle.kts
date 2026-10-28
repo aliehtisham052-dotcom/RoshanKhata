@@ -30,4 +30,7 @@ plugins {
     // The compiler plugin ships with Kotlin, so its version is Kotlin's.
     id("org.jetbrains.compose") version "1.11.1" apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.4.21" apply false
+    // Firebase's config reader, for live sync's wake-up (22 Oct 2026). Applied in :app only when
+    // CI wrote app/google-services.json from the owner's secret; the version the Firebase console named.
+    id("com.google.gms.google-services") version "4.5.0" apply false
 }

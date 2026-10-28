@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   The amount pad, shown under the amount field when money is entered against a
-  party.
+  party, and in the Edit entry dialog when an entry is corrected (21 Oct).
 
   Same grid as the Calculator screen — four columns, five rows, every key the
   same size — so the pad a shopkeeper uses ten times a day and the one they
@@ -35,7 +35,8 @@
          into the amount box (which still has its own, calcBack) and a wrong
          digit then meant reaching for a small icon at the far corner. A tall
          = would need a 21st cell, so = is one cell again rather than dropping
-         a key. Every key is a Button: PartyDetailActivity binds them as one. -->
+         a key. Every key is a Button: ui/CalcPad binds them as one, for the
+         add-entry form and the Edit entry dialog alike. -->
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calcClear" style="@style/CalcPadKeyMuted" android:text="@string/calc_clear" />
         <Button android:id="@+id/calcBackKey" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />

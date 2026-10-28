@@ -15,12 +15,58 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      same_version:
+        description: "Build again with the versionCode of the last bundle (only when that bundle never reached Play)"
+        type: boolean
+        default: false
 
 jobs:
   aab:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+
+      # R102 (23 Oct 2026): Play refuses a versionCode it has seen, and the release-aab asset is
+      # overwritten by every run, so a repeat run with the same number clobbered the last good
+      # bundle with one Play rejects. The number of the last bundle is kept in the release-aab
+      # notes ("versionCode: N", written below); the source must be strictly higher. A first run
+      # (no number in the notes yet) only says so. same_version = true is the one way past it,
+      # for a bundle that was built but never uploaded.
+      - name: versionCode is new for Play
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SAME_VERSION: ${{ inputs.same_version }}
+        run: |
+          code=$(grep -oE '^\s*versionCode = [0-9]+' app/build.gradle.kts | grep -oE '[0-9]+' | head -1)
+          if [ -z "$code" ]; then echo "::error::versionCode not found in app/build.gradle.kts"; exit 1; fi
+          echo "VERSION_CODE=$code" >> "$GITHUB_ENV"
+          last=$(gh release view release-aab --repo "$GITHUB_REPOSITORY" --json body --jq .body 2>/dev/null \
+            | grep -oE 'versionCode: [0-9]+' | grep -oE '[0-9]+' | head -1 || true)
+          if [ -z "$last" ]; then
+            echo "::notice::No versionCode recorded on release-aab yet; building $code (Play itself refuses one it has seen)."
+          elif [ "$code" -gt "$last" ]; then
+            echo "::notice::versionCode $code (the last bundle was $last)."
+          elif [ "$SAME_VERSION" = "true" ] && [ "$code" -eq "$last" ]; then
+            echo "::warning::Building versionCode $code again, as asked: upload it only if $code never reached Play."
+          else
+            echo "::error::versionCode $code is not higher than the last bundle's ($last). Raise versionCode in app/build.gradle.kts (Play refuses a number it has seen); the last bundle on release-aab is left as it is."
+            exit 1
+          fi
+
+      # R37 (23 Oct 2026): the one build that reaches shopkeepers was the only one packaged with no
+      # correctness gate. The string checks (seconds, plain Python) and the same tests as build.yml
+      # run before the keystore is even decoded; a red one stops the release.
+      - name: Strings and generated copies
+        run: |
+          python3 scripts/check_strings.py
+          python3 scripts/check_dark_colours.py
+          python3 scripts/check_dark_pairs.py
+          python3 scripts/check_pdf_rtl.py
+          python3 scripts/check_icon_direction.py
+          python3 scripts/gen_desktop_invoice.py --check
+          python3 scripts/gen_desktop_cards.py --check
+          python3 scripts/gen_desktop_poster.py --check
 
       - uses: actions/setup-java@v5
         with:
@@ -32,8 +78,32 @@ jobs:
           cache-disabled: true
           gradle-version: 8.14.3
 
+      # Firebase config for live sync's wake-up (PushWake), from the owner's
+      # secret; never committed (public repo). Without it: the app without the wake-up.
+      - name: Firebase config (wake-up)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: python3 scripts/google_services.py
+
       # The keystore exists as a file only for the length of this run, in the
       # runner's own temp directory, and is never written into the workspace.
+      - name: Unit tests
+        run: |
+          set +e
+          gradle testDebugUnitTest :shared:desktopTest :desktop:test --no-daemon --stacktrace 2>&1 | tee /tmp/test_output.txt
+          EXIT=${PIPESTATUS[0]}
+          exit $EXIT
+
+      - name: Publish test failures
+        if: failure()
+        run: |
+          if [ ! -f /tmp/test_output.txt ]; then exit 0; fi
+          errs=$(grep -iE "^e: |FAILED|AssertionError" /tmp/test_output.txt | head -40 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$errs" ] && echo "::error title=Compiler and test errors::$errs"
+          why=$(grep -A12 "What went wrong" /tmp/test_output.txt | grep -v "^--$" | head -14 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$why" ] && echo "::error title=What went wrong::$why"
+          true
+
       - name: Decode keystore
         env:
           RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
@@ -125,6 +195,8 @@ jobs:
             file (not a ZIP). Upload it as it is.
 
             **Commit:** ${{ github.sha }}
+
+            versionCode: ${{ env.VERSION_CODE }}
           files: out-aab/RoshanKhata-release.aab
           make_latest: false
           prerelease: true

@@ -110,7 +110,7 @@ object InvoicePdfExport {
      * @return null on any failure — a blank preview area is the correct
      *         result of nothing typed yet, not a crash.
      */
-    fun renderPreviewBitmap(context: Context, invoice: Invoice, items: List<InvoiceItem>): android.graphics.Bitmap? {
+    fun renderPreviewBitmap(context: Context, invoice: Invoice, items: List<InvoiceItem>, scale: Float = 2f): android.graphics.Bitmap? {
         val file = build(context, invoice, items) ?: return null
         return try {
             android.os.ParcelFileDescriptor.open(
@@ -123,7 +123,8 @@ object InvoicePdfExport {
                         // screen without rendering something absurdly large for
                         // what is, after all, just a preview.
                         val bmp = android.graphics.Bitmap.createBitmap(
-                            page.width * 2, page.height * 2, android.graphics.Bitmap.Config.ARGB_8888
+                            (page.width * scale).toInt().coerceAtLeast(1), (page.height * scale).toInt().coerceAtLeast(1),
+                            android.graphics.Bitmap.Config.ARGB_8888
                         )
                         bmp.eraseColor(Color.WHITE)
                         page.render(
@@ -141,7 +142,10 @@ object InvoicePdfExport {
 
     private fun outputFile(context: Context, invoice: Invoice): File {
         val dir = File(context.cacheDir, "invoices").apply { mkdirs() }
-        val safeName = invoice.customerName.replace(Regex("[^A-Za-z0-9 ]"), "").trim().replace(" ", "_")
+        // Letters and digits of every script, with their vowel marks (23 Oct 2026, the review:
+        // an Urdu name was stripped to nothing and every file was "INV-000123_Customer.pdf").
+        val fileSafe = { s: String -> s.replace(Regex("[^\\p{L}\\p{M}\\p{N} ]"), "").trim().replace(Regex("\\s+"), "_").take(60) }
+        val safeName = fileSafe(invoice.customerName).ifEmpty { fileSafe(context.getString(R.string.customer)) }
         return File(dir, "${invoice.invoiceNumber}_${safeName.ifEmpty { "Customer" }}.pdf")
     }
 
@@ -1136,7 +1140,7 @@ object InvoicePdfExport {
             BusinessProfile.bankName(context)?.let { labels.bank to it },
             BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
-            BusinessProfile.bankJazzCash(context)?.let { (if (Currency.symbol == Currency.DEFAULT) "JazzCash" else context.getString(R.string.pay_wallet_label)) to it }
+            BusinessProfile.bankJazzCash(context)?.let { (if (com.innovation313.roshankhata.data.ShopCountry.current == com.innovation313.roshankhata.data.ShopCountry.PAKISTAN) "JazzCash" else context.getString(R.string.pay_wallet_label)) to it }
         )
         val qr = BusinessProfile.loadQr(context)
         if (bank.isNotEmpty() || qr != null) {

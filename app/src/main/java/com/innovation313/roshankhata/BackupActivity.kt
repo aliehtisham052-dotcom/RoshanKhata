@@ -31,8 +31,19 @@ import com.innovation313.roshankhata.data.DriveBackup
 import com.innovation313.roshankhata.data.DriveFeature
 import com.innovation313.roshankhata.data.EraseAll
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.WifiSync
+import com.innovation313.roshankhata.data.LiveRound
+import com.innovation313.roshankhata.data.LiveRunner
+import com.innovation313.roshankhata.data.LiveSync
+import com.innovation313.roshankhata.data.LiveWire
+import com.innovation313.roshankhata.data.syncSql
+import com.innovation313.roshankhata.data.openOther
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -74,7 +85,7 @@ class BackupActivity : BaseActivity() {
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
-        findViewById<MaterialButton>(R.id.btnBackup).setOnClickListener { createBackup() }
+        findViewById<MaterialButton>(R.id.btnBackup).setOnClickListener { withDownloadsAccess { createBackup() } }
 
         findViewById<MaterialButton>(R.id.btnRestore).setOnClickListener {
             showRestoreOptions()
@@ -103,6 +114,36 @@ class BackupActivity : BaseActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnEraseAll).setOnClickListener { confirmEraseAll() }
+
+        findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener { scanComputer(take = false) }
+        findViewById<MaterialButton>(R.id.btnTakeFromComputer).setOnClickListener { scanComputer(take = true) }
+
+        // Live sync with the computer (22 Oct 2026): join once, then the same book on both.
+        // Joining gives a device the whole book: the owner's PIN first, whoever is signed in (22 Oct 2026).
+        findViewById<MaterialButton>(R.id.btnLiveJoin).setOnClickListener {
+            com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_needs_owner)) { scanLive() }
+        }
+        findViewById<MaterialButton>(R.id.btnLiveStop).setOnClickListener { confirmLiveStop() }
+        // The book's devices (a stale one removed) and its conflicts, as the computer's Live sync window has them.
+        findViewById<MaterialButton>(R.id.btnLiveDevices).setOnClickListener {
+            startActivity(Intent(this, LiveDevicesActivity::class.java))
+        }
+        // A phone may take a shop's book from another phone (23 Oct 2026): it shows the code, the other scans it.
+        findViewById<MaterialButton>(R.id.btnLiveReceive).setOnClickListener { showReceive() }
+        // The relay on the internet: the owner's choice for the book (one switch for both devices), off until then.
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchLiveRelay).setOnCheckedChangeListener { b, on ->
+            if (showingRelay) return@setOnCheckedChangeListener
+            if (on) {
+                // Not on until the owner says so (the book's data would leave the shop's WiFi, sealed).
+                showingRelay = true; b.isChecked = false; showingRelay = false
+                com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.live_relay)) { setRelay(true) }
+            } else {
+                setRelay(false)
+                // Google forgets this phone's wake-up address too (PushWake).
+                com.innovation313.roshankhata.data.PushWake.off(this)
+            }
+        }
+        lifecycleScope.launch { LiveRunner.status.collect { showLive(it) } }
 
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
@@ -223,6 +264,483 @@ class BackupActivity : BaseActivity() {
         }
     }
 
+    /**
+     * To the computer over WiFi (20 Oct): scan the code the Windows app shows
+     * (its window "From phone"), then send this book there, sealed with the
+     * code's secret (data/WifiSync). The scanner is Play services' own, as
+     * for customer cards, so the app still asks for no camera permission.
+     * Cancelling the scanner says nothing.
+     */
+    private fun scanComputer(take: Boolean) {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val pairing = WifiSync.parsePairing(barcode.rawValue)
+                if (pairing == null) {
+                    Toast.makeText(this, R.string.wifi_send_not_computer, Toast.LENGTH_LONG).show()
+                    return@addOnSuccessListener
+                }
+                if (take) takeFromComputer(pairing) else sendToComputer(pairing)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun sendToComputer(pairing: WifiSync.Pairing) {
+        Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val outcome = withContext(Dispatchers.IO) {
+                // The same streamed backup file every other path uses (P6), sent as it is read:
+                // never held whole (22 Oct 2026, the review).
+                val file = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
+                    ?: return@withContext null
+                if (file.length() > WifiSync.MAX_BYTES) return@withContext WifiSync.Outcome.Refused(WifiSync.TOO_BIG)
+                try { WifiSync.sendFile(pairing, file) } catch (e: Exception) { WifiSync.Outcome.Unreachable }
+            }
+            if (isFinishing || isDestroyed) return@launch
+            val message = when (outcome) {
+                null -> getString(R.string.backup_failed)
+                is WifiSync.Outcome.Sent -> getString(R.string.wifi_send_done)
+                is WifiSync.Outcome.Refused -> getString(R.string.wifi_send_refused)
+                WifiSync.Outcome.Unreachable -> getString(R.string.wifi_send_unreachable)
+            }
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.wifi_send_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+        }
+    }
+
+    /**
+     * The computer's book onto this phone (20 Oct): asked for over the same
+     * pairing, then through the same parse-and-confirm as a chosen file, so
+     * nothing here is replaced before the owner has read what is in it.
+     */
+    private fun takeFromComputer(pairing: WifiSync.Pairing) {
+        Toast.makeText(this, R.string.wifi_take_asking, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            // The book is written to the cache as it arrives, never held whole (23 Oct 2026, the review report R46);
+            // a book too big for this phone is refused before it is read, and running out of memory reading it after
+            // is said, not a crash.
+            val into = File(File(cacheDir, "backups").apply { mkdirs() }, "from_computer.txt")
+            val pulled = withContext(Dispatchers.IO) {
+                try { WifiSync.pull(pairing, into) }
+                catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                catch (e: OutOfMemoryError) { runCatching { into.delete() }; WifiSync.Pulled.TooBig }
+                catch (e: Exception) { WifiSync.Pulled.Unreachable }
+            }
+            if (isFinishing || isDestroyed) return@launch
+            when (pulled) {
+                is WifiSync.Pulled.Got -> {
+                    val parsed = withContext(Dispatchers.IO) {
+                        try { BackupCodec.parseFile(pulled.file) }
+                        catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                        catch (e: OutOfMemoryError) { null }
+                    }
+                    if (parsed == null) tell(R.string.wifi_take_too_big)
+                    else handleParseResult(parsed.first, parsed.second)
+                }
+                WifiSync.Pulled.TooBig -> tell(R.string.wifi_take_too_big)
+                WifiSync.Pulled.Refused -> tell(R.string.wifi_take_refused)
+                WifiSync.Pulled.Unreachable -> tell(R.string.wifi_send_unreachable)
+            }
+        }
+    }
+
+    /** What live sync is doing, in a line; and whether it may be turned off. */
+    private fun showLive(s: LiveRunner.Status) {
+        val bidi = androidx.core.text.BidiFormatter.getInstance()
+        val text = when (s) {
+            LiveRunner.Status.Off -> getString(R.string.live_status_off)
+            LiveRunner.Status.NotPaired -> getString(R.string.live_status_not_paired)
+            LiveRunner.Status.Waiting -> getString(R.string.live_status_waiting)
+            LiveRunner.Status.NotHere -> getString(R.string.live_status_not_here)
+            is LiveRunner.Status.Live -> getString(
+                if (s.relay) R.string.live_status_relay else R.string.live_status_live,
+                // The computer's name and the time kept whole in a right-to-left sentence (lesson 30).
+                bidi.unicodeWrap(s.computer?.takeIf { it.isNotBlank() } ?: getString(R.string.live_title)),
+                bidi.unicodeWrap(Digits.toLatin(java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date(s.at))))
+            )
+            LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
+            is LiveRunner.Status.RelayDown -> getString(R.string.live_status_relay_down, bidi.unicodeWrap(liveWhy(s.why)))
+            is LiveRunner.Status.UpdateNeeded -> getString(R.string.live_status_update_both, bidi.unicodeWrap(s.why))
+            is LiveRunner.Status.KeyBusy -> getString(R.string.live_status_key_busy, bidi.unicodeWrap(s.why))
+            LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
+            LiveRunner.Status.NotAccepted -> getString(R.string.live_status_not_accepted)
+            LiveRunner.Status.Rejoin -> getString(R.string.live_status_rejoin)
+            is LiveRunner.Status.Failed -> getString(R.string.live_status_failed, bidi.unicodeWrap(liveWhy(s.why)))
+        }
+        val shown = if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
+        findViewById<android.widget.TextView>(R.id.tvLiveStatus).text = shown
+        val off = s == LiveRunner.Status.Off || s == LiveRunner.Status.Rejoin || s == LiveRunner.Status.NotAccepted
+        findViewById<MaterialButton>(R.id.btnLiveStop).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
+        findViewById<MaterialButton>(R.id.btnLiveDevices).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
+        val relay = if (off) android.view.View.GONE else android.view.View.VISIBLE
+        findViewById<android.view.View>(R.id.switchLiveRelay).visibility = relay
+        findViewById<android.view.View>(R.id.tvLiveRelayHint).visibility = relay
+        if (!off) lifecycleScope.launch {
+            val on = withContext(Dispatchers.IO) { runCatching { dao.settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) == "1" }.getOrDefault(false) }
+            showRelay(on)
+            // Changes from the other device this book could not take yet, said here too (R52: only the computer's
+            // window said it). A day later they are given up into the conflicts list (Devices and conflicts).
+            val app = applicationContext
+            val held = withContext(Dispatchers.IO) { runCatching { LiveSync.state(KhataDatabase.get(app).syncSql()).held }.getOrDefault(0) }
+            // The relay cannot ring this phone (no Firebase key there, R70): said, instead of "fine" everywhere.
+            val wakeOff = on && withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.LiveCloud.wakeOff(KhataDatabase.get(app).syncSql()) }.getOrDefault(false)
+            }
+            val extra = listOfNotNull(
+                if (held > 0) Digits.string(resources, R.string.live_held, held) else null,
+                if (wakeOff) getString(R.string.live_wake_off) else null
+            )
+            val tv = findViewById<android.widget.TextView>(R.id.tvLiveStatus)
+            if (extra.isNotEmpty() && tv.text.toString() == shown) tv.text = (listOf(shown) + extra).joinToString("\n")
+        }
+    }
+
+    /**
+     * A refusal's reason code in the owner's language (23 Oct 2026, the review's R48: "another computer" stood in
+     * English inside an Urdu sentence). A code not known here (a relay's new word, "schema 39") is shown as it is.
+     * The table is shared with the computer's Live sync window (`LiveWhy`).
+     */
+    private fun liveWhy(why: String): String =
+        com.innovation313.roshankhata.data.LiveWhy.text(com.innovation313.roshankhata.data.AndroidWords(this), why)
+
+    /** The relay switch set from the book, without asking again. */
+    private var showingRelay = false
+
+    private fun showRelay(on: Boolean) {
+        val sw = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchLiveRelay)
+        if (sw.isChecked == on) return
+        showingRelay = true
+        sw.isChecked = on
+        showingRelay = false
+    }
+
+    private fun setRelay(on: Boolean) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                runCatching { dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, if (on) "1" else null) }
+            }
+            showRelay(on)
+        }
+    }
+
+    /** The computer's live code (More → Live sync on Windows), then this book sent there to join. */
+    private fun scanLive() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val invite = LiveWire.parseInvite(barcode.rawValue)
+                if (invite == null) {
+                    Toast.makeText(this, R.string.live_not_live_code, Toast.LENGTH_LONG).show()
+                    return@addOnSuccessListener
+                }
+                // The computer's "give" code takes no book from this phone: it gives its own (Take a shop's book).
+                if (invite.give) {
+                    MaterialAlertDialogBuilder(this).setTitle(R.string.live_title).setMessage(R.string.live_give_code_wrong_place)
+                        .setPositiveButton(R.string.ok, null).show()
+                    return@addOnSuccessListener
+                }
+                // A phone's code: two phones meet only through the internet relay, so the owner is asked before the
+                // relay is turned on for this book (23 Oct 2026, the review's R11: it was turned on, then said after).
+                if (invite.phone) {
+                    MaterialAlertDialogBuilder(this).setTitle(R.string.live_title)
+                        .setMessage(getString(R.string.live_phone_relay_ask) + "\n\n" + getString(R.string.live_relay_help))
+                        .setPositiveButton(R.string.ok) { _, _ -> joinComputer(invite) }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
+                    return@addOnSuccessListener
+                }
+                joinComputer(invite)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    /**
+     * Turns live sync on for this book (if it was not), and sends the book
+     * with its sync identity to the computer. The computer shows its usual
+     * restore confirmation; once the owner says yes there, the rounds begin.
+     *
+     * Until that yes, nothing this phone knew changes (22 Oct 2026, the
+     * review): a computer it already synced with keeps its place, a book
+     * that did not sync before goes back to not syncing when the book never
+     * reached the computer, and the whole pairing runs on the app's own
+     * scope, so turning the phone or pressing Back cannot leave it half made.
+     */
+    private fun joinComputer(invite: LiveWire.Invite) {
+        Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
+        val appContext = applicationContext
+        lifecycleScope.launch {
+            val sent = com.innovation313.roshankhata.data.AppScope.async { pairWith(appContext, invite) }.await()
+            if (isFinishing || isDestroyed) return@launch
+            val message = when (sent) {
+                null -> getString(R.string.backup_failed)
+                // The pairing's code too: the computer shows the same four digits beside its yes (22 Oct 2026).
+                is LiveWire.Sent.Taken -> getString(if (invite.phone) R.string.live_sent_phone else R.string.live_sent) +
+                    (sent.code?.let { "\n\n" + getString(R.string.live_pair_code, it) } ?: "")
+                LiveWire.Sent.Refused -> getString(R.string.wifi_send_refused)
+                LiveWire.Sent.Unreachable -> getString(R.string.wifi_send_unreachable)
+            }
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.live_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+        }
+    }
+
+    /** The pairing itself; null when the book could not be made into a copy to send. */
+    private suspend fun pairWith(context: android.content.Context, invite: LiveWire.Invite): LiveWire.Sent? {
+        val sql = KhataDatabase.get(context).syncSql()
+        val wasOn = LiveSync.identity(sql) != null
+        // The relay as it was: a phone's pairing turns it on, and one that is not taken leaves it as it was (R11).
+        val relayWasOff = invite.phone && runCatching {
+            KhataDatabase.get(context).khataDao().settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) != "1"
+        }.getOrDefault(false)
+        val sent: LiveWire.Sent? = try {
+            val id = LiveSync.enable(sql, LiveRunner.install(context), LiveRunner.deviceName(), marks = LiveRunner.marks(context))
+            val joinerMark = LiveSync.nextJoinerMark(sql)
+            // A phone meets this one through the relay alone (it serves no WiFi rounds): the relay is turned on for
+            // the book before the copy is taken, so the joiner's copy has it on too (23 Oct 2026).
+            if (invite.phone) KhataDatabase.get(context).khataDao().setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, "1")
+            // The book's other devices and how far this one has read each, as the copy will hold them; this phone
+            // holds back its word to them at those lines until they know the joiner (LiveCrew).
+            val peersAtCopy = com.innovation313.roshankhata.data.LiveCrew.offerPeers(sql)
+            com.innovation313.roshankhata.data.LiveCrew.holdForCopy(sql, peersAtCopy)
+            // The book is taken after this line: whatever changes after it is sent again
+            // in the first rounds, and a row that lands twice lands as one.
+            val seq = LiveSync.lastSeq(sql)
+            val file = Backup.exportToCache(context, KhataDatabase.get(context).khataDao())
+            try {
+            if (file.length() > LiveWire.MAX_BYTES) LiveWire.Sent.Refused
+            else {
+                val pair = LiveSync.newHex(8)
+                // The book read from its file as it goes out, never held whole (22 Oct 2026, the review).
+                val offer = LiveWire.Offer(
+                    id.book, id.key, id.device, id.name, seq, ByteArray(0), joinerMark, pair, peers = peersAtCopy,
+                    // Every letter taken in the book as this phone knows it: the joiner never gives one of them again (R05).
+                    marks = LiveSync.knownMarks(sql)
+                )
+                val outcome = LiveWire.sendOfferFile(invite, offer, file)
+                if (outcome is LiveWire.Sent.Taken) {
+                    // The computer has the book; its owner has not said yes yet. The first round it answers
+                    // makes it this phone's computer (LiveRound.take); until then any earlier one stays.
+                    val hosts = listOf(outcome.host) + invite.hosts.filter { it != outcome.host }
+                    LiveRound.setPending(sql, LiveRound.Target(hosts, invite.port, seq, invite.computer, pair = pair, phone = invite.phone), wasOff = !wasOn, relayWasOff = relayWasOff)
+                }
+                outcome
+            }
+            } finally {
+                // The whole book, PIN hashes included, does not linger in the cache once sent (23 Oct 2026).
+                file.delete()
+            }
+        } catch (e: Exception) {
+            null
+        }
+        // Nothing reached the other device: the holds made for the copy go; and if this phone did not sync before, as it was.
+        if (sent !is LiveWire.Sent.Taken) runCatching { com.innovation313.roshankhata.data.LiveCrew.dropCopyHold(sql) }
+        if (sent !is LiveWire.Sent.Taken && !wasOn) runCatching { LiveSync.disable(sql) }
+        if (sent !is LiveWire.Sent.Taken && relayWasOff) runCatching {
+            KhataDatabase.get(context).khataDao().setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, null)
+        }
+        com.innovation313.roshankhata.data.NumberMark.mark = runCatching { LiveSync.mark(sql) }.getOrNull()
+        return sent
+    }
+
+    /**
+     * This phone takes a shop's book from another phone (23 Oct 2026): it shows a live code on the shop's WiFi;
+     * the phone with the book scans it and sends the book; the owner sees the same four digits on both, and what
+     * this phone would lose, before anything is replaced. The window waits 15 minutes; closing it stops listening.
+     */
+    private fun showReceive() {
+        val receive = com.innovation313.roshankhata.data.LiveReceive(applicationContext)
+        var dialog: androidx.appcompat.app.AlertDialog? = null
+        val text = receive.open(LiveRunner.deviceName()) { arrived ->
+            runOnUiThread {
+                if (isFinishing || isDestroyed) { receive.close(); return@runOnUiThread }
+                dialog?.dismiss()
+                confirmReceive(receive, arrived)
+            }
+        }
+        if (text == null) {
+            receive.close()
+            MaterialAlertDialogBuilder(this).setTitle(R.string.live_title).setMessage(R.string.live_receive_no_wifi)
+                .setPositiveButton(R.string.ok, null).show()
+            return
+        }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val box = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(pad, pad / 2, pad, 0)
+            addView(android.widget.ImageView(this@BackupActivity).apply {
+                setImageBitmap(com.innovation313.roshankhata.ui.QrImage.of(text, 720))
+                adjustViewBounds = true
+            })
+            addView(android.widget.TextView(this@BackupActivity).apply {
+                setText(R.string.live_receive_steps)
+                setPadding(0, pad / 2, 0, 0)
+            })
+        }
+        dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.live_receive)
+            .setView(box)
+            .setNegativeButton(R.string.cancel) { _, _ -> receive.close() }
+            // The computer cannot scan this code (no camera): it shows a give code of its own, scanned from here.
+            .setNeutralButton(R.string.live_receive_scan_pc) { _, _ -> receive.close(); scanGive() }
+            .setOnCancelListener { receive.close() }
+            .show()
+        // Not answered in 15 minutes: the code goes.
+        lifecycleScope.launch {
+            kotlinx.coroutines.delay(15 * 60_000L)
+            if (dialog?.isShowing == true) { dialog?.dismiss(); receive.close() }
+        }
+    }
+
+    /**
+     * The computer's give code (More → Live sync → Give this book to a phone), scanned: its book is asked for over
+     * the shop's WiFi and comes to the same confirmation as a phone's (23 Oct 2026).
+     */
+    private fun scanGive() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val invite = LiveWire.parseInvite(barcode.rawValue)
+                if (invite == null || !invite.give) {
+                    MaterialAlertDialogBuilder(this).setTitle(R.string.live_receive).setMessage(R.string.live_receive_not_give)
+                        .setPositiveButton(R.string.ok, null).show()
+                    return@addOnSuccessListener
+                }
+                pullGiven(invite)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun pullGiven(invite: LiveWire.Invite) {
+        Toast.makeText(this, R.string.wifi_take_asking, Toast.LENGTH_SHORT).show()
+        val receive = com.innovation313.roshankhata.data.LiveReceive(applicationContext)
+        lifecycleScope.launch {
+            val pulled = withContext(Dispatchers.IO) {
+                runCatching { receive.pull(invite, LiveRunner.deviceName()) }
+                    .getOrDefault(com.innovation313.roshankhata.data.LiveReceive.Pulled.Refused)
+            }
+            if (isFinishing || isDestroyed) { receive.close(); return@launch }
+            when (pulled) {
+                is com.innovation313.roshankhata.data.LiveReceive.Pulled.Got -> confirmReceive(receive, pulled.arrived)
+                else -> {
+                    receive.close()
+                    val why = if (pulled == com.innovation313.roshankhata.data.LiveReceive.Pulled.Unreachable) R.string.live_receive_pc_unreachable
+                        else R.string.live_receive_pc_refused
+                    MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.live_receive).setMessage(why)
+                        .setPositiveButton(R.string.ok, null).show()
+                }
+            }
+        }
+    }
+
+    /** The book came: the owner sees who sent it, the pairing's code and what this phone would lose, then says yes. */
+    private fun confirmReceive(receive: com.innovation313.roshankhata.data.LiveReceive, arrived: com.innovation313.roshankhata.data.LiveReceive.Arrived) {
+        lifecycleScope.launch {
+            val loss = withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, arrived.data) }.getOrNull()
+                    ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN
+            }
+            if (isFinishing) { receive.close(); return@launch }
+            val lost = loss.takeIf { !it.none }?.let { l ->
+                getString(R.string.restore_loss_intro) + "\n" +
+                    com.innovation313.roshankhata.data.RestoreCheck.lines(l, com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)) { Format.dateTime(it) }
+                        .joinToString("\n") { "• $it" } + "\n\n" + getString(R.string.restore_loss_kept)
+            }
+            val sender = arrived.offer.name.ifBlank { getString(R.string.live_title) }
+            // From the computer's give code: the code is checked on the computer's screen, and the two meet on the WiFi too.
+            val offerText = getString(if (arrived.from != null) R.string.live_receive_offer_pc else R.string.live_receive_offer, sender, arrived.offer.code ?: "----")
+            val message = listOfNotNull(offerText, lost).joinToString("\n\n")
+            val b = MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.live_receive)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel) { _, _ -> receive.close() }
+                .setPositiveButton(R.string.restore_replace) { _, _ -> takeReceived(receive, arrived) }
+                .setCancelable(false)
+            if (lost == null) { b.show(); return@launch }
+            val agree = android.widget.CheckBox(this@BackupActivity).apply { setText(R.string.restore_loss_agree) }
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            b.setView(android.widget.FrameLayout(this@BackupActivity).apply { setPadding(pad, 0, pad, 0); addView(agree) })
+            val d = b.show()
+            val replace = d.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+            replace.isEnabled = false
+            agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
+        }
+    }
+
+    private fun takeReceived(receive: com.innovation313.roshankhata.data.LiveReceive, arrived: com.innovation313.roshankhata.data.LiveReceive.Arrived) {
+        Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
+        val appContext = applicationContext
+        lifecycleScope.launch {
+            // On the app's own scope: a screen turned mid-way does not leave the book half replaced.
+            val outcome = com.innovation313.roshankhata.data.AppScope.async {
+                runCatching { com.innovation313.roshankhata.data.LiveReceive.take(appContext, arrived) }
+            }.await()
+            receive.close()
+            if (isFinishing || isDestroyed) return@launch
+            val ok = outcome.getOrDefault(false)
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.live_title)
+                .setMessage(
+                    when {
+                        ok -> getString(R.string.live_receive_done)
+                        outcome.isSuccess -> getString(R.string.restore_keep_failed)
+                        else -> getString(R.string.snapshot_restore_failed)
+                    }
+                )
+                .setPositiveButton(R.string.ok) { _, _ -> recreate() }
+                .show()
+        }
+    }
+
+    private fun confirmLiveStop() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.live_title)
+            .setMessage(R.string.live_stop_confirm)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.live_stop) { _, _ ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        runCatching {
+                            val sql = KhataDatabase.get(this@BackupActivity).syncSql()
+                            // The relays forget this phone first (its parcels there go), then the book's conversation ends.
+                            runCatching { com.innovation313.roshankhata.data.LiveCloud.leaveAll(sql) }
+                            LiveRound.setTarget(sql, null)
+                            LiveSync.disable(sql)
+                            com.innovation313.roshankhata.data.NumberMark.mark = null
+                            // No conversation, no wake-up: the Firebase token goes with it (23 Oct 2026).
+                            runCatching { com.innovation313.roshankhata.data.PushWake.off(this@BackupActivity) }
+                        }
+                    }
+                    showLive(LiveRunner.Status.Off)
+                }
+            }
+            .show()
+    }
+
+    private fun tell(message: Int) {
+        MaterialAlertDialogBuilder(this).setTitle(R.string.wifi_send_title).setMessage(message).setPositiveButton(R.string.ok, null).show()
+    }
+
     private fun shareBackup(file: File) {
         val uri = FileProvider.getUriForFile(
             this,
@@ -265,7 +783,7 @@ class BackupActivity : BaseActivity() {
     private fun handleParseResult(
         result: BackupCodec.ImportResult,
         data: BackupCodec.ParsedBackup?,
-        driveAccount: String? = null
+        drive: DriveSource? = null
     ) {
         when (result) {
             is BackupCodec.ImportResult.Failed -> {
@@ -278,7 +796,7 @@ class BackupActivity : BaseActivity() {
 
             is BackupCodec.ImportResult.Ok -> {
                 if (data == null) return
-                confirmRestore(result, data, driveAccount)
+                confirmRestore(result, data, drive)
             }
         }
     }
@@ -292,7 +810,26 @@ class BackupActivity : BaseActivity() {
     private fun confirmRestore(
         counts: BackupCodec.ImportResult.Ok,
         data: BackupCodec.ParsedBackup,
-        driveAccount: String? = null
+        drive: DriveSource? = null
+    ) {
+        // What the restore would take away, worked out before the question is
+        // asked (21 Oct 2026): a phone's newer work must never vanish under an
+        // older copy without the owner being told, in figures.
+        lifecycleScope.launch {
+            val loss = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull()
+                // A count that could not be made is said, and ticked, never read as "nothing lost".
+                ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN }
+            val live = withContext(Dispatchers.IO) { Backup.liveOn(this@BackupActivity) }
+            if (!isFinishing) askRestore(counts, data, drive, loss, live)
+        }
+    }
+
+    private fun askRestore(
+        counts: BackupCodec.ImportResult.Ok,
+        data: BackupCodec.ParsedBackup,
+        drive: DriveSource?,
+        loss: com.innovation313.roshankhata.data.RestoreCheck.Loss?,
+        live: Boolean = false
     ) {
         val body = Digits.string(resources, R.string.restore_warning_message,
             counts.parties,
@@ -313,48 +850,161 @@ class BackupActivity : BaseActivity() {
         val openShop = BusinessProfile.businessName(this)
         val mismatch = data.businessName != null && openShop != null &&
             !data.businessName.equals(openShop, ignoreCase = true)
-        val message =
-            if (mismatch) getString(R.string.restore_business_mismatch, data.businessName, openShop) +
-                "\n\n" + body
-            else body
+        val lost = loss?.takeIf { !it.none }?.let { l ->
+            getString(R.string.restore_loss_intro) + "\n" +
+                com.innovation313.roshankhata.data.RestoreCheck.lines(l, com.innovation313.roshankhata.data.AndroidWords(this)) { Format.dateTime(it) }
+                    .joinToString("\n") { "• $it" } +
+                "\n\n" + getString(R.string.restore_loss_kept)
+        }
+        val message = listOfNotNull(
+            lost,
+            if (mismatch) getString(R.string.restore_business_mismatch, data.businessName, openShop) else null,
+            // A replaced book is no longer the computer's: live sync stops with it (22 Oct 2026, the review).
+            if (live) getString(R.string.restore_stops_live) else null,
+            body
+        ).joinToString("\n\n")
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore_warning_title)
+        val b = MaterialAlertDialogBuilder(this)
+            .setTitle(if (lost != null) R.string.restore_loss_title else R.string.restore_warning_title)
             .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, driveAccount) }
-            .show()
+            .setPositiveButton(R.string.restore_replace) { _, _ -> doRestore(data, drive) }
+            // Or keep this book and add only what the copy has that it lacks (21 Oct 2026).
+            .setNeutralButton(R.string.merge_button) { _, _ -> askMerge(data) }
+        if (lost == null) { b.show(); return }
+        // Work would be lost: the owner ticks that they understand before Replace works.
+        val agree = android.widget.CheckBox(this).apply { setText(R.string.restore_loss_agree) }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        b.setView(android.widget.FrameLayout(this).apply { setPadding(pad, 0, pad, 0); addView(agree) })
+        val dialog = b.show()
+        val replace = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+        replace.isEnabled = false
+        agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
     }
 
-    private fun doRestore(data: BackupCodec.ParsedBackup, driveAccount: String? = null) {
+    /**
+     * A copy merged in instead of replacing the book (21 Oct 2026,
+     * BookMerge): what it would add is said first, in figures; this book is
+     * kept as a copy before anything is written; then only the rows it lacks
+     * come in, in one transaction.
+     */
+    private fun askMerge(data: BackupCodec.ParsedBackup) {
+        lifecycleScope.launch {
+            val shop = BusinessProfile.businessName(this@BackupActivity)
+            val plan = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookMerge.plan(dao, data, shop) } }
+            if (isFinishing) return@launch
+            val words = com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)
+            val p = plan.getOrElse { e ->
+                val msg = if (e is com.innovation313.roshankhata.data.BookMerge.Refused)
+                    getString(com.innovation313.roshankhata.data.WordIds.string(com.innovation313.roshankhata.data.BookMerge.refusalWord(e)))
+                // In the owner's words, never the English reason or the backup's sentence (23 Oct 2026, the review).
+                else getString(R.string.book_merge_failed).also { android.util.Log.w("RoshanKhata", "merge plan failed", e) }
+                MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.merge_title).setMessage(msg).setPositiveButton(android.R.string.ok, null).show()
+                return@launch
+            }
+            if (p.none) {
+                MaterialAlertDialogBuilder(this@BackupActivity).setTitle(R.string.merge_title).setMessage(R.string.merge_nothing).setPositiveButton(android.R.string.ok, null).show()
+                return@launch
+            }
+            MaterialAlertDialogBuilder(this@BackupActivity)
+                .setTitle(R.string.merge_title)
+                .setMessage(getString(R.string.merge_help) + "\n\n" + com.innovation313.roshankhata.data.BookMerge.lines(p, words).joinToString("\n") { "• $it" })
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.merge_button) { _, _ -> doMerge(data, shop) }
+                .show()
+        }
+    }
+
+    private fun doMerge(data: BackupCodec.ParsedBackup, shop: String?) {
+        lifecycleScope.launch {
+            // On the app's own scope (21 Oct 2026): turning the phone mid-merge cancelled the screen's
+            // scope and rolled the merge back with nothing said. Only the message waits for the screen.
+            val result = com.innovation313.roshankhata.data.AppScope.async {
+                runCatching {
+                    // This book as it stands, kept first (Daily copies), so the merge can be undone;
+                    // nothing is merged unless it was.
+                    if (!com.innovation313.roshankhata.data.Snapshots.keepNow(this@BackupActivity)) error(getString(R.string.restore_keep_failed))
+                    dao.mergeBook(data, shop)
+                }
+            }.await()
+            if (isFinishing) return@launch
+            result.onSuccess { done ->
+                Toast.makeText(this@BackupActivity, Digits.string(resources, R.string.merge_done, done.rows, done.renumbered), Toast.LENGTH_LONG).show()
+            }.onFailure { e ->
+                android.util.Log.w("RoshanKhata", "merge failed", e)
+                // In the owner's words (23 Oct 2026, the review): the safety copy's own sentence, a refusal's, or "nothing was added".
+                val keepFailed = getString(R.string.restore_keep_failed)
+                val msg = when {
+                    e is com.innovation313.roshankhata.data.BookMerge.Refused ->
+                        getString(com.innovation313.roshankhata.data.WordIds.string(com.innovation313.roshankhata.data.BookMerge.refusalWord(e)))
+                    e.message == keepFailed -> keepFailed
+                    else -> getString(R.string.book_merge_failed)
+                }
+                Toast.makeText(this@BackupActivity, msg, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun doRestore(data: BackupCodec.ParsedBackup, drive: DriveSource? = null) {
         Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                Backup.restore(this@BackupActivity, dao, data)
+            // The restore itself on the app's own scope (21 Oct 2026): a screen turned mid-restore no
+            // longer cancels it half way.
+            val appContext = applicationContext
+            val outcome = com.innovation313.roshankhata.data.AppScope.async {
+                runCatching {
+                    // This book as it stands, kept first (Daily copies), so the restore can be undone.
+                    // No copy, no restore (21 Oct 2026).
+                    val kept = com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
+                        .also { if (it) Backup.restore(appContext, dao, data) }
+                    // From Drive (23 Oct 2026, the review): this phone now stands on that shop's backup, so
+                    // its next upload continues it instead of being asked about "another phone's" file.
+                    if (kept && drive != null && Businesses.active(appContext).id == drive.biz.id) {
+                        BackupReminder.recordBackupOf(appContext, drive.biz.id)
+                        DriveBackup.rememberSeen(appContext, drive.biz.modifiedAt, drive.biz.id)
+                    }
+                    kept
+                }
+            }.await()
+            // A restore that failed rolled back whole (22 Oct 2026, the review: it crashed the app and said nothing).
+            if (outcome.isFailure) {
+                if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
+                    .setTitle(R.string.restore_warning_title)
+                    .setMessage(R.string.snapshot_restore_failed)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
+            }
+            val kept = outcome.getOrDefault(false)
+            if (!kept) {
+                if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
+                    .setTitle(R.string.restore_warning_title)
+                    .setMessage(R.string.restore_keep_failed)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
             }
 
             // Images, only on the Drive route and only if an archive is there.
             // This runs AFTER the text restore on purpose: the bill-photo path
             // re-map reads and rewrites the very entries the text restore just
-            // put back. A file restore (driveAccount == null) never carries
+            // put back. A file restore (drive == null) never carries
             // images, by the owner's design.
             var imagesFailed = false
             // Silence used to be the answer when no archive came back, and
             // silence reads as "everything came back". It does not: photos
             // simply were not in this backup. Say which of the two happened.
             var noImages = false
-            if (driveAccount != null) {
+            if (drive != null) {
                 imagesFailed = withContext(Dispatchers.IO) {
-                    val result = DriveBackup.restoreImages(this@BackupActivity, driveAccount)
+                    // That shop's own archive, by its Drive number (23 Oct 2026, the review).
+                    val result = DriveBackup.readImagesForBusiness(appContext, drive.account, drive.biz.id)
                     val bytes = result.getOrNull()
                     when {
                         result.isFailure -> true
                         bytes == null -> { noImages = true; false }
-                        else -> {
-                            BackupImages.restore(this@BackupActivity, dao, bytes)
-                            false
-                        }
+                        else -> runCatching { BackupImages.restore(appContext, dao, bytes) }.isFailure
                     }
                 }
             } else {
@@ -382,7 +1032,7 @@ class BackupActivity : BaseActivity() {
             // had no archive beside it.
             val imagesNote = when {
                 !noImages -> null
-                driveAccount == null -> getString(R.string.restore_file_no_images)
+                drive == null -> getString(R.string.restore_file_no_images)
                 else -> getString(R.string.restore_no_images)
             }
 
@@ -905,90 +1555,233 @@ class BackupActivity : BaseActivity() {
                 Digits.quantity(resources, R.plurals.drive_found_businesses, found.size, found.size),
                 choices,
                 secondary = ChoiceSheet.Action(getString(R.string.drive_restore_all)) {
-                    confirmRestoreAll(account, found)
+                    planDrive(account, found)
                 }
-            ) { which -> confirmRestoreAll(account, listOf(found[which])) }
+            ) { which -> planDrive(account, listOf(found[which])) }
         }
     }
 
-    private fun confirmRestoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
-        val names = businesses.joinToString("\n") { biz ->
-            "• " + (biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id))
+    /** Where a restore came from: one shop's backup on Drive, whose own photos then come with it. */
+    private class DriveSource(val account: String, val biz: DriveBackup.DriveBusiness)
+
+    /**
+     * One Drive shop, read and weighed before anything is asked (23 Oct 2026, the review: a Drive
+     * restore replaced books with no figures, no wrong-shop guard and no live-sync warning).
+     */
+    private class DrivePlan(
+        val biz: DriveBackup.DriveBusiness,
+        /** The Drive shop's name, or its number. */
+        val label: String,
+        /** The downloaded copy; null when it could not be read. Deleted once restored or let go. */
+        val file: File?,
+        /** The phone's shop it would replace, or null when it comes in as a shop of its own. */
+        val hereId: Long? = null,
+        val hereName: String? = null,
+        /** A different shop holds its number here: it comes in as a new shop beside it. */
+        val asNew: Boolean = false,
+        /** What the replace would take away from the phone's book; null when that book is empty or absent. */
+        val loss: com.innovation313.roshankhata.data.RestoreCheck.Loss? = null,
+        /** The phone's book syncs live: a replace stops that. */
+        val live: Boolean = false
+    ) {
+        val lost: Boolean get() = loss != null && !loss.none
+    }
+
+    /** Downloads and weighs one Drive shop, off the main thread. Nothing on the phone is changed. */
+    private suspend fun planFor(account: String, biz: DriveBackup.DriveBusiness, label: String): DrivePlan {
+        val ctx = applicationContext
+        val file = DriveBackup.restoreByIdToFile(ctx, account, biz.backupFileId).getOrNull()
+            ?: return DrivePlan(biz, label, null)
+        val (result, data) = Backup.parseFile(file)
+        if (result !is BackupCodec.ImportResult.Ok || data == null) { file.delete(); return DrivePlan(biz, label, null) }
+        val here = Businesses.list(ctx).firstOrNull { it.id == biz.id }
+            ?: return DrivePlan(biz, label, file)
+        val hereName = Businesses.displayName(ctx, here)
+        val differs = !biz.name.isNullOrBlank() && !hereName.isNullOrBlank() &&
+            !hereName.trim().equals(biz.name.trim(), ignoreCase = true)
+        var loss: com.innovation313.roshankhata.data.RestoreCheck.Loss? = null
+        var live = false
+        if (here.id == Businesses.active(ctx).id) {
+            loss = runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(dao, data) }.getOrNull()
+                ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN
+            live = Backup.liveOn(ctx)
+        } else {
+            // A closed shop is read through its own short-lived handle; null = never written, nothing to lose.
+            val other = try { KhataDatabase.openOther(ctx, here) } catch (_: Exception) {
+                loss = com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN; null
+            }
+            if (other != null) try {
+                loss = runCatching { com.innovation313.roshankhata.data.RestoreCheck.of(other.khataDao(), data) }.getOrNull()
+                    ?: com.innovation313.roshankhata.data.RestoreCheck.UNKNOWN
+                live = runCatching { LiveSync.identity(other.syncSql()) != null }.getOrDefault(false)
+            } finally {
+                other.close()
+            }
         }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore_warning_title)
-            .setMessage(getString(R.string.drive_restore_all_warning, names))
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore_replace) { _, _ -> restoreAll(account, businesses) }
-            .show()
+        // A shop of this number here under ANOTHER name is a different shop: the Drive copy comes in
+        // beside it. Business 1 too, unless replacing it would take nothing away (a new phone's
+        // empty first shop, named a little differently, is where its own backup belongs).
+        val nothingHere = loss == null || loss.none
+        if (differs && (here.id != 1L || !nothingHere)) return DrivePlan(biz, label, file, hereName = hereName, asNew = true)
+        return DrivePlan(biz, label, file, hereId = here.id, hereName = hereName, loss = loss, live = live)
     }
 
     /**
-     * Restore each discovered shop into its own book, one after another.
-     *
-     * Two things here are deliberate and load-bearing. Each shop's registry
-     * entry is recreated at the id its Drive file already carries, so it lands
-     * back on its own database file rather than a newly numbered one. And the
-     * DAO is fetched fresh inside every round, never the screen's cached one:
-     * switching business closes and reopens the database, so a handle taken
-     * before the switch would write this shop's ledger into the last shop's
-     * file. That is the single worst thing this feature could do, so it is
-     * done explicitly rather than left to habit.
+     * Read and weigh the chosen Drive shops, then ask. The open shop alone, replaced in place, takes
+     * the single restore's own question (figures, the wrong-shop line, live sync, Merge) and its photos.
      */
-    private fun restoreAll(account: String, businesses: List<DriveBackup.DriveBusiness>) {
-        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
-
+    private fun planDrive(account: String, businesses: List<DriveBackup.DriveBusiness>) {
+        Toast.makeText(this, R.string.reading_backup, Toast.LENGTH_SHORT).show()
+        val labels = businesses.map { biz -> biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id) }
         lifecycleScope.launch {
+            val plans = withContext(Dispatchers.IO) { businesses.mapIndexed { i, biz -> planFor(account, biz, labels[i]) } }
+            if (isFinishing || isDestroyed) { plans.forEach { it.file?.delete() }; return@launch }
+            val one = plans.singleOrNull()
+            val oneFile = one?.file
+            if (one != null && oneFile != null && !one.asNew && one.hereId == Businesses.active(this@BackupActivity).id) {
+                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(oneFile).also { oneFile.delete() } }
+                handleParseResult(result, data, DriveSource(account, one.biz))
+                return@launch
+            }
+            askDrivePlans(account, plans)
+        }
+    }
+
+    private fun askDrivePlans(account: String, plans: List<DrivePlan>) {
+        val ready = plans.filter { it.file != null }
+        if (ready.isEmpty()) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.restore_warning_title)
+                .setMessage(getString(R.string.drive_restore_missed, plans.joinToString("\n") { "• " + it.label }))
+                .setPositiveButton(R.string.ok, null)
+                .show()
+            return
+        }
+        val words = com.innovation313.roshankhata.data.AndroidWords(this)
+        val parts = plans.map { p ->
+            val hereLabel = p.hereName ?: p.hereId?.let { Digits.string(resources, R.string.business_numbered, it) }.orEmpty()
+            when {
+                p.file == null -> getString(R.string.drive_plan_unreadable, p.label)
+                p.asNew -> getString(R.string.drive_plan_new, p.label, hereLabel)
+                p.hereId == null -> getString(R.string.drive_plan_fresh, p.label)
+                else -> listOfNotNull(
+                    getString(R.string.drive_plan_replace, p.label, hereLabel),
+                    p.loss?.takeIf { p.lost }?.let { l ->
+                        getString(R.string.restore_loss_intro) + "\n" +
+                            com.innovation313.roshankhata.data.RestoreCheck.lines(l, words) { Format.dateTime(it) }
+                                .joinToString("\n") { "• $it" }
+                    },
+                    if (p.live) getString(R.string.drive_plan_live, hereLabel) else null
+                ).joinToString("\n")
+            }
+        }
+        val anyLoss = ready.any { it.lost }
+        val message = (parts + listOfNotNull(if (anyLoss) getString(R.string.restore_loss_kept) else null)).joinToString("\n\n")
+        var started = false
+        val b = MaterialAlertDialogBuilder(this)
+            .setTitle(if (anyLoss) R.string.restore_loss_title else R.string.restore_warning_title)
+            .setMessage(message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.restore_replace) { _, _ -> started = true; restoreAll(account, plans) }
+            .setOnDismissListener { if (!started) plans.forEach { it.file?.delete() } }
+        if (!anyLoss) { b.show(); return }
+        // Work would be lost: the owner ticks that he understands before Replace works, as a single restore.
+        val agree = android.widget.CheckBox(this).apply { setText(R.string.restore_loss_agree) }
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        b.setView(android.widget.FrameLayout(this).apply { setPadding(pad, 0, pad, 0); addView(agree) })
+        val dialog = b.show()
+        val replace = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+        replace.isEnabled = false
+        agree.setOnCheckedChangeListener { _, on -> replace.isEnabled = on }
+    }
+
+    /**
+     * Restore each weighed Drive shop into its own book, one after another.
+     *
+     * Each shop's registry entry is recreated at the id its Drive file already carries, so it lands
+     * back on its own database file, unless a different shop holds that number here (then it comes
+     * in as a new shop). The DAO is fetched fresh after every switch, never the screen's cached one:
+     * a handle taken before the switch would write this shop's ledger into the last shop's file.
+     *
+     * On the app's own scope (23 Oct 2026, the review): a screen turned mid-restore used to stop it
+     * half way, leave the phone on another shop and a syncing book paused. Only the summary waits for
+     * the screen; with the screen gone the app is simply restarted on the shop it ends on.
+     */
+    private fun restoreAll(account: String, plans: List<DrivePlan>) {
+        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
+        val app = applicationContext
+        val startId = Businesses.active(app).id
+        com.innovation313.roshankhata.data.AppScope.launch {
             val done = mutableListOf<String>()
             val failed = mutableListOf<String>()
+            for (p in plans) {
+                val file = p.file
+                if (file == null) { failed += p.label; continue }
+                try {
+                    val (result, data) = Backup.parseFile(file)
+                    if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += p.label; continue }
+                    val target = if (p.asNew) Businesses.create(app, p.biz.name.orEmpty())
+                        else Businesses.ensure(app, p.biz.id, p.biz.name)
+                    withContext(Dispatchers.Main) { Businesses.switchTo(app, target.id) }
 
-            for (biz in businesses) {
-                val label = biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id)
+                    val liveDao = KhataDatabase.get(app).khataDao()
+                    // Each shop's own book kept first, as a single restore does; not replaced unless kept.
+                    // A restore that fails rolls back whole and is counted as failed, never a crash (22 Oct 2026).
+                    val kept = runCatching {
+                        com.innovation313.roshankhata.data.Snapshots.keepNow(app)
+                            .also { if (it) Backup.restore(app, liveDao, data) }
+                    }.getOrDefault(false)
+                    if (!kept) { failed += p.label; continue }
 
-                Businesses.ensure(this@BackupActivity, biz.id, biz.name)
-                Businesses.switchTo(this@BackupActivity, biz.id)
-
-                val file = DriveBackup.restoreByIdToFile(this@BackupActivity, account, biz.backupFileId)
-                    .getOrNull()
-                if (file == null) { failed += label; continue }
-
-                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(file).also { file.delete() } }
-                if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += label; continue }
-
-                val liveDao = KhataDatabase.get(this@BackupActivity).khataDao()
-                withContext(Dispatchers.IO) { Backup.restore(this@BackupActivity, liveDao, data) }
-
-                // Images for this shop, from this shop's own archive. A shop
-                // without one is restored without photos, not failed.
-                DriveBackup.restoreImages(this@BackupActivity, account).getOrNull()?.let { bytes ->
-                    withContext(Dispatchers.IO) {
-                        BackupImages.restore(this@BackupActivity, liveDao, bytes)
+                    // Images from the Drive shop's own archive, by its Drive number (23 Oct 2026, the
+                    // review: a shop given a new number here took another shop's photos). A shop without
+                    // one is restored without photos, not failed.
+                    DriveBackup.readImagesForBusiness(app, account, p.biz.id).getOrNull()?.let { bytes ->
+                        runCatching { BackupImages.restore(app, liveDao, bytes) }
                     }
-                }
 
-                BackupReminder.recordBackup(this@BackupActivity)
-                // This phone now stands on that backup: its next upload is a
-                // continuation of it, not a stranger's file to be asked about.
-                DriveBackup.rememberSeen(this@BackupActivity, biz.modifiedAt)
-                done += label
+                    // This phone now stands on that backup: its next upload continues it. Only when it
+                    // is the same Drive file, which a shop given a new number here is not.
+                    if (target.id == p.biz.id) {
+                        BackupReminder.recordBackupOf(app, target.id)
+                        DriveBackup.rememberSeen(app, p.biz.modifiedAt, target.id)
+                    }
+                    done += p.label
+                } catch (e: Exception) {
+                    failed += p.label
+                } finally {
+                    file.delete()
+                }
+            }
+            // Several shops: back to the one that was open. One shop: stay on it, it is what was asked for.
+            if (plans.size > 1 && Businesses.list(app).any { it.id == startId } && Businesses.active(app).id != startId) {
+                withContext(Dispatchers.Main) { Businesses.switchTo(app, startId) }
             }
 
             val body = buildString {
-                if (done.isNotEmpty()) {
-                    append(getString(R.string.drive_restored_these, done.joinToString("\n") { "• $it" }))
-                }
+                if (done.isNotEmpty()) append(getString(R.string.drive_restored_these, done.joinToString("\n") { "• $it" }))
                 if (failed.isNotEmpty()) {
                     if (isNotEmpty()) append("\n\n")
                     append(getString(R.string.drive_restore_missed, failed.joinToString("\n") { "• $it" }))
                 }
             }
-
-            MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(R.string.restore_done)
-                .setMessage(body)
-                .setCancelable(false)
-                .setPositiveButton(R.string.ok) { _, _ -> goHome() }
-                .show()
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    MaterialAlertDialogBuilder(this@BackupActivity)
+                        .setTitle(R.string.restore_done)
+                        .setMessage(body)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.ok) { _, _ -> goHome() }
+                        .show()
+                } else {
+                    // Every screen still holds the book it was opened on: start them again on this one.
+                    app.startActivity(
+                        Intent(app, MainActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .putExtra(MainActivity.EXTRA_UNLOCKED, true)
+                    )
+                }
+            }
         }
     }
 

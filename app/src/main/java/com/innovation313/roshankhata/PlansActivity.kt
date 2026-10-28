@@ -25,6 +25,7 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Installment
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.PlanSchedule
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.PaymentPlan
 import com.innovation313.roshankhata.data.PlanProgress
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
-import com.innovation313.roshankhata.data.Digits
 
 /**
  * Payment plans: an arrangement for clearing a debt in instalments.
@@ -106,6 +106,18 @@ class PlansActivity : BaseActivity() {
         val btnDue: MaterialButton = view.findViewById(R.id.btnPlanDueDate)
         val etNote: EditText = view.findViewById(R.id.etPlanNote)
 
+        // Total and instalment on the app's own calculator pad (21 Oct): one
+        // pad, typing into whichever of the two has the focus.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.planKeypad),
+            fields = listOf(etTotal, etInstallment),
+            results = mapOf(
+                etTotal to view.findViewById<TextView>(R.id.tvPlanTotalResult),
+                etInstallment to view.findViewById<TextView>(R.id.tvPlanInstallmentResult)
+            )
+        )
+
         etParty.setAdapter(
             ArrayAdapter(
                 this,
@@ -164,7 +176,7 @@ class PlansActivity : BaseActivity() {
                     return@setPositiveButton
                 }
 
-                val total = Digits.parse(etTotal.text)
+                val total = Calc.evalAmount(etTotal.text.toString())
                 if (total == null || total <= 0.0) {
                     Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
@@ -180,7 +192,7 @@ class PlansActivity : BaseActivity() {
                         PaymentPlan(
                             partyId = party.id,
                             totalAmount = total,
-                            installmentAmount = Digits.parse(etInstallment.text)?.takeIf { it > 0 },
+                            installmentAmount = Calc.evalAmount(etInstallment.text.toString()),
                             nextDueDate = nextDue,
                             note = etNote.text.toString().trim().ifEmpty { null }
                         )
@@ -198,20 +210,52 @@ class PlansActivity : BaseActivity() {
             return
         }
 
-        val options = listOf(
-            ChoiceSheet.Option(getString(R.string.record_payment), icon = R.drawable.ic_arrow_got,
-                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg),
-            ChoiceSheet.done(getString(R.string.close_plan)),
-            ChoiceSheet.delete(getString(R.string.delete_plan))
-        )
-
-        ChoiceSheet.show(this, getString(R.string.plan_actions), options) { which ->
-            when (which) {
-                0 -> showRecordPaymentDialog(plan)
-                1 -> closePlan(plan)
-                2 -> confirmDeletePlan(plan)
-            }
+        // The next payment day can be changed or removed at any time (21 Oct 2026, the owner).
+        val actions = buildList<Pair<ChoiceSheet.Option, () -> Unit>> {
+            add(ChoiceSheet.Option(getString(R.string.record_payment), icon = R.drawable.ic_arrow_got,
+                iconTint = R.color.bal_i_owe, tile = R.color.summary_give_bg) to { showRecordPaymentDialog(plan) })
+            add(ChoiceSheet.Option(getString(R.string.plan_next_change), icon = R.drawable.ic_calendar,
+                iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg) to {
+                askNextDue(plan.id, plan.partyName, plan.nextDueDate ?: PlanSchedule.suggestNext(null))
+            })
+            if (plan.nextDueDate != null) add(ChoiceSheet.Option(getString(R.string.plan_next_clear)) to {
+                AppScope.launch { dao.setPlanNextDue(plan.id, null) }
+                Unit
+            })
+            add(ChoiceSheet.done(getString(R.string.close_plan)) to { closePlan(plan) })
+            add(ChoiceSheet.delete(getString(R.string.delete_plan)) to { confirmDeletePlan(plan) })
         }
+
+        ChoiceSheet.show(this, getString(R.string.plan_actions), actions.map { it.first }) { which ->
+            actions[which].second()
+        }
+    }
+
+    /**
+     * The plan's next payment day, picked by the owner: from the plan's actions, and
+     * after each payment with the suggested day already chosen (PlanSchedule). Cancel
+     * leaves the day as it was.
+     */
+    private fun askNextDue(planId: Long, partyName: String, start: Long) {
+        val cal = Calendar.getInstance().apply { timeInMillis = start }
+        BrandDatePickerDialog(
+            this,
+            { _, y, m, d ->
+                val picked = Calendar.getInstance().apply {
+                    set(y, m, d, 0, 0, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.timeInMillis
+                AppScope.launch {
+                    dao.setPlanNextDue(planId, picked)
+                    withContext(Dispatchers.Main) {
+                        if (!isFinishing && !isDestroyed) Toast.makeText(
+                            this@PlansActivity, getString(R.string.plan_next_saved, Format.dateOnly(picked)), Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            },
+            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
+        ).apply { setTitle(getString(R.string.plan_next_ask, partyName)) }.show()
     }
 
     private fun showRecordPaymentDialog(plan: PlanProgress) {
@@ -241,6 +285,29 @@ class PlansActivity : BaseActivity() {
         view.findViewById<View>(R.id.btnEntryDate).visibility = View.GONE
 
         plan.installmentAmount?.let { etAmount.setText(Format.plain(it)) }
+
+        // The note sits in step two, which nothing on this dialog opens, so
+        // there was no way to write one (21 Oct). Step two is shown with the
+        // note alone: everything else in it is the ledger's (goods, rate,
+        // signature, qarz-e-hasna, recovery) and stays hidden here.
+        val stepTwo = view.findViewById<android.view.ViewGroup>(R.id.stepTwo)
+        for (i in 0 until stepTwo.childCount) {
+            val child = stepTwo.getChildAt(i)
+            child.visibility = if (child === etNote) View.VISIBLE else View.GONE
+        }
+        stepTwo.visibility = View.VISIBLE
+
+        // The layout has always carried the calculator pad (entryKeypad) and
+        // the backspace in the box, but nothing here bound them: the keys
+        // were dead and the phone's keyboard came up instead (21 Oct). Bound
+        // now as on the add-entry form; the note gets the phone's keyboard
+        // and the pad steps aside for it.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.entryKeypad),
+            fields = listOf(etAmount),
+            results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvAmountResult))
+        )
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.record_payment_title)
@@ -294,38 +361,23 @@ class PlansActivity : BaseActivity() {
     private fun recordPayment(plan: PlanProgress, amount: Double, note: String) {
         val noteText = note.ifEmpty { getString(R.string.plan_note_prefix) }
         AppScope.launch {
-            val entryId = dao.insertEntryNumbered(
-                LedgerEntry(
-                    partyId = plan.partyId,
-                    amount = amount,
-                    // Money coming IN from the customer: it reduces what they owe.
-                    isGiven = false,
-                    note = noteText,
-                    entryNumber = ""
-                )
+            // The entry, the instalment and the plan's closing in ONE transaction (21 Oct 2026, the
+            // critical review): written one after another, a failure half way left a payment in the
+            // khata with no instalment, or an instalment that closed nothing. The computer's own call.
+            // Money coming IN from the customer: it reduces what they owe; once the agreed total is
+            // met the plan closes rather than staying open with a full progress bar.
+            dao.recordPlanPayment(
+                planId = plan.id,
+                partyId = plan.partyId,
+                amount = amount,
+                paidBefore = plan.paidSoFar,
+                entryNote = noteText,
+                note = note.ifEmpty { null }
             )
-
-            dao.insertInstallment(
-                Installment(
-                    planId = plan.id,
-                    amount = amount,
-                    ledgerEntryId = entryId,
-                    note = note.ifEmpty { null }
-                )
-            )
-
-            // Once the agreed total is met, close the plan rather than leaving
-            // it open forever with a full progress bar.
-            val paid = plan.paidSoFar + amount
-            if (paid >= plan.totalAmount) {
-                dao.getPlan(plan.id)?.let { existing ->
-                    dao.updatePlan(
-                        existing.copy(
-                            isClosed = true,
-                            closedAt = System.currentTimeMillis()
-                        )
-                    )
-                }
+            // Still open: the next payment day is asked, the suggestion already chosen (21 Oct 2026:
+            // the day never moved on, and a plan paid on time read as late for ever).
+            if (plan.paidSoFar + amount < plan.totalAmount) withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) askNextDue(plan.id, plan.partyName, PlanSchedule.suggestNext(plan.nextDueDate))
             }
 
             withContext(Dispatchers.Main) {
@@ -341,6 +393,7 @@ class PlansActivity : BaseActivity() {
     }
 
     private fun closePlan(plan: PlanProgress) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { closePlan(plan) }) return
         lifecycleScope.launch {
             AppScope.launch {
                 dao.getPlan(plan.id)?.let { existing ->
@@ -359,13 +412,17 @@ class PlansActivity : BaseActivity() {
      * tidied away would be inventing a debt the customer already settled.
      */
     private fun confirmDeletePlan(plan: PlanProgress) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeletePlan(plan) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_plan)
             .setMessage(R.string.delete_plan_confirm)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    AppScope.launch { dao.softDeletePlan(plan.id) }.join()
+                    val job = AppScope.launch { dao.softDeletePlan(plan.id) }
+                    job.join()
+                    // A failed write was said already ("not saved"); no "deleted" after it (23 Oct 2026).
+                    if (job.isCancelled) return@launch
                     Toast.makeText(
                         this@PlansActivity,
                         R.string.plan_deleted,

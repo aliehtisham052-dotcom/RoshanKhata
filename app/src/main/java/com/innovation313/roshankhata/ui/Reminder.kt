@@ -21,12 +21,15 @@ import com.innovation313.roshankhata.data.PaymentDetails
 object Reminder {
 
     /**
-     * Pakistani numbers arrive in many shapes: 03001234567, +923001234567,
-     * 0092..., or with spaces and dashes. WhatsApp needs a bare international
-     * number with no plus and no separators.
+     * Numbers arrive in many shapes: 03001234567, +923001234567, 0092...,
+     * or with spaces and dashes. WhatsApp needs a bare international number
+     * with no plus and no separators. A local number takes the SHOP'S
+     * country's code (WhatsAppNumber's own default, ShopCountry.current):
+     * this wrapper passed a literal "92" until 23 Oct, so a Bangladeshi
+     * shop's reminder went to a Pakistani number.
      */
-    fun toWhatsAppNumber(raw: String, defaultCountryCode: String = "92"): String? =
-        com.innovation313.roshankhata.data.WhatsAppNumber.of(raw, defaultCountryCode)
+    fun toWhatsAppNumber(raw: String): String? =
+        com.innovation313.roshankhata.data.WhatsAppNumber.of(raw)
 
     /**
      * The message body. Kept plain and polite — this goes to a real customer.
@@ -53,27 +56,13 @@ object Reminder {
         /** When this chase's first reminder went, for step 2's "first sent on". */
         firstSentAt: Long? = null
     ): String {
-        val amount = Format.money(balance)
-        val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
-
-        val body = if (Money.isPositive(balance) && step >= com.innovation313.roshankhata.data.ReminderLadder.SERIOUS) {
-            context.getString(R.string.reminder_step3, partyName, amount)
-        } else if (Money.isPositive(balance) && step == com.innovation313.roshankhata.data.ReminderLadder.PLAIN) {
-            context.getString(R.string.reminder_step2, partyName, amount, Format.dateOnly(firstSentAt ?: System.currentTimeMillis()))
-        } else if (Money.isPositive(balance)) {
-            // They owe me.
-            if (promisedDate != null) {
-                context.getString(
-                    R.string.reminder_they_owe_by_date,
-                    partyName, amount, Format.dateOnly(promisedDate)
-                )
-            } else {
-                context.getString(R.string.reminder_they_owe, partyName, amount)
-            }
-        } else {
-            // I owe them — a courtesy note, not a demand.
-            context.getString(R.string.reminder_i_owe, partyName, amount)
-        }
+        // The words are the shared ReminderText's (Marhala 4, 25 Oct 2026): the computer's customer page
+        // and Follow-up say the same at each step. The figure and the names are sealed in their own
+        // direction there; in an English sentence the wrapper adds nothing, so an SMS stays as short.
+        val from = if (businessName.isNullOrBlank()) "" else "\n\n— " + Format.isolate(businessName)
+        val body = com.innovation313.roshankhata.data.ReminderText.body(
+            com.innovation313.roshankhata.data.AndroidWords(context), partyName, balance, promisedDate, step, firstSentAt
+        )
 
         // How to pay, only on a reminder that asks for money (2 Oct).
         val pay = if (Money.isPositive(balance)) paymentBlock(context) else ""
@@ -110,14 +99,14 @@ object Reminder {
     ): String {
         val line = context.getString(
             if (isGiven) R.string.entry_share_gave else R.string.entry_share_got,
-            partyName, Format.dateOnly(date), Format.money(amount)
+            Format.isolate(partyName), Format.dateOnly(date), Format.ltr(Format.money(amount))
         )
         val standing = when {
-            Money.isPositive(balanceAfter) -> context.getString(R.string.entry_share_balance, Format.money(balanceAfter))
-            Money.isPositive(-balanceAfter) -> context.getString(R.string.entry_share_advance, Format.money(-balanceAfter))
+            Money.isPositive(balanceAfter) -> context.getString(R.string.entry_share_balance, Format.ltr(Format.money(balanceAfter)))
+            Money.isPositive(-balanceAfter) -> context.getString(R.string.entry_share_advance, Format.ltr(Format.money(-balanceAfter)))
             else -> context.getString(R.string.entry_share_settled)
         }
-        val from = if (businessName.isNullOrBlank()) "" else "\n\n— $businessName"
+        val from = if (businessName.isNullOrBlank()) "" else "\n\n— " + Format.isolate(businessName)
         return line + "\n" + standing + from
     }
 

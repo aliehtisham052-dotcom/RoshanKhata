@@ -32,7 +32,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("partyId")]
+    indices = [Index("partyId"), Index("uid")]
 )
 data class SupplierBill(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -75,7 +75,16 @@ data class SupplierBill(
      * left null there — one picture, one owner. Absolute path under
      * filesDir/bills, re-pointed on an image restore like the entry's.
      */
-    val photoPath: String? = null
+    val photoPath: String? = null,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 )
 
 /** A cash bill's photo path, for the image backup and its restore. */
@@ -106,7 +115,7 @@ data class SupplierBillPhoto(val id: Long, val photoPath: String?)
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("billId"), Index("productId")]
+    indices = [Index("billId"), Index("productId"), Index("uid")]
 )
 data class BillItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -148,7 +157,9 @@ data class BillItem(
      */
     val productId: Long? = null,
 
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -187,15 +198,6 @@ data class BillSummary(
     val supplierBalance: Double = 0.0
 )
 
-/**
- * One batch of a product that a sale can be tagged to.
- *
- * [soldFromBatch] is computed from every past sale already tagged to this
- * exact batch — the same honesty rule as the rest of stock: [remaining] is
- * shown as a real number, never assumed, and a batch with nothing left is
- * still offered rather than hidden, since the owner may know something the
- * count does not (a few units held back, a recount not yet entered).
- */
 /** One customer's purchases from one batch; see KhataDao.buyersOfBatch. */
 data class BatchBuyer(
     val partyId: Long,
@@ -206,6 +208,14 @@ data class BatchBuyer(
     val lastAt: Long
 )
 
+/**
+ * One batch of a product that a sale can be tagged to, or a batch as [KhataDao.batchesOfProduct] reads it.
+ *
+ * As a choice it comes from [Fefo.options] (Marhala 3, 25 Oct 2026): [quantity] is what is LEFT of the batch
+ * by the one rule, in [unit], and [soldFromBatch] is 0, so [remaining] says what the counter would say. A
+ * batch with nothing left is still offered rather than hidden, since the owner may know something the count
+ * does not (a few units held back, a recount not yet entered).
+ */
 data class BatchOption(
     val id: Long,
     val batchNumber: String?,
@@ -252,13 +262,9 @@ data class InspectorBatch(
     val billDate: Long
 ) {
     /**
-     * Arrived minus what was sold OUT OF THIS BATCH specifically.
-     *
-     * Read this as "not more than this much". A sale the owner never tagged to
-     * a batch subtracts from nothing, so the figure can only ever be too high,
-     * never too low — which is the safe direction for a document someone signs
-     * their name under, and the report says so in plain words rather than
-     * leaving the reader to assume it is exact.
+     * What is left of the batch: on the register's rows ([Fefo.register], Marhala 3) [quantity] already is
+     * what is left by the one rule and [soldFromBatch] is 0. A row straight from [KhataDao.batchRowsOnce] is
+     * what came, and this is then what came.
      */
     val remaining: Double get() = quantity - soldFromBatch
 

@@ -146,6 +146,19 @@
                 android:textColor="@color/white"
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/white" />
+
+            <!-- The day's figures (POS Phase 4): sales by method, returns, voids, the drawer. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDayReport"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:minHeight="48dp"
+                android:text="@string/z_title"
+                android:textColor="@color/white"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
 

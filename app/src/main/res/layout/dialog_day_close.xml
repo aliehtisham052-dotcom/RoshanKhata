@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Galla milan: the books' figure, the counted figure, the difference. -->
+<!-- Galla milan: the books' figure, the counted figure, the difference.
+     Both figures are written on the app's calculator pad (21 Oct). -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -15,6 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/etOpening"
             android:text="@string/dayclose_opening"
             android:textColor="@color/text_muted"
             android:textSize="13sp" />
@@ -23,8 +25,24 @@
             android:id="@+id/etOpening"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:digits="0123456789.+−×÷*/-%"
             android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:inputType="phone"
+            android:textAlignment="viewStart"
+            android:textDirection="ltr" />
+
+        <TextView
+            android:id="@+id/tvOpeningResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvBreakdown"
@@ -38,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:labelFor="@+id/etCounted"
             android:text="@string/dayclose_counted"
             android:textColor="@color/text_muted"
             android:textSize="13sp" />
@@ -46,8 +65,24 @@
             android:id="@+id/etCounted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:digits="0123456789.+−×÷*/-%"
             android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:inputType="phone"
+            android:textAlignment="viewStart"
+            android:textDirection="ltr" />
+
+        <TextView
+            android:id="@+id/tvCountedResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvDifference"
@@ -57,6 +92,15 @@
             android:textColor="@color/ink"
             android:textSize="15sp"
             android:textStyle="bold" />
+
+        <!-- One pad for both figures: it types into whichever of the two
+             has the focus, and steps aside for the note (CalcPad.bindAll). -->
+        <include
+            android:id="@+id/closeKeypad"
+            layout="@layout/view_calculator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
 
         <EditText
             android:id="@+id/etCloseNote"

@@ -755,7 +755,7 @@ class KhataActivity : BaseActivity() {
         selectionBack.isEnabled = picking
         selectionBar.visibility = if (picking) View.VISIBLE else View.GONE
         if (picking) {
-            tvSelectedCount.text = Digits.string(resources, R.string.selected_count, selectedIds.size)
+            tvSelectedCount.text = Digits.quantity(resources, R.plurals.n_selected, selectedIds.size, selectedIds.size)
             val visible = shownParties.map { it.id }
             btnSelectAll.setText(
                 if (visible.isNotEmpty() && selectedIds.containsAll(visible)) R.string.clear_all
@@ -798,6 +798,7 @@ class KhataActivity : BaseActivity() {
      * more serious of the two to forget — that one is somebody else's.
      */
     private fun confirmDeleteSelected() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDeleteSelected() }) return
         val picked = allParties.filter { it.id in selectedIds }
         if (picked.isEmpty()) return
 
@@ -832,10 +833,21 @@ class KhataActivity : BaseActivity() {
                     // All-or-nothing inside one transaction, under one
                     // timestamp: a crash partway leaves the ledger untouched,
                     // and a restore brings back exactly what one delete took.
-                    AppScope.launch { dao.softDeleteParties(picked.map { it.id }) }.join()
+                    // A customer with posted counter tickets stays (22 Oct 2026, the review): said by name.
+                    var kept: List<Long> = emptyList()
+                    AppScope.launch { kept = dao.softDeleteParties(picked.map { it.id }) }.join()
                     clearSelection()
-                    Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
-                        .show()
+                    if (kept.isNotEmpty()) {
+                        val names = picked.filter { it.id in kept }.joinToString(", ") { androidx.core.text.BidiFormatter.getInstance().unicodeWrap(it.name) }
+                        MaterialAlertDialogBuilder(this@KhataActivity)
+                            .setTitle(R.string.entry_linked_title)
+                            .setMessage(getString(R.string.party_has_tickets, names))
+                            .setPositiveButton(R.string.ok, null)
+                            .show()
+                    } else {
+                        Toast.makeText(this@KhataActivity, R.string.moved_to_bin, Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
             .show()
@@ -938,8 +950,8 @@ class KhataActivity : BaseActivity() {
                 }.thenBy { keys[it.id]?.lower ?: it.name.lowercase() }
             )
         } else when (sortMode) {
-            SortMode.NAME_AZ -> byType.sortedBy { it.name.lowercase() }
-            SortMode.NAME_ZA -> byType.sortedByDescending { it.name.lowercase() }
+            SortMode.NAME_AZ -> com.innovation313.roshankhata.data.NameOrder.sortedBy(byType) { it.name }
+            SortMode.NAME_ZA -> com.innovation313.roshankhata.data.NameOrder.sortedByDescending(byType) { it.name }
             // "Owes me most" means the largest positive balance at the top.
             SortMode.OWES_MOST -> byType.sortedByDescending { it.balance }
             // "I owe most" is the mirror: the most negative balance first.
@@ -1116,8 +1128,8 @@ class KhataActivity : BaseActivity() {
         )
         val choices = options.mapIndexed { i, label ->
             when (i) {
-                0 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = "A\u2013Z", glyphSp = 13f)
-                1 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = "Z\u2013A", glyphSp = 13f)
+                0 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = getString(R.string.sort_glyph_az), glyphSp = 13f)
+                1 -> ChoiceSheet.Option(label, getString(hints[i]), glyph = getString(R.string.sort_glyph_za), glyphSp = 13f)
                 2 -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_arrow_got,
                     iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg)
                 3 -> ChoiceSheet.Option(label, getString(hints[i]), icon = R.drawable.ic_arrow_gave,
@@ -1378,8 +1390,15 @@ class KhataActivity : BaseActivity() {
     private fun askPhoneWhatItSpeaks() {
         if (speechLanguages != null) return
         try {
+            // Addressed to the recogniser that answers it (23 Oct 2026, the review): the bare
+            // implicit broadcast reaches no app's manifest receiver on Android 8+, so the answer
+            // never came. getVoiceDetailsIntent names the receiver the WEB_SEARCH activity
+            // declares (manifest <queries> lets Android 11+ see it); null means none does,
+            // and the old guess stands.
+            val ask = android.speech.RecognizerIntent.getVoiceDetailsIntent(this)
+                ?: Intent(android.speech.RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS)
             sendOrderedBroadcast(
-                Intent(android.speech.RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS),
+                ask,
                 null,
                 object : android.content.BroadcastReceiver() {
                     override fun onReceive(context: android.content.Context?, intent: Intent?) {
@@ -1440,9 +1459,16 @@ class KhataActivity : BaseActivity() {
         // do quietly. Without this the app would appear to be broken, when in
         // fact the phone simply does not carry their language.
         if (!choice.exact) {
+            // The language's name in the app's language, never a raw tag such as "ur-PK";
+            // no tag at all means the phone listens in its own setting.
+            val heard = choice.tag?.let { tag ->
+                val inApp = java.util.Locale.forLanguageTag(appLanguageTag())
+                java.util.Locale.forLanguageTag(tag).getDisplayLanguage(inApp).takeIf { it.isNotBlank() } ?: tag
+            }
             Toast.makeText(
                 this,
-                getString(R.string.voice_language_missing, choice.tag ?: ""),
+                if (heard != null) getString(R.string.voice_language_missing, heard)
+                else getString(R.string.voice_language_missing_phone),
                 Toast.LENGTH_LONG
             ).show()
         }

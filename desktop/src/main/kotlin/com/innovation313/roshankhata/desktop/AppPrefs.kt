@@ -1,11 +1,12 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.PinHash
 import java.io.File
 import java.util.Properties
 
 /**
- * The Windows app's own choices, for every shop on the computer: for now the
- * language. A properties file next to the book, written in full on each
+ * The Windows app's own choices, for every shop on the computer: the
+ * language, the theme and the second backup folder. A properties file next to the book, written in full on each
  * change through a temporary file, so a crash mid-write leaves the old one.
  */
 class AppPrefs(private val file: File) {
@@ -25,6 +26,166 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /** Light, dark, or as Windows is (the phone's Theme choice); SYSTEM when never chosen. */
+    fun theme(): ThemeChoice = props.getProperty(KEY_THEME)
+        ?.let { name -> ThemeChoice.entries.firstOrNull { it.name == name } } ?: ThemeChoice.SYSTEM
+
+    /** The owner's text size, 0..3 (the phone's TextSize: small, normal, large, largest); normal when never chosen. */
+    fun textSize(): Int = props.getProperty(KEY_TEXT_SIZE)?.toIntOrNull()?.coerceIn(0, TEXT_FACTORS.lastIndex) ?: 1
+
+    @Synchronized
+    fun setTextSize(level: Int) {
+        props.setProperty(KEY_TEXT_SIZE, level.coerceIn(0, TEXT_FACTORS.lastIndex).toString())
+        save()
+    }
+
+    /**
+     * Which optional invoice fields the shop uses (the phone's InvoiceFeatureSettings); all on until turned off.
+     * Per business (R78, 23 Oct 2026), as the phone's invoice_feature_settings_b<id>: one shop turning Tax off
+     * hid it on every other shop's new invoices. Business 1 keeps the keys it always had; the others' carry
+     * "_b<id>" (an id is never given out again, so a deleted shop's keys are never read by another).
+     */
+    fun invoiceFields(businessId: Long = 1L): InvoiceFields {
+        val s = invoiceSuffix(businessId)
+        return InvoiceFields(
+            discount = flag(KEY_INV_DISCOUNT + s), tax = flag(KEY_INV_TAX + s), charge = flag(KEY_INV_CHARGE + s),
+            received = flag(KEY_INV_RECEIVED + s), note = flag(KEY_INV_NOTE + s), dueDate = flag(KEY_INV_DUE + s)
+        )
+    }
+
+    @Synchronized
+    fun setInvoiceFields(f: InvoiceFields, businessId: Long = 1L) {
+        val s = invoiceSuffix(businessId)
+        listOf(KEY_INV_DISCOUNT to f.discount, KEY_INV_TAX to f.tax, KEY_INV_CHARGE to f.charge,
+            KEY_INV_RECEIVED to f.received, KEY_INV_NOTE to f.note, KEY_INV_DUE to f.dueDate)
+            .forEach { (k, on) -> props.setProperty(k + s, on.toString()) }
+        save()
+    }
+
+    private fun invoiceSuffix(businessId: Long) = if (businessId == 1L) "" else "_b$businessId"
+
+    private fun flag(key: String): Boolean = props.getProperty(key)?.toBooleanStrictOrNull() ?: true
+
+    /** The first-run walkthrough has been seen (or skipped) on this computer. */
+    fun tourSeen(): Boolean = props.getProperty(KEY_TOUR) == "true"
+
+    @Synchronized
+    fun setTourSeen() {
+        props.setProperty(KEY_TOUR, "true")
+        save()
+    }
+
+    /**
+     * When a business's book was last saved as a backup file ("Back up now"), or
+     * null (25 Oct 2026, the audit). The daily copies on this computer's own disk
+     * are not a backup of that disk, so they never count as one.
+     */
+    fun lastSavedBackup(businessId: Long): Long? = props.getProperty(KEY_LAST_BACKUP + "_b" + businessId)?.toLongOrNull()
+
+    @Synchronized
+    fun setLastSavedBackup(businessId: Long, at: Long) {
+        props.setProperty(KEY_LAST_BACKUP + "_b" + businessId, at.toString())
+        save()
+    }
+
+    /**
+     * Whether the money totals show as dots (25 Oct 2026, the audit): hidden until the owner opens
+     * them with the eye, then remembered — the phone's BalancePrivacy, so a customer at the counter
+     * sees dots, not the shop's position. One choice for Home and Khata.
+     */
+    fun balancesHidden(): Boolean = props.getProperty(KEY_TOTALS_HIDDEN)?.let { it == "true" } ?: true
+
+    @Synchronized
+    fun setBalancesHidden(hidden: Boolean) {
+        props.setProperty(KEY_TOTALS_HIDDEN, hidden.toString())
+        save()
+    }
+
+    /** The day (yyyy-MM-dd) the daily reminder was last shown (Reminders). */
+    fun remindedDay(): String? = props.getProperty(KEY_REMINDED)
+
+    @Synchronized
+    fun setRemindedDay(day: String) { props.setProperty(KEY_REMINDED, day); save() }
+
+    /** The update check's last answer and when it was asked (UpdateCheck). */
+    fun updateLatest(): String? = props.getProperty(KEY_UPDATE_LATEST)?.takeIf { it.isNotBlank() }
+    fun updateCheckedAt(): Long = props.getProperty(KEY_UPDATE_AT)?.toLongOrNull() ?: 0L
+
+    @Synchronized
+    fun setUpdateLatest(version: String, at: Long) {
+        props.setProperty(KEY_UPDATE_LATEST, version); props.setProperty(KEY_UPDATE_AT, at.toString()); save()
+    }
+
+    /**
+     * Who may do what on this computer (21 Oct 2026): counter mode and the
+     * wrong-PIN count are this computer's, kept here; the owner's PIN is the
+     * book's.
+     */
+    val accessStore: com.innovation313.roshankhata.data.Access.DeviceStore = object : com.innovation313.roshankhata.data.Access.DeviceStore {
+        override fun get(key: String): String? = props.getProperty(key)
+        override fun put(key: String, value: String?) {
+            synchronized(this@AppPrefs) {
+                if (value == null) props.remove(key) else props.setProperty(key, value)
+                save()
+            }
+        }
+    }
+
+    /** This computer's receipt printer: 80 mm, the logo, the cash drawer (21 Oct 2026). */
+    fun receipt(): ThermalReceipt.Settings = ThermalReceipt.Settings(
+        wide = props.getProperty(KEY_RECEIPT_WIDE) == "true",
+        logo = props.getProperty(KEY_RECEIPT_LOGO) == "true",
+        drawer = props.getProperty(KEY_RECEIPT_DRAWER) == "true"
+    )
+
+    fun setReceipt(r: ThermalReceipt.Settings) {
+        props.setProperty(KEY_RECEIPT_WIDE, r.wide.toString())
+        props.setProperty(KEY_RECEIPT_LOGO, r.logo.toString())
+        props.setProperty(KEY_RECEIPT_DRAWER, r.drawer.toString())
+        save()
+    }
+
+    /** True when the owner has set an App Lock PIN on this computer. */
+    fun hasPin(): Boolean = !props.getProperty(KEY_PIN_HASH).isNullOrBlank() && !props.getProperty(KEY_PIN_SALT).isNullOrBlank()
+
+    /** The typed PIN against the kept hash; false when there is none. */
+    fun pinMatches(pin: String): Boolean {
+        val hash = props.getProperty(KEY_PIN_HASH) ?: return false
+        val salt = props.getProperty(KEY_PIN_SALT) ?: return false
+        return runCatching { PinHash.matches(pin, salt, hash) }.getOrDefault(false)
+    }
+
+    /** Keeps a salted PBKDF2 hash of [pin], never the PIN itself. */
+    @Synchronized
+    fun setPin(pin: String) {
+        val salt = PinHash.salt()
+        props.setProperty(KEY_PIN_SALT, salt)
+        props.setProperty(KEY_PIN_HASH, PinHash.hash(pin, salt))
+        save()
+    }
+
+    @Synchronized
+    fun clearPin() {
+        props.remove(KEY_PIN_HASH); props.remove(KEY_PIN_SALT)
+        save()
+    }
+
+    /** Printed sheets in the language's own digits (Arabic, Sindhi, Farsi, Bengali; 21 Oct 2026). Off when never chosen. */
+    fun nativeDigits(): Boolean = props.getProperty(KEY_NATIVE_DIGITS) == "true"
+
+    @Synchronized
+    fun setNativeDigits(on: Boolean) {
+        props.setProperty(KEY_NATIVE_DIGITS, on.toString())
+        save()
+        com.innovation313.roshankhata.data.Digits.nativeOnPrint = on
+    }
+
+    @Synchronized
+    fun setTheme(choice: ThemeChoice) {
+        props.setProperty(KEY_THEME, choice.name)
+        save()
+    }
+
     @Synchronized
     fun setLanguage(tag: String) {
         props.setProperty(KEY_LANGUAGE, tag)
@@ -35,11 +196,70 @@ class AppPrefs(private val file: File) {
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".tmp")
         tmp.writer(Charsets.UTF_8).use { props.store(it, "Roshan Khata") }
-        if (!tmp.renameTo(file)) { file.delete(); tmp.renameTo(file) }
+        // Swapped in one step (21 Oct 2026): Windows will not rename over a file, and the old way deleted
+        // the settings first — a power cut in between lost them all (App Lock, counter mode, the backup folder).
+        replaceAtomically(tmp, file)
     }
 
     private companion object {
         const val KEY_LANGUAGE = "app_language"
+        const val KEY_LAST_BACKUP = "last_saved_backup"
+        const val KEY_TOTALS_HIDDEN = "totals_hidden"
         const val KEY_BACKUP_FOLDER = "backup_folder"
+        const val KEY_THEME = "theme"
+        const val KEY_TEXT_SIZE = "text_size"
+        const val KEY_NATIVE_DIGITS = "print_native_digits"
+        const val KEY_TOUR = "tour_seen"
+        const val KEY_PIN_HASH = "app_lock_hash"
+        const val KEY_PIN_SALT = "app_lock_salt"
+        const val KEY_INV_DISCOUNT = "invoice_discount"
+        const val KEY_INV_TAX = "invoice_tax"
+        const val KEY_INV_CHARGE = "invoice_extra_charge"
+        const val KEY_INV_RECEIVED = "invoice_received"
+        const val KEY_INV_NOTE = "invoice_note"
+        const val KEY_INV_DUE = "invoice_due_date"
+        const val KEY_REMINDED = "reminded_day"
+        const val KEY_UPDATE_LATEST = "update_latest"
+        const val KEY_UPDATE_AT = "update_checked_at"
+        const val KEY_RECEIPT_WIDE = "receipt_80mm"
+        const val KEY_RECEIPT_LOGO = "receipt_logo"
+        const val KEY_RECEIPT_DRAWER = "receipt_drawer"
+    }
+}
+
+/** The phone's three Theme choices (MoreSheet): as the computer is, always light, always dark. */
+enum class ThemeChoice(val word: String) {
+    SYSTEM(com.innovation313.roshankhata.words.W.theme_system_pc),
+    LIGHT(com.innovation313.roshankhata.words.W.theme_light),
+    DARK(com.innovation313.roshankhata.words.W.theme_dark)
+}
+
+/** The phone's text-size steps (TextSize.FACTORS), the same four on the computer. */
+val TEXT_FACTORS = floatArrayOf(0.90f, 1.00f, 1.15f, 1.30f)
+
+/** Their names, in the same order. */
+val TEXT_SIZE_WORDS = listOf(
+    com.innovation313.roshankhata.words.W.text_size_small,
+    com.innovation313.roshankhata.words.W.text_size_normal,
+    com.innovation313.roshankhata.words.W.text_size_large,
+    com.innovation313.roshankhata.words.W.text_size_largest
+)
+
+/** The invoice form's optional fields, each on or off (the phone's Invoice settings screen). */
+data class InvoiceFields(
+    val discount: Boolean = true,
+    val tax: Boolean = true,
+    val charge: Boolean = true,
+    val received: Boolean = true,
+    val note: Boolean = true,
+    val dueDate: Boolean = true
+)
+
+/** [tmp] moved over [target] atomically where the disk allows, else replacing it in one move. */
+internal fun replaceAtomically(tmp: java.io.File, target: java.io.File) {
+    try {
+        java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
+    } catch (e: Exception) {
+        java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
     }
 }

@@ -71,16 +71,24 @@ object PdfExport {
          * holding their photo — not to it travelling on to whoever the
          * statement is passed to next.
          */
-        partyPhoto: Bitmap? = null
+        partyPhoto: Bitmap? = null,
+        /** A supplier's statement is read by the supplier: the columns say it from their side (21 Oct 2026). */
+        isCustomer: Boolean = true
     ): File? {
+        // Oldest first, as every statement reads (21 Oct 2026, the critical review): the screen's
+        // newest-first list printed the period backwards and put the opening line above the newest
+        // entry. Each row keeps its own running balance, so the order changes nothing else.
+        val rows = rows.sortedWith(compareBy<StatementRow> { it.entry.timestamp }.thenBy { it.entry.id })
 
         // "You gave" / "You got" is the SHOPKEEPER's phrasing, and this sheet
         // is read by the CUSTOMER — who would take "You gave Rs 8,000" to mean
         // they had paid it. Same figures, told from the side of the person
         // holding the page. Read once here because the summary box and the
         // table header must say the same words, on every page.
-        val owedLabel = context.getString(R.string.pdf_stmt_you_owe)
-        val paidLabel = context.getString(R.string.pdf_stmt_you_paid)
+        // A supplier holding the page: what the shop gave them was paid TO them, and what came
+        // from them is what they supplied (the customer's words read backwards on their page).
+        val owedLabel = context.getString(if (isCustomer) R.string.pdf_stmt_you_owe else R.string.pdf_stmt_paid_to_you)
+        val paidLabel = context.getString(if (isCustomer) R.string.pdf_stmt_you_paid else R.string.pdf_stmt_you_supplied)
 
         val title = Paint().apply {
             color = Color.WHITE
@@ -518,8 +526,13 @@ object PdfExport {
         // Written to cache: a statement is a throwaway artefact, not something
         // to quietly accumulate in the user's storage.
         val dir = File(context.cacheDir, "statements").apply { mkdirs() }
-        val safeName = partyName.replace(Regex("[^A-Za-z0-9 ]"), "").trim().replace(" ", "_")
-        val file = File(dir, "Statement_${safeName.ifEmpty { "Party" }}.pdf")
+        // Letters and digits of every script, with their vowel marks (23 Oct 2026, the review:
+        // an Urdu or Hindi name was stripped to nothing and every file was "Statement_Party.pdf").
+        // The words around it are the app's own, in its language.
+        val fileSafe = { s: String -> s.replace(Regex("[^\\p{L}\\p{M}\\p{N} ]"), "").trim().replace(Regex("\\s+"), "_").take(60) }
+        val safeName = fileSafe(partyName).ifEmpty { fileSafe(context.getString(R.string.party)) }
+        val prefix = fileSafe(context.getString(R.string.statement_pdf)).ifEmpty { "Statement" }
+        val file = File(dir, "${prefix}_${safeName.ifEmpty { "Party" }}.pdf")
 
         return try {
             FileOutputStream(file).use { doc.writeTo(it) }

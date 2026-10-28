@@ -87,12 +87,8 @@ object RegisterReport {
             // row after any several-item sale written at a different amount,
             // so the register's total is the ledger's. sortedWith is stable:
             // the difference row stays right after its own items.
-            sales = (
-                dao.salesRegister(from, to) +
-                    dao.salesAdjustments(from, to).map {
-                        it.copy(itemName = context.getString(R.string.register_adjustment))
-                    }
-                ).sortedWith(compareBy({ it.date }, { it.refNumber })),
+            // Walk-in counter tickets too (22 Oct 2026, the review), each with its batch.
+            sales = dao.registerSales(from, to, context.getString(R.string.register_adjustment), context.getString(R.string.pos_walk_in)),
             purchases = dao.purchaseRegister(from, to)
         )
     }

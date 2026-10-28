@@ -13,7 +13,9 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillPhoto
+import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.string
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.ui.BinAdapter
 import com.innovation313.roshankhata.ui.Format
@@ -67,7 +69,7 @@ class RecycleBinActivity : BaseActivity() {
         AppScope.launch {
             val cutoff = System.currentTimeMillis() - (RETENTION_DAYS * DAY_MS)
             // Photos of what is purged go too (BillPhoto.purgingOrphans).
-            BillPhoto.purgingOrphans(dao) {
+            BillPhoto.purgingOrphans(applicationContext, dao) {
                 dao.purgeOldEntries(cutoff)
                 dao.purgeOldParties(cutoff)
             }
@@ -202,19 +204,29 @@ class RecycleBinActivity : BaseActivity() {
                 // delete interrupted by the screen closing would leave the
                 // row half-gone from the user's point of view.
                 AppScope.launch {
-                    BillPhoto.purgingOrphans(dao) {
+                    // A customer with supplier bills, cheques, plans or counter tickets is kept, and
+                    // said so (22 Oct 2026, the review: the screen said "deleted forever" either way).
+                    val gone = BillPhoto.purgingOrphans(applicationContext, dao) {
                         when (item) {
-                            is BinItem.DeletedParty -> dao.purgeParty(item.id)
-                            is BinItem.DeletedEntry -> dao.purgeEntry(item.id)
+                            is BinItem.DeletedParty -> dao.purgeParty(item.id) > 0
+                            is BinItem.DeletedEntry -> { dao.purgeEntry(item.id); true }
                         }
                     }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
-                            Toast.makeText(
-                                this@RecycleBinActivity,
-                                R.string.deleted_forever_done,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            if (gone) {
+                                Toast.makeText(
+                                    this@RecycleBinActivity,
+                                    R.string.deleted_forever_done,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                MaterialAlertDialogBuilder(this@RecycleBinActivity)
+                                    .setTitle(R.string.delete_forever)
+                                    .setMessage(R.string.bin_party_kept)
+                                    .setPositiveButton(R.string.ok, null)
+                                    .show()
+                            }
                         }
                     }
                 }
@@ -228,21 +240,33 @@ class RecycleBinActivity : BaseActivity() {
             .setMessage(R.string.empty_bin_confirm)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete_forever) { _, _ ->
-                // AppScope: two permanent deletions. Stopping between them
-                // leaves parties whose every entry is already gone forever —
-                // rows that look restorable and would come back empty.
+                // AppScope: two permanent deletions, finished even if the
+                // screen closes. The first takes only entries binned on their
+                // own; a binned customer's entries go with him in the second
+                // (the cascade), so a customer the bin keeps — his bills,
+                // cheques, plans or counter tickets — keeps them too, and
+                // comes back whole (22 Oct 2026, the review).
                 AppScope.launch {
-                    BillPhoto.purgingOrphans(dao) {
+                    val kept = BillPhoto.purgingOrphans(applicationContext, dao) {
                         dao.purgeAllEntries()
                         dao.purgeAllParties()
+                        dao.binnedPartyCount()
                     }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
-                            Toast.makeText(
-                                this@RecycleBinActivity,
-                                R.string.bin_emptied,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            if (kept == 0) {
+                                Toast.makeText(
+                                    this@RecycleBinActivity,
+                                    R.string.bin_emptied,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                MaterialAlertDialogBuilder(this@RecycleBinActivity)
+                                    .setTitle(R.string.empty_bin)
+                                    .setMessage(Digits.string(resources, R.string.bin_emptied_kept, kept))
+                                    .setPositiveButton(R.string.ok, null)
+                                    .show()
+                            }
                         }
                     }
                 }

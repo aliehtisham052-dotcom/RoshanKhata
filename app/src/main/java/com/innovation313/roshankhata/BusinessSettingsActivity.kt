@@ -77,6 +77,7 @@ class BusinessSettingsActivity : BaseActivity() {
     private lateinit var etInvoiceTerms: EditText
     private lateinit var etStrn: EditText
     private lateinit var btnCurrency: MaterialButton
+    private lateinit var btnCountry: MaterialButton
     private lateinit var btnTrade: MaterialButton
 
     /** Foldable sections; the flags feed their folded one-line summaries. */
@@ -217,9 +218,16 @@ class BusinessSettingsActivity : BaseActivity() {
         etBankTitle = findViewById(R.id.etBankTitle)
         etBankIban = findViewById(R.id.etBankIban)
         etBankJazzCash = findViewById(R.id.etBankJazzCash)
+        // The wallet hint names the shop's country's services (21 Oct 2026): bKash in Dhaka, not JazzCash.
+        com.innovation313.roshankhata.data.ShopCountry.current.wallets.takeIf { it.isNotBlank() }?.let {
+            findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash).hint = getString(R.string.wallet_hint_country, it)
+        }
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)
         btnCurrency = findViewById(R.id.btnCurrency)
+        btnCountry = findViewById(R.id.btnCountry)
+        btnCountry.setOnClickListener { chooseCountry() }
+        renderCountry()
         btnTrade = findViewById(R.id.btnTrade)
         tvUnsaved = findViewById(R.id.tvUnsaved)
         btnPickQr = findViewById(R.id.btnPickQr)
@@ -340,6 +348,13 @@ class BusinessSettingsActivity : BaseActivity() {
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.swPayOnReminder).apply {
             isChecked = BusinessProfile.paymentOnReminder(this@BusinessSettingsActivity)
             setOnCheckedChangeListener { _, on -> BusinessProfile.setPaymentOnReminder(this@BusinessSettingsActivity, on) }
+        }
+        // Own digits on printed sheets, offered only where the language has digits of its own (21 Oct 2026).
+        findViewById<android.view.View>(R.id.rowNativeDigits).visibility =
+            if (com.innovation313.roshankhata.data.Digits.hasOwnDigits()) android.view.View.VISIBLE else android.view.View.GONE
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.swNativeDigits).apply {
+            isChecked = com.innovation313.roshankhata.data.Digits.nativeOnPrint
+            setOnCheckedChangeListener { _, on -> com.innovation313.roshankhata.data.PrintDigits.set(this@BusinessSettingsActivity, on) }
         }
 
         // The preview tracks every keystroke, so it always matches the
@@ -725,6 +740,45 @@ class BusinessSettingsActivity : BaseActivity() {
         ChoiceSheet.show(this, getString(R.string.bp_calendar), choices, kinds.indexOf(current)) { which ->
             com.innovation313.roshankhata.data.ShopCalendar.set(this, kinds[which])
             renderCalendar()
+        }
+    }
+
+    private fun renderCountry() {
+        val c = BusinessProfile.country(this)
+        btnCountry.text = if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER) getString(R.string.country_other)
+            else c.displayName(resources.configuration.locales[0])
+    }
+
+    /**
+     * The shop's country (21 Oct 2026). Saved the moment it is chosen, like
+     * the currency. Choosing a country also offers its currency and calendar
+     * when the shop still has the defaults, so a Saudi shop is not left on
+     * rupees; a sign the owner chose himself is kept.
+     */
+    private fun chooseCountry() {
+        val locale = resources.configuration.locales[0]
+        val current = BusinessProfile.country(this)
+        val all = com.innovation313.roshankhata.data.ShopCountry.choices(locale)
+        val choices = all.map { c ->
+            if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER)
+                ChoiceSheet.Option(getString(R.string.country_other), icon = R.drawable.ic_hash,
+                    iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
+            else ChoiceSheet.Option(c.displayName(locale), glyph = c.code, glyphSp = 13f,
+                iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg)
+        }
+        ChoiceSheet.show(this, getString(R.string.bp_country), choices, all.indexOf(current)) { which ->
+            val chosen = all[which]
+            val wasDefaultCurrency = BusinessProfile.currency(this) == Currency.DEFAULT
+            BusinessProfile.setCountry(this, chosen)
+            if (wasDefaultCurrency && chosen != com.innovation313.roshankhata.data.ShopCountry.OTHER && chosen.currencySign != Currency.DEFAULT) {
+                Currency.set(this, chosen.currencySign)
+                renderCurrency()
+            }
+            if (BusinessProfile.calendar(this) == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN && chosen.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN) {
+                com.innovation313.roshankhata.data.ShopCalendar.set(this, chosen.calendar)
+                renderCalendar()
+            }
+            renderCountry()
         }
     }
 

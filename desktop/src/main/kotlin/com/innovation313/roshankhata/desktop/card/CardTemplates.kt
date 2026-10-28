@@ -11,6 +11,7 @@ import com.innovation313.roshankhata.desktop.gfx.LinearGradient
 import com.innovation313.roshankhata.desktop.gfx.Paint
 import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.RadialGradient
+import com.innovation313.roshankhata.desktop.gfx.Rect
 import com.innovation313.roshankhata.desktop.gfx.RectF
 import com.innovation313.roshankhata.desktop.gfx.Shader
 import com.innovation313.roshankhata.desktop.gfx.Typeface
@@ -73,11 +74,17 @@ object CardTemplates {
         /** The shop's logo from its Profile, or null for none (see [CardLogo]). */
         val logo: Bitmap? = null,
         /**
-         * An Urdu card (12 Oct): the whole design reads right to left - every
-         * shape mirrored, every line anchored on the right - while the words,
-         * the QR and the logo themselves stay the right way round.
+         * A right-to-left card (Urdu 12 Oct; Sindhi, Arabic, Farsi 21 Oct):
+         * the whole design reads right to left - every shape mirrored, every
+         * line anchored on the right - while the words, the QR and the logo
+         * themselves stay the right way round.
          */
-        val rtl: Boolean = false
+        val rtl: Boolean = false,
+        /**
+         * Arabic-script words in Nastaliq (an Urdu card). Sindhi, Arabic and
+         * Farsi cards print in Naskh, the system's own face (21 Oct).
+         */
+        val nastaliq: Boolean = rtl
     )
 
     /** One design: a name for the picker, and how to draw it. */
@@ -91,6 +98,12 @@ object CardTemplates {
     ) {
         /** The card, and the shop's logo in a free spot on it when there is one. */
         fun draw(c: Canvas, d: CardData, w: Int, h: Int, t: Float) {
+            val before = nastaliqCard
+            nastaliqCard = d.nastaliq
+            try { drawCard(c, d, w, h, t) } finally { nastaliqCard = before }
+        }
+
+        private fun drawCard(c: Canvas, d: CardData, w: Int, h: Int, t: Float) {
             if (d.rtl && c !is CardLogo.Recorder) {
                 // Drawn once in a mirror: the layout's left becomes its right.
                 c.save()
@@ -105,7 +118,11 @@ object CardTemplates {
         }
 
         /** Where text, QR and shapes land on this card (for the logo and its tests). */
-        internal fun layout(d: CardData, w: Int, h: Int): CardLogo.Layout = CardLogo.layout(body, d, w, h)
+        internal fun layout(d: CardData, w: Int, h: Int): CardLogo.Layout {
+            val before = nastaliqCard
+            nastaliqCard = d.nastaliq
+            try { return CardLogo.layout(body, d, w, h) } finally { nastaliqCard = before }
+        }
     }
 
     const val W = 1200
@@ -139,8 +156,36 @@ object CardTemplates {
     @Volatile
     private var mirrored = false
 
+    /** True while a card whose Arabic-script words are Nastaliq is being drawn (see [CardData.nastaliq]). */
+    @Volatile
+    private var nastaliqCard = true
+
     internal fun arabicScript(s: String) = s.any {
         it in '\u0600'..'\u06FF' || it in '\u0750'..'\u077F' || it in '\uFB50'..'\uFDFF' || it in '\uFE70'..'\uFEFF'
+    }
+
+    /** Latin letters, digits and signs only: the scripts the cards' own faces draw. */
+    internal fun latinOnly(s: String) = s.all { it.code < 0x0250 || it in '\u2000'..'\u20CF' || it in '\u2190'..'\u21FF' }
+
+    /**
+     * The paint [text] really sets [s] with. Latin keeps [p]. Any other
+     * script is never letter-spaced: spacing breaks Arabic letters' joins and
+     * the line along the top of Hindi and Bengali words (21 Oct). Its letters
+     * come from the system's own face for that script, which the phone and
+     * Windows both find by themselves. On an Urdu card Arabic script gets
+     * Nastaliq: it reads a size smaller than Latin set at the same size, so it
+     * starts a step larger and comes down only as far as the width [p]
+     * measured for the line.
+     */
+    private fun scriptPaint(s: String, p: Paint): Paint {
+        if (latinOnly(s)) return p
+        val paint = Paint(p).apply { letterSpacing = 0f }
+        val tf = urduTf
+        if (!arabicScript(s) || !nastaliqCard || tf == null) return paint
+        paint.apply { typeface = tf; isFakeBoldText = false; textSize = p.textSize * NASTALIQ_STEP }
+        val room = p.measureText(s)
+        while (paint.measureText(s) > room && paint.textSize > 14f) paint.textSize -= 1f
+        return paint
     }
 
     /**
@@ -155,18 +200,7 @@ object CardTemplates {
     private fun text(c: Canvas, raw: String, x: Float, y: Float, p: Paint) {
         if (raw.isEmpty()) return
         val s = if (mirrored && raw == "\u2192") "\u2190" else raw
-        var paint = p
-        if (arabicScript(s)) {
-            val tf = urduTf
-            paint = Paint(p).apply {
-                letterSpacing = 0f
-                // Nastaliq reads a size smaller than Latin set at the same size; it
-                // starts a step larger and comes down only as far as its line needs.
-                if (tf != null) { typeface = tf; isFakeBoldText = false; textSize = p.textSize * NASTALIQ_STEP }
-            }
-            val room = p.measureText(s)
-            while (paint.measureText(s) > room && paint.textSize > 14f) paint.textSize -= 1f
-        }
+        val paint = scriptPaint(s, p)
         if (!mirrored) {
             c.drawText(s, x, y, paint)
             return
@@ -181,6 +215,19 @@ object CardTemplates {
         c.scale(-1f, 1f, mid, 0f)
         c.drawText(s, x, y, paint)
         c.restore()
+    }
+
+    /**
+     * The name's first letter as a reader sees it: a Hindi or Bengali letter
+     * with its vowel sign, not the bare consonant (21 Oct).
+     */
+    internal fun firstLetter(name: String): String {
+        val s = name.trim()
+        if (s.isEmpty()) return ""
+        val it = java.text.BreakIterator.getCharacterInstance()
+        it.setText(s)
+        val end = it.next().takeIf { e -> e > 0 } ?: 1
+        return s.substring(0, end).uppercase()
     }
 
     // ---------- paint helpers ----------
@@ -339,10 +386,36 @@ object CardTemplates {
         val w = p.measureText(shown) + size * 1.4f
         val h = size * 1.7f
         val left = if (alignRight) x - w else x
-        c.drawRoundRect(RectF(left, y, left + w, y + h), h / 2, h / 2, fill(bg))
-        text(c, shown, left + size * 0.7f, y + h * 0.68f, p)
+        if (latinOnly(shown)) {
+            c.drawRoundRect(RectF(left, y, left + w, y + h), h / 2, h / 2, fill(bg))
+            text(c, shown, left + size * 0.7f, y + h * 0.68f, p)
+            return w
+        }
+        // Other scripts are sized to their ink (Hindi and Bengali vowel signs
+        // reach above and below Latin too). Nastaliq climbs far above Latin: the strokes of گ and ک reach almost
+        // twice the type size over the line. A pill sized for Latin let them
+        // leave it, onto a background the colour of the text itself, and گھر
+        // read as لھر (20 Oct). So the pill is sized to the ink, centred where
+        // the Latin pill sits, and the type comes down a step at a time (never
+        // below MIN_READABLE) before the pill grows past half again its height.
+        val pad = size * 0.2f
+        var tp = p
+        var ink = inkBounds(shown, tp)
+        while (ink.height() + 2 * pad > h * 1.5f && tp.textSize > MIN_READABLE) {
+            tp = paint(tp.textSize - 1f, fg, bold = true)
+            ink = inkBounds(shown, tp)
+        }
+        val ph = max(h, ink.height() + 2 * pad)
+        val top = y + h / 2 - ph / 2
+        c.drawRoundRect(RectF(left, top, left + w, top + ph), ph / 2, ph / 2, fill(bg))
+        val tw = scriptPaint(shown, tp).measureText(shown)
+        text(c, shown, left + (w - tw) / 2, top + (ph - ink.height()) / 2 - ink.top, tp)
         return w
     }
+
+    /** The ink [text] would lay down for [s] with [p], about its baseline (top is negative). */
+    private fun inkBounds(s: String, p: Paint): Rect =
+        Rect().also { scriptPaint(s, p).getTextBounds(s, 0, s.length, it) }
 
     // ---------- glyphs ----------
 
@@ -551,10 +624,9 @@ object CardTemplates {
 
     /** wa.me link for the WhatsApp number (or the phone, if that is all there is). */
     internal fun qrPayload(d: CardData): String? {
-        var n = d.whatsapp.ifEmpty { d.phone }.filter { it.isDigit() }
-        if (n.startsWith("00")) n = n.drop(2)
-        if (n.startsWith("0")) n = "92" + n.drop(1)
-        if (n.length < 11 || n.length > 15) return null
+        // The shop's own country's calling code, as every WhatsApp link (21 Oct 2026).
+        val n = com.innovation313.roshankhata.data.WhatsAppNumber.of(d.whatsapp.ifEmpty { d.phone }) ?: return null
+        if (n.length < 10 || n.length > 15) return null
         val msg = d.qrMessage.trim()
         // wa.me takes a pre-filled message as ?text= (URL-encoded, spaces as %20).
         val text = if (msg.isEmpty()) "" else
@@ -922,7 +994,7 @@ object CardTemplates {
         val tile = RectF(64f, h / 2f - 140f, 344f, h / 2f + 140f)
         c.drawRoundRect(RectF(tile.left, tile.top + 18f, tile.right, tile.bottom + 18f), 64f, 64f, fill(alpha(blue, 70)))
         c.drawRoundRect(tile, 64f, 64f, linear(tile.left, tile.top, tile.right, tile.bottom, blue, Color.parseColor("#7F77DD")))
-        val initial = d.name.trim().take(1).uppercase().ifEmpty { "•" }
+        val initial = firstLetter(d.name).ifEmpty { "•" }
         text(c, initial, tile.centerX(), tile.centerY() + 62f, paint(176f, WHITE, bold = true, align = Paint.Align.CENTER))
         val x0 = 400f
         val room = w - x0 - 64f
@@ -978,7 +1050,7 @@ object CardTemplates {
         }
         hazard(0f, 34f)
         hazard(h - 18f, h.toFloat())
-        val initial = d.name.trim().take(1).uppercase()
+        val initial = firstLetter(d.name)
         text(c, initial, w - 70f, h - 70f, paint(320f, Color.parseColor("#2E2A24"), bold = true, align = Paint.Align.RIGHT))
         val b = title(c, d.name.uppercase(), 70f, 70f, w - 380f, 84f, amber, lineGap = 0.95f)
         caps(c, d.type, 72f, b + 26f, w - 380f, Color.parseColor("#9C9A92"))
