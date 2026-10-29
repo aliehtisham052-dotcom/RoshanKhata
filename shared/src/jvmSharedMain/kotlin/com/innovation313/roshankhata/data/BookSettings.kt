@@ -71,7 +71,11 @@ object BookSettings {
         return runCatching { dao.allStaffForBackup().any { it.isActive && it.role != null } }.getOrDefault(false)
     }
 
-    /** "1" when the counter refuses to sell more than the shelf holds (else it warns). */
+    /**
+     * "1" when the counter refuses to sell more than the shelf holds (else it
+     * only warns). Read by [Counter.post] on every device since 29 Oct 2026;
+     * set in the counter settings on both platforms. Travels with the book.
+     */
     const val BLOCK_NEGATIVE_STOCK = "block_negative_stock"
 
     /**

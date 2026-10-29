@@ -52,6 +52,7 @@ fun CounterSettingsDialog(
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var taxInside by remember { mutableStateOf(false) }
+    var blockShort by remember { mutableStateOf(false) }
     // The big-shop tools (24 Oct 2026): shifts, day report, loyalty, scale, customer's screen, tax.
     var tools by remember { mutableStateOf(false) }
     var perHundred by remember { mutableStateOf("") }
@@ -70,6 +71,7 @@ fun CounterSettingsDialog(
         withContext(Dispatchers.IO) {
             tools = BookSettings.counterAdvanced(dao)
             taxInside = BookSettings.isOn(dao.settingValue(BookSettings.PRICES_INCLUDE_TAX))
+            blockShort = BookSettings.isOn(dao.settingValue(BookSettings.BLOCK_NEGATIVE_STOCK))
             perHundred = dao.settingValue(BookSettings.LOYALTY_POINTS_PER_100).orEmpty()
             pointValue = dao.settingValue(BookSettings.LOYALTY_POINT_VALUE).orEmpty()
             prefix = dao.settingValue(BookSettings.SCALE_PREFIX) ?: com.innovation313.roshankhata.data.ScaleCode.DEFAULT_PREFIX
@@ -88,6 +90,8 @@ fun CounterSettingsDialog(
                         // The owner's word on the big-shop tools, kept either way so the book's own guess no longer decides.
                         dao.setSetting(BookSettings.COUNTER_ADVANCED, if (tools) "1" else "0")
                         dao.setSetting(BookSettings.PRICES_INCLUDE_TAX, if (taxInside) "1" else null)
+                        // The stock rule (29 Oct 2026): the book's word, read by Counter.post on every device.
+                        dao.setSetting(BookSettings.BLOCK_NEGATIVE_STOCK, if (blockShort) "1" else null)
                         // An empty or nothing box keeps loyalty off; a prefix outside 20–29 falls back to 21.
                         fun positive(t: String) = t.trim().takeIf { (com.innovation313.roshankhata.data.Digits.parse(it) ?: 0.0) > 0.0 }
                         dao.setSetting(BookSettings.LOYALTY_POINTS_PER_100, positive(perHundred))
@@ -116,6 +120,11 @@ fun CounterSettingsDialog(
                 }
                 Rule()
             }
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Tick(blockShort, word(W.pos_block_negative)) { blockShort = it }
+                Text(word(W.pos_block_negative_help), color = c.textMuted, fontSize = 12.sp)
+            }
+            Rule()
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(word(W.printer_section), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 Tick(wide, word(W.printer_width_80)) { wide = it }

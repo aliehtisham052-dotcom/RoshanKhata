@@ -3227,6 +3227,9 @@
     <string name="pos_tax_included">कीमतों में शामिल टैक्स</string>
     <string name="pos_sell_by">%1$s के हिसाब से बेचें</string>
     <string name="pos_expired_stock">%1$s का सिर्फ़ एक्सपायर स्टॉक बचा है (ठीक: %2$s)। पुराना बैच एक्सपायरी में हटाएँ, या कम बेचें।</string>
+    <string name="pos_block_negative">ऐसी बिक्री रोकें जो स्टॉक को शून्य से नीचे ले जाए</string>
+    <string name="pos_block_negative_help">चालू: शेल्फ़ से ज़्यादा का टिकट हर डिवाइस पर अस्वीकार होगा। बंद: काउंटर केवल चेतावनी देता है।</string>
+    <string name="pos_short_stock">%1$s का स्टॉक केवल %2$s है। बिक्री अस्वीकार हुई: कम बेचें या पहले स्टॉक प्राप्त करें।</string>
     <string name="counter_settings">काउंटर सेटिंग्स</string>
     <string name="pos_next_pay">आगे: भुगतान</string>
     <string name="pos_how_1">1 · चीज़ का नाम लिखें या बारकोड स्कैन करें</string>

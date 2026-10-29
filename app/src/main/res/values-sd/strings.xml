@@ -3207,6 +3207,9 @@
     <string name="pos_tax_included">قيمتن ۾ شامل ٽيڪس</string>
     <string name="pos_sell_by">%1$s جي حساب سان وڪرو</string>
     <string name="pos_expired_stock">%1$s جو رڳو ايڪسپائر اسٽاڪ بچيو آهي (ٺيڪ: %2$s). پراڻو بيچ ايڪسپائري ۾ ختم ڪريو، يا گهٽ وڪرو.</string>
+    <string name="pos_block_negative">اهڙي وڪرو روڪيو جيڪو اسٽاڪ کي صفر کان هيٺ وٺي وڃي</string>
+    <string name="pos_block_negative_help">آن: شيلف کان وڌيڪ جي ٽڪيٽ هر ڊوائيس تي رد ٿيندي. آف: ڪائونٽر صرف خبردار ڪري ٿو.</string>
+    <string name="pos_short_stock">%1$s جو اسٽاڪ صرف %2$s آهي. وڪرو رد ٿيو: گهٽ وڪڻو يا پهرين اسٽاڪ وصول ڪريو.</string>
     <string name="counter_settings">ڪائونٽر سيٽنگون</string>
     <string name="pos_next_pay">اڳتي: ادائيگي</string>
     <string name="pos_how_1">1 · شيءِ جو نالو لکو يا بارڪوڊ اسڪين ڪريو</string>

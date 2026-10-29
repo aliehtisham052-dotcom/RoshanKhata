@@ -3367,6 +3367,9 @@
     <string name="pos_tax_included">الضريبة ضمن الأسعار</string>
     <string name="pos_sell_by">البيع بـ %1$s</string>
     <string name="pos_expired_stock">لم يبقَ من %1$s إلا مخزون منتهي الصلاحية (الصالح: %2$s). اشطب الدفعة القديمة من صفحة الصلاحية، أو بع كمية أقل.</string>
+    <string name="pos_block_negative">رفض أي عملية بيع تُنزل المخزون تحت الصفر</string>
+    <string name="pos_block_negative_help">مفعّل: تُرفض الفاتورة التي تتجاوز ما على الرف على كل جهاز. غير مفعّل: نقطة البيع تحذّر فقط.</string>
+    <string name="pos_short_stock">المتوفر من %1$s هو %2$s فقط. رُفض البيع: قلّل الكمية أو استلم المخزون أولاً.</string>
     <string name="counter_settings">إعدادات الكاشير</string>
     <string name="pos_next_pay">التالي: الدفع</string>
     <string name="pos_how_1">1 · اكتب اسم الصنف أو امسح الباركود</string>

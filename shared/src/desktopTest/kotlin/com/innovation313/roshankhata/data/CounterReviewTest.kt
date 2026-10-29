@@ -135,6 +135,36 @@ class CounterReviewTest {
     }
 
     @Test
+    fun `the stock rule refuses a ticket below zero only while it is on, summed across the ticket's lines`() = runBlocking {
+        val engro = dao.insertParty(Party(name = "Engro", isCustomer = false))
+        val urea = dao.insertProduct(
+            Product(name = "Urea", nameKey = ProductName.key("Urea"), normalisedName = ProductName.normalised("Urea"), defaultUnit = "bag", salePrice = 4000.0)
+        )
+        dao.insertSupplierBill(
+            null, SupplierBill(partyId = engro, billDate = now - 10 * day, totalAmount = 0.0),
+            listOf(BillItem(billId = 0, productName = "Urea", quantity = 5.0, unit = "bag", rate = 3500.0, productId = urea))
+        )
+        val p = dao.productById(urea)!!
+        fun ticket(vararg qty: Double) = CounterDraft().apply { for (q in qty) add(p, qty = q); payRestInCash() }
+        // Off (the default): six bags from a shelf of five go through — the screen only warned.
+        Counter.post(dao, ticket(6.0))
+        // On: two lines of three and three are six again, against a shelf now of minus one.
+        dao.setSetting(BookSettings.BLOCK_NEGATIVE_STOCK, "1")
+        try {
+            Counter.post(dao, ticket(3.0, 3.0))
+            fail("six bags with the shelf below zero and the rule on")
+        } catch (e: Counter.ShortStock) {
+            assertEquals("Urea", e.item)
+            assertEquals(-1.0, e.onHand, 0.001)
+        }
+        // A line without a product (free text) is never refused: the book has no figure for it.
+        val free = CounterDraft().apply { addFree("Rope").also { it.qty = "2"; it.rate = "50" }; payRestInCash() }
+        Counter.post(dao, free)
+        dao.setSetting(BookSettings.BLOCK_NEGATIVE_STOCK, null)
+        Counter.post(dao, ticket(1.0))
+    }
+
+    @Test
     fun `a ticket's cash line is changed from the ticket, the owner's own from the cashbook`() = runBlocking {
         val sale = sellTo(null, product("Urea"), 2.0)
         val line = dao.allCashForBackup().single { it.saleId == sale }

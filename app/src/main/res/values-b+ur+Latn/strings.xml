@@ -3179,6 +3179,9 @@
     <string name="pos_tax_included">Qeematon mein shamil tax</string>
     <string name="pos_sell_by">%1$s ke hisaab se bechein</string>
     <string name="pos_expired_stock">%1$s ka sirf expire stock bacha hai (theek: %2$s). Purana batch Expiry mein khatam karein, ya kam bechein.</string>
+    <string name="pos_block_negative">Aisi sale rokein jo stock ko zero se neeche le jaye</string>
+    <string name="pos_block_negative_help">On: shelf se zyada ka ticket har device par mustarad hoga. Off: counter sirf khabardar karta hai.</string>
+    <string name="pos_short_stock">%1$s ka stock sirf %2$s hai. Sale mustarad hui: kam bechein ya pehle stock wasool karein.</string>
     <string name="counter_settings">Counter settings</string>
     <string name="pos_next_pay">Aage: payment</string>
     <string name="pos_how_1">1 · Cheez ka naam likhein ya barcode scan karein</string>

@@ -3179,6 +3179,9 @@
     <string name="pos_tax_included">قیمتوں میں شامل ٹیکس</string>
     <string name="pos_sell_by">%1$s کے حساب سے بیچیں</string>
     <string name="pos_expired_stock">%1$s کا صرف ایکسپائر اسٹاک بچا ہے (ٹھیک: %2$s)۔ پرانا بیچ ایکسپائری میں ختم کریں، یا کم بیچیں۔</string>
+    <string name="pos_block_negative">ایسی فروخت روکیں جو اسٹاک کو صفر سے نیچے لے جائے</string>
+    <string name="pos_block_negative_help">آن: شیلف سے زیادہ کا ٹکٹ ہر ڈیوائس پر مسترد ہوگا۔ آف: کاؤنٹر صرف خبردار کرتا ہے۔</string>
+    <string name="pos_short_stock">%1$s کا اسٹاک صرف %2$s ہے۔ فروخت مسترد ہوئی: کم بیچیں یا پہلے اسٹاک وصول کریں۔</string>
     <string name="counter_settings">کاؤنٹر سیٹنگز</string>
     <string name="pos_next_pay">آگے: ادائیگی</string>
     <string name="pos_how_1">1 · چیز کا نام لکھیں یا بارکوڈ اسکین کریں</string>
