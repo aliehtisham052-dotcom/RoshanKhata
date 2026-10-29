@@ -172,10 +172,16 @@ class CounterSaleActivity : BaseActivity() {
                 ).associateWith { dao.settingValue(it) }
             }
             val wasAdvanced = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.BookSettings.counterAdvanced(dao) }
+            val wasBlockShort = withContext(Dispatchers.IO) {
+                com.innovation313.roshankhata.data.BookSettings.isOn(dao.settingValue(com.innovation313.roshankhata.data.BookSettings.BLOCK_NEGATIVE_STOCK))
+            }
             val printer = com.innovation313.roshankhata.ui.TextReceipt.settings(this@CounterSaleActivity)
             val hasLogo = com.innovation313.roshankhata.data.BusinessProfile.hasLogo(this@CounterSaleActivity)
             val box = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax); isChecked = on }
             val help = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.counter_prices_include_tax_help); textSize = 13f }
+            // The stock rule (29 Oct 2026): refuse a ticket that takes a product below zero, or only warn (the default).
+            val blockShort = android.widget.CheckBox(this@CounterSaleActivity).apply { setText(R.string.pos_block_negative); isChecked = wasBlockShort }
+            val blockShortHelp = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.pos_block_negative_help); textSize = 13f }
             val head = android.widget.TextView(this@CounterSaleActivity).apply {
                 setText(R.string.printer_section); textSize = 15f; setTypeface(typeface, android.graphics.Typeface.BOLD)
                 setPadding(0, (16 * resources.displayMetrics.density).toInt(), 0, 0)
@@ -241,7 +247,7 @@ class CounterSaleActivity : BaseActivity() {
             }
             val view = android.widget.LinearLayout(this@CounterSaleActivity).apply {
                 orientation = android.widget.LinearLayout.VERTICAL; setPadding(pad, pad / 2, pad, pad / 2)
-                listOf(tools, toolsHelp, box, help, head, wide, logo, drawer, drawerHelp, choosePrinter,
+                listOf(tools, toolsHelp, box, help, blockShort, blockShortHelp, head, wide, logo, drawer, drawerHelp, choosePrinter,
                     loyaltyHead, perHundred, pointValue, loyaltyHelp,
                     scaleHead, prefix, pricedLabel, decimalsLabel, decimalsGroup, example, scaleHelp).forEach { addView(it) }
             }
@@ -260,6 +266,7 @@ class CounterSaleActivity : BaseActivity() {
                             // The owner's word on the big-shop tools, kept either way so the book's own guess no longer decides.
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.COUNTER_ADVANCED, if (tools.isChecked) "1" else "0")
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.PRICES_INCLUDE_TAX, if (box.isChecked) "1" else null)
+                            dao.setSetting(com.innovation313.roshankhata.data.BookSettings.BLOCK_NEGATIVE_STOCK, if (blockShort.isChecked) "1" else null)
                             fun typed(e: android.widget.EditText) = e.text.toString().trim().takeIf { t -> (com.innovation313.roshankhata.data.Digits.parse(t) ?: 0.0) > 0.0 }
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100, typed(perHundred))
                             dao.setSetting(com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINT_VALUE, typed(pointValue))
@@ -416,8 +423,11 @@ class CounterSaleActivity : BaseActivity() {
                         .show()
                 }.onFailure { e ->
                     android.util.Log.w("RoshanKhata", "sale not posted", e)
-                    message = if (e is Counter.ExpiredStock) getString(R.string.pos_expired_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.fresh))
-                        else failWord(e, R.string.pos_post_failed)
+                    message = when (e) {
+                        is Counter.ExpiredStock -> getString(R.string.pos_expired_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.fresh))
+                        is Counter.ShortStock -> getString(R.string.pos_short_stock, e.item, com.innovation313.roshankhata.ui.Calc.trim(e.onHand))
+                        else -> failWord(e, R.string.pos_post_failed)
+                    }
                     // A held ticket another counter rang up meanwhile: this one is no longer held.
                     if (e is com.innovation313.roshankhata.data.CounterRefused && e.why == com.innovation313.roshankhata.data.CounterRefused.Why.HELD_GONE) draft.heldId = null
                 }

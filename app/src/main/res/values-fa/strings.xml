@@ -3207,6 +3207,9 @@
     <string name="pos_tax_included">مالیات داخل قیمت‌ها</string>
     <string name="pos_sell_by">فروش به %1$s</string>
     <string name="pos_expired_stock">از %1$s فقط موجودی تاریخ‌گذشته مانده است (سالم: %2$s). بچ قدیمی را در صفحهٔ انقضا حذف کنید، یا کمتر بفروشید.</string>
+    <string name="pos_block_negative">فروشی که موجودی را زیر صفر ببرد رد شود</string>
+    <string name="pos_block_negative_help">روشن: فاکتور بیش از موجودی قفسه در هر دستگاه رد می‌شود. خاموش: صندوق فقط هشدار می‌دهد.</string>
+    <string name="pos_short_stock">از %1$s فقط %2$s در موجودی است. فروش رد شد: کمتر بفروشید یا ابتدا کالا را دریافت کنید.</string>
     <string name="counter_settings">تنظیمات صندوق</string>
     <string name="pos_next_pay">بعدی: پرداخت</string>
     <string name="pos_how_1">1 · نام کالا را بنویسید یا بارکد را اسکن کنید</string>

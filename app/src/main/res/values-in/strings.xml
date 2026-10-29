@@ -3180,6 +3180,9 @@
     <string name="pos_tax_included">Pajak di dalam harga</string>
     <string name="pos_sell_by">Jual per %1$s</string>
     <string name="pos_expired_stock">Hanya stok kedaluwarsa yang tersisa dari %1$s (masih baik: %2$s). Hapus batch lama di Kedaluwarsa, atau jual lebih sedikit.</string>
+    <string name="pos_block_negative">Tolak penjualan yang membuat stok di bawah nol</string>
+    <string name="pos_block_negative_help">Aktif: tiket melebihi stok rak ditolak di setiap perangkat. Nonaktif: kasir hanya memperingatkan.</string>
+    <string name="pos_short_stock">Stok %1$s hanya %2$s. Penjualan ditolak: jual lebih sedikit, atau terima stok dulu.</string>
     <string name="counter_settings">Pengaturan kasir</string>
     <string name="pos_next_pay">Lanjut: pembayaran</string>
     <string name="pos_how_1">1 · Ketik nama barang atau pindai barcode-nya</string>

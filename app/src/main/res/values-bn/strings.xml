@@ -3227,6 +3227,9 @@
     <string name="pos_tax_included">দামের ভেতরে থাকা কর</string>
     <string name="pos_sell_by">%1$s হিসেবে বিক্রি</string>
     <string name="pos_expired_stock">%1$s-এর শুধু মেয়াদোত্তীর্ণ স্টক বাকি (ভালো: %2$s)। পুরোনো ব্যাচটি মেয়াদ পাতায় বাদ দিন, বা কম বিক্রি করুন।</string>
+    <string name="pos_block_negative">যে বিক্রি স্টককে শূন্যের নিচে নিয়ে যায় তা প্রত্যাখ্যান করুন</string>
+    <string name="pos_block_negative_help">চালু: তাকের চেয়ে বেশি পরিমাণের টিকিট প্রতিটি ডিভাইসে প্রত্যাখ্যাত হবে। বন্ধ: কাউন্টার শুধু সতর্ক করে।</string>
+    <string name="pos_short_stock">%1$s-এর স্টক মাত্র %2$s। বিক্রি প্রত্যাখ্যাত হয়েছে: কম বিক্রি করুন বা আগে স্টক গ্রহণ করুন।</string>
     <string name="counter_settings">কাউন্টার সেটিংস</string>
     <string name="pos_next_pay">পরবর্তী: পেমেন্ট</string>
     <string name="pos_how_1">1 · পণ্যের নাম লিখুন বা বারকোড স্ক্যান করুন</string>

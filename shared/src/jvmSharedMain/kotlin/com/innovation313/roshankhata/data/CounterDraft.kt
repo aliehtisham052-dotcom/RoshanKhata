@@ -459,6 +459,14 @@ object Counter {
     class ExpiredStock(val item: String, val fresh: Double) : IllegalArgumentException("sale refused: expired stock of $item")
 
     /**
+     * A line the shelf cannot cover while the book refuses to go below zero
+     * ([BookSettings.BLOCK_NEGATIVE_STOCK], 29 Oct 2026): [onHand] is what the
+     * book holds of [item] in the product's own unit, before this ticket.
+     * Off (the default), the counter only warns ([CounterDraft.Line.shortBy]).
+     */
+    class ShortStock(val item: String, val onHand: Double) : IllegalArgumentException("sale refused: only $onHand of $item in stock")
+
+    /**
      * Ring the draft up: cost rates filled in per line, each product line's
      * batches chosen first-expiry-first-out ([Fefo]) and an expired batch
      * never sold, the sale posted in one transaction, the held ticket it came
@@ -506,10 +514,26 @@ object Counter {
         // so every product's shelf is the figure the per-product read gave; a failed read falls back to it.
         val shelf: Map<Long, Double?>? =
             if (ticket.items.any { it.productId != null }) runCatching { onHand(dao) }.getOrNull() else null
+        // The stock rule (29 Oct 2026): with BLOCK_NEGATIVE_STOCK on, a ticket that would take a product below
+        // zero is refused here, in the one place every counter posts through — the screen's warning
+        // (Line.shortBy) is advice, this is the book's word. The shelf is summed across the ticket's lines of
+        // one product (a carton and loose bottles), in the product's own unit; a product whose stock the book
+        // cannot state (mixed units, no shelf read) is never refused on a figure nobody has.
+        val refuseShort = BookSettings.isOn(dao.settingValue(BookSettings.BLOCK_NEGATIVE_STOCK))
+        val taken = HashMap<Long, Double>()
         for (item in ticket.items) {
             val p = item.productId?.let { products[it] }
             items += item.copy(costRate = p?.let { costOf(dao, it, item.unit) })
             if (p == null) { takes += null; continue }
+            if (refuseShort) {
+                val have = shelf?.get(p.id)
+                val f = Units.factor(p, item.unit)
+                if (have != null && !f.isNaN()) {
+                    val sold = (taken[p.id] ?: 0.0) + item.quantity * f
+                    taken[p.id] = sold
+                    if (sold > have + 1e-9) throw ShortStock(item.itemName, have)
+                }
+            }
             val lots = lotsOf.getOrPut(p.id) { Fefo.lots(dao, p, shelf).toMutableList() }
             val factor = Units.factor(p, item.unit)
             if (item.billItemId != null) {

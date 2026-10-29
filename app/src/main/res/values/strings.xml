@@ -3391,6 +3391,9 @@
     <string name="pos_tax_included">Tax inside the prices</string>
     <string name="pos_sell_by">Sell by %1$s</string>
     <string name="pos_expired_stock">Only expired stock is left of %1$s (still good: %2$s). Write the old batch off in Expiry, or sell less.</string>
+    <string name="pos_block_negative">Refuse a sale that takes stock below zero</string>
+    <string name="pos_block_negative_help">On: a ticket for more than the shelf holds is refused on every device. Off: the counter only warns.</string>
+    <string name="pos_short_stock">Only %2$s of %1$s in stock. The sale was refused: sell less, or receive the stock first.</string>
     <string name="counter_settings">Counter settings</string>
     <string name="pos_next_pay">Next: payment</string>
     <string name="pos_how_1">1 · Type an item\'s name or scan its barcode</string>

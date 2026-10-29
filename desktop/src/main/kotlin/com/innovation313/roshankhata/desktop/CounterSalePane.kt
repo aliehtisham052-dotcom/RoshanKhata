@@ -313,8 +313,11 @@ fun CounterSalePane(
                     tick++
                     onChanged()
                 }.onFailure { e ->
-                    told = if (e is Counter.ExpiredStock) words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
-                        else counterFail(e)
+                    told = when (e) {
+                        is Counter.ExpiredStock -> words.text(W.pos_expired_stock, e.item, Calc.trim(e.fresh))
+                        is Counter.ShortStock -> words.text(W.pos_short_stock, e.item, Calc.trim(e.onHand))
+                        else -> counterFail(e)
+                    }
                     // A held ticket another counter rang up meanwhile: this one is no longer held (23 Oct 2026).
                     if (e is com.innovation313.roshankhata.data.CounterRefused && e.why == com.innovation313.roshankhata.data.CounterRefused.Why.HELD_GONE) draft.heldId = null
                 }
