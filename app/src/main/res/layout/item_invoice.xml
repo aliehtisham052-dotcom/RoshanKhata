@@ -46,12 +46,35 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvInvoiceNumber"
-            android:layout_width="wrap_content"
+        <!-- The number says the kind (Q-, SO-, DC-, INV-); the tag beside it where the document stands
+             (Accepted, Converted, Cancelled — nothing while Open). -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_muted"
-            android:textSize="12sp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvInvoiceNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvInvoiceStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_doc_tag"
+                android:paddingStart="8dp"
+                android:paddingTop="1dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="1dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvInvoiceMeta"

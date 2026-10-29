@@ -773,7 +773,6 @@
     <string name="invoice_feature_note_desc">سطر قصير خاص بفاتورة واحدة.</string>
     <string name="invoice_feature_due_date">تاريخ الاستحقاق</string>
     <string name="invoice_feature_due_date_desc">متى يُتوقع السداد.</string>
-    <string name="nav_invoice">فاتورة</string>
 
     <string name="expiring_stock">بضاعة قاربت الانتهاء</string>
     <string name="expiring_subtitle">بعها أو خفّضها أو أرجعها — ما دمت تستطيع</string>
@@ -3760,6 +3759,10 @@
     <string name="doc_converted_from">من %1$s</string>
     <string name="doc_locked">تم تحويل هذا المستند ولا يمكن تغييره؛ غيّر المستند الجديد.</string>
     <string name="documents_title">المستندات</string>
+    <string name="doc_add">إضافة مستند</string>
+    <string name="doc_pick_kind">أي مستند؟</string>
+    <string name="doc_accept">تعليم كمقبول</string>
+    <string name="doc_cancel_confirm">إلغاء %1$s؟ يبقى في السجل برقمه ولا يمكن تغييره بعد ذلك.</string>
     <string name="audit_doc_converted">تم تحويل مستند</string>
     <string name="audit_doc_accepted">تم قبول مستند</string>
     <string name="audit_doc_cancelled">تم إلغاء مستند</string>

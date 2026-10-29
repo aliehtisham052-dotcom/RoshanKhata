@@ -40,6 +40,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.BillPhoto
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.EntryItem
+import com.innovation313.roshankhata.data.InvoicePdfExport
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.attach
@@ -205,6 +206,25 @@ class EntryDetailActivity : BaseActivity() {
         }
     }
 
+    /**
+     * The entry as a debit note: the supplier, the goods sent back and their value, in the shop's invoice
+     * design (InvoicePdfExport draws it from the in-memory document; nothing is written), opened to read,
+     * print or share as any document is.
+     */
+    private fun openDebitNote(e: LedgerEntry, party: com.innovation313.roshankhata.data.Party) {
+        lifecycleScope.launch {
+            val (doc, lines) = com.innovation313.roshankhata.data.NoteDocument.debitNote(e, items, party)
+            val file = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                runCatching { InvoicePdfExport.build(this@EntryDetailActivity, doc, lines) }.getOrNull()
+            }
+            if (file == null) {
+                Toast.makeText(this@EntryDetailActivity, R.string.invoice_pdf_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            com.innovation313.roshankhata.ui.PdfShare.open(this@EntryDetailActivity, file)
+        }
+    }
+
     private fun render(e: LedgerEntry) {
         // A sale can become an invoice; a payment received cannot.
         renderSeason(e)
@@ -214,7 +234,16 @@ class EntryDetailActivity : BaseActivity() {
         val btnInvoice = findViewById<MaterialButton>(R.id.btnMakeInvoice)
         btnInvoice.visibility = if (e.isGiven && !e.isDeleted) View.VISIBLE else View.GONE
         if (e.isGiven && !e.isDeleted) lifecycleScope.launch {
-            val existing = KhataDatabase.get(this@EntryDetailActivity).khataDao().invoiceForEntry(e.id)
+            val dao = KhataDatabase.get(this@EntryDetailActivity).khataDao()
+            // Goods given to a SUPPLIER are a return to him (BatchReturnDialog, Expiry's send-back): the paper
+            // for that is a debit note, drawn from this entry and never saved (NoteDocument, 29 Oct 2026).
+            val party = dao.getParty(e.partyId)
+            if (party != null && !party.isCustomer && items.isNotEmpty()) {
+                btnInvoice.setText(R.string.doc_kind_debit_note)
+                btnInvoice.setOnClickListener { openDebitNote(e, party) }
+                return@launch
+            }
+            val existing = dao.invoiceForEntry(e.id)
             btnInvoice.setText(if (existing != null) R.string.entry_open_invoice else R.string.entry_make_invoice)
             btnInvoice.setOnClickListener {
                 val intent = Intent(this@EntryDetailActivity, InvoiceEditorActivity::class.java)

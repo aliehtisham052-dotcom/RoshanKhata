@@ -676,7 +676,6 @@
     <string name="pick_invoice_date">Pick invoice date</string>
     <string name="invoice_date_set">Date: %1$s</string>
     <string name="invoice_due_date_hint">Due date (optional)</string>
-    <string name="nav_invoice">Invoice</string>
     <string name="invoice_item_name_hint">Item name</string>
     <string name="invoice_item_rate_hint">Rate</string>
     <string name="invoice_row_unit_hint">Unit</string>
@@ -3752,6 +3751,10 @@
     <string name="doc_converted_from">From %1$s</string>
     <string name="doc_locked">This document was converted and cannot be changed; change the new one.</string>
     <string name="documents_title">Documents</string>
+    <string name="doc_add">Add document</string>
+    <string name="doc_pick_kind">Which document?</string>
+    <string name="doc_accept">Mark as Accepted</string>
+    <string name="doc_cancel_confirm">Cancel %1$s? It stays on record under its number and cannot be changed afterwards.</string>
     <string name="audit_doc_converted">Document converted</string>
     <string name="audit_doc_accepted">Document accepted</string>
     <string name="audit_doc_cancelled">Document cancelled</string>

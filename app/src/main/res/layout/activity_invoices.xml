@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/invoices"
+                android:text="@string/documents_title"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -51,6 +51,31 @@
             app:tint="@color/white" />
     </LinearLayout>
 
+    <!-- The kind pills (29 Oct 2026, schema 40): All, Quotation, Sales order, Challan, Invoice — one row,
+         scrolling sideways so no word is cut; the proforma is under All and in the Add picker. -->
+    <HorizontalScrollView
+        android:id="@+id/kindScroll"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipKinds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true" />
+    </HorizontalScrollView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvInvoices"
         android:layout_width="0dp"
@@ -60,7 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
+        app:layout_constraintTop_toBottomOf="@id/kindScroll" />
 
     <TextView
         android:id="@+id/tvNoInvoices"
@@ -83,7 +108,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="@string/add_invoice"
+        android:text="@string/doc_add"
         android:textColor="@color/white"
         app:backgroundTint="@color/button_dark"
         app:layout_constraintBottom_toBottomOf="parent"

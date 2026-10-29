@@ -24,8 +24,8 @@ No account, no server, no ads. Everything stays on the phone.
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 39 (schema JSON checked in up to 31; CI writes the rest);
-  backup format 16 (the payment reference, 28 Oct 2026; 15 the bill photo path, 22 Oct)
+- Room database, version 40 (schema JSON checked in up to 31; CI writes the rest);
+  backup format 17 (documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -1194,6 +1194,45 @@ Businesses/Settings), each part with its proof pictures. CI only.
   inventory_subtitle, po_subtitle, po_copied_no_number, trace_came, invoice_whatsapp_pc, sig_hint_pc (nine languages). Tests: ReminderTextTest (shared),
   ReminderStoreTest, BookExportTest (the type column), LookContrastTest, TileIconsTest; proofs
   screen-laptop-khata-ur, screen-laptop-khata-en-dark, screen-laptop-side-khata-en.
+
+### Marhala 5: the payment record, the cleanup, the documents (28–29 Oct 2026, kmp-desktop-16)
+
+After the top-POS comparison (Doc "Roshan Khata — Top POS Systems se Muqabla", the owner: "jo jo
+behtar hai implement karo"; agriculture not the focus). CI only — nothing on a real device.
+
+- **Schema 39, backup 16 — the payment reference** (`paymentRef` on transactions and cashbook): a
+  Reference box beside any way of paying but cash on both platforms' entry and cashbook forms
+  (`PaymentRef`), said on the entry receipt, thermal receipt and statement (`PaymentMethod.said`);
+  `PaymentMethod.WALLET` (country-neutral) with one label table (`wordKey`/`label`); a reminder quotes
+  the sale it chases (`reminder_ref`, `newestGaveNumber`) and the computer appends how to pay too
+  (`ReminderText.paymentBlock`, `ShopSettings` bank/wallet getters); Follow-up says "Reminded <day>,
+  nothing received since" (`PaymentRequest.waitingSince`). Strings: payment_method_wallet,
+  reminder_ref, followup_waiting.
+- **The cleanup** (a 15,913-declaration scan): BusinessReport.kt, the shared EntryForm.kt, 19 unread DAO
+  queries, 3 unused writes, RKA1 `sendOffer`, per-gram nisab helpers, 1.10.0 StatCard/MonoTile/GlyphChip/
+  TotalCard and 108 strings went; `BLOCK_NEGATIVE_STOCK` became a real counter switch
+  (`Counter.ShortStock`, `pos_short_stock`); six duplicates became one shared rule each (DayMath,
+  DateWindow, WhenWords, `DayCloseMath.drawerByTheBooks`, `Format.moneyLtr`, the phone's balance side
+  word), each with a test holding both platforms' old results equal. Kept on purpose: CustomerLink.setLook
+  (the customer page), ImageAutoCrop (the phone's crop start), the gfx stand-in's surface.
+- **Schema 40, backup 17 — documents** (`Documents.kt`, `NoteDocument.kt`): the invoice IS the
+  document. `invoices.kind` (QUOTATION Q-, PROFORMA PI-, SALES_ORDER SO-, CHALLAN DC-, INVOICE INV-; each
+  its own series, the INV- rule unchanged), `status` (OPEN/ACCEPTED/CONVERTED/CANCELLED, changed only in
+  the DAO from the state that allows it), `sourceDocId` (indexed; merge re-points it, sync carries it as a
+  uid). `convertDocument` copies the row and its lines into the next step (Q→SO→DC→INV, PI→INV), marks the
+  source CONVERTED and immutable, audits (`DOC_CONVERTED/ACCEPTED/CANCELLED`). Credit and debit notes print
+  from a return / a supplier return with no row of their own (print-only kinds). Every design heads itself
+  by kind (`Labels.heading`); a challan prints no prices (`drawItemsTable(showPrices)`, the totals guard).
+  `updateInvoiceWithItems` keeps the row's uid/kind/status (the phone's editor renamed the uid on every
+  edit — lesson 35). **Screens:** the Invoices page is "Documents" on both (kind pills, status tags, Add
+  asks the kind, a challan form hides money, "From Q-…" opens the source, Accept / Convert to … / Cancel
+  by `DocActions`, converted/cancelled rows locked with `doc_locked`); Credit note on a return (counter)
+  and Debit note on a supplier's goods entry (receipt). Strings: doc_kind_* (6), doc_status_* (4),
+  doc_convert_to, doc_converted_from, doc_locked, documents_title, doc_add, doc_pick_kind, doc_accept,
+  doc_cancel_confirm, audit_doc_* (3). Tests: Schema40Test, DocumentsTest, BackupCodecDesktopTest,
+  InvoiceDesignsTest (quotation/challan proofs), ScreenProofTest (screen-laptop-documents-en/-ur).
+- Not built, by decision (the Doc's "what not to build"): FBR/PRA integration, payment gateways,
+  WhatsApp Cloud API, restaurant/salon modules, double-entry accounting, recurring invoices.
 
 ### The shared module (KMP)
 

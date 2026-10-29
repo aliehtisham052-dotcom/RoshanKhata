@@ -119,6 +119,32 @@ object DocStatus {
 }
 
 /**
+ * What a screen may offer on a document, one rule for the phone and the
+ * computer (29 Oct 2026, the Documents page): the DAO refuses the rest, this
+ * only decides which buttons are drawn, so the two platforms show the same.
+ */
+object DocActions {
+    /** Edit and Delete: a live document only (CONVERTED and CANCELLED say what they said). */
+    fun canEdit(status: String): Boolean = DocStatus.isLive(status)
+
+    /** Accept: an OPEN quotation, proforma or sales order — the customer's "yes" to a price; a challan or an invoice is not accepted, it is delivered or paid. */
+    fun canAccept(kind: String, status: String): Boolean =
+        status == DocStatus.OPEN && (kind == DocKind.QUOTATION || kind == DocKind.PROFORMA || kind == DocKind.SALES_ORDER)
+
+    /** The kind "Convert to …" offers, or null when there is no step (an invoice, or a document no longer live). */
+    fun convertTarget(kind: String, status: String): String? = if (DocStatus.isLive(status)) DocKind.next(kind) else null
+
+    /** Cancel: a live document only; a converted one lives on as its next step — cancel that. */
+    fun canCancel(status: String): Boolean = DocStatus.isLive(status)
+
+    /** The word for a refusal, as a [W] name: a document no longer live is said as [W.doc_locked]; null for the rest (a generic failure). */
+    fun refusalWordKey(why: DocRefused.Why): String? = when (why) {
+        DocRefused.Why.NOT_LIVE -> W.doc_locked
+        else -> null
+    }
+}
+
+/**
  * A document write the data layer refused, with the reason a screen can put
  * in the owner's language — [CounterRefused]'s shape.
  */

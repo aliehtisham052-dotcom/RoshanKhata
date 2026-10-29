@@ -999,6 +999,19 @@ private fun Book(
                             printer = printer, hasLogo = images.has(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO),
                             onPrinter = { r -> appPrefs.setReceipt(r); printer = r },
                             paymentQr = images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.QR).takeIf { it.isFile },
+                            // A return as a credit note (29 Oct 2026): drawn in the shop's design, opened in the preview, never saved.
+                            onCreditNote = { r ->
+                                scope.launch {
+                                    val made = withContext(Dispatchers.IO) {
+                                        runCatching {
+                                            NoteSheets.creditNote(dao, r.id, com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl)) { inv, lines ->
+                                                InvoicePrint(words, rtl, shop ?: words.text(W.app_name), settings.businessAddress(), inv, lines)
+                                            }
+                                        }
+                                    }
+                                    made.getOrNull()?.let { (sheet, number) -> StatementPrint.show(sheet, number) }
+                                }
+                            },
                             draft = counterDraft
                         )
                     }
@@ -1645,7 +1658,21 @@ private fun Book(
                 if (id != null) { viewing = null; invoiceToOpen = id; section = Section.INVOICES }
                 else scope.launch { invoiceFrom = e to withContext(Dispatchers.IO) { dao.itemsOfEntry(e.id) } }
             },
-            onChanged = { reload++ }
+            onChanged = { reload++ },
+            isCustomer = partyRow?.isCustomer ?: forParty?.isCustomer ?: true,
+            // Goods sent back to a supplier as a debit note (29 Oct 2026): the entry drawn in the shop's design, never saved.
+            onDebitNote = { e, items ->
+                scope.launch {
+                    val made = withContext(Dispatchers.IO) {
+                        runCatching {
+                            NoteSheets.debitNote(dao, e, items, com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl)) { inv, lines ->
+                                InvoicePrint(words, rtl, shop ?: words.text(W.app_name), settings.businessAddress(), inv, lines)
+                            }
+                        }
+                    }
+                    made.getOrNull()?.let { (sheet, number) -> StatementPrint.show(sheet, number) }
+                }
+            }
         )
     }
     invoiceFrom?.let { (e, items) ->

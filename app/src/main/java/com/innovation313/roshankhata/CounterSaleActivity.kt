@@ -507,22 +507,48 @@ class CounterSaleActivity : BaseActivity() {
                 .setItems(labels) { _, i ->
                     val s = rows[i]
                     if (s.status != com.innovation313.roshankhata.data.SaleStatus.DONE) return@setItems
-                    MaterialAlertDialogBuilder(this@CounterSaleActivity)
-                        .setTitle(s.saleNumber)
-                        .setItems(arrayOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void))) { _, which ->
-                            when (which) {
-                                // The ticket as an A4 invoice (21 Oct 2026): made once, then opened to print or share.
-                                0 -> openInvoice(s.id)
-                                // Who allowed it goes to the DAO, which refuses a void or return nobody allowed (23 Oct 2026).
-                                1 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { by -> startReturn(s.id, by) }
-                                else -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { by -> askVoid(s.id, s.saleNumber, by) }
+                    lifecycleScope.launch {
+                        // The ticket's posted returns: each can be printed as a credit note (29 Oct 2026).
+                        val back = withContext(Dispatchers.IO) { runCatching { dao.returnsOfSale(s.id) }.getOrDefault(emptyList()) }
+                        val actions = arrayListOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void)) +
+                            back.map { getString(R.string.doc_kind_credit_note) + " · " + it.returnNumber }
+                        MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                            .setTitle(s.saleNumber)
+                            .setItems(actions.toTypedArray()) { _, which ->
+                                when (which) {
+                                    // The ticket as an A4 invoice (21 Oct 2026): made once, then opened to print or share.
+                                    0 -> openInvoice(s.id)
+                                    // Who allowed it goes to the DAO, which refuses a void or return nobody allowed (23 Oct 2026).
+                                    1 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { by -> startReturn(s.id, by) }
+                                    2 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { by -> askVoid(s.id, s.saleNumber, by) }
+                                    else -> back.getOrNull(which - 3)?.let { openCreditNote(it.id) }
+                                }
                             }
-                        }
-                        .setNegativeButton(R.string.cancel, null)
-                        .show()
+                            .setNegativeButton(R.string.cancel, null)
+                            .show()
+                    }
                 }
                 .setNegativeButton(R.string.close, null)
                 .show()
+        }
+    }
+
+    /**
+     * A return as a credit note ([com.innovation313.roshankhata.data.NoteDocument.creditNote]): what came back
+     * and what the customer is credited, in the shop's invoice design, opened to read, print or share. Drawn
+     * from the return itself and never saved — the return already holds the money.
+     */
+    private fun openCreditNote(returnId: Long) {
+        lifecycleScope.launch {
+            val file = withContext(Dispatchers.IO) {
+                val ret = dao.getReturn(returnId)?.takeIf { !it.isDeleted } ?: return@withContext null
+                val items = dao.returnItems(returnId)
+                val party = ret.partyId?.let { dao.getParty(it) }
+                val (doc, lines) = com.innovation313.roshankhata.data.NoteDocument.creditNote(ret, items, party)
+                runCatching { com.innovation313.roshankhata.data.InvoicePdfExport.build(this@CounterSaleActivity, doc, lines) }.getOrNull()
+            }
+            if (file == null) { toast(R.string.invoice_pdf_failed); return@launch }
+            com.innovation313.roshankhata.ui.PdfShare.open(this@CounterSaleActivity, file)
         }
     }
 
@@ -593,6 +619,12 @@ class CounterSaleActivity : BaseActivity() {
                                         val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                         message = getString(R.string.pos_return_posted, number)
                                         dialog.dismiss(); reload()
+                                        // The return's paper, offered at once: a credit note from the row just written.
+                                        if (!isFinishing && !isDestroyed) MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                                            .setTitle(getString(R.string.pos_return_posted, number))
+                                            .setPositiveButton(R.string.doc_kind_credit_note) { _, _ -> openCreditNote(id) }
+                                            .setNegativeButton(R.string.close, null)
+                                            .show()
                                     }.onFailure {
                                         android.util.Log.w("RoshanKhata", "return not posted", it)
                                         problem = failWord(it, R.string.pos_return_failed)

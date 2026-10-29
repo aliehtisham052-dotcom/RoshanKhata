@@ -730,7 +730,6 @@
     <string name="invoice_feature_note_desc">هڪ انوائس لاءِ خاص مختصر لائن.</string>
     <string name="invoice_feature_due_date">ادائيگي جي تاريخ</string>
     <string name="invoice_feature_due_date_desc">ادائيگي ڪڏهن متوقع آهي.</string>
-    <string name="nav_invoice">انوائس</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">ختم ٿيندڙ مال</string>
@@ -3568,6 +3567,10 @@
     <string name="doc_converted_from">%1$s مان</string>
     <string name="doc_locked">هي دستاويز تبديل ٿي چڪو آهي ۽ بدلائي نٿو سگهجي؛ نئون بدلايو.</string>
     <string name="documents_title">دستاويز</string>
+    <string name="doc_add">دستاويز شامل ڪريو</string>
+    <string name="doc_pick_kind">ڪهڙو دستاويز؟</string>
+    <string name="doc_accept">منظور ٿيل نشان لڳايو</string>
+    <string name="doc_cancel_confirm">%1$s منسوخ ڪريو؟ هي پنهنجي نمبر سان رڪارڊ ۾ رهندو ۽ پوءِ بدلائي نٿو سگهجي.</string>
     <string name="audit_doc_converted">دستاويز تبديل ٿيو</string>
     <string name="audit_doc_accepted">دستاويز منظور ٿيو</string>
     <string name="audit_doc_cancelled">دستاويز منسوخ ٿيو</string>

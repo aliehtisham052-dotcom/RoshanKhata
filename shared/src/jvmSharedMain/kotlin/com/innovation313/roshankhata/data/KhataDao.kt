@@ -1339,6 +1339,44 @@ interface KhataDao {
     )
     fun observeInvoicePage(limit: Int): Flow<List<InvoiceSummary>>
 
+    /**
+     * [observeInvoicePage] for one [kind] of document (schema 40, the Documents
+     * page's kind pills), or every kind when [kind] is null — the same rows and
+     * the same arithmetic, so the two lists never disagree.
+     */
+    @Query(
+        """
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount, s.kind, s.status,
+               (
+                 (CASE WHEN s.discountAmount IS NOT NULL THEN
+                    MAX(0, s.gross - MAX(0, s.discountAmount))
+                  ELSE
+                    s.gross * (1 - COALESCE(s.discountPercent, 0) / 100.0)
+                  END)
+                 * (1 + COALESCE(s.taxPercent, 0) / 100.0)
+                 + COALESCE(s.additionalChargeAmount, 0)
+               ) AS grandTotal
+        FROM (
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate, i.kind, i.status,
+                 i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
+                 (SELECT COUNT(*) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
+                 (SELECT COALESCE(SUM(li.quantity * li.rate), 0) FROM invoice_items li
+                  WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS gross
+          FROM invoices i
+          WHERE i.isDeleted = 0 AND (:kind IS NULL OR i.kind = :kind)
+          ORDER BY i.invoiceDate DESC, i.id DESC
+          LIMIT :limit
+        ) s
+        ORDER BY s.invoiceDate DESC, s.id DESC
+        """
+    )
+    fun observeDocPage(kind: String?, limit: Int): Flow<List<InvoiceSummary>>
+
+    /** How many live documents of [kind] the book has (every kind when null) — the Documents page's "All · N". */
+    @Query("SELECT COUNT(*) FROM invoices WHERE isDeleted = 0 AND (:kind IS NULL OR kind = :kind)")
+    fun observeDocCount(kind: String?): Flow<Int>
+
     /** Every invoice dated on or after [from], summed the same way — this month's figure on Windows. */
     @Query(
         """
@@ -3509,6 +3547,16 @@ interface KhataDao {
         """
     )
     fun observeRecentReturns(limit: Int): Flow<List<ReturnSummary>>
+
+    /** A ticket's posted returns, newest first — the ones a credit note can be printed for ([NoteDocument.creditNote]). */
+    @Query(
+        """
+        SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
+        FROM sale_returns r LEFT JOIN sales s ON s.id = r.saleId
+        WHERE r.saleId = :saleId AND r.isDeleted = 0 AND r.status = 'done' ORDER BY r.timestamp DESC, r.id DESC
+        """
+    )
+    suspend fun returnsOfSale(saleId: Long): List<ReturnSummary>
 
     @Query(
         """

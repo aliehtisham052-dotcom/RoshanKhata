@@ -659,7 +659,6 @@
     <string name="pick_invoice_date">Pilih tanggal faktur</string>
     <string name="invoice_date_set">Tanggal: %1$s</string>
     <string name="invoice_due_date_hint">Jatuh tempo (opsional)</string>
-    <string name="nav_invoice">Faktur</string>
     <string name="invoice_item_name_hint">Nama barang</string>
     <string name="invoice_item_rate_hint">Harga</string>
     <string name="invoice_row_unit_hint">Satuan</string>
@@ -3533,6 +3532,10 @@
     <string name="doc_converted_from">Dari %1$s</string>
     <string name="doc_locked">Dokumen ini sudah dikonversi dan tidak dapat diubah; ubah yang baru.</string>
     <string name="documents_title">Dokumen</string>
+    <string name="doc_add">Tambah dokumen</string>
+    <string name="doc_pick_kind">Dokumen yang mana?</string>
+    <string name="doc_accept">Tandai Diterima</string>
+    <string name="doc_cancel_confirm">Batalkan %1$s? Dokumen tetap tercatat dengan nomornya dan tidak dapat diubah setelahnya.</string>
     <string name="audit_doc_converted">Dokumen dikonversi</string>
     <string name="audit_doc_accepted">Dokumen diterima</string>
     <string name="audit_doc_cancelled">Dokumen dibatalkan</string>

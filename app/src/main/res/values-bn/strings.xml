@@ -675,7 +675,6 @@
     <string name="pick_invoice_date">ইনভয়েসের তারিখ বেছে নিন</string>
     <string name="invoice_date_set">তারিখ: %1$s</string>
     <string name="invoice_due_date_hint">পরিশোধের তারিখ (ঐচ্ছিক)</string>
-    <string name="nav_invoice">ইনভয়েস</string>
     <string name="invoice_item_name_hint">পণ্যের নাম</string>
     <string name="invoice_item_rate_hint">দর</string>
     <string name="invoice_row_unit_hint">একক</string>
@@ -3588,6 +3587,10 @@
     <string name="doc_converted_from">%1$s থেকে</string>
     <string name="doc_locked">এই নথি রূপান্তরিত হয়েছে এবং পরিবর্তন করা যাবে না; নতুনটি পরিবর্তন করুন।</string>
     <string name="documents_title">নথিপত্র</string>
+    <string name="doc_add">নথি যোগ করুন</string>
+    <string name="doc_pick_kind">কোন নথি?</string>
+    <string name="doc_accept">গৃহীত চিহ্নিত করুন</string>
+    <string name="doc_cancel_confirm">%1$s বাতিল করবেন? এটি নিজের নম্বরে রেকর্ডে থাকবে এবং পরে পরিবর্তন করা যাবে না।</string>
     <string name="audit_doc_converted">নথি রূপান্তরিত</string>
     <string name="audit_doc_accepted">নথি গৃহীত</string>
     <string name="audit_doc_cancelled">নথি বাতিল</string>

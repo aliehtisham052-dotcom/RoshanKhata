@@ -85,11 +85,26 @@ fun InvoiceForm(
      * the sale it came from, and its lines — everything still the owner's to change until Save.
      */
     start: Invoice? = null,
-    startLines: List<InvoiceItem> = emptyList()
+    startLines: List<InvoiceItem> = emptyList(),
+    /**
+     * Which document a NEW one is (schema 40): a quotation, a proforma, a sales order, a challan or the
+     * invoice — the form's title, its number series and whether prices are typed at all (a delivery challan
+     * carries none, DocKind.showsPrices). An [existing] document keeps its own kind.
+     */
+    kind: String = existing?.kind ?: start?.kind ?: com.innovation313.roshankhata.data.DocKind.INVOICE,
+    /** The number the save will give (KhataDao.nextDocNumber), shown as a hint and on the picture; null shows the series alone. */
+    nextNumber: (suspend () -> String)? = null
 ) {
     val c = LocalRoshanColors.current
     fun pad(v: Double?) = v?.takeIf { it != 0.0 }?.let { Calc.trim(it) }.orEmpty()
     val from = existing ?: start
+    val docKind = existing?.kind ?: kind
+    // A challan says what went out, never what it costs: no rate, discount, tax, charge or received box.
+    val prices = com.innovation313.roshankhata.data.DocKind.showsPrices(docKind)
+    var comingNumber by remember { mutableStateOf<String?>(null) }
+    if (existing == null && nextNumber != null) {
+        androidx.compose.runtime.LaunchedEffect(docKind) { comingNumber = runCatching { nextNumber() }.getOrNull() }
+    }
     var customer by remember { mutableStateOf(from?.customerName.orEmpty()) }
     var phone by remember { mutableStateOf(from?.customerPhone.orEmpty()) }
     var date by remember { mutableStateOf(from?.invoiceDate ?: System.currentTimeMillis()) }
@@ -105,10 +120,10 @@ fun InvoiceForm(
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var due by remember { mutableStateOf(existing?.dueDate) }
     var pickingDue by remember { mutableStateOf(false) }
-    val showDiscount = fields.discount || existing?.discountPercent != null || existing?.discountAmount != null
-    val showTax = fields.tax || existing?.taxPercent != null
-    val showCharge = fields.charge || existing?.additionalChargeAmount != null
-    val showReceived = fields.received || existing?.receivedAmount != null
+    val showDiscount = prices && (fields.discount || existing?.discountPercent != null || existing?.discountAmount != null)
+    val showTax = prices && (fields.tax || existing?.taxPercent != null)
+    val showCharge = prices && (fields.charge || existing?.additionalChargeAmount != null)
+    val showReceived = prices && (fields.received || existing?.receivedAmount != null)
     val showNote = fields.note || !existing?.note.isNullOrBlank()
     val showDue = fields.dueDate || existing?.dueDate != null
     var templateId by remember { mutableStateOf(existing?.templateId ?: 1) }
@@ -125,6 +140,7 @@ fun InvoiceForm(
     // The invoice as typed: what Save keeps, and (with a stand-in name and number) what the picture shows.
     fun built(forPicture: Boolean): Invoice {
         val inv = (existing ?: start ?: Invoice(customerName = "")).copy(
+            kind = docKind,
             templateId = templateId,
             customerName = customer.trim().let { if (forPicture) it.ifEmpty { "\u2014" } else it },
             customerPhone = phone.trim().ifEmpty { null },
@@ -139,7 +155,7 @@ fun InvoiceForm(
             note = note.trim().ifEmpty { null },
             dueDate = due
         )
-        return if (forPicture) inv.copy(invoiceNumber = existing?.invoiceNumber ?: "INV-\u2026") else inv
+        return if (forPicture) inv.copy(invoiceNumber = existing?.invoiceNumber ?: comingNumber ?: (com.innovation313.roshankhata.data.DocKind.prefix(docKind) + "\u2026")) else inv
     }
     fun save() {
         when {
@@ -150,7 +166,7 @@ fun InvoiceForm(
         }
     }
     if (preview != null) {
-        androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, discountInMoney, tax, chargeLabel, charge, received, note) {
+        androidx.compose.runtime.LaunchedEffect(templateId, customer, phone, date, due, lines, discount, discountInMoney, tax, chargeLabel, charge, received, note, comingNumber) {
             kotlinx.coroutines.delay(400)
             val draft = built(forPicture = true)
             picture = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
@@ -181,6 +197,8 @@ fun InvoiceForm(
                 }
             }
         }
+        // The number the save will give, as the phone's hint ("Q-000007 (auto)"): a new document only.
+        if (existing == null) comingNumber?.let { Text(word(W.invoice_number_auto_hint, Format.ltr(it)), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Bottom) {
             DateBox(word(W.date_label), Format.dateOnly(date), word(W.pick_date), { picking = true }, Modifier.weight(1f))
             // The phone's optional due date: printed on the designs that carry one.
@@ -195,12 +213,12 @@ fun InvoiceForm(
             Row(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(l.itemName, color = c.ink, fontWeight = FontWeight.Bold)
-                    Text(word(W.bill_item_figures, Format.qty(l.quantity, l.unit), Format.money(l.rate), Format.money(l.lineTotal)), color = c.inkSoft, fontSize = 12.sp)
+                    Text(if (prices) word(W.bill_item_figures, Format.qty(l.quantity, l.unit), Format.money(l.rate), Format.money(l.lineTotal)) else Format.qty(l.quantity, l.unit), color = c.inkSoft, fontSize = 12.sp)
                 }
                 FluentButton(word(W.delete), { lines = lines.filterIndexed { j, _ -> j != i } }, kind = ButtonKind.DANGER)
             }
         }
-        InvoiceLineForm(products, onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { lines = lines + it; problem = null }
+        InvoiceLineForm(products, prices = prices, onBusy = { lineBusy = it; if (!it && problem == needLine) problem = null }) { lines = lines + it; problem = null }
 
         if (showDiscount) Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(word(W.invoice_discount_label), color = c.inkSoft, fontSize = 13.sp)
@@ -223,7 +241,7 @@ fun InvoiceForm(
         if (showReceived) Outlined(received, { received = it }, label = { Text(word(W.invoice_received_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         if (showNote) Outlined(note, { note = it }, label = { Text(word(W.invoice_note_label)) }, modifier = Modifier.fillMaxWidth())
 
-        Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(12.dp)) {
+        if (prices) Column(Modifier.fillMaxWidth().background(Look.subtle, Look.ctl).padding(12.dp)) {
             SumLine(word(W.invoice_sum_items), Format.money(t.subtotal))
             if (t.discountAmount > 0) SumLine(word(W.invoice_discount_label), "− " + Format.money(t.discountAmount))
             if (t.taxAmount > 0) SumLine(word(W.invoice_tax_label), Format.money(t.taxAmount))
@@ -260,13 +278,15 @@ fun InvoiceForm(
     }
 
     DialogFrame(
-        title = existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber } ?: word(W.add_invoice),
+        title = existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber }
+            ?: if (docKind == com.innovation313.roshankhata.data.DocKind.INVOICE) word(W.add_invoice) else docKindWord(docKind),
         onClose = onCancel,
         scroll = false,
         footerStart = {
             val said = problem
             if (said != null) Text(said, color = c.owedToMe, fontSize = 13.sp, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-            else Text(word(W.invoice_sum_total) + "  " + Format.money(t.grandTotal), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+            else if (prices) Text(word(W.invoice_sum_total) + "  " + Format.money(t.grandTotal), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+            else Text(word(W.invoice_items_label) + "  " + lines.size, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
         },
         footer = {
             FluentButton(word(W.cancel), onCancel)
@@ -340,7 +360,7 @@ private fun SumLine(label: String, value: String, bold: Boolean = false) {
 }
 
 @Composable
-private fun InvoiceLineForm(products: ProductShelf?, onBusy: (Boolean) -> Unit = {}, onAdd: (InvoiceItem) -> Unit) {
+private fun InvoiceLineForm(products: ProductShelf?, prices: Boolean = true, onBusy: (Boolean) -> Unit = {}, onAdd: (InvoiceItem) -> Unit) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf("") }
     var qty by remember { mutableStateOf("1") }
@@ -358,10 +378,11 @@ private fun InvoiceLineForm(products: ProductShelf?, onBusy: (Boolean) -> Unit =
         })
         Outlined(qty, { qty = it }, label = { Text(word(W.qty_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
         Outlined(unit, { unit = it }, label = { Text(LocalTrade.current.unitHint()) }, singleLine = true, modifier = Modifier.weight(1f))
-        Outlined(rate, { rate = it }, label = { Text(word(W.invoice_item_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+        // A challan's line has no rate box (prices are not printed); its rate is kept as 0.
+        if (prices) Outlined(rate, { rate = it }, label = { Text(word(W.invoice_item_rate_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
     }
     val q = Calc.evalAmount(qty)
-    val r = Calc.evalPad(rate)
+    val r = if (prices) Calc.evalPad(rate) else 0.0
     FillButton(word(W.add_item), c.brandGreen, enabled = name.isNotBlank() && q != null && r != null && r >= 0) {
         onAdd(InvoiceItem(invoiceId = 0, itemName = name.trim(), quantity = q!!, unit = com.innovation313.roshankhata.data.UnitWords.canonical(unit), rate = r!!))
         name = ""; qty = "1"; unit = ""; rate = ""
