@@ -161,7 +161,8 @@ class CounterReviewTest {
         val free = CounterDraft().apply { addFree("Rope").also { it.qty = "2"; it.rate = "50" }; payRestInCash() }
         Counter.post(dao, free)
         dao.setSetting(BookSettings.BLOCK_NEGATIVE_STOCK, null)
-        Counter.post(dao, ticket(1.0))
+        // Off again: the shelf is below zero and the sale still goes through, as before the rule existed.
+        assertTrue(Counter.post(dao, ticket(1.0)) > 0L)
     }
 
     @Test
