@@ -19,10 +19,13 @@ No account, no server, no ads. Everything stays on the phone.
     `:desktop`: sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,685 strings and 57 plurals (counted 28 Oct 2026) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
+- About 2,582 strings and 55 plurals (counted 29 Oct 2026, after the unused-code
+  sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
+  screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
+  queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 38 (schema JSON checked in up to 31; CI writes the rest);
-  backup format 15 (an entry's bill photo path, 22 Oct 2026)
+- Room database, version 39 (schema JSON checked in up to 31; CI writes the rest);
+  backup format 16 (the payment reference, 28 Oct 2026; 15 the bill photo path, 22 Oct)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -157,7 +160,9 @@ No account, no server, no ads. Everything stays on the phone.
   while focused; `big` for an amount), `FluentCard`, `PageHeader` (26 sp
   title, its line, the page's actions on the end side), `StatCard` (the
   figure cards with a soft gradient of their tint), `Avatar`, `TableHead`,
-  `MonoTile` (a tile glyph in one colour). `Look` (Panes.kt) gained the
+  `MonoTile` (a tile glyph in one colour) — `StatCard`, `MonoTile`,
+  `GlyphChip` and Panes' `TotalCard` were removed 29 Oct 2026 as unused
+  (Marhala 2 replaced them). `Look` (Panes.kt) gained the
   surfaces — base, layer, layerAlt, subtle, control, strokeCard — the accent
   (#1A7F50 by day: Figma's #1F8F5C fell short of 4.5:1 for white words;
   #5FD9A3 by night), the four tints and `ctl`/`card` corners; the edge and
@@ -174,7 +179,8 @@ No account, no server, no ads. Everything stays on the phone.
   last dealing, the balance and which way it runs); Add Party and the entry
   editor use FluentField (the amount big with the currency sign, the day as a
   date box). Three strings were added in all nine languages
-  (home_cash_in_hand, home_quick_actions, home_col_time). Phase 2 (the same
+  (home_cash_in_hand — removed 29 Oct 2026, unused since Marhala 2 —,
+  home_quick_actions, home_col_time). Phase 2 (the same
   evening, the owner: one theme on every Windows screen, no generic page):
   Fluent.kt also holds the frames — `FluentPage` (head + actions, 24/18 dp),
   `ListCard`/`ListHead`, `EmptyState` (tile on a disc, a line, the one
@@ -1196,8 +1202,10 @@ shared/src/
   jvmSharedMain/   Kotlin that may use the JDK; Android and the computer share it
     data/          KhataDatabase (Room, @ConstructedBy), KhataDao, entities,
                    BackupCodec (the backup format), ShopSettings, Format...
-    screens/       Shared Compose screens: About, EntryForm, RoshanTheme (PartyLedgerScreen.kt
-                   keeps only the balance's side word and colour since Marhala 4)
+    screens/       Shared Compose screens: About, RoshanTheme (PartyLedgerScreen.kt
+                   keeps only the balance's side word and colour since Marhala 4;
+                   EntryForm.kt, a shared entry form nothing showed, was removed
+                   29 Oct 2026 — each platform has its own entry dialog)
     words/         Words: the app's strings for shared screens (W / WP / WA names)
   androidMain/     The phone's side of each door (android.icu, JsonReader, BidiFormatter)
   desktopMain/     The computer's side (java.time Hijri, Gson, BidiPort, FileShopSettings,
@@ -1396,8 +1404,8 @@ Each of these cost a build or a bug.
 30. **Names sort in the reader's alphabet** (`NameOrder`), never by
     `lowercase()`: the JDK's Collator has no Urdu/Sindhi/Persian
     tailoring on Windows, so the order is the app's own. Counts are
-    `<plurals>`; direction icons on Windows go through `Glyph`/`MonoTile`
-    (flipped in RTL); names and figures in a sentence are
+    `<plurals>`; direction icons on Windows go through `Glyph`
+    (flipped in RTL; `MonoTile` is gone); names and figures in a sentence are
     `Format.isolate`/`Format.ltr`.
 31. **A row with a random uid never equals its copy.** Tests that compare
     entities read back from a backup or another book compare

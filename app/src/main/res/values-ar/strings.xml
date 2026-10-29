@@ -2,7 +2,6 @@
     <string name="app_name">روشن كهاتا</string>
     <string name="welcome_title">دفاترك في أمان</string>
     <string name="welcome_body">يحتفظ روشن كهاتا بسجلاتك على هذا الهاتف. اربط حساب Google الخاص بك ليتم نسخ دفاترك احتياطيًا إلى درايفك — بياناتك، في حسابك.</string>
-    <string name="welcome_note">الربط يجعل النسخ الاحتياطي ممكنًا فقط. تصبح دفاترك في أمان بعد إجراء نسخة احتياطية — فعّل النسخ التلقائي، أو انسخ في أي وقت.</string>
     <string name="welcome_connect">المتابعة باستخدام Google</string>
     <string name="welcome_skip">ربما لاحقًا</string>
 
@@ -10,10 +9,6 @@
     <string name="coach_next">التالي</string>
     <string name="coach_done">فهمت</string>
     <string name="coach_desc_balance">كل ما يدين به عملاؤك لك، مطروحًا منه كل ما عليك. يظهر في البداية مخفيًا بنقاط: اضغط على العين لرؤيته، ومرة أخرى لإخفائه.</string>
-    <string name="coach_desc_get">إجمالي ما لا يزال على عملائك أن يدفعوه لك.</string>
-    <string name="coach_desc_give">إجمالي ما لا يزال عليك أن تدفعه للموردين وغيرهم.</string>
-    <string name="coach_title_search">ابحث عن عميل</string>
-    <string name="coach_desc_search">ابحث في قائمة عملائك أو رتّبها من هنا.</string>
     <string name="coach_title_nav_khata">كهاتا</string>
     <string name="coach_desc_nav_khata">سجلات عملائك — من يدين لك ومن تدين له.</string>
     <string name="coach_title_nav_cashbook">دفتر النقدية</string>
@@ -22,16 +17,12 @@
     <string name="coach_desc_nav_cheques">تتبّع الشيكات التي أعطيتها أو استلمتها، مع مواعيد الاستحقاق.</string>
     <string name="coach_title_nav_plans">الخطط</string>
     <string name="coach_desc_nav_plans">خطط التقسيط للعملاء الذين يدفعون على دفعات.</string>
-    <string name="coach_title_nav_more">المزيد</string>
-    <string name="coach_desc_nav_more">حاسبة الزكاة، بطاقة المتجر، النسخ الاحتياطي، قفل التطبيق، والإعدادات.</string>
         <string name="coach_title_bills">فواتير الموردين</string>
     <string name="coach_desc_bills">سجّل ما تشتريه من الموردين وما لا يزال عليك لهم.</string>
     <string name="coach_title_stock">مخزون تقترب صلاحيته من الانتهاء</string>
     <string name="coach_desc_stock">بِعه أو خفّض سعره أو أرجعه — ما دام في الوقت متسع.</string>
     <string name="coach_title_insights">تحليلات المبيعات</string>
     <string name="coach_desc_insights">اعرف ما يُباع، وما يبقى راكدًا، وأين تتجمّد أموالك.</string>
-    <string name="coach_title_zakat">حاسبة الزكاة</string>
-    <string name="coach_desc_zakat">أداة مرجعية لتقدير زكاتك — تأكّد من الحكم مع عالم مؤهل.</string>
     <string name="coach_title_bizcard">بطاقة العمل</string>
     <string name="coach_desc_bizcard">أنشئ بطاقة قابلة للمشاركة لمتجرك في ثوانٍ، بثلاثة أنماط.</string>
     <string name="coach_title_invoice">فاتورة</string>
@@ -79,8 +70,6 @@
     <string name="coach_title_backup">النسخ الاحتياطي</string>
     <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
     <string name="coach_desc_backup_pc">تُحفظ نسخة من دفترك على هذا الحاسوب كل يوم. اختر لها مكانًا ثانيًا في النسخ اليومية: ذاكرة USB أو مجلد درايف الخاص بك.</string>
-        <string name="coach_title_settings">إعدادات العمل</string>
-    <string name="coach_desc_settings">اسم متجرك وبيانات الاتصال وتفضيلاتك — تُضبط مرة وتُستخدم في كل مكان.</string>
         <string name="calculator">آلة حاسبة</string>
     <string name="calc_clear">C</string>
     <string name="calc_backspace">\u232B</string>
@@ -94,39 +83,29 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">آلة حاسبة</string>
     <string name="coach_desc_calc">حسابات سريعة إلى جانب دفترك — الأرباح والمجاميع والتقسيم.</string>
-    <string name="coach_title_applock">سلة المحذوفات</string>
-    <string name="coach_desc_applock">حذفت عميلًا بالخطأ؟ استعده من هنا.</string>
-    <string name="coach_title_add">أضف عميلًا</string>
-    <string name="coach_desc_add">اضغط هنا لإضافة عميلك الأول وبدء دفتر حساباتك.</string>
     <string name="app_tagline">Innovation-313</string>
-    <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">الرصيد الصافي</string>
     <string name="home_sec_daily">كل يوم</string>
     <string name="home_sec_business">النشاط</string>
     <string name="home_today">اليوم</string>
-    <string name="home_cash_in_hand">النقد في اليد</string>
     <string name="home_quick_actions">إجراءات سريعة</string>
     <string name="home_col_time">الوقت</string>
     <string name="tile_bills">الفواتير</string>
     <string name="tile_expiry">الانتهاء</string>
     <string name="tile_card">البطاقة</string>
-    <string name="tile_settings">الإعدادات</string>
     <string name="tile_bin">المهملات</string>
     <string name="tile_products">البضائع</string>
     <string name="tile_zakat">الزكاة</string>
     <string name="tile_insights">التحليل</string>
     <string name="tile_seasons">الموسم</string>
-    <string name="tile_rates">الأسعار</string>
     <string name="today_backup">النسخ</string>
     <string name="today_gap">عجز نقدي</string>
     <string name="today_chip">%1$s · %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
-    <string name="ledger_pdf_title">تقرير دفتر الأستاذ PDF</string>
     <string name="ledger_report_generating">جارٍ إنشاء تقرير دفتر الأستاذ…</string>
     <string name="ledger_report_failed">تعذّر إنشاء التقرير.</string>
     <string name="ledger_report_title">تقرير الدفتر</string>
-    <string name="ledger_report_col_name">الاسم</string>
     <string name="ledger_report_empty">لا قيود في هذه الفترة.</string>
     <string name="ledger_report_download">تنزيل</string>
     <string name="ledger_report_download_as">تنزيل بأي صيغة</string>
@@ -138,8 +117,6 @@
     <string name="report_end_date">تاريخ النهاية</string>
     <string name="ledger_report_from">من %1$s</string>
     <string name="ledger_report_till">حتى %1$s</string>
-    <string name="ledger_report_showing_all">المعروض: كل الفترات</string>
-    <string name="ledger_report_show_all">عرض كل الفترات</string>
     <string name="add_party">إضافة طرف</string>
     <string name="add_party_duplicate_with_phone">يوجد عميل مشابه بالفعل: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">يوجد عميل مشابه بالفعل: %1$s</string>
@@ -223,7 +200,6 @@
         <item quantity="other">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
     </plurals>
     <string name="moved_to_bin">نُقل إلى سلة المحذوفات</string>
-    <string name="long_press_to_delete">اضغط مطولًا على الطرف لحذفه</string>
 
     <string name="zakat_calculator">حاسبة الزكاة</string>
     <string name="zakat_subtitle">أداة استرشادية — ليست فتوى</string>
@@ -232,7 +208,6 @@
     <string name="nisab_section">النصاب</string>
     <string name="nisab_help">النصاب هنا على معيار الفضة (612.36 غرامًا)، وهو الرأي الأحوط لحق الفقراء غالبًا.</string>
     <string name="silver_price_hint">سعر غرام الفضة</string>
-    <string name="nisab_value">النصاب = %1$s</string>
     <string name="nisab_enter_price">أدخل السعر لحساب النصاب</string>
     <string name="nisab_needed_first">أدخل السعر أولاً</string>
     <string name="above_nisab">بلغ مالك النصاب — الزكاة واجبة (بشرط تمام الحول القمري).</string>
@@ -311,7 +286,6 @@
 
     <string name="statement_pdf">كشف حساب</string>
     <string name="generating_statement">جارٍ تجهيز الكشف\u2026</string>
-    <string name="share_statement">مشاركة الكشف</string>
     <string name="statement_failed">تعذر إنشاء الكشف. حاول مجددًا.</string>
     <string name="no_entries_to_export">لا قيود لوضعها في كشف بعد.</string>
 
@@ -327,7 +301,6 @@
     <string name="lock_pin_again">أدخل الرمز نفسه مرة أخرى</string>
     <string name="lock_pin_wrong">رمز خاطئ. حاول مرة أخرى.</string>
     <string name="lock_pin_mismatch">الرمزان غير متطابقين.</string>
-    <string name="lock_pin_wait">محاولات كثيرة. انتظر %1$d ثانية.</string>
     <string name="lock_unlock">فتح</string>
     <string name="lock_title">فتح روشن كهاتا</string>
     <string name="lock_subtitle">دفترك خاص. أكّد أنك أنت.</string>
@@ -348,7 +321,6 @@
     <string name="app_lock_unavailable">قفل التطبيق غير متاح على هذا الهاتف.</string>
     <string name="ok">حسنًا</string>
 
-    <string name="business_settings">إعدادات النشاط التجاري</string>
     <string name="business_profile">ملف النشاط التجاري</string>
     <string name="profile_preview_caption">معاينة مباشرة لرأس فاتورتك</string>
     <string name="business_settings_subtitle">تُطبع على فواتيرك وكشوفك وتقاريرك</string>
@@ -374,7 +346,6 @@
     <string name="qr_confirm_message">انظر إلى الرمز أعلاه وأكّد أنه حساب الدفع الخاص بك (EasyPaisa، JazzCash، UPI…). وإلا وصلت مدفوعات عملائك إلى شخص آخر.</string>
     <string name="qr_confirm_yes">نعم، هو حسابي</string>
     <string name="profile_saved">تم الحفظ</string>
-    <string name="attach_qr_to_reminder">إرفاق رمز الدفع</string>
 
     <string name="cheques">الشيكات</string>
     <string name="add_cheque">إضافة شيك</string>
@@ -420,7 +391,6 @@
         <item quantity="many">%1$d شيكًا جاهزًا للإيداع</item>
         <item quantity="other">%1$d شيك جاهز للإيداع</item>
     </plurals>
-    <string name="due_summary_none">لا مستحقات</string>
     <string name="due_summary_pending">%1$d بانتظار الصرف</string>
     <string name="due_summary_empty">لا شيكات</string>
     <string name="due_summary_all_settled">الكل مسدد</string>
@@ -446,8 +416,6 @@
     <string name="search_parties">الاسم أو الرقم</string>
     <string name="search_entries">ملاحظات أو بضاعة</string>
     <string name="sort">ترتيب</string>
-    <string name="filter_type">النوع</string>
-    <string name="filter_type_title">أي نوع تعرض</string>
     <string name="filter_type_all">الكل</string>
     <string name="filter_type_customers">العملاء</string>
     <string name="filter_type_suppliers">الموردون</string>
@@ -468,8 +436,6 @@
     <string name="khata_pick_party">اختر أحدًا من القائمة لترى حسابه هنا.</string>
     <string name="khata_choose_several">تحديد عدة عناصر (للحذف)</string>
     <string name="no_matching_entries">لا قيود تطابق بحثك.</string>
-    <string name="showing_filtered">عرض %1$d من %2$d</string>
-    <string name="running_balance_note">الرصيد الجاري يتبع ترتيب الدفتر نفسه، فيبقى صحيحًا مهما رتبت أو بحثت.</string>
 
     <string name="party_photo">الصورة</string>
     <string name="set_photo">تعيين صورة</string>
@@ -482,7 +448,6 @@
     <string name="photo_removed">أُزيلت الصورة</string>
     <string name="photo_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
     <string name="photo_privacy_note">تبقى الصورة على هذا الهاتف. لا تُرفع أبدًا، وتُترك عمدًا خارج الكشوف — فالكشف يُعاد توجيهه، وعميلك لم يوافق على سفر وجهه معه.</string>
-    <string name="party_options">خيارات</string>
     <string name="edit_party">تعديل البيانات</string>
     <string name="delete_party">حذف</string>
 
@@ -492,8 +457,6 @@
     <string name="credit_limit_hint">الحد</string>
     <string name="credit_limit_advisory">هذا تحذير لا منع. النشاط نشاطك — يمكنك المتابعة دائمًا.</string>
     <string name="credit_limit_current">عليه لك حاليًا %1$s</string>
-    <string name="credit_limit_none">لا حد معين</string>
-    <string name="credit_limit_set_to">الحد: %1$s</string>
     <string name="credit_limit_removed">أُزيل حد الائتمان</string>
     <string name="credit_limit_saved">حُفظ حد الائتمان</string>
 
@@ -520,7 +483,6 @@
     <string name="pick_end_date">اختر تاريخ النهاية</string>
     <string name="closing_note_range">الأرقام الثلاثة أعلاه لهذه الفترة فقط. الرصيد الختامي أدناه هو الحساب الكامل — %1$s — لأن مجموع فترة جزئية ليس ما يستحق على عميلك.</string>
     <string name="closing_note_all">الرصيد الختامي: %1$s</string>
-    <string name="report_period">الفترة: %1$s</string>
     <string name="invalid_range">لا يمكن أن يسبق تاريخ النهاية تاريخ البداية.</string>
 
     <string name="cashbook">دفتر النقد</string>
@@ -544,7 +506,6 @@
     <string name="restore_from_file">استعادة من نسخة احتياطية</string>
     <string name="backup_explain">كل شيء — العملاء والدفتر والشيكات ودفتر النقد وسلة المحذوفات — يُكتب في ملف واحد تحفظه في Drive أو ترسله لنفسك على واتساب أو تبقيه على بطاقة ذاكرة.\n\nالملف نص بسيط مقروء. حتى بعد سنوات، وحتى بدون هذا التطبيق، تبقى سجلاتك قابلة للاسترجاع. البيانات التي لا تستعيدها إلا بمساعدتنا ليست ملكك حقًا.\n\nالصور هي الاستثناء الوحيد. تبقى صور العملاء وصور الفواتير على هذا الهاتف ولا تُدرَج داخل الملف — فاستعادة نسخة احتياطية على هاتف جديد تعيد كل السجلات، لكن ليس الصور. احتفظ بنسخة من أي صورة فاتورة مهمة.</string>
     <string name="backup_warning">يحفظ روشن كهاتا كل شيء على هذا الهاتف وحده. إن ضاع الهاتف أو تعطل أو أُزيل التطبيق ذهبت السجلات معه. خذ نسخة احتياطية بانتظام واحفظها في مكان آخر.</string>
-    <string name="backup_created">النسخة جاهزة — اختر مكان الحفظ</string>
     <string name="backup_failed">تعذر إنشاء النسخة الاحتياطية.</string>
     <string name="save_backup">حفظ النسخة</string>
 
@@ -592,15 +553,11 @@
 
     <string name="nav_khata">الدفتر</string>
     <string name="nav_home">الرئيسية</string>
-    <string name="home_section_daily">كل يوم</string>
-    <string name="home_section_business">عملك</string>
     <string name="nav_cashbook">النقد</string>
     <string name="nav_cheques">الشيكات</string>
     <string name="nav_plans">الخطط</string>
-    <string name="nav_more">المزيد</string>
 
     <string name="more_title">المزيد</string>
-    <string name="tap_to_change_business">اضغط لتبديل النشاط التجاري</string>
     <string name="businesses_title">أنشطتك التجارية</string>
     <string name="businesses_subtitle">لكل نشاط تجاري دفتر حسابات منفصل خاص به</string>
     <string name="business_add">إضافة نشاط تجاري</string>
@@ -618,7 +575,6 @@
     <string name="erase_all_done">تم مسح كل البيانات.</string>
     <string name="db_broken_title">الدفتر لا يفتح</string>
     <string name="db_broken_body">تضرر ملف الدفتر على هذا الهاتف. نسخك اليومية سليمة — يحتفظ التطبيق بنسخة عن كل يوم من الأيام السبعة الماضية، والرجوع إلى نسخة لا يمس ملف اليوم حتى يتم التأكد من سلامتها.</string>
-    <string name="business_rename_hint">اضغط للفتح · اضغط مطولاً لإعادة التسمية</string>
     <string name="restore_business_mismatch">هذه النسخة الاحتياطية تخص %1$s، لكن النشاط المفتوح الآن هو %2$s. الاستعادة ستستبدل بيانات النشاط المفتوح بتلك النسخة.</string>
     <string name="contact_in_recycle_bin">في سلة المحذوفات</string>
     <string name="restore_no_images">عادت سجلاتك، لكن هذه النسخة الاحتياطية لم تكن معها صور، لذلك لم تُستعد الصور وصور الفواتير ورمز الاستجابة. للاحتفاظ بالصور في النسخ القادمة، فعّل «تضمين الصور» قبل النسخ الاحتياطي.</string>
@@ -633,7 +589,6 @@
         <item quantity="other">تم العثور على %1$d نشاط تجاري في درايف</item>
     </plurals>
     <string name="drive_restore_all">استعادة الكل</string>
-    <string name="drive_restore_all_warning">ستُستعاد هذه الأنشطة من درايف، وستُستبدل بيانات كل منها على هذا الهاتف:\n\n%1$s</string>
     <string name="drive_restored_these">تمت الاستعادة:\n%1$s</string>
     <string name="drive_restore_missed">تعذرت الاستعادة:\n%1$s</string>
     <string name="business_numbered">نشاط %1$d</string>
@@ -688,13 +643,11 @@
     <string name="filter_apply">تطبيق التصفية</string>
     <string name="filter_clear">مسح</string>
     <string name="filter_account_all">الكل</string>
-    <string name="more_reports">التقارير والزكاة</string>
     <string name="more_settings">الإعدادات</string>
     <string name="settings_group_security">الأمان</string>
     <string name="settings_group_data">البيانات</string>
     <string name="settings_group_display">العرض</string>
     <string name="settings_group_help">المساعدة</string>
-    <string name="more_data">بياناتك</string>
 
     <string name="more_options">المزيد</string>
 
@@ -746,7 +699,6 @@
     <string name="delete_bill">حذف الفاتورة</string>
     <string name="delete_bill_confirm">ستُزال الفاتورة وسجلات دُفعاتها. إن كانت فاتورة آجلة فسيذهب قيدها في الدفتر (ما تدين به لهذا المورّد) إلى سلة المحذوفات أيضًا، فينقص المبلغ المستحق بقيمة هذه الفاتورة. يمكن استعادة القيد من سلة المحذوفات خلال 30 يومًا.</string>
     <string name="bill_actions">الفاتورة</string>
-    <string name="view_items">عرض الأصناف والدُفعات</string>
 
     <!-- Invoices -->
     <string name="invoices">فواتير البيع</string>
@@ -758,12 +710,9 @@
     <string name="pick_invoice_date">اختر تاريخ الفاتورة</string>
     <string name="invoice_date_set">التاريخ: %1$s</string>
     <string name="invoice_due_date_hint">تاريخ الاستحقاق (اختياري)</string>
-    <string name="invoice_discount_hint">الخصم % (اختياري)</string>
-    <string name="invoice_tax_hint">الضريبة % (اختياري)</string>
     <string name="invoice_item_name_hint">اسم الصنف</string>
     <string name="invoice_item_rate_hint">السعر</string>
     <string name="invoice_row_unit_hint">الوحدة</string>
-    <string name="invoice_item_invalid">أدخل اسم صنف ومقدارًا وسعرًا صحيحين.</string>
     <string name="invoice_customer_required">أدخل اسم العميل أولاً.</string>
     <string name="invoice_needs_item">أضف صنفًا واحدًا على الأقل أولاً.</string>
     <string name="invoice_saved">تم حفظ الفاتورة.</string>
@@ -800,9 +749,7 @@
     <string name="invoice_back">السابق</string>
     <string name="invoice_items_label">الأصناف</string>
     <string name="invoice_number_hint">رقم الفاتورة (اختياري)</string>
-    <string name="invoice_charge_label_hint">رسوم إضافية (اختياري)</string>
     <string name="invoice_charge_amount_hint">المبلغ</string>
-    <string name="invoice_received_hint">المبلغ المستلم (اختياري)</string>
     <string name="invoice_terms">الشروط والأحكام</string>
     <string name="invoice_terms_hint">مثل السداد خلال 14 يومًا.</string>
     <string name="invoice_strn_hint">مثل 1234567-8 (اختياري)</string>
@@ -853,7 +800,6 @@
     <string name="batch_none">لا رقم دُفعة مسجل</string>
     <string name="from_supplier">من %1$s</string>
     <string name="from_supplier_bill">من %1$s — فاتورة %2$s</string>
-    <string name="expiring_badge">%1$d قارب الانتهاء</string>
 
     <string name="trace_batch">تتبع دُفعة</string>
     <string name="trace_batch_hint">أدخل رقم الدُفعة</string>
@@ -870,7 +816,6 @@
 
     <string name="search_action">بحث</string>
 
-    <string name="pick_bill_due_date">اختر موعد استحقاق الدفع</string>
 
     <string name="backup_done_title">حُفظت النسخة الاحتياطية</string>
     <string name="backup_done_saved">حُفظت في:\n\n%1$s\n\nستجدها في مجلد التنزيلات وفي أي مدير ملفات. يحتفظ روشن كهاتا بنسخته أيضًا، فتستعيد دون البحث عن الملف.</string>
@@ -907,12 +852,8 @@
 
     <string name="powered_by">بدعم من Innovation-313</string>
     <string name="lock_tagline">بدعم من Innovation-313</string>
-    <string name="tap_to_start">المس أي مكان للمتابعة</string>
 
-    <string name="tap_to_continue">المس للمتابعة</string>
-    <string name="brand_har_hisaab">Har Hisaab Roshan</string>
 
-    <string name="unlock_to_open">المس للفتح</string>
 
     <string name="restore_done_with_bin">عادت بياناتك.\n\n%1$d من عملاء هذه النسخة كانوا محذوفين قبل إنشائها، فاستُعيدوا إلى سلة المحذوفات \u2014 لا القائمة الرئيسية. افتح المزيد \u2190 سلة المحذوفات لتجدهم وتستعيد من تشاء كاملًا.</string>
 
@@ -921,7 +862,6 @@
     <string name="drive_not_connected">اربط حساب Google ويُنسخ دفترك تلقائيًا إلى Drive الخاص بك أنت. غيّر هاتفك وسجّل الدخول ثانية فيعود كل شيء. بياناتك في Drive حسابك؛ لا تصلنا أبدًا.</string>
     <string name="drive_connected">متصل باسم %1$s. آخر نسخة سحابية: %2$s</string>
     <string name="drive_connected_never">متصل باسم %1$s. لا نسخة سحابية بعد \u2014 اضغط «نسخ إلى Drive».</string>
-    <string name="welcome_signed_in_title">تم تسجيل الدخول بنجاح</string>
     <string name="drive_backup_now">نسخ إلى Drive الآن</string>
     <string name="drive_backup_images">تضمين الصور (الصور، صور الفواتير، QR)</string>
     <string name="drive_auto_backup">نسخ احتياطي تلقائي</string>
@@ -939,10 +879,8 @@
     <string name="drive_images_restore_failed">تمت استعادة سجلاتك، لكن تعذّر تنزيل الصور. أعد الاستعادة عند اتصال أفضل.</string>
     <string name="drive_restoring">جارٍ الاستعادة من Drive\u2026</string>
     <string name="drive_no_backup">لا نسخة في Google Drive بعد.</string>
-    <string name="drive_restore_failed">تعذرت الاستعادة من Drive. تحقق من الإنترنت وحاول ثانية.</string>
     <string name="drive_signin_failed">لم يكتمل تسجيل دخول Google. حاول ثانية.</string>
     <string name="drive_permission_needed">يحتاج روشن كهاتا إذنًا للحفظ في مجلده داخل Drive حسابك. اسمح عند السؤال.</string>
-    <string name="drive_restore_confirm">سيستبدل هذا كل ما في التطبيق بنسخة Google Drive. متابعة؟</string>
     <string name="i_have_to_get">لي عند الناس</string>
     <string name="i_have_to_give">عليّ للناس</string>
     <string name="insights_title">نظرة على المبيعات</string>
@@ -1271,7 +1209,6 @@
     <string name="about_privacy_body_pc">كل شيء محفوظ على هذا الحاسوب. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. وتبقى النسخ الاحتياطية على هذا الحاسوب وفي المجلد الذي تختاره، مثل ذاكرة فلاش أو مجلد غوغل درايف — وليس لدينا.</string>
     <string name="about_privacy_policy">سياسة الخصوصية</string>
     <string name="about_maker">من إنتاج Innovation-313</string>
-    <string name="party_exists">%1$s موجود بالفعل في دفترك — يتم فتحه الآن.</string>
     <string name="party_exists_title">قد يكون هذا في دفترك بالفعل</string>
     <string name="party_exists_message">هناك حساب مشابه مفتوح بالفعل:\n\n%1$s\n\nإن كان الشخص نفسه فافتح ما لديك. وإن كان شخصًا آخر — أو حسابًا ثانيًا تحتفظ به عن قصد — فأضفه.</string>
     <string name="open_existing">افتح الحساب الحالي</string>
@@ -1299,8 +1236,6 @@
     <string name="stamp_saved">تم حفظ الختم.</string>
     <string name="stamp_save_failed">تعذّر حفظ تلك الصورة.</string>
     <string name="made_with_app">روشن كهاتا</string>
-    <string name="more_details">أضف ملاحظة أو بضاعة أو حالة التحصيل</string>
-    <string name="back_to_amount">العودة إلى المبلغ</string>
     <string name="voice_entry">أدخل بالصوت</string>
     <string name="voice_prompt">قل مثلاً: أعطيت بلال خمسة آلاف</string>
     <string name="voice_unavailable">لا يوجد في هذا الهاتف محرك للتعرف على الصوت.</string>
@@ -1431,7 +1366,6 @@
     <string name="village_optional">القرية (اختياري)</string>
     <string name="product_name">اسم المنتج</string>
     <string name="company_optional">الشركة / العلامة (اختياري)</string>
-    <string name="category_optional">الفئة (اختياري)</string>
     <string name="unit_optional">الوحدة — زجاجة، كجم، كيس (اختياري)</string>
     <string name="compliance_section">بيانات جهة التفتيش</string>
     <string name="compliance_explain">مطلوبة فقط إن سُئل عنها في التفتيش. اتركها فارغة للأعلاف أو البذور.</string>
@@ -1460,7 +1394,6 @@
     <string name="poster_subtitle">صورة لحالة واتساب، باسم متجرك</string>
     <string name="poster_heading_hint">السطر الكبير</string>
     <string name="poster_message_hint">الرسالة</string>
-    <string name="poster_show_logo">شعار المتجر على الملصق</string>
     <string name="poster_show_mark">إظهار “روشن كهاتا” على الملصق</string>
     <string name="poster_custom">كلماتك الخاصة</string>
     <string name="poster_new_stock">وصلت بضاعة جديدة!</string>
@@ -1668,36 +1601,6 @@
     <string name="pdf_rep_col_got">استلمت</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 صفحة %2$d</string>
 
-    <string name="pdf_biz_generated">أُنشئ التقرير في %1$s</string>
-    <string name="pdf_biz_not_backup_2">لا يستطيع %1$s استعادة سجلاتك من PDF. احتفظ بملف</string>
-    <string name="pdf_biz_not_backup_3">النسخة الاحتياطية (RoshanKhata_Backup...txt) \u2014 فهو الذي</string>
-    <string name="pdf_biz_not_backup_4">يعيد بياناتك.</string>
-    <string name="pdf_biz_you_will_receive">سوف تستلم</string>
-    <string name="pdf_biz_you_will_pay">سوف تدفع</string>
-    <string name="pdf_biz_net_position">الصافي</string>
-    <string name="pdf_biz_cash_in">نقد وارد (دفتر النقد)</string>
-    <string name="pdf_biz_cash_out">نقد صادر (دفتر النقد)</string>
-    <string name="pdf_biz_people_count">العملاء والموردون</string>
-    <string name="pdf_biz_accounts">الحسابات</string>
-    <string name="pdf_biz_no_accounts">لا حسابات بعد.</string>
-    <string name="pdf_biz_settled">مسدد</string>
-    <string name="pdf_biz_cheques">شيكات لم تُحصّل بعد</string>
-    <string name="pdf_biz_cheques_note">ليست مالًا حتى تُحصّل. وهي غير مدرجة في الأرصدة أعلاه.</string>
-    <string name="pdf_biz_cheque">شيك</string>
-    <string name="pdf_biz_due">" \u00B7 الاستحقاق "</string>
-    <string name="pdf_biz_plans">خطط سداد جارية</string>
-    <string name="pdf_biz_paid_of">%1$s من %2$s</string>
-    <string name="pdf_biz_expiring">مخزون قارب على الانتهاء</string>
-    <string name="pdf_biz_expired">منتهي الصلاحية</string>
-    <plurals name="pdf_biz_days_left">
-        <item quantity="zero">%1$d يومًا</item>
-        <item quantity="one">%1$d يومًا</item>
-        <item quantity="two">%1$d يومًا</item>
-        <item quantity="few">%1$d يومًا</item>
-        <item quantity="many">%1$d يومًا</item>
-        <item quantity="other">%1$d يومًا</item>
-    </plurals>
-    <string name="pdf_biz_batch">"دفعة %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">سجل المبيعات والمشتريات</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1763,7 +1666,6 @@
     <string name="pdf_insp_no_batches">لا دفعات في المخزون. تُسجل الدفعة وتاريخ الانتهاء على فاتورة المورد.</string>
     <string name="pdf_insp_missing_note">كل منتج أدناه متوفر في المخزون لكن حقلًا أو أكثر من حقول ملصقه لم يُسجل قط.</string>
     <string name="pdf_insp_expired">منتهي الصلاحية</string>
-    <string name="pdf_insp_days_left">بقي %1$d يومًا</string>
     <string name="pdf_insp_units_differ">الوحدات مختلفة</string>
     <string name="pdf_insp_company_tag">الشركة</string>
     <plurals name="pdf_insp_products">
@@ -2943,12 +2845,9 @@
     <string name="poster_choose_design">اختر تصميمًا</string>
     <string name="poster_language">لغة الملصق</string>
     <string name="poster_lang_more">المزيد</string>
-    <string name="poster_real_picture">الصورة الحقيقية، 1080 × 1920: ملء الشاشة في الحالة</string>
-    <string name="poster_what_goes">ما يظهر على الملصق</string>
     <string name="poster_items_label">ماذا وصل؟ (حتى 4)</string>
     <string name="poster_add_item">إضافة</string>
     <string name="poster_item_hint">مثلًا بذور القمح</string>
-    <string name="poster_for_your_shop">لمحلك:</string>
     <string name="poster_add_photo">أضف صورة</string>
     <string name="poster_photo_hint">اختياري. صورتك للبضاعة تأخذ مكان الصندوق.</string>
     <string name="poster_remove_photo">إزالة الصورة</string>
@@ -3082,7 +2981,6 @@
     <string name="invoice_sum_balance">الرصيد المستحق</string>
     <string name="invoice_more_apply">تطبيق</string>
     <string name="invoice_discount_amount_line">الخصم: −%1$s</string>
-    <string name="invoice_designs_count">%1$d تصاميم</string>
     <string name="invoice_designs_tap">اضغط على تصميم لتراه بالأسفل</string>
     <string name="invoice_design_position">%1$d من %2$d</string>
     <string name="invoice_filter_all">الكل</string>
@@ -3131,8 +3029,6 @@
     <string name="auto_folder_last">آخر نسخة هناك: %1$s</string>
     <string name="auto_folder_missing">لا يمكن الوصول إلى هذا المجلد الآن. أدخل ذاكرة USB أو اختر مجلدًا آخر.</string>
     <string name="import_csv">استيراد العملاء</string>
-    <string name="import_csv_help">انقل العملاء من تطبيق دفتر آخر: ملف CSV فيه الاسم والهاتف والرصيد. يُضاف كل عميل برصيده كقيد افتتاحي واحد.</string>
-    <string name="import_csv_found">العملاء في الملف: %1$d · المجموع %2$s</string>
     <string name="import_csv_skipped">موجودون في الدفتر من قبل، تُركوا كما هم: %1$d</string>
     <string name="import_csv_sign">في هذا الملف، الرصيد الموجب يعني:</string>
     <string name="import_csv_owes_me">هم مدينون لي</string>
@@ -3180,7 +3076,6 @@
 
     <!-- The counter (POS Phase 1, 21 Oct 2026) -->
     <string name="pos_title">بيع على الكاونتر</string>
-    <string name="pos_subtitle">امسح الصنف أو ابحث عنه، أضفه، واستلم الدفع</string>
     <string name="pos_search_hint">اسم الصنف أو الباركود</string>
     <string name="pos_scan">مسح</string>
     <string name="pos_walk_in">زبون عابر</string>
@@ -3190,7 +3085,6 @@
     <string name="pos_col_qty">الكمية</string>
     <string name="pos_col_rate">السعر</string>
     <string name="pos_col_total">الإجمالي</string>
-    <string name="pos_line_discount">خصم السطر</string>
     <string name="pos_subtotal">المجموع الفرعي</string>
     <string name="pos_discount">الخصم</string>
     <string name="pos_tax">الضريبة %</string>
@@ -3218,9 +3112,6 @@
     <string name="pos_voided">ملغى</string>
     <string name="pos_status_done">تم</string>
     <string name="pos_status_void">ملغى</string>
-    <string name="pos_status_held">معلّق</string>
-    <string name="pos_today_count">%1$d مبيعات اليوم</string>
-    <string name="pos_today_total">اليوم %1$s</string>
     <string name="pos_recent">آخر المبيعات</string>
     <string name="pos_all_tickets">كل المبيعات (آخر 60 يومًا)</string>
     <string name="pos_ticket_search">رقم الفاتورة أو اسم الزبون</string>
@@ -3240,7 +3131,6 @@
     <string name="pos_receipt">إيصال</string>
     <string name="pos_customer_pays_later">الباقي على حساب %1$s</string>
     <string name="cash_category_sale">بيع</string>
-    <string name="pos_sales_title">المبيعات</string>
     <string name="pos_keys_help">F2 صنف · F4 كمية · F6 خصم · F8 زبون · F9 دفع · F12 إتمام</string>
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
@@ -3273,8 +3163,6 @@
     <string name="pos_err_walk_in_cash">الزبون العابر يُرد له المبلغ كاملًا نقدًا</string>
     <string name="pos_err_reason">السبب مطلوب</string>
     <string name="pos_err_refund">المبلغ المسترد أكبر من قيمة البضاعة</string>
-    <string name="pos_return_no_receipt">بدون إيصال</string>
-    <string name="pos_exchange">استبدال: بيع من جديد</string>
     <string name="pos_return_of">إرجاع %1$s</string>
     <string name="cash_category_return">إرجاع</string>
     <string name="pos_recent_sales">آخر المبيعات</string>
@@ -3562,7 +3450,6 @@
     <string name="product_variant">النوع (مقاس، لون، نكهة)</string>
     <string name="product_variant_help">الأنواع منتجات مستقلة — لكلٍّ سعره وباركوده ومخزونه — تُعرض معًا تحت المنتج الرئيسي في شبكة أصناف الكاشير.</string>
     <string name="cd_title">شاشة العميل</string>
-    <string name="cd_help">نافذة ثانية للعميل: الأصناف والإجمالي ورمز QR للدفع الخاص بالمتجر. اسحبها إلى الشاشة الثانية.</string>
     <string name="cd_scan">امسح للدفع</string>
     <string name="cd_qr_note">رمز QR لا يحمل المبلغ: تحقق منه على هاتفك قبل الدفع.</string>
     <string name="cd_welcome">أهلًا وسهلًا</string>
@@ -3675,7 +3562,6 @@
     <string name="country_other">أخرى</string>
     <string name="country_ask_title">أين يقع محلك؟</string>
     <string name="country_ask_body">يستخدم التطبيق هذا لأرقام واتساب واسم الرقم الضريبي والأسبوع. يمكنك تغييره لاحقاً من ملف المحل.</string>
-    <string name="poster_national_day">اليوم الوطني</string>
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">رقم المحفظة الإلكترونية (%1$s)</string>
@@ -3704,14 +3590,6 @@
         <item quantity="few">%d تقارب الانتهاء</item>
         <item quantity="many">%d يقارب الانتهاء</item>
         <item quantity="other">%d يقارب الانتهاء</item>
-    </plurals>
-    <plurals name="n_sales_today">
-        <item quantity="zero">لا مبيعات اليوم</item>
-        <item quantity="one">عملية بيع واحدة اليوم</item>
-        <item quantity="two">عمليتا بيع اليوم</item>
-        <item quantity="few">%d عمليات بيع اليوم</item>
-        <item quantity="many">%d عملية بيع اليوم</item>
-        <item quantity="other">%d عملية بيع اليوم</item>
     </plurals>
     <plurals name="n_designs">
         <item quantity="zero">لا تصاميم</item>

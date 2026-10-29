@@ -297,8 +297,8 @@ object LiveWire {
     /**
      * Phone side: the offer with the book read from [backup] as it goes out
      * ([SealedChunks]), never held whole (22 Oct 2026, the review); the
-     * computer reads the same frame [sendOffer] sends. [offer]'s own backup
-     * bytes are not sent. Blocking.
+     * computer reads it as "RKA2" ([PAIR]). [offer]'s own backup bytes are
+     * not sent. Blocking.
      */
     fun sendOfferFile(invite: Invite, offer: Offer, backup: java.io.File, connectMs: Int = 3000, readMs: Int = 120_000): Sent {
         val head = offerHead(offer)
@@ -310,24 +310,6 @@ object LiveWire {
                 val out = DataOutputStream(s.getOutputStream().buffered(1 shl 16))
                 out.write(PAIR)
                 backup.inputStream().buffered(1 shl 16).use { body -> SealedChunks.write(out, WifiSync.chunkKey(invite.secret), PAIR, head, body) }
-                val answer = s.getInputStream().read()
-                return if (answer == OK) Sent.Taken(host, offer.pair?.let { pairCode(invite.secret, it) }) else Sent.Refused
-            }
-        }
-        return Sent.Unreachable
-    }
-
-    /** Phone side: the offer (its book in [Offer.backup]) under the code's secret, to the first address that answers. Blocking. */
-    fun sendOffer(invite: Invite, offer: Offer, connectMs: Int = 3000, readMs: Int = 120_000): Sent {
-        val head = offerHead(offer)
-        for (host in invite.hosts) {
-            val socket = Socket()
-            try { socket.connect(InetSocketAddress(host, invite.port), connectMs) } catch (e: IOException) { runCatching { socket.close() }; continue }
-            socket.use { s ->
-                s.soTimeout = readMs
-                val out = DataOutputStream(s.getOutputStream().buffered(1 shl 16))
-                out.write(PAIR)
-                SealedChunks.write(out, WifiSync.chunkKey(invite.secret), PAIR, head, java.io.ByteArrayInputStream(offer.backup))
                 val answer = s.getInputStream().read()
                 return if (answer == OK) Sent.Taken(host, offer.pair?.let { pairCode(invite.secret, it) }) else Sent.Refused
             }

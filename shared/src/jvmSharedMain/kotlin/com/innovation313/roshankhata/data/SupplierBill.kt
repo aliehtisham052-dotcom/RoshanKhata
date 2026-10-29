@@ -268,8 +268,6 @@ data class InspectorBatch(
      */
     val remaining: Double get() = quantity - soldFromBatch
 
-    val hasExpiry: Boolean get() = expiryDate != null
-
     val daysLeft: Int?
         get() = expiryDate?.let {
             ((it - System.currentTimeMillis()) / (24L * 60 * 60 * 1000)).toInt()

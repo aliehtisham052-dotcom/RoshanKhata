@@ -42,7 +42,6 @@ object PosterKit {
     const val GOLD = 0xFFF3CF6A.toInt()
     const val GOLD_DEEP = 0xFFA8751C.toInt()
     const val GOLD_PALE = 0xFFFFF8D6.toInt()
-    const val CREAM = 0xFFF6EBD0.toInt()
 
     /** Everything a design draws from. [shopName] is already the one for this language. */
     class Page(

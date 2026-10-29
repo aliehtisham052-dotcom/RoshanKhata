@@ -110,9 +110,8 @@ class MainActivity : BaseActivity() {
         val iconRes: Int,
         val labelRes: Int,
         val destination: Class<*>,
-        /** The tile's own tint, and the colour its icon is drawn in. */
-        val tintRes: Int,
-        val iconColorRes: Int
+        /** The tile's own tint. */
+        val tintRes: Int
     )
 
     /**
@@ -129,19 +128,19 @@ class MainActivity : BaseActivity() {
         // to a row, so the screen is not a wall of sixteen equal buttons.
         val daily = listOf(
             Feature(R.drawable.ic_tile_khata, R.string.nav_khata, KhataActivity::class.java,
-                R.color.tile_khata_bg, R.color.section_khata),
+                R.color.tile_khata_bg),
             Feature(R.drawable.ic_tile_cashbook, R.string.nav_cashbook, CashbookActivity::class.java,
-                R.color.tile_cashbook_bg, R.color.section_cashbook),
+                R.color.tile_cashbook_bg),
             Feature(R.drawable.ic_tile_cheques, R.string.nav_cheques, ChequesActivity::class.java,
-                R.color.tile_cheques_bg, R.color.section_cheques),
+                R.color.tile_cheques_bg),
             // "Supplier bills" again (11 Oct): as "Bills" the word supplier had
             // gone from the whole Home screen, and the owner could not find it.
             Feature(R.drawable.ic_tile_bills, R.string.supplier_bills, BillsActivity::class.java,
-                R.color.tile_bills_bg, R.color.section_bills),
+                R.color.tile_bills_bg),
             Feature(R.drawable.ic_tile_plans, R.string.nav_plans, PlansActivity::class.java,
-                R.color.tile_plans_bg, R.color.section_plans),
+                R.color.tile_plans_bg),
             Feature(R.drawable.ic_tile_expiring, R.string.tile_expiry, ExpiringActivity::class.java,
-                R.color.tile_stock_bg, R.color.tile_stock_fg)
+                R.color.tile_stock_bg)
         )
         // Business (9 Oct): the selling and the books' story - two rows of four.
         // Every icon on Home is now its own picture: Rate list shared the
@@ -156,29 +155,29 @@ class MainActivity : BaseActivity() {
             // A product is born the first time its name appears on a bill, so
             // Products keeps Supplier Bills' colour.
             Feature(R.drawable.ic_tile_products, R.string.tile_products, ProductsActivity::class.java,
-                R.color.tile_bills_bg, R.color.section_bills),
+                R.color.tile_bills_bg),
             // The counter (POS Phase 1, 21 Oct) beside the products it sells: moved out of Every day on
             // 24 Oct 2026 — the owner keeps his sales in Khata and did not use it daily.
             Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
-                R.color.tile_cashbook_bg, R.color.section_cashbook),
+                R.color.tile_cashbook_bg),
             Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
-                R.color.tile_invoice_bg, R.color.tile_invoice_fg),
+                R.color.tile_invoice_bg),
             Feature(R.drawable.ic_tile_price_list, R.string.rate_list_title, RateListActivity::class.java,
-                R.color.tile_calc_bg, R.color.tile_calc_fg),
+                R.color.tile_calc_bg),
             Feature(R.drawable.ic_tile_supplier_rates, R.string.sr_title, SupplierRatesActivity::class.java,
-                R.color.tile_zakat_bg, R.color.gold_accent),
+                R.color.tile_zakat_bg),
             // The sales report (POS Phase 7): what sold, to whom, at what profit.
             Feature(R.drawable.ic_tile_cashflow, R.string.sales_report_title, SalesReportActivity::class.java,
-                R.color.tile_insights_bg, R.color.section_insights),
+                R.color.tile_insights_bg),
             Feature(R.drawable.ic_tile_insights, R.string.tile_insights, InsightsActivity::class.java,
-                R.color.tile_insights_bg, R.color.tile_insights_fg),
+                R.color.tile_insights_bg),
             Feature(R.drawable.ic_tile_followup, R.string.followup_title, FollowUpActivity::class.java,
-                R.color.tile_followup_bg, R.color.tile_followup_fg),
+                R.color.tile_followup_bg),
             Feature(R.drawable.ic_tile_cashflow, R.string.cf_title, CashFlowActivity::class.java,
-                R.color.tile_insights_bg, R.color.tile_insights_fg),
+                R.color.tile_insights_bg),
             // Seasons are an agri shop's; another trade's grid goes without (4 Oct).
             Feature(R.drawable.ic_tile_season, R.string.tile_seasons, SeasonsActivity::class.java,
-                R.color.tile_plans_bg, R.color.section_plans)
+                R.color.tile_plans_bg)
         ).filter {
             it.destination != SeasonsActivity::class.java ||
                 com.innovation313.roshankhata.data.TradeFeatures.seasons(this)
@@ -190,17 +189,17 @@ class MainActivity : BaseActivity() {
         // the small chip under the balance.
         val tools = listOf(
             Feature(R.drawable.ic_tile_calc, R.string.calculator, CalculatorActivity::class.java,
-                R.color.tile_calc_bg, R.color.tile_calc_fg),
+                R.color.tile_calc_bg),
             Feature(R.drawable.ic_tile_card, R.string.tile_card, BusinessCardActivity::class.java,
-                R.color.tile_card_bg, R.color.tile_card_fg),
+                R.color.tile_card_bg),
             Feature(R.drawable.ic_tile_zakat, R.string.tile_zakat, ZakatActivity::class.java,
-                R.color.tile_zakat_bg, R.color.gold_accent),
+                R.color.tile_zakat_bg),
             Feature(R.drawable.ic_tile_poster, R.string.poster_title, PosterActivity::class.java,
-                R.color.tile_plans_bg, R.color.section_plans),
+                R.color.tile_plans_bg),
             Feature(R.drawable.ic_tile_backup, R.string.tile_backup, BackupActivity::class.java,
-                R.color.tile_backup_bg, R.color.tile_backup_fg),
+                R.color.tile_backup_bg),
             Feature(R.drawable.ic_tile_bin, R.string.tile_bin, RecycleBinActivity::class.java,
-                R.color.tile_bin_bg, R.color.tile_bin_fg)
+                R.color.tile_bin_bg)
         )
 
         // A read-only phone shows no tile for a screen it may not open.

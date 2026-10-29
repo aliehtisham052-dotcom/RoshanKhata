@@ -17,14 +17,12 @@ import java.util.Locale
  * A printable PDF of every entry across every customer within one date
  * window — "what happened this week", not "how do the books stand today".
  *
- * This is the piece [BusinessReport] does not cover: that report is a
- * current-balance snapshot with no entries and no date choice at all.
- * Built alongside it in the same visual language (same header band, same
- * "not a backup" warning placed first) so a shopkeeper printing either one
- * recognises it as the same family of document, not a stray new design.
+ * Drawn in the same visual language as the app's other printed sheets
+ * (the header band, the "not a backup" warning placed first) so a shopkeeper
+ * printing any of them recognises the same family of document.
  *
- * Same warning, same reason as [BusinessReport]: a PDF cannot be read back
- * into the app, and the real backup is the .txt file, not this.
+ * The warning is there because a PDF cannot be read back into the app, and
+ * the real backup is the .txt file, not this.
  */
 object LedgerReport {
 
@@ -124,7 +122,7 @@ object LedgerReport {
 
         y = header()
 
-        // ---- The warning first, same placement and same reason as BusinessReport ----
+        // ---- The warning first: a PDF is not a backup ----
         canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 40f, warnFill)
         PdfRtl.drawText(canvas,
             context.getString(R.string.pdf_rep_not_backup),

@@ -334,7 +334,7 @@ class PartyDetailActivity : BaseActivity() {
     /**
      * Select-and-delete for this party's own history — the bounded
      * replacement for the "Delete all customers" button removed from the
-     * Recycle Bin (see KhataDao.softDeleteEntries). Scoped to whichever
+     * Recycle Bin (see KhataDao.softDeleteOwnEntries). Scoped to whichever
      * entries are on screen for THIS party, never the whole ledger.
      */
     private var selectionMode = false

@@ -729,26 +729,11 @@ object DriveBackup {
             ?.groupValues?.get(1)?.toLongOrNull()
     }
 
-    /** Download one discovered business's backup text by its Drive file id. */
-    suspend fun restoreById(
-        context: Context,
-        accountName: String,
-        fileId: String
-    ): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val drive = driveFor(context, accountName)
-            val out = ByteArrayOutputStream()
-            drive.files().get(fileId).executeMediaAndDownloadTo(out)
-            Result.success(out.toString("UTF-8"))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     /**
-     * The same download, streamed to a cache file (P7, 7 Oct) for the owner's
-     * restore, which then reads it as a stream too: a wholesaler's backup never
-     * sits in memory as one string on its way back into the book.
+     * Download one discovered business's backup text by its Drive file id,
+     * streamed to a cache file (P7, 7 Oct) for the owner's restore, which then
+     * reads it as a stream too: a wholesaler's backup never sits in memory as
+     * one string on its way back into the book.
      */
     suspend fun restoreByIdToFile(
         context: Context,
@@ -767,27 +752,6 @@ object DriveBackup {
             Result.failure(e)
         }
     }
-
-    /**
-     * Download the image archive's bytes, or null if none exists yet (the owner
-     * never turned images on, or this is an older cloud backup with text only).
-     * A missing images file is not an error — the text restore still stands on
-     * its own.
-     */
-    suspend fun restoreImages(context: Context, accountName: String): Result<ByteArray?> =
-        withContext(Dispatchers.IO) {
-            try {
-                val drive = driveFor(context, accountName)
-                val id = findImagesId(drive, Businesses.active(context).id)
-                    ?: return@withContext Result.success(null)
-
-                val out = ByteArrayOutputStream()
-                drive.files().get(id).executeMediaAndDownloadTo(out)
-                Result.success(out.toByteArray())
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
 
     /** When was the last cloud backup made? Null if none. */
     suspend fun lastBackupTime(context: Context, accountName: String): Long? =

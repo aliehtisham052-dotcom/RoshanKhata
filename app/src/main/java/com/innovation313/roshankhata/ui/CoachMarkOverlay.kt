@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
 
@@ -113,13 +112,6 @@ class CoachMarkOverlay(context: Context) : View(context) {
             val left = (targetLoc[0] - rootLoc[0]).toFloat()
             val top = (targetLoc[1] - rootLoc[1]).toFloat()
             return RectF(left, top, left + target.width, top + target.height)
-        }
-
-        /** Screen-space bounds of the target, e.g. for a BottomNavigationView item. */
-        fun screenBounds(target: View): Rect {
-            val out = Rect()
-            target.getGlobalVisibleRect(out)
-            return out
         }
     }
 }

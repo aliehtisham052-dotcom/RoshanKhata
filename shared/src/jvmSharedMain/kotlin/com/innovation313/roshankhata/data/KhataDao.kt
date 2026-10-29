@@ -92,19 +92,11 @@ interface KhataDao {
     fun observePartiesWithBalance(): Flow<List<PartyWithBalance>>
 
     /**
-     * Every live ledger line, reduced to what [PaymentHabit] reads: whose,
-     * when, how much, which way. Deleted (recycle-bin) lines are left out,
-     * the same as the balance above, so the habit and the balance agree.
-     */
-    @Query(
-        "SELECT partyId, timestamp, amount, isGiven FROM transactions " +
-            "WHERE isDeleted = 0 ORDER BY partyId, timestamp"
-    )
-    fun observeLedgerPoints(): Flow<List<LedgerPoint>>
-
-    /**
-     * The same lines, for the customers who OWE something only (P3 of the
-     * scaling work, 7 Oct 2026).
+     * Every live ledger line, reduced to what [PaymentHabit] reads (whose,
+     * when, how much, which way), for the customers who OWE something only
+     * (P3 of the scaling work, 7 Oct 2026). Deleted (recycle-bin) lines are
+     * left out, the same as the balance above, so the habit and the balance
+     * agree.
      *
      * Home's "paying late" count and the Follow-up screen read every live
      * line of the whole book, then threw away every customer who owed
@@ -247,19 +239,6 @@ interface KhataDao {
     @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteEntry(id: Long, now: Long = System.currentTimeMillis())
 
-    /**
-     * Several entries at once, for the party ledger's own select-and-delete
-     * — scoped to whichever entries the owner actually picked from ONE
-     * party's history, never the whole ledger. This is the bounded
-     * replacement for the "Delete all customers" button removed from the
-     * Recycle Bin: the owner asked for the capability to stay, just moved
-     * to where deleting an entry is an ordinary, expected action, and
-     * kept to the one party being looked at rather than everything at
-     * once.
-     */
-    @Query("UPDATE transactions SET isDeleted = 1, deletedAt = :now WHERE id IN (:ids)")
-    suspend fun softDeleteEntries(ids: List<Long>, now: Long = System.currentTimeMillis())
-
     // ---------- Recycle Bin: restore ----------
 
     @Query("UPDATE parties SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
@@ -291,10 +270,6 @@ interface KhataDao {
         """
     )
     suspend fun restoreEntry(id: Long)
-
-    /** An entry cannot live in an active ledger if its party is still in the bin. */
-    @Query("SELECT isDeleted FROM parties WHERE id = :partyId")
-    suspend fun isPartyDeleted(partyId: Long): Boolean?
 
     // ---------- Recycle Bin: listing ----------
 
@@ -473,16 +448,6 @@ interface KhataDao {
 
     // ---------- Totals ----------
 
-    @Query(
-        """
-        SELECT COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0)
-        FROM transactions t
-        JOIN parties p ON p.id = t.partyId
-        WHERE t.isDeleted = 0 AND p.isDeleted = 0
-        """
-    )
-    fun observeNetBalance(): Flow<Double>
-
     /**
      * One-shot version of the totals above, for the business-delete
      * confirmation dialog: it opens a scratch connection to a business
@@ -536,18 +501,6 @@ interface KhataDao {
         """
     )
     fun observeZakatBalancesByParty(): Flow<List<PartyZakatBalance>>
-
-    // ---------- Qarz-e-Hasna listing ----------
-
-    @Query(
-        """
-        SELECT t.* FROM transactions t
-        JOIN parties p ON p.id = t.partyId
-        WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND t.isQarzeHasna = 1
-        ORDER BY t.timestamp DESC
-        """
-    )
-    fun observeQarzeHasnaEntries(): Flow<List<LedgerEntry>>
 
     // ---------- Contact import ----------
 
@@ -677,9 +630,6 @@ interface KhataDao {
 
     @Query("UPDATE cheques SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeleteCheque(id: Long, now: Long = System.currentTimeMillis())
-
-    @Query("SELECT * FROM cheques WHERE partyId = :partyId AND isDeleted = 0 ORDER BY dueDate ASC")
-    fun observeChequesOfParty(partyId: Long): Flow<List<Cheque>>
 
     /**
      * A pending cheque becomes money: the payment posted to the party's
@@ -906,23 +856,6 @@ interface KhataDao {
     )
     fun observePlans(): Flow<List<PlanProgress>>
 
-    @Query(
-        """
-        SELECT pl.id, pl.partyId, p.name AS partyName,
-               pl.totalAmount, pl.installmentAmount,
-               COALESCE((
-                   SELECT SUM(i.amount) FROM installments i
-                   WHERE i.planId = pl.id AND i.isDeleted = 0
-               ), 0) AS paidSoFar,
-               pl.nextDueDate, pl.note, pl.isClosed
-        FROM payment_plans pl
-        JOIN parties p ON p.id = pl.partyId
-        WHERE pl.isDeleted = 0 AND p.isDeleted = 0 AND pl.partyId = :partyId
-        ORDER BY pl.isClosed ASC, pl.createdAt DESC
-        """
-    )
-    fun observePlansOfParty(partyId: Long): Flow<List<PlanProgress>>
-
     @Query("UPDATE payment_plans SET isDeleted = 1, deletedAt = :now WHERE id = :id")
     suspend fun softDeletePlan(id: Long, now: Long = System.currentTimeMillis())
 
@@ -1074,9 +1007,6 @@ interface KhataDao {
         log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", billId, "${item.productName} ${"%.2f".format(Digits.FIGURES, item.quantity)}")
         return id
     }
-
-    @Query("SELECT * FROM installments WHERE planId = :planId AND isDeleted = 0 ORDER BY paidAt DESC")
-    fun observeInstallments(planId: Long): Flow<List<Installment>>
 
     // ---------- Supplier bills ----------
 
@@ -1806,21 +1736,11 @@ interface KhataDao {
     @Query("SELECT * FROM products WHERE nameKey = :key LIMIT 1")
     suspend fun productByKey(key: String): Product?
 
-    /**
-     * Products that merely LOOK like this one, for suggesting rather than
-     * deciding. Never used to refuse a name.
-     */
-    @Query("SELECT * FROM products WHERE normalisedName = :normalised AND isDeleted = 0")
-    suspend fun productsLike(normalised: String): List<Product>
-
     @Insert
     suspend fun insertProduct(product: Product): Long
 
     @Update
     suspend fun updateProduct(product: Product)
-
-    @Query("UPDATE products SET isDeleted = 1, deletedAt = :now WHERE id = :id")
-    suspend fun softDeleteProduct(id: Long, now: Long = System.currentTimeMillis())
 
     @Query("UPDATE products SET isDeleted = 0, deletedAt = NULL WHERE id = :id")
     suspend fun restoreProduct(id: Long)
@@ -1884,15 +1804,6 @@ interface KhataDao {
     // counted several times over. That mistake produces a believable number,
     // which is the worst kind.
 
-    /** Stock that arrived, per product. Deleted bills and lines excluded. */
-    @Query(
-        "SELECT i.productId AS productId, SUM(i.quantity) AS qty, MIN(i.unit) AS unit " +
-        "FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
-        "WHERE i.productId IS NOT NULL AND i.isDeleted = 0 AND b.isDeleted = 0 " +
-        "GROUP BY i.productId"
-    )
-    suspend fun boughtPerProduct(): List<Stock.ProductQty>
-
     /**
      * Stock that left, per product.
      *
@@ -1908,41 +1819,6 @@ interface KhataDao {
         "GROUP BY ei.productId"
     )
     suspend fun soldPerProduct(): List<Stock.ProductQty>
-
-    /** Goods that came back in. Same shape, other direction. */
-    @Query(
-        "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, MIN(ei.unit) AS unit " +
-        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
-        "JOIN parties p ON p.id = t.partyId " +
-        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
-        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
-        "GROUP BY ei.productId"
-    )
-    suspend fun returnedPerProduct(): List<Stock.ProductQty>
-
-    /**
-     * Everyone who was sold a specific batch, exactly.
-     *
-     * Only answers for sales the owner actually tagged with the bill line.
-     * For the rest there is [customersWhoBought], which asks the weaker but
-     * still useful question: who took this product while that batch was here.
-     *
-     * p.isCustomer = 1 on purpose: isGiven only means goods left the shop
-     * TOWARDS this party, which is exactly as true of a supplier as of a
-     * customer if their account is ever used for anything unusual. A batch
-     * recall is for the people who might use the product, not for whoever a
-     * ledger entry happened to be filed against.
-     */
-    @Query(
-        "SELECT p.id, p.name, p.phone, p.isCustomer, p.photoPath, " +
-        "0.0 AS balance, MAX(t.timestamp) AS lastActivity, p.creditLimit " +
-        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
-        "JOIN parties p ON p.id = t.partyId " +
-        "WHERE ei.billItemId = :billItemId AND t.isGiven = 1 " +
-        "AND p.isCustomer = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 " +
-        "GROUP BY p.id ORDER BY p.name COLLATE NOCASE"
-    )
-    suspend fun customersWhoGotBatch(billItemId: Long): List<PartyWithBalance>
 
     /**
      * Everyone who bought a product inside a window of time.
@@ -3091,9 +2967,6 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
     suspend fun doneSaleCount(from: Long, to: Long): Int
 
-    @Query("SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
-    suspend fun doneSaleTotal(from: Long, to: Long): Double
-
     /** A live product by the code on its pack; null when none carries it. */
     @Query("SELECT * FROM products WHERE barcode = :code AND isDeleted = 0 LIMIT 1")
     suspend fun productByBarcode(code: String): Product?
@@ -3432,12 +3305,6 @@ interface KhataDao {
     @Query("SELECT * FROM sales ORDER BY id")
     suspend fun allSalesForBackup(): List<Sale>
 
-    @Query("SELECT * FROM sale_items ORDER BY id")
-    suspend fun allSaleItemsForBackup(): List<SaleItem>
-
-    @Query("SELECT * FROM sale_payments ORDER BY id")
-    suspend fun allSalePaymentsForBackup(): List<SalePayment>
-
     @Query("SELECT * FROM audit_log ORDER BY id")
     suspend fun allAuditForBackup(): List<AuditLog>
 
@@ -3512,12 +3379,6 @@ interface KhataDao {
 
     @Query("SELECT * FROM sale_return_items WHERE returnId = :id AND isDeleted = 0 ORDER BY lineNo ASC, id ASC")
     suspend fun returnItems(id: Long): List<SaleReturnItem>
-
-    @Transaction
-    suspend fun returnWithLines(id: Long): SaleReturnWithLines? {
-        val r = getReturn(id) ?: return null
-        return SaleReturnWithLines(r, returnItems(id))
-    }
 
     @Query("SELECT COALESCE(MAX(CAST(SUBSTR(returnNumber, 3) AS INTEGER)), 0) FROM sale_returns WHERE returnNumber LIKE 'R-%'")
     suspend fun highestReturnNumber(): Int
@@ -3882,9 +3743,6 @@ interface KhataDao {
     @Query("UPDATE purchase_orders SET status = :status WHERE id = :id")
     suspend fun setOrderStatus(id: Long, status: String)
 
-    @Query("UPDATE purchase_orders SET isDeleted = 1 WHERE id = :id AND status = 'draft'")
-    suspend fun dropDraftOrder(id: Long)
-
     /**
      * The goods arrived: the order becomes a supplier bill with the lines
      * as received ([received]: per order line, the quantity and rate that
@@ -3974,22 +3832,6 @@ interface KhataDao {
     )
     suspend fun khataSaleRowsBetween(from: Long, to: Long): List<KhataSaleRow>
 
-    /**
-     * What the goods that came back in [from, to) had cost, where their sale
-     * line knew its cost (21 Oct 2026): a bag returned is back on the shelf, so
-     * the report takes off the margin lost, not the whole refund as if the bag
-     * had vanished.
-     */
-    @Query(
-        """
-        SELECT COALESCE(SUM(ri.quantity * si.costRate), 0)
-        FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
-        WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND si.costRate IS NOT NULL
-          AND r.timestamp >= :from AND r.timestamp < :to
-        """
-    )
-    suspend fun returnedCostBetween(from: Long, to: Long): Double
-
     /** Each line returned in [from, to) with the sold line it came back from ([ReturnedLine]; 22 Oct 2026, the review). */
     @Query(
         """
@@ -4054,9 +3896,6 @@ interface KhataDao {
     @Query("SELECT value FROM book_settings WHERE `key` = :key")
     suspend fun settingValue(key: String): String?
 
-    @Query("SELECT value FROM book_settings WHERE `key` = :key")
-    fun observeSetting(key: String): Flow<String?>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun putSetting(setting: BookSetting)
 
@@ -4085,9 +3924,6 @@ interface KhataDao {
     @Query("SELECT COALESCE(SUM(points), 0) FROM loyalty WHERE partyId = :partyId AND isDeleted = 0")
     suspend fun loyaltyBalance(partyId: Long): Double
 
-    @Query("SELECT * FROM loyalty WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC, id DESC")
-    suspend fun loyaltyOf(partyId: Long): List<LoyaltyEntry>
-
     /** A voided sale's points, earned and spent, taken back. */
     @Query("UPDATE loyalty SET isDeleted = 1 WHERE saleId = :saleId")
     suspend fun dropLoyaltyOfSale(saleId: Long)
@@ -4099,10 +3935,6 @@ interface KhataDao {
     /** The points a ticket wrote (spent and earned), for its receipt. */
     @Query("SELECT * FROM loyalty WHERE saleId = :saleId AND isDeleted = 0 ORDER BY id")
     suspend fun loyaltyOfSale(saleId: Long): List<LoyaltyEntry>
-
-    /** A customer's points, as the counter shows them. */
-    @Query("SELECT COALESCE(SUM(points), 0) FROM loyalty WHERE partyId = :partyId AND isDeleted = 0")
-    fun observeLoyaltyBalance(partyId: Long): Flow<Double>
 
     @Query("SELECT * FROM loyalty ORDER BY id")
     suspend fun allLoyaltyForBackup(): List<LoyaltyEntry>
@@ -4175,7 +4007,7 @@ interface KhataDao {
 
     // ---------- Stock per unit, batches and costs (schema 36) ----------
     //
-    // The same sums as boughtPerProduct & co., one row per product AND unit as
+    // The same sums as soldPerProduct & co., one row per product AND unit as
     // written, so Stock.combine can turn a product's pack into its own unit and
     // see a unit it cannot convert, instead of SQL adding bags to kilos.
 

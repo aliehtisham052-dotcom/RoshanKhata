@@ -74,11 +74,3 @@ object CashCategory {
     /** A walk-in's refund over the counter (POS Phase 3). */
     const val RETURN = "Return"
 }
-
-/** Totals over a window, for the cashbook header. */
-data class CashTotals(
-    val income: Double,
-    val expense: Double
-) {
-    val net: Double get() = income - expense
-}
