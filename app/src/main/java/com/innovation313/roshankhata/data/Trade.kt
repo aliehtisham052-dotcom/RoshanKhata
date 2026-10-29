@@ -72,11 +72,6 @@ enum class Trade(
         if (this == OTHER) OtherTrade.name(context) ?: context.getString(labelRes)
         else context.getString(labelRes)
 
-    /** The short name on a card; for [OTHER], the owner's own words once written. */
-    fun shortName(context: Context): String =
-        if (this == OTHER) OtherTrade.name(context) ?: context.getString(nameRes)
-        else context.getString(nameRes)
-
     /** The line under it; for [OTHER], the three goods the owner wrote, once written. */
     fun example(context: Context): String =
         if (this == OTHER) OtherTrade.items(context).takeIf { it.isNotEmpty() }?.joinToString(" \u00b7 ")

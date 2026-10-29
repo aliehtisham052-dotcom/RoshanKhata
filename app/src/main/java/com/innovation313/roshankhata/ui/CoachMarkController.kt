@@ -45,9 +45,7 @@ class CoachMarkController(
         val titleRes: Int,
         val descRes: Int,
         val cornerRadiusDp: Float = 999f,
-        val paddingDp: Float = 10f,
-        /** Kept for callers; the sheet no longer needs a clearance view. */
-        val clearance: View? = null
+        val paddingDp: Float = 10f
     )
 
     private var index = 0

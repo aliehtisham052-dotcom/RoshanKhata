@@ -2,7 +2,6 @@
     <string name="app_name">روشن کھاتہ</string>
     <string name="welcome_title">آپ کا کھاتا، محفوظ</string>
     <string name="welcome_body">روشن کھاتہ آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
-    <string name="welcome_note">منسلک کرنے سے صرف بیک اپ ممکن ہوتا ہے۔ آپ کا کھاتا تب محفوظ ہوتا ہے جب بیک اپ ہو جائے — خودکار بیک اپ آن کریں، یا کسی بھی وقت بیک اپ کریں۔</string>
     <string name="welcome_connect">Google کے ساتھ جاری رکھیں</string>
     <string name="welcome_skip">شاید بعد میں</string>
 
@@ -10,10 +9,6 @@
     <string name="coach_next">اگلا</string>
     <string name="coach_done">سمجھ گیا</string>
     <string name="coach_desc_balance">گاہکوں کا کل بقایا، منفی جو آپ نے دینا ہے۔ شروع میں یہ نقطوں میں چھپا ہوتا ہے: دیکھنے کے لیے آنکھ دبائیں، چھپانے کے لیے دوبارہ۔</string>
-    <string name="coach_desc_get">کل رقم جو گاہکوں نے ابھی آپ کو دینی ہے۔</string>
-    <string name="coach_desc_give">کل رقم جو آپ نے ابھی سپلائرز اور دوسروں کو دینی ہے۔</string>
-    <string name="coach_title_search">گاہک تلاش کریں</string>
-    <string name="coach_desc_search">یہاں سے اپنی گاہکوں کی فہرست تلاش یا ترتیب دیں۔</string>
     <string name="coach_title_nav_khata">کھاتہ</string>
     <string name="coach_desc_nav_khata">آپ کے گاہکوں کے کھاتے — کون آپ کا مقروض ہے اور آپ کس کے مقروض ہیں۔</string>
     <string name="coach_title_nav_cashbook">کیش بک</string>
@@ -22,16 +17,12 @@
     <string name="coach_desc_nav_cheques">وہ چیک جو آپ نے دیے یا وصول کیے، مقررہ تاریخوں کے ساتھ ان کا حساب رکھیں۔</string>
     <string name="coach_title_nav_plans">پلانز</string>
     <string name="coach_desc_nav_plans">ان گاہکوں کے لیے قسطوں کے پلان جو حصوں میں ادائیگی کرتے ہیں۔</string>
-    <string name="coach_title_nav_more">مزید</string>
-    <string name="coach_desc_nav_more">زکوٰۃ کیلکولیٹر، دکان کارڈ، بیک اپ، ایپ لاک، اور سیٹنگز۔</string>
         <string name="coach_title_bills">سپلائر بلز</string>
     <string name="coach_desc_bills">سپلائر سے جو خریدا اور جو ابھی دینا باقی ہے، وہ درج کریں۔</string>
     <string name="coach_title_stock">ایکسپائر ہوتا اسٹاک</string>
     <string name="coach_desc_stock">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے۔</string>
     <string name="coach_title_insights">سیل انسائٹس</string>
     <string name="coach_desc_insights">دیکھیں کیا بک رہا ہے، کیا پڑا ہے، اور آپ کا پیسہ کہاں پھنسا ہے۔</string>
-    <string name="coach_title_zakat">زکوٰۃ کیلکولیٹر</string>
-    <string name="coach_desc_zakat">زکوٰۃ کا اندازہ لگانے کا رہنما ٹول — حکم کسی مستند عالم سے معلوم کریں۔</string>
     <string name="coach_title_bizcard">بزنس کارڈ</string>
     <string name="coach_desc_bizcard">اپنی دکان کے لیے سیکنڈوں میں شیئر ہونے والا کارڈ بنائیں، تین انداز میں۔</string>
     <string name="coach_title_invoice">انوائس</string>
@@ -63,8 +54,6 @@
     <string name="coach_title_backup">بیک اپ</string>
     <string name="coach_desc_backup">اپنا کھاتہ محفوظ طریقے سے اپنے گوگل ڈرائیو پر رکھیں۔</string>
     <string name="coach_desc_backup_pc">روزانہ آپ کے کھاتے کی ایک کاپی اسی کمپیوٹر پر رکھی جاتی ہے۔ روزانہ کاپیاں میں اس کی دوسری جگہ چنیں: USB یا آپ کا گوگل ڈرائیو فولڈر۔</string>
-        <string name="coach_title_settings">کاروباری سیٹنگز</string>
-    <string name="coach_desc_settings">آپ کی دکان کا نام، رابطہ اور ترجیحات — ایک بار سیٹ کریں، ہر جگہ استعمال ہوں گی۔</string>
         <string name="calculator">کیلکولیٹر</string>
     <string name="calc_clear">C</string>
     <string name="calc_backspace">\u232B</string>
@@ -78,39 +67,29 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">کیلکولیٹر</string>
     <string name="coach_desc_calc">کھاتے کے ساتھ فوری حساب — منافع، کل میزان اور تقسیم۔</string>
-    <string name="coach_title_applock">ری سائیکل بن</string>
-    <string name="coach_desc_applock">غلطی سے کوئی گاہک ڈیلیٹ ہو گیا؟ یہاں سے واپس لائیں۔</string>
-    <string name="coach_title_add">گاہک شامل کریں</string>
-    <string name="coach_desc_add">اپنا پہلا گاہک شامل کرنے اور کھاتہ شروع کرنے کے لیے یہاں ٹیپ کریں۔</string>
     <string name="app_tagline">Innovation-313</string>
-    <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">کل بیلنس</string>
     <string name="home_sec_daily">ہر روز</string>
     <string name="home_sec_business">کاروبار</string>
     <string name="home_today">آج</string>
-    <string name="home_cash_in_hand">نقد ہاتھ میں</string>
     <string name="home_quick_actions">فوری کام</string>
     <string name="home_col_time">وقت</string>
     <string name="tile_bills">بل</string>
     <string name="tile_expiry">ایکسپائری</string>
     <string name="tile_card">کارڈ</string>
-    <string name="tile_settings">ترتیبات</string>
     <string name="tile_bin">ردی</string>
     <string name="tile_products">مال</string>
     <string name="tile_zakat">زکوٰۃ</string>
     <string name="tile_insights">جائزہ</string>
     <string name="tile_seasons">فصل</string>
-    <string name="tile_rates">ریٹ</string>
     <string name="today_backup">بیک اپ</string>
     <string name="today_gap">نقدی کمی</string>
     <string name="today_chip">%1$s · %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
-    <string name="ledger_pdf_title">لیجر رپورٹ PDF</string>
     <string name="ledger_report_generating">لیجر رپورٹ بن رہی ہے…</string>
     <string name="ledger_report_failed">رپورٹ نہیں بن سکی۔</string>
     <string name="ledger_report_title">کھاتہ رپورٹ</string>
-    <string name="ledger_report_col_name">نام</string>
     <string name="ledger_report_empty">اس مدت میں کوئی اندراج نہیں۔</string>
     <string name="ledger_report_download">ڈاؤن لوڈ</string>
     <string name="ledger_report_download_as">کس شکل میں ڈاؤن لوڈ کریں</string>
@@ -122,8 +101,6 @@
     <string name="report_end_date">اختتام کی تاریخ</string>
     <string name="ledger_report_from">%1$s سے</string>
     <string name="ledger_report_till">%1$s تک</string>
-    <string name="ledger_report_showing_all">دکھایا جا رہا ہے: سارا وقت</string>
-    <string name="ledger_report_show_all">سارا وقت دکھائیں</string>
     <string name="add_party">پارٹی شامل کریں</string>
     <string name="add_party_duplicate_with_phone">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>
@@ -195,7 +172,6 @@
         <item quantity="other">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
     </plurals>
     <string name="moved_to_bin">ری سائیکل بن میں منتقل ہو گیا</string>
-    <string name="long_press_to_delete">پارٹی حذف کرنے کے لیے اسے دیر تک دبائیں</string>
 
     <string name="zakat_calculator">زکوٰۃ کیلکولیٹر</string>
     <string name="zakat_subtitle">صرف رہنمائی کے لیے — فتویٰ نہیں</string>
@@ -204,7 +180,6 @@
     <string name="nisab_section">نصاب</string>
     <string name="nisab_help">یہاں نصاب چاندی کے معیار (612.36 گرام) پر رکھا گیا ہے — یہ موقف عام طور پر غریبوں کے حق میں زیادہ محتاط سمجھا جاتا ہے۔</string>
     <string name="silver_price_hint">چاندی کی قیمت فی گرام</string>
-    <string name="nisab_value">نصاب = %1$s</string>
     <string name="nisab_enter_price">نصاب معلوم کرنے کے لیے قیمت لکھیں</string>
     <string name="nisab_needed_first">پہلے قیمت لکھیں</string>
     <string name="above_nisab">آپ کا مال نصاب کو پہنچ گیا ہے — زکوٰۃ واجب ہے (بشرطیکہ قمری سال مکمل ہو)۔</string>
@@ -279,7 +254,6 @@
 
     <string name="statement_pdf">اسٹیٹمنٹ</string>
     <string name="generating_statement">اسٹیٹمنٹ تیار ہو رہی ہے\u2026</string>
-    <string name="share_statement">اسٹیٹمنٹ شیئر کریں</string>
     <string name="statement_failed">اسٹیٹمنٹ نہیں بن سکی۔ دوبارہ کوشش کریں۔</string>
     <string name="no_entries_to_export">ابھی اسٹیٹمنٹ میں ڈالنے کے لیے کوئی اندراج نہیں۔</string>
 
@@ -295,7 +269,6 @@
     <string name="lock_pin_again">وہی PIN دوبارہ لکھیں</string>
     <string name="lock_pin_wrong">غلط PIN۔ دوبارہ کوشش کریں۔</string>
     <string name="lock_pin_mismatch">دونوں PIN ایک جیسے نہیں ہیں۔</string>
-    <string name="lock_pin_wait">بہت زیادہ کوششیں۔ %1$d سیکنڈ انتظار کریں۔</string>
     <string name="lock_unlock">کھولیں</string>
     <string name="lock_title">روشن کھاتہ کھولیں</string>
     <string name="lock_subtitle">آپ کا کھاتہ نجی ہے۔ تصدیق کریں کہ یہ آپ ہیں۔</string>
@@ -316,7 +289,6 @@
     <string name="app_lock_unavailable">اس فون پر ایپ لاک دستیاب نہیں۔</string>
     <string name="ok">ٹھیک ہے</string>
 
-    <string name="business_settings">کاروباری ترتیبات</string>
     <string name="business_profile">کاروباری پروفائل</string>
     <string name="profile_preview_caption">آپ کے انوائس کا اوپری حصہ — ساتھ ساتھ بدلتا ہے</string>
     <string name="business_settings_subtitle">انوائس، اسٹیٹمنٹ اور رپورٹس پر چھپنے والی معلومات</string>
@@ -342,7 +314,6 @@
     <string name="qr_confirm_message">اوپر کوڈ دیکھیں اور تصدیق کریں کہ یہ آپ ہی کا پیمنٹ اکاؤنٹ (ایزی پیسہ، جاز کیش، UPI…) ہے۔ اگر نہیں، تو آپ کے گاہکوں کی ادائیگیاں کسی اور کو پہنچیں گی۔</string>
     <string name="qr_confirm_yes">جی، یہ میرا ہے</string>
     <string name="profile_saved">محفوظ ہو گیا</string>
-    <string name="attach_qr_to_reminder">پیمنٹ QR ساتھ لگائیں</string>
 
     <string name="cheques">چیک</string>
     <string name="add_cheque">چیک شامل کریں</string>
@@ -376,7 +347,6 @@
         <item quantity="one">%1$d چیک بینک لے جانے کے لیے تیار</item>
         <item quantity="other">%1$d چیک بینک لے جانے کے لیے تیار</item>
     </plurals>
-    <string name="due_summary_none">کچھ واجب نہیں</string>
     <string name="due_summary_pending">%1$d کلیئر ہونے کے منتظر</string>
     <string name="due_summary_empty">کوئی چیک نہیں</string>
     <string name="due_summary_all_settled">سب برابر</string>
@@ -402,8 +372,6 @@
     <string name="search_parties">نام یا نمبر</string>
     <string name="search_entries">نوٹ یا مال</string>
     <string name="sort">ترتیب</string>
-    <string name="filter_type">قسم</string>
-    <string name="filter_type_title">کون سی قسم دکھائیں</string>
     <string name="filter_type_all">سب</string>
     <string name="filter_type_customers">گاہک</string>
     <string name="filter_type_suppliers">سپلائر</string>
@@ -424,8 +392,6 @@
     <string name="khata_pick_party">یہاں کھاتہ دیکھنے کے لیے فہرست میں سے کسی کو چنیں۔</string>
     <string name="khata_choose_several">کئی چنیں (حذف کرنے کے لیے)</string>
     <string name="no_matching_entries">آپ کی تلاش سے کوئی اندراج نہیں ملتا۔</string>
-    <string name="showing_filtered">%2$d میں سے %1$d دکھائے جا رہے ہیں</string>
-    <string name="running_balance_note">رواں بیلنس کھاتے کی اپنی ترتیب پر چلتا ہے، اس لیے آپ جیسے بھی ترتیب دیں یا تلاش کریں، یہ درست رہتا ہے۔</string>
 
     <string name="party_photo">تصویر</string>
     <string name="set_photo">تصویر لگائیں</string>
@@ -438,7 +404,6 @@
     <string name="photo_removed">تصویر ہٹا دی گئی</string>
     <string name="photo_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
     <string name="photo_privacy_note">تصویر اسی فون پر رہتی ہے۔ کبھی اپ لوڈ نہیں ہوتی، اور جان بوجھ کر اسٹیٹمنٹ پر نہیں لگائی جاتی — اسٹیٹمنٹ آگے بھیجی جاتی ہے، اور آپ کے گاہک نے اپنی تصویر کے سفر کی اجازت نہیں دی۔</string>
-    <string name="party_options">اختیارات</string>
     <string name="edit_party">تفصیل بدلیں</string>
     <string name="delete_party">حذف کریں</string>
 
@@ -448,8 +413,6 @@
     <string name="credit_limit_hint">حد</string>
     <string name="credit_limit_advisory">یہ صرف انتباہ ہے، رکاوٹ نہیں۔ کاروبار آپ کا ہے — آپ ہمیشہ آگے بڑھ سکتے ہیں۔</string>
     <string name="credit_limit_current">اس وقت آپ کے %1$s واجب ہیں</string>
-    <string name="credit_limit_none">کوئی حد مقرر نہیں</string>
-    <string name="credit_limit_set_to">حد: %1$s</string>
     <string name="credit_limit_removed">ادھار کی حد ہٹا دی گئی</string>
     <string name="credit_limit_saved">ادھار کی حد محفوظ ہو گئی</string>
 
@@ -476,7 +439,6 @@
     <string name="pick_end_date">آخری تاریخ چنیں</string>
     <string name="closing_note_range">اوپر کے تین اعداد صرف اس مدت کے ہیں۔ نیچے اختتامی بیلنس پورا حساب ہے — %1$s — کیونکہ جزوی مدت کا مجموعہ وہ نہیں جو آپ کے گاہک کے ذمے ہے۔</string>
     <string name="closing_note_all">اختتامی بیلنس: %1$s</string>
-    <string name="report_period">مدت: %1$s</string>
     <string name="invalid_range">آخری تاریخ شروع کی تاریخ سے پہلے نہیں ہو سکتی۔</string>
 
     <string name="cashbook">کیش بک</string>
@@ -500,7 +462,6 @@
     <string name="restore_from_file">بیک اپ فائل سے واپس لائیں</string>
     <string name="backup_explain">سب کچھ — گاہک، کھاتہ، چیک، کیش بک، اور ری سائیکل بن — ایک فائل میں لکھا جاتا ہے جسے آپ ڈرائیو میں محفوظ کر سکتے ہیں، خود کو واٹس ایپ کر سکتے ہیں، یا میموری کارڈ پر رکھ سکتے ہیں۔\n\nفائل سادہ، پڑھنے کے قابل متن ہے۔ برسوں بعد بھی، اس ایپ کے بغیر بھی، آپ کا ریکارڈ بازیاب ہو سکے گا۔ جو ڈیٹا ہماری مدد کے بغیر واپس نہ مل سکے وہ حقیقت میں آپ کا نہیں۔\n\nصرف تصویریں مستثنیٰ ہیں۔ گاہک کی تصویر اور بل کی تصویر اسی فون پر رہتی ہیں، فائل کے اندر نہیں جاتیں — نئے فون پر بیک اپ بحال کرنے سے ہر ریکارڈ واپس آ جاتا ہے، مگر تصویریں نہیں۔ جو بل کی تصویر اہم ہو، اس کی نقل الگ رکھ لیں۔</string>
     <string name="backup_warning">روشن کھاتہ سب کچھ صرف اسی فون پر رکھتا ہے۔ فون گم ہو، ٹوٹ جائے، یا ایپ ان انسٹال ہو تو ریکارڈ بھی ساتھ جاتا ہے۔ براہِ کرم باقاعدگی سے بیک اپ لیں اور کہیں اور محفوظ رکھیں۔</string>
-    <string name="backup_created">بیک اپ تیار — محفوظ کرنے کی جگہ چنیں</string>
     <string name="backup_failed">بیک اپ نہیں بن سکا۔</string>
     <string name="save_backup">بیک اپ محفوظ کریں</string>
 
@@ -548,15 +509,11 @@
 
     <string name="nav_khata">کھاتہ</string>
     <string name="nav_home">ہوم</string>
-    <string name="home_section_daily">ہر روز</string>
-    <string name="home_section_business">آپ کا کاروبار</string>
     <string name="nav_cashbook">کیش بک</string>
     <string name="nav_cheques">چیک</string>
     <string name="nav_plans">منصوبے</string>
-    <string name="nav_more">مزید</string>
 
     <string name="more_title">مزید</string>
-    <string name="tap_to_change_business">کاروبار بدلنے کے لیے دبائیں</string>
     <string name="businesses_title">آپ کے کاروبار</string>
     <string name="businesses_subtitle">ہر کاروبار کا اپنا الگ کھاتہ رہتا ہے</string>
     <string name="business_add">نیا کاروبار شامل کریں</string>
@@ -574,7 +531,6 @@
     <string name="erase_all_done">سارا ڈیٹا مٹ گیا۔</string>
     <string name="db_broken_title">کھاتہ کھل نہیں رہا</string>
     <string name="db_broken_body">اس فون پر کھاتے کی فائل خراب ہو گئی ہے۔ آپ کی روزانہ کاپیاں محفوظ ہیں — ایپ پچھلے سات دنوں کی ایک ایک کاپی رکھتی ہے، اور کسی کاپی پر واپس جانے سے آج کی فائل کو اُس وقت تک ہاتھ نہیں لگتا جب تک صحت مند کاپی کی تصدیق نہ ہو جائے۔</string>
-    <string name="business_rename_hint">کھولنے کے لیے دبائیں · نام بدلنے کے لیے دیر تک دبائیں</string>
     <string name="restore_business_mismatch">یہ بیک اپ %1$s کا ہے، لیکن ابھی %2$s کھلا ہے۔ بحال کرنے سے کھلے ہوئے کاروبار کا ڈیٹا اُس بیک اپ سے بدل جائے گا۔</string>
     <string name="contact_in_recycle_bin">ری سائیکل بن میں</string>
     <string name="restore_no_images">آپ کا ریکارڈ واپس آ گیا، لیکن اس بیک اپ کے ساتھ تصاویر نہیں تھیں، اس لیے فوٹو، بل کی تصاویر اور کیو آر بحال نہیں ہوئے۔ آئندہ بیک اپ میں تصاویر رکھنے کے لیے بیک اپ سے پہلے «تصاویر بھی شامل کریں» آن کریں۔</string>
@@ -585,7 +541,6 @@
         <item quantity="other">ڈرائیو پر %1$d کاروبار ملے</item>
     </plurals>
     <string name="drive_restore_all">سب بحال کریں</string>
-    <string name="drive_restore_all_warning">یہ کاروبار ڈرائیو سے بحال ہوں گے، اور ہر ایک کا موجودہ ڈیٹا اس فون پر اُن سے بدل جائے گا:\n\n%1$s</string>
     <string name="drive_restored_these">بحال ہو گئے:\n%1$s</string>
     <string name="drive_restore_missed">بحال نہیں ہو سکے:\n%1$s</string>
     <string name="business_numbered">کاروبار %1$d</string>
@@ -628,13 +583,11 @@
     <string name="filter_apply">فلٹر لگائیں</string>
     <string name="filter_clear">صاف کریں</string>
     <string name="filter_account_all">سب</string>
-    <string name="more_reports">رپورٹس اور زکوٰۃ</string>
     <string name="more_settings">ترتیبات</string>
     <string name="settings_group_security">حفاظت</string>
     <string name="settings_group_data">ڈیٹا</string>
     <string name="settings_group_display">ڈسپلے</string>
     <string name="settings_group_help">مدد</string>
-    <string name="more_data">آپ کا ڈیٹا</string>
 
     <string name="more_options">مزید</string>
 
@@ -682,7 +635,6 @@
     <string name="delete_bill">بل حذف کریں</string>
     <string name="delete_bill_confirm">بل اور اس کے بیچ ریکارڈ ہٹ جائیں گے۔ اگر یہ ادھار کا بل ہے تو اس کا کھاتے کا اندراج (جو رقم آپ نے اس سپلائر کو دینی ہے) بھی ری سائیکل بن میں چلا جائے گا، اور واجب رقم اتنی کم ہو جائے گی۔ یہ اندراج 30 دن کے اندر ری سائیکل بن سے واپس لایا جا سکتا ہے۔</string>
     <string name="bill_actions">بل</string>
-    <string name="view_items">چیزیں اور بیچ دیکھیں</string>
 
     <!-- Invoices -->
     <string name="invoices">انوائس</string>
@@ -694,12 +646,9 @@
     <string name="pick_invoice_date">انوائس کی تاریخ چنیں</string>
     <string name="invoice_date_set">تاریخ: %1$s</string>
     <string name="invoice_due_date_hint">ادائیگی کی تاریخ (اختیاری)</string>
-    <string name="invoice_discount_hint">ڈسکاؤنٹ % (اختیاری)</string>
-    <string name="invoice_tax_hint">ٹیکس % (اختیاری)</string>
     <string name="invoice_item_name_hint">چیز کا نام</string>
     <string name="invoice_item_rate_hint">ریٹ</string>
     <string name="invoice_row_unit_hint">اکائی</string>
-    <string name="invoice_item_invalid">درست چیز کا نام، مقدار اور ریٹ درج کریں۔</string>
     <string name="invoice_customer_required">پہلے گاہک کا نام درج کریں۔</string>
     <string name="invoice_needs_item">پہلے کم از کم ایک چیز شامل کریں۔</string>
     <string name="invoice_saved">انوائس محفوظ ہو گئی۔</string>
@@ -736,9 +685,7 @@
     <string name="invoice_back">پیچھے</string>
     <string name="invoice_items_label">چیزیں</string>
     <string name="invoice_number_hint">انوائس # (اختیاری)</string>
-    <string name="invoice_charge_label_hint">اضافی خرچہ (اختیاری)</string>
     <string name="invoice_charge_amount_hint">رقم</string>
-    <string name="invoice_received_hint">موصول شدہ رقم (اختیاری)</string>
     <string name="invoice_terms">شرائط و ضوابط</string>
     <string name="invoice_terms_hint">مثلاً ادائیگی 14 دن کے اندر۔</string>
     <string name="invoice_strn_hint">مثلاً 1234567-8 (اختیاری)</string>
@@ -781,7 +728,6 @@
     <string name="batch_none">کوئی بیچ نمبر درج نہیں</string>
     <string name="from_supplier">%1$s سے</string>
     <string name="from_supplier_bill">%1$s سے — بل %2$s</string>
-    <string name="expiring_badge">%1$d ایکسپائر ہونے والے</string>
 
     <string name="trace_batch">بیچ تلاش کریں</string>
     <string name="trace_batch_hint">بیچ نمبر لکھیں</string>
@@ -794,7 +740,6 @@
 
     <string name="search_action">تلاش</string>
 
-    <string name="pick_bill_due_date">ادائیگی کی تاریخ چنیں</string>
 
     <string name="backup_done_title">بیک اپ محفوظ ہو گیا</string>
     <string name="backup_done_saved">یہاں محفوظ ہوا:\n\n%1$s\n\nیہ آپ کو فون کے ڈاؤن لوڈز فولڈر اور کسی بھی فائل مینیجر میں ملے گا۔ روشن کھاتہ اپنی کاپی بھی رکھتا ہے، تاکہ فائل ڈھونڈے بغیر بحال کر سکیں۔</string>
@@ -831,12 +776,8 @@
 
     <string name="powered_by">Innovation-313 کی پیشکش</string>
     <string name="lock_tagline">Innovation-313 کی پیشکش</string>
-    <string name="tap_to_start">جاری رکھنے کے لیے کہیں بھی چھوئیں</string>
 
-    <string name="tap_to_continue">جاری رکھنے کے لیے چھوئیں</string>
-    <string name="brand_har_hisaab">ہر حساب روشن</string>
 
-    <string name="unlock_to_open">کھولنے کے لیے چھوئیں</string>
 
     <string name="restore_done_with_bin">آپ کا ڈیٹا واپس آ گیا۔\n\nاس بیک اپ کے %1$d گاہک بیک اپ بننے سے پہلے حذف ہو چکے تھے، اس لیے وہ ری سائیکل بن میں بحال ہوئے ہیں \u2014 مرکزی فہرست میں نہیں۔ مزید \u2190 ری سائیکل بن کھولیں، وہاں سے کسی کو بھی مکمل بحال کر سکتے ہیں۔</string>
 
@@ -845,7 +786,6 @@
     <string name="drive_not_connected">اپنا گوگل اکاؤنٹ جوڑیں تو آپ کا کھاتہ آپ کی اپنی گوگل ڈرائیو میں خودکار بیک اپ ہوتا رہے گا۔ فون بدلیں، دوبارہ سائن اِن کریں، سب واپس۔ ڈیٹا آپ کی ڈرائیو میں رہتا ہے؛ ہمارے پاس کبھی نہیں آتا۔</string>
     <string name="drive_connected">%1$s کے طور پر جڑا ہے۔ آخری کلاؤڈ بیک اپ: %2$s</string>
     <string name="drive_connected_never">%1$s کے طور پر جڑا ہے۔ ابھی کوئی کلاؤڈ بیک اپ نہیں \u2014 ”ڈرائیو میں بیک اپ“ دبائیں۔</string>
-    <string name="welcome_signed_in_title">کامیابی سے سائن اِن ہو گئے</string>
     <string name="drive_backup_now">ابھی ڈرائیو میں بیک اپ لیں</string>
     <string name="drive_backup_images">تصاویر بھی شامل کریں (فوٹوز، بل کی فوٹوز، QR)</string>
     <string name="drive_auto_backup">خودکار بیک اپ</string>
@@ -863,10 +803,8 @@
     <string name="drive_images_restore_failed">آپ کا ریکارڈ بحال ہو گیا، مگر تصاویر ڈاؤن لوڈ نہ ہو سکیں۔ بہتر انٹرنیٹ پر دوبارہ بحال کریں۔</string>
     <string name="drive_restoring">ڈرائیو سے بحال ہو رہا ہے\u2026</string>
     <string name="drive_no_backup">آپ کی گوگل ڈرائیو میں ابھی کوئی بیک اپ نہیں ملا۔</string>
-    <string name="drive_restore_failed">ڈرائیو سے بحالی نہیں ہو سکی۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔</string>
     <string name="drive_signin_failed">گوگل سائن اِن مکمل نہیں ہوا۔ دوبارہ کوشش کریں۔</string>
     <string name="drive_permission_needed">روشن کھاتہ کو آپ کی ڈرائیو میں اپنے فولڈر میں محفوظ کرنے کی اجازت چاہیے۔ پوچھے جانے پر اجازت دیں۔</string>
-    <string name="drive_restore_confirm">یہ ایپ کی موجودہ ہر چیز کو آپ کی گوگل ڈرائیو کے بیک اپ سے بدل دے گا۔ جاری رکھیں؟</string>
     <string name="i_have_to_get">مجھے لینے ہیں</string>
     <string name="i_have_to_give">مجھے دینے ہیں</string>
     <string name="insights_title">فروخت کا جائزہ</string>
@@ -1171,7 +1109,6 @@
     <string name="about_privacy_body_pc">سب کچھ اسی کمپیوٹر پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ اسی کمپیوٹر پر اور آپ کے چنے ہوئے فولڈر میں رہتے ہیں، جیسے یو ایس بی یا گوگل ڈرائیو کا فولڈر — ہمارے پاس نہیں۔</string>
     <string name="about_privacy_policy">پرائیویسی پالیسی</string>
     <string name="about_maker">Innovation-313 کی تیار کردہ</string>
-    <string name="party_exists">%1$s پہلے سے آپ کے کھاتے میں ہے — کھولا جا رہا ہے۔</string>
     <string name="party_exists_title">یہ شاید پہلے سے آپ کے کھاتے میں ہے</string>
     <string name="party_exists_message">اس جیسا ایک کھاتہ پہلے سے کھلا ہے:\n\n%1$s\n\nاگر یہ وہی شخص ہے تو جو پہلے سے ہے وہی کھولیں۔ اگر کوئی اور ہے — یا دوسرا کھاتہ جو آپ جان بوجھ کر رکھتے ہیں — تو شامل کر لیں۔</string>
     <string name="open_existing">موجودہ کھاتہ کھولیں</string>
@@ -1199,8 +1136,6 @@
     <string name="stamp_saved">مہر محفوظ ہو گئی۔</string>
     <string name="stamp_save_failed">وہ تصویر محفوظ نہیں ہو سکی۔</string>
     <string name="made_with_app">روشن کھاتہ</string>
-    <string name="more_details">نوٹ، مال یا وصولی شامل کریں</string>
-    <string name="back_to_amount">رقم پر واپس</string>
     <string name="voice_entry">بول کر اندراج کریں</string>
     <string name="voice_prompt">ایسے کہیں: بلال کو پانچ ہزار دیے</string>
     <string name="voice_unavailable">اس فون میں آواز پہچاننے کا نظام نہیں ہے۔</string>
@@ -1311,7 +1246,6 @@
     <string name="village_optional">گاؤں (اختیاری)</string>
     <string name="product_name">پروڈکٹ کا نام</string>
     <string name="company_optional">کمپنی / برانڈ (اختیاری)</string>
-    <string name="category_optional">قسم (اختیاری)</string>
     <string name="unit_optional">یونٹ — بوتل، کلو، بوری (اختیاری)</string>
     <string name="compliance_section">انسپیکشن محکمے کی تفصیلات</string>
     <string name="compliance_explain">صرف اُس وقت درکار جب معائنے میں پوچھا جائے۔ فیڈ یا بیج کے لیے خالی چھوڑ دیں۔</string>
@@ -1340,7 +1274,6 @@
     <string name="poster_subtitle">واٹس ایپ اسٹیٹس کے لیے تصویر، آپ کی دکان کے نام کے ساتھ</string>
     <string name="poster_heading_hint">بڑی لائن</string>
     <string name="poster_message_hint">پیغام</string>
-    <string name="poster_show_logo">پوسٹر پر دکان کا لوگو</string>
     <string name="poster_show_mark">پوسٹر پر “روشن کھاتہ” دکھائیں</string>
     <string name="poster_custom">اپنے الفاظ</string>
     <string name="poster_new_stock">نیا مال آ گیا!</string>
@@ -1532,32 +1465,6 @@
     <string name="pdf_rep_col_got">میں نے لیا</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 صفحہ %2$d</string>
 
-    <string name="pdf_biz_generated">رپورٹ بنائی گئی %1$s</string>
-    <string name="pdf_biz_not_backup_2">%1$s پی ڈی ایف سے آپ کا ریکارڈ واپس نہیں لا سکتا۔ بیک اپ</string>
-    <string name="pdf_biz_not_backup_3">فائل (RoshanKhata_Backup...txt) محفوظ رکھیں \u2014 وہی آپ کا</string>
-    <string name="pdf_biz_not_backup_4">ڈیٹا واپس لاتی ہے۔</string>
-    <string name="pdf_biz_you_will_receive">آپ کو ملنے ہیں</string>
-    <string name="pdf_biz_you_will_pay">آپ نے دینے ہیں</string>
-    <string name="pdf_biz_net_position">صاف پوزیشن</string>
-    <string name="pdf_biz_cash_in">نقد آیا (کیش بک)</string>
-    <string name="pdf_biz_cash_out">نقد گیا (کیش بک)</string>
-    <string name="pdf_biz_people_count">گاہک اور سپلائر</string>
-    <string name="pdf_biz_accounts">کھاتے</string>
-    <string name="pdf_biz_no_accounts">ابھی کوئی کھاتہ نہیں۔</string>
-    <string name="pdf_biz_settled">حساب برابر</string>
-    <string name="pdf_biz_cheques">چیک جو ابھی کلیئر نہیں ہوئے</string>
-    <string name="pdf_biz_cheques_note">یہ کلیئر ہونے تک رقم نہیں۔ یہ اوپر کے بیلنس میں شامل نہیں۔</string>
-    <string name="pdf_biz_cheque">چیک</string>
-    <string name="pdf_biz_due">" \u00B7 مقررہ تاریخ "</string>
-    <string name="pdf_biz_plans">جاری ادائیگی منصوبے</string>
-    <string name="pdf_biz_paid_of">%2$s میں سے %1$s</string>
-    <string name="pdf_biz_expiring">اسٹاک جو جلد ختم ہو رہا ہے</string>
-    <string name="pdf_biz_expired">میعاد ختم</string>
-    <plurals name="pdf_biz_days_left">
-        <item quantity="one">%1$d دن</item>
-        <item quantity="other">%1$d دن</item>
-    </plurals>
-    <string name="pdf_biz_batch">"بیچ %1$s \u00B7 "</string>
 
     <string name="pdf_reg_title">سیلز اینڈ پرچیز رجسٹر</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1623,7 +1530,6 @@
     <string name="pdf_insp_no_batches">اسٹاک میں کوئی بیچ نہیں۔ بیچ اور میعاد سپلائر بل پر درج ہوتی ہے۔</string>
     <string name="pdf_insp_missing_note">نیچے ہر پروڈکٹ اسٹاک میں ہے لیکن اس کے ایک یا زیادہ لیبل خانے کبھی درج نہیں ہوئے۔</string>
     <string name="pdf_insp_expired">میعاد ختم</string>
-    <string name="pdf_insp_days_left">%1$d دن باقی</string>
     <string name="pdf_insp_units_differ">یونٹ مختلف</string>
     <string name="pdf_insp_company_tag">کمپنی</string>
     <plurals name="pdf_insp_products">
@@ -2763,12 +2669,9 @@
     <string name="poster_choose_design">ڈیزائن چنیں</string>
     <string name="poster_language">پوسٹر کی زبان</string>
     <string name="poster_lang_more">مزید</string>
-    <string name="poster_real_picture">اصل تصویر، 1080 × 1920: اسٹیٹس پر پوری اسکرین</string>
-    <string name="poster_what_goes">پوسٹر پر کیا آئے گا</string>
     <string name="poster_items_label">کیا آیا ہے؟ (زیادہ سے زیادہ 4)</string>
     <string name="poster_add_item">شامل کریں</string>
     <string name="poster_item_hint">مثلاً گندم کا بیج</string>
-    <string name="poster_for_your_shop">آپ کی دکان کے لیے:</string>
     <string name="poster_add_photo">تصویر لگائیں</string>
     <string name="poster_photo_hint">اختیاری۔ مال کی آپ کی اپنی تصویر ڈبے کی جگہ آئے گی۔</string>
     <string name="poster_remove_photo">تصویر ہٹائیں</string>
@@ -2894,7 +2797,6 @@
     <string name="invoice_sum_balance">باقی رقم</string>
     <string name="invoice_more_apply">لاگو کریں</string>
     <string name="invoice_discount_amount_line">رعایت: −%1$s</string>
-    <string name="invoice_designs_count">%1$d ڈیزائن</string>
     <string name="invoice_designs_tap">نیچے دیکھنے کے لیے کسی پر ٹیپ کریں</string>
     <string name="invoice_design_position">%2$d میں سے %1$d</string>
     <string name="invoice_filter_all">سب</string>
@@ -2943,8 +2845,6 @@
     <string name="auto_folder_last">وہاں آخری کاپی: %1$s</string>
     <string name="auto_folder_missing">یہ فولڈر ابھی دستیاب نہیں۔ یو ایس بی لگائیں، یا کوئی اور فولڈر چنیں۔</string>
     <string name="import_csv">گاہک امپورٹ کریں</string>
-    <string name="import_csv_help">کسی دوسری کھاتہ ایپ سے گاہک لائیں: نام، فون اور بیلنس والی CSV فائل۔ ہر گاہک اپنے بیلنس کے ساتھ ایک ابتدائی اندراج کے طور پر آئے گا۔</string>
-    <string name="import_csv_found">فائل میں گاہک: %1$d · کل %2$s</string>
     <string name="import_csv_skipped">پہلے سے کھاتے میں، جوں کے توں چھوڑ دیے: %1$d</string>
     <string name="import_csv_sign">اس فائل میں مثبت بیلنس کا مطلب ہے:</string>
     <string name="import_csv_owes_me">انہوں نے مجھے دینا ہے</string>
@@ -2992,7 +2892,6 @@
 
     <!-- The counter (POS Phase 1, 21 Oct 2026) -->
     <string name="pos_title">کاؤنٹر سیل</string>
-    <string name="pos_subtitle">آئٹم اسکین یا تلاش کریں، شامل کریں، ادائیگی لیں</string>
     <string name="pos_search_hint">آئٹم کا نام یا بارکوڈ</string>
     <string name="pos_scan">اسکین</string>
     <string name="pos_walk_in">عام گاہک</string>
@@ -3002,7 +2901,6 @@
     <string name="pos_col_qty">مقدار</string>
     <string name="pos_col_rate">ریٹ</string>
     <string name="pos_col_total">کل</string>
-    <string name="pos_line_discount">لائن رعایت</string>
     <string name="pos_subtotal">ذیلی کل</string>
     <string name="pos_discount">رعایت</string>
     <string name="pos_tax">ٹیکس %</string>
@@ -3030,9 +2928,6 @@
     <string name="pos_voided">منسوخ</string>
     <string name="pos_status_done">مکمل</string>
     <string name="pos_status_void">منسوخ</string>
-    <string name="pos_status_held">روکا ہوا</string>
-    <string name="pos_today_count">آج %1$d سیلز</string>
-    <string name="pos_today_total">آج %1$s</string>
     <string name="pos_recent">حالیہ سیلز</string>
     <string name="pos_all_tickets">تمام سیلز (پچھلے 60 دن)</string>
     <string name="pos_ticket_search">بل نمبر یا گاہک کا نام</string>
@@ -3052,7 +2947,6 @@
     <string name="pos_receipt">رسید</string>
     <string name="pos_customer_pays_later">باقی %1$s کے کھاتے میں</string>
     <string name="cash_category_sale">سیل</string>
-    <string name="pos_sales_title">سیلز</string>
     <string name="pos_keys_help">F2 آئٹم · F4 مقدار · F6 رعایت · F8 گاہک · F9 ادائیگی · F12 مکمل</string>
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
@@ -3085,8 +2979,6 @@
     <string name="pos_err_walk_in_cash">عام گاہک کو پوری رقم نقد/بینک واپس ہوتی ہے</string>
     <string name="pos_err_reason">وجہ ضروری ہے</string>
     <string name="pos_err_refund">واپسی کی رقم سامان کی قیمت سے زیادہ ہے</string>
-    <string name="pos_return_no_receipt">رسید نہیں</string>
-    <string name="pos_exchange">تبادلہ: دوبارہ بیچیں</string>
     <string name="pos_return_of">%1$s کی واپسی</string>
     <string name="cash_category_return">واپسی</string>
     <string name="pos_recent_sales">حالیہ سیلز</string>
@@ -3370,7 +3262,6 @@
     <string name="product_variant">قسم (سائز، رنگ، ذائقہ)</string>
     <string name="product_variant_help">اقسام اپنی الگ پروڈکٹس ہیں — اپنی قیمت، بارکوڈ اور اسٹاک — جو کاؤنٹر کی اشیاء والی جالی میں مرکزی پروڈکٹ کے نیچے اکٹھی دکھتی ہیں۔</string>
     <string name="cd_title">گاہک کی اسکرین</string>
-    <string name="cd_help">گاہک کے لیے دوسری ونڈو: اشیاء، کل رقم اور دکان کا ادائیگی QR۔ اسے دوسرے مانیٹر پر گھسیٹ لیں۔</string>
     <string name="cd_scan">ادائیگی کے لیے اسکین کریں</string>
     <string name="cd_qr_note">QR میں رقم شامل نہیں: ادائیگی سے پہلے اپنے فون پر رقم دیکھ لیں۔</string>
     <string name="cd_welcome">خوش آمدید</string>
@@ -3483,7 +3374,6 @@
     <string name="country_other">دیگر</string>
     <string name="country_ask_title">آپ کی دکان کس ملک میں ہے؟</string>
     <string name="country_ask_body">ایپ اسے واٹس ایپ نمبر، ٹیکس نمبر کے نام اور ہفتے کے لیے استعمال کرتی ہے۔ بعد میں بزنس پروفائل سے بدل سکتے ہیں۔</string>
-    <string name="poster_national_day">قومی دن</string>
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">موبائل والٹ نمبر (%1$s)</string>
@@ -3500,10 +3390,6 @@
     <plurals name="n_expiring">
         <item quantity="one">%d ایکسپائر ہونے والا</item>
         <item quantity="other">%d ایکسپائر ہونے والے</item>
-    </plurals>
-    <plurals name="n_sales_today">
-        <item quantity="one">آج %d سیل</item>
-        <item quantity="other">آج %d سیلز</item>
     </plurals>
     <plurals name="n_designs">
         <item quantity="one">%d ڈیزائن</item>

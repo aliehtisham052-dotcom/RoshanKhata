@@ -425,17 +425,6 @@ private fun GroupRow(g: Group, count: Int, open: Boolean, holdsOpenPage: Boolean
     }
 }
 
-/** A total in a card: a label, and the figure in its colour (Fluent's card, 1.10.0). */
-@Composable
-fun TotalCard(label: String, amount: String, color: Color, modifier: Modifier = Modifier) {
-    val c = LocalRoshanColors.current
-    Column(modifier.clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card).padding(14.dp)) {
-        Text(label, color = c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Spacer(Modifier.height(4.dp))
-        Text(amount, color = color, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-    }
-}
-
 /**
  * A filled button in [fill] with white bold words: Fluent's 32 dp control with
  * 4 dp corners (Material's 40 dp pill before 1.10.0). [fill] is kept for the

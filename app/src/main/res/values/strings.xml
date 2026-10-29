@@ -2,7 +2,6 @@
     <string name="app_name">Roshan Khata</string>
     <string name="welcome_title">Your books, kept safe</string>
     <string name="welcome_body">Roshan Khata keeps your records on this phone. Connect your own Google account so your books can be backed up to your Drive — your data, in your account.</string>
-    <string name="welcome_note">Connecting only makes backup possible. Your books are safe once a backup runs — turn on automatic backup, or back up any time.</string>
     <string name="welcome_connect">Continue with Google</string>
     <string name="welcome_skip">Maybe later</string>
 
@@ -14,10 +13,6 @@
     <string name="coach_next">Next</string>
     <string name="coach_done">Got it</string>
     <string name="coach_desc_balance">Everything your customers owe you, minus everything you owe. It starts hidden as dots: tap the eye to see it, and again to hide it.</string>
-    <string name="coach_desc_get">The total your customers still have to pay you.</string>
-    <string name="coach_desc_give">The total you still have to pay your suppliers and others.</string>
-    <string name="coach_title_search">Find a Customer</string>
-    <string name="coach_desc_search">Search or sort your customer list here.</string>
     <string name="coach_title_nav_khata">Khata</string>
     <string name="coach_desc_nav_khata">Your customer ledgers — who owes you, and who you owe.</string>
     <string name="coach_title_nav_cashbook">Cash Book</string>
@@ -26,16 +21,12 @@
     <string name="coach_desc_nav_cheques">Track cheques you\'ve given or received, with due dates.</string>
     <string name="coach_title_nav_plans">Plans</string>
     <string name="coach_desc_nav_plans">Installment plans for customers paying in parts.</string>
-    <string name="coach_title_nav_more">More</string>
-    <string name="coach_desc_nav_more">Zakat calculator, Dukan Card, backup, App Lock, and settings.</string>
         <string name="coach_title_bills">Supplier Bills</string>
     <string name="coach_desc_bills">Record what you buy from suppliers and what you still owe them.</string>
     <string name="coach_title_stock">Expiring Stock</string>
     <string name="coach_desc_stock">Sell it, discount it, or return it — while there is still time.</string>
     <string name="coach_title_insights">Sale Insights</string>
     <string name="coach_desc_insights">See what sells, what sits, and where your money is tied up.</string>
-    <string name="coach_title_zakat">Zakat Calculator</string>
-    <string name="coach_desc_zakat">A reference aid to estimate your Zakat — confirm the ruling with a qualified scholar.</string>
     <string name="coach_title_bizcard">Business Card</string>
     <string name="coach_desc_bizcard">Make a shareable card for your shop in seconds, in three styles.</string>
     <string name="coach_title_invoice">Invoice</string>
@@ -67,8 +58,6 @@
     <string name="coach_title_backup">Backup</string>
     <string name="coach_desc_backup">Save your ledger safely to your own Google Drive.</string>
     <string name="coach_desc_backup_pc">Every day a copy of your ledger is kept on this computer. In Daily copies, choose a second place for it: a USB stick or your Google Drive folder.</string>
-        <string name="coach_title_settings">Business Settings</string>
-    <string name="coach_desc_settings">Your shop\'s name, contact and preferences — set once, used everywhere.</string>
         <string name="calculator">Calculator</string>
     <string name="calc_clear">C</string>
     <string name="calc_backspace">\u232B</string>
@@ -82,39 +71,29 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">Calculator</string>
     <string name="coach_desc_calc">Quick sums beside your ledger — margins, totals, splits.</string>
-    <string name="coach_title_applock">Recycle Bin</string>
-    <string name="coach_desc_applock">Deleted a customer by mistake? Restore them from here.</string>
-    <string name="coach_title_add">Add a Customer</string>
-    <string name="coach_desc_add">Tap here to add your first customer and start your khata.</string>
     <string name="app_tagline">Innovation-313</string>
-    <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Net balance</string>
     <string name="home_sec_daily">Every day</string>
     <string name="home_sec_business">Business</string>
     <string name="home_today">Today</string>
-    <string name="home_cash_in_hand">Cash in hand</string>
     <string name="home_quick_actions">Quick actions</string>
     <string name="home_col_time">Time</string>
     <string name="tile_bills">Bills</string>
     <string name="tile_expiry">Expiry</string>
     <string name="tile_card">Card</string>
-    <string name="tile_settings">Settings</string>
     <string name="tile_bin">Bin</string>
     <string name="tile_products">Products</string>
     <string name="tile_zakat">Zakat</string>
     <string name="tile_insights">Insights</string>
     <string name="tile_seasons">Seasons</string>
-    <string name="tile_rates">Rates</string>
     <string name="today_backup">Backup</string>
     <string name="today_gap">Cash gap</string>
     <string name="today_chip">%1$s · %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
-    <string name="ledger_pdf_title">Ledger report PDF</string>
     <string name="ledger_report_generating">Building the ledger report…</string>
     <string name="ledger_report_failed">Could not build the report.</string>
     <string name="ledger_report_title">Khata Report</string>
-    <string name="ledger_report_col_name">Name</string>
     <string name="ledger_report_empty">No entries in this period.</string>
     <string name="ledger_report_download">Download</string>
     <string name="ledger_report_download_as">Download as</string>
@@ -126,8 +105,6 @@
     <string name="report_end_date">End date</string>
     <string name="ledger_report_from">From %1$s</string>
     <string name="ledger_report_till">Till %1$s</string>
-    <string name="ledger_report_showing_all">Showing: all time</string>
-    <string name="ledger_report_show_all">Show all time</string>
     <string name="add_party">Add Party</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
@@ -201,7 +178,6 @@
         <item quantity="other">Delete %1$d selected entries? They will move to the Recycle Bin. You can restore them within 30 days.</item>
     </plurals>
     <string name="moved_to_bin">Moved to Recycle Bin</string>
-    <string name="long_press_to_delete">Long-press a party to delete it</string>
 
     <!-- Zakat -->
     <string name="zakat_calculator">Zakat Calculator</string>
@@ -211,7 +187,6 @@
     <string name="nisab_section">Nisab</string>
     <string name="nisab_help">Nisab is set here against the silver standard (612.36 g), the position generally taken as more careful toward the rights of the poor.</string>
     <string name="silver_price_hint">Silver price per gram</string>
-    <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Enter the price to calculate nisab</string>
     <string name="nisab_needed_first">Enter the price first</string>
     <string name="above_nisab">Your wealth has reached nisab — Zakat is due (subject to the lunar year being complete).</string>
@@ -294,7 +269,6 @@
     <!-- PDF statement -->
     <string name="statement_pdf">Statement</string>
     <string name="generating_statement">Preparing statement\u2026</string>
-    <string name="share_statement">Share statement</string>
     <string name="statement_failed">Could not create the statement. Please try again.</string>
     <string name="no_entries_to_export">There are no entries to put in a statement yet.</string>
 
@@ -311,7 +285,6 @@
     <string name="lock_pin_again">Enter the same PIN again</string>
     <string name="lock_pin_wrong">Wrong PIN. Try again.</string>
     <string name="lock_pin_mismatch">The two PINs are not the same.</string>
-    <string name="lock_pin_wait">Too many tries. Wait %1$d seconds.</string>
     <string name="lock_unlock">Unlock</string>
     <string name="lock_title">Unlock Roshan Khata</string>
     <string name="lock_subtitle">Your ledger is private. Confirm it is you.</string>
@@ -333,7 +306,6 @@
     <string name="ok">OK</string>
 
     <!-- Business settings / payment QR -->
-    <string name="business_settings">Business Settings</string>
     <string name="business_profile">Business Profile</string>
     <string name="profile_preview_caption">Live preview of your invoice header</string>
     <string name="business_settings_subtitle">Printed on your invoices, statements and reports</string>
@@ -359,7 +331,6 @@
     <string name="qr_confirm_message">Look at the code above and confirm it is your own payment account (EasyPaisa, JazzCash, UPI…). If it is not, your customers\' payments will reach someone else.</string>
     <string name="qr_confirm_yes">Yes, it is mine</string>
     <string name="profile_saved">Saved</string>
-    <string name="attach_qr_to_reminder">Attach payment QR</string>
 
     <!-- Cheques -->
     <string name="cheques">Cheques</string>
@@ -394,7 +365,6 @@
         <item quantity="one">%1$d cheque ready to bank</item>
         <item quantity="other">%1$d cheques ready to bank</item>
     </plurals>
-    <string name="due_summary_none">Nothing due</string>
     <string name="due_summary_pending">%1$d waiting to clear</string>
     <string name="due_summary_empty">No cheques</string>
     <string name="due_summary_all_settled">All settled</string>
@@ -421,8 +391,6 @@
     <string name="search_parties">Name or number</string>
     <string name="search_entries">Notes or goods</string>
     <string name="sort">Sort</string>
-    <string name="filter_type">Type</string>
-    <string name="filter_type_title">Show which type</string>
     <string name="filter_type_all">All</string>
     <string name="filter_type_customers">Customers</string>
     <string name="filter_type_suppliers">Suppliers</string>
@@ -443,8 +411,6 @@
     <string name="khata_pick_party">Choose someone on the list to see their account here.</string>
     <string name="khata_choose_several">Choose several (to delete)</string>
     <string name="no_matching_entries">No entries match your search.</string>
-    <string name="showing_filtered">Showing %1$d of %2$d</string>
-    <string name="running_balance_note">Running balance follows the ledger\'s own order, so it stays correct however you sort or search.</string>
 
     <!-- Party photo -->
     <string name="party_photo">Photo</string>
@@ -458,7 +424,6 @@
     <string name="photo_removed">Photo removed</string>
     <string name="photo_save_failed">That image could not be saved. Please pick another.</string>
     <string name="photo_privacy_note">The photo stays on this phone. It is never uploaded, and it is deliberately left OFF statements — a statement gets forwarded, and your customer did not agree to their face travelling with it.</string>
-    <string name="party_options">Options</string>
     <string name="edit_party">Edit details</string>
     <string name="delete_party">Delete</string>
 
@@ -469,8 +434,6 @@
     <string name="credit_limit_hint">Limit</string>
     <string name="credit_limit_advisory">This is a warning, not a block. It is your business — you can always proceed anyway.</string>
     <string name="credit_limit_current">Currently owes you %1$s</string>
-    <string name="credit_limit_none">No limit set</string>
-    <string name="credit_limit_set_to">Limit: %1$s</string>
     <string name="credit_limit_removed">Credit limit removed</string>
     <string name="credit_limit_saved">Credit limit saved</string>
 
@@ -498,7 +461,6 @@
     <string name="pick_end_date">Pick the end date</string>
     <string name="closing_note_range">The three figures above cover only this period. The closing balance below is the full account — %1$s — because a part-period total is not what your customer owes.</string>
     <string name="closing_note_all">Closing balance: %1$s</string>
-    <string name="report_period">Period: %1$s</string>
     <string name="invalid_range">The end date cannot be before the start date.</string>
 
     <!-- Cashbook -->
@@ -524,7 +486,6 @@
     <string name="restore_from_file">Restore from a backup</string>
     <string name="backup_explain">Everything — customers, ledger, cheques, cashbook, and the Recycle Bin — is written to a single file you can save to Drive, WhatsApp to yourself, or keep on a memory card.\n\nThe file is plain, readable text. Even years from now, even without this app, your records will still be recoverable. Data you cannot get back without our help is not really yours.\n\nPhotographs are the one exception. Customer photos and bill photos stay on this phone and are not inside the file — a backup restored on a new phone brings back every record, but not the pictures. Keep copies of any bill photo that matters.</string>
     <string name="backup_warning">Roshan Khata keeps everything on this phone alone. If the phone is lost, broken, or the app is uninstalled, the records go with it. Please take a backup regularly and keep it somewhere else.</string>
-    <string name="backup_created">Backup ready — choose where to save it</string>
     <string name="backup_failed">The backup could not be created.</string>
     <string name="save_backup">Save backup</string>
 
@@ -574,16 +535,12 @@
     <!-- Bottom navigation -->
     <string name="nav_khata">Khata</string>
     <string name="nav_home">Home</string>
-    <string name="home_section_daily">EVERY DAY</string>
-    <string name="home_section_business">YOUR BUSINESS</string>
     <string name="nav_cashbook">Cashbook</string>
     <string name="nav_cheques">Cheques</string>
     <string name="nav_plans">Plans</string>
-    <string name="nav_more">More</string>
 
     <!-- More sheet -->
     <string name="more_title">More</string>
-    <string name="tap_to_change_business">Tap to switch business</string>
     <string name="businesses_title">Businesses</string>
     <string name="businesses_subtitle">Each business keeps its own separate khata</string>
     <string name="business_add">Add business</string>
@@ -601,7 +558,6 @@
     <string name="erase_all_done">All data erased.</string>
     <string name="db_broken_title">The ledger will not open</string>
     <string name="db_broken_body">Something has damaged the ledger file on this phone. Your daily copies are safe — the app keeps one for each of the last seven days, and going back to one does not touch today\'s file until a healthy copy is confirmed.</string>
-    <string name="business_rename_hint">Tap to open · long-press to rename</string>
     <string name="restore_business_mismatch">This backup belongs to %1$s, but the business open right now is %2$s. Restoring will replace the open business with that backup.</string>
     <string name="contact_in_recycle_bin">In Recycle Bin</string>
     <string name="restore_no_images">Your records are back, but this backup had no images with it, so photos, bill photos and the QR were not restored. To keep images in future backups, turn on Include images before backing up.</string>
@@ -612,7 +568,6 @@
         <item quantity="other">%1$d businesses on Drive</item>
     </plurals>
     <string name="drive_restore_all">Restore all</string>
-    <string name="drive_restore_all_warning">These businesses will be restored from Drive, replacing whatever is on this phone for each of them:\n\n%1$s</string>
     <string name="drive_restored_these">Restored:\n%1$s</string>
     <string name="drive_restore_missed">Could not restore:\n%1$s</string>
     <string name="business_numbered">Business %1$d</string>
@@ -656,14 +611,12 @@
     <string name="filter_apply">Apply filter</string>
     <string name="filter_clear">Clear</string>
     <string name="filter_account_all">All</string>
-    <string name="more_reports">Reports &amp; Zakat</string>
     <string name="more_settings">Settings</string>
     <!-- The Settings sheet's four group labels (7 Oct). -->
     <string name="settings_group_security">Security</string>
     <string name="settings_group_data">Data</string>
     <string name="settings_group_display">Display</string>
     <string name="settings_group_help">Help</string>
-    <string name="more_data">Your data</string>
 
     <string name="more_options">More</string>
 
@@ -712,7 +665,6 @@
     <string name="delete_bill">Delete bill</string>
     <string name="delete_bill_confirm">The bill and its batch records will be removed. If it is a credit bill, its ledger entry (what you owe this supplier) also goes to the Recycle Bin, so the amount owed drops by this bill. You can restore the entry from the Recycle Bin within 30 days.</string>
     <string name="bill_actions">Bill</string>
-    <string name="view_items">View items and batches</string>
 
     <!-- Invoices — a printable bill, deliberately outside the khata ledger -->
     <string name="invoices">Invoices</string>
@@ -724,13 +676,10 @@
     <string name="pick_invoice_date">Pick invoice date</string>
     <string name="invoice_date_set">Date: %1$s</string>
     <string name="invoice_due_date_hint">Due date (optional)</string>
-    <string name="invoice_discount_hint">Discount % (optional)</string>
-    <string name="invoice_tax_hint">Tax % (optional)</string>
     <string name="nav_invoice">Invoice</string>
     <string name="invoice_item_name_hint">Item name</string>
     <string name="invoice_item_rate_hint">Rate</string>
     <string name="invoice_row_unit_hint">Unit</string>
-    <string name="invoice_item_invalid">Enter a valid item name, quantity and rate.</string>
     <string name="invoice_customer_required">Enter the customer name first.</string>
     <string name="invoice_needs_item">Add at least one item first.</string>
     <string name="invoice_saved">Invoice saved.</string>
@@ -767,9 +716,7 @@
     <string name="invoice_back">Back</string>
     <string name="invoice_items_label">Items</string>
     <string name="invoice_number_hint">Invoice # (optional)</string>
-    <string name="invoice_charge_label_hint">Extra charge (optional)</string>
     <string name="invoice_charge_amount_hint">Amount</string>
-    <string name="invoice_received_hint">Amount received (optional)</string>
     <string name="invoice_terms">Terms &amp; Conditions</string>
     <string name="invoice_terms_hint">e.g. Payment due within 14 days.</string>
     <string name="invoice_strn_hint">e.g. 1234567-8 (optional)</string>
@@ -812,7 +759,6 @@
     <string name="batch_none">No batch number recorded</string>
     <string name="from_supplier">From %1$s</string>
     <string name="from_supplier_bill">From %1$s — bill %2$s</string>
-    <string name="expiring_badge">%1$d expiring</string>
 
     <!-- Batch trace -->
     <string name="trace_batch">Trace a batch</string>
@@ -826,7 +772,6 @@
 
     <string name="search_action">Search</string>
 
-    <string name="pick_bill_due_date">Pick payment due date</string>
 
     <!-- Backup: saved location + restore sources -->
     <string name="backup_done_title">Backup saved</string>
@@ -866,13 +811,9 @@
 
     <string name="powered_by">Powered by Innovation-313</string>
     <string name="lock_tagline">Powered by Innovation-313</string>
-    <string name="tap_to_start">Tap anywhere to continue</string>
 
     <!-- Splash / branding -->
-    <string name="tap_to_continue">Tap to continue</string>
-    <string name="brand_har_hisaab">Har Hisaab Roshan</string>
 
-    <string name="unlock_to_open">Touch to unlock</string>
 
     <string name="restore_done_with_bin">Your data is back.\n\n%1$d customer(s) in this backup had been deleted before it was made, so they have been restored to the Recycle Bin \u2014 not the main list. Open More \u2192 Recycle Bin to find them, where you can restore any of them fully.</string>
 
@@ -885,7 +826,6 @@
     <!-- Shown as a toast the moment the welcome screen connects an account. It
          only confirms the sign-in: the backup state belongs on the backup
          screen, not here, where it reads as a complaint about a brand-new account. -->
-    <string name="welcome_signed_in_title">Successfully signed in</string>
     <string name="drive_backup_now">Back up to Drive now</string>
     <string name="drive_backup_images">Include images (photos, bill photos, QR)</string>
     <string name="drive_auto_backup">Automatic backup</string>
@@ -903,12 +843,10 @@
     <string name="drive_images_restore_failed">Your records were restored, but the images could not be downloaded. Try restoring again on a better connection.</string>
     <string name="drive_restoring">Restoring from Drive\u2026</string>
     <string name="drive_no_backup">No backup found in your Google Drive yet.</string>
-    <string name="drive_restore_failed">Could not restore from Drive. Check your internet and try again.</string>
     <string name="drive_signin_failed">Google sign-in did not complete. Please try again.</string>
     <!-- Web OAuth client ID for Credential Manager (Sign in with Google). Public, not a secret. -->
     <string name="google_web_client_id" translatable="false">998510731642-rdk1rcdfcuah11qerh1env6tim54tg0n.apps.googleusercontent.com</string>
     <string name="drive_permission_needed">Roshan Khata needs permission to save to its own folder in your Drive. Please allow it when asked.</string>
-    <string name="drive_restore_confirm">This will replace everything currently in the app with the backup from your Google Drive. Continue?</string>
     <string name="i_have_to_get">I have to get</string>
     <string name="i_have_to_give">I have to give</string>
     <string name="insights_title">Sale Insights</string>
@@ -1214,7 +1152,6 @@
     <string name="about_privacy_body_pc">Everything is stored on this computer. We never see your customers, their numbers, or what anyone owes. Backups stay on this computer and in the folder you choose, such as a USB stick or a Google Drive folder — never with us.</string>
     <string name="about_privacy_policy">Privacy policy</string>
     <string name="about_maker">Built by Innovation-313</string>
-    <string name="party_exists">%1$s is already in your khata — opening it.</string>
     <string name="party_exists_title">This may already be in your khata</string>
     <string name="party_exists_message">An account like this one is already open:\n\n%1$s\n\nIf it is the same person, open what you already have. If it is someone else — or a second account you keep on purpose — go ahead and add it.</string>
     <string name="open_existing">Open existing</string>
@@ -1242,8 +1179,6 @@
     <string name="stamp_saved">Stamp saved.</string>
     <string name="stamp_save_failed">That image could not be saved.</string>
     <string name="made_with_app">Roshan Khata</string>
-    <string name="more_details">Add note, goods or recovery</string>
-    <string name="back_to_amount">Back to amount</string>
     <string name="voice_entry">Speak an entry</string>
     <string name="voice_prompt">Say it like: Gave Bilal five thousand</string>
     <string name="voice_unavailable">This phone has no speech recogniser.</string>
@@ -1354,7 +1289,6 @@
     <string name="village_optional">Village (optional)</string>
     <string name="product_name">Product name</string>
     <string name="company_optional">Company / brand (optional)</string>
-    <string name="category_optional">Category (optional)</string>
     <string name="unit_optional">Unit — bottle, kg, bag (optional)</string>
     <string name="compliance_section">Inspection department details</string>
     <string name="compliance_explain">Only needed if an inspection may ask for them. Leave blank for feed or seed.</string>
@@ -1383,7 +1317,6 @@
     <string name="poster_subtitle">A picture for WhatsApp Status, with your shop\'s name on it</string>
     <string name="poster_heading_hint">Big line</string>
     <string name="poster_message_hint">Message</string>
-    <string name="poster_show_logo">Shop logo on the poster</string>
     <string name="poster_show_mark">Show “Roshan Khata” on the poster</string>
     <string name="poster_custom">Your own words</string>
     <string name="poster_new_stock">New stock has arrived!</string>
@@ -1583,34 +1516,6 @@
     <string name="pdf_rep_col_got">I GOT</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 Page %2$d</string>
 
-    <!-- Words printed on the BUSINESS REPORT pdf — the owner's own whole-shop summary. -->
-    <string name="pdf_biz_generated">Report generated %1$s</string>
-    <string name="pdf_biz_not_backup_2">%1$s cannot restore your records from a PDF. Keep the backup</string>
-    <string name="pdf_biz_not_backup_3">file (RoshanKhata_Backup...txt) safe \u2014 that is the one that brings</string>
-    <string name="pdf_biz_not_backup_4">your data back.</string>
-    <string name="pdf_biz_you_will_receive">You will receive</string>
-    <string name="pdf_biz_you_will_pay">You will pay</string>
-    <string name="pdf_biz_net_position">Net position</string>
-    <string name="pdf_biz_cash_in">Cash in (cashbook)</string>
-    <string name="pdf_biz_cash_out">Cash out (cashbook)</string>
-    <string name="pdf_biz_people_count">Customers and suppliers</string>
-    <string name="pdf_biz_accounts">Accounts</string>
-    <string name="pdf_biz_no_accounts">No accounts yet.</string>
-    <string name="pdf_biz_settled">Settled</string>
-    <string name="pdf_biz_cheques">Cheques not yet cleared</string>
-    <string name="pdf_biz_cheques_note">These are not money until they clear. They are not in the balances above.</string>
-    <string name="pdf_biz_cheque">Cheque</string>
-    <string name="pdf_biz_due">" \u00B7 due "</string>
-    <string name="pdf_biz_plans">Payment plans still running</string>
-    <string name="pdf_biz_paid_of">%1$s of %2$s</string>
-    <string name="pdf_biz_expiring">Stock expiring soon</string>
-    <string name="pdf_biz_expired">EXPIRED</string>
-    <plurals name="pdf_biz_days_left">
-        <item quantity="one">%1$d day</item>
-        <item quantity="other">%1$d days</item>
-    </plurals>
-    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
-
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
@@ -1677,7 +1582,6 @@
     <string name="pdf_insp_no_batches">No batches in stock. Batch and expiry are recorded on a supplier bill.</string>
     <string name="pdf_insp_missing_note">Each product below is in stock with one or more label fields never recorded.</string>
     <string name="pdf_insp_expired">EXPIRED</string>
-    <string name="pdf_insp_days_left">%1$d days left</string>
     <string name="pdf_insp_units_differ">units differ</string>
     <string name="pdf_insp_company_tag">COMPANY</string>
     <plurals name="pdf_insp_products">
@@ -2977,12 +2881,9 @@
     <string name="poster_choose_design">Choose a design</string>
     <string name="poster_language">Poster language</string>
     <string name="poster_lang_more">More</string>
-    <string name="poster_real_picture">The real picture, 1080 × 1920: full screen on Status</string>
-    <string name="poster_what_goes">What goes on the poster</string>
     <string name="poster_items_label">What arrived? (up to 4)</string>
     <string name="poster_add_item">Add</string>
     <string name="poster_item_hint">e.g. Wheat seed</string>
-    <string name="poster_for_your_shop">For your shop:</string>
     <string name="poster_add_photo">Add a photo</string>
     <string name="poster_photo_hint">Optional. Your own picture of the stock takes the crate\'s place.</string>
     <string name="poster_remove_photo">Remove photo</string>
@@ -3108,7 +3009,6 @@
     <string name="invoice_sum_balance">Balance due</string>
     <string name="invoice_more_apply">Apply</string>
     <string name="invoice_discount_amount_line">Discount: −%1$s</string>
-    <string name="invoice_designs_count">%1$d designs</string>
     <string name="invoice_designs_tap">Tap one to see it below</string>
     <string name="invoice_design_position">%1$d of %2$d</string>
     <string name="invoice_filter_all">All</string>
@@ -3157,8 +3057,6 @@
     <string name="auto_folder_last">Last copy there: %1$s</string>
     <string name="auto_folder_missing">That folder cannot be reached right now. Plug in the USB stick, or choose another folder.</string>
     <string name="import_csv">Import customers</string>
-    <string name="import_csv_help">Bring customers from another ledger app: a CSV file with name, phone and balance. Each customer comes in with their balance as one opening entry.</string>
-    <string name="import_csv_found">Customers in the file: %1$d · total %2$s</string>
     <string name="import_csv_skipped">Already in your khata, left as they are: %1$d</string>
     <string name="import_csv_sign">In this file, a positive balance means:</string>
     <string name="import_csv_owes_me">They owe me</string>
@@ -3206,7 +3104,6 @@
 
     <!-- The counter (POS Phase 1, 21 Oct 2026) -->
     <string name="pos_title">Counter sale</string>
-    <string name="pos_subtitle">Scan or search an item, add it, take the payment</string>
     <string name="pos_search_hint">Item name or barcode</string>
     <string name="pos_scan">Scan</string>
     <string name="pos_walk_in">Walk-in customer</string>
@@ -3216,7 +3113,6 @@
     <string name="pos_col_qty">Qty</string>
     <string name="pos_col_rate">Rate</string>
     <string name="pos_col_total">Total</string>
-    <string name="pos_line_discount">Line discount</string>
     <string name="pos_subtotal">Subtotal</string>
     <string name="pos_discount">Discount</string>
     <string name="pos_tax">Tax %</string>
@@ -3244,9 +3140,6 @@
     <string name="pos_voided">Voided</string>
     <string name="pos_status_done">Done</string>
     <string name="pos_status_void">Void</string>
-    <string name="pos_status_held">Held</string>
-    <string name="pos_today_count">%1$d sales today</string>
-    <string name="pos_today_total">Today %1$s</string>
     <string name="pos_recent">Recent sales</string>
     <string name="pos_all_tickets">All sales (last 60 days)</string>
     <string name="pos_ticket_search">Bill number or customer</string>
@@ -3266,7 +3159,6 @@
     <string name="pos_receipt">Receipt</string>
     <string name="pos_customer_pays_later">The rest goes to %1$s’s account</string>
     <string name="cash_category_sale">Sale</string>
-    <string name="pos_sales_title">Sales</string>
     <string name="pos_keys_help">F2 item · F4 qty · F6 discount · F8 customer · F9 pay · F12 complete</string>
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
@@ -3299,8 +3191,6 @@
     <string name="pos_err_walk_in_cash">A walk-in customer is refunded in full, in money</string>
     <string name="pos_err_reason">A reason is needed</string>
     <string name="pos_err_refund">The refund is more than the goods are worth</string>
-    <string name="pos_return_no_receipt">No receipt</string>
-    <string name="pos_exchange">Exchange: sell again</string>
     <string name="pos_return_of">Return of %1$s</string>
     <string name="cash_category_return">Return</string>
     <string name="pos_recent_sales">Recent sales</string>
@@ -3584,7 +3474,6 @@
     <string name="product_variant">Variant (size, colour, flavour)</string>
     <string name="product_variant_help">Variants are their own products — own price, barcode and stock — shown together under the main product on the counter\'s item grid.</string>
     <string name="cd_title">Customer screen</string>
-    <string name="cd_help">A second window for the customer: the items, the total and the shop\'s payment QR. Drag it to the second monitor.</string>
     <string name="cd_scan">Scan to pay</string>
     <string name="cd_qr_note">The QR does not carry the amount: check it on your phone before you pay.</string>
     <string name="cd_welcome">Welcome</string>
@@ -3697,7 +3586,6 @@
     <string name="country_other">Other</string>
     <string name="country_ask_title">Where is your shop?</string>
     <string name="country_ask_body">The app uses this for WhatsApp numbers, the tax number\'s name and the week. You can change it later in Business Profile.</string>
-    <string name="poster_national_day">National day</string>
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">Mobile wallet number (%1$s)</string>
@@ -3714,10 +3602,6 @@
     <plurals name="n_expiring">
         <item quantity="one">%d expiring</item>
         <item quantity="other">%d expiring</item>
-    </plurals>
-    <plurals name="n_sales_today">
-        <item quantity="one">%d sale today</item>
-        <item quantity="other">%d sales today</item>
     </plurals>
     <plurals name="n_designs">
         <item quantity="one">%d design</item>

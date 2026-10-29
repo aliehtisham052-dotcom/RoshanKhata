@@ -104,8 +104,6 @@ data class SaleReturnItem(
     val lineTotal: Double get() = SaleMath.lineTotal(quantity, rate)
 }
 
-data class SaleReturnWithLines(val ret: SaleReturn, val items: List<SaleReturnItem>)
-
 /** A return as the list shows it. */
 data class ReturnSummary(
     val id: Long,

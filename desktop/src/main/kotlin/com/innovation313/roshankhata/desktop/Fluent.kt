@@ -38,12 +38,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import com.innovation313.roshankhata.screens.calcKeys
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -328,31 +325,6 @@ fun Avatar(name: String, size: Int = 36, index: Int = 0, rounded: Boolean = fals
     }
 }
 
-/**
- * The Home's figure cards (the "colourful" mockup): a soft gradient of the
- * figure's tint into the card, the glyph on a solid chip, the figure at 26 sp
- * in its colour, and a line of context under it.
- */
-@Composable
-fun StatCard(label: String, amount: String, under: String?, color: Color, tint: Color, icon: String, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
-    val c = LocalRoshanColors.current
-    Column(
-        modifier.clip(Look.card)
-            .background(Brush.linearGradient(listOf(tint, Look.layer)))
-            .border(1.dp, color.copy(alpha = 0.25f), Look.card)
-            .then(if (onClick != null) Modifier.press(Look.card, onClick = onClick) else Modifier)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Box(Modifier.size(30.dp).background(color, Look.ctl), contentAlignment = Alignment.Center) { Glyph(icon, Look.layer, 16) }
-            Text(label, Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
-        Text(amount, color = color, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-        under?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
-    }
-}
-
 /** A table's header row: 12 sp bold labels on the subtle fill. [columns]: each label with its width in dp (0 fills). */
 @Composable
 fun TableHead(columns: List<Pair<String, Int>>, endAligned: Set<Int> = emptySet()) {
@@ -385,21 +357,6 @@ fun WeightedHead(columns: List<Pair<String, Float>>, endAligned: Set<Int> = empt
 /** The quiet line between rows and under a card's title. */
 @Composable
 fun Rule() { HorizontalDivider(color = Look.line) }
-
-/** A tinted chip with a glyph in its colour (an alert's kind, a quick action). */
-@Composable
-fun GlyphChip(icon: String, color: Color, tint: Color, size: Int = 32) {
-    Box(Modifier.size(size.dp).background(tint, Look.ctl), contentAlignment = Alignment.Center) { Glyph(icon, color, (size / 2)) }
-}
-
-/** The phone's tile picture painted in one colour, [size] across (the rail's and the chips' glyphs). */
-@Composable
-fun MonoTile(icon: String, tint: Color, size: Int) {
-    val flip = iconFlipped(icon)
-    tileIcon(icon)?.let {
-        Image(it, contentDescription = null, modifier = Modifier.size(size.dp).then(if (flip) Modifier.scale(-1f, 1f) else Modifier), colorFilter = ColorFilter.tint(tint))
-    }
-}
 
 /** The words of an icon-only control as its hover tip. */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)

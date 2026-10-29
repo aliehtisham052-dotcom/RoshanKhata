@@ -2,7 +2,6 @@
     <string name="app_name">Roshan Khata</string>
     <string name="welcome_title">Buku Anda, tersimpan aman</string>
     <string name="welcome_body">Roshan Khata menyimpan catatan Anda di ponsel ini. Hubungkan akun Google Anda sendiri agar buku Anda bisa dicadangkan ke Drive Anda — data Anda, di akun Anda.</string>
-    <string name="welcome_note">Menghubungkan akun hanya membuat pencadangan menjadi mungkin. Buku Anda baru aman setelah cadangan dibuat — aktifkan cadangan otomatis, atau cadangkan kapan saja.</string>
     <string name="welcome_connect">Lanjutkan dengan Google</string>
     <string name="welcome_skip">Nanti saja</string>
 
@@ -14,10 +13,6 @@
     <string name="coach_next">Lanjut</string>
     <string name="coach_done">Mengerti</string>
     <string name="coach_desc_balance">Semua utang pelanggan kepada Anda, dikurangi semua utang Anda. Awalnya tersembunyi sebagai titik: ketuk ikon mata untuk melihatnya, dan lagi untuk menyembunyikannya.</string>
-    <string name="coach_desc_get">Total yang masih harus dibayar pelanggan kepada Anda.</string>
-    <string name="coach_desc_give">Total yang masih harus Anda bayar kepada pemasok dan pihak lain.</string>
-    <string name="coach_title_search">Cari Pelanggan</string>
-    <string name="coach_desc_search">Cari atau urutkan daftar pelanggan Anda di sini.</string>
     <string name="coach_title_nav_khata">Buku</string>
     <string name="coach_desc_nav_khata">Buku utang pelanggan Anda — siapa yang berutang kepada Anda, dan kepada siapa Anda berutang.</string>
     <string name="coach_title_nav_cashbook">Buku Kas</string>
@@ -26,16 +21,12 @@
     <string name="coach_desc_nav_cheques">Pantau cek yang Anda berikan atau terima, beserta tanggal jatuh temponya.</string>
     <string name="coach_title_nav_plans">Cicilan</string>
     <string name="coach_desc_nav_plans">Rencana cicilan untuk pelanggan yang membayar bertahap.</string>
-    <string name="coach_title_nav_more">Lainnya</string>
-    <string name="coach_desc_nav_more">Kalkulator zakat, Kartu Toko, cadangan, Kunci Aplikasi, dan pengaturan.</string>
         <string name="coach_title_bills">Tagihan Pemasok</string>
     <string name="coach_desc_bills">Catat apa yang Anda beli dari pemasok dan berapa yang masih harus Anda bayar.</string>
     <string name="coach_title_stock">Stok Kedaluwarsa</string>
     <string name="coach_desc_stock">Jual, beri diskon, atau kembalikan — selagi masih ada waktu.</string>
     <string name="coach_title_insights">Analisis Penjualan</string>
     <string name="coach_desc_insights">Lihat apa yang laku, apa yang menumpuk, dan di mana uang Anda tertahan.</string>
-    <string name="coach_title_zakat">Kalkulator Zakat</string>
-    <string name="coach_desc_zakat">Alat bantu untuk memperkirakan zakat Anda — pastikan hukumnya kepada ulama yang berkompeten.</string>
     <string name="coach_title_bizcard">Kartu Nama</string>
     <string name="coach_desc_bizcard">Buat kartu toko yang siap dibagikan dalam hitungan detik, dalam tiga gaya.</string>
     <string name="coach_title_invoice">Faktur</string>
@@ -63,8 +54,6 @@
     <string name="coach_title_backup">Cadangan</string>
     <string name="coach_desc_backup">Simpan buku Anda dengan aman ke Google Drive Anda sendiri.</string>
     <string name="coach_desc_backup_pc">Setiap hari salinan buku Anda disimpan di komputer ini. Di Salinan harian, pilih tempat kedua untuknya: flashdisk USB atau folder Google Drive Anda.</string>
-        <string name="coach_title_settings">Pengaturan Usaha</string>
-    <string name="coach_desc_settings">Nama, kontak, dan preferensi toko Anda — diatur sekali, dipakai di mana saja.</string>
         <string name="calculator">Kalkulator</string>
     <string name="calc_clear">C</string>
     <string name="calc_backspace">\u232B</string>
@@ -78,39 +67,29 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">Kalkulator</string>
     <string name="coach_desc_calc">Hitungan cepat di samping buku Anda — margin, total, pembagian.</string>
-    <string name="coach_title_applock">Tempat Sampah</string>
-    <string name="coach_desc_applock">Tidak sengaja menghapus pelanggan? Pulihkan dari sini.</string>
-    <string name="coach_title_add">Tambah Pelanggan</string>
-    <string name="coach_desc_add">Ketuk di sini untuk menambahkan pelanggan pertama dan memulai buku Anda.</string>
     <string name="app_tagline">Innovation-313</string>
-    <string name="brand_line">Innovation-313</string>
 
     <string name="net_balance">Saldo bersih</string>
     <string name="home_sec_daily">Setiap hari</string>
     <string name="home_sec_business">Usaha</string>
     <string name="home_today">Hari ini</string>
-    <string name="home_cash_in_hand">Kas di tangan</string>
     <string name="home_quick_actions">Tindakan cepat</string>
     <string name="home_col_time">Waktu</string>
     <string name="tile_bills">Tagihan</string>
     <string name="tile_expiry">Kedaluwarsa</string>
     <string name="tile_card">Kartu</string>
-    <string name="tile_settings">Setelan</string>
     <string name="tile_bin">Sampah</string>
     <string name="tile_products">Barang</string>
     <string name="tile_zakat">Zakat</string>
     <string name="tile_insights">Wawasan</string>
     <string name="tile_seasons">Musim</string>
-    <string name="tile_rates">Harga</string>
     <string name="today_backup">Cadangan</string>
     <string name="today_gap">Kas kurang</string>
     <string name="today_chip">%1$s · %2$s</string>
     <string name="ledger_pdf_button">PDF</string>
-    <string name="ledger_pdf_title">PDF laporan buku</string>
     <string name="ledger_report_generating">Menyusun laporan buku…</string>
     <string name="ledger_report_failed">Laporan tidak dapat dibuat.</string>
     <string name="ledger_report_title">Laporan Buku</string>
-    <string name="ledger_report_col_name">Nama</string>
     <string name="ledger_report_empty">Tidak ada catatan pada periode ini.</string>
     <string name="ledger_report_download">Unduh</string>
     <string name="ledger_report_download_as">Unduh sebagai</string>
@@ -122,8 +101,6 @@
     <string name="report_end_date">Tanggal akhir</string>
     <string name="ledger_report_from">Dari %1$s</string>
     <string name="ledger_report_till">Sampai %1$s</string>
-    <string name="ledger_report_showing_all">Menampilkan: semua waktu</string>
-    <string name="ledger_report_show_all">Tampilkan semua waktu</string>
     <string name="add_party">Tambah Kontak</string>
     <string name="add_party_duplicate_with_phone">Pelanggan serupa sudah ada: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Pelanggan serupa sudah ada: %1$s</string>
@@ -194,7 +171,6 @@
         <item quantity="other">Hapus %1$d catatan terpilih? Catatan akan dipindahkan ke Tempat Sampah. Anda dapat memulihkannya dalam 30 hari.</item>
     </plurals>
     <string name="moved_to_bin">Dipindahkan ke Tempat Sampah</string>
-    <string name="long_press_to_delete">Tekan lama sebuah kontak untuk menghapusnya</string>
 
     <!-- Zakat -->
     <string name="zakat_calculator">Kalkulator Zakat</string>
@@ -204,7 +180,6 @@
     <string name="nisab_section">Nisab</string>
     <string name="nisab_help">Nisab di sini ditetapkan dengan standar perak (612,36 g), pendapat yang umumnya dianggap lebih berhati-hati terhadap hak fakir miskin.</string>
     <string name="silver_price_hint">Harga perak per gram</string>
-    <string name="nisab_value">Nisab = %1$s</string>
     <string name="nisab_enter_price">Masukkan harga untuk menghitung nisab</string>
     <string name="nisab_needed_first">Masukkan harga terlebih dahulu</string>
     <string name="above_nisab">Harta Anda telah mencapai nisab — zakat wajib dibayar (dengan syarat haul telah genap).</string>
@@ -286,7 +261,6 @@
     <!-- PDF statement -->
     <string name="statement_pdf">Laporan</string>
     <string name="generating_statement">Menyiapkan laporan\u2026</string>
-    <string name="share_statement">Bagikan laporan</string>
     <string name="statement_failed">Laporan tidak dapat dibuat. Silakan coba lagi.</string>
     <string name="no_entries_to_export">Belum ada catatan untuk dimasukkan ke laporan.</string>
 
@@ -303,7 +277,6 @@
     <string name="lock_pin_again">Masukkan PIN yang sama lagi</string>
     <string name="lock_pin_wrong">PIN salah. Coba lagi.</string>
     <string name="lock_pin_mismatch">Kedua PIN tidak sama.</string>
-    <string name="lock_pin_wait">Terlalu banyak percobaan. Tunggu %1$d detik.</string>
     <string name="lock_unlock">Buka</string>
     <string name="lock_title">Buka Roshan Khata</string>
     <string name="lock_subtitle">Buku Anda bersifat pribadi. Pastikan ini memang Anda.</string>
@@ -325,7 +298,6 @@
     <string name="ok">OK</string>
 
     <!-- Business settings / payment QR -->
-    <string name="business_settings">Pengaturan Usaha</string>
     <string name="business_profile">Profil Usaha</string>
     <string name="profile_preview_caption">Pratinjau langsung kop faktur Anda</string>
     <string name="business_settings_subtitle">Dicetak pada faktur, laporan, dan rekap Anda</string>
@@ -351,7 +323,6 @@
     <string name="qr_confirm_message">Lihat kode di atas dan pastikan itu akun pembayaran Anda sendiri (QRIS, GoPay, DANA…). Jika bukan, pembayaran pelanggan Anda akan sampai ke orang lain.</string>
     <string name="qr_confirm_yes">Ya, ini milik saya</string>
     <string name="profile_saved">Tersimpan</string>
-    <string name="attach_qr_to_reminder">Lampirkan QR pembayaran</string>
 
     <!-- Cheques -->
     <string name="cheques">Cek</string>
@@ -383,7 +354,6 @@
     <plurals name="due_summary">
         <item quantity="other">%1$d cek siap dicairkan</item>
     </plurals>
-    <string name="due_summary_none">Tidak ada yang jatuh tempo</string>
     <string name="due_summary_pending">%1$d menunggu cair</string>
     <string name="due_summary_empty">Tidak ada cek</string>
     <string name="due_summary_all_settled">Semua lunas</string>
@@ -410,8 +380,6 @@
     <string name="search_parties">Nama atau nomor</string>
     <string name="search_entries">Keterangan atau barang</string>
     <string name="sort">Urutkan</string>
-    <string name="filter_type">Jenis</string>
-    <string name="filter_type_title">Tampilkan jenis apa</string>
     <string name="filter_type_all">Semua</string>
     <string name="filter_type_customers">Pelanggan</string>
     <string name="filter_type_suppliers">Pemasok</string>
@@ -432,8 +400,6 @@
     <string name="khata_pick_party">Pilih seseorang di daftar untuk melihat bukunya di sini.</string>
     <string name="khata_choose_several">Pilih beberapa (untuk dihapus)</string>
     <string name="no_matching_entries">Tidak ada catatan yang cocok dengan pencarian Anda.</string>
-    <string name="showing_filtered">Menampilkan %1$d dari %2$d</string>
-    <string name="running_balance_note">Saldo berjalan mengikuti urutan buku itu sendiri, jadi tetap benar bagaimanapun Anda mengurutkan atau mencari.</string>
 
     <!-- Party photo -->
     <string name="party_photo">Foto</string>
@@ -447,7 +413,6 @@
     <string name="photo_removed">Foto dihapus</string>
     <string name="photo_save_failed">Gambar itu tidak dapat disimpan. Silakan pilih yang lain.</string>
     <string name="photo_privacy_note">Foto tetap berada di ponsel ini. Foto tidak pernah diunggah, dan sengaja TIDAK disertakan di laporan — laporan bisa diteruskan ke orang lain, dan pelanggan Anda tidak pernah setuju wajahnya ikut tersebar.</string>
-    <string name="party_options">Opsi</string>
     <string name="edit_party">Ubah detail</string>
     <string name="delete_party">Hapus</string>
 
@@ -458,8 +423,6 @@
     <string name="credit_limit_hint">Batas</string>
     <string name="credit_limit_advisory">Ini peringatan, bukan larangan. Ini usaha Anda — Anda selalu bisa tetap melanjutkan.</string>
     <string name="credit_limit_current">Saat ini berutang kepada Anda %1$s</string>
-    <string name="credit_limit_none">Belum ada batas</string>
-    <string name="credit_limit_set_to">Batas: %1$s</string>
     <string name="credit_limit_removed">Batas utang dihapus</string>
     <string name="credit_limit_saved">Batas utang disimpan</string>
 
@@ -487,7 +450,6 @@
     <string name="pick_end_date">Pilih tanggal akhir</string>
     <string name="closing_note_range">Tiga angka di atas hanya mencakup periode ini. Saldo akhir di bawah adalah seluruh akun — %1$s — karena total sebagian periode bukanlah jumlah utang pelanggan Anda.</string>
     <string name="closing_note_all">Saldo akhir: %1$s</string>
-    <string name="report_period">Periode: %1$s</string>
     <string name="invalid_range">Tanggal akhir tidak boleh sebelum tanggal mulai.</string>
 
     <!-- Cashbook -->
@@ -513,7 +475,6 @@
     <string name="restore_from_file">Pulihkan dari cadangan</string>
     <string name="backup_explain">Semuanya — pelanggan, buku, cek, buku kas, dan Tempat Sampah — ditulis ke satu berkas yang bisa Anda simpan ke Drive, kirim ke WhatsApp Anda sendiri, atau simpan di kartu memori.\n\nBerkasnya berupa teks biasa yang mudah dibaca. Bertahun-tahun kemudian pun, bahkan tanpa aplikasi ini, catatan Anda tetap bisa dipulihkan. Data yang tidak bisa Anda ambil kembali tanpa bantuan kami bukanlah benar-benar milik Anda.\n\nFoto adalah satu-satunya pengecualian. Foto pelanggan dan foto nota tetap berada di ponsel ini dan tidak ada di dalam berkas — cadangan yang dipulihkan di ponsel baru mengembalikan semua catatan, tetapi tidak gambarnya. Simpan salinan foto nota yang penting.</string>
     <string name="backup_warning">Roshan Khata menyimpan semuanya hanya di ponsel ini. Jika ponsel hilang, rusak, atau aplikasi dihapus, catatannya ikut hilang. Mohon cadangkan secara rutin dan simpan di tempat lain.</string>
-    <string name="backup_created">Cadangan siap — pilih tempat menyimpannya</string>
     <string name="backup_failed">Cadangan tidak dapat dibuat.</string>
     <string name="save_backup">Simpan cadangan</string>
 
@@ -563,16 +524,12 @@
     <!-- Bottom navigation -->
     <string name="nav_khata">Buku</string>
     <string name="nav_home">Beranda</string>
-    <string name="home_section_daily">SETIAP HARI</string>
-    <string name="home_section_business">USAHA ANDA</string>
     <string name="nav_cashbook">Buku Kas</string>
     <string name="nav_cheques">Cek</string>
     <string name="nav_plans">Cicilan</string>
-    <string name="nav_more">Lainnya</string>
 
     <!-- More sheet -->
     <string name="more_title">Lainnya</string>
-    <string name="tap_to_change_business">Ketuk untuk ganti usaha</string>
     <string name="businesses_title">Usaha</string>
     <string name="businesses_subtitle">Setiap usaha memiliki buku tersendiri</string>
     <string name="business_add">Tambah usaha</string>
@@ -590,7 +547,6 @@
     <string name="erase_all_done">Semua data dihapus.</string>
     <string name="db_broken_title">Buku tidak dapat dibuka</string>
     <string name="db_broken_body">Ada sesuatu yang merusak berkas buku di ponsel ini. Salinan harian Anda aman — aplikasi menyimpan satu salinan untuk masing-masing tujuh hari terakhir, dan kembali ke salah satunya tidak menyentuh berkas hari ini sampai salinan yang sehat dipastikan.</string>
-    <string name="business_rename_hint">Ketuk untuk membuka · tekan lama untuk ganti nama</string>
     <string name="restore_business_mismatch">Cadangan ini milik %1$s, tetapi usaha yang sedang terbuka adalah %2$s. Pemulihan akan mengganti usaha yang terbuka dengan cadangan itu.</string>
     <string name="contact_in_recycle_bin">Di Tempat Sampah</string>
     <string name="restore_no_images">Catatan Anda sudah kembali, tetapi cadangan ini tidak membawa gambar, jadi foto, foto nota, dan QR tidak dipulihkan. Agar gambar ikut di cadangan berikutnya, aktifkan Sertakan gambar sebelum mencadangkan.</string>
@@ -600,7 +556,6 @@
         <item quantity="other">%1$d usaha di Drive</item>
     </plurals>
     <string name="drive_restore_all">Pulihkan semua</string>
-    <string name="drive_restore_all_warning">Usaha berikut akan dipulihkan dari Drive, menggantikan apa pun yang ada di ponsel ini untuk masing-masing:\n\n%1$s</string>
     <string name="drive_restored_these">Dipulihkan:\n%1$s</string>
     <string name="drive_restore_missed">Tidak dapat dipulihkan:\n%1$s</string>
     <string name="business_numbered">Usaha %1$d</string>
@@ -641,13 +596,11 @@
     <string name="filter_apply">Terapkan filter</string>
     <string name="filter_clear">Reset</string>
     <string name="filter_account_all">Semua</string>
-    <string name="more_reports">Laporan &amp; Zakat</string>
     <string name="more_settings">Pengaturan</string>
     <string name="settings_group_security">Keamanan</string>
     <string name="settings_group_data">Data</string>
     <string name="settings_group_display">Tampilan</string>
     <string name="settings_group_help">Bantuan</string>
-    <string name="more_data">Data Anda</string>
 
     <string name="more_options">Lainnya</string>
 
@@ -695,7 +648,6 @@
     <string name="delete_bill">Hapus tagihan</string>
     <string name="delete_bill_confirm">Tagihan dan catatan batch-nya akan dihapus. Jika ini tagihan kredit, catatan bukunya (utang Anda kepada pemasok ini) juga masuk Tempat Sampah, sehingga utang berkurang sebesar tagihan ini. Catatan itu bisa dipulihkan dari Tempat Sampah dalam 30 hari.</string>
     <string name="bill_actions">Tagihan</string>
-    <string name="view_items">Lihat barang dan batch</string>
 
     <!-- Invoices — a printable bill, deliberately outside the khata ledger -->
     <string name="invoices">Faktur</string>
@@ -707,13 +659,10 @@
     <string name="pick_invoice_date">Pilih tanggal faktur</string>
     <string name="invoice_date_set">Tanggal: %1$s</string>
     <string name="invoice_due_date_hint">Jatuh tempo (opsional)</string>
-    <string name="invoice_discount_hint">Diskon % (opsional)</string>
-    <string name="invoice_tax_hint">Pajak % (opsional)</string>
     <string name="nav_invoice">Faktur</string>
     <string name="invoice_item_name_hint">Nama barang</string>
     <string name="invoice_item_rate_hint">Harga</string>
     <string name="invoice_row_unit_hint">Satuan</string>
-    <string name="invoice_item_invalid">Masukkan nama barang, jumlah, dan harga yang benar.</string>
     <string name="invoice_customer_required">Masukkan nama pelanggan terlebih dahulu.</string>
     <string name="invoice_needs_item">Tambahkan minimal satu barang terlebih dahulu.</string>
     <string name="invoice_saved">Faktur disimpan.</string>
@@ -750,9 +699,7 @@
     <string name="invoice_back">Kembali</string>
     <string name="invoice_items_label">Barang</string>
     <string name="invoice_number_hint">No. faktur (opsional)</string>
-    <string name="invoice_charge_label_hint">Biaya tambahan (opsional)</string>
     <string name="invoice_charge_amount_hint">Jumlah</string>
-    <string name="invoice_received_hint">Jumlah diterima (opsional)</string>
     <string name="invoice_terms">Syarat &amp; Ketentuan</string>
     <string name="invoice_terms_hint">mis. Pembayaran paling lambat 14 hari.</string>
     <string name="invoice_strn_hint">mis. 1234567-8 (opsional)</string>
@@ -793,7 +740,6 @@
     <string name="batch_none">Nomor batch tidak dicatat</string>
     <string name="from_supplier">Dari %1$s</string>
     <string name="from_supplier_bill">Dari %1$s — tagihan %2$s</string>
-    <string name="expiring_badge">%1$d hampir kedaluwarsa</string>
 
     <!-- Batch trace -->
     <string name="trace_batch">Lacak batch</string>
@@ -806,7 +752,6 @@
 
     <string name="search_action">Cari</string>
 
-    <string name="pick_bill_due_date">Pilih tanggal jatuh tempo pembayaran</string>
 
     <!-- Backup: saved location + restore sources -->
     <string name="backup_done_title">Cadangan disimpan</string>
@@ -846,13 +791,9 @@
 
     <string name="powered_by">Dipersembahkan oleh Innovation-313</string>
     <string name="lock_tagline">Dipersembahkan oleh Innovation-313</string>
-    <string name="tap_to_start">Ketuk di mana saja untuk melanjutkan</string>
 
     <!-- Splash / branding -->
-    <string name="tap_to_continue">Ketuk untuk melanjutkan</string>
-    <string name="brand_har_hisaab">Har Hisaab Roshan</string>
 
-    <string name="unlock_to_open">Sentuh untuk membuka kunci</string>
 
     <string name="restore_done_with_bin">Data Anda sudah kembali.\n\n%1$d pelanggan dalam cadangan ini sudah dihapus sebelum cadangan dibuat, jadi mereka dipulihkan ke Tempat Sampah \u2014 bukan ke daftar utama. Buka Lainnya \u2192 Tempat Sampah untuk menemukannya, di sana Anda dapat memulihkan siapa pun sepenuhnya.</string>
 
@@ -865,7 +806,6 @@
     <!-- Shown as a toast the moment the welcome screen connects an account. It
          only confirms the sign-in: the backup state belongs on the backup
          screen, not here, where it reads as a complaint about a brand-new account. -->
-    <string name="welcome_signed_in_title">Berhasil masuk</string>
     <string name="drive_backup_now">Cadangkan ke Drive sekarang</string>
     <string name="drive_backup_images">Sertakan gambar (foto, foto nota, QR)</string>
     <string name="drive_auto_backup">Cadangan otomatis</string>
@@ -883,11 +823,9 @@
     <string name="drive_images_restore_failed">Catatan Anda sudah dipulihkan, tetapi gambar tidak dapat diunduh. Coba pulihkan lagi dengan koneksi yang lebih baik.</string>
     <string name="drive_restoring">Memulihkan dari Drive\u2026</string>
     <string name="drive_no_backup">Belum ada cadangan di Google Drive Anda.</string>
-    <string name="drive_restore_failed">Tidak dapat memulihkan dari Drive. Periksa internet Anda dan coba lagi.</string>
     <string name="drive_signin_failed">Proses masuk Google tidak selesai. Silakan coba lagi.</string>
     <!-- Web OAuth client ID for Credential Manager (Sign in with Google). Public, not a secret. -->
     <string name="drive_permission_needed">Roshan Khata memerlukan izin untuk menyimpan ke foldernya sendiri di Drive Anda. Mohon izinkan saat diminta.</string>
-    <string name="drive_restore_confirm">Ini akan mengganti semua yang ada di aplikasi dengan cadangan dari Google Drive Anda. Lanjutkan?</string>
     <string name="i_have_to_get">Harus saya terima</string>
     <string name="i_have_to_give">Harus saya bayar</string>
     <string name="insights_title">Analisis Penjualan</string>
@@ -1186,7 +1124,6 @@
     <string name="about_privacy_body_pc">Semuanya disimpan di komputer ini. Kami tidak pernah melihat pelanggan Anda, nomor mereka, atau utang siapa pun. Cadangan tetap ada di komputer ini dan di folder yang Anda pilih, seperti USB atau folder Google Drive — bukan di kami.</string>
     <string name="about_privacy_policy">Kebijakan privasi</string>
     <string name="about_maker">Dibuat oleh Innovation-313</string>
-    <string name="party_exists">%1$s sudah ada di buku Anda — sedang dibuka.</string>
     <string name="party_exists_title">Ini mungkin sudah ada di buku Anda</string>
     <string name="party_exists_message">Akun seperti ini sudah ada:\n\n%1$s\n\nJika orangnya sama, buka yang sudah ada. Jika orang lain — atau akun kedua yang sengaja Anda buat — silakan tambahkan.</string>
     <string name="open_existing">Buka yang ada</string>
@@ -1214,8 +1151,6 @@
     <string name="stamp_saved">Stempel disimpan.</string>
     <string name="stamp_save_failed">Gambar itu tidak dapat disimpan.</string>
     <string name="made_with_app">Roshan Khata</string>
-    <string name="more_details">Tambah keterangan, barang, atau peluang tertagih</string>
-    <string name="back_to_amount">Kembali ke jumlah</string>
     <string name="voice_entry">Ucapkan catatan</string>
     <string name="voice_prompt">Ucapkan seperti: Beri Budi lima ribu</string>
     <string name="voice_unavailable">Ponsel ini tidak memiliki pengenal suara.</string>
@@ -1321,7 +1256,6 @@
     <string name="village_optional">Desa (opsional)</string>
     <string name="product_name">Nama produk</string>
     <string name="company_optional">Perusahaan / merek (opsional)</string>
-    <string name="category_optional">Kategori (opsional)</string>
     <string name="unit_optional">Satuan — botol, kg, karung (opsional)</string>
     <string name="compliance_section">Data untuk dinas pengawas</string>
     <string name="compliance_explain">Hanya diperlukan jika pemeriksaan mungkin memintanya. Kosongkan untuk pakan atau benih.</string>
@@ -1350,7 +1284,6 @@
     <string name="poster_subtitle">Gambar untuk Status WhatsApp, dengan nama toko Anda</string>
     <string name="poster_heading_hint">Baris besar</string>
     <string name="poster_message_hint">Pesan</string>
-    <string name="poster_show_logo">Logo toko di poster</string>
     <string name="poster_show_mark">Tampilkan “Roshan Khata” di poster</string>
     <string name="poster_custom">Kata-kata Anda sendiri</string>
     <string name="poster_new_stock">Stok baru telah tiba!</string>
@@ -1544,33 +1477,6 @@
     <string name="pdf_rep_col_got">SAYA TERIMA</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 Halaman %2$d</string>
 
-    <!-- Words printed on the BUSINESS REPORT pdf — the owner's own whole-shop summary. -->
-    <string name="pdf_biz_generated">Laporan dibuat %1$s</string>
-    <string name="pdf_biz_not_backup_2">%1$s tidak dapat memulihkan catatan Anda dari PDF. Simpan berkas</string>
-    <string name="pdf_biz_not_backup_3">cadangan (RoshanKhata_Backup...txt) dengan aman \u2014 itulah yang</string>
-    <string name="pdf_biz_not_backup_4">mengembalikan data Anda.</string>
-    <string name="pdf_biz_you_will_receive">Akan Anda terima</string>
-    <string name="pdf_biz_you_will_pay">Akan Anda bayar</string>
-    <string name="pdf_biz_net_position">Posisi bersih</string>
-    <string name="pdf_biz_cash_in">Kas masuk (buku kas)</string>
-    <string name="pdf_biz_cash_out">Kas keluar (buku kas)</string>
-    <string name="pdf_biz_people_count">Pelanggan dan pemasok</string>
-    <string name="pdf_biz_accounts">Akun</string>
-    <string name="pdf_biz_no_accounts">Belum ada akun.</string>
-    <string name="pdf_biz_settled">Lunas</string>
-    <string name="pdf_biz_cheques">Cek yang belum cair</string>
-    <string name="pdf_biz_cheques_note">Ini belum menjadi uang sebelum cair. Tidak termasuk dalam saldo di atas.</string>
-    <string name="pdf_biz_cheque">Cek</string>
-    <string name="pdf_biz_due">" \u00B7 jatuh tempo "</string>
-    <string name="pdf_biz_plans">Rencana cicilan yang masih berjalan</string>
-    <string name="pdf_biz_paid_of">%1$s dari %2$s</string>
-    <string name="pdf_biz_expiring">Stok segera kedaluwarsa</string>
-    <string name="pdf_biz_expired">KEDALUWARSA</string>
-    <plurals name="pdf_biz_days_left">
-        <item quantity="other">%1$d hari</item>
-    </plurals>
-    <string name="pdf_biz_batch">"Batch %1$s \u00B7 "</string>
-
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Register Penjualan &amp; Pembelian</string>
     <string name="pdf_reg_ntn">NPWP: %1$s</string>
@@ -1637,7 +1543,6 @@
     <string name="pdf_insp_no_batches">Tidak ada batch tersedia. Batch dan kedaluwarsa dicatat pada tagihan pemasok.</string>
     <string name="pdf_insp_missing_note">Setiap produk di bawah ini ada stoknya dengan satu atau lebih kolom label yang tidak pernah dicatat.</string>
     <string name="pdf_insp_expired">KEDALUWARSA</string>
-    <string name="pdf_insp_days_left">sisa %1$d hari</string>
     <string name="pdf_insp_units_differ">satuan berbeda</string>
     <string name="pdf_insp_company_tag">PERUSAHAAN</string>
     <plurals name="pdf_insp_products">
@@ -2768,12 +2673,9 @@
     <string name="poster_choose_design">Pilih desain</string>
     <string name="poster_language">Bahasa poster</string>
     <string name="poster_lang_more">Lainnya</string>
-    <string name="poster_real_picture">Gambar sebenarnya, 1080 × 1920: layar penuh di Status</string>
-    <string name="poster_what_goes">Isi poster</string>
     <string name="poster_items_label">Apa yang datang? (maks. 4)</string>
     <string name="poster_add_item">Tambah</string>
     <string name="poster_item_hint">mis. Benih gandum</string>
-    <string name="poster_for_your_shop">Untuk toko Anda:</string>
     <string name="poster_add_photo">Tambah foto</string>
     <string name="poster_photo_hint">Opsional. Foto barang Anda sendiri menggantikan kotak.</string>
     <string name="poster_remove_photo">Hapus foto</string>
@@ -2897,7 +2799,6 @@
     <string name="invoice_sum_balance">Sisa tagihan</string>
     <string name="invoice_more_apply">Terapkan</string>
     <string name="invoice_discount_amount_line">Diskon: −%1$s</string>
-    <string name="invoice_designs_count">%1$d desain</string>
     <string name="invoice_designs_tap">Ketuk satu untuk melihatnya di bawah</string>
     <string name="invoice_design_position">%1$d dari %2$d</string>
     <string name="invoice_filter_all">Semua</string>
@@ -2946,8 +2847,6 @@
     <string name="auto_folder_last">Salinan terakhir di sana: %1$s</string>
     <string name="auto_folder_missing">Folder itu tidak dapat dijangkau sekarang. Pasang flashdisk USB, atau pilih folder lain.</string>
     <string name="import_csv">Impor pelanggan</string>
-    <string name="import_csv_help">Bawa pelanggan dari aplikasi buku kas lain: file CSV berisi nama, telepon, dan saldo. Setiap pelanggan masuk dengan saldonya sebagai satu catatan awal.</string>
-    <string name="import_csv_found">Pelanggan dalam file: %1$d · total %2$s</string>
     <string name="import_csv_skipped">Sudah ada di buku kas, dibiarkan apa adanya: %1$d</string>
     <string name="import_csv_sign">Dalam file ini, saldo positif berarti:</string>
     <string name="import_csv_owes_me">Mereka berutang kepada saya</string>
@@ -2995,7 +2894,6 @@
 
     <!-- The counter (POS Phase 1, 21 Oct 2026) -->
     <string name="pos_title">Penjualan kasir</string>
-    <string name="pos_subtitle">Pindai atau cari barang, tambahkan, terima pembayaran</string>
     <string name="pos_search_hint">Nama barang atau barcode</string>
     <string name="pos_scan">Pindai</string>
     <string name="pos_walk_in">Pelanggan umum</string>
@@ -3005,7 +2903,6 @@
     <string name="pos_col_qty">Jml</string>
     <string name="pos_col_rate">Harga</string>
     <string name="pos_col_total">Total</string>
-    <string name="pos_line_discount">Diskon baris</string>
     <string name="pos_subtotal">Subtotal</string>
     <string name="pos_discount">Diskon</string>
     <string name="pos_tax">Pajak %</string>
@@ -3033,9 +2930,6 @@
     <string name="pos_voided">Dibatalkan</string>
     <string name="pos_status_done">Selesai</string>
     <string name="pos_status_void">Batal</string>
-    <string name="pos_status_held">Ditahan</string>
-    <string name="pos_today_count">%1$d penjualan hari ini</string>
-    <string name="pos_today_total">Hari ini %1$s</string>
     <string name="pos_recent">Penjualan terbaru</string>
     <string name="pos_all_tickets">Semua penjualan (60 hari terakhir)</string>
     <string name="pos_ticket_search">Nomor nota atau nama pelanggan</string>
@@ -3055,7 +2949,6 @@
     <string name="pos_receipt">Struk</string>
     <string name="pos_customer_pays_later">Sisanya ke akun %1$s</string>
     <string name="cash_category_sale">Penjualan</string>
-    <string name="pos_sales_title">Penjualan</string>
     <string name="pos_keys_help">F2 barang · F4 jml · F6 diskon · F8 pelanggan · F9 bayar · F12 selesai</string>
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
@@ -3088,8 +2981,6 @@
     <string name="pos_err_walk_in_cash">Pelanggan umum dikembalikan uangnya penuh, tunai</string>
     <string name="pos_err_reason">Alasan diperlukan</string>
     <string name="pos_err_refund">Pengembalian lebih besar dari nilai barang</string>
-    <string name="pos_return_no_receipt">Tanpa struk</string>
-    <string name="pos_exchange">Tukar: jual lagi</string>
     <string name="pos_return_of">Retur %1$s</string>
     <string name="cash_category_return">Retur</string>
     <string name="pos_recent_sales">Penjualan terbaru</string>
@@ -3372,7 +3263,6 @@
     <string name="product_variant">Varian (ukuran, warna, rasa)</string>
     <string name="product_variant_help">Varian adalah produk tersendiri — harga, barcode dan stok sendiri — yang ditampilkan bersama di bawah produk utama pada grid barang di kasir.</string>
     <string name="cd_title">Layar pelanggan</string>
-    <string name="cd_help">Jendela kedua untuk pelanggan: barang, total dan QR pembayaran toko. Seret ke monitor kedua.</string>
     <string name="cd_scan">Pindai untuk bayar</string>
     <string name="cd_qr_note">QR tidak memuat jumlah: periksa jumlahnya di ponsel Anda sebelum membayar.</string>
     <string name="cd_welcome">Selamat datang</string>
@@ -3485,7 +3375,6 @@
     <string name="country_other">Lainnya</string>
     <string name="country_ask_title">Di mana toko Anda?</string>
     <string name="country_ask_body">Aplikasi memakainya untuk nomor WhatsApp, nama nomor pajak, dan minggu. Bisa diubah nanti di Profil Usaha.</string>
-    <string name="poster_national_day">Hari nasional</string>
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">Nomor dompet digital (%1$s)</string>
@@ -3499,9 +3388,6 @@
     </plurals>
     <plurals name="n_expiring">
         <item quantity="other">%d hampir kedaluwarsa</item>
-    </plurals>
-    <plurals name="n_sales_today">
-        <item quantity="other">%d penjualan hari ini</item>
     </plurals>
     <plurals name="n_designs">
         <item quantity="other">%d desain</item>

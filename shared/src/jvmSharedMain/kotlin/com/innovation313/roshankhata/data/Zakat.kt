@@ -79,14 +79,6 @@ object Zakat {
         else perGram < 80.0 || perGram > 5_000.0
     }
 
-    /** Nisab value in currency, given today's silver price per gram. */
-    fun nisabFromSilverPrice(pricePerGram: Double): Double =
-        NISAB_SILVER_GRAMS * pricePerGram
-
-    /** Nisab value in currency, given today's gold price per gram. */
-    fun nisabFromGoldPrice(pricePerGram: Double): Double =
-        NISAB_GOLD_GRAMS * pricePerGram
-
     /**
      * Net Zakatable wealth from the ledger, plus any cash/stock the owner adds.
      *

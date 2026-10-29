@@ -293,19 +293,6 @@ object Backup {
             ?: emptyList()
     }
 
-    /** Shareable copy, for sending to Drive or another phone. */
-    fun writeToCache(context: Context, json: String): File? {
-        return try {
-            val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName(context))
-            file.writeText(json)
-            sweepCache(dir, file)
-            file
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     /** Read a backup the app saved itself. */
     fun parseFile(file: File): Pair<ImportResult, ParsedBackup?> = BackupCodec.parseFile(file)
 
