@@ -52,11 +52,25 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
+    /** Undo version 39: the payment reference on transactions and cashbook. */
+    fun undo39(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for ((table, cols) in Schema39.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema39.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
     /**
      * Undo version 38: the uid indices on all 27 tables, and the uid column on
-     * the 15 tables that gained it there.
+     * the 15 tables that gained it there. Undoes 39 first.
      */
     fun undo38(raw: SQLiteDatabase) {
+        undo39(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         raw.execSQL("PRAGMA legacy_alter_table = ON")
         for (idx in Schema38.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")

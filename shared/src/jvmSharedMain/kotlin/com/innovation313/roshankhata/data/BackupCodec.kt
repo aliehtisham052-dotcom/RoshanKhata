@@ -37,7 +37,9 @@ object BackupCodec {
      * products, every line table, plans, staff, schemes and day closes; 15
      * (22 Oct 2026, the review) the photo path of an entry's bill, the one
      * column no backup carried — after any restore every credit bill's photo
-     * was unlinked, the files back on disk with nothing pointing at them.
+     * was unlinked, the files back on disk with nothing pointing at them; 16
+     * (28 Oct 2026, schema 39) the payment reference of a khata or cashbook
+     * row — the transfer id, TID or cheque number its payment came with.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -46,7 +48,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 15
+    const val FORMAT_VERSION = 16
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -832,6 +834,8 @@ object BackupCodec {
         // staff logins arrive is still a complete record of its own rows.
         put("createdBy", e.createdBy ?: JSONObject.NULL)
         put("paymentMethod", e.paymentMethod ?: JSONObject.NULL)
+        // Format 16 (28 Oct 2026): the reference the payment came with (a transfer id, a TID, a cheque number).
+        put("paymentRef", e.paymentRef ?: JSONObject.NULL)
         put("rateType", e.rateType ?: JSONObject.NULL)
         put("pairedEntryId", e.pairedEntryId ?: JSONObject.NULL)
         put("season", e.season ?: JSONObject.NULL)
@@ -868,6 +872,8 @@ object BackupCodec {
         // older file restores with no method, which is what those entries
         // actually recorded.
         paymentMethod = o.optNullableString("paymentMethod"),
+        // Absent before format 16: no reference was recorded (as none could be).
+        paymentRef = o.optNullableString("paymentRef"),
         // Absent before format 7 — those entries never recorded either.
         rateType = o.optNullableString("rateType"),
         pairedEntryId = o.optNullableLong("pairedEntryId"),
@@ -966,6 +972,8 @@ object BackupCodec {
         put("isDeleted", c.isDeleted)
         put("deletedAt", c.deletedAt ?: JSONObject.NULL)
         put("paymentMethod", c.paymentMethod ?: JSONObject.NULL)
+        // Format 16 (28 Oct 2026): the reference the payment came with.
+        put("paymentRef", c.paymentRef ?: JSONObject.NULL)
         put("saleId", c.saleId ?: JSONObject.NULL)
         put("uid", c.uid ?: JSONObject.NULL)
     }
@@ -981,6 +989,8 @@ object BackupCodec {
         deletedAt = o.optNullableLong("deletedAt"),
         // Absent before format 8.
         paymentMethod = o.optNullableString("paymentMethod"),
+        // Absent before format 16.
+        paymentRef = o.optNullableString("paymentRef"),
         saleId = o.optNullableLong("saleId"),
         uid = o.uid()
     )

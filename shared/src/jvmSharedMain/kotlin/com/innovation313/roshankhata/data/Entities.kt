@@ -227,6 +227,18 @@ data class LedgerEntry(
     val paymentMethod: String? = null,
 
     /**
+     * The reference of the payment [paymentMethod] names, when the owner wrote
+     * it down (schema 39, 28 Oct 2026): a Raast or bank transfer's transaction
+     * id, a JazzCash or Easypaisa TID, a cheque's number, the last digits of a
+     * slip. Only meaningful beside a method other than cash — cash has no
+     * reference — and only ever on an "I Got" entry, as the method is. Free
+     * text, never parsed: it is what the customer's bank or wallet printed,
+     * kept so a dispute can be answered. Null on every entry written before
+     * the column existed and on every one where nothing was recorded.
+     */
+    val paymentRef: String? = null,
+
+    /**
      * Which of the product's two prices this entry's goods went at — one of
      * [RateType]. Fixed when the entry is saved and never recalculated: the
      * price is agreed at the time of the sale, and a later change to the

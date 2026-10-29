@@ -86,6 +86,52 @@ class BackupCodecDesktopTest {
     }
 
     @Test
+    fun `a payment's reference survives export and restore on the computer`() {
+        // Format 16 (28 Oct 2026, schema 39): the transfer id, TID or cheque number a khata or
+        // cashbook payment came with goes out with the row and comes back on it; a row with none
+        // comes back with none. The rows are compared whole, their uids aside (lesson 31).
+        val dir = java.nio.file.Files.createTempDirectory("rk-ref").toFile()
+        val here = DesktopDatabase.open(dir.resolve("here.db"))
+        val there = DesktopDatabase.open(dir.resolve("there.db"))
+        try {
+            kotlinx.coroutines.runBlocking {
+                val dao = here.khataDao()
+                val ali = dao.insertParty(Party(name = "Ali", isCustomer = true))
+                dao.insertEntryWithItems(
+                    LedgerEntry(partyId = ali, amount = 1200.0, isGiven = false, entryNumber = "", paymentMethod = PaymentMethod.ONLINE, paymentRef = "TID 7781234509"),
+                    emptyList()
+                )
+                dao.insertEntryWithItems(LedgerEntry(partyId = ali, amount = 400.0, isGiven = false, entryNumber = ""), emptyList())
+                dao.insertCashEntry(CashEntry(amount = 300.0, isIncome = true, category = CashCategory.SALE, paymentMethod = PaymentMethod.BANK, paymentRef = "RAAST 20261028-0042"))
+                dao.insertCashEntry(CashEntry(amount = 150.0, isIncome = false, category = "Fuel"))
+
+                val text = java.io.StringWriter().also { BackupCodec.exportTo(dao, "Shop", org.json.JSONObject(), it) }.toString()
+                val (result, data) = BackupCodec.parseText(text)
+                assertTrue("$result", result is BackupCodec.ImportResult.Ok)
+                assertEquals(BackupCodec.FORMAT_VERSION, data!!.version)
+                assertTrue(text.contains("\"paymentRef\": \"TID 7781234509\"") || text.contains("\"paymentRef\":\"TID 7781234509\""))
+                BackupCodec.restoreLedger(there.khataDao(), data)
+
+                val o = there.khataDao()
+                assertEquals(
+                    dao.allEntriesForBackup().sortedBy { it.id }.map { it.copy(uid = null) },
+                    o.allEntriesForBackup().sortedBy { it.id }.map { it.copy(uid = null) }
+                )
+                assertEquals(
+                    dao.allCashForBackup().sortedBy { it.id }.map { it.copy(uid = null) },
+                    o.allCashForBackup().sortedBy { it.id }.map { it.copy(uid = null) }
+                )
+                assertEquals("TID 7781234509", o.allEntriesForBackup().single { it.amount == 1200.0 }.paymentRef)
+                assertNull("none recorded, none restored", o.allEntriesForBackup().single { it.amount == 400.0 }.paymentRef)
+                assertEquals("RAAST 20261028-0042", o.allCashForBackup().single { it.isIncome }.paymentRef)
+                assertNull(o.allCashForBackup().single { !it.isIncome }.paymentRef)
+            }
+        } finally {
+            here.close(); there.close(); dir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `refusals are the same kinds as on the phone`() {
         fun why(text: String) = (BackupCodec.parseText(text).first as BackupCodec.ImportResult.Failed).why
         assertEquals(BackupCodec.ImportResult.Why.NOT_OURS, why("""{"format": "SomethingElse", "version": 1}"""))
