@@ -70,8 +70,18 @@ object DesktopDatabase {
         }
     }
 
+    /** 38 → 39: the payment reference on khata and cashbook rows (28 Oct 2026). */
+    private val MIGRATION_38_39 = object : Migration(38, 39) {
+        override fun migrate(connection: SQLiteConnection) {
+            for (sql in Schema39.statements) connection.execSQL(sql)
+        }
+    }
+
     /** Every migration a computer's book may need, in order. */
-    val MIGRATIONS = arrayOf<Migration>(MIGRATION_31_32, MIGRATION_32_33, MIGRATION_33_34, MIGRATION_34_35, MIGRATION_35_36, MIGRATION_36_37, MIGRATION_37_38)
+    val MIGRATIONS = arrayOf<Migration>(
+        MIGRATION_31_32, MIGRATION_32_33, MIGRATION_33_34, MIGRATION_34_35, MIGRATION_35_36, MIGRATION_36_37, MIGRATION_37_38,
+        MIGRATION_38_39
+    )
 
     fun open(file: File): KhataDatabase {
         file.parentFile?.mkdirs()

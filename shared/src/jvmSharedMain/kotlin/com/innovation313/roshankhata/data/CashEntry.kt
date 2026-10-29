@@ -41,6 +41,15 @@ data class CashEntry(
      */
     val paymentMethod: String? = null,
 
+    /**
+     * The reference of the payment [paymentMethod] names, when the owner wrote
+     * it down (schema 39, 28 Oct 2026): a transfer's transaction id, a wallet's
+     * TID, a cheque's number. Only meaningful beside a method other than cash;
+     * free text, never parsed. Null on every row written before the column
+     * existed and wherever nothing was recorded. See [LedgerEntry.paymentRef].
+     */
+    val paymentRef: String? = null,
+
     /** The counter sale that posted this row, if one did; see [LedgerEntry.saleId]. */
     val saleId: Long? = null,
 
