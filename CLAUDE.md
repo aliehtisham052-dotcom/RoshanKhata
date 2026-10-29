@@ -1498,6 +1498,10 @@ Each of these cost a build or a bug.
 56. **A two-tone tile painted in one colour is a blob.** The phone's
     `ic_tile_*` draw themselves (two tones); only its one-colour glyphs
     (`ic_feature_*`, `ic_qr_scan`…) are tinted (`PictureBadge`, `Section.ink`).
+57. **A `= runBlocking { … }` test must end on Unit.** JUnit refuses a test
+    method that returns a value ("should be void"); a last line like
+    `Counter.post(...)` (a Long) failed the whole class at initialisation
+    (CounterReviewTest, 29 Oct 2026). End with an assertion.
 
 ---
 
