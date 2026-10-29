@@ -52,6 +52,10 @@ interface ShopSettings {
     fun photoOnStatement(): Boolean
     fun setPhotoOnStatement(enabled: Boolean)
 
+    /** The wallet and bank details under every payment reminder (the phone's setting since 2 Oct; on by default). */
+    fun paymentOnReminder(): Boolean
+    fun setPaymentOnReminder(enabled: Boolean)
+
     /** After a restore: whatever is printed from these (the calendar) re-reads them. */
     fun refreshDisplay()
 
@@ -75,5 +79,6 @@ interface ShopSettings {
         const val TRADE_OTHER_NAME = "trade_other_name"
         const val TRADE_OTHER_ITEMS = "trade_other_items"
         const val PHOTO_ON_STATEMENT = "photo_on_statement"
+        const val PAYMENT_ON_REMINDER = "payment_on_reminder"
     }
 }

@@ -42,6 +42,8 @@ import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.CashEntry
 import com.innovation313.roshankhata.data.KhataDao
+import com.innovation313.roshankhata.data.PaymentMethod
+import com.innovation313.roshankhata.data.PaymentRef
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
@@ -208,10 +210,16 @@ fun CashbookPane(dao: KhataDao) {
 @Composable
 private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit, onCancel: () -> Unit) {
     val c = LocalRoshanColors.current
+    val words = com.innovation313.roshankhata.words.LocalWords.current
     var isIncome by remember { mutableStateOf(income) }
     var amountText by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
+    // How the money moved (29 Oct 2026): Cash unless the owner says otherwise, as the khata's "I got" starts —
+    // the day's count looks in the drawer only for cash (drawerByTheBooks); a bank or wallet payment carries
+    // its reference (CashEntry.paymentRef).
+    var method by remember { mutableStateOf<String?>(PaymentMethod.CASH) }
+    var paymentRef by remember { mutableStateOf("") }
     var used by remember { mutableStateOf<List<String>>(emptyList()) }
     var problem by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) { used = withContext(Dispatchers.IO) { dao.cashCategories() } }
@@ -234,7 +242,9 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
                             amount = amount,
                             isIncome = isIncome,
                             category = category.trim(),
-                            note = note.trim().ifEmpty { null }
+                            note = note.trim().ifEmpty { null },
+                            paymentMethod = method,
+                            paymentRef = PaymentRef.clean(method, paymentRef)
                         )
                     )
                 }
@@ -251,6 +261,15 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
                     FluentPill(u, u == category) { category = u; problem = null }
                 }
             }
+        }
+        Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            PaymentMethod.ALL.forEach { m ->
+                FluentPill(PaymentMethod.label(words, m), m == method) { method = if (m == method) null else m }
+            }
+        }
+        if (PaymentRef.applies(method)) {
+            FluentField(paymentRef, { paymentRef = it }, Modifier.fillMaxWidth(), label = word(W.pos_reference_hint), ltr = true)
         }
         FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
     }

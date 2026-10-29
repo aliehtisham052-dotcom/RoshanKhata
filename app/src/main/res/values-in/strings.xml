@@ -247,6 +247,7 @@
     <string name="reminder_step_serious">Serius</string>
     <string name="reminder_step2">*Pengingat Kedua*\n\nYth. *%1$s*,\n\nTagihan: *%2$s*\nPengingat pertama: %3$s\n\nIni pengingat kedua kami. Mohon lunasi tagihan minggu ini.\n\nTerima kasih.</string>
     <string name="reminder_step3">*Pembayaran Tertunda*\n\nYth. *%1$s*,\n\nTagihan: *%2$s*\n\nKami sudah beberapa kali mengingatkan dan tagihan masih belum dibayar. Mohon dibayar, atau beri tahu tanggal pembayarannya agar hisab bisa diselesaikan.\n\nTerima kasih atas pengertiannya.</string>
+    <string name="reminder_ref">Referensi: %1$s</string>
     <string name="reminder_i_owe">*Catatan Pembayaran*\n\nYth. *%1$s*,\n\nUtang kami kepada Anda: *%2$s*\n\nKami akan segera melunasinya. Jika catatan Anda berbeda dengan catatan kami, mohon beri tahu kami.\n\nTerima kasih.</string>
     <string name="send_reminder">Kirim Pengingat</string>
     <string name="open_whatsapp">Buka WhatsApp</string>
@@ -1457,6 +1458,7 @@
     <string name="payment_method_bank">Transfer bank</string>
     <string name="payment_method_cheque">Cek</string>
     <string name="payment_method_online">Online</string>
+    <string name="payment_method_wallet">Dompet digital</string>
 
     <!-- Quick shares of an outstanding balance, when money comes in. -->
     <string name="quick_amount_label">Dari saldo %1$s</string>
@@ -1777,6 +1779,7 @@
     <string name="label_guess_note">Beberapa kolom diisi dari tagihan (perusahaan, satuan, jenis, formulasi). Cocokkan dengan label sebelum menyimpan.</string>
     <string name="entry_make_invoice">Faktur</string>
     <string name="followup_promised">Dijanjikan %1$s</string>
+    <string name="followup_waiting">Diingatkan %1$s, belum ada yang masuk</string>
     <plurals name="followup_today">
         <item quantity="other">%d untuk diingatkan hari ini</item>
     </plurals>

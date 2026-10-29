@@ -28,6 +28,9 @@ import com.innovation313.roshankhata.data.CashEntry
 import com.innovation313.roshankhata.data.ReminderLog
 import com.innovation313.roshankhata.data.LineMath
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PaymentMethod
+import com.innovation313.roshankhata.data.PaymentRef
+import com.innovation313.roshankhata.data.labelOf
 import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.DayClose
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -312,6 +315,25 @@ class CashbookActivity : BaseActivity() {
         val etCategory: AutoCompleteTextView = view.findViewById(R.id.etCashCategory)
         val etNote: EditText = view.findViewById(R.id.etCashNote)
 
+        // How the money moved and its reference (29 Oct 2026): the add-entry form's chips, one per
+        // PaymentMethod.ALL, Cash checked first; the reference box only beside a way that has one.
+        val cgMethod: com.google.android.material.chip.ChipGroup = view.findViewById(R.id.cgCashMethod)
+        val etRef: EditText = view.findViewById(R.id.etCashRef)
+        val chipKeys = HashMap<Int, String>()
+        PaymentMethod.ALL.forEach { key ->
+            val chip = layoutInflater.inflate(R.layout.item_rate_list_chip, cgMethod, false) as com.google.android.material.chip.Chip
+            chip.id = View.generateViewId()
+            chip.text = PaymentMethod.labelOf(this, key)
+            chipKeys[chip.id] = key
+            cgMethod.addView(chip)
+            if (key == PaymentMethod.CASH) cgMethod.check(chip.id)
+        }
+        fun chosenMethod(): String? = chipKeys[cgMethod.checkedChipId]
+        fun showRefBox() { etRef.visibility = if (PaymentRef.applies(chosenMethod())) View.VISIBLE else View.GONE }
+        // After the first check (lesson 4): the listener only follows the chip.
+        cgMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
+        showRefBox()
+
         // The app's own calculator pad for the amount (21 Oct), as on the
         // add-entry form; the category and note keep the phone's keyboard.
         com.innovation313.roshankhata.ui.CalcPad.bindAll(
@@ -375,7 +397,9 @@ class CashbookActivity : BaseActivity() {
                             isIncome = isIncome,
                             category = category,
                             note = etNote.text.toString().trim().ifEmpty { null },
-                            timestamp = chosenTime
+                            timestamp = chosenTime,
+                            paymentMethod = chosenMethod(),
+                            paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString())
                         )
                     )
                 }

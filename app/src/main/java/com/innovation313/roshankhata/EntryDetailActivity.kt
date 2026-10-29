@@ -7,7 +7,7 @@ import com.innovation313.roshankhata.data.AuditAction as AuditActs
 import com.innovation313.roshankhata.data.choices
 
 import com.innovation313.roshankhata.data.get
-import com.innovation313.roshankhata.data.labelOf
+import com.innovation313.roshankhata.data.saidOn
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import com.innovation313.roshankhata.data.UnitWords
@@ -285,9 +285,10 @@ class EntryDetailActivity : BaseActivity() {
         // How the money arrived, when it was recorded. Hidden entirely when it
         // was not: a blank row would suggest the question was asked and left
         // unanswered, and an entry that predates the column never had it to
-        // answer. Never guessed — an unrecorded method is not cash.
+        // answer. Never guessed — an unrecorded method is not cash. With the
+        // payment's reference after it (schema 39): "Bank transfer · Ref: TID 778…".
         val rowPaymentMethod = findViewById<TableRow>(R.id.rowPaymentMethod)
-        val method = PaymentMethod.labelOf(this, e.paymentMethod)
+        val method = PaymentMethod.saidOn(this, e.paymentMethod, e.paymentRef)
         if (method == null) {
             rowPaymentMethod.visibility = View.GONE
         } else {

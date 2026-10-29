@@ -247,6 +247,7 @@
     <string name="reminder_step_serious">سنجيده</string>
     <string name="reminder_step2">*ٻي ياد ڏياريندڙ*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nپهرين ياد ڏياريندڙ: %3$s\n\nهي اسان جي ٻي ياد ڏياريندڙ آهي. مهرباني ڪري هن هفتي رقم ادا ڪريو.\n\nمهرباني.</string>
     <string name="reminder_step3">*ادائگي باقي آهي*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nڪيترائي ڀيرا ياد ڏيارڻ کان پوءِ به رقم باقي آهي. مهرباني ڪري ادا ڪريو، يا ادائگي جي تاريخ ٻڌايو ته جيئن حساب صاف ٿئي.\n\nتوهان جي تعاون جي مهرباني.</string>
+    <string name="reminder_ref">حوالو: %1$s</string>
     <string name="reminder_i_owe">*کاتي جي اطلاع*\n\nمحترم *%1$s*،\n\nاسان تي توهان جو: *%2$s*\n\nانشاءالله جلد ادا ڪنداسين. جيڪڏهن توهان جو حساب اسان کان مختلف هجي ته ٻڌايو.\n\nمهرباني.</string>
     <string name="send_reminder">ياد ڏياريو</string>
     <string name="open_whatsapp">واٽس ايپ کوليو</string>
@@ -1475,6 +1476,7 @@
     <string name="payment_method_bank">بينڪ ٽرانسفر</string>
     <string name="payment_method_cheque">چيڪ</string>
     <string name="payment_method_online">آن لائن</string>
+    <string name="payment_method_wallet">موبائل والٽ</string>
 
     <string name="quick_amount_label">باقي %1$s مان</string>
     <string name="quick_amount_quarter">25%</string>
@@ -1792,6 +1794,7 @@
     <string name="label_guess_note">ڪجهه خانا بل مان ڀريا ويا آهن (ڪمپني، يونٽ، قسم، فارموليشن). محفوظ ڪرڻ کان اڳ ليبل سان ملائي وٺو.</string>
     <string name="entry_make_invoice">انوائس</string>
     <string name="followup_promised">واعدو: %1$s</string>
+    <string name="followup_waiting">ياد ڏياريو %1$s، ان بعد ڪجهه نه آيو</string>
     <plurals name="followup_today">
         <item quantity="one">اڄ %d کي ياد ڏيارڻو</item>
         <item quantity="other">اڄ %d کي ياد ڏيارڻو</item>

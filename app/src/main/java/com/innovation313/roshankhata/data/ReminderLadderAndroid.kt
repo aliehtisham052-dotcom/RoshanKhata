@@ -19,3 +19,14 @@ fun ReminderLadder.record(context: Context, partyId: Long, balanceNow: Double, n
     val s = next(state(context, partyId), balanceNow, now)
     ladderPrefs(context).edit().putString(partyId.toString(), encode(s)).apply()
 }
+
+/**
+ * When each customer was last reminded from this phone (the ladder's last time), for Follow-up's
+ * "reminded, nothing received since" ([PaymentRequest], 29 Oct 2026). The computer's ReminderStore.lastReminded.
+ */
+fun ReminderLadder.lastReminded(context: Context): Map<Long, Long> =
+    ladderPrefs(context).all.mapNotNull { (k, v) ->
+        val id = k.toLongOrNull() ?: return@mapNotNull null
+        val s = decode(v as? String) ?: return@mapNotNull null
+        id to s.lastAt
+    }.toMap()

@@ -242,6 +242,7 @@
     <string name="reminder_step_serious">Sanjeeda</string>
     <string name="reminder_step2">*Doosri Yaad Dehani*\n\nMohtaram *%1$s*,\n\nWajib ul ada: *%2$s*\nPehli yaad dehani: %3$s\n\nYe hamari doosri yaad dehani hai. Baraye meherbani is hafte raqam ada farma dein.\n\nShukriya.</string>
     <string name="reminder_step3">*Adaigi Baqi Hai*\n\nMohtaram *%1$s*,\n\nWajib ul ada: *%2$s*\n\nKai dafa yaad dehani ke baad bhi raqam baqi hai. Baraye meherbani ada farma dein, ya adaigi ki tareekh bata dein taake hisaab saaf ho sake.\n\nAap ke taawun ka shukriya.</string>
+    <string name="reminder_ref">Reference: %1$s</string>
     <string name="reminder_i_owe">*Hisaab ki Ittila*\n\nMohtaram *%1$s*,\n\nHamare zimme aap ka: *%2$s*\n\nInshaAllah jald ada kar denge. Agar aap ka hisaab hum se mukhtalif ho to bata dein.\n\nShukriya.</string>
     <string name="send_reminder">Yaad Dehani Bhejein</string>
     <string name="open_whatsapp">WhatsApp Kholein</string>
@@ -1447,6 +1448,7 @@
     <string name="payment_method_bank">Bank transfer</string>
     <string name="payment_method_cheque">Cheque</string>
     <string name="payment_method_online">Online</string>
+    <string name="payment_method_wallet">Mobile wallet</string>
 
     <string name="quick_amount_label">Baqaya %1$s mein se</string>
     <string name="quick_amount_quarter">25%</string>
@@ -1764,6 +1766,7 @@
     <string name="label_guess_note">Kuch khane bill se bhare gaye hain (company, unit, qism, formulation). Save karne se pehle label se mila lein.</string>
     <string name="entry_make_invoice">Invoice</string>
     <string name="followup_promised">Wada: %1$s</string>
+    <string name="followup_waiting">Yaad-dehani %1$s, us ke baad kuch nahi aaya</string>
     <plurals name="followup_today">
         <item quantity="one">Aaj %d ko yaad dehani</item>
         <item quantity="other">Aaj %d ko yaad dehani</item>

@@ -2120,6 +2120,21 @@ interface KhataDao {
     suspend fun reminderDateForParty(partyId: Long): Long? =
         promisedDateForParty(partyId) ?: getParty(partyId)?.harvestPromise
 
+    /**
+     * The sale a reminder chases (29 Oct 2026): the party's newest live "I gave"
+     * entry number, quoted under the reminder so his payment can name it. Null
+     * when he has none (an opening balance written as "I gave" carries a number
+     * too; a book from before numbering may hold a blank, which is passed over).
+     */
+    @Query(
+        """
+        SELECT entryNumber FROM transactions
+        WHERE partyId = :partyId AND isDeleted = 0 AND isGiven = 1 AND entryNumber <> ''
+        ORDER BY timestamp DESC, id DESC LIMIT 1
+        """
+    )
+    suspend fun newestGaveNumber(partyId: Long): String?
+
     @Query("UPDATE parties SET harvestPromise = :at WHERE id = :partyId")
     suspend fun setHarvestPromise(partyId: Long, at: Long?)
 

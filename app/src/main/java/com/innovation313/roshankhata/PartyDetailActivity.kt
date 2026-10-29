@@ -84,6 +84,7 @@ import com.innovation313.roshankhata.data.ScannedPayment
 import com.innovation313.roshankhata.ui.BillScanFlow
 import com.google.android.material.chip.ChipGroup
 import com.innovation313.roshankhata.data.PaymentMethod
+import com.innovation313.roshankhata.data.PaymentRef
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
@@ -145,6 +146,7 @@ class PartyDetailActivity : BaseActivity() {
         private const val F_BATCH = "batch"
         private const val F_RECOVERY = "recovery"
         private const val F_METHOD = "method"
+        private const val F_REF = "payment_ref"
         private const val F_QARZ = "qarz"
         private const val F_PAID_NOW = "paid_now"
         private const val F_DETAILS = "details_open"
@@ -1682,6 +1684,17 @@ class PartyDetailActivity : BaseActivity() {
         // "I Gave" entry the whole section stays hidden and the column stays
         // null.
         val cgPaymentMethod: ChipGroup = view.findViewById(R.id.cgPaymentMethod)
+        // The payment's own id (schema 39, 29 Oct 2026): shown only beside a way that has one (PaymentRef).
+        val etPaymentRef: EditText = view.findViewById(R.id.etPaymentRef)
+        /** The chip for a stored method key; none for null or a key this build does not know. */
+        fun checkMethod(key: String?) = when (key) {
+            PaymentMethod.CASH -> cgPaymentMethod.check(R.id.chipCash)
+            PaymentMethod.BANK -> cgPaymentMethod.check(R.id.chipBank)
+            PaymentMethod.CHEQUE -> cgPaymentMethod.check(R.id.chipCheque)
+            PaymentMethod.ONLINE -> cgPaymentMethod.check(R.id.chipOnline)
+            PaymentMethod.WALLET -> cgPaymentMethod.check(R.id.chipWallet)
+            else -> cgPaymentMethod.clearCheck()
+        }
         if (!isGiven) {
             view.findViewById<View>(R.id.paymentMethodSection).visibility = View.VISIBLE
             // Money received is marked Cash unless the owner taps another way (21 Oct 2026, the owner:
@@ -1739,9 +1752,15 @@ class PartyDetailActivity : BaseActivity() {
                 etAmount.setSelection(etAmount.text.length)
             }
             payment.reference?.let { ref ->
-                val tag = getString(R.string.payment_scan_reference, ref)
-                val now = etNote.text.toString().trim()
-                if (!now.contains(ref)) etNote.setText(if (now.isEmpty()) tag else "$now\n$tag")
+                // Into the reference box when the owner has said a way that has one (29 Oct 2026); while the
+                // entry still reads as cash the box is not there, so the note keeps it as before.
+                if (etPaymentRef.visibility == View.VISIBLE) {
+                    if (etPaymentRef.text.isBlank()) etPaymentRef.setText(ref)
+                } else {
+                    val tag = getString(R.string.payment_scan_reference, ref)
+                    val now = etNote.text.toString().trim()
+                    if (!now.contains(ref)) etNote.setText(if (now.isEmpty()) tag else "$now\n$tag")
+                }
             }
             payment.date?.let { day ->
                 val now = System.currentTimeMillis()
@@ -1763,8 +1782,15 @@ class PartyDetailActivity : BaseActivity() {
             R.id.chipBank -> PaymentMethod.BANK
             R.id.chipCheque -> PaymentMethod.CHEQUE
             R.id.chipOnline -> PaymentMethod.ONLINE
+            R.id.chipWallet -> PaymentMethod.WALLET
             else -> null
         }
+        fun showRefBox() {
+            etPaymentRef.visibility = if (!isGiven && PaymentRef.applies(chosenPaymentMethod())) View.VISIBLE else View.GONE
+        }
+        // After the first check above (lesson 4): the listener only follows the chip, it decides nothing.
+        cgPaymentMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
+        showRefBox()
 
         // ---- Editing: put the entry back on the form ----
         if (editing != null) {
@@ -1772,12 +1798,9 @@ class PartyDetailActivity : BaseActivity() {
             etNote.setText(e.note.orEmpty())
             cbQarzeHasna.isChecked = e.isQarzeHasna
             if (isGiven && e.recovery == Recovery.DOUBTFUL) rbDoubtful.isChecked = true
-            when (e.paymentMethod) {
-                PaymentMethod.CASH -> cgPaymentMethod.check(R.id.chipCash)
-                PaymentMethod.BANK -> cgPaymentMethod.check(R.id.chipBank)
-                PaymentMethod.CHEQUE -> cgPaymentMethod.check(R.id.chipCheque)
-                PaymentMethod.ONLINE -> cgPaymentMethod.check(R.id.chipOnline)
-            }
+            if (e.paymentMethod != null) checkMethod(e.paymentMethod)
+            etPaymentRef.setText(e.paymentRef.orEmpty())
+            showRefBox()
             // The chip first, while the list is still empty, so nothing is
             // re-priced by setting it.
             if (e.rateType == RateType.CASH) cgRateType.check(R.id.chipRateCash)
@@ -1826,13 +1849,9 @@ class PartyDetailActivity : BaseActivity() {
             cbQarzeHasna.isChecked = restore.getBoolean(F_QARZ)
             restore.getInt(F_RECOVERY, View.NO_ID).takeIf { it != View.NO_ID && isGiven }?.let { rgRecovery.check(it) }
             if (!isGiven) {
-                when (restore.getString(F_METHOD)) {
-                    PaymentMethod.CASH -> cgPaymentMethod.check(R.id.chipCash)
-                    PaymentMethod.BANK -> cgPaymentMethod.check(R.id.chipBank)
-                    PaymentMethod.CHEQUE -> cgPaymentMethod.check(R.id.chipCheque)
-                    PaymentMethod.ONLINE -> cgPaymentMethod.check(R.id.chipOnline)
-                    else -> cgPaymentMethod.clearCheck()
-                }
+                checkMethod(restore.getString(F_METHOD))
+                etPaymentRef.setText(restore.getString(F_REF).orEmpty())
+                showRefBox()
             }
             amountOwn = restore.getBoolean(F_AMOUNT_OWN)
             amountByItems = restore.getBoolean(F_AMOUNT_BY_ITEMS)
@@ -2008,6 +2027,9 @@ class PartyDetailActivity : BaseActivity() {
                 // hidden for it), so nothing is recorded there either.
                 paymentMethod = if (isGiven || (isReturn() && items.isNotEmpty())) null
                     else chosenPaymentMethod(),
+                // The reference rides with its method and only with one that has one (PaymentRef).
+                paymentRef = if (isGiven || (isReturn() && items.isNotEmpty())) null
+                    else PaymentRef.clean(chosenPaymentMethod(), etPaymentRef.text.toString()),
                 rateType = rateType
             )
 
@@ -2030,6 +2052,7 @@ class PartyDetailActivity : BaseActivity() {
                     recovery = recovery,
                     timestamp = chosenTime,
                     paymentMethod = entry.paymentMethod,
+                    paymentRef = entry.paymentRef,
                     rateType = rateType
                 )
                 AppScope.launch { dao.updateEntryWithItems(updated, items); dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount)) }
@@ -2083,6 +2106,7 @@ class PartyDetailActivity : BaseActivity() {
             (selectedBatch?.id ?: pendingBatchId)?.let { b.putLong(F_BATCH, it) }
             b.putInt(F_RECOVERY, rgRecovery.checkedRadioButtonId)
             chosenPaymentMethod()?.let { b.putString(F_METHOD, it) }
+            b.putString(F_REF, etPaymentRef.text.toString())
             b.putBoolean(F_QARZ, cbQarzeHasna.isChecked)
             b.putBoolean(F_PAID_NOW, cbPaidNow.isChecked)
             b.putBoolean(F_DETAILS, view.findViewById<View>(R.id.stepTwo).visibility == View.VISIBLE)
@@ -2482,14 +2506,16 @@ class PartyDetailActivity : BaseActivity() {
         // dialog is built so the message the owner reads is the message that
         // gets sent — a date arriving late would change the text underneath them.
         lifecycleScope.launch {
-            val promisedDate = withContext(Dispatchers.IO) {
-                runCatching { dao.reminderDateForParty(partyId) }.getOrNull()
+            // With the sale being chased (ReminderText.facts, 29 Oct 2026), read before the words are made.
+            val facts = withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.ReminderText.facts(dao, partyId) }
+                    .getOrDefault(com.innovation313.roshankhata.data.ReminderText.Facts(null, null))
             }
-            showReminderDialog(viaWhatsApp, promisedDate)
+            showReminderDialog(viaWhatsApp, facts)
         }
     }
 
-    private fun showReminderDialog(viaWhatsApp: Boolean, promisedDate: Long?) {
+    private fun showReminderDialog(viaWhatsApp: Boolean, facts: com.innovation313.roshankhata.data.ReminderText.Facts) {
         val view = layoutInflater.inflate(R.layout.dialog_reminder_preview, null)
         val etMessage: EditText = view.findViewById(R.id.etMessage)
         // The ladder (6 Oct): the app picks the next step, the owner can change it.
@@ -2502,13 +2528,14 @@ class PartyDetailActivity : BaseActivity() {
                     partyName = partyName,
                     balance = currentBalance,
                     businessName = BusinessProfile.businessName(this),
-                    promisedDate = promisedDate,
+                    promisedDate = facts.promisedDate,
                     // The preview must be what actually gets sent: SMS shows no
                     // bold, so the owner should not be reading asterisks here
                     // and wondering what the customer will see.
                     forSms = !viaWhatsApp,
                     step = step,
-                    firstSentAt = state?.firstAt
+                    firstSentAt = state?.firstAt,
+                    reference = facts.reference
                 )
             )
             etMessage.setSelection(etMessage.text?.length ?: 0)

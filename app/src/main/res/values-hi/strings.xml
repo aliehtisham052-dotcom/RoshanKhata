@@ -254,6 +254,7 @@
     <string name="reminder_step_serious">गंभीर</string>
     <string name="reminder_step2">*दूसरी याद दिलाई*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nपहली याद दिलाई: %3$s\n\nयह हमारी दूसरी याद दिलाई है। कृपया इस हफ़्ते रक़म चुका दें।\n\nशुक्रिया।</string>
     <string name="reminder_step3">*भुगतान बाक़ी है*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\n\nकई बार याद दिलाने के बाद भी रक़म बाक़ी है। कृपया भुगतान करें, या भुगतान की तारीख़ बता दें ताकि हिसाब साफ़ हो सके।\n\nआपके सहयोग का शुक्रिया।</string>
+    <string name="reminder_ref">संदर्भ: %1$s</string>
     <string name="reminder_i_owe">*भुगतान नोट*\n\nआदरणीय *%1$s*,\n\nहमें आपको देना है: *%2$s*\n\nहम जल्द चुका देंगे। अगर आपका हिसाब हमारे हिसाब से अलग हो तो कृपया बताएँ।\n\nधन्यवाद।</string>
     <string name="send_reminder">रिमाइंडर भेजें</string>
     <string name="open_whatsapp">WhatsApp खोलें</string>
@@ -1490,6 +1491,7 @@
     <string name="payment_method_bank">बैंक ट्रांसफ़र</string>
     <string name="payment_method_cheque">चेक</string>
     <string name="payment_method_online">ऑनलाइन</string>
+    <string name="payment_method_wallet">मोबाइल वॉलेट</string>
 
     <!-- Quick shares of an outstanding balance, when money comes in. -->
     <string name="quick_amount_label">बैलेंस %1$s में से</string>
@@ -1814,6 +1816,7 @@
     <string name="label_guess_note">कुछ खाने बिल से भरे गए हैं (कंपनी, इकाई, प्रकार, फ़ॉर्मूलेशन)। सेव करने से पहले लेबल से मिला लें।</string>
     <string name="entry_make_invoice">इनवॉइस</string>
     <string name="followup_promised">%1$s का वादा</string>
+    <string name="followup_waiting">%1$s को याद दिलाया, उसके बाद कुछ नहीं आया</string>
     <plurals name="followup_today">
         <item quantity="one">आज %d को याद दिलाना है</item>
         <item quantity="other">आज %d को याद दिलाना है</item>

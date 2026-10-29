@@ -16,6 +16,7 @@ import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.FollowUpRank
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.PaymentHabit
+import com.innovation313.roshankhata.data.PaymentRequest
 
 /**
  * Everyone who owes the shop, as an action list rather than a balance view.
@@ -49,10 +50,17 @@ class FollowUpAdapter(
     /** Parties whose reminder was already opened today; see ReminderLog. */
     var remindedToday: Set<Long> = emptySet()
 
+    /** Party id → when this phone last reminded him (the ladder); set with [habits], before submitList. */
+    var lastReminded: Map<Long, Long> = emptyMap()
+
+    /** Party id → his newest live "I got" (PaymentRequest.lastGotAt); set with [habits], before submitList. */
+    var lastGot: Map<Long, Long> = emptyMap()
+
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFollowUpName)
         val tvAge: TextView = view.findViewById(R.id.tvFollowUpAge)
         val tvHabit: TextView = view.findViewById(R.id.tvFollowUpHabit)
+        val tvWaiting: TextView = view.findViewById(R.id.tvFollowUpWaiting)
         val tvAmount: TextView = view.findViewById(R.id.tvFollowUpAmount)
         val tvSend: TextView = view.findViewById(R.id.tvFollowUpSend)
     }
@@ -111,6 +119,16 @@ class FollowUpAdapter(
                 ContextCompat.getColor(ctx, if (urgent) R.color.gold_accent else R.color.text_muted)
             )
             holder.tvHabit.setTypeface(null, if (urgent) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+        }
+
+        // Reminded, and nothing received since (PaymentRequest, 29 Oct 2026):
+        // the last reminder from this phone against his newest payment.
+        val remindedAt = lastReminded[p.id]
+        if (remindedAt != null && PaymentRequest.waitingSince(remindedAt, lastGot[p.id])) {
+            holder.tvWaiting.visibility = View.VISIBLE
+            holder.tvWaiting.text = ctx.getString(R.string.followup_waiting, Format.dateOnly(remindedAt))
+        } else {
+            holder.tvWaiting.visibility = View.GONE
         }
 
         // A customer with no number cannot be messaged, and the row should

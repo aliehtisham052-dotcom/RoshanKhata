@@ -17,6 +17,7 @@ import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.ReminderLadder
 import com.innovation313.roshankhata.data.ReminderText
+import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.data.WhatsAppNumber
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.LocalWords
@@ -63,6 +64,17 @@ class ReminderStore(private val file: File) {
         }.toSet()
     }
 
+    /**
+     * When each customer was last reminded from this computer (the ladder's last time), for Follow-up's
+     * "reminded, nothing received since" ([com.innovation313.roshankhata.data.PaymentRequest], 29 Oct 2026).
+     */
+    @Synchronized
+    fun lastReminded(): Map<Long, Long> = props.stringPropertyNames().mapNotNull { key ->
+        val id = key.toLongOrNull() ?: return@mapNotNull null
+        val s = ReminderLadder.decode(props.getProperty(key)) ?: return@mapNotNull null
+        id to s.lastAt
+    }.toMap()
+
     companion object {
         fun forBusiness(home: File, businessId: Long) = ReminderStore(File(home, "reminders_b$businessId.properties"))
     }
@@ -72,7 +84,9 @@ class ReminderStore(private val file: File) {
  * A payment reminder read over before it goes (Marhala 4; the phone's reminder preview): the ladder's next step
  * chosen (Gentle, Plain, Serious — the owner can pick another), the words in a box he can change, then WhatsApp
  * opens with them; the owner presses send himself. A customer with no number, or a computer that cannot open
- * WhatsApp, is told so here (25 Oct 2026, the audit: the button did nothing at all, silently).
+ * WhatsApp, is told so here (25 Oct 2026, the audit: the button did nothing at all, silently). The words are
+ * the phone's whole message (29 Oct 2026): the sale being chased on its own line and, under a reminder that
+ * asks for money, how to pay from the Business Profile (ReminderText.paymentBlock) — read from [settings].
  */
 @Composable
 fun ReminderDialog(
@@ -80,9 +94,10 @@ fun ReminderDialog(
     name: String,
     phone: String?,
     balance: Double,
-    /** The day the customer promised, if any: the gentle step names it. */
-    promised: Long?,
+    /** The day the customer promised, if any (the gentle step names it), and the sale being chased. */
+    facts: ReminderText.Facts,
     shopName: String?,
+    settings: ShopSettings,
     store: ReminderStore,
     onClose: () -> Unit
 ) {
@@ -91,7 +106,10 @@ fun ReminderDialog(
     val owes = Money.isPositive(balance)
     val state = remember(partyId) { store.state(partyId) }
     var step by remember(partyId) { mutableStateOf(if (owes) ReminderLadder.step(state, balance, System.currentTimeMillis()) else ReminderLadder.GENTLE) }
-    fun fill(s: Int) = ReminderText.signed(ReminderText.body(words, name, balance, promised, s, state?.firstAt), shopName)
+    val pay = remember(partyId) { if (owes) ReminderText.paymentBlock(words, settings) else "" }
+    fun fill(s: Int) = ReminderText.signed(
+        ReminderText.body(words, name, balance, facts.promisedDate, s, state?.firstAt, reference = facts.reference) + pay, shopName
+    )
     var text by remember(partyId) { mutableStateOf(fill(step)) }
     var trouble by remember { mutableStateOf<String?>(null) }
     val number = phone?.let { WhatsAppNumber.of(it) }

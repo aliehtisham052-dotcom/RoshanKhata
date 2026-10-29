@@ -60,6 +60,7 @@ import com.innovation313.roshankhata.data.SaleWithLines
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.word
@@ -753,14 +754,7 @@ private fun FigureRow(label: String, figure: String, color: androidx.compose.ui.
 }
 
 @Composable
-private fun methodWord(m: String): String = word(
-    when (m) {
-        PaymentMethod.CASH -> W.payment_method_cash
-        PaymentMethod.BANK -> W.payment_method_bank
-        PaymentMethod.CHEQUE -> W.payment_method_cheque
-        else -> W.payment_method_online
-    }
-)
+private fun methodWord(m: String): String = PaymentMethod.label(LocalWords.current, m)
 
 /** The grand total's size: smaller for a long figure, so "Rs 1,234,567" is never cut (25 Oct 2026, the audit). */
 internal fun totalSize(figure: String): androidx.compose.ui.unit.TextUnit = when {
@@ -906,14 +900,7 @@ object SaleReceipt {
         val inside = s.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
         if (inside > 0.004) out += ThermalReceipt.Line(words.text(W.pos_tax_included) + ": " + Format.money(inside), 18f, centre = true)
         for (p in s.payments) {
-            val m = words.text(
-                when (p.method) {
-                    PaymentMethod.CASH -> W.payment_method_cash
-                    PaymentMethod.BANK -> W.payment_method_bank
-                    PaymentMethod.CHEQUE -> W.payment_method_cheque
-                    else -> W.payment_method_online
-                }
-            )
+            val m = PaymentMethod.label(words, p.method)
             out += ThermalReceipt.Line(m + ": " + Format.money(p.amount) + (p.reference?.let { "  $it" } ?: ""), 18f)
         }
         if (sale.creditAmount > 0.005) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)

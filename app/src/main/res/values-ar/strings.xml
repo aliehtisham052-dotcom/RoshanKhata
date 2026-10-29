@@ -270,6 +270,7 @@
     <string name="reminder_step_serious">جاد</string>
     <string name="reminder_step2">*تذكير ثانٍ*\n\nالسيد/ة *%1$s*،\n\nالمبلغ المستحق: *%2$s*\nالتذكير الأول: %3$s\n\nهذا تذكيرنا الثاني. نرجو سداد المبلغ هذا الأسبوع.\n\nشكرًا لكم.</string>
     <string name="reminder_step3">*دفعة متأخرة*\n\nالسيد/ة *%1$s*،\n\nالمبلغ المستحق: *%2$s*\n\nذكّرناكم عدة مرات وما زال المبلغ مستحقًا. نرجو السداد، أو إخبارنا بموعد السداد لتسوية الحساب.\n\nشكرًا لتفهمكم.</string>
+    <string name="reminder_ref">المرجع: %1$s</string>
     <string name="reminder_i_owe">*إشعار حساب*\n\nالسيد *%1$s*،\n\nلكم علينا: *%2$s*\n\nسنسدده قريباً إن شاء الله. إن اختلف حسابكم عن حسابنا فأخبرونا.\n\nشكراً لكم.</string>
     <string name="send_reminder">إرسال تذكير</string>
     <string name="open_whatsapp">فتح واتساب</string>
@@ -1579,6 +1580,7 @@
     <string name="payment_method_bank">تحويل بنكي</string>
     <string name="payment_method_cheque">شيك</string>
     <string name="payment_method_online">عبر الإنترنت</string>
+    <string name="payment_method_wallet">محفظة الجوال</string>
 
     <string name="quick_amount_label">من الرصيد %1$s</string>
     <string name="quick_amount_quarter">25%</string>
@@ -1912,6 +1914,7 @@
     <string name="label_guess_note">بعض الحقول مُلئت من الفاتورة (الشركة، الوحدة، النوع، التركيبة). طابقها مع الملصق قبل الحفظ.</string>
     <string name="entry_make_invoice">فاتورة</string>
     <string name="followup_promised">وعد بالسداد: %1$s</string>
+    <string name="followup_waiting">تم التذكير %1$s، ولم يصل شيء بعده</string>
     <plurals name="followup_today">
         <item quantity="zero">للتذكير اليوم: %d</item>
         <item quantity="one">للتذكير اليوم: %d</item>

@@ -34,14 +34,7 @@ object SaleReceiptText {
         val inside = s.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
         if (inside > 0.004) b.append(words.text(W.pos_tax_included)).append(": ").append(Format.money(inside)).append('\n')
         for (p in s.payments) {
-            val m = words.text(
-                when (p.method) {
-                    PaymentMethod.CASH -> W.payment_method_cash
-                    PaymentMethod.BANK -> W.payment_method_bank
-                    PaymentMethod.CHEQUE -> W.payment_method_cheque
-                    else -> W.payment_method_online
-                }
-            )
+            val m = PaymentMethod.label(words, p.method)
             b.append(m).append(": ").append(Format.money(p.amount)).append(p.reference?.let { "  $it" } ?: "").append('\n')
         }
         if (sale.creditAmount > 0.005) b.append(words.text(W.pos_to_account)).append(": ").append(Format.money(sale.creditAmount)).append('\n')

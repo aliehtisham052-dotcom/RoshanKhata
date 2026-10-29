@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.Words
 
 /** A customer or supplier. */
 @Entity(
@@ -98,7 +101,7 @@ object Recovery {
  * changed with the language would make a backup unreadable by the app that
  * wrote it.
  *
- * [labelOf] falls back to showing an unrecognised key as it was stored rather
+ * [label] falls back to showing an unrecognised key as it was stored rather
  * than blanking it or calling it cash. A value this version does not know is
  * still something the owner recorded.
  */
@@ -107,11 +110,45 @@ object PaymentMethod {
     const val BANK = "bank"
     const val CHEQUE = "cheque"
     const val ONLINE = "online"
+    /** A mobile wallet (JazzCash, Easypaisa, bKash, UPI, GoPay… — the profile's wallet field names the country's), 29 Oct 2026. */
+    const val WALLET = "wallet"
 
-    val ALL = listOf(CASH, BANK, CHEQUE, ONLINE)
+    val ALL = listOf(CASH, BANK, CHEQUE, ONLINE, WALLET)
 
-    // labelRes() and labelOf(), which read the app's strings, are in the app
-    // (PaymentMethodLabels.kt): KMP Phase 3, 18 Oct.
+    /**
+     * The string key of [key]'s label (payment_method_*), or null for a key
+     * this version does not know. One table for every picker, receipt and
+     * report on both platforms (29 Oct 2026: seven copies of this `when`
+     * each had to learn WALLET).
+     */
+    fun wordKey(key: String): String? = when (key) {
+        CASH -> W.payment_method_cash
+        BANK -> W.payment_method_bank
+        CHEQUE -> W.payment_method_cheque
+        ONLINE -> W.payment_method_online
+        WALLET -> W.payment_method_wallet
+        else -> null
+    }
+
+    /** [key]'s label in the app's language; an unrecognised key as it was stored (see the class note). */
+    fun label(words: Words, key: String): String =
+        wordKey(key)?.let { words.text(it) } ?: key
+
+    /**
+     * How a payment came, for a receipt or a statement row: the method's label,
+     * then "Ref: <id>" when a reference was written down ("Bank transfer · Ref: TID 778…"),
+     * the id sealed left-to-right so it is not reordered inside an Urdu line.
+     * Null when neither was recorded — an unrecorded method is not cash.
+     */
+    fun said(words: Words, method: String?, ref: String?): String? {
+        val m = method?.takeIf { it.isNotBlank() }?.let { label(words, it) }
+        val r = ref?.trim()?.takeIf { it.isNotEmpty() }?.let {
+            words.text(W.payment_scan_reference, Format.ltr(it))
+        }
+        return listOfNotNull(m, r).joinToString(" · ").ifEmpty { null }
+    }
+
+    // labelOf(context, key), the phone's call shape, is in the app (PaymentMethodLabels.kt) over [label].
 }
 
 /** A single ledger entry against a party. */

@@ -389,7 +389,7 @@ class ScreenProofTest {
                 CashFlowPane(dao, reload = 0)
             }
             shoot("screen-laptop-followup-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.FOLLOWUP, waits = 2) {
-                FollowUpPane(dao, partiesNow, words, "Al-Noor Agri Store", ReminderStore.forBusiness(home, 1L))
+                FollowUpPane(dao, partiesNow, words, "Al-Noor Agri Store", com.innovation313.roshankhata.data.FileShopSettings(home.resolve("shop.properties")), ReminderStore.forBusiness(home, 1L))
             }
             shoot("screen-laptop-aging-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.AGING, waits = 3) {
                 AgingPane(dao, words, rtl = false, shopName = "Al-Noor Agri Store", reload = 0) {}

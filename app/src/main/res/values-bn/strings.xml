@@ -254,6 +254,7 @@
     <string name="reminder_step_serious">গুরুতর</string>
     <string name="reminder_step2">*দ্বিতীয় স্মরণ*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\nপ্রথম স্মরণ: %3$s\n\nএটি আমাদের দ্বিতীয় স্মরণ। অনুগ্রহ করে এই সপ্তাহে টাকা পরিশোধ করুন।\n\nধন্যবাদ।</string>
     <string name="reminder_step3">*পরিশোধ বাকি*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\n\nকয়েকবার মনে করানোর পরও টাকা বাকি আছে। অনুগ্রহ করে পরিশোধ করুন, অথবা পরিশোধের তারিখ জানান যাতে হিসাব মিটে যায়।\n\nআপনার সহযোগিতার জন্য ধন্যবাদ।</string>
+    <string name="reminder_ref">রেফারেন্স: %1$s</string>
     <string name="reminder_i_owe">*পেমেন্ট নোট*\n\nজনাব *%1$s*,\n\nআপনার কাছে আমাদের দেনা: *%2$s*\n\nআমরা শিগগিরই পরিশোধ করব। আপনার হিসাব আমাদের সঙ্গে না মিললে অনুগ্রহ করে জানান।\n\nধন্যবাদ।</string>
     <string name="send_reminder">রিমাইন্ডার পাঠান</string>
     <string name="open_whatsapp">WhatsApp খুলুন</string>
@@ -1490,6 +1491,7 @@
     <string name="payment_method_bank">ব্যাংক ট্রান্সফার</string>
     <string name="payment_method_cheque">চেক</string>
     <string name="payment_method_online">অনলাইন</string>
+    <string name="payment_method_wallet">মোবাইল ওয়ালেট</string>
 
     <!-- Quick shares of an outstanding balance, when money comes in. -->
     <string name="quick_amount_label">ব্যালেন্স %1$s-এর মধ্যে</string>
@@ -1814,6 +1816,7 @@
     <string name="label_guess_note">কিছু ঘর বিল থেকে পূরণ হয়েছে (কোম্পানি, একক, ধরন, ফর্মুলেশন)। সেভ করার আগে লেবেলের সঙ্গে মিলিয়ে নিন।</string>
     <string name="entry_make_invoice">ইনভয়েস</string>
     <string name="followup_promised">%1$s-এর প্রতিশ্রুতি</string>
+    <string name="followup_waiting">%1$s স্মরণ করানো হয়েছে, এরপর কিছু আসেনি</string>
     <plurals name="followup_today">
         <item quantity="one">আজ %d জনকে মনে করাতে হবে</item>
         <item quantity="other">আজ %d জনকে মনে করাতে হবে</item>

@@ -70,6 +70,9 @@ class FileShopSettings(private val file: File) : ShopSettings {
 
     override fun photoOnStatement() = props.getProperty(ShopSettings.Keys.PHOTO_ON_STATEMENT) == "true"
     override fun setPhotoOnStatement(enabled: Boolean) = put(ShopSettings.Keys.PHOTO_ON_STATEMENT to enabled.toString())
+    // On unless switched off, as the phone's default reads.
+    override fun paymentOnReminder() = props.getProperty(ShopSettings.Keys.PAYMENT_ON_REMINDER) != "false"
+    override fun setPaymentOnReminder(enabled: Boolean) = put(ShopSettings.Keys.PAYMENT_ON_REMINDER to enabled.toString())
 
     /**
      * A new shop starts where the open one is (the phone's BusinessProfile.copyRegion, 23 Oct 2026; Marhala 4,

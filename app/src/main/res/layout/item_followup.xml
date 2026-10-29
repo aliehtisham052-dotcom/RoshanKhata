@@ -40,6 +40,18 @@
             android:layout_marginTop="2dp"
             android:textSize="12sp"
             android:visibility="gone" />
+
+        <!-- "Reminded on …, nothing received since" (PaymentRequest, 29 Oct):
+             the last reminder from this phone against his newest payment. -->
+        <TextView
+            android:id="@+id/tvFollowUpWaiting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/red_gave_text"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout

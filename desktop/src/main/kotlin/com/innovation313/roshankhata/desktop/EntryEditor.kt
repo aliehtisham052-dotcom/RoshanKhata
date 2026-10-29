@@ -40,6 +40,7 @@ import com.innovation313.roshankhata.data.SeasonBook
 import kotlinx.coroutines.delay
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PaymentMethod
+import com.innovation313.roshankhata.data.PaymentRef
 import com.innovation313.roshankhata.data.Recovery
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Calc
@@ -141,6 +142,7 @@ fun EntryEditor(
     var doubtful by remember { mutableStateOf(existing?.recovery == Recovery.DOUBTFUL) }
     // A new "I got" starts as Cash, as on the phone (21 Oct 2026); an edited entry keeps its own.
     var method by remember { mutableStateOf(if (existing == null) PaymentMethod.CASH else existing.paymentMethod) }
+    var paymentRef by remember { mutableStateOf(existing?.paymentRef.orEmpty()) }
     var picking by remember { mutableStateOf(false) }
     var pickingTime by remember { mutableStateOf(false) }
     var cashRate by remember { mutableStateOf(existing?.rateType == RateType.CASH) }
@@ -320,6 +322,7 @@ fun EntryEditor(
                 recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN,
                 // Goods coming back are not money in any way (the phone's rule): no method.
                 paymentMethod = if (isGiven) base.paymentMethod else if (items.isNotEmpty()) null else method,
+                paymentRef = if (isGiven) base.paymentRef else if (items.isNotEmpty()) null else PaymentRef.clean(method, paymentRef),
                 rateType = kept,
                 billPhotoPath = photoPath
             ),
@@ -518,12 +521,14 @@ fun EntryEditor(
                 // (Cashbook, Close the day) counts only khata money marked Cash. Goods coming back were not paid.
                 Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf(
-                        PaymentMethod.CASH to W.payment_method_cash, PaymentMethod.BANK to W.payment_method_bank,
-                        PaymentMethod.CHEQUE to W.payment_method_cheque, PaymentMethod.ONLINE to W.payment_method_online
-                    ).forEach { (m, label) ->
-                        FluentPill(word(label), m == method) { method = if (m == method) null else m }
+                    PaymentMethod.ALL.forEach { m ->
+                        FluentPill(PaymentMethod.label(words, m), m == method) { method = if (m == method) null else m }
                     }
+                }
+                // The payment's own id (schema 39): a transfer's transaction id, a wallet's TID, a cheque's
+                // number — what answers "I sent it on Tuesday". Only beside a way that has one: cash has none.
+                if (PaymentRef.applies(method)) {
+                    FluentField(paymentRef, { paymentRef = it }, Modifier.fillMaxWidth(), label = word(W.pos_reference_hint), ltr = true)
                 }
             }
             if (isGiven) {

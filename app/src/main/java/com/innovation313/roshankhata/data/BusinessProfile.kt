@@ -41,6 +41,7 @@ object BusinessProfile {
     private const val KEY_STAMP_SAVED = "stamp_saved"
     private const val KEY_LOGO_SAVED = "logo_saved"
     private const val KEY_PHOTO_ON_STATEMENT = "photo_on_statement"
+    private const val KEY_PAYMENT_ON_REMINDER = "payment_on_reminder"
     private const val QR_FILE = "payment_qr.png"
     private const val SIGNATURE_FILE = "signature.png"
     private const val STAMP_FILE = "stamp.png"
@@ -127,6 +128,8 @@ object BusinessProfile {
         override fun setOtherTrade(name: String?, items: String?) { readOnly() }
         override fun photoOnStatement() = p.getBoolean(KEY_PHOTO_ON_STATEMENT, false)
         override fun setPhotoOnStatement(enabled: Boolean) { readOnly() }
+        override fun paymentOnReminder() = p.getBoolean(KEY_PAYMENT_ON_REMINDER, true)
+        override fun setPaymentOnReminder(enabled: Boolean) { readOnly() }
         override fun refreshDisplay() = Unit
     }
 
@@ -695,10 +698,10 @@ object BusinessProfile {
 
     /** Put the JazzCash / bank details under a payment reminder (2 Oct). */
     fun paymentOnReminder(context: Context): Boolean =
-        prefs(context).getBoolean("payment_on_reminder", true)
+        prefs(context).getBoolean(KEY_PAYMENT_ON_REMINDER, true)
 
     fun setPaymentOnReminder(context: Context, enabled: Boolean) {
-        prefs(context).edit().putBoolean("payment_on_reminder", enabled).apply()
+        prefs(context).edit().putBoolean(KEY_PAYMENT_ON_REMINDER, enabled).apply()
     }
 
     /**

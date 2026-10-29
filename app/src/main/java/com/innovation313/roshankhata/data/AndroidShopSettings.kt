@@ -39,5 +39,7 @@ class AndroidShopSettings(private val context: Context) : ShopSettings {
     override fun setOtherTrade(name: String?, items: String?) = BusinessProfile.setOtherTrade(context, name, items)
     override fun photoOnStatement() = BusinessProfile.photoOnStatement(context)
     override fun setPhotoOnStatement(enabled: Boolean) = BusinessProfile.setPhotoOnStatement(context, enabled)
+    override fun paymentOnReminder() = BusinessProfile.paymentOnReminder(context)
+    override fun setPaymentOnReminder(enabled: Boolean) = BusinessProfile.setPaymentOnReminder(context, enabled)
     override fun refreshDisplay() = ShopCalendar.refresh(context)
 }

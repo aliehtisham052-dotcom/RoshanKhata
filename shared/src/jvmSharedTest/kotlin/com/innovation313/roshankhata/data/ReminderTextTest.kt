@@ -35,6 +35,34 @@ class ReminderTextTest {
     }
 
     @Test
+    fun `the sale being chased is one line under a reminder that asks for money, never under a courtesy note`() {
+        val asked = ReminderText.body(words, "Aslam", 5_000.0, reference = "RK-000013")
+        val lines = asked.split("\n")
+        assertTrue(lines.first().startsWith("reminder_they_owe("))
+        assertTrue(lines.last().startsWith("reminder_ref("))
+        assertTrue(lines.last().contains("RK-000013"))
+        // The same line at every step.
+        assertTrue(ReminderText.body(words, "Aslam", 5_000.0, step = ReminderLadder.SERIOUS, reference = "RK-000013").endsWith(lines.last()))
+        // Nothing to quote, or blank: the body as before.
+        assertEquals(ReminderText.body(words, "Aslam", 5_000.0), ReminderText.body(words, "Aslam", 5_000.0, reference = null))
+        assertEquals(ReminderText.body(words, "Aslam", 5_000.0), ReminderText.body(words, "Aslam", 5_000.0, reference = "  "))
+        // Money the shop owes: no sale is being chased.
+        assertEquals(ReminderText.body(words, "Seeds Co.", -1_200.0), ReminderText.body(words, "Seeds Co.", -1_200.0, reference = "RK-000013"))
+    }
+
+    @Test
+    fun `how to pay is one block on both platforms, and nothing when off or empty`() {
+        val block = ReminderText.paymentBlock(words, "03001234567", "HBL", "Ali Traders", "PK36HABB0001")
+        assertEquals("\n\npay_heading()\npay_wallet_label(): 03001234567\npay_bank_label(): HBL · Ali Traders · PK36HABB0001", block)
+        assertEquals("", ReminderText.paymentBlock(words, "03001234567", "HBL", "Ali Traders", "PK36HABB0001", enabled = false))
+        assertEquals("", ReminderText.paymentBlock(words, null, "HBL", "Ali Traders", null))
+        // The whole message as the phone and the computer both put it together: body, reference, how to pay, the shop.
+        val whole = ReminderText.signed(ReminderText.body(words, "Aslam", 5_000.0, reference = "RK-000013") + block, "Al-Noor")
+        val order = listOf("reminder_they_owe(", "reminder_ref(", "pay_heading()", "pay_wallet_label()", "\u2014 ").map { whole.indexOf(it) }
+        assertTrue(order.toString(), order.all { it >= 0 } && order == order.sorted())
+    }
+
+    @Test
     fun `the ladder's stored form reads back, and anything else is nothing`() {
         val s = ReminderLadder.next(null, 12_000.0, 1_000L)
         assertEquals(s, ReminderLadder.decode(ReminderLadder.encode(s)))

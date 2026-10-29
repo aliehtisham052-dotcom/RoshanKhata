@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.desktop
 
 import com.innovation313.roshankhata.data.EntryWithItems
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.WP
@@ -243,6 +244,8 @@ class StatementPrint(
                 add(e.entryNumber)
                 Format.goods(row.e.items)?.let { add(it) }
                 e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
+                // The payment's reference with its way (schema 39), as the phone's statement prints it.
+                if (!e.paymentRef.isNullOrBlank()) PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { add(it) }
                 if (e.isQarzeHasna) add(words.text(W.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
             g.color = muted

@@ -254,6 +254,7 @@
     <string name="reminder_step_serious">Serious</string>
     <string name="reminder_step2">*Second Reminder*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\nFirst reminder sent: %3$s\n\nThis is our second reminder. Kindly clear the amount this week.\n\nThank you.</string>
     <string name="reminder_step3">*Payment Pending*\n\nDear *%1$s*,\n\nOutstanding: *%2$s*\n\nWe have reminded you several times and the amount is still due. Kindly pay, or tell us the date you will pay, so we can settle the account.\n\nThank you for your understanding.</string>
+    <string name="reminder_ref">Reference: %1$s</string>
     <string name="reminder_i_owe">*Payment Note*\n\nDear *%1$s*,\n\nWe owe you: *%2$s*\n\nWe will settle it soon. If your records differ from ours, please let us know.\n\nThank you.</string>
     <string name="send_reminder">Send Reminder</string>
     <string name="open_whatsapp">Open WhatsApp</string>
@@ -1494,6 +1495,7 @@
     <string name="payment_method_bank">Bank transfer</string>
     <string name="payment_method_cheque">Cheque</string>
     <string name="payment_method_online">Online</string>
+    <string name="payment_method_wallet">Mobile wallet</string>
 
     <!-- Quick shares of an outstanding balance, when money comes in. -->
     <string name="quick_amount_label">Of the balance %1$s</string>
@@ -1819,6 +1821,7 @@
     <string name="label_guess_note">Some boxes are filled from the bill (company, unit, type, formulation). Check them against the label before saving.</string>
     <string name="entry_make_invoice">Invoice</string>
     <string name="followup_promised">Promised for %1$s</string>
+    <string name="followup_waiting">Reminded %1$s, nothing received since</string>
     <plurals name="followup_today">
         <item quantity="one">%d to remind today</item>
         <item quantity="other">%d to remind today</item>

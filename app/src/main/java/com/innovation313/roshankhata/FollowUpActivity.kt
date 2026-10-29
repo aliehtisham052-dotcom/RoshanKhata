@@ -20,7 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.FollowUpRank
+import com.innovation313.roshankhata.data.PaymentRequest
 import com.innovation313.roshankhata.data.ReminderLog
+import com.innovation313.roshankhata.data.lastReminded
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PartyWithBalance
@@ -171,7 +173,11 @@ class FollowUpActivity : BaseActivity() {
                         !it.phone.isNullOrBlank() &&
                             FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday)
                     }
-                    FollowUpState(ordered, habits, promises, today, remindedToday, due)
+                    // "Reminded on …, nothing received since" (PaymentRequest, 29 Oct 2026): the ladder's last
+                    // time on this phone, re-read with the marks (a reminder opened just now moves it), against
+                    // the newest payment in the points already read for the habit.
+                    val lastReminded = com.innovation313.roshankhata.data.ReminderLadder.lastReminded(this@FollowUpActivity)
+                    FollowUpState(ordered, habits, promises, today, remindedToday, due, lastReminded, PaymentRequest.lastGotAt(points))
                 }
                 // A big book is thousands of lines; the arithmetic stays off
                 // the main thread.
@@ -180,6 +186,8 @@ class FollowUpActivity : BaseActivity() {
                     val debtors = state.debtors
                     adapter.habits = state.habits
                     adapter.promises = state.promises
+                    adapter.lastReminded = state.lastReminded
+                    adapter.lastGot = state.lastGot
                     // Rows are compared by party only, so a new mark needs a rebind.
                     val marksChanged = adapter.remindedToday != state.remindedToday
                     adapter.remindedToday = state.remindedToday
@@ -211,7 +219,9 @@ class FollowUpActivity : BaseActivity() {
         // Room's suspend queries run off the main thread themselves, so this
         // reads the agreed date without blocking the tap.
         lifecycleScope.launch {
-            val promisedDate = runCatching { dao.reminderDateForParty(party.id) }.getOrNull()
+            // The promised day and the sale being chased, read together (ReminderText.facts, 29 Oct 2026).
+            val facts = runCatching { com.innovation313.roshankhata.data.ReminderText.facts(dao, party.id) }
+                .getOrDefault(com.innovation313.roshankhata.data.ReminderText.Facts(null, null))
             // The ladder (6 Oct) picks how firm this one is: gentle, plain, serious.
             val state = com.innovation313.roshankhata.data.ReminderLadder.state(this@FollowUpActivity, party.id)
             val message = Reminder.buildMessage(
@@ -219,9 +229,10 @@ class FollowUpActivity : BaseActivity() {
                 partyName = party.name,
                 balance = party.balance,
                 businessName = BusinessProfile.businessName(this@FollowUpActivity),
-                promisedDate = promisedDate,
+                promisedDate = facts.promisedDate,
                 step = com.innovation313.roshankhata.data.ReminderLadder.step(state, party.balance, System.currentTimeMillis()),
-                firstSentAt = state?.firstAt
+                firstSentAt = state?.firstAt,
+                reference = facts.reference
             )
             Reminder.sendViaWhatsApp(this@FollowUpActivity, party.phone, message)
             ReminderLog.record(this@FollowUpActivity, party.id)
@@ -237,5 +248,7 @@ private class FollowUpState(
     val promises: Map<Long, Long>,
     val today: Int,
     val remindedToday: Set<Long>,
-    val dueWithPhone: List<PartyWithBalance>
+    val dueWithPhone: List<PartyWithBalance>,
+    val lastReminded: Map<Long, Long>,
+    val lastGot: Map<Long, Long>
 )
