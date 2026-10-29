@@ -58,8 +58,6 @@ class SupplierRatesActivity : BaseActivity() {
         }
     }
 
-    private fun money(v: Double) = Format.ltr(Format.money(v))
-
     private fun render() {
         val list = findViewById<LinearLayout>(R.id.srList)
         list.removeAllViews()
@@ -78,17 +76,17 @@ class SupplierRatesActivity : BaseActivity() {
             val unit = UnitWords.label(r.unit).takeIf { it.isNotEmpty() }
             card.findViewById<TextView>(R.id.tvSrName).text = listOfNotNull(r.name, unit).joinToString(" \u00b7 ")
             card.findViewById<TextView>(R.id.tvSrLast).text =
-                getString(R.string.sr_last, money(r.last.rate), r.last.supplierName, DateWords.format("d MMM yyyy", r.last.date))
+                getString(R.string.sr_last, Format.moneyLtr(r.last.rate), r.last.supplierName, DateWords.format("d MMM yyyy", r.last.date))
             val change = card.findViewById<TextView>(R.id.tvSrChange)
             val pct = String.format(Locale.US, "%.1f%%", kotlin.math.abs(r.percent))
             when {
                 r.previous == null -> change.visibility = View.GONE
                 r.change > 0.004 -> {
-                    change.text = getString(R.string.sr_up, money(r.change), pct)
+                    change.text = getString(R.string.sr_up, Format.moneyLtr(r.change), pct)
                     change.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me))
                 }
                 r.change < -0.004 -> {
-                    change.text = getString(R.string.sr_down, money(-r.change), pct)
+                    change.text = getString(R.string.sr_down, Format.moneyLtr(-r.change), pct)
                     change.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe))
                 }
                 else -> change.visibility = View.GONE
@@ -96,7 +94,7 @@ class SupplierRatesActivity : BaseActivity() {
             val cheaper = card.findViewById<TextView>(R.id.tvSrCheaper)
             val c = r.cheaperElsewhere
             if (c == null) cheaper.visibility = View.GONE
-            else cheaper.text = getString(R.string.sr_cheaper, c.supplierName, money(c.rate), DateWords.format("d MMM yyyy", c.date))
+            else cheaper.text = getString(R.string.sr_cheaper, c.supplierName, Format.moneyLtr(c.rate), DateWords.format("d MMM yyyy", c.date))
             list.addView(card)
         }
     }

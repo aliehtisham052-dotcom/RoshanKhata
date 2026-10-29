@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.PartyWhen
 import com.innovation313.roshankhata.data.PartyWithBalance
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

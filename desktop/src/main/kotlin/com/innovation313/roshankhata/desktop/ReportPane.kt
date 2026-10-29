@@ -33,6 +33,10 @@ import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerCsv
+import com.innovation313.roshankhata.data.PartyWhen
+import com.innovation313.roshankhata.data.ReportWindow
+import com.innovation313.roshankhata.data.dayAfter
+import com.innovation313.roshankhata.data.dayBefore
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
@@ -49,32 +53,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-/**
- * A report's windows, the phone's chips (Marhala 4, part 7): today and yesterday whole, this week and this
- * month up to now (the shop's own week start), all, or days the owner picks. Each page offers its own list:
- * the Khata Report all of them but yesterday, the register no "all" (the phone's: a register is a fact about
- * a period).
- */
-internal enum class ReportWindow(val word: String) {
-    TODAY(W.range_today), YESTERDAY(W.range_yesterday), WEEK(W.range_this_week), MONTH(W.range_this_month),
-    ALL(W.range_all), CUSTOM(W.range_custom);
-
-    /** Its first and last moments now (an open end is null); null for all and for the owner's days. */
-    fun window(now: Long = System.currentTimeMillis()): Pair<Long, Long?>? = when (this) {
-        TODAY -> PartyWhen.TODAY.window(now)?.let { it.first to it.last }
-        YESTERDAY -> PartyWhen.TODAY.window(now)?.let { dayBefore(it.first) to it.first - 1 }
-        WEEK -> PartyWhen.THIS_WEEK.window(now)?.let { it.first to null }
-        MONTH -> PartyWhen.THIS_MONTH.window(now)?.let { it.first to null }
-        ALL, CUSTOM -> null
-    }
-}
-
-/** The next day's first moment after the day [start] begins (by the calendar: a clock change makes a day 23 or 25 hours). */
-internal fun dayAfter(start: Long): Long = java.util.Calendar.getInstance().apply { timeInMillis = start; add(java.util.Calendar.DAY_OF_YEAR, 1) }.timeInMillis
-
-/** The day before's first moment, by the calendar. */
-internal fun dayBefore(start: Long): Long = java.util.Calendar.getInstance().apply { timeInMillis = start; add(java.util.Calendar.DAY_OF_YEAR, -1) }.timeInMillis
 
 /**
  * The owner's own days, asked as the phone asks them: the first day, then the last (its whole day). Leaving the

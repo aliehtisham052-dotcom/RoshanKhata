@@ -86,8 +86,6 @@ class StaffActivity : BaseActivity() {
         }
     }
 
-    private fun money(v: Double) = Format.ltr(Format.money(v))
-
     private fun render(staff: List<Staff>, marks: List<StaffAttendance>, pays: List<StaffPayment>, from: Long, to: Long, days: Int) {
         findViewById<View>(R.id.tvStaffEmpty).visibility = if (staff.isEmpty()) View.VISIBLE else View.GONE
         val list = findViewById<LinearLayout>(R.id.staffList)
@@ -97,15 +95,15 @@ class StaffActivity : BaseActivity() {
             val m = Payroll.month(person.monthlySalary, days, mine.map { it.status }, pays.filter { it.staffId == person.id })
             val card = layoutInflater.inflate(R.layout.item_staff, list, false)
             card.findViewById<TextView>(R.id.tvStaffName).text = person.name
-            card.findViewById<TextView>(R.id.tvStaffSalary).text = getString(R.string.staff_salary_line, money(person.monthlySalary))
+            card.findViewById<TextView>(R.id.tvStaffSalary).text = getString(R.string.staff_salary_line, Format.moneyLtr(person.monthlySalary))
             card.findViewById<TextView>(R.id.tvStaffCounts).text =
                 getString(R.string.staff_counts, m.absent.toString(), m.half.toString(), m.leave.toString())
             card.findViewById<TextView>(R.id.tvStaffMoney).text =
-                getString(R.string.staff_money, money(m.earned), money(m.advances), money(m.paid))
+                getString(R.string.staff_money, Format.moneyLtr(m.earned), Format.moneyLtr(m.advances), Format.moneyLtr(m.paid))
             val due = card.findViewById<TextView>(R.id.tvStaffDue)
             when {
-                m.due > 0.004 -> { due.text = getString(R.string.staff_due, money(m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me)) }
-                m.due < -0.004 -> { due.text = getString(R.string.staff_overpaid, money(-m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe)) }
+                m.due > 0.004 -> { due.text = getString(R.string.staff_due, Format.moneyLtr(m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me)) }
+                m.due < -0.004 -> { due.text = getString(R.string.staff_overpaid, Format.moneyLtr(-m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe)) }
                 else -> { due.text = getString(R.string.staff_settled); due.setTextColor(ContextCompat.getColor(this, R.color.ink)) }
             }
             card.findViewById<View>(R.id.btnStaffAttendance).setOnClickListener { markDay(person, mine, from, to) }
@@ -290,17 +288,17 @@ class StaffActivity : BaseActivity() {
     /** The month's slip as text, to WhatsApp or anywhere: every figure on its own line. */
     private fun sendSlip(person: Staff, m: Payroll.Month, from: Long) {
         val due = when {
-            m.due > 0.004 -> getString(R.string.staff_due, money(m.due))
-            m.due < -0.004 -> getString(R.string.staff_overpaid, money(-m.due))
+            m.due > 0.004 -> getString(R.string.staff_due, Format.moneyLtr(m.due))
+            m.due < -0.004 -> getString(R.string.staff_overpaid, Format.moneyLtr(-m.due))
             else -> getString(R.string.staff_settled)
         }
         val shop = BusinessProfile.businessName(this)?.trim().orEmpty()
         val text = listOf(
             shop,
             getString(R.string.staff_slip_title, person.name, DateWords.format("MMMM yyyy", from)),
-            getString(R.string.staff_salary_line, money(person.monthlySalary)),
+            getString(R.string.staff_salary_line, Format.moneyLtr(person.monthlySalary)),
             getString(R.string.staff_counts, m.absent.toString(), m.half.toString(), m.leave.toString()),
-            getString(R.string.staff_money, money(m.earned), money(m.advances), money(m.paid)),
+            getString(R.string.staff_money, Format.moneyLtr(m.earned), Format.moneyLtr(m.advances), Format.moneyLtr(m.paid)),
             due
         ).filter { it.isNotBlank() }.joinToString("\n")
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {

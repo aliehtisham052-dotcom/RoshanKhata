@@ -75,6 +75,8 @@ import com.innovation313.roshankhata.data.EntryLines
 import com.innovation313.roshankhata.data.LastRate
 import com.innovation313.roshankhata.data.EntryWithItems
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.WordIds
+import com.innovation313.roshankhata.screens.balanceSideWord
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.PdfExport
 import com.innovation313.roshankhata.data.BillPhoto
@@ -706,21 +708,20 @@ class PartyDetailActivity : BaseActivity() {
                 colour = ContextCompat.getColor(this, R.color.bal_owed_to_me)
                 chip.setBackgroundResource(R.drawable.bg_home_chip_get)
                 chip.setImageResource(R.drawable.ic_arrow_got)
-                tvBalanceHint.setText(R.string.you_will_get)
             }
             Money.isNegative(balance) -> {
                 colour = ContextCompat.getColor(this, R.color.bal_i_owe)
                 chip.setBackgroundResource(R.drawable.bg_home_chip_give)
                 chip.setImageResource(R.drawable.ic_arrow_gave)
-                tvBalanceHint.setText(R.string.you_will_give)
             }
             else -> {
                 colour = ContextCompat.getColor(this, R.color.header_light_ink)
                 chip.setBackgroundResource(R.drawable.bg_today_chip)
                 chip.setImageResource(R.drawable.ic_check_plain)
-                tvBalanceHint.setText(R.string.settled)
             }
         }
+        // The side's words come from the one shared rule (balanceSideWord, 29 Oct 2026), as the list's do.
+        tvBalanceHint.setText(WordIds.string(balanceSideWord(balance)))
         tvPartyBalance.setTextColor(colour)
         chip.imageTintList = android.content.res.ColorStateList.valueOf(colour)
     }

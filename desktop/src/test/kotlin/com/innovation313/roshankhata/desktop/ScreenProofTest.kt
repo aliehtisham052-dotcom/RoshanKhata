@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.innovation313.roshankhata.data.LedgerAlerts
+import com.innovation313.roshankhata.data.PartyWhen
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.screens.RoshanTheme

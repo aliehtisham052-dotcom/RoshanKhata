@@ -118,15 +118,17 @@ class CashbookActivity : BaseActivity() {
      */
     private fun showDayClose() {
         lifecycleScope.launch {
-            val last = dao.lastDayClose()
-            val now = System.currentTimeMillis()
-            val from = last?.closedAt ?: 0L
-            val cbIn = dao.cashbookCashBetween(true, from, now)
-            val cbOut = dao.cashbookCashBetween(false, from, now)
-            val kIn = dao.khataCashBetween(false, from, now)
-            val kOut = dao.khataCashBetween(true, from, now)
-            val cashIn = cbIn + kIn
-            val cashOut = cbOut + kOut
+            // The figures by the one shared rule (DayCloseMath.drawerByTheBooks, 29 Oct 2026): the computer's Home,
+            // Cashbook and Close the day read the same, so no two screens can disagree on the drawer.
+            val figures = DayCloseMath.drawerByTheBooks(dao)
+            val last = figures.last
+            val now = figures.now
+            val cbIn = figures.cbIn
+            val cbOut = figures.cbOut
+            val kIn = figures.kIn
+            val kOut = figures.kOut
+            val cashIn = figures.cashIn
+            val cashOut = figures.cashOut
             if (isFinishing || isDestroyed) return@launch
 
             val view = layoutInflater.inflate(R.layout.dialog_day_close, null)

@@ -140,11 +140,8 @@ object Payroll {
         )
     }
 
-    /** Local midnight of [millis]. */
-    fun dayOf(millis: Long): Long = Calendar.getInstance().apply {
-        timeInMillis = millis
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    /** Local midnight of [millis] ([DayMath.startOfDay]; attendance days are keyed on it). */
+    fun dayOf(millis: Long): Long = DayMath.startOfDay(millis)
 
     /** [from, to) of the month holding [millis], and its number of days. */
     fun monthRange(millis: Long): Triple<Long, Long, Int> {

@@ -25,6 +25,9 @@ import com.innovation313.roshankhata.data.Downloads
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerReport
+import com.innovation313.roshankhata.data.DayMath
+import com.innovation313.roshankhata.data.AndroidWords
+import com.innovation313.roshankhata.data.WhenWords
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.PdfShare
 import com.innovation313.roshankhata.ui.ScreenInsets
@@ -407,25 +410,19 @@ class LedgerReportActivity : BaseActivity() {
         private var items: List<EntryWithParty> = emptyList()
         private var days: LongArray = LongArray(0)
         private var perDay: Map<Long, Int> = emptyMap()
-        private var today = 0L
-        private var yesterday = 0L
+        /** The moment the list was built: Today and Yesterday are judged against it, not against each row's bind. */
+        private var builtAt = 0L
+        private val words by lazy { AndroidWords(this@LedgerReportActivity) }
 
         fun submit(list: List<EntryWithParty>) {
             items = list
             days = LongArray(list.size) { dayOf(list[it].timestamp) }
             perDay = days.toList().groupingBy { it }.eachCount()
-            today = dayOf(System.currentTimeMillis())
-            yesterday = Calendar.getInstance().apply {
-                timeInMillis = today; add(Calendar.DAY_OF_MONTH, -1)
-            }.timeInMillis
+            builtAt = System.currentTimeMillis()
             notifyDataSetChanged()
         }
 
-        private fun dayOf(ms: Long): Long = Calendar.getInstance().apply {
-            timeInMillis = ms
-            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
+        private fun dayOf(ms: Long): Long = DayMath.startOfDay(ms)
 
         inner class VH(v: View) : RecyclerView.ViewHolder(v) {
             val dayHead: View = v.findViewById(R.id.lrDayHead)
@@ -463,11 +460,8 @@ class LedgerReportActivity : BaseActivity() {
             holder.dayHead.visibility = if (first) View.VISIBLE else View.GONE
             if (first) {
                 val date = dayFmt.format(Date(d))
-                holder.day.text = when (d) {
-                    today -> getString(R.string.range_today) + " \u00B7 " + date
-                    yesterday -> getString(R.string.range_yesterday) + " \u00B7 " + date
-                    else -> date
-                }
+                // Today · 12 Oct 2026 / Yesterday · … / the date alone: the day word is the shared rule (WhenWords).
+                holder.day.text = WhenWords.relativeDay(d, builtAt, words)?.let { it + " \u00B7 " + date } ?: date
                 val n = perDay[d] ?: 0
                 holder.dayCount.text = Digits.quantity(resources, R.plurals.pdf_stmt_entries, n, n)
             }

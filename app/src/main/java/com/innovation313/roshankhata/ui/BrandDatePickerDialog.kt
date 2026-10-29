@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.view.View
 import com.innovation313.roshankhata.R
 import java.util.Calendar
+import com.innovation313.roshankhata.data.DayMath
 
 /**
  * The app's date picker (10 Oct): the platform calendar in the brand green
@@ -54,10 +55,7 @@ class BrandDatePickerDialog(
         }
     }
 
-    private fun startOfDay(t: Long) = Calendar.getInstance().apply {
-        timeInMillis = t
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    private fun startOfDay(t: Long) = DayMath.startOfDay(t)
 
     private fun endOfDay(t: Long) = Calendar.getInstance().apply {
         timeInMillis = t

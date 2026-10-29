@@ -50,7 +50,6 @@ object PaymentHabit {
     const val LATE_FACTOR = 1.5
     const val MIN_DAYS_OVER = 7
 
-    private const val DAY = 24L * 60 * 60 * 1000
     private const val EPS = 0.005
 
     /**
@@ -82,7 +81,7 @@ object PaymentHabit {
         for (p in lines.sortedBy { it.timestamp }) {
             val before = balance
             balance += if (p.isGiven) p.amount else -p.amount
-            if (!p.isGiven) paymentDays += dayOf(p.timestamp, tz)
+            if (!p.isGiven) paymentDays += DayMath.dayNumber(p.timestamp, tz)
             when {
                 balance <= EPS -> debtStart = null
                 before <= EPS -> debtStart = p.timestamp
@@ -95,16 +94,12 @@ object PaymentHabit {
         val days = paymentDays.toList()
         val typical = median(days.zipWithNext { a, b -> (b - a).toInt() }).coerceAtLeast(1)
 
-        val from = maxOf(days.last(), dayOf(start, tz))
-        val waiting = (dayOf(now, tz) - from).toInt().coerceAtLeast(0)
+        val from = maxOf(days.last(), DayMath.dayNumber(start, tz))
+        val waiting = (DayMath.dayNumber(now, tz) - from).toInt().coerceAtLeast(0)
         val late = waiting > typical * LATE_FACTOR && waiting - typical >= MIN_DAYS_OVER
 
         return Habit(typical, waiting, late)
     }
-
-    /** Local calendar day number, so "today" and "yesterday" are the owner's own. */
-    private fun dayOf(millis: Long, tz: TimeZone): Long =
-        (millis + tz.getOffset(millis)).floorDiv(DAY)
 
     private fun median(values: List<Int>): Int {
         val s = values.sorted()

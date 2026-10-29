@@ -19,6 +19,7 @@ import com.innovation313.roshankhata.data.ReminderLadder
 import com.innovation313.roshankhata.data.ReminderText
 import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.data.WhatsAppNumber
+import com.innovation313.roshankhata.data.DayMath
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
@@ -55,7 +56,7 @@ class ReminderStore(private val file: File) {
      */
     @Synchronized
     fun openedToday(now: Long = System.currentTimeMillis(), tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Set<Long> {
-        fun dayOf(t: Long) = Math.floorDiv(t + tz.getOffset(t), 24L * 60 * 60 * 1000)
+        fun dayOf(t: Long) = DayMath.dayNumber(t, tz)
         val today = dayOf(now)
         return props.stringPropertyNames().mapNotNull { key ->
             val id = key.toLongOrNull() ?: return@mapNotNull null

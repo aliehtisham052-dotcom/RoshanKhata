@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.CashEntry
+import com.innovation313.roshankhata.data.DayCloseMath
+import com.innovation313.roshankhata.data.DrawerFigures
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.PaymentRef
@@ -96,7 +98,7 @@ fun CashbookPane(dao: KhataDao) {
     // neither). Read again when the cashbook or the last count changes.
     var drawer by remember { mutableStateOf<Double?>(null) }
     LaunchedEffect(income, expense, last, lineCount) {
-        drawer = withContext(Dispatchers.IO) { runCatching { drawerByTheBooks(dao).first }.getOrNull() }
+        drawer = withContext(Dispatchers.IO) { runCatching { DayCloseMath.drawerByTheBooks(dao).expected }.getOrNull() }
     }
     FluentPage(
         word(W.cashbook),
@@ -285,7 +287,7 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
 fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
-    var figures by remember { mutableStateOf<DayFigures?>(null) }
+    var figures by remember { mutableStateOf<DrawerFigures?>(null) }
     var opening by remember { mutableStateOf("") }
     var counted by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
@@ -293,20 +295,10 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
     val needReason = word(W.z_variance_reason)
     var problem by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) {
-        val (fig, lastCounted) = withContext(Dispatchers.IO) {
-            val last = dao.lastDayClose()
-            val now = System.currentTimeMillis()
-            val from = last?.closedAt ?: 0L
-            DayFigures(
-                now = now,
-                cbIn = dao.cashbookCashBetween(true, from, now),
-                cbOut = dao.cashbookCashBetween(false, from, now),
-                kIn = dao.khataCashBetween(false, from, now),
-                kOut = dao.khataCashBetween(true, from, now)
-            ) to last?.counted
-        }
+        // The phone's figures, by the one shared rule (DayCloseMath.drawerByTheBooks).
+        val fig = withContext(Dispatchers.IO) { DayCloseMath.drawerByTheBooks(dao) }
         // The last count is this stretch's opening, as on the phone.
-        lastCounted?.let { opening = Calc.trim(it) }
+        fig.last?.let { opening = Calc.trim(it.counted) }
         figures = fig
     }
     // The app's own dialog (Marhala 4): one title and ✕, the figures, and Save waited for — the save ran in the
@@ -322,7 +314,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
             }
         } else {
             val open = Calc.evalPad(opening) ?: 0.0
-            val expected = com.innovation313.roshankhata.data.DayCloseMath.expected(open, f.cbIn + f.kIn, f.cbOut + f.kOut)
+            val expected = f.expectedFrom(open)
             val count = Calc.evalPad(counted)
             DialogFrame(
                 word(W.dayclose_title),
@@ -376,8 +368,6 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
         }
     }
 }
-
-private class DayFigures(val now: Long, val cbIn: Double, val cbOut: Double, val kIn: Double, val kOut: Double)
 
 /**
  * The day's figures (POS Phase 4, the Z report): a day picked with ‹ ›,

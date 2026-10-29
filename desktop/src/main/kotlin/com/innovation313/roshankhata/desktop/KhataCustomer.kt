@@ -48,6 +48,7 @@ import com.innovation313.roshankhata.data.EntryWithItems
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PartyWhen
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.QrTag
