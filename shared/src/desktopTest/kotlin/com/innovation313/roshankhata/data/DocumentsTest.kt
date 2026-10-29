@@ -92,7 +92,11 @@ class DocumentsTest {
         assertEquals(DocKind.SALES_ORDER, order.kind)
         assertEquals("SO-000001", order.invoiceNumber)
         assertEquals(q, order.sourceDocId)
-        assertEquals(DocStatus.OPEN, order.status)
+        // Every stepped-on document is converted; only the invoice at the end of the chain is still open.
+        assertEquals(DocStatus.CONVERTED, order.status)
+        assertEquals(DocStatus.CONVERTED, dao.getInvoice(q)!!.status)
+        assertEquals(DocStatus.CONVERTED, dao.getInvoice(dc)!!.status)
+        assertEquals(DocStatus.OPEN, dao.getInvoice(inv)!!.status)
         assertEquals("the quotation's pricing rides along", 5.0, order.discountPercent!!, 0.0)
         assertEquals("DC-000001", dao.getInvoice(dc)!!.invoiceNumber)
         assertEquals(so, dao.getInvoice(dc)!!.sourceDocId)
