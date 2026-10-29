@@ -10,6 +10,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.PartyWhen
 
 /**
  * "Show me a particular stretch of days" — the same control on the customer
@@ -120,45 +121,19 @@ object DateRangeFilter {
         }.show()
     }
 
-    fun today(): Range {
-        val c = Calendar.getInstance()
-        return Range(
-            dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
-            dayEnd(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
-            R.string.range_today
-        )
-    }
+    /*
+     * The four named windows are the shared arithmetic (PartyWhen.window, 29 Oct 2026: the computer's Khata
+     * filter and report chips compute the same days). The phone's Range is inclusive and CLOSED — this week and
+     * this month run from their first day to now — where the computer's ReportWindow leaves them open (to = null).
+     */
+    fun today(): Range = PartyWhen.TODAY.window()!!.let { Range(it.first, it.last, R.string.range_today) }
 
-    fun yesterday(): Range {
-        val c = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }
-        return Range(
-            dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
-            dayEnd(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
-            R.string.range_yesterday
-        )
-    }
+    fun yesterday(): Range = PartyWhen.YESTERDAY.window()!!.let { Range(it.first, it.last, R.string.range_yesterday) }
 
     /** From the first day of this week to now; the week starts where the shop's country starts it (21 Oct 2026). */
-    fun thisWeek(): Range {
-        val c = Calendar.getInstance().apply {
-            firstDayOfWeek = com.innovation313.roshankhata.data.ShopCountry.current.weekStart
-            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-        }
-        return Range(
-            dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)),
-            System.currentTimeMillis(),
-            R.string.range_this_week
-        )
-    }
+    fun thisWeek(): Range = PartyWhen.THIS_WEEK.window()!!.let { Range(it.first, it.last, R.string.range_this_week) }
 
-    fun thisMonth(): Range {
-        val c = Calendar.getInstance()
-        return Range(
-            dayStart(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1),
-            System.currentTimeMillis(),
-            R.string.range_this_month
-        )
-    }
+    fun thisMonth(): Range = PartyWhen.THIS_MONTH.window()!!.let { Range(it.first, it.last, R.string.range_this_month) }
 
     private fun dayStart(year: Int, month: Int, day: Int): Long =
         Calendar.getInstance().apply {

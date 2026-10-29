@@ -22,6 +22,7 @@ import com.innovation313.roshankhata.data.MonthSale
 import com.innovation313.roshankhata.data.Profit
 import com.innovation313.roshankhata.data.VoiceQuestion
 import com.innovation313.roshankhata.data.SaleInsights
+import com.innovation313.roshankhata.data.DayMath
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -265,11 +266,9 @@ class InsightsActivity : BaseActivity() {
 
     /** "To get" and "to give" are separate sums over separate people, never netted. */
     private suspend fun compute(kind: com.innovation313.roshankhata.data.VoiceQuestion.Kind): Triple<String, String, Class<*>?> {
-        fun money(v: Double) = (if (v < 0) "\u2212" else "") + Format.ltr(Format.money(v))
-        val c = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0)
-            set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
-        }
+        // The minus stays outside the LTR seal, as this screen always wrote it; the figure is the shared [Format.moneyLtr].
+        fun money(v: Double) = (if (v < 0) "\u2212" else "") + Format.moneyLtr(v)
+        val c = java.util.Calendar.getInstance().apply { timeInMillis = DayMath.startOfDay(System.currentTimeMillis()) }
         val dayStart = c.timeInMillis
         val dayEnd = (c.clone() as java.util.Calendar).apply { add(java.util.Calendar.DAY_OF_MONTH, 1) }.timeInMillis
         c.set(java.util.Calendar.DAY_OF_MONTH, 1)

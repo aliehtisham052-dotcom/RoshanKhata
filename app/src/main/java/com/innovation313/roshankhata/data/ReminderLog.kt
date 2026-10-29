@@ -16,10 +16,7 @@ import java.util.TimeZone
 object ReminderLog {
 
     private const val PREFS = "reminder_log"
-    private const val DAY = 24L * 60 * 60 * 1000
-
-    fun dayOf(millis: Long, tz: TimeZone = TimeZone.getDefault()): Long =
-        (millis + tz.getOffset(millis)).floorDiv(DAY)
+    fun dayOf(millis: Long, tz: TimeZone = TimeZone.getDefault()): Long = DayMath.dayNumber(millis, tz)
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS + Businesses.suffix(context), Context.MODE_PRIVATE)

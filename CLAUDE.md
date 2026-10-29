@@ -1202,6 +1202,12 @@ shared/src/
   jvmSharedMain/   Kotlin that may use the JDK; Android and the computer share it
     data/          KhataDatabase (Room, @ConstructedBy), KhataDao, entities,
                    BackupCodec (the backup format), ShopSettings, Format...
+                   One rule on both since 29 Oct 2026: DayMath (dayNumber/startOfDay —
+                   13 copies before), DateWindow (PartyWhen/ReportWindow, the phone's
+                   DateRangeFilter reads them), WhenWords (Today/Yesterday/day),
+                   DayCloseMath.drawerByTheBooks + DrawerFigures (the phone's Close
+                   the day and the computer's Home/Cashbook), Format.moneyLtr,
+                   PaymentRef/PaymentRequest, PaymentMethod.label/said
     screens/       Shared Compose screens: About, RoshanTheme (PartyLedgerScreen.kt
                    keeps only the balance's side word and colour since Marhala 4;
                    EntryForm.kt, a shared entry form nothing showed, was removed

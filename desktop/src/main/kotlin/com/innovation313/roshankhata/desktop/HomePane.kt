@@ -81,22 +81,6 @@ class HomeFigures(
     val promisedToday: Set<Long> = emptySet()
 )
 
-/**
- * What should be in the drawer now (25 Oct 2026, the audit): Home's "Cash in
- * hand" was the cashbook's all-time net in every method, bank and online
- * included and khata cash left out, so it never matched the drawer.
- */
-suspend fun drawerByTheBooks(dao: KhataDao, now: Long = System.currentTimeMillis()): Pair<Double, DayClose?> {
-    val last = dao.lastDayClose()
-    val from = last?.closedAt ?: 0L
-    val expected = DayCloseMath.expected(
-        last?.counted ?: 0.0,
-        dao.cashbookCashBetween(true, from, now) + dao.khataCashBetween(false, from, now),
-        dao.cashbookCashBetween(false, from, now) + dao.khataCashBetween(true, from, now)
-    )
-    return expected to last
-}
-
 /** How many of the book's last entries Home lists. */
 const val HOME_RECENT = 8
 
@@ -106,13 +90,15 @@ suspend fun homeFigures(dao: KhataDao): HomeFigures = withContext(Dispatchers.IO
         set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
     }.timeInMillis
     val end = start + 24L * 60 * 60 * 1000 - 1
-    val drawer = runCatching { drawerByTheBooks(dao) }.getOrNull()
+    // What should be in the drawer now (25 Oct 2026, the audit): Home's "Cash in hand" was the cashbook's
+    // all-time net in every method, so it never matched the drawer. The rule is shared with the phone.
+    val drawer = runCatching { DayCloseMath.drawerByTheBooks(dao) }.getOrNull()
     HomeFigures(
         cashIn = runCatching { dao.cashIncomeOnce() }.getOrDefault(0.0),
         cashOut = runCatching { dao.cashExpenseOnce() }.getOrDefault(0.0),
         today = runCatching { dao.entriesInRange(start, end) }.getOrDefault(emptyList()).sortedByDescending { it.timestamp },
-        drawer = drawer?.first,
-        lastCount = drawer?.second,
+        drawer = drawer?.expected,
+        lastCount = drawer?.last,
         recent = runCatching { dao.recentEntries(HOME_RECENT) }.getOrDefault(emptyList()),
         promisedToday = runCatching { dao.observePromises().first() }.getOrDefault(emptyList())
             .filter { it.due in start..end }.map { it.partyId }.toSet()

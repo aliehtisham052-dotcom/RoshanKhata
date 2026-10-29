@@ -22,10 +22,9 @@ data class PartyPromise(val partyId: Long, val due: Long)
  */
 object FollowUpRank {
 
-    private const val DAY = 24L * 60 * 60 * 1000
 
     fun isDue(due: Long?, now: Long, tz: TimeZone): Boolean =
-        due != null && dayOf(due, tz) <= dayOf(now, tz)
+        due != null && DayMath.dayNumber(due, tz) <= DayMath.dayNumber(now, tz)
 
     fun remindToday(
         partyId: Long,
@@ -74,7 +73,4 @@ object FollowUpRank {
             .thenBy { it.lastActivity }
             .thenByDescending { it.balance }
     )
-
-    private fun dayOf(millis: Long, tz: TimeZone): Long =
-        (millis + tz.getOffset(millis)).floorDiv(DAY)
 }

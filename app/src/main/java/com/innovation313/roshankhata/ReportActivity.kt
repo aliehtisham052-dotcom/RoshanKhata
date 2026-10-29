@@ -18,6 +18,7 @@ import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.PartyPhoto
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PdfExport
+import com.innovation313.roshankhata.data.DayMath
 import com.innovation313.roshankhata.ui.EntryAdapter
 import com.innovation313.roshankhata.ui.EntryRow
 import com.innovation313.roshankhata.ui.Format
@@ -294,13 +295,5 @@ class ReportActivity : BaseActivity() {
         }
     }
 
-    private fun startOfDay(millis: Long): Long {
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = millis
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return cal.timeInMillis
-    }
+    private fun startOfDay(millis: Long): Long = DayMath.startOfDay(millis)
 }

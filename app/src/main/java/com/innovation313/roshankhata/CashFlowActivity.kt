@@ -79,8 +79,6 @@ class CashFlowActivity : BaseActivity() {
         set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
     }.timeInMillis
 
-    private fun money(v: Double) = Format.ltr(Format.money(v))
-
     private fun kind(k: CashFlow.Kind) = getString(when (k) {
         CashFlow.Kind.PLAN -> R.string.cf_kind_plan
         CashFlow.Kind.CHEQUE_IN -> R.string.cf_kind_cheque_in
@@ -110,24 +108,24 @@ class CashFlowActivity : BaseActivity() {
 
     private fun render() {
         val o = CashFlow.outlook(all, undated, today(), days)
-        findViewById<TextView>(R.id.tvCfIn).text = money(o.coming)
-        findViewById<TextView>(R.id.tvCfOut).text = money(o.going)
+        findViewById<TextView>(R.id.tvCfIn).text = Format.moneyLtr(o.coming)
+        findViewById<TextView>(R.id.tvCfOut).text = Format.moneyLtr(o.going)
         findViewById<TextView>(R.id.tvCfWarning).text = o.gapWeek?.let {
-            getString(R.string.cf_gap, DateWords.format("d MMM", it.from), money(o.gap))
+            getString(R.string.cf_gap, DateWords.format("d MMM", it.from), Format.moneyLtr(o.gap))
         } ?: getString(R.string.cf_no_gap)
 
         val weeks = findViewById<LinearLayout>(R.id.cfWeeks)
         weeks.removeAllViews()
         o.weeks.forEach { w ->
             val label = getString(R.string.cf_week, DateWords.format("d MMM", w.from), DateWords.format("d MMM", w.to - 1))
-            row(weeks, label, getString(R.string.cf_in) + " " + money(w.coming), getString(R.string.cf_out) + " " + money(w.going),
+            row(weeks, label, getString(R.string.cf_in) + " " + Format.moneyLtr(w.coming), getString(R.string.cf_out) + " " + Format.moneyLtr(w.going),
                 if (w == o.gapWeek) R.color.bal_owed_to_me else null)
         }
 
         val list = findViewById<LinearLayout>(R.id.cfItems)
         list.removeAllViews()
         fun item(i: CashFlow.Item) = row(list, i.name, kind(i.kind) + " \u00b7 " + DateWords.format("d MMM yyyy", i.date),
-            (if (i.kind.isIn) "+" else "\u2212") + money(i.amount), if (i.kind.isIn) R.color.bal_i_owe else R.color.bal_owed_to_me)
+            (if (i.kind.isIn) "+" else "\u2212") + Format.moneyLtr(i.amount), if (i.kind.isIn) R.color.bal_i_owe else R.color.bal_owed_to_me)
         if (o.overdue.isNotEmpty()) { heading(list, getString(R.string.cf_overdue)); o.overdue.forEach(::item) }
         if (o.items.isNotEmpty()) { heading(list, getString(R.string.cf_ahead)); o.items.forEach(::item) }
         if (all.isEmpty()) row(list, getString(R.string.cf_empty), null, null, null)

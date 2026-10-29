@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PartyWhen
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.screens.balanceColour

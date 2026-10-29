@@ -26,6 +26,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.Scheme
 import com.innovation313.roshankhata.data.SchemeMath
+import com.innovation313.roshankhata.data.DayMath
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.flow.collectLatest
@@ -323,9 +324,7 @@ class SchemesActivity : BaseActivity() {
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    private fun startOfDay(t: Long): Long = Calendar.getInstance().apply {
-        timeInMillis = t; set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    private fun startOfDay(t: Long): Long = DayMath.startOfDay(t)
 
     private fun endOfDay(t: Long): Long = startOfDay(t) + 24L * 60 * 60 * 1000 - 1
 }

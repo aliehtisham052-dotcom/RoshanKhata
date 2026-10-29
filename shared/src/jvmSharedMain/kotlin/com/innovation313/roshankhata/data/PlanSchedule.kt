@@ -17,8 +17,8 @@ import java.util.Calendar
  */
 object PlanSchedule {
     fun suggestNext(previousDue: Long?, now: Long = System.currentTimeMillis()): Long {
-        val today = startOfDay(now)
-        val c = Calendar.getInstance().apply { timeInMillis = startOfDay(previousDue ?: now) }
+        val today = DayMath.startOfDay(now)
+        val c = Calendar.getInstance().apply { timeInMillis = DayMath.startOfDay(previousDue ?: now) }
         val day = c.get(Calendar.DAY_OF_MONTH)
         var steps = 0
         do {
@@ -29,9 +29,4 @@ object PlanSchedule {
         } while (c.timeInMillis <= today && steps < 1200)
         return c.timeInMillis
     }
-
-    private fun startOfDay(ms: Long): Long = Calendar.getInstance().apply {
-        timeInMillis = ms
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
 }

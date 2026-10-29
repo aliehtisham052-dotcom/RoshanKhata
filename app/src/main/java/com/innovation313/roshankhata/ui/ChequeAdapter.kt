@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.ChequeStatus
 import com.innovation313.roshankhata.data.ChequeWithParty
+import com.innovation313.roshankhata.data.DayMath
 import java.util.concurrent.TimeUnit
 
 class ChequeAdapter(
@@ -118,13 +119,5 @@ class ChequeAdapter(
         return TimeUnit.MILLISECONDS.toDays(startOfDue - startOfToday)
     }
 
-    private fun startOfDay(millis: Long): Long {
-        val cal = java.util.Calendar.getInstance()
-        cal.timeInMillis = millis
-        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
-        cal.set(java.util.Calendar.MINUTE, 0)
-        cal.set(java.util.Calendar.SECOND, 0)
-        cal.set(java.util.Calendar.MILLISECOND, 0)
-        return cal.timeInMillis
-    }
+    private fun startOfDay(millis: Long): Long = DayMath.startOfDay(millis)
 }

@@ -38,7 +38,7 @@ data class DayClose(
 object DayCloseMath {
     /** The local calendar day of a moment, as [DayClose.day] keys it (the phone's ReminderLog.dayOf). */
     fun dayOf(millis: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long =
-        Math.floorDiv(millis + tz.getOffset(millis), 24L * 60 * 60 * 1000)
+        DayMath.dayNumber(millis, tz)
 
     /**
      * The hour a shop's working day ends by (23 Oct 2026, the review): a drawer
@@ -63,4 +63,59 @@ object DayCloseMath {
 
     /** Positive = more in the drawer than the books say; negative = short. */
     fun difference(counted: Double, expected: Double): Double = LineMath.round(counted - expected)
+
+    /**
+     * What should be in the drawer at [now], by the books — the one rule for
+     * Home's cash card, the Cashbook's "Should be in drawer" and Close the day
+     * on both platforms (25 Oct 2026, the audit; shared 29 Oct 2026 — the
+     * computer had it as a function and the phone's day-close dialog wrote the
+     * same four queries and arithmetic inline).
+     *
+     * Since the last count ([KhataDao.lastDayClose], or the beginning of the
+     * book): cashbook money in and out that moved in cash (an unmarked row is
+     * cash, a bank, online, wallet or cheque row is not), plus khata receipts
+     * and payments marked Cash — unmarked khata entries are not guessed. The
+     * stretch is `closedAt < t <= now`, the DAO's own bounds.
+     */
+    suspend fun drawerByTheBooks(dao: KhataDao, now: Long = System.currentTimeMillis()): DrawerFigures {
+        val last = dao.lastDayClose()
+        val from = last?.closedAt ?: 0L
+        return DrawerFigures(
+            now = now,
+            last = last,
+            cbIn = dao.cashbookCashBetween(true, from, now),
+            cbOut = dao.cashbookCashBetween(false, from, now),
+            kIn = dao.khataCashBetween(false, from, now),
+            kOut = dao.khataCashBetween(true, from, now)
+        )
+    }
+}
+
+/**
+ * The drawer's figures since the last count ([DayCloseMath.drawerByTheBooks]):
+ * the four sums the day-close dialog prints in its breakdown, the two totals
+ * Close the day writes, and what should be in the drawer.
+ */
+data class DrawerFigures(
+    /** The moment the figures run to. */
+    val now: Long,
+    /** The last count, or null when the drawer was never counted. */
+    val last: DayClose?,
+    /** Cashbook income in cash since the count. */
+    val cbIn: Double,
+    /** Cashbook expenses in cash since the count. */
+    val cbOut: Double,
+    /** Khata "I got" marked Cash since the count. */
+    val kIn: Double,
+    /** Khata "I gave" marked Cash since the count. */
+    val kOut: Double
+) {
+    val cashIn: Double get() = cbIn + kIn
+    val cashOut: Double get() = cbOut + kOut
+
+    /** What should be in the drawer, opening on the last count (nothing when never counted). */
+    val expected: Double get() = expectedFrom(last?.counted ?: 0.0)
+
+    /** The same figure from an opening the owner typed over the last count. */
+    fun expectedFrom(opening: Double): Double = DayCloseMath.expected(opening, cashIn, cashOut)
 }

@@ -86,6 +86,16 @@ object Format {
     }
 
     /**
+     * [money] sealed left-to-right with [ltr], for a figure dropped into a
+     * translated sentence (29 Oct 2026, the cleanup: four screens each wrote
+     * `Format.ltr(Format.money(v))` as a private one-liner). In Urdu, Sindhi,
+     * Arabic and Farsi "Rs 1,250" inside an RTL line otherwise lands as
+     * "1,250 Rs" or splits around the words beside it. The sign is dropped
+     * as [money] drops it; a caller that wants a minus adds its own.
+     */
+    fun moneyLtr(value: Double, sign: String = Currency.symbol): String = ltr(money(value, sign))
+
+    /**
      * Indonesian groups thousands with a dot and marks the decimal with a
      * comma (21 Oct 2026, the nine-language review): "Rp 1,500" reads there
      * as one and a half. Every other language keeps 1,500.00. The digits

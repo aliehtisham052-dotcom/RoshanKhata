@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.PurchaseRegisterRow
+import com.innovation313.roshankhata.data.ReportWindow
 import com.innovation313.roshankhata.data.SaleRegisterRow
 import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.screens.LocalRoshanColors

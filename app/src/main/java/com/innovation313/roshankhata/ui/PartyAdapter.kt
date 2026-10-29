@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.WordIds
+import com.innovation313.roshankhata.screens.balanceSideWord
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.innovation313.roshankhata.data.PartyPhoto
@@ -126,13 +128,8 @@ class PartyAdapter(
         holder.tvBalance.setTextColor(
             ContextCompat.getColor(ctx, Format.customerBalanceColour(item.balance))
         )
-        holder.tvBalanceLabel.setText(
-            when {
-                Money.isPositive(item.balance) -> R.string.you_will_get
-                Money.isNegative(item.balance) -> R.string.you_will_give
-                else -> R.string.settled
-            }
-        )
+        // Which way the balance runs, in the one shared rule's words (balanceSideWord, 29 Oct 2026).
+        holder.tvBalanceLabel.setText(WordIds.string(balanceSideWord(item.balance)))
 
         // The badge only speaks when a limit was actually set and the party
         // is at or beyond it. Below the line it stays quiet — a warning that

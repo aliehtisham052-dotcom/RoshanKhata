@@ -17,7 +17,9 @@ import java.nio.file.Files
  * Home's cash card (25 Oct 2026, the audit): it showed the cashbook's net in
  * every method, so a walk-in's bank transfer read as cash in hand and khata
  * cash was left out. It now follows Close the day's rule: the last count plus
- * cash in, less cash out, since. Made-up figures only.
+ * cash in, less cash out, since — the rule shared with the phone since 29 Oct 2026
+ * (DayCloseMath.drawerByTheBooks; DrawerByTheBooksTest holds it to the phone's arithmetic).
+ * Made-up figures only.
  */
 class DrawerFigureTest {
 
@@ -34,14 +36,16 @@ class DrawerFigureTest {
             val aslam = dao.insertParty(Party(name = "Aslam"))
             dao.insertEntry(LedgerEntry(partyId = aslam, amount = 300.0, isGiven = false, entryNumber = "RK-1", timestamp = t0, paymentMethod = PaymentMethod.CASH))
 
-            val (never, none) = drawerByTheBooks(dao)
+            val neverCounted = DayCloseMath.drawerByTheBooks(dao)
+            val (never, none) = neverCounted.expected to neverCounted.last
             assertNull("never counted", none)
             assertEquals("1,000 + 300 khata cash − 200; the bank transfer is not in the drawer", 1_100.0, never, 0.001)
 
             val countedAt = t0 + 10 * 60 * 1000
             dao.saveDayCloseRow(DayClose(day = DayCloseMath.dayOf(countedAt), opening = 0.0, cashIn = 1_300.0, cashOut = 200.0, counted = 900.0, closedAt = countedAt))
             dao.insertCashEntry(CashEntry(amount = 100.0, isIncome = true, category = "Sale", timestamp = countedAt + 60_000))
-            val (now, last) = drawerByTheBooks(dao)
+            val counted = DayCloseMath.drawerByTheBooks(dao)
+            val (now, last) = counted.expected to counted.last
             assertEquals(900.0, last!!.counted, 0.0)
             assertEquals("the count, plus what came in after it", 1_000.0, now, 0.001)
         } finally {
