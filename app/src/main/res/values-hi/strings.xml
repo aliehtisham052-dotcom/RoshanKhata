@@ -675,7 +675,6 @@
     <string name="pick_invoice_date">इनवॉइस की तारीख़ चुनें</string>
     <string name="invoice_date_set">तारीख़: %1$s</string>
     <string name="invoice_due_date_hint">देय तारीख़ (ज़रूरी नहीं)</string>
-    <string name="nav_invoice">इनवॉइस</string>
     <string name="invoice_item_name_hint">चीज़ का नाम</string>
     <string name="invoice_item_rate_hint">भाव</string>
     <string name="invoice_row_unit_hint">इकाई</string>
@@ -3588,6 +3587,10 @@
     <string name="doc_converted_from">%1$s से</string>
     <string name="doc_locked">यह दस्तावेज़ परिवर्तित हो चुका है और बदला नहीं जा सकता; नया बदलें।</string>
     <string name="documents_title">दस्तावेज़</string>
+    <string name="doc_add">दस्तावेज़ जोड़ें</string>
+    <string name="doc_pick_kind">कौन सा दस्तावेज़?</string>
+    <string name="doc_accept">स्वीकृत चिह्नित करें</string>
+    <string name="doc_cancel_confirm">%1$s रद्द करें? यह अपने नंबर के साथ रिकॉर्ड में रहेगा और बाद में बदला नहीं जा सकेगा।</string>
     <string name="audit_doc_converted">दस्तावेज़ परिवर्तित</string>
     <string name="audit_doc_accepted">दस्तावेज़ स्वीकृत</string>
     <string name="audit_doc_cancelled">दस्तावेज़ रद्द</string>

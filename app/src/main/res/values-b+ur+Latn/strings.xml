@@ -709,7 +709,6 @@
     <string name="invoice_feature_note_desc">Ek invoice ke liye khaas mukhtasar line.</string>
     <string name="invoice_feature_due_date">Adaigi ki tareekh</string>
     <string name="invoice_feature_due_date_desc">Adaigi kab mutawaqqe hai.</string>
-    <string name="nav_invoice">Invoice</string>
 
     <string name="expiring_stock">Expire Hota Maal</string>
     <string name="expiring_subtitle">Bechein, riayat dein, ya wapas karein — jab tak waqt hai</string>
@@ -3540,6 +3539,10 @@
     <string name="doc_converted_from">%1$s se</string>
     <string name="doc_locked">Yeh document convert ho chuka hai aur badla nahi ja sakta; naya wala badlein.</string>
     <string name="documents_title">Documents</string>
+    <string name="doc_add">Document shamil karein</string>
+    <string name="doc_pick_kind">Kaun si document?</string>
+    <string name="doc_accept">Manzoor Shuda Nishan Zad Karein</string>
+    <string name="doc_cancel_confirm">%1$s mansookh karein? Yeh apne number ke saath record mein rahegi aur baad mein badli nahi ja sakegi.</string>
     <string name="audit_doc_converted">Document convert hua</string>
     <string name="audit_doc_accepted">Document manzoor hua</string>
     <string name="audit_doc_cancelled">Document mansookh hua</string>

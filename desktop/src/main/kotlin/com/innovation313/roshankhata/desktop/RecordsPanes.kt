@@ -369,6 +369,16 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     }
 }
 
+/**
+ * The Documents page (29 Oct 2026, schema 40; the Invoices page before): every
+ * customer-facing document — quotation, proforma, sales order, delivery challan,
+ * invoice — in one list with kind pills, each row its number, its status tag and
+ * its total; the open document beside it in its own design with the actions its
+ * status allows (DocActions): Accept, Convert to the next kind, Mark as
+ * Cancelled, Edit, Delete, and Print and WhatsApp always. A converted or
+ * cancelled document is read, printed and sent, never changed (W.doc_locked).
+ * Add asks the kind first (Invoice by default) and opens the one form with it.
+ */
 @Composable
 fun InvoicesPane(
     dao: KhataDao,
@@ -382,31 +392,49 @@ fun InvoicesPane(
     /** The optional invoice fields the shop uses, and the switches to change them (Invoice settings). */
     fields: InvoiceFields = InvoiceFields(),
     onFields: (InvoiceFields) -> Unit = {},
-    /** An invoice to open first (one just made from a counter sale). */
+    /** A document to open first (one just made from a counter sale, or the one a conversion made). */
     openId: Long? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
-    // The newest page of invoices, more as the owner scrolls (23 Oct 2026, the review: every invoice was
+    // The kind pill: null is every kind. A document opened from elsewhere (a counter sale, a conversion, a
+    // "From …" link) may be of another kind than the pill shows, so those openings put the pill back on All.
+    var kind by remember { mutableStateOf<String?>(null) }
+    // The newest page of documents, more as the owner scrolls (23 Oct 2026, the review: every invoice was
     // read, three subqueries each, after any change); the count and this month's figure have their own reads.
     var invoiceLimit by remember { mutableStateOf(com.innovation313.roshankhata.data.ListWindow.PAGE) }
     var invoices by remember { mutableStateOf(emptyList<com.innovation313.roshankhata.data.InvoiceSummary>()) }
-    LaunchedEffect(invoiceLimit) { dao.observeInvoicePage(invoiceLimit).collect { invoices = it } }
-    val invoiceCount by remember { dao.observeInvoiceCount() }.collectAsState(0)
+    LaunchedEffect(invoiceLimit, kind) { dao.observeDocPage(kind, invoiceLimit).collect { invoices = it } }
+    val invoiceCount by remember { dao.observeDocCount(null) }.collectAsState(0)
     var settingFields by remember { mutableStateOf(false) }
     if (settingFields) {
         AppDialog(onCloseRequest = { settingFields = false },onPreviewKeyEvent = escCloses { settingFields = false }, title = word(W.invoice_settings_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
             InvoiceFieldsSettings(fields, onFields)
         }
     }
-    var adding by remember { mutableStateOf(false) }
-    // A saved invoice opened to correct it: the row and its live lines.
+    // Add: the kind is asked first (Invoice by default), then the form opens with it.
+    var pickingKind by remember { mutableStateOf(false) }
+    var adding by remember { mutableStateOf<String?>(null) }
+    if (pickingKind) {
+        PickDialog(
+            word(W.doc_pick_kind),
+            com.innovation313.roshankhata.data.DocKind.saved.map { docKindWord(it) },
+            chosen = com.innovation313.roshankhata.data.DocKind.saved.indexOf(com.innovation313.roshankhata.data.DocKind.INVOICE),
+            onPick = { i -> pickingKind = false; adding = com.innovation313.roshankhata.data.DocKind.saved[i] },
+            onDismiss = { pickingKind = false }
+        )
+    }
+    // A saved document opened to correct it: the row and its live lines.
     var editingInvoice by remember { mutableStateOf<Pair<com.innovation313.roshankhata.data.Invoice, List<com.innovation313.roshankhata.data.InvoiceItem>>?>(null) }
     var deletingInvoice by remember { mutableStateOf<com.innovation313.roshankhata.data.InvoiceSummary?>(null) }
+    var cancelling by remember { mutableStateOf<com.innovation313.roshankhata.data.InvoiceSummary?>(null) }
+    // What a refused or failed write said, in the owner's words (doc_locked for a document no longer live).
+    var refused by remember { mutableStateOf<String?>(null) }
+    var chosen by remember(openId) { mutableStateOf(openId) }
     deletingInvoice?.let { inv ->
         // The app's question, titled (Marhala 4, the audit: it was Material's, with no title).
         AskDialog(
-            title = word(W.delete) + "  \u00b7  " + inv.invoiceNumber,
+            title = word(W.delete) + "  ·  " + inv.invoiceNumber,
             subtitle = Format.name(inv.customerName),
             text = word(W.delete_invoice_confirm),
             confirm = word(W.delete),
@@ -418,14 +446,33 @@ fun InvoicesPane(
             onDismiss = { deletingInvoice = null }
         )
     }
+    cancelling?.let { inv ->
+        // Cancel keeps the document on record under its number (delete nothing, reverse it), red: it ends it.
+        AskDialog(
+            title = word(W.mark_cancelled) + "  ·  " + inv.invoiceNumber,
+            subtitle = Format.name(inv.customerName),
+            text = word(W.doc_cancel_confirm, Format.ltr(inv.invoiceNumber)),
+            confirm = word(W.mark_cancelled),
+            danger = true,
+            onConfirm = {
+                cancelling = null
+                scope.launch {
+                    withContext(Dispatchers.IO) { runCatching { dao.cancelDocument(inv.id) } }
+                        .onFailure { refused = docFailText(words, it) }
+                }
+            },
+            onDismiss = { cancelling = null }
+        )
+    }
+    refused?.let { TellDialog(word(W.documents_title), it, { refused = null }) }
     var told by remember { mutableStateOf<String?>(null) }
     told?.let { TellDialog(word(W.invoice_send_whatsapp), it, { told = null }, height = 320) }
-    // The invoice as the customer will hold it: the phone's design it was made with — the plain layout only
+    // The document as the customer will hold it: the phone's design it was made with — the plain layout only
     // if a design could not be drawn.
     fun sheetOf(inv: com.innovation313.roshankhata.data.Invoice, lines: List<com.innovation313.roshankhata.data.InvoiceItem>): java.awt.print.Printable =
         com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.let { com.innovation313.roshankhata.desktop.invoice.DocumentPrint(it) }
             ?: InvoicePrint(words, rtl, shopName ?: words.text(W.app_name), shopLine, inv, lines)
-    // Print an invoice by id: the saved row and its lines, as the customer will hold them.
+    // Print a document by id: the saved row and its lines, as the customer will hold them.
     fun print(id: Long) {
         scope.launch {
             val pair = withContext(Dispatchers.IO) { dao.getInvoice(id)?.let { it to dao.invoiceItems(id) } } ?: return@launch
@@ -462,22 +509,49 @@ fun InvoicesPane(
             }.onFailure { told = words.text(W.pc_pdf_failed, it.message ?: it.toString()) }
         }
     }
-    if (adding) {
-        AppDialog(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_invoice), state = rememberDialogState(width = fitW(1100.dp), height = fitH(900.dp))) {
+    // The step on: the DAO copies the row and its lines into the next kind and marks this one converted
+    // (one transaction, an audit row); the new document opens, whatever pill was on.
+    fun convert(id: Long, to: String) {
+        scope.launch {
+            withContext(Dispatchers.IO) { runCatching { dao.convertDocument(id, to) } }
+                .onSuccess { made -> kind = null; chosen = made }
+                .onFailure { refused = docFailText(words, it) }
+        }
+    }
+    fun accept(id: Long) {
+        scope.launch {
+            withContext(Dispatchers.IO) { runCatching { dao.acceptDocument(id) } }
+                .onFailure { refused = docFailText(words, it) }
+        }
+    }
+    /** Edit: a live document opens in the form; one converted or cancelled is told so (the DAO refuses it too). */
+    fun edit(id: Long) {
+        scope.launch {
+            val pair = withContext(Dispatchers.IO) { dao.getInvoice(id)?.let { it to dao.invoiceItems(id) } } ?: return@launch
+            if (!com.innovation313.roshankhata.data.DocActions.canEdit(pair.first.status)) refused = words.text(W.doc_locked)
+            else editingInvoice = pair
+        }
+    }
+    adding?.let { newKind ->
+        val title = if (newKind == com.innovation313.roshankhata.data.DocKind.INVOICE) word(W.add_invoice) else docKindWord(newKind)
+        AppDialog(onCloseRequest = { adding = null },onPreviewKeyEvent = escCloses { adding = null }, title = title, state = rememberDialogState(width = fitW(1100.dp), height = fitH(900.dp))) {
             Box(Modifier.fillMaxSize()) {
                 InvoiceForm(
                     parties = parties,
                     preview = { inv, lines -> com.innovation313.roshankhata.desktop.invoice.InvoiceDesigns.pages(designs(), inv, lines)?.picture(0, SHARP) },
                     fields = fields,
                     products = rememberProductShelf(dao),
+                    kind = newKind,
+                    nextNumber = { dao.nextDocNumber(newKind) },
                     onSave = { inv, lines ->
-                        adding = false
+                        adding = null
                         scope.launch {
-                            val id = withContext(Dispatchers.IO) { dao.saveInvoiceWithItems(inv, lines) }
-                            print(id)
+                            val saved = withContext(Dispatchers.IO) { runCatching { dao.saveInvoiceWithItems(inv, lines) } }
+                            saved.onSuccess { id -> kind = null; chosen = id; print(id) }
+                                .onFailure { refused = docFailText(words, it) }
                         }
                     },
-                    onCancel = { adding = false }
+                    onCancel = { adding = null }
                 )
             }
         }
@@ -495,9 +569,11 @@ fun InvoicesPane(
                     onSave = { updated, newLines ->
                         editingInvoice = null
                         scope.launch {
-                            // The phone's edit: the invoice and its whole line list, in one transaction.
-                            withContext(Dispatchers.IO) { dao.updateInvoiceWithItems(updated.copy(id = inv.id), newLines) }
-                            print(inv.id)
+                            // The phone's edit: the document and its whole line list, in one transaction; the DAO
+                            // keeps its kind, status, source, uid and refuses one no longer live.
+                            withContext(Dispatchers.IO) { runCatching { dao.updateInvoiceWithItems(updated.copy(id = inv.id), newLines) } }
+                                .onSuccess { print(inv.id) }
+                                .onFailure { refused = docFailText(words, it) }
                         }
                     },
                     onCancel = { editingInvoice = null }
@@ -505,60 +581,68 @@ fun InvoicesPane(
             }
         }
     }
-    // List and page side by side (20 Oct redesign): a click opens the invoice in
+    // List and page side by side (20 Oct redesign): a click opens the document in
     // its own design beside the list, with its actions; it no longer prints at once.
-    var chosen by remember(openId) { mutableStateOf(openId) }
-    var monthOnly by remember { mutableStateOf(false) }
     val monthStart = remember {
         java.util.Calendar.getInstance().apply {
             set(java.util.Calendar.DAY_OF_MONTH, 1); set(java.util.Calendar.HOUR_OF_DAY, 0)
             set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
         }.timeInMillis
     }
+    // This month's money is the invoices' alone — a quotation, an order or a challan is not a sale, and a
+    // cancelled invoice was never one.
     val thisMonth by remember(monthStart) { dao.observeInvoicesFrom(monthStart) }.collectAsState(emptyList())
-    val shown = if (monthOnly) thisMonth else invoices
+    val monthMoney = thisMonth.filter { it.kind == com.innovation313.roshankhata.data.DocKind.INVOICE && it.status != com.innovation313.roshankhata.data.DocStatus.CANCELLED }.sumOf { it.grandTotal }
+    val shown = invoices
     val invoiceListState = androidx.compose.foundation.lazy.rememberLazyListState()
-    LaunchedEffect(invoiceListState, invoices.size, monthOnly) {
-        if (monthOnly) return@LaunchedEffect
+    LaunchedEffect(invoiceListState, invoices.size, kind) {
         androidx.compose.runtime.snapshotFlow { invoiceListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }
             .collect { last -> invoiceLimit = com.innovation313.roshankhata.data.ListWindow.grown(invoiceLimit, invoices.size, last) }
     }
     val open = shown.firstOrNull { it.id == chosen } ?: shown.firstOrNull()
-    // A customer's face wears his khata's colours when the book has one party of that name (an invoice keeps
+    // A customer's face wears his khata's colours when the book has one party of that name (a document keeps
     // only the name), else colours of its own from the name — never by the row's place (Marhala 4, the audit).
     val faceIds = remember(parties) { parties.groupBy { it.name.trim().lowercase() }.mapValues { (_, same) -> same.singleOrNull()?.id } }
     fun faceId(name: String): Long = faceIds[name.trim().lowercase()] ?: name.trim().lowercase().hashCode().toLong()
     FluentPage(
-        word(W.nav_invoice),
-        // This month's money; the counts are on the two pills (Marhala 4, the audit: they were said twice).
-        word(W.range_this_month) + " " + Format.money(thisMonth.sumOf { it.grandTotal }),
+        word(W.documents_title),
+        // This month's invoice money; the count is on the All pill (Marhala 4, the audit: they were said twice).
+        word(W.range_this_month) + " " + Format.money(monthMoney),
         scroll = false,
         actions = {
             FluentButton(word(W.invoice_settings_title), { settingFields = true }, icon = "ic_tile_settings")
-            FluentButton(word(W.add_invoice), { adding = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
+            FluentButton(word(W.doc_add), { pickingKind = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
         }
     ) {
-        if (invoices.isEmpty()) {
-            // The head's Add invoice is the one way in (it was offered twice).
+        if (invoices.isEmpty() && kind == null) {
+            // The head's Add is the one way in (it was offered twice).
             EmptyState("ic_tile_invoice", word(W.no_invoices), null, Modifier.weight(1f))
             return@FluentPage
         }
         androidx.compose.foundation.layout.BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-            // The list as narrow as its rows allow; the invoice gets the rest (Marhala 4, the audit: small and low).
+            // The list as narrow as its rows allow; the document gets the rest (Marhala 4, the audit: small and low).
             val listWidth = (maxWidth * 0.36f).coerceIn(280.dp, 380.dp)
             Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 ListCard(Modifier.width(listWidth).fillMaxHeight()) {
-                    Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Chip(word(W.range_all) + " \u00b7 " + invoiceCount, !monthOnly) { monthOnly = false }
-                        Chip(word(W.range_this_month) + " \u00b7 " + thisMonth.size, monthOnly) { monthOnly = true }
+                    // The kind pills: All with its count, then the chain's kinds (the row scrolls on a narrow list).
+                    PillRow(Modifier.padding(12.dp)) {
+                        for (k in DOC_PILLS) {
+                            val label = if (k == null) word(W.range_all) + " · " + invoiceCount else docKindWord(k)
+                            Chip(label, kind == k) { kind = k }
+                        }
                     }
                     Rule()
+                    // A kind pill with nothing under it (the book has documents of other kinds).
+                    if (shown.isEmpty()) Text(word(W.no_entries_yet), Modifier.padding(16.dp), color = c.textMuted, fontSize = 13.sp)
                     LazyColumn(Modifier.fillMaxSize(), state = invoiceListState) {
                         itemsIndexed(shown, key = { _, it -> it.id }) { _, i ->
                             val on = i.id == open?.id
+                            val cancelled = i.status == com.innovation313.roshankhata.data.DocStatus.CANCELLED
                             Row(
                                 Modifier.fillMaxWidth().background(eased(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent))
-                                    .press { chosen = i.id }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp),
+                                    .press { chosen = i.id }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp)
+                                    // A cancelled document is read as a record, not a bill: muted and struck.
+                                    .alpha(if (cancelled) 0.55f else 1f),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Box(Modifier.width(3.dp).height(22.dp).background(eased(if (on) Look.accent else androidx.compose.ui.graphics.Color.Transparent), Look.ctl))
@@ -567,9 +651,16 @@ fun InvoicesPane(
                                 androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(Format.name(i.customerName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                                    Text(Format.ltr(i.invoiceNumber) + "  \u00b7  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1)
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                        // The number alone says the kind (Q-, SO-, DC-, INV-); the tag says where it stands.
+                                        Text(Format.ltr(i.invoiceNumber) + "  ·  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                                        DocStatusTag(i.status)
+                                    }
                                 }
-                                Text(Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                                Text(
+                                    Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false,
+                                    textDecoration = if (cancelled) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
+                                )
                             }
                             Rule()
                         }
@@ -577,31 +668,47 @@ fun InvoicesPane(
                 }
                 Column(Modifier.weight(1f).fillMaxHeight().card().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     if (open != null) {
-                        // The saved row (what was received, if the owner recorded it) and its pages in its own design.
+                        // The saved row (what was received, if the owner recorded it; the document it came from)
+                        // and its pages in its own design.
                         var full by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
+                        var source by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
                         var sheets by remember(open.id) { mutableStateOf<Sheets?>(null) }
                         // The design on show: the saved one until the owner steps through the
                         // phone's ten (only one could be seen before, 20 Oct); Apply keeps it.
                         var look by remember(open.id) { mutableStateOf<Int?>(null) }
-                        LaunchedEffect(open.id, open.grandTotal, open.invoiceDate, look) {
+                        LaunchedEffect(open.id, open.grandTotal, open.invoiceDate, open.status, look) {
                             sheets = null
                             val row = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } }
                             full = row?.first
+                            source = row?.first?.sourceDocId?.let { withContext(Dispatchers.IO) { dao.getInvoice(it) } }
                             // What Print and WhatsApp send: the design, else the plain layout (sheetOf).
                             sheets = row?.let { (inv, lines) ->
                                 withContext(Preview.drawing) { runCatching { Sheets.of(sheetOf(inv.copy(templateId = look ?: inv.templateId), lines)) }.getOrNull() }
                             }
                         }
+                        val status = full?.status ?: open.status
+                        val kindNow = full?.kind ?: open.kind
                         // The head and every action stay in sight; the pages take the height left (Marhala 4: the
                         // picture began under a head, a row of buttons and the stepper, its top third in view).
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Avatar(open.customerName, 40, id = faceId(open.customerName))
                             Column(Modifier.weight(1f)) {
                                 Text(Format.name(open.customerName), color = c.ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                                Text(
-                                    listOfNotNull(Format.ltr(open.invoiceNumber), Format.dateOnly(open.invoiceDate), full?.dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) }).joinToString("  \u00b7  "),
-                                    color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Text(
+                                        listOfNotNull(docKindWord(kindNow), Format.ltr(open.invoiceNumber), Format.dateOnly(open.invoiceDate), full?.dueDate?.let { word(W.due_date_set, Format.dateOnly(it)) }).joinToString("  ·  "),
+                                        color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                    DocStatusTag(status)
+                                }
+                                // The document this one was made from: a click opens it (whatever pill is on).
+                                source?.let { from ->
+                                    Text(
+                                        word(W.doc_converted_from, Format.ltr(from.invoiceNumber)),
+                                        Modifier.press { kind = null; chosen = from.id },
+                                        color = Look.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false
+                                    )
+                                }
                             }
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(Format.money(open.grandTotal), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
@@ -614,13 +721,14 @@ fun InvoicesPane(
                                 }
                             }
                         }
+                        val live = com.innovation313.roshankhata.data.DocActions.canEdit(status)
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             FluentButton(word(W.ledger_pdf_button), { print(open.id) }, kind = ButtonKind.ACCENT, icon = "ic_print")
                             IconAction("ic_action_whatsapp", word(W.invoice_send_whatsapp), { sendOnWhatsApp(open.id) })
-                            IconAction("ic_edit", word(W.edit), {
-                                Gates.edit { scope.launch { editingInvoice = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } } } }
-                            })
-                            IconAction("ic_delete", word(W.delete), { Gates.edit { deletingInvoice = open } }, tint = c.owedToMe)
+                            if (live) {
+                                IconAction("ic_edit", word(W.edit), { Gates.edit { edit(open.id) } })
+                                IconAction("ic_delete", word(W.delete), { Gates.edit { deletingInvoice = open } }, tint = c.owedToMe)
+                            }
                             full?.let { saved ->
                                 DesignStepper(
                                     shown = look ?: saved.templateId,
@@ -634,6 +742,16 @@ fun InvoicesPane(
                                     },
                                     modifier = Modifier.weight(1f)
                                 )
+                            }
+                        }
+                        // Where the document goes next, by its status (DocActions): the same three words on the phone.
+                        val target = com.innovation313.roshankhata.data.DocActions.convertTarget(kindNow, status)
+                        val mayAccept = com.innovation313.roshankhata.data.DocActions.canAccept(kindNow, status)
+                        if (target != null || mayAccept || com.innovation313.roshankhata.data.DocActions.canCancel(status)) {
+                            PillRow(Modifier.fillMaxWidth()) {
+                                if (mayAccept) FluentButton(word(W.doc_accept), { Gates.edit { accept(open.id) } }, icon = "ic_check_plain")
+                                if (target != null) FluentButton(word(W.doc_convert_to, docKindWord(target)), { Gates.edit { convert(open.id, target) } }, icon = "ic_chevron_right")
+                                if (com.innovation313.roshankhata.data.DocActions.canCancel(status)) FluentButton(word(W.mark_cancelled), { Gates.edit { cancelling = open } }, kind = ButtonKind.DANGER, icon = "ic_close")
                             }
                         }
                         if (sending) LinearProgressIndicator(Modifier.fillMaxWidth())

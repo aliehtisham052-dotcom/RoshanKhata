@@ -730,7 +730,6 @@
     <string name="invoice_feature_note_desc">یک خط کوتاه مخصوص همان فاکتور.</string>
     <string name="invoice_feature_due_date">تاریخ سررسید</string>
     <string name="invoice_feature_due_date_desc">چه زمانی پرداخت انتظار می‌رود.</string>
-    <string name="nav_invoice">فاکتور</string>
 
     <!-- Expiry alerts -->
     <string name="expiring_stock">کالای رو به انقضا</string>
@@ -3568,6 +3567,10 @@
     <string name="doc_converted_from">از %1$s</string>
     <string name="doc_locked">این سند تبدیل شده و قابل تغییر نیست؛ سند جدید را تغییر دهید.</string>
     <string name="documents_title">اسناد</string>
+    <string name="doc_add">افزودن سند</string>
+    <string name="doc_pick_kind">کدام سند؟</string>
+    <string name="doc_accept">علامت «پذیرفته‌شده»</string>
+    <string name="doc_cancel_confirm">%1$s لغو شود؟ با شماره خود در سوابق می‌ماند و پس از آن قابل تغییر نیست.</string>
     <string name="audit_doc_converted">سند تبدیل شد</string>
     <string name="audit_doc_accepted">سند تأیید شد</string>
     <string name="audit_doc_cancelled">سند لغو شد</string>

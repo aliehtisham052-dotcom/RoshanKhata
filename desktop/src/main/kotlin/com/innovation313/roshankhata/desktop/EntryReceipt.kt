@@ -69,10 +69,14 @@ fun EntryReceiptDialog(
     onPrint: (LedgerEntry, List<EntryItem>) -> Unit,
     /** A sale's invoice: the one made from it (its id), or a new one to make (null). */
     onInvoice: (LedgerEntry, Long?) -> Unit,
-    onChanged: () -> Unit
+    onChanged: () -> Unit,
+    /** Whether the party is a customer; a supplier's "I gave" with goods is a return to him, printed as a debit note. */
+    isCustomer: Boolean = true,
+    /** Goods sent back to a supplier as a debit note (NoteDocument, print-only); null offers none. */
+    onDebitNote: ((LedgerEntry, List<EntryItem>) -> Unit)? = null
 ) {
     AppDialog(onCloseRequest = onClose, title = word(W.receipt_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(720.dp))) {
-        EntryReceiptCard(dao, entryId, partyName, home, businessId, reload, onClose, onEdit, onDelete, onPrint, onInvoice, onChanged)
+        EntryReceiptCard(dao, entryId, partyName, home, businessId, reload, onClose, onEdit, onDelete, onPrint, onInvoice, onChanged, isCustomer, onDebitNote)
     }
 }
 
@@ -90,7 +94,9 @@ fun EntryReceiptCard(
     onDelete: (LedgerEntry) -> Unit,
     onPrint: (LedgerEntry, List<EntryItem>) -> Unit,
     onInvoice: (LedgerEntry, Long?) -> Unit,
-    onChanged: () -> Unit
+    onChanged: () -> Unit,
+    isCustomer: Boolean = true,
+    onDebitNote: ((LedgerEntry, List<EntryItem>) -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     val words = LocalWords.current
@@ -137,7 +143,10 @@ fun EntryReceiptCard(
             footer = {
                 if (e != null) {
                     IconAction("ic_print", word(W.print_receipt), { onPrint(e, items) })
-                    if (e.isGiven && !e.isDeleted) FluentButton(word(if (invoiceId != null) W.entry_open_invoice else W.entry_make_invoice), { onInvoice(e, invoiceId) }, icon = "ic_tile_invoice")
+                    // A supplier's "I gave" with goods is a return to him: its paper is a debit note, not an invoice.
+                    val supplierReturn = !isCustomer && e.isGiven && items.isNotEmpty() && onDebitNote != null
+                    if (supplierReturn && !e.isDeleted) FluentButton(word(W.doc_kind_debit_note), { onDebitNote!!(e, items) }, icon = "ic_tile_invoice")
+                    else if (e.isGiven && !e.isDeleted) FluentButton(word(if (invoiceId != null) W.entry_open_invoice else W.entry_make_invoice), { onInvoice(e, invoiceId) }, icon = "ic_tile_invoice")
                     if (!e.isDeleted) FluentButton(word(W.edit), { if (!owner.isNullOrEmpty()) linkedSaid = true else onEdit(e) }, kind = ButtonKind.ACCENT, icon = "ic_edit")
                 }
             }

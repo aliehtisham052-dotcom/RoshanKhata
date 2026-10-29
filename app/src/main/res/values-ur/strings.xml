@@ -709,7 +709,6 @@
     <string name="invoice_feature_note_desc">ایک انوائس کے لیے مخصوص مختصر لائن۔</string>
     <string name="invoice_feature_due_date">ادائیگی کی تاریخ</string>
     <string name="invoice_feature_due_date_desc">ادائیگی کب متوقع ہے۔</string>
-    <string name="nav_invoice">انوائس</string>
 
     <string name="expiring_stock">ایکسپائر ہوتا مال</string>
     <string name="expiring_subtitle">بیچیں، رعایت دیں، یا واپس کریں — جب تک وقت ہے</string>
@@ -3540,6 +3539,10 @@
     <string name="doc_converted_from">%1$s سے</string>
     <string name="doc_locked">یہ دستاویز تبدیل ہو چکی ہے اور بدلی نہیں جا سکتی؛ نئی والی بدلیں۔</string>
     <string name="documents_title">دستاویزات</string>
+    <string name="doc_add">دستاویز شامل کریں</string>
+    <string name="doc_pick_kind">کون سی دستاویز؟</string>
+    <string name="doc_accept">منظور شدہ نشان زد کریں</string>
+    <string name="doc_cancel_confirm">%1$s منسوخ کریں؟ یہ اپنے نمبر کے ساتھ ریکارڈ میں رہے گی اور بعد میں بدلی نہیں جا سکے گی۔</string>
     <string name="audit_doc_converted">دستاویز تبدیل ہوئی</string>
     <string name="audit_doc_accepted">دستاویز منظور ہوئی</string>
     <string name="audit_doc_cancelled">دستاویز منسوخ ہوئی</string>

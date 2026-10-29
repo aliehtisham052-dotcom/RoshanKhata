@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.data
 
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -246,5 +247,34 @@ class DocumentsTest {
         assertEquals(listOf("Urea"), debitLines.map { it.itemName })
         assertEquals(9300.0, debit.totals(debitLines).grandTotal, 0.0)
         assertEquals("nothing was written to the documents table", 0, dao.totalInvoiceCount())
+    }
+
+    @Test
+    fun `the kind pills list one kind and the screens offer what the status allows`() = runBlocking {
+        val q = quotation()
+        val inv = dao.saveInvoiceWithItems(Invoice(customerName = "Bilal"), lines)
+        assertEquals(listOf(q), dao.observeDocPage(DocKind.QUOTATION, 50).first().map { it.id })
+        assertEquals(listOf(inv), dao.observeDocPage(DocKind.INVOICE, 50).first().map { it.id })
+        assertEquals(setOf(q, inv), dao.observeDocPage(null, 50).first().map { it.id }.toSet())
+        assertEquals(2, dao.observeDocCount(null).first())
+        assertEquals(0, dao.observeDocCount(DocKind.CHALLAN).first())
+        // Open quotation: Accept, Convert to Sales order, Cancel, Edit. An invoice: Convert nowhere, no Accept.
+        assertTrue(DocActions.canAccept(DocKind.QUOTATION, DocStatus.OPEN))
+        assertFalse(DocActions.canAccept(DocKind.INVOICE, DocStatus.OPEN))
+        assertFalse(DocActions.canAccept(DocKind.CHALLAN, DocStatus.OPEN))
+        assertEquals(DocKind.SALES_ORDER, DocActions.convertTarget(DocKind.QUOTATION, DocStatus.OPEN))
+        assertEquals(DocKind.INVOICE, DocActions.convertTarget(DocKind.PROFORMA, DocStatus.ACCEPTED))
+        assertNull(DocActions.convertTarget(DocKind.INVOICE, DocStatus.OPEN))
+        assertTrue(DocActions.canCancel(DocStatus.ACCEPTED) && DocActions.canEdit(DocStatus.ACCEPTED))
+        // Converted or cancelled: nothing but reading.
+        val so = dao.convertDocument(q, DocKind.SALES_ORDER)
+        val qNow = dao.getInvoice(q)!!
+        assertFalse(DocActions.canEdit(qNow.status))
+        assertNull(DocActions.convertTarget(qNow.kind, qNow.status))
+        assertFalse(DocActions.canCancel(qNow.status) || DocActions.canAccept(qNow.kind, qNow.status))
+        assertEquals(so, dao.getInvoice(so)!!.id)
+        // The one refusal with its own words: a document no longer live.
+        assertEquals(com.innovation313.roshankhata.words.W.doc_locked, DocActions.refusalWordKey(DocRefused.Why.NOT_LIVE))
+        assertNull(DocActions.refusalWordKey(DocRefused.Why.BAD_STEP))
     }
 }

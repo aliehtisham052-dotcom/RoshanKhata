@@ -26,6 +26,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.DocActions
+import com.innovation313.roshankhata.data.DocKind
+import com.innovation313.roshankhata.data.DocRefused
+import com.innovation313.roshankhata.data.WordIds
 import com.innovation313.roshankhata.data.EntryInvoice
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceFeatureSettings
@@ -74,6 +78,8 @@ class InvoiceEditorActivity : BaseActivity() {
         const val EXTRA_INVOICE_ID = "invoice_id"
         /** A khata sale ("I gave") to start a NEW invoice from; see [EntryInvoice]. */
         const val EXTRA_FROM_ENTRY_ID = "from_entry_id"
+        /** Which document a NEW one is (schema 40, one of [DocKind.saved]); absent means the invoice. */
+        const val EXTRA_KIND = "doc_kind"
         private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
     }
 
@@ -135,6 +141,21 @@ class InvoiceEditorActivity : BaseActivity() {
 
     /** Null while creating a new invoice; set once an existing one has been loaded for editing. */
     private var editingInvoiceId: Long? = null
+
+    /**
+     * The saved row being edited, whole: the draft is a copy of it, so its kind, status, source, uid and
+     * createdAt pass through untouched (the DAO keeps them too — lesson 35: a fresh Invoice renamed the uid).
+     */
+    private var loaded: Invoice? = null
+
+    /**
+     * Which document this is (schema 40): the loaded row's kind, else the one Add asked for, else the
+     * invoice. Decides the title, the number series shown as the hint, and — for a delivery challan —
+     * that no rate, discount, tax or received box is shown at all (DocKind.showsPrices: prices are the
+     * invoice's, a challan says only what went out).
+     */
+    private var kind: String = DocKind.INVOICE
+    private val prices: Boolean get() = DocKind.showsPrices(kind)
 
     /**
      * Set only when editing a saved invoice, and only until the first
@@ -344,6 +365,8 @@ class InvoiceEditorActivity : BaseActivity() {
             supportActionBar?.setTitle(R.string.edit_invoice)
             lifecycleScope.launch { loadForEditing(editId) }
         } else {
+            kind = intent.getStringExtra(EXTRA_KIND)?.takeIf { DocKind.isSaved(it) } ?: DocKind.INVOICE
+            applyKind()
             val fromEntry = intent.getLongExtra(EXTRA_FROM_ENTRY_ID, -1L).takeIf { it > 0 }
             // Read again after a rotation too, the same way an edited invoice is.
             if (fromEntry != null) {
@@ -355,6 +378,31 @@ class InvoiceEditorActivity : BaseActivity() {
             showNextNumberHint()
         }
     }
+
+    /**
+     * The screen as its kind wants it: the title (the kind's own word; the invoice keeps Add/Edit invoice),
+     * and for a challan no More options (discount, tax, received are prices) and no rate on any row.
+     */
+    private fun applyKind() {
+        val editing = editingInvoiceId != null
+        supportActionBar?.title = when {
+            kind == DocKind.INVOICE -> getString(if (editing) R.string.edit_invoice else R.string.add_invoice)
+            editing -> getString(R.string.edit) + " · " + kindWord(kind)
+            else -> kindWord(kind)
+        }
+        findViewById<MaterialButton>(R.id.btnMoreOptions).visibility =
+            if ((prices && InvoiceFeatureSettings.anyOptionalFieldEnabled(this)) || InvoiceFeatureSettings.noteEnabled(this)) View.VISIBLE else View.GONE
+        rows.forEach { applyKind(it) }
+        refreshTotals()
+    }
+
+    /** A row's rate box only where prices are printed. */
+    private fun applyKind(row: Row) {
+        row.rate.visibility = if (prices) View.VISIBLE else View.GONE
+        if (!prices) row.totalLine.visibility = View.GONE
+    }
+
+    private fun kindWord(kind: String): String = getString(WordIds.string(DocKind.wordKey(kind)))
 
     /**
      * A new invoice pre-filled from a khata sale: the customer, the day and
@@ -390,7 +438,7 @@ class InvoiceEditorActivity : BaseActivity() {
     private fun showNextNumberHint() {
         lifecycleScope.launch {
             // The same reading the save makes (the kind's own count, else its highest number — schema 40).
-            val next = dao.nextDocNumber(com.innovation313.roshankhata.data.DocKind.INVOICE)
+            val next = dao.nextDocNumber(kind)
             etInvoiceNumber.hint = getString(R.string.invoice_number_auto_hint, next)
         }
     }
@@ -406,8 +454,17 @@ class InvoiceEditorActivity : BaseActivity() {
             finish()
             return
         }
+        // A converted or cancelled document is never edited: said, and the screen closes (the DAO refuses it too).
+        if (!DocActions.canEdit(invoice.status)) {
+            Toast.makeText(this, R.string.doc_locked, Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
         val items = dao.invoiceItems(id)
         editingInvoiceId = id
+        loaded = invoice
+        kind = invoice.kind
+        applyKind()
 
         etCustomer.setText(invoice.customerName)
         etPhone.setText(invoice.customerPhone.orEmpty())
@@ -558,6 +615,7 @@ class InvoiceEditorActivity : BaseActivity() {
             }
         }
         offerProducts(row)
+        applyKind(row)
         rows.add(row)
         itemRows.addView(v)
         renumberRows()
@@ -577,7 +635,8 @@ class InvoiceEditorActivity : BaseActivity() {
     private fun refreshRow(r: Row) {
         val qty = Digits.parse(r.qty.text)
         val rate = Digits.parse(r.rate.text)
-        if (qty == null || qty <= 0 || rate == null || rate < 0) {
+        // A challan's line has no money: nothing to multiply, no line total.
+        if (!prices || qty == null || qty <= 0 || rate == null || rate < 0) {
             r.totalLine.visibility = View.GONE
             return
         }
@@ -601,12 +660,15 @@ class InvoiceEditorActivity : BaseActivity() {
         val totals = d.totals(items)
         tvItemsCount.text = Digits.string(resources, R.string.invoice_editor_item_count, items.size)
         tvItemsTotal.text = getString(R.string.invoice_editor_total, Format.money(totals.grandTotal))
+        // A challan carries no total: the count alone.
+        tvItemsTotal.visibility = if (prices) View.VISIBLE else View.GONE
     }
 
     private fun validItems(): List<InvoiceItem> = rows.mapNotNull { r ->
         val name = r.name.text.toString().trim()
         val qty = Digits.parse(r.qty.text)
-        val rate = Digits.parse(r.rate.text)
+        // A challan's rate is kept as 0: nothing is priced on it.
+        val rate = if (prices) Digits.parse(r.rate.text) else 0.0
         if (name.isEmpty() || qty == null || qty <= 0 || rate == null || rate < 0) return@mapNotNull null
         InvoiceItem(
             invoiceId = 0,
@@ -646,10 +708,11 @@ class InvoiceEditorActivity : BaseActivity() {
 
         // Each field follows its own switch in Invoice settings; extra charge
         // is a pair (a name with no amount means nothing), so it hides as one.
-        val useDiscount = InvoiceFeatureSettings.discountEnabled(this)
-        val useTax = InvoiceFeatureSettings.taxEnabled(this)
-        val useCharge = InvoiceFeatureSettings.extraChargeEnabled(this)
-        val useReceived = InvoiceFeatureSettings.receivedEnabled(this)
+        // A challan prints no prices, so its sheet has no money boxes — only the note (DocKind.showsPrices).
+        val useDiscount = prices && InvoiceFeatureSettings.discountEnabled(this)
+        val useTax = prices && InvoiceFeatureSettings.taxEnabled(this)
+        val useCharge = prices && InvoiceFeatureSettings.extraChargeEnabled(this)
+        val useReceived = prices && InvoiceFeatureSettings.receivedEnabled(this)
         val useNote = InvoiceFeatureSettings.noteEnabled(this)
         view.findViewById<View>(R.id.blockDiscount).visibility = if (useDiscount) View.VISIBLE else View.GONE
         view.findViewById<View>(R.id.blockTax).visibility = if (useTax) View.VISIBLE else View.GONE
@@ -798,7 +861,9 @@ class InvoiceEditorActivity : BaseActivity() {
         // usable extra charge — treated the same as neither being set.
         val hasCharge = chargeLabel != null && chargeAmount != null
 
-        return Invoice(
+        // An edit is the saved row with what was typed over it: kind, status, source, uid and createdAt
+        // pass through; a new document starts fresh with the kind Add asked for.
+        return (loaded ?: Invoice(customerName = "", kind = kind)).copy(
             invoiceNumber = etInvoiceNumber.text.toString().trim(),
             customerName = etCustomer.text.toString().trim(),
             customerPhone = etPhone.text.toString().trim().ifEmpty { null },
@@ -1039,16 +1104,24 @@ class InvoiceEditorActivity : BaseActivity() {
 
         AppScope.launch {
             val editId = editingInvoiceId
-            if (editId != null) {
-                dao.updateInvoiceWithItems(invoice.copy(id = editId), items)
-            } else {
-                dao.saveInvoiceWithItems(invoice, items)
-            }
+            // A document no longer live is refused by the DAO (DocRefused): said in the owner's words, the
+            // screen left open; any other failure is AppScope's "not saved".
+            val refused = try {
+                if (editId != null) dao.updateInvoiceWithItems(invoice.copy(id = editId), items)
+                else dao.saveInvoiceWithItems(invoice, items)
+                null
+            } catch (e: DocRefused) { e }
             withContext(Dispatchers.Main) {
-                if (!isFinishing && !isDestroyed) {
-                    Toast.makeText(this@InvoiceEditorActivity, R.string.invoice_saved, Toast.LENGTH_SHORT).show()
-                    finish()
+                if (isFinishing || isDestroyed) return@withContext
+                if (refused != null) {
+                    val key = DocActions.refusalWordKey(refused.why)
+                    val text = if (key != null) getString(WordIds.string(key)) else getString(R.string.action_failed_detail, refused.message ?: refused.why.name)
+                    Toast.makeText(this@InvoiceEditorActivity, text, Toast.LENGTH_LONG).show()
+                    MaterialAlertDialogBuilder(this@InvoiceEditorActivity).setTitle(R.string.documents_title).setMessage(text).setPositiveButton(R.string.ok, null).show()
+                    return@withContext
                 }
+                Toast.makeText(this@InvoiceEditorActivity, R.string.invoice_saved, Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }

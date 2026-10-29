@@ -85,7 +85,8 @@ enum class Section(val word: String, val icon: String, val tile: String, val gro
     EXPIRY(W.tile_expiry, "ic_tile_expiring", "tile_stock_bg", Group.SALES),
     STOCK(W.inspector_title, "ic_register_stock", "tile_backup_bg", Group.SALES, ink = "fi_teal_b"),
     ORDERS(W.po_title, "ic_truck", "tile_bills_bg", Group.SALES, ink = "fi_gold_b"),
-    INVOICES(W.nav_invoice, "ic_tile_invoice", "tile_invoice_bg", Group.SALES),
+    // Documents since 29 Oct 2026 (schema 40): the invoice and the four documents before it, under the invoice tile.
+    INVOICES(W.documents_title, "ic_tile_invoice", "tile_invoice_bg", Group.SALES),
     REPORT(W.ledger_report_title, "ic_list_all", "tile_khata_bg", Group.REPORTS, ink = "fi_green_b"),
     REGISTER(W.register_title, "ic_register_sales", "tile_invoice_bg", Group.REPORTS, ink = "fi_pink_b"),
     SALES(W.sales_report_title, "ic_feature_insights", "tile_insights_bg", Group.REPORTS, ink = "fi_blue_b"),

@@ -24,6 +24,7 @@ import com.innovation313.roshankhata.screens.RoshanTheme
 import com.innovation313.roshankhata.words.ProvideWords
 import com.innovation313.roshankhata.words.desktopWords
 import org.jetbrains.skia.EncodedImageFormat
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assume
 import org.junit.Test
@@ -453,6 +454,26 @@ class ScreenProofTest {
                 }
             )
             for (f in invoiceShots) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
+            // Documents (29 Oct 2026, schema 40): a quotation stepped on to a sales order — the quotation reads
+            // Converted with no Edit, the order says "From Q-…" with Accept, Convert to Delivery Challan and
+            // Mark as Cancelled — beside the invoices, under the kind pills; at the laptop's size and in Urdu.
+            val (quotationId, orderId) = kotlinx.coroutines.runBlocking {
+                val q = dao.saveInvoiceWithItems(
+                    com.innovation313.roshankhata.data.Invoice(customerName = "Ghulam Rasool", customerPhone = "03000000002", invoiceDate = now - day, templateId = 6, kind = com.innovation313.roshankhata.data.DocKind.QUOTATION),
+                    lines.take(2)
+                )
+                q to dao.convertDocument(q, com.innovation313.roshankhata.data.DocKind.SALES_ORDER, now = now - 60 * 60 * 1000)
+            }
+            assertEquals(com.innovation313.roshankhata.data.DocStatus.CONVERTED, kotlinx.coroutines.runBlocking { dao.getInvoice(quotationId)!!.status })
+            val documentShots = listOf(
+                shoot("screen-laptop-documents-en", ur = false, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.INVOICES, waits = 4) {
+                    InvoicesPane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store", shopLine = "Main Bazaar, Sample Town", designs = { enDesigns }, openId = orderId)
+                },
+                shoot("screen-laptop-documents-ur", ur = true, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.INVOICES, waits = 4) {
+                    InvoicesPane(dao, partiesNow, urWords, rtl = true, shopName = "النور ایگری اسٹور", shopLine = null, designs = { urDesigns }, openId = quotationId)
+                }
+            )
+            for (f in documentShots) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
             // The form as the laptop's dialog holds it (1093 dp window less its margins), wide enough for the picture beside.
             val invoice = kotlinx.coroutines.runBlocking { dao.observeInvoicePage(5).first().first { it.customerName == "Muhammad Aslam" }.let { dao.getInvoice(it.id)!! to dao.invoiceItems(it.id) } }
             val shelf = kotlinx.coroutines.runBlocking { ProductShelf(dao.productsOnce(), emptyList(), "") }

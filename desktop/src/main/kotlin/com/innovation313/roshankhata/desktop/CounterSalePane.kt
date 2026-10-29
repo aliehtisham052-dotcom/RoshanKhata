@@ -102,6 +102,8 @@ fun CounterSalePane(
     onPrinter: (ThermalReceipt.Settings) -> Unit = {},
     /** The shop's payment QR picture (Business Profile), for the customer's screen. */
     paymentQr: java.io.File? = null,
+    /** A posted return as a credit note (NoteDocument, print-only): the window draws it in the shop's design; null offers none. */
+    onCreditNote: ((com.innovation313.roshankhata.data.ReturnSummary) -> Unit)? = null,
     /**
      * The open ticket, kept by the window (25 Oct 2026, the audit): a click on the rail, a bell
      * row or F1 used to throw away a half-rung ticket with the page. One per open business.
@@ -517,7 +519,7 @@ fun CounterSalePane(
                 onVoid = { s -> allTickets = false; voidSale(s) }, onReturn = { s -> allTickets = false; returnSale(s) }, onInvoice = { s -> allTickets = false; invoiceSale(s) })
             Column(Modifier.fillMaxWidth().heightIn(max = if (short) 112.dp else if (narrow) 150.dp else 230.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             RecentSales(recent, words, onVoid = voidSale, onReturn = returnSale, onInvoice = invoiceSale, onMore = { allTickets = true })
-            RecentReturns(returns, words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } })
+            RecentReturns(returns, words, onVoid = { r -> allowed(com.innovation313.roshankhata.data.Access.Permission.VOID, words.text(W.pos_void_return) + " " + r.returnNumber) { by -> voidingReturnBy = by; voidingReturn = r } }, onCreditNote = onCreditNote)
             }
         }
 
@@ -852,9 +854,13 @@ private fun SaleRows(rows: List<SaleSummary>, onVoid: (SaleSummary) -> Unit, onR
     }
 }
 
-/** The last few returns, with their void. */
+/** The last few returns, each with its credit note (the return drawn as a document, never saved) and its void. */
 @Composable
-private fun RecentReturns(rows: List<com.innovation313.roshankhata.data.ReturnSummary>, words: Words, onVoid: (com.innovation313.roshankhata.data.ReturnSummary) -> Unit) {
+private fun RecentReturns(
+    rows: List<com.innovation313.roshankhata.data.ReturnSummary>, words: Words,
+    onVoid: (com.innovation313.roshankhata.data.ReturnSummary) -> Unit,
+    onCreditNote: ((com.innovation313.roshankhata.data.ReturnSummary) -> Unit)? = null
+) {
     val c = LocalRoshanColors.current
     if (rows.isEmpty()) return
     ListCard(Modifier.fillMaxWidth()) {
@@ -867,7 +873,10 @@ private fun RecentReturns(rows: List<com.innovation313.roshankhata.data.ReturnSu
                 }
                 Text(Format.money(r.total), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 if (r.status == SaleStatus.VOID) Tag(word(W.pos_status_void), c.owedToMe, Look.getTint)
-                else FluentButton(word(W.pos_void), { onVoid(r) }, kind = ButtonKind.SUBTLE)
+                else {
+                    if (onCreditNote != null) FluentButton(word(W.doc_kind_credit_note), { onCreditNote(r) }, kind = ButtonKind.SUBTLE, icon = "ic_print")
+                    FluentButton(word(W.pos_void), { onVoid(r) }, kind = ButtonKind.SUBTLE)
+                }
             }
             if (i < rows.lastIndex) Rule()
         }

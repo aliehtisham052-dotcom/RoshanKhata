@@ -160,7 +160,8 @@ class MainActivity : BaseActivity() {
             // 24 Oct 2026 — the owner keeps his sales in Khata and did not use it daily.
             Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
                 R.color.tile_cashbook_bg),
-            Feature(R.drawable.ic_tile_invoice, R.string.nav_invoice, InvoicesActivity::class.java,
+            // Documents since 29 Oct 2026 (schema 40): the invoice and the four documents before it, one tile.
+            Feature(R.drawable.ic_tile_invoice, R.string.documents_title, InvoicesActivity::class.java,
                 R.color.tile_invoice_bg),
             Feature(R.drawable.ic_tile_price_list, R.string.rate_list_title, RateListActivity::class.java,
                 R.color.tile_calc_bg),
