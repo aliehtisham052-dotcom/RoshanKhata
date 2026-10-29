@@ -56,7 +56,8 @@ object SyncSchema {
         Table("cashbook", fks = mapOf("saleId" to "sales")),
         Table("supplier_bills", fks = mapOf("partyId" to "parties", "ledgerEntryId" to "transactions"), localOnly = setOf("photoPath")),
         Table("bill_items", fks = mapOf("billId" to "supplier_bills", "productId" to "products")),
-        Table("invoices", fks = mapOf("sourceEntryId" to "transactions")),
+        // sourceDocId (schema 40) points at an older row of the same table, as a product variant's parentId does.
+        Table("invoices", fks = mapOf("sourceEntryId" to "transactions", "sourceDocId" to "invoices")),
         Table("invoice_items", fks = mapOf("invoiceId" to "invoices")),
         Table("sales", fks = mapOf("partyId" to "parties", "ledgerEntryId" to "transactions", "invoiceId" to "invoices")),
         Table("sale_items", fks = mapOf("saleId" to "sales", "productId" to "products", "billItemId" to "bill_items")),

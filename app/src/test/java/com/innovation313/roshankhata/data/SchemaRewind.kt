@@ -52,8 +52,23 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 39: the payment reference on transactions and cashbook. */
+    /** Undo version 40: the documents' kind, status and source on invoices, and the source's index. */
+    fun undo40(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for (idx in Schema40.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
+        for ((table, cols) in Schema40.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema40.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
+    /** Undo version 39: the payment reference on transactions and cashbook. Undoes 40 first. */
     fun undo39(raw: SQLiteDatabase) {
+        undo40(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         raw.execSQL("PRAGMA legacy_alter_table = ON")
         for ((table, cols) in Schema39.newColumns) stripColumns(raw, table, cols)

@@ -3572,4 +3572,23 @@
     <string name="live_pair_left_business">फ़ोन की जोड़ी तब आई जब कारोबार “%1$s” खुला था, और अब दूसरा कारोबार खुला है: इसलिए उसे छोड़ दिया गया, ताकि वह इस खाते की जगह न ले। जोड़ने के लिए “%1$s” खोलें और फ़ोन पर कोड फिर से स्कैन करें।</string>
     <string name="live_wake_off">ऐप बंद हो तो रिले इस फ़ोन को जगा नहीं सकता: दूसरे डिवाइस के बदलाव ऐप खुलने पर आएँगे।</string>
     <string name="staff_name_taken">इस नाम का स्टाफ़ पहले से सूची में है। फ़र्क़ के लिए कुछ साथ लिखें, जैसे पिता का नाम।</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">कोटेशन</string>
+    <string name="doc_kind_proforma">प्रोफ़ॉर्मा इनवॉइस</string>
+    <string name="doc_kind_sales_order">सेल्स ऑर्डर</string>
+    <string name="doc_kind_challan">डिलीवरी चालान</string>
+    <string name="doc_kind_credit_note">क्रेडिट नोट</string>
+    <string name="doc_kind_debit_note">डेबिट नोट</string>
+    <string name="doc_status_open">खुला</string>
+    <string name="doc_status_accepted">स्वीकृत</string>
+    <string name="doc_status_converted">परिवर्तित</string>
+    <string name="doc_status_cancelled">रद्द</string>
+    <string name="doc_convert_to">%1$s में बदलें</string>
+    <string name="doc_converted_from">%1$s से</string>
+    <string name="doc_locked">यह दस्तावेज़ परिवर्तित हो चुका है और बदला नहीं जा सकता; नया बदलें।</string>
+    <string name="documents_title">दस्तावेज़</string>
+    <string name="audit_doc_converted">दस्तावेज़ परिवर्तित</string>
+    <string name="audit_doc_accepted">दस्तावेज़ स्वीकृत</string>
+    <string name="audit_doc_cancelled">दस्तावेज़ रद्द</string>
 </resources>

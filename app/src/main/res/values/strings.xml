@@ -3736,4 +3736,23 @@
     <string name="live_pair_left_business">A phone’s pairing came while the business “%1$s” was open, and another business is open now: it was let go, so it cannot replace this book. To pair, open “%1$s” and scan the code again on the phone.</string>
     <string name="live_wake_off">The relay cannot wake this phone while the app is closed: the other device’s changes come in when the app is opened.</string>
     <string name="staff_name_taken">Someone on the staff list already has this name. Add something to tell them apart, such as the father\'s name.</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">Quotation</string>
+    <string name="doc_kind_proforma">Proforma Invoice</string>
+    <string name="doc_kind_sales_order">Sales Order</string>
+    <string name="doc_kind_challan">Delivery Challan</string>
+    <string name="doc_kind_credit_note">Credit Note</string>
+    <string name="doc_kind_debit_note">Debit Note</string>
+    <string name="doc_status_open">Open</string>
+    <string name="doc_status_accepted">Accepted</string>
+    <string name="doc_status_converted">Converted</string>
+    <string name="doc_status_cancelled">Cancelled</string>
+    <string name="doc_convert_to">Convert to %1$s</string>
+    <string name="doc_converted_from">From %1$s</string>
+    <string name="doc_locked">This document was converted and cannot be changed; change the new one.</string>
+    <string name="documents_title">Documents</string>
+    <string name="audit_doc_converted">Document converted</string>
+    <string name="audit_doc_accepted">Document accepted</string>
+    <string name="audit_doc_cancelled">Document cancelled</string>
 </resources>

@@ -4,6 +4,7 @@ package com.innovation313.roshankhata.desktop.invoice
 
 import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.data.DocKind
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoiceTotals
@@ -141,6 +142,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -154,15 +159,15 @@ object InvoicePdfExport {
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -175,7 +180,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -240,6 +245,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -257,15 +266,15 @@ object InvoicePdfExport {
             // Before anything else — a continuation page left white would
             // be a jarring break in the middle of a dark document.
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -278,7 +287,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -333,6 +342,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -346,15 +359,15 @@ object InvoicePdfExport {
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -367,7 +380,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -429,6 +442,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -442,15 +459,15 @@ object InvoicePdfExport {
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -463,7 +480,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -520,6 +537,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -533,15 +554,15 @@ object InvoicePdfExport {
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -554,7 +575,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -605,6 +626,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -620,15 +645,15 @@ object InvoicePdfExport {
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -641,7 +666,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -690,6 +715,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -705,15 +734,15 @@ object InvoicePdfExport {
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -726,7 +755,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -782,6 +811,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -797,15 +830,15 @@ object InvoicePdfExport {
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -818,7 +851,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -865,6 +898,10 @@ object InvoicePdfExport {
             monoBold = InvoiceFonts.ibmPlexMonoBold(context)
         )
 
+        // Which document this is (schema 40): its heading, and whether it prints prices at all (a challan does not).
+        val heading = InvoiceTemplateKit.Labels(context).heading(invoice.kind)
+        val prices = DocKind.showsPrices(invoice.kind)
+
         val doc = PdfDocument()
         val left = MARGIN
         val right = PAGE_W_A4 - MARGIN
@@ -880,15 +917,15 @@ object InvoicePdfExport {
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, pageNo).create())
             c = page.canvas
             InvoiceTemplateKit.fillPage(c, palette, PAGE_W_A4, PAGE_H_A4)
-            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+            val bandY = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
             return c to bandY
         }
 
-        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right)
+        var y = InvoiceTemplateKit.drawHeaderBand(c, context, palette, fonts, PAGE_W_A4, left, right, heading = heading)
         y = InvoiceTemplateKit.drawBillToAndMeta(c, context, palette, fonts, left, right, y, invoice)
 
         val (tableCanvas, tableY) = InvoiceTemplateKit.drawItemsTable(
-            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null
+            c, context, palette, fonts, left, right, y, PAGE_H_A4 - 250f, items, extraColumn = null, showPrices = prices
         ) { newPage() }
         c = tableCanvas
         y = tableY + 18f
@@ -901,7 +938,7 @@ object InvoicePdfExport {
             y = fresh.second
         }
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
-        y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
+        if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
         if (y > PAGE_H_A4 - 140f) {
             val fresh = newPage()
@@ -929,12 +966,17 @@ object InvoicePdfExport {
         val pad = 16f
 
         val totals = invoice.totals(items)
+        // Which document this is (schema 40): a quotation or a challan on the roll says so under the shop's
+        // name (an invoice says nothing more, as before), and a challan prints no rate, total or payment.
+        val kind = invoice.kind
+        val prices = DocKind.showsPrices(kind)
 
         // Height is computed, not guessed — a thermal roll has no fixed page,
         // and the alternative (a fixed too-short page) would silently cut the
         // receipt off mid-item.
         var estimatedH = 210f
         estimatedH += items.size * 26f
+        if (kind != DocKind.INVOICE) estimatedH += 14f
         if (BusinessProfile.strn(context) != null) estimatedH += 11f
         if (invoice.dueDate != null) estimatedH += 13f
         if (totals.discountAmount > 0) estimatedH += 12f
@@ -994,6 +1036,10 @@ object InvoicePdfExport {
         val labels = InvoiceTemplateKit.Labels(context)
 
         PdfRtl.drawText(c, BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata", cx, y, shopName)
+        if (kind != DocKind.INVOICE) {
+            y += 14f
+            PdfRtl.drawText(c, labels.heading(kind), cx, y, Paint(shopName).apply { textSize = 10f })
+        }
         BusinessProfile.businessAddress(context)?.let {
             y += 12f
             PdfRtl.drawText(c, it, cx, y, shopSub)
@@ -1032,11 +1078,15 @@ object InvoicePdfExport {
         items.forEach { item ->
             PdfRtl.drawText(c, item.itemName, pad, y, monoBold)
             y += 11f
-            PdfRtl.drawText(c,
-                "${Format.qty(item.quantity, item.unit)} × ${numberOnly(item.rate)}",
-                pad, y, monoGrey
-            )
-            PdfRtl.drawText(c, numberOnly(item.lineTotal), pageW - pad, y, monoGreyR)
+            if (prices) {
+                PdfRtl.drawText(c,
+                    "${Format.qty(item.quantity, item.unit)} × ${numberOnly(item.rate)}",
+                    pad, y, monoGrey
+                )
+                PdfRtl.drawText(c, numberOnly(item.lineTotal), pageW - pad, y, monoGreyR)
+            } else {
+                PdfRtl.drawText(c, Format.qty(item.quantity, item.unit), pageW - pad, y, monoGreyR)
+            }
             y += 15f
         }
 
@@ -1045,7 +1095,7 @@ object InvoicePdfExport {
 
         // Same rule as the A4 templates: only when something sits between it
         // and the total, otherwise it just repeats the total.
-        if (InvoiceTemplateKit.showSubtotal(totals)) {
+        if (prices && InvoiceTemplateKit.showSubtotal(totals)) {
             PdfRtl.drawText(c, labels.subtotal, pad, y, mono)
             PdfRtl.drawText(c, numberOnly(totals.subtotal), pageW - pad, y, monoR)
             y += 13f
@@ -1065,13 +1115,15 @@ object InvoicePdfExport {
             PdfRtl.drawText(c, numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
             y += 13f
         }
-        y += 4f
-        c.drawLine(pad, y, pageW - pad, y, dash)
-        y += 15f
-        PdfRtl.drawText(c, labels.total, pad, y, grandPaint)
-        PdfRtl.drawText(c, Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
-        y += 12f
-        if (invoice.receivedAmount != null) {
+        if (prices) {
+            y += 4f
+            c.drawLine(pad, y, pageW - pad, y, dash)
+            y += 15f
+            PdfRtl.drawText(c, labels.total, pad, y, grandPaint)
+            PdfRtl.drawText(c, Format.money(totals.grandTotal), pageW - pad, y, grandPaintR)
+            y += 12f
+        }
+        if (prices && invoice.receivedAmount != null) {
             PdfRtl.drawText(c, labels.received, pad, y, mono)
             PdfRtl.drawText(c, numberOnly(totals.received), pageW - pad, y, monoR)
             y += 13f
@@ -1079,14 +1131,16 @@ object InvoicePdfExport {
             PdfRtl.drawText(c, numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
             y += 12f
         }
-        c.drawLine(pad, y, pageW - pad, y, dash)
-        y += 16f
-        PdfRtl.drawText(c, "${labels.amountInWords}:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
-        y += 11f
-        // Wrapped by hand, not left to overflow the receipt's own width —
-        // the words for a large total are routinely longer than 226pt fits
-        // on one line, unlike every other value on this narrow page.
-        y = wrapMonoText(context, c, NumberWords.amountInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
+        if (prices) {
+            c.drawLine(pad, y, pageW - pad, y, dash)
+            y += 16f
+            PdfRtl.drawText(c, "${labels.amountInWords}:", pad, y, Paint(mono).apply { textSize = 8f; color = 0xFF555555.toInt() })
+            y += 11f
+            // Wrapped by hand, not left to overflow the receipt's own width —
+            // the words for a large total are routinely longer than 226pt fits
+            // on one line, unlike every other value on this narrow page.
+            y = wrapMonoText(context, c, NumberWords.amountInWords(context, totals.grandTotal), pad, y, pageW - 2 * pad, 9f)
+        }
 
         val bank = listOfNotNull(
             BusinessProfile.bankName(context)?.let { labels.bank to it },
@@ -1095,7 +1149,7 @@ object InvoicePdfExport {
             BusinessProfile.bankJazzCash(context)?.let { (if (com.innovation313.roshankhata.data.ShopCountry.current == com.innovation313.roshankhata.data.ShopCountry.PAKISTAN) "JazzCash" else context.getString(R.string.pay_wallet_label)) to it }
         )
         val qr = BusinessProfile.loadQr(context)
-        if (bank.isNotEmpty() || qr != null) {
+        if (prices && (bank.isNotEmpty() || qr != null)) {
             y += 6f
             c.drawLine(pad, y, pageW - pad, y, dash)
             y += 16f

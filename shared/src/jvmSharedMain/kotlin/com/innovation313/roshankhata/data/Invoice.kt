@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -21,8 +22,15 @@ import androidx.room.PrimaryKey
  * and reserved inside one @Transaction (see
  * [KhataDao.saveInvoiceWithItems]) so two near-simultaneous invoices can
  * never collide on the same printed number.
+ *
+ * Since schema 40 (29 Oct 2026) the row is every customer-facing document,
+ * not the invoice alone: [kind] says whether it is a quotation, a proforma
+ * invoice, a sales order, a delivery challan or the invoice ([DocKind]), each
+ * numbered in its own series; [status] where it stands ([DocStatus]); and
+ * [sourceDocId] which document it was made from. The invoice IS the
+ * document — one table, one editor, ten designs, one sync, one backup.
  */
-@Entity(tableName = "invoices", indices = [Index("uid")])
+@Entity(tableName = "invoices", indices = [Index("uid"), Index("sourceDocId")])
 data class Invoice(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 
@@ -101,7 +109,34 @@ data class Invoice(
      * to say what would be lost, and what a merge matches rows by. Null only
      * for a moment on a row restored from an old file; restoreAll fills it.
      */
-    val uid: String? = Uid.next()
+    val uid: String? = Uid.next(),
+
+    /**
+     * Which document this row is (schema 40): one of [DocKind.saved]. Every
+     * row written before is [DocKind.INVOICE]. Decides the number's series
+     * (Q-, PI-, SO-, DC-, INV-), the heading on paper, and whether prices are
+     * printed at all (a challan's are not).
+     */
+    @ColumnInfo(defaultValue = "INVOICE") val kind: String = DocKind.INVOICE,
+
+    /**
+     * Where the document stands (schema 40): [DocStatus.OPEN] until the
+     * customer agrees ([DocStatus.ACCEPTED]), it is stepped on
+     * ([DocStatus.CONVERTED]) or dropped ([DocStatus.CANCELLED]). Changed only
+     * in the DAO, from the state that allows it (lesson 52); a converted or
+     * cancelled document is never edited again.
+     */
+    @ColumnInfo(defaultValue = "OPEN") val status: String = DocStatus.OPEN,
+
+    /**
+     * The document this one was made from by [KhataDao.convertDocument]
+     * (schema 40) — the quotation behind a sales order, the challan behind an
+     * invoice — or null for one started from scratch. A plain row id like
+     * [sourceEntryId], not a foreign key: the source stays on record, marked
+     * converted, and binning it must not touch a document already handed over.
+     * Travels as a uid in live sync and is re-pointed on a merge.
+     */
+    val sourceDocId: Long? = null
 )
 
 /**
@@ -209,7 +244,10 @@ data class InvoiceSummary(
     val customerName: String,
     val invoiceDate: Long,
     val itemCount: Int,
-    val grandTotal: Double
+    val grandTotal: Double,
+    /** Which document and where it stands (schema 40) — the list says "Quotation · Accepted", not only a number. */
+    val kind: String = DocKind.INVOICE,
+    val status: String = DocStatus.OPEN
 )
 
 /**
@@ -219,5 +257,15 @@ data class InvoiceSummary(
  * customer holding both kinds of paper.
  */
 object InvoiceNumber {
-    fun next(existingCount: Int): String = "INV-%06d".format(Digits.FIGURES, existingCount + 1) + NumberMark.suffix()
+    /** The next invoice number — [DocKind.INVOICE]'s series, as every caller before schema 40 asked for it. */
+    fun next(existingCount: Int): String = next(DocKind.INVOICE, existingCount)
+
+    /**
+     * The next number in [kind]'s own series (schema 40): its prefix
+     * ([DocKind.prefix]), six digits, and this device's letter while the book
+     * syncs ([NumberMark]) — Q-000001, SO-000013-B. A quotation and an
+     * invoice never share a number: a customer holding both sees two series.
+     */
+    fun next(kind: String, existingCount: Int): String =
+        DocKind.prefix(kind) + "%06d".format(Digits.FIGURES, existingCount + 1) + NumberMark.suffix()
 }

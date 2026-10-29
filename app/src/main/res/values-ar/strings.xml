@@ -3744,4 +3744,23 @@
     <string name="live_pair_left_business">وصل اقتران الهاتف حين كان النشاط «%1$s» مفتوحًا، والمفتوح الآن نشاط آخر: لذلك تُرك، فلا يحل محل هذا الدفتر. للاقتران افتح «%1$s» وامسح الرمز مرة أخرى على الهاتف.</string>
     <string name="live_wake_off">لا يستطيع المُرحِّل إيقاظ هذا الهاتف والتطبيق مغلق: تصل تغييرات الجهاز الآخر عند فتح التطبيق.</string>
     <string name="staff_name_taken">يوجد في قائمة الموظفين من يحمل هذا الاسم. أضف ما يميّزه، مثل اسم الأب.</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">عرض سعر</string>
+    <string name="doc_kind_proforma">فاتورة مبدئية</string>
+    <string name="doc_kind_sales_order">أمر بيع</string>
+    <string name="doc_kind_challan">إذن تسليم</string>
+    <string name="doc_kind_credit_note">إشعار دائن</string>
+    <string name="doc_kind_debit_note">إشعار مدين</string>
+    <string name="doc_status_open">مفتوح</string>
+    <string name="doc_status_accepted">مقبول</string>
+    <string name="doc_status_converted">تم تحويله</string>
+    <string name="doc_status_cancelled">ملغى</string>
+    <string name="doc_convert_to">تحويل إلى %1$s</string>
+    <string name="doc_converted_from">من %1$s</string>
+    <string name="doc_locked">تم تحويل هذا المستند ولا يمكن تغييره؛ غيّر المستند الجديد.</string>
+    <string name="documents_title">المستندات</string>
+    <string name="audit_doc_converted">تم تحويل مستند</string>
+    <string name="audit_doc_accepted">تم قبول مستند</string>
+    <string name="audit_doc_cancelled">تم إلغاء مستند</string>
 </resources>

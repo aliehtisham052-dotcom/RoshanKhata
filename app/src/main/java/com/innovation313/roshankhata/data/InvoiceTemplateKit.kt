@@ -116,7 +116,7 @@ object InvoiceTemplateKit {
      * works. A Roman Urdu app still prints "TAFSEEL" and "Tareekh" — there
      * they belong.
      */
-    class Labels(context: Context) {
+    class Labels(private val context: Context) {
         val invoice: String = context.getString(R.string.pdf_label_invoice)
         val billTo: String = context.getString(R.string.pdf_label_bill_to)
         val invoiceDetails: String = context.getString(R.string.pdf_label_invoice_details)
@@ -144,6 +144,21 @@ object InvoiceTemplateKit {
         val accountTitle: String = context.getString(R.string.pdf_label_account_title)
         val thankYou: String = context.getString(R.string.pdf_label_thank_you)
         val visitAgain: String = context.getString(R.string.pdf_label_visit_again)
+
+        /**
+         * The heading a document of [kind] prints where an invoice prints
+         * [invoice] (schema 40): QUOTATION, SALES ORDER, DELIVERY CHALLAN…
+         * in the app's language. The invoice keeps its own word.
+         */
+        fun heading(kind: String): String = when (kind) {
+            DocKind.QUOTATION -> context.getString(R.string.doc_kind_quotation)
+            DocKind.PROFORMA -> context.getString(R.string.doc_kind_proforma)
+            DocKind.SALES_ORDER -> context.getString(R.string.doc_kind_sales_order)
+            DocKind.CHALLAN -> context.getString(R.string.doc_kind_challan)
+            DocKind.CREDIT_NOTE -> context.getString(R.string.doc_kind_credit_note)
+            DocKind.DEBIT_NOTE -> context.getString(R.string.doc_kind_debit_note)
+            else -> invoice
+        }
     }
 
     /**
@@ -356,7 +371,10 @@ object InvoiceTemplateKit {
 
     /**
      * Table header + rows, an optional [extraColumn] inserted between the
-     * item name and Qty. [pageBreakAt] is where a row no longer fits;
+     * item name and Qty. With [showPrices] false (a delivery challan,
+     * [DocKind.showsPrices]) the Rate and Amount columns are not drawn at
+     * all — the table ends at Qty — because a challan says what went out,
+     * never what it costs. [pageBreakAt] is where a row no longer fits;
      * [onNewPage] starts a fresh page and must return its Canvas plus the y
      * to draw the header band at (typically 0f, since the caller usually
      * redraws the band itself first and passes its result). Returns the
@@ -374,6 +392,7 @@ object InvoiceTemplateKit {
         pageBreakAt: Float,
         items: List<InvoiceItem>,
         extraColumn: ExtraColumn?,
+        showPrices: Boolean = true,
         onNewPage: () -> Pair<Canvas, Float>
     ): Pair<Canvas, Float> {
         var canvas = c
@@ -382,7 +401,8 @@ object InvoiceTemplateKit {
         val xNo = left + 8f
         val xItem = left + 30f
         val xExtra = 300f
-        val xQty = if (extraColumn != null) 372f + 40f else 372f
+        // Without prices the quantity takes the amount's place at the right edge, so the table still ends at the margin.
+        val xQty = if (!showPrices) right - 8f else if (extraColumn != null) 372f + 40f else 372f
         val xRate = if (extraColumn != null) 452f + 20f else 452f
         val xAmt = right - 8f
         val rulePaint = Paint().apply { color = palette.ruleColor; strokeWidth = 0.7f }
@@ -396,8 +416,10 @@ object InvoiceTemplateKit {
             PdfRtl.drawText(canvas, labels.item, xItem, atY + 16f, th)
             extraColumn?.let { PdfRtl.drawText(canvas, it.label.uppercase(), xExtra, atY + 16f, thR) }
             PdfRtl.drawText(canvas, labels.qty, xQty, atY + 16f, thR)
-            PdfRtl.drawText(canvas, labels.rate, xRate, atY + 16f, thR)
-            PdfRtl.drawText(canvas, labels.amount, xAmt, atY + 16f, thR)
+            if (showPrices) {
+                PdfRtl.drawText(canvas, labels.rate, xRate, atY + 16f, thR)
+                PdfRtl.drawText(canvas, labels.amount, xAmt, atY + 16f, thR)
+            }
             return atY + 24f
         }
 
@@ -418,8 +440,10 @@ object InvoiceTemplateKit {
             PdfRtl.drawText(canvas, item.itemName, xItem, baseline, body)
             extraColumn?.let { PdfRtl.drawText(canvas, it.valueOf(item), xExtra, baseline, bodyR) }
             PdfRtl.drawText(canvas, Format.qty(item.quantity, item.unit), xQty, baseline, bodyR)
-            PdfRtl.drawText(canvas, numberOnlyMoney(item.rate), xRate, baseline, bodyR)
-            PdfRtl.drawText(canvas, numberOnlyMoney(item.lineTotal), xAmt, baseline, bodyR)
+            if (showPrices) {
+                PdfRtl.drawText(canvas, numberOnlyMoney(item.rate), xRate, baseline, bodyR)
+                PdfRtl.drawText(canvas, numberOnlyMoney(item.lineTotal), xAmt, baseline, bodyR)
+            }
             y += rowH
             canvas.drawLine(left, y, right, y, rulePaint)
         }
@@ -431,7 +455,10 @@ object InvoiceTemplateKit {
      * Payment info (bank rows + QR, only when at least one is set) beside
      * the totals stack ending in a filled TOTAL bar, with Received/Balance
      * Due below it when a received amount was recorded. Returns the y
-     * position work should continue from.
+     * position work should continue from. A document that shows no prices
+     * (a delivery challan, [DocKind.showsPrices]) draws none of it and
+     * returns [blockTop] unchanged: no total, and no "how to pay" for a paper
+     * that asks for no money.
      */
     fun drawPaymentAndTotals(
         c: Canvas,
@@ -444,6 +471,7 @@ object InvoiceTemplateKit {
         invoice: Invoice,
         totals: InvoiceTotals
     ): Float {
+        if (!DocKind.showsPrices(invoice.kind)) return blockTop
         val labels = Labels(context)
         val bankRows = listOfNotNull(
             BusinessProfile.bankName(context)?.let { labels.bank to it },

@@ -389,8 +389,8 @@ class InvoiceEditorActivity : BaseActivity() {
      */
     private fun showNextNumberHint() {
         lifecycleScope.launch {
-            // The same reading the save makes (the highest ever used, not only the count).
-            val next = InvoiceNumber.next(maxOf(dao.totalInvoiceCount(), dao.highestInvoiceNumber()))
+            // The same reading the save makes (the kind's own count, else its highest number — schema 40).
+            val next = dao.nextDocNumber(com.innovation313.roshankhata.data.DocKind.INVOICE)
             etInvoiceNumber.hint = getString(R.string.invoice_number_auto_hint, next)
         }
     }

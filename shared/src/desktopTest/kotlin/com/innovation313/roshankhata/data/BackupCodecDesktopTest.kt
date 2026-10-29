@@ -131,6 +131,61 @@ class BackupCodecDesktopTest {
         }
     }
 
+    /**
+     * Format 17 (29 Oct 2026, schema 40): a document's kind, status and the
+     * document it was made from go out and come back; a file from before 17
+     * reads every invoice as an open invoice made from nothing.
+     */
+    @Test
+    fun `a converted pair of documents goes out and comes back linked, and an older file reads as invoices`() {
+        val dir = java.nio.file.Files.createTempDirectory("rk-backup-docs").toFile()
+        val here = DesktopDatabase.open(dir.resolve("here.db"))
+        val there = DesktopDatabase.open(dir.resolve("there.db"))
+        try {
+            kotlinx.coroutines.runBlocking {
+                val dao = here.khataDao()
+                val lines = listOf(InvoiceItem(invoiceId = 0, itemName = "Urea", quantity = 10.0, unit = "bag", rate = 4650.0))
+                val q = dao.saveInvoiceWithItems(Invoice(customerName = "Ali", kind = DocKind.QUOTATION), lines)
+                val so = dao.convertDocument(q, DocKind.SALES_ORDER, by = "Owner")
+                dao.cancelDocument(dao.saveInvoiceWithItems(Invoice(customerName = "Bashir", kind = DocKind.PROFORMA), lines), by = "Owner")
+                dao.saveInvoiceWithItems(Invoice(customerName = "Chaudhry"), lines)
+
+                val text = java.io.StringWriter().also { BackupCodec.exportTo(dao, "Shop", org.json.JSONObject(), it) }.toString()
+                val (result, data) = BackupCodec.parseText(text)
+                assertTrue("$result", result is BackupCodec.ImportResult.Ok)
+                assertEquals(BackupCodec.FORMAT_VERSION, data!!.version)
+                assertTrue(data.version >= 17)
+                BackupCodec.restoreLedger(there.khataDao(), data)
+                val o = there.khataDao()
+                // Row for row, the random uids aside (lesson 31).
+                assertEquals(
+                    dao.allInvoicesForBackup().sortedBy { it.id }.map { it.copy(uid = null) },
+                    o.allInvoicesForBackup().sortedBy { it.id }.map { it.copy(uid = null) }
+                )
+                val order = o.getInvoice(so)!!
+                assertEquals(DocKind.SALES_ORDER, order.kind)
+                assertEquals(DocStatus.OPEN, order.status)
+                assertEquals("a restore keeps every id, so the link points where it did", q, order.sourceDocId)
+                assertEquals(DocStatus.CONVERTED, o.getInvoice(q)!!.status)
+                assertEquals(DocStatus.CANCELLED, o.allInvoicesForBackup().single { it.customerName == "Bashir" }.status)
+                assertEquals(listOf("Urea"), o.invoiceItems(so).map { it.itemName })
+
+                // The same file as an older release wrote it: no kind, status or source on any invoice.
+                val root = org.json.JSONObject(text)
+                root.put("version", 16)
+                val arr = root.getJSONArray("invoices")
+                for (i in 0 until arr.length()) arr.getJSONObject(i).apply { remove("kind"); remove("status"); remove("sourceDocId") }
+                val older = root.toString()
+                val (oldResult, oldData) = BackupCodec.parseText(older)
+                assertTrue("$oldResult", oldResult is BackupCodec.ImportResult.Ok)
+                assertEquals(4, oldData!!.invoices.size)
+                assertTrue(oldData.invoices.all { it.kind == DocKind.INVOICE && it.status == DocStatus.OPEN && it.sourceDocId == null })
+            }
+        } finally {
+            here.close(); there.close(); dir.deleteRecursively()
+        }
+    }
+
     @Test
     fun `refusals are the same kinds as on the phone`() {
         fun why(text: String) = (BackupCodec.parseText(text).first as BackupCodec.ImportResult.Failed).why

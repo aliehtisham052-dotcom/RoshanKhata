@@ -87,8 +87,9 @@ expect object KhataDatabaseConstructor : RoomDatabaseConstructor<KhataDatabase> 
 }
 
 /**
- * The schema version (39 since 28 Oct 2026: the payment reference on khata and
- * cashbook rows; 38 since 22 Oct 2026: a uid and its index on every row a
+ * The schema version (40 since 29 Oct 2026: the documents — an invoice's kind,
+ * status and the document it was made from; 39 since 28 Oct 2026: the payment
+ * reference on khata and cashbook rows; 38 since 22 Oct 2026: a uid and its index on every row a
  * live sync can carry; 37 since 21 Oct 2026: a stock adjustment's batch; 36 the
  * same night: book settings, loyalty, shifts,
  * product packs/tax/variants, line tax, the audit chain and row uids; 35 the
@@ -100,7 +101,7 @@ expect object KhataDatabaseConstructor : RoomDatabaseConstructor<KhataDatabase> 
  * with the database class (KMP Phase 3); the Android migrations stay in the
  * app and still end at this number.
  */
-const val KHATA_DB_VERSION = 39
+const val KHATA_DB_VERSION = 40
 
 object EntryNumber {
     fun next(existingCount: Int): String =

@@ -3552,4 +3552,23 @@
     <string name="live_pair_left_business">فون جو جوڙ تڏهن آيو جڏهن ڪاروبار “%1$s” کليل هو، ۽ هاڻي ٻيو ڪاروبار کليل آهي: ان کي ڇڏيو ويو ته جيئن اهو هن کاتي جي جاءِ نه وٺي. جوڙڻ لاءِ “%1$s” کوليو ۽ فون تي ڪوڊ ٻيهر اسڪين ڪريو.</string>
     <string name="live_wake_off">ايپ بند هجي ته ريلي هن فون کي جاڳائي نٿو سگهي: ٻئي ڊوائيس جون تبديليون ايپ کلڻ تي اينديون.</string>
     <string name="staff_name_taken">هن نالي جو عملو اڳ ۾ ئي فهرست ۾ آهي. فرق لاءِ ڪجهه ساڻ لکو، جيئن پيءُ جو نالو.</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">ڪوٽيشن</string>
+    <string name="doc_kind_proforma">پروفارما انوائس</string>
+    <string name="doc_kind_sales_order">سيلز آرڊر</string>
+    <string name="doc_kind_challan">ڊليوري چالان</string>
+    <string name="doc_kind_credit_note">ڪريڊٽ نوٽ</string>
+    <string name="doc_kind_debit_note">ڊيبٽ نوٽ</string>
+    <string name="doc_status_open">کليل</string>
+    <string name="doc_status_accepted">منظور</string>
+    <string name="doc_status_converted">تبديل ٿيل</string>
+    <string name="doc_status_cancelled">منسوخ</string>
+    <string name="doc_convert_to">%1$s ۾ تبديل ڪريو</string>
+    <string name="doc_converted_from">%1$s مان</string>
+    <string name="doc_locked">هي دستاويز تبديل ٿي چڪو آهي ۽ بدلائي نٿو سگهجي؛ نئون بدلايو.</string>
+    <string name="documents_title">دستاويز</string>
+    <string name="audit_doc_converted">دستاويز تبديل ٿيو</string>
+    <string name="audit_doc_accepted">دستاويز منظور ٿيو</string>
+    <string name="audit_doc_cancelled">دستاويز منسوخ ٿيو</string>
 </resources>
