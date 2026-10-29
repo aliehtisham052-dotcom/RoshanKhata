@@ -97,15 +97,7 @@ data class ZReport(
 
     /** The report as lines of text — the receipt printer, a share, a dialog. */
     fun lines(words: Words, money: (Double) -> String): List<Pair<String, String>> {
-        fun m(key: String) = words.text(
-            when (key) {
-                PaymentMethod.CASH -> W.payment_method_cash
-                PaymentMethod.BANK -> W.payment_method_bank
-                PaymentMethod.CHEQUE -> W.payment_method_cheque
-                SaleReturn.ACCOUNT -> W.pos_refund_account
-                else -> W.payment_method_online
-            }
-        )
+        fun m(key: String) = if (key == SaleReturn.ACCOUNT) words.text(W.pos_refund_account) else PaymentMethod.label(words, key)
         val out = ArrayList<Pair<String, String>>()
         out += words.text(W.z_sales_count) to saleCount.toString()
         out += words.text(W.z_sales_total) to money(salesTotal)

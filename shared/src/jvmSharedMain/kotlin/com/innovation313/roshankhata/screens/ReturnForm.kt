@@ -40,6 +40,7 @@ import com.innovation313.roshankhata.data.SaleReturnItem
 import com.innovation313.roshankhata.data.SaleWithLines
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
 
@@ -180,11 +181,4 @@ fun ReturnForm(draft: ReturnDraft, onPost: () -> Unit, onCancel: () -> Unit, mod
 }
 
 @Composable
-private fun methodWord(m: String): String = word(
-    when (m) {
-        PaymentMethod.CASH -> W.payment_method_cash
-        PaymentMethod.BANK -> W.payment_method_bank
-        PaymentMethod.CHEQUE -> W.payment_method_cheque
-        else -> W.payment_method_online
-    }
-)
+private fun methodWord(m: String): String = PaymentMethod.label(LocalWords.current, m)

@@ -6,9 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import com.innovation313.roshankhata.R
-import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.AndroidShopSettings
+import com.innovation313.roshankhata.data.AndroidWords
 import com.innovation313.roshankhata.data.Money
-import com.innovation313.roshankhata.data.PaymentDetails
+import com.innovation313.roshankhata.data.ReminderText
+import com.innovation313.roshankhata.words.Words
 
 /**
  * Payment reminders.
@@ -54,35 +56,30 @@ object Reminder {
         /** ReminderLadder step (6 Oct): 1 gentle (the message as before), 2 plain, 3 serious. */
         step: Int = com.innovation313.roshankhata.data.ReminderLadder.GENTLE,
         /** When this chase's first reminder went, for step 2's "first sent on". */
-        firstSentAt: Long? = null
+        firstSentAt: Long? = null,
+        /** The sale being chased (ReminderText.facts), quoted on its own line; null adds nothing. */
+        reference: String? = null
     ): String {
         // The words are the shared ReminderText's (Marhala 4, 25 Oct 2026): the computer's customer page
         // and Follow-up say the same at each step. The figure and the names are sealed in their own
         // direction there; in an English sentence the wrapper adds nothing, so an SMS stays as short.
         val from = if (businessName.isNullOrBlank()) "" else "\n\n— " + Format.isolate(businessName)
-        val body = com.innovation313.roshankhata.data.ReminderText.body(
-            com.innovation313.roshankhata.data.AndroidWords(context), partyName, balance, promisedDate, step, firstSentAt
+        val words = AndroidWords(context)
+        val body = ReminderText.body(
+            words, partyName, balance, promisedDate, step, firstSentAt, reference = reference
         )
 
         // How to pay, only on a reminder that asks for money (2 Oct).
-        val pay = if (Money.isPositive(balance)) paymentBlock(context) else ""
+        val pay = if (Money.isPositive(balance)) paymentBlock(context, words) else ""
         return (if (forSms) toPlainText(body) else body) + pay + from
     }
 
-    /** "\n\nPayment:\nJazzCash/Easypaisa: …" — empty when nothing is set or it is switched off. */
-    fun paymentBlock(context: Context): String {
-        if (!BusinessProfile.paymentOnReminder(context)) return ""
-        val lines = PaymentDetails.lines(
-            jazzCash = BusinessProfile.bankJazzCash(context),
-            bankName = BusinessProfile.bankName(context),
-            accountTitle = BusinessProfile.bankAccountTitle(context),
-            iban = BusinessProfile.bankIban(context),
-            walletLabel = context.getString(R.string.pay_wallet_label),
-            bankLabel = context.getString(R.string.pay_bank_label)
-        )
-        if (lines.isEmpty()) return ""
-        return "\n\n" + context.getString(R.string.pay_heading) + "\n" + lines.joinToString("\n")
-    }
+    /**
+     * "\n\nPayment:\nMobile wallet: …" — empty when nothing is set or it is switched off. The rule is the shared
+     * ReminderText.paymentBlock (29 Oct 2026), read here from this phone's profile; the computer reads its own.
+     */
+    fun paymentBlock(context: Context, words: Words = AndroidWords(context)): String =
+        ReminderText.paymentBlock(words, AndroidShopSettings(context))
 
     /**
      * The after-entry confirmation (2 Oct): what was written, on which day,

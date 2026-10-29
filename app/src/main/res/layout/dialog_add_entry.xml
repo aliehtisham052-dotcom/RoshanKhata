@@ -459,8 +459,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_method_online" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWallet"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_method_wallet" />
             </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
+
+            <!--
+              The payment's own id (schema 39, 29 Oct): a transfer's transaction
+              id, a wallet's TID, a cheque's number. Shown only beside a way that
+              has one — cash has none (PaymentRef.applies). Left-to-right: an id
+              is digits and Latin letters whatever the app's language.
+            -->
+            <EditText
+                android:id="@+id/etPaymentRef"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/pos_reference_hint"
+                android:importantForAutofill="no"
+                android:inputType="textVisiblePassword|textNoSuggestions"
+                android:maxLines="1"
+                android:textAlignment="viewStart"
+                android:textDirection="ltr"
+                android:visibility="gone" />
 
             <!-- "Scan payment slip" (1 Oct) moved up to the card's "Bill photo"
                  chip on 2 Oct: down here it was pushed below the keypad. -->

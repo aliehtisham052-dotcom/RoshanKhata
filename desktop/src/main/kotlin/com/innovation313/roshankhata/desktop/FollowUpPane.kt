@@ -26,7 +26,10 @@ import com.innovation313.roshankhata.data.FollowUpRank
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.PaymentHabit
+import com.innovation313.roshankhata.data.PaymentRequest
 import com.innovation313.roshankhata.data.PartyWithBalance
+import com.innovation313.roshankhata.data.ReminderText
+import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.data.WhatsAppNumber
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
@@ -48,11 +51,12 @@ import kotlinx.coroutines.withContext
  * ([ReminderStore.openedToday]) goes to the foot and leaves the "to remind today" count, as on the phone.
  */
 @Composable
-fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, shopName: String?, reminders: ReminderStore) {
+fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, shopName: String?, settings: ShopSettings, reminders: ReminderStore) {
     val c = LocalRoshanColors.current
     // The reminder read over before WhatsApp opens, at the ladder's next step (Marhala 4, as on the Khata page),
-    // with the date the phone's reminder quotes: a plan's next due day, else the promised harvest day.
-    var reminding by remember { mutableStateOf<Pair<PartyWithBalance, Long?>?>(null) }
+    // with the date the phone's reminder quotes (a plan's next due day, else the promised harvest day) and the
+    // sale being chased (ReminderText.facts).
+    var reminding by remember { mutableStateOf<Pair<PartyWithBalance, ReminderText.Facts>?>(null) }
     var closed by remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
     val points by remember { dao.observeOwingLedgerPoints() }.collectAsState(emptyList())
@@ -64,6 +68,10 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
     val debtors = parties.filter { Money.isPositive(it.balance) }
     // Re-read when a reminder closes: one opened just now counts.
     val reminded = remember(reminders, closed) { reminders.openedToday(now, tz) }
+    // "Reminded on …, nothing received since" (PaymentRequest, 29 Oct 2026): the last reminder from this
+    // computer against the customer's newest payment, from the points already read for his habit.
+    val lastReminded = remember(reminders, closed) { reminders.lastReminded() }
+    val lastGot = remember(points) { PaymentRequest.lastGotAt(points) }
     val ordered = remember(debtors, habits, promises, reminded) { FollowUpRank.order(debtors, habits, promises, now, tz, reminded) }
     val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, reminded) }
 
@@ -104,11 +112,15 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
                                 Text(line, color = if (urgent) c.owedToMe else c.textMuted, fontSize = 12.sp,
                                     fontWeight = if (urgent) FontWeight.SemiBold else FontWeight.Normal, maxLines = 2, overflow = TextOverflow.Ellipsis)
                             }
+                            val remindedAt = lastReminded[p.id]
+                            if (remindedAt != null && PaymentRequest.waitingSince(remindedAt, lastGot[p.id])) {
+                                Tag(word(W.followup_waiting, Format.dateOnly(remindedAt)), c.owedToMe, Look.getTint)
+                            }
                         }
                         Text(Format.money(p.balance), color = c.owedToMe, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                         val number = p.phone?.let { WhatsAppNumber.of(it) }
                         FluentButton(word(W.promo_send), {
-                            scope.launch { reminding = p to withContext(Dispatchers.IO) { runCatching { dao.reminderDateForParty(p.id) }.getOrNull() } }
+                            scope.launch { reminding = p to withContext(Dispatchers.IO) { reminderFacts(dao, p.id) } }
                         }, kind = ButtonKind.SUBTLE, icon = "ic_action_whatsapp", enabled = number != null)
                     }
                     Rule()
@@ -116,5 +128,9 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
             }
         }
     }
-    reminding?.let { (p, promised) -> ReminderDialog(p.id, p.name, p.phone, p.balance, promised, shopName, reminders) { reminding = null; closed++ } }
+    reminding?.let { (p, facts) -> ReminderDialog(p.id, p.name, p.phone, p.balance, facts, shopName, settings, reminders) { reminding = null; closed++ } }
 }
+
+/** ReminderText.facts with a book that cannot be read as nothing: the reminder still goes, without a date or number. */
+suspend fun reminderFacts(dao: KhataDao, partyId: Long): ReminderText.Facts =
+    runCatching { ReminderText.facts(dao, partyId) }.getOrDefault(ReminderText.Facts(null, null))

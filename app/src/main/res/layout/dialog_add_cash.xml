@@ -66,6 +66,52 @@
         android:importantForAutofill="no"
         android:inputType="text" />
 
+    <!--
+      How the money moved (29 Oct): Cash unless the owner taps another way, as
+      the khata's "I got" starts — the day's count looks in the drawer only for
+      cash. The chips are the add-entry form's, built in code from
+      PaymentMethod.ALL (CashbookActivity) so the two forms cannot drift apart.
+      One line that slides sideways, as on that form.
+    -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/payment_method_label"
+        android:textColor="@color/brand_green_text"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:clipToPadding="false"
+        android:fillViewport="false"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgCashMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true" />
+    </HorizontalScrollView>
+
+    <!-- The payment's own id (schema 39): shown only beside a way that has one (PaymentRef). -->
+    <EditText
+        android:id="@+id/etCashRef"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/pos_reference_hint"
+        android:importantForAutofill="no"
+        android:inputType="textVisiblePassword|textNoSuggestions"
+        android:maxLines="1"
+        android:textAlignment="viewStart"
+        android:textDirection="ltr"
+        android:visibility="gone" />
+
     <EditText
         android:id="@+id/etCashNote"
         android:layout_width="match_parent"

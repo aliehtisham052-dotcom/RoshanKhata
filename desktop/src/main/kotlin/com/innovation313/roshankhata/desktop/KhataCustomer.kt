@@ -403,7 +403,7 @@ private fun LedgerRow(w: EntryWithItems, balanceAfter: Double, picking: Boolean,
     val method = e.paymentMethod
     val title = when {
         goods.isNotEmpty() -> goods
-        method != null -> methodWords(method) + (note?.let { " · $it" } ?: "")
+        method != null -> (PaymentMethod.said(LocalWords.current, method, e.paymentRef) ?: method) + (note?.let { " · $it" } ?: "")
         note != null -> note
         else -> word(if (e.isGiven) W.i_gave else W.i_got)
     }
@@ -445,16 +445,6 @@ private fun figure(v: Double, signed: Boolean = false): String {
     val m = Format.money(if (Money.isZero(v)) 0.0 else v)
     return Format.ltr((if (minus) "−" else "") + m.substringAfter(' ', m))
 }
-
-@Composable
-internal fun methodWords(m: String): String = word(
-    when (m) {
-        PaymentMethod.CASH -> W.payment_method_cash
-        PaymentMethod.BANK -> W.payment_method_bank
-        PaymentMethod.CHEQUE -> W.payment_method_cheque
-        else -> W.payment_method_online
-    }
-)
 
 /** A small fact under the name: the promised day (a click changes it), a season paid on time. */
 @Composable

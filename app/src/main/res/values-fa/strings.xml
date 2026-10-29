@@ -247,6 +247,7 @@
     <string name="reminder_step_serious">جدی</string>
     <string name="reminder_step2">*یادآوری دوم*\n\n*%1$s* گرامی،\n\nمبلغ باقی‌مانده: *%2$s*\nیادآوری اول: %3$s\n\nاین دومین یادآوری ماست. لطفاً این هفته مبلغ را پرداخت کنید.\n\nسپاسگزاریم.</string>
     <string name="reminder_step3">*پرداخت معوق*\n\n*%1$s* گرامی،\n\nمبلغ باقی‌مانده: *%2$s*\n\nچند بار یادآوری کرده‌ایم و مبلغ هنوز باقی است. لطفاً پرداخت کنید یا تاریخ پرداخت را بگویید تا حساب تسویه شود.\n\nاز همکاری شما سپاسگزاریم.</string>
+    <string name="reminder_ref">مرجع: %1$s</string>
     <string name="reminder_i_owe">*اطلاع حساب*\n\nجناب *%1$s*،\n\nبدهی ما به شما: *%2$s*\n\nان‌شاءالله به‌زودی می‌پردازیم. اگر حساب شما با ما متفاوت است خبر دهید.\n\nسپاسگزاریم.</string>
     <string name="send_reminder">ارسال یادآوری</string>
     <string name="open_whatsapp">باز کردن واتساپ</string>
@@ -1475,6 +1476,7 @@
     <string name="payment_method_bank">انتقال بانکی</string>
     <string name="payment_method_cheque">چک</string>
     <string name="payment_method_online">آنلاین</string>
+    <string name="payment_method_wallet">کیف پول موبایل</string>
 
     <string name="quick_amount_label">از مانده %1$s</string>
     <string name="quick_amount_quarter">25%</string>
@@ -1792,6 +1794,7 @@
     <string name="label_guess_note">برخی خانه‌ها از روی فاکتور پر شده‌اند (شرکت، واحد، نوع، فرمولاسیون). پیش از ذخیره با برچسب مقایسه کنید.</string>
     <string name="entry_make_invoice">فاکتور</string>
     <string name="followup_promised">قول پرداخت: %1$s</string>
+    <string name="followup_waiting">یادآوری %1$s، پس از آن چیزی نرسید</string>
     <plurals name="followup_today">
         <item quantity="one">یادآوری امروز: %d</item>
         <item quantity="other">یادآوری امروز: %d</item>

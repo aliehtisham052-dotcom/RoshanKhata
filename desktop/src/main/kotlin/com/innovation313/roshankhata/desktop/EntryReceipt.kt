@@ -33,6 +33,7 @@ import androidx.compose.ui.window.rememberDialogState
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerEntry
+import com.innovation313.roshankhata.data.PaymentMethod
 import com.innovation313.roshankhata.data.ReceiptGoods
 import com.innovation313.roshankhata.data.SeasonBook
 import com.innovation313.roshankhata.screens.LocalRoshanColors
@@ -162,8 +163,9 @@ fun EntryReceiptCard(
                     ReceiptRow(word(W.goods_label), goods)
                 }
                 e.note?.takeIf { it.isNotBlank() }?.let { ReceiptRow(word(W.note_label), it) }
-                // How the money came, only when it was recorded: an unrecorded method is not cash.
-                e.paymentMethod?.let { m -> ReceiptRow(word(W.payment_method_label), methodWords(m)) }
+                // How the money came, only when it was recorded (an unrecorded method is not cash), with the
+                // payment's reference after it (schema 39): "Bank transfer · Ref: TID 778…".
+                PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { ReceiptRow(word(W.payment_method_label), it) }
                 // The balance this entry left, in the customer's own words (ReceiptBalance), not today's.
                 ReceiptRow(word(W.balance_label), after?.let { com.innovation313.roshankhata.data.ReceiptBalance.text(words, it) } ?: "—")
 

@@ -1,22 +1,18 @@
 package com.innovation313.roshankhata.data
 
 import android.content.Context
-import com.innovation313.roshankhata.R
 
-// PaymentMethod's labels: the app's own strings, so they stay with the app
-// while the table itself moved to the shared module (KMP Phase 3, 18 Oct).
-// Called as before: PaymentMethod.labelOf(context, key).
-
-fun PaymentMethod.labelRes(key: String): Int? = when (key) {
-    CASH -> R.string.payment_method_cash
-    BANK -> R.string.payment_method_bank
-    CHEQUE -> R.string.payment_method_cheque
-    ONLINE -> R.string.payment_method_online
-    else -> null
-}
+// PaymentMethod's labels on the phone, as the call has always read:
+// PaymentMethod.labelOf(context, key). The table itself is the shared
+// PaymentMethod.label (29 Oct 2026: one list of methods for both platforms,
+// read through the phone's own resources by AndroidWords), so a method added
+// there — WALLET — is labelled here without a second list to forget.
 
 fun PaymentMethod.labelOf(context: Context, key: String?): String? {
     if (key.isNullOrBlank()) return null
-    val res = labelRes(key) ?: return key
-    return context.getString(res)
+    return label(AndroidWords(context), key)
 }
+
+/** The method with its reference, "Bank transfer · Ref: TID 778…" — the shared PaymentMethod.said, on the phone. */
+fun PaymentMethod.saidOn(context: Context, method: String?, ref: String?): String? =
+    said(AndroidWords(context), method, ref)

@@ -723,7 +723,7 @@ private fun Book(
     var statementFor by remember { mutableStateOf<PartyWithBalance?>(null) }
     // A payment reminder being read over (Marhala 4): the party and the day they promised, if any; and this
     // computer's count of reminders opened, per business (the ladder's steps).
-    var reminding by remember { mutableStateOf<Pair<PartyWithBalance, Long?>?>(null) }
+    var reminding by remember { mutableStateOf<Pair<PartyWithBalance, com.innovation313.roshankhata.data.ReminderText.Facts>?>(null) }
     val reminders = remember(activeBusiness) { ReminderStore.forBusiness(home, activeBusiness) }
     // The open account's other tools (the phone's customer menu): its promised day being chosen (the party and
     // the day it has), its QR card, and several of its entries chosen to delete — cleared when another opens.
@@ -1015,7 +1015,7 @@ private fun Book(
                     Section.ZAKAT -> Box(Modifier.fillMaxSize()) { ZakatPane(dao) }
                     Section.RATES -> Box(Modifier.fillMaxSize()) { RateListPane(dao, words, rtl, shop) }
                     Section.STAFF -> Box(Modifier.fillMaxSize()) { StaffPane(dao) }
-                    Section.FOLLOWUP -> Box(Modifier.fillMaxSize()) { FollowUpPane(dao, parties, words, shop, reminders) }
+                    Section.FOLLOWUP -> Box(Modifier.fillMaxSize()) { FollowUpPane(dao, parties, words, shop, settings, reminders) }
                     Section.AGING -> Box(Modifier.fillMaxSize()) { AgingPane(dao, words, rtl, shop, reload) { id -> selected = id; section = Section.KHATA } }
                     Section.CALC -> Box(Modifier.fillMaxSize()) { CalculatorPane(onKhata = { v -> pickedFor = selected; carry = v }) }
                     Section.SCHEMES -> Box(Modifier.fillMaxSize()) { SchemesPane(dao, reload) }
@@ -1204,7 +1204,7 @@ private fun Book(
                                     // plan's next due day, else the promised harvest day (reminderDateForParty).
                                     onRemind = {
                                         if (Money.isZero(party.balance)) told = words.text(W.send_reminder) to words.text(W.nothing_outstanding)
-                                        else scope.launch { reminding = party to withContext(Dispatchers.IO) { runCatching { dao.reminderDateForParty(party.id) }.getOrNull() } }
+                                        else scope.launch { reminding = party to withContext(Dispatchers.IO) { reminderFacts(dao, party.id) } }
                                     },
                                     onStatement = { statementFor = party },
                                     onEdit = { Gates.edit { scope.launch { editingParty = withContext(Dispatchers.IO) { dao.getParty(party.id) } } } },
@@ -1228,8 +1228,8 @@ private fun Book(
                             }
                         }
                         // The reminder read over before WhatsApp opens (the phone's preview, the ladder's step).
-                        reminding?.let { (p, promised) ->
-                            ReminderDialog(p.id, p.name, p.phone, p.balance, promised, shopName(), reminders) { reminding = null }
+                        reminding?.let { (p, facts) ->
+                            ReminderDialog(p.id, p.name, p.phone, p.balance, facts, shopName(), settings, reminders) { reminding = null }
                         }
                         // The promised day from the page (the phone's menu and chip): 7/15/30 days, the next harvests,
                         // another day, or taken back. Follow-up and the reminder's words read it.
@@ -1527,6 +1527,8 @@ private fun Book(
                             ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true)
                         ) + goodsLines + listOfNotNull(
                             e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
+                            // How it was paid and the payment's reference, as the receipt card says them (29 Oct 2026).
+                            com.innovation313.roshankhata.data.PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { ThermalReceipt.Line(it, 18f) },
                             ThermalReceipt.Line(""),
                             // The customer reads this: his side in his own words, never a bare figure (ReceiptBalance).
                             after?.let { b ->

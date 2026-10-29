@@ -367,12 +367,15 @@ object PdfExport {
             // down the page, so it gets the weight — bold, like the summary.
             PdfRtl.drawText(c, Format.money(row.runningBalance), xBal, y, header)
 
-            // Second line: reference number, note, and any goods that moved.
+            // Second line: reference number, note, any goods that moved, and
+            // the payment's own reference with its way (schema 39): the id the
+            // customer can look up on his side ("Bank transfer · Ref: TID 778…").
             y += 12f
             val detail = buildList {
                 add(e.entryNumber)
                 Format.goods(row.items)?.let { add(it) }
                 e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
+                if (!e.paymentRef.isNullOrBlank()) PaymentMethod.saidOn(context, e.paymentMethod, e.paymentRef)?.let { add(it) }
                 if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
 
