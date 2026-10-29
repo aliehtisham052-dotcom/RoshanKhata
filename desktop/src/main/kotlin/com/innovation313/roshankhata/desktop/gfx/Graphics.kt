@@ -651,6 +651,9 @@ class Replay(val g: Graphics2D) {
  */
 open class Canvas(val width: Int = 0, val height: Int = 0) {
     internal val ops = mutableListOf<(Replay) -> Unit>()
+
+    /** Every text drawn on this canvas, in order — for the proof tests, which cannot read a picture (29 Oct 2026). */
+    val words = mutableListOf<String>()
     private var depth = 1
     private var current = AffineTransform()
     private val saved = ArrayDeque<AffineTransform>()
@@ -807,6 +810,7 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
     }
 
     open fun drawText(text: String, x: Float, y: Float, paint: Paint) {
+        words += text
         val p = Paint(paint)
         ops += { r ->
             Text.layout(text, p)?.let { layout ->

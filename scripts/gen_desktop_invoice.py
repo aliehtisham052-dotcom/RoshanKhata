@@ -29,6 +29,7 @@ IMPORTS = """package com.innovation313.roshankhata.desktop.invoice
 
 import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.data.DocKind
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoiceTotals

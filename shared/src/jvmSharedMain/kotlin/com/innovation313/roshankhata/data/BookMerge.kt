@@ -383,12 +383,17 @@ object BookMerge {
         val invoiceMap = HashMap<Long, Long>()
         for (i in there.invoices) i.uid?.let { h.invoices[it] }?.let { invoiceMap[i.id] = it }
         val invoiceLines = there.invoiceItems.groupBy { it.invoiceId }
+        // In id order, so a converted document's source (always the older row) is already in invoiceMap —
+        // either shared (by uid) or just written; a source this book will never have (the copy's bin) is let go.
         for (inv in n.invoices.sortedBy { it.id }) {
             var number = inv.invoiceNumber
             if (number.isBlank() || dao.invoiceNumberUsed(number) > 0) {
-                number = InvoiceNumber.next(maxOf(dao.totalInvoiceCount(), dao.highestInvoiceNumber())); renumbered++
+                number = dao.nextDocNumber(inv.kind); renumbered++
             }
-            val id = dao.insertInvoice(inv.copy(id = 0, invoiceNumber = number, sourceEntryId = inv.sourceEntryId?.let { entryMap[it] }))
+            val id = dao.insertInvoice(inv.copy(
+                id = 0, invoiceNumber = number, sourceEntryId = inv.sourceEntryId?.let { entryMap[it] },
+                sourceDocId = inv.sourceDocId?.let { invoiceMap[it] }
+            ))
             invoiceMap[inv.id] = id
             for (l in invoiceLines[inv.id].orEmpty().sortedBy { it.id }) dao.insertInvoiceItem(l.copy(id = 0, invoiceId = id))
         }

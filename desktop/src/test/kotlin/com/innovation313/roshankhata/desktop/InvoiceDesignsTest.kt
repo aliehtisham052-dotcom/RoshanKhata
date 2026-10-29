@@ -89,6 +89,54 @@ class InvoiceDesignsTest {
         }
     }
 
+    /**
+     * The documents (schema 40, 29 Oct 2026): a quotation wears its own
+     * heading where the invoice says INVOICE, and a delivery challan prints
+     * no rate, amount or total — the driver's paper says what went out, never
+     * what it costs. Every design, every language; proofs quotation-<lang>.png
+     * and challan-<lang>.png beside the invoices'.
+     */
+    @Test
+    fun `a quotation says quotation and a challan prints no prices, in every design`() {
+        val dir = File("build/invoice-proof").apply { mkdirs() }
+        for (tag in listOf("en", "ur")) {
+            val previous = Locale.getDefault()
+            Locale.setDefault(Locale.forLanguageTag(tag))
+            try {
+                val ctx = context(tag)
+                val quotationWord = ctx.getString(com.innovation313.roshankhata.words.W.doc_kind_quotation)
+                val challanWord = ctx.getString(com.innovation313.roshankhata.words.W.doc_kind_challan)
+                val invoiceWord = ctx.getString(com.innovation313.roshankhata.words.W.pdf_label_invoice)
+                // Urea's rate and line total, whatever the language groups its digits with.
+                val rate = Regex("4\\D?650")
+                val lineTotal = Regex("46\\D?500")
+                for (design in 1..10) {
+                    val quotation = invoice(design).copy(invoiceNumber = "Q-000003", kind = com.innovation313.roshankhata.data.DocKind.QUOTATION, receivedAmount = null)
+                    val q = InvoiceDesigns.pages(ctx, quotation, items)!!
+                    val qWords = q.finished.flatMap { it.canvas.words }
+                    assertTrue("design $design ($tag): the quotation's heading is missing", quotationWord in qWords)
+                    assertTrue("design $design ($tag): a quotation must not say INVOICE", invoiceWord !in qWords)
+                    assertTrue("design $design ($tag): a quotation prints its rates", qWords.any { rate.containsMatchIn(it) })
+
+                    val challan = invoice(design).copy(invoiceNumber = "DC-000003", kind = com.innovation313.roshankhata.data.DocKind.CHALLAN, receivedAmount = null)
+                    val d = InvoiceDesigns.pages(ctx, challan, items)!!
+                    val dWords = d.finished.flatMap { it.canvas.words }
+                    assertTrue("design $design ($tag): the challan's heading is missing", challanWord in dWords)
+                    assertTrue("design $design ($tag): a challan printed a rate", dWords.none { rate.containsMatchIn(it) })
+                    assertTrue("design $design ($tag): a challan printed a line total", dWords.none { lineTotal.containsMatchIn(it) })
+                    assertTrue("design $design ($tag): a challan printed the total word", ctx.getString(com.innovation313.roshankhata.words.W.pdf_label_total) !in dWords)
+                    assertTrue("design $design ($tag): a challan still lists its goods", dWords.any { it.contains("Urea") })
+                    if (design == 1) {
+                        ImageIO.write(q.picture(0, 1.5f), "png", File(dir, "quotation-$tag.png"))
+                        ImageIO.write(d.picture(0, 1.5f), "png", File(dir, "challan-$tag.png"))
+                    }
+                }
+            } finally {
+                Locale.setDefault(previous)
+            }
+        }
+    }
+
     @Test
     fun `a long invoice runs onto a second page instead of off the first`() {
         val many = (1..40).map { InvoiceItem(invoiceId = 1, itemName = "Item $it", quantity = 1.0, rate = 100.0) }

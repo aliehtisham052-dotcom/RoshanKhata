@@ -495,4 +495,8 @@ object AuditAction {
     const val IMPORT = "import"
     const val BILL_DELETED = "bill_deleted"
     const val BILL_EDITED = "bill_edited"
+    /** The documents (schema 40, 29 Oct 2026): a step taken, a customer's yes, a document dropped. */
+    const val DOC_CONVERTED = "doc_converted"
+    const val DOC_ACCEPTED = "doc_accepted"
+    const val DOC_CANCELLED = "doc_cancelled"
 }

@@ -163,5 +163,8 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.IMPORT -> word(W.audit_import)
     AuditAction.BILL_DELETED -> word(W.audit_bill_deleted)
     AuditAction.BILL_EDITED -> word(W.audit_bill_edited)
+    AuditAction.DOC_CONVERTED -> word(W.audit_doc_converted)
+    AuditAction.DOC_ACCEPTED -> word(W.audit_doc_accepted)
+    AuditAction.DOC_CANCELLED -> word(W.audit_doc_cancelled)
     else -> a.action
 }

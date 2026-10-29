@@ -39,7 +39,12 @@ object BackupCodec {
      * column no backup carried — after any restore every credit bill's photo
      * was unlinked, the files back on disk with nothing pointing at them; 16
      * (28 Oct 2026, schema 39) the payment reference of a khata or cashbook
-     * row — the transfer id, TID or cheque number its payment came with.
+     * row — the transfer id, TID or cheque number its payment came with; 17
+     * (29 Oct 2026, schema 40) the documents — an invoice row's kind
+     * (quotation, proforma, sales order, challan, invoice), its status and the
+     * document it was converted from (sourceDocId, a row id: a restore keeps
+     * every id as written, so it points where it did; a merge re-points it
+     * through the invoice map, as sourceEntryId is through the entry map).
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -48,7 +53,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 16
+    const val FORMAT_VERSION = 17
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -1213,6 +1218,9 @@ object BackupCodec {
         put("isDeleted", i.isDeleted)
         put("deletedAt", i.deletedAt ?: JSONObject.NULL)
         put("uid", i.uid ?: JSONObject.NULL)
+        put("kind", i.kind)
+        put("status", i.status)
+        put("sourceDocId", i.sourceDocId ?: JSONObject.NULL)
     }
 
     private fun jsonToInvoice(o: JSONObject) = Invoice(
@@ -1236,7 +1244,11 @@ object BackupCodec {
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt"),
-        uid = o.uid()
+        uid = o.uid(),
+        // Absent before format 17 (schema 40): every older row is an open invoice made from nothing.
+        kind = o.optString("kind", "").ifBlank { DocKind.INVOICE },
+        status = o.optString("status", "").ifBlank { DocStatus.OPEN },
+        sourceDocId = o.optNullableLong("sourceDocId")
     )
 
     private fun invoiceItemToJson(i: InvoiceItem) = JSONObject().apply {

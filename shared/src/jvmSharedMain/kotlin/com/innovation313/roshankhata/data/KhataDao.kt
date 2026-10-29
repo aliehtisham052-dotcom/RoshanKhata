@@ -1132,10 +1132,9 @@ interface KhataDao {
      */
     @Transaction
     suspend fun saveInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Long {
+        if (!DocKind.isSaved(invoice.kind)) throw DocRefused(DocRefused.Why.BAD_KIND, "not a saved document kind: ${invoice.kind}")
         val numbered = if (invoice.invoiceNumber.isBlank()) {
-            // From the highest number ever used, not the count (21 Oct 2026, the critical review): with
-            // one invoice deleted or merged in, the count gave a number already on another invoice.
-            invoice.copy(invoiceNumber = InvoiceNumber.next(maxOf(totalInvoiceCount(), highestInvoiceNumber())))
+            invoice.copy(invoiceNumber = nextDocNumber(invoice.kind))
         } else {
             invoice
         }
@@ -1145,6 +1144,99 @@ interface KhataDao {
         }
         return invoiceId
     }
+
+    /**
+     * The next number in [kind]'s series, read inside the caller's transaction
+     * (schema 40): the higher of the kind's own count and its own highest
+     * number, plus one. For the invoice this is the rule every INV- book has
+     * run on since 21 Oct 2026 (the count, else the highest INV- number — with
+     * one invoice deleted or merged in, the count alone gave a number already
+     * on another invoice): before 40 every row was an invoice, so the kind's
+     * count IS the table's count those books numbered from, and no existing
+     * series skips or repeats a number. Counting by kind only keeps a hundred
+     * quotations from pushing the next invoice to INV-000106.
+     */
+    suspend fun nextDocNumber(kind: String): String =
+        InvoiceNumber.next(kind, maxOf(docCount(kind), highestDocNumber(kind, DocKind.prefix(kind))))
+
+    /** How many documents of [kind] the book holds, the bin included (a number is never given twice). */
+    @Query("SELECT COUNT(*) FROM invoices WHERE kind = :kind")
+    suspend fun docCount(kind: String): Int
+
+    /**
+     * The largest number in [kind]'s series: the digits after [prefix], cast
+     * as [highestInvoiceNumber] casts them — SQLite stops at the device's
+     * letter ([NumberMark]), so SO-000013-B counts as 13.
+     */
+    @Query(
+        "SELECT COALESCE(MAX(CAST(SUBSTR(invoiceNumber, LENGTH(:prefix) + 1) AS INTEGER)), 0) FROM invoices " +
+            "WHERE kind = :kind AND invoiceNumber LIKE :prefix || '%'"
+    )
+    suspend fun highestDocNumber(kind: String, prefix: String): Int
+
+    /**
+     * The document stepped on (schema 40, 29 Oct 2026): a quotation into a
+     * sales order, a sales order into a challan, a challan or a proforma into
+     * the invoice — or any earlier step straight to the invoice
+     * ([DocKind.canConvert]). The source's row is copied whole (a new id and
+     * uid, [toKind], [DocStatus.OPEN], today's date, the due date carried,
+     * [sourceDocId] pointing back) with its live lines as new rows, and the
+     * source is marked [DocStatus.CONVERTED]: it is never edited again, what
+     * changes is written on the new one. A received amount is a payment
+     * against a bill, so it is carried only onto an invoice. One transaction,
+     * one audit row with the signed-in name; the new document's id comes back.
+     *
+     * Refused ([DocRefused]) when the source is binned or missing, is not
+     * live (converted or cancelled already), or [toKind] is not a legal step.
+     */
+    @Transaction
+    suspend fun convertDocument(sourceId: Long, toKind: String, now: Long = System.currentTimeMillis(), by: String? = Access.userName): Long {
+        val source = getInvoice(sourceId)?.takeIf { !it.isDeleted }
+            ?: throw DocRefused(DocRefused.Why.NOT_FOUND, "no live document $sourceId")
+        if (!DocStatus.isLive(source.status)) throw DocRefused(DocRefused.Why.NOT_LIVE, "${source.invoiceNumber} is ${source.status}")
+        if (!DocKind.isSaved(toKind)) throw DocRefused(DocRefused.Why.BAD_KIND, "not a saved document kind: $toKind")
+        if (!DocKind.canConvert(source.kind, toKind)) throw DocRefused(DocRefused.Why.BAD_STEP, "${source.kind} does not convert to $toKind")
+        val made = insertInvoice(
+            source.copy(
+                id = 0, uid = Uid.next(), kind = toKind, status = DocStatus.OPEN, sourceDocId = source.id,
+                invoiceNumber = nextDocNumber(toKind), invoiceDate = now, createdAt = now,
+                receivedAmount = if (toKind == DocKind.INVOICE) source.receivedAmount else null,
+                isDeleted = false, deletedAt = null
+            )
+        )
+        for (line in invoiceItems(source.id)) insertInvoiceItem(line.copy(id = 0, uid = Uid.next(), invoiceId = made))
+        setDocStatus(source.id, DocStatus.CONVERTED, source.status)
+        val number = getInvoice(made)?.invoiceNumber.orEmpty()
+        insertAudit(AuditLog(user = by, action = AuditAction.DOC_CONVERTED, refTable = "invoices", refId = made, detail = "${source.invoiceNumber} → $number"))
+        return made
+    }
+
+    /** The customer agreed to the document (a quotation, usually): OPEN → ACCEPTED, from OPEN only (lesson 52). */
+    @Transaction
+    suspend fun acceptDocument(id: Long, by: String? = Access.userName) {
+        val doc = getInvoice(id)?.takeIf { !it.isDeleted } ?: throw DocRefused(DocRefused.Why.NOT_FOUND, "no live document $id")
+        if (doc.status != DocStatus.OPEN) throw DocRefused(DocRefused.Why.NOT_OPEN, "${doc.invoiceNumber} is ${doc.status}")
+        if (setDocStatus(id, DocStatus.ACCEPTED, DocStatus.OPEN) != 1) throw DocRefused(DocRefused.Why.NOT_OPEN, "${doc.invoiceNumber} changed under us")
+        insertAudit(AuditLog(user = by, action = AuditAction.DOC_ACCEPTED, refTable = "invoices", refId = id, detail = doc.invoiceNumber))
+    }
+
+    /**
+     * The document dropped: OPEN or ACCEPTED → CANCELLED. It stays on record
+     * under its number (delete nothing, reverse it) and is never edited again.
+     * A converted document cannot be cancelled — the step it became is the
+     * live one; cancel that.
+     */
+    @Transaction
+    suspend fun cancelDocument(id: Long, by: String? = Access.userName) {
+        val doc = getInvoice(id)?.takeIf { !it.isDeleted } ?: throw DocRefused(DocRefused.Why.NOT_FOUND, "no live document $id")
+        if (!DocStatus.isLive(doc.status)) throw DocRefused(DocRefused.Why.NOT_LIVE, "${doc.invoiceNumber} is ${doc.status}")
+        if (setDocStatus(id, DocStatus.CANCELLED, doc.status) != 1) throw DocRefused(DocRefused.Why.NOT_LIVE, "${doc.invoiceNumber} changed under us")
+        insertAudit(AuditLog(user = by, action = AuditAction.DOC_CANCELLED, refTable = "invoices", refId = id, detail = doc.invoiceNumber))
+    }
+
+    /** The one status write: only from [from], so a stale screen cannot overwrite a step another device took. Rows changed. */
+    @Query("UPDATE invoices SET status = :to WHERE id = :id AND status = :from AND isDeleted = 0")
+    suspend fun setDocStatus(id: Long, to: String, from: String): Int
 
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoice(id: Long): Invoice?
@@ -1168,7 +1260,14 @@ interface KhataDao {
      */
     @Transaction
     suspend fun updateInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>) {
-        updateInvoice(invoice)
+        // Immutable once converted or cancelled (schema 40): the document a customer holds, or the one that
+        // was stepped on, says what it said. Kind and status are not the editor's to change either — a
+        // conversion is convertDocument, a status change acceptDocument/cancelDocument (lesson 52). The row's
+        // uid and createdAt stay the saved row's too: the phone's editor builds the edit as a fresh Invoice,
+        // whose default uid would have renamed the row for every other device (lesson 35).
+        val saved = getInvoice(invoice.id) ?: throw DocRefused(DocRefused.Why.NOT_FOUND, "no document ${invoice.id}")
+        if (!DocStatus.isLive(saved.status)) throw DocRefused(DocRefused.Why.NOT_LIVE, "${saved.invoiceNumber} is ${saved.status}")
+        updateInvoice(invoice.copy(kind = saved.kind, status = saved.status, sourceDocId = saved.sourceDocId, uid = saved.uid, createdAt = saved.createdAt))
         softDeleteInvoiceItems(invoice.id)
         for (item in items) {
             insertInvoiceItem(item.copy(id = 0, invoiceId = invoice.id))
@@ -1183,7 +1282,7 @@ interface KhataDao {
 
     @Query(
         """
-        SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+        SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate, i.kind, i.status,
                (SELECT COUNT(*) FROM invoice_items li
                 WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
                (
@@ -1213,7 +1312,7 @@ interface KhataDao {
      */
     @Query(
         """
-        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount,
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount, s.kind, s.status,
                (
                  (CASE WHEN s.discountAmount IS NOT NULL THEN
                     MAX(0, s.gross - MAX(0, s.discountAmount))
@@ -1224,7 +1323,7 @@ interface KhataDao {
                  + COALESCE(s.additionalChargeAmount, 0)
                ) AS grandTotal
         FROM (
-          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate, i.kind, i.status,
                  i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
                  (SELECT COUNT(*) FROM invoice_items li
                   WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
@@ -1243,7 +1342,7 @@ interface KhataDao {
     /** Every invoice dated on or after [from], summed the same way — this month's figure on Windows. */
     @Query(
         """
-        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount,
+        SELECT s.id, s.invoiceNumber, s.customerName, s.invoiceDate, s.itemCount, s.kind, s.status,
                (
                  (CASE WHEN s.discountAmount IS NOT NULL THEN
                     MAX(0, s.gross - MAX(0, s.discountAmount))
@@ -1254,7 +1353,7 @@ interface KhataDao {
                  + COALESCE(s.additionalChargeAmount, 0)
                ) AS grandTotal
         FROM (
-          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate,
+          SELECT i.id, i.invoiceNumber, i.customerName, i.invoiceDate, i.kind, i.status,
                  i.discountAmount, i.discountPercent, i.taxPercent, i.additionalChargeAmount,
                  (SELECT COUNT(*) FROM invoice_items li
                   WHERE li.invoiceId = i.id AND li.isDeleted = 0) AS itemCount,
@@ -4178,7 +4277,7 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM purchase_orders WHERE orderNumber = :n") suspend fun orderNumberUsed(n: String): Int
     @Query("SELECT COUNT(*) FROM invoices WHERE invoiceNumber = :n") suspend fun invoiceNumberUsed(n: String): Int
 
-    /** The largest INV- number in the book (invoices are otherwise numbered by their count). */
+    /** The largest INV- number in the book, whatever kind the row says (an old book's series; [highestDocNumber] is the rule since 40). */
     @Query("SELECT COALESCE(MAX(CAST(SUBSTR(invoiceNumber, 5) AS INTEGER)), 0) FROM invoices WHERE invoiceNumber LIKE 'INV-%'")
     suspend fun highestInvoiceNumber(): Int
 

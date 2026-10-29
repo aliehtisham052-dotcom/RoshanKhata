@@ -3524,4 +3524,23 @@
     <string name="live_pair_left_business">Phone ka jor us waqt aaya jab karobar “%1$s” khula tha, aur ab doosra karobar khula hai: isay chhor diya gaya taake yeh is khate ki jagah na le. Jorne ke liye “%1$s” kholein aur phone par code dobara scan karein.</string>
     <string name="live_wake_off">App band ho to relay is phone ko jaga nahin sakta: doosre device ki tabdeeliyan app khulne par aayengi.</string>
     <string name="staff_name_taken">Is naam ka staff pehle se list mein hai. Farq ke liye kuch saath likhein, jaise walid ka naam.</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">Quotation</string>
+    <string name="doc_kind_proforma">Proforma Invoice</string>
+    <string name="doc_kind_sales_order">Sales Order</string>
+    <string name="doc_kind_challan">Delivery Challan</string>
+    <string name="doc_kind_credit_note">Credit Note</string>
+    <string name="doc_kind_debit_note">Debit Note</string>
+    <string name="doc_status_open">Khula</string>
+    <string name="doc_status_accepted">Manzoor</string>
+    <string name="doc_status_converted">Convert ho gaya</string>
+    <string name="doc_status_cancelled">Mansookh</string>
+    <string name="doc_convert_to">%1$s mein convert karein</string>
+    <string name="doc_converted_from">%1$s se</string>
+    <string name="doc_locked">Yeh document convert ho chuka hai aur badla nahi ja sakta; naya wala badlein.</string>
+    <string name="documents_title">Documents</string>
+    <string name="audit_doc_converted">Document convert hua</string>
+    <string name="audit_doc_accepted">Document manzoor hua</string>
+    <string name="audit_doc_cancelled">Document mansookh hua</string>
 </resources>

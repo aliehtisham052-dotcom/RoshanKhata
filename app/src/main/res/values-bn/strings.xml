@@ -3572,4 +3572,23 @@
     <string name="live_pair_left_business">ফোনের জোড় এসেছিল যখন ব্যবসা “%1$s” খোলা ছিল, আর এখন অন্য ব্যবসা খোলা: তাই সেটি ছেড়ে দেওয়া হয়েছে, যাতে এটি এই খাতার জায়গা না নেয়। জোড়ার জন্য “%1$s” খুলুন এবং ফোনে কোডটি আবার স্ক্যান করুন।</string>
     <string name="live_wake_off">অ্যাপ বন্ধ থাকলে রিলে এই ফোনকে জাগাতে পারে না: অন্য ডিভাইসের পরিবর্তন অ্যাপ খুললে আসবে।</string>
     <string name="staff_name_taken">এই নামে কর্মী আগে থেকেই তালিকায় আছেন। আলাদা করে চেনার জন্য কিছু যোগ করুন, যেমন বাবার নাম।</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">কোটেশন</string>
+    <string name="doc_kind_proforma">প্রোফর্মা ইনভয়েস</string>
+    <string name="doc_kind_sales_order">সেলস অর্ডার</string>
+    <string name="doc_kind_challan">ডেলিভারি চালান</string>
+    <string name="doc_kind_credit_note">ক্রেডিট নোট</string>
+    <string name="doc_kind_debit_note">ডেবিট নোট</string>
+    <string name="doc_status_open">খোলা</string>
+    <string name="doc_status_accepted">গৃহীত</string>
+    <string name="doc_status_converted">রূপান্তরিত</string>
+    <string name="doc_status_cancelled">বাতিল</string>
+    <string name="doc_convert_to">%1$s-এ রূপান্তর</string>
+    <string name="doc_converted_from">%1$s থেকে</string>
+    <string name="doc_locked">এই নথি রূপান্তরিত হয়েছে এবং পরিবর্তন করা যাবে না; নতুনটি পরিবর্তন করুন।</string>
+    <string name="documents_title">নথিপত্র</string>
+    <string name="audit_doc_converted">নথি রূপান্তরিত</string>
+    <string name="audit_doc_accepted">নথি গৃহীত</string>
+    <string name="audit_doc_cancelled">নথি বাতিল</string>
 </resources>

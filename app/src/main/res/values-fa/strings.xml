@@ -3552,4 +3552,23 @@
     <string name="live_pair_left_business">جفت‌شدن گوشی وقتی رسید که کسب‌وکار «%1$s» باز بود، و اکنون کسب‌وکار دیگری باز است: پس رها شد تا جای این دفتر را نگیرد. برای جفت‌شدن، «%1$s» را باز کنید و کد را دوباره روی گوشی اسکن کنید.</string>
     <string name="live_wake_off">تا برنامه بسته است، رله نمی‌تواند این گوشی را بیدار کند: تغییرات دستگاه دیگر با باز شدن برنامه می‌رسند.</string>
     <string name="staff_name_taken">کسی با این نام در فهرست کارکنان هست. چیزی برای تمایز اضافه کنید، مثل نام پدر.</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">پیش‌فاکتور</string>
+    <string name="doc_kind_proforma">پیش‌فاکتور رسمی</string>
+    <string name="doc_kind_sales_order">سفارش فروش</string>
+    <string name="doc_kind_challan">حواله تحویل</string>
+    <string name="doc_kind_credit_note">اعلامیه بستانکار</string>
+    <string name="doc_kind_debit_note">اعلامیه بدهکار</string>
+    <string name="doc_status_open">باز</string>
+    <string name="doc_status_accepted">تأیید شده</string>
+    <string name="doc_status_converted">تبدیل شده</string>
+    <string name="doc_status_cancelled">لغو شده</string>
+    <string name="doc_convert_to">تبدیل به %1$s</string>
+    <string name="doc_converted_from">از %1$s</string>
+    <string name="doc_locked">این سند تبدیل شده و قابل تغییر نیست؛ سند جدید را تغییر دهید.</string>
+    <string name="documents_title">اسناد</string>
+    <string name="audit_doc_converted">سند تبدیل شد</string>
+    <string name="audit_doc_accepted">سند تأیید شد</string>
+    <string name="audit_doc_cancelled">سند لغو شد</string>
 </resources>

@@ -3517,4 +3517,23 @@
     <string name="live_pair_left_business">Pemasangan ponsel datang saat usaha “%1$s” terbuka, dan sekarang usaha lain yang terbuka: pemasangan itu dilepas agar tidak menggantikan buku ini. Untuk memasangkan, buka “%1$s” lalu pindai kodenya lagi di ponsel.</string>
     <string name="live_wake_off">Relai tidak dapat membangunkan ponsel ini saat aplikasi tertutup: perubahan dari perangkat lain masuk saat aplikasi dibuka.</string>
     <string name="staff_name_taken">Sudah ada staf dengan nama ini. Tambahkan pembeda, misalnya nama ayah.</string>
+
+    <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
+    <string name="doc_kind_quotation">Penawaran</string>
+    <string name="doc_kind_proforma">Faktur Proforma</string>
+    <string name="doc_kind_sales_order">Pesanan Penjualan</string>
+    <string name="doc_kind_challan">Surat Jalan</string>
+    <string name="doc_kind_credit_note">Nota Kredit</string>
+    <string name="doc_kind_debit_note">Nota Debit</string>
+    <string name="doc_status_open">Terbuka</string>
+    <string name="doc_status_accepted">Diterima</string>
+    <string name="doc_status_converted">Dikonversi</string>
+    <string name="doc_status_cancelled">Dibatalkan</string>
+    <string name="doc_convert_to">Konversi ke %1$s</string>
+    <string name="doc_converted_from">Dari %1$s</string>
+    <string name="doc_locked">Dokumen ini sudah dikonversi dan tidak dapat diubah; ubah yang baru.</string>
+    <string name="documents_title">Dokumen</string>
+    <string name="audit_doc_converted">Dokumen dikonversi</string>
+    <string name="audit_doc_accepted">Dokumen diterima</string>
+    <string name="audit_doc_cancelled">Dokumen dibatalkan</string>
 </resources>
