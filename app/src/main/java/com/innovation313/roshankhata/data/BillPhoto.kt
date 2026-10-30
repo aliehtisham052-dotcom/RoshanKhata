@@ -132,11 +132,19 @@ object BillPhoto {
         (paths - kept).forEach { delete(it) }
     }
 
-    /** Remove a photo's file. Safe to call when it has already gone. */
+    /**
+     * Remove a photo's file. Safe to call when it has already gone. Only a file in the app's own bills folder
+     * (`files/bills`) is ever deleted (30 Oct 2026, the security review): a path restored from a backup may
+     * point anywhere — a crafted one at another shop's book — and the bin's purge would have deleted it. The
+     * computer has kept the same rule since Marhala 4 (Photos.ours).
+     */
     fun delete(path: String?) {
         if (path.isNullOrBlank()) return
         try {
-            File(path).delete()
+            val f = File(path).canonicalFile
+            val dir = f.parentFile ?: return
+            if (dir.name != DIR || dir.parentFile?.name != "files") return
+            f.delete()
         } catch (e: Exception) {
             // Nothing to do about it, and nothing worth interrupting the owner
             // over: the entry no longer points here either way.

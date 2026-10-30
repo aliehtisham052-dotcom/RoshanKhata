@@ -23,8 +23,8 @@ object Format {
      *
      * In Urdu, Sindhi, Arabic and Persian the sentence runs right-to-left,
      * and a run of digits split by spaces is reordered piece by piece:
-     * "0340 7026467" shows as "7026467 0340", "+92 348 7239466" as
-     * "7239466 348 92+". (Checked with the Unicode bidi algorithm, and it is
+     * "0300 1234567" shows as "1234567 0300", "+92 300 7654321" as
+     * "7654321 300 92+". (Checked with the Unicode bidi algorithm, and it is
      * exactly what the owner's Urdu screenshot showed.) Wrapped, the number
      * keeps its own order inside any sentence; in English nothing changes.
      */

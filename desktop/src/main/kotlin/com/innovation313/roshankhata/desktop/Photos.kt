@@ -97,6 +97,12 @@ object Photos {
     }
 
     /** True for a picture this app keeps for a book on this computer: in its bills folder or a business's faces folder. */
+    /** A UNC or other network path (\\host\share, //host/share, \\?\UNC\…) — never read. */
+    internal fun isNetworkPath(p: String): Boolean {
+        val s = p.trim().replace('/', '\\')
+        return s.startsWith("\\\\") || s.startsWith("file:", ignoreCase = true)
+    }
+
     internal fun ours(home: File, f: File): Boolean {
         val root = runCatching { home.canonicalFile }.getOrNull() ?: return false
         val dir = runCatching { f.canonicalFile.parentFile }.getOrNull() ?: return false
@@ -139,6 +145,10 @@ object Photos {
     /** The picture at [path] for the screen, or null when it is not on this computer. */
     fun bitmap(path: String?, max: Int = 0): ImageBitmap? {
         val p = path?.takeIf { it.isNotBlank() } ?: return null
+        // Never a network path (30 Oct 2026, the security review): a photo path that came in a backup as
+        // \\host\share\a.png made Windows connect over SMB on its own and offer the user's password hash, the
+        // moment the Khata list drew the face. Pictures this app keeps are always on this computer's disk.
+        if (isNetworkPath(p)) return null
         val f = File(p)
         val key = "$p|$max|${f.lastModified()}"
         synchronized(cache) { if (cache.containsKey(key)) return cache[key] }

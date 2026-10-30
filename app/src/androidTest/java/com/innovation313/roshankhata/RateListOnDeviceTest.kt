@@ -47,7 +47,7 @@ class RateListOnDeviceTest {
     }
 
     private fun input(rows: List<RateList.Row>) = RateListImage.Input(
-        shopName = "Ali Traders Pasrur", contact = "0340 7026467  \u00b7  Main Bazaar", logo = null,
+        shopName = "Ali Traders Pasrur", contact = "0300 1234567  \u00b7  Main Bazaar", logo = null,
         heading = "This week", subLine = "5 Oct 2026", rows = rows,
         columns = RateList.Columns(cash = true, credit = true), companyPerRow = true, mark = "Roshan Khata"
     )
