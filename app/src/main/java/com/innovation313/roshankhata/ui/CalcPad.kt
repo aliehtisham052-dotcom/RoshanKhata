@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.innovation313.roshankhata.R
@@ -151,6 +152,60 @@ object CalcPad {
             (8 * parent.resources.displayMetrics.density).toInt()
         TextFit.relax(pad)
         return pad
+    }
+
+    /**
+     * A money form as a full screen, with its pad docked like a keyboard (30 Oct 2026, the owner's photos
+     * of Edit entry and Add bill: a small card floated over the page and its pad scrolled with the form, so
+     * the pad's last row — 0, 00, the dot and "=" — sat cut off below the card's foot).
+     *
+     * Call right after [dialog] is shown, with [content] the view given to setView. The add-entry form's own
+     * shape is made around it: [content] and [pad] go into one column in [content]'s place — the form above,
+     * taking what height is left and scrolling, the pad under it, always whole — and the window fills the
+     * screen ([fullScreen]). The dialog's own panels are not touched: AlertDialogLayout measures its title,
+     * form and buttons itself and gives up that measuring when a fourth panel is added to it.
+     * Whether the pad shows is still [bindAll]'s (or the form's own) rule: while an amount box has the
+     * focus; a name or a note gets the phone's keyboard and the pad's room.
+     *
+     * Best effort, like [fillDialogHeight]: a dialog built some other way is left as it was.
+     */
+    fun dock(dialog: android.app.Dialog, content: View, pad: View) {
+        try {
+            val host = content.parent as? ViewGroup ?: return fullScreen(dialog, content)
+            val at = host.indexOfChild(content)
+            val keep = content.layoutParams
+            host.removeView(content)
+            (pad.parent as? ViewGroup)?.removeView(pad)
+            val side = (16 * content.resources.displayMetrics.density).toInt()
+            val column = LinearLayout(content.context).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(content, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
+                addView(pad, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .apply { setMargins(side, side / 4, side, side / 4) })
+            }
+            host.addView(column, at, keep ?: ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            fullScreen(dialog, column)
+        } catch (e: Exception) {
+            // Leave the dialog as it was.
+        }
+    }
+
+    /**
+     * The window part of [dock] alone, for a form whose pad is already docked in its own layout (the
+     * add-entry layout, which a plan's instalment also opens): full screen, [content] given the height.
+     */
+    fun fullScreen(dialog: android.app.Dialog, content: View) {
+        try {
+            dialog.window?.apply {
+                setBackgroundDrawable(android.graphics.drawable.ColorDrawable(ContextCompat.getColor(context, R.color.page_bg)))
+                setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                // A name or a note brings the phone's keyboard; the buttons ride above it.
+                setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            }
+            content.fillDialogHeight()
+        } catch (e: Exception) {
+            // Leave the dialog as it was.
+        }
     }
 
     /** One pad bound to several boxes; see [bindAll]. */

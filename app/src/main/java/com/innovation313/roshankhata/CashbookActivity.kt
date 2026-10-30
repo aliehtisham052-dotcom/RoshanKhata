@@ -194,6 +194,7 @@ class CashbookActivity : BaseActivity() {
                 // dialog whatever its listener returns, so a refused save threw away both counted figures.
                 .setPositiveButton(R.string.save, null)
                 .show().also { dialog ->
+                    com.innovation313.roshankhata.ui.CalcPad.dock(dialog, view, view.findViewById(R.id.closeKeypad))
                     com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
                     dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
                         val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
@@ -406,7 +407,7 @@ class CashbookActivity : BaseActivity() {
                     )
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.cashKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun confirmDelete(entry: CashEntry) {

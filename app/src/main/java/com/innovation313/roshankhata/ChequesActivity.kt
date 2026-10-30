@@ -269,7 +269,7 @@ class ChequesActivity : BaseActivity() {
                     }
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.chequeKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showChequeActions(cheque: ChequeWithParty) {

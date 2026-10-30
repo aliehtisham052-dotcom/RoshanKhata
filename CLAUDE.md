@@ -1278,6 +1278,15 @@ the phone's Compose screens); every point read in the code first. CI only — no
   from six products (name or company; Select all / Clear all act on what it shows; the picture is not
   narrowed); Preview and Share share the bar by weight, no capitals. Strings: rate_list_unpriced
   (rewritten), rate_list_unpriced_title. RateListTest. CI only.
+- **Money forms full screen (same day, the owner's photos of Edit entry and Add bill):** a small card
+  floated over the page and its pad scrolled with the form, the last row (0, 00, ., =) cut off below.
+  `CalcPad.dock(dialog, content, pad)` after show(): the form and the pad go into one column in the
+  form's place (the add-entry layout's own shape; AlertDialogLayout's panels are never touched — it
+  gives up its own measuring when a fourth panel is added), the window fills the screen
+  (`CalcPad.fullScreen`, page_bg, adjustResize). Edit entry, Add/Edit bill, Money in/out, Close the
+  day, Cheque, Plan, Scheme claim, Staff pay and edit; a plan's instalment (the add-entry layout, its
+  pad already docked) only `fullScreen`. Not changed: the invoice's options (a bottom sheet) and Zakat
+  (a screen of its own). CI only.
 - **Left for the owner's decision, with the reason:** a binned khata sale's invoice (binning is
   undone from the bin, cancelling is not); the owner PIN hash in plain backups (needed to restore
   on a new phone, lesson 40) and 120,000 rounds; BLOCK_NEGATIVE_STOCK on khata sales (a change in

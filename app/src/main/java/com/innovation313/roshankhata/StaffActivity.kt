@@ -183,6 +183,8 @@ class StaffActivity : BaseActivity() {
         body.addView(pad, at + 2)
         val scroll = android.widget.ScrollView(this)
         scroll.addView(body)
+        // Kept on the scroll so the dialog can dock it above its buttons once shown (CalcPad.dock).
+        scroll.setTag(R.id.calc_pad_view, pad)
         com.innovation313.roshankhata.ui.CalcPad.bindAll(
             root = scroll, pad = pad, fields = listOf(money), results = mapOf(money to result)
         )
@@ -193,9 +195,10 @@ class StaffActivity : BaseActivity() {
     private fun handOver(person: Staff, kind: Int) {
         val amount = field(R.string.staff_amount, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
         val note = field(R.string.staff_note, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+        val form = withPad(box(amount, note), amount, padShown = true)
         MaterialAlertDialogBuilder(this)
             .setTitle(person.name + " \u00b7 " + getString(if (kind == Payroll.ADVANCE) R.string.staff_advance else R.string.staff_pay))
-            .setView(withPad(box(amount, note), amount, padShown = true))
+            .setView(form)
             .setPositiveButton(R.string.save) { _, _ ->
                 val v = com.innovation313.roshankhata.ui.Calc.evalAmount(amount.text.toString())
                 if (v == null || v <= 0) {
@@ -208,7 +211,7 @@ class StaffActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, form, form.getTag(R.id.calc_pad_view) as View); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun editStaff(person: Staff?) {
@@ -228,9 +231,10 @@ class StaffActivity : BaseActivity() {
         val pin = field(R.string.staff_pin, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
         val pinNote = android.widget.TextView(this).apply { setText(R.string.staff_pin_keep); textSize = 12f; visibility = if (person?.pinHash != null) View.VISIBLE else View.GONE }
         val views = if (mayEditLogin) arrayOf<View>(name, phone, salary, roleLabel, roleBox, pin, pinNote) else arrayOf<View>(name, phone, salary)
+        val form = withPad(box(*views), salary, padShown = false)
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
-            .setView(withPad(box(*views), salary, padShown = false))
+            .setView(form)
             .setPositiveButton(R.string.save) { _, _ ->
                 val n = name.text.toString().trim()
                 val s = com.innovation313.roshankhata.ui.Calc.evalAmount(salary.text.toString())
@@ -266,7 +270,7 @@ class StaffActivity : BaseActivity() {
                 if (mayEditLogin && role != null) com.innovation313.roshankhata.ui.AccessUi.requireOwnerPin(this) { save() } else save()
             }
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, form, form.getTag(R.id.calc_pad_view) as View); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun manage(person: Staff) {

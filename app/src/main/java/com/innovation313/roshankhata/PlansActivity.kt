@@ -199,7 +199,7 @@ class PlansActivity : BaseActivity() {
                     )
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.planKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showPlanActions(plan: PlanProgress) {
@@ -341,7 +341,7 @@ class PlansActivity : BaseActivity() {
                     recordPayment(plan, amount, etNote.text.toString().trim())
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.fullScreen(it, view); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**
