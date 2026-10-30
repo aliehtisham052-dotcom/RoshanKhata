@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,605 strings and 55 plurals (2,605 on 30 Oct 2026 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,606 strings and 55 plurals (2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1270,6 +1270,14 @@ the phone's Compose screens); every point read in the code first. CI only — no
   a search for the rest, a settled account shows no "Rs 0"; the chosen way of paying wears the chips'
   own fill (it wore "I gave"'s red); a line's tax reads "Tax %: 33" (it read "Tax % 33%"); Round off
   is a switch with what it moved (a chip reading "0"). CI only.
+- **The phone's price list (same day, the owner's review):** Preview shows the pictures before they go
+  (`makeFiles` draws them once; Share in the preview sends the very files shown; pages read back at
+  ≥70% of the screen's width, RGB_565); each row says which price is which (`rate_type_cash/credit`, one
+  figure when both are the same); the no-price note lists those products (`RateList.unpriced`, the
+  count's own rule) and opens one in the product form, names only on a read-only phone; a search box
+  from six products (name or company; Select all / Clear all act on what it shows; the picture is not
+  narrowed); Preview and Share share the bar by weight, no capitals. Strings: rate_list_unpriced
+  (rewritten), rate_list_unpriced_title. RateListTest. CI only.
 - **Left for the owner's decision, with the reason:** a binned khata sale's invoice (binning is
   undone from the bin, cancelling is not); the owner PIN hash in plain backups (needed to restore
   on a new phone, lesson 40) and 120,000 rounds; BLOCK_NEGATIVE_STOCK on khata sales (a change in

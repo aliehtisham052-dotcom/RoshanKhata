@@ -76,31 +76,61 @@
         android:layout_height="wrap_content"
         android:background="@color/surface"
         android:elevation="6dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingTop="10dp"
-        android:paddingEnd="12dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!-- The count on its own line, then Preview and Share sharing the row by weight (30 Oct 2026: the
+             picture is seen before it is sent; one look of button, no capitals — lesson 58). -->
         <TextView
             android:id="@+id/tvRateListSummary"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textColor="@color/ink_soft"
             android:textSize="13sp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnShareRateList"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:minHeight="48dp"
-            android:text="@string/share"
-            app:icon="@drawable/ic_share" />
+            android:layout_marginTop="8dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPreviewRateList"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minHeight="48dp"
+                android:ellipsize="end"
+                android:letterSpacing="0"
+                android:maxLines="1"
+                android:text="@string/pdf_preview"
+                android:textAllCaps="false"
+                android:textColor="@color/ink"
+                app:icon="@drawable/ic_eye_open"
+                app:iconTint="@color/ink"
+                app:strokeColor="@color/page_line" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShareRateList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:minHeight="48dp"
+                android:ellipsize="end"
+                android:letterSpacing="0"
+                android:maxLines="1"
+                android:text="@string/share"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_share" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1266,7 +1266,8 @@
     <string name="rate_list_show_mark">لسٹ پر “روشن کھاتہ” دکھائیں</string>
     <string name="rate_list_col_product">پروڈکٹ</string>
     <string name="rate_list_col_unit">اکائی</string>
-    <string name="rate_list_unpriced">جن پروڈکٹس کی قیمت نہیں، وہ لسٹ میں نہیں: %1$s۔ قیمت ڈالنے کے لیے پروڈکٹس اور اسٹاک کھولیں، پروڈکٹ پر ٹیپ کریں اور تفصیلات میں ترمیم چنیں۔</string>
+    <string name="rate_list_unpriced">جن پروڈکٹس کی قیمت نہیں، وہ لسٹ میں نہیں: %1$s۔ انہیں دیکھنے اور قیمت ڈالنے کے لیے یہاں ٹیپ کریں۔</string>
+    <string name="rate_list_unpriced_title">بغیر قیمت کے پروڈکٹس</string>
     <string name="rate_list_summary">پروڈکٹس: %1$s \u00b7 تصویریں: %2$s</string>
     <string name="rate_list_none">ابھی کسی پروڈکٹ کی قیمت نہیں۔ پروڈکٹس اور اسٹاک کھولیں، پروڈکٹ پر ٹیپ کریں، تفصیلات میں ترمیم چنیں اور نقد یا ادھار قیمت لکھیں۔</string>
     <string name="rate_list_purchase_note">خرید کی قیمت اس لسٹ پر کبھی نہیں آتی۔</string>

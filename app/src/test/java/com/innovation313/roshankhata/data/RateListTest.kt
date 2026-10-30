@@ -36,6 +36,18 @@ class RateListTest {
     }
 
     @Test
+    fun `the note's list is the products it counts, by name, the binned left out`() {
+        val list = listOf(
+            product("Zinc", cash = 0.0),
+            product("Urea", cash = 4200.0),
+            product("Sulphur"),
+            product("Old spray", deleted = true)
+        )
+        assertEquals(listOf("Sulphur", "Zinc"), RateList.unpriced(list).map { it.name })
+        assertEquals(RateList.unpriced(list).size, RateList.unpricedCount(list))
+    }
+
+    @Test
     fun `a company is one company whatever its spacing or case`() {
         val list = listOf(
             product("A", company = "Engro", cash = 1.0),

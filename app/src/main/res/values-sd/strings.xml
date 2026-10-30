@@ -1294,7 +1294,8 @@
     <string name="rate_list_show_mark">لسٽ تي “روشن کاتو” ڏيکاريو</string>
     <string name="rate_list_col_product">پراڊڪٽ</string>
     <string name="rate_list_col_unit">ماپ</string>
-    <string name="rate_list_unpriced">جن پراڊڪٽس جي قيمت ناهي، اهي لسٽ ۾ ناهن: %1$s. قيمت وجهڻ لاءِ پراڊڪٽس ۽ اسٽاڪ کوليو، پراڊڪٽ تي ٽيپ ڪريو ۽ تفصيلن ۾ ترميم چونڊيو.</string>
+    <string name="rate_list_unpriced">جن پراڊڪٽس جي قيمت ناهي، اهي لسٽ ۾ ناهن: %1$s. انهن کي ڏسڻ ۽ قيمت وجهڻ لاءِ هتي ٽيپ ڪريو.</string>
+    <string name="rate_list_unpriced_title">قيمت کان سواءِ پراڊڪٽس</string>
     <string name="rate_list_summary">پراڊڪٽس: %1$s \u00b7 تصويرون: %2$s</string>
     <string name="rate_list_none">اڃا ڪنهن به پراڊڪٽ جي قيمت ناهي. پراڊڪٽس ۽ اسٽاڪ کوليو، پراڊڪٽ تي ٽيپ ڪريو، تفصيلن ۾ ترميم چونڊيو ۽ نقد يا اڌاري قيمت لکو.</string>
     <string name="rate_list_purchase_note">خريد جي قيمت هن لسٽ تي ڪڏهن به نه ايندي.</string>

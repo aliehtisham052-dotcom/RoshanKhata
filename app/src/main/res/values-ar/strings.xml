@@ -1386,7 +1386,8 @@
     <string name="rate_list_show_mark">إظهار “روشن كهاتا” على القائمة</string>
     <string name="rate_list_col_product">المنتج</string>
     <string name="rate_list_col_unit">الوحدة</string>
-    <string name="rate_list_unpriced">المنتجات التي لا سعر لها لا تظهر في القائمة: %1$s. لإضافة سعر افتح «المنتجات والمخزون»، واضغط على المنتج، واختر «تعديل البيانات».</string>
+    <string name="rate_list_unpriced">المنتجات التي لا سعر لها لا تظهر في القائمة: %1$s. اضغط هنا لعرضها وإضافة سعر.</string>
+    <string name="rate_list_unpriced_title">منتجات بلا سعر</string>
     <string name="rate_list_summary">المنتجات: %1$s \u00b7 الصور: %2$s</string>
     <string name="rate_list_none">لا يوجد سعر لأي منتج بعد. افتح «المنتجات والمخزون»، واضغط على منتج، واختر «تعديل البيانات»، وأضف سعر النقد أو سعر الآجل.</string>
     <string name="rate_list_purchase_note">سعر الشراء لا يظهر في هذه القائمة أبدًا.</string>
