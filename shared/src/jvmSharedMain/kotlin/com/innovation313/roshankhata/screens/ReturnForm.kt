@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -149,19 +150,22 @@ fun ReturnForm(draft: ReturnDraft, onPost: () -> Unit, onCancel: () -> Unit, mod
         Text(word(W.pos_return_of, draft.sale.sale.saleNumber) + " · " + (draft.sale.sale.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in)), color = c.inkSoft, fontSize = 13.sp)
         draft.lines.forEach { l ->
             Row(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Column(Modifier.weight(1f)) {
+                Column(Modifier.weight(0.55f)) {
                     Text(l.item.itemName, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(word(W.pos_return_qty_help, Calc.trim(l.item.quantity), Calc.trim(l.item.quantity - l.left)) + " · " + Format.money(l.rate), color = c.textMuted, fontSize = 12.sp)
                 }
-                CalcField(l.qty, { l.qty = it }, Modifier.width(112.dp), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty), enabled = l.left > 0.0)
+                // A share of the row, not 112 dp (30 Oct 2026, the phone audit: in the phone's dialog the fixed box kept
+                // ~44 dp for the figure and "Miqdar" was clipped).
+                CalcField(l.qty, { l.qty = it }, Modifier.weight(0.45f), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty), enabled = l.left > 0.0)
             }
         }
         OutlinedTextField(draft.reason, { draft.reason = it }, Modifier.fillMaxWidth(), label = { Text(word(W.pos_return_reason)) }, singleLine = true)
         Text(word(W.pos_return_refund) + " · " + Format.money(draft.total), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            if (draft.hasParty) FilterChip(selected = draft.refundMethod == SaleReturn.ACCOUNT, onClick = { draft.refundMethod = SaleReturn.ACCOUNT }, label = { Text(word(W.pos_refund_account), fontSize = 12.sp) })
+        // The ways to refund scroll sideways (30 Oct 2026, the phone audit: six chips need ~576 dp; the phone's dialog has ~280).
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (draft.hasParty) FilterChip(selected = draft.refundMethod == SaleReturn.ACCOUNT, onClick = { draft.refundMethod = SaleReturn.ACCOUNT }, label = { Text(word(W.pos_refund_account), fontSize = 12.sp, maxLines = 1, softWrap = false) })
             PaymentMethod.ALL.forEach { m ->
-                FilterChip(selected = draft.refundMethod == m, onClick = { draft.refundMethod = m }, label = { Text(methodWord(m), fontSize = 12.sp) })
+                FilterChip(selected = draft.refundMethod == m, onClick = { draft.refundMethod = m }, label = { Text(methodWord(m), fontSize = 12.sp, maxLines = 1, softWrap = false) })
             }
         }
         if (draft.refundMethod != SaleReturn.ACCOUNT) {

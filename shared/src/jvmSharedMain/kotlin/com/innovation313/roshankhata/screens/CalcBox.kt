@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.screens
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -139,8 +141,9 @@ fun CalcField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.calcKeys({ value }, kind, onValueChange),
-        label = label?.let { { Text(it, maxLines = 1) } },
-        placeholder = placeholder?.let { { Text(it, maxLines = 1) } },
+        // One line ending in "…", never cut mid-word (30 Oct 2026, the phone audit).
+        label = label?.let { { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
+        placeholder = placeholder?.let { { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
         singleLine = true,
         enabled = enabled,
         keyboardOptions = KeyboardOptions(keyboardType = if (kind == CalcKind.MONEY) KeyboardType.Decimal else KeyboardType.Number),
@@ -177,7 +180,8 @@ fun CalcPadDialog(start: String, kind: CalcKind, onDone: (String) -> Unit, onDis
     )
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            Modifier.width(300.dp).background(c.surface, RoundedCornerShape(16.dp)).padding(16.dp),
+            // As wide as the screen allows up to 340 dp (a fixed 300 pressed the edges of a 320 dp phone or a split screen).
+            Modifier.fillMaxWidth().widthIn(max = 340.dp).background(c.surface, RoundedCornerShape(16.dp)).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(

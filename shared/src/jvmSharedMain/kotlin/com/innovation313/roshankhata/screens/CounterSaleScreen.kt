@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -122,7 +124,7 @@ fun CounterSaleScreen(
             Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = query, onValueChange = { query = it }, modifier = Modifier.weight(1f).testTag("posSearch"),
-                    placeholder = { Text(word(W.pos_search_hint)) }, singleLine = true,
+                    placeholder = { Text(word(W.pos_search_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
                         val q = query.trim()
@@ -197,11 +199,13 @@ fun CounterSaleScreen(
                                 Text(Format.money(line.total), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                                 TextButton(onClick = { draft.remove(line) }) { Text("✕", color = c.textMuted) }
                             }
+                            // Quantity and rate share a row, the discount has its own (30 Oct 2026, the phone audit: three
+                            // across left each box ~28 dp of text — "Discount" read "Di" and a rate of 1,250 was hidden).
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 CalcField(line.qty, { line.qty = it }, Modifier.weight(1f).testTag("posQty"), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty) + (com.innovation313.roshankhata.data.UnitWords.label(line.unit).let { u -> if (u.isEmpty()) "" else " ($u)" }))
                                 CalcField(line.rate, { line.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
-                                CalcField(line.discount, { line.discount = it }, Modifier.weight(1f), label = word(W.pos_discount))
                             }
+                            CalcField(line.discount, { line.discount = it }, Modifier.fillMaxWidth(), label = word(W.pos_discount))
                         }
                     }
                 }
@@ -232,9 +236,11 @@ fun CounterSaleScreen(
             // ---- Step 2: who and how paid ----
             Column(Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(word(W.customer), color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = !draft.hasParty, onClick = { draft.setParty(null, null); choosingParty = false }, label = { Text(word(W.pos_walk_in)) })
-                    FilterChip(selected = draft.hasParty, onClick = { choosingParty = true }, label = { Text(draft.partyName?.let { Format.name(it) } ?: word(W.pos_choose_customer)) }, modifier = Modifier.testTag("posCustomer"))
+                // The chips scroll sideways rather than squeeze (30 Oct 2026, the phone audit: a long name or a larger
+                // text size pressed the second chip into a column).
+                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(selected = !draft.hasParty, onClick = { draft.setParty(null, null); choosingParty = false }, label = { Text(word(W.pos_walk_in), maxLines = 1) })
+                    FilterChip(selected = draft.hasParty, onClick = { choosingParty = true }, label = { Text(draft.partyName?.let { Format.name(it) } ?: word(W.pos_choose_customer), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp)) }, modifier = Modifier.testTag("posCustomer"))
                 }
                 if (choosingParty) {
                     var q by remember { mutableStateOf("") }
@@ -285,16 +291,20 @@ fun CounterSaleScreen(
                 Text(word(W.pos_paid), color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 draft.payments.forEach { p ->
                     Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        // The five ways of paying scroll sideways (30 Oct 2026, the phone audit: in one plain Row they
+                        // needed ~445 dp of a phone's ~304 and "Online" / "Mobile wallet" were pressed into columns).
+                        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             PaymentMethod.ALL.forEach { m ->
-                                FilterChip(selected = p.method == m, onClick = { p.method = m }, label = { Text(methodWord(m), fontSize = 12.sp) }, colors = FilterChipDefaults.filterChipColors(selectedContainerColor = c.gaveFill))
+                                FilterChip(selected = p.method == m, onClick = { p.method = m }, label = { Text(methodWord(m), fontSize = 12.sp, maxLines = 1, softWrap = false) }, colors = FilterChipDefaults.filterChipColors(selectedContainerColor = c.gaveFill))
                             }
                         }
+                        // The amount with its ✕, and the reference under it at full width (beside the amount each box
+                        // kept ~47 dp of text and the long label wrapped to four lines inside the box).
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             CalcField(p.amount, { p.amount = it }, Modifier.weight(1f).testTag("posPayAmount"), label = word(W.amount))
-                            if (p.method != PaymentMethod.CASH) OutlinedTextField(p.reference, { p.reference = it }, Modifier.weight(1f), label = { Text(word(W.pos_reference_hint)) }, singleLine = true)
                             TextButton(onClick = { draft.removePayment(p) }) { Text("✕", color = c.textMuted) }
                         }
+                        if (p.method != PaymentMethod.CASH) OutlinedTextField(p.reference, { p.reference = it }, Modifier.fillMaxWidth(), label = { Text(word(W.pos_reference_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true)
                     }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -320,12 +330,13 @@ fun CounterSaleScreen(
             }
             val problem = draft.problem
             Row(Modifier.fillMaxWidth().background(c.surface).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(onClick = { paying = false }) { Text(word(W.cancel), color = c.ink) }
-                Spacer(Modifier.weight(1f))
+                // Shared by weight, the main button twice the other (30 Oct 2026, the phone audit: in Roman Urdu or
+                // Indonesian, or English at 150%, "Complete sale" wrapped oddly beside a free-sized Cancel).
+                OutlinedButton(onClick = { paying = false }, modifier = Modifier.weight(1f)) { Text(word(W.cancel), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 Button(
                     onClick = { onComplete() }, enabled = problem == null && !draft.posting,
-                    colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.testTag("posComplete")
-                ) { Text(word(W.pos_post), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp) }
+                    colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.weight(2f).testTag("posComplete")
+                ) { Text(word(W.pos_post), color = if (problem == null && !draft.posting) Color.White else c.textMuted, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
             }
         }
     }

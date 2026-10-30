@@ -146,8 +146,10 @@ fun OrdersScreen(
 
     Column(modifier.fillMaxSize().background(c.pageBg)) {
         Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { newOrder(false) }, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) { Text(word(W.po_new), color = Color.White, fontWeight = FontWeight.Bold) }
-            OutlinedButton(onClick = { newOrder(true) }) { Text(word(W.po_from_low), color = c.ink) }
+            // Half the row each, two lines allowed (30 Oct 2026, the phone audit: in Indonesian, or English at 130%,
+            // the two free-sized buttons ran past a 360 dp screen).
+            Button(onClick = { newOrder(false) }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) { Text(word(W.po_new), color = Color.White, fontWeight = FontWeight.Bold, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+            OutlinedButton(onClick = { newOrder(true) }, modifier = Modifier.weight(1f)) { Text(word(W.po_from_low), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
         }
         told?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = c.inkSoft, fontSize = 13.sp) }
         if (orders.isEmpty()) { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(word(W.po_none), color = c.textMuted) }; return }
@@ -161,19 +163,24 @@ fun OrdersScreen(
                         }
                         Text(orderStatusWord(o.status), color = if (o.status == OrderStatus.RECEIVED) c.brandGreenText else c.inkSoft, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                     }
+                    // Two rows: Send and Goods arrived share the first, Edit and Close the second (30 Oct 2026, the phone
+                    // audit: four text buttons in one row needed ~434 dp of ~312 and "Close order" had no room).
                     if (o.status == OrderStatus.DRAFT || o.status == OrderStatus.SENT) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        TextButton(onClick = {
+                        TextButton(modifier = Modifier.weight(1f), onClick = {
                             scope.launch {
                                 val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch
                                 onSend(suppliers.firstOrNull { it.id == o.partyId }?.phone, orderText(words, shopName, full, o.partyName))
                                 withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.SENT) }
                             }
-                        }) { Text(word(W.po_send), color = c.brandGreenText) }
-                        if (o.status == OrderStatus.DRAFT && offered) TextButton(onClick = { gated {
+                        }) { Text(word(W.po_send), color = c.brandGreenText, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                        if (offered) TextButton(modifier = Modifier.weight(1f), onClick = { gated { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } } }) { Text(word(W.po_receive), color = c.brandGreenText, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    }
+                    if ((o.status == OrderStatus.DRAFT || o.status == OrderStatus.SENT) && offered) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        if (o.status == OrderStatus.DRAFT) TextButton(onClick = { gated {
                             scope.launch { val full = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } ?: return@launch; editing = OrderDraft(full, withContext(Dispatchers.IO) { dao.productsOnce() }) }
-                        } }) { Text(word(W.edit), color = c.ink) }
-                        if (offered) TextButton(onClick = { gated { scope.launch { receiving = withContext(Dispatchers.IO) { dao.orderWithLines(o.id) } } } }) { Text(word(W.po_receive), color = c.brandGreenText, fontWeight = FontWeight.Bold) }
-                        if (offered) TextButton(onClick = { gated { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.CLOSED) } } } }) { Text(word(W.po_close), color = c.textMuted) }
+                        } }) { Text(word(W.edit), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                        Spacer(Modifier.weight(1f))
+                        TextButton(onClick = { gated { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.CLOSED) } } } }) { Text(word(W.po_close), color = c.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                     }
                 }
             }
@@ -211,7 +218,7 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, on
                 }
             }
         }
-        OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), placeholder = { Text(word(W.pos_search_hint)) }, singleLine = true)
+        OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), placeholder = { Text(word(W.pos_search_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true)
         if (query.isNotBlank()) Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp))) {
             CounterDraft.search(draft.products, query, 8).forEach { p ->
                 Text(p.name, Modifier.fillMaxWidth().clickable { draft.add(p); query = "" }.padding(12.dp), color = c.ink, fontSize = 15.sp)
@@ -267,13 +274,14 @@ private fun ReceiveEditor(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     CalcField(g.qty, { g.qty = it }, Modifier.weight(1f), kind = CalcKind.QUANTITY, label = word(W.pos_col_qty))
                     CalcField(g.rate, { g.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate))
-                    OutlinedTextField(g.batch, { g.batch = it }, Modifier.weight(1f), label = { Text(word(W.pdf_reg_batch, "")) }, singleLine = true)
                 }
+                // The batch on its own line (30 Oct 2026, the phone audit: third in the row it kept ~64 dp).
+                OutlinedTextField(g.batch, { g.batch = it }, Modifier.fillMaxWidth(), label = { Text(word(W.pdf_reg_batch, ""), maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true)
                 if (pickDay != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     // The expiry opens on today (the phone's bill line rule: the urgent lot is the one two months out,
                     // not a year away); a chosen day can be taken back.
-                    OutlinedButton(onClick = { pickDay(g.expiry ?: System.currentTimeMillis()) { g.expiry = it } }) {
-                        Text(g.expiry?.let { word(W.bill_scan_expiry, Format.dateOnly(it)) } ?: word(W.expiry_date), color = c.ink)
+                    OutlinedButton(onClick = { pickDay(g.expiry ?: System.currentTimeMillis()) { g.expiry = it } }, modifier = Modifier.weight(1f)) {
+                        Text(g.expiry?.let { word(W.bill_scan_expiry, Format.dateOnly(it)) } ?: word(W.expiry_date), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     if (g.expiry != null) TextButton(onClick = { g.expiry = null }) { Text(word(W.filter_clear), color = c.inkSoft) }
                 }

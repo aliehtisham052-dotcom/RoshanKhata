@@ -147,7 +147,7 @@ fun SalesReportScreen(
             }
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            ReportView.values().forEach { v -> FilterChip(selected = view == v, onClick = { view = v }, label = { Text(word(v.wordKey), fontSize = 12.sp) }) }
+            ReportView.values().forEach { v -> FilterChip(selected = view == v, onClick = { view = v }, label = { Text(word(v.wordKey), fontSize = 12.sp, maxLines = 1) }) }
         }
         val r = report
         if (r == null) { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("…", color = c.textMuted) }; return }
@@ -167,12 +167,29 @@ fun SalesReportScreen(
             item(key = "chart") {
                 SalesChart(r.bars(), Modifier.fillMaxWidth().padding(bottom = 8.dp).background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp))
             }
-            if (head.any { it.isNotEmpty() }) item {
+            // The five-column views (count, quantity, revenue, profit) are a card per row on the phone (30 Oct 2026,
+            // the phone audit: five weighted columns left each figure ~56 dp, "Rs 1,250,000" read "Rs / 1,250,0…").
+            // The short views (tax, P&L, dead stock) keep their table: two or three columns fit.
+            val cards = head.size == 5
+            if (!cards && head.any { it.isNotEmpty() }) item {
                 Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                    head.forEachIndexed { i, h -> Text(h, Modifier.weight(if (i == 0) 2f else 1f), color = c.textMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold, maxLines = 1) }
+                    head.forEachIndexed { i, h -> Text(h, Modifier.weight(if (i == 0) 2f else 1f), color = c.textMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 }
             }
-            items(rows) { cells ->
+            if (cards) items(rows) { cells ->
+                Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(cells[0], Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        Text(cells[3], color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                    }
+                    Text(
+                        listOf(1, 2, 4).joinToString("  ·  ") { i -> head[i] + " " + cells[i] },
+                        color = c.textMuted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis
+                    )
+                }
+                HorizontalDivider(color = c.surface)
+            }
+            if (!cards) items(rows) { cells ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     cells.forEachIndexed { i, v ->
                         Text(v, Modifier.weight(if (i == 0) 2f else 1f), color = c.ink, fontSize = if (i == 0) 14.sp else 13.sp,
