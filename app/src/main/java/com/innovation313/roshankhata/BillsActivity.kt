@@ -401,7 +401,7 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.billKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
 
         btnScan.setOnClickListener {
             val draft = BillDraft(
@@ -1111,7 +1111,7 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.billKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**

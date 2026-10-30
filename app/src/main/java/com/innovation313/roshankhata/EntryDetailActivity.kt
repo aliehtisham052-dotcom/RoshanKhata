@@ -660,7 +660,7 @@ class EntryDetailActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, pad); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**
