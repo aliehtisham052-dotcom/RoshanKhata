@@ -69,12 +69,13 @@ fun StockCountForm(draft: CountDraft, onSave: () -> Unit, onCancel: () -> Unit, 
         LazyColumn(Modifier.fillMaxWidth().weight(1f), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
             items(shown, key = { it.stock.productId }) { l ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Column(Modifier.weight(1f)) {
+                    Column(Modifier.weight(0.6f)) {
                         Text(l.stock.name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text(word(W.po_book) + ": " + (l.stock.onHand?.let { Calc.trim(it) } ?: "?") + (com.innovation313.roshankhata.data.UnitWords.label(l.stock.unit).let { u -> if (u.isEmpty()) "" else " $u" }), color = c.textMuted, fontSize = 12.sp)
                     }
-                    if (l.stock.onHand == null) Text(word(W.stock_units_differ), Modifier.width(124.dp), color = c.textMuted, fontSize = 12.sp)
-                    else CalcField(l.counted, { l.counted = it }, Modifier.width(124.dp), kind = CalcKind.QUANTITY, label = word(W.stock_counted_hint))
+                    // A share of the row, not 124 dp (30 Oct 2026, the phone audit: "Dihitung" and the Farsi label were clipped).
+                    if (l.stock.onHand == null) Text(word(W.stock_units_differ), Modifier.weight(0.4f), color = c.textMuted, fontSize = 12.sp)
+                    else CalcField(l.counted, { l.counted = it }, Modifier.weight(0.4f), kind = CalcKind.QUANTITY, label = word(W.stock_counted_hint))
                 }
                 HorizontalDivider(color = c.pageBg)
             }
