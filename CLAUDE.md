@@ -1265,6 +1265,11 @@ the phone's Compose screens); every point read in the code first. CI only — no
   name comes back keeping its id and uid. The form stays open over a missing or taken name. `no_products`
   names the button (nine languages). Windows still has no Add product (its Products page says so).
   Tests: ProductAddTest. CI only.
+- **The phone's counter, from the owner's photos (same day):** the customer list scrolls in its own
+  box (it stood 260 dp with no scroll, the names below unreachable), recent customers first, 50 shown,
+  a search for the rest, a settled account shows no "Rs 0"; the chosen way of paying wears the chips'
+  own fill (it wore "I gave"'s red); a line's tax reads "Tax %: 33" (it read "Tax % 33%"); Round off
+  is a switch with what it moved (a chip reading "0"). CI only.
 - **Left for the owner's decision, with the reason:** a binned khata sale's invoice (binning is
   undone from the bin, cancelling is not); the owner PIN hash in plain backups (needed to restore
   on a new phone, lesson 40) and 120,000 rounds; BLOCK_NEGATIVE_STOCK on khata sales (a change in

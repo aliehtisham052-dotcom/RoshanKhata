@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -187,7 +186,8 @@ fun CounterSaleScreen(
                                     Column(Modifier.weight(1f)) {
                                         Text(line.name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                         line.shortBy?.let { Text(word(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)), color = c.owedToMe, fontSize = 12.sp) }
-                                        line.taxRate?.takeIf { it > 0.0 }?.let { Text(word(W.pos_tax) + " " + Calc.trim(it) + "%", color = c.textMuted, fontSize = 12.sp) }
+                                        // "Tax %: 33" — the word already carries its % (it read "Tax % 33%", 30 Oct 2026).
+                                        line.taxRate?.takeIf { it > 0.0 }?.let { Text(word(W.pos_tax) + ": " + Calc.trim(it), color = c.textMuted, fontSize = 12.sp) }
                                         // A product also sold by the pack (schema 36): the line switches between the two.
                                         if (line.canSwitchUnit) {
                                             TextButton(onClick = { line.product?.let { line.switchUnit(draft.unitRate(it)) } }) {
@@ -245,12 +245,20 @@ fun CounterSaleScreen(
                 if (choosingParty) {
                     var q by remember { mutableStateOf("") }
                     OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), placeholder = { Text(word(W.search_parties)) }, singleLine = true)
-                    val shown = parties.filter { it.isCustomer && NameSearch.matches(it.name, it.phone, q.trim().lowercase()) }.take(30)
-                    Column(Modifier.fillMaxWidth().heightIn(max = 260.dp).background(c.surface, RoundedCornerShape(12.dp))) {
+                    // With nothing typed, the customers dealt with most recently come first; a search finds anyone.
+                    // The list scrolls inside its own box (30 Oct 2026, the owner's phone: it stood 260 dp tall
+                    // with no scroll of its own, so the names below its foot could not be reached).
+                    val needle = q.trim().lowercase()
+                    val shown = parties.filter { it.isCustomer && NameSearch.matches(it.name, it.phone, needle) }
+                        .let { found -> if (needle.isEmpty()) found.sortedByDescending { it.lastActivity } else found }
+                        .take(50)
+                    Column(Modifier.fillMaxWidth().heightIn(max = 300.dp).background(c.surface, RoundedCornerShape(12.dp)).verticalScroll(rememberScrollState())) {
                         shown.forEachIndexed { i, p ->
-                            Row(Modifier.fillMaxWidth().clickable { draft.setParty(p.id, p.name); choosingParty = false }.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Row(Modifier.fillMaxWidth().clickable { draft.setParty(p.id, p.name); choosingParty = false }.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(Format.name(p.name), Modifier.weight(1f), color = c.ink, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                Text(Format.customerBalance(p.balance), color = c.textMuted, fontSize = 12.sp)
+                                // A settled account says nothing; one that owes says how much, in the khata's colour.
+                                if (com.innovation313.roshankhata.data.Money.isPositive(p.balance) || com.innovation313.roshankhata.data.Money.isNegative(p.balance))
+                                    Text(Format.customerBalance(p.balance), color = if (p.balance > 0) c.owedToMe else c.iOwe, fontSize = 12.sp, maxLines = 1, softWrap = false)
                             }
                             if (i < shown.lastIndex) HorizontalDivider(color = c.pageBg)
                         }
@@ -277,10 +285,12 @@ fun CounterSaleScreen(
                     if (draft.totals.tax > 0.0) Figure(word(W.pos_tax), Format.money(draft.totals.tax))
                     if (draft.totals.taxIncluded > 0.0) Figure(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                     // Settled to whole rupees, as on the computer (23 Oct 2026, the review): the paisa no drawer holds.
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    // A switch, with what the rounding moved beside it (30 Oct 2026: a chip reading "0" did not
+                    // look like something to press, and said nothing of whether rounding was on).
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(word(W.pos_round_off), Modifier.weight(1f), color = c.inkSoft, fontSize = 13.sp)
-                        FilterChip(selected = draft.roundToWhole, onClick = { draft.roundToWhole = !draft.roundToWhole },
-                            label = { Text(if (draft.totals.roundOff != 0.0) Format.money(draft.totals.roundOff) else "0", fontSize = 12.sp) })
+                        if (draft.roundToWhole && draft.totals.roundOff != 0.0) Text(Format.money(draft.totals.roundOff), color = c.ink, fontSize = 13.sp, maxLines = 1, softWrap = false)
+                        androidx.compose.material3.Switch(checked = draft.roundToWhole, onCheckedChange = { draft.roundToWhole = it }, modifier = Modifier.testTag("posRoundOff"))
                     }
                     HorizontalDivider(color = c.pageBg)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -295,7 +305,9 @@ fun CounterSaleScreen(
                         // needed ~445 dp of a phone's ~304 and "Online" / "Mobile wallet" were pressed into columns).
                         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             PaymentMethod.ALL.forEach { m ->
-                                FilterChip(selected = p.method == m, onClick = { p.method = m }, label = { Text(methodWord(m), fontSize = 12.sp, maxLines = 1, softWrap = false) }, colors = FilterChipDefaults.filterChipColors(selectedContainerColor = c.gaveFill))
+                                // The chosen way wears the same fill as every other chosen chip here (30 Oct 2026: it wore
+                                // "I gave"'s red, which says money went out — the wrong word for a payment coming in).
+                                FilterChip(selected = p.method == m, onClick = { p.method = m }, label = { Text(methodWord(m), fontSize = 12.sp, maxLines = 1, softWrap = false) })
                             }
                         }
                         // The amount with its ✕, and the reference under it at full width (beside the amount each box
