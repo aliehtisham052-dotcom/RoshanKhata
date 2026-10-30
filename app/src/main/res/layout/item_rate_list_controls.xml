@@ -90,16 +90,36 @@
         android:textColor="@color/ink_soft"
         android:textSize="12sp" />
 
+    <!-- Tapped, it lists the products with no price and opens one to add it (30 Oct 2026). -->
     <TextView
         android:id="@+id/tvRateUnpriced"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@color/note_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:padding="10dp"
         android:textColor="@color/note_text"
         android:textSize="12sp"
         android:visibility="gone" />
+
+    <!-- Find a product to tick or untick; the picture is not narrowed by it (30 Oct 2026). Shown once the
+         list is long enough to need it. -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilRateSearch"
+        style="@style/ProfileField"
+        android:layout_marginTop="10dp"
+        android:hint="@string/products_search_hint"
+        android:visibility="gone">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etRateSearch"
+            style="@style/ProfileFieldInput"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -114,6 +134,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
+            android:letterSpacing="0"
             android:text="@string/select_all"
             android:textAllCaps="false" />
 
@@ -123,6 +144,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
+            android:letterSpacing="0"
             android:text="@string/clear_all"
             android:textAllCaps="false" />
     </LinearLayout>

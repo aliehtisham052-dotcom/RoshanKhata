@@ -1309,7 +1309,8 @@
     <string name="rate_list_show_mark">Show “Roshan Khata” on the list</string>
     <string name="rate_list_col_product">Product</string>
     <string name="rate_list_col_unit">Unit</string>
-    <string name="rate_list_unpriced">Products with no price are left off: %1$s. To add one, open Products &amp; stock, tap the product and choose Edit details.</string>
+    <string name="rate_list_unpriced">Products with no price are left off: %1$s. Tap here to see them and add a price.</string>
+    <string name="rate_list_unpriced_title">Products with no price</string>
     <string name="rate_list_summary">Products: %1$s \u00b7 Pictures: %2$s</string>
     <string name="rate_list_none">No product has a price yet. Open Products &amp; stock, tap a product, choose Edit details and add a cash or credit price.</string>
     <string name="rate_list_purchase_note">Purchase prices never go on this list.</string>

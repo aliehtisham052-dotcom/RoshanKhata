@@ -76,6 +76,9 @@ class RateListActivity : BaseActivity() {
     private lateinit var markSwitch: SwitchMaterial
     private lateinit var summary: TextView
     private lateinit var share: MaterialButton
+    private lateinit var preview: MaterialButton
+    /** The search box's words: they narrow the list to tick, never the picture. */
+    private var query = ""
     private val productAdapter = ProductRows { id, on -> toggle(id, on) }
 
     private var summaryJob: Job? = null
@@ -97,6 +100,7 @@ class RateListActivity : BaseActivity() {
         markSwitch = controls.findViewById(R.id.switchRateMark)
         summary = findViewById(R.id.tvRateListSummary)
         share = findViewById(R.id.btnShareRateList)
+        preview = findViewById(R.id.btnPreviewRateList)
 
         rv.adapter = ConcatAdapter(OneView(controls), productAdapter)
 
@@ -106,16 +110,28 @@ class RateListActivity : BaseActivity() {
         cbCredit.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_CREDIT, on).apply(); updateSummary() }
         markSwitch.setOnCheckedChangeListener { _, on -> prefs.edit().putBoolean(KEY_MARK, on).apply() }
         heading.doAfterTextChanged { saveHeading() }
+        // Select all / Clear all act on the products in sight: with a search typed, only those it found.
         controls.findViewById<View>(R.id.btnRateSelectAll).setOnClickListener {
-            RateList.candidates(products, company).forEach { excluded.remove(it.id) }
+            listed().forEach { excluded.remove(it.id) }
             saveExcluded(); showProducts()
         }
         controls.findViewById<View>(R.id.btnRateClear).setOnClickListener {
-            RateList.candidates(products, company).forEach { excluded.add(it.id) }
+            listed().forEach { excluded.add(it.id) }
             saveExcluded(); showProducts()
         }
+        controls.findViewById<TextInputEditText>(R.id.etRateSearch).doAfterTextChanged {
+            query = it?.toString()?.trim().orEmpty()
+            showProducts()
+        }
+        controls.findViewById<View>(R.id.tvRateUnpriced).setOnClickListener { showUnpriced() }
         share.setOnClickListener { shareList() }
+        preview.setOnClickListener { previewList() }
 
+        load()
+    }
+
+    /** The products and the logo, read again after a price is added from the note's list. */
+    private fun load() {
         lifecycleScope.launch {
             val (all, shopLogo) = withContext(Dispatchers.IO) {
                 dao.productsOnce() to BusinessProfile.loadLogo(this@RateListActivity)
@@ -127,6 +143,45 @@ class RateListActivity : BaseActivity() {
             setUpCompanies()
             showProducts()
         }
+    }
+
+    /** The products the list shows: the company's, narrowed by the search box. */
+    private fun listed(): List<Product> {
+        val all = RateList.candidates(products, company)
+        if (query.isEmpty()) return all
+        val needle = query.lowercase()
+        // The name, or the company typed: "engro" finds every Engro product.
+        return all.filter { p ->
+            com.innovation313.roshankhata.ui.NameSearch.matches(p.name, null, needle) ||
+                p.company?.let { com.innovation313.roshankhata.ui.NameSearch.matches(it, null, needle) } == true
+        }
+    }
+
+    /**
+     * The products the note counts, by name (30 Oct 2026: it said only how many, and sent the owner to
+     * another screen to find them). A tap opens the product's form to add its price; on a helper's
+     * read-only phone the names are shown and nothing opens.
+     */
+    private fun showUnpriced() {
+        val missing = RateList.unpriced(products)
+        if (missing.isEmpty()) return
+        val canEdit = !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+        val names: Array<CharSequence> = missing.map<Product, CharSequence> { p ->
+            listOfNotNull(p.name, p.company?.trim()?.takeIf { it.isNotEmpty() }).joinToString("  \u00b7  ")
+        }.toTypedArray()
+        val builder = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.rate_list_unpriced_title)
+            .setNegativeButton(R.string.close, null)
+        if (canEdit) {
+            builder.setItems(names) { _, i ->
+                com.innovation313.roshankhata.ui.ProductDetailsDialog.show(
+                    activity = this, product = missing[i], dao = dao, onSaved = { load() }
+                )
+            }
+        } else {
+            builder.setMessage(names.joinToString("\n"))
+        }
+        builder.show()
     }
 
     private fun restore() {
@@ -201,7 +256,11 @@ class RateListActivity : BaseActivity() {
         findViewById<View>(R.id.rvRateList).visibility = if (anyPriced) View.VISIBLE else View.GONE
         findViewById<View>(R.id.rateListBar).visibility = if (anyPriced) View.VISIBLE else View.GONE
 
-        productAdapter.submitList(RateList.candidates(products, company).map { p ->
+        val candidates = RateList.candidates(products, company)
+        // The search box only once the list is long enough to need one.
+        controls.findViewById<View>(R.id.tilRateSearch).visibility =
+            if (candidates.size >= SEARCH_FROM || query.isNotEmpty()) View.VISIBLE else View.GONE
+        productAdapter.submitList(listed().map { p ->
             ProductRow(
                 id = p.id,
                 name = p.name,
@@ -209,16 +268,29 @@ class RateListActivity : BaseActivity() {
                     p.company?.trim()?.takeIf { company == null && it.isNotEmpty() },
                     UnitWords.label(p.defaultUnit).takeIf { it.isNotEmpty() }
                 ).joinToString(" \u00b7 "),
-                // Each figure kept left-to-right: in Urdu a "₹ 4,200" left loose
-                // in a right-to-left line can come out as "4,200 ₹".
-                prices = listOfNotNull(
-                    p.salePrice?.takeIf { it > 0 }?.let { Format.ltr(Format.money(it)) },
-                    p.creditPrice?.takeIf { it > 0 }?.let { Format.ltr(Format.money(it)) }
-                ).joinToString(" / "),
+                prices = priceLine(p),
                 checked = p.id !in excluded
             )
         })
         updateSummary()
+    }
+
+    /**
+     * Which price is which (30 Oct 2026: "Rs 33 / Rs 33" said neither). One price for both is said once;
+     * two different ones each with its name. Each figure kept left-to-right: in Urdu a "₹ 4,200" left loose
+     * in a right-to-left line can come out as "4,200 ₹".
+     */
+    private fun priceLine(p: Product): String {
+        val cash = p.salePrice?.takeIf { it > 0 }
+        val credit = p.creditPrice?.takeIf { it > 0 }
+        fun money(v: Double) = Format.ltr(Format.money(v))
+        return when {
+            cash != null && credit != null && kotlin.math.abs(cash - credit) < 0.005 -> money(cash)
+            else -> listOfNotNull(
+                cash?.let { getString(R.string.rate_type_cash) + " " + money(it) },
+                credit?.let { getString(R.string.rate_type_credit) + " " + money(it) }
+            ).joinToString("  \u00b7  ")
+        }
     }
 
     private fun toggle(id: Long, on: Boolean) {
@@ -255,6 +327,7 @@ class RateListActivity : BaseActivity() {
         summaryJob?.cancel()
         val inp = input()
         share.isEnabled = inp.rows.isNotEmpty()
+        preview.isEnabled = inp.rows.isNotEmpty()
         summaryJob = lifecycleScope.launch {
             delay(120)
             val pages = withContext(Dispatchers.Default) {
@@ -264,33 +337,98 @@ class RateListActivity : BaseActivity() {
         }
     }
 
+    /**
+     * The pictures as files in the shared cache folder, drawn off the main thread one page at a time and
+     * recycled straight after. Null if drawing failed. Share and Preview both use it, so what the preview
+     * shows is exactly what is sent.
+     */
+    private suspend fun makeFiles(inp: RateListImage.Input): List<File>? = withContext(Dispatchers.Default) {
+        try {
+            val dir = File(cacheDir, "ratelists").apply { mkdirs() }
+            dir.listFiles()?.forEach { it.delete() }
+            val plan = RateListImage.plan(this@RateListActivity, inp)
+            plan.pages.indices.map { i ->
+                val bmp = RateListImage.draw(plan, i)
+                val f = File(dir, "rate_list_${i + 1}.png")
+                FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                bmp.recycle()
+                f
+            }.takeIf { it.isNotEmpty() }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private fun shareList() {
         val inp = input()
         if (inp.rows.isEmpty()) return
-        share.isEnabled = false
+        share.isEnabled = false; preview.isEnabled = false
         lifecycleScope.launch {
-            val files = withContext(Dispatchers.Default) {
-                try {
-                    val dir = File(cacheDir, "ratelists").apply { mkdirs() }
-                    dir.listFiles()?.forEach { it.delete() }
-                    val plan = RateListImage.plan(this@RateListActivity, inp)
-                    plan.pages.indices.map { i ->
-                        val bmp = RateListImage.draw(plan, i)
-                        val f = File(dir, "rate_list_${i + 1}.png")
-                        FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
-                        bmp.recycle()
-                        f
-                    }
-                } catch (e: Exception) {
-                    null
-                }
-            }
-            share.isEnabled = true
-            if (files.isNullOrEmpty()) {
+            val files = makeFiles(inp)
+            share.isEnabled = true; preview.isEnabled = true
+            if (files == null) {
                 Toast.makeText(this@RateListActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
                 return@launch
             }
             send(files)
+        }
+    }
+
+    /**
+     * The pictures on screen before they are sent (30 Oct 2026: the owner saw them only once they were on
+     * WhatsApp). Each page is read back at a size the screen can show, so a long list does not hold its
+     * full-size pages in memory; Share sends the very files shown.
+     */
+    private fun previewList() {
+        val inp = input()
+        if (inp.rows.isEmpty()) return
+        share.isEnabled = false; preview.isEnabled = false
+        lifecycleScope.launch {
+            val files = makeFiles(inp)
+            val pictures = files?.let { list ->
+                withContext(Dispatchers.IO) {
+                    val wide = resources.displayMetrics.widthPixels
+                    list.mapNotNull { f ->
+                        val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                        android.graphics.BitmapFactory.decodeFile(f.path, bounds)
+                        // Halved only while the page stays at least 70% of the screen's width, and read without
+                        // an alpha channel (the pictures have none): sharp enough to read, half the memory.
+                        var sample = 1
+                        while (bounds.outWidth / (sample * 2) >= wide * 0.7) sample *= 2
+                        android.graphics.BitmapFactory.decodeFile(f.path, android.graphics.BitmapFactory.Options().apply {
+                            inSampleSize = sample
+                            inPreferredConfig = Bitmap.Config.RGB_565
+                        })
+                    }
+                }
+            }
+            share.isEnabled = true; preview.isEnabled = true
+            if (files == null || pictures.isNullOrEmpty()) {
+                Toast.makeText(this@RateListActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            val pad = (12 * resources.displayMetrics.density).toInt()
+            val column = android.widget.LinearLayout(this@RateListActivity).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                setPadding(pad, pad / 2, pad, 0)
+                pictures.forEach { bmp ->
+                    addView(android.widget.ImageView(this@RateListActivity).apply {
+                        setImageBitmap(bmp)
+                        adjustViewBounds = true
+                        contentDescription = getString(R.string.pdf_preview)
+                    }, android.widget.LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { bottomMargin = pad })
+                }
+            }
+            val box = android.widget.ScrollView(this@RateListActivity).apply { addView(column) }
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this@RateListActivity)
+                .setTitle(R.string.pdf_preview)
+                .setView(box)
+                .setNegativeButton(R.string.close, null)
+                .setPositiveButton(R.string.share) { _, _ -> send(files) }
+                // Not recycled on dismiss: the closing window may still draw them; the collector frees them.
+                .show()
         }
     }
 
@@ -380,5 +518,7 @@ class RateListActivity : BaseActivity() {
         private const val KEY_CASH = "cash"
         private const val KEY_CREDIT = "credit"
         private const val KEY_MARK = "mark"
+        /** The search box shows from this many products. */
+        private const val SEARCH_FROM = 6
     }
 }

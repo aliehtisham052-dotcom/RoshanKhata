@@ -1266,7 +1266,8 @@
     <string name="rate_list_show_mark">List par “Roshan Khata” dikhayein</string>
     <string name="rate_list_col_product">Product</string>
     <string name="rate_list_col_unit">Ikai</string>
-    <string name="rate_list_unpriced">Jin products ki qeemat nahi, woh list mein nahi: %1$s. Qeemat daalne ke liye Products aur stock kholein, product par tap karein aur Tafseelat mein tarmeem chunein.</string>
+    <string name="rate_list_unpriced">Jin products ki qeemat nahi, woh list mein nahi: %1$s. Unhein dekhne aur qeemat daalne ke liye yahan tap karein.</string>
+    <string name="rate_list_unpriced_title">Baghair qeemat ke products</string>
     <string name="rate_list_summary">Products: %1$s \u00b7 Tasveerein: %2$s</string>
     <string name="rate_list_none">Abhi kisi product ki qeemat nahi. Products aur stock kholein, product par tap karein, Tafseelat mein tarmeem chunein aur naqd ya udhar qeemat likhein.</string>
     <string name="rate_list_purchase_note">Khareed ki qeemat is list par kabhi nahi aati.</string>

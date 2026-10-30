@@ -40,8 +40,11 @@ object RateList {
     fun hasPrice(p: Product): Boolean = priced(p.salePrice) != null || priced(p.creditPrice) != null
 
     /** Products that cannot go on a rate list because neither price is set. */
-    fun unpricedCount(products: List<Product>): Int =
-        products.count { !it.isDeleted && !hasPrice(it) }
+    fun unpricedCount(products: List<Product>): Int = unpriced(products).size
+
+    /** Those products by name, for the note's list (30 Oct 2026): the count and the list are one rule. */
+    fun unpriced(products: List<Product>): List<Product> =
+        products.filter { !it.isDeleted && !hasPrice(it) }.sortedWith(compareBy(NameOrder.byName) { it.name })
 
     /**
      * The companies among the priced products, each once, in the spelling met

@@ -1276,7 +1276,8 @@
     <string name="rate_list_show_mark">Tampilkan “Roshan Khata” di daftar</string>
     <string name="rate_list_col_product">Produk</string>
     <string name="rate_list_col_unit">Satuan</string>
-    <string name="rate_list_unpriced">Produk tanpa harga tidak masuk daftar: %1$s. Untuk menambah harga, buka Produk &amp; stok, ketuk produknya, lalu pilih Ubah detail.</string>
+    <string name="rate_list_unpriced">Produk tanpa harga tidak masuk daftar: %1$s. Ketuk di sini untuk melihatnya dan menambah harga.</string>
+    <string name="rate_list_unpriced_title">Produk tanpa harga</string>
     <string name="rate_list_summary">Produk: %1$s \u00b7 Gambar: %2$s</string>
     <string name="rate_list_none">Belum ada produk yang punya harga. Buka Produk &amp; stok, ketuk sebuah produk, pilih Ubah detail, lalu isi harga tunai atau harga kredit.</string>
     <string name="rate_list_purchase_note">Harga beli tidak pernah dimasukkan ke daftar ini.</string>

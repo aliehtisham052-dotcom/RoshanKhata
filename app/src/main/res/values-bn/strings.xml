@@ -1306,7 +1306,8 @@
     <string name="rate_list_show_mark">তালিকায় “রোশন খাতা” দেখান</string>
     <string name="rate_list_col_product">পণ্য</string>
     <string name="rate_list_col_unit">একক</string>
-    <string name="rate_list_unpriced">দর নেই এমন পণ্য তালিকায় নেই: %1$s। দর যোগ করতে পণ্য ও স্টক খুলুন, পণ্যে ট্যাপ করুন এবং তথ্য সম্পাদনা বেছে নিন।</string>
+    <string name="rate_list_unpriced">দর নেই এমন পণ্য তালিকায় নেই: %1$s। সেগুলো দেখতে ও দর যোগ করতে এখানে ট্যাপ করুন।</string>
+    <string name="rate_list_unpriced_title">দরহীন পণ্য</string>
     <string name="rate_list_summary">পণ্য: %1$s \u00b7 ছবি: %2$s</string>
     <string name="rate_list_none">এখনো কোনো পণ্যের দর নেই। পণ্য ও স্টক খুলুন, একটি পণ্যে ট্যাপ করুন, তথ্য সম্পাদনা বেছে নিন এবং নগদ বা বাকির দর লিখুন।</string>
     <string name="rate_list_purchase_note">কেনা দাম এই তালিকায় কখনো আসে না।</string>

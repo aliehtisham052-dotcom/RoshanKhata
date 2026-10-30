@@ -1306,7 +1306,8 @@
     <string name="rate_list_show_mark">सूची पर “रोशन खाता” दिखाएँ</string>
     <string name="rate_list_col_product">प्रोडक्ट</string>
     <string name="rate_list_col_unit">इकाई</string>
-    <string name="rate_list_unpriced">जिन प्रोडक्ट का भाव नहीं है, वे सूची में नहीं: %1$s। भाव जोड़ने के लिए प्रोडक्ट और स्टॉक खोलें, प्रोडक्ट पर टैप करें और जानकारी बदलें चुनें।</string>
+    <string name="rate_list_unpriced">जिन प्रोडक्ट का भाव नहीं है, वे सूची में नहीं: %1$s। उन्हें देखने और भाव जोड़ने के लिए यहाँ टैप करें।</string>
+    <string name="rate_list_unpriced_title">बिना भाव वाले प्रोडक्ट</string>
     <string name="rate_list_summary">प्रोडक्ट: %1$s \u00b7 तस्वीरें: %2$s</string>
     <string name="rate_list_none">अभी किसी प्रोडक्ट का भाव नहीं है। प्रोडक्ट और स्टॉक खोलें, किसी प्रोडक्ट पर टैप करें, जानकारी बदलें चुनें और नकद या उधार भाव लिखें।</string>
     <string name="rate_list_purchase_note">ख़रीद का दाम इस सूची पर कभी नहीं आता।</string>
