@@ -1403,6 +1403,7 @@
     <string name="pdf_label_bill_to">BILL BANAM</string>
     <string name="pdf_label_invoice_details">INVOICE KI TAFSEEL</string>
     <string name="pdf_label_invoice_no">Invoice No</string>
+    <string name="pdf_label_doc_no">No.</string>
     <string name="pdf_label_date">Tareekh</string>
     <string name="pdf_label_due_date">Adaigi ki Tareekh</string>
     <string name="pdf_label_time">Waqt</string>

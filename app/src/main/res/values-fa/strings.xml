@@ -1431,6 +1431,7 @@
     <string name="pdf_label_bill_to">صورتحساب برای</string>
     <string name="pdf_label_invoice_details">جزئیات فاکتور</string>
     <string name="pdf_label_invoice_no">شماره فاکتور</string>
+    <string name="pdf_label_doc_no">شماره</string>
     <string name="pdf_label_date">تاریخ</string>
     <string name="pdf_label_due_date">سررسید</string>
     <string name="pdf_label_time">زمان</string>

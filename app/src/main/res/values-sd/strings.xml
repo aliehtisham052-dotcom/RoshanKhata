@@ -1431,6 +1431,7 @@
     <string name="pdf_label_bill_to">بل ڏانهن</string>
     <string name="pdf_label_invoice_details">انوائس جي تفصيل</string>
     <string name="pdf_label_invoice_no">انوائس نمبر</string>
+    <string name="pdf_label_doc_no">نمبر</string>
     <string name="pdf_label_date">تاريخ</string>
     <string name="pdf_label_due_date">ادائيگي جي تاريخ</string>
     <string name="pdf_label_time">وقت</string>

@@ -1414,6 +1414,7 @@
     <string name="pdf_label_bill_to">KEPADA</string>
     <string name="pdf_label_invoice_details">RINCIAN FAKTUR</string>
     <string name="pdf_label_invoice_no">No. Faktur</string>
+    <string name="pdf_label_doc_no">No.</string>
     <string name="pdf_label_date">Tanggal</string>
     <string name="pdf_label_due_date">Jatuh Tempo</string>
     <string name="pdf_label_time">Waktu</string>

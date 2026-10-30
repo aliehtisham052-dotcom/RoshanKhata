@@ -1452,6 +1452,7 @@
     <string name="pdf_label_bill_to">BILL TO</string>
     <string name="pdf_label_invoice_details">INVOICE DETAILS</string>
     <string name="pdf_label_invoice_no">Invoice No</string>
+    <string name="pdf_label_doc_no">No.</string>
     <string name="pdf_label_date">Date</string>
     <string name="pdf_label_due_date">Due Date</string>
     <string name="pdf_label_time">Time</string>

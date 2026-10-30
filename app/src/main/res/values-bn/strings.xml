@@ -1447,6 +1447,7 @@
     <string name="pdf_label_bill_to">বিল যার নামে</string>
     <string name="pdf_label_invoice_details">ইনভয়েসের বিবরণ</string>
     <string name="pdf_label_invoice_no">ইনভয়েস নং</string>
+    <string name="pdf_label_doc_no">নং</string>
     <string name="pdf_label_date">তারিখ</string>
     <string name="pdf_label_due_date">পরিশোধের তারিখ</string>
     <string name="pdf_label_time">সময়</string>

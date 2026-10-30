@@ -1535,6 +1535,7 @@
     <string name="pdf_label_bill_to">فاتورة إلى</string>
     <string name="pdf_label_invoice_details">تفاصيل الفاتورة</string>
     <string name="pdf_label_invoice_no">رقم الفاتورة</string>
+    <string name="pdf_label_doc_no">الرقم</string>
     <string name="pdf_label_date">التاريخ</string>
     <string name="pdf_label_due_date">تاريخ الاستحقاق</string>
     <string name="pdf_label_time">الوقت</string>

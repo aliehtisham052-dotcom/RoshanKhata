@@ -207,20 +207,26 @@ fun CounterSaleScreen(
                 }
             }
             message?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = c.inkSoft, fontSize = 13.sp) }
-            // The band: held, total, Pay.
-            Row(Modifier.fillMaxWidth().background(c.surface).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (heldCount > 0) OutlinedButton(onClick = onShowHeld) { Text(word(W.pos_held_tickets, heldCount), color = c.ink) }
-                else if (draft.lines.isNotEmpty()) OutlinedButton(onClick = onHold) { Text(word(W.pos_hold), color = c.ink) }
-                // Recent sales in sight (24 Oct 2026: they were only in the top bar's menu, and never found).
-                else if (onShowRecent != null) OutlinedButton(onClick = onShowRecent, modifier = Modifier.testTag("posRecent")) { Text(word(W.pos_recent), color = c.ink, maxLines = 1) }
-                Column(Modifier.weight(1f)) {
-                    Text(word(W.pos_grand_total), color = c.textMuted, fontSize = 12.sp)
-                    Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+            // The band: the total on its own line, then held/hold/recent and Pay sharing a row (30 Oct 2026, the
+            // owner's phone: in one Row the two buttons were measured first and the weighted total was left a
+            // letter wide — "Tot / al / R"). Each button's words stay on one line and end in "…" if they must.
+            Column(Modifier.fillMaxWidth().background(c.surface).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(word(W.pos_grand_total), Modifier.weight(1f), color = c.textMuted, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
                 }
-                Button(
-                    onClick = { paying = true }, enabled = draft.lines.isNotEmpty(),
-                    colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.testTag("posPay")
-                ) { Text(word(W.pos_next_pay), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1) }
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    val side = Modifier.weight(1f)
+                    if (heldCount > 0) OutlinedButton(onClick = onShowHeld, modifier = side) { Text(word(W.pos_held_tickets, heldCount), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    else if (draft.lines.isNotEmpty()) OutlinedButton(onClick = onHold, modifier = side) { Text(word(W.pos_hold), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    // Recent sales in sight (24 Oct 2026: they were only in the top bar's menu, and never found).
+                    else if (onShowRecent != null) OutlinedButton(onClick = onShowRecent, modifier = side.testTag("posRecent")) { Text(word(W.pos_recent), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    Button(
+                        onClick = { paying = true }, enabled = draft.lines.isNotEmpty(),
+                        colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.weight(1f).testTag("posPay")
+                    // Disabled, the fill fades to grey: white words on it could not be read (lesson 10).
+                    ) { Text(word(W.pos_next_pay), color = if (draft.lines.isNotEmpty()) Color.White else c.textMuted, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                }
             }
         } else {
             // ---- Step 2: who and how paid ----
