@@ -166,7 +166,8 @@ object PaymentMethod {
     // the balance SUM per party, each read straight off the index (P2, 7 Oct).
     // The single partyId index stays: Room expects every declared index to
     // exist, and dropping it would be a migration of its own for no gain.
-    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"]), Index("uid")]
+    // isDeleted+timestamp and entryNumber: schema 41 (30 Oct 2026, the speed review — every whole-book date window read the whole table).
+    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"]), Index("uid"), Index(value = ["isDeleted", "timestamp"]), Index("entryNumber")]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

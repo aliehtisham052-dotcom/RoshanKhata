@@ -30,7 +30,8 @@ import androidx.room.PrimaryKey
  * [sourceDocId] which document it was made from. The invoice IS the
  * document — one table, one editor, ten designs, one sync, one backup.
  */
-@Entity(tableName = "invoices", indices = [Index("uid"), Index("sourceDocId")])
+// isDeleted+kind+invoiceDate: schema 41 (30 Oct 2026) — the Documents page's kind pills and newest-first window.
+@Entity(tableName = "invoices", indices = [Index("uid"), Index("sourceDocId"), Index(value = ["isDeleted", "kind", "invoiceDate"])])
 data class Invoice(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 

@@ -13,7 +13,8 @@ import androidx.room.PrimaryKey
  * party ledger would either invent a phantom party or corrupt a real one's
  * balance. Keeping them apart is what lets both stay truthful.
  */
-@Entity(tableName = "cashbook", indices = [Index("uid")])
+// isDeleted+timestamp: schema 41 (30 Oct 2026) — the page, the day's and the drawer's sums no longer read the whole cashbook.
+@Entity(tableName = "cashbook", indices = [Index("uid"), Index(value = ["isDeleted", "timestamp"])])
 data class CashEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 

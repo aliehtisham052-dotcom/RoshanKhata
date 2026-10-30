@@ -777,7 +777,13 @@ val MIGRATION_39_40 = object : Migration(39, 40) {
     }
 }
 
-// KHATA_DB_VERSION (40) moved to the shared module with the database class (KMP Phase 3).
+// KHATA_DB_VERSION (41) moved to the shared module with the database class (KMP Phase 3).
+/** v41 (30 Oct 2026, the speed review): indexes only — the shared [Schema41] list. */
+val MIGRATION_40_41 = object : Migration(40, 41) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema41.statements) db.execSQL(sql)
+    }
+}
 
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
@@ -819,5 +825,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_36_37,
     MIGRATION_37_38,
     MIGRATION_38_39,
-    MIGRATION_39_40
+    MIGRATION_39_40,
+    MIGRATION_40_41
 )
