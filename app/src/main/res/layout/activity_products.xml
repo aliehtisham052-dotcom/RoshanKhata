@@ -165,10 +165,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/productStats" />
 
+    <!-- The bottom padding keeps the last product clear of the Add product button. -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProducts"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
         app:layout_constraintBottom_toTopOf="@id/productsActions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -185,7 +188,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/rvProducts"
+        app:layout_constraintBottom_toTopOf="@id/fabAddProduct"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/rvProducts">
@@ -406,5 +409,29 @@
             app:cornerRadius="12dp"
             app:strokeColor="@color/page_line" />
     </LinearLayout>
+
+    <!--
+      Add product (30 Oct 2026): until now a product came only from a name on a bill or an entry,
+      so a new book's counter, which sells only products, had nothing to find. The Bills screen's
+      floating button, above the registers so it never covers them; the band above has no room
+      for a third button at 360 dp (lesson 58). Hidden on a helper's read-only phone.
+    -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAddProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:maxWidth="260dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="@string/product_add"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/button_dark"
+        app:icon="@drawable/ic_add_plain"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/productsActions"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

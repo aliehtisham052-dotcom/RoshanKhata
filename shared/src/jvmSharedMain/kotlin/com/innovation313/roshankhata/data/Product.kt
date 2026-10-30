@@ -216,6 +216,13 @@ data class Product(
     val uid: String? = Uid.next()
 )
 
+/** What [KhataDao.addProduct] did: the row's id, or which live product already holds the name or barcode. */
+sealed class ProductAdd {
+    data class Added(val id: Long) : ProductAdd()
+    data class NameTaken(val name: String) : ProductAdd()
+    data class BarcodeTaken(val name: String) : ProductAdd()
+}
+
 /**
  * The two keys a product name is looked up by, in one place.
  *

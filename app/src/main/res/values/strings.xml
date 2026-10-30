@@ -1217,7 +1217,7 @@
     <string name="inventory_subtitle">What is on the shelf, and what it is worth</string>
     <string name="po_subtitle">What you have asked suppliers for, and what has come</string>
     <string name="products_note">These figures only count entries that are tied to a product. Use the button below to tie the ones written before.</string>
-    <string name="no_products">No products yet. Tie your existing entries below, or a product appears the first time you name one on a bill.</string>
+    <string name="no_products">No products yet. Tap “Add product”, tie your existing entries below, or a product appears the first time you name one on a bill.</string>
     <string name="link_goods">Tie existing entries to products</string>
     <string name="link_goods_explain">This reads the product names already written on your bills and ledger entries, and creates a product for each one.\n\nWhat it will NOT do: it never changes a name you typed, and it never replaces a product you chose yourself. It runs as one step — either all of it happens or none of it does — and running it again does nothing.</string>
     <string name="link_goods_go">Tie them</string>
@@ -1300,6 +1300,7 @@
     <string name="registration_number_hint">Pesticide registration number</string>
     <string name="product_who_bought">Who bought this</string>
     <string name="product_edit_details">Edit details</string>
+    <string name="product_add">Add product</string>
     <string name="rate_list_title">Price list</string>
     <string name="rate_list_subtitle">Your selling prices as a picture for WhatsApp</string>
     <string name="rate_list_heading_hint">Heading on the picture</string>

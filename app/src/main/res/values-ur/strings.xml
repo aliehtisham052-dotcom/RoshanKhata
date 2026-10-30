@@ -1174,7 +1174,7 @@
     <string name="inventory_subtitle">شیلف پر کتنا مال ہے، اور اس کی مالیت</string>
     <string name="po_subtitle">سپلائرز سے کیا منگوایا، اور کیا آ گیا</string>
     <string name="products_note">یہ حساب صرف ان اندراجات کا ہے جو کسی پروڈکٹ سے جڑے ہیں۔ جو پہلے لکھے جا چکے ہیں، انہیں نیچے والے بٹن سے جوڑیں۔</string>
-    <string name="no_products">ابھی کوئی پروڈکٹ نہیں۔ نیچے سے پرانے اندراجات جوڑیں، یا جب کسی بل پر نام لکھیں گے تو پروڈکٹ خود بن جائے گا۔</string>
+    <string name="no_products">ابھی کوئی پروڈکٹ نہیں۔ “پروڈکٹ شامل کریں” دبائیں، نیچے سے پرانے اندراجات جوڑیں، یا جب کسی بل پر نام لکھیں گے تو پروڈکٹ خود بن جائے گا۔</string>
     <string name="link_goods">پرانے اندراجات کو پروڈکٹس سے جوڑیں</string>
     <string name="link_goods_explain">یہ آپ کے بلوں اور کھاتوں پر پہلے سے لکھے ہوئے پروڈکٹ کے نام پڑھتا ہے، اور ہر نام کا ایک پروڈکٹ بنا دیتا ہے۔\n\nجو یہ نہیں کرے گا: آپ کا لکھا ہوا نام کبھی نہیں بدلے گا، اور جو پروڈکٹ آپ نے خود چنا ہو اسے کبھی تبدیل نہیں کرے گا۔ یہ ایک ہی قدم میں ہوتا ہے — یا پورا ہوگا یا بالکل نہیں — اور دوبارہ چلانے سے کچھ نہیں ہوتا۔</string>
     <string name="link_goods_go">جوڑ دیں</string>
@@ -1257,6 +1257,7 @@
     <string name="registration_number_hint">پیسٹی سائیڈ رجسٹریشن نمبر</string>
     <string name="product_who_bought">کس کس نے خریدا</string>
     <string name="product_edit_details">تفصیلات میں ترمیم</string>
+    <string name="product_add">پروڈکٹ شامل کریں</string>
     <string name="rate_list_title">ریٹ لسٹ</string>
     <string name="rate_list_subtitle">اپنی فروخت کی قیمتیں، واٹس ایپ کے لیے تصویر میں</string>
     <string name="rate_list_heading_hint">تصویر پر عنوان</string>

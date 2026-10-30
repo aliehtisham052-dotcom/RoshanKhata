@@ -1214,7 +1214,7 @@
     <string name="inventory_subtitle">তাকে কত মাল আছে, আর তার দাম কত</string>
     <string name="po_subtitle">সরবরাহকারীদের কাছে কী চেয়েছেন, আর কী এসেছে</string>
     <string name="products_note">এই অঙ্কগুলো শুধু পণ্যের সঙ্গে যুক্ত এন্ট্রি গোনে। আগে লেখা এন্ট্রি যুক্ত করতে নিচের বোতাম ব্যবহার করুন।</string>
-    <string name="no_products">এখনো কোনো পণ্য নেই। নিচে থেকে আগের এন্ট্রি যুক্ত করুন, অথবা বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়।</string>
+    <string name="no_products">এখনো কোনো পণ্য নেই। “পণ্য যোগ করুন” চাপুন, নিচে থেকে আগের এন্ট্রি যুক্ত করুন, অথবা বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়।</string>
     <string name="link_goods">আগের এন্ট্রি পণ্যের সঙ্গে যুক্ত করুন</string>
     <string name="link_goods_explain">এটি আপনার বিল ও খাতার এন্ট্রিতে আগে লেখা পণ্যের নাম পড়ে এবং প্রতিটির জন্য একটি পণ্য তৈরি করে।\n\nএটি যা করবে না: আপনার লেখা নাম কখনো বদলায় না, এবং আপনার নিজে বেছে নেওয়া পণ্য কখনো সরায় না। এটি এক ধাপে চলে — হয় পুরোটা হয়, নয় কিছুই হয় না — আর আবার চালালে কিছু হয় না।</string>
     <string name="link_goods_go">যুক্ত করুন</string>
@@ -1297,6 +1297,7 @@
     <string name="registration_number_hint">কীটনাশক নিবন্ধন নম্বর</string>
     <string name="product_who_bought">এটি কে কিনেছে</string>
     <string name="product_edit_details">তথ্য সম্পাদনা</string>
+    <string name="product_add">পণ্য যোগ করুন</string>
     <string name="rate_list_title">দরের তালিকা</string>
     <string name="rate_list_subtitle">আপনার বিক্রির দর, WhatsApp-এর জন্য ছবিতে</string>
     <string name="rate_list_heading_hint">ছবির শিরোনাম</string>
