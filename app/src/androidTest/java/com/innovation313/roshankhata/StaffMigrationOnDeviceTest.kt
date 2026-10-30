@@ -47,7 +47,8 @@ class StaffMigrationOnDeviceTest {
         for (sql in Schema36.statements.filter { it.contains("staff_payments") }) migrated.execSQL(sql)
         // Schema 38 gave staff and staff_attendance a uid, and all three an index on it (live sync, 22 Oct 2026).
         for (sql in Schema38.statements.filter { it.contains("`staff") }) migrated.execSQL(sql)
-        // Schema 39 (28 Oct 2026) touches transactions and cashbook only, and schema 40 (29 Oct 2026) invoices only:
+        // Schema 39 (28 Oct 2026) touches transactions and cashbook only, schema 40 (29 Oct 2026) invoices only and
+        // schema 41 (30 Oct 2026) adds indexes on those three only:
         // nothing of either reaches these three tables.
 
         val room = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()

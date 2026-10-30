@@ -2,6 +2,8 @@ package com.innovation313.roshankhata.data
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.util.Calendar
@@ -146,9 +148,14 @@ object Fefo {
         }
     }
 
-    /** How many batches [expiring] holds, again whenever stock moves ([KhataDao.observeBatchMoves]): the badges. */
+    /**
+     * How many batches [expiring] holds, again whenever stock moves ([KhataDao.observeBatchMoves]): the badges.
+     * A burst of saves is counted once, a second after the last (30 Oct 2026, the speed review: the tick fires on
+     * every write to ten tables, a plain khata entry included, and each one re-ran the whole stock rule).
+     */
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
     fun observeExpiringCount(dao: KhataDao, cutoff: Long): Flow<Int> =
-        dao.observeBatchMoves().map {
+        dao.observeBatchMoves().debounce(1_000).conflate().map {
             try {
                 expiring(dao, cutoff).size
             } catch (e: CancellationException) {

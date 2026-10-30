@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import androidx.lifecycle.repeatOnLifecycle
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.data.quantity
@@ -403,7 +404,9 @@ class KhataActivity : BaseActivity() {
     }
 
     private fun observeData() {
-        lifecycleScope.launch {
+        // Read only while the screen is on show (30 Oct 2026, the speed review): kept in the back stack under a
+        // customer's page, it re-read the whole book on every save made there.
+        lifecycleScope.launch { repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
             dao.observePartiesWithBalance().collectLatest { list ->
                 // The search keys for this book, folded once, off the main
                 // thread (P1, 7 Oct) — see NameSearch.Key.
@@ -447,7 +450,7 @@ class KhataActivity : BaseActivity() {
                 renderPartySummary(list)
                 render()
             }
-        }
+        } }
 
         setupReminders()
     }

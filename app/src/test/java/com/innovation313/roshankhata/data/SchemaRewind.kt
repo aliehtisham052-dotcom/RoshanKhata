@@ -52,8 +52,18 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 40: the documents' kind, status and source on invoices, and the source's index. */
+    /** Undo version 41: indexes only (30 Oct 2026). */
+    fun undo41(raw: SQLiteDatabase) {
+        for (idx in Schema41.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
+        val left = raw.rawQuery("SELECT name FROM sqlite_master WHERE type = 'index'", null).use { c ->
+            buildSet { while (c.moveToNext()) add(c.getString(0)) }
+        }
+        assertTrue("rewind left ${Schema41.newIndices.filter { it in left }}", Schema41.newIndices.none { it in left })
+    }
+
+    /** Undo version 40: the documents' kind, status and source on invoices, and the source's index. Undoes 41 first. */
     fun undo40(raw: SQLiteDatabase) {
+        undo41(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         raw.execSQL("PRAGMA legacy_alter_table = ON")
         for (idx in Schema40.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
