@@ -1286,7 +1286,7 @@
     <string name="inventory_subtitle">ما على الرف، وكم يساوي</string>
     <string name="po_subtitle">ما طلبته من المورّدين، وما وصل</string>
     <string name="products_note">هذه الأرقام تحسب فقط القيود المرتبطة بمنتج. اربط ما كُتب سابقاً بالزر أدناه.</string>
-    <string name="no_products">لا توجد منتجات بعد. اربط قيودك السابقة أدناه، أو سيظهر منتج أول مرة تسمّيه في فاتورة.</string>
+    <string name="no_products">لا توجد منتجات بعد. اضغط «إضافة منتج»، أو اربط قيودك السابقة أدناه، أو سيظهر منتج أول مرة تسمّيه في فاتورة.</string>
     <string name="link_goods">اربط القيود السابقة بالمنتجات</string>
     <string name="link_goods_explain">يقرأ هذا أسماء المنتجات المكتوبة أصلاً في فواتيرك وقيودك، ويُنشئ منتجاً لكل اسم.\n\nما لن يفعله: لن يغيّر اسماً كتبته أبداً، ولن يستبدل منتجاً اخترته بنفسك. يجري في خطوة واحدة — إما كله أو لا شيء — وتشغيله مرة أخرى لا يفعل شيئاً.</string>
     <string name="link_goods_go">اربطها</string>
@@ -1377,6 +1377,7 @@
     <string name="registration_number_hint">رقم تسجيل المبيد</string>
     <string name="product_who_bought">من اشترى هذا</string>
     <string name="product_edit_details">تعديل البيانات</string>
+    <string name="product_add">إضافة منتج</string>
     <string name="rate_list_title">قائمة الأسعار</string>
     <string name="rate_list_subtitle">أسعار البيع لديك، صورةً لإرسالها عبر واتساب</string>
     <string name="rate_list_heading_hint">العنوان على الصورة</string>

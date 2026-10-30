@@ -1174,7 +1174,7 @@
     <string name="inventory_subtitle">Shelf par kitna maal hai, aur us ki maliyat</string>
     <string name="po_subtitle">Suppliers se kya mangwaya, aur kya aa gaya</string>
     <string name="products_note">Ye hisaab sirf un entries ka hai jo kisi product se juri hain. Jo pehle likhi ja chuki hain, unhein neeche wale button se jorein.</string>
-    <string name="no_products">Abhi koi product nahi. Neeche se purani entries jorein, ya jab kisi bill par naam likhenge to product khud ban jayega.</string>
+    <string name="no_products">Abhi koi product nahi. “Product shamil karein” dabayein, neeche se purani entries jorein, ya jab kisi bill par naam likhenge to product khud ban jayega.</string>
     <string name="link_goods">Purani entries ko products se jorein</string>
     <string name="link_goods_explain">Ye aap ke bills aur khaton par pehle se likhe hue product ke naam parhta hai, aur har naam ka ek product bana deta hai.\n\nJo ye NAHI karega: aap ka likha hua naam kabhi nahi badlega, aur jo product aap ne khud chuna ho use kabhi tabdeel nahi karega. Ye ek hi qadam mein hota hai — ya poora hoga ya bilkul nahi — aur dobara chalane se kuch nahi hota.</string>
     <string name="link_goods_go">Jor dein</string>
@@ -1257,6 +1257,7 @@
     <string name="registration_number_hint">Pesticide registration number</string>
     <string name="product_who_bought">Kis kis ne khareeda</string>
     <string name="product_edit_details">Tafseelat mein tarmeem</string>
+    <string name="product_add">Product shamil karein</string>
     <string name="rate_list_title">Rate List</string>
     <string name="rate_list_subtitle">Apni farokht ki qeematein, WhatsApp ke liye tasveer mein</string>
     <string name="rate_list_heading_hint">Tasveer par unwan</string>

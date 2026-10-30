@@ -1214,7 +1214,7 @@
     <string name="inventory_subtitle">शेल्फ़ पर कितना माल है, और उसकी कीमत</string>
     <string name="po_subtitle">सप्लायरों से क्या मँगवाया, और क्या आ गया</string>
     <string name="products_note">ये आँकड़े सिर्फ़ वे एंट्रियाँ गिनते हैं जो किसी प्रोडक्ट से जुड़ी हैं। पहले लिखी एंट्रियों को जोड़ने के लिए नीचे का बटन दबाएँ।</string>
-    <string name="no_products">अभी कोई प्रोडक्ट नहीं। नीचे से मौजूदा एंट्रियाँ जोड़ें, या बिल में पहली बार नाम लिखते ही प्रोडक्ट बन जाता है।</string>
+    <string name="no_products">अभी कोई प्रोडक्ट नहीं। “प्रोडक्ट जोड़ें” दबाएँ, नीचे से मौजूदा एंट्रियाँ जोड़ें, या बिल में पहली बार नाम लिखते ही प्रोडक्ट बन जाता है।</string>
     <string name="link_goods">मौजूदा एंट्रियों को प्रोडक्ट से जोड़ें</string>
     <string name="link_goods_explain">यह आपके बिलों और खाता एंट्रियों में पहले से लिखे प्रोडक्ट नाम पढ़ता है और हर एक के लिए प्रोडक्ट बनाता है।\n\nयह क्या नहीं करेगा: आपका लिखा नाम कभी नहीं बदलता, और आपका खुद चुना प्रोडक्ट कभी नहीं हटाता। यह एक ही कदम में चलता है — या तो सब होता है या कुछ नहीं — और दोबारा चलाने से कुछ नहीं होता।</string>
     <string name="link_goods_go">जोड़ें</string>
@@ -1297,6 +1297,7 @@
     <string name="registration_number_hint">कीटनाशक पंजीकरण संख्या</string>
     <string name="product_who_bought">यह किसने खरीदा</string>
     <string name="product_edit_details">जानकारी बदलें</string>
+    <string name="product_add">प्रोडक्ट जोड़ें</string>
     <string name="rate_list_title">भाव सूची</string>
     <string name="rate_list_subtitle">आपके बिक्री भाव, WhatsApp के लिए तस्वीर में</string>
     <string name="rate_list_heading_hint">तस्वीर पर शीर्षक</string>

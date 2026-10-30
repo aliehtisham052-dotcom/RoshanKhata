@@ -15,6 +15,7 @@ import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.ProductName
+import com.innovation313.roshankhata.data.ProductAdd
 import kotlinx.coroutines.launch
 import com.innovation313.roshankhata.data.Digits
 
@@ -174,9 +175,56 @@ object ProductDetailsDialog {
             if (guessed) View.VISIBLE else View.GONE
 
         val lastStep = step == null || step.position == step.total - 1
+        // A product not yet in the book (id 0): the Products screen's Add (30 Oct 2026).
+        val isNew = product.id == 0L
+
+        fun typed(e: EditText) = e.text.toString().trim().ifEmpty { null }
+
+        /** The product as the form now reads; one reading for an edit and an add alike. */
+        fun fromForm(newName: String) = product.copy(
+            name = newName,
+            nameKey = ProductName.key(newName),
+            normalisedName = ProductName.normalised(newName),
+            company = typed(etCompany),
+            // Carried through untouched: the box is gone from the
+            // form, the column is not. Writing null here would erase
+            // a value the owner typed before today and never asked
+            // to lose.
+            category = product.category,
+            defaultUnit = UnitWords.canonical(etUnit.text.toString()),
+            productType = typed(etType),
+            technicalName = typed(etTechnical),
+            formulation = typed(etFormulation),
+            registrationNumber = typed(etRegistration),
+            // A cleared box means "I do not quote a rate for this",
+            // which is a null and not a zero. Zero is a price.
+            salePrice = Digits.parse(typed(etSalePrice)),
+            creditPrice = Digits.parse(typed(etCreditPrice)),
+            barcode = typed(etBarcode),
+            costPrice = Digits.parse(typed(etCostPrice)),
+            lowStockLevel = Digits.parse(typed(etLowStock)),
+            // A pack needs both its name and how many are in it; half of one is no pack.
+            packUnit = typed(etPackUnit)?.takeIf { (Digits.parse(typed(etPackSize)) ?: 0.0) > 0.0 },
+            packSize = Digits.parse(typed(etPackSize))?.takeIf { it > 0.0 && typed(etPackUnit) != null },
+            packPrice = Digits.parse(typed(etPackPrice))?.takeIf { typed(etPackUnit) != null },
+            taxRate = typed(etTaxRate)?.let { com.innovation313.roshankhata.ui.Calc.evalPercent(it) }?.takeIf { it > 0.0 },
+            // The main product by its exact name; a name that is no product here leaves it on its own.
+            parentId = typed(etVariantOf)?.let { n -> mains.firstOrNull { it.name.equals(n, ignoreCase = true) }?.id },
+            variant = typed(etVariant)?.takeIf { typed(etVariantOf) != null }
+        )
+
+        /** The price line who-did-what keeps when a price was set or changed; [id] is the product's row. */
+        suspend fun logPrices(updated: Product, id: Long) {
+            if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
+                dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", id,
+                    // Each figure sealed left-to-right, so the audit line's "old → new" keeps its order in an RTL language (21 Oct 2026).
+                    updated.name + ": " + com.innovation313.roshankhata.ui.Format.ltr(listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " \u2192 " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/")))
+            }
+        }
+
         val dialog = MaterialAlertDialogBuilder(activity)
             .setTitle(
-                if (step == null) activity.getString(R.string.product_edit_details)
+                if (step == null) activity.getString(if (isNew) R.string.product_add else R.string.product_edit_details)
                 else Digits.string(activity.resources, R.string.label_step_title, step.position + 1, step.total)
             )
             .setView(view)
@@ -187,96 +235,102 @@ object ProductDetailsDialog {
             .apply {
                 step?.onBack?.let { back -> setNeutralButton(R.string.back) { _, _ -> back() } }
             }
-            .setPositiveButton(if (lastStep) R.string.save else R.string.label_step_save_next) { _, _ ->
-                val newName = etName.text.toString().trim()
-                if (newName.isEmpty()) {
-                    Toast.makeText(activity, R.string.enter_name, Toast.LENGTH_SHORT).show()
-                    // The dialog is already closing; treat an empty name as a
-                    // skip rather than silently saving a nameless product.
-                    onDismissed()
-                    return@setPositiveButton
+            // A new product's Save is wired after create(), so a missing or taken name keeps the form open.
+            .setPositiveButton(if (lastStep) R.string.save else R.string.label_step_save_next, null)
+            .create()
+
+        /** Editing a product the book has: the form closes at once and the write runs on. */
+        fun saveEdit() {
+            dialog.dismiss()
+            val newName = etName.text.toString().trim()
+            if (newName.isEmpty()) {
+                Toast.makeText(activity, R.string.enter_name, Toast.LENGTH_SHORT).show()
+                // Treat an empty name as a skip rather than silently saving a nameless product.
+                onDismissed()
+                return
+            }
+            val updated = fromForm(newName)
+
+            // AppScope for the write itself: leaving the screen right
+            // after Save must not cancel it. The clash check runs in the
+            // same block so the read and the write cannot be separated by
+            // the owner walking away.
+            AppScope.launch {
+                // Only a rename can collide; keeping the same name finds
+                // this very product and is no clash at all. nameKey is a
+                // UNIQUE index, so without this check the write would be
+                // refused inside a coroutine with the owner believing it
+                // saved.
+                val clash = dao.productByKey(updated.nameKey)
+                if (clash != null && clash.id != product.id) {
+                    activity.runOnUiThread {
+                        if (!activity.isFinishing) {
+                            Toast.makeText(
+                                activity,
+                                activity.getString(R.string.product_name_taken, clash.name),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        onDismissed()
+                    }
+                    return@launch
                 }
 
-                fun typed(e: EditText) = e.text.toString().trim().ifEmpty { null }
-
-                val updated = product.copy(
-                    name = newName,
-                    nameKey = ProductName.key(newName),
-                    normalisedName = ProductName.normalised(newName),
-                    company = typed(etCompany),
-                    // Carried through untouched: the box is gone from the
-                    // form, the column is not. Writing null here would erase
-                    // a value the owner typed before today and never asked
-                    // to lose.
-                    category = product.category,
-                    defaultUnit = UnitWords.canonical(etUnit.text.toString()),
-                    productType = typed(etType),
-                    technicalName = typed(etTechnical),
-                    formulation = typed(etFormulation),
-                    registrationNumber = typed(etRegistration),
-                    // A cleared box means "I do not quote a rate for this",
-                    // which is a null and not a zero. Zero is a price.
-                    salePrice = Digits.parse(typed(etSalePrice)),
-                    creditPrice = Digits.parse(typed(etCreditPrice)),
-                    barcode = typed(etBarcode),
-                    costPrice = Digits.parse(typed(etCostPrice)),
-                    lowStockLevel = Digits.parse(typed(etLowStock)),
-                    // A pack needs both its name and how many are in it; half of one is no pack.
-                    packUnit = typed(etPackUnit)?.takeIf { (Digits.parse(typed(etPackSize)) ?: 0.0) > 0.0 },
-                    packSize = Digits.parse(typed(etPackSize))?.takeIf { it > 0.0 && typed(etPackUnit) != null },
-                    packPrice = Digits.parse(typed(etPackPrice))?.takeIf { typed(etPackUnit) != null },
-                    taxRate = typed(etTaxRate)?.let { com.innovation313.roshankhata.ui.Calc.evalPercent(it) }?.takeIf { it > 0.0 },
-                    // The main product by its exact name; a name that is no product here leaves it on its own.
-                    parentId = typed(etVariantOf)?.let { n -> mains.firstOrNull { it.name.equals(n, ignoreCase = true) }?.id },
-                    variant = typed(etVariant)?.takeIf { typed(etVariantOf) != null }
-                )
-
-                // AppScope for the write itself: leaving the screen right
-                // after Save must not cancel it. The clash check runs in the
-                // same block so the read and the write cannot be separated by
-                // the owner walking away.
-                AppScope.launch {
-                    // Only a rename can collide; keeping the same name finds
-                    // this very product and is no clash at all. nameKey is a
-                    // UNIQUE index, so without this check the write would be
-                    // refused inside a coroutine with the owner believing it
-                    // saved.
-                    val clash = dao.productByKey(updated.nameKey)
-                    if (clash != null && clash.id != product.id) {
-                        activity.runOnUiThread {
-                            if (!activity.isFinishing) {
-                                Toast.makeText(
-                                    activity,
-                                    activity.getString(R.string.product_name_taken, clash.name),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                            onDismissed()
+                // A barcode names one product: the same code on two would ring the wrong one up.
+                val codeClash = updated.barcode?.let { dao.productByBarcode(it) }
+                if (codeClash != null && codeClash.id != product.id) {
+                    activity.runOnUiThread {
+                        if (!activity.isFinishing) {
+                            Toast.makeText(activity, activity.getString(R.string.product_barcode_taken, codeClash.name), Toast.LENGTH_LONG).show()
                         }
-                        return@launch
+                        onDismissed()
                     }
+                    return@launch
+                }
+                dao.updateProduct(updated)
+                logPrices(updated, product.id)
+                activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
+            }
+        }
 
-                    // A barcode names one product: the same code on two would ring the wrong one up.
-                    val codeClash = updated.barcode?.let { dao.productByBarcode(it) }
-                    if (codeClash != null && codeClash.id != product.id) {
-                        activity.runOnUiThread {
-                            if (!activity.isFinishing) {
-                                Toast.makeText(activity, activity.getString(R.string.product_barcode_taken, codeClash.name), Toast.LENGTH_LONG).show()
-                            }
-                            onDismissed()
-                        }
-                        return@launch
+        /**
+         * Adding a product: the form stays open until the book has it, so a missing name, or one
+         * or a barcode another product already holds, is said over what was typed instead of
+         * losing it. The name and barcode are checked and the row written in one transaction
+         * ([KhataDao.addProduct]); the write runs on AppScope so leaving the screen cannot cut it.
+         */
+        fun saveNew() {
+            val newName = etName.text.toString().trim()
+            if (newName.isEmpty()) {
+                etName.error = activity.getString(R.string.enter_name)
+                etName.requestFocus()
+                return
+            }
+            val fresh = fromForm(newName)
+            val save = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+            save.isEnabled = false
+            AppScope.launch {
+                val result = runCatching { dao.addProduct(fresh) }
+                // The product is in the book whatever happens to its audit line.
+                (result.getOrNull() as? ProductAdd.Added)?.let { added -> runCatching { logPrices(fresh, added.id) } }
+                activity.runOnUiThread {
+                    if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
+                    save.isEnabled = true
+                    when (val r = result.getOrNull()) {
+                        is ProductAdd.Added -> { dialog.dismiss(); onSaved() }
+                        is ProductAdd.NameTaken -> { etName.error = activity.getString(R.string.product_name_taken, r.name); etName.requestFocus() }
+                        is ProductAdd.BarcodeTaken -> { etBarcode.error = activity.getString(R.string.product_barcode_taken, r.name); etBarcode.requestFocus() }
+                        // A read-only phone refuses with its own notice (ViewerMode); anything else is said here.
+                        null -> if (result.exceptionOrNull() !is kotlinx.coroutines.CancellationException)
+                            Toast.makeText(activity, R.string.save_failed_not_saved, Toast.LENGTH_LONG).show()
                     }
-                    dao.updateProduct(updated)
-                    if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
-                        dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
-                            // Each figure sealed left-to-right, so the audit line's "old → new" keeps its order in an RTL language (21 Oct 2026).
-                            updated.name + ": " + com.innovation313.roshankhata.ui.Format.ltr(listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " \u2192 " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/")))
-                    }
-                    activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
                 }
             }
-            .create()
+        }
+
+        dialog.setOnShowListener {
+            dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE).setOnClickListener { if (isNew) saveNew() else saveEdit() }
+        }
         // A tap beside the form used to close it — and in the queue that
         // silently skipped the product with everything typed lost. Only the
         // buttons (or Back) close it now.

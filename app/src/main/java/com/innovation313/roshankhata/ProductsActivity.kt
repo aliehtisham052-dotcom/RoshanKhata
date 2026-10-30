@@ -119,6 +119,13 @@ class ProductsActivity : BaseActivity() {
 
         btnLink.setOnClickListener { confirmLink() }
 
+        // Add product (30 Oct 2026): the one form that edits a product, opened on a blank one.
+        // A helper's read-only phone cannot write, so the button is not offered there.
+        findViewById<View>(R.id.fabAddProduct).apply {
+            if (com.innovation313.roshankhata.data.ViewerMode.isOn(this@ProductsActivity)) visibility = View.GONE
+            else setOnClickListener { addProduct() }
+        }
+
         // The stock register an inspection asks for. It opens from here, on the
         // screen whose figures it prints, rather than from a settings list
         // where it would be looked for only after the inspector had left.
@@ -350,6 +357,24 @@ class ProductsActivity : BaseActivity() {
                 onSaved = { refresh() }
             )
         }
+    }
+
+    /**
+     * A product the owner makes himself: the same form as an edit, on an empty product, so
+     * both ask the same questions. The search box's words start the name, since "no match"
+     * is the moment an owner reaches for Add. The list is read again once it is saved.
+     */
+    private fun addProduct() {
+        val typed = findViewById<android.widget.EditText>(R.id.etProductSearch).text.toString().trim()
+        val blank = com.innovation313.roshankhata.data.Product(
+            name = typed,
+            nameKey = com.innovation313.roshankhata.data.ProductName.key(typed),
+            normalisedName = com.innovation313.roshankhata.data.ProductName.normalised(typed)
+        )
+        ProductDetailsDialog.show(activity = this, product = blank, dao = dao, onSaved = {
+            findViewById<android.widget.EditText>(R.id.etProductSearch).text.clear()
+            refresh()
+        })
     }
 
     /**

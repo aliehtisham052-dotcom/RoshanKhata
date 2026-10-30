@@ -128,6 +128,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun updateProduct(product: Product): Unit = refused()
     override suspend fun restoreProduct(id: Long): Unit = refused()
     override suspend fun findOrCreateProduct(name: String, category: String?, defaultUnit: String?): Product = refused()
+    override suspend fun addProduct(product: Product): ProductAdd = refused()
     override suspend fun wipeProducts(): Unit = refused()
     override suspend fun restoreProducts(items: List<Product>): Unit = refused()
     override suspend fun linkEntriesNamed(name: String, productId: Long): Int = refused()

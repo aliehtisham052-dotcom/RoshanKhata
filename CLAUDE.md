@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,601 strings and 55 plurals (2,601 on 30 Oct 2026 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,603 strings and 55 plurals (2,603 on 30 Oct 2026 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1257,6 +1257,14 @@ the phone's Compose screens); every point read in the code first. CI only — no
   numbers, an email and the owner's supplier balances replaced with dummies in tests (git history
   keeps them).
 - **One rule:** `PartyTotals` (get/give/net) for five hand-written copies.
+- **Add product on the phone** (the owner, the same day: the counter found nothing in a new book, and a
+  product could be made only by naming it on a bill or an entry): Products has a floating Add product
+  (`fabAddProduct`, hidden on a helper's read-only phone) that opens `ProductDetailsDialog` on a blank
+  product, the search box's words as its name. `KhataDao.addProduct` checks the name and barcode and
+  writes in one transaction (`ProductAdd`: Added / NameTaken / BarcodeTaken); a deleted product of the
+  name comes back keeping its id and uid. The form stays open over a missing or taken name. `no_products`
+  names the button (nine languages). Windows still has no Add product (its Products page says so).
+  Tests: ProductAddTest. CI only.
 - **Left for the owner's decision, with the reason:** a binned khata sale's invoice (binning is
   undone from the bin, cancelling is not); the owner PIN hash in plain backups (needed to restore
   on a new phone, lesson 40) and 120,000 rounds; BLOCK_NEGATIVE_STOCK on khata sales (a change in

@@ -1202,7 +1202,7 @@
     <string name="inventory_subtitle">آنچه در قفسه است و ارزش آن</string>
     <string name="po_subtitle">آنچه از تأمین‌کنندگان سفارش داده‌اید و آنچه رسیده است</string>
     <string name="products_note">این ارقام فقط ثبت‌هایی را می‌شمارد که به یک محصول وصل‌اند. آنچه پیش‌تر نوشته شده را با دکمهٔ زیر وصل کنید.</string>
-    <string name="no_products">هنوز محصولی نیست. ثبت‌های قبلی را از پایین وصل کنید، یا محصول اولین بار که نامش را در فاکتوری بنویسید ساخته می‌شود.</string>
+    <string name="no_products">هنوز محصولی نیست. «افزودن محصول» را بزنید، ثبت‌های قبلی را از پایین وصل کنید، یا محصول اولین بار که نامش را در فاکتوری بنویسید ساخته می‌شود.</string>
     <string name="link_goods">ثبت‌های قبلی را به محصولات وصل کنید</string>
     <string name="link_goods_explain">این کار نام محصولاتی را که از قبل روی فاکتورها و دفترتان نوشته شده می‌خواند و برای هر نام یک محصول می‌سازد.\n\nآنچه انجام نمی‌دهد: نامی را که نوشته‌اید هرگز تغییر نمی‌دهد، و محصولی را که خودتان انتخاب کرده‌اید جایگزین نمی‌کند. در یک مرحله انجام می‌شود — یا همه یا هیچ — و اجرای دوباره کاری نمی‌کند.</string>
     <string name="link_goods_go">وصل کن</string>
@@ -1285,6 +1285,7 @@
     <string name="registration_number_hint">شماره ثبت سم</string>
     <string name="product_who_bought">چه کسانی خریدند</string>
     <string name="product_edit_details">ویرایش مشخصات</string>
+    <string name="product_add">افزودن محصول</string>
     <string name="rate_list_title">فهرست قیمت</string>
     <string name="rate_list_subtitle">قیمت‌های فروش شما، به‌صورت تصویر برای واتساپ</string>
     <string name="rate_list_heading_hint">عنوان روی تصویر</string>

@@ -1967,6 +1967,40 @@ interface KhataDao {
         return fresh.copy(id = insertProduct(fresh))
     }
 
+    /**
+     * A product the owner made himself, from the Products screen's Add (30 Oct 2026: the
+     * phone could make one only by naming it on a bill or an entry, so the counter, which
+     * sells only products, found nothing in a new book).
+     *
+     * One transaction, as [findOrCreateProduct] is: the name and the barcode are checked and
+     * the row written with nothing between them. A live product of the same name or barcode is
+     * refused and named; a DELETED one of the same name comes back with what was typed,
+     * keeping its id, uid and first day, so the goods it was tied to are tied to it still and
+     * the other device meets the same row (lesson 35).
+     */
+    @Transaction
+    suspend fun addProduct(product: Product): ProductAdd {
+        val key = ProductName.key(product.name)
+        val existing = productByKey(key)
+        if (existing != null && !existing.isDeleted) return ProductAdd.NameTaken(existing.name)
+        val code = product.barcode?.trim()?.takeIf { it.isNotEmpty() }
+        if (code != null) productByBarcode(code)?.let { if (it.id != existing?.id) return ProductAdd.BarcodeTaken(it.name) }
+        val row = product.copy(
+            name = product.name.trim(),
+            nameKey = key,
+            normalisedName = ProductName.normalised(product.name),
+            barcode = code,
+            isDeleted = false,
+            deletedAt = null
+        )
+        if (existing != null) {
+            updateProduct(row.copy(id = existing.id, uid = existing.uid, createdAt = existing.createdAt,
+                category = row.category ?: existing.category, note = row.note ?: existing.note))
+            return ProductAdd.Added(existing.id)
+        }
+        return ProductAdd.Added(insertProduct(row.copy(id = 0)))
+    }
+
     // Backup coverage for products. A restore that dropped this table would
     // leave every productId on every entry pointing at nothing — the ledger
     // would survive and the goods would quietly stop being goods.

@@ -1186,7 +1186,7 @@
     <string name="inventory_subtitle">Apa yang ada di rak, dan berapa nilainya</string>
     <string name="po_subtitle">Apa yang Anda pesan dari pemasok, dan apa yang sudah datang</string>
     <string name="products_note">Angka-angka ini hanya menghitung catatan yang terkait dengan suatu produk. Gunakan tombol di bawah untuk mengaitkan catatan yang ditulis sebelumnya.</string>
-    <string name="no_products">Belum ada produk. Kaitkan catatan lama Anda di bawah, atau produk akan muncul saat pertama kali Anda menuliskannya di tagihan.</string>
+    <string name="no_products">Belum ada produk. Ketuk “Tambah produk”, kaitkan catatan lama Anda di bawah, atau produk akan muncul saat pertama kali Anda menuliskannya di tagihan.</string>
     <string name="link_goods">Kaitkan catatan lama ke produk</string>
     <string name="link_goods_explain">Ini membaca nama produk yang sudah tertulis di tagihan dan catatan buku Anda, lalu membuat produk untuk masing-masing.\n\nYang TIDAK dilakukannya: tidak pernah mengubah nama yang Anda ketik, dan tidak pernah mengganti produk yang Anda pilih sendiri. Prosesnya berjalan sebagai satu langkah — semuanya terjadi atau tidak sama sekali — dan menjalankannya lagi tidak mengubah apa pun.</string>
     <string name="link_goods_go">Kaitkan</string>
@@ -1267,6 +1267,7 @@
     <string name="registration_number_hint">Nomor pendaftaran pestisida</string>
     <string name="product_who_bought">Siapa yang membeli ini</string>
     <string name="product_edit_details">Ubah detail</string>
+    <string name="product_add">Tambah produk</string>
     <string name="rate_list_title">Daftar harga</string>
     <string name="rate_list_subtitle">Harga jual Anda sebagai gambar untuk WhatsApp</string>
     <string name="rate_list_heading_hint">Judul pada gambar</string>
