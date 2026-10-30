@@ -200,6 +200,7 @@ class SchemesActivity : BaseActivity() {
         lifecycleScope.launch {
             val suppliers: List<Party> = dao.suppliersOnce()
             val view = layoutInflater.inflate(R.layout.dialog_scheme, null)
+            com.innovation313.roshankhata.ui.TextFit.relax(view)
             val etName = view.findViewById<EditText>(R.id.etSchemeName)
             // A company's crop-season scheme is an agri shop's example; any
             // other trade is shown a festival offer instead (9 Oct).

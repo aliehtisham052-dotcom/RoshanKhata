@@ -4,4 +4,6 @@
     <item name="tile_compact" type="id" />
     <!-- KeyboardFollow: marks a root whose focus listener is already added. -->
     <item name="tag_keyboard_follow" type="id" />
+    <!-- HintFit: marks a box whose hint is already watched. -->
+    <item name="hint_fit_watched" type="id" />
 </resources>

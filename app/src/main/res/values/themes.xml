@@ -573,6 +573,15 @@
     </style>
 
     <!-- Invoice "more options" sheet (13 Oct): a field's label above its box. -->
+    <!-- A form box's question, above the box rather than as its one-line hint, so it wraps and is read
+         whole (30 Oct 2026, the product form). -->
+    <style name="FormFieldLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="SheetFieldLabel">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

@@ -1,36 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Editing a product, which until now could not be edited at all: products are
-  created by typing a name into a bill, and whatever was typed was what the
-  product stayed. The compliance block is the reason this screen exists, but
-  the plain fields belong here too — a name entered in a hurry mid-sale should
-  be fixable afterwards.
-
-  Everything below the name is optional and says so. A feed or seed shop must
-  never be made to answer pesticide questions to save a product.
-
-  The four Agriculture Department questions are asked ABOVE their boxes, not
-  inside them. A hint lives on one line and is cut off when it runs past the
-  edge, and these four run well past it: "Active ingredient, e.g.
-  Chlorpyrifos 40% EC" arrived on screen as "Active ingredient, e.g. Chlorpy"
-  with no way to see the rest — the owner could not tell what was being asked
-  for, and the example, which is the part that actually answers the question,
-  was the part that vanished. As a label the same string wraps and is read in
-  full. Urdu, Arabic, Sindhi and Persian run longer than English, so this was
-  worse in the languages most of these shops read.
-
-  The strings themselves are untouched, which is the point: all six locales
-  already have them, and nothing needed retranslating to fix this. The three
-  short fields above keep their hints, which fit.
--->
-<!--
-  No maxHeight here: ScrollView ignores it. The dialog itself keeps this one
-  scrolling panel between the title and the buttons — which only works while
-  it is the ONLY middle panel, so the "filled from the bill" note is a view
-  inside it (tvGuessNote), never the dialog's own message (1 Oct: with both,
-  Save and Cancel were pushed off the bottom of the screen).
+  Every box is asked by a label ABOVE it, not by a hint inside it (30 Oct 2026, the owner's photo:
+  "Barcode (optional", "Cost price (op", "How many in a" — a hint is drawn on one line and cut at
+  the box's edge, and the paired boxes are half the dialog wide). A label wraps and is read whole
+  in every language and at every text size; the unit's examples change with the shop's trade
+  (TradeVocab), so its label is written in code. In a pair, each box sits at the foot of its
+  column, so the two boxes stay level when one label takes two lines.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -53,79 +31,106 @@
             android:textSize="14sp"
             android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/tvProductNameLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="0dp"
+            android:labelFor="@+id/etProductName"
+            android:text="@string/product_name" />
+
         <EditText
             android:id="@+id/etProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/product_name"
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
+
+        <TextView
+            android:id="@+id/tvProductCompanyLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="10dp"
+            android:labelFor="@+id/etProductCompany"
+            android:text="@string/company_optional" />
 
         <EditText
             android:id="@+id/etProductCompany"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/company_optional"
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
 
-        <!--
-          Category was removed here, not renamed. It asked for the same thing
-          as "Type" in the Agriculture Department block below — both were
-          documented in Product.kt as "pesticide, seed, fertiliser, feed" —
-          so the form asked one question twice and the owner could not tell
-          which box wanted what. Type is the one kept: it sits with the
-          registration fields it belongs to and it already travels with the
-          register's own query. The products.category COLUMN stays, and what
-          is already stored in it is preserved on save, so no backup written
-          before today loses anything.
-        -->
+        <!-- Category is not asked: it asked what "Type" below asks. The column stays and keeps what it holds. -->
+
+        <TextView
+            android:id="@+id/tvProductUnitLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="10dp"
+            android:labelFor="@+id/etProductUnit"
+            android:text="@string/unit_optional" />
 
         <EditText
             android:id="@+id/etProductUnit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/unit_optional"
             android:importantForAutofill="no"
             android:inputType="text" />
 
-        <!--
-          The two rates, side by side because they are the same figure asked
-          twice: what this costs paid today, and what it costs paid after the
-          crop. Both optional — a shop that quotes from memory fills in
-          neither and loses nothing.
-        -->
+        <!-- The two rates: paid today, and paid after the crop. Both optional; zero is a price, empty is none. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/etSalePrice"
-                android:textDirection="ltr"
-                android:textAlignment="viewStart"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="1"
-                android:hint="@string/sale_price_hint"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etCreditPrice"
+                <TextView
+                android:id="@+id/tvSalePriceLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etSalePrice"
+                android:text="@string/sale_price_hint" />
+
+                <EditText
+                android:id="@+id/etSalePrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:hint="@string/credit_price_hint"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                android:id="@+id/tvCreditPriceLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etCreditPrice"
+                android:text="@string/credit_price_hint" />
+
+                <EditText
+                android:id="@+id/etCreditPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
@@ -134,74 +139,117 @@
             android:layout_marginTop="4dp"
             android:text="@string/product_price_help"
             android:textColor="@color/ink_soft"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
 
-        <!-- The counter (POS Phase 2): the pack's barcode (the camera reads it),
-             what the unit costs the shop, and the stock level that warns. -->
+        <!-- The counter (POS Phase 2): the pack's barcode (the camera reads it), what the unit costs the
+             shop, and the stock level that warns. -->
+        <TextView
+            android:id="@+id/tvBarcodeLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="12dp"
+            android:labelFor="@+id/etBarcode"
+            android:text="@string/product_barcode_hint" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:baselineAligned="false"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/etBarcode"
-                android:textDirection="ltr"
-                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/product_barcode_hint"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:importantForAutofill="no"
                 android:inputType="textVisiblePassword" />
 
+            <!-- The app's own outlined button (MaterialComponents): the Material 3 style this had found
+                 none of its colours in the app's theme and drew a magenta edge and tiny text. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnScanBarcode"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="@string/pos_scan" />
+                android:maxWidth="140dp"
+                android:minHeight="48dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="@string/pos_scan"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green_text"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_qr_scan"
+                app:iconTint="@color/brand_green_text"
+                app:strokeColor="@color/page_line" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/etCostPrice"
-                android:textDirection="ltr"
-                android:textAlignment="viewStart"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="1"
-                android:hint="@string/product_cost_hint"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etLowStock"
+                <TextView
+                android:id="@+id/tvCostPriceLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etCostPrice"
+                android:text="@string/product_cost_hint" />
+
+                <EditText
+                android:id="@+id/etCostPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:hint="@string/product_low_stock_hint"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                android:id="@+id/tvLowStockLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etLowStock"
+                android:text="@string/product_low_stock_hint" />
+
+                <EditText
+                android:id="@+id/etLowStock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Packs and tax (schema 36): a bigger unit the product also comes or goes in, and its tax. -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:text="@string/product_pack_help"
             android:textColor="@color/text_muted"
             android:textSize="12sp" />
@@ -209,71 +257,130 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/etPackUnit"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="1"
-                android:hint="@string/product_pack_unit"
+                android:orientation="vertical">
+
+                <TextView
+                android:id="@+id/tvPackUnitLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etPackUnit"
+                android:text="@string/product_pack_unit" />
+
+                <EditText
+                android:id="@+id/etPackUnit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:importantForAutofill="no"
                 android:inputType="text" />
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/etPackSize"
-                android:textDirection="ltr"
-                android:textAlignment="viewStart"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:hint="@string/product_pack_size"
+                android:orientation="vertical">
+
+                <TextView
+                android:id="@+id/tvPackSizeLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etPackSize"
+                android:text="@string/product_pack_size" />
+
+                <EditText
+                android:id="@+id/etPackSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/etPackPrice"
-                android:textDirection="ltr"
-                android:textAlignment="viewStart"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_weight="1"
-                android:hint="@string/product_pack_price"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etTaxRate"
+                <TextView
+                android:id="@+id/tvPackPriceLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etPackPrice"
+                android:text="@string/product_pack_price" />
+
+                <EditText
+                android:id="@+id/etPackPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:hint="@string/product_tax_rate"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                android:id="@+id/tvTaxRateLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="0dp"
+                android:labelFor="@+id/etTaxRate"
+                android:text="@string/product_tax_rate" />
+
+                <EditText
+                android:id="@+id/etTaxRate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textDirection="ltr"
+                android:textAlignment="viewStart"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Variants (21 Oct 2026): this product as one size, colour or flavour of a main product. -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:text="@string/product_variant_help"
             android:textColor="@color/text_muted"
             android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvVariantOfLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="10dp"
+            android:labelFor="@+id/etVariantOf"
+            android:text="@string/product_variant_of" />
 
         <AutoCompleteTextView
             android:id="@+id/etVariantOf"
@@ -281,16 +388,21 @@
             android:layout_height="wrap_content"
             android:completionThreshold="1"
             android:dropDownVerticalOffset="4dp"
-            android:hint="@string/product_variant_of"
             android:importantForAutofill="no"
             android:inputType="textCapWords"
             android:popupBackground="@drawable/bg_dropdown_popup" />
+
+        <TextView
+            android:id="@+id/tvVariantLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="10dp"
+            android:labelFor="@+id/etVariant"
+            android:text="@string/product_variant" />
 
         <EditText
             android:id="@+id/etVariant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/product_variant"
             android:importantForAutofill="no"
             android:inputType="textCapWords" />
 

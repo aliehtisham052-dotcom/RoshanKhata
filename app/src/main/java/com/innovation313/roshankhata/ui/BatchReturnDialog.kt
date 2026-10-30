@@ -43,6 +43,7 @@ object BatchReturnDialog {
             }
 
             val view = activity.layoutInflater.inflate(R.layout.dialog_batch_return, null)
+            com.innovation313.roshankhata.ui.TextFit.relax(view)
             val etQty = view.findViewById<EditText>(R.id.etReturnQty)
             val etRate = view.findViewById<EditText>(R.id.etReturnRate)
             val tvTotal = view.findViewById<TextView>(R.id.tvReturnTotal)

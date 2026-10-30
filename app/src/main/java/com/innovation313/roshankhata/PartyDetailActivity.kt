@@ -2518,6 +2518,7 @@ class PartyDetailActivity : BaseActivity() {
 
     private fun showReminderDialog(viaWhatsApp: Boolean, facts: com.innovation313.roshankhata.data.ReminderText.Facts) {
         val view = layoutInflater.inflate(R.layout.dialog_reminder_preview, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etMessage: EditText = view.findViewById(R.id.etMessage)
         // The ladder (6 Oct): the app picks the next step, the owner can change it.
         val ladder = com.innovation313.roshankhata.data.ReminderLadder
@@ -3324,6 +3325,7 @@ class PartyDetailActivity : BaseActivity() {
             val party = dao.getParty(partyId) ?: return@launch
 
             val view = layoutInflater.inflate(R.layout.dialog_edit_party, null)
+            com.innovation313.roshankhata.ui.TextFit.relax(view)
             val etName: EditText = view.findViewById(R.id.etEditName)
             val etPhone: EditText = view.findViewById(R.id.etEditPhone)
             val etFather: EditText = view.findViewById(R.id.etEditFatherName)
@@ -3379,6 +3381,7 @@ class PartyDetailActivity : BaseActivity() {
     private fun showCreditLimitDialog() {
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { showCreditLimitDialog() }) return
         val view = layoutInflater.inflate(R.layout.dialog_credit_limit, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
         val tvOwed: TextView = view.findViewById(R.id.tvCurrentOwed)
 

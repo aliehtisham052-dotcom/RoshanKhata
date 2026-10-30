@@ -597,14 +597,17 @@ class BillsActivity : BaseActivity() {
         val btnExpiry: MaterialButton = view.findViewById(R.id.btnExpiry)
         val etQty: EditText = view.findViewById(R.id.etItemQty)
         val etUnit: AutoCompleteTextView = view.findViewById(R.id.etItemUnit)
-        etUnit.hint = TradeVocab.unitHint(this)
+        // "Unit" alone (30 Oct 2026): the trade's examples were cut at this half-width box's edge.
+        // A tap on the empty box lists the units, the shop's own first.
+        etUnit.hint = getString(R.string.unit_short)
+        etUnit.setOnClickListener { if (etUnit.text.isNullOrBlank()) etUnit.showDropDown() }
         val etRate: EditText = view.findViewById(R.id.etItemRate)
 
         etUnit.setAdapter(
             ArrayAdapter(
                 this,
                 R.layout.item_dropdown_row,
-                UnitWords.choices(this)
+                TradeVocab.unitChoices(this)
             )
         )
 
