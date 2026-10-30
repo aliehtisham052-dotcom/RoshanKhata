@@ -142,8 +142,9 @@ fun HomePane(
     hidden: Boolean = false,
     onHidden: (Boolean) -> Unit = {}
 ) {
-    val get = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-    val give = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+    val sides = com.innovation313.roshankhata.data.PartyTotals.of(parties.map { it.balance })
+    val get = sides.get
+    val give = sides.give
     var figures by remember { mutableStateOf<HomeFigures?>(null) }
     LaunchedEffect(reload) { figures = figuresOf() }
     // Home rises into place once as it opens (Motion.PAGE ms, a few dp): a welcome, not a show.

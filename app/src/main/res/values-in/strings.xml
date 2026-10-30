@@ -3540,4 +3540,5 @@
     <string name="audit_doc_converted">Dokumen dikonversi</string>
     <string name="audit_doc_accepted">Dokumen diterima</string>
     <string name="audit_doc_cancelled">Dokumen dibatalkan</string>
+    <string name="audit_doc_deleted">Dokumen dihapus</string>
 </resources>

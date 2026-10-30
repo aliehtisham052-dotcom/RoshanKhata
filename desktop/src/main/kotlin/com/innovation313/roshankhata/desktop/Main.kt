@@ -65,6 +65,7 @@ import com.innovation313.roshankhata.data.BackupCodec
 import com.innovation313.roshankhata.data.DesktopDatabase
 import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.Money
+import com.innovation313.roshankhata.data.PartyTotals
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerEntry
@@ -1065,10 +1066,10 @@ private fun Book(
                                     { partyType = it }
                                 )
                                 // What the open tab will get and give; a card is also the side filter, as on the phone.
-                                val ofType = byType(parties, partyType)
+                                val ofType = PartyTotals.of(byType(parties, partyType).map { it.balance })
                                 KhataTotals(
-                                    get = ofType.filter { Money.isPositive(it.balance) }.sumOf { it.balance },
-                                    give = ofType.filter { Money.isNegative(it.balance) }.sumOf { -it.balance },
+                                    get = ofType.get,
+                                    give = ofType.give,
                                     hidden = totalsHidden, side = partySide, onSide = { partySide = it }
                                 )
                                 // Today's cheques and expiring stock: their chips, as on the phone's Home.
@@ -1751,8 +1752,8 @@ private fun Book(
             plural(WP.delete_parties_title, gone.size, gone.size),
             plural(WP.delete_parties_confirm, gone.size, gone.size) + if (owing.isEmpty()) "" else "\n\n" + plural(
                 WP.delete_parties_owing, owing.size, owing.size,
-                Format.money(owing.filter { Money.isPositive(it.balance) }.sumOf { it.balance }),
-                Format.money(owing.filter { Money.isNegative(it.balance) }.sumOf { -it.balance })
+                PartyTotals.of(owing.map { it.balance }).let { Format.money(it.get) },
+                PartyTotals.of(owing.map { it.balance }).let { Format.money(it.give) }
             ),
             word(W.delete), danger = true, height = if (owing.isEmpty()) 280 else 340,
             onDismiss = { deletingMany = false },

@@ -499,4 +499,5 @@ object AuditAction {
     const val DOC_CONVERTED = "doc_converted"
     const val DOC_ACCEPTED = "doc_accepted"
     const val DOC_CANCELLED = "doc_cancelled"
+    const val DOC_DELETED = "doc_deleted"
 }

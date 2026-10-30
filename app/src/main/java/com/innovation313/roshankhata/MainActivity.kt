@@ -672,9 +672,11 @@ class MainActivity : BaseActivity() {
             try {
                 val dao = KhataDatabase.get(this@MainActivity).khataDao()
                 dao.observePartiesWithBalance().collectLatest { parties ->
-                    totalGet = parties.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-                    totalGive = parties.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
-                    netBalance = totalGet - totalGive
+                    // One rule for every screen's two totals (PartyTotals, 30 Oct 2026).
+                    val sides = com.innovation313.roshankhata.data.PartyTotals.of(parties.map { it.balance })
+                    totalGet = sides.get
+                    totalGive = sides.give
+                    netBalance = sides.net
                     renderBalance()
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {

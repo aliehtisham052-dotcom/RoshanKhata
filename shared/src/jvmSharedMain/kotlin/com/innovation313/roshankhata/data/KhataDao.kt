@@ -1200,7 +1200,7 @@ interface KhataDao {
             source.copy(
                 id = 0, uid = Uid.next(), kind = toKind, status = DocStatus.OPEN, sourceDocId = source.id,
                 invoiceNumber = nextDocNumber(toKind), invoiceDate = now, createdAt = now,
-                receivedAmount = if (toKind == DocKind.INVOICE) source.receivedAmount else null,
+                receivedAmount = if (toKind == DocKind.INVOICE) receivedUpChain(source) else null,
                 isDeleted = false, deletedAt = null
             )
         )
@@ -1209,6 +1209,21 @@ interface KhataDao {
         val number = getInvoice(made)?.invoiceNumber.orEmpty()
         insertAudit(AuditLog(user = by, action = AuditAction.DOC_CONVERTED, refTable = "invoices", refId = made, detail = "${source.invoiceNumber} → $number"))
         return made
+    }
+
+    /**
+     * What was received against this deal by the time it becomes an invoice: the source's own amount, else the
+     * nearest earlier step's (30 Oct 2026, the review: an advance written on a sales order was dropped by the
+     * challan — which carries none, it prints no money — so SO → DC → INV lost it while SO → INV kept it).
+     */
+    suspend fun receivedUpChain(source: Invoice): Double? {
+        var doc: Invoice? = source
+        repeat(5) {
+            val d = doc ?: return null
+            d.receivedAmount?.let { return it }
+            doc = d.sourceDocId?.let { getInvoice(it) }
+        }
+        return null
     }
 
     /** The customer agreed to the document (a quotation, usually): OPEN → ACCEPTED, from OPEN only (lesson 52). */
@@ -1241,8 +1256,11 @@ interface KhataDao {
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoice(id: Long): Invoice?
 
-    /** The live invoice already made from this khata sale, if any (v22). */
-    @Query("SELECT id FROM invoices WHERE sourceEntryId = :entryId AND isDeleted = 0 ORDER BY id DESC LIMIT 1")
+    /**
+     * The live invoice already made from this khata sale, if any (v22). A cancelled one is not it (30 Oct 2026,
+     * the review: it was returned, opened "locked", and a corrected invoice could never be made from the sale).
+     */
+    @Query("SELECT id FROM invoices WHERE sourceEntryId = :entryId AND isDeleted = 0 AND status <> 'CANCELLED' ORDER BY id DESC LIMIT 1")
     suspend fun invoiceForEntry(entryId: Long): Long?
 
     @Update
@@ -1265,12 +1283,18 @@ interface KhataDao {
         // conversion is convertDocument, a status change acceptDocument/cancelDocument (lesson 52). The row's
         // uid and createdAt stay the saved row's too: the phone's editor builds the edit as a fresh Invoice,
         // whose default uid would have renamed the row for every other device (lesson 35).
-        val saved = getInvoice(invoice.id) ?: throw DocRefused(DocRefused.Why.NOT_FOUND, "no document ${invoice.id}")
+        // A document binned meanwhile (another device, a stale editor) stays binned: the save is refused rather
+        // than bringing it back with the editor's default isDeleted = false (30 Oct 2026, the review).
+        val saved = getInvoice(invoice.id)?.takeIf { !it.isDeleted } ?: throw DocRefused(DocRefused.Why.NOT_FOUND, "no document ${invoice.id}")
         if (!DocStatus.isLive(saved.status)) throw DocRefused(DocRefused.Why.NOT_LIVE, "${saved.invoiceNumber} is ${saved.status}")
-        updateInvoice(invoice.copy(kind = saved.kind, status = saved.status, sourceDocId = saved.sourceDocId, uid = saved.uid, createdAt = saved.createdAt))
+        updateInvoice(invoice.copy(kind = saved.kind, status = saved.status, sourceDocId = saved.sourceDocId, uid = saved.uid, createdAt = saved.createdAt, isDeleted = false, deletedAt = null))
         softDeleteInvoiceItems(invoice.id)
+        // The whole line set is written anew, each line with a NEW uid (LiveSync rule 7). The computer's form
+        // passes the lines it loaded, uids and all: inserted as they came, every edit left the binned line and
+        // its live successor under one uid — a peer's change could land on the binned one and the two books'
+        // fingerprints never agreed again (30 Oct 2026, the review).
         for (item in items) {
-            insertInvoiceItem(item.copy(id = 0, invoiceId = invoice.id))
+            insertInvoiceItem(item.copy(id = 0, invoiceId = invoice.id, uid = Uid.next()))
         }
     }
 
@@ -1410,8 +1434,31 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM invoices WHERE isDeleted = 0")
     fun observeInvoiceCount(): Flow<Int>
 
-    @Query("UPDATE invoices SET isDeleted = 1, deletedAt = :now WHERE id = :id")
-    suspend fun softDeleteInvoice(id: Long, now: Long = System.currentTimeMillis())
+    /**
+     * Bins a document only while it is live (OPEN or ACCEPTED), in the DAO (lesson 52; 30 Oct 2026, the review: a
+     * stale menu could bin a CONVERTED quotation and leave its sales order pointing into the bin). Rows changed.
+     * Screens call [deleteDocument], which also reopens the source and writes who did it.
+     */
+    @Query("UPDATE invoices SET isDeleted = 1, deletedAt = :now WHERE id = :id AND isDeleted = 0 AND status IN ('OPEN', 'ACCEPTED')")
+    suspend fun softDeleteInvoice(id: Long, now: Long = System.currentTimeMillis()): Int
+
+    /** Live documents made from [sourceId] (a cancelled step still stands for the conversion). */
+    @Query("SELECT COUNT(*) FROM invoices WHERE sourceDocId = :sourceId AND isDeleted = 0")
+    suspend fun docsMadeFrom(sourceId: Long): Int
+
+    /**
+     * The owner's Delete on a document: binned only while live; the document it was made from goes back to OPEN
+     * when nothing else made from it is left (a quotation whose sales order was deleted can be stepped on again,
+     * instead of staying CONVERTED for good with nothing after it); one audit row. False when refused.
+     */
+    @Transaction
+    suspend fun deleteDocument(id: Long, now: Long = System.currentTimeMillis(), by: String? = Access.userName): Boolean {
+        val doc = getInvoice(id)?.takeIf { !it.isDeleted } ?: return false
+        if (softDeleteInvoice(id, now) != 1) return false
+        doc.sourceDocId?.let { src -> if (docsMadeFrom(src) == 0) setDocStatus(src, DocStatus.OPEN, DocStatus.CONVERTED) }
+        insertAudit(AuditLog(user = by, action = AuditAction.DOC_DELETED, refTable = "invoices", refId = id, detail = doc.invoiceNumber))
+        return true
+    }
 
     /**
      * Every party in the book, for the customer field's suggestion list —
@@ -3318,6 +3365,16 @@ interface KhataDao {
             p.cashEntryId?.let { softDeleteCashEntry(it, now) }
         }
         updateSale(sale.copy(status = SaleStatus.VOID, voidReason = reason.trim(), voidedAt = now))
+        // The ticket's A4 invoice goes with it, cancelled — kept on record under its number (30 Oct 2026, the
+        // review: a voided ticket left its INV- open, editable, sendable, and counted in the month's figure).
+        // A void is never undone, so neither is this; from the state it is in only (lesson 52).
+        sale.invoiceId?.let { invId ->
+            getInvoice(invId)?.takeIf { !it.isDeleted && DocStatus.isLive(it.status) }?.let { doc ->
+                if (setDocStatus(invId, DocStatus.CANCELLED, doc.status) == 1) {
+                    insertAudit(AuditLog(user = user, action = AuditAction.DOC_CANCELLED, refTable = "invoices", refId = invId, detail = "${doc.invoiceNumber} · ${sale.saleNumber}"))
+                }
+            }
+        }
         // The points it earned and spent go with it (21 Oct 2026) — never below nothing (22 Oct 2026, the review:
         // points earned here and already spent on another ticket left the customer at minus that much).
         val before = sale.partyId?.let { loyaltyBalance(it) }

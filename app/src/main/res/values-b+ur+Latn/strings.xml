@@ -3547,4 +3547,5 @@
     <string name="audit_doc_converted">Document convert hua</string>
     <string name="audit_doc_accepted">Document manzoor hua</string>
     <string name="audit_doc_cancelled">Document mansookh hua</string>
+    <string name="audit_doc_deleted">Document mitaya gaya</string>
 </resources>

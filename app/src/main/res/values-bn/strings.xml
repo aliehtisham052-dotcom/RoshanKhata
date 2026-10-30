@@ -3595,4 +3595,5 @@
     <string name="audit_doc_converted">নথি রূপান্তরিত</string>
     <string name="audit_doc_accepted">নথি গৃহীত</string>
     <string name="audit_doc_cancelled">নথি বাতিল</string>
+    <string name="audit_doc_deleted">নথি মোছা হয়েছে</string>
 </resources>

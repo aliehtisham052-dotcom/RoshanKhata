@@ -441,11 +441,13 @@ class InvoicesActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 lifecycleScope.launch {
-                    val job = AppScope.launch { dao.softDeleteInvoice(invoice.id) }
+                    var done = false
+                    val job = AppScope.launch { done = dao.deleteDocument(invoice.id) }
                     job.join()
                     // A failed write was said already ("not saved"); no "deleted" after it (23 Oct 2026).
                     if (job.isCancelled) return@launch
-                    Toast.makeText(this@InvoicesActivity, R.string.invoice_deleted, Toast.LENGTH_LONG).show()
+                    // Refused in the DAO: converted or cancelled meanwhile (another device, a stale menu).
+                    Toast.makeText(this@InvoicesActivity, if (done) R.string.invoice_deleted else R.string.doc_locked, Toast.LENGTH_LONG).show()
                 }
             }
             .show()

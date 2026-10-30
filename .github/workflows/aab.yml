@@ -67,6 +67,8 @@ jobs:
           python3 scripts/gen_desktop_invoice.py --check
           python3 scripts/gen_desktop_cards.py --check
           python3 scripts/gen_desktop_poster.py --check
+          # 30 Oct 2026, the review: strings.yml checked the inspector copy, the release gate did not.
+          python3 scripts/gen_desktop_inspector.py --check
 
       - uses: actions/setup-java@v5
         with:

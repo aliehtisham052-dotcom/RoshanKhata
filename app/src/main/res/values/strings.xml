@@ -3759,4 +3759,5 @@
     <string name="audit_doc_converted">Document converted</string>
     <string name="audit_doc_accepted">Document accepted</string>
     <string name="audit_doc_cancelled">Document cancelled</string>
+    <string name="audit_doc_deleted">Document deleted</string>
 </resources>

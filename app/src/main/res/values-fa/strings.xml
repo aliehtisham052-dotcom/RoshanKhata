@@ -3575,4 +3575,5 @@
     <string name="audit_doc_converted">سند تبدیل شد</string>
     <string name="audit_doc_accepted">سند تأیید شد</string>
     <string name="audit_doc_cancelled">سند لغو شد</string>
+    <string name="audit_doc_deleted">سند حذف شد</string>
 </resources>
