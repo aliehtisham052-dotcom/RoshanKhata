@@ -3547,4 +3547,5 @@
     <string name="audit_doc_converted">دستاویز تبدیل ہوئی</string>
     <string name="audit_doc_accepted">دستاویز منظور ہوئی</string>
     <string name="audit_doc_cancelled">دستاویز منسوخ ہوئی</string>
+    <string name="audit_doc_deleted">دستاویز مٹائی گئی</string>
 </resources>

@@ -3767,4 +3767,5 @@
     <string name="audit_doc_converted">تم تحويل مستند</string>
     <string name="audit_doc_accepted">تم قبول مستند</string>
     <string name="audit_doc_cancelled">تم إلغاء مستند</string>
+    <string name="audit_doc_deleted">تم حذف مستند</string>
 </resources>

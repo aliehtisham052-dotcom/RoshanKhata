@@ -23,7 +23,8 @@ object SaleInvoice {
         val full = dao.saleWithLines(saleId) ?: return null
         val s = full.sale
         if (s.status != SaleStatus.DONE || s.isDeleted) return null
-        s.invoiceId?.let { id -> dao.getInvoice(id)?.takeIf { !it.isDeleted }?.let { return it.id } }
+        // A cancelled invoice is not the ticket's any more: a corrected one is made (30 Oct 2026, the review).
+        s.invoiceId?.let { id -> dao.getInvoice(id)?.takeIf { !it.isDeleted && it.status != DocStatus.CANCELLED }?.let { return it.id } }
         val ownTax = full.items.any { (it.taxRate ?: 0.0) > 0.0 }
         val discount = LineMath.round(full.items.sumOf { it.discount } + s.discountAmount)
         val extra = LineMath.round((if (ownTax) s.taxAmount else 0.0) + s.roundOff)

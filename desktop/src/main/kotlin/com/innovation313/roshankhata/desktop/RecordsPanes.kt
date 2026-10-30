@@ -441,7 +441,12 @@ fun InvoicesPane(
             danger = true,
             onConfirm = {
                 deletingInvoice = null
-                scope.launch { withContext(Dispatchers.IO) { dao.softDeleteInvoice(inv.id) } }
+                val locked = words.text(W.doc_locked)
+                scope.launch {
+                    // Refused in the DAO when the document was converted or cancelled meanwhile.
+                    val done = withContext(Dispatchers.IO) { runCatching { dao.deleteDocument(inv.id) }.getOrDefault(false) }
+                    if (!done) refused = locked
+                }
             },
             onDismiss = { deletingInvoice = null }
         )

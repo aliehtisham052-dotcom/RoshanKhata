@@ -667,8 +667,11 @@ class InvoiceEditorActivity : BaseActivity() {
     private fun validItems(): List<InvoiceItem> = rows.mapNotNull { r ->
         val name = r.name.text.toString().trim()
         val qty = Digits.parse(r.qty.text)
-        // A challan's rate is kept as 0: nothing is priced on it.
-        val rate = if (prices) Digits.parse(r.rate.text) else 0.0
+        // A challan prints no rate, but a line it carries from its sales order keeps that order's rate in the
+        // hidden box (addRow fills it), so the invoice the challan becomes is priced. Only a line added on the
+        // challan itself (an empty box) is 0. (30 Oct 2026, the review: this was `0.0` for every row, so saving
+        // an edited challan priced every line at 0 and its invoice came out at Rs 0. Windows kept the rates.)
+        val rate = if (prices) Digits.parse(r.rate.text) else (Digits.parse(r.rate.text)?.takeIf { it >= 0 } ?: 0.0)
         if (name.isEmpty() || qty == null || qty <= 0 || rate == null || rate < 0) return@mapNotNull null
         InvoiceItem(
             invoiceId = 0,

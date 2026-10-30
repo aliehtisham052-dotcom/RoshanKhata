@@ -277,4 +277,49 @@ class DocumentsTest {
         assertEquals(com.innovation313.roshankhata.words.W.doc_locked, DocActions.refusalWordKey(DocRefused.Why.NOT_LIVE))
         assertNull(DocActions.refusalWordKey(DocRefused.Why.BAD_STEP))
     }
+
+    // ---------- 30 Oct 2026, the review ----------
+
+    @Test
+    fun `an advance on a sales order reaches the invoice through the challan`() = runBlocking {
+        val so = dao.saveInvoiceWithItems(Invoice(customerName = "Ali", kind = DocKind.SALES_ORDER, receivedAmount = 10_000.0), lines)
+        val dc = dao.convertDocument(so, DocKind.CHALLAN)
+        assertNull("a challan carries no money", dao.getInvoice(dc)!!.receivedAmount)
+        val inv = dao.convertDocument(dc, DocKind.INVOICE)
+        assertEquals("the order's advance, as SO → INV would have carried it", 10_000.0, dao.getInvoice(inv)!!.receivedAmount!!, 0.0)
+    }
+
+    @Test
+    fun `delete bins only a live document, reopens its source and is audited`() = runBlocking {
+        val q = quotation()
+        val so = dao.convertDocument(q, DocKind.SALES_ORDER)
+        assertFalse("a converted quotation is not deleted", dao.deleteDocument(q, by = "Owner"))
+        assertFalse(dao.getInvoice(q)!!.isDeleted)
+        assertEquals(0, dao.softDeleteInvoice(q))
+
+        assertTrue(dao.deleteDocument(so, by = "Owner"))
+        assertTrue(dao.getInvoice(so)!!.isDeleted)
+        assertEquals("nothing is left after it: the quotation can be stepped on again", DocStatus.OPEN, dao.getInvoice(q)!!.status)
+        assertTrue(dao.latestAudit(10).any { it.action == AuditAction.DOC_DELETED && it.refId == so && it.user == "Owner" })
+        assertFalse("binned once is enough", dao.deleteDocument(so))
+
+        val cancelled = quotation()
+        dao.cancelDocument(cancelled)
+        assertFalse("a cancelled document stays on record", dao.deleteDocument(cancelled))
+    }
+
+    @Test
+    fun `an edit writes every line anew under a new uid and does not bring back a binned document`() = runBlocking {
+        val inv = dao.saveInvoiceWithItems(Invoice(customerName = "Ali"), lines)
+        val before = dao.invoiceItems(inv)
+        // The computer's form passes back the lines it loaded, uids and all.
+        dao.updateInvoiceWithItems(dao.getInvoice(inv)!!.copy(note = "x"), before)
+        val after = dao.invoiceItems(inv)
+        assertEquals(before.map { it.itemName to it.rate }, after.map { it.itemName to it.rate })
+        assertTrue("no live line shares a uid with a binned one", after.map { it.uid }.intersect(before.map { it.uid }.toSet()).isEmpty())
+
+        dao.deleteDocument(inv)
+        refused(DocRefused.Why.NOT_FOUND) { dao.updateInvoiceWithItems(dao.getInvoice(inv)!!.copy(isDeleted = false, note = "stale"), lines) }
+        assertTrue(dao.getInvoice(inv)!!.isDeleted)
+    }
 }

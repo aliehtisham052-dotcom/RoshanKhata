@@ -802,8 +802,9 @@ class KhataActivity : BaseActivity() {
         val picked = allParties.filter { it.id in selectedIds }
         if (picked.isEmpty()) return
 
-        val toCollect = picked.filter { Money.isPositive(it.balance) }.sumOf { it.balance }
-        val toPay = picked.filter { Money.isNegative(it.balance) }.sumOf { -it.balance }
+        val sides = com.innovation313.roshankhata.data.PartyTotals.of(picked.map { it.balance })
+        val toCollect = sides.get
+        val toPay = sides.give
         val owing = picked.count { Money.isNotZero(it.balance) }
 
         val message = buildString {

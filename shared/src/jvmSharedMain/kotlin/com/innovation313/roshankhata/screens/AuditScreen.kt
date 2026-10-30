@@ -166,5 +166,6 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.DOC_CONVERTED -> word(W.audit_doc_converted)
     AuditAction.DOC_ACCEPTED -> word(W.audit_doc_accepted)
     AuditAction.DOC_CANCELLED -> word(W.audit_doc_cancelled)
+    AuditAction.DOC_DELETED -> word(W.audit_doc_deleted)
     else -> a.action
 }

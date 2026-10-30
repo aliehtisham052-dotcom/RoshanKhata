@@ -3595,4 +3595,5 @@
     <string name="audit_doc_converted">दस्तावेज़ परिवर्तित</string>
     <string name="audit_doc_accepted">दस्तावेज़ स्वीकृत</string>
     <string name="audit_doc_cancelled">दस्तावेज़ रद्द</string>
+    <string name="audit_doc_deleted">दस्तावेज़ मिटाया गया</string>
 </resources>

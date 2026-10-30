@@ -15,6 +15,13 @@ on:
 permissions:
   contents: write
 
+# One run per branch at a time, the newest queued after it (30 Oct 2026, the review): two quick pushes
+# to main raced, and the older run could finish last and leave an older APK behind the "latest" link —
+# desktop.yml met the same race on 20 Oct. Queued, not cancelled, so a run already publishing finishes.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     # Pinned, not ubuntu-latest: GitHub moves that label to Ubuntu 26.04

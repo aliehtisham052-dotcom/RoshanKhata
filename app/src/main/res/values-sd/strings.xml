@@ -3575,4 +3575,5 @@
     <string name="audit_doc_converted">دستاويز تبديل ٿيو</string>
     <string name="audit_doc_accepted">دستاويز منظور ٿيو</string>
     <string name="audit_doc_cancelled">دستاويز منسوخ ٿيو</string>
+    <string name="audit_doc_deleted">دستاويز ميٽيو ويو</string>
 </resources>

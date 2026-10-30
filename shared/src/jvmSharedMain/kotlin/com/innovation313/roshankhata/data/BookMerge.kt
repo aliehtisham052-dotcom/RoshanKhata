@@ -390,11 +390,20 @@ object BookMerge {
             if (number.isBlank() || dao.invoiceNumberUsed(number) > 0) {
                 number = dao.nextDocNumber(inv.kind); renumbered++
             }
+            val source = inv.sourceDocId?.let { invoiceMap[it] }
             val id = dao.insertInvoice(inv.copy(
                 id = 0, invoiceNumber = number, sourceEntryId = inv.sourceEntryId?.let { entryMap[it] },
-                sourceDocId = inv.sourceDocId?.let { invoiceMap[it] }
+                sourceDocId = source
             ))
             invoiceMap[inv.id] = id
+            // The copy stepped this book's document on: here it is converted too (30 Oct 2026, the review — "stay as
+            // here" left the quotation OPEN with a live sales order under it, and it could be converted a second
+            // time into a second invoice for one deal). From a live state only (lesson 52).
+            if (source != null) {
+                dao.getInvoice(source)?.takeIf { !it.isDeleted && DocStatus.isLive(it.status) }?.let {
+                    dao.setDocStatus(source, DocStatus.CONVERTED, it.status)
+                }
+            }
             for (l in invoiceLines[inv.id].orEmpty().sortedBy { it.id }) dao.insertInvoiceItem(l.copy(id = 0, invoiceId = id))
         }
         for ((s, id) in newSales) {
