@@ -24,7 +24,7 @@ No account, no server, no ads. Everything stays on the phone.
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 40 (schema JSON checked in up to 31; CI writes the rest);
+- Room database, version 41 (41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
   backup format 17 (documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
@@ -1233,6 +1233,36 @@ behtar hai implement karo"; agriculture not the focus). CI only — nothing on a
   InvoiceDesignsTest (quotation/challan proofs), ScreenProofTest (screen-laptop-documents-en/-ur).
 - Not built, by decision (the Doc's "what not to build"): FBR/PRA integration, payment gateways,
   WhatsApp Cloud API, restaurant/salon modules, double-entry accounting, recurring invoices.
+
+### The 30 Oct 2026 review (kmp-desktop-16 — the owner: "har angle se review karo, fix karo")
+
+Five reviewers (data, speed, coupling, security, features) and two layout audits (143 XML layouts,
+the phone's Compose screens); every point read in the code first. CI only — nothing on a device.
+
+- **Layouts (lesson 58):** the cashbook's drawer line and the counter's total (the owner's phone);
+  every shared Compose screen the phone shows at 360 dp (payment/refund chips scroll, three-across
+  fields split, the sales report as cards on the phone); 13 XML layouts at 130–150% and in long
+  languages (EntryChip and FilterSegment two lines, selection bars without caps). Windows'
+  Documents head and tag; printed quotations/challans say DETAILS / No. (`pdf_label_doc_no`).
+- **Documents:** a phone challan edit kept its lines' rates (it wrote 0 — critical);
+  `updateInvoiceWithItems` gives every line a new uid and refuses a binned document; an advance
+  reaches the invoice through the challan (`receivedUpChain`); a void cancels its ticket's invoice;
+  a cancelled invoice no longer blocks a new one; delete only from OPEN/ACCEPTED in the DAO
+  (`deleteDocument`: reopens the source, `DOC_DELETED`); merge marks the source converted.
+- **Schema 41** (`Schema41`, indexes only): transactions (isDeleted, timestamp) and (entryNumber),
+  cashbook (isDeleted, timestamp), invoices (isDeleted, kind, invoiceDate). Phone Home/Khata stop
+  reading in the back stack; the expiring count is debounced.
+- **Security:** the phone deletes only files in `files/bills` (`BillPhoto.delete`); Windows never
+  reads a network photo path (`Photos.isNetworkPath`); the PIN strength comment corrected; real
+  numbers, an email and the owner's supplier balances replaced with dummies in tests (git history
+  keeps them).
+- **One rule:** `PartyTotals` (get/give/net) for five hand-written copies.
+- **Left for the owner's decision, with the reason:** a binned khata sale's invoice (binning is
+  undone from the bin, cancelling is not); the owner PIN hash in plain backups (needed to restore
+  on a new phone, lesson 40) and 120,000 rounds; BLOCK_NEGATIVE_STOCK on khata sales (a change in
+  what the switch means); sync_log for a device silent 30 days; two devices converting one document
+  between rounds (needs a conflict rule); moving the six phone-only screens out of :shared and
+  RecycleBinScreen into :desktop (lesson 58; mechanical, best with a compile at hand).
 
 ### The shared module (KMP)
 
