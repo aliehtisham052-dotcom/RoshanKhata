@@ -52,9 +52,10 @@ object Photos {
      */
     suspend fun moveOnMerge(dao: com.innovation313.roshankhata.data.KhataDao, home: File, businessId: Long, loserIds: List<Long>, survivorId: Long) {
         val keep = dao.getParty(survivorId) ?: return
-        if (keep.photoPath?.let { File(it).isFile } == true) return
+        // A network path is never touched, not even to ask whether it is a file (isNetworkPath, 30 Oct 2026).
+        if (keep.photoPath?.let { !isNetworkPath(it) && File(it).isFile } == true) return
         for (loserId in loserIds) {
-            val from = dao.getParty(loserId)?.photoPath?.let { File(it) }?.takeIf { it.isFile } ?: continue
+            val from = dao.getParty(loserId)?.photoPath?.takeIf { !isNetworkPath(it) }?.let { File(it) }?.takeIf { it.isFile } ?: continue
             val to = partyFile(home, businessId, survivorId)
             to.parentFile?.mkdirs()
             if (to.exists() && !to.delete()) return
@@ -88,7 +89,8 @@ object Photos {
             val elsewhere = runCatching { others() }.getOrNull() ?: return result
             for (path in gone - elsewhere) {
                 val f = File(path)
-                if (f.isFile && ours(home, f)) runCatching {
+                // ours first: it refuses a network path before isFile could reach the host.
+                if (ours(home, f) && f.isFile) runCatching {
                     if (f.delete()) synchronized(cache) { cache.keys.removeAll { it.startsWith(f.path) } }
                 }
             }
@@ -96,14 +98,16 @@ object Photos {
         return result
     }
 
-    /** True for a picture this app keeps for a book on this computer: in its bills folder or a business's faces folder. */
     /** A UNC or other network path (\\host\share, //host/share, \\?\UNC\…) — never read. */
     internal fun isNetworkPath(p: String): Boolean {
         val s = p.trim().replace('/', '\\')
         return s.startsWith("\\\\") || s.startsWith("file:", ignoreCase = true)
     }
 
+    /** True for a picture this app keeps for a book on this computer: in its bills folder or a business's faces folder. */
     internal fun ours(home: File, f: File): Boolean {
+        // Resolving a network path's canonical form already reaches the host (30 Oct 2026, the review).
+        if (isNetworkPath(f.path)) return false
         val root = runCatching { home.canonicalFile }.getOrNull() ?: return false
         val dir = runCatching { f.canonicalFile.parentFile }.getOrNull() ?: return false
         if (dir.parentFile != root) return false
