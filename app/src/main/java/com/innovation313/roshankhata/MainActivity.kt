@@ -368,6 +368,17 @@ class MainActivity : BaseActivity() {
 
 
     /**
+     * Home stops reading the book while it is out of sight (30 Oct 2026, the speed review): its totals and late
+     * collectors ran on in the back stack, so every save on a customer's page re-ran whole-book group-bys for a
+     * screen nobody saw. onStart starts them again, on the book that is open then.
+     */
+    override fun onStop() {
+        totalsJob?.cancel()
+        lateJob?.cancel()
+        super.onStop()
+    }
+
+    /**
      * The figures are re-read every time this screen comes forward, not once
      * when it is built.
      *
@@ -380,17 +391,6 @@ class MainActivity : BaseActivity() {
      * to do that — it can check for itself, and this is the screen where a
      * wrong figure is most believed.
      */
-    /**
-     * Home stops reading the book while it is out of sight (30 Oct 2026, the speed review): its totals and late
-     * collectors ran on in the back stack, so every save on a customer's page re-ran whole-book group-bys for a
-     * screen nobody saw. onStart starts them again, on the book that is open then.
-     */
-    override fun onStop() {
-        totalsJob?.cancel()
-        lateJob?.cancel()
-        super.onStop()
-    }
-
     override fun onStart() {
         super.onStart()
 

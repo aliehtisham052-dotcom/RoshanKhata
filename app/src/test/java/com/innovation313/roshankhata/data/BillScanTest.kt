@@ -182,7 +182,7 @@ class BillScanTest {
         "ANAAJ GOLI 56% (TAB) 90 GM  202501  100  288  28,800.00  .00  .00  28,800.00",
         "LEPTOKILL 20%EC 800 ML  SI/CBM/26050801  24  2760  66,240.00  .00  .00  66,240.00",
         "Total:  179,940.00  .00  179,940.00",
-        "Gate Pass #:  G.P. Date:  Veh. #:  Bilty # :  Opening Balance:  (100,000.00)",
+        "Gate Pass #:  G.P. Date:  Veh. #:  Bilty # :  Opening Balance:  (259,880.00)",
         "Current D.C.:  179,940.00",
         "Transporter:  Driver Name:  Balance:  (79,940.00)"
     )

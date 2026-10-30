@@ -39,9 +39,9 @@ class CardLogoOnDeviceTest {
     private val brim = CardTemplates.CardData(
         name = "Al-Noor Pesticides and General Order Suppliers Samplepur",
         type = "Pesticides, Seeds, Fertiliser, Livestock Feed and Sprayers",
-        owner = "Chaudhry Muhammad Ehtisham Ali Bajwa",
+        owner = "Chaudhry Muhammad Saleem Akhtar Sample",
         phone = "0300 1234567",
-        address = "Lappay wali tehsil Pasrur district Sialkot Punjab Pakistan",
+        address = "Sample Town tehsil Samplepur district Sampleabad Punjab Pakistan",
         footer = "Roshan Khata",
         whatsapp = "0321 7654321",
         email = "shop.sample@example.com",
