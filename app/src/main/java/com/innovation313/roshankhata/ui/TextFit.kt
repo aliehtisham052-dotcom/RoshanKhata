@@ -71,7 +71,11 @@ object TextFit {
             val lp = view.layoutParams
             // > 0: a real fixed height. 0 (match-constraint / weight) and the
             // negative MATCH_PARENT / WRAP_CONTENT are left as designed.
-            if (lp != null && lp.height > 0) {
+            // A view that shrinks its own text to its box (autoSize) keeps the box: Android documents autoSize
+            // with wrap_content as unpredictable (30 Oct 2026, the phone audit: btnGave/btnGot, btnDriveConnect).
+            val shrinks = androidx.core.widget.TextViewCompat.getAutoSizeTextType(view) !=
+                androidx.core.widget.TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE
+            if (lp != null && lp.height > 0 && !shrinks) {
                 view.minHeight = maxOf(view.minHeight, lp.height)
                 lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 view.layoutParams = lp

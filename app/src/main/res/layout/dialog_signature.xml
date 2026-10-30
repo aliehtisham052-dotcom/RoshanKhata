@@ -225,20 +225,23 @@
             android:letterSpacing="0"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="52dp"
             android:layout_weight="1"
             android:text="@string/cancel"
             android:textAllCaps="false"
             android:textColor="@color/ink"
             android:textSize="16sp"
             app:cornerRadius="12dp"
-            app:strokeColor="@color/editor_field_stroke" />
+            app:strokeColor="@color/editor_field_stroke"
+            android:layout_height="wrap_content"
+            android:minHeight="52dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:maxLines="2" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSigSave"
             android:letterSpacing="0"
             android:layout_width="0dp"
-            android:layout_height="52dp"
             android:layout_marginStart="12dp"
             android:layout_weight="1.4"
             app:backgroundTint="@color/brand_green"
@@ -250,6 +253,11 @@
             app:cornerRadius="12dp"
             app:icon="@drawable/ic_check_plain"
             app:iconGravity="textStart"
-            app:iconTint="@color/white" />
+            app:iconTint="@color/white"
+            android:layout_height="wrap_content"
+            android:minHeight="52dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:maxLines="2" />
     </LinearLayout>
 </LinearLayout>

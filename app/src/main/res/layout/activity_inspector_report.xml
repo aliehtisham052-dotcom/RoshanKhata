@@ -233,7 +233,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="92dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:gravity="end"
             android:text="@string/inspector_col_expiry"
@@ -242,7 +242,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="72dp"
+            android:layout_width="84dp"
             android:layout_height="wrap_content"
             android:gravity="end"
             android:text="@string/inspector_col_left"

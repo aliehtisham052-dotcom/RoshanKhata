@@ -461,15 +461,17 @@
     </style>
 
     <!-- The three chips under the amount: note/goods, bill photo, date. -->
+    <!-- 40 dp at least, two lines allowed (30 Oct 2026, the phone audit: one ellipsized line cut the
+         entry's own date to "30 Oct 2…" at 130% and the Indonesian details chip at 100%). -->
     <style name="EntryChip" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">40dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/brand_green_text</item>
@@ -510,8 +512,10 @@
         <item name="android:minHeight">42dp</item>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
+        <!-- The icon above the words and two lines allowed (30 Oct 2026, the phone audit: beside its icon one
+             line kept ~73 dp — Farsi's "Suppliers" was cut at 100%, English at 130%). -->
+        <item name="android:maxLines">2</item>
+        <item name="iconGravity">top</item>
         <item name="android:textSize">13sp</item>
         <item name="cornerRadius">11dp</item>
         <item name="iconPadding">4dp</item>
