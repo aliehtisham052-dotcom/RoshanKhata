@@ -114,7 +114,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="@string/select_all" />
+            android:text="@string/select_all"
+            android:textAllCaps="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRateClear"
@@ -122,6 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="@string/clear_all" />
+            android:text="@string/clear_all"
+            android:textAllCaps="false" />
     </LinearLayout>
 </LinearLayout>

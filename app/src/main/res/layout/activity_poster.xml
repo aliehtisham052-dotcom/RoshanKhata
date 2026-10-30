@@ -727,7 +727,8 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="56dp"
+                                android:layout_width="wrap_content"
+                                android:minWidth="56dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/poster_day_label"
                                 android:textColor="@color/brand_green_text"
@@ -751,7 +752,8 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="56dp"
+                                android:layout_width="wrap_content"
+                                android:minWidth="56dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/poster_night_label"
                                 android:textColor="@color/brand_green_text"

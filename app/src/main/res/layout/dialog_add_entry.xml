@@ -203,8 +203,8 @@
                             android:id="@+id/btnMoreDetails"
                             style="@style/EntryChip"
                             android:layout_width="0dp"
-                            android:layout_weight="1.3"
-                            android:text="@string/entry_details_chip" />
+                            android:text="@string/entry_details_chip"
+                            android:layout_weight="1.1" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAddBill"
@@ -219,7 +219,7 @@
                             style="@style/EntryChip"
                             android:layout_width="0dp"
                             android:layout_marginStart="6dp"
-                            android:layout_weight="0.9" />
+                            android:layout_weight="1.1" />
                     </LinearLayout>
                 </LinearLayout>
             </FrameLayout>

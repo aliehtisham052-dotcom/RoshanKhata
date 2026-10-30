@@ -152,14 +152,16 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnInvoiceDate"
                             style="@style/EditorDateButton"
-                            android:text="@string/pick_invoice_date" />
+                            android:text="@string/pick_invoice_date"
+                            android:ellipsize="end" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnInvoiceDueDate"
                             style="@style/EditorDateButton"
                             android:layout_marginStart="8dp"
                             android:text="@string/invoice_due_date_hint"
-                            android:textColor="@color/text_muted" />
+                            android:textColor="@color/text_muted"
+                            android:ellipsize="end" />
                     </LinearLayout>
 
                     <!--

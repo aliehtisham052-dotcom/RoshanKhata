@@ -651,7 +651,11 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                android:textAllCaps="false"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:maxWidth="130dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeleteSelected"
@@ -662,7 +666,11 @@
                 android:text="@string/delete"
                 android:textColor="@color/delete_selected_button_fg"
                 app:backgroundTint="@color/delete_selected_button_bg"
-                app:cornerRadius="10dp" />
+                app:cornerRadius="10dp"
+                android:textAllCaps="false"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:maxWidth="130dp" />
         </LinearLayout>
 
     </FrameLayout>

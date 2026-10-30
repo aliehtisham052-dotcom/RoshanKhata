@@ -51,5 +51,7 @@
         android:layout_marginStart="12dp"
         android:gravity="end"
         android:textColor="@color/ink"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:maxWidth="120dp"
+        android:maxLines="2" />
 </LinearLayout>

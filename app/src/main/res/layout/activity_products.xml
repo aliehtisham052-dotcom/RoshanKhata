@@ -17,16 +17,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- The title above its two buttons (30 Oct 2026, the phone audit: beside Rate list and the more
+             button the 21 sp title kept ~100 dp and split mid-word at 130% text). -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
@@ -45,6 +45,13 @@
                     android:textColor="@color/section_bills_soft"
                     android:textSize="13sp" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical|end"
+                android:orientation="horizontal">
 
             <!--
               The rate list is sent from the products it lists. A labelled
@@ -92,6 +99,7 @@
                 app:iconPadding="0dp"
                 app:iconTint="@color/white"
                 app:strokeColor="@color/header_tile_stroke" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Find a product by name (13 Oct): a dealer stocks dozens. -->

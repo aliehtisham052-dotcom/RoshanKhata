@@ -38,20 +38,22 @@
 
     <TextView
         android:id="@+id/tvInsRowExpiry"
-        android:layout_width="92dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:gravity="end"
         android:maxLines="1"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:ellipsize="end" />
 
     <TextView
         android:id="@+id/tvInsRowLeft"
-        android:layout_width="72dp"
+        android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:gravity="end"
         android:maxLines="1"
         android:textColor="@color/ink"
         android:textSize="13sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:ellipsize="end" />
 
 </LinearLayout>
