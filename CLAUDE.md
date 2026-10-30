@@ -14,12 +14,12 @@ No account, no server, no ads. Everything stays on the phone.
 ## Shape of the project
 
 - Three modules (Kotlin Multiplatform since 18 Oct 2026):
-  - `:app` — the Android app, ~194 Kotlin files, ~47,000 lines
-  - `:shared` — everything that does not need Android, ~14,500 lines with
-    `:desktop`: sums, voice parsing, search, dates, the Room database, the
+  - `:app` — the Android app, 216 Kotlin files, ~53,600 lines (counted 30 Oct 2026, main only)
+  - `:shared` — everything that does not need Android, ~30,500 lines (`:desktop` ~31,800
+    more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,582 strings and 55 plurals (counted 29 Oct 2026, after the unused-code
+- About 2,601 strings and 55 plurals (2,601 on 30 Oct 2026 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1541,6 +1541,17 @@ Each of these cost a build or a bug.
     method that returns a value ("should be void"); a last line like
     `Counter.post(...)` (a Long) failed the whole class at initialisation
     (CounterReviewTest, 29 Oct 2026). End with an assertion.
+58. **A row of buttons leaves nothing for the words beside it — and the phone is
+    360 dp.** In a horizontal LinearLayout a `0dp`/weight-1 TextView gets only what
+    two wrap_content buttons leave; in a Compose `Row` unweighted children are measured
+    first and a `weight(1f)` Column gets the rest. On the owner's phone (30 Oct 2026)
+    the cashbook's "Drawer not counted yet" ran down the screen a letter a line and the
+    counter's total read "Tot / al / R". Words go on their own line above the buttons,
+    and buttons sharing a row share it by weight with `maxLines = 1` + ellipsis. **The
+    owner's rule:** what is Windows' stays Windows', what is the phone's stays the
+    phone's, and only what fits both is shared — a shared screen is checked at the
+    phone's width (and at 150% text, in Urdu) before it is shared, not only on the
+    laptop's proof pictures.
 
 ---
 

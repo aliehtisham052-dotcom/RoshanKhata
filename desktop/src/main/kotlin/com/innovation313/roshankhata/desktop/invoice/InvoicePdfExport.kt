@@ -1057,7 +1057,7 @@ object InvoicePdfExport {
         c.drawLine(pad, y, pageW - pad, y, dash)
         y += 16f
 
-        PdfRtl.drawText(c, "${labels.invoiceNo}:", pad, y, mono)
+        PdfRtl.drawText(c, "${labels.numberFor(kind)}:", pad, y, mono)
         PdfRtl.drawText(c, invoice.invoiceNumber, pageW - pad, y, monoR)
         y += 13f
         PdfRtl.drawText(c, "${labels.date}:", pad, y, mono)

@@ -610,7 +610,9 @@ fun InvoicesPane(
         word(W.range_this_month) + " " + Format.money(monthMoney),
         scroll = false,
         actions = {
-            FluentButton(word(W.invoice_settings_title), { settingFields = true }, icon = "ic_tile_settings")
+            // Invoice settings as an icon with its words as the hover tip (30 Oct 2026, the proof picture): as a
+            // worded button it took the title's room and "Documents" read "Docume…" on the laptop.
+            IconAction("ic_tile_settings", word(W.invoice_settings_title), { settingFields = true })
             FluentButton(word(W.doc_add), { pickingKind = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
         }
     ) {
@@ -651,16 +653,19 @@ fun InvoicesPane(
                                 androidx.compose.foundation.layout.Spacer(Modifier.width(10.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(Format.name(i.customerName), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                        // The number alone says the kind (Q-, SO-, DC-, INV-); the tag says where it stands.
-                                        Text(Format.ltr(i.invoiceNumber) + "  ·  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)
-                                        DocStatusTag(i.status)
-                                    }
+                                    // The number alone says the kind (Q-, SO-, DC-, INV-).
+                                    Text(Format.ltr(i.invoiceNumber) + "  ·  " + Format.dateOnly(i.invoiceDate), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                                 }
-                                Text(
-                                    Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false,
-                                    textDecoration = if (cancelled) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
-                                )
+                                androidx.compose.foundation.layout.Spacer(Modifier.width(8.dp))
+                                // The amount, and under it the tag that says where the document stands (30 Oct 2026, the
+                                // proof picture: beside the number the tag ran under the amount and read "Con").
+                                Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                                    Text(
+                                        Format.money(i.grandTotal), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false,
+                                        textDecoration = if (cancelled) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
+                                    )
+                                    DocStatusTag(i.status)
+                                }
                             }
                             Rule()
                         }

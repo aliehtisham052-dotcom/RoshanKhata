@@ -120,29 +120,34 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Galla milan (2 Oct): close the day against a counted drawer. -->
-        <LinearLayout
+        <!-- Galla milan (2 Oct): close the day against a counted drawer. The last close's line sits
+             above its two buttons at full width (30 Oct 2026, the owner's phone: beside two wrap_content
+             buttons the weighted line was left one letter wide and "Drawer not counted yet" ran down
+             the screen a letter at a time). The buttons share their row equally and may wrap. -->
+        <TextView
+            android:id="@+id/tvLastClose"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvLastClose"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCloseDay"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:minHeight="48dp"
                 android:text="@string/dayclose_button"
+                android:textAllCaps="false"
                 android:textColor="@color/white"
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/white" />
@@ -151,11 +156,13 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDayReport"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:minHeight="48dp"
                 android:text="@string/z_title"
+                android:textAllCaps="false"
                 android:textColor="@color/white"
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/white" />

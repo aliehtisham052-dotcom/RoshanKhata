@@ -1447,6 +1447,7 @@
     <string name="pdf_label_bill_to">बिल किसके नाम</string>
     <string name="pdf_label_invoice_details">इनवॉइस का ब्योरा</string>
     <string name="pdf_label_invoice_no">इनवॉइस नं.</string>
+    <string name="pdf_label_doc_no">नं.</string>
     <string name="pdf_label_date">तारीख़</string>
     <string name="pdf_label_due_date">देय तारीख़</string>
     <string name="pdf_label_time">समय</string>

@@ -159,6 +159,19 @@ object InvoiceTemplateKit {
             DocKind.DEBIT_NOTE -> context.getString(R.string.doc_kind_debit_note)
             else -> invoice
         }
+
+        /**
+         * The details block's head for a document of [kind]: an invoice keeps
+         * "INVOICE DETAILS"; any other kind says "DETAILS" alone, under its own
+         * heading (30 Oct 2026, the proof pictures: a quotation and a challan
+         * printed "INVOICE DETAILS" and "Invoice No").
+         */
+        fun detailsFor(kind: String): String =
+            if (kind == DocKind.INVOICE) invoiceDetails else context.getString(R.string.details).uppercase()
+
+        /** The number's label for a document of [kind]: "Invoice No" for an invoice, "No." for the rest (Q-, SO-, DC-…). */
+        fun numberFor(kind: String): String =
+            if (kind == DocKind.INVOICE) invoiceNo else context.getString(R.string.pdf_label_doc_no)
     }
 
     /**
@@ -353,7 +366,7 @@ object InvoiceTemplateKit {
             PdfRtl.drawText(c, it, left, y + 31f, paint(fonts, 10f, palette.muted))
         }
 
-        PdfRtl.drawText(c, labels.invoiceDetails, right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
+        PdfRtl.drawText(c, labels.detailsFor(invoice.kind), right, y, paint(fonts, 9f, palette.primary, bold = true, align = Paint.Align.RIGHT))
         val metaLabel = paint(fonts, 10.5f, palette.muted, align = Paint.Align.RIGHT)
         val metaValue = paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT)
         var my = y + 17f
@@ -362,7 +375,7 @@ object InvoiceTemplateKit {
             PdfRtl.drawText(c, value, right, my, metaValue)
             my += 14f
         }
-        metaRow(labels.invoiceNo, invoice.invoiceNumber)
+        metaRow(labels.numberFor(invoice.kind), invoice.invoiceNumber)
         metaRow(labels.date, Format.dateOnly(invoice.invoiceDate))
         invoice.dueDate?.let { metaRow(labels.dueDate, Format.dateOnly(it)) }
 
