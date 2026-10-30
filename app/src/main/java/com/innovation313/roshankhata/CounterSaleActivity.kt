@@ -201,9 +201,12 @@ class CounterSaleActivity : BaseActivity() {
                 setText(res); textSize = 15f; setTypeface(typeface, android.graphics.Typeface.BOLD)
                 setPadding(0, (16 * resources.displayMetrics.density).toInt(), 0, 0)
             }
-            fun number(hint: Int, value: String?) = android.widget.EditText(this@CounterSaleActivity).apply {
+            fun number(hint: Int, value: String?) = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this@CounterSaleActivity)).apply {
                 setHint(hint); setText(value.orEmpty()); inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
                 textDirection = android.view.View.TEXT_DIRECTION_LTR
+                // Boxed, they need room between them (a bare line did not).
+                layoutParams = android.widget.LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .apply { topMargin = (8 * resources.displayMetrics.density).toInt() }
             }
             // Loyalty (the book's): points per 100 spent and a point's worth; an empty box keeps it off.
             val perHundred = number(R.string.loyalty_per_100, book[com.innovation313.roshankhata.data.BookSettings.LOYALTY_POINTS_PER_100])
@@ -563,11 +566,11 @@ class CounterSaleActivity : BaseActivity() {
     }
 
     private fun askVoid(saleId: Long, number: String, allowedBy: String?) {
-        val input = android.widget.EditText(this).apply { hint = getString(R.string.pos_void_reason) }
+        val input = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this)).apply { hint = getString(R.string.pos_void_reason) }
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.pos_void)
             .setMessage(getString(R.string.pos_void_confirm, number))
-            .setView(input)
+            .setView(com.innovation313.roshankhata.ui.FormBox.column(this, input))
             .setPositiveButton(R.string.pos_void) { _, _ ->
                 val reason = input.text.toString().trim()
                 if (reason.isEmpty()) { toast(R.string.pos_err_reason); return@setPositiveButton }

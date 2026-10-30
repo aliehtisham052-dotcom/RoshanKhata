@@ -5,7 +5,6 @@ import android.content.Context
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -318,17 +317,13 @@ object AccessUi {
     /** A screen going away takes its sheet with it; the next screen shows its own. */
     fun screenGone(activity: Activity) { if (gateOn?.get() === activity) gateOn = null }
 
-    private fun pinBox(activity: Activity, hint: Int): EditText = EditText(activity).apply {
+    private fun pinBox(activity: Activity, hint: Int): EditText = FormBox.style(EditText(activity).apply {
         setHint(hint)
         inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
-    }
+    })
 
-    private fun box(activity: Activity, vararg views: View) = LinearLayout(activity).apply {
-        orientation = LinearLayout.VERTICAL
-        val pad = (20 * activity.resources.displayMetrics.density).toInt()
-        setPadding(pad, pad / 2, pad, 0)
-        views.forEach { addView(it) }
-    }
+    /** The boxes in one column, the dialog's margins and room between them (FormBox, 30 Oct 2026). */
+    private fun box(activity: Activity, vararg views: View) = FormBox.column(activity, *views)
 
     private fun askPin(activity: Activity, title: String, onCancel: () -> Unit = {}, forgot: (() -> Unit)? = null, onPin: (String) -> Unit) {
         val input = pinBox(activity, R.string.staff_pin)
@@ -342,10 +337,10 @@ object AccessUi {
 
     /** The owner's recovery code typed instead of a forgotten PIN; [then] after a new PIN is set. */
     private fun recover(activity: Activity, dao: KhataDao, then: () -> Unit, cancelled: () -> Unit = {}) {
-        val input = EditText(activity).apply {
+        val input = FormBox.style(EditText(activity).apply {
             setHint(R.string.access_recovery_code)
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-        }
+        })
         MaterialAlertDialogBuilder(activity).setTitle(R.string.access_forgot_pin)
             .setMessage(R.string.access_recovery_ask)
             .setView(box(activity, input))

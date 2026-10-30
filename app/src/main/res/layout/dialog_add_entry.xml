@@ -477,6 +477,7 @@
               is digits and Latin letters whatever the app's language.
             -->
             <EditText
+                style="@style/EditorField"
                 android:id="@+id/etPaymentRef"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -514,6 +515,7 @@
           field's size depend on how tall the phone happens to be.
         -->
         <EditText
+            style="@style/EditorField"
             android:id="@+id/etNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -592,6 +594,7 @@
             android:orientation="vertical" />
 
         <AutoCompleteTextView
+            style="@style/EditorField"
             android:popupBackground="@drawable/bg_dropdown_popup"
             android:dropDownVerticalOffset="4dp"
             android:id="@+id/etItemName"
@@ -609,6 +612,7 @@
           Then Quantity × Rate side by side, as a bill reads.
         -->
         <AutoCompleteTextView
+            style="@style/EditorField"
             android:popupBackground="@drawable/bg_dropdown_popup"
             android:dropDownVerticalOffset="4dp"
             android:id="@+id/etUnit"
@@ -627,6 +631,7 @@
             android:orientation="horizontal">
 
             <EditText
+                style="@style/EditorField"
                 android:id="@+id/etQuantity"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"
@@ -644,6 +649,7 @@
               never overwritten. Shown only for a sale to a customer.
             -->
             <EditText
+                style="@style/EditorField"
                 android:id="@+id/etRate"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"

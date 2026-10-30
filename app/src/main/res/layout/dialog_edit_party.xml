@@ -23,6 +23,7 @@
     android:paddingBottom="8dp">
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etEditName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,6 +32,7 @@
         android:inputType="textPersonName" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etEditPhone"
         android:textDirection="ltr"
         android:textAlignment="viewStart"
@@ -42,6 +44,7 @@
         android:inputType="phone" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etEditFatherName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,6 +54,7 @@
         android:inputType="textPersonName" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etEditVillage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

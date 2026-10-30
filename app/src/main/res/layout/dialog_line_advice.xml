@@ -9,6 +9,7 @@
     android:paddingEnd="24dp">
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etAdviceCrop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +18,7 @@
         android:inputType="textCapSentences" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etAdvicePest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,6 +28,7 @@
         android:inputType="textCapSentences" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etAdviceDose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

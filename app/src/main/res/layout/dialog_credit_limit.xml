@@ -25,6 +25,7 @@
         android:textStyle="bold" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etCreditLimit"
         android:textDirection="ltr"
         android:textAlignment="viewStart"

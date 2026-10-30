@@ -30,6 +30,8 @@
         android:textStyle="bold" />
 
     <EditText
+        style="@style/EditorField"
+        android:layout_marginTop="4dp"
         android:id="@+id/etOtherName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,6 +54,8 @@
         android:textStyle="bold" />
 
     <EditText
+        style="@style/EditorField"
+        android:layout_marginTop="4dp"
         android:id="@+id/etOtherItems"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

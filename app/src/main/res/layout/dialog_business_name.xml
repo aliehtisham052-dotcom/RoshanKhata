@@ -8,6 +8,7 @@
     android:paddingTop="8dp">
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etBusinessName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

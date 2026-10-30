@@ -813,7 +813,7 @@ class BusinessSettingsActivity : BaseActivity() {
     }
 
     private fun typeCurrency(current: String) {
-        val input = EditText(this).apply {
+        val input = com.innovation313.roshankhata.ui.FormBox.style(EditText(this)).apply {
             setText(current)
             hint = getString(R.string.currency_custom_hint)
             filters = arrayOf(android.text.InputFilter.LengthFilter(Currency.MAX_LENGTH))

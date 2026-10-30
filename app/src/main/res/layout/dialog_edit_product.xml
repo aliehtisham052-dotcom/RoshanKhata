@@ -39,6 +39,8 @@
             android:text="@string/product_name" />
 
         <EditText
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,6 +55,8 @@
             android:text="@string/company_optional" />
 
         <EditText
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etProductCompany"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,6 +73,8 @@
             android:text="@string/unit_optional" />
 
         <EditText
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etProductUnit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,6 +104,8 @@
                 android:text="@string/sale_price_hint" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etSalePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,6 +131,8 @@
                 android:text="@string/credit_price_hint" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etCreditPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -158,6 +168,7 @@
             android:orientation="horizontal">
 
             <EditText
+                style="@style/EditorField"
                 android:id="@+id/etBarcode"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -210,6 +221,8 @@
                 android:text="@string/product_cost_hint" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etCostPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -235,6 +248,8 @@
                 android:text="@string/product_low_stock_hint" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etLowStock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -276,6 +291,8 @@
                 android:text="@string/product_pack_unit" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etPackUnit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -299,6 +316,8 @@
                 android:text="@string/product_pack_size" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etPackSize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -331,6 +350,8 @@
                 android:text="@string/product_pack_price" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etPackPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -356,6 +377,8 @@
                 android:text="@string/product_tax_rate" />
 
                 <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etTaxRate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -383,6 +406,8 @@
             android:text="@string/product_variant_of" />
 
         <AutoCompleteTextView
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etVariantOf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -400,6 +425,8 @@
             android:text="@string/product_variant" />
 
         <EditText
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etVariant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -423,6 +450,8 @@
         <!-- An AutoCompleteTextView (9 Oct): the trade's own types drop down,
              and the owner may still type a type of his own. -->
         <AutoCompleteTextView
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:popupBackground="@drawable/bg_dropdown_popup"
             android:dropDownVerticalOffset="4dp"
             android:id="@+id/etProductType"
@@ -474,6 +503,8 @@
                 android:textSize="12sp" />
 
             <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etTechnicalName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -491,6 +522,8 @@
                 android:textSize="12sp" />
 
             <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etFormulation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -508,6 +541,8 @@
                 android:textSize="12sp" />
 
             <EditText
+                style="@style/EditorField"
+                android:layout_marginTop="4dp"
                 android:id="@+id/etRegistrationNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
