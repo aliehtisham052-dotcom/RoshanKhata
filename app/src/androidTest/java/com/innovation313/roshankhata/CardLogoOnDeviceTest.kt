@@ -37,15 +37,15 @@ class CardLogoOnDeviceTest {
     )
 
     private val brim = CardTemplates.CardData(
-        name = "Al-Madina Pesticides and General Order Suppliers Pasrur",
+        name = "Al-Noor Pesticides and General Order Suppliers Samplepur",
         type = "Pesticides, Seeds, Fertiliser, Livestock Feed and Sprayers",
         owner = "Chaudhry Muhammad Ehtisham Ali Bajwa",
         phone = "0300 1234567",
         address = "Lappay wali tehsil Pasrur district Sialkot Punjab Pakistan",
         footer = "Roshan Khata",
         whatsapp = "0321 7654321",
-        email = "al.madina.pesticides.pasrur@gmail.com",
-        web = "facebook.com/almadinapesticidespasrur",
+        email = "shop.sample@example.com",
+        web = "facebook.com/sampleshop",
         tagline = "Ghar tak delivery, har roz subah 8 se raat 10 baje tak",
         logo = logo
     )

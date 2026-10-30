@@ -67,7 +67,13 @@ object PinHash {
      * The owner's PIN: 6 to 8 digits (22 Oct 2026, the owner's choice after
      * the review). Its hash travels in every backup of the book, and four
      * digits fall to a guessing program in minutes once a file is in other
-     * hands; six take days, eight months. Staff PINs stay 4 to 8.
+     * hands. Six or eight digits are NOT safe from that either (30 Oct 2026, the
+     * security review, corrected from "six take days, eight months"): at 120,000
+     * rounds one gaming graphics card tries tens of thousands of PINs a second, so
+     * a copied backup gives up a six-digit PIN in under a minute and an eight-digit
+     * one within the hour (an estimate from public benchmarks, not measured here).
+     * The length only keeps out guessing at the till. What keeps a backup's hash
+     * safe is keeping the file out of other hands. Staff PINs stay 4 to 8.
      */
     fun validOwner(pin: String): Boolean = pin.length in OWNER_MIN..8 && pin.all { it in '0'..'9' }
 

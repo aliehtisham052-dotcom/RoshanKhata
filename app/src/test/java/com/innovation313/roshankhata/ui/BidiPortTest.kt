@@ -24,7 +24,7 @@ class BidiPortTest {
     fun back() = Locale.setDefault(saved)
 
     private val samples = listOf(
-        "", " ", "0340 7026467", "+92 348 7239466", "Rs 4,598", "1205",
+        "", " ", "0300 1234567", "+92 300 7654321", "Rs 4,598", "1205",
         "Ali", "(Shari)Touseef", "علی", "(شاری)توصیف", "علی Traders", "Bhatti علی",
         "Ali (علی)", "علی (Ali)", "12 علی", "علی 12", "-", "+ Rs 10", "— 5",
         "‫علی‬", "‪Ali‬", "a‫ب‬c", "ب‪a‬ج",

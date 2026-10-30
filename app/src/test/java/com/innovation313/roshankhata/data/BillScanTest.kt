@@ -161,7 +161,9 @@ class BillScanTest {
     // -------------------------------------------- the owner's own bill, 1 Oct
 
     /**
-     * Sayban International's supply order, as the owner photographed it.
+     * Sayban International's supply order, as the owner photographed it (the shop's
+     * name, address, number, the order number and the balances replaced with dummies,
+     * 30 Oct 2026: the repository is public).
      * Before this, only the total and date came through: the company name,
      * the "S.O No." and the batches (printed as bare digits) were lost.
      */
@@ -170,26 +172,26 @@ class BillScanTest {
         "62-KM MULTAN ROAD, ROHI NALA KHAN KEY MORE, PHOOL NAGAR, TEHSIL PATTOKI DISTT KASUR",
         "SUPPLY ORDER / INVOICE",
         "Date: 20-07-2026",
-        "S.O No. : 2101003668  Ref. No.",
-        "Customer Name:  BHATTI TRADERS LAPPAY WALI",
+        "S.O No. : 2101000001  Ref. No.",
+        "Customer Name:  SAMPLE TRADERS SAMPLE TOWN",
         "G.S.T./NTN/CNIC No.:",
-        "Address:  LAPPAY WALI TEHSIL PASRUR DISTRICT SIALKOT 0348-7239466",
+        "Address:  SAMPLE TOWN TEHSIL SAMPLE DISTRICT SAMPLE 0300-0000000",
         "Territory:  NAROWAL  Order #:  Please Confirm this Order",
         "PRODUCT  BATCH NO.  QTY  Rate  Gross Amount  Disc %  Discount Amount  Net Amount",
         "NAAMVAR UREA PHOSPHATE 1C  20260706  15  5660  84,900.00  .00  .00  84,900.00",
         "ANAAJ GOLI 56% (TAB) 90 GM  202501  100  288  28,800.00  .00  .00  28,800.00",
         "LEPTOKILL 20%EC 800 ML  SI/CBM/26050801  24  2760  66,240.00  .00  .00  66,240.00",
         "Total:  179,940.00  .00  179,940.00",
-        "Gate Pass #:  G.P. Date:  Veh. #:  Bilty # :  Opening Balance:  (329,048.44)",
+        "Gate Pass #:  G.P. Date:  Veh. #:  Bilty # :  Opening Balance:  (100,000.00)",
         "Current D.C.:  179,940.00",
-        "Transporter:  Driver Name:  Balance:  (149,108.44)"
+        "Transporter:  Driver Name:  Balance:  (79,940.00)"
     )
 
     @Test
     fun `the owner's sayban bill - header`() {
         val b = BillScan.parseRows(sayban, now = now, tz = utc)
         assertEquals("Sayban International", b.supplierName)
-        assertEquals("2101003668", b.billNumber)
+        assertEquals("2101000001", b.billNumber)
         assertEquals(day(2026, 7, 20), b.billDate)
         assertEquals(179_940.0, b.total!!, 0.0)
     }

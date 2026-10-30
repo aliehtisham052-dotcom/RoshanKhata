@@ -10,7 +10,7 @@ import java.util.Locale
 /**
  * A party whose name is only a phone number — saved from a contact that had
  * none, the "?" avatar in the list. On the owner's Urdu, Arabic and Sindhi
- * screens it read "923487239466+": with no letter in it, the name took the
+ * screens it read "923007654321+": with no letter in it, the name took the
  * paragraph's right-to-left direction and the "+" went to the far end.
  * [Format.name] wraps such a name left-to-right; a name with letters in it
  * is left exactly as typed.
@@ -21,7 +21,7 @@ class FormatNameTest {
     // BidiFormatter embeds the run as LRE … PDF (or LRI … PDI), and on a
     // right-to-left screen adds a right-to-left mark on either side so the
     // "+" is not pulled across the boundary. The embedding is what matters.
-    private val number = "+923487239466"
+    private val number = "+923007654321"
     private val embedded = listOf("\u202A$number\u202C", "\u2066$number\u2069")
 
     private fun under(tag: String, block: () -> Unit) {
