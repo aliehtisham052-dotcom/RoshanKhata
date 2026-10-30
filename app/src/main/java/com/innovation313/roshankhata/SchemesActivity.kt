@@ -160,7 +160,7 @@ class SchemesActivity : BaseActivity() {
 
     /** "Claim received" — what actually came (credit note, rebate, free bags' value). */
     private fun askClaim(s: Scheme) {
-        val et = EditText(this).apply {
+        val et = com.innovation313.roshankhata.ui.FormBox.style(EditText(this)).apply {
             hint = getString(R.string.scheme_claim_hint)
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
         }

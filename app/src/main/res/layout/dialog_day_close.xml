@@ -22,6 +22,8 @@
             android:textSize="13sp" />
 
         <EditText
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etOpening"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,6 +64,8 @@
             android:textSize="13sp" />
 
         <EditText
+            style="@style/EditorField"
+            android:layout_marginTop="4dp"
             android:id="@+id/etCounted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,6 +107,7 @@
             android:layout_marginTop="6dp" />
 
         <EditText
+            style="@style/EditorField"
             android:id="@+id/etCloseNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

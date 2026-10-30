@@ -16,6 +16,7 @@
         android:textSize="14sp" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etReturnQty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
         android:inputType="numberDecimal" />
 
     <EditText
+        style="@style/EditorField"
         android:id="@+id/etReturnRate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

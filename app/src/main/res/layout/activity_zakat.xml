@@ -168,6 +168,7 @@
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <EditText
+                style="@style/EditorField"
                 android:id="@+id/etSilverPrice"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"
@@ -241,6 +242,7 @@
                 android:textSize="12sp" />
 
             <EditText
+                style="@style/EditorField"
                 android:id="@+id/etCashStock"
                 android:textDirection="ltr"
                 android:textAlignment="viewStart"

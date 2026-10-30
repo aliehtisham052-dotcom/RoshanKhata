@@ -1623,6 +1623,11 @@ Each of these cost a build or a bug.
     it) wraps any EditText hint that still does not fit, keeping the keyboard's Next/Done. Every
     layout inflated in code calls `TextFit.relax(view)`. **No `Widget.Material3` style in this
     MaterialComponents theme**: it finds none of its colours (a magenta edge, tiny text).
+    **Every form box is boxed** (the owner, 30 Oct 2026: the bill's boxes looked professional, the
+    product form's bare lines did not): a layout's box has `style="@style/EditorField"` (70 were bare in
+    16 layouts), a box built in code goes through `FormBox.style` (which also runs HintFit) and a dialog
+    body built in code is `FormBox.column` (side margins, 8 dp between boxes). A box in a
+    TextInputLayout keeps that layout's own outline.
 
 ---
 

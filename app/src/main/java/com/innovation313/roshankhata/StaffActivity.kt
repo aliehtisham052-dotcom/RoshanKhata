@@ -155,16 +155,12 @@ class StaffActivity : BaseActivity() {
         }
     }
 
-    private fun field(hint: Int, type: Int, value: String? = null) = EditText(this).apply {
+    private fun field(hint: Int, type: Int, value: String? = null) = com.innovation313.roshankhata.ui.FormBox.style(EditText(this)).apply {
         setHint(hint); inputType = type; value?.let { setText(it) }
     }
 
-    private fun box(vararg views: View) = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        val pad = (20 * resources.displayMetrics.density).toInt()
-        setPadding(pad, pad / 2, pad, 0)
-        views.forEach { addView(it) }
-    }
+    /** The boxes in one column, the dialog's margins and room between them (FormBox, 30 Oct 2026). */
+    private fun box(vararg views: View) = com.innovation313.roshankhata.ui.FormBox.column(this, *views)
 
     /**
      * A money box in a dialog built here gets the app's calculator pad

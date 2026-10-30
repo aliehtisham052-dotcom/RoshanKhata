@@ -237,16 +237,12 @@ class ProductsActivity : BaseActivity() {
                 .setTitle(R.string.stock_adjust)
                 .setItems(products.map { it.name }.toTypedArray()) { _, i ->
                     val p = products[i]
-                    val qty = android.widget.EditText(this@ProductsActivity).apply { hint = getString(R.string.adjust_qty_hint); inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL or android.text.InputType.TYPE_NUMBER_FLAG_SIGNED }
+                    val qty = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this@ProductsActivity)).apply { hint = getString(R.string.adjust_qty_hint); inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL or android.text.InputType.TYPE_NUMBER_FLAG_SIGNED }
                     val reasons = listOf(com.innovation313.roshankhata.data.AdjustReason.DAMAGE, com.innovation313.roshankhata.data.AdjustReason.EXPIRED, com.innovation313.roshankhata.data.AdjustReason.THEFT, com.innovation313.roshankhata.data.AdjustReason.OTHER)
                     val labels = listOf(R.string.adjust_reason_damage, R.string.adjust_reason_expired, R.string.adjust_reason_theft, R.string.adjust_reason_other).map { getString(it) }
                     val reason = android.widget.Spinner(this@ProductsActivity).apply { adapter = android.widget.ArrayAdapter(this@ProductsActivity, android.R.layout.simple_spinner_dropdown_item, labels) }
-                    val note = android.widget.EditText(this@ProductsActivity).apply { hint = getString(R.string.note_optional) }
-                    val box = android.widget.LinearLayout(this@ProductsActivity).apply {
-                        orientation = android.widget.LinearLayout.VERTICAL
-                        val pad = (20 * resources.displayMetrics.density).toInt(); setPadding(pad, pad / 2, pad, 0)
-                        addView(qty); addView(reason); addView(note)
-                    }
+                    val note = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this@ProductsActivity)).apply { hint = getString(R.string.note_optional) }
+                    val box = com.innovation313.roshankhata.ui.FormBox.column(this@ProductsActivity, qty, reason, note)
                     MaterialAlertDialogBuilder(this@ProductsActivity)
                         .setTitle(p.name)
                         .setView(box)

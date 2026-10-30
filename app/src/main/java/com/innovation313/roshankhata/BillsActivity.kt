@@ -1322,15 +1322,14 @@ class BillsActivity : BaseActivity() {
      * record — not from memory and a drawer full of paper.
      */
     private fun showTraceDialog() {
-        val input = EditText(this).apply {
+        val input = com.innovation313.roshankhata.ui.FormBox.style(EditText(this).apply {
             hint = getString(R.string.trace_batch_hint)
-            setPadding(48, 32, 48, 32)
-        }
+        })
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.trace_batch)
             .setMessage(R.string.trace_batch_help)
-            .setView(input)
+            .setView(com.innovation313.roshankhata.ui.FormBox.column(this, input))
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.search_action) { _, _ ->
                 val query = input.text.toString().trim()
