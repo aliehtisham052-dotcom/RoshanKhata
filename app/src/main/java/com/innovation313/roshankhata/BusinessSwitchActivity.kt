@@ -66,6 +66,7 @@ class BusinessSwitchActivity : BaseActivity() {
 
     private fun promptCreate() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_name, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val et: EditText = view.findViewById(R.id.etBusinessName)
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.business_add)
@@ -107,6 +108,7 @@ class BusinessSwitchActivity : BaseActivity() {
 
     private fun promptRename(id: Long, current: String?) {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_name, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val et: EditText = view.findViewById(R.id.etBusinessName)
         et.setText(current.orEmpty())
         et.setSelection(et.text.length)
@@ -166,6 +168,7 @@ class BusinessSwitchActivity : BaseActivity() {
         summary: BusinessDeleteSummary
     ) {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_delete, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val tvSummary: TextView = view.findViewById(R.id.tvDeleteSummary)
         val etConfirm: EditText = view.findViewById(R.id.etDeleteConfirmName)
         tvSummary.text = Digits.string(resources, R.string.business_delete_confirm_body,

@@ -236,7 +236,7 @@
     <string name="goods_section">Barang (opsional)</string>
     <string name="goods_help">Jika ada stok yang berpindah bersama catatan ini — 5 karung urea, 2 liter pestisida — catat di sini. Kosongkan untuk catatan uang biasa.</string>
     <string name="item_name_hint">Barang (Urea, Pakan…)</string>
-    <string name="quantity_hint">Jumlah barang</string>
+    <string name="quantity_hint">Kuantitas</string>
     <string name="unit_hint">Satuan (karung, liter, kg…)</string>
 
     <!-- Contact import -->
@@ -3382,6 +3382,8 @@
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">Nomor dompet digital (%1$s)</string>
+    <string name="unit_short">Satuan</string>
+    <string name="wallet_number">Nomor dompet digital</string>
 
     <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
     <plurals name="n_days_left">

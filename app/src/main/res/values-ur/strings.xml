@@ -3381,6 +3381,8 @@
 
     <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
     <string name="wallet_hint_country">موبائل والٹ نمبر (%1$s)</string>
+    <string name="unit_short">اکائی</string>
+    <string name="wallet_number">موبائل والٹ نمبر</string>
 
     <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
     <plurals name="n_days_left">

@@ -39,6 +39,8 @@ import java.util.Locale
  * Roman Urdu (`ur-Latn`) is Latin and stays as designed, as do the other
  * languages and every phone below Android 15 (still the compact font).
  *
+ * It also lets a box's hint wrap instead of being cut ([HintFit]), at every size.
+ *
  * Call it on anything freshly inflated: [com.innovation313.roshankhata.BaseActivity]
  * does the screen itself; dialogs and rows inflated in code call it directly.
  */
@@ -46,6 +48,8 @@ object TextFit {
 
     fun relax(root: View?) {
         if (root == null) return
+        // Hints are read whole at every text size, so this runs before the size check below.
+        HintFit.apply(root)
         val config = root.resources.configuration
         val locale = if (config.locales.isEmpty) null else config.locales[0]
         if (!needed(config.fontScale, Build.VERSION.SDK_INT, locale)) return

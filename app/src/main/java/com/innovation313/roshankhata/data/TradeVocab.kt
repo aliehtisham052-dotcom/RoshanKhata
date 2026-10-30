@@ -67,6 +67,12 @@ object TradeVocab {
     /** "Item (Milk, Yogurt, Ghee…)" */
     fun itemHint(context: Context): String = context.getString(R.string.vocab_item_hint, join(items(context)))
 
+    /**
+     * Every unit a box offers, this trade's own first (30 Oct 2026): the narrow unit boxes say only
+     * "Unit" now, since the examples were cut at their edge, and the list they open leads with them.
+     */
+    fun unitChoices(context: Context): List<String> = (unitLabels(context) + UnitWords.choices(context)).distinct()
+
     /** "Unit (litre, kg, packet…)" */
     fun unitHint(context: Context): String = context.getString(R.string.vocab_unit_hint, join(unitLabels(context).take(3)))
 

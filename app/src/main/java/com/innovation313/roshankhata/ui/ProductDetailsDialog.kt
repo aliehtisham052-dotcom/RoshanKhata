@@ -77,6 +77,7 @@ object ProductDetailsDialog {
         step: Step? = null
     ) {
         val view = activity.layoutInflater.inflate(R.layout.dialog_edit_product, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         fun field(id: Int) = view.findViewById<EditText>(id)
 
         val etName = field(R.id.etProductName).apply { setText(product.name) }
@@ -98,7 +99,8 @@ object ProductDetailsDialog {
             setOnClickListener { if (text.isNullOrBlank()) showDropDown() }
         }
         view.findViewById<android.widget.TextView>(R.id.tvProductTypeLabel).text = TradeVocab.typeHint(activity)
-        etUnit.hint = TradeVocab.unitOptionalHint(activity)
+        // The unit is asked above its box (30 Oct 2026), in the shop's own units.
+        view.findViewById<android.widget.TextView>(R.id.tvProductUnitLabel).text = TradeVocab.unitOptionalHint(activity)
         // The inspection details belong to the trades an inspector visits
         // (9 Oct): hidden for any other, in the medical trade's own words for
         // a pharmacy. Hidden fields still hold what was saved, so a trade

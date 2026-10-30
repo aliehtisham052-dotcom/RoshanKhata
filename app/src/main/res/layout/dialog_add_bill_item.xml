@@ -92,7 +92,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:completionThreshold="1"
-                android:hint="@string/unit_hint"
+                android:hint="@string/unit_short"
                 android:importantForAutofill="no"
                 android:inputType="text" />
         </LinearLayout>

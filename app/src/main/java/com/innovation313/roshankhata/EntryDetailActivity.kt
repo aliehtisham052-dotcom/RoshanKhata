@@ -379,7 +379,10 @@ class EntryDetailActivity : BaseActivity() {
         boxHint(etItemName, TradeVocab.itemHint(this))
         val etQuantity = view.findViewById<EditText>(R.id.etEditQuantity)
         val etUnit = view.findViewById<AutoCompleteTextView>(R.id.etEditUnit)
-        boxHint(etUnit, TradeVocab.unitHint(this))
+        // "Unit" alone (30 Oct 2026): the half-width box cut the trade's examples; a tap lists the
+        // units, the shop's own first.
+        boxHint(etUnit, getString(R.string.unit_short))
+        etUnit.setOnClickListener { if (etUnit.text.isNullOrBlank()) etUnit.showDropDown() }
         val btnBatch = view.findViewById<MaterialButton>(R.id.btnEditBatch)
 
         // Header (18 Oct): whose entry, which number, and which way.
@@ -469,7 +472,7 @@ class EntryDetailActivity : BaseActivity() {
         etItemName.setText(line?.itemName.orEmpty(), false)
         etQuantity.setText(line?.quantity?.let { Format.plain(it) } ?: "")
         etUnit.setAdapter(
-            ArrayAdapter(this, R.layout.item_dropdown_row, UnitWords.choices(this))
+            ArrayAdapter(this, R.layout.item_dropdown_row, TradeVocab.unitChoices(this))
         )
         etUnit.setText(UnitWords.label(line?.unit), false)
         if (!canEditGoods) {

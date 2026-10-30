@@ -219,8 +219,9 @@ class BusinessSettingsActivity : BaseActivity() {
         etBankIban = findViewById(R.id.etBankIban)
         etBankJazzCash = findViewById(R.id.etBankJazzCash)
         // The wallet hint names the shop's country's services (21 Oct 2026): bKash in Dhaka, not JazzCash.
+        // The services are said under the box, not in its one-line label, where they were cut (30 Oct 2026).
         com.innovation313.roshankhata.data.ShopCountry.current.wallets.takeIf { it.isNotBlank() }?.let {
-            findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash).hint = getString(R.string.wallet_hint_country, it)
+            findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash).helperText = it
         }
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)

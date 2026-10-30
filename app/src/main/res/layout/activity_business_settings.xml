@@ -546,7 +546,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilBankJazzCash"
                     style="@style/ProfileField"
-                    android:hint="@string/invoice_bank_jazzcash_hint">
+                    android:hint="@string/wallet_number">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etBankJazzCash"

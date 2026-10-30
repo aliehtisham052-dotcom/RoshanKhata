@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,603 strings and 55 plurals (2,603 on 30 Oct 2026 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,605 strings and 55 plurals (2,605 on 30 Oct 2026 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1590,6 +1590,17 @@ Each of these cost a build or a bug.
     phone's, and only what fits both is shared — a shared screen is checked at the
     phone's width (and at 150% text, in Urdu) before it is shared, not only on the
     laptop's proof pictures.
+
+59. **A hint is one line; a question longer than its box goes above it.** A one-line box cuts its
+    hint at the edge, and which hints overrun depends on the trade (TradeVocab's examples), the
+    language (Bengali, Indonesian longest), the text size and the phone (30 Oct 2026, the owner's
+    photo of the product form). Long questions are labels above the box (`FormFieldLabel`,
+    dialog_edit_product); narrow unit boxes say "Unit" (`unit_short`) and list the trade's units
+    first on a tap (`TradeVocab.unitChoices`); a TextInputLayout's examples are its helper text.
+    Under all of it `HintFit` (run by `TextFit.relax`, so every screen and every dialog that calls
+    it) wraps any EditText hint that still does not fit, keeping the keyboard's Next/Done. Every
+    layout inflated in code calls `TextFit.relax(view)`. **No `Widget.Material3` style in this
+    MaterialComponents theme**: it finds none of its colours (a magenta edge, tiny text).
 
 ---
 

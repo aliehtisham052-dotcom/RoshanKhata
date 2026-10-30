@@ -501,6 +501,7 @@ class KhataActivity : BaseActivity() {
 
     private fun showAddPartyDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_add_party, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etName: EditText = view.findViewById(R.id.etName)
         val etPhone: EditText = view.findViewById(R.id.etPhone)
         val etFatherName: EditText = view.findViewById(R.id.etFatherName)

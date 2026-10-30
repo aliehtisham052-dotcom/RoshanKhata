@@ -255,7 +255,7 @@
                         style="@style/ProfileFieldInput"
                         android:completionThreshold="1"
                         android:dropDownVerticalOffset="4dp"
-                        android:hint="@string/unit_hint"
+                        android:hint="@string/unit_short"
                         android:importantForAutofill="no"
                         android:inputType="text"
                         android:paddingStart="16dp"
