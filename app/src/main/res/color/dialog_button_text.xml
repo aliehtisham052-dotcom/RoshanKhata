@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A dialog button's words: brand_green_text (7.75:1 by day, 8.85:1 by night), faded when disabled. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="0.38" android:color="@color/brand_green_text" android:state_enabled="false" />
+    <item android:color="@color/brand_green_text" />
+</selector>
