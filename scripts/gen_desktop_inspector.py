@@ -35,6 +35,7 @@ import com.innovation313.roshankhata.data.InspectorBatch
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.NameOrder
 import com.innovation313.roshankhata.data.Product
+import com.innovation313.roshankhata.data.RegisterStyle
 import com.innovation313.roshankhata.data.Stock
 import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.gfx.Color
@@ -68,8 +69,8 @@ def must(pattern: str, text: str, repl: str, count: int = 1, flags: int = 0) -> 
 def report() -> str:
     text = body(SRC.read_text())
     # No file is written on the computer: build gives the finished pages, the preview saves or prints them.
-    text = must(r"    suspend fun build\(context: Context, dao: KhataDao, windowDays: Int\): File\? \{", text,
-                "    suspend fun build(context: Context, dao: KhataDao, windowDays: Int): PdfDocument? {")
+    text = must(r"    suspend fun build\(context: Context, dao: KhataDao, windowDays: Int, style: RegisterStyle = RegisterStyle.AGRI\): File\? \{", text,
+                "    suspend fun build(context: Context, dao: KhataDao, windowDays: Int, style: RegisterStyle = RegisterStyle.AGRI): PdfDocument? {")
     text = must(
         r"\n    private fun render\(context: Context, d: ReportData\): File\? \{.*?\n    }\n",
         text,

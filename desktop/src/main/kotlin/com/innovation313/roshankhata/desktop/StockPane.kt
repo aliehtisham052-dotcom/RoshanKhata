@@ -78,6 +78,8 @@ fun StockPane(
     val expired = batches.count { it.hasExpired }
     val expiring = batches.count { b -> val e = b.expiryDate; e != null && !b.hasExpired && e <= cutoff }
 
+    // Every shop's register; only an agri or medical shop's carries the inspector's label columns (RegisterStyle).
+    val style = com.innovation313.roshankhata.data.RegisterStyle.of(LocalTrade.current.key)
     FluentPage(word(W.inspector_title), word(W.inspector_subtitle), scroll = false, actions = {
         FluentButton(word(W.ledger_pdf_button), kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = shown.isNotEmpty(), onClick = {
             // The phone's full inspector document (InspectorReport, copied by gen_desktop_inspector.py): the
@@ -85,7 +87,7 @@ fun StockPane(
             if (designs != null) {
                 scope.launch {
                     val doc = withContext(Dispatchers.IO) {
-                        runCatching { com.innovation313.roshankhata.desktop.invoice.InspectorReport.build(designs(), dao, window) }.getOrNull()
+                        runCatching { com.innovation313.roshankhata.desktop.invoice.InspectorReport.build(designs(), dao, window, style) }.getOrNull()
                     }
                     if (doc == null) told = failText(words, IllegalStateException("inspector"))
                     else StatementPrint.show(com.innovation313.roshankhata.desktop.invoice.DocumentPrint(doc), words.text(W.inspector_title))

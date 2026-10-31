@@ -1346,7 +1346,7 @@
     <string name="son_of_prefix">s/o %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">Stock &amp; compliance register</string>
+    <string name="inspector_title">Stock register</string>
     <string name="inspector_subtitle">Stock, batches and expiry in one PDF</string>
     <string name="inspector_window_title">EXPIRY WINDOW</string>
     <string name="inspector_window_30">30 days</string>
@@ -1546,11 +1546,15 @@
     <string name="pdf_reg_missing_rate">%1$d purchase line(s) had no rate recorded and are not in the total above.</string>
     <string name="pdf_reg_dealer_sign">Dealer\'s signature</string>
     <string name="pdf_reg_inspector_sign">Inspector\'s signature</string>
+    <string name="pdf_sign_owner">Owner\'s signature</string>
+    <string name="pdf_sign_checked">Checked by</string>
     <string name="pdf_reg_footer">%1$s \u00B7 Generated %2$s \u00B7 Page %3$d</string>
 
     <!-- Words printed on the STOCK &amp; COMPLIANCE REGISTER pdf — the document an inspector is handed. -->
     <string name="pdf_insp_title">Stock &amp; Compliance Register</string>
     <string name="pdf_insp_title_cont">Stock &amp; Compliance Register (continued)</string>
+    <string name="pdf_insp_title_plain">Stock Register</string>
+    <string name="pdf_insp_title_plain_cont">Stock Register (continued)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">Generated %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 Page %2$d of %3$d</string>
@@ -1572,6 +1576,7 @@
     <string name="pdf_insp_col_product">PRODUCT</string>
     <string name="pdf_insp_col_company">COMPANY</string>
     <string name="pdf_insp_col_technical">TECHNICAL NAME</string>
+    <string name="pdf_insp_col_generic">GENERIC NAME</string>
     <string name="pdf_insp_col_form">FORM.</string>
     <string name="pdf_insp_col_reg">REG#</string>
     <string name="pdf_insp_col_onhand">ON HAND</string>
@@ -1595,6 +1600,7 @@
     <string name="pdf_insp_no_company">\u2014 company not recorded</string>
     <string name="pdf_insp_miss_company">company</string>
     <string name="pdf_insp_miss_technical">technical name</string>
+    <string name="pdf_insp_miss_generic">generic name</string>
     <string name="pdf_insp_miss_form">formulation</string>
     <string name="pdf_insp_miss_reg">Reg#</string>
     <string name="pdf_insp_dealer_sign">Dealer\'s signature</string>

@@ -28,7 +28,11 @@ object TradeFeatures {
     /** "Write spray advice" on a sold line. */
     fun sprayAdvice(context: Context): Boolean = Trade.current(context) == Trade.AGRI
 
-    /** Inspector stock report and the in/out register — the trades an inspector visits. */
+    /**
+     * The inspector's label details — a product's technical name, formulation and registration, and the
+     * registers' compliance columns, checklist and signatures — for the trades an inspector visits. The
+     * stock register and the sales & purchase register themselves are every shop's (31 Oct 2026; RegisterStyle).
+     */
     fun inspectorReports(context: Context): Boolean =
         when (Trade.current(context)) { Trade.AGRI, Trade.MEDICAL -> true; else -> false }
 }

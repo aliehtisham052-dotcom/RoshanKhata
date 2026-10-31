@@ -1312,7 +1312,7 @@
     <string name="son_of_prefix">anak dari %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">Register stok &amp; kepatuhan</string>
+    <string name="inspector_title">Register stok</string>
     <string name="inspector_subtitle">Stok, batch, dan kedaluwarsa dalam satu PDF</string>
     <string name="inspector_window_title">RENTANG KEDALUWARSA</string>
     <string name="inspector_window_30">30 hari</string>
@@ -1507,11 +1507,15 @@
     <string name="pdf_reg_missing_rate">%1$d baris pembelian tidak memiliki harga tercatat dan tidak termasuk dalam total di atas.</string>
     <string name="pdf_reg_dealer_sign">Tanda tangan penjual</string>
     <string name="pdf_reg_inspector_sign">Tanda tangan petugas</string>
+    <string name="pdf_sign_owner">Tanda tangan pemilik</string>
+    <string name="pdf_sign_checked">Diperiksa oleh</string>
     <string name="pdf_reg_footer">%1$s \u00B7 Dibuat %2$s \u00B7 Halaman %3$d</string>
 
     <!-- Words printed on the STOCK &amp; COMPLIANCE REGISTER pdf — the document an inspector is handed. -->
     <string name="pdf_insp_title">Register Stok &amp; Kepatuhan</string>
     <string name="pdf_insp_title_cont">Register Stok &amp; Kepatuhan (lanjutan)</string>
+    <string name="pdf_insp_title_plain">Register Stok</string>
+    <string name="pdf_insp_title_plain_cont">Register Stok (lanjutan)</string>
     <string name="pdf_insp_ntn">NPWP: %1$s</string>
     <string name="pdf_insp_generated">Dibuat %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 Halaman %2$d dari %3$d</string>
@@ -1533,6 +1537,7 @@
     <string name="pdf_insp_col_product">PRODUK</string>
     <string name="pdf_insp_col_company">PERUSAHAAN</string>
     <string name="pdf_insp_col_technical">NAMA TEKNIS</string>
+    <string name="pdf_insp_col_generic">NAMA GENERIK</string>
     <string name="pdf_insp_col_form">FORM.</string>
     <string name="pdf_insp_col_reg">REG#</string>
     <string name="pdf_insp_col_onhand">STOK</string>
@@ -1555,6 +1560,7 @@
     <string name="pdf_insp_no_company">\u2014 perusahaan tidak dicatat</string>
     <string name="pdf_insp_miss_company">perusahaan</string>
     <string name="pdf_insp_miss_technical">nama teknis</string>
+    <string name="pdf_insp_miss_generic">nama generik</string>
     <string name="pdf_insp_miss_form">formulasi</string>
     <string name="pdf_insp_miss_reg">No. reg</string>
     <string name="pdf_insp_dealer_sign">Tanda tangan penjual</string>

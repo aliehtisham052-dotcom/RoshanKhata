@@ -1421,7 +1421,7 @@
     <string name="son_of_prefix">بن %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">سجل المخزون والامتثال</string>
+    <string name="inspector_title">سجل المخزون</string>
     <string name="inspector_subtitle">المخزون والدفعات وتاريخ الانتهاء في ملف PDF واحد</string>
     <string name="inspector_window_title">مدة الانتهاء</string>
     <string name="inspector_window_30">30 يوماً</string>
@@ -1631,10 +1631,14 @@
     <string name="pdf_reg_missing_rate">%1$d من سطور الشراء بلا سعر مسجل، وهي غير مدرجة في الإجمالي أعلاه.</string>
     <string name="pdf_reg_dealer_sign">توقيع التاجر</string>
     <string name="pdf_reg_inspector_sign">توقيع المفتش</string>
+    <string name="pdf_sign_owner">توقيع المالك</string>
+    <string name="pdf_sign_checked">راجعه</string>
     <string name="pdf_reg_footer">%1$s \u00B7 أُنشئ %2$s \u00B7 صفحة %3$d</string>
 
     <string name="pdf_insp_title">سجل المخزون والامتثال</string>
     <string name="pdf_insp_title_cont">سجل المخزون والامتثال (تابع)</string>
+    <string name="pdf_insp_title_plain">سجل المخزون</string>
+    <string name="pdf_insp_title_plain_cont">سجل المخزون (تابع)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">أُنشئ في %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحة %2$d من %3$d</string>
@@ -1656,6 +1660,7 @@
     <string name="pdf_insp_col_product">المنتج</string>
     <string name="pdf_insp_col_company">الشركة</string>
     <string name="pdf_insp_col_technical">الاسم الفني</string>
+    <string name="pdf_insp_col_generic">الاسم العلمي</string>
     <string name="pdf_insp_col_form">الصيغة</string>
     <string name="pdf_insp_col_reg">رقم التسجيل</string>
     <string name="pdf_insp_col_onhand">المتوفر</string>
@@ -1683,6 +1688,7 @@
     <string name="pdf_insp_no_company">\u2014 الشركة غير مسجلة</string>
     <string name="pdf_insp_miss_company">الشركة</string>
     <string name="pdf_insp_miss_technical">الاسم الفني</string>
+    <string name="pdf_insp_miss_generic">الاسم العلمي</string>
     <string name="pdf_insp_miss_form">الصيغة</string>
     <string name="pdf_insp_miss_reg">رقم التسجيل</string>
     <string name="pdf_insp_dealer_sign">توقيع التاجر</string>

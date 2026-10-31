@@ -1329,7 +1329,7 @@
     <string name="son_of_prefix">ولد %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">اسٽاڪ ۽ ڪمپلائنس رجسٽر</string>
+    <string name="inspector_title">اسٽاڪ رجسٽر</string>
     <string name="inspector_subtitle">اسٽاڪ، بيچ ۽ ايڪسپائري هڪ ئي پي ڊي ايف ۾</string>
     <string name="inspector_window_title">ايڪسپائري جي مدت</string>
     <string name="inspector_window_30">30 ڏينهن</string>
@@ -1523,10 +1523,14 @@
     <string name="pdf_reg_missing_rate">%1$d خريد لائينن جو ريٽ درج نه هو، انڪري اهي مٿين ڪل ۾ شامل ناهن.</string>
     <string name="pdf_reg_dealer_sign">ڊيلر جي صحيح</string>
     <string name="pdf_reg_inspector_sign">انسپيڪٽر جي صحيح</string>
+    <string name="pdf_sign_owner">مالڪ جي صحيح</string>
+    <string name="pdf_sign_checked">جانچڻ وارو</string>
     <string name="pdf_reg_footer">%1$s \u00B7 ٺاهي وئي %2$s \u00B7 صفحو %3$d</string>
 
     <string name="pdf_insp_title">اسٽاڪ ۽ ڪمپلائنس رجسٽر</string>
     <string name="pdf_insp_title_cont">اسٽاڪ ۽ ڪمپلائنس رجسٽر (جاري)</string>
+    <string name="pdf_insp_title_plain">اسٽاڪ رجسٽر</string>
+    <string name="pdf_insp_title_plain_cont">اسٽاڪ رجسٽر (جاري)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">ٺاهيو ويو %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحو %2$d / %3$d</string>
@@ -1548,6 +1552,7 @@
     <string name="pdf_insp_col_product">پراڊڪٽ</string>
     <string name="pdf_insp_col_company">ڪمپني</string>
     <string name="pdf_insp_col_technical">ٽيڪنيڪل نالو</string>
+    <string name="pdf_insp_col_generic">جنرڪ نالو</string>
     <string name="pdf_insp_col_form">فارم</string>
     <string name="pdf_insp_col_reg">رجسٽريشن نمبر</string>
     <string name="pdf_insp_col_onhand">موجود</string>
@@ -1571,6 +1576,7 @@
     <string name="pdf_insp_no_company">\u2014 ڪمپني درج ناهي</string>
     <string name="pdf_insp_miss_company">ڪمپني</string>
     <string name="pdf_insp_miss_technical">ٽيڪنيڪل نالو</string>
+    <string name="pdf_insp_miss_generic">جنرڪ نالو</string>
     <string name="pdf_insp_miss_form">فارموليشن</string>
     <string name="pdf_insp_miss_reg">رجسٽريشن نمبر</string>
     <string name="pdf_insp_dealer_sign">ڊيلر جي صحيح</string>
