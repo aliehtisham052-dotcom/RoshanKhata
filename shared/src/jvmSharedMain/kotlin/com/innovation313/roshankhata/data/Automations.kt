@@ -94,8 +94,10 @@ object Automations {
     /** Today, from midnight: sales (khata and counter), payments in, and the drawer by the books. */
     suspend fun dayEnd(dao: KhataDao, now: Long, tz: TimeZone = TimeZone.getDefault()): DayEnd {
         val from = DayMath.startOfDay(now, tz)
-        val sales = dao.salesTotalBetween(from, now + 1)
-        val received = dao.receivedBetween(from, now + 1)
+        // The whole day, not up to [now]: an entry dated later today (a clock set back, a synced device) is today's.
+        val to = DayMath.startOfDay(from + 36L * 60 * 60 * 1000, tz)
+        val sales = dao.salesTotalBetween(from, to)
+        val received = dao.receivedBetween(from, to)
         val drawer = DayCloseMath.drawerByTheBooks(dao, now)
         val counted = drawer.last?.let { DayMath.dayNumber(it.closedAt, tz) == DayMath.dayNumber(now, tz) } == true
         val moved = Money.isPositive(sales) || Money.isPositive(received) ||
@@ -120,7 +122,7 @@ object Automations {
         dao.observeOrders().first().filter { it.status != OrderStatus.RECEIVED }.forEach { o ->
             dao.orderItems(o.id).filter { !it.isDeleted }.forEach { i -> i.productId?.let(onOrder::add) }
         }
-        val sold = dao.topProductsBetween(now - SALES_WINDOW_MS, now + 1, 10_000)
+        val sold = dao.topProductsBetween(now - SALES_WINDOW_MS, now + 24L * 60 * 60 * 1000, 10_000)
             .groupBy { key(it.name) }
         val products = dao.productsOnce().associateBy { it.id }
         val bills = dao.allBillsForBackup().filter { !it.isDeleted }.associateBy { it.id }
