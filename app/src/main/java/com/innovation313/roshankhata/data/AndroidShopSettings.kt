@@ -33,7 +33,11 @@ class AndroidShopSettings(private val context: Context) : ShopSettings {
     override fun country() = BusinessProfile.country(context)
     override fun setCountry(country: ShopCountry) = BusinessProfile.setCountry(context, country)
     override fun tradeKey() = BusinessProfile.trade(context)
-    override fun setTradeKey(key: String) = BusinessProfile.setTrade(context, Trade.of(key))
+    // A key this build does not know (a newer phone's trade, a damaged copy) is not stored as agri (31 Oct 2026, the
+    // review): left unset, Home asks for the trade, as the computer does.
+    override fun setTradeKey(key: String) {
+        Trade.entries.firstOrNull { it.name == key.trim().uppercase() }?.let { BusinessProfile.setTrade(context, it) }
+    }
     override fun otherTradeName() = BusinessProfile.otherTradeName(context)
     override fun otherTradeItems() = BusinessProfile.otherTradeItems(context)
     override fun setOtherTrade(name: String?, items: String?) = BusinessProfile.setOtherTrade(context, name, items)

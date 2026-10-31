@@ -30,7 +30,8 @@ object StepDots {
             val v = View(dots.context)
             v.background = GradientDrawable().apply {
                 cornerRadius = 3 * d
-                setColor(if (on) 0xFF1B5E3A.toInt() else 0xFFC9D8CE.toInt())
+                // The chosen step in the night-aware green (31 Oct 2026: a fixed #1B5E3A was the darkest dot by night).
+                setColor(if (on) androidx.core.content.ContextCompat.getColor(dots.context, com.innovation313.roshankhata.R.color.brand_green_text) else 0xFFC9D8CE.toInt())
             }
             v.layoutParams = LinearLayout.LayoutParams(
                 ((if (on) 18 else 6) * d).toInt(), (6 * d).toInt()

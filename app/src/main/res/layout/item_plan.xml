@@ -45,7 +45,7 @@
         android:layout_height="8dp"
         android:layout_marginTop="8dp"
         android:max="100"
-        android:progressTint="@color/green_got" />
+        android:progressTint="@color/green_got_text" />
 
     <LinearLayout
         android:layout_width="match_parent"

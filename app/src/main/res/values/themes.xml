@@ -91,6 +91,10 @@
       a label that still cannot fit wraps to two lines instead of "SA…".
     -->
     <style name="ThemeOverlay.RoshanKhata.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- The buttons' words take colorPrimary: button_dark is near-black by day (17:1) but #2E7D52 by night,
+             3.2:1 on the dialog (31 Oct 2026). brand_green_text reads 7.75:1 by day and 8.85:1 by night, and
+             the button keeps its own faded state when disabled. -->
+        <item name="colorPrimary">@color/brand_green_text</item>
         <item name="buttonBarPositiveButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNeutralButtonStyle">@style/DialogButton</item>
@@ -127,7 +131,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/brand_green_text</item>
         <item name="iconGravity">textStart</item>
-        <item name="strokeColor">@color/brand_green</item>
+        <item name="strokeColor">@color/brand_green_text</item>
         <item name="strokeWidth">1.5dp</item>
         <item name="cornerRadius">14dp</item>
     </style>

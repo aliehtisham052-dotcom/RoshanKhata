@@ -168,7 +168,7 @@ private fun OpeningWindow(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (!failed) {
-                    androidx.compose.material3.CircularProgressIndicator(color = c.brandGreen)
+                    androidx.compose.material3.CircularProgressIndicator(color = c.brandGreenText)
                     Text(words.text(W.book_opening), color = c.ink, fontSize = 15.sp)
                 } else {
                     Text(words.text(W.book_cannot_open), color = c.ink, fontSize = 15.sp)
@@ -1254,7 +1254,7 @@ private fun Book(
                                 promising = null
                                 scope.launch {
                                     withContext(Dispatchers.IO) { runCatching { dao.setHarvestPromise(p.id, day) } }
-                                        .onFailure { told = words.text(W.harvest_promise_menu) to failText(words, it) }
+                                        .onFailure { told = words.text(W.cf_kind_promised) to failText(words, it) }
                                     reload++
                                 }
                             }, onDismiss = { promising = null })
@@ -2354,12 +2354,15 @@ private fun lateCount(dao: KhataDao): kotlinx.coroutines.flow.Flow<Int> =
 @Composable
 private fun customerFacts(dao: KhataDao, party: PartyWithBalance, reload: Int): CustomerFacts {
     var rows by remember(party.id, reload) { mutableStateOf<List<com.innovation313.roshankhata.data.SeasonBook.PartySeason>>(emptyList()) }
+    // Seasons only where the shop has them (an agri shop in a Rabi/Kharif country), as on the phone (31 Oct 2026:
+    // every customer of every trade showed "Rabi 2025-26" chips — SeasonBook dates an untagged entry by itself).
+    val seasonsOn = LocalTrade.current.seasons
     var row by remember(party.id, reload) { mutableStateOf<Party?>(null) }
-    LaunchedEffect(party.id, reload) {
+    LaunchedEffect(party.id, reload, seasonsOn) {
         withContext(Dispatchers.IO) {
             val p = dao.getParty(party.id)
             row = p
-            rows = if (p?.isCustomer == true) runCatching {
+            rows = if (seasonsOn && p?.isCustomer == true) runCatching {
                 com.innovation313.roshankhata.data.SeasonBook.book(dao.seasonLinesOf(party.id))
             }.getOrDefault(emptyList()) else emptyList()
         }

@@ -911,6 +911,9 @@ class BillsActivity : BaseActivity() {
         products: List<Product>,
         guesses: Map<Long, com.innovation313.roshankhata.data.LabelGuess.Guess> = emptyMap()
     ) {
+        // Only where an inspector reads labels (agri, medical): any other trade's form has no such fields, so
+        // the question could never be answered and came after every bill (31 Oct 2026, the review).
+        if (!com.innovation313.roshankhata.data.TradeFeatures.inspectorReports(this)) return
         val incomplete = products.filter { ProductDetailsDialog.needsLabelDetails(it) }
         if (incomplete.isEmpty()) return
 

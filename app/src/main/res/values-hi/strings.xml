@@ -32,7 +32,7 @@
     <string name="coach_title_invoice">इनवॉइस</string>
     <string name="coach_desc_invoice">ग्राहकों के लिए प्रोफ़ेशनल इनवॉइस बनाएँ — तैयार डिज़ाइन चुनें, अपने नाम, मुहर और QR के साथ।</string>
     <string name="coach_title_products">प्रोडक्ट और स्टॉक</string>
-    <string name="coach_desc_products">मौजूद स्टॉक, बैच की एक्सपायरी और रजिस्टर — उन्हीं बिलों से जो आप पहले से लिखते हैं।</string>
+    <string name="coach_desc_products">मौजूद स्टॉक, बैच की एक्सपायरी और स्टॉक रजिस्टर — उन्हीं बिलों से जो आप पहले से लिखते हैं।</string>
     <string name="followup_title">वसूली</string>
     <string name="followup_subtitle">किससे वसूलना है — सबसे पुराना पहले, रकम साथ में</string>
     <plurals name="followup_summary">
@@ -639,7 +639,7 @@
     <string name="add_item">चीज़ जोड़ें</string>
     <string name="product_name_hint">प्रोडक्ट का नाम</string>
     <string name="batch_number_hint">बैच नंबर</string>
-    <string name="batch_why">डिब्बे पर लिखा बैच नंबर लिखें। कभी सैंपल पर सवाल उठे या जाँच विभाग पूछे, तो यही रिकॉर्ड बताता है कि माल ठीक कहाँ से आया। इसे बाद में दोबारा नहीं बनाया जा सकता।</string>
+    <string name="batch_why">डिब्बे पर लिखा बैच नंबर लिखें। कभी किसी चीज़ पर सवाल उठे — ग्राहक, कंपनी या इंस्पेक्टर की ओर से — तो यही रिकॉर्ड बताता है कि माल ठीक कहाँ से आया। इसे बाद में दोबारा नहीं बनाया जा सकता।</string>
     <string name="expiry_date">एक्सपायरी तारीख़</string>
     <string name="expiry_why">रोशन खाता इसके एक्सपायर होने से 60 दिन पहले चेतावनी देगा — इतना पहले कि आप बेच सकें, छूट दे सकें, या लौटा सकें जब तक सप्लायर वापस ले।</string>
     <string name="pick_expiry">एक्सपायरी तारीख़ चुनें</string>

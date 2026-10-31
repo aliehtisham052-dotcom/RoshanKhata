@@ -32,7 +32,7 @@
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Make professional invoices for your customers — pick from ready designs with your name, stamp and QR.</string>
     <string name="coach_title_products">Products &amp; Stock</string>
-    <string name="coach_desc_products">Stock on hand, batch expiry, and compliance registers — built from the bills you already write.</string>
+    <string name="coach_desc_products">Stock on hand, batch expiry and the stock register — built from the bills you already write.</string>
     <string name="followup_title">Follow-up</string>
     <string name="followup_subtitle">Who to collect from — oldest first, amount alongside</string>
     <plurals name="followup_summary">
@@ -640,7 +640,7 @@
     <string name="add_item">Add item</string>
     <string name="product_name_hint">Product name</string>
     <string name="batch_number_hint">Batch number</string>
-    <string name="batch_why">Write the batch number from the container. If a sample is ever questioned, or the inspection department asks, this is the record that shows exactly where the stock came from. It cannot be reconstructed later.</string>
+    <string name="batch_why">Write the batch number from the container. If an item is ever questioned — by a customer, the company or an inspector — this record shows exactly where the stock came from. It cannot be reconstructed later.</string>
     <string name="expiry_date">Expiry date</string>
     <string name="expiry_why">Roshan Khata will warn you 60 days before this expires — early enough to sell it, discount it, or return it while the supplier will still take it.</string>
     <string name="pick_expiry">Pick expiry date</string>

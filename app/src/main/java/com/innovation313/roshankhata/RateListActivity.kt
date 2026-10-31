@@ -94,6 +94,7 @@ class RateListActivity : BaseActivity() {
         // EveryScreenOpensTest on 5 Oct before it reached a phone).
         rv.layoutManager = LinearLayoutManager(this)
         controls = LayoutInflater.from(this).inflate(R.layout.item_rate_list_controls, rv, false)
+        com.innovation313.roshankhata.ui.TextFit.relax(controls) // heading and search boxes at large text (31 Oct 2026)
         heading = controls.findViewById(R.id.etRateHeading)
         cbCash = controls.findViewById(R.id.cbRateCash)
         cbCredit = controls.findViewById(R.id.cbRateCredit)

@@ -28,7 +28,7 @@
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Apne customers ke liye professional invoice banayein — tayyar designon mein se chunein, aap ke naam, muhar aur QR ke saath.</string>
     <string name="coach_title_products">Products aur Stock</string>
-    <string name="coach_desc_products">Hath mein maujooda stock, batch ki expiry, aur compliance registers — wahi bills jo aap pehle se likhte hain, unhi se khud ban jaate hain.</string>
+    <string name="coach_desc_products">Hath mein maujooda stock, batch ki expiry aur stock register — wahi bills jo aap pehle se likhte hain, unhi se khud ban jaate hain.</string>
     <string name="followup_title">Wusooli</string>
     <string name="followup_subtitle">Kis se wusool karna hai — sab se purana pehle, raqam saath</string>
     <plurals name="followup_summary">
@@ -610,7 +610,7 @@
     <string name="add_item">Cheez shamil karein</string>
     <string name="product_name_hint">Product ka naam</string>
     <string name="batch_number_hint">Batch number</string>
-    <string name="batch_why">Dabbe par likha batch number darj karein. Agar kabhi namoone par sawal ho, ya inspection mehkma pooche, to yehi record batata hai maal kahan se aaya. Baad mein ye dobara nahi ban sakta.</string>
+    <string name="batch_why">Dabbe par likha batch number darj karein. Agar kabhi kisi shai par sawal uthe — customer, company ya inspector ki taraf se — to yehi record batata hai maal kahan se aaya. Baad mein ye dobara nahi ban sakta.</string>
     <string name="expiry_date">Expiry tareekh</string>
     <string name="expiry_why">Roshan Khata expiry se 60 din pehle khabardar karega — itna pehle ke maal bech sakein, riayat de sakein, ya wapas kar sakein jab tak supplier le le.</string>
     <string name="pick_expiry">Expiry tareekh chunein</string>

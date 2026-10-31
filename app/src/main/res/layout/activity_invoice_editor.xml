@@ -213,7 +213,7 @@
                     app:icon="@drawable/ic_add_plain"
                     app:iconGravity="textStart"
                     app:iconTint="@color/brand_green_text"
-                    app:strokeColor="@color/brand_green"
+                    app:strokeColor="@color/brand_green_text"
                     app:strokeWidth="1.5dp" />
 
                 <!-- "Scan bill photo": a printed bill's lines, read on the phone, as rows here (1 Oct). -->
@@ -492,7 +492,7 @@
                 android:textSize="15sp"
                 android:visibility="gone"
                 app:cornerRadius="14dp"
-                app:strokeColor="@color/brand_green"
+                app:strokeColor="@color/brand_green_text"
                 app:strokeWidth="1.5dp" />
 
             <com.google.android.material.button.MaterialButton

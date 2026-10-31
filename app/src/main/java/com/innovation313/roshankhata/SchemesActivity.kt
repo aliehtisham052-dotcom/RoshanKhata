@@ -204,7 +204,8 @@ class SchemesActivity : BaseActivity() {
             val etName = view.findViewById<EditText>(R.id.etSchemeName)
             // A company's crop-season scheme is an agri shop's example; any
             // other trade is shown a festival offer instead (9 Oct).
-            if (com.innovation313.roshankhata.data.Trade.current(this@SchemesActivity) != com.innovation313.roshankhata.data.Trade.AGRI) {
+            // "Syngenta Rabi 2026" only where the shop has Rabi/Kharif (31 Oct 2026: an Egyptian agri shop has none).
+            if (!com.innovation313.roshankhata.data.TradeFeatures.seasons(this@SchemesActivity)) {
                 etName.setHint(R.string.scheme_name_hint_general)
             }
             val btnSupplier = view.findViewById<MaterialButton>(R.id.btnSchemeSupplier)

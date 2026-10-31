@@ -1039,7 +1039,7 @@ class InvoiceEditorActivity : BaseActivity() {
             }
         }
         tvSwipeHint.text = Digits.string(resources, R.string.invoice_swipe_designs, position + 1, templateIds.size)
-        val active = androidx.core.content.ContextCompat.getColor(this, R.color.brand_green)
+        val active = androidx.core.content.ContextCompat.getColor(this, R.color.brand_green_text) // brand_green stays dark at night (31 Oct 2026)
         val inactive = androidx.core.content.ContextCompat.getColor(this, R.color.text_muted)
         for (i in 0 until templateDots.childCount) {
             templateDots.getChildAt(i).backgroundTintList =

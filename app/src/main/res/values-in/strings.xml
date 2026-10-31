@@ -32,7 +32,7 @@
     <string name="coach_title_invoice">Faktur</string>
     <string name="coach_desc_invoice">Buat faktur profesional untuk pelanggan Anda — pilih dari desain siap pakai dengan nama, stempel, dan QR Anda.</string>
     <string name="coach_title_products">Produk &amp; Stok</string>
-    <string name="coach_desc_products">Stok yang tersedia, kedaluwarsa per batch, dan buku register kepatuhan — disusun dari tagihan yang sudah Anda catat.</string>
+    <string name="coach_desc_products">Stok yang tersedia, kedaluwarsa per batch, dan register stok — disusun dari tagihan yang sudah Anda catat.</string>
     <string name="followup_title">Penagihan</string>
     <string name="followup_subtitle">Siapa yang perlu ditagih — yang terlama lebih dulu, beserta jumlahnya</string>
     <plurals name="followup_summary">
@@ -624,7 +624,7 @@
     <string name="add_item">Tambah barang</string>
     <string name="product_name_hint">Nama produk</string>
     <string name="batch_number_hint">Nomor batch</string>
-    <string name="batch_why">Tulis nomor batch dari kemasannya. Jika suatu saat sampel dipertanyakan, atau dinas pengawas bertanya, inilah catatan yang menunjukkan dengan tepat dari mana stok berasal. Catatan ini tidak bisa disusun ulang belakangan.</string>
+    <string name="batch_why">Tulis nomor batch dari kemasannya. Jika suatu barang dipertanyakan — oleh pelanggan, perusahaan, atau petugas pengawas — catatan inilah yang menunjukkan dengan tepat dari mana stok berasal. Catatan ini tidak bisa disusun ulang belakangan.</string>
     <string name="expiry_date">Tanggal kedaluwarsa</string>
     <string name="expiry_why">Roshan Khata akan memperingatkan Anda 60 hari sebelum kedaluwarsa — cukup awal untuk menjualnya, memberi diskon, atau mengembalikannya selagi pemasok masih mau menerima.</string>
     <string name="pick_expiry">Pilih tanggal kedaluwarsa</string>

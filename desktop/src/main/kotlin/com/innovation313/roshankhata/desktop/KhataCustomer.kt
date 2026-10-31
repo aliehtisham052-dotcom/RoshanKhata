@@ -189,7 +189,8 @@ fun CustomerPane(
             }
             if (promise != null || seasons.isNotEmpty()) {
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    promise?.let { p -> HoverTip(word(W.harvest_promise_menu)) { AccountChip(p, Look.warn, Look.warnTint, "ic_calendar", onPromise) } }
+                    // "Pays after the harvest" only where the shop has seasons; any other shop's promise is a promised payment (31 Oct 2026).
+                    promise?.let { p -> HoverTip(word(if (LocalTrade.current.seasons) W.harvest_promise_menu else W.cf_kind_promised)) { AccountChip(p, Look.warn, Look.warnTint, "ic_calendar", onPromise) } }
                     seasons.forEach { AccountChip(it, Look.olive, Look.oliveTint, null) }
                 }
             }

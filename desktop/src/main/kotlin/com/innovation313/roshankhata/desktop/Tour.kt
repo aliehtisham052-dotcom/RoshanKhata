@@ -71,7 +71,7 @@ fun TourWindowContent(onDone: () -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
             steps.indices.forEach { i ->
                 Box(Modifier.size(width = if (i == at) 20.dp else 8.dp, height = 8.dp).clip(RoundedCornerShape(4.dp))
-                    .background(if (i == at) c.brandGreen else Look.line))
+                    .background(if (i == at) c.brandGreenText else Look.line))
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End), verticalAlignment = Alignment.CenterVertically) {

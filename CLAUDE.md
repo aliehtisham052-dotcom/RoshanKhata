@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,613 strings and 55 plurals (2,613 on 31 Oct 2026 with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,613 strings and 55 plurals (2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1332,6 +1332,33 @@ Two read-only audits (trade bias; the nine languages' countries), then the fixes
   a calling-code box for OTHER (a profile field on both platforms and in the backup); a Tajik (Cyrillic)
   language; "IBAN" stays as printed (the international term); Nepal's Bikram Sambat calendar.
 
+### The 31 Oct 2026 review: every shop, night and large text (kmp-desktop-16)
+
+Five audits (trade words in 9 languages, trade switches, each trade's needs, dark mode, text size); every point
+read in the code first. CI only — nothing on a device. Trade words: 25 trades x 4 lists x 9 languages, no gap.
+
+- **Trades:** Windows' customer page showed Rabi/Kharif chips for every trade and country (SeasonBook dates an
+  untagged entry itself) — now only with `LocalTrade.seasons`; the phone asked for label details after every
+  bill, a question non-agri forms could never answer — only `TradeFeatures.inspectorReports`; Home's sixth daily
+  tile is Expiry only where goods go off (`TradeFeatures.expiryDaily`), else Products (Expiry moves to Business,
+  nothing hidden; the tour follows); Windows' promise tip and failure title, the scheme hint (seasons, not AGRI),
+  the batch help and the products coach say no harvest/inspector/compliance to every shop; the stock register's
+  no-expiry card and line warn only for AGRI/MEDICAL; maund and seer are offered only in PK/IN/BD/NP (keys kept);
+  a restore's unknown trade key stays unset so Home asks (it became AGRI).
+- **Large text:** the Khata totals and the Khata Report totals autosize on one line (`app:autoSizeTextType`,
+  match_parent); Home's net balance shrinks to the card (`ui/FitOneLine`) — at 130-150% they broke after "Rs" and
+  showed only that; Add Entry's amount row is at least 68 dp, not exactly; the erase-all, spray advice and price
+  list controls call `TextFit.relax`.
+- **Night:** brand_green (dark both ways) is a fill only; marks, outlines, chart bars and progress use
+  brand_green_text / brandGreenText — the Khata filter's segments (1.69:1), the sales chart and 0-30 bucket
+  (2.08:1), outline buttons and the editor box's focus edge, step dots and lines, plan progress; dialog buttons
+  take brand_green_text (`ThemeOverlay.RoshanKhata.Dialog` colorPrimary; 3.2:1 before); Windows' `FillButton`
+  writes dark ink on a light fill (`luminance() > 0.18`; Save on "I got" was white on light green, 1.82:1).
+- **Not done:** the entry receipt shared or printed at night is the dark card (render() fills the activity's own
+  views; a light copy needs it to bind into a given root); the per-trade features (service items, job cards,
+  serials, price tiers — /topics/per-trade-needs-research in the owner's memory); a CI proof of every screen at
+  360 dp, 150%/85% text and night.
+
 ### The shared module (KMP)
 
 ```
@@ -1666,6 +1693,11 @@ Each of these cost a build or a bug.
     16 layouts), a box built in code goes through `FormBox.style` (which also runs HintFit) and a dialog
     body built in code is `FormBox.column` (side margins, 8 dp between boxes). A box in a
     TextInputLayout keeps that layout's own outline.
+
+60. **A colour that stays dark at night is a fill, never a mark.** brand_green (#1B5E3A both ways) under white
+    words is right; as text, an outline, a chart bar or a progress line on a night card it vanished (1.7-2.4:1).
+    Marks take the night-aware `*_text` colour (brand_green_text, green_got_text; Compose `brandGreenText`), and a
+    button's words take the colour its fill can carry, never a fixed white.
 
 ---
 

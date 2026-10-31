@@ -28,7 +28,7 @@
     <string name="coach_title_invoice">انوائس</string>
     <string name="coach_desc_invoice">اپنے گاہکوں کے لیے پروفیشنل انوائس بنائیں — تیار ڈیزائنوں میں سے چنیں، آپ کے نام، مہر اور کیو آر کے ساتھ۔</string>
     <string name="coach_title_products">پروڈکٹس اور اسٹاک</string>
-    <string name="coach_desc_products">دستیاب اسٹاک، بیچ کی میعاد، اور کمپلائنس رجسٹرز — وہی بل جو آپ پہلے سے لکھتے ہیں، انہی سے خود بن جاتے ہیں۔</string>
+    <string name="coach_desc_products">دستیاب اسٹاک، بیچ کی میعاد اور اسٹاک رجسٹر — وہی بل جو آپ پہلے سے لکھتے ہیں، انہی سے خود بن جاتے ہیں۔</string>
     <string name="followup_title">وصولی</string>
     <string name="followup_subtitle">کس سے وصول کرنا ہے — سب سے پرانا پہلے، رقم ساتھ</string>
     <plurals name="followup_summary">
@@ -610,7 +610,7 @@
     <string name="add_item">چیز شامل کریں</string>
     <string name="product_name_hint">مصنوعات کا نام</string>
     <string name="batch_number_hint">بیچ نمبر</string>
-    <string name="batch_why">ڈبے پر لکھا بیچ نمبر درج کریں۔ اگر کبھی نمونے پر سوال ہو، یا انسپیکشن محکمہ پوچھے، تو یہی ریکارڈ بتاتا ہے مال کہاں سے آیا۔ بعد میں یہ دوبارہ نہیں بن سکتا۔</string>
+    <string name="batch_why">ڈبے پر لکھا بیچ نمبر درج کریں۔ اگر کبھی کسی شے پر سوال اٹھے — گاہک، کمپنی یا انسپیکٹر کی طرف سے — تو یہی ریکارڈ بتاتا ہے مال کہاں سے آیا۔ بعد میں یہ دوبارہ نہیں بن سکتا۔</string>
     <string name="expiry_date">ایکسپائری تاریخ</string>
     <string name="expiry_why">روشن کھاتہ ایکسپائری سے 60 دن پہلے خبردار کرے گا — اتنا پہلے کہ مال بیچ سکیں، رعایت دے سکیں، یا واپس کر سکیں جب تک سپلائر لے لے۔</string>
     <string name="pick_expiry">ایکسپائری تاریخ چنیں</string>

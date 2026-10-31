@@ -113,9 +113,12 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
+                    <!-- At least 68dp, and taller when large text needs it (31 Oct 2026, the review: a fixed
+                         68dp row left the amount ~40dp at 130-150% once the running total showed). -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="68dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="68dp"
                         android:background="@drawable/bg_entry_amount"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
@@ -132,7 +135,7 @@
 
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:orientation="vertical">
@@ -142,8 +145,8 @@
                                 android:textDirection="ltr"
                                 android:textAlignment="viewStart"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:minHeight="48dp"
                                 android:background="@null"
                                 android:cursorVisible="true"
                                 android:digits="0123456789.+−×÷*/-%"
@@ -288,7 +291,7 @@
                         app:iconPadding="10dp"
                         app:iconSize="18dp"
                         app:iconTint="@color/brand_green_text"
-                        app:strokeColor="@color/brand_green" />
+                        app:strokeColor="@color/brand_green_text" />
                 </LinearLayout>
 
         <LinearLayout

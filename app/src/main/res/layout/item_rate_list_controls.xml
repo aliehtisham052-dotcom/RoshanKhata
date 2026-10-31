@@ -131,6 +131,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRateSelectAll"
             style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/brand_green_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
@@ -141,6 +142,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRateClear"
             style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/brand_green_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"

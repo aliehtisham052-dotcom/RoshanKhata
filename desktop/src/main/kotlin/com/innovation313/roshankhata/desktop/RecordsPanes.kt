@@ -1085,7 +1085,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                 LinearProgressIndicator(
                     progress = { p.percentPaid / 100f },
                     modifier = Modifier.fillMaxWidth(),
-                    color = c.brandGreen,
+                    color = c.brandGreenText, // brandGreenText: brandGreen stays dark at night (2.08:1 on the night card, 31 Oct 2026)
                     trackColor = c.pageBg
                 )
                 Text(

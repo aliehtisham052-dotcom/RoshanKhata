@@ -1008,8 +1008,8 @@ class PosterActivity : BaseActivity() {
             tv.isSelected = current
             tv.contentDescription = tv.text
         }
-        findViewById<View>(R.id.stepLine1).setBackgroundColor(getColor(if (step > 1) R.color.brand_green else R.color.page_line))
-        findViewById<View>(R.id.stepLine2).setBackgroundColor(getColor(if (step > 2) R.color.brand_green else R.color.page_line))
+        findViewById<View>(R.id.stepLine1).setBackgroundColor(getColor(if (step > 1) R.color.brand_green_text else R.color.page_line))
+        findViewById<View>(R.id.stepLine2).setBackgroundColor(getColor(if (step > 2) R.color.brand_green_text else R.color.page_line))
     }
 
     /** The round number (or tick) before each step's name. */

@@ -1070,6 +1070,8 @@ class BackupActivity : BaseActivity() {
         val keyword = getString(R.string.erase_all_keyword)
         val view = android.view.LayoutInflater.from(this)
             .inflate(R.layout.dialog_business_delete, null)
+        // Its hint carries the word to type: wrapped, never cut, at any text size (31 Oct 2026, the review).
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val tvSummary: android.widget.TextView = view.findViewById(R.id.tvDeleteSummary)
         val etConfirm: android.widget.EditText = view.findViewById(R.id.etDeleteConfirmName)
         tvSummary.text = getString(R.string.erase_all_body)

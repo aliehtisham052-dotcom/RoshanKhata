@@ -168,7 +168,7 @@ class InspectorReportActivity : BaseActivity() {
         val noExpiry = d.noExpiryCount
         val notes = buildList {
             if (gaps > 0) add(Digits.quantity(resources, R.plurals.inspector_gap_labels, gaps, gaps))
-            if (noExpiry > 0) add(
+            if (noExpiry > 0 && registerStyle().compliance) add(
                 Digits.quantity(resources, 
                     R.plurals.inspector_gap_expiry, noExpiry, noExpiry
                 )

@@ -16,8 +16,14 @@ fun UnitWords.label(context: Context, key: String): String = label(key, DateWord
 fun UnitWords.choices(context: Context): List<String> {
     val locale = DateWords.appLocale()
     val lead = TradeVocab.unitKeys(context)
-    return (lead + KEYS.filter { it !in lead }).map { label(it, locale) }
+    // Maund and seer are South Asia's (31 Oct 2026, the review): an Egyptian or Indonesian shop was offered them,
+    // in Indonesian as the English words. They stay keys, so an old entry still reads; they are just not offered.
+    val southAsia = ShopCountry.current in setOf(ShopCountry.PAKISTAN, ShopCountry.INDIA, ShopCountry.BANGLADESH, ShopCountry.NEPAL)
+    return (lead + KEYS.filter { it !in lead && (southAsia || it !in SOUTH_ASIAN_UNITS) }).map { label(it, locale) }
 }
+
+/** The units only South Asian shops weigh by (UnitWords.KEYS keeps them for every book). */
+private val SOUTH_ASIAN_UNITS = setOf("maund", "seer")
 
 /**
  * Turn units that were typed by hand as one of the app's own labels into

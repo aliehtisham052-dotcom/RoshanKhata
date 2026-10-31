@@ -6,6 +6,8 @@
     <item name="tag_keyboard_follow" type="id" />
     <!-- HintFit: marks a box whose hint is already watched. -->
     <item name="hint_fit_watched" type="id" />
+    <!-- FitOneLine: the size a one-line figure was laid out at, before it was shrunk to fit. -->
+    <item name="fit_one_line_base" type="id" />
     <!-- CalcPad.dock: the pad a dialog built in code carries on its scroll. -->
     <item name="calc_pad_view" type="id" />
 </resources>

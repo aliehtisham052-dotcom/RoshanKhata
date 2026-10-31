@@ -28,7 +28,7 @@
     <string name="coach_title_invoice">فاتورة</string>
     <string name="coach_desc_invoice">أنشئ فواتير احترافية لعملائك — اختر من تصاميم جاهزة مع اسمك وختمك ورمز QR.</string>
     <string name="coach_title_products">المنتجات والمخزون</string>
-    <string name="coach_desc_products">المخزون الحالي، تاريخ انتهاء كل دفعة، وتقارير الامتثال — تُبنى تلقائيًا من نفس الفواتير التي تُسجّلها.</string>
+    <string name="coach_desc_products">المخزون الحالي، تاريخ انتهاء كل دفعة، وسجل المخزون — تُبنى تلقائيًا من نفس الفواتير التي تُسجّلها.</string>
     <string name="followup_title">المتابعة</string>
     <string name="followup_subtitle">ممن تُحصّل — الأقدم أولاً، والمبلغ بجانبه</string>
     <plurals name="followup_summary">
@@ -670,7 +670,7 @@
     <string name="add_item">إضافة صنف</string>
     <string name="product_name_hint">اسم المنتج</string>
     <string name="batch_number_hint">رقم الدُفعة</string>
-    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن شُكك في عينة يومًا أو سألت جهة التفتيش، فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
+    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن سُئل يومًا عن صنف — من زبون أو شركة أو مفتش — فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
     <string name="expiry_date">تاريخ الانتهاء</string>
     <string name="expiry_why">سيحذرك روشن كهاتا قبل الانتهاء بـ60 يومًا — وقت يكفي لبيعها أو تخفيضها أو إرجاعها والمورّد ما زال يقبلها.</string>
     <string name="pick_expiry">اختر تاريخ الانتهاء</string>
