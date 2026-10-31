@@ -123,7 +123,7 @@ fun OrdersScreen(
     }
 
     editing?.let { draft ->
-        OrderEditor(draft, suppliers, onCancel = { editing = null }) {
+        OrderEditor(draft, suppliers, itemHint, onCancel = { editing = null }) {
             scope.launch {
                 val order = PurchaseOrder(id = draft.existing?.order?.id ?: 0, partyId = draft.partyId!!, note = draft.note.trim().ifBlank { null }, createdBy = Access.userName)
                 val id = withContext(Dispatchers.IO) { runCatching { dao.saveOrder(order, draft.toItems()) }.getOrNull() }
@@ -201,7 +201,7 @@ fun orderStatusWord(s: String): String = word(
 )
 
 @Composable
-private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, onCancel: () -> Unit, onSave: () -> Unit) {
+private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, itemHint: String?, onCancel: () -> Unit, onSave: () -> Unit) {
     val c = LocalRoshanColors.current
     var query by remember { mutableStateOf("") }
     var partyQuery by remember { mutableStateOf("") }
