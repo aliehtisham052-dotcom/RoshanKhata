@@ -17,6 +17,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.get
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.TextSize
