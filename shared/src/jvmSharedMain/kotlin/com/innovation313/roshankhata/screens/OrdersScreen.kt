@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.Access
+import com.innovation313.roshankhata.data.Automations
 import com.innovation313.roshankhata.data.BillItem
 import com.innovation313.roshankhata.data.CounterDraft
 import com.innovation313.roshankhata.data.KhataDao
@@ -54,7 +55,6 @@ import com.innovation313.roshankhata.data.PurchaseOrder
 import com.innovation313.roshankhata.data.PurchaseOrderItem
 import com.innovation313.roshankhata.data.PurchaseOrderWithLines
 import com.innovation313.roshankhata.data.SupplierBill
-import com.innovation313.roshankhata.data.Valuation
 import com.innovation313.roshankhata.data.orderText
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
@@ -85,7 +85,9 @@ fun OrdersScreen(
      */
     pickDay: ((startAt: Long, onPicked: (Long) -> Unit) -> Unit)? = null,
     /** The shop trade's own example items for a typed line; null: a plain "Item name" (31 Oct 2026: it said Urea to every shop). */
-    itemHint: String? = null
+    itemHint: String? = null,
+    /** Opened from the low-stock automation's notification: start the low-stock draft at once (31 Oct 2026). */
+    startLow: Boolean = false
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -113,14 +115,21 @@ fun OrdersScreen(
             val products = withContext(Dispatchers.IO) { dao.productsOnce() }
             val draft = OrderDraft(null, products)
             if (lowOnly) {
-                val low = withContext(Dispatchers.IO) { runCatching { Valuation.compute(dao).low }.getOrDefault(emptyList()) }
-                low.forEach { r -> products.firstOrNull { it.id == r.productId }?.let { p ->
-                    draft.add(p, kotlin.math.ceil(((r.lowStockLevel ?: 0.0) * 2 - (r.onHand ?: 0.0)).coerceAtLeast(1.0)))
-                } }
+                // The automation's rule (31 Oct 2026): 30 days' sales or twice the low level, whichever is more, less the
+                // shelf; nothing already on an open order; one supplier at a time, the one these came from last.
+                val lines = withContext(Dispatchers.IO) { runCatching { Automations.reorder(dao, System.currentTimeMillis()) }.getOrDefault(emptyList()) }
+                val (supplier, picked) = Automations.firstOrder(lines)
+                picked.forEach { r -> products.firstOrNull { it.id == r.productId }?.let { p -> draft.add(p, r.qty) } }
+                val known = withContext(Dispatchers.IO) { dao.partiesWithBalanceOnce().filter { !it.isCustomer }.map { it.id }.toSet() }
+                if (supplier != null && supplier in known) draft.partyId = supplier
             }
             editing = draft
         }
     }
+
+    // The notification's tap: the draft at once, once (the phone passes it only on a fresh screen).
+    var startedLow by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(startLow) { if (startLow && !startedLow) { startedLow = true; newOrder(true) } }
 
     editing?.let { draft ->
         OrderEditor(draft, suppliers, itemHint, onCancel = { editing = null }) {

@@ -463,6 +463,8 @@ class KhataActivity : BaseActivity() {
     private fun setupReminders() {
         ReminderWorker.ensureChannel(this)
         ReminderWorker.schedule(this)
+        AutomationWorker.ensureChannel(this)
+        AutomationWorker.schedule(this)
         if (Build.VERSION.SDK_INT >= 33) {
             val granted = ContextCompat.checkSelfPermission(
                 this, android.Manifest.permission.POST_NOTIFICATIONS

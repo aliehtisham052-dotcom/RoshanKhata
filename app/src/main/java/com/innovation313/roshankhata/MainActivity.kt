@@ -76,8 +76,15 @@ class MainActivity : BaseActivity() {
         // Only the screens reminders open; anything else is ignored.
         if (savedInstanceState == null) {
             OPENABLE.firstOrNull { it.name == intent.getStringExtra(EXTRA_OPEN) }
-                ?.let { startActivity(Intent(this, it)) }
+                ?.let { target ->
+                    // The automation's own words for the screen (start the queue, last month's window…).
+                    val args = intent.getBundleExtra(EXTRA_OPEN_ARGS)
+                    startActivity(Intent(this, target).apply { if (args != null) putExtras(args) })
+                }
         }
+
+        // The automations' hourly check (31 Oct 2026): scheduled from Home too, for an owner who never opens Khata.
+        runCatching { AutomationWorker.schedule(this) }
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvHomeLate = findViewById(R.id.tvHomeLate)
@@ -929,6 +936,9 @@ class MainActivity : BaseActivity() {
         /** The screen a reminder notification asked for; see ReminderWorker. */
         const val EXTRA_OPEN = "open_screen"
 
+        /** Extras for the screen EXTRA_OPEN names, carried through the gate and the lock (Automations). */
+        const val EXTRA_OPEN_ARGS = "open_screen_args"
+
         /** The only screens EXTRA_OPEN may name: the ones reminders open. */
         private val OPENABLE = listOf(
             AlertsActivity::class.java,
@@ -936,7 +946,12 @@ class MainActivity : BaseActivity() {
             ChequesActivity::class.java,
             PlansActivity::class.java,
             ExpiringActivity::class.java,
-            BusinessSwitchActivity::class.java
+            BusinessSwitchActivity::class.java,
+            // The automations' places (31 Oct 2026).
+            FollowUpActivity::class.java,
+            CashbookActivity::class.java,
+            OrdersActivity::class.java,
+            LedgerReportActivity::class.java
         )
     }
 }

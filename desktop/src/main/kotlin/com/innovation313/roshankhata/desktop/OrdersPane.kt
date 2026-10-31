@@ -43,7 +43,6 @@ import com.innovation313.roshankhata.data.PurchaseOrder
 import com.innovation313.roshankhata.data.PurchaseOrderItem
 import com.innovation313.roshankhata.data.PurchaseOrderWithLines
 import com.innovation313.roshankhata.data.SupplierBill
-import com.innovation313.roshankhata.data.Valuation
 import com.innovation313.roshankhata.data.OrderDraft
 import com.innovation313.roshankhata.data.orderText
 import com.innovation313.roshankhata.data.WhatsAppNumber
@@ -68,7 +67,12 @@ import java.net.URLEncoder
  * their warning level.
  */
 @Composable
-fun OrdersPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?, onChanged: () -> Unit) {
+fun OrdersPane(
+    dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl: Boolean, shopName: String?,
+    /** The low-stock automation's click (31 Oct 2026): start the low-stock draft at once, then [onStartedLow]. */
+    startLow: Boolean = false, onStartedLow: () -> Unit = {},
+    onChanged: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     val orders by remember { dao.observeOrders() }.collectAsState(emptyList())
@@ -84,15 +88,17 @@ fun OrdersPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, rtl
             val products = withContext(Dispatchers.IO) { dao.productsOnce() }
             val draft = OrderDraft(null, products)
             if (lowOnly) {
-                val low = withContext(Dispatchers.IO) { runCatching { Valuation.compute(dao).low }.getOrDefault(emptyList()) }
-                low.forEach { r -> products.firstOrNull { it.id == r.productId }?.let { p ->
-                    val want = ((r.lowStockLevel ?: 0.0) * 2 - (r.onHand ?: 0.0)).coerceAtLeast(1.0)
-                    draft.add(p, kotlin.math.ceil(want))
-                } }
+                // The phone's rule (Automations.reorder, 31 Oct 2026): 30 days' sales or twice the low level, less the
+                // shelf; nothing already on an open order; one supplier at a time, the one these came from last.
+                val lines = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Automations.reorder(dao, System.currentTimeMillis()) }.getOrDefault(emptyList()) }
+                val (supplier, picked) = com.innovation313.roshankhata.data.Automations.firstOrder(lines)
+                picked.forEach { r -> products.firstOrNull { it.id == r.productId }?.let { p -> draft.add(p, r.qty) } }
+                if (supplier != null && suppliers.any { it.id == supplier }) draft.partyId = supplier
             }
             editing = draft
         }
     }
+    LaunchedEffect(startLow) { if (startLow) { onStartedLow(); newOrder(true) } }
 
     editing?.let { draft ->
         OrderDialog(dao, draft, suppliers, onClose = { editing = null }) { id ->

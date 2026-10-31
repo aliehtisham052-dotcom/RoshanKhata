@@ -3559,4 +3559,36 @@
     <string name="audit_doc_accepted">Document manzoor hua</string>
     <string name="audit_doc_cancelled">Document mansookh hua</string>
     <string name="audit_doc_deleted">Document mitaya gaya</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">Khudkaar kaam</string>
+    <string name="auto_help">Har ek apne waqt par batata hai aur sahi safha kholta hai. Kuch bhi khud se bheja ya likha nahi jata.</string>
+    <string name="auto_collect_name">Subah ki wusooli list</string>
+    <string name="auto_collect_title">Aaj ki wusooli</string>
+    <string name="auto_dayend_name">Dukaan band karne ka khulasa</string>
+    <string name="auto_dayend_title">Aaj ka hisaab</string>
+    <string name="auto_dayend_body">Farokht %1$s · Wusool %2$s · Galle mein hona chahiye %3$s</string>
+    <string name="auto_dayend_uncounted">Galla abhi nahi gina gaya: din band karne ke liye tap karein.</string>
+    <string name="auto_reorder_name">Kam stock ke order</string>
+    <string name="auto_reorder_title">Kam stock mangwayein</string>
+    <string name="auto_month_name">Mahana report</string>
+    <string name="auto_month_title">%1$s ki report tayyar hai</string>
+    <string name="auto_month_body">Main ne diya %1$s · Main ne liya %2$s. Dekhne aur share karne ke liye tap karein.</string>
+    <string name="auto_expiry_name">Expiry par amal</string>
+    <string name="auto_expiry_title">Expire hone se pehle qadam uthayein</string>
+    <string name="auto_expiry_body">%1$s, batch %2$s: %3$s baqi, %4$s ko expire. Bechein, riayat dein ya wapas karein.</string>
+    <string name="auto_at_time">%1$s baje</string>
+    <string name="auto_pick_hour">Waqt chunein</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">Aaj %1$d gahak ko yaad dehani · %2$s</item>
+        <item quantity="other">Aaj %1$d gahakon ko yaad dehani · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">%1$d product ka stock kam hai: %2$s. Order tayyar karne ke liye tap karein.</item>
+        <item quantity="other">%1$d products ka stock kam hai: %2$s. Order tayyar karne ke liye tap karein.</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">aur %1$d mazeed batch</item>
+        <item quantity="other">aur %1$d mazeed batch</item>
+    </plurals>
 </resources>

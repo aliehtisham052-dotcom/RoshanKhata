@@ -91,7 +91,12 @@ private val KHATA_PERIODS = listOf(ReportWindow.TODAY, ReportWindow.WEEK, Report
  * (the preview, to save or print) or Excel (CSV, the accountant's copy, the phone's text).
  */
 @Composable
-fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int, parties: List<com.innovation313.roshankhata.data.PartyWithBalance> = emptyList()) {
+fun ReportPane(
+    dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int,
+    parties: List<com.innovation313.roshankhata.data.PartyWithBalance> = emptyList(),
+    /** A window to open on (the monthly automation's click: last month), its first and last millisecond. */
+    startWindow: Pair<Long, Long>? = null, onStartedWindow: () -> Unit = {}
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var period by remember { mutableStateOf(ReportWindow.MONTH) }
@@ -103,6 +108,9 @@ fun ReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, rel
     var notice by remember { mutableStateOf<String?>(null) }
     var refused by remember { mutableStateOf(false) }
 
+    LaunchedEffect(startWindow) {
+        startWindow?.let { (s, e) -> period = ReportWindow.CUSTOM; from = s; till = e; onStartedWindow() }
+    }
     LaunchedEffect(from, till, reload) {
         entries = withContext(Dispatchers.IO) { dao.entriesInRange(from ?: 0L, till ?: Long.MAX_VALUE) }
     }

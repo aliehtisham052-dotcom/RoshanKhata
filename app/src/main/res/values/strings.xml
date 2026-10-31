@@ -3771,4 +3771,36 @@
     <string name="audit_doc_accepted">Document accepted</string>
     <string name="audit_doc_cancelled">Document cancelled</string>
     <string name="audit_doc_deleted">Document deleted</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">Automations</string>
+    <string name="auto_help">Each one tells you at its time and opens the right page. Nothing is sent or written on its own.</string>
+    <string name="auto_collect_name">Morning collection list</string>
+    <string name="auto_collect_title">Collect today</string>
+    <string name="auto_dayend_name">Closing summary</string>
+    <string name="auto_dayend_title">Today\'s closing</string>
+    <string name="auto_dayend_body">Sales %1$s · Received %2$s · Drawer should hold %3$s</string>
+    <string name="auto_dayend_uncounted">Drawer not counted yet: tap to close the day.</string>
+    <string name="auto_reorder_name">Low stock orders</string>
+    <string name="auto_reorder_title">Order the low stock</string>
+    <string name="auto_month_name">Monthly report</string>
+    <string name="auto_month_title">%1$s report is ready</string>
+    <string name="auto_month_body">I gave %1$s · I got %2$s. Tap to see and share.</string>
+    <string name="auto_expiry_name">Expiry action</string>
+    <string name="auto_expiry_title">Act before it expires</string>
+    <string name="auto_expiry_body">%1$s, batch %2$s: %3$s left, expires %4$s. Sell it, give a discount or return it.</string>
+    <string name="auto_at_time">At %1$s</string>
+    <string name="auto_pick_hour">Choose the hour</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">%1$d customer to remind today · %2$s</item>
+        <item quantity="other">%1$d customers to remind today · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">%1$d product is low: %2$s. Tap to prepare the order.</item>
+        <item quantity="other">%1$d products are low: %2$s. Tap to prepare the order.</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">and %1$d more batch</item>
+        <item quantity="other">and %1$d more batches</item>
+    </plurals>
 </resources>

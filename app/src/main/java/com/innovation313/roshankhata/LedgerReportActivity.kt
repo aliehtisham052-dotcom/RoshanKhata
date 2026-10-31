@@ -141,6 +141,11 @@ class LedgerReportActivity : BaseActivity() {
             period = restored
             startMs = savedInstanceState.getLong(KEY_START, -1L).takeIf { it >= 0L }
             endMs = savedInstanceState.getLong(KEY_END, -1L).takeIf { it >= 0L }
+        } else if (intent.hasExtra(EXTRA_FROM) && intent.hasExtra(EXTRA_TO)) {
+            // Last month, from the monthly automation's notification: a window of its own (31 Oct 2026).
+            period = Period.CUSTOM
+            startMs = intent.getLongExtra(EXTRA_FROM, 0L)
+            endMs = intent.getLongExtra(EXTRA_TO, 0L)
         } else {
             setWindow(Period.MONTH)
         }
@@ -509,9 +514,13 @@ class LedgerReportActivity : BaseActivity() {
         }
     }
 
-    private companion object {
-        const val KEY_PERIOD = "lr_period"
-        const val KEY_START = "lr_start"
-        const val KEY_END = "lr_end"
+    companion object {
+        private const val KEY_PERIOD = "lr_period"
+        private const val KEY_START = "lr_start"
+        private const val KEY_END = "lr_end"
+
+        /** A window to open on (the monthly automation: last month), first and last millisecond. */
+        const val EXTRA_FROM = "lr_from"
+        const val EXTRA_TO = "lr_to"
     }
 }

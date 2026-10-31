@@ -3607,4 +3607,36 @@
     <string name="audit_doc_accepted">दस्तावेज़ स्वीकृत</string>
     <string name="audit_doc_cancelled">दस्तावेज़ रद्द</string>
     <string name="audit_doc_deleted">दस्तावेज़ मिटाया गया</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">अपने-आप होने वाले काम</string>
+    <string name="auto_help">हर एक अपने समय पर बताता है और सही पेज खोलता है। कुछ भी अपने-आप भेजा या लिखा नहीं जाता।</string>
+    <string name="auto_collect_name">सुबह की वसूली सूची</string>
+    <string name="auto_collect_title">आज की वसूली</string>
+    <string name="auto_dayend_name">दुकान बंद करने का सारांश</string>
+    <string name="auto_dayend_title">आज का हिसाब</string>
+    <string name="auto_dayend_body">बिक्री %1$s · वसूली %2$s · गल्ले में होना चाहिए %3$s</string>
+    <string name="auto_dayend_uncounted">गल्ला अभी नहीं गिना गया: दिन बंद करने के लिए टैप करें।</string>
+    <string name="auto_reorder_name">कम स्टॉक के ऑर्डर</string>
+    <string name="auto_reorder_title">कम स्टॉक मंगवाएँ</string>
+    <string name="auto_month_name">मासिक रिपोर्ट</string>
+    <string name="auto_month_title">%1$s की रिपोर्ट तैयार है</string>
+    <string name="auto_month_body">मैंने दिए %1$s · मुझे मिले %2$s। देखने और शेयर करने के लिए टैप करें।</string>
+    <string name="auto_expiry_name">एक्सपायरी से पहले कदम</string>
+    <string name="auto_expiry_title">एक्सपायर होने से पहले कदम उठाएँ</string>
+    <string name="auto_expiry_body">%1$s, बैच %2$s: %3$s बाकी, %4$s को एक्सपायर। बेचें, छूट दें या वापस करें।</string>
+    <string name="auto_at_time">%1$s बजे</string>
+    <string name="auto_pick_hour">समय चुनें</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">आज %1$d ग्राहक को याद दिलाना है · %2$s</item>
+        <item quantity="other">आज %1$d ग्राहकों को याद दिलाना है · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">%1$d आइटम का स्टॉक कम है: %2$s। ऑर्डर तैयार करने के लिए टैप करें।</item>
+        <item quantity="other">%1$d आइटम का स्टॉक कम है: %2$s। ऑर्डर तैयार करने के लिए टैप करें।</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">और %1$d बैच</item>
+        <item quantity="other">और %1$d बैच</item>
+    </plurals>
 </resources>

@@ -3587,4 +3587,36 @@
     <string name="audit_doc_accepted">سند تأیید شد</string>
     <string name="audit_doc_cancelled">سند لغو شد</string>
     <string name="audit_doc_deleted">سند حذف شد</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">کارهای خودکار</string>
+    <string name="auto_help">هر کدام سر وقت خودش به شما خبر می‌دهد و صفحهٔ درست را باز می‌کند. هیچ چیزی خودبه‌خود فرستاده یا نوشته نمی‌شود.</string>
+    <string name="auto_collect_name">فهرست وصول صبحگاهی</string>
+    <string name="auto_collect_title">وصول امروز</string>
+    <string name="auto_dayend_name">خلاصهٔ پایان روز</string>
+    <string name="auto_dayend_title">حساب امروز</string>
+    <string name="auto_dayend_body">فروش %1$s · دریافتی %2$s · باید در صندوق باشد %3$s</string>
+    <string name="auto_dayend_uncounted">صندوق هنوز شمرده نشده: برای بستن روز بزنید.</string>
+    <string name="auto_reorder_name">سفارش موجودی کم</string>
+    <string name="auto_reorder_title">موجودی کم را سفارش دهید</string>
+    <string name="auto_month_name">گزارش ماهانه</string>
+    <string name="auto_month_title">گزارش %1$s آماده است</string>
+    <string name="auto_month_body">دادم %1$s · گرفتم %2$s. برای دیدن و هم‌رسانی بزنید.</string>
+    <string name="auto_expiry_name">اقدام پیش از انقضا</string>
+    <string name="auto_expiry_title">پیش از انقضا اقدام کنید</string>
+    <string name="auto_expiry_body">%1$s، بچ %2$s: %3$s مانده، انقضا %4$s. بفروشید، تخفیف دهید یا برگردانید.</string>
+    <string name="auto_at_time">ساعت %1$s</string>
+    <string name="auto_pick_hour">ساعت را انتخاب کنید</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">یادآوری امروز: %1$d مشتری · %2$s</item>
+        <item quantity="other">یادآوری امروز: %1$d مشتری · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">موجودی %1$d کالا کم است: %2$s. برای آماده کردن سفارش بزنید.</item>
+        <item quantity="other">موجودی %1$d کالا کم است: %2$s. برای آماده کردن سفارش بزنید.</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">و %1$d بچ دیگر</item>
+        <item quantity="other">و %1$d بچ دیگر</item>
+    </plurals>
 </resources>

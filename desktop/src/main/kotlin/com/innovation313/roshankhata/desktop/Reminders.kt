@@ -31,8 +31,11 @@ object Reminders {
         if (!SystemTray.isSupported()) return null
         return runCatching {
             val img = Reminders::class.java.getResourceAsStream("/roshan_khata_icon.png")!!.use { ImageIO.read(it) }
-            TrayIcon(img, title).apply { isImageAutoSize = true }
-                .also { SystemTray.getSystemTray().add(it); tray = it }
+            TrayIcon(img, title).apply {
+                isImageAutoSize = true
+                // A click on the icon or on its notification: the place the last notification named (Automations).
+                addActionListener { onClick?.let { java.awt.EventQueue.invokeLater(it) } }
+            }.also { SystemTray.getSystemTray().add(it); tray = it }
         }.getOrNull()
     }
 
@@ -42,9 +45,13 @@ object Reminders {
         tray = null
     }
 
-    /** A Windows notification [title] / [text]. */
-    fun show(appName: String, title: String, text: String) {
+    /** What a click on the tray does now: the last automation's page (null: nothing). */
+    @Volatile private var onClick: (() -> Unit)? = null
+
+    /** A Windows notification [title] / [text]; a click on it runs [open] (the automations' page), if given. */
+    fun show(appName: String, title: String, text: String, open: (() -> Unit)? = null) {
         val t = icon(appName) ?: return
+        if (open != null) onClick = open
         java.awt.EventQueue.invokeLater { runCatching { t.displayMessage(title, text, TrayIcon.MessageType.INFO) } }
     }
 

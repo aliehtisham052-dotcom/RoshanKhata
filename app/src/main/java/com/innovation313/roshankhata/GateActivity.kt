@@ -56,6 +56,7 @@ class GateActivity : BaseActivity() {
                 .putExtra(MainActivity.EXTRA_UNLOCKED, !locked)
                 // A notification's screen, carried through the lock unopened.
                 .putExtra(MainActivity.EXTRA_OPEN, intent.getStringExtra(MainActivity.EXTRA_OPEN))
+                .putExtra(MainActivity.EXTRA_OPEN_ARGS, intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS))
         )
         finish()
     }
