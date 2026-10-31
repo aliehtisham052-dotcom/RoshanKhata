@@ -246,7 +246,7 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, it
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onCancel) { Text(word(W.cancel), color = c.ink) }
             Spacer(Modifier.weight(1f))
-            Button(onClick = onSave, enabled = draft.valid, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) { Text(word(W.save), color = Color.White, fontWeight = FontWeight.Bold) }
+            Button(onClick = onSave, enabled = draft.valid, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen, contentColor = Color.White)) { Text(word(W.save), fontWeight = FontWeight.Bold) }
         }
     }
 }
@@ -302,7 +302,7 @@ private fun ReceiveEditor(
                     if (q <= 0.0) null else BillItem(billId = 0, productName = g.item.itemName, quantity = q, unit = g.item.unit, rate = Calc.evalAmount(g.rate), batchNumber = g.batch.trim().ifBlank { null }, expiryDate = g.expiry, productId = g.item.productId)
                 }
                 onSave(items, billNumber.trim().ifBlank { null }, total)
-            }, enabled = got.any { (Calc.evalAmount(it.qty) ?: 0.0) > 0.0 }, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) { Text(word(W.save), color = Color.White, fontWeight = FontWeight.Bold) }
+            }, enabled = got.any { (Calc.evalAmount(it.qty) ?: 0.0) > 0.0 }, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen, contentColor = Color.White)) { Text(word(W.save), fontWeight = FontWeight.Bold) }
         }
     }
 }

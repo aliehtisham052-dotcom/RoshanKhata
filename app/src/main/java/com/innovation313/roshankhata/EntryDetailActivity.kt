@@ -834,9 +834,8 @@ class EntryDetailActivity : BaseActivity() {
     }
 
     private fun sendToPrinter(device: android.bluetooth.BluetoothDevice) {
-        val card = findViewById<View>(R.id.receiptCard)
         val picture = try {
-            Bitmap.createBitmap(card.width, card.height, Bitmap.Config.ARGB_8888).also { card.draw(Canvas(it)) }
+            receiptPicture()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.print_failed, Toast.LENGTH_LONG).show(); return
         }
@@ -862,13 +861,55 @@ class EntryDetailActivity : BaseActivity() {
         }
     }
 
+    /**
+     * The receipt card as a picture in the day's colours, whatever the phone's theme (31 Oct 2026, the review): at
+     * night the share sent the customer the dark card, and the printer — which inverts a mostly dark picture —
+     * printed the white signature box and the bill photo as a black block. A copy of the card is inflated in a day
+     * configuration (same language, direction and text size) and given the live card's words, visibility and
+     * photos view by view: both are the same layout, and render() sets no colour in code but the banner's.
+     */
+    private fun receiptPicture(): Bitmap {
+        val card = findViewById<View>(R.id.receiptCard)
+        val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        if (!night) return Bitmap.createBitmap(card.width, card.height, Bitmap.Config.ARGB_8888).also { card.draw(Canvas(it)) }
+        val dayConfig = android.content.res.Configuration(resources.configuration).apply {
+            uiMode = (uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK.inv()) or
+                android.content.res.Configuration.UI_MODE_NIGHT_NO
+        }
+        val day = android.view.ContextThemeWrapper(createConfigurationContext(dayConfig), R.style.Theme_RoshanKhata)
+        // A clone of the screen's inflater keeps AppCompat's view factory (app:tint, compat drawables) in the day context.
+        val page = layoutInflater.cloneInContext(day).inflate(R.layout.activity_entry_detail, null)
+        val copy = page.findViewById<View>(R.id.receiptCard)
+        (copy.parent as? android.view.ViewGroup)?.removeView(copy)
+        mirrorReceipt(card, copy)
+        entry?.let { e ->
+            copy.findViewById<View>(R.id.amountBanner)?.setBackgroundResource(if (e.isGiven) R.drawable.bg_receipt_red else R.drawable.bg_receipt_green)
+        }
+        copy.measure(
+            View.MeasureSpec.makeMeasureSpec(card.width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        copy.layout(0, 0, copy.measuredWidth, copy.measuredHeight)
+        return Bitmap.createBitmap(copy.measuredWidth, copy.measuredHeight, Bitmap.Config.ARGB_8888).also { copy.draw(Canvas(it)) }
+    }
+
+    /** What the screen's card shows, into the day copy: visibility, words and photos (never an icon's night tint). */
+    private fun mirrorReceipt(from: View, to: View) {
+        to.visibility = from.visibility
+        if (from is TextView && to is TextView) to.text = from.text
+        if (from is android.widget.ImageView && to is android.widget.ImageView) {
+            (from.drawable as? android.graphics.drawable.BitmapDrawable)?.let { to.setImageDrawable(it) }
+        }
+        if (from is android.view.ViewGroup && to is android.view.ViewGroup && from.childCount == to.childCount) {
+            for (i in 0 until from.childCount) mirrorReceipt(from.getChildAt(i), to.getChildAt(i))
+        }
+    }
+
     /** Render the receipt card to an image and offer it to the share sheet. */
     private fun shareReceipt() {
-        val card = findViewById<View>(R.id.receiptCard)
         try {
-            val bitmap = Bitmap.createBitmap(card.width, card.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            card.draw(canvas)
+            val bitmap = receiptPicture()
 
             val dir = File(cacheDir, "receipts").apply { mkdirs() }
             val file = File(dir, "receipt_${entryId}.png")

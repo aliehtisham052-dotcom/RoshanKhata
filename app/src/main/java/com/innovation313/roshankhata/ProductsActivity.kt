@@ -49,6 +49,8 @@ class ProductsActivity : BaseActivity() {
 
     /** Every product with its stock, before the search box narrows it. */
     private var allStock: List<Stock.ProductStock> = emptyList()
+    /** Each product's technical / generic name, so the search finds a medicine by its salt (31 Oct 2026). */
+    private var technicalById: Map<Long, String> = emptyMap()
     private lateinit var btnLink: MaterialButton
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -280,6 +282,7 @@ class ProductsActivity : BaseActivity() {
     private fun refresh() {
         lifecycleScope.launch {
             val stock = com.innovation313.roshankhata.data.NameOrder.sortedBy(Stock.of(dao)) { it.name }
+            technicalById = dao.productsOnce().mapNotNull { p -> p.technicalName?.takeIf { it.isNotBlank() }?.let { p.id to it } }.toMap()
 
             allStock = stock
             show()
@@ -295,7 +298,10 @@ class ProductsActivity : BaseActivity() {
     private fun show() {
         val q = findViewById<android.widget.EditText>(R.id.etProductSearch).text.toString().trim()
         val shown = if (q.isEmpty()) allStock
-        else allStock.filter { com.innovation313.roshankhata.ui.NameSearch.matches(it.name, null, q.lowercase()) }
+        else allStock.filter {
+            com.innovation313.roshankhata.ui.NameSearch.matches(it.name, null, q.lowercase()) ||
+                (technicalById[it.productId]?.let { t -> com.innovation313.roshankhata.ui.NameSearch.matches(t, null, q.lowercase()) } ?: false)
+        }
         adapter.submitList(shown)
         tvEmptyText.setText(if (allStock.isEmpty()) R.string.no_products else R.string.products_no_match)
         tvEmpty.visibility = if (shown.isEmpty()) View.VISIBLE else View.GONE

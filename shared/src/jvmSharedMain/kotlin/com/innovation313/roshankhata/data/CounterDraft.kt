@@ -431,7 +431,10 @@ class CounterDraft {
             products.firstOrNull { it.barcode != null && it.barcode == q }?.let { return listOf(it) }
             val typed = q.lowercase()
             return products.filter {
-                NameSearch.matches(it.name, null, typed) || (it.company?.let { c -> NameSearch.matches(c, null, typed) } ?: false)
+                // The label's technical / generic name too (31 Oct 2026): a pharmacy finds "Panadol" by "paracetamol",
+                // an agri shop a spray by its active ingredient.
+                NameSearch.matches(it.name, null, typed) || (it.company?.let { c -> NameSearch.matches(c, null, typed) } ?: false) ||
+                    (it.technicalName?.let { t -> NameSearch.matches(t, null, typed) } ?: false)
             }.take(limit)
         }
     }
