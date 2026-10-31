@@ -91,10 +91,6 @@
       a label that still cannot fit wraps to two lines instead of "SA…".
     -->
     <style name="ThemeOverlay.RoshanKhata.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <!-- The buttons' words take colorPrimary: button_dark is near-black by day (17:1) but #2E7D52 by night,
-             3.2:1 on the dialog (31 Oct 2026). brand_green_text reads 7.75:1 by day and 8.85:1 by night, and
-             the button keeps its own faded state when disabled. -->
-        <item name="colorPrimary">@color/brand_green_text</item>
         <item name="buttonBarPositiveButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNeutralButtonStyle">@style/DialogButton</item>
@@ -172,6 +168,9 @@
     </style>
 
     <style name="DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <!-- The words in brand_green_text (31 Oct 2026): colorPrimary (button_dark) read 3.2:1 on a night dialog.
+             Only these words change; colorPrimary stays, since it fills buttons that carry white words. -->
+        <item name="android:textColor">@color/dialog_button_text</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:maxLines">2</item>

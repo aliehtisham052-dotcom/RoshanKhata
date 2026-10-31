@@ -1351,8 +1351,9 @@ read in the code first. CI only — nothing on a device. Trade words: 25 trades 
   list controls call `TextFit.relax`.
 - **Night:** brand_green (dark both ways) is a fill only; marks, outlines, chart bars and progress use
   brand_green_text / brandGreenText — the Khata filter's segments (1.69:1), the sales chart and 0-30 bucket
-  (2.08:1), outline buttons and the editor box's focus edge, step dots and lines, plan progress; dialog buttons
-  take brand_green_text (`ThemeOverlay.RoshanKhata.Dialog` colorPrimary; 3.2:1 before); Windows' `FillButton`
+  (2.08:1), outline buttons and the editor box's focus edge, step dots and lines, plan progress; dialog buttons'
+  words take brand_green_text (`DialogButton`'s textColor, `color/dialog_button_text`; 3.2:1 before — not colorPrimary,
+  which fills buttons with white words: check_dark_colours.py refused it); Windows' `FillButton`
   writes dark ink on a light fill (`luminance() > 0.18`; Save on "I got" was white on light green, 1.82:1).
 - **Not done:** the entry receipt shared or printed at night is the dark card (render() fills the activity's own
   views; a light copy needs it to bind into a given root); the per-trade features (service items, job cards,
