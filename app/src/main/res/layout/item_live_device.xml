@@ -19,6 +19,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvDeviceName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,6 +28,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvDeviceSeen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

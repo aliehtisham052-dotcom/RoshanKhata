@@ -50,6 +50,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="14dp"
@@ -197,6 +198,7 @@
     <!-- What the register will have to print a dash for. Shown here so it can
          be fixed before the document is handed to anyone. -->
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvInsGaps"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -224,6 +226,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvInsGaps">
 
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -289,6 +292,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnInsPreview"
+            android:ellipsize="end"
+            android:letterSpacing="0"
+            android:textAllCaps="false"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -309,6 +315,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnInsDownload"
+            android:ellipsize="end"
+            android:letterSpacing="0"
+            android:textAllCaps="false"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -330,6 +339,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnInsShare"
+            android:ellipsize="end"
+            android:letterSpacing="0"
+            android:textAllCaps="false"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

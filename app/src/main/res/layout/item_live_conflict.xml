@@ -12,6 +12,7 @@
     android:paddingBottom="6dp">
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvConflictTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

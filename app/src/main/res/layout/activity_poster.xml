@@ -317,6 +317,7 @@
                         app:drawableTint="@color/brand_green_text" />
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -348,6 +349,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -390,6 +392,7 @@
                     android:visibility="gone">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/poster_items_label"
@@ -613,6 +616,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -621,6 +625,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
@@ -852,6 +857,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -910,6 +916,7 @@
                     android:visibility="gone">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawablePadding="10dp"

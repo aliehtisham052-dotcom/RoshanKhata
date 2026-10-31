@@ -16,6 +16,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvCfTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,6 +24,7 @@
             android:textSize="15sp" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvCfSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

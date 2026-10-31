@@ -28,6 +28,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvRateName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvRateSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,6 +48,7 @@
         <!-- Each price says which it is ("Cash rate Rs 33 · Credit rate Rs 40"), under the name at the row's
              full width so it wraps instead of being cut (30 Oct 2026: "Rs 33 / Rs 33" said neither). -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvRatePrices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

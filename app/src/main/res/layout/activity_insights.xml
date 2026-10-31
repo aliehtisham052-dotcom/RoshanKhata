@@ -320,6 +320,7 @@
                             android:background="@color/page_line" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvMonthPick"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -329,6 +330,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvMonthHint"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -338,6 +340,7 @@
                             android:textSize="11sp" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvNoMonthly"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -380,6 +383,7 @@
                             android:orientation="vertical" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvNoProducts"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -422,6 +426,7 @@
                             android:orientation="vertical" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvNoCustomers"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

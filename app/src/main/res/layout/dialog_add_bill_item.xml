@@ -39,6 +39,7 @@
 
         <!-- Why it matters, said plainly, at the moment it is being asked for -->
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -57,6 +58,7 @@
             app:icon="@drawable/ic_calendar" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

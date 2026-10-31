@@ -13,6 +13,7 @@
         android:paddingBottom="8dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/cheque_not_money_yet"

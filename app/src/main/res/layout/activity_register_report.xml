@@ -51,6 +51,7 @@
                 android:padding="12dp">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/register_period_title"
@@ -70,6 +71,7 @@
     </LinearLayout>
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvRegSummary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

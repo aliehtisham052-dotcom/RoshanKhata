@@ -36,6 +36,7 @@
 
     <!-- What this screen does and does not do, admitted up front. -->
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvDuplicatesNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

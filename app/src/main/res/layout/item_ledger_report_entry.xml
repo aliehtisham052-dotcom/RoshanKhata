@@ -23,6 +23,7 @@
         android:paddingBottom="6dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvLrDay"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -62,6 +63,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:id="@+id/lrColName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -91,6 +93,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lrColAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="end"

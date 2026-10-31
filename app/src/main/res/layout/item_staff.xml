@@ -16,6 +16,7 @@
         android:padding="14dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvStaffName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvStaffSalary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,6 +34,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvStaffCounts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,6 +43,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvStaffMoney"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,6 +52,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvStaffDue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

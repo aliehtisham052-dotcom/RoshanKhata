@@ -114,6 +114,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvPreviewBusinessName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -125,6 +126,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvPreviewDetails"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -195,6 +197,7 @@
                     android:background="@color/hairline" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="14dp"
@@ -231,6 +234,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/bp_logo"
@@ -239,6 +243,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -379,12 +384,14 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_trade"
                             android:textAppearance="?attr/textAppearanceSubtitle2" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_trade_help"
@@ -409,12 +416,14 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_country"
                             android:textAppearance="?attr/textAppearanceSubtitle2" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_country_help"
@@ -439,12 +448,14 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_currency"
                             android:textAppearance="?attr/textAppearanceSubtitle2" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_currency_help"
@@ -469,12 +480,14 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_calendar"
                             android:textAppearance="?attr/textAppearanceSubtitle2" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/bp_calendar_help"
@@ -506,6 +519,7 @@
                     android:orientation="vertical">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/bp_paid_help"
@@ -571,6 +585,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/bp_qr"
@@ -579,6 +594,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -699,6 +715,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/stamp"
@@ -771,6 +788,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/signature"
@@ -799,6 +817,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"

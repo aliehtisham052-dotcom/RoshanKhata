@@ -38,6 +38,7 @@
             android:paddingBottom="24dp">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/live_devices"
@@ -46,6 +47,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvDevicesEmpty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,6 +64,7 @@
                 android:orientation="vertical" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvConflictsHead"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,6 +74,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvConflictsEmpty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

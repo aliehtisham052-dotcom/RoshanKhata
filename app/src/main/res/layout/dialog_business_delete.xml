@@ -8,6 +8,7 @@
     android:paddingTop="8dp">
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvDeleteSummary"
         android:labelFor="@+id/etDeleteConfirmName"
         android:layout_width="match_parent"

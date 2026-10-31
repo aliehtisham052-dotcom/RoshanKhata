@@ -123,6 +123,7 @@
     </LinearLayout>
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvBillNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

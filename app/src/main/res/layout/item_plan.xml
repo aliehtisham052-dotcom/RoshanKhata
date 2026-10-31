@@ -15,6 +15,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvPlanParty"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -54,6 +55,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvPlanPaid"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

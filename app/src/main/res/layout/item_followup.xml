@@ -17,6 +17,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvFollowUpName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvFollowUpAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,6 +36,7 @@
         <!-- The customer's own payment rhythm (PaymentHabit); gone when there
              is too little history to have one. -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvFollowUpHabit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,6 +47,7 @@
         <!-- "Reminded on …, nothing received since" (PaymentRequest, 29 Oct):
              the last reminder from this phone against his newest payment. -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvFollowUpWaiting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

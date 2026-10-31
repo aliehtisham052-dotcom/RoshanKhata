@@ -23,6 +23,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/itemName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

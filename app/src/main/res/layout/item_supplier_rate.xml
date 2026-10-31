@@ -16,6 +16,7 @@
         android:padding="14dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvSrName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvSrLast"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,6 +34,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvSrChange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,6 +44,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvSrCheaper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

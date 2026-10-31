@@ -15,6 +15,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvInsRowName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,6 +27,7 @@
         <!-- Batch, company and supplier: the three things asked for right
              after "what is this". -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvInsRowSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

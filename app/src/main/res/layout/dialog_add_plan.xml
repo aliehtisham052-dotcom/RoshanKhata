@@ -14,6 +14,7 @@
         android:paddingBottom="8dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/plan_dialog_help"
@@ -34,6 +35,7 @@
             android:inputType="text" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvPlanOwes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

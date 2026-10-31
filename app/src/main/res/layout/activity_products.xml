@@ -150,6 +150,7 @@
 
     <!-- The app's own limit, admitted rather than hidden -->
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvProductsNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -300,6 +301,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/inspector_title"
@@ -308,6 +310,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -372,6 +375,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/register_title"
@@ -380,6 +384,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"

@@ -67,6 +67,7 @@
         </LinearLayout>
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvStep"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -351,6 +352,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvTemplateCaption"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -359,6 +361,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:textAlignment="viewStart"
                             android:id="@+id/tvTemplateUse"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -457,6 +460,7 @@
             android:visibility="gone">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvItemsCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

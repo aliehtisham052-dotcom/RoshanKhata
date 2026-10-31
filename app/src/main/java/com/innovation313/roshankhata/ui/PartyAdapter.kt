@@ -54,6 +54,7 @@ class PartyAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_party, parent, false)
+        TextFit.stackWhenLarge(v.findViewById(R.id.colName), v.findViewById(R.id.colBalance))
         return VH(v)
     }
 

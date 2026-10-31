@@ -39,6 +39,7 @@
     </HorizontalScrollView>
 
     <TextView
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -83,6 +84,7 @@
         android:textSize="14sp" />
 
     <TextView
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
@@ -92,6 +94,7 @@
 
     <!-- Tapped, it lists the products with no price and opens one to add it (30 Oct 2026). -->
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvRateUnpriced"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

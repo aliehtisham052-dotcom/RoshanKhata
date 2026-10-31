@@ -22,6 +22,7 @@
         android:paddingBottom="8dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvGuessNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -144,6 +145,7 @@
         </LinearLayout>
 
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -262,6 +264,7 @@
 
         <!-- Packs and tax (schema 36): a bigger unit the product also comes or goes in, and its tax. -->
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -391,6 +394,7 @@
 
         <!-- Variants (21 Oct 2026): this product as one size, colour or flavour of a main product. -->
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -438,6 +442,7 @@
              inspector visits - agriculture and medical - and
              ProductDetailsDialog hides the whole group for any other (9 Oct). -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvProductTypeLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -475,6 +480,7 @@
                 android:background="@color/divider_grey" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
@@ -484,6 +490,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -493,6 +500,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -512,6 +520,7 @@
                 android:inputType="text" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -531,6 +540,7 @@
                 android:inputType="textCapCharacters" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

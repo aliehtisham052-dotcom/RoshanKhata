@@ -1700,6 +1700,15 @@ Each of these cost a build or a bug.
     Marks take the night-aware `*_text` colour (brand_green_text, green_got_text; Compose `brandGreenText`), and a
     button's words take the colour its fill can carry, never a fixed white.
 
+61. **A TextView's "start" is its text's, not the screen's.** Android aligns a TextView with no gravity by its
+    paragraph's own direction: an English name in an Urdu row sits at the LEFT, against the amount ("Rs 4,000Test
+    Supplier", the 31 Oct screen proofs — bills, expiry, documents). Every full-width or weighted TextView in the
+    layouts carries `android:textAlignment="viewStart"` (227 added), except where gravity or a style sets its own;
+    a new one needs it too. And a name beside a figure on a 360 dp phone at 120-150% text gets a few letters' width:
+    the row calls `TextFit.stackWhenLarge(nameColumn, figureColumn)` (Khata list, Khata Report), which puts the
+    figure under the name above `TextFit.STACK_SCALE`. `screen-proof.yml` takes 28 phone screens in four looks
+    (English 150% day, Urdu 150% night, Bengali night, Indonesian 85%) to the `screen-proof` release — look at them.
+
 ---
 
 ## Working with the owner
