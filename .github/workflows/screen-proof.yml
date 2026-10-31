@@ -1,0 +1,79 @@
+# Pictures of the phone's screens to look at (31 Oct 2026): 360 dp, four looks (English 150% day kiryana, Urdu
+# 150% night agri, Bengali night clothing, Indonesian 85% day pharmacy) — ScreenProofPhoneTest. A crash test cannot
+# see a figure cut to "Rs" or words dark on dark; these pictures can. Runs on a push to a kmp-* branch that touches
+# the phone's screens, and by hand. The rolling "screen-proof" pre-release holds the newest set. Made-up shop only.
+name: Screen proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['kmp-*']
+    paths:
+      - 'app/src/main/**'
+      - 'shared/src/jvmSharedMain/**'
+      - 'app/src/androidTest/java/com/innovation313/roshankhata/ScreenProofPhoneTest.kt'
+      - 'scripts/screen-proof.sh'
+      - '.github/workflows/screen-proof.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screen-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+          gradle-version: 8.14.3
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Pictures on the emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: >-
+            -no-window -no-snapshot -noaudio -no-boot-anim
+            -gpu swiftshader_indirect -camera-back none
+          disable-animations: true
+          script: sh scripts/screen-proof.sh
+      - name: Zip
+        if: always()
+        run: |
+          mkdir -p /tmp/screen-proof
+          cd /tmp && zip -qr screen-proof.zip screen-proof && ls -lh screen-proof.zip
+      - name: Publish to Releases
+        if: always()
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: screen-proof
+          name: "Roshan Khata — Screen proof (phone)"
+          prerelease: true
+          body: |
+            Pictures of the phone's screens at 360 dp in four looks, made by the Screen proof workflow from
+            ${{ github.sha }} on a made-up shop. Not an app build.
+          files: /tmp/screen-proof.zip
+          make_latest: false
+      - name: Publish the failure
+        if: failure()
+        run: |
+          [ -f /tmp/screen_proof_output.txt ] || { echo "::error::The emulator did not start."; exit 0; }
+          grep -iE "AssertionError|FAILED|Exception|error:" /tmp/screen_proof_output.txt | head -20 \
+            | while IFS= read -r line; do echo "::error::$(echo "$line" | tr -d '\r' | sed 's/%/%%/g')"; done

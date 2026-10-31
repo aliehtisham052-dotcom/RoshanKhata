@@ -25,14 +25,14 @@ EVENTS=4000
 SEED=313
 
 # ---- 1. Written tests ------------------------------------------------------
-# StoreScreenshotsTest is the Play listing's, run by screenshots.yml alone.
+# StoreScreenshotsTest is the Play listing's, run by screenshots.yml alone; ScreenProofPhoneTest by screen-proof.yml.
 # The two keyboard tests need the soft keyboard shown; keyboard.yml runs them.
 # The 3D posters' own log (and the renderer's), kept apart: when a still does
 # not come back, this says which hero and at which step.
 adb logcat -c
 adb logcat -v time Poster3D:V Filament:V TestRunner:I BigBookPerf:I AndroidRuntime:E *:S > /tmp/poster3d_log.txt 2>&1 &
 p3d=$!
-gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.innovation313.roshankhata.StoreScreenshotsTest,com.innovation313.roshankhata.KeyboardOnDeviceTest,com.innovation313.roshankhata.KeyboardDialogsOnDeviceTest,com.innovation313.roshankhata.SignatureProofTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
+gradle connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.notClass=com.innovation313.roshankhata.StoreScreenshotsTest,com.innovation313.roshankhata.KeyboardOnDeviceTest,com.innovation313.roshankhata.KeyboardDialogsOnDeviceTest,com.innovation313.roshankhata.SignatureProofTest,com.innovation313.roshankhata.ScreenProofPhoneTest --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
 tests=$?
 kill $p3d 2>/dev/null
 tail -150 /tmp/instrumented_output.txt

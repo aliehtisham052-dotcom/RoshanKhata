@@ -177,8 +177,10 @@ fun ReturnForm(draft: ReturnDraft, onPost: () -> Unit, onCancel: () -> Unit, mod
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onCancel) { Text(word(W.cancel), color = c.ink) }
             Spacer(Modifier.weight(1f))
-            Button(onClick = { if (!draft.posting) onPost() }, enabled = problem == null && !draft.posting, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) {
-                Text(word(W.pos_return), color = Color.White, fontWeight = FontWeight.Bold)
+            Button(onClick = { if (!draft.posting) onPost() }, enabled = problem == null && !draft.posting, colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen, contentColor = Color.White)) {
+                // The words take the button's own content colour, so a disabled button greys them too (31 Oct 2026:
+                // white on the disabled grey read 1.39:1).
+                Text(word(W.pos_return), fontWeight = FontWeight.Bold)
             }
         }
     }

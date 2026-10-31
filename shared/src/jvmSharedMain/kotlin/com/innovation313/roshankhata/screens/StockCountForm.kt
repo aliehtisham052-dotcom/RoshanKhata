@@ -84,8 +84,8 @@ fun StockCountForm(draft: CountDraft, onSave: () -> Unit, onCancel: () -> Unit, 
         Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onCancel) { Text(word(W.cancel), color = c.ink) }
             Spacer(Modifier.weight(1f))
-            Button(onClick = onSave, enabled = draft.counts().isNotEmpty(), colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)) {
-                Text(word(W.save), color = Color.White, fontWeight = FontWeight.Bold)
+            Button(onClick = onSave, enabled = draft.counts().isNotEmpty(), colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen, contentColor = Color.White)) {
+                Text(word(W.save), fontWeight = FontWeight.Bold) // greyed with the button when disabled (31 Oct 2026)
             }
         }
     }
