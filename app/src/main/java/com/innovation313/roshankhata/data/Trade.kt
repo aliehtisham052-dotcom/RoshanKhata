@@ -79,7 +79,23 @@ enum class Trade(
         else context.getString(exampleRes)
 
     companion object {
+        /**
+         * The stored trade a book with none is read as. Only old books reach it now: Home asks for a trade
+         * when none is stored (31 Oct 2026), so a new shop is never silently taken for an agri one.
+         */
         val DEFAULT = AGRI
+
+        /**
+         * The order the picker shows (31 Oct 2026, the owner: the app is for every shop and wholesaler,
+         * agriculture first said otherwise): the shops of any town first, the specialised after, Other last.
+         * The enum's own order is kept, so nothing stored or tested by position moves.
+         */
+        val PICKER: List<Trade> = listOf(
+            GENERAL, KIRYANA, WHOLESALE, MEDICAL, MOBILE, CLOTHING, ELECTRONICS, HARDWARE,
+            AGRI, DAIRY, BAKERY, MEAT, PRODUCE, RESTAURANT, COSMETICS, FOOTWEAR,
+            STATIONERY, TAILOR, SALON, AUTO, FURNITURE, BUILDING, SOLAR, FUEL,
+            OTHER
+        )
 
         /** The stored name back to a trade; anything unknown or blank is [DEFAULT]. */
         fun of(name: String?): Trade =

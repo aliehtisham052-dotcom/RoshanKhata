@@ -235,7 +235,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">کالا (اختیاری)</string>
     <string name="goods_help">اگر همراه این ثبت کالایی جابه‌جا شده — 5 کیسه اوره، 2 لیتر سم — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
-    <string name="item_name_hint">کالا (اوره، خوراک…)</string>
+    <string name="item_name_hint">نام کالا</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">واحد (کیسه، لیتر، کیلوگرم…)</string>
 
@@ -305,14 +305,14 @@
     <string name="business_name">نام کسب‌وکار</string>
     <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
     <string name="business_name_urdu">نام فروشگاه به اردو</string>
-    <string name="business_name_urdu_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu_help">روی پوسترهای اردو نشان داده می‌شود. خالی بگذارید تا نام بالا استفاده شود.</string>
     <string name="business_address">آدرس مغازه</string>
-    <string name="business_address_hint">مثلاً بازار اصلی، پسرور</string>
+    <string name="business_address_hint">مثلاً بازار اصلی</string>
     <string name="invoice_bank_name_hint">نام بانک</string>
     <string name="invoice_bank_title_hint">عنوان حساب</string>
     <string name="invoice_bank_iban_hint">شماره شبا / حساب</string>
-    <string name="invoice_bank_jazzcash_hint">شماره کیف پول موبایل (JazzCash، EasyPaisa، UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">شماره کیف پول موبایل</string>
 
     <string name="payment_qr">کد QR پرداخت</string>
     <string name="no_qr_yet">هنوز QR پرداختی ذخیره نشده است.</string>
@@ -321,7 +321,7 @@
     <string name="qr_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
     <string name="qr_removed">QR پرداخت حذف شد</string>
     <string name="qr_confirm_title">آیا این همان کد درست است؟</string>
-    <string name="qr_confirm_message">کد بالا را ببینید و تأیید کنید که حساب پرداخت خود شماست (EasyPaisa، JazzCash، UPI…). اگر نباشد، پرداخت مشتریان به شخص دیگری می‌رسد.</string>
+    <string name="qr_confirm_message">کد بالا را ببینید و تأیید کنید که حساب پرداخت خود شماست. اگر نباشد، پرداخت مشتریان به شخص دیگری می‌رسد.</string>
     <string name="qr_confirm_yes">بله، مال من است</string>
     <string name="profile_saved">ذخیره شد</string>
 
@@ -616,7 +616,7 @@
     <string name="bills_subtitle">کالایی که خریده‌اید</string>
     <string name="bill_ledger_note">بدهی شما به تأمین‌کننده مثل بقیه چیزها در دفترتان است. فاکتور فقط کاغذبازی را رویش می‌افزاید: شماره فاکتور، شماره بچ، تاریخ انقضا.</string>
     <string name="add_bill">افزودن فاکتور</string>
-    <string name="no_bills">هنوز فاکتوری ثبت نشده است.\n\nخریدهای خود را ثبت کنید — با شماره بچ و تاریخ انقضا. همین‌هاست که بازرس می‌پرسد و همین است که جلوی فاسد شدن کالا روی قفسه را می‌گیرد.</string>
+    <string name="no_bills">هنوز فاکتوری ثبت نشده است.\n\nخریدهای خود را ثبت کنید — با شماره بچ و تاریخ انقضا. این‌طور می‌دانید هر کالا از کجا آمده و هیچ کالایی بی‌خبر روی قفسه خراب نمی‌شود.</string>
 
     <string name="bill_number_hint">شماره فاکتور</string>
     <string name="bill_total_hint">جمع فاکتور</string>
@@ -753,7 +753,7 @@
     <!-- Batch trace -->
     <string name="trace_batch">ردیابی بچ</string>
     <string name="trace_batch_hint">شماره بچ را وارد کنید</string>
-    <string name="trace_batch_help">اگر نمونه‌ای زیر سؤال رفت یا بازرس پرسید، شماره بچ را اینجا جستجو کنید تا ببینید از کدام تأمین‌کننده، روی کدام فاکتور و چه زمانی آمده.</string>
+    <string name="trace_batch_help">اگر روزی درباره کالایی سؤالی پیش آمد، شماره بچ آن را اینجا جستجو کنید تا ببینید از کدام تأمین‌کننده، روی کدام فاکتور و چه زمانی آمده.</string>
     <string name="trace_no_results">کالایی با این شماره بچ یافت نشد.</string>
     <plurals name="trace_results">
         <item quantity="one">%1$d رکورد یافت شد</item>
@@ -887,6 +887,7 @@
     <string name="cf_kind_plan">قسط</string>
     <string name="cf_kind_cheque_in">چک دریافتنی</string>
     <string name="cf_kind_harvest">پس از برداشت</string>
+    <string name="cf_kind_promised">پرداخت وعده‌شده</string>
     <string name="cf_kind_bill">فاکتور تأمین‌کننده</string>
     <string name="cf_kind_cheque_out">چک پرداختنی</string>
     <string name="cf_empty">هنوز تاریخی نیست. تاریخ‌ها از طرح‌های قسطی، چک‌ها و فاکتورهای دارای سررسید می‌آیند.</string>
@@ -1638,7 +1639,7 @@
     <string name="trade_general">فروشگاه عمومی</string>
     <string name="bp_paid_help">در کادر پرداخت فاکتور نمایش داده می‌شود. ردیف‌های خالی حذف می‌شوند.</string>
     <string name="bp_qr">QR پرداخت</string>
-    <string name="bp_qr_help">QR پرداخت شما (EasyPaisa، JazzCash، UPI…)، برای صورت‌حساب‌ها.</string>
+    <string name="bp_qr_help">QR پرداخت شما، برای صورت‌حساب‌ها.</string>
     <string name="bp_add">افزودن</string>
     <string name="bp_change">تغییر</string>
     <string name="bp_seals_help">روی کاغذ سفید ساده عکس بگیرید — برنامه خودش برش می‌دهد.</string>
@@ -1646,8 +1647,8 @@
     <string name="bp_photo">عکس مشتری روی صورت‌حساب</string>
     <string name="bp_photo_help">به‌طور پیش‌فرض خاموش — صورت‌حساب ممکن است بازارسال شود.</string>
     <string name="bp_unsaved">تغییرات ذخیره نشده</string>
-    <string name="bp_iban_bad">این شبیه IBAN نیست، مثلاً PK36 SCBL 0000 0011 2345 6702.</string>
-    <string name="bp_mobile_bad">این شبیه شماره موبایل نیست، مثلاً 03001234567.</string>
+    <string name="bp_iban_bad">این شبیه IBAN نیست. آن را با مدارک بانک خود مقایسه کنید.</string>
+    <string name="bp_mobile_bad">این شبیه شماره موبایل نیست. رقم‌ها را دوباره ببینید.</string>
     <string name="bp_leave_title">بدون ذخیره خارج می‌شوید؟</string>
     <string name="bp_leave_msg">تغییرات شما در این صفحه از بین می‌رود.</string>
     <string name="bp_leave_discard">رها کردن</string>
@@ -2701,7 +2702,7 @@
     <string name="poster_lang_more">بیشتر</string>
     <string name="poster_items_label">چه رسیده؟ (تا 4)</string>
     <string name="poster_add_item">افزودن</string>
-    <string name="poster_item_hint">مثلاً بذر گندم</string>
+    <string name="poster_item_hint">نام کالا را بنویسید</string>
     <string name="poster_add_photo">افزودن عکس</string>
     <string name="poster_photo_hint">اختیاری. عکس خودتان از کالا جای جعبه را می‌گیرد.</string>
     <string name="poster_remove_photo">حذف عکس</string>
@@ -2820,7 +2821,7 @@
     <string name="invoice_received_full">کامل</string>
     <string name="invoice_received_none">هیچ</string>
     <string name="invoice_note_label">یادداشت روی فاکتور</string>
-    <string name="invoice_note_example">مثلاً بعد از 7 روز سمپاشی کنید</string>
+    <string name="invoice_note_example">مثلاً کالا تا 7 روز قابل تعویض است</string>
     <string name="invoice_sum_items">اقلام</string>
     <string name="invoice_sum_total">جمع کل</string>
     <string name="invoice_sum_received">دریافت شد</string>
@@ -2852,7 +2853,7 @@
     <string name="biz_card_l_web">وب‌سایت</string>
     <string name="biz_card_l_qr">پیام هنگام اسکن QR</string>
     <string name="biz_card_ex_name">مثلاً فروشگاه نور</string>
-    <string name="biz_card_ex_type">مثلاً سم و بذر</string>
+    <string name="biz_card_ex_type">مثلاً عمده‌فروشی و خرده‌فروشی</string>
     <string name="biz_card_ex_owner">مثلاً علی خان</string>
     <string name="biz_card_ex_address">مثلاً بازار اصلی</string>
     <string name="biz_card_ex_tagline">مثلاً ارسال به منزل</string>
@@ -3227,7 +3228,7 @@
     <string name="expiry_nothing_left">از این بچ چیزی نمانده</string>
     <string name="expiry_left">مانده: %1$s</string>
     <string name="trace_came">رسیده: %1$s</string>
-    <string name="product_pack_help">بسته‌ای (کارتن، گونی…) که کالا با آن هم خرید یا فروش می‌شود، و چند تا از واحد خودش در یک بسته است. موجودی با واحد خودش شمرده می‌شود.</string>
+    <string name="product_pack_help">بسته‌ای (کارتن، جعبه، دوجین…) که کالا با آن هم خرید یا فروش می‌شود، و چند تا از واحد خودش در یک بسته است. موجودی با واحد خودش شمرده می‌شود.</string>
     <string name="product_pack_unit">نام بسته</string>
     <string name="product_pack_size">چند تا در یک بسته</string>
     <string name="product_pack_price">قیمت بسته</string>

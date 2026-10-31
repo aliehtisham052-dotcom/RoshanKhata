@@ -122,7 +122,7 @@ object BusinessProfile {
     fun taxLabel(c: Context): String = when (val country = c.settings.country()) {
         com.innovation313.roshankhata.data.ShopCountry.PAKISTAN -> "STRN"
         com.innovation313.roshankhata.data.ShopCountry.OTHER -> c.getString(W.tax_number_label)
-        else -> country.taxIdName
+        else -> country.taxIdName.ifEmpty { c.getString(W.tax_number_label) }
     }
     fun bankName(c: Context): String? = c.settings.bankName()?.takeIf { it.isNotBlank() }
     fun bankAccountTitle(c: Context): String? = c.settings.bankAccountTitle()?.takeIf { it.isNotBlank() }

@@ -110,7 +110,7 @@ object TradePicker {
         var otherWords: OtherTrade.Words? = if (current == Trade.OTHER)
             OtherTrade.Words(OtherTrade.name(activity), OtherTrade.items(activity)) else null
         lateinit var adapter: Cards
-        adapter = Cards(Trade.entries, chosen, { otherWords }) { picked ->
+        adapter = Cards(Trade.PICKER, chosen, { otherWords }) { picked ->
             if (picked == Trade.OTHER) {
                 askOther(activity, otherWords) { words ->
                     otherWords = words
@@ -129,7 +129,7 @@ object TradePicker {
             this.adapter = adapter
             itemAnimator = null
             // The owner's current trade, when changing it, is in view.
-            current?.let { scrollToPosition(Trade.entries.indexOf(it)) }
+            current?.let { scrollToPosition(Trade.PICKER.indexOf(it)) }
         }
 
         // Search (11 Oct): a few letters of the trade's name, its examples or
@@ -140,8 +140,8 @@ object TradePicker {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(e: android.text.Editable?) {
                 val q = e?.toString()?.trim()?.lowercase().orEmpty()
-                val shown = if (q.isEmpty()) Trade.entries else {
-                    val hits = Trade.entries.filter { it != Trade.OTHER && matches(activity, it, q) }
+                val shown = if (q.isEmpty()) Trade.PICKER else {
+                    val hits = Trade.PICKER.filter { it != Trade.OTHER && matches(activity, it, q) }
                     hits + Trade.OTHER
                 }
                 adapter.submit(shown)

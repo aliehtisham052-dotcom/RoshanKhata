@@ -153,9 +153,27 @@ object ShopCalendar {
             "মেহর", "আবান", "আজার", "দে", "বাহমান", "এসফান্দ")
     )
 
-    fun monthNames(kind: Kind, languageKey: String): Array<String> = when (kind) {
+    /**
+     * Afghanistan counts the same solar year as Iran with its own month names, the zodiac's (31 Oct 2026; the
+     * names from Wikipedia's "Solar Hijri calendar", Dari column): an Afghan shop read Farvardin for Hamal.
+     */
+    private val AFGHAN_MONTHS: Map<String, Array<String>> = mapOf(
+        "en" to arrayOf("Hamal", "Sawr", "Jawza", "Saratan", "Asad", "Sunbula",
+            "Mizan", "Aqrab", "Qaws", "Jadi", "Dalw", "Hut"),
+        "fa" to arrayOf("حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله",
+            "میزان", "عقرب", "قوس", "جدی", "دلو", "حوت"),
+        "ur" to arrayOf("حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبلہ",
+            "میزان", "عقرب", "قوس", "جدی", "دلو", "حوت"),
+        "sd" to arrayOf("حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله",
+            "ميزان", "عقرب", "قوس", "جدي", "دلو", "حوت"),
+        "ar" to arrayOf("حمل", "ثور", "جوزا", "سرطان", "أسد", "سنبلة",
+            "ميزان", "عقرب", "قوس", "جدي", "دلو", "حوت")
+    )
+
+    fun monthNames(kind: Kind, languageKey: String, country: ShopCountry = ShopCountry.current): Array<String> = when (kind) {
         Kind.HIJRI -> HIJRI_MONTHS[languageKey] ?: HIJRI_MONTHS.getValue("en")
-        Kind.JALALI -> JALALI_MONTHS[languageKey] ?: JALALI_MONTHS.getValue("en")
+        Kind.JALALI -> if (country == ShopCountry.AFGHANISTAN) AFGHAN_MONTHS[languageKey] ?: AFGHAN_MONTHS.getValue("en")
+            else JALALI_MONTHS[languageKey] ?: JALALI_MONTHS.getValue("en")
         Kind.GREGORIAN -> DateWords.months(Locale(languageKey))
     }
 }

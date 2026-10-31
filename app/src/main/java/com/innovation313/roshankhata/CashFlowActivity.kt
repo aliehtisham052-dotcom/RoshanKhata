@@ -82,7 +82,8 @@ class CashFlowActivity : BaseActivity() {
     private fun kind(k: CashFlow.Kind) = getString(when (k) {
         CashFlow.Kind.PLAN -> R.string.cf_kind_plan
         CashFlow.Kind.CHEQUE_IN -> R.string.cf_kind_cheque_in
-        CashFlow.Kind.HARVEST -> R.string.cf_kind_harvest
+        // A promised day is "after harvest" only where the shop has crop seasons (31 Oct 2026): any shop can set one.
+        CashFlow.Kind.HARVEST -> if (com.innovation313.roshankhata.data.TradeFeatures.seasons(this)) R.string.cf_kind_harvest else R.string.cf_kind_promised
         CashFlow.Kind.BILL -> R.string.cf_kind_bill
         CashFlow.Kind.CHEQUE_OUT -> R.string.cf_kind_cheque_out
     })

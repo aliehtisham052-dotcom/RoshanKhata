@@ -229,7 +229,7 @@
 
     <string name="goods_section">مال (اختیاری)</string>
     <string name="goods_help">اگر اس اندراج کے ساتھ مال بھی گیا — 5 بوری یوریا، 2 لیٹر زہر — تو یہاں لکھیں۔ سادہ نقد اندراج کے لیے خالی چھوڑ دیں۔</string>
-    <string name="item_name_hint">شے (یوریا، فیڈ…)</string>
+    <string name="item_name_hint">شے کا نام</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">اکائی (بوری، لیٹر، کلو…)</string>
 
@@ -293,16 +293,16 @@
     <string name="profile_preview_caption">آپ کے انوائس کا اوپری حصہ — ساتھ ساتھ بدلتا ہے</string>
     <string name="business_settings_subtitle">انوائس، اسٹیٹمنٹ اور رپورٹس پر چھپنے والی معلومات</string>
     <string name="business_name">کاروبار کا نام</string>
-    <string name="business_name_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu">دکان کا نام اردو میں</string>
-    <string name="business_name_urdu_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu_help">اردو پوسٹر پر یہی نام چھپے گا۔ خالی چھوڑیں تو اوپر والا نام۔</string>
     <string name="business_address">دکان کا پتہ</string>
-    <string name="business_address_hint">مثلاً مین بازار، پسرور</string>
+    <string name="business_address_hint">مثلاً مین بازار</string>
     <string name="invoice_bank_name_hint">بینک کا نام</string>
     <string name="invoice_bank_title_hint">اکاؤنٹ ٹائٹل</string>
     <string name="invoice_bank_iban_hint">IBAN / اکاؤنٹ نمبر</string>
-    <string name="invoice_bank_jazzcash_hint">موبائل والٹ نمبر (جاز کیش، ایزی پیسہ، UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">موبائل والٹ نمبر</string>
 
     <string name="payment_qr">پیمنٹ QR کوڈ</string>
     <string name="no_qr_yet">ابھی کوئی پیمنٹ QR محفوظ نہیں۔</string>
@@ -311,7 +311,7 @@
     <string name="qr_save_failed">یہ تصویر محفوظ نہیں ہو سکی۔ دوسری چنیں۔</string>
     <string name="qr_removed">پیمنٹ QR ہٹا دیا گیا</string>
     <string name="qr_confirm_title">کیا یہ درست کوڈ ہے؟</string>
-    <string name="qr_confirm_message">اوپر کوڈ دیکھیں اور تصدیق کریں کہ یہ آپ ہی کا پیمنٹ اکاؤنٹ (ایزی پیسہ، جاز کیش، UPI…) ہے۔ اگر نہیں، تو آپ کے گاہکوں کی ادائیگیاں کسی اور کو پہنچیں گی۔</string>
+    <string name="qr_confirm_message">اوپر کوڈ دیکھیں اور تصدیق کریں کہ یہ آپ ہی کا پیمنٹ اکاؤنٹ ہے۔ اگر نہیں، تو آپ کے گاہکوں کی ادائیگیاں کسی اور کو پہنچیں گی۔</string>
     <string name="qr_confirm_yes">جی، یہ میرا ہے</string>
     <string name="profile_saved">محفوظ ہو گیا</string>
 
@@ -595,7 +595,7 @@
     <string name="bills_subtitle">جو مال آپ نے خریدا</string>
     <string name="bill_ledger_note">سپلائر کا واجب آپ کے کھاتے میں رہتا ہے، باقی سب کی طرح۔ بل اوپر کاغذی ریکارڈ جوڑتا ہے: بل نمبر، بیچ نمبر، ایکسپائری تاریخیں۔</string>
     <string name="add_bill">بل شامل کریں</string>
-    <string name="no_bills">ابھی کوئی سپلائر بل نہیں۔\n\nجو خریدیں اسے درج کریں — بیچ نمبر اور ایکسپائری کے ساتھ۔ یہی انسپکٹر پوچھتا ہے، اور یہی مال کو شیلف پر خراب ہونے سے بچاتا ہے۔</string>
+    <string name="no_bills">ابھی کوئی سپلائر بل نہیں۔\n\nجو خریدیں اسے درج کریں — بیچ نمبر اور ایکسپائری کے ساتھ۔ اس سے پتا رہتا ہے کہ ہر شے کہاں سے آئی، اور کوئی مال شیلف پر بے خبری میں خراب نہیں ہوتا۔</string>
 
     <string name="bill_number_hint">بل نمبر</string>
     <string name="bill_total_hint">کل بل</string>
@@ -730,7 +730,7 @@
 
     <string name="trace_batch">بیچ تلاش کریں</string>
     <string name="trace_batch_hint">بیچ نمبر لکھیں</string>
-    <string name="trace_batch_help">اگر نمونے پر سوال ہو یا انسپکٹر پوچھے، یہاں بیچ نمبر تلاش کریں — کس سپلائر سے، کس بل پر، اور کب آیا۔</string>
+    <string name="trace_batch_help">اگر کبھی کسی شے پر سوال اٹھے، یہاں اس کا بیچ نمبر تلاش کریں — کس سپلائر سے، کس بل پر، اور کب آئی۔</string>
     <string name="trace_no_results">اس بیچ نمبر کا کوئی مال نہیں ملا۔</string>
     <plurals name="trace_results">
         <item quantity="one">%1$d ریکارڈ ملا</item>
@@ -859,6 +859,7 @@
     <string name="cf_kind_plan">قسط</string>
     <string name="cf_kind_cheque_in">لینے والا چیک</string>
     <string name="cf_kind_harvest">فصل کے بعد</string>
+    <string name="cf_kind_promised">وعدے کی ادائیگی</string>
     <string name="cf_kind_bill">سپلائر کا بل</string>
     <string name="cf_kind_cheque_out">دینے والا چیک</string>
     <string name="cf_empty">ابھی کوئی تاریخ نہیں۔ تاریخیں قسطوں کے پلان، چیک اور ڈیو ڈیٹ والے سپلائر بلوں سے آتی ہیں۔</string>
@@ -1610,7 +1611,7 @@
     <string name="trade_general">عام دکان</string>
     <string name="bp_paid_help">انوائس کے ادائیگی والے خانے میں آتا ہے۔ خالی لائن نہیں چھپتی۔</string>
     <string name="bp_qr">پیمنٹ QR</string>
-    <string name="bp_qr_help">آپ کا پیمنٹ QR (ایزی پیسہ، جاز کیش، UPI…)، اسٹیٹمنٹ کے لیے۔</string>
+    <string name="bp_qr_help">آپ کا پیمنٹ QR، اسٹیٹمنٹ کے لیے۔</string>
     <string name="bp_add">شامل کریں</string>
     <string name="bp_change">بدلیں</string>
     <string name="bp_seals_help">سادہ سفید کاغذ پر تصویر لیں — ایپ خود کاٹ دیتی ہے۔</string>
@@ -1618,8 +1619,8 @@
     <string name="bp_photo">اسٹیٹمنٹ پر گاہک کی تصویر</string>
     <string name="bp_photo_help">پہلے سے بند — اسٹیٹمنٹ آگے بھیجی جا سکتی ہے۔</string>
     <string name="bp_unsaved">تبدیلیاں محفوظ نہیں ہوئیں</string>
-    <string name="bp_iban_bad">یہ IBAN جیسا نہیں لگتا، مثلاً PK36 SCBL 0000 0011 2345 6702۔</string>
-    <string name="bp_mobile_bad">یہ موبائل نمبر جیسا نہیں لگتا، مثلاً 03001234567۔</string>
+    <string name="bp_iban_bad">یہ IBAN جیسا نہیں لگتا۔ اپنے بینک کے کاغذات سے ملا لیں۔</string>
+    <string name="bp_mobile_bad">یہ موبائل نمبر جیسا نہیں لگتا۔ ہندسے دوبارہ دیکھ لیں۔</string>
     <string name="bp_leave_title">محفوظ کیے بغیر نکلیں؟</string>
     <string name="bp_leave_msg">اس اسکرین پر آپ کی تبدیلیاں ضائع ہو جائیں گی۔</string>
     <string name="bp_leave_discard">چھوڑ دیں</string>
@@ -2321,7 +2322,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">آپ کی دکان کا نام کیا ہے؟</string>
     <string name="shop_name_field">دکان کا نام</string>
-    <string name="shop_name_hint">مثلاً: بھٹی ٹریڈرز</string>
+    <string name="shop_name_hint">مثلاً: النور ٹریڈرز</string>
     <string name="shop_phone_field">دکان کا فون (اختیاری)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2673,7 +2674,7 @@
     <string name="poster_lang_more">مزید</string>
     <string name="poster_items_label">کیا آیا ہے؟ (زیادہ سے زیادہ 4)</string>
     <string name="poster_add_item">شامل کریں</string>
-    <string name="poster_item_hint">مثلاً گندم کا بیج</string>
+    <string name="poster_item_hint">کسی شے کا نام لکھیں</string>
     <string name="poster_add_photo">تصویر لگائیں</string>
     <string name="poster_photo_hint">اختیاری۔ مال کی آپ کی اپنی تصویر ڈبے کی جگہ آئے گی۔</string>
     <string name="poster_remove_photo">تصویر ہٹائیں</string>
@@ -2792,7 +2793,7 @@
     <string name="invoice_received_full">پورے</string>
     <string name="invoice_received_none">کچھ نہیں</string>
     <string name="invoice_note_label">انوائس پر نوٹ</string>
-    <string name="invoice_note_example">مثلاً 7 دن بعد اسپرے کریں</string>
+    <string name="invoice_note_example">مثلاً مال 7 دن کے اندر تبدیل ہو سکتا ہے</string>
     <string name="invoice_sum_items">اشیاء</string>
     <string name="invoice_sum_total">کل</string>
     <string name="invoice_sum_received">ملے</string>
@@ -2823,10 +2824,10 @@
     <string name="biz_card_l_email">ای میل</string>
     <string name="biz_card_l_web">ویب سائٹ</string>
     <string name="biz_card_l_qr">QR اسکین ہونے پر پیغام</string>
-    <string name="biz_card_ex_name">مثلاً بھٹی ٹریڈرز</string>
-    <string name="biz_card_ex_type">مثلاً زرعی ادویات اور بیج</string>
+    <string name="biz_card_ex_name">مثلاً النور ٹریڈرز</string>
+    <string name="biz_card_ex_type">مثلاً ہول سیل اور پرچون</string>
     <string name="biz_card_ex_owner">مثلاً علی خان</string>
-    <string name="biz_card_ex_address">مثلاً مین بازار، پسرور</string>
+    <string name="biz_card_ex_address">مثلاً مین بازار</string>
     <string name="biz_card_ex_tagline">مثلاً گھر تک ڈیلیوری</string>
     <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
@@ -3199,7 +3200,7 @@
     <string name="expiry_nothing_left">اس بیچ میں کچھ نہیں بچا</string>
     <string name="expiry_left">بچا: %1$s</string>
     <string name="trace_came">آیا: %1$s</string>
-    <string name="product_pack_help">وہ پیک (کارٹن، بوری…) جس میں یہ پروڈکٹ خریدی یا بیچی بھی جاتی ہے، اور ایک پیک میں اس کی اپنی اکائی کتنی ہیں۔ اسٹاک اپنی اکائی میں گنا جاتا ہے۔</string>
+    <string name="product_pack_help">وہ پیک (کارٹن، ڈبہ، درجن…) جس میں یہ پروڈکٹ خریدی یا بیچی بھی جاتی ہے، اور ایک پیک میں اس کی اپنی اکائی کتنی ہیں۔ اسٹاک اپنی اکائی میں گنا جاتا ہے۔</string>
     <string name="product_pack_unit">پیک کا نام</string>
     <string name="product_pack_size">ایک پیک میں کتنے</string>
     <string name="product_pack_price">پیک کی قیمت</string>

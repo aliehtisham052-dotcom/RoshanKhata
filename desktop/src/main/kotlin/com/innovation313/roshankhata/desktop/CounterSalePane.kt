@@ -461,7 +461,7 @@ fun CounterSalePane(
                             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Column(Modifier.weight(5f)) {
                                     if (line.productId == null) {
-                                        FluentField(line.name, { line.name = it }, Modifier.fillMaxWidth(), placeholder = word(W.item_name_hint))
+                                        FluentField(line.name, { line.name = it }, Modifier.fillMaxWidth(), placeholder = LocalTrade.current.itemHint())
                                     } else {
                                         Text(line.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                         val under = listOfNotNull(

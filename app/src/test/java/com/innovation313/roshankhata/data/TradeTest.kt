@@ -18,4 +18,13 @@ class TradeTest {
         for (t in Trade.entries) assertEquals(t, Trade.of(t.name))
         assertEquals(Trade.KIRYANA, Trade.of(" kiryana "))
     }
+
+    @Test
+    fun pickerShowsEveryTradeOnceWithTheTownsShopsFirst() {
+        // 31 Oct 2026: the app is for every shop; agriculture first said otherwise.
+        assertEquals(Trade.entries.toSet(), Trade.PICKER.toSet())
+        assertEquals(Trade.entries.size, Trade.PICKER.size)
+        assertEquals(Trade.GENERAL, Trade.PICKER.first())
+        assertEquals(Trade.OTHER, Trade.PICKER.last())
+    }
 }

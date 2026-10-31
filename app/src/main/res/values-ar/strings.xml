@@ -257,7 +257,7 @@
 
     <string name="goods_section">البضاعة (اختياري)</string>
     <string name="goods_help">إن تحركت بضاعة مع هذا القيد — 5 أكياس يوريا، لتران مبيد — فسجلها هنا. اتركه فارغًا لقيد نقدي بسيط.</string>
-    <string name="item_name_hint">الصنف (يوريا، علف…)</string>
+    <string name="item_name_hint">اسم الصنف</string>
     <string name="quantity_hint">الكمية</string>
     <string name="unit_hint">الوحدة (كيس، لتر، كغ…)</string>
 
@@ -327,14 +327,14 @@
     <string name="business_name">اسم النشاط التجاري</string>
     <string name="business_name_hint">مثل بهاتي للتجارة</string>
     <string name="business_name_urdu">اسم المحل بالأردية</string>
-    <string name="business_name_urdu_hint">مثلاً بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu_help">يظهر على الملصقات الأردية. اتركه فارغاً لاستخدام الاسم أعلاه.</string>
     <string name="business_address">عنوان المحل</string>
     <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
     <string name="invoice_bank_name_hint">اسم البنك</string>
     <string name="invoice_bank_title_hint">اسم صاحب الحساب</string>
     <string name="invoice_bank_iban_hint">رقم الآيبان / الحساب</string>
-    <string name="invoice_bank_jazzcash_hint">رقم المحفظة الإلكترونية (JazzCash، EasyPaisa، UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">رقم المحفظة الإلكترونية</string>
 
     <string name="payment_qr">رمز QR للدفع</string>
     <string name="no_qr_yet">لا رمز دفع محفوظ بعد.</string>
@@ -343,7 +343,7 @@
     <string name="qr_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
     <string name="qr_removed">أُزيل رمز الدفع</string>
     <string name="qr_confirm_title">هل هذا هو الرمز الصحيح؟</string>
-    <string name="qr_confirm_message">انظر إلى الرمز أعلاه وأكّد أنه حساب الدفع الخاص بك (EasyPaisa، JazzCash، UPI…). وإلا وصلت مدفوعات عملائك إلى شخص آخر.</string>
+    <string name="qr_confirm_message">انظر إلى الرمز أعلاه وأكّد أنه حساب الدفع الخاص بك. وإلا وصلت مدفوعات عملائك إلى شخص آخر.</string>
     <string name="qr_confirm_yes">نعم، هو حسابي</string>
     <string name="profile_saved">تم الحفظ</string>
 
@@ -655,7 +655,7 @@
     <string name="bills_subtitle">البضاعة التي اشتريتها</string>
     <string name="bill_ledger_note">ما عليك للمورّد في دفترك كسائر الأشياء. الفاتورة تضيف الورقيات فوقه: رقم الفاتورة، أرقام الدُفعات، تواريخ الانتهاء.</string>
     <string name="add_bill">إضافة فاتورة</string>
-    <string name="no_bills">لا فواتير مورّدين بعد.\n\nسجّل ما تشتريه — بأرقام الدُفعات وتواريخ الانتهاء. هذا ما يسأل عنه المفتش، وما ينقذك من فساد البضاعة على الرف.</string>
+    <string name="no_bills">لا فواتير مورّدين بعد.\n\nسجّل ما تشتريه — بأرقام الدُفعات وتواريخ الانتهاء. هكذا تعرف من أين جاء كل صنف، ولا تفسد بضاعة على الرف دون أن تنتبه.</string>
 
     <string name="bill_number_hint">رقم الفاتورة</string>
     <string name="bill_total_hint">إجمالي الفاتورة</string>
@@ -802,7 +802,7 @@
 
     <string name="trace_batch">تتبع دُفعة</string>
     <string name="trace_batch_hint">أدخل رقم الدُفعة</string>
-    <string name="trace_batch_help">إن شُكك في عينة أو سأل مفتش، ابحث هنا برقم الدُفعة — من أي مورّد وعلى أي فاتورة ومتى.</string>
+    <string name="trace_batch_help">إن سُئل يومًا عن صنف، ابحث هنا برقم دفعته — من أي مورّد وعلى أي فاتورة ومتى.</string>
     <string name="trace_no_results">لا بضاعة بهذا الرقم.</string>
     <plurals name="trace_results">
         <item quantity="zero">وُجد %1$d سجل</item>
@@ -935,6 +935,7 @@
     <string name="cf_kind_plan">قسط</string>
     <string name="cf_kind_cheque_in">شيك للتحصيل</string>
     <string name="cf_kind_harvest">بعد الحصاد</string>
+    <string name="cf_kind_promised">دفعة موعودة</string>
     <string name="cf_kind_bill">فاتورة مورّد</string>
     <string name="cf_kind_cheque_out">شيك للدفع</string>
     <string name="cf_empty">لا تواريخ بعد. تأتي التواريخ من خطط الأقساط والشيكات وفواتير الموردين ذات تاريخ الاستحقاق.</string>
@@ -1750,7 +1751,7 @@
     <string name="trade_general">متجر عام</string>
     <string name="bp_paid_help">يظهر في خانة الدفع بالفاتورة. الأسطر الفارغة لا تُطبع.</string>
     <string name="bp_qr">رمز QR للدفع</string>
-    <string name="bp_qr_help">رمز QR للدفع (EasyPaisa، JazzCash، UPI…)، للكشوف.</string>
+    <string name="bp_qr_help">رمز QR للدفع، للكشوف.</string>
     <string name="bp_add">إضافة</string>
     <string name="bp_change">تغيير</string>
     <string name="bp_seals_help">صوّرها على ورق أبيض عادي — يقصّها التطبيق تلقائيًا.</string>
@@ -1758,8 +1759,8 @@
     <string name="bp_photo">صورة العميل على الكشوف</string>
     <string name="bp_photo_help">مُطفأ افتراضيًا — قد يُعاد توجيه الكشف.</string>
     <string name="bp_unsaved">تغييرات غير محفوظة</string>
-    <string name="bp_iban_bad">هذا لا يبدو IBAN، مثال PK36 SCBL 0000 0011 2345 6702.</string>
-    <string name="bp_mobile_bad">هذا لا يبدو رقم جوال، مثال 03001234567.</string>
+    <string name="bp_iban_bad">هذا لا يبدو IBAN. طابِقه مع أوراق مصرفك.</string>
+    <string name="bp_mobile_bad">هذا لا يبدو رقم جوال. راجع الأرقام.</string>
     <string name="bp_leave_title">المغادرة دون حفظ؟</string>
     <string name="bp_leave_msg">ستضيع تغييراتك في هذه الشاشة.</string>
     <string name="bp_leave_discard">تجاهل</string>
@@ -2849,7 +2850,7 @@
     <string name="poster_lang_more">المزيد</string>
     <string name="poster_items_label">ماذا وصل؟ (حتى 4)</string>
     <string name="poster_add_item">إضافة</string>
-    <string name="poster_item_hint">مثلًا بذور القمح</string>
+    <string name="poster_item_hint">اكتب اسم الصنف</string>
     <string name="poster_add_photo">أضف صورة</string>
     <string name="poster_photo_hint">اختياري. صورتك للبضاعة تأخذ مكان الصندوق.</string>
     <string name="poster_remove_photo">إزالة الصورة</string>
@@ -2976,7 +2977,7 @@
     <string name="invoice_received_full">كامل</string>
     <string name="invoice_received_none">لا شيء</string>
     <string name="invoice_note_label">ملاحظة على الفاتورة</string>
-    <string name="invoice_note_example">مثلاً رشّ بعد 7 أيام</string>
+    <string name="invoice_note_example">مثلاً يمكن استبدال البضاعة خلال 7 أيام</string>
     <string name="invoice_sum_items">الأصناف</string>
     <string name="invoice_sum_total">الإجمالي</string>
     <string name="invoice_sum_received">المستلم</string>
@@ -3008,7 +3009,7 @@
     <string name="biz_card_l_web">الموقع</string>
     <string name="biz_card_l_qr">رسالة عند مسح الرمز</string>
     <string name="biz_card_ex_name">مثلاً متجر النور</string>
-    <string name="biz_card_ex_type">مثلاً مبيدات وبذور</string>
+    <string name="biz_card_ex_type">مثلاً جملة وتجزئة</string>
     <string name="biz_card_ex_owner">مثلاً علي خان</string>
     <string name="biz_card_ex_address">مثلاً السوق الرئيسي</string>
     <string name="biz_card_ex_tagline">مثلاً توصيل للمنزل</string>
@@ -3387,7 +3388,7 @@
     <string name="expiry_nothing_left">لم يبقَ شيء من هذه الدفعة</string>
     <string name="expiry_left">المتبقي: %1$s</string>
     <string name="trace_came">الوارد: %1$s</string>
-    <string name="product_pack_help">عبوة (كرتونة، شوال…) يُشترى المنتج أو يُباع بها أيضًا، وكم من وحدته فيها. يُحسب المخزون بوحدته.</string>
+    <string name="product_pack_help">عبوة (كرتونة، علبة، دزينة…) يُشترى المنتج أو يُباع بها أيضًا، وكم من وحدته فيها. يُحسب المخزون بوحدته.</string>
     <string name="product_pack_unit">اسم العبوة</string>
     <string name="product_pack_size">كم في العبوة</string>
     <string name="product_pack_price">سعر العبوة</string>

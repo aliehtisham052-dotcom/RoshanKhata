@@ -24,7 +24,7 @@ import java.util.Locale
  * @property dialing The calling code, digits only.
  * @property currencySign What [Currency] prints; one of [Currency.CHOICES].
  * @property currencyDecimals How many decimals the currency's smallest unit has.
- * @property taxIdName What the shop's tax registration is called on a sheet.
+ * @property taxIdName What the shop's tax registration is called on a sheet; blank = the language's "Tax No.".
  * @property weekStart [Calendar.MONDAY] and friends.
  * @property weeklyOff The usual closed day, for the hours poster.
  * @property calendar The calendar most shops there date by.
@@ -69,6 +69,25 @@ enum class ShopCountry(
     KENYA("KE", "254", "KSh", 2, "KRA PIN", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, "M-Pesa"),
     SOUTH_AFRICA("ZA", "27", "R", 2, "VAT No.", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, "SnapScan"),
     TURKEY("TR", "90", "₺", 2, "VKN", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, true, "Papara"),
+    // 31 Oct 2026, the countries of the nine languages that were missing: an Iraqi or Moroccan shop was
+    // taken for a Saudi one (SAR, +966, Hijri). The week and weekly off are from Wikipedia's "Workweek and
+    // weekend"; a blank tax name prints the language's own "Tax No.". IQD, LBP, SYP and YER print no
+    // decimals (their sub-units are not used at a counter), as IRR.
+    IRAQ("IQ", "964", "IQD", 0, "", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, "ZainCash"),
+    JORDAN("JO", "962", "JOD", 3, "", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, "CliQ"),
+    LEBANON("LB", "961", "LBP", 0, "", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    SYRIA("SY", "963", "SYP", 0, "", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    PALESTINE("PS", "970", "₪", 2, "", Calendar.SATURDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    YEMEN("YE", "967", "YER", 0, "", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    MOROCCO("MA", "212", "MAD", 2, "ICE", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, true, ""),
+    ALGERIA("DZ", "213", "DZD", 2, "NIF", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, true, ""),
+    TUNISIA("TN", "216", "TND", 3, "", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, true, ""),
+    LIBYA("LY", "218", "LYD", 3, "", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    SUDAN("SD", "249", "SDG", 2, "", Calendar.SUNDAY, Calendar.FRIDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    MAURITANIA("MR", "222", "MRU", 2, "", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, ""),
+    NEPAL("NP", "977", "NPR", 2, "PAN", Calendar.SUNDAY, Calendar.SATURDAY, ShopCalendar.Kind.GREGORIAN, false, "eSewa, Khalti"),
+    FIJI("FJ", "679", "FJ$", 2, "", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, "M-PAiSA"),
+    TAJIKISTAN("TJ", "992", "TJS", 2, "", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, true, ""),
     /** Anywhere else: no calling code assumed, so a number is used as typed. */
     OTHER("", "", "Rs", 2, "Tax ID", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, "");
 
@@ -105,6 +124,8 @@ enum class ShopCountry(
                 "fa" -> IRAN
                 "id", "in" -> INDONESIA
                 "ar" -> SAUDI_ARABIA
+                "ne" -> NEPAL
+                "tg" -> TAJIKISTAN
                 else -> PAKISTAN
             }
         }

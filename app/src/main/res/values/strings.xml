@@ -242,7 +242,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">Goods (optional)</string>
     <string name="goods_help">If stock moved with this entry — 5 bags of urea, 2 litres of pesticide — record it here. Leave blank for a plain cash entry.</string>
-    <string name="item_name_hint">Item (Urea, Feed…)</string>
+    <string name="item_name_hint">Item name</string>
     <string name="quantity_hint">Quantity</string>
     <string name="unit_hint">Unit (bag, litre, kg…)</string>
 
@@ -310,16 +310,16 @@
     <string name="profile_preview_caption">Live preview of your invoice header</string>
     <string name="business_settings_subtitle">Printed on your invoices, statements and reports</string>
     <string name="business_name">Business name</string>
-    <string name="business_name_hint">e.g. Bhatti Traders</string>
+    <string name="business_name_hint">e.g. Al-Noor Traders</string>
     <string name="business_name_urdu">Shop name in Urdu</string>
-    <string name="business_name_urdu_hint">e.g. بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">e.g. النور ٹریڈرز</string>
     <string name="business_name_urdu_help">Shown on posters in Urdu. Leave blank to use the name above.</string>
     <string name="business_address">Shop address</string>
-    <string name="business_address_hint">e.g. Main Bazaar, Pasrur</string>
+    <string name="business_address_hint">e.g. Main Bazaar</string>
     <string name="invoice_bank_name_hint">Bank name</string>
     <string name="invoice_bank_title_hint">Account title</string>
     <string name="invoice_bank_iban_hint">IBAN / account number</string>
-    <string name="invoice_bank_jazzcash_hint">Mobile wallet number (JazzCash, EasyPaisa, UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">Mobile wallet number</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="no_qr_yet">No payment QR saved yet.</string>
@@ -328,7 +328,7 @@
     <string name="qr_save_failed">That image could not be saved. Please pick another.</string>
     <string name="qr_removed">Payment QR removed</string>
     <string name="qr_confirm_title">Is this the right code?</string>
-    <string name="qr_confirm_message">Look at the code above and confirm it is your own payment account (EasyPaisa, JazzCash, UPI…). If it is not, your customers\' payments will reach someone else.</string>
+    <string name="qr_confirm_message">Look at the code above and confirm it is your own payment account. If it is not, your customers\' payments will reach someone else.</string>
     <string name="qr_confirm_yes">Yes, it is mine</string>
     <string name="profile_saved">Saved</string>
 
@@ -625,7 +625,7 @@
     <string name="bills_subtitle">Stock you bought in</string>
     <string name="bill_ledger_note">What you owe a supplier lives in your ledger, same as everything else. A bill adds the paperwork on top: bill number, batch numbers, expiry dates.</string>
     <string name="add_bill">Add Bill</string>
-    <string name="no_bills">No supplier bills yet.\n\nRecord what you buy in — with batch numbers and expiry dates. Those are what an inspector asks for, and what saves you from stock going bad on the shelf.</string>
+    <string name="no_bills">No supplier bills yet.\n\nRecord what you buy in — with batch numbers and expiry dates. Then you know where every item came from, and nothing goes bad on the shelf unseen.</string>
 
     <string name="bill_number_hint">Bill number</string>
     <string name="bill_total_hint">Bill total</string>
@@ -762,7 +762,7 @@
     <!-- Batch trace -->
     <string name="trace_batch">Trace a batch</string>
     <string name="trace_batch_hint">Enter a batch number</string>
-    <string name="trace_batch_help">If a sample is questioned or an inspector asks, search the batch number here to see which supplier it came from, on which bill, and when.</string>
+    <string name="trace_batch_help">If an item is ever questioned, search its batch number here to see which supplier it came from, on which bill, and when.</string>
     <string name="trace_no_results">No stock found with that batch number.</string>
     <plurals name="trace_results">
         <item quantity="one">%1$d record found</item>
@@ -901,6 +901,7 @@
     <string name="cf_kind_plan">Instalment</string>
     <string name="cf_kind_cheque_in">Cheque to receive</string>
     <string name="cf_kind_harvest">After harvest</string>
+    <string name="cf_kind_promised">Promised payment</string>
     <string name="cf_kind_bill">Supplier bill</string>
     <string name="cf_kind_cheque_out">Cheque to pay</string>
     <string name="cf_empty">No dates yet. They come from instalment plans, cheques and supplier bills with a due date.</string>
@@ -1663,7 +1664,7 @@
     <string name="trade_general">General shop</string>
     <string name="bp_paid_help">Shown in the payment box on your invoice. Blank rows are left off.</string>
     <string name="bp_qr">Payment QR</string>
-    <string name="bp_qr_help">Your payment QR (EasyPaisa, JazzCash, UPI…), for statements.</string>
+    <string name="bp_qr_help">Your payment QR, for statements.</string>
     <string name="bp_add">Add</string>
     <string name="bp_change">Change</string>
     <string name="bp_seals_help">Photo on plain white paper — the app crops it for you.</string>
@@ -1671,8 +1672,8 @@
     <string name="bp_photo">Customer photo on statements</string>
     <string name="bp_photo_help">Off by default — a statement can be forwarded.</string>
     <string name="bp_unsaved">Unsaved changes</string>
-    <string name="bp_iban_bad">This does not look like an IBAN, e.g. PK36 SCBL 0000 0011 2345 6702.</string>
-    <string name="bp_mobile_bad">This does not look like a mobile number, e.g. 03001234567.</string>
+    <string name="bp_iban_bad">This does not look like an IBAN. Check it against your bank statement.</string>
+    <string name="bp_mobile_bad">This does not look like a mobile number. Check the digits.</string>
     <string name="bp_leave_title">Leave without saving?</string>
     <string name="bp_leave_msg">Your changes on this screen will be lost.</string>
     <string name="bp_leave_discard">Discard</string>
@@ -2454,7 +2455,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">What is your shop\'s name?</string>
     <string name="shop_name_field">Shop name</string>
-    <string name="shop_name_hint">e.g. Bhatti Traders</string>
+    <string name="shop_name_hint">e.g. Al-Noor Traders</string>
     <string name="shop_phone_field">Shop phone (optional)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2885,7 +2886,7 @@
     <string name="poster_lang_more">More</string>
     <string name="poster_items_label">What arrived? (up to 4)</string>
     <string name="poster_add_item">Add</string>
-    <string name="poster_item_hint">e.g. Wheat seed</string>
+    <string name="poster_item_hint">Type an item name</string>
     <string name="poster_add_photo">Add a photo</string>
     <string name="poster_photo_hint">Optional. Your own picture of the stock takes the crate\'s place.</string>
     <string name="poster_remove_photo">Remove photo</string>
@@ -3004,7 +3005,7 @@
     <string name="invoice_received_full">Full</string>
     <string name="invoice_received_none">None</string>
     <string name="invoice_note_label">Note on the invoice</string>
-    <string name="invoice_note_example">e.g. Spray after 7 days</string>
+    <string name="invoice_note_example">e.g. Goods can be exchanged within 7 days</string>
     <string name="invoice_sum_items">Items</string>
     <string name="invoice_sum_total">Total</string>
     <string name="invoice_sum_received">Received</string>
@@ -3035,10 +3036,10 @@
     <string name="biz_card_l_email">Email</string>
     <string name="biz_card_l_web">Website</string>
     <string name="biz_card_l_qr">Message when the QR is scanned</string>
-    <string name="biz_card_ex_name">e.g. Bhatti Traders</string>
-    <string name="biz_card_ex_type">e.g. Pesticides and seeds</string>
+    <string name="biz_card_ex_name">e.g. Al-Noor Traders</string>
+    <string name="biz_card_ex_type">e.g. Wholesale and retail</string>
     <string name="biz_card_ex_owner">e.g. Ali Khan</string>
-    <string name="biz_card_ex_address">e.g. Main Bazar, Pasrur</string>
+    <string name="biz_card_ex_address">e.g. Main Bazar</string>
     <string name="biz_card_ex_tagline">e.g. Home delivery</string>
     <string name="biz_card_ex_phone">e.g. 0300 1234567</string>
     <string name="biz_card_ex_email">e.g. shop@gmail.com</string>
@@ -3411,7 +3412,7 @@
     <string name="expiry_nothing_left">Nothing of this batch is left</string>
     <string name="expiry_left">Left: %1$s</string>
     <string name="trace_came">Came: %1$s</string>
-    <string name="product_pack_help">A pack (carton, bori…) the product is also bought or sold in, and how many of its own unit are in one. Stock is counted in its own unit.</string>
+    <string name="product_pack_help">A pack (carton, box, dozen…) the product is also bought or sold in, and how many of its own unit are in one. Stock is counted in its own unit.</string>
     <string name="product_pack_unit">Pack name</string>
     <string name="product_pack_size">How many in a pack</string>
     <string name="product_pack_price">Pack price</string>

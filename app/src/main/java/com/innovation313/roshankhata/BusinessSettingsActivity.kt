@@ -86,8 +86,12 @@ class BusinessSettingsActivity : BaseActivity() {
     private var hasStamp = false
     private var hasSignature = false
 
-    /** A shop that counts in rupees gets the Pakistani IBAN/mobile checks; any other, a general shape check. */
-    private val pakistaniRules: Boolean get() = BusinessProfile.currency(this) == Currency.DEFAULT
+    /**
+     * A Pakistani shop gets the Pakistani IBAN/mobile checks; any other, a general shape check. Decided by the
+     * shop's country (31 Oct 2026, lesson 29): it was the currency, so a shop of another country still on "Rs"
+     * was told its own IBAN and mobile number were wrong.
+     */
+    private val pakistaniRules: Boolean get() = BusinessProfile.country(this) == com.innovation313.roshankhata.data.ShopCountry.PAKISTAN
     private lateinit var tvUnsaved: TextView
     private lateinit var btnPickQr: MaterialButton
     private lateinit var btnPickStamp: MaterialButton
@@ -220,9 +224,7 @@ class BusinessSettingsActivity : BaseActivity() {
         etBankJazzCash = findViewById(R.id.etBankJazzCash)
         // The wallet hint names the shop's country's services (21 Oct 2026): bKash in Dhaka, not JazzCash.
         // The services are said under the box, not in its one-line label, where they were cut (30 Oct 2026).
-        com.innovation313.roshankhata.data.ShopCountry.current.wallets.takeIf { it.isNotBlank() }?.let {
-            findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash).helperText = it
-        }
+        renderWalletHelp()
         etInvoiceTerms = findViewById(R.id.etInvoiceTerms)
         etStrn = findViewById(R.id.etStrn)
         btnCurrency = findViewById(R.id.btnCurrency)
@@ -780,7 +782,14 @@ class BusinessSettingsActivity : BaseActivity() {
                 renderCalendar()
             }
             renderCountry()
+            renderWalletHelp()
         }
+    }
+
+    /** The wallet services of the shop's country under the wallet box (none named for a country with none listed). */
+    private fun renderWalletHelp() {
+        findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilBankJazzCash).helperText =
+            BusinessProfile.country(this).wallets.takeIf { it.isNotBlank() }
     }
 
     private fun renderCurrency() {

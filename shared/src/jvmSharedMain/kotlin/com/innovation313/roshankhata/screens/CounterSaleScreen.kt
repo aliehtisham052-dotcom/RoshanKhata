@@ -100,7 +100,9 @@ fun CounterSaleScreen(
     /** "When will he pay?" for what goes to the chosen customer's account (null: not offered). */
     onChooseDue: (() -> Unit)? = null,
     /** The recent tickets (their return, void and invoice), offered on an empty till (null: not offered). */
-    onShowRecent: (() -> Unit)? = null
+    onShowRecent: (() -> Unit)? = null,
+    /** The shop trade's own example items for a typed line ("Item (Rice, Sugar…)"); null: a plain "Item name". */
+    itemHint: String? = null
 ) {
     val c = LocalRoshanColors.current
     var paying by remember { mutableStateOf(false) }
@@ -181,7 +183,7 @@ fun CounterSaleScreen(
                         Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                 if (line.productId == null) {
-                                    OutlinedTextField(line.name, { line.name = it }, Modifier.weight(1f), placeholder = { Text(word(W.item_name_hint)) }, singleLine = true)
+                                    OutlinedTextField(line.name, { line.name = it }, Modifier.weight(1f), placeholder = { Text(itemHint ?: word(W.item_name_hint), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }, singleLine = true)
                                 } else {
                                     Column(Modifier.weight(1f)) {
                                         Text(line.name, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
