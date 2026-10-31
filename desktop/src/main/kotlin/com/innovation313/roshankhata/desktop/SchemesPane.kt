@@ -271,7 +271,7 @@ private fun SchemeForm(title: String, existing: Scheme?, suppliers: List<Party>,
         FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
         FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT)
     }) {
-        FluentField(name, { name = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.scheme_name_hint))
+        FluentField(name, { name = it; problem = null }, Modifier.fillMaxWidth(), label = word(if (LocalTrade.current.key == "AGRI") W.scheme_name_hint else W.scheme_name_hint_general))
         // Any supplier, or one of the book's: chosen from a list, not laid out whole in the form.
         ChoiceBox(word(W.supplier), suppliers.firstOrNull { it.id == partyId }?.let { Format.name(it.name) }, word(W.scheme_any_supplier),
             { pickingSupplier = true }, Modifier.fillMaxWidth())

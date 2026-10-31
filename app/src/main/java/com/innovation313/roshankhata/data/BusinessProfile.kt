@@ -298,7 +298,7 @@ object BusinessProfile {
     fun taxName(country: ShopCountry, generic: String): String = when (country) {
         ShopCountry.PAKISTAN -> "STRN"
         ShopCountry.OTHER -> generic
-        else -> country.taxIdName
+        else -> country.taxIdName.ifEmpty { generic }
     }
 
     /**

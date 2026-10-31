@@ -45,11 +45,9 @@ import com.innovation313.roshankhata.words.word
  * inspector's registers for agri and medical. The core is the same for all.
  */
 object Trades {
-    /** The phone's Trade entries, in its picker's order. */
+    /** The phone's Trade keys, in its picker's order (Trade.PICKER, 31 Oct 2026: every town's shops first). */
     val KEYS = listOf(
-        "AGRI", "MEDICAL", "MOBILE", "KIRYANA", "HARDWARE", "DAIRY", "TAILOR", "AUTO", "FURNITURE", "SALON", "SOLAR",
-        "CLOTHING", "FOOTWEAR", "ELECTRONICS", "RESTAURANT", "BAKERY", "MEAT", "PRODUCE", "STATIONERY", "COSMETICS",
-        "BUILDING", "FUEL", "WHOLESALE", "GENERAL", "OTHER"
+        "GENERAL", "KIRYANA", "WHOLESALE", "MEDICAL", "MOBILE", "CLOTHING", "ELECTRONICS", "HARDWARE", "AGRI", "DAIRY", "BAKERY", "MEAT", "PRODUCE", "RESTAURANT", "COSMETICS", "FOOTWEAR", "STATIONERY", "TAILOR", "SALON", "AUTO", "FURNITURE", "BUILDING", "SOLAR", "FUEL", "OTHER"
     )
 
     /** A stored key back to one of [KEYS]; unknown or blank is null (never chosen). */

@@ -96,7 +96,7 @@ class MainActivity : BaseActivity() {
 
         buildFeatureGrid()
         sizeGridTail()
-        maybeShowCoachMarks()
+        if (!askTradeIfMissing()) maybeShowCoachMarks()
 
         builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
     }
@@ -754,6 +754,26 @@ class MainActivity : BaseActivity() {
      * at a time. Never a full-screen slide — every step points at the actual
      * card the owner will tap later.
      */
+    /**
+     * A shop with no trade is asked for one before anything else (31 Oct 2026, the owner: the app is for every
+     * shop, not only agriculture). A first run closed on the shop-type page, or a book from before trades,
+     * came to Home with none and was silently taken for an agri shop (Trade.DEFAULT): the item and unit hints,
+     * the seasons and the harvest days all followed. Windows already required it (TradeKit). The page cannot
+     * be closed without a choice; "General shop" fits any. A helper's read-only phone is not asked. Asked
+     * here, after App Lock, rather than on the way in: the first-run steps open Home as unlocked.
+     *
+     * @return true when the page was shown (the tour waits for the next Home).
+     */
+    private fun askTradeIfMissing(): Boolean {
+        if (com.innovation313.roshankhata.data.BusinessProfile.trade(this) != null || com.innovation313.roshankhata.data.ViewerMode.isOn(this)) return false
+        com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = true) { trade ->
+            com.innovation313.roshankhata.data.BusinessProfile.setTrade(this, trade)
+            // Home's tiles, hints and the tour follow the trade: draw Home again with it.
+            recreate()
+        }
+        return true
+    }
+
     private fun maybeShowCoachMarks() {
         if (CoachMarkController.hasRun(this)) return
 

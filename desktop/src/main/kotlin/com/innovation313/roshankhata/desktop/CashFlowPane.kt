@@ -87,11 +87,13 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
                 )
             }
         }
+        val seasons = LocalTrade.current.seasons
         ListCard(Modifier.fillMaxWidth()) {
             fun kind(k: CashFlow.Kind) = when (k) {
                 CashFlow.Kind.PLAN -> W.cf_kind_plan
                 CashFlow.Kind.CHEQUE_IN -> W.cf_kind_cheque_in
-                CashFlow.Kind.HARVEST -> W.cf_kind_harvest
+                // "After harvest" only where the shop has crop seasons (31 Oct 2026): any shop can promise a day.
+                CashFlow.Kind.HARVEST -> if (seasons) W.cf_kind_harvest else W.cf_kind_promised
                 CashFlow.Kind.BILL -> W.cf_kind_bill
                 CashFlow.Kind.CHEQUE_OUT -> W.cf_kind_cheque_out
             }

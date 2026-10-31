@@ -950,13 +950,13 @@ class PartyDetailActivity : BaseActivity() {
         }
         val cbQarzeHasna: MaterialCheckBox = view.findViewById(R.id.cbQarzeHasna)
 
-        // Suggest the units this trade actually uses — bag, maund, seer,
-        // litre — rather than making the shopkeeper type them out each time.
+        // Suggest the units this trade actually uses, its own first (31 Oct 2026: bag, maund and seer led for
+        // every shop; the bill and the entry editor already listed the trade's units first).
         etUnit.setAdapter(
             ArrayAdapter(
                 this,
                 R.layout.item_dropdown_row,
-                UnitWords.choices(this)
+                com.innovation313.roshankhata.data.TradeVocab.unitChoices(this)
             )
         )
         val btnBatch: MaterialButton = view.findViewById(R.id.btnBatch)

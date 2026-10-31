@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,606 strings and 55 plurals (2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,607 strings and 55 plurals (2,607 on 31 Oct 2026 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1293,6 +1293,35 @@ the phone's Compose screens); every point read in the code first. CI only — no
   what the switch means); sync_log for a device silent 30 days; two devices converting one document
   between rounds (needs a conflict rule); moving the six phone-only screens out of :shared and
   RecycleBinScreen into :desktop (lesson 58; mechanical, best with a compile at hand).
+
+### Every shop, every country (31 Oct 2026, kmp-desktop-16 — the owner: "agriculture specific nahi honi chahiye")
+
+Two read-only audits (trade bias; the nine languages' countries), then the fixes. CI only.
+
+- **No silent agri shop:** a book with no stored trade is asked for one on Home, after App Lock, before the tour
+  (`MainActivity.askTradeIfMissing`; the first-run steps open Home as unlocked, so it is not asked on the way in);
+  a helper's phone is not asked. `Trade.DEFAULT` (AGRI) is now reached only by old books' reads. The picker's
+  order is `Trade.PICKER` (General, Kiryana, Wholesale first; agri ninth; Other last) — Windows' `Trades.KEYS`
+  the same; the enum's order is unchanged.
+- **Words every trade sees are neutral:** the counter's and orders' typed line take the trade's item hint
+  (`CounterSaleScreen(itemHint)`, `OrdersScreen(itemHint)`, Windows `LocalTrade.itemHint()`); `item_name_hint`
+  is "Item name" and the orders button "Add item"; the add-entry units list the trade's first
+  (`TradeVocab.unitChoices`); cash flow says "Promised payment" (`cf_kind_promised`) unless the shop has seasons;
+  Windows' product type label, plans' empty text, scheme hint and a pharmacy's inspection words follow the
+  phone's rules. Invoice note, poster, pack help, bills and batch help have no spray, seed, bori or inspector.
+- **Privacy:** the owner's shop name and town were the examples in nine languages (`business_name_hint`,
+  `shop_name_hint`, `biz_card_ex_*`, `business_address_hint`): now "Al-Noor Traders", "Main Bazar". Test data
+  still names them (not shown to users).
+- **Countries:** fifteen added (Iraq, Jordan, Lebanon, Syria, Palestine, Yemen, Morocco, Algeria, Tunisia,
+  Libya, Sudan, Mauritania, Nepal, Fiji, Tajikistan) with their currencies in `Currency.CHOICES` (JOD/TND/LYD 3
+  decimals; IQD/LBP/SYP/YER none, as IRR) and the week from Wikipedia's "Workweek and weekend"; a blank
+  `taxIdName` prints the language's "Tax No.". The profile's IBAN/mobile checks follow the country, not the
+  "Rs" sign (lesson 29); their messages carry no Pakistani example; the QR and wallet texts name no
+  JazzCash/EasyPaisa (the wallet box's help names the country's own, and follows a new choice). Afghanistan's
+  solar months are Hamal…Hut (`ShopCalendar.monthNames(country)`, Wikipedia's Dari column).
+- **Not done, by decision or size:** lakh grouping (1,00,000) for India/Bangladesh (changes every figure);
+  a calling-code box for OTHER (a profile field on both platforms and in the backup); a Tajik (Cyrillic)
+  language; "IBAN" stays as printed (the international term); Nepal's Bikram Sambat calendar.
 
 ### The shared module (KMP)
 

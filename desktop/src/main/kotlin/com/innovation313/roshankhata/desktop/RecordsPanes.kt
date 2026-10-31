@@ -1071,7 +1071,8 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
             onDismiss = { deleting = null }
         )
     }
-    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(W.no_plans), action = word(W.add_plan) to { adding = true }, emptyIcon = "ic_tile_plans") {
+    // "After the harvest" is an agri shop's instalment; others read the help without it, as on the phone (PlansActivity).
+    RecordList(word(W.payment_plans), word(W.plans_subtitle), plans.isEmpty(), word(if (LocalTrade.current.seasons) W.no_plans else W.no_plans_general), action = word(W.add_plan) to { adding = true }, emptyIcon = "ic_tile_plans") {
         items(plans, key = { it.id }) { p ->
             Column(
                 Modifier.fillMaxWidth().alpha(if (p.isClosed) 0.6f else 1f).press { acting = p }.padding(horizontal = 16.dp, vertical = 12.dp),

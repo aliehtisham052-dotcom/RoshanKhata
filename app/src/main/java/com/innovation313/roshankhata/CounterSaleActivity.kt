@@ -103,7 +103,8 @@ class CounterSaleActivity : BaseActivity() {
                         advanced = advanced,
                         // The promised day for what goes to the account: the khata entry's own question (DuePicker).
                         onChooseDue = { draft.partyName?.let { name -> com.innovation313.roshankhata.ui.DuePicker.choose(this@CounterSaleActivity, com.innovation313.roshankhata.ui.Format.name(name), draft.due) { at -> draft.due = at } } },
-                        onShowRecent = { showRecent() }
+                        onShowRecent = { showRecent() },
+                        itemHint = com.innovation313.roshankhata.data.TradeVocab.itemHint(this@CounterSaleActivity)
                     )
                 }
             }

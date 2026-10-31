@@ -235,7 +235,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">مال (اختياري)</string>
     <string name="goods_help">جيڪڏهن هن داخلا سان مال ويو آهي — 5 ٻوريون يوريا، 2 لٽر دوا — ته هتي لکو. رڳو نقد داخلا لاءِ خالي ڇڏيو.</string>
-    <string name="item_name_hint">شيءِ (يوريا، فيڊ…)</string>
+    <string name="item_name_hint">شيءِ جو نالو</string>
     <string name="quantity_hint">مقدار</string>
     <string name="unit_hint">ماپ (ٻوري، لٽر، ڪلوگرام…)</string>
 
@@ -303,16 +303,16 @@
     <string name="profile_preview_caption">توهان جي انوائس جو مٿيون حصو — گڏوگڏ بدلجي ٿو</string>
     <string name="business_settings_subtitle">انوائس، اسٽيٽمينٽ ۽ رپورٽن تي ڇپجندڙ معلومات</string>
     <string name="business_name">ڪاروبار جو نالو</string>
-    <string name="business_name_hint">مثال: ڀٽي ٽريڊرز</string>
+    <string name="business_name_hint">مثال: النور ٽريڊرز</string>
     <string name="business_name_urdu">دڪان جو نالو اردو ۾</string>
-    <string name="business_name_urdu_hint">مثال: بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">مثال: النور ٹریڈرز</string>
     <string name="business_name_urdu_help">اردو پوسٽرن تي ڏيکاريو ويندو. خالي ڇڏيو ته مٿيون نالو.</string>
     <string name="business_address">دڪان جو پتو</string>
-    <string name="business_address_hint">مثال: مين بازار، پسرور</string>
+    <string name="business_address_hint">مثال: مين بازار</string>
     <string name="invoice_bank_name_hint">بئنڪ جو نالو</string>
     <string name="invoice_bank_title_hint">اڪائونٽ ٽائيٽل</string>
     <string name="invoice_bank_iban_hint">IBAN / اڪائونٽ نمبر</string>
-    <string name="invoice_bank_jazzcash_hint">موبائل والٽ نمبر (جاز ڪيش، ايزي پيسا، UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">موبائل والٽ نمبر</string>
 
     <string name="payment_qr">ادائيگي جو QR ڪوڊ</string>
     <string name="no_qr_yet">اڃا ڪو ادائيگي QR محفوظ ناهي.</string>
@@ -321,7 +321,7 @@
     <string name="qr_save_failed">اها تصوير محفوظ نه ٿي سگهي. مهرباني ڪري ٻي چونڊيو.</string>
     <string name="qr_removed">ادائيگي QR هٽايو ويو</string>
     <string name="qr_confirm_title">ڇا اهو ئي صحيح ڪوڊ آهي؟</string>
-    <string name="qr_confirm_message">مٿيون ڪوڊ ڏسو ۽ تصديق ڪريو ته اهو توهان جو پنهنجو پيمينٽ کاتو (ايزي پئسا، جاز ڪيش، UPI…) آهي. جيڪڏهن ناهي ته گراهڪن جون ادائيگيون ڪنهن ٻئي وٽ پهچنديون.</string>
+    <string name="qr_confirm_message">مٿيون ڪوڊ ڏسو ۽ تصديق ڪريو ته اهو توهان جو پنهنجو پيمينٽ کاتو آهي. جيڪڏهن ناهي ته گراهڪن جون ادائيگيون ڪنهن ٻئي وٽ پهچنديون.</string>
     <string name="qr_confirm_yes">ها، اهو منهنجو آهي</string>
     <string name="profile_saved">محفوظ ٿيو</string>
 
@@ -616,7 +616,7 @@
     <string name="bills_subtitle">جيڪو مال خريد ڪيو</string>
     <string name="bill_ledger_note">جيڪو توهان سپلائر کي ڏيڻو آهي اهو ٻين سڀني وانگر توهان جي کاتي ۾ آهي. بل مٿان رڳو ڪاغذي رڪارڊ وجهي ٿو: بل نمبر، بيچ نمبر، ختم ٿيڻ جون تاريخون.</string>
     <string name="add_bill">بل شامل ڪريو</string>
-    <string name="no_bills">اڃا ڪو سپلائر بل ناهي.\n\nجيڪو خريد ڪريو سو لکو — بيچ نمبرن ۽ ختم ٿيڻ جي تاريخن سان. اهو ئي انسپيڪٽر پڇندو آهي، ۽ اهو ئي مال کي شيلف تي خراب ٿيڻ کان بچائي ٿو.</string>
+    <string name="no_bills">اڃا ڪو سپلائر بل ناهي.\n\nجيڪو خريد ڪريو سو لکو — بيچ نمبرن ۽ ختم ٿيڻ جي تاريخن سان. ان سان خبر رهي ٿي ته هر شيءِ ڪٿان آئي، ۽ ڪو مال شيلف تي بي خبريءَ ۾ خراب نٿو ٿئي.</string>
 
     <string name="bill_number_hint">بل نمبر</string>
     <string name="bill_total_hint">بل جو ڪل</string>
@@ -753,7 +753,7 @@
     <!-- Batch trace -->
     <string name="trace_batch">بيچ ڳوليو</string>
     <string name="trace_batch_hint">بيچ نمبر لکو</string>
-    <string name="trace_batch_help">جيڪڏهن ڪو نمونو سواليه ٿئي يا انسپيڪٽر پڇي، ته بيچ نمبر هتي ڳوليو ته خبر پوي ته ڪهڙي سپلائر کان، ڪهڙي بل تي، ۽ ڪڏهن آيو.</string>
+    <string name="trace_batch_help">جيڪڏهن ڪڏهن ڪنهن شيءِ تي سوال اٿي، ته هتي ان جو بيچ نمبر ڳوليو ته خبر پوي ته ڪهڙي سپلائر کان، ڪهڙي بل تي، ۽ ڪڏهن آئي.</string>
     <string name="trace_no_results">ان بيچ نمبر سان ڪو مال نه مليو.</string>
     <plurals name="trace_results">
         <item quantity="one">%1$d رڪارڊ مليو</item>
@@ -887,6 +887,7 @@
     <string name="cf_kind_plan">قسط</string>
     <string name="cf_kind_cheque_in">وٺڻ وارو چيڪ</string>
     <string name="cf_kind_harvest">فصل کان پوءِ</string>
+    <string name="cf_kind_promised">واعدي جي ادائگي</string>
     <string name="cf_kind_bill">سپلائر جو بل</string>
     <string name="cf_kind_cheque_out">ڏيڻ وارو چيڪ</string>
     <string name="cf_empty">اڃا ڪا تاريخ ناهي. تاريخون قسطن جي پلان، چيڪن ۽ ڊيو ڊيٽ وارن سپلائر بلن مان اچن ٿيون.</string>
@@ -1638,7 +1639,7 @@
     <string name="trade_general">عام دڪان</string>
     <string name="bp_paid_help">انوائس جي ادائگي واري خاني ۾ اچي ٿو. خالي لائين نه ڇپبي.</string>
     <string name="bp_qr">ادائگي QR</string>
-    <string name="bp_qr_help">توهان جو پيمينٽ QR (ايزي پيسا، جاز ڪيش، UPI…)، اسٽيٽمينٽ لاءِ.</string>
+    <string name="bp_qr_help">توهان جو پيمينٽ QR، اسٽيٽمينٽ لاءِ.</string>
     <string name="bp_add">شامل ڪريو</string>
     <string name="bp_change">مٽايو</string>
     <string name="bp_seals_help">سادي اڇي ڪاغذ تي تصوير وٺو — ايپ پاڻ ڪٽي ٿي.</string>
@@ -1646,8 +1647,8 @@
     <string name="bp_photo">اسٽيٽمينٽ تي گراهڪ جي تصوير</string>
     <string name="bp_photo_help">اڳ ۾ بند — اسٽيٽمينٽ اڳتي موڪلي سگهجي ٿي.</string>
     <string name="bp_unsaved">تبديليون محفوظ نه ٿيون</string>
-    <string name="bp_iban_bad">هي IBAN جهڙو نٿو لڳي، مثال PK36 SCBL 0000 0011 2345 6702.</string>
-    <string name="bp_mobile_bad">هي موبائل نمبر جهڙو نٿو لڳي، مثال 03001234567.</string>
+    <string name="bp_iban_bad">هي IBAN جهڙو نٿو لڳي. پنهنجي بئنڪ جي ڪاغذن سان ملائي ڏسو.</string>
+    <string name="bp_mobile_bad">هي موبائل نمبر جهڙو نٿو لڳي. انگ ٻيهر ڏسو.</string>
     <string name="bp_leave_title">محفوظ ڪرڻ کان سواءِ نڪرو؟</string>
     <string name="bp_leave_msg">هن اسڪرين تي توهان جون تبديليون ضايع ٿي وينديون.</string>
     <string name="bp_leave_discard">ڇڏي ڏيو</string>
@@ -2349,7 +2350,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">توهان جي دڪان جو نالو ڇا آهي؟</string>
     <string name="shop_name_field">دڪان جو نالو</string>
-    <string name="shop_name_hint">مثال: ڀٽي ٽريڊرز</string>
+    <string name="shop_name_hint">مثال: النور ٽريڊرز</string>
     <string name="shop_phone_field">دڪان جو فون (اختياري)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2701,7 +2702,7 @@
     <string name="poster_lang_more">وڌيڪ</string>
     <string name="poster_items_label">ڇا آيو آهي؟ (وڌ ۾ وڌ 4)</string>
     <string name="poster_add_item">شامل ڪريو</string>
-    <string name="poster_item_hint">مثال: ڪڻڪ جو ٻج</string>
+    <string name="poster_item_hint">ڪنهن شيءِ جو نالو لکو</string>
     <string name="poster_add_photo">تصوير لڳايو</string>
     <string name="poster_photo_hint">اختياري. سامان جي توهان جي پنهنجي تصوير دٻي جي جاءِ وٺندي.</string>
     <string name="poster_remove_photo">تصوير هٽايو</string>
@@ -2820,7 +2821,7 @@
     <string name="invoice_received_full">پورا</string>
     <string name="invoice_received_none">ڪجهه نه</string>
     <string name="invoice_note_label">انوائس تي نوٽ</string>
-    <string name="invoice_note_example">مثال 7 ڏينهن پوءِ اسپري ڪريو</string>
+    <string name="invoice_note_example">مثال مال 7 ڏينهن اندر مٽائي سگهجي ٿو</string>
     <string name="invoice_sum_items">شيون</string>
     <string name="invoice_sum_total">ڪل</string>
     <string name="invoice_sum_received">مليا</string>
@@ -2851,10 +2852,10 @@
     <string name="biz_card_l_email">اي ميل</string>
     <string name="biz_card_l_web">ويب سائيٽ</string>
     <string name="biz_card_l_qr">QR اسڪين ٿيڻ تي پيغام</string>
-    <string name="biz_card_ex_name">مثال ڀٽي ٽريڊرز</string>
-    <string name="biz_card_ex_type">مثال زرعي دوائون ۽ ٻج</string>
+    <string name="biz_card_ex_name">مثال النور ٽريڊرز</string>
+    <string name="biz_card_ex_type">مثال هول سيل ۽ پرچون</string>
     <string name="biz_card_ex_owner">مثال علي خان</string>
-    <string name="biz_card_ex_address">مثال مين بازار، پسرور</string>
+    <string name="biz_card_ex_address">مثال مين بازار</string>
     <string name="biz_card_ex_tagline">مثال گهر تائين ڊليوري</string>
     <string name="biz_card_ex_phone">مثال \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثال shop@gmail.com</string>
@@ -3227,7 +3228,7 @@
     <string name="expiry_nothing_left">هن بيچ ۾ ڪجهه نه بچيو</string>
     <string name="expiry_left">بچيو: %1$s</string>
     <string name="trace_came">آيو: %1$s</string>
-    <string name="product_pack_help">اهو پيڪ (ڪارٽن، ٻوري…) جنهن ۾ هي پراڊڪٽ خريد يا وڪرو به ٿئي ٿي، ۽ هڪ پيڪ ۾ ان جا پنهنجا يونٽ ڪيترا آهن. اسٽاڪ پنهنجي يونٽ ۾ ڳڻيو وڃي ٿو.</string>
+    <string name="product_pack_help">اهو پيڪ (ڪارٽن، ڊٻو، درجن…) جنهن ۾ هي پراڊڪٽ خريد يا وڪرو به ٿئي ٿي، ۽ هڪ پيڪ ۾ ان جا پنهنجا يونٽ ڪيترا آهن. اسٽاڪ پنهنجي يونٽ ۾ ڳڻيو وڃي ٿو.</string>
     <string name="product_pack_unit">پيڪ جو نالو</string>
     <string name="product_pack_size">هڪ پيڪ ۾ ڪيترا</string>
     <string name="product_pack_price">پيڪ جي قيمت</string>

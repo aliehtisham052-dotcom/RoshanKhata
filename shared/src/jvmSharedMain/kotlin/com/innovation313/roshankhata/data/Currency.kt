@@ -54,7 +54,22 @@ object Currency {
         "₦" to "NGN",
         "KSh" to "KES",
         "R" to "ZAR",
-        "₺" to "TRY"
+        "₺" to "TRY",
+        // 31 Oct 2026, with the countries added to ShopCountry.
+        "IQD" to "IQD",
+        "JOD" to "JOD",
+        "LBP" to "LBP",
+        "SYP" to "SYP",
+        "₪" to "ILS",
+        "YER" to "YER",
+        "MAD" to "MAD",
+        "DZD" to "DZD",
+        "TND" to "TND",
+        "LYD" to "LYD",
+        "SDG" to "SDG",
+        "MRU" to "MRU",
+        "FJ$" to "FJD",
+        "TJS" to "TJS"
     )
 
     @Volatile
@@ -66,8 +81,8 @@ object Currency {
      * Iran and Indonesia to none. A whole figure prints no decimals anywhere.
      */
     fun decimals(sign: String = symbol): Int = when (sign) {
-        "KWD", "BHD", "OMR" -> 3
-        "IRR", "Rp" -> 0
+        "KWD", "BHD", "OMR", "JOD", "TND", "LYD" -> 3
+        "IRR", "Rp", "IQD", "LBP", "SYP", "YER" -> 0
         else -> 2
     }
 

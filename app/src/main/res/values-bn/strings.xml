@@ -242,7 +242,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">পণ্য (ঐচ্ছিক)</string>
     <string name="goods_help">এই এন্ট্রির সঙ্গে মাল গেলে — 5 বস্তা ইউরিয়া, 2 লিটার কীটনাশক — এখানে লিখুন। শুধু নগদ এন্ট্রি হলে ফাঁকা রাখুন।</string>
-    <string name="item_name_hint">পণ্য (ইউরিয়া, ফিড…)</string>
+    <string name="item_name_hint">পণ্যের নাম</string>
     <string name="quantity_hint">পরিমাণ</string>
     <string name="unit_hint">একক (বস্তা, লিটার, কেজি…)</string>
 
@@ -312,14 +312,14 @@
     <string name="business_name">ব্যবসার নাম</string>
     <string name="business_name_hint">যেমন ভাট্টি ট্রেডার্স</string>
     <string name="business_name_urdu">উর্দুতে দোকানের নাম</string>
-    <string name="business_name_urdu_hint">যেমন بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">যেমন النور ٹریڈرز</string>
     <string name="business_name_urdu_help">উর্দু পোস্টারে এই নাম ছাপা হবে। খালি রাখলে উপরের নাম।</string>
     <string name="business_address">দোকানের ঠিকানা</string>
     <string name="business_address_hint">যেমন মেইন বাজার, পসরুর</string>
     <string name="invoice_bank_name_hint">ব্যাংকের নাম</string>
     <string name="invoice_bank_title_hint">অ্যাকাউন্টের নাম</string>
     <string name="invoice_bank_iban_hint">IBAN / অ্যাকাউন্ট নম্বর</string>
-    <string name="invoice_bank_jazzcash_hint">মোবাইল ওয়ালেট নম্বর (JazzCash, EasyPaisa, UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">মোবাইল ওয়ালেট নম্বর</string>
 
     <string name="payment_qr">পেমেন্ট QR কোড</string>
     <string name="no_qr_yet">এখনো কোনো পেমেন্ট QR সেভ নেই।</string>
@@ -328,7 +328,7 @@
     <string name="qr_save_failed">ছবিটি সেভ করা যায়নি। অন্য একটি বেছে নিন।</string>
     <string name="qr_removed">পেমেন্ট QR সরানো হয়েছে</string>
     <string name="qr_confirm_title">এটি কি সঠিক কোড?</string>
-    <string name="qr_confirm_message">ওপরের কোডটি দেখে নিশ্চিত করুন এটি আপনার নিজের পেমেন্ট অ্যাকাউন্ট (EasyPaisa, JazzCash, UPI…)। তা না হলে গ্রাহকদের টাকা অন্য কারও কাছে চলে যাবে।</string>
+    <string name="qr_confirm_message">ওপরের কোডটি দেখে নিশ্চিত করুন এটি আপনার নিজের পেমেন্ট অ্যাকাউন্ট। তা না হলে গ্রাহকদের টাকা অন্য কারও কাছে চলে যাবে।</string>
     <string name="qr_confirm_yes">হ্যাঁ, এটি আমার</string>
     <string name="profile_saved">সেভ হয়েছে</string>
 
@@ -624,7 +624,7 @@
     <string name="bills_subtitle">আপনি যে মাল কিনেছেন</string>
     <string name="bill_ledger_note">সরবরাহকারীর কাছে আপনার দেনা অন্য সবকিছুর মতো খাতাতেই থাকে। বিল তার ওপর কাগজপত্র যোগ করে: বিল নম্বর, ব্যাচ নম্বর, মেয়াদের তারিখ।</string>
     <string name="add_bill">বিল যোগ করুন</string>
-    <string name="no_bills">এখনো কোনো সরবরাহকারীর বিল নেই।\n\nযা কিনছেন তা ব্যাচ নম্বর ও মেয়াদের তারিখসহ লিখে রাখুন। পরিদর্শক এগুলোই চান, আর এগুলোই তাকে মাল নষ্ট হওয়া থেকে বাঁচায়।</string>
+    <string name="no_bills">এখনো কোনো সরবরাহকারীর বিল নেই।\n\nযা কিনছেন তা ব্যাচ নম্বর ও মেয়াদের তারিখসহ লিখে রাখুন। এতে জানা থাকে প্রতিটি পণ্য কোথা থেকে এসেছে, আর কোনো মাল তাকে অজান্তে নষ্ট হয় না।</string>
 
     <string name="bill_number_hint">বিল নম্বর</string>
     <string name="bill_total_hint">বিলের মোট</string>
@@ -761,7 +761,7 @@
     <!-- Batch trace -->
     <string name="trace_batch">ব্যাচ খুঁজে বের করুন</string>
     <string name="trace_batch_hint">ব্যাচ নম্বর লিখুন</string>
-    <string name="trace_batch_help">কখনো নমুনা নিয়ে প্রশ্ন উঠলে বা পরিদর্শক জানতে চাইলে, এখানে ব্যাচ নম্বর খুঁজে দেখুন এটি কোন সরবরাহকারীর কাছ থেকে, কোন বিলে, কবে এসেছে।</string>
+    <string name="trace_batch_help">কখনো কোনো পণ্য নিয়ে প্রশ্ন উঠলে, এখানে তার ব্যাচ নম্বর খুঁজে দেখুন এটি কোন সরবরাহকারীর কাছ থেকে, কোন বিলে, কবে এসেছে।</string>
     <string name="trace_no_results">এই ব্যাচ নম্বরের কোনো স্টক পাওয়া যায়নি।</string>
     <plurals name="trace_results">
         <item quantity="one">%1$dটি রেকর্ড পাওয়া গেছে</item>
@@ -899,6 +899,7 @@
     <string name="cf_kind_plan">কিস্তি</string>
     <string name="cf_kind_cheque_in">পাওয়ার চেক</string>
     <string name="cf_kind_harvest">ফসলের পরে</string>
+    <string name="cf_kind_promised">প্রতিশ্রুত পরিশোধ</string>
     <string name="cf_kind_bill">সরবরাহকারীর বিল</string>
     <string name="cf_kind_cheque_out">দেওয়ার চেক</string>
     <string name="cf_empty">এখনো কোনো তারিখ নেই। তারিখ আসে কিস্তির পরিকল্পনা, চেক ও নির্ধারিত তারিখসহ সরবরাহকারীর বিল থেকে।</string>
@@ -1658,7 +1659,7 @@
     <string name="trade_general">সাধারণ দোকান</string>
     <string name="bp_paid_help">আপনার ইনভয়েসের পেমেন্ট ঘরে দেখায়। ফাঁকা সারি বাদ যায়।</string>
     <string name="bp_qr">পেমেন্ট QR</string>
-    <string name="bp_qr_help">আপনার পেমেন্ট QR (EasyPaisa, JazzCash, UPI…), স্টেটমেন্টের জন্য।</string>
+    <string name="bp_qr_help">আপনার পেমেন্ট QR, স্টেটমেন্টের জন্য।</string>
     <string name="bp_add">যোগ করুন</string>
     <string name="bp_change">বদলান</string>
     <string name="bp_seals_help">সাদা কাগজে তোলা ছবি — অ্যাপ নিজেই কেটে নেয়।</string>
@@ -1666,8 +1667,8 @@
     <string name="bp_photo">স্টেটমেন্টে গ্রাহকের ছবি</string>
     <string name="bp_photo_help">শুরুতে বন্ধ — স্টেটমেন্ট অন্যের কাছে পাঠানো হতে পারে।</string>
     <string name="bp_unsaved">সেভ না করা পরিবর্তন</string>
-    <string name="bp_iban_bad">এটি IBAN-এর মতো দেখাচ্ছে না, যেমন PK36 SCBL 0000 0011 2345 6702।</string>
-    <string name="bp_mobile_bad">এটি মোবাইল নম্বরের মতো দেখাচ্ছে না, যেমন 03001234567।</string>
+    <string name="bp_iban_bad">এটি IBAN-এর মতো দেখাচ্ছে না। আপনার ব্যাংকের কাগজের সঙ্গে মিলিয়ে নিন।</string>
+    <string name="bp_mobile_bad">এটি মোবাইল নম্বরের মতো দেখাচ্ছে না। অঙ্কগুলো আবার দেখুন।</string>
     <string name="bp_leave_title">সেভ না করে বেরিয়ে যাবেন?</string>
     <string name="bp_leave_msg">এই স্ক্রিনে আপনার পরিবর্তন হারিয়ে যাবে।</string>
     <string name="bp_leave_discard">বাদ দিন</string>
@@ -2721,7 +2722,7 @@
     <string name="poster_lang_more">আরও</string>
     <string name="poster_items_label">কী এসেছে? (সর্বোচ্চ 4)</string>
     <string name="poster_add_item">যোগ করুন</string>
-    <string name="poster_item_hint">যেমন গমের বীজ</string>
+    <string name="poster_item_hint">একটি পণ্যের নাম লিখুন</string>
     <string name="poster_add_photo">ছবি যোগ করুন</string>
     <string name="poster_photo_hint">ঐচ্ছিক। মালের আপনার নিজের ছবি বাক্সের জায়গা নেবে।</string>
     <string name="poster_remove_photo">ছবি সরান</string>
@@ -2840,7 +2841,7 @@
     <string name="invoice_received_full">পুরো</string>
     <string name="invoice_received_none">কিছু না</string>
     <string name="invoice_note_label">ইনভয়েসে নোট</string>
-    <string name="invoice_note_example">যেমন 7 দিন পরে স্প্রে করুন</string>
+    <string name="invoice_note_example">যেমন 7 দিনের মধ্যে পণ্য বদলানো যাবে</string>
     <string name="invoice_sum_items">আইটেম</string>
     <string name="invoice_sum_total">মোট</string>
     <string name="invoice_sum_received">পাওয়া গেছে</string>
@@ -2872,7 +2873,7 @@
     <string name="biz_card_l_web">ওয়েবসাইট</string>
     <string name="biz_card_l_qr">QR স্ক্যান হলে বার্তা</string>
     <string name="biz_card_ex_name">যেমন রহমান স্টোর</string>
-    <string name="biz_card_ex_type">যেমন কীটনাশক ও বীজ</string>
+    <string name="biz_card_ex_type">যেমন পাইকারি ও খুচরা</string>
     <string name="biz_card_ex_owner">যেমন আলী খান</string>
     <string name="biz_card_ex_address">যেমন মেইন বাজার</string>
     <string name="biz_card_ex_tagline">যেমন হোম ডেলিভারি</string>
@@ -3247,7 +3248,7 @@
     <string name="expiry_nothing_left">এই ব্যাচের কিছুই বাকি নেই</string>
     <string name="expiry_left">বাকি: %1$s</string>
     <string name="trace_came">এসেছে: %1$s</string>
-    <string name="product_pack_help">যে প্যাকে (কার্টন, বস্তা…) পণ্যটি কেনা বা বিক্রিও হয়, আর এক প্যাকে তার নিজের এককের কয়টি থাকে। স্টক তার নিজের এককে গোনা হয়।</string>
+    <string name="product_pack_help">যে প্যাকে (কার্টন, বাক্স, ডজন…) পণ্যটি কেনা বা বিক্রিও হয়, আর এক প্যাকে তার নিজের এককের কয়টি থাকে। স্টক তার নিজের এককে গোনা হয়।</string>
     <string name="product_pack_unit">প্যাকের নাম</string>
     <string name="product_pack_size">এক প্যাকে কয়টি</string>
     <string name="product_pack_price">প্যাকের দাম</string>

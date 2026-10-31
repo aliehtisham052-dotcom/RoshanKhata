@@ -83,7 +83,9 @@ fun OrdersScreen(
      * The platform's day picker, for a received batch's expiry (Marhala 4: the phone's receive form had none, so a
      * lot that came in through an order never reached Expiry). Null hides the box.
      */
-    pickDay: ((startAt: Long, onPicked: (Long) -> Unit) -> Unit)? = null
+    pickDay: ((startAt: Long, onPicked: (Long) -> Unit) -> Unit)? = null,
+    /** The shop trade's own example items for a typed line; null: a plain "Item name" (31 Oct 2026: it said Urea to every shop). */
+    itemHint: String? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -229,7 +231,7 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, on
         draft.lines.forEach { l ->
             Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(12.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    if (l.productId == null) OutlinedTextField(l.name, { l.name = it }, Modifier.weight(1f), placeholder = { Text(word(W.item_name_hint)) }, singleLine = true)
+                    if (l.productId == null) OutlinedTextField(l.name, { l.name = it }, Modifier.weight(1f), placeholder = { Text(itemHint ?: word(W.item_name_hint), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }, singleLine = true)
                     else Text(l.name, Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                     TextButton(onClick = { draft.lines.remove(l) }) { Text("✕", color = c.textMuted) }
                 }
@@ -239,7 +241,7 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, on
                 }
             }
         }
-        OutlinedButton(onClick = { draft.lines += OrderDraft.Line(null, "", "1", null, "") }) { Text(word(W.item_name_hint), color = c.ink) }
+        OutlinedButton(onClick = { draft.lines += OrderDraft.Line(null, "", "1", null, "") }) { Text(word(W.add_item), color = c.ink) }
         OutlinedTextField(draft.note, { draft.note = it }, Modifier.fillMaxWidth(), label = { Text(word(W.note_optional)) }, singleLine = true)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onCancel) { Text(word(W.cancel), color = c.ink) }

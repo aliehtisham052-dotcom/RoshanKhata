@@ -64,6 +64,40 @@ class ShopCountryTest {
         }
     }
 
+    @Test
+    fun `the countries of the nine languages are their own, not Saudi Arabia or India`() {
+        // 31 Oct 2026: an Iraqi or Moroccan phone was taken for a Saudi shop (SAR, +966, Hijri).
+        assertEquals(ShopCountry.IRAQ, ShopCountry.guess("IQ", "Rs", "ar"))
+        assertEquals("964", ShopCountry.IRAQ.dialing)
+        assertEquals(Calendar.FRIDAY, ShopCountry.IRAQ.weeklyOff)
+        assertEquals(ShopCountry.MOROCCO, ShopCountry.guess("ma", "Rs", "ar"))
+        assertEquals(Calendar.SUNDAY, ShopCountry.MOROCCO.weeklyOff)
+        assertEquals(ShopCountry.NEPAL, ShopCountry.guess("NP", "Rs", "hi"))
+        assertEquals(ShopCountry.NEPAL, ShopCountry.guess(null, "Rs", "ne"))
+        assertEquals(Calendar.SATURDAY, ShopCountry.NEPAL.weeklyOff)
+        assertEquals(ShopCountry.PALESTINE, ShopCountry.of("PS"))
+        assertEquals(3, Currency.decimals("JOD"))
+        assertEquals(0, Currency.decimals("IQD"))
+        // Every code is its own: no two countries share one.
+        val codes = ShopCountry.entries.filter { it != ShopCountry.OTHER }.map { it.code }
+        assertEquals(codes.size, codes.toSet().size)
+    }
+
+    @Test
+    fun `a blank tax name is the language's own word`() {
+        assertTrue(ShopCountry.IRAQ.taxIdName.isEmpty())
+        assertEquals("PAN", ShopCountry.NEPAL.taxIdName)
+    }
+
+    @Test
+    fun `Afghanistan's solar months have their own names`() {
+        assertEquals("حمل", ShopCalendar.monthNames(ShopCalendar.Kind.JALALI, "fa", ShopCountry.AFGHANISTAN)[0])
+        assertEquals("Hut", ShopCalendar.monthNames(ShopCalendar.Kind.JALALI, "en", ShopCountry.AFGHANISTAN)[11])
+        assertEquals("فروردین", ShopCalendar.monthNames(ShopCalendar.Kind.JALALI, "fa", ShopCountry.IRAN)[0])
+        // A language without its own Afghan names reads them in Latin letters, never Iran's.
+        assertEquals("Hamal", ShopCalendar.monthNames(ShopCalendar.Kind.JALALI, "id", ShopCountry.AFGHANISTAN)[0])
+    }
+
     /** PosterOccasion lives in the app module; the rule it reads is the country's own flag. */
     private object PosterOccasionSeen {
         fun azadiFor(c: ShopCountry) = c.pakistan

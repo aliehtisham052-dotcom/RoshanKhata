@@ -46,7 +46,7 @@ class RegisterPrint(
                 when (country) {
                     ShopCountry.PAKISTAN -> words.text(W.pdf_reg_ntn, n)
                     ShopCountry.OTHER -> words.text(W.tax_number_label) + ": " + n
-                    else -> country.taxIdName + ": " + n
+                    else -> country.taxIdName.ifEmpty { words.text(W.tax_number_label) } + ": " + n
                 }
             }
             return listOfNotNull(address?.trim()?.takeIf { it.isNotEmpty() }, tax).joinToString(" · ").ifEmpty { null }

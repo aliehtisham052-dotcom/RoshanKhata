@@ -191,8 +191,9 @@ object DateWords {
         // bucket — a month of the sales chart — or a time, and a Hijri name on
         // a Gregorian month would be a wrong label, so those stay as they are.
         if (kind != ShopCalendar.Kind.GREGORIAN && hasDay(pattern)) {
-            return cache.get()!!.getOrPut("$key|$roman|$pattern|${kind.key}") {
-                CalendarDateFormat(pattern, gregorian(pattern, key, roman), kind, ShopCalendar.monthNames(kind, key))
+            val country = ShopCountry.current
+            return cache.get()!!.getOrPut("$key|$roman|$pattern|${kind.key}|${country.code}") {
+                CalendarDateFormat(pattern, gregorian(pattern, key, roman), kind, ShopCalendar.monthNames(kind, key, country))
             }
         }
         return cache.get()!!.getOrPut("$key|$roman|$pattern") { gregorian(pattern, key, roman) }

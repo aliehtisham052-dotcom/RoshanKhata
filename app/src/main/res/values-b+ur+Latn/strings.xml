@@ -229,7 +229,7 @@
 
     <string name="goods_section">Maal (ikhtiyari)</string>
     <string name="goods_help">Agar is entry ke saath maal bhi gaya — 5 bori urea, 2 litre zehar — to yahan likhein. Sada naqad entry ke liye khali chhor dein.</string>
-    <string name="item_name_hint">Shai (Urea, Feed…)</string>
+    <string name="item_name_hint">Shai ka naam</string>
     <string name="quantity_hint">Miqdaar</string>
     <string name="unit_hint">Ikai (bori, litre, kg…)</string>
 
@@ -293,16 +293,16 @@
     <string name="profile_preview_caption">Aap ke invoice ka upar wala hissa — saath saath badalta hai</string>
     <string name="business_settings_subtitle">Invoice, statement aur reports par chhapne wali maloomat</string>
     <string name="business_name">Karobar ka naam</string>
-    <string name="business_name_hint">maslan Bhatti Traders</string>
+    <string name="business_name_hint">maslan Al-Noor Traders</string>
     <string name="business_name_urdu">Dukaan ka naam Urdu mein</string>
-    <string name="business_name_urdu_hint">Maslan بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">Maslan النور ٹریڈرز</string>
     <string name="business_name_urdu_help">Urdu poster par yahi naam chhapega. Khali chhorein to upar wala naam.</string>
     <string name="business_address">Dukaan ka pata</string>
-    <string name="business_address_hint">maslan Main Bazaar, Pasrur</string>
+    <string name="business_address_hint">maslan Main Bazaar</string>
     <string name="invoice_bank_name_hint">Bank ka naam</string>
     <string name="invoice_bank_title_hint">Account title</string>
     <string name="invoice_bank_iban_hint">IBAN / account number</string>
-    <string name="invoice_bank_jazzcash_hint">Mobile wallet number (JazzCash, EasyPaisa, UPI…)</string>
+    <string name="invoice_bank_jazzcash_hint">Mobile wallet number</string>
 
     <string name="payment_qr">Payment QR code</string>
     <string name="no_qr_yet">Abhi koi payment QR mehfooz nahi.</string>
@@ -311,7 +311,7 @@
     <string name="qr_save_failed">Ye tasveer mehfooz nahi ho saki. Doosri chunein.</string>
     <string name="qr_removed">Payment QR hata diya gaya</string>
     <string name="qr_confirm_title">Kya ye durust code hai?</string>
-    <string name="qr_confirm_message">Oopar code dekhein aur tasdeeq karein ke ye aap hi ka payment account (EasyPaisa, JazzCash, UPI…) hai. Agar nahi, to aap ke gahakon ki adaigiyan kisi aur ko pahunchengi.</string>
+    <string name="qr_confirm_message">Oopar code dekhein aur tasdeeq karein ke ye aap hi ka payment account hai. Agar nahi, to aap ke gahakon ki adaigiyan kisi aur ko pahunchengi.</string>
     <string name="qr_confirm_yes">Ji, ye mera hai</string>
     <string name="profile_saved">Mehfooz ho gaya</string>
 
@@ -595,7 +595,7 @@
     <string name="bills_subtitle">Jo maal aap ne khareeda</string>
     <string name="bill_ledger_note">Supplier ka wajib aap ke khate mein rehta hai, baqi sab ki tarah. Bill oopar kaghazi record jorta hai: bill number, batch number, expiry tareekhein.</string>
     <string name="add_bill">Bill Shamil Karein</string>
-    <string name="no_bills">Abhi koi supplier bill nahi.\n\nJo khareedein usey darj karein — batch number aur expiry ke saath. Yehi inspector poochta hai, aur yehi maal ko shelf par kharab hone se bachata hai.</string>
+    <string name="no_bills">Abhi koi supplier bill nahi.\n\nJo khareedein usey darj karein — batch number aur expiry ke saath. Is se pata rehta hai ke har shai kahan se aayi, aur koi maal shelf par be-khabri mein kharab nahi hota.</string>
 
     <string name="bill_number_hint">Bill number</string>
     <string name="bill_total_hint">Kul bill</string>
@@ -730,7 +730,7 @@
 
     <string name="trace_batch">Batch talash karein</string>
     <string name="trace_batch_hint">Batch number likhein</string>
-    <string name="trace_batch_help">Agar namoone par sawal ho ya inspector pooche, yahan batch number talash karein — kis supplier se, kis bill par, aur kab aaya.</string>
+    <string name="trace_batch_help">Agar kabhi kisi shai par sawal uthe, yahan us ka batch number talash karein — kis supplier se, kis bill par, aur kab aayi.</string>
     <string name="trace_no_results">Is batch number ka koi maal nahi mila.</string>
     <plurals name="trace_results">
         <item quantity="one">%1$d record mila</item>
@@ -859,6 +859,7 @@
     <string name="cf_kind_plan">Qist</string>
     <string name="cf_kind_cheque_in">Lene wala cheque</string>
     <string name="cf_kind_harvest">Fasal ke baad</string>
+    <string name="cf_kind_promised">Waade ki adaigi</string>
     <string name="cf_kind_bill">Supplier ka bill</string>
     <string name="cf_kind_cheque_out">Dene wala cheque</string>
     <string name="cf_empty">Abhi koi tareekh nahi. Tareekhein qiston ke plan, cheque aur due date wale supplier bills se aati hain.</string>
@@ -1610,7 +1611,7 @@
     <string name="trade_general">Aam dukaan</string>
     <string name="bp_paid_help">Invoice ke payment box mein aata hai. Khali line nahi chhapti.</string>
     <string name="bp_qr">Payment QR</string>
-    <string name="bp_qr_help">Aap ka payment QR (EasyPaisa, JazzCash, UPI…), statement ke liye.</string>
+    <string name="bp_qr_help">Aap ka payment QR, statement ke liye.</string>
     <string name="bp_add">Shamil karein</string>
     <string name="bp_change">Badlein</string>
     <string name="bp_seals_help">Sada safed kaghaz par photo lein — app khud kaat deti hai.</string>
@@ -1618,8 +1619,8 @@
     <string name="bp_photo">Statement par customer ki photo</string>
     <string name="bp_photo_help">Pehle se band — statement aage bheji ja sakti hai.</string>
     <string name="bp_unsaved">Tabdeeliyan save nahi huin</string>
-    <string name="bp_iban_bad">Ye IBAN jaisa nahi lagta, misaal PK36 SCBL 0000 0011 2345 6702.</string>
-    <string name="bp_mobile_bad">Ye mobile number jaisa nahi lagta, misaal 03001234567.</string>
+    <string name="bp_iban_bad">Ye IBAN jaisa nahi lagta. Apne bank ke kaghzaat se mila lein.</string>
+    <string name="bp_mobile_bad">Ye mobile number jaisa nahi lagta. Hindse dobara dekh lein.</string>
     <string name="bp_leave_title">Save kiye baghair niklein?</string>
     <string name="bp_leave_msg">Is screen par aap ki tabdeeliyan zaya ho jayengi.</string>
     <string name="bp_leave_discard">Chhor dein</string>
@@ -2321,7 +2322,7 @@
     <!-- First run, step 3: the shop name (11 Oct). -->
     <string name="shop_name_title">Aap ki dukaan ka naam kya hai?</string>
     <string name="shop_name_field">Dukaan ka naam</string>
-    <string name="shop_name_hint">Maslan: Bhatti Traders</string>
+    <string name="shop_name_hint">Maslan: Al-Noor Traders</string>
     <string name="shop_phone_field">Dukaan ka phone (ikhtiyari)</string>
 
     <!-- The twelve trades added 11 Oct, and Other: names and words. -->
@@ -2673,7 +2674,7 @@
     <string name="poster_lang_more">Mazeed</string>
     <string name="poster_items_label">Kya aaya hai? (ziada se ziada 4)</string>
     <string name="poster_add_item">Shamil karein</string>
-    <string name="poster_item_hint">Maslan gandum ka beej</string>
+    <string name="poster_item_hint">Kisi shai ka naam likhein</string>
     <string name="poster_add_photo">Tasveer lagayein</string>
     <string name="poster_photo_hint">Ikhtiyari. Maal ki aap ki apni tasveer dabbe ki jagah aayegi.</string>
     <string name="poster_remove_photo">Tasveer hatayein</string>
@@ -2792,7 +2793,7 @@
     <string name="invoice_received_full">Poore</string>
     <string name="invoice_received_none">Kuch nahi</string>
     <string name="invoice_note_label">Invoice par note</string>
-    <string name="invoice_note_example">Maslan 7 din baad spray karein</string>
+    <string name="invoice_note_example">Maslan maal 7 din ke andar tabdeel ho sakta hai</string>
     <string name="invoice_sum_items">Items</string>
     <string name="invoice_sum_total">Total</string>
     <string name="invoice_sum_received">Mile</string>
@@ -2823,10 +2824,10 @@
     <string name="biz_card_l_email">Email</string>
     <string name="biz_card_l_web">Website</string>
     <string name="biz_card_l_qr">QR scan hone par paigham</string>
-    <string name="biz_card_ex_name">Maslan Bhatti Traders</string>
-    <string name="biz_card_ex_type">Maslan zarai adwiyat aur beej</string>
+    <string name="biz_card_ex_name">Maslan Al-Noor Traders</string>
+    <string name="biz_card_ex_type">Maslan wholesale aur parchoon</string>
     <string name="biz_card_ex_owner">Maslan Ali Khan</string>
-    <string name="biz_card_ex_address">Maslan Main Bazar, Pasrur</string>
+    <string name="biz_card_ex_address">Maslan Main Bazar</string>
     <string name="biz_card_ex_tagline">Maslan ghar tak delivery</string>
     <string name="biz_card_ex_phone">Maslan 0300 1234567</string>
     <string name="biz_card_ex_email">Maslan shop@gmail.com</string>
@@ -3199,7 +3200,7 @@
     <string name="expiry_nothing_left">Is batch mein kuch nahi bacha</string>
     <string name="expiry_left">Bacha: %1$s</string>
     <string name="trace_came">Aaya: %1$s</string>
-    <string name="product_pack_help">Woh pack (carton, bori…) jis mein yeh product khareedi ya bechi bhi jati hai, aur ek pack mein us ki apni unit kitni hain. Stock apni unit mein gina jata hai.</string>
+    <string name="product_pack_help">Woh pack (carton, dabba, darjan…) jis mein yeh product khareedi ya bechi bhi jati hai, aur ek pack mein us ki apni unit kitni hain. Stock apni unit mein gina jata hai.</string>
     <string name="product_pack_unit">Pack ka naam</string>
     <string name="product_pack_size">Ek pack mein kitne</string>
     <string name="product_pack_price">Pack ki qeemat</string>

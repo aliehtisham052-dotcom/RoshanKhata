@@ -193,17 +193,21 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                     }
                 }
             }
-            Field(word(W.product_type_hint), type) { type = it }
+            // The trade's own types in the label, as the phone's (TradeVocab.typeHint; 31 Oct 2026: it said
+            // "pesticide, fertilizer, seed" to every shop).
+            Field(trade.types().take(3).takeIf { it.isNotEmpty() }?.let { word(W.vocab_type_hint, it.joinToString(", ")) } ?: word(W.product_type_hint), type) { type = it }
             SuggestionRow(trade.types(), type) { type = it }
             // The inspector's details (technical name, formulation, registration) belong to the
             // trades an inspector visits (TradeFeatures.inspectorReports); a value already
             // written stays and is saved as it was.
             if (trade.inspector || technical.isNotBlank() || formulation.isNotBlank() || registration.isNotBlank()) {
                 Text(word(W.compliance_section), Modifier.padding(top = 8.dp), color = c.ink, fontWeight = FontWeight.Bold)
-                Text(word(W.compliance_explain), color = c.textMuted, fontSize = 12.sp)
-                Field(word(W.technical_name_hint), technical) { technical = it }
-                Field(word(W.formulation_hint), formulation) { formulation = it }
-                Field(word(W.registration_number_hint), registration) { registration = it }
+                // A pharmacy's inspector asks for the drug's words, as on the phone (ProductDetailsDialog).
+                val medical = trade.key == "MEDICAL"
+                Text(word(if (medical) W.compliance_explain_medical else W.compliance_explain), color = c.textMuted, fontSize = 12.sp)
+                Field(word(if (medical) W.technical_name_hint_medical else W.technical_name_hint), technical) { technical = it }
+                Field(word(if (medical) W.formulation_hint_medical else W.formulation_hint), formulation) { formulation = it }
+                Field(word(if (medical) W.registration_number_hint_medical else W.registration_number_hint), registration) { registration = it }
             }
         }
     }

@@ -216,14 +216,14 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
             if (draft.lines.isEmpty()) Text(word(W.po_lines_empty), Modifier.padding(12.dp), color = c.textMuted)
             draft.lines.forEach { l ->
                 Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (l.productId == null) FluentField(l.name, { l.name = it }, Modifier.weight(3f), placeholder = word(W.item_name_hint))
+                    if (l.productId == null) FluentField(l.name, { l.name = it }, Modifier.weight(3f), placeholder = LocalTrade.current.itemHint())
                     else Text(l.name, Modifier.weight(3f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     FluentField(l.qty, { l.qty = it }, Modifier.weight(1f), label = word(W.pos_col_qty) + (com.innovation313.roshankhata.data.UnitWords.label(l.unit).let { u -> if (u.isEmpty()) "" else " ($u)" }), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                     FluentField(l.rate, { l.rate = it }, Modifier.weight(1f), label = word(W.pos_col_rate), placeholder = "–", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     IconAction("ic_close", word(W.delete), { draft.lines.remove(l) })
                 }
             }
-            FluentButton(word(W.item_name_hint), { draft.lines += OrderDraft.Line(null, "", "1", null, "") }, Modifier.padding(top = 6.dp), kind = ButtonKind.SUBTLE, icon = "ic_add_plain")
+            FluentButton(word(W.add_item), { draft.lines += OrderDraft.Line(null, "", "1", null, "") }, Modifier.padding(top = 6.dp), kind = ButtonKind.SUBTLE, icon = "ic_add_plain")
             FluentField(draft.note, { draft.note = it }, Modifier.fillMaxWidth().padding(top = 8.dp), label = word(W.note_optional))
         }
     }

@@ -29,7 +29,7 @@ class OrdersActivity : BaseActivity() {
         findViewById<ComposeView>(R.id.ordersCompose).setContent {
             RoshanTheme(dark = dark) {
                 ProvideWords(words) {
-                    OrdersScreen(dao, shop, onSend = { phone, text ->
+                    OrdersScreen(dao, shop, itemHint = com.innovation313.roshankhata.data.TradeVocab.itemHint(this@OrdersActivity), onSend = { phone, text ->
                         val number = phone?.let { WhatsAppNumber.of(it) }
                         val sent = number?.let {
                             runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$it?text=" + Uri.encode(text)))) }.isSuccess

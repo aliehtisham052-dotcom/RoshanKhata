@@ -235,7 +235,7 @@
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">Barang (opsional)</string>
     <string name="goods_help">Jika ada stok yang berpindah bersama catatan ini — 5 karung urea, 2 liter pestisida — catat di sini. Kosongkan untuk catatan uang biasa.</string>
-    <string name="item_name_hint">Barang (Urea, Pakan…)</string>
+    <string name="item_name_hint">Nama barang</string>
     <string name="quantity_hint">Kuantitas</string>
     <string name="unit_hint">Satuan (karung, liter, kg…)</string>
 
@@ -304,14 +304,14 @@
     <string name="business_name">Nama usaha</string>
     <string name="business_name_hint">mis. Toko Tani Makmur</string>
     <string name="business_name_urdu">Nama toko dalam bahasa Urdu</string>
-    <string name="business_name_urdu_hint">mis. بھٹی ٹریڈرز</string>
+    <string name="business_name_urdu_hint">mis. النور ٹریڈرز</string>
     <string name="business_name_urdu_help">Tampil di poster berbahasa Urdu. Kosongkan untuk memakai nama di atas.</string>
     <string name="business_address">Alamat toko</string>
     <string name="business_address_hint">mis. Jl. Pasar Baru No. 12</string>
     <string name="invoice_bank_name_hint">Nama bank</string>
     <string name="invoice_bank_title_hint">Nama pemilik rekening</string>
     <string name="invoice_bank_iban_hint">IBAN / nomor rekening</string>
-    <string name="invoice_bank_jazzcash_hint">Nomor dompet digital (GoPay, OVO, DANA…)</string>
+    <string name="invoice_bank_jazzcash_hint">Nomor dompet digital</string>
 
     <string name="payment_qr">Kode QR pembayaran</string>
     <string name="no_qr_yet">Belum ada QR pembayaran yang disimpan.</string>
@@ -320,7 +320,7 @@
     <string name="qr_save_failed">Gambar itu tidak dapat disimpan. Silakan pilih yang lain.</string>
     <string name="qr_removed">QR pembayaran dihapus</string>
     <string name="qr_confirm_title">Apakah ini kode yang benar?</string>
-    <string name="qr_confirm_message">Lihat kode di atas dan pastikan itu akun pembayaran Anda sendiri (QRIS, GoPay, DANA…). Jika bukan, pembayaran pelanggan Anda akan sampai ke orang lain.</string>
+    <string name="qr_confirm_message">Lihat kode di atas dan pastikan itu akun pembayaran Anda sendiri. Jika bukan, pembayaran pelanggan Anda akan sampai ke orang lain.</string>
     <string name="qr_confirm_yes">Ya, ini milik saya</string>
     <string name="profile_saved">Tersimpan</string>
 
@@ -609,7 +609,7 @@
     <string name="bills_subtitle">Stok yang Anda beli</string>
     <string name="bill_ledger_note">Utang Anda kepada pemasok tercatat di buku, sama seperti yang lain. Tagihan menambahkan dokumennya: nomor tagihan, nomor batch, tanggal kedaluwarsa.</string>
     <string name="add_bill">Tambah Tagihan</string>
-    <string name="no_bills">Belum ada tagihan pemasok.\n\nCatat apa yang Anda beli — dengan nomor batch dan tanggal kedaluwarsa. Itulah yang ditanyakan petugas pengawas, dan yang menyelamatkan Anda dari stok rusak di rak.</string>
+    <string name="no_bills">Belum ada tagihan pemasok.\n\nCatat apa yang Anda beli — dengan nomor batch dan tanggal kedaluwarsa. Dengan begitu Anda tahu asal setiap barang, dan tidak ada stok yang rusak di rak tanpa diketahui.</string>
 
     <string name="bill_number_hint">Nomor tagihan</string>
     <string name="bill_total_hint">Total tagihan</string>
@@ -743,7 +743,7 @@
     <!-- Batch trace -->
     <string name="trace_batch">Lacak batch</string>
     <string name="trace_batch_hint">Masukkan nomor batch</string>
-    <string name="trace_batch_help">Jika sampel dipertanyakan atau petugas pengawas bertanya, cari nomor batch di sini untuk melihat dari pemasok mana asalnya, pada tagihan mana, dan kapan.</string>
+    <string name="trace_batch_help">Jika suatu barang dipertanyakan, cari nomor batch-nya di sini untuk melihat dari pemasok mana asalnya, pada tagihan mana, dan kapan.</string>
     <string name="trace_no_results">Tidak ditemukan stok dengan nomor batch itu.</string>
     <plurals name="trace_results">
         <item quantity="other">%1$d catatan ditemukan</item>
@@ -880,6 +880,7 @@
     <string name="cf_kind_plan">Cicilan</string>
     <string name="cf_kind_cheque_in">Cek untuk diterima</string>
     <string name="cf_kind_harvest">Setelah panen</string>
+    <string name="cf_kind_promised">Pembayaran dijanjikan</string>
     <string name="cf_kind_bill">Nota pemasok</string>
     <string name="cf_kind_cheque_out">Cek untuk dibayar</string>
     <string name="cf_empty">Belum ada tanggal. Tanggal berasal dari rencana cicilan, cek, dan nota pemasok yang punya jatuh tempo.</string>
@@ -1623,7 +1624,7 @@
     <string name="trade_general">Toko umum</string>
     <string name="bp_paid_help">Ditampilkan di kotak pembayaran pada faktur Anda. Baris kosong tidak dicetak.</string>
     <string name="bp_qr">QR Pembayaran</string>
-    <string name="bp_qr_help">QR pembayaran Anda (QRIS, GoPay, DANA…), untuk laporan.</string>
+    <string name="bp_qr_help">QR pembayaran Anda, untuk laporan.</string>
     <string name="bp_add">Tambah</string>
     <string name="bp_change">Ganti</string>
     <string name="bp_seals_help">Foto di atas kertas putih polos — aplikasi akan memotongnya untuk Anda.</string>
@@ -1631,8 +1632,8 @@
     <string name="bp_photo">Foto pelanggan di laporan</string>
     <string name="bp_photo_help">Nonaktif secara bawaan — laporan bisa diteruskan ke orang lain.</string>
     <string name="bp_unsaved">Perubahan belum disimpan</string>
-    <string name="bp_iban_bad">Ini tidak terlihat seperti IBAN, mis. PK36 SCBL 0000 0011 2345 6702.</string>
-    <string name="bp_mobile_bad">Ini tidak terlihat seperti nomor ponsel, mis. 03001234567.</string>
+    <string name="bp_iban_bad">Ini tidak terlihat seperti IBAN. Cocokkan dengan dokumen bank Anda.</string>
+    <string name="bp_mobile_bad">Ini tidak terlihat seperti nomor ponsel. Periksa lagi angkanya.</string>
     <string name="bp_leave_title">Keluar tanpa menyimpan?</string>
     <string name="bp_leave_msg">Perubahan Anda di layar ini akan hilang.</string>
     <string name="bp_leave_discard">Buang</string>
@@ -2677,7 +2678,7 @@
     <string name="poster_lang_more">Lainnya</string>
     <string name="poster_items_label">Apa yang datang? (maks. 4)</string>
     <string name="poster_add_item">Tambah</string>
-    <string name="poster_item_hint">mis. Benih gandum</string>
+    <string name="poster_item_hint">Ketik nama barang</string>
     <string name="poster_add_photo">Tambah foto</string>
     <string name="poster_photo_hint">Opsional. Foto barang Anda sendiri menggantikan kotak.</string>
     <string name="poster_remove_photo">Hapus foto</string>
@@ -2794,7 +2795,7 @@
     <string name="invoice_received_full">Penuh</string>
     <string name="invoice_received_none">Tidak ada</string>
     <string name="invoice_note_label">Catatan di faktur</string>
-    <string name="invoice_note_example">mis. Semprot setelah 7 hari</string>
+    <string name="invoice_note_example">mis. Barang dapat ditukar dalam 7 hari</string>
     <string name="invoice_sum_items">Barang</string>
     <string name="invoice_sum_total">Total</string>
     <string name="invoice_sum_received">Diterima</string>
@@ -2826,7 +2827,7 @@
     <string name="biz_card_l_web">Situs web</string>
     <string name="biz_card_l_qr">Pesan saat QR dipindai</string>
     <string name="biz_card_ex_name">mis. Toko Makmur</string>
-    <string name="biz_card_ex_type">mis. Pestisida dan benih</string>
+    <string name="biz_card_ex_type">mis. Grosir dan eceran</string>
     <string name="biz_card_ex_owner">mis. Ali Khan</string>
     <string name="biz_card_ex_address">mis. Pasar Utama</string>
     <string name="biz_card_ex_tagline">mis. Antar ke rumah</string>
@@ -3200,7 +3201,7 @@
     <string name="expiry_nothing_left">Batch ini sudah habis</string>
     <string name="expiry_left">Sisa: %1$s</string>
     <string name="trace_came">Masuk: %1$s</string>
-    <string name="product_pack_help">Kemasan (karton, karung…) tempat produk juga dibeli atau dijual, dan berapa satuannya sendiri dalam satu kemasan. Stok dihitung dalam satuannya sendiri.</string>
+    <string name="product_pack_help">Kemasan (karton, kotak, lusin…) tempat produk juga dibeli atau dijual, dan berapa satuannya sendiri dalam satu kemasan. Stok dihitung dalam satuannya sendiri.</string>
     <string name="product_pack_unit">Nama kemasan</string>
     <string name="product_pack_size">Isi per kemasan</string>
     <string name="product_pack_price">Harga kemasan</string>
