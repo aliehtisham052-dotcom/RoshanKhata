@@ -42,6 +42,7 @@
 
         <!-- How many product lines this bill already carries (from a scan). -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvBillPendingItems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -169,6 +170,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvPaidCashHelp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -180,6 +182,7 @@
 
         <!-- What this bill will do to the ledger, stated before it is saved. -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvBillLedgerEffect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

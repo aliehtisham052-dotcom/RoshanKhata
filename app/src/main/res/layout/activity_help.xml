@@ -104,6 +104,7 @@
                     android:padding="18dp">
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="3dp"
@@ -153,6 +154,7 @@
                         app:strokeColor="@color/brand_green_text" />
 
                     <TextView
+                        android:textAlignment="viewStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

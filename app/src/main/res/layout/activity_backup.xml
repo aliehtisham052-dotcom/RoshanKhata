@@ -55,6 +55,7 @@
 
         <!-- The plain truth about where the data lives, stated first -->
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -99,6 +100,7 @@
               for handing a copy to someone — but automatic is the safety net.
             -->
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/drive_section"
@@ -107,6 +109,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvDriveStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -163,6 +166,7 @@
                 android:checked="false" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvAutoBackupHint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -247,6 +251,7 @@
                 android:paddingEnd="12dp">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -276,6 +281,7 @@
                 android:visibility="gone">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -333,6 +339,7 @@
                 android:paddingBottom="12dp">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/wifi_send_title"
@@ -341,6 +348,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -379,6 +387,7 @@
                 android:paddingBottom="12dp">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/live_title"
@@ -387,6 +396,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -395,6 +405,7 @@
                     android:textSize="13sp" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvLiveStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -416,6 +427,7 @@
                     android:checked="false" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvLiveRelayHint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

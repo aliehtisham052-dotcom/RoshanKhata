@@ -61,6 +61,7 @@
       before reaching for Save at all.
     -->
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvAddPartyDuplicateWarning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -203,6 +203,13 @@ jobs:
             tests=$((tests + ${t:-0})); failed=$((failed + ${x:-0}))
           done < /tmp/xmls.txt
           echo "::notice::On-device tests (JUnit XML, $files files): $tests run, $failed failed"
+          # The monkey's crash FIRST, as one annotation: GitHub keeps 10 per step, and the ANR lines below
+          # used to take them all (31 Oct 2026: "1 crashes" with no word of which).
+          if [ -f /tmp/monkey_output.txt ] && grep -q '// CRASH' /tmp/monkey_output.txt; then
+            body=$( (grep -A14 '// CRASH' /tmp/monkey_output.txt | head -16; grep -E 'FATAL EXCEPTION|Process:|Exception|at com\.innovation313' /tmp/crash_log.txt 2>/dev/null | head -12) \
+              | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}' | cut -c1-3800)
+            echo "::warning title=Monkey crash::$body"
+          fi
           # The big-book timings, every query, pass or fail: a budget that is
           # nearly used up shows here before it turns red.
           perf=$(grep "BigBookPerf" /tmp/poster3d_log.txt 2>/dev/null | sed 's/^.*BigBookPerf[^:]*: //' | head -20 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')

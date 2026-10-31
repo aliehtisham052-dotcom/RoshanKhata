@@ -613,6 +613,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvVoiceSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -624,6 +625,7 @@
                     tools:text="Bilal  ·  Rs 5,000  ·  I Gave" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvVoiceHeard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -708,6 +710,7 @@
         app:layout_constraintTop_toBottomOf="@id/header">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvSelectedCount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -125,6 +125,7 @@
              buttons the weighted line was left one letter wide and "Drawer not counted yet" ran down
              the screen a letter at a time). The buttons share their row equally and may wrap. -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvLastClose"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -170,6 +171,7 @@
     </LinearLayout>
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvCashbookNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -51,6 +51,7 @@
             </FrameLayout>
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"

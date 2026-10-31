@@ -88,6 +88,7 @@
         <!-- The count on its own line, then Preview and Share sharing the row by weight (30 Oct 2026: the
              picture is seen before it is sent; one look of button, no capitals — lesson 58). -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvRateListSummary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

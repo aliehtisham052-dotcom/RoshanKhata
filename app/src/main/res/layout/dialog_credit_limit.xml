@@ -9,6 +9,7 @@
     android:paddingBottom="8dp">
 
     <TextView
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/credit_limit_help"
@@ -16,6 +17,7 @@
         android:textSize="12sp" />
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvCurrentOwed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,6 +39,7 @@
         android:inputType="numberDecimal" />
 
     <TextView
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

@@ -51,6 +51,7 @@
             android:visibility="gone">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/note_bg"
@@ -66,6 +67,7 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvViewerShop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -74,6 +76,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvViewerDataAt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -82,6 +85,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvViewerRefreshedAt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,6 +94,7 @@
                     android:textSize="13sp" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvViewerSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -129,6 +134,7 @@
             android:visibility="gone">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/viewer_share_title"
@@ -137,6 +143,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -155,6 +162,7 @@
                 app:cornerRadius="10dp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
@@ -164,6 +172,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"

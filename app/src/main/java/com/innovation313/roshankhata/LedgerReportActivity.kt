@@ -99,6 +99,17 @@ class LedgerReportActivity : BaseActivity() {
 
         tvRange = findViewById(R.id.tvLrRange)
         tvCounts = findViewById(R.id.tvLrCounts)
+        // At 120-150% text the counts beside the window pill were a few letters wide ("4 en / tries / · 2 / cust /
+        // ome / rs", the 31 Oct screen proofs): the pill goes under the counts instead.
+        if (resources.configuration.fontScale >= com.innovation313.roshankhata.ui.TextFit.STACK_SCALE) {
+            findViewById<android.widget.LinearLayout>(R.id.lrSummaryHead).orientation = android.widget.LinearLayout.VERTICAL
+            tvCounts.layoutParams = (tvCounts.layoutParams as android.widget.LinearLayout.LayoutParams).apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT; weight = 0f
+            }
+            tvRange.layoutParams = (tvRange.layoutParams as android.widget.LinearLayout.LayoutParams).apply {
+                marginStart = 0; topMargin = (8 * resources.displayMetrics.density).toInt()
+            }
+        }
         shareBar = findViewById(R.id.lrShareBar)
         shareGave = findViewById(R.id.lrShareGave)
         shareGot = findViewById(R.id.lrShareGot)
@@ -439,6 +450,7 @@ class LedgerReportActivity : BaseActivity() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.item_ledger_report_entry, parent, false)
             com.innovation313.roshankhata.ui.TextFit.relax(v)
+            com.innovation313.roshankhata.ui.TextFit.stackWhenLarge(v.findViewById(R.id.lrColName), v.findViewById(R.id.lrColAmount))
             return VH(v).apply {
                 initial.background = android.graphics.drawable.GradientDrawable().apply {
                     shape = android.graphics.drawable.GradientDrawable.OVAL

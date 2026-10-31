@@ -23,6 +23,7 @@
         android:padding="16dp">
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvQuestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,6 +34,7 @@
             tools:text="How do I back up my ledger?" />
 
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvAnswer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

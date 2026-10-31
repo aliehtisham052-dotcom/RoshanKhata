@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/invoice_more_title"
@@ -39,6 +40,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -87,6 +89,7 @@
 
                     <TextView
                         style="@style/SheetFieldLabel"
+                        android:textAlignment="viewStart"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:labelFor="@+id/etInvoiceDiscount"
@@ -230,6 +233,7 @@
 
                     <TextView
                         style="@style/SheetFieldLabel"
+                        android:textAlignment="viewStart"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:labelFor="@+id/etReceived"

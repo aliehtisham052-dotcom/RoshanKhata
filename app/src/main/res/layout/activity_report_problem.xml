@@ -40,6 +40,7 @@
           to keep than to rebuild.
         -->
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/note_bg"
@@ -55,6 +56,7 @@
             android:padding="16dp">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/report_what_kind"
@@ -107,6 +109,7 @@
             </RadioGroup>
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -116,6 +119,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -150,6 +154,7 @@
                 app:cornerRadius="10dp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"

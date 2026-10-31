@@ -50,6 +50,7 @@
 
         <!-- Disclaimer sits above everything, not buried at the bottom -->
         <TextView
+            android:textAlignment="viewStart"
             android:id="@+id/tvDisclaimer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,6 +76,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvNisabHelp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,6 +127,7 @@
               but exactly how much metal the nisab is measured against.
             -->
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvNisabStandardNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,6 +198,7 @@
 
             <!-- Where to get the figure, in one line. -->
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvPriceHelp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -205,6 +209,7 @@
 
             <!-- Shown only when the figure looks like the other unit. -->
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvPriceWarning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -234,6 +239,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -278,6 +284,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvCertain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -286,6 +293,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvQarzeHasna"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -294,6 +302,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvDoubtful"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -302,6 +311,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvPayables"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -318,6 +328,7 @@
                 android:textSize="13sp" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/include_doubtful_help"
@@ -371,6 +382,7 @@ android:id="@+id/tvWealth"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvNisabStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -380,6 +392,7 @@ android:id="@+id/tvWealth"
             </LinearLayout>
 
             <TextView
+                android:textAlignment="viewStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

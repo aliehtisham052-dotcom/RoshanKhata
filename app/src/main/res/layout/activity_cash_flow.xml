@@ -110,6 +110,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvCfWarning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,6 +135,7 @@
                 android:orientation="vertical" />
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvCfNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

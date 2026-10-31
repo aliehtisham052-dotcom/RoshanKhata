@@ -330,6 +330,7 @@
               every normal phone.
             -->
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvHomeViewer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -355,6 +356,7 @@
               as the Follow-up screen it opens. Gone when nobody is late.
             -->
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvHomeLate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -456,6 +458,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

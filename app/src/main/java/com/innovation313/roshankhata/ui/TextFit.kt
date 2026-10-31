@@ -70,6 +70,29 @@ object TextFit {
         return locale.language in ARABIC_SCRIPT && locale.script != "Latn"
     }
 
+    /** At or above this text scale a row's figure column goes under the name (see [stackWhenLarge]). */
+    const val STACK_SCALE = 1.2f
+
+    /**
+     * A row of name + figure (a weighted name column beside a wrap_content figure column) on a
+     * 360 dp phone at 120-150% text: the figure takes what it needs first and the name is left
+     * a few letters wide, so it breaks a letter a line (31 Oct 2026, the screen proofs: "Test Wh /
+     * olesale / Custom / er"). Above [STACK_SCALE] the figure column moves under the name, at the
+     * reading start, and the name has the whole width. At normal size nothing changes. Call once,
+     * on a freshly inflated row.
+     */
+    fun stackWhenLarge(nameColumn: ViewGroup, figureColumn: View) {
+        if (nameColumn.resources.configuration.fontScale < STACK_SCALE) return
+        val row = figureColumn.parent as? ViewGroup ?: return
+        if (row === nameColumn) return
+        row.removeView(figureColumn)
+        val lp = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        lp.topMargin = (4 * nameColumn.resources.displayMetrics.density).toInt()
+        nameColumn.addView(figureColumn, android.widget.LinearLayout.LayoutParams(lp))
+        if (figureColumn is android.widget.LinearLayout) figureColumn.gravity = android.view.Gravity.START
+        if (figureColumn is TextView) figureColumn.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+    }
+
     private fun walk(view: View) {
         if (view is TextView) {
             val lp = view.layoutParams

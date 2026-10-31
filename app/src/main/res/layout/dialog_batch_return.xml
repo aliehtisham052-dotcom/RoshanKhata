@@ -9,6 +9,7 @@
     android:paddingEnd="24dp">
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvReturnInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
         android:inputType="numberDecimal" />
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvReturnTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,6 +47,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"

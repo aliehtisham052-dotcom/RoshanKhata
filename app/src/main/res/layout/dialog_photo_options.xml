@@ -22,6 +22,7 @@
     android:paddingBottom="4dp">
 
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvPhotoNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

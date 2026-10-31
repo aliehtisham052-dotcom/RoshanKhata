@@ -36,6 +36,7 @@
 
     <!-- The app's own limit, admitted rather than hidden -->
     <TextView
+        android:textAlignment="viewStart"
         android:id="@+id/tvExpiringNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

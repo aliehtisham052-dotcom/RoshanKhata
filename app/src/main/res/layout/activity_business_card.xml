@@ -69,6 +69,7 @@
         </HorizontalScrollView>
 
         <TextView
+            android:textAlignment="viewStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
@@ -123,6 +124,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textAlignment="viewStart"
                     android:id="@+id/tvCardOwnTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -146,6 +148,7 @@
             </LinearLayout>
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvCardOwnSub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -214,6 +217,7 @@
             android:padding="14dp">
 
             <TextView
+                android:textAlignment="viewStart"
                 android:id="@+id/tvCardSharedTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
