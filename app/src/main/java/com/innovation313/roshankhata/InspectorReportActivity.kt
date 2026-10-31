@@ -69,6 +69,9 @@ class InspectorReportActivity : BaseActivity() {
 
     private var data: InspectorReport.ReportData? = null
 
+    /** Every shop's register; an agri or medical shop's carries the inspector's label details (31 Oct 2026). */
+    private fun registerStyle() = com.innovation313.roshankhata.data.RegisterStyle.of(com.innovation313.roshankhata.data.Trade.current(this).name)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inspector_report)
@@ -137,7 +140,7 @@ class InspectorReportActivity : BaseActivity() {
     private fun load() {
         lifecycleScope.launch {
             val d = withContext(Dispatchers.IO) {
-                InspectorReport.gather(this@InspectorReportActivity, dao, windowDays)
+                InspectorReport.gather(this@InspectorReportActivity, dao, windowDays, registerStyle())
             }
             data = d
             render(d)
@@ -196,7 +199,7 @@ class InspectorReportActivity : BaseActivity() {
         val days = windowDays
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
-                InspectorReport.build(this@InspectorReportActivity, dao, days)
+                InspectorReport.build(this@InspectorReportActivity, dao, days, registerStyle())
             }
             if (file == null) {
                 Toast.makeText(this@InspectorReportActivity, R.string.inspector_failed, Toast.LENGTH_LONG).show()

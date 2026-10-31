@@ -1329,7 +1329,7 @@
     <string name="son_of_prefix">فرزند %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">ثبت موجودی و انطباق</string>
+    <string name="inspector_title">دفتر موجودی</string>
     <string name="inspector_subtitle">موجودی، بچ و تاریخ انقضا در یک PDF</string>
     <string name="inspector_window_title">بازه انقضا</string>
     <string name="inspector_window_30">30 روز</string>
@@ -1523,10 +1523,14 @@
     <string name="pdf_reg_missing_rate">%1$d سطر خرید نرخ ثبت‌شده نداشت و در جمع بالا نیامده است.</string>
     <string name="pdf_reg_dealer_sign">امضای فروشنده</string>
     <string name="pdf_reg_inspector_sign">امضای بازرس</string>
+    <string name="pdf_sign_owner">امضای مالک</string>
+    <string name="pdf_sign_checked">بررسی‌کننده</string>
     <string name="pdf_reg_footer">%1$s \u00B7 ساخته‌شده %2$s \u00B7 صفحه %3$d</string>
 
     <string name="pdf_insp_title">دفتر موجودی و انطباق</string>
     <string name="pdf_insp_title_cont">دفتر موجودی و انطباق (ادامه)</string>
+    <string name="pdf_insp_title_plain">دفتر موجودی</string>
+    <string name="pdf_insp_title_plain_cont">دفتر موجودی (ادامه)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">ساخته‌شده %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحه %2$d از %3$d</string>
@@ -1548,6 +1552,7 @@
     <string name="pdf_insp_col_product">کالا</string>
     <string name="pdf_insp_col_company">شرکت</string>
     <string name="pdf_insp_col_technical">نام فنی</string>
+    <string name="pdf_insp_col_generic">نام ژنریک</string>
     <string name="pdf_insp_col_form">فرم</string>
     <string name="pdf_insp_col_reg">شماره ثبت</string>
     <string name="pdf_insp_col_onhand">موجودی</string>
@@ -1571,6 +1576,7 @@
     <string name="pdf_insp_no_company">\u2014 شرکت ثبت نشده</string>
     <string name="pdf_insp_miss_company">شرکت</string>
     <string name="pdf_insp_miss_technical">نام فنی</string>
+    <string name="pdf_insp_miss_generic">نام ژنریک</string>
     <string name="pdf_insp_miss_form">فرمولاسیون</string>
     <string name="pdf_insp_miss_reg">شماره ثبت</string>
     <string name="pdf_insp_dealer_sign">امضای فروشنده</string>

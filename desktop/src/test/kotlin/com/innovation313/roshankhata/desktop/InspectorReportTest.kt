@@ -68,6 +68,14 @@ class InspectorReportTest {
                 val f = File(dir, "inspector-" + (if (ur) "ur" else "en") + ".png")
                 ImageIO.write(img, "png", f)
                 assertTrue("${f.name} looks empty", f.length() > 20_000)
+                // Every shop's register (31 Oct 2026): a kiryana's sheet, without the inspector's label columns.
+                val plain = runBlocking { InspectorReport.build(ctx, dao, 60, com.innovation313.roshankhata.data.RegisterStyle.PLAIN) }
+                assertTrue("the plain register was not built", plain != null)
+                val plainSheets = Sheets.of(plain!!)
+                assertTrue("no plain pages", plainSheets.count >= 1)
+                val pf = File(dir, "stock-register-plain-" + (if (ur) "ur" else "en") + ".png")
+                ImageIO.write(plainSheets.picture(0, 1.5f), "png", pf)
+                assertTrue("${pf.name} looks empty", pf.length() > 20_000)
             }
             Locale.setDefault(before)
         } finally {

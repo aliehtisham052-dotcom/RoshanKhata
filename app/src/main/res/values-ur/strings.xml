@@ -1301,7 +1301,7 @@
     <string name="son_of_prefix">ولد %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">اسٹاک اور کمپلائنس رجسٹر</string>
+    <string name="inspector_title">اسٹاک رجسٹر</string>
     <string name="inspector_subtitle">اسٹاک، بیچ اور ایکسپائری ایک ہی پی ڈی ایف میں</string>
     <string name="inspector_window_title">ایکسپائری کی مدت</string>
     <string name="inspector_window_30">30 دن</string>
@@ -1495,10 +1495,14 @@
     <string name="pdf_reg_missing_rate">%1$d خرید لائنوں کا ریٹ درج نہیں تھا، اس لیے وہ اوپر کے کل میں شامل نہیں۔</string>
     <string name="pdf_reg_dealer_sign">ڈیلر کے دستخط</string>
     <string name="pdf_reg_inspector_sign">انسپکٹر کے دستخط</string>
+    <string name="pdf_sign_owner">مالک کے دستخط</string>
+    <string name="pdf_sign_checked">جانچ کرنے والا</string>
     <string name="pdf_reg_footer">%1$s \u00B7 بنائی گئی %2$s \u00B7 صفحہ %3$d</string>
 
     <string name="pdf_insp_title">اسٹاک اور کمپلائنس رجسٹر</string>
     <string name="pdf_insp_title_cont">اسٹاک اور کمپلائنس رجسٹر (جاری)</string>
+    <string name="pdf_insp_title_plain">اسٹاک رجسٹر</string>
+    <string name="pdf_insp_title_plain_cont">اسٹاک رجسٹر (جاری)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">بنایا گیا %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 صفحہ %2$d / %3$d</string>
@@ -1520,6 +1524,7 @@
     <string name="pdf_insp_col_product">پروڈکٹ</string>
     <string name="pdf_insp_col_company">کمپنی</string>
     <string name="pdf_insp_col_technical">ٹیکنیکل نام</string>
+    <string name="pdf_insp_col_generic">جنرک نام</string>
     <string name="pdf_insp_col_form">فارم</string>
     <string name="pdf_insp_col_reg">رجسٹریشن نمبر</string>
     <string name="pdf_insp_col_onhand">موجود</string>
@@ -1543,6 +1548,7 @@
     <string name="pdf_insp_no_company">\u2014 کمپنی درج نہیں</string>
     <string name="pdf_insp_miss_company">کمپنی</string>
     <string name="pdf_insp_miss_technical">ٹیکنیکل نام</string>
+    <string name="pdf_insp_miss_generic">جنرک نام</string>
     <string name="pdf_insp_miss_form">فارمولیشن</string>
     <string name="pdf_insp_miss_reg">رجسٹریشن نمبر</string>
     <string name="pdf_insp_dealer_sign">ڈیلر کے دستخط</string>

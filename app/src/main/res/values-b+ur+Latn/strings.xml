@@ -1301,7 +1301,7 @@
     <string name="son_of_prefix">walad %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">Stock aur compliance register</string>
+    <string name="inspector_title">Stock register</string>
     <string name="inspector_subtitle">Stock, batch aur expiry ek hi PDF mein</string>
     <string name="inspector_window_title">EXPIRY WINDOW</string>
     <string name="inspector_window_30">30 din</string>
@@ -1495,10 +1495,14 @@
     <string name="pdf_reg_missing_rate">%1$d purchase lines ka rate darj nahi tha, is liye wo upar ke total mein shamil nahi.</string>
     <string name="pdf_reg_dealer_sign">Dealer ke dastkhat</string>
     <string name="pdf_reg_inspector_sign">Inspector ke dastkhat</string>
+    <string name="pdf_sign_owner">Maalik ke dastkhat</string>
+    <string name="pdf_sign_checked">Jaanch karne wala</string>
     <string name="pdf_reg_footer">%1$s \u00B7 Banaya gaya %2$s \u00B7 Safha %3$d</string>
 
     <string name="pdf_insp_title">Stock &amp; Compliance Register</string>
     <string name="pdf_insp_title_cont">Stock &amp; Compliance Register (jari)</string>
+    <string name="pdf_insp_title_plain">Stock Register</string>
+    <string name="pdf_insp_title_plain_cont">Stock Register (jari)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">Banaya gaya %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 Safha %2$d / %3$d</string>
@@ -1520,6 +1524,7 @@
     <string name="pdf_insp_col_product">PRODUCT</string>
     <string name="pdf_insp_col_company">COMPANY</string>
     <string name="pdf_insp_col_technical">TECHNICAL NAME</string>
+    <string name="pdf_insp_col_generic">GENERIC NAME</string>
     <string name="pdf_insp_col_form">FORM.</string>
     <string name="pdf_insp_col_reg">REG#</string>
     <string name="pdf_insp_col_onhand">MAUJOOD</string>
@@ -1543,6 +1548,7 @@
     <string name="pdf_insp_no_company">\u2014 company darj nahi</string>
     <string name="pdf_insp_miss_company">company</string>
     <string name="pdf_insp_miss_technical">technical name</string>
+    <string name="pdf_insp_miss_generic">generic name</string>
     <string name="pdf_insp_miss_form">formulation</string>
     <string name="pdf_insp_miss_reg">Reg#</string>
     <string name="pdf_insp_dealer_sign">Dealer ke dastkhat</string>

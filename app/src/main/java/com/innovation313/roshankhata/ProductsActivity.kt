@@ -169,11 +169,9 @@ class ProductsActivity : BaseActivity() {
                 }
             }.show()
         }
-        // An inspector visits agri and medical shops; the others keep the list only (4 Oct).
-        if (!com.innovation313.roshankhata.data.TradeFeatures.inspectorReports(this)) {
-            findViewById<View>(R.id.btnInspectorReport).visibility = View.GONE
-            findViewById<View>(R.id.btnRegisterReport).visibility = View.GONE
-        }
+        // The stock register and the sales & purchase register are every shop's (31 Oct 2026, the owner: the
+        // app is for all shops). They were hidden outside agri and medical since 4 Oct; what an inspector
+        // reads (label columns, checklist, his signature) now prints only on those trades' sheets (RegisterStyle).
 
         refresh()
     }

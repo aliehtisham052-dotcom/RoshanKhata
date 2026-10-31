@@ -1342,7 +1342,7 @@
     <string name="son_of_prefix">पुत्र %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">स्टॉक और अनुपालन रजिस्टर</string>
+    <string name="inspector_title">स्टॉक रजिस्टर</string>
     <string name="inspector_subtitle">स्टॉक, बैच और एक्सपायरी एक PDF में</string>
     <string name="inspector_window_title">एक्सपायरी की अवधि</string>
     <string name="inspector_window_30">30 दिन</string>
@@ -1541,11 +1541,15 @@
     <string name="pdf_reg_missing_rate">खरीद की %1$d लाइन(नों) में भाव नहीं लिखा था और वे ऊपर के जोड़ में नहीं हैं।</string>
     <string name="pdf_reg_dealer_sign">डीलर के हस्ताक्षर</string>
     <string name="pdf_reg_inspector_sign">इंस्पेक्टर के हस्ताक्षर</string>
+    <string name="pdf_sign_owner">मालिक के हस्ताक्षर</string>
+    <string name="pdf_sign_checked">जाँचकर्ता</string>
     <string name="pdf_reg_footer">%1$s \u00B7 %2$s को बनी \u00B7 पेज %3$d</string>
 
     <!-- Words printed on the STOCK &amp; COMPLIANCE REGISTER pdf — the document an inspector is handed. -->
     <string name="pdf_insp_title">स्टॉक और अनुपालन रजिस्टर</string>
     <string name="pdf_insp_title_cont">स्टॉक और अनुपालन रजिस्टर (जारी)</string>
+    <string name="pdf_insp_title_plain">स्टॉक रजिस्टर</string>
+    <string name="pdf_insp_title_plain_cont">स्टॉक रजिस्टर (जारी)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">%1$s को बना</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 पेज %2$d / %3$d</string>
@@ -1567,6 +1571,7 @@
     <string name="pdf_insp_col_product">प्रोडक्ट</string>
     <string name="pdf_insp_col_company">कंपनी</string>
     <string name="pdf_insp_col_technical">तकनीकी नाम</string>
+    <string name="pdf_insp_col_generic">जेनेरिक नाम</string>
     <string name="pdf_insp_col_form">फ़ॉर्म.</string>
     <string name="pdf_insp_col_reg">REG#</string>
     <string name="pdf_insp_col_onhand">मौजूद</string>
@@ -1590,6 +1595,7 @@
     <string name="pdf_insp_no_company">\u2014 कंपनी नहीं लिखी</string>
     <string name="pdf_insp_miss_company">कंपनी</string>
     <string name="pdf_insp_miss_technical">तकनीकी नाम</string>
+    <string name="pdf_insp_miss_generic">जेनेरिक नाम</string>
     <string name="pdf_insp_miss_form">फ़ॉर्मूलेशन</string>
     <string name="pdf_insp_miss_reg">Reg#</string>
     <string name="pdf_insp_dealer_sign">डीलर के हस्ताक्षर</string>

@@ -28,7 +28,9 @@ class RegisterPrint(
     private val to: Long,
     private val sales: List<SaleRegisterRow>,
     private val purchases: List<PurchaseRegisterRow>,
-    made: Long = System.currentTimeMillis()
+    made: Long = System.currentTimeMillis(),
+    /** Whose register: an agri or medical shop's is signed by the dealer and the inspector, any other by its owner. */
+    private val style: com.innovation313.roshankhata.data.RegisterStyle = com.innovation313.roshankhata.data.RegisterStyle.AGRI
 ) : PhoneSheet(rtl) {
 
     private val madeAt = DateWords.formatter("dd MMM yyyy, HH:mm").format(Date(made))
@@ -173,8 +175,8 @@ class RegisterPrint(
         if (y > PAGE_H - 160.0) newPage() else y += 24.0
         rule(MARGIN, MARGIN + 180.0, y + 24.0, Color(0xBB, 0xBB, 0xBB))
         rule(PAGE_W - MARGIN - 180.0, PAGE_W - MARGIN, y + 24.0, Color(0xBB, 0xBB, 0xBB))
-        text(words.text(W.pdf_reg_dealer_sign), MARGIN, y + 38.0, font(9f), GREY)
-        text(words.text(W.pdf_reg_inspector_sign), PAGE_W - MARGIN, y + 38.0, font(9f), GREY, end = true)
+        text(words.text(if (style.compliance) W.pdf_reg_dealer_sign else W.pdf_sign_owner), MARGIN, y + 38.0, font(9f), GREY)
+        text(words.text(if (style.compliance) W.pdf_reg_inspector_sign else W.pdf_sign_checked), PAGE_W - MARGIN, y + 38.0, font(9f), GREY, end = true)
         y += 44.0
     }
 }

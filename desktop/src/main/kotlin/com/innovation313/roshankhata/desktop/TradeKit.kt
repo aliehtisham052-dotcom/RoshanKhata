@@ -64,13 +64,15 @@ data class TradeKit(val key: String = "AGRI", val ownItems: List<String> = empty
     /** The dealer's spray advice on a sale's items (crop, pest, dose): an agri shop's, as on the phone (TradeFeatures.sprayAdvice). */
     val sprayAdvice: Boolean get() = key == "AGRI"
 
-    /** The inspector's stock report and in/out register (TradeFeatures.inspectorReports). */
+    /**
+     * The inspector's label details on products and on the registers (TradeFeatures.inspectorReports). The
+     * registers themselves are every shop's (31 Oct 2026); this decides only their compliance columns.
+     */
     val inspector: Boolean get() = key == "AGRI" || key == "MEDICAL"
 
     /** Whether a section belongs in this trade's rail and Home. */
     fun shows(s: Section): Boolean = when (s) {
         Section.SEASONS -> seasons
-        Section.STOCK, Section.REGISTER -> inspector
         else -> true
     }
 

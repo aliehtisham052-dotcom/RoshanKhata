@@ -102,12 +102,13 @@ fun RegisterPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, r
     ).joinToString(" · ")
 
     val has = sales.isNotEmpty() || purchases.isNotEmpty()
+    val style = com.innovation313.roshankhata.data.RegisterStyle.of(LocalTrade.current.key)
     FluentPage(word(W.register_title), windowLabel, scroll = false, actions = {
         FluentButton(word(W.pdf_preview), {
             val to = till ?: System.currentTimeMillis()
             val identity = settings?.let { RegisterPrint.identityLine(words, it.businessAddress(), it.strn(), it.country()) }
             StatementPrint.show(
-                RegisterPrint(words, rtl, shopName ?: words.text(W.app_name), identity, from, to, sales, purchases),
+                RegisterPrint(words, rtl, shopName ?: words.text(W.app_name), identity, from, to, sales, purchases, style = style),
                 words.text(W.register_title)
             )
         }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = has)

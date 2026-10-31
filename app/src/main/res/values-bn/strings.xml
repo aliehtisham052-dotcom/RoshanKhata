@@ -1342,7 +1342,7 @@
     <string name="son_of_prefix">পিতা: %1$s</string>
 
     <!-- Inspector mode: the stock and compliance register -->
-    <string name="inspector_title">স্টক ও কমপ্লায়েন্স রেজিস্টার</string>
+    <string name="inspector_title">স্টক রেজিস্টার</string>
     <string name="inspector_subtitle">স্টক, ব্যাচ ও মেয়াদ এক PDF-এ</string>
     <string name="inspector_window_title">মেয়াদের সময়সীমা</string>
     <string name="inspector_window_30">30 দিন</string>
@@ -1541,11 +1541,15 @@
     <string name="pdf_reg_missing_rate">কেনার %1$dটি লাইনে দর লেখা ছিল না এবং সেগুলো ওপরের মোটে নেই।</string>
     <string name="pdf_reg_dealer_sign">ডিলারের স্বাক্ষর</string>
     <string name="pdf_reg_inspector_sign">পরিদর্শকের স্বাক্ষর</string>
+    <string name="pdf_sign_owner">মালিকের স্বাক্ষর</string>
+    <string name="pdf_sign_checked">যাচাইকারী</string>
     <string name="pdf_reg_footer">%1$s \u00B7 তৈরি %2$s \u00B7 পৃষ্ঠা %3$d</string>
 
     <!-- Words printed on the STOCK &amp; COMPLIANCE REGISTER pdf — the document an inspector is handed. -->
     <string name="pdf_insp_title">স্টক ও কমপ্লায়েন্স রেজিস্টার</string>
     <string name="pdf_insp_title_cont">স্টক ও কমপ্লায়েন্স রেজিস্টার (চলমান)</string>
+    <string name="pdf_insp_title_plain">স্টক রেজিস্টার</string>
+    <string name="pdf_insp_title_plain_cont">স্টক রেজিস্টার (চলমান)</string>
     <string name="pdf_insp_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_insp_generated">তৈরি %1$s</string>
     <string name="pdf_insp_footer_of">%1$s \u00B7 পৃষ্ঠা %2$d / %3$d</string>
@@ -1567,6 +1571,7 @@
     <string name="pdf_insp_col_product">পণ্য</string>
     <string name="pdf_insp_col_company">কোম্পানি</string>
     <string name="pdf_insp_col_technical">কারিগরি নাম</string>
+    <string name="pdf_insp_col_generic">জেনেরিক নাম</string>
     <string name="pdf_insp_col_form">ফর্ম.</string>
     <string name="pdf_insp_col_reg">REG#</string>
     <string name="pdf_insp_col_onhand">হাতে আছে</string>
@@ -1590,6 +1595,7 @@
     <string name="pdf_insp_no_company">\u2014 কোম্পানি লেখা নেই</string>
     <string name="pdf_insp_miss_company">কোম্পানি</string>
     <string name="pdf_insp_miss_technical">কারিগরি নাম</string>
+    <string name="pdf_insp_miss_generic">জেনেরিক নাম</string>
     <string name="pdf_insp_miss_form">ফর্মুলেশন</string>
     <string name="pdf_insp_miss_reg">Reg#</string>
     <string name="pdf_insp_dealer_sign">ডিলারের স্বাক্ষর</string>

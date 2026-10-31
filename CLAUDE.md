@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,607 strings and 55 plurals (2,607 on 31 Oct 2026 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,613 strings and 55 plurals (2,613 on 31 Oct 2026 with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1319,6 +1319,15 @@ Two read-only audits (trade bias; the nine languages' countries), then the fixes
   "Rs" sign (lesson 29); their messages carry no Pakistani example; the QR and wallet texts name no
   JazzCash/EasyPaisa (the wallet box's help names the country's own, and follows a new choice). Afghanistan's
   solar months are Hamal…Hut (`ShopCalendar.monthNames(country)`, Wikipedia's Dari column).
+- **The registers are every shop's** (the owner, the same day): the stock register and the sales &
+  purchase register are on Products (phone) and in the rail (Windows) for all 25 trades. `RegisterStyle`
+  (shared: AGRI, MEDICAL, PLAIN, from the trade key) decides only their words: AGRI and MEDICAL print
+  "Stock & Compliance Register" with the label columns (MEDICAL's "Generic name"), the label checklist
+  and the dealer's and inspector's signatures; PLAIN prints "Stock Register" with no label columns or
+  checklist, signed by the owner and "Checked by". The app's own name for the page is "Stock register"
+  everywhere (`inspector_title`). `InspectorReport.build/gather(style)` (the desktop copy too —
+  gen_desktop_inspector.py imports RegisterStyle), `RegisterPrint(style)`, the phone's RegisterReport reads
+  the trade itself. The product form's label fields stay agri/medical only (`TradeFeatures.inspectorReports`).
 - **Not done, by decision or size:** lakh grouping (1,00,000) for India/Bangladesh (changes every figure);
   a calling-code box for OTHER (a profile field on both platforms and in the backup); a Tajik (Cyrillic)
   language; "IBAN" stays as printed (the international term); Nepal's Bikram Sambat calendar.

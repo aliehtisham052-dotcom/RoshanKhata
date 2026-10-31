@@ -151,7 +151,12 @@ object InspectorReport {
          * unset ones last under one honest label. Printed as one line under
          * the summary cards (1 Oct).
          */
-        val typeCounts: List<Pair<String, Int>> = emptyList()
+        val typeCounts: List<Pair<String, Int>> = emptyList(),
+        /**
+         * Whose register this is (31 Oct 2026): every shop prints it; only an agri or medical shop's sheet
+         * carries the inspector's label columns, checklist and signatures ([RegisterStyle]).
+         */
+        val style: RegisterStyle = RegisterStyle.AGRI
     )
 
     /** One in-stock product and which of the four label fields it has. */
@@ -165,9 +170,9 @@ object InspectorReport {
         val missing: Int get() = listOf(company, technical, formulation, registration).count { !it }
     }
 
-    suspend fun build(context: Context, dao: KhataDao, windowDays: Int): File? {
+    suspend fun build(context: Context, dao: KhataDao, windowDays: Int, style: RegisterStyle = RegisterStyle.AGRI): File? {
         return try {
-            render(context, gather(context, dao, windowDays))
+            render(context, gather(context, dao, windowDays, style))
         } catch (e: Exception) {
             null
         }
@@ -181,7 +186,7 @@ object InspectorReport {
      * groups — re-sorting would risk the register and the expiry screen
      * disagreeing about which batch of a product is the oldest.
      */
-    suspend fun gather(context: Context, dao: KhataDao, windowDays: Int): ReportData {
+    suspend fun gather(context: Context, dao: KhataDao, windowDays: Int, style: RegisterStyle = RegisterStyle.AGRI): ReportData {
         val products = dao.productsOnce()
         val stock = NameOrder.sortedBy(Stock.of(dao)) { it.name }
 
@@ -203,9 +208,10 @@ object InspectorReport {
         // inspector reads off the bottle. Counted only for stock on the shelf:
         // nagging about a product the shop no longer carries would train the
         // owner to ignore the whole section.
+        // A shop no inspector visits has no label details to chase (RegisterStyle.PLAIN): no checklist.
         val idsInStock = live.mapNotNull { it.productId }.toSet()
         val incompleteRows = products
-            .filter { it.id in idsInStock }
+            .filter { style.compliance && it.id in idsInStock }
             .filter {
                 it.company.isNullOrBlank() ||
                     it.registrationNumber.isNullOrBlank() ||
@@ -225,7 +231,7 @@ object InspectorReport {
             .map { p ->
                 p.name to listOfNotNull(
                     context.getString(R.string.pdf_insp_miss_company).takeIf { p.company.isNullOrBlank() },
-                    context.getString(R.string.pdf_insp_miss_technical).takeIf { p.technicalName.isNullOrBlank() },
+                    context.getString(if (style == RegisterStyle.MEDICAL) R.string.pdf_insp_miss_generic else R.string.pdf_insp_miss_technical).takeIf { p.technicalName.isNullOrBlank() },
                     context.getString(R.string.pdf_insp_miss_form).takeIf { p.formulation.isNullOrBlank() },
                     context.getString(R.string.pdf_insp_miss_reg).takeIf { p.registrationNumber.isNullOrBlank() }
                 ).joinToString(", ")
@@ -269,7 +275,8 @@ object InspectorReport {
             companyStock = companyStock,
             windowDays = windowDays,
             labelChecks = labelChecks,
-            typeCounts = typeCounts
+            typeCounts = typeCounts,
+            style = style
         )
     }
 
@@ -487,7 +494,7 @@ object InspectorReport {
                 canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 34f, navyFill)
                 canvas.drawRect(0f, 34f, PAGE_W.toFloat(), 36f, goldFill)
                 PdfRtl.drawText(canvas, clip(businessName, contName, usable / 2f), MARGIN, 22f, contName)
-                val cont = context.getString(R.string.pdf_insp_title_cont).uppercase(Locale.getDefault())
+                val cont = context.getString(if (d.style.compliance) R.string.pdf_insp_title_cont else R.string.pdf_insp_title_plain_cont).uppercase(Locale.getDefault())
                 val c = clip(cont, contTitle, usable / 2f - 10f)
                 PdfRtl.drawText(canvas, c, right - contTitle.measureText(c), 21.5f, contTitle)
                 return 58f
@@ -522,7 +529,7 @@ object InspectorReport {
             }
 
             // Right-hand block first, so the shop's lines know how much room is left.
-            val title = context.getString(R.string.pdf_insp_title).uppercase(Locale.getDefault())
+            val title = context.getString(if (d.style.compliance) R.string.pdf_insp_title else R.string.pdf_insp_title_plain).uppercase(Locale.getDefault())
             val asOf = context.getString(R.string.pdf_insp_as_of, dayFmt.format(now))
             val generated = context.getString(R.string.pdf_insp_generated, timeFmt.format(now))
             val rightW = maxOf(bandTitle.measureText(title), bandAsOf.measureText(asOf), bandSmall.measureText(generated))
@@ -703,14 +710,16 @@ object InspectorReport {
         }
         val redTone = Triple(RED_FG, RED_BG, RED_EDGE)
         val amberTone = Triple(AMBER_FG, AMBER_BG, AMBER_EDGE)
-        val cards = listOf(
+        val cards = listOfNotNull(
             card(context.getString(R.string.pdf_insp_sum_products), d.stock.size, null),
             card(context.getString(R.string.pdf_insp_sum_batches), d.batches.size, null),
             card(context.getString(R.string.pdf_insp_sum_expired), d.expired.size, redTone),
             card(Digits.string(context.resources, R.string.pdf_insp_sum_expiring, d.windowDays), d.expiringSoon.size, amberTone),
             card(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount, amberTone),
-            card(context.getString(R.string.pdf_insp_sum_incomplete), d.incompleteProducts.size, amberTone)
+            card(context.getString(R.string.pdf_insp_sum_incomplete), d.incompleteProducts.size, amberTone).takeIf { d.style.compliance }
         )
+        // The medicine's generic name where a drug inspector reads the sheet; the pesticide's technical name else.
+        val technicalCol = context.getString(if (d.style == RegisterStyle.MEDICAL) R.string.pdf_insp_col_generic else R.string.pdf_insp_col_technical)
         val gap = 8f
         val cardW = (usable - gap * (cards.size - 1)) / cards.size
         val cardH = 50f
@@ -756,17 +765,19 @@ object InspectorReport {
             PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_no_movement), MARGIN, y + 4f, muted)
             y += 10f
         } else {
-            // 24 + 150 + 110 + 130 + 64 + 90 + 64 + 64 + 66 = 762
-            val cols = listOf(
+            // 24 + 150 + 110 + 130 + 64 + 90 + 64 + 64 + 66 = 762; a plain shop's sheet has no label
+            // columns: 24 + 250 + 200 + 96 + 96 + 96 = 762.
+            val label = d.style.compliance
+            val cols = listOfNotNull(
                 Col("#", 24f),
-                Col(context.getString(R.string.pdf_insp_col_product), 150f),
-                Col(context.getString(R.string.pdf_insp_col_company), 110f),
-                Col(context.getString(R.string.pdf_insp_col_technical), 130f),
-                Col(context.getString(R.string.pdf_insp_col_form), 64f),
-                Col(context.getString(R.string.pdf_insp_col_reg), 90f),
-                Col(context.getString(R.string.pdf_insp_col_in), 64f, Paint.Align.RIGHT),
-                Col(context.getString(R.string.pdf_insp_col_out), 64f, Paint.Align.RIGHT),
-                Col(context.getString(R.string.pdf_insp_col_onhand), 66f, Paint.Align.RIGHT)
+                Col(context.getString(R.string.pdf_insp_col_product), if (label) 150f else 250f),
+                Col(context.getString(R.string.pdf_insp_col_company), if (label) 110f else 200f),
+                Col(technicalCol, 130f).takeIf { label },
+                Col(context.getString(R.string.pdf_insp_col_form), 64f).takeIf { label },
+                Col(context.getString(R.string.pdf_insp_col_reg), 90f).takeIf { label },
+                Col(context.getString(R.string.pdf_insp_col_in), if (label) 64f else 96f, Paint.Align.RIGHT),
+                Col(context.getString(R.string.pdf_insp_col_out), if (label) 64f else 96f, Paint.Align.RIGHT),
+                Col(context.getString(R.string.pdf_insp_col_onhand), if (label) 66f else 96f, Paint.Align.RIGHT)
             )
             var lefts = tableHead(cols)
             val rowH = 20f
@@ -780,13 +791,13 @@ object InspectorReport {
                     else -> Cell.Text(Format.qty(onHand, s.unit), strong)
                 }
                 val p = d.productsById[s.productId]
-                tableRow(cols, lefts, rowH, listOf(
+                tableRow(cols, lefts, rowH, listOfNotNull(
                     Cell.Text((index + 1).toString(), muted),
                     Cell.Text(s.name, bodyBold),
                     Cell.Text(p?.company, body),
-                    Cell.Text(p?.technicalName, body),
-                    Cell.Text(p?.formulation, body),
-                    Cell.Text(p?.registrationNumber, body),
+                    Cell.Text(p?.technicalName, body).takeIf { label },
+                    Cell.Text(p?.formulation, body).takeIf { label },
+                    Cell.Text(p?.registrationNumber, body).takeIf { label },
                     Cell.Text(Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit ?: s.soldUnit), body),
                     Cell.Text(Format.qty(s.soldQty, s.soldUnit ?: s.boughtUnit), body),
                     onHandCell
@@ -875,10 +886,11 @@ object InspectorReport {
             val s3 = context.getString(R.string.pdf_insp_sec_company)
             heading(s3, null, n3)
 
-            // 330 + 250 + 182 = 762
-            val cols = listOf(
-                Col(context.getString(R.string.pdf_insp_col_product), 330f, indent = 14f),
-                Col(context.getString(R.string.pdf_insp_col_technical), 250f),
+            // 330 + 250 + 182 = 762; a plain shop's sheet has no technical name: 580 + 182.
+            val label = d.style.compliance
+            val cols = listOfNotNull(
+                Col(context.getString(R.string.pdf_insp_col_product), if (label) 330f else 580f, indent = 14f),
+                Col(technicalCol, 250f).takeIf { label },
                 Col(context.getString(R.string.pdf_insp_col_onhand), 182f, Paint.Align.RIGHT)
             )
             var lefts = tableHead(cols)
@@ -907,9 +919,9 @@ object InspectorReport {
                         onHand == 0.0 -> Cell.Text(Format.qty(onHand, s.unit), muted)
                         else -> Cell.Text(Format.qty(onHand, s.unit), bodyBold)
                     }
-                    tableRow(cols, lefts, rowH, listOf(
+                    tableRow(cols, lefts, rowH, listOfNotNull(
                         Cell.Text(s.name, body),
-                        Cell.Text(d.productsById[s.productId]?.technicalName, body),
+                        Cell.Text(d.productsById[s.productId]?.technicalName, body).takeIf { label },
                         qty
                     ), shaded = false)
                 }
@@ -930,7 +942,7 @@ object InspectorReport {
             val cols = listOf(
                 Col(context.getString(R.string.pdf_insp_col_product), 240f),
                 Col(context.getString(R.string.pdf_insp_col_company), 115f, Paint.Align.CENTER),
-                Col(context.getString(R.string.pdf_insp_col_technical), 115f, Paint.Align.CENTER),
+                Col(technicalCol, 115f, Paint.Align.CENTER),
                 Col(context.getString(R.string.pdf_insp_col_form), 115f, Paint.Align.CENTER),
                 Col(context.getString(R.string.pdf_insp_col_reg), 115f, Paint.Align.CENTER),
                 Col(context.getString(R.string.pdf_insp_col_missing), 62f, Paint.Align.RIGHT)
@@ -994,9 +1006,11 @@ object InspectorReport {
         y += noteH + 14f
 
         val boxW = (usable - 20f) / 2f
+        // The dealer and the inspector sign a compliance sheet; any other shop's count is signed by its owner
+        // and whoever checked it (a partner, the accountant).
         val signs = listOf(
-            R.string.pdf_insp_dealer_sign to MARGIN,
-            R.string.pdf_insp_inspector_sign to MARGIN + boxW + 20f
+            (if (d.style.compliance) R.string.pdf_insp_dealer_sign else R.string.pdf_sign_owner) to MARGIN,
+            (if (d.style.compliance) R.string.pdf_insp_inspector_sign else R.string.pdf_sign_checked) to MARGIN + boxW + 20f
         )
         val dateLabel = context.getString(R.string.pdf_insp_date_blank)
         signs.forEach { (label, x) ->
