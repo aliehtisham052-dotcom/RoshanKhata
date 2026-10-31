@@ -77,7 +77,7 @@ fun ItemGrid(
             items(groups, key = { it.main.id }) { g ->
                 val inTicket = (listOf(g.main) + g.variants).sumOf { onTicket(it.id) }
                 Column(
-                    Modifier.fillMaxWidth().heightIn(min = 84.dp).background(if (inTicket > 0.0) c.brandGreen.copy(alpha = 0.14f) else c.surface, RoundedCornerShape(12.dp))
+                    Modifier.fillMaxWidth().heightIn(min = 84.dp).background(if (inTicket > 0.0) c.brandGreenText.copy(alpha = 0.18f) else c.surface, RoundedCornerShape(12.dp))
                         .clickable { if (g.choices.size == 1) onPick(g.choices[0]) else choosing = g }.padding(10.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {

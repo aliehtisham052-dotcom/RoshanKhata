@@ -49,7 +49,7 @@ val AGING_WORDS = listOf(W.aging_0_30, W.aging_31_60, W.aging_61_90, W.aging_90)
 fun agingColor(bucket: Int): Color {
     val c = LocalRoshanColors.current
     return when (bucket) {
-        0 -> c.brandGreen
+        0 -> c.brandGreenText // brandGreenText: brandGreen stays dark at night (2.08:1 on the night card, 31 Oct 2026)
         1 -> Color(0xFFF2A900)
         2 -> Color(0xFFE8710A)
         else -> c.owedToMe

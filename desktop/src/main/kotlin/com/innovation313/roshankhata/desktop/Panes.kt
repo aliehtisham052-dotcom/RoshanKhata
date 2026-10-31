@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -439,7 +440,10 @@ fun FillButton(text: String, fill: Color, enabled: Boolean = true, onClick: () -
         shape = Look.ctl,
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 14.dp, vertical = 0.dp),
         modifier = Modifier.height(32.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = fill, contentColor = Color.White)
+        // The words take the colour the fill can carry (31 Oct 2026): white was written on every fill, and by night the
+        // accent is a light green (#7FD1A3) — Save on an "I got" entry read 1.82:1. White keeps 4.5:1 up to a fill
+        // luminance of 0.18; a lighter fill gets the dark ink Look.onAccent uses.
+        colors = ButtonDefaults.buttonColors(containerColor = fill, contentColor = if (fill.luminance() > 0.18f) Color(0xFF0B2A1A) else Color.White)
     ) { Text(text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1, softWrap = false) }
 }
 

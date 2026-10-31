@@ -103,7 +103,7 @@ fun AboutScreen(
                     onClick = onPrivacyPolicy,
                     modifier = Modifier.fillMaxWidth().padding(top = 14.dp).heightIn(min = 48.dp).testTag("aboutPolicy"),
                     shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, c.brandGreen),
+                    border = BorderStroke(1.dp, c.brandGreenText),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = c.brandGreenText)
                 ) {
                     Text(word(W.about_privacy_policy), fontSize = 14.sp)

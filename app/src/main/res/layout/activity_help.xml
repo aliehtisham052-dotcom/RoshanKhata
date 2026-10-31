@@ -76,7 +76,7 @@
                 android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 app:cornerRadius="12dp"
-                app:strokeColor="@color/brand_green" />
+                app:strokeColor="@color/brand_green_text" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -136,7 +136,7 @@
                         android:textColor="@color/brand_green_text"
                         android:textSize="15sp"
                         app:cornerRadius="12dp"
-                        app:strokeColor="@color/brand_green" />
+                        app:strokeColor="@color/brand_green_text" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRateApp"
@@ -150,7 +150,7 @@
                         android:textColor="@color/brand_green_text"
                         android:textSize="15sp"
                         app:cornerRadius="12dp"
-                        app:strokeColor="@color/brand_green" />
+                        app:strokeColor="@color/brand_green_text" />
 
                     <TextView
                         android:layout_width="match_parent"

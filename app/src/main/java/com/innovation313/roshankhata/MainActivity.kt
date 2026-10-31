@@ -126,6 +126,14 @@ class MainActivity : BaseActivity() {
         // Every day (7 Oct): the six a shopkeeper opens daily, in full-size
         // tiles. Everything else is a smaller tile in Business or Tools, four
         // to a row, so the screen is not a wall of sixteen equal buttons.
+        // Expiry or Products as the sixth daily tile, by trade (TradeFeatures.expiryDaily, 31 Oct 2026); the other
+        // goes first among the Business tiles.
+        val expiryDaily = com.innovation313.roshankhata.data.TradeFeatures.expiryDaily(this)
+        val expiryTile = Feature(R.drawable.ic_tile_expiring, R.string.tile_expiry, ExpiringActivity::class.java,
+            R.color.tile_stock_bg)
+        // A product is born the first time its name appears on a bill, so Products keeps Supplier Bills' colour.
+        val productsTile = Feature(R.drawable.ic_tile_products, R.string.tile_products, ProductsActivity::class.java,
+            R.color.tile_bills_bg)
         val daily = listOf(
             Feature(R.drawable.ic_tile_khata, R.string.nav_khata, KhataActivity::class.java,
                 R.color.tile_khata_bg),
@@ -139,8 +147,7 @@ class MainActivity : BaseActivity() {
                 R.color.tile_bills_bg),
             Feature(R.drawable.ic_tile_plans, R.string.nav_plans, PlansActivity::class.java,
                 R.color.tile_plans_bg),
-            Feature(R.drawable.ic_tile_expiring, R.string.tile_expiry, ExpiringActivity::class.java,
-                R.color.tile_stock_bg)
+            if (expiryDaily) expiryTile else productsTile
         )
         // Business (9 Oct): the selling and the books' story - two rows of four.
         // Every icon on Home is now its own picture: Rate list shared the
@@ -152,10 +159,7 @@ class MainActivity : BaseActivity() {
         // Order keeps neighbours in different colours, Seasons (agri only)
         // last so a shop without it simply ends a tile early.
         val business = listOf(
-            // A product is born the first time its name appears on a bill, so
-            // Products keeps Supplier Bills' colour.
-            Feature(R.drawable.ic_tile_products, R.string.tile_products, ProductsActivity::class.java,
-                R.color.tile_bills_bg),
+            if (expiryDaily) productsTile else expiryTile,
             // The counter (POS Phase 1, 21 Oct) beside the products it sells: moved out of Every day on
             // 24 Oct 2026 — the owner keeps his sales in Khata and did not use it daily.
             Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
@@ -747,6 +751,12 @@ class MainActivity : BaseActivity() {
         ivEye.setImageResource(
             if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open
         )
+        // The whole figure on one line at any text size (31 Oct 2026): the card's width less its padding and the eye.
+        val row = findViewById<View>(R.id.balanceRow)
+        row.post {
+            val eyeRoom = ivEye.width + ((ivEye.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.let { it.marginStart + it.marginEnd } ?: 0)
+            com.innovation313.roshankhata.ui.FitOneLine.fit(tvNetBalance, row.width - row.paddingStart - row.paddingEnd - eyeRoom)
+        }
     }
 
     /**
@@ -815,7 +825,9 @@ class MainActivity : BaseActivity() {
             tileStep(R.string.nav_cheques, R.string.coach_title_nav_cheques, R.string.coach_desc_nav_cheques),
             tileStep(R.string.supplier_bills, R.string.coach_title_bills, R.string.coach_desc_bills),
             tileStep(R.string.nav_plans, R.string.coach_title_nav_plans, R.string.coach_desc_nav_plans),
-            tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock),
+            if (com.innovation313.roshankhata.data.TradeFeatures.expiryDaily(this))
+                tileStep(R.string.tile_expiry, R.string.coach_title_stock, R.string.coach_desc_stock)
+            else tileStep(R.string.tile_products, R.string.coach_title_products, R.string.coach_desc_products),
             // The two smaller sections as one step each: the owner is told
             // what lives there, not walked through eight tiles he has not
             // needed yet.

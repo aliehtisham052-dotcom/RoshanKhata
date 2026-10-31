@@ -32,7 +32,7 @@
     <string name="coach_title_invoice">ইনভয়েস</string>
     <string name="coach_desc_invoice">গ্রাহকদের জন্য পেশাদার ইনভয়েস বানান — তৈরি ডিজাইন বেছে নিন, আপনার নাম, সিল ও QR সহ।</string>
     <string name="coach_title_products">পণ্য ও স্টক</string>
-    <string name="coach_desc_products">হাতে থাকা স্টক, ব্যাচের মেয়াদ ও রেজিস্টার — আপনি যে বিল লেখেন তা থেকেই।</string>
+    <string name="coach_desc_products">হাতে থাকা স্টক, ব্যাচের মেয়াদ ও স্টক রেজিস্টার — আপনি যে বিল লেখেন তা থেকেই।</string>
     <string name="followup_title">আদায়</string>
     <string name="followup_subtitle">কার কাছ থেকে আদায় করবেন — সবচেয়ে পুরোনো আগে, পাশে টাকার অঙ্ক</string>
     <plurals name="followup_summary">
@@ -639,7 +639,7 @@
     <string name="add_item">পণ্য যোগ করুন</string>
     <string name="product_name_hint">পণ্যের নাম</string>
     <string name="batch_number_hint">ব্যাচ নম্বর</string>
-    <string name="batch_why">পাত্রের গায়ে লেখা ব্যাচ নম্বর লিখুন। কখনো নমুনা নিয়ে প্রশ্ন উঠলে বা পরিদর্শন বিভাগ জানতে চাইলে, এই রেকর্ডই দেখায় মাল ঠিক কোথা থেকে এসেছে। পরে এটি আর তৈরি করা যায় না।</string>
+    <string name="batch_why">পাত্রের গায়ে লেখা ব্যাচ নম্বর লিখুন। কখনো কোনো পণ্য নিয়ে প্রশ্ন উঠলে — গ্রাহক, কোম্পানি বা পরিদর্শকের কাছ থেকে — এই রেকর্ডই দেখায় মাল ঠিক কোথা থেকে এসেছে। পরে এটি আর তৈরি করা যায় না।</string>
     <string name="expiry_date">মেয়াদের তারিখ</string>
     <string name="expiry_why">মেয়াদ শেষের 60 দিন আগে রোশন খাতা সতর্ক করবে — যথেষ্ট আগে, যাতে বিক্রি করতে, ছাড় দিতে বা সরবরাহকারী নিতে রাজি থাকতে ফেরত দিতে পারেন।</string>
     <string name="pick_expiry">মেয়াদের তারিখ বেছে নিন</string>

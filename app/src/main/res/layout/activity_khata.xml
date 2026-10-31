@@ -325,11 +325,16 @@
 
                     <TextView
                         android:id="@+id/tvTotalGet"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:textColor="@color/bal_owed_to_me"
                         android:textSize="15sp"
+                        android:textAlignment="viewStart"
+                        app:autoSizeMaxTextSize="15sp"
+                        app:autoSizeMinTextSize="9sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
                         android:textStyle="bold"
                         tools:text="Rs 7,520" />
 
@@ -377,11 +382,16 @@
 
                     <TextView
                         android:id="@+id/tvTotalGive"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:textColor="@color/bal_i_owe"
                         android:textSize="15sp"
+                        android:textAlignment="viewStart"
+                        app:autoSizeMaxTextSize="15sp"
+                        app:autoSizeMinTextSize="9sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
                         android:textStyle="bold"
                         tools:text="Rs 167,665" />
 

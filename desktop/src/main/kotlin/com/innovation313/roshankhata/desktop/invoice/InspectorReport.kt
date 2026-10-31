@@ -706,7 +706,8 @@ object InspectorReport {
             card(context.getString(R.string.pdf_insp_sum_batches), d.batches.size, null),
             card(context.getString(R.string.pdf_insp_sum_expired), d.expired.size, redTone),
             card(Digits.string(context.resources, R.string.pdf_insp_sum_expiring, d.windowDays), d.expiringSoon.size, amberTone),
-            card(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount, amberTone),
+            // No expiry is a warning only where goods must carry one (an inspector's shop); a tailor's cloth has none (31 Oct 2026).
+            card(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount, amberTone.takeIf { d.style.compliance }),
             card(context.getString(R.string.pdf_insp_sum_incomplete), d.incompleteProducts.size, amberTone).takeIf { d.style.compliance }
         )
         // The medicine's generic name where a drug inspector reads the sheet; the pesticide's technical name else.

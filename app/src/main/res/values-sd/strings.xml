@@ -28,7 +28,7 @@
     <string name="coach_title_invoice">انوائس</string>
     <string name="coach_desc_invoice">پنهنجن گراهڪن لاءِ پروفيشنل انوائس ٺاهيو — تيار ڊيزائنن مان چونڊيو، پنهنجي نالي، مهر ۽ QR سان.</string>
     <string name="coach_title_products">پراڊڪٽس ۽ اسٽاڪ</string>
-    <string name="coach_desc_products">موجود اسٽاڪ، بيچ جي ختم ٿيڻ جي تاريخ، ۽ ڪمپلائنس رجسٽر — اهي ئي بل جيڪي توهان اڳ ۾ ئي لکو ٿا، انهن مان پاڻمرادو ٺهي وڃن ٿا.</string>
+    <string name="coach_desc_products">موجود اسٽاڪ، بيچ جي ختم ٿيڻ جي تاريخ ۽ اسٽاڪ رجسٽر — اهي ئي بل جيڪي توهان اڳ ۾ ئي لکو ٿا، انهن مان پاڻمرادو ٺهي وڃن ٿا.</string>
     <string name="followup_title">وصولي</string>
     <string name="followup_subtitle">ڪنهن کان وصول ڪرڻو آهي — سڀ کان پراڻو پهرين، رقم گڏ</string>
     <plurals name="followup_summary">
@@ -631,7 +631,7 @@
     <string name="add_item">شيءِ شامل ڪريو</string>
     <string name="product_name_hint">پراڊڪٽ جو نالو</string>
     <string name="batch_number_hint">بيچ نمبر</string>
-    <string name="batch_why">دٻي تي لکيل بيچ نمبر لکو. جيڪڏهن ڪڏهن ڪو نمونو سواليه ٿيو، يا انسپيڪشن کاتو پڇيو، ته اهو ئي رڪارڊ ڏيکاريندو ته مال ڪٿان آيو. پوءِ اهو ٻيهر ٺاهي نٿو سگهجي.</string>
+    <string name="batch_why">دٻي تي لکيل بيچ نمبر لکو. جيڪڏهن ڪڏهن ڪنهن شيءِ تي سوال اٿي — گراهڪ، ڪمپني يا انسپيڪٽر طرفان — ته اهو ئي رڪارڊ ڏيکاريندو ته مال ڪٿان آيو. پوءِ اهو ٻيهر ٺاهي نٿو سگهجي.</string>
     <string name="expiry_date">ختم ٿيڻ جي تاريخ</string>
     <string name="expiry_why">روشن کاتو ختم ٿيڻ کان 60 ڏينهن اڳ خبردار ڪندو — ايترو اڳ جو وڪڻي سگهو، گهٽ اگهه تي ڏئي سگهو، يا جيستائين سپلائر واپس وٺي، موٽائي سگهو.</string>
     <string name="pick_expiry">ختم ٿيڻ جي تاريخ چونڊيو</string>

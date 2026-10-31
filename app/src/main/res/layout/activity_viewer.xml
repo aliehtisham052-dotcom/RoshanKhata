@@ -183,7 +183,7 @@
                 android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 app:cornerRadius="10dp"
-                app:strokeColor="@color/brand_green" />
+                app:strokeColor="@color/brand_green_text" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewerFromDrive"
@@ -195,7 +195,7 @@
                 android:textColor="@color/brand_green_text"
                 android:textSize="15sp"
                 app:cornerRadius="10dp"
-                app:strokeColor="@color/brand_green" />
+                app:strokeColor="@color/brand_green_text" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

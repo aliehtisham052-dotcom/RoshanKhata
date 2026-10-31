@@ -1085,8 +1085,9 @@ class KhataActivity : BaseActivity() {
         paintAccount()
 
         // Type: one segmented control. Unchosen segments are plain text on
-        // the pale green track (brand green on brand_green_soft, 6.75:1).
-        val segIdle = Look(android.graphics.Color.TRANSPARENT, col(R.color.brand_green), android.graphics.Color.TRANSPARENT)
+        // the pale green track (brand_green_text: 6.75:1 by day, and by night too — brand_green stayed dark on the
+        // night track, 1.69:1, 31 Oct 2026).
+        val segIdle = Look(android.graphics.Color.TRANSPARENT, col(R.color.brand_green_text), android.graphics.Color.TRANSPARENT)
         val typeOpts = listOf(
             R.id.optTypeAll to TypeFilter.ALL,
             R.id.optTypeCustomers to TypeFilter.CUSTOMERS,

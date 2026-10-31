@@ -200,12 +200,17 @@
 
                     <TextView
                         android:id="@+id/tvLrTotalGave"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:maxLines="1"
                         android:textColor="@color/red_gave_text"
                         android:textSize="18sp"
+                        android:textAlignment="viewStart"
+                        app:autoSizeMaxTextSize="18sp"
+                        app:autoSizeMinTextSize="11sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -231,12 +236,17 @@
 
                     <TextView
                         android:id="@+id/tvLrTotalGot"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:maxLines="1"
                         android:textColor="@color/green_got_text"
                         android:textSize="18sp"
+                        android:textAlignment="viewStart"
+                        app:autoSizeMaxTextSize="18sp"
+                        app:autoSizeMinTextSize="11sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>

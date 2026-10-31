@@ -2251,7 +2251,7 @@ class PartyDetailActivity : BaseActivity() {
                     val base = getString(R.string.entry_details_chip)
                     more.text = if (filled) "\u2713" + base.removePrefix("+") else base
                     more.strokeColor = android.content.res.ColorStateList.valueOf(
-                        color(if (open || filled) R.color.brand_green else R.color.page_line)
+                        color(if (open || filled) R.color.brand_green_text else R.color.page_line)
                     )
                     more.backgroundTintList = android.content.res.ColorStateList.valueOf(
                         color(if (open) R.color.brand_green_soft else R.color.navy_surface)

@@ -172,6 +172,7 @@ class EntryDetailActivity : BaseActivity() {
 
     private fun editAdvice(item: EntryItem) {
         val view = layoutInflater.inflate(R.layout.dialog_line_advice, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view) // the three boxes' hints wrap at large text (31 Oct 2026)
         val etCrop = view.findViewById<EditText>(R.id.etAdviceCrop).apply { setText(item.crop) }
         val etPest = view.findViewById<EditText>(R.id.etAdvicePest).apply { setText(item.pest) }
         val etDose = view.findViewById<EditText>(R.id.etAdviceDose).apply { setText(item.dose) }

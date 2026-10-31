@@ -28,7 +28,7 @@
     <string name="coach_title_invoice">فاکتور</string>
     <string name="coach_desc_invoice">برای مشتریان خود فاکتورهای حرفه‌ای بسازید — از طرح‌های آماده با نام، مهر و QR خود انتخاب کنید.</string>
     <string name="coach_title_products">محصولات و موجودی</string>
-    <string name="coach_desc_products">موجودی فعلی، تاریخ انقضای هر بچ، و گزارش‌های انطباق — همان که از فاکتورهایی که می‌نویسید خودکار ساخته می‌شود.</string>
+    <string name="coach_desc_products">موجودی فعلی، تاریخ انقضای هر بچ و دفتر موجودی — همان که از فاکتورهایی که می‌نویسید خودکار ساخته می‌شود.</string>
     <string name="followup_title">پیگیری وصول</string>
     <string name="followup_subtitle">از چه کسی وصول کنید — قدیمی‌ترین اول، مبلغ در کنار</string>
     <plurals name="followup_summary">
@@ -631,7 +631,7 @@
     <string name="add_item">افزودن قلم</string>
     <string name="product_name_hint">نام محصول</string>
     <string name="batch_number_hint">شماره بچ</string>
-    <string name="batch_why">شماره بچ روی ظرف را بنویسید. اگر روزی نمونه‌ای زیر سؤال رفت یا اداره بازرسی پرسید، همین رکورد نشان می‌دهد کالا دقیقاً از کجا آمده. بعداً نمی‌شود آن را بازسازی کرد.</string>
+    <string name="batch_why">شماره بچ روی ظرف را بنویسید. اگر روزی درباره کالایی سؤالی پیش آمد — از مشتری، شرکت یا بازرس — همین رکورد نشان می‌دهد کالا دقیقاً از کجا آمده. بعداً نمی‌شود آن را بازسازی کرد.</string>
     <string name="expiry_date">تاریخ انقضا</string>
     <string name="expiry_why">روشن خاتا 60 روز پیش از انقضا هشدار می‌دهد — به‌قدری زود که بتوانید بفروشید، تخفیف بدهید یا تا وقتی تأمین‌کننده هنوز پس می‌گیرد، برگردانید.</string>
     <string name="pick_expiry">انتخاب تاریخ انقضا</string>

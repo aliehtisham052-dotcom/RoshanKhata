@@ -29,6 +29,18 @@ object TradeFeatures {
     fun sprayAdvice(context: Context): Boolean = Trade.current(context) == Trade.AGRI
 
     /**
+     * Whether Expiry belongs among Home's six daily tiles (31 Oct 2026, the review): the trades whose goods go
+     * off — medicine, food, feed and sprays, cosmetics — and the mixed shops. A tailor, a mobile or furniture
+     * shop gets Products there instead and finds Expiry with the Business tiles; nothing is hidden, so batches
+     * already written stay one tap away.
+     */
+    fun expiryDaily(context: Context): Boolean = when (Trade.current(context)) {
+        Trade.AGRI, Trade.MEDICAL, Trade.KIRYANA, Trade.DAIRY, Trade.BAKERY, Trade.MEAT, Trade.PRODUCE,
+        Trade.COSMETICS, Trade.RESTAURANT, Trade.WHOLESALE, Trade.GENERAL, Trade.OTHER -> true
+        else -> false
+    }
+
+    /**
      * The inspector's label details — a product's technical name, formulation and registration, and the
      * registers' compliance columns, checklist and signatures — for the trades an inspector visits. The
      * stock register and the sales & purchase register themselves are every shop's (31 Oct 2026; RegisterStyle).

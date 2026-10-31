@@ -213,7 +213,7 @@ fun SalesChart(bars: List<SalesReport.Bar>, modifier: Modifier = Modifier, heigh
     val c = LocalRoshanColors.current
     val rtl = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
     val top = bars.maxOfOrNull { it.revenue } ?: 0.0
-    val fill = c.brandGreen
+    val fill = c.brandGreenText // brandGreenText: brandGreen stays dark at night (2.08:1 on the night card, 31 Oct 2026); the bars looked empty
     val empty = c.textMuted.copy(alpha = 0.35f)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
