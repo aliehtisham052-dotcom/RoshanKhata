@@ -85,7 +85,8 @@ class CustomerLinkTest {
 
     @Test
     fun `a linked customer's page goes sealed, three entries at most, goods but never the note, and only when it changed`() = book { d, _ ->
-        val ali = d.insertParty(Party(name = "Ali"))
+        // A long name (31 Oct 2026): "Ali" turns up by chance in random base64 about once in 700 runs, and failed CI.
+        val ali = d.insertParty(Party(name = "Ali Raza Qureshi"))
         d.insertParty(Party(name = "Bilal (no link)"))
         repeat(4) { i -> d.insertEntryWithItems(LedgerEntry(partyId = ali, amount = 100.0 + i, isGiven = true, entryNumber = "", timestamp = 1000L + i), emptyList()) }
         d.insertEntryWithItems(
@@ -105,12 +106,12 @@ class CustomerLinkTest {
         assertEquals("https://x.test/khata/#" + link.id + "." + link.key, CustomerLink.url(link, "https://x.test/khata"))
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes))
         val blob = server.pages.getValue(link.id)
-        assertFalse("the server never sees a name", blob.contains("Ali"))
+        assertFalse("the server never sees a name", blob.contains("Ali Raza Qureshi") || blob.contains("Qureshi"))
         val text = CustomerLink.open(link.key, blob)!!
         assertFalse("the shop's own note never leaves the device", text.contains("cheque") || text.contains("0300"))
         val page = JSONObject(text)
         assertEquals(2, page.getInt("v"))
-        assertEquals("Ali", page.getString("n"))
+        assertEquals("Ali Raza Qureshi", page.getString("n"))
         assertEquals("Bhatti Traders", page.getString("s"))
         assertEquals("c", page.getString("p"))
         assertEquals("ur", page.getString("l"))
