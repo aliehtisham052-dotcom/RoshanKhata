@@ -87,6 +87,9 @@ class FollowUpActivity : BaseActivity() {
     private var queueOpened = 0
     private var queueWaiting = false
 
+    /** Opened from the morning notification on a fresh screen: start the queue when the list is read. */
+    private var queueAsked = false
+
     private fun startQueue() {
         queue = dueToday
         queueIndex = 0
@@ -149,6 +152,7 @@ class FollowUpActivity : BaseActivity() {
             adapter = this@FollowUpActivity.adapter
         }
 
+        queueAsked = savedInstanceState == null && intent.getBooleanExtra(EXTRA_START_QUEUE, false)
         observeDebtors()
     }
 
@@ -192,6 +196,8 @@ class FollowUpActivity : BaseActivity() {
                     val marksChanged = adapter.remindedToday != state.remindedToday
                     adapter.remindedToday = state.remindedToday
                     dueToday = state.dueWithPhone
+                    // The morning automation's tap: the queue, once, as soon as there is someone to remind.
+                    if (queueAsked && dueToday.isNotEmpty() && queue.isEmpty()) { queueAsked = false; startQueue() }
                     btnRemindAll.visibility = if (dueToday.size >= 2) View.VISIBLE else View.GONE
                     adapter.submitList(debtors) { if (marksChanged) adapter.notifyDataSetChanged() }
 
@@ -239,6 +245,11 @@ class FollowUpActivity : BaseActivity() {
             com.innovation313.roshankhata.data.ReminderLadder.record(this@FollowUpActivity, party.id, party.balance)
             reminded.value = ReminderLog.openedToday(this@FollowUpActivity)
         }
+    }
+
+    companion object {
+        /** Start the one-by-one reminder queue once the list is read (the morning automation, 31 Oct 2026). */
+        const val EXTRA_START_QUEUE = "start_queue"
     }
 }
 

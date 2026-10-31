@@ -801,6 +801,51 @@ private fun Book(
     LaunchedEffect(Unit) { newerVersion = withContext(Dispatchers.IO) { runCatching { UpdateCheck.newer(appPrefs) }.getOrNull() } }
     // The day's reminder from the tray (Reminders), once the bell's list and the backup's age are known.
     var reminded by remember { mutableStateOf(false) }
+    // The automations (31 Oct 2026, Automations): every five minutes, whatever is due by this computer's hours is
+    // said from the tray; a click brings the window forward on its page (the low-stock draft started, last month's
+    // report). Only while the book is open and unlocked (Book is drawn only then); the open business's book.
+    val autoSettings = remember { DesktopAutomationSettings(appPrefs) }
+    var showAutomations by remember { mutableStateOf(false) }
+    var orderLowAsked by remember { mutableStateOf(false) }
+    var reportWindowAsked by remember { mutableStateOf<Pair<Long, Long>?>(null) }
+    LaunchedEffect(activeBusiness) {
+        kotlinx.coroutines.delay(8000)
+        while (true) {
+            val notices = withContext(Dispatchers.IO) {
+                runCatching {
+                    com.innovation313.roshankhata.data.Automations.noticesDue(
+                        dao, autoSettings, words, money = { Format.money(it) },
+                        date = { com.innovation313.roshankhata.data.DateWords.format("d MMM", it) },
+                        monthName = { com.innovation313.roshankhata.data.DateWords.format("MMMM yyyy", it) },
+                        remindedToday = reminders.openedToday()
+                    )
+                }.getOrDefault(emptyList())
+            }
+            notices.forEach { n ->
+                runCatching {
+                    Reminders.show(words.text(W.app_name), n.title, n.body) {
+                        java.awt.Frame.getFrames().firstOrNull { it.isVisible }?.let { f ->
+                            if (f.extendedState and java.awt.Frame.ICONIFIED != 0) f.extendedState = f.extendedState and java.awt.Frame.ICONIFIED.inv()
+                            f.toFront(); f.requestFocus()
+                        }
+                        when (n.kind) {
+                            com.innovation313.roshankhata.data.Automations.Kind.COLLECT -> section = Section.FOLLOWUP
+                            com.innovation313.roshankhata.data.Automations.Kind.DAY_END -> section = Section.CASHBOOK
+                            com.innovation313.roshankhata.data.Automations.Kind.REORDER -> { orderLowAsked = true; section = Section.ORDERS }
+                            com.innovation313.roshankhata.data.Automations.Kind.MONTH -> {
+                                reportWindowAsked = com.innovation313.roshankhata.data.Automations.lastMonth(n.extra?.let { it + 40L * 24 * 60 * 60 * 1000 } ?: System.currentTimeMillis())
+                                section = Section.REPORT
+                            }
+                            com.innovation313.roshankhata.data.Automations.Kind.EXPIRY -> section = Section.EXPIRY
+                        }
+                    }
+                }
+                kotlinx.coroutines.delay(6000)
+            }
+            kotlinx.coroutines.delay(5 * 60_000L)
+        }
+    }
+    if (showAutomations) AutomationsDialog(autoSettings) { showAutomations = false }
     LaunchedEffect(alerts, lastBackupAt) {
         if (reminded) return@LaunchedEffect
         kotlinx.coroutines.delay(4000)
@@ -921,6 +966,7 @@ private fun Book(
                 // Joining a device hands it the whole book: the owner's own PIN, whoever is signed in (22 Oct 2026).
                 MenuLine(word(W.live_title)) { openLiveSync() },
                 MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
+                MenuLine(word(W.auto_title)) { showAutomations = true },
                 MenuLine(word(W.home_sec_business), null),
                 MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
                 MenuLine(word(W.trade_kicker_change)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingTrade = true } },
@@ -1019,7 +1065,7 @@ private fun Book(
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
                     Section.INVENTORY -> Box(Modifier.fillMaxSize()) { InventoryPane(dao, words, reload, businesses = businesses, activeBusiness = activeBusiness) { reload++ } }
                     Section.SALES -> Box(Modifier.fillMaxSize()) { SalesReportPane(dao, words, rtl, shop, reload) }
-                    Section.ORDERS -> Box(Modifier.fillMaxSize()) { OrdersPane(dao, parties, words, rtl, shop) { reload++ } }
+                    Section.ORDERS -> Box(Modifier.fillMaxSize()) { OrdersPane(dao, parties, words, rtl, shop, startLow = orderLowAsked, onStartedLow = { orderLowAsked = false }) { reload++ } }
                     Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }
                     Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words) { reload++ } }
                     Section.PLANS -> Box(Modifier.fillMaxSize()) { PlansPane(dao, parties, words) { reload++ } }
@@ -1043,7 +1089,7 @@ private fun Book(
                     Section.REGISTER -> Box(Modifier.fillMaxSize()) { RegisterPane(dao, words, rtl, shop, reload, settings) }
                     Section.STOCK -> Box(Modifier.fillMaxSize()) { StockPane(dao, words, rtl, shop, reload, designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }) }
                     Section.DAILY -> Box(Modifier.fillMaxSize()) { DailyCopiesPane(dao, settings, dailyDir, outsideFolder, outsideDir, onFolder = onBackupFolder, sync = db.syncSql()) { shop = shopName(); reload++ } }
-                    Section.REPORT -> Box(Modifier.fillMaxSize()) { ReportPane(dao, words, rtl, shop, reload, parties) }
+                    Section.REPORT -> Box(Modifier.fillMaxSize()) { ReportPane(dao, words, rtl, shop, reload, parties, startWindow = reportWindowAsked, onStartedWindow = { reportWindowAsked = null }) }
                     Section.SHOP -> Box(Modifier.fillMaxSize()) { ShopDetailsPane(settings, images) { shop = shopName() } }
                     Section.CARD -> Box(Modifier.fillMaxSize()) { BusinessCardPane(settings, images, home, activeBusiness, words) { shop = shopName() } }
                     Section.POSTER -> Box(Modifier.fillMaxSize()) { PosterPane(settings, images, home, activeBusiness, words) }

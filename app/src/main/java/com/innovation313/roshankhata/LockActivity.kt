@@ -99,6 +99,7 @@ class LockActivity : BaseActivity() {
             Intent(this, MainActivity::class.java)
                 .putExtra(MainActivity.EXTRA_UNLOCKED, true)
                 .putExtra(MainActivity.EXTRA_OPEN, intent.getStringExtra(MainActivity.EXTRA_OPEN))
+                .putExtra(MainActivity.EXTRA_OPEN_ARGS, intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS))
         )
         finish()
     }

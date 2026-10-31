@@ -3552,4 +3552,33 @@
     <string name="audit_doc_accepted">Dokumen diterima</string>
     <string name="audit_doc_cancelled">Dokumen dibatalkan</string>
     <string name="audit_doc_deleted">Dokumen dihapus</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">Otomatisasi</string>
+    <string name="auto_help">Masing-masing memberi tahu pada waktunya dan membuka halaman yang tepat. Tidak ada yang dikirim atau ditulis dengan sendirinya.</string>
+    <string name="auto_collect_name">Daftar penagihan pagi</string>
+    <string name="auto_collect_title">Tagih hari ini</string>
+    <string name="auto_dayend_name">Ringkasan tutup toko</string>
+    <string name="auto_dayend_title">Tutup buku hari ini</string>
+    <string name="auto_dayend_body">Penjualan %1$s · Diterima %2$s · Seharusnya di laci %3$s</string>
+    <string name="auto_dayend_uncounted">Laci belum dihitung: ketuk untuk menutup hari.</string>
+    <string name="auto_reorder_name">Pesanan stok menipis</string>
+    <string name="auto_reorder_title">Pesan stok yang menipis</string>
+    <string name="auto_month_name">Laporan bulanan</string>
+    <string name="auto_month_title">Laporan %1$s sudah siap</string>
+    <string name="auto_month_body">Saya Beri %1$s · Saya Terima %2$s. Ketuk untuk melihat dan membagikan.</string>
+    <string name="auto_expiry_name">Tindakan kedaluwarsa</string>
+    <string name="auto_expiry_title">Bertindak sebelum kedaluwarsa</string>
+    <string name="auto_expiry_body">%1$s, batch %2$s: sisa %3$s, kedaluwarsa %4$s. Jual, beri diskon, atau kembalikan.</string>
+    <string name="auto_at_time">Pukul %1$s</string>
+    <string name="auto_pick_hour">Pilih jam</string>
+    <plurals name="auto_collect_body">
+        <item quantity="other">%1$d pelanggan untuk diingatkan hari ini · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="other">%1$d barang stoknya menipis: %2$s. Ketuk untuk menyiapkan pesanan.</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="other">dan %1$d batch lainnya</item>
+    </plurals>
 </resources>

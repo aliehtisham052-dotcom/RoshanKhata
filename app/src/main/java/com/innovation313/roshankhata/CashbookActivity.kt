@@ -97,6 +97,10 @@ class CashbookActivity : BaseActivity() {
         // The day's figures (POS Phase 4): a long press on Close the day shows the Z report.
         findViewById<View>(R.id.btnCloseDay).setOnLongClickListener { showDayReport(); true }
         findViewById<View>(R.id.btnDayReport).setOnClickListener { showDayReport() }
+        // The closing automation's tap (31 Oct 2026): Close the day at once, on a fresh screen only.
+        if (savedInstanceState == null && intent.getBooleanExtra(EXTRA_CLOSE_DAY, false)) {
+            findViewById<View>(R.id.btnCloseDay).post { if (!isFinishing && !isDestroyed) showDayClose() }
+        }
         val tvLastClose = findViewById<TextView>(R.id.tvLastClose)
         lifecycleScope.launch {
             dao.observeLastDayClose().collectLatest { c ->
@@ -442,5 +446,10 @@ class CashbookActivity : BaseActivity() {
                 }
                 .show()
         }
+    }
+
+    companion object {
+        /** Open Close the day at once (the closing automation's notification, 31 Oct 2026). */
+        const val EXTRA_CLOSE_DAY = "close_day"
     }
 }

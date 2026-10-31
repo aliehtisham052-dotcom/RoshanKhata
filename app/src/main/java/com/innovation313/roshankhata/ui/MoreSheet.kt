@@ -55,6 +55,8 @@ object MoreSheet {
             if (viewer) null else e(R.drawable.ic_menu_duplicate, R.color.tile_card_bg, R.string.duplicate_customers, data) { activity.startActivity(Intent(activity, DuplicateCustomersActivity::class.java)) },
             // The helper's phone: the owner sends a copy from here, and a helper's
             // phone becomes read-only (or stops being) from here too.
+            // The shop's daily work said at its own time (31 Oct 2026); a read-only phone says none of it.
+            if (viewer) null else e(R.drawable.ic_bell, R.color.tile_followup_bg, R.string.auto_title, data) { AutomationsDialog.show(activity) },
             e(R.drawable.ic_menu_viewer, R.color.tile_insights_bg, R.string.viewer_menu, data) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
             e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language, display) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
             e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size, display) { textSize(activity) },

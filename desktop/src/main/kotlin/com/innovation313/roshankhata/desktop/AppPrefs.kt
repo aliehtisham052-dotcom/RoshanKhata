@@ -192,6 +192,17 @@ class AppPrefs(private val file: File) {
         save()
     }
 
+    /** A setting of its own name (the automations' switches, hours and marks — DesktopAutomationSettings). */
+    @Synchronized
+    fun prop(key: String): String? = props.getProperty(key)?.takeIf { it.isNotBlank() }
+
+    @Synchronized
+    fun setProp(key: String, value: String) {
+        if (props.getProperty(key) == value) return
+        props.setProperty(key, value)
+        save()
+    }
+
     private fun save() {
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".tmp")

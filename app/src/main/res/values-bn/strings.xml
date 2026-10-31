@@ -3607,4 +3607,36 @@
     <string name="audit_doc_accepted">নথি গৃহীত</string>
     <string name="audit_doc_cancelled">নথি বাতিল</string>
     <string name="audit_doc_deleted">নথি মোছা হয়েছে</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">স্বয়ংক্রিয় কাজ</string>
+    <string name="auto_help">প্রতিটি নিজের সময়ে জানায় এবং সঠিক পাতা খোলে। কিছুই নিজে থেকে পাঠানো বা লেখা হয় না।</string>
+    <string name="auto_collect_name">সকালের আদায় তালিকা</string>
+    <string name="auto_collect_title">আজকের আদায়</string>
+    <string name="auto_dayend_name">দোকান বন্ধের সারাংশ</string>
+    <string name="auto_dayend_title">আজকের হিসাব</string>
+    <string name="auto_dayend_body">বিক্রি %1$s · আদায় %2$s · ক্যাশে থাকা উচিত %3$s</string>
+    <string name="auto_dayend_uncounted">ক্যাশ এখনো গোনা হয়নি: দিন বন্ধ করতে ট্যাপ করুন।</string>
+    <string name="auto_reorder_name">কম স্টকের অর্ডার</string>
+    <string name="auto_reorder_title">কম স্টক আনিয়ে নিন</string>
+    <string name="auto_month_name">মাসিক রিপোর্ট</string>
+    <string name="auto_month_title">%1$s মাসের রিপোর্ট তৈরি</string>
+    <string name="auto_month_body">আমি দিয়েছি %1$s · আমি পেয়েছি %2$s। দেখতে ও শেয়ার করতে ট্যাপ করুন।</string>
+    <string name="auto_expiry_name">মেয়াদ শেষের আগে ব্যবস্থা</string>
+    <string name="auto_expiry_title">মেয়াদ শেষের আগে ব্যবস্থা নিন</string>
+    <string name="auto_expiry_body">%1$s, ব্যাচ %2$s: %3$s বাকি, মেয়াদ শেষ %4$s। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</string>
+    <string name="auto_at_time">%1$sটায়</string>
+    <string name="auto_pick_hour">সময় বেছে নিন</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">আজ %1$d জনকে মনে করাতে হবে · %2$s</item>
+        <item quantity="other">আজ %1$d জনকে মনে করাতে হবে · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">%1$d আইটেমের স্টক কম: %2$s। অর্ডার তৈরি করতে ট্যাপ করুন।</item>
+        <item quantity="other">%1$d আইটেমের স্টক কম: %2$s। অর্ডার তৈরি করতে ট্যাপ করুন।</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">আরও %1$dটি ব্যাচ</item>
+        <item quantity="other">আরও %1$dটি ব্যাচ</item>
+    </plurals>
 </resources>

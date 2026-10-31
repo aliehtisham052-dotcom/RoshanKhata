@@ -3587,4 +3587,36 @@
     <string name="audit_doc_accepted">دستاويز منظور ٿيو</string>
     <string name="audit_doc_cancelled">دستاويز منسوخ ٿيو</string>
     <string name="audit_doc_deleted">دستاويز ميٽيو ويو</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">پاڻمرادو ڪم</string>
+    <string name="auto_help">هر هڪ پنهنجي وقت تي ٻڌائي ٿو ۽ صحيح صفحو کولي ٿو. ڪجهه به پاڻمرادو نه موڪليو ويندو آهي ۽ نه لکيو ويندو آهي.</string>
+    <string name="auto_collect_name">صبح جي وصولي لسٽ</string>
+    <string name="auto_collect_title">اڄ جي وصولي</string>
+    <string name="auto_dayend_name">دڪان بند ڪرڻ جو خلاصو</string>
+    <string name="auto_dayend_title">اڄ جو حساب</string>
+    <string name="auto_dayend_body">وڪرو %1$s · وصول %2$s · گلي ۾ هجڻ گهرجي %3$s</string>
+    <string name="auto_dayend_uncounted">گلو اڃا نه ڳڻيو ويو: ڏينهن بند ڪرڻ لاءِ ٽيپ ڪريو.</string>
+    <string name="auto_reorder_name">گهٽ اسٽاڪ جا آرڊر</string>
+    <string name="auto_reorder_title">گهٽ اسٽاڪ گهرايو</string>
+    <string name="auto_month_name">مهيني جي رپورٽ</string>
+    <string name="auto_month_title">%1$s جي رپورٽ تيار آهي</string>
+    <string name="auto_month_body">مون ڏنا %1$s · مون ورتا %2$s. ڏسڻ ۽ شيئر ڪرڻ لاءِ ٽيپ ڪريو.</string>
+    <string name="auto_expiry_name">ختم ٿيڻ کان اڳ عمل</string>
+    <string name="auto_expiry_title">ختم ٿيڻ کان اڳ قدم کڻو</string>
+    <string name="auto_expiry_body">%1$s، بيچ %2$s: %3$s باقي، %4$s تي ختم. وڪڻو، رعايت ڏيو يا واپس ڪريو.</string>
+    <string name="auto_at_time">%1$s وڳي</string>
+    <string name="auto_pick_hour">وقت چونڊيو</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">اڄ %1$d گراهڪ کي ياد ڏيارڻو · %2$s</item>
+        <item quantity="other">اڄ %1$d گراهڪن کي ياد ڏيارڻو · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">%1$d شين جو اسٽاڪ گهٽ آهي: %2$s. آرڊر تيار ڪرڻ لاءِ ٽيپ ڪريو.</item>
+        <item quantity="other">%1$d شين جو اسٽاڪ گهٽ آهي: %2$s. آرڊر تيار ڪرڻ لاءِ ٽيپ ڪريو.</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">۽ %1$d ٻيا بيچ</item>
+        <item quantity="other">۽ %1$d ٻيا بيچ</item>
+    </plurals>
 </resources>

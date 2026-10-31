@@ -3559,4 +3559,36 @@
     <string name="audit_doc_accepted">دستاویز منظور ہوئی</string>
     <string name="audit_doc_cancelled">دستاویز منسوخ ہوئی</string>
     <string name="audit_doc_deleted">دستاویز مٹائی گئی</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">خودکار کام</string>
+    <string name="auto_help">ہر ایک اپنے وقت پر بتاتا ہے اور صحیح صفحہ کھولتا ہے۔ کچھ بھی خود سے بھیجا یا لکھا نہیں جاتا۔</string>
+    <string name="auto_collect_name">صبح کی وصولی لسٹ</string>
+    <string name="auto_collect_title">آج کی وصولی</string>
+    <string name="auto_dayend_name">دکان بند کرنے کا خلاصہ</string>
+    <string name="auto_dayend_title">آج کا حساب</string>
+    <string name="auto_dayend_body">فروخت %1$s · وصول %2$s · گلے میں ہونا چاہیے %3$s</string>
+    <string name="auto_dayend_uncounted">گلا ابھی نہیں گنا گیا: دن بند کرنے کے لیے ٹیپ کریں۔</string>
+    <string name="auto_reorder_name">کم اسٹاک کے آرڈر</string>
+    <string name="auto_reorder_title">کم اسٹاک منگوائیں</string>
+    <string name="auto_month_name">ماہانہ رپورٹ</string>
+    <string name="auto_month_title">%1$s کی رپورٹ تیار ہے</string>
+    <string name="auto_month_body">میں نے دیا %1$s · میں نے لیا %2$s۔ دیکھنے اور شیئر کرنے کے لیے ٹیپ کریں۔</string>
+    <string name="auto_expiry_name">ایکسپائری پر عمل</string>
+    <string name="auto_expiry_title">ایکسپائر ہونے سے پہلے قدم اٹھائیں</string>
+    <string name="auto_expiry_body">%1$s، بیچ %2$s: %3$s باقی، %4$s کو ایکسپائر۔ بیچیں، رعایت دیں یا واپس کریں۔</string>
+    <string name="auto_at_time">%1$s بجے</string>
+    <string name="auto_pick_hour">وقت چنیں</string>
+    <plurals name="auto_collect_body">
+        <item quantity="one">آج %1$d گاہک کو یاد دہانی · %2$s</item>
+        <item quantity="other">آج %1$d گاہکوں کو یاد دہانی · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="one">%1$d پروڈکٹ کا اسٹاک کم ہے: %2$s۔ آرڈر تیار کرنے کے لیے ٹیپ کریں۔</item>
+        <item quantity="other">%1$d پروڈکٹس کا اسٹاک کم ہے: %2$s۔ آرڈر تیار کرنے کے لیے ٹیپ کریں۔</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="one">اور %1$d مزید بیچ</item>
+        <item quantity="other">اور %1$d مزید بیچ</item>
+    </plurals>
 </resources>

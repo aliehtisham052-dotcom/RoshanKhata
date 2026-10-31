@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,613 strings and 55 plurals (2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,631 strings and 58 plurals (2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1359,6 +1359,34 @@ read in the code first. CI only — nothing on a device. Trade words: 25 trades 
   views; a light copy needs it to bind into a given root); the per-trade features (service items, job cards,
   serials, price tiers — /topics/per-trade-needs-research in the owner's memory); a CI proof of every screen at
   360 dp, 150%/85% text and night.
+
+### Automations (31 Oct 2026, kmp-desktop-16 — the owner: "automation rakh ke behtar tareeqe se manage karein")
+
+Five, in :shared (`Automations`), said at the owner's hours on both platforms; they TELL and open the place to act —
+none sends a message or writes a row on its own (a background write on two synced devices makes every draft twice;
+WhatsApp sending needs the paid Cloud API, decided against). CI only — nothing on a real device.
+
+- **Morning collection** (9:00): Follow-up's own rule (`FollowUpRank.remindToday`, with a phone, less those reminded
+  today) as a count and total; the tap opens Follow-up and starts its one-by-one queue (`EXTRA_START_QUEUE`).
+- **Low stock orders** (10:00): `Automations.reorder` — `Valuation.low`, less what an order not yet received carries;
+  quantity = max(30 days' sales of that name and unit, twice the low level) less the shelf, at least 1; supplier from
+  the newest bill that carried it. "Order the low stock" on both platforms uses it and `firstOrder` (one supplier per
+  draft; the rest stay low for the next tap). The tap opens a ready draft (`OrdersScreen(startLow)`, `OrdersPane`).
+- **Expiry action** (10:00): the soonest batch by name, what is left and its day (`Fefo.expiring`); opens Expiry.
+- **Monthly report** (the 1st, 9:00): last month's gave/got (`lastMonth`, inclusive end); opens the Khata Report on
+  that window (`LedgerReportActivity.EXTRA_FROM/TO`, `ReportPane(startWindow)`).
+- **Closing summary** (21:00): today's sales, payments and the drawer by the books; opens Close the day
+  (`CashbookActivity.EXTRA_CLOSE_DAY`; Windows opens the Cashbook).
+- `Automations.due`: on, the hour reached, once a day (the month's once a month) — late, never twice; `noticesDue`
+  marks a quiet one said too. Settings per device: the phone's `AndroidAutomationSettings` (prefs "automations",
+  More → Automations, `AutomationsDialog`), Windows' `DesktopAutomationSettings` (app.properties, More → Automations).
+- Phone: `AutomationWorker`, hourly periodic work, its own channel; a helper's read-only phone says nothing; the tap
+  goes through the gate (`MainActivity.EXTRA_OPEN_ARGS` carries the screen's extras through Gate and Lock). Windows:
+  Book's loop every 5 minutes while the book is open, as tray notifications; a click on the tray brings the window
+  forward on the page (`Reminders.show(open)`). Only the open business's book.
+- Strings (nine languages): auto_title, auto_help, auto_*_name/_title, auto_collect_body, auto_reorder_body,
+  auto_expiry_more (plurals), auto_dayend_body/_uncounted, auto_month_body, auto_expiry_body, auto_at_time,
+  auto_pick_hour. Tests: AutomationsClockTest (shared), AutomationsBookTest (desktop).
 
 ### The shared module (KMP)
 

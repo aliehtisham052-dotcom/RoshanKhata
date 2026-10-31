@@ -3779,4 +3779,48 @@
     <string name="audit_doc_accepted">تم قبول مستند</string>
     <string name="audit_doc_cancelled">تم إلغاء مستند</string>
     <string name="audit_doc_deleted">تم حذف مستند</string>
+
+    <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
+    <string name="auto_title">المهام التلقائية</string>
+    <string name="auto_help">يخبرك كلٌّ منها في وقته ويفتح الصفحة الصحيحة. لا يُرسل أو يُكتب أي شيء من تلقاء نفسه.</string>
+    <string name="auto_collect_name">قائمة التحصيل الصباحية</string>
+    <string name="auto_collect_title">تحصيل اليوم</string>
+    <string name="auto_dayend_name">ملخص الإغلاق</string>
+    <string name="auto_dayend_title">حساب اليوم</string>
+    <string name="auto_dayend_body">المبيعات %1$s · المقبوض %2$s · يجب أن يكون في الدرج %3$s</string>
+    <string name="auto_dayend_uncounted">لم يُعدّ الدرج بعد: اضغط لإغلاق اليوم.</string>
+    <string name="auto_reorder_name">طلبات المخزون المنخفض</string>
+    <string name="auto_reorder_title">اطلب المخزون المنخفض</string>
+    <string name="auto_month_name">التقرير الشهري</string>
+    <string name="auto_month_title">تقرير %1$s جاهز</string>
+    <string name="auto_month_body">أعطيت %1$s · استلمت %2$s. اضغط للعرض والمشاركة.</string>
+    <string name="auto_expiry_name">إجراء قبل انتهاء الصلاحية</string>
+    <string name="auto_expiry_title">تصرّف قبل انتهاء الصلاحية</string>
+    <string name="auto_expiry_body">%1$s، الدفعة %2$s: المتبقي %3$s، تنتهي في %4$s. بِعه أو اعرض خصمًا أو أعده.</string>
+    <string name="auto_at_time">الساعة %1$s</string>
+    <string name="auto_pick_hour">اختر الساعة</string>
+    <plurals name="auto_collect_body">
+        <item quantity="zero">للتذكير اليوم: %1$d · %2$s</item>
+        <item quantity="one">للتذكير اليوم: %1$d · %2$s</item>
+        <item quantity="two">للتذكير اليوم: %1$d · %2$s</item>
+        <item quantity="few">للتذكير اليوم: %1$d · %2$s</item>
+        <item quantity="many">للتذكير اليوم: %1$d · %2$s</item>
+        <item quantity="other">للتذكير اليوم: %1$d · %2$s</item>
+    </plurals>
+    <plurals name="auto_reorder_body">
+        <item quantity="zero">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
+        <item quantity="one">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
+        <item quantity="two">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
+        <item quantity="few">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
+        <item quantity="many">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
+        <item quantity="other">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
+    </plurals>
+    <plurals name="auto_expiry_more">
+        <item quantity="zero">و%1$d دفعات أخرى</item>
+        <item quantity="one">و%1$d دفعات أخرى</item>
+        <item quantity="two">و%1$d دفعات أخرى</item>
+        <item quantity="few">و%1$d دفعات أخرى</item>
+        <item quantity="many">و%1$d دفعات أخرى</item>
+        <item quantity="other">و%1$d دفعات أخرى</item>
+    </plurals>
 </resources>
