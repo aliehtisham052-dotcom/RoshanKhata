@@ -96,34 +96,6 @@ object Motion {
             }.start()
     }
 
-    /**
-     * An entry is saved (5 Oct): a green disc pops up in the middle of the
-     * screen, a white tick draws itself, and it fades — about 1.1 s, over
-     * everything, touching nothing, so the owner can carry on at once. Felt
-     * as well (see [confirm]). Not shown with animations off.
-     */
-    fun savedTick(activity: android.app.Activity) {
-        val root = activity.findViewById<android.view.ViewGroup>(android.R.id.content) ?: return
-        if (!enabled(activity) || !root.isLaidOut) return
-        val tick = android.view.LayoutInflater.from(activity)
-            .inflate(com.innovation313.roshankhata.R.layout.view_save_tick, root, false) as android.widget.ImageView
-        val size = (104 * activity.resources.displayMetrics.density).toInt()
-        val left = (root.width - size) / 2
-        val top = (root.height * 0.42f - size / 2f).toInt()
-        tick.layout(left, top, left + size, top + size)
-        root.overlay.add(tick)
-        tick.alpha = 0f
-        tick.scaleX = 0.6f
-        tick.scaleY = 0.6f
-        tick.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(260)
-            .setInterpolator(android.view.animation.OvershootInterpolator(1.6f))
-            .withStartAction { (tick.drawable as? android.graphics.drawable.Animatable)?.start() }
-            .withEndAction {
-                tick.animate().alpha(0f).scaleX(0.9f).scaleY(0.9f).setStartDelay(560).setDuration(240)
-                    .withEndAction { root.overlay.remove(tick) }.start()
-            }.start()
-    }
-
     // ---------- Listening, and sending (5 Oct) ----------
 
     /**

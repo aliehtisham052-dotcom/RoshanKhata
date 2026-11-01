@@ -3823,4 +3823,52 @@
         <item quantity="many">و%1$d دفعات أخرى</item>
         <item quantity="other">و%1$d دفعات أخرى</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">جديد</string>
+    <string name="help_feature_guides">شرح الميزات</string>
+    <string name="intro_counter_body">بيع العميل يُسجَّل في دفتره، وبيع الزبون العابر في دفتر النقد. والمخزون ينقص في الحالتين.</string>
+    <string name="intro_counter_s1">اختر الأصناف</string>
+    <string name="intro_counter_s2">عميل أو زبون عابر</string>
+    <string name="intro_counter_s3">استلم المال</string>
+    <string name="intro_documents_body">يتحول عرض السعر إلى أمر بيع ثم إذن تسليم ثم فاتورة، بنقرة واحدة في كل مرة. لا شيء يُكتب مرتين.</string>
+    <string name="intro_documents_s1">عرض سعر</string>
+    <string name="intro_documents_s2">إذن تسليم</string>
+    <string name="intro_documents_s3">فاتورة</string>
+    <string name="intro_cashbook_body">كل مساء، عُدّ ما في الدرج وأغلق اليوم. يخبرك التطبيق بما يجب أن يكون فيه.</string>
+    <string name="intro_cashbook_s1">نقد وارد وصادر</string>
+    <string name="intro_cashbook_s2">عُدّ الدرج</string>
+    <string name="intro_cashbook_s3">أغلق اليوم</string>
+    <string name="intro_cheques_body">لا يصل الشيك إلى الدفتر إلا عند صرفه. الشيك المرتجع لا يغيّر شيئًا.</string>
+    <string name="intro_cheques_s1">سجّل الشيك</string>
+    <string name="intro_cheques_s2">يُصرف أو يُرتجع</string>
+    <string name="intro_cheques_s3">صُرف: إلى الدفتر</string>
+    <string name="intro_qr_body">امسح بطاقة العميل فيُفتح دفتره فورًا. لا يحمل الرمز اسمًا ولا رقمًا ولا رصيدًا.</string>
+    <string name="intro_qr_s1">أنشئ رمز QR</string>
+    <string name="intro_qr_s2">أرسل البطاقة أو اطبعها</string>
+    <string name="intro_qr_s3">امسحها: يُفتح الدفتر</string>
+    <string name="intro_staff_body">الرواتب والسُّلف والحضور في مكان واحد. وعلى الكاونتر يدخل كل شخص برمز PIN خاص به، فتعرف من فعل ماذا.</string>
+    <string name="intro_staff_s1">أضف شخصًا</string>
+    <string name="intro_staff_s2">الحضور والراتب</string>
+    <string name="intro_staff_s3">الدخول برمز PIN</string>
+    <string name="intro_plans_body">بِع بالتقسيط. يذكّرك التطبيق في يوم استحقاق كل قسط.</string>
+    <string name="intro_plans_s1">اختر العميل</string>
+    <string name="intro_plans_s2">حدّد الأقساط</string>
+    <string name="intro_plans_s3">تذكير في يومه</string>
+    <string name="intro_followup_body">كل يوم يعرض من تطالبه بالمال، الأقدم أولاً. ونقرة واحدة ترسل تذكيرًا لطيفًا عبر واتساب.</string>
+    <string name="intro_followup_s1">المدينون، الأقدم أولاً</string>
+    <string name="intro_followup_s2">ذكّر عبر واتساب</string>
+    <string name="intro_followup_s3">ثم التالي</string>
+    <string name="intro_backup_body">دفترك موجود على هذا الهاتف فقط. نسخة احتياطية خارج الهاتف تحفظه إن ضاع الهاتف.</string>
+    <string name="intro_backup_s1">نسخ إلى درايف أو ملف</string>
+    <string name="intro_backup_s2">العودة إلى يوم سابق</string>
+    <string name="intro_backup_s3">الهاتف والكمبيوتر معًا</string>
+    <string name="intro_orders_body">عند وصول البضاعة يصبح الطلب فاتورة المورّد ويزيد مخزونك.</string>
+    <string name="intro_orders_s1">المخزون ينفد</string>
+    <string name="intro_orders_s2">اطلب من المورّد</string>
+    <string name="intro_orders_s3">وصل: صار فاتورة</string>
+    <string name="intro_expiry_body">تُباع البضاعة الأقرب انتهاءً أولاً، وتُنبَّه قبل انتهاء صلاحية الدفعة بـ 60 يومًا.</string>
+    <string name="intro_expiry_s1">الدفعة والصلاحية في الفاتورة</string>
+    <string name="intro_expiry_s2">الأقرب انتهاءً أولاً</string>
+    <string name="intro_expiry_s3">أرجعها أو اشطبها</string>
 </resources>

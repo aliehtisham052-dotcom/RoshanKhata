@@ -3619,4 +3619,52 @@
         <item quantity="one">۽ %1$d ٻيا بيچ</item>
         <item quantity="other">۽ %1$d ٻيا بيچ</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">نئون</string>
+    <string name="help_feature_guides">فيچرن جي وضاحت</string>
+    <string name="intro_counter_body">گراهڪ جو وڪرو سندس کاتي ۾ وڃي ٿو، عام گراهڪ جو ڪيش بڪ ۾. اسٽاڪ ٻنهي صورتن ۾ گهٽجي ٿو.</string>
+    <string name="intro_counter_s1">شيون چونڊيو</string>
+    <string name="intro_counter_s2">گراهڪ يا عام گراهڪ</string>
+    <string name="intro_counter_s3">پئسا وٺو</string>
+    <string name="intro_documents_body">ڪوٽيشن مان آرڊر، پوءِ چالان ۽ پوءِ انوائس، هر ڀيري هڪ ٽيپ. ڪجهه به ٻيهر لکڻو نٿو پوي.</string>
+    <string name="intro_documents_s1">ڪوٽيشن</string>
+    <string name="intro_documents_s2">ڊليوري چالان</string>
+    <string name="intro_documents_s3">انوائس</string>
+    <string name="intro_cashbook_body">هر شام گلو ڳڻيو ۽ ڏينهن بند ڪريو. ايپ ٻڌائي ٿي ته ان ۾ ڪيترو هئڻ گهرجي.</string>
+    <string name="intro_cashbook_s1">پئسا آيا ۽ ويا</string>
+    <string name="intro_cashbook_s2">گلو ڳڻيو</string>
+    <string name="intro_cashbook_s3">ڏينهن بند ڪريو</string>
+    <string name="intro_cheques_body">چيڪ صرف ڪليئر ٿيڻ تي کاتي ۾ وڃي ٿو. باؤنس ٿيل چيڪ ڪجهه به نٿو بدلائي.</string>
+    <string name="intro_cheques_s1">چيڪ لکو</string>
+    <string name="intro_cheques_s2">ڪليئر يا باؤنس</string>
+    <string name="intro_cheques_s3">ڪليئر: کاتي ۾</string>
+    <string name="intro_qr_body">گراهڪ جو ڪارڊ اسڪين ڪريو، سندس کاتو هڪدم کلي ٿو. ڪوڊ ۾ نه نالو آهي، نه نمبر، نه بيلنس.</string>
+    <string name="intro_qr_s1">سندس QR ٺاهيو</string>
+    <string name="intro_qr_s2">ڪارڊ موڪليو يا پرنٽ ڪريو</string>
+    <string name="intro_qr_s3">اسڪين: کاتو کلي ٿو</string>
+    <string name="intro_staff_body">پگهار، ايڊوانس ۽ حاضري هڪ هنڌ. ڪائونٽر تي هر ماڻهو پنهنجي PIN سان داخل ٿئي ٿو، ته جيئن خبر پوي ته ڪنهن ڇا ڪيو.</string>
+    <string name="intro_staff_s1">ماڻهو شامل ڪريو</string>
+    <string name="intro_staff_s2">حاضري ۽ پگهار</string>
+    <string name="intro_staff_s3">PIN سان داخل ٿيو</string>
+    <string name="intro_plans_body">قسطن تي وڪڻو. هر قسط واري ڏينهن ايپ ياد ڏياري ٿي.</string>
+    <string name="intro_plans_s1">گراهڪ چونڊيو</string>
+    <string name="intro_plans_s2">قسطون مقرر ڪريو</string>
+    <string name="intro_plans_s3">ان ڏينهن ياد ڏياريندڙ</string>
+    <string name="intro_followup_body">هر روز ٻڌائي ٿي ته ڪنهن کان پئسا گهرڻا آهن، پراڻو پهرين. هڪ ٽيپ سان واٽس ايپ تي نرم ياد ڏياريندڙ وڃي ٿو.</string>
+    <string name="intro_followup_s1">ڪنهن جي ذمي، پراڻو پهرين</string>
+    <string name="intro_followup_s2">واٽس ايپ تي ياد ڏياريو</string>
+    <string name="intro_followup_s3">پوءِ ٻيو</string>
+    <string name="intro_backup_body">توهان جو کاتو صرف هن فون تي آهي. فون کان ٻاهر بيڪ اپ هجي ته فون گم ٿيڻ تي به محفوظ رهي ٿو.</string>
+    <string name="intro_backup_s1">ڊرائيو يا فائل ۾ بيڪ اپ</string>
+    <string name="intro_backup_s2">اڳئين ڏينهن ڏانهن واپس</string>
+    <string name="intro_backup_s3">فون ۽ ڪمپيوٽر گڏ</string>
+    <string name="intro_orders_body">مال اچڻ تي آرڊر سپلائر جو بل بڻجي ٿو ۽ اسٽاڪ وڌي ٿو.</string>
+    <string name="intro_orders_s1">اسٽاڪ گهٽجي رهيو آهي</string>
+    <string name="intro_orders_s2">سپلائر کي آرڊر</string>
+    <string name="intro_orders_s3">مال آيو: بل بڻيو</string>
+    <string name="intro_expiry_body">جلد ايڪسپائر ٿيندڙ مال پهرين وڪامجي ٿو، ۽ بيچ ايڪسپائر ٿيڻ کان 60 ڏينهن اڳ ٻڌايو وڃي ٿو.</string>
+    <string name="intro_expiry_s1">بل تي بيچ ۽ ايڪسپائري</string>
+    <string name="intro_expiry_s2">جلد وارو پهرين</string>
+    <string name="intro_expiry_s3">واپس ڪريو يا ختم لکو</string>
 </resources>

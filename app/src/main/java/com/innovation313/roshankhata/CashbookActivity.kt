@@ -67,6 +67,8 @@ class CashbookActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cashbook)
+        // How this works, the first time (1 Nov 2026) - not when a notification brought the owner here to act.
+        if (!intent.getBooleanExtra(EXTRA_CLOSE_DAY, false)) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CASHBOOK)
         // Owner only, like the screen itself: a helper's phone shows no staff list.
         findViewById<android.view.View>(R.id.btnStaff).apply {
             visibility = if (com.innovation313.roshankhata.data.ViewerMode.isOn(this@CashbookActivity))

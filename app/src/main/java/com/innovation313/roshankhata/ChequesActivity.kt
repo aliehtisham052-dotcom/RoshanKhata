@@ -64,6 +64,8 @@ class ChequesActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cheques)
+        // How this works, the first time it opens on this phone (1 Nov 2026).
+        com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)

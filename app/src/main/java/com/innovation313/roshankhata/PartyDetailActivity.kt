@@ -112,6 +112,9 @@ class PartyDetailActivity : BaseActivity() {
 
         const val EXTRA_PARTY_ID = "party_id"
 
+        /** How long the entry just written wears its "New" look. */
+        private const val NEW_ENTRY_MS = 4500L
+
         /**
          * Open this entry on the full add-entry form, to edit it. The only
          * way to change an entry carrying items, rates or free goods; the
@@ -3077,6 +3080,8 @@ class PartyDetailActivity : BaseActivity() {
         // the screen's own balance had sometimes already taken the entry in, and "balance after"
         // counted it twice — a due date or a harvest promise then went by the wrong figure.
         val before = currentBalance
+        // The promised day as it stood, so Undo can put it back if this entry moved it.
+        val promiseBefore = harvestPromise
         AppScope.launch {
             // Numbering, the entry and its goods lines all happen inside the
             // DAO's own transaction — see insertEntryNumbered for why the count
@@ -3111,15 +3116,15 @@ class PartyDetailActivity : BaseActivity() {
                 val settledNow = !entry.isGiven && Money.isPositive(before) && !Money.isPositive(after)
                 when {
                     settledNow -> com.innovation313.roshankhata.ui.SettledCelebration.show(this@PartyDetailActivity, partyName)
-                    // Paid on the spot: nothing is owed, so no "udhar written"
-                    // message to send — instead, a way back if the box was ticked by mistake.
+                    // Paid on the spot: nothing is owed, so no "udhar written" message
+                    // to send; Undo takes back only the cash, if the box was ticked by mistake.
                     gotId != null -> {
-                        com.innovation313.roshankhata.ui.Motion.savedTick(this@PartyDetailActivity)
+                        showNewEntry(id)
                         offerUndoCash(id, gotId, entry.amount)
                     }
                     else -> {
-                        com.innovation313.roshankhata.ui.Motion.savedTick(this@PartyDetailActivity)
-                        offerEntryShare(entry, after)
+                        showNewEntry(id)
+                        showSavedCard(id, entry, after, promiseBefore)
                     }
                 }
             }
@@ -3189,35 +3194,102 @@ class PartyDetailActivity : BaseActivity() {
      * owner turned it off in settings. WhatsApp opens with the text ready;
      * the owner presses Send there.
      */
-    private fun offerEntryShare(entry: LedgerEntry, balanceAfter: Double) {
-        if (!partyIsCustomerAccount || partyPhone.isNullOrBlank() || noEntryShare ||
-            !BusinessProfile.askShareAfterEntry(this)) return
-        val message = Reminder.buildEntryMessage(
-            context = this,
-            partyName = partyName,
-            isGiven = entry.isGiven,
-            amount = entry.amount,
-            date = entry.timestamp,
-            balanceAfter = balanceAfter,
-            businessName = BusinessProfile.businessName(this)
+    /**
+     * The entry just written, said once (1 Nov 2026, the owner's design "A"): one card above
+     * I gave / I got with the tick, "Saved", what was written (way · amount · number), Undo and,
+     * for a customer with a number, Send on WhatsApp. It replaces the green disc in the middle of
+     * the screen and the separate "send this?" bar that came after it.
+     */
+    private fun showSavedCard(id: Long, entry: LedgerEntry, balanceAfter: Double, promiseBefore: Long?) {
+        if (isFinishing || isDestroyed) return
+        val share: (() -> Unit)? = if (partyIsCustomerAccount && !partyPhone.isNullOrBlank() && !noEntryShare &&
+            BusinessProfile.askShareAfterEntry(this)) {
+            {
+                val message = Reminder.buildEntryMessage(
+                    context = this,
+                    partyName = partyName,
+                    isGiven = entry.isGiven,
+                    amount = entry.amount,
+                    date = entry.timestamp,
+                    balanceAfter = balanceAfter,
+                    businessName = BusinessProfile.businessName(this)
+                )
+                Reminder.sendViaWhatsApp(this, partyPhone, message)
+            }
+        } else null
+        com.innovation313.roshankhata.ui.SavedCard.show(
+            this,
+            title = getString(R.string.saved),
+            line = savedLine(entry.isGiven, entry.amount, entry.entryNumber),
+            anchor = bottomBarContainer,
+            onUndo = { undoNewEntry(id, entry.amount, promiseBefore) },
+            onShare = share
         )
-        com.innovation313.roshankhata.ui.EntryBar.show(
-            this, getString(R.string.entry_share_offer, partyName), R.drawable.ic_action_whatsapp,
-            getString(R.string.entry_share_send), 4500
-        ) { Reminder.sendViaWhatsApp(this, partyPhone, message) }
+    }
+
+    /** "I Gave · Rs 600 · RK-000006": order-free, each part kept whole in either direction. */
+    private fun savedLine(isGiven: Boolean, amount: Double, number: String?): String =
+        listOfNotNull(
+            getString(if (isGiven) R.string.i_gave else R.string.i_got),
+            Format.isolate(Format.money(amount)),
+            number?.takeIf { it.isNotBlank() }?.let { Format.isolate(it) }
+        ).joinToString(" \u00b7 ")
+
+    /**
+     * Undo straight after Save: the entry goes to the Recycle Bin (30 days, restorable, written in
+     * Who did what - the same as deleting it), and the promised day goes back to what it was.
+     * Asks for a manager's PIN where deleting would.
+     */
+    private fun undoNewEntry(id: Long, amount: Double, promiseBefore: Long?) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { undoNewEntry(id, amount, promiseBefore) }) return
+        markNewEntry(null)
+        AppScope.launch {
+            dao.softDeleteEntry(id)
+            dao.audit(AuditActs.ENTRY_DELETED, "transactions", id, auditAmount(amount))
+            if (harvestPromise != promiseBefore) dao.setHarvestPromise(partyId, promiseBefore)
+            withContext(Dispatchers.Main) {
+                if (isFinishing || isDestroyed) return@withContext
+                harvestPromise = promiseBefore
+                refreshSeasonRecord()
+                offerUndo(listOf(id))
+            }
+        }
     }
 
     /**
-     * After a cash-rate sale saved with "money received now" ticked: says so,
-     * and Undo takes the cash "I got" back out, leaving the sale on udhar.
-     * Replaces the old "Was it received?" pop-up (3 Oct 2026), whose "Yes"
-     * was too easy to hit by accident straight after Save.
+     * After a cash-rate sale saved with "money received now" ticked: says so, and Undo takes the
+     * cash "I got" back out, leaving the sale on udhar. Replaces the old "Was it received?" pop-up
+     * (3 Oct 2026), whose "Yes" was too easy to hit by accident straight after Save. The saved
+     * card's look since 1 Nov 2026.
      */
     private fun offerUndoCash(saleId: Long, gotId: Long, amount: Double) {
-        com.innovation313.roshankhata.ui.EntryBar.show(
-            this, getString(R.string.cash_paid_recorded, Format.money(amount)), R.drawable.ic_check_circle,
-            getString(R.string.undo), 4500
-        ) { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
+        com.innovation313.roshankhata.ui.SavedCard.show(
+            this,
+            title = getString(R.string.cash_paid_recorded, Format.money(amount)),
+            anchor = bottomBarContainer,
+            onUndo = { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
+        )
+    }
+
+    // ---------- The entry just written: "New" for a few seconds (1 Nov 2026) ----------
+
+    private val clearNewEntry = Runnable { markNewEntry(null) }
+
+    /** Marks [id] as new, brings it into sight once it is in the list, and lets it go after a few seconds. */
+    internal fun showNewEntry(id: Long) {
+        markNewEntry(id)
+        val rv = findViewById<RecyclerView>(R.id.rvEntries)
+        rv.removeCallbacks(clearNewEntry)
+        // The list takes the row in from the database a moment later; then it is scrolled to.
+        rv.postDelayed({
+            val at = adapter.positionOf(id)
+            if (at != -1) rv.smoothScrollToPosition(at)
+        }, 350)
+        rv.postDelayed(clearNewEntry, NEW_ENTRY_MS)
+    }
+
+    private fun markNewEntry(id: Long?) {
+        if (::adapter.isInitialized) adapter.markNew(id)
     }
 
     /**
@@ -3532,7 +3604,8 @@ class PartyDetailActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_customer_qr -> {
-                showCustomerQr()
+                // The first time: what the card is for, then the card (1 Nov 2026).
+                com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CUSTOMER_QR) { showCustomerQr() }
                 true
             }
             R.id.action_report -> {

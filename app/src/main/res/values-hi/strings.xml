@@ -3639,4 +3639,52 @@
         <item quantity="one">और %1$d बैच</item>
         <item quantity="other">और %1$d बैच</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">नया</string>
+    <string name="help_feature_guides">फ़ीचर गाइड</string>
+    <string name="intro_counter_body">ग्राहक की बिक्री उसके खाते में जाती है, आम ग्राहक की कैशबुक में। स्टॉक दोनों में घटता है।</string>
+    <string name="intro_counter_s1">आइटम चुनें</string>
+    <string name="intro_counter_s2">ग्राहक या आम ग्राहक</string>
+    <string name="intro_counter_s3">पैसे लें</string>
+    <string name="intro_documents_body">कोटेशन से ऑर्डर, फिर चालान और फिर इनवॉइस, हर बार एक टैप। कुछ भी दोबारा नहीं लिखना पड़ता।</string>
+    <string name="intro_documents_s1">कोटेशन</string>
+    <string name="intro_documents_s2">डिलीवरी चालान</string>
+    <string name="intro_documents_s3">इनवॉइस</string>
+    <string name="intro_cashbook_body">हर शाम गल्ला गिनें और दिन बंद करें। ऐप बताता है कि उसमें कितना होना चाहिए।</string>
+    <string name="intro_cashbook_s1">पैसा आया और गया</string>
+    <string name="intro_cashbook_s2">गल्ला गिनें</string>
+    <string name="intro_cashbook_s3">दिन बंद करें</string>
+    <string name="intro_cheques_body">चेक क्लियर होने पर ही खाते में जाता है। बाउंस हुआ चेक कुछ नहीं बदलता।</string>
+    <string name="intro_cheques_s1">चेक लिखें</string>
+    <string name="intro_cheques_s2">क्लियर या बाउंस</string>
+    <string name="intro_cheques_s3">क्लियर: खाते में</string>
+    <string name="intro_qr_body">ग्राहक का कार्ड स्कैन करें, उसका खाता तुरंत खुल जाता है। कोड में न नाम है, न नंबर, न बैलेंस।</string>
+    <string name="intro_qr_s1">उसका QR बनाएँ</string>
+    <string name="intro_qr_s2">कार्ड भेजें या प्रिंट करें</string>
+    <string name="intro_qr_s3">स्कैन: खाता खुलता है</string>
+    <string name="intro_staff_body">वेतन, एडवांस और हाज़िरी एक जगह। काउंटर पर हर व्यक्ति अपने PIN से अंदर आता है, ताकि पता रहे किसने क्या किया।</string>
+    <string name="intro_staff_s1">व्यक्ति जोड़ें</string>
+    <string name="intro_staff_s2">हाज़िरी और वेतन</string>
+    <string name="intro_staff_s3">PIN से अंदर आएँ</string>
+    <string name="intro_plans_body">किस्तों पर बेचें। हर किस्त के दिन ऐप याद दिलाता है।</string>
+    <string name="intro_plans_s1">ग्राहक चुनें</string>
+    <string name="intro_plans_s2">किस्तें तय करें</string>
+    <string name="intro_plans_s3">उसी दिन याद</string>
+    <string name="intro_followup_body">हर दिन बताता है किससे पैसे माँगने हैं, सबसे पुराना पहले। एक टैप में WhatsApp पर नरम रिमाइंडर जाता है।</string>
+    <string name="intro_followup_s1">किस पर बकाया, पुराना पहले</string>
+    <string name="intro_followup_s2">WhatsApp पर याद दिलाएँ</string>
+    <string name="intro_followup_s3">फिर अगला</string>
+    <string name="intro_backup_body">आपका खाता सिर्फ़ इसी फ़ोन पर है। फ़ोन के बाहर बैकअप हो तो फ़ोन खोने पर भी सुरक्षित रहता है।</string>
+    <string name="intro_backup_s1">Drive या फ़ाइल में बैकअप</string>
+    <string name="intro_backup_s2">पिछले दिन पर वापस</string>
+    <string name="intro_backup_s3">फ़ोन और कंप्यूटर साथ</string>
+    <string name="intro_orders_body">माल आने पर ऑर्डर सप्लायर का बिल बन जाता है और स्टॉक बढ़ जाता है।</string>
+    <string name="intro_orders_s1">स्टॉक कम हो रहा है</string>
+    <string name="intro_orders_s2">सप्लायर को ऑर्डर</string>
+    <string name="intro_orders_s3">माल आया: बिल बना</string>
+    <string name="intro_expiry_body">जल्दी एक्सपायर होने वाला माल पहले बिकता है, और बैच एक्सपायर होने से 60 दिन पहले बताया जाता है।</string>
+    <string name="intro_expiry_s1">बिल पर बैच और एक्सपायरी</string>
+    <string name="intro_expiry_s2">जल्दी वाला पहले बिके</string>
+    <string name="intro_expiry_s3">लौटाएँ या खत्म लिखें</string>
 </resources>

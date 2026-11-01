@@ -128,6 +128,8 @@ class FollowUpActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_followup)
+        // How this works, the first time (1 Nov 2026) - not when a notification brought the owner here to act.
+        if (!intent.getBooleanExtra(EXTRA_START_QUEUE, false)) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.FOLLOWUP)
         ScreenInsets.on(this)
 
         tvSummary = findViewById(R.id.tvFollowUpSummary)

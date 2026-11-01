@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A step's number disc: the deep green with a gold edge, the app's own marks (white figure on it). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/brand_green" />
+    <stroke android:width="2dp" android:color="@color/brand_gold" />
+</shape>
