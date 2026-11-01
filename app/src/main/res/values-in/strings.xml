@@ -1902,7 +1902,7 @@
     <string name="drive_other_phone_replace">Pakai buku ponsel ini</string>
     <string name="notif_backup_other_phone_title">Pencadangan dihentikan</string>
     <string name="notif_backup_other_phone_body">Ponsel lain terakhir mencadangkan toko ini. Buka Cadangan dan pilih buku ponsel mana yang dipakai.</string>
-    <string name="cash_paid_now">Uang diterima sekarang, tunai (catat juga \"Saya Terima\")</string>
+    <string name="cash_paid_now">Sudah dibayar tunai sekarang</string>
     <string name="cash_paid_recorded">%1$s diterima tunai. Penjualan dan pembayaran keduanya dicatat.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">Editorial</string>
@@ -3631,4 +3631,5 @@
     <string name="intro_expiry_s3">Kembalikan atau hapuskan</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">Belum ada catatan</string>
+    <string name="cash_paid_now_help">Penjualan dan uang tunai yang diterima disimpan bersama, jadi tidak ada yang perlu ditagih.</string>
 </resources>

@@ -1925,7 +1925,7 @@
     <string name="drive_other_phone_replace">دفتر این گوشی بماند</string>
     <string name="notif_backup_other_phone_title">پشتیبان‌گیری متوقف شد</string>
     <string name="notif_backup_other_phone_body">آخرین پشتیبان این مغازه از گوشی دیگری گرفته شده است. صفحهٔ پشتیبان را باز کنید و انتخاب کنید دفتر کدام گوشی بماند.</string>
-    <string name="cash_paid_now">پول همین حالا نقد رسید («گرفتم» را هم بنویس)</string>
+    <string name="cash_paid_now">همین حالا نقد پرداخت شد</string>
     <string name="cash_paid_recorded">%1$s نقد دریافت شد. فروش و پرداخت هر دو ثبت شد.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">سردبیری</string>
@@ -3669,4 +3669,5 @@
     <string name="intro_expiry_s3">مرجوع کنید یا حذف کنید</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">بدون ثبت</string>
+    <string name="cash_paid_now_help">فروش و پول نقد دریافتی با هم ثبت می‌شوند، پس چیزی برای وصول باقی نمی‌ماند.</string>
 </resources>

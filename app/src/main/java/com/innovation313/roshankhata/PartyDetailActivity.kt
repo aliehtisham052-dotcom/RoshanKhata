@@ -1061,6 +1061,7 @@ class PartyDetailActivity : BaseActivity() {
         fun syncPaidNow() {
             val show = editing == null && isSale() && chosenRateType() == RateType.CASH
             cbPaidNow.visibility = if (show) View.VISIBLE else View.GONE
+            view.findViewById<View>(R.id.tvPaidNowHelp).visibility = cbPaidNow.visibility
             if (!show) cbPaidNow.isChecked = false
         }
 

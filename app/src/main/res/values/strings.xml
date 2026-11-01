@@ -1950,7 +1950,7 @@
     <string name="drive_other_phone_replace">Keep this phone\'s book</string>
     <string name="notif_backup_other_phone_title">Backup stopped</string>
     <string name="notif_backup_other_phone_body">Another phone backed up this shop last. Open Backup and choose which phone\'s book to keep.</string>
-    <string name="cash_paid_now">Money received now, in cash (also write the \"I got\")</string>
+    <string name="cash_paid_now">Paid in cash now</string>
     <string name="cash_paid_recorded">%1$s received in cash. Sale and payment both written.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">Editorial</string>
@@ -3853,4 +3853,5 @@
     <string name="intro_expiry_s3">Return it or write it off</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">No entries</string>
+    <string name="cash_paid_now_help">The sale and the cash received are saved together, so nothing is left to collect.</string>
 </resources>
