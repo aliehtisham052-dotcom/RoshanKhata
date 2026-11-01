@@ -3629,4 +3629,6 @@
     <string name="intro_expiry_s1">Batch dan kedaluwarsa di tagihan</string>
     <string name="intro_expiry_s2">Tercepat dijual dulu</string>
     <string name="intro_expiry_s3">Kembalikan atau hapuskan</string>
+    <!-- Khata list: a party never written to (1 Nov 2026) -->
+    <string name="party_no_entries">Belum ada catatan</string>
 </resources>

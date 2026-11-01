@@ -3687,4 +3687,6 @@
     <string name="intro_expiry_s1">बिल पर बैच और एक्सपायरी</string>
     <string name="intro_expiry_s2">जल्दी वाला पहले बिके</string>
     <string name="intro_expiry_s3">लौटाएँ या खत्म लिखें</string>
+    <!-- Khata list: a party never written to (1 Nov 2026) -->
+    <string name="party_no_entries">कोई एंट्री नहीं</string>
 </resources>

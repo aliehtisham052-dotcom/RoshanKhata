@@ -3851,4 +3851,6 @@
     <string name="intro_expiry_s1">Batch and expiry on the bill</string>
     <string name="intro_expiry_s2">Soonest sold first</string>
     <string name="intro_expiry_s3">Return it or write it off</string>
+    <!-- Khata list: a party never written to (1 Nov 2026) -->
+    <string name="party_no_entries">No entries</string>
 </resources>

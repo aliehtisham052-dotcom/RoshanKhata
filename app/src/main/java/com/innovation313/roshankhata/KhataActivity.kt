@@ -1154,6 +1154,8 @@ class KhataActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        // A row that grew into a ledger is shown again even if its fold-back was cut short.
+        com.innovation313.roshankhata.ui.RowToScreen.settle(findViewById(R.id.rvParties))
         // Balance hidden or shown on Home while this screen sat in the back
         // stack: follow it now, since this screen has no eye of its own.
         renderPrivacy()

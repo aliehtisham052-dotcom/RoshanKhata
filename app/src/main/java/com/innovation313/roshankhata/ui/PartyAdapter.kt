@@ -74,6 +74,10 @@ class PartyAdapter(
                 android.content.res.ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.row_selected))
             else null
 
+        // A recycled row may carry the hidden state and transition name of the row that grew into
+        // a ledger (RowToScreen.plain): it starts plain, or the card is a blank gap.
+        RowToScreen.plain(holder.itemView)
+
         holder.tvName.text = Format.name(item.name)
 
         // Photo if we have one, initials if not. A list of blank grey circles
@@ -130,7 +134,10 @@ class PartyAdapter(
             ContextCompat.getColor(ctx, Format.customerBalanceColour(item.balance))
         )
         // Which way the balance runs, in the one shared rule's words (balanceSideWord, 29 Oct 2026).
-        holder.tvBalanceLabel.setText(WordIds.string(balanceSideWord(item.balance)))
+        // A customer added and never written to is not "Settled" - nothing was ever dealt.
+        if (item.lastActivity <= 0L && !Money.isPositive(item.balance) && !Money.isPositive(-item.balance))
+            holder.tvBalanceLabel.setText(R.string.party_no_entries)
+        else holder.tvBalanceLabel.setText(WordIds.string(balanceSideWord(item.balance)))
 
         // The badge only speaks when a limit was actually set and the party
         // is at or beyond it. Below the line it stays quiet — a warning that

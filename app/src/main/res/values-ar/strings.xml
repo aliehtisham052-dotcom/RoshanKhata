@@ -3871,4 +3871,6 @@
     <string name="intro_expiry_s1">الدفعة والصلاحية في الفاتورة</string>
     <string name="intro_expiry_s2">الأقرب انتهاءً أولاً</string>
     <string name="intro_expiry_s3">أرجعها أو اشطبها</string>
+    <!-- Khata list: a party never written to (1 Nov 2026) -->
+    <string name="party_no_entries">لا قيود</string>
 </resources>
