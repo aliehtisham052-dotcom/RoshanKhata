@@ -2069,7 +2069,7 @@
     <string name="drive_other_phone_replace">أبقِ دفتر هذا الهاتف</string>
     <string name="notif_backup_other_phone_title">توقّف النسخ الاحتياطي</string>
     <string name="notif_backup_other_phone_body">آخر نسخة احتياطية لهذا المتجر جاءت من هاتف آخر. افتح النسخ الاحتياطي واختر دفتر أي هاتف يبقى.</string>
-    <string name="cash_paid_now">استُلم المبلغ نقدًا الآن (سجّل «استلمتُ» أيضًا)</string>
+    <string name="cash_paid_now">دُفع نقدًا الآن</string>
     <string name="cash_paid_recorded">استُلم %1$s نقدًا. سُجّل البيع والدفع معًا.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">تحريري</string>
@@ -3873,4 +3873,5 @@
     <string name="intro_expiry_s3">أرجعها أو اشطبها</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">لا قيود</string>
+    <string name="cash_paid_now_help">يُحفظ البيع والمبلغ النقدي المستلم معًا، فلا يبقى شيء للتحصيل.</string>
 </resources>

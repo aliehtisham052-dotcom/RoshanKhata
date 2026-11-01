@@ -1897,7 +1897,7 @@
     <string name="drive_other_phone_replace">Is phone ka khata rakhein</string>
     <string name="notif_backup_other_phone_title">Backup ruk gaya</string>
     <string name="notif_backup_other_phone_body">Is dukaan ka aakhri backup doosre phone se hua hai. Backup khol kar faisla karein ke kis phone ka khata rakhna hai.</string>
-    <string name="cash_paid_now">Paise abhi naqd mil gaye (\"Main Ne Liya\" bhi likhein)</string>
+    <string name="cash_paid_now">Abhi naqd adaigi ho gayi</string>
     <string name="cash_paid_recorded">%1$s naqd mil gaye. Sale aur wusooli dono likh di gayin.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">Akhbari</string>
@@ -3641,4 +3641,5 @@
     <string name="intro_expiry_s3">Wapas karein ya khatam likhein</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">Koi entry nahi</string>
+    <string name="cash_paid_now_help">Sale aur mili hui naqd raqam ek saath save hoti hain, is liye wasooli ke liye kuch baqi nahi rehta.</string>
 </resources>

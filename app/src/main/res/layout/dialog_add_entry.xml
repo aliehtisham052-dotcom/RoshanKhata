@@ -774,6 +774,18 @@
                 android:text="@string/cash_paid_now"
                 android:textSize="14sp"
                 android:visibility="gone" />
+
+            <!-- What the tick does, in words (1 Nov 2026, the owner: an "I got" named on an "I gave" form read wrong). -->
+            <TextView
+                android:id="@+id/tvPaidNowHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="32dp"
+                android:text="@string/cash_paid_now_help"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!--

@@ -1925,7 +1925,7 @@
     <string name="drive_other_phone_replace">هن فون جو کاتو رکو</string>
     <string name="notif_backup_other_phone_title">بيڪ اپ رڪجي ويو</string>
     <string name="notif_backup_other_phone_body">هن دڪان جو آخري بيڪ اپ ٻئي فون تان ٿيو آهي. بيڪ اپ کولي فيصلو ڪريو ته ڪهڙي فون جو کاتو رکڻو آهي.</string>
-    <string name="cash_paid_now">پئسا هينئر نقد ملي ويا («مون ورتا» به لکو)</string>
+    <string name="cash_paid_now">هينئر نقد ادائيگي ٿي وئي</string>
     <string name="cash_paid_recorded">%1$s نقد ملي ويا. وڪرو ۽ وصولي ٻئي لکيا ويا.</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">اخباري</string>
@@ -3669,4 +3669,5 @@
     <string name="intro_expiry_s3">واپس ڪريو يا ختم لکو</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">ڪا داخلا ناهي</string>
+    <string name="cash_paid_now_help">وڪرو ۽ مليل نقد رقم گڏ محفوظ ٿين ٿا، ان ڪري وصولي لاءِ ڪجهه به باقي نٿو رهي.</string>
 </resources>

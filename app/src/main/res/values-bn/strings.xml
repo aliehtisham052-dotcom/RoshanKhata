@@ -1945,7 +1945,7 @@
     <string name="drive_other_phone_replace">এই ফোনের খাতা রাখুন</string>
     <string name="notif_backup_other_phone_title">ব্যাকআপ থেমে গেছে</string>
     <string name="notif_backup_other_phone_body">এই দোকানের শেষ ব্যাকআপ অন্য ফোন থেকে নেওয়া হয়েছে। ব্যাকআপ খুলে ঠিক করুন কোন ফোনের খাতা রাখবেন।</string>
-    <string name="cash_paid_now">টাকা এখনই নগদ পাওয়া গেছে (\"আমি পেয়েছি\"-ও লিখুন)</string>
+    <string name="cash_paid_now">এখনই নগদে পরিশোধ হয়েছে</string>
     <string name="cash_paid_recorded">%1$s নগদ পাওয়া গেছে। বিক্রি ও পেমেন্ট দুটিই লেখা হয়েছে।</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">এডিটোরিয়াল</string>
@@ -3689,4 +3689,5 @@
     <string name="intro_expiry_s3">ফেরত দিন বা বাদ দিন</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">কোনো এন্ট্রি নেই</string>
+    <string name="cash_paid_now_help">বিক্রি আর পাওয়া নগদ টাকা একসাথে সেভ হয়, তাই আদায়ের কিছু বাকি থাকে না।</string>
 </resources>

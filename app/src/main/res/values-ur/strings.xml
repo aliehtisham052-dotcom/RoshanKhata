@@ -1897,7 +1897,7 @@
     <string name="drive_other_phone_replace">اس فون کا کھاتہ رکھیں</string>
     <string name="notif_backup_other_phone_title">بیک اپ رک گیا</string>
     <string name="notif_backup_other_phone_body">اس دکان کا آخری بیک اپ دوسرے فون سے ہوا ہے۔ بیک اپ کھول کر فیصلہ کریں کہ کس فون کا کھاتہ رکھنا ہے۔</string>
-    <string name="cash_paid_now">پیسے ابھی نقد مل گئے («میں نے لیا» بھی لکھیں)</string>
+    <string name="cash_paid_now">ابھی نقد ادائیگی ہو گئی</string>
     <string name="cash_paid_recorded">%1$s نقد مل گئے۔ فروخت اور وصولی دونوں لکھ دی گئیں۔</string>
     <!-- Business card: 24 designs and new contact fields (4 Oct 2026) -->
     <string name="biz_tpl_editorial">اخباری</string>
@@ -3641,4 +3641,5 @@
     <string name="intro_expiry_s3">واپس کریں یا ختم لکھیں</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">کوئی اندراج نہیں</string>
+    <string name="cash_paid_now_help">سیل اور ملی ہوئی نقد رقم ایک ساتھ محفوظ ہوتی ہیں، اس لیے وصولی کے لیے کچھ باقی نہیں رہتا۔</string>
 </resources>
