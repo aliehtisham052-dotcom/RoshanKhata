@@ -3639,4 +3639,6 @@
     <string name="intro_expiry_s1">Bill par batch aur expiry</string>
     <string name="intro_expiry_s2">Jaldi wala pehle bike</string>
     <string name="intro_expiry_s3">Wapas karein ya khatam likhein</string>
+    <!-- Khata list: a party never written to (1 Nov 2026) -->
+    <string name="party_no_entries">Koi entry nahi</string>
 </resources>

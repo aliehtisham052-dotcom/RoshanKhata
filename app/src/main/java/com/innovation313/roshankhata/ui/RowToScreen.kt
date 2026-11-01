@@ -46,6 +46,31 @@ object RowToScreen {
         }
     }
 
+    /**
+     * Back on the list, once the fold-back has had its time: every row on screen plain again
+     * (1 Nov 2026, the owner's photo of a blank card-sized gap in Khata). The framework hides the
+     * row that grew into the ledger and shows it again only at the end of the return transition;
+     * when that return was cut short (the list changed while the ledger was open - a new entry
+     * moves the customer - or the ledger closed another way), the row stayed hidden, and the
+     * RecyclerView then gave that hidden row to another customer. Its transition name went with
+     * it, so a later return could hide the wrong row again.
+     */
+    fun settle(list: androidx.recyclerview.widget.RecyclerView) {
+        list.postDelayed({
+            for (i in 0 until list.childCount) plain(list.getChildAt(i))
+        }, SETTLE_MS)
+    }
+
+    /** One row: visible, opaque, no transition name (also every bind - a recycled row starts plain). */
+    fun plain(row: View) {
+        row.transitionName = null
+        if (row.visibility != View.VISIBLE) row.visibility = View.VISIBLE
+        if (row.alpha != 1f) row.alpha = 1f
+    }
+
+    /** Longer than the 280 ms fold-back, so a return that runs is never cut. */
+    private const val SETTLE_MS = 600L
+
     fun start(activity: Activity, intent: Intent, row: View?) {
         if (row == null || !Motion.enabled(activity) || !row.isAttachedToWindow) {
             activity.startActivity(intent)

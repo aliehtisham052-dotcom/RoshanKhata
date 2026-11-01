@@ -3667,4 +3667,6 @@
     <string name="intro_expiry_s1">بچ و تاریخ انقضا روی فاکتور</string>
     <string name="intro_expiry_s2">زودتر منقضی، اول فروش</string>
     <string name="intro_expiry_s3">مرجوع کنید یا حذف کنید</string>
+    <!-- Khata list: a party never written to (1 Nov 2026) -->
+    <string name="party_no_entries">بدون ثبت</string>
 </resources>

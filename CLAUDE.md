@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,677 strings and 58 plurals (2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,678 strings and 58 plurals (2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1762,6 +1762,13 @@ Each of these cost a build or a bug.
     the row calls `TextFit.stackWhenLarge(nameColumn, figureColumn)` (Khata list, Khata Report), which puts the
     figure under the name above `TextFit.STACK_SCALE`. `screen-proof.yml` takes 28 phone screens in four looks
     (English 150% day, Urdu 150% night, Bengali night, Indonesian 85%) to the `screen-proof` release — look at them.
+
+62. **A shared-element row is hidden until its return ends — in a RecyclerView that row is recycled.** The Khata
+    row that grows into the ledger (`RowToScreen`) is made invisible by the framework and shown again only when the
+    fold-back finishes; a return cut short (the list changed under it) left it hidden, and the list gave the hidden
+    row to another customer: a blank card-sized gap (the owner's photo, 1 Nov 2026). Every bind makes a row plain
+    (`RowToScreen.plain`: visible, opaque, no transition name) and the list settles its rows after resuming
+    (`RowToScreen.settle`). A party never written to reads "No entries", not "Settled" (`party_no_entries`).
 
 ---
 
