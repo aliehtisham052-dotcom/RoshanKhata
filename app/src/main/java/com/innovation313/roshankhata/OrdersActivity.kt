@@ -19,6 +19,8 @@ class OrdersActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_orders)
+        // How this works, the first time (1 Nov 2026) - not when a notification brought the owner here to act.
+        if (!intent.getBooleanExtra(EXTRA_START_LOW, false)) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.ORDERS)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==

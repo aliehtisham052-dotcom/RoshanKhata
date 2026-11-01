@@ -3803,4 +3803,52 @@
         <item quantity="one">and %1$d more batch</item>
         <item quantity="other">and %1$d more batches</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">New</string>
+    <string name="help_feature_guides">Feature guides</string>
+    <string name="intro_counter_body">A customer\'s sale goes into their khata, a walk-in\'s into the cashbook. Stock comes off either way.</string>
+    <string name="intro_counter_s1">Pick the items</string>
+    <string name="intro_counter_s2">Customer or walk-in</string>
+    <string name="intro_counter_s3">Take the money</string>
+    <string name="intro_documents_body">A quotation becomes an order, a challan and then an invoice, one tap each. Nothing is typed twice.</string>
+    <string name="intro_documents_s1">Quotation</string>
+    <string name="intro_documents_s2">Delivery challan</string>
+    <string name="intro_documents_s3">Invoice</string>
+    <string name="intro_cashbook_body">Every evening, count the drawer and close the day. The app tells you what should be in it.</string>
+    <string name="intro_cashbook_s1">Money in and out</string>
+    <string name="intro_cashbook_s2">Count the drawer</string>
+    <string name="intro_cashbook_s3">Close the day</string>
+    <string name="intro_cheques_body">A cheque reaches the khata only when it clears. A bounced cheque changes nothing.</string>
+    <string name="intro_cheques_s1">Write the cheque</string>
+    <string name="intro_cheques_s2">Clears or bounces</string>
+    <string name="intro_cheques_s3">Cleared: into the khata</string>
+    <string name="intro_qr_body">Scan a customer\'s card and their khata opens at once. The code carries no name, number or balance.</string>
+    <string name="intro_qr_s1">Make their QR</string>
+    <string name="intro_qr_s2">Send or print the card</string>
+    <string name="intro_qr_s3">Scan: the khata opens</string>
+    <string name="intro_staff_body">Salary, advances and attendance in one place. At the counter each person signs in with a PIN, so you know who did what.</string>
+    <string name="intro_staff_s1">Add a person</string>
+    <string name="intro_staff_s2">Attendance and salary</string>
+    <string name="intro_staff_s3">Sign in with a PIN</string>
+    <string name="intro_plans_body">Sell on instalments. The app reminds you on the day each one is due.</string>
+    <string name="intro_plans_s1">Pick the customer</string>
+    <string name="intro_plans_s2">Set the instalments</string>
+    <string name="intro_plans_s3">A reminder on the day</string>
+    <string name="intro_followup_body">Every day it lists whom to ask for money, oldest first. One tap sends a polite WhatsApp reminder.</string>
+    <string name="intro_followup_s1">Who owes, oldest first</string>
+    <string name="intro_followup_s2">Remind on WhatsApp</string>
+    <string name="intro_followup_s3">Then the next one</string>
+    <string name="intro_backup_body">Your khata lives only on this phone. A backup outside the phone keeps it safe if the phone is lost.</string>
+    <string name="intro_backup_s1">Back up to Drive or a file</string>
+    <string name="intro_backup_s2">Go back to an earlier day</string>
+    <string name="intro_backup_s3">Phone and computer together</string>
+    <string name="intro_orders_body">When the goods arrive, the order becomes the supplier\'s bill and your stock goes up.</string>
+    <string name="intro_orders_s1">Stock running low</string>
+    <string name="intro_orders_s2">Order from the supplier</string>
+    <string name="intro_orders_s3">Received: it becomes a bill</string>
+    <string name="intro_expiry_body">Goods are sold soonest-expiring first, and you are told 60 days before a batch expires.</string>
+    <string name="intro_expiry_s1">Batch and expiry on the bill</string>
+    <string name="intro_expiry_s2">Soonest sold first</string>
+    <string name="intro_expiry_s3">Return it or write it off</string>
 </resources>

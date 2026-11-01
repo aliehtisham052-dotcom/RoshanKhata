@@ -55,6 +55,7 @@ class StoreScreenshotsTest(private val language: String) {
     fun seed() {
         app.getSharedPreferences("language", Context.MODE_PRIVATE).edit().putBoolean("chosen", true).commit()
         app.getSharedPreferences("welcome", Context.MODE_PRIVATE).edit().putBoolean("welcome_seen", true).commit()
+        com.innovation313.roshankhata.ui.FeatureIntro.markAllSeen(app)
         CoachMarkController.markRun(app)
         // Home's one-time backup offer (MainActivity.maybeOfferBackup) sat
         // over the first English screenshot; the listing shows the screen.

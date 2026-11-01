@@ -3591,4 +3591,52 @@
         <item quantity="one">اور %1$d مزید بیچ</item>
         <item quantity="other">اور %1$d مزید بیچ</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">نیا</string>
+    <string name="help_feature_guides">فیچرز کی وضاحت</string>
+    <string name="intro_counter_body">گاہک کی سیل اس کے کھاتے میں جاتی ہے، عام گاہک کی کیش بک میں۔ اسٹاک دونوں صورتوں میں کم ہوتا ہے۔</string>
+    <string name="intro_counter_s1">آئٹم چنیں</string>
+    <string name="intro_counter_s2">گاہک یا عام گاہک</string>
+    <string name="intro_counter_s3">پیسے لیں</string>
+    <string name="intro_documents_body">کوٹیشن سے آرڈر، پھر چالان اور پھر انوائس، ہر بار ایک ٹیپ۔ کچھ بھی دوبارہ لکھنا نہیں پڑتا۔</string>
+    <string name="intro_documents_s1">کوٹیشن</string>
+    <string name="intro_documents_s2">ڈیلیوری چالان</string>
+    <string name="intro_documents_s3">انوائس</string>
+    <string name="intro_cashbook_body">ہر شام گلہ گنیں اور دن بند کریں۔ ایپ بتاتی ہے کہ اس میں کتنا ہونا چاہیے۔</string>
+    <string name="intro_cashbook_s1">پیسہ آیا اور گیا</string>
+    <string name="intro_cashbook_s2">گلہ گنیں</string>
+    <string name="intro_cashbook_s3">دن بند کریں</string>
+    <string name="intro_cheques_body">چیک کلیئر ہونے پر ہی کھاتے میں جاتا ہے۔ باؤنس ہونے والا چیک کچھ نہیں بدلتا۔</string>
+    <string name="intro_cheques_s1">چیک لکھیں</string>
+    <string name="intro_cheques_s2">کلیئر یا باؤنس</string>
+    <string name="intro_cheques_s3">کلیئر: کھاتے میں</string>
+    <string name="intro_qr_body">گاہک کا کارڈ اسکین کریں، اس کا کھاتہ فوراً کھل جاتا ہے۔ کوڈ میں نہ نام ہے، نہ نمبر، نہ بیلنس۔</string>
+    <string name="intro_qr_s1">اس کا کیو آر بنائیں</string>
+    <string name="intro_qr_s2">کارڈ بھیجیں یا پرنٹ کریں</string>
+    <string name="intro_qr_s3">اسکین: کھاتہ کھل جاتا ہے</string>
+    <string name="intro_staff_body">تنخواہ، ایڈوانس اور حاضری ایک جگہ۔ کاؤنٹر پر ہر بندہ اپنے PIN سے داخل ہوتا ہے، تاکہ پتا رہے کس نے کیا کیا۔</string>
+    <string name="intro_staff_s1">بندہ شامل کریں</string>
+    <string name="intro_staff_s2">حاضری اور تنخواہ</string>
+    <string name="intro_staff_s3">PIN سے داخل ہوں</string>
+    <string name="intro_plans_body">قسطوں پر بیچیں۔ ہر قسط کے دن ایپ یاد دلاتی ہے۔</string>
+    <string name="intro_plans_s1">گاہک چنیں</string>
+    <string name="intro_plans_s2">قسطیں طے کریں</string>
+    <string name="intro_plans_s3">اسی دن یاد دہانی</string>
+    <string name="intro_followup_body">ہر روز بتاتی ہے کس سے پیسے مانگنے ہیں، پرانا پہلے۔ ایک ٹیپ سے واٹس ایپ پر نرم یاد دہانی جاتی ہے۔</string>
+    <string name="intro_followup_s1">کس کے ذمے، پرانا پہلے</string>
+    <string name="intro_followup_s2">واٹس ایپ پر یاد دہانی</string>
+    <string name="intro_followup_s3">پھر اگلا</string>
+    <string name="intro_backup_body">آپ کا کھاتہ صرف اسی فون پر ہے۔ فون سے باہر بیک اپ ہو تو فون گم ہونے پر بھی محفوظ رہتا ہے۔</string>
+    <string name="intro_backup_s1">ڈرائیو یا فائل میں بیک اپ</string>
+    <string name="intro_backup_s2">پچھلے دن پر واپس جائیں</string>
+    <string name="intro_backup_s3">فون اور کمپیوٹر ایک ساتھ</string>
+    <string name="intro_orders_body">مال آنے پر آرڈر سپلائر کا بل بن جاتا ہے اور اسٹاک بڑھ جاتا ہے۔</string>
+    <string name="intro_orders_s1">اسٹاک کم ہو رہا ہے</string>
+    <string name="intro_orders_s2">سپلائر کو آرڈر</string>
+    <string name="intro_orders_s3">مال آیا: بل بن گیا</string>
+    <string name="intro_expiry_body">جلد ایکسپائر ہونے والا مال پہلے بکتا ہے، اور بیچ ایکسپائر ہونے سے 60 دن پہلے بتا دیا جاتا ہے۔</string>
+    <string name="intro_expiry_s1">بل پر بیچ اور ایکسپائری</string>
+    <string name="intro_expiry_s2">جلد والا پہلے بکے</string>
+    <string name="intro_expiry_s3">واپس کریں یا ختم لکھیں</string>
 </resources>

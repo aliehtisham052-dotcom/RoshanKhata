@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The saved card's mark (1 Nov 2026): the deep green disc with a gold ring, the owner's chosen design. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/brand_green" />
+    <stroke android:width="3dp" android:color="@color/brand_gold" />
+</shape>

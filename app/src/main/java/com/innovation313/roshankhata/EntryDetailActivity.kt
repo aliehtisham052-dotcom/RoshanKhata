@@ -775,7 +775,7 @@ class EntryDetailActivity : BaseActivity() {
                     runCatching { com.innovation313.roshankhata.data.EntrySignature.save(this@EntryDetailActivity, entryId, bmp) }.isSuccess
                 }
                 if (ok) {
-                    com.innovation313.roshankhata.ui.Motion.savedTick(this@EntryDetailActivity)
+                    com.innovation313.roshankhata.ui.SavedCard.show(this@EntryDetailActivity, getString(R.string.saved))
                     showSignature()
                 } else {
                     Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()

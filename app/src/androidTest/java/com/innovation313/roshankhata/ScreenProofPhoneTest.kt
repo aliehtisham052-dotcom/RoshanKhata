@@ -24,6 +24,7 @@ import com.innovation313.roshankhata.data.TextSize
 import com.innovation313.roshankhata.data.ThemeMode
 import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.ui.CoachMarkController
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -60,6 +61,8 @@ class ScreenProofPhoneTest(
         app.getSharedPreferences("welcome", Context.MODE_PRIVATE).edit().putBoolean("welcome_seen", true).commit()
         app.getSharedPreferences("home_offers", Context.MODE_PRIVATE).edit().putBoolean("backup_offered", true).commit()
         CoachMarkController.markRun(app)
+        // The pictures are of the screens, not of their first-open sheets (one sheet has its own picture).
+        com.innovation313.roshankhata.ui.FeatureIntro.markAllSeen(app)
         BalancePrivacy.setHidden(app, false)
         BusinessProfile.setTrade(app, trade)
         BusinessProfile.setBusinessName(app, "Al-Noor Traders")
@@ -129,6 +132,19 @@ class ScreenProofPhoneTest(
         shoot("26-staff", open(StaffActivity::class.java))
         shoot("27-zakat", open(ZakatActivity::class.java))
         shoot("28-calculator", open(CalculatorActivity::class.java))
+        // A feature's first-open sheet (1 Nov 2026), as the owner meets it.
+        com.innovation313.roshankhata.ui.FeatureIntro.forget(app, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
+        shoot("29-intro-cheques", open(ChequesActivity::class.java), settleMs = 2000)
+        // The card after Save and the entry wearing "New" (1 Nov 2026).
+        val newest = runBlocking { KhataDatabase.get(app).khataDao().observeEntries(big).first().maxByOrNull { it.timestamp }?.id }
+        shoot("30-saved-card", open(PartyDetailActivity::class.java) { putExtra(PartyDetailActivity.EXTRA_PARTY_ID, big) }, settleMs = 1200) { a ->
+            val d = a as PartyDetailActivity
+            newest?.let { d.showNewEntry(it) }
+            com.innovation313.roshankhata.ui.SavedCard.show(
+                d, d.getString(R.string.saved), d.getString(R.string.i_gave) + " \u00b7 Rs 600 \u00b7 RK-900103",
+                anchor = d.findViewById(R.id.bottomBarContainer), onUndo = {}, onShare = {}, millis = 15000
+            )
+        }
     }
 
     /** A customer with seven-figure dealings, so every total on the way is wide (made-up name). */
@@ -142,11 +158,16 @@ class ScreenProofPhoneTest(
         id
     }
 
-    private fun shoot(name: String, intent: Intent, settleMs: Long = 1500) {
+    private fun shoot(name: String, intent: Intent, settleMs: Long = 1500, then: ((Activity) -> Unit)? = null) {
         try {
             ActivityScenario.launch<Activity>(intent).use {
                 InstrumentationRegistry.getInstrumentation().waitForIdleSync()
                 SystemClock.sleep(settleMs)
+                if (then != null) {
+                    it.onActivity { a -> then(a) }
+                    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+                    SystemClock.sleep(1500)
+                }
                 val bmp = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
                 assertTrue("no picture for $name", bmp != null && bmp.width > 0)
                 save("$name.png", bmp)

@@ -57,6 +57,9 @@ class HelpActivity : BaseActivity() {
             )
             finish()
         }
+        findViewById<MaterialButton>(R.id.btnFeatureGuides).setOnClickListener {
+            com.innovation313.roshankhata.ui.FeatureIntro.pick(this)
+        }
         findViewById<MaterialButton>(R.id.btnRateApp).setOnClickListener {
             com.innovation313.roshankhata.ui.AppRating.launch(this)
         }

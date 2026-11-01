@@ -3639,4 +3639,52 @@
         <item quantity="one">আরও %1$dটি ব্যাচ</item>
         <item quantity="other">আরও %1$dটি ব্যাচ</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">নতুন</string>
+    <string name="help_feature_guides">ফিচার গাইড</string>
+    <string name="intro_counter_body">গ্রাহকের বিক্রি তার খাতায় যায়, সাধারণ ক্রেতার বিক্রি ক্যাশবুকে। স্টক দুই ক্ষেত্রেই কমে।</string>
+    <string name="intro_counter_s1">পণ্য বাছুন</string>
+    <string name="intro_counter_s2">গ্রাহক বা সাধারণ ক্রেতা</string>
+    <string name="intro_counter_s3">টাকা নিন</string>
+    <string name="intro_documents_body">কোটেশন থেকে অর্ডার, তারপর চালান, তারপর ইনভয়েস, প্রতিবার এক ট্যাপে। কিছুই দুবার লিখতে হয় না।</string>
+    <string name="intro_documents_s1">কোটেশন</string>
+    <string name="intro_documents_s2">ডেলিভারি চালান</string>
+    <string name="intro_documents_s3">ইনভয়েস</string>
+    <string name="intro_cashbook_body">প্রতি সন্ধ্যায় ক্যাশবাক্সের টাকা গুনে দিন বন্ধ করুন। অ্যাপ বলে দেয় তাতে কত থাকা উচিত।</string>
+    <string name="intro_cashbook_s1">টাকা এল ও গেল</string>
+    <string name="intro_cashbook_s2">ক্যাশবাক্স গুনুন</string>
+    <string name="intro_cashbook_s3">দিন বন্ধ করুন</string>
+    <string name="intro_cheques_body">চেক ক্লিয়ার হলেই কেবল খাতায় যায়। বাউন্স হওয়া চেক কিছুই বদলায় না।</string>
+    <string name="intro_cheques_s1">চেক লিখুন</string>
+    <string name="intro_cheques_s2">ক্লিয়ার বা বাউন্স</string>
+    <string name="intro_cheques_s3">ক্লিয়ার: খাতায়</string>
+    <string name="intro_qr_body">গ্রাহকের কার্ড স্ক্যান করুন, তার খাতা সঙ্গে সঙ্গে খুলে যায়। কোডে নাম, নম্বর বা ব্যালান্স কিছুই নেই।</string>
+    <string name="intro_qr_s1">তার QR বানান</string>
+    <string name="intro_qr_s2">কার্ড পাঠান বা প্রিন্ট করুন</string>
+    <string name="intro_qr_s3">স্ক্যান: খাতা খোলে</string>
+    <string name="intro_staff_body">বেতন, অগ্রিম আর হাজিরা এক জায়গায়। কাউন্টারে প্রত্যেকে নিজের PIN দিয়ে ঢোকেন, তাই জানা যায় কে কী করেছে।</string>
+    <string name="intro_staff_s1">লোক যোগ করুন</string>
+    <string name="intro_staff_s2">হাজিরা ও বেতন</string>
+    <string name="intro_staff_s3">PIN দিয়ে ঢুকুন</string>
+    <string name="intro_plans_body">কিস্তিতে বিক্রি করুন। প্রতিটি কিস্তির দিনে অ্যাপ মনে করিয়ে দেয়।</string>
+    <string name="intro_plans_s1">গ্রাহক বাছুন</string>
+    <string name="intro_plans_s2">কিস্তি ঠিক করুন</string>
+    <string name="intro_plans_s3">সেই দিনেই মনে করানো</string>
+    <string name="intro_followup_body">প্রতিদিন দেখায় কার কাছে টাকা চাইতে হবে, সবচেয়ে পুরোনো আগে। এক ট্যাপে WhatsApp-এ নম্র রিমাইন্ডার যায়।</string>
+    <string name="intro_followup_s1">কার কাছে পাওনা, পুরোনো আগে</string>
+    <string name="intro_followup_s2">WhatsApp-এ মনে করান</string>
+    <string name="intro_followup_s3">তারপর পরেরজন</string>
+    <string name="intro_backup_body">আপনার খাতা শুধু এই ফোনেই আছে। ফোনের বাইরে ব্যাকআপ থাকলে ফোন হারালেও তা নিরাপদ থাকে।</string>
+    <string name="intro_backup_s1">Drive বা ফাইলে ব্যাকআপ</string>
+    <string name="intro_backup_s2">আগের দিনে ফিরে যান</string>
+    <string name="intro_backup_s3">ফোন ও কম্পিউটার একসাথে</string>
+    <string name="intro_orders_body">মাল এলে অর্ডারটি সরবরাহকারীর বিল হয়ে যায় আর স্টক বাড়ে।</string>
+    <string name="intro_orders_s1">স্টক কমে আসছে</string>
+    <string name="intro_orders_s2">সরবরাহকারীকে অর্ডার</string>
+    <string name="intro_orders_s3">মাল এল: বিল হল</string>
+    <string name="intro_expiry_body">যে মালের মেয়াদ আগে শেষ হয় তা আগে বিক্রি হয়, আর ব্যাচের মেয়াদ শেষ হওয়ার 60 দিন আগে জানানো হয়।</string>
+    <string name="intro_expiry_s1">বিলে ব্যাচ ও মেয়াদ</string>
+    <string name="intro_expiry_s2">আগে মেয়াদ, আগে বিক্রি</string>
+    <string name="intro_expiry_s3">ফেরত দিন বা বাদ দিন</string>
 </resources>

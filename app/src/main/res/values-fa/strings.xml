@@ -3619,4 +3619,52 @@
         <item quantity="one">و %1$d بچ دیگر</item>
         <item quantity="other">و %1$d بچ دیگر</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">جدید</string>
+    <string name="help_feature_guides">راهنمای امکانات</string>
+    <string name="intro_counter_body">فروش به مشتری در دفتر او ثبت می‌شود و فروش به مشتری گذری در دفتر نقدی. موجودی در هر دو حالت کم می‌شود.</string>
+    <string name="intro_counter_s1">کالاها را انتخاب کنید</string>
+    <string name="intro_counter_s2">مشتری یا مشتری گذری</string>
+    <string name="intro_counter_s3">پول را بگیرید</string>
+    <string name="intro_documents_body">پیش‌فاکتور به سفارش، سپس حواله تحویل و بعد فاکتور تبدیل می‌شود، هر بار با یک ضربه. چیزی دو بار نوشته نمی‌شود.</string>
+    <string name="intro_documents_s1">پیش‌فاکتور</string>
+    <string name="intro_documents_s2">حواله تحویل</string>
+    <string name="intro_documents_s3">فاکتور</string>
+    <string name="intro_cashbook_body">هر شب پول کشو را بشمارید و روز را ببندید. برنامه می‌گوید چقدر باید در آن باشد.</string>
+    <string name="intro_cashbook_s1">پول ورودی و خروجی</string>
+    <string name="intro_cashbook_s2">کشو را بشمارید</string>
+    <string name="intro_cashbook_s3">بستن روز</string>
+    <string name="intro_cheques_body">چک فقط وقتی پاس شود به دفتر می‌رود. چک برگشتی چیزی را تغییر نمی‌دهد.</string>
+    <string name="intro_cheques_s1">چک را ثبت کنید</string>
+    <string name="intro_cheques_s2">پاس یا برگشت</string>
+    <string name="intro_cheques_s3">پاس شد: به دفتر</string>
+    <string name="intro_qr_body">کارت مشتری را اسکن کنید تا دفتر او فوراً باز شود. این کد نه نام دارد، نه شماره، نه مانده.</string>
+    <string name="intro_qr_s1">کد QR او را بسازید</string>
+    <string name="intro_qr_s2">کارت را بفرستید یا چاپ کنید</string>
+    <string name="intro_qr_s3">اسکن: دفتر باز می‌شود</string>
+    <string name="intro_staff_body">حقوق، مساعده و حضور در یک جا. در پیشخوان هر نفر با PIN خودش وارد می‌شود تا بدانید چه کسی چه کرد.</string>
+    <string name="intro_staff_s1">افزودن نفر</string>
+    <string name="intro_staff_s2">حضور و حقوق</string>
+    <string name="intro_staff_s3">ورود با PIN</string>
+    <string name="intro_plans_body">قسطی بفروشید. برنامه روز سررسید هر قسط به شما یادآوری می‌کند.</string>
+    <string name="intro_plans_s1">مشتری را انتخاب کنید</string>
+    <string name="intro_plans_s2">اقساط را تعیین کنید</string>
+    <string name="intro_plans_s3">یادآوری در همان روز</string>
+    <string name="intro_followup_body">هر روز می‌گوید از چه کسی پول بخواهید، قدیمی‌ترین اول. با یک ضربه یادآوری مؤدبانه در واتساپ فرستاده می‌شود.</string>
+    <string name="intro_followup_s1">بدهکاران، قدیمی‌ترین اول</string>
+    <string name="intro_followup_s2">یادآوری در واتساپ</string>
+    <string name="intro_followup_s3">سپس نفر بعدی</string>
+    <string name="intro_backup_body">دفتر شما فقط روی همین گوشی است. پشتیبانی بیرون از گوشی آن را اگر گوشی گم شود حفظ می‌کند.</string>
+    <string name="intro_backup_s1">پشتیبان در درایو یا فایل</string>
+    <string name="intro_backup_s2">بازگشت به روز قبل</string>
+    <string name="intro_backup_s3">گوشی و رایانه با هم</string>
+    <string name="intro_orders_body">وقتی کالا برسد، سفارش به فاکتور تأمین‌کننده تبدیل می‌شود و موجودی شما بالا می‌رود.</string>
+    <string name="intro_orders_s1">موجودی رو به اتمام</string>
+    <string name="intro_orders_s2">سفارش به تأمین‌کننده</string>
+    <string name="intro_orders_s3">رسید: فاکتور شد</string>
+    <string name="intro_expiry_body">کالایی که زودتر منقضی می‌شود اول فروخته می‌شود، و 60 روز پیش از انقضای هر بچ به شما خبر داده می‌شود.</string>
+    <string name="intro_expiry_s1">بچ و تاریخ انقضا روی فاکتور</string>
+    <string name="intro_expiry_s2">زودتر منقضی، اول فروش</string>
+    <string name="intro_expiry_s3">مرجوع کنید یا حذف کنید</string>
 </resources>

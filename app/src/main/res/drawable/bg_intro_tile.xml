@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A step's tile on a feature's first-open sheet: rounded, filled by FeatureIntro with the feature's own tint. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/brand_green_soft" />
+    <stroke android:width="1dp" android:color="@color/editor_card_stroke" />
+    <corners android:radius="16dp" />
+</shape>

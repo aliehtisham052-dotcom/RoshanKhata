@@ -46,6 +46,8 @@ class StaffActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_staff)
+        // How this works, the first time it opens on this phone (1 Nov 2026).
+        com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.STAFF)
         ScreenInsets.on(this)
         findViewById<View>(R.id.btnPrevMonth).setOnClickListener { shiftMonth(-1) }
         findViewById<View>(R.id.btnNextMonth).setOnClickListener { shiftMonth(1) }
@@ -203,7 +205,7 @@ class StaffActivity : BaseActivity() {
                 lifecycleScope.launch {
                     dao.insertStaffPayment(StaffPayment(staffId = person.id, amount = v, kind = kind,
                         note = note.text.toString().trim().ifEmpty { null }))
-                    com.innovation313.roshankhata.ui.Motion.savedTick(this@StaffActivity)
+                    com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
                 }
             }
             .setNegativeButton(R.string.cancel, null)

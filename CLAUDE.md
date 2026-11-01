@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,631 strings and 58 plurals (2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,677 strings and 58 plurals (2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1387,6 +1387,32 @@ WhatsApp sending needs the paid Cloud API, decided against). CI only — nothing
 - Strings (nine languages): auto_title, auto_help, auto_*_name/_title, auto_collect_body, auto_reorder_body,
   auto_expiry_more (plurals), auto_dayend_body/_uncounted, auto_month_body, auto_expiry_body, auto_at_time,
   auto_pick_hour. Tests: AutomationsClockTest (shared), AutomationsBookTest (desktop).
+
+### First-open sheets and the saved card (1 Nov 2026, kmp-desktop-16 — the owner: "professionally check karo, implement karo")
+
+Phone only. CI only — nothing on a real device.
+
+- **The saved card** (`ui/SavedCard`, `view_saved_card.xml`, the owner's mockup "A"): after an entry is saved on a
+  customer's screen, one card above I gave / I got — the gold-ringed tick drawing itself (`avd_save_check`; a plain
+  tick with animations off), "Saved", the line "I Gave · Rs 600 · RK-000006", Undo and, for a customer with a number
+  and the share setting on, Send on WhatsApp. It replaces the green disc in the middle of the screen
+  (`Motion.savedTick` and `view_save_tick.xml` are gone) and the separate "send this?" bar (`offerEntryShare`).
+  Undo bins the entry (the delete path: `softDeleteEntry` + ENTRY_DELETED, AccessUi's PIN where deleting asks one) and
+  puts the promised day back; the bin's own Undo bar follows. A paid-now sale's card keeps its old Undo (only the cash
+  "I got"). The entry wears "New" (`bg_entry_new`, `tvNewTag`, `EntryAdapter.markNew`) for 4.5 s and is scrolled to.
+  Entry edit's signature and Staff's payment say "Saved" on the same card, without actions. Above 120% text the
+  actions go under the words (`TextFit.stackWhenLarge`). No balance "+Rs" chip: on a supplier the balance falls when
+  "I gave" is written, and a "+" beside it read wrong.
+- **First-open sheets** (`ui/FeatureIntro`, `sheet_feature_intro.xml`, `item_intro_step.xml`): three numbered pictures
+  (the app's own tile drawings; two-tone tiles untinted, glyphs in brand_green_text), the feature's name, one line on
+  what it does for the shop, Got it. Eleven: Counter sale, Documents, Cashbook, Cheques, Customer QR (before the card
+  opens), Staff, Plans, Follow-up, Backup, Purchase orders, Expiry. Once per feature per phone (prefs
+  "feature_intro"); a rotation while open shows it again; not when a notification opened the screen to act
+  (EXTRA_CLOSE_DAY, EXTRA_START_QUEUE, EXTRA_START_LOW). Help → Feature guides lists them (ChoiceSheet). Left out on
+  purpose: screens that explain themselves or have the Home tour (Khata, Products, Calculator, Zakat, Price list,
+  cards, posters, reports, bin, Automations whose dialog has its own help). **A test that photographs screens calls
+  `FeatureIntro.markAllSeen`** (ScreenProofPhoneTest, StoreScreenshotsTest); EveryScreenOpensTest keeps them on, so
+  every sheet is opened and rotated there. Proofs: 29-intro-cheques, 30-saved-card.
 
 ### The shared module (KMP)
 

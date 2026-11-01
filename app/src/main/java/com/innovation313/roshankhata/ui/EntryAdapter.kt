@@ -65,6 +65,26 @@ class EntryAdapter(
     }
 
     /**
+     * The entry just written (1 Nov 2026): its card is pale green with a green edge and says
+     * "New" for a few seconds, so the owner sees where it went. Like selection, not part of
+     * [EntryRow] (DiffUtil cannot see it), so the rows that change are named here. The row
+     * may not be in the list yet when this is called; it is drawn new when it arrives.
+     */
+    var newEntryId: Long? = null
+        private set
+
+    fun markNew(id: Long?) {
+        val old = newEntryId
+        newEntryId = id
+        for (x in listOfNotNull(old, id)) {
+            val at = currentList.indexOfFirst { it.entry.id == x }
+            if (at != -1) notifyItemChanged(at)
+        }
+    }
+
+    fun positionOf(id: Long): Int = currentList.indexOfFirst { it.entry.id == id }
+
+    /**
      * Selection is NOT part of [EntryRow], so DiffUtil cannot see it and the
      * rows that changed have to be named here.
      *
@@ -97,6 +117,7 @@ class EntryAdapter(
         val tvAmount: TextView = view.findViewById(R.id.tvAmount)
         val tvRunningBalance: TextView = view.findViewById(R.id.tvRunningBalance)
         val cbSelect: CheckBox = view.findViewById(R.id.cbSelect)
+        val tvNewTag: TextView = view.findViewById(R.id.tvNewTag)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -133,6 +154,10 @@ class EntryAdapter(
 
         holder.tvRunningBalance.text =
             ctx.getString(R.string.running_balance_short, Format.money(row.runningBalance))
+
+        val isNew = e.id == newEntryId && !selectionMode
+        holder.tvNewTag.visibility = if (isNew) View.VISIBLE else View.GONE
+        holder.itemView.setBackgroundResource(if (isNew) R.drawable.bg_entry_new else R.drawable.bg_party_card)
 
         holder.cbSelect.visibility = if (selectionMode) View.VISIBLE else View.GONE
         holder.cbSelect.isChecked = e.id in selectedIds

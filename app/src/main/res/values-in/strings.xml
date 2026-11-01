@@ -3581,4 +3581,52 @@
     <plurals name="auto_expiry_more">
         <item quantity="other">dan %1$d batch lainnya</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">Baru</string>
+    <string name="help_feature_guides">Panduan fitur</string>
+    <string name="intro_counter_body">Penjualan ke pelanggan masuk ke bukunya, penjualan ke pelanggan umum masuk ke buku kas. Stok berkurang di keduanya.</string>
+    <string name="intro_counter_s1">Pilih barang</string>
+    <string name="intro_counter_s2">Pelanggan atau umum</string>
+    <string name="intro_counter_s3">Terima uangnya</string>
+    <string name="intro_documents_body">Penawaran menjadi pesanan, lalu surat jalan, lalu faktur, masing-masing sekali ketuk. Tidak ada yang diketik dua kali.</string>
+    <string name="intro_documents_s1">Penawaran</string>
+    <string name="intro_documents_s2">Surat jalan</string>
+    <string name="intro_documents_s3">Faktur</string>
+    <string name="intro_cashbook_body">Setiap sore, hitung uang di laci dan tutup hari. Aplikasi memberi tahu berapa yang seharusnya ada.</string>
+    <string name="intro_cashbook_s1">Uang masuk dan keluar</string>
+    <string name="intro_cashbook_s2">Hitung laci</string>
+    <string name="intro_cashbook_s3">Tutup hari</string>
+    <string name="intro_cheques_body">Cek baru masuk ke buku setelah cair. Cek yang ditolak tidak mengubah apa pun.</string>
+    <string name="intro_cheques_s1">Catat ceknya</string>
+    <string name="intro_cheques_s2">Cair atau ditolak</string>
+    <string name="intro_cheques_s3">Cair: masuk ke buku</string>
+    <string name="intro_qr_body">Pindai kartu pelanggan dan bukunya langsung terbuka. Kodenya tidak memuat nama, nomor, atau saldo.</string>
+    <string name="intro_qr_s1">Buat QR-nya</string>
+    <string name="intro_qr_s2">Kirim atau cetak kartunya</string>
+    <string name="intro_qr_s3">Pindai: buku terbuka</string>
+    <string name="intro_staff_body">Gaji, kasbon, dan absensi di satu tempat. Di kasir, setiap orang masuk dengan PIN-nya sendiri, jadi Anda tahu siapa melakukan apa.</string>
+    <string name="intro_staff_s1">Tambah orang</string>
+    <string name="intro_staff_s2">Absensi dan gaji</string>
+    <string name="intro_staff_s3">Masuk dengan PIN</string>
+    <string name="intro_plans_body">Jual dengan cicilan. Aplikasi mengingatkan Anda pada hari setiap cicilan jatuh tempo.</string>
+    <string name="intro_plans_s1">Pilih pelanggan</string>
+    <string name="intro_plans_s2">Atur cicilan</string>
+    <string name="intro_plans_s3">Pengingat di harinya</string>
+    <string name="intro_followup_body">Setiap hari menunjukkan siapa yang perlu ditagih, yang terlama lebih dulu. Sekali ketuk mengirim pengingat sopan lewat WhatsApp.</string>
+    <string name="intro_followup_s1">Siapa berutang, terlama dulu</string>
+    <string name="intro_followup_s2">Ingatkan lewat WhatsApp</string>
+    <string name="intro_followup_s3">Lalu yang berikutnya</string>
+    <string name="intro_backup_body">Buku Anda hanya ada di ponsel ini. Cadangan di luar ponsel menjaganya tetap aman jika ponsel hilang.</string>
+    <string name="intro_backup_s1">Cadangkan ke Drive atau file</string>
+    <string name="intro_backup_s2">Kembali ke hari sebelumnya</string>
+    <string name="intro_backup_s3">Ponsel dan komputer bersama</string>
+    <string name="intro_orders_body">Saat barang tiba, pesanan menjadi tagihan pemasok dan stok Anda bertambah.</string>
+    <string name="intro_orders_s1">Stok menipis</string>
+    <string name="intro_orders_s2">Pesan ke pemasok</string>
+    <string name="intro_orders_s3">Diterima: jadi tagihan</string>
+    <string name="intro_expiry_body">Barang yang paling cepat kedaluwarsa dijual lebih dulu, dan Anda diberi tahu 60 hari sebelum sebuah batch kedaluwarsa.</string>
+    <string name="intro_expiry_s1">Batch dan kedaluwarsa di tagihan</string>
+    <string name="intro_expiry_s2">Tercepat dijual dulu</string>
+    <string name="intro_expiry_s3">Kembalikan atau hapuskan</string>
 </resources>

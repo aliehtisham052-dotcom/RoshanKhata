@@ -3591,4 +3591,52 @@
         <item quantity="one">aur %1$d mazeed batch</item>
         <item quantity="other">aur %1$d mazeed batch</item>
     </plurals>
+
+    <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
+    <string name="entry_new_tag">Naya</string>
+    <string name="help_feature_guides">Features ki wazahat</string>
+    <string name="intro_counter_body">Gahak ki sale us ke khate mein jati hai, aam gahak ki cashbook mein. Stock dono soorton mein kam hota hai.</string>
+    <string name="intro_counter_s1">Items chunein</string>
+    <string name="intro_counter_s2">Gahak ya aam gahak</string>
+    <string name="intro_counter_s3">Paise lein</string>
+    <string name="intro_documents_body">Quotation se order, phir challan aur phir invoice, har baar ek tap. Kuch bhi dobara likhna nahi parta.</string>
+    <string name="intro_documents_s1">Quotation</string>
+    <string name="intro_documents_s2">Delivery challan</string>
+    <string name="intro_documents_s3">Invoice</string>
+    <string name="intro_cashbook_body">Har shaam galla ginein aur din band karein. App batati hai ke us mein kitna hona chahiye.</string>
+    <string name="intro_cashbook_s1">Paisa aaya aur gaya</string>
+    <string name="intro_cashbook_s2">Galla ginein</string>
+    <string name="intro_cashbook_s3">Din band karein</string>
+    <string name="intro_cheques_body">Cheque clear hone par hi khate mein jata hai. Bounce hone wala cheque kuch nahi badalta.</string>
+    <string name="intro_cheques_s1">Cheque likhein</string>
+    <string name="intro_cheques_s2">Clear ya bounce</string>
+    <string name="intro_cheques_s3">Clear: khate mein</string>
+    <string name="intro_qr_body">Gahak ka card scan karein, us ka khata foran khul jata hai. Code mein na naam hai, na number, na balance.</string>
+    <string name="intro_qr_s1">Us ka QR banayein</string>
+    <string name="intro_qr_s2">Card bhejein ya print karein</string>
+    <string name="intro_qr_s3">Scan: khata khul jata hai</string>
+    <string name="intro_staff_body">Tankhwah, advance aur haazri ek jagah. Counter par har banda apne PIN se andar aata hai, taake pata rahe kis ne kya kiya.</string>
+    <string name="intro_staff_s1">Banda shamil karein</string>
+    <string name="intro_staff_s2">Haazri aur tankhwah</string>
+    <string name="intro_staff_s3">PIN se andar aayein</string>
+    <string name="intro_plans_body">Qiston par bechein. Har qist ke din app yaad dilati hai.</string>
+    <string name="intro_plans_s1">Gahak chunein</string>
+    <string name="intro_plans_s2">Qistein tay karein</string>
+    <string name="intro_plans_s3">Usi din yaad-dehani</string>
+    <string name="intro_followup_body">Har roz batati hai kis se paise maangne hain, purana pehle. Ek tap se WhatsApp par naram yaad-dehani jati hai.</string>
+    <string name="intro_followup_s1">Kis ke zimme, purana pehle</string>
+    <string name="intro_followup_s2">WhatsApp par yaad-dehani</string>
+    <string name="intro_followup_s3">Phir agla</string>
+    <string name="intro_backup_body">Aap ka khata sirf isi phone par hai. Phone se bahar backup ho to phone gum hone par bhi mehfooz rehta hai.</string>
+    <string name="intro_backup_s1">Drive ya file mein backup</string>
+    <string name="intro_backup_s2">Pichhle din par wapas</string>
+    <string name="intro_backup_s3">Phone aur computer ek saath</string>
+    <string name="intro_orders_body">Maal aane par order supplier ka bill ban jata hai aur stock barh jata hai.</string>
+    <string name="intro_orders_s1">Stock kam ho raha hai</string>
+    <string name="intro_orders_s2">Supplier ko order</string>
+    <string name="intro_orders_s3">Maal aaya: bill ban gaya</string>
+    <string name="intro_expiry_body">Jaldi expire hone wala maal pehle bikta hai, aur batch expire hone se 60 din pehle bata diya jata hai.</string>
+    <string name="intro_expiry_s1">Bill par batch aur expiry</string>
+    <string name="intro_expiry_s2">Jaldi wala pehle bike</string>
+    <string name="intro_expiry_s3">Wapas karein ya khatam likhein</string>
 </resources>

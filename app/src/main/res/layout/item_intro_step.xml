@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One of a feature's three steps on its first-open sheet (1 Nov 2026): a tinted tile with the
+  feature's picture, its number on a dark disc over the top edge, and a few words under it.
+  ui/FeatureIntro inflates three into a row, each a third of the width.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false">
+
+        <FrameLayout
+            android:id="@+id/introStepTile"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:layout_marginTop="13dp"
+            android:background="@drawable/bg_intro_tile">
+
+            <ImageView
+                android:id="@+id/ivIntroStep"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvIntroNumber"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_horizontal|top"
+            android:background="@drawable/bg_intro_number"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvIntroStep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textColor="@color/ink"
+        android:textSize="13sp" />
+</LinearLayout>
