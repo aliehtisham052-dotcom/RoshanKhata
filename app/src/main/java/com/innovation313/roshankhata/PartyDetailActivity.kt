@@ -2633,6 +2633,8 @@ class PartyDetailActivity : BaseActivity() {
                     } ?: 0.0,
                     closingBalance = currentBalance,
                     isCustomer = partyIsCustomerAccount,
+                    // The promised day, said under what is owed (2 Nov 2026).
+                    payBy = harvestPromise,
                     businessName = BusinessProfile.businessName(this@PartyDetailActivity),
                     paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity),
                     // Only if the owner has turned it on. Off by default.

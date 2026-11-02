@@ -33,7 +33,27 @@ object PdfExport {
     private const val GOLD = 0xFFE1AF3F.toInt()
     private const val RED = 0xFFC0392B.toInt()
     private const val GREEN = 0xFF1E8449.toInt()
-    private const val GREY = 0xFF7A7A7A.toInt()
+    private const val GREY = 0xFF6F6F6F.toInt()
+    /** The band's second lines: a paler gold that still reads on the green. */
+    private const val GOLD_SOFT = 0xFFF1DFA8.toInt()
+    private const val GREEN_SOFT = 0xFFE7F2EA.toInt()
+    private const val BOX_EDGE = 0xFFDAD6CB.toInt()
+    private const val ROW_WASH = 0xFFF8F7F2.toInt()
+
+    /** [text] cut with an ellipsis to fit [maxW] at [paint]'s size. */
+    private fun fitted(text: String, paint: Paint, maxW: Float): String {
+        if (paint.measureText(text) <= maxW) return text
+        var end = text.length
+        while (end > 1 && paint.measureText(text, 0, end) + paint.measureText("\u2026") > maxW) end--
+        return text.substring(0, end).trimEnd() + "\u2026"
+    }
+
+    /** A figure is never cut: its size comes down (to [min]) until it fits. */
+    private fun shrinkToFit(text: String, paint: Paint, maxW: Float, min: Float) {
+        while (paint.textSize > min && paint.measureText(text) > maxW) paint.textSize -= 0.5f
+    }
+
+    private fun latinOnly(word: String): Boolean = word.all { it.code < 0x0250 }
 
     data class StatementRow(
         val entry: LedgerEntry,
@@ -73,7 +93,9 @@ object PdfExport {
          */
         partyPhoto: Bitmap? = null,
         /** A supplier's statement is read by the supplier: the columns say it from their side (21 Oct 2026). */
-        isCustomer: Boolean = true
+        isCustomer: Boolean = true,
+        /** The day the customer promised to pay (Party.harvestPromise); said under what is owed when it is today or later. */
+        payBy: Long? = null
     ): File? {
         // Oldest first, as every statement reads (21 Oct 2026, the critical review): the screen's
         // newest-first list printed the period backwards and put the opening line above the newest
@@ -87,8 +109,23 @@ object PdfExport {
         // table header must say the same words, on every page.
         // A supplier holding the page: what the shop gave them was paid TO them, and what came
         // from them is what they supplied (the customer's words read backwards on their page).
-        val owedLabel = context.getString(if (isCustomer) R.string.pdf_stmt_you_owe else R.string.pdf_stmt_paid_to_you)
-        val paidLabel = context.getString(if (isCustomer) R.string.pdf_stmt_you_paid else R.string.pdf_stmt_you_supplied)
+        // "Taken" / "Paid" (2 Nov 2026, the owner's review): each row is one dealing, not what is
+        // owed, and the (-) / (+) marks read against a balance printed without a sign. "Taken"
+        // fits goods and cash lent alike; the goods themselves are named on the row's second line.
+        val owedLabel = context.getString(if (isCustomer) R.string.pdf_stmt_taken else R.string.pdf_stmt_paid_to_you)
+        val paidLabel = context.getString(if (isCustomer) R.string.pdf_stmt_paid else R.string.pdf_stmt_you_supplied)
+        val totalOwedLabel = context.getString(if (isCustomer) R.string.pdf_stmt_total_taken else R.string.pdf_stmt_paid_to_you)
+        val totalPaidLabel = context.getString(if (isCustomer) R.string.pdf_stmt_total_paid else R.string.pdf_stmt_you_supplied)
+        // The shop's own way back: a customer holding the sheet must be able to reach the shop.
+        val shopPhone = BusinessProfile.businessPhone(context)?.trim()?.takeIf { it.isNotEmpty() }
+        val shopAddress = BusinessProfile.businessAddress(context)?.trim()?.takeIf { it.isNotEmpty() }
+        val madeOn = Format.dateOnly(System.currentTimeMillis())
+        // The fourth box's name: where the account stands, from the reader's side.
+        fun closingWord(): String = when {
+            Money.isPositive(closingBalance) -> context.getString(R.string.pdf_stmt_still_to_pay)
+            Money.isPositive(-closingBalance) -> context.getString(R.string.pdf_stmt_you_will_receive)
+            else -> context.getString(R.string.pdf_stmt_settled_short)
+        }
 
         val title = Paint().apply {
             color = Color.WHITE
@@ -118,6 +155,8 @@ object PdfExport {
             isAntiAlias = true
         }
         val navyFill = Paint().apply { color = NAVY }
+        val washFill = Paint().apply { color = ROW_WASH }
+        val dash = Paint().apply { color = 0xFFB5B2AA.toInt(); textSize = 10f; isAntiAlias = true }
         val goldFill = Paint().apply { color = GOLD }
         val lineFill = Paint().apply {
             color = 0xFFDDDDDD.toInt()
@@ -204,44 +243,30 @@ object PdfExport {
             // stay inside the shop. The hint lives in the footer now.
 
             c.drawRect(0f, 0f, PAGE_W.toFloat(), 78f, navyFill)
-            PdfRtl.drawText(c, businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name), MARGIN, 32f, title)
-            // Name and number on one line. They used to be two, which on a
-            // customer saved under their phone number printed the same digits
-            // twice.
-            val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
-            PdfRtl.drawText(c,
-                context.getString(R.string.pdf_stmt_title, partyName) +
-                    (phone?.let { "  ·  $it" } ?: ""),
-                MARGIN, 52f, subtitle
-            )
+            // A gold rule under the band, the app's own pairing of colours.
+            c.drawRect(0f, 78f, PAGE_W.toFloat(), 80.5f, goldFill)
 
-            // The stretch of days this statement covers, read off the rows
-            // themselves — first entry to last. Seen working in a
-            // competitor's statement and adopted for the reason it works
-            // there: a customer holding the sheet should not have to scan
-            // the date column to learn what period they are looking at.
-            // Right-aligned in the band, stopping short of the corner logo.
-            if (rows.isNotEmpty()) {
-                val fmt = DateWords.formatter("d MMM yyyy")
-                val from = fmt.format(java.util.Date(rows.minOf { it.entry.timestamp }))
-                val till = fmt.format(java.util.Date(rows.maxOf { it.entry.timestamp }))
-                val period = if (from == till) from else "$from \u2013 $till"
-                val periodPaint = Paint(subtitle).apply { textAlign = Paint.Align.RIGHT }
-                PdfRtl.drawText(c, period, PAGE_W - MARGIN - 50f, 66f, periodPaint)
+            // The document's own name and the day it was made, on the band's far side (2 Nov 2026):
+            // the corner used to repeat the period printed again below, and nothing said when the
+            // sheet was made.
+            val docTitle = Paint(subtitle).apply {
+                textSize = 10f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                textAlign = Paint.Align.RIGHT
+                letterSpacing = if (latinOnly(context.getString(R.string.pdf_stmt_doc_title))) 0.08f else 0f
             }
+            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_doc_title), PAGE_W - MARGIN, 32f, docTitle)
+            val madePaint = Paint(subtitle).apply { textSize = 8f; color = GOLD_SOFT; textAlign = Paint.Align.RIGHT }
+            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_made_on, madeOn), PAGE_W - MARGIN, 46f, madePaint)
 
-            // The customer's photo, beside their name — the same face the
-            // owner sees in the ledger, so the statement is plainly about this
-            // person and not another of the same name.
-            partyPhoto?.let { photo ->
-                val size = 54
-                val left = PAGE_W - MARGIN - 90 - size
-                PdfRtl.drawBitmap(c,
-                    photo,
-                    null,
-                    Rect(left.toInt(), 12, left.toInt() + size, 12 + size),
-                    null
-                )
+            // The shop's name, and under it how to reach the shop: its address and phone.
+            val nameRoom = PAGE_W - 2 * MARGIN - 150f
+            val shopName = businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name)
+            PdfRtl.drawText(c, fitted(shopName, title, nameRoom), MARGIN, 34f, title)
+            val reach = listOfNotNull(shopAddress, shopPhone).joinToString("  \u00b7  ")
+            if (reach.isNotEmpty()) {
+                val reachPaint = Paint(subtitle).apply { textSize = 9f; color = GOLD_SOFT }
+                PdfRtl.drawText(c, fitted(reach, reachPaint, nameRoom), MARGIN, 52f, reachPaint)
             }
 
             // No app logo in this band, deliberately: this sheet is the
@@ -249,68 +274,79 @@ object PdfExport {
             // the shop's identity, not the app's. The app's mark is one quiet
             // line in the page footer instead.
 
-            var yy = 94f
+            var yy = 98f
 
             if (first) {
-                // Which stretch of the ledger this covers, and how many
-                // entries — so a page that gets forwarded still says what it
-                // is a statement OF.
-                val period = if (rows.isNotEmpty()) {
-                    context.getString(
-                        R.string.pdf_stmt_period,
-                        Format.dateOnly(rows.first().entry.timestamp),
-                        Format.dateOnly(rows.last().entry.timestamp)
-                    ) + "  ·  " + Digits.quantity(context.resources, 
-                        R.plurals.pdf_stmt_entries, rows.size, rows.size
-                    )
-                } else {
-                    context.getString(R.string.pdf_stmt_no_entries)
+                // Who the statement is for, and which stretch of the ledger it covers (2 Nov 2026):
+                // the customer's name used to sit in the band as a gold sub-line, the period twice.
+                val small = Paint(periodPaint).apply { textSize = 7f; letterSpacing = 0.06f }
+                val nameX = partyPhoto?.let { MARGIN + 44f } ?: MARGIN
+                partyPhoto?.let { photo ->
+                    // The customer's photo, beside their name, when the owner turned it on.
+                    PdfRtl.drawBitmap(c, photo, null, Rect(MARGIN.toInt(), (yy - 6).toInt(), MARGIN.toInt() + 36, (yy + 30).toInt()), null)
                 }
-                PdfRtl.drawText(c, period, MARGIN, yy, periodPaint)
-                if (totalPages != null && totalPages > 1) {
-                    val pageLabel = Paint(periodPaint).apply {
-                        textSize = 8f
-                        textAlign = Paint.Align.RIGHT
-                    }
-                    PdfRtl.drawText(c,
-                        Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages),
-                        PAGE_W - MARGIN, yy, pageLabel
-                    )
-                }
+                PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_for), nameX, yy, small)
+                val who = Paint(header).apply { textSize = 13f; color = Color.BLACK }
+                PdfRtl.drawText(c, fitted(partyName, who, 300f), nameX, yy + 15f, who)
+                val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
+                phone?.let { PdfRtl.drawText(c, it, nameX, yy + 27f, Paint(periodPaint).apply { textSize = 8.5f }) }
+
+                val right = PAGE_W - MARGIN
+                val smallR = Paint(small).apply { textAlign = Paint.Align.RIGHT }
+                PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_period_label), right, yy, smallR)
+                val periodText = if (rows.isNotEmpty()) {
+                    val from = Format.dateOnly(rows.first().entry.timestamp)
+                    val till = Format.dateOnly(rows.last().entry.timestamp)
+                    if (from == till) from else "$from \u2013 $till"
+                } else context.getString(R.string.pdf_stmt_no_entries)
+                PdfRtl.drawText(c, periodText, right, yy + 13f, Paint(header).apply { textSize = 9f; color = Color.BLACK; textAlign = Paint.Align.RIGHT })
+                val countLine = Digits.quantity(context.resources, R.plurals.pdf_stmt_entries, rows.size, rows.size) +
+                    if (totalPages != null && totalPages > 1)
+                        "  \u00b7  " + Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages)
+                    else ""
+                PdfRtl.drawText(c, countLine, right, yy + 25f, Paint(periodPaint).apply { textSize = 8f; textAlign = Paint.Align.RIGHT })
+
+                yy += 34f
+                c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
                 yy += 10f
 
-                // Two boxes, not three: the third repeated the closing bar a
-                // few centimetres below it. Tinted to match the table's own
-                // colours so red means the same thing everywhere.
-                val gap = 10f
-                val boxW = (PAGE_W - 2 * MARGIN - gap) / 2f
-                val boxH = 42f
+                // Four boxes: where the account stood, what was taken, what was paid, and where it
+                // stands now — the last in the brand's green, the figure the customer looks for.
+                val gap = 8f
+                val boxW = (PAGE_W - 2 * MARGIN - 3 * gap) / 4f
+                val boxH = 40f
 
-                fun summaryBox(index: Int, label: String, value: String, tint: Int, valueColor: Int) {
+                fun summaryBox(index: Int, label: String, value: String, valueColor: Int, strong: Boolean = false) {
                     val left = MARGIN + index * (boxW + gap)
                     val r = RectF(left, yy, left + boxW, yy + boxH)
-                    val fill = Paint().apply { color = tint }
-                    c.drawRoundRect(r, 5f, 5f, fill)
-                    boxStroke.color = valueColor
+                    if (strong) c.drawRoundRect(r, 5f, 5f, Paint().apply { color = GREEN_SOFT })
+                    boxStroke.color = if (strong) NAVY else BOX_EDGE
+                    boxStroke.strokeWidth = if (strong) 1.2f else 0.8f
                     c.drawRoundRect(r, 5f, 5f, boxStroke)
-                    PdfRtl.drawText(c, label, left + 10f, yy + 15f, boxLabel)
+                    val lp = Paint(boxLabel).apply { if (strong) { color = NAVY; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) } }
+                    PdfRtl.drawText(c, fitted(label, lp, boxW - 16f), left + 8f, yy + 14f, lp)
                     boxValue.color = valueColor
-                    PdfRtl.drawText(c, value, left + 10f, yy + 33f, boxValue)
+                    val vp = Paint(boxValue).apply { textSize = 12f }
+                    shrinkToFit(value, vp, boxW - 16f, 8f)
+                    PdfRtl.drawText(c, value, left + 8f, yy + 31f, vp)
                 }
 
-                summaryBox(0, owedLabel, Format.money(totalGave), 0xFFFDECEA.toInt(), RED)
-                summaryBox(1, paidLabel, Format.money(totalGot), 0xFFEAF7EF.toInt(), GREEN)
+                summaryBox(0, context.getString(R.string.pdf_stmt_opening), Format.money(openingBalance), Color.BLACK)
+                summaryBox(1, totalOwedLabel, Format.money(totalGave), RED)
+                summaryBox(2, totalPaidLabel, Format.money(totalGot), GREEN)
+                summaryBox(3, closingWord(), Format.money(kotlin.math.abs(closingBalance)), NAVY, strong = true)
 
-                yy += boxH + 18f
+                yy += boxH + 16f
             }
 
-            PdfRtl.drawText(c, context.getString(R.string.pdf_label_date), xDate, yy, header)
-            PdfRtl.drawText(c, owedLabel, xGave, yy, header)
-            PdfRtl.drawText(c, paidLabel, xGot, yy, header)
-            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_balance), xBal, yy, header)
-            yy += 6f
-            c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
-            return yy + 16f
+            // The column heads on the brand's green bar, white words, on every page.
+            c.drawRoundRect(RectF(MARGIN, yy - 11f, PAGE_W - MARGIN, yy + 6f), 3f, 3f, navyFill)
+            val headW = Paint(header).apply { color = Color.WHITE; textSize = 9f }
+            PdfRtl.drawText(c, context.getString(R.string.pdf_label_date), xDate + 6f, yy, headW)
+            PdfRtl.drawText(c, fitted(owedLabel, headW, xGot - xGave - 6f), xGave, yy, headW)
+            PdfRtl.drawText(c, fitted(paidLabel, headW, xBal - xGot - 6f), xGot, yy, headW)
+            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_balance), headW, PAGE_W - MARGIN - xBal - 4f), xBal, yy, headW)
+            return yy + 22f
         }
 
         y = drawHeader(first = true)
@@ -336,6 +372,7 @@ object PdfExport {
             y += 16f
         }
 
+        var rowIndex = 0
         for (row in rows) {
             // Two lines per entry (details + reference), so break before we run off.
             if (y > PAGE_H - 110f) {
@@ -350,6 +387,9 @@ object PdfExport {
 
             val e = row.entry
 
+            // Every other row on a faint wash, so the eye keeps its line across the page.
+            if (rowIndex++ % 2 == 1) c.drawRect(MARGIN, y - 11f, PAGE_W - MARGIN, y + 15f, washFill)
+
             // A "12:00 AM" on every row is not a time anyone recorded — it is
             // what a date with no time of day comes out as.
             PdfRtl.drawText(c, Format.statementStamp(e.timestamp), xDate, y, body)
@@ -357,9 +397,11 @@ object PdfExport {
             if (e.isGiven) {
                 body.color = RED
                 PdfRtl.drawText(c, Format.money(e.amount), xGave, y, body)
+                PdfRtl.drawText(c, "\u2014", xGot, y, dash)
             } else {
                 body.color = GREEN
                 PdfRtl.drawText(c, Format.money(e.amount), xGot, y, body)
+                PdfRtl.drawText(c, "\u2014", xGave, y, dash)
             }
             body.color = Color.BLACK
 
@@ -386,8 +428,9 @@ object PdfExport {
             y += 16f
         }
 
-        // Closing balance — stated in the customer's terms, not accounting signs.
-        if (y > PAGE_H - 100f) {
+        // Closing balance — stated in the customer's terms, not accounting signs. Room for the
+        // bar, its pay-by line and the call-us line above the foot.
+        if (y > PAGE_H - 130f) {
             doc.finishPage(page)
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
@@ -396,8 +439,19 @@ object PdfExport {
         }
 
         y += 8f
-        c.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 52f, navyFill)
-        c.drawRect(MARGIN, y, MARGIN + 4f, y + 52f, goldFill)
+        // How to pay (2 Nov 2026): the shop's bank and wallet beside what is owed, with the
+        // number to quote — only on a customer's statement that has something to pay.
+        val bank = listOfNotNull(
+            BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context), BusinessProfile.bankIban(context)
+        ).map { it.trim() }.filter { it.isNotEmpty() }.joinToString("  \u00b7  ").takeIf { it.isNotEmpty() }
+        val wallet = BusinessProfile.bankJazzCash(context)?.trim()?.takeIf { it.isNotEmpty() }
+        val quote = rows.lastOrNull { it.entry.isGiven }?.entry?.entryNumber?.takeIf { it.isNotBlank() }
+        val howToPay = isCustomer && closingBalance > 0 && (bank != null || wallet != null)
+        val dueDay = payBy?.takeIf { isCustomer && closingBalance > 0 && it >= DayMath.startOfDay(System.currentTimeMillis()) }
+        val barH = if (dueDay != null) 60f else 52f
+        val barRight = if (howToPay) PAGE_W - MARGIN - 212f else PAGE_W - MARGIN
+        c.drawRect(MARGIN, y, barRight, y + barH, navyFill)
+        c.drawRect(MARGIN, y, MARGIN + 4f, y + barH, goldFill)
 
         val closingLabel = when {
             closingBalance > 0 -> context.getString(R.string.pdf_stmt_you_will_pay)
@@ -406,12 +460,42 @@ object PdfExport {
         }
 
         subtitle.color = GOLD
-        PdfRtl.drawText(c, closingLabel, MARGIN + 16f, y + 20f, subtitle)
+        subtitle.textSize = 10f
+        PdfRtl.drawText(c, closingLabel, MARGIN + 16f, y + 18f, subtitle)
 
         title.textSize = 18f
-        PdfRtl.drawText(c, Format.money(closingBalance), MARGIN + 16f, y + 42f, title)
+        title.color = Color.WHITE
+        PdfRtl.drawText(c, Format.money(closingBalance), MARGIN + 16f, y + 40f, title)
+        dueDay?.let {
+            val duePaint = Paint(subtitle).apply { textSize = 8.5f; color = GOLD_SOFT }
+            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_pay_by, Format.dateOnly(it)), MARGIN + 16f, y + 53f, duePaint)
+        }
 
-        y += 70f
+        if (howToPay) {
+            val boxL = PAGE_W - MARGIN - 200f
+            val box = RectF(boxL, y, PAGE_W - MARGIN, y + barH)
+            boxStroke.color = BOX_EDGE; boxStroke.strokeWidth = 0.8f
+            c.drawRoundRect(box, 5f, 5f, boxStroke)
+            val headP = Paint(header).apply { textSize = 8f }
+            PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_how_to_pay), boxL + 8f, y + 13f, headP)
+            val lineP = Paint(body).apply { textSize = 8f; color = Color.BLACK }
+            var ly = y + 25f
+            bank?.let { PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_bank, it), lineP, 184f), boxL + 8f, ly, lineP); ly += 11f }
+            wallet?.let { PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_wallet, it), lineP, 184f), boxL + 8f, ly, lineP); ly += 11f }
+            quote?.let {
+                val q = Paint(muted).apply { textSize = 7f }
+                if (ly < y + barH - 2f) PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_mention_ref, it), q, 184f), boxL + 8f, ly, q)
+            }
+        }
+
+        y += barH + 14f
+
+        // If something does not match, who to call — the shop's own number.
+        shopPhone?.let {
+            val q = Paint(muted).apply { textSize = 8f }
+            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_query, it), q, PAGE_W - 2 * MARGIN), MARGIN, y, q)
+            y += 20f
+        } ?: run { y += 4f }
 
         // The payment code goes in only when there is actually something for
         // the customer to pay. Printing "scan to pay me" on a statement where

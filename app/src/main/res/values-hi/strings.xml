@@ -3690,4 +3690,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">कोई एंट्री नहीं</string>
     <string name="cash_paid_now_help">बिक्री और मिला नकद पैसा साथ में सेव होते हैं, इसलिए वसूली के लिए कुछ बाकी नहीं रहता।</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">खाता विवरण</string>
+    <string name="pdf_stmt_made_on">बनाया गया: %1$s</string>
+    <string name="pdf_stmt_for">विवरण किसके लिए</string>
+    <string name="pdf_stmt_period_label">अवधि</string>
+    <string name="pdf_stmt_taken">लिया</string>
+    <string name="pdf_stmt_paid">चुकाया</string>
+    <string name="pdf_stmt_total_taken">कुल लिया</string>
+    <string name="pdf_stmt_total_paid">कुल चुकाया</string>
+    <string name="pdf_stmt_still_to_pay">अभी देना है</string>
+    <string name="pdf_stmt_settled_short">हिसाब बराबर</string>
+    <string name="pdf_stmt_pay_by">कृपया %1$s तक भुगतान करें</string>
+    <string name="pdf_stmt_how_to_pay">भुगतान कैसे करें</string>
+    <string name="pdf_stmt_bank">बैंक: %1$s</string>
+    <string name="pdf_stmt_wallet">वॉलेट: %1$s</string>
+    <string name="pdf_stmt_mention_ref">भुगतान के साथ %1$s बताएँ।</string>
+    <string name="pdf_stmt_query">अगर कुछ आपके हिसाब से मेल न खाए तो हमें %1$s पर फ़ोन करें।</string>
 </resources>

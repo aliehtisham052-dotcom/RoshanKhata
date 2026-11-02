@@ -3642,4 +3642,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">کوئی اندراج نہیں</string>
     <string name="cash_paid_now_help">سیل اور ملی ہوئی نقد رقم ایک ساتھ محفوظ ہوتی ہیں، اس لیے وصولی کے لیے کچھ باقی نہیں رہتا۔</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">کھاتے کا گوشوارہ</string>
+    <string name="pdf_stmt_made_on">بنایا گیا: %1$s</string>
+    <string name="pdf_stmt_for">گوشوارہ برائے</string>
+    <string name="pdf_stmt_period_label">مدت</string>
+    <string name="pdf_stmt_taken">لیا</string>
+    <string name="pdf_stmt_paid">ادا کیا</string>
+    <string name="pdf_stmt_total_taken">کل لیا</string>
+    <string name="pdf_stmt_total_paid">کل ادا کیا</string>
+    <string name="pdf_stmt_still_to_pay">ابھی ادا کرنا ہے</string>
+    <string name="pdf_stmt_settled_short">حساب برابر</string>
+    <string name="pdf_stmt_pay_by">براہِ کرم %1$s تک ادا کریں</string>
+    <string name="pdf_stmt_how_to_pay">ادائیگی کا طریقہ</string>
+    <string name="pdf_stmt_bank">بینک: %1$s</string>
+    <string name="pdf_stmt_wallet">والیٹ: %1$s</string>
+    <string name="pdf_stmt_mention_ref">ادائیگی کے ساتھ %1$s کا حوالہ دیں۔</string>
+    <string name="pdf_stmt_query">اگر کچھ آپ کے حساب سے مختلف ہو تو ہمیں %1$s پر فون کریں۔</string>
 </resources>

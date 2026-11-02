@@ -3670,4 +3670,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">بدون ثبت</string>
     <string name="cash_paid_now_help">فروش و پول نقد دریافتی با هم ثبت می‌شوند، پس چیزی برای وصول باقی نمی‌ماند.</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">صورت‌حساب</string>
+    <string name="pdf_stmt_made_on">تهیه‌شده در: %1$s</string>
+    <string name="pdf_stmt_for">صورت‌حساب برای</string>
+    <string name="pdf_stmt_period_label">دوره</string>
+    <string name="pdf_stmt_taken">گرفتید</string>
+    <string name="pdf_stmt_paid">پرداختید</string>
+    <string name="pdf_stmt_total_taken">جمع گرفته‌شده</string>
+    <string name="pdf_stmt_total_paid">جمع پرداختی</string>
+    <string name="pdf_stmt_still_to_pay">باقی‌مانده برای پرداخت</string>
+    <string name="pdf_stmt_settled_short">تسویه شده</string>
+    <string name="pdf_stmt_pay_by">لطفاً تا %1$s پرداخت کنید</string>
+    <string name="pdf_stmt_how_to_pay">روش پرداخت</string>
+    <string name="pdf_stmt_bank">بانک: %1$s</string>
+    <string name="pdf_stmt_wallet">کیف پول: %1$s</string>
+    <string name="pdf_stmt_mention_ref">هنگام پرداخت %1$s را ذکر کنید.</string>
+    <string name="pdf_stmt_query">اگر چیزی با حساب شما نمی‌خواند، با %1$s تماس بگیرید.</string>
 </resources>

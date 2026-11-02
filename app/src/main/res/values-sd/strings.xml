@@ -3670,4 +3670,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">ڪا داخلا ناهي</string>
     <string name="cash_paid_now_help">وڪرو ۽ مليل نقد رقم گڏ محفوظ ٿين ٿا، ان ڪري وصولي لاءِ ڪجهه به باقي نٿو رهي.</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">کاتي جو گوشوارو</string>
+    <string name="pdf_stmt_made_on">ٺاهيو ويو: %1$s</string>
+    <string name="pdf_stmt_for">گوشوارو لاءِ</string>
+    <string name="pdf_stmt_period_label">مدو</string>
+    <string name="pdf_stmt_taken">ورتو</string>
+    <string name="pdf_stmt_paid">ادا ڪيو</string>
+    <string name="pdf_stmt_total_taken">ڪل ورتو</string>
+    <string name="pdf_stmt_total_paid">ڪل ادا ڪيو</string>
+    <string name="pdf_stmt_still_to_pay">اڃا ادا ڪرڻو آهي</string>
+    <string name="pdf_stmt_settled_short">حساب برابر</string>
+    <string name="pdf_stmt_pay_by">مهرباني ڪري %1$s تائين ادا ڪريو</string>
+    <string name="pdf_stmt_how_to_pay">ادائيگي جو طريقو</string>
+    <string name="pdf_stmt_bank">بئنڪ: %1$s</string>
+    <string name="pdf_stmt_wallet">والٽ: %1$s</string>
+    <string name="pdf_stmt_mention_ref">ادائيگي سان %1$s جو حوالو ڏيو.</string>
+    <string name="pdf_stmt_query">جيڪڏهن ڪجهه توهان جي حساب سان نه ملي ته اسان کي %1$s تي فون ڪريو.</string>
 </resources>

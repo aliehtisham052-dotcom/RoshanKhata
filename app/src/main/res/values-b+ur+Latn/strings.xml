@@ -3642,4 +3642,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">Koi entry nahi</string>
     <string name="cash_paid_now_help">Sale aur mili hui naqd raqam ek saath save hoti hain, is liye wasooli ke liye kuch baqi nahi rehta.</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">KHATA STATEMENT</string>
+    <string name="pdf_stmt_made_on">Banaya gaya: %1$s</string>
+    <string name="pdf_stmt_for">STATEMENT BARAYE</string>
+    <string name="pdf_stmt_period_label">MUDDAT</string>
+    <string name="pdf_stmt_taken">Liya</string>
+    <string name="pdf_stmt_paid">Ada kiya</string>
+    <string name="pdf_stmt_total_taken">Kul liya</string>
+    <string name="pdf_stmt_total_paid">Kul ada kiya</string>
+    <string name="pdf_stmt_still_to_pay">Abhi ada karna hai</string>
+    <string name="pdf_stmt_settled_short">Hisaab barabar</string>
+    <string name="pdf_stmt_pay_by">Barah-e-karam %1$s tak ada karein</string>
+    <string name="pdf_stmt_how_to_pay">ADAIGI KA TAREEQA</string>
+    <string name="pdf_stmt_bank">Bank: %1$s</string>
+    <string name="pdf_stmt_wallet">Wallet: %1$s</string>
+    <string name="pdf_stmt_mention_ref">Adaigi ke saath %1$s ka hawala dein.</string>
+    <string name="pdf_stmt_query">Agar kuch aap ke hisaab se mukhtalif ho to hamein %1$s par phone karein.</string>
 </resources>
