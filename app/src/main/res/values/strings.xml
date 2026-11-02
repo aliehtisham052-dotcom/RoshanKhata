@@ -3854,4 +3854,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">No entries</string>
     <string name="cash_paid_now_help">The sale and the cash received are saved together, so nothing is left to collect.</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">ACCOUNT STATEMENT</string>
+    <string name="pdf_stmt_made_on">Made on %1$s</string>
+    <string name="pdf_stmt_for">STATEMENT FOR</string>
+    <string name="pdf_stmt_period_label">PERIOD</string>
+    <string name="pdf_stmt_taken">Taken</string>
+    <string name="pdf_stmt_paid">Paid</string>
+    <string name="pdf_stmt_total_taken">Total taken</string>
+    <string name="pdf_stmt_total_paid">Total paid</string>
+    <string name="pdf_stmt_still_to_pay">Still to pay</string>
+    <string name="pdf_stmt_settled_short">Settled</string>
+    <string name="pdf_stmt_pay_by">Please pay by %1$s</string>
+    <string name="pdf_stmt_how_to_pay">HOW TO PAY</string>
+    <string name="pdf_stmt_bank">Bank: %1$s</string>
+    <string name="pdf_stmt_wallet">Wallet: %1$s</string>
+    <string name="pdf_stmt_mention_ref">Mention %1$s with your payment.</string>
+    <string name="pdf_stmt_query">If anything here does not match your records, call us on %1$s.</string>
 </resources>

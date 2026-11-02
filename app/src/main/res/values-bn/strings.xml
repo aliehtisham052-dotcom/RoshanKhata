@@ -3690,4 +3690,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">কোনো এন্ট্রি নেই</string>
     <string name="cash_paid_now_help">বিক্রি আর পাওয়া নগদ টাকা একসাথে সেভ হয়, তাই আদায়ের কিছু বাকি থাকে না।</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">হিসাব বিবরণী</string>
+    <string name="pdf_stmt_made_on">তৈরি: %1$s</string>
+    <string name="pdf_stmt_for">বিবরণী যার জন্য</string>
+    <string name="pdf_stmt_period_label">সময়কাল</string>
+    <string name="pdf_stmt_taken">নিয়েছেন</string>
+    <string name="pdf_stmt_paid">দিয়েছেন</string>
+    <string name="pdf_stmt_total_taken">মোট নিয়েছেন</string>
+    <string name="pdf_stmt_total_paid">মোট দিয়েছেন</string>
+    <string name="pdf_stmt_still_to_pay">এখনও দিতে হবে</string>
+    <string name="pdf_stmt_settled_short">হিসাব মিটে গেছে</string>
+    <string name="pdf_stmt_pay_by">অনুগ্রহ করে %1$s-এর মধ্যে পরিশোধ করুন</string>
+    <string name="pdf_stmt_how_to_pay">কীভাবে পরিশোধ করবেন</string>
+    <string name="pdf_stmt_bank">ব্যাংক: %1$s</string>
+    <string name="pdf_stmt_wallet">ওয়ালেট: %1$s</string>
+    <string name="pdf_stmt_mention_ref">পরিশোধের সময় %1$s উল্লেখ করুন।</string>
+    <string name="pdf_stmt_query">কিছু না মিললে আমাদের %1$s নম্বরে ফোন করুন।</string>
 </resources>

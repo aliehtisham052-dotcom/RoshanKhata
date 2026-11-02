@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,679 strings and 58 plurals (2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,695 strings and 58 plurals (2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1413,6 +1413,26 @@ Phone only. CI only — nothing on a real device.
   cards, posters, reports, bin, Automations whose dialog has its own help). **A test that photographs screens calls
   `FeatureIntro.markAllSeen`** (ScreenProofPhoneTest, StoreScreenshotsTest); EveryScreenOpensTest keeps them on, so
   every sheet is opened and rotated there. Proofs: 29-intro-cheques, 30-saved-card.
+
+### The customer statement, redesigned (2 Nov 2026, kmp-desktop-16 — the owner's review: "professional karke implement karo")
+
+Phone only (`data/PdfExport.buildStatement`); Windows' StatementPrint is its own code and unchanged. CI only.
+
+- The band: the shop's name, its address and phone (`BusinessProfile`), a gold rule; on the far side "ACCOUNT
+  STATEMENT" and "Made on <day>" (the corner had repeated the period). "Statement for": the customer, phone and the
+  photo when that setting is on; the period and entry count (and page n of m) on the right — said once.
+- Four boxes: Opening balance, Total taken, Total paid, Still to pay (green, the figure the customer looks for;
+  You will receive / Settled when it runs the other way). The columns are "Taken" / "Paid" for a customer — the
+  rows are dealings, not what is owed, and "You Owe (-)" / "You Paid (+)" read against an unsigned balance; a
+  supplier's stay "Paid to you" / "You supplied". Heads on a green bar, every other row washed, a dash in the empty
+  column. `pdf_stmt_you_owe`/`_you_paid` stay: Windows and ReceiptBalance use them.
+- Under what is owed: "Please pay by <day>" when a promised day (`payBy`, Party.harvestPromise) is today or later;
+  a How to pay box (bank, IBAN, wallet from the profile, the newest sale's number to quote) on a customer's
+  statement that owes; "call us on <shop phone>" if anything does not match. The QR and signature stay as they were,
+  and the foot line with the DOWNLOAD link stays (the app's publicity, the owner).
+- Strings (nine languages): pdf_stmt_doc_title, _made_on, _for, _period_label, _taken, _paid, _total_taken,
+  _total_paid, _still_to_pay, _settled_short, _pay_by, _how_to_pay, _bank, _wallet, _mention_ref, _query.
+  Proof: 31-statement (ScreenProofPhoneTest, drawn with the app's context, so in English in every look).
 
 ### The shared module (KMP)
 

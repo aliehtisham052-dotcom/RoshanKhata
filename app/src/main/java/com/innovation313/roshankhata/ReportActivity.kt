@@ -274,6 +274,8 @@ class ReportActivity : BaseActivity() {
                     // this PDF goes to the customer.
                     closingBalance = closingBalance,
                     isCustomer = partyIsCustomer,
+                    // The promised day, said under what is owed (2 Nov 2026).
+                    payBy = dao.getParty(partyId)?.harvestPromise,
                     businessName = BusinessProfile.businessName(this@ReportActivity),
                     paymentQr = BusinessProfile.loadQr(this@ReportActivity),
                     // Only if the owner has turned it on. Off by default.

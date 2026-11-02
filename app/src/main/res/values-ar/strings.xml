@@ -3874,4 +3874,21 @@
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">لا قيود</string>
     <string name="cash_paid_now_help">يُحفظ البيع والمبلغ النقدي المستلم معًا، فلا يبقى شيء للتحصيل.</string>
+    <!-- Customer statement redesign (2 Nov 2026) -->
+    <string name="pdf_stmt_doc_title">كشف حساب</string>
+    <string name="pdf_stmt_made_on">أُعدّ في: %1$s</string>
+    <string name="pdf_stmt_for">كشف حساب لـ</string>
+    <string name="pdf_stmt_period_label">الفترة</string>
+    <string name="pdf_stmt_taken">أخذت</string>
+    <string name="pdf_stmt_paid">دفعت</string>
+    <string name="pdf_stmt_total_taken">إجمالي ما أخذت</string>
+    <string name="pdf_stmt_total_paid">إجمالي ما دفعت</string>
+    <string name="pdf_stmt_still_to_pay">المتبقي عليك</string>
+    <string name="pdf_stmt_settled_short">الحساب مسدَّد</string>
+    <string name="pdf_stmt_pay_by">يرجى الدفع قبل %1$s</string>
+    <string name="pdf_stmt_how_to_pay">طريقة الدفع</string>
+    <string name="pdf_stmt_bank">البنك: %1$s</string>
+    <string name="pdf_stmt_wallet">المحفظة: %1$s</string>
+    <string name="pdf_stmt_mention_ref">اذكر %1$s مع دفعتك.</string>
+    <string name="pdf_stmt_query">إذا لم يطابق شيء هنا سجلاتك فاتصل بنا على %1$s.</string>
 </resources>

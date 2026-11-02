@@ -66,6 +66,12 @@ class ScreenProofPhoneTest(
         BalancePrivacy.setHidden(app, false)
         BusinessProfile.setTrade(app, trade)
         BusinessProfile.setBusinessName(app, "Al-Noor Traders")
+        // Made-up shop details, so the statement's band and How to pay show (no real number).
+        BusinessProfile.setBusinessPhone(app, "0300 0000000")
+        BusinessProfile.setBusinessAddress(app, "Main Bazar")
+        BusinessProfile.setBankName(app, "Test Bank")
+        BusinessProfile.setBankIban(app, "PK00 TEST 0000 0000 0000")
+        BusinessProfile.setBankJazzCash(app, "0300 0000001")
         val ui = InstrumentationRegistry.getInstrumentation().uiAutomation
         ui.grantRuntimePermission(app.packageName, Manifest.permission.READ_CONTACTS)
         if (Build.VERSION.SDK_INT >= 33) ui.grantRuntimePermission(app.packageName, Manifest.permission.POST_NOTIFICATIONS)
@@ -137,6 +143,7 @@ class ScreenProofPhoneTest(
         shoot("29-intro-cheques", open(ChequesActivity::class.java), settleMs = 2000)
         // The card after Save and the entry wearing "New" (1 Nov 2026).
         val newest = runBlocking { KhataDatabase.get(app).khataDao().observeEntries(big).first().maxByOrNull { it.timestamp }?.id }
+        statementProof(big)
         shoot("30-saved-card", open(PartyDetailActivity::class.java) { putExtra(PartyDetailActivity.EXTRA_PARTY_ID, big) }, settleMs = 1200) { a ->
             val d = a as PartyDetailActivity
             newest?.let { d.showNewEntry(it) }
@@ -144,6 +151,36 @@ class ScreenProofPhoneTest(
                 d, d.getString(R.string.saved), d.getString(R.string.i_gave) + " \u00b7 Rs 600 \u00b7 RK-900103",
                 anchor = d.findViewById(R.id.bottomBarContainer), onUndo = {}, onShare = {}, millis = 15000
             )
+        }
+    }
+
+    /** The customer statement's first page as the customer gets it (2 Nov 2026), drawn from its PDF. */
+    private fun statementProof(party: Long) {
+        try {
+            val dao = KhataDatabase.get(app).khataDao()
+            val entries = runBlocking { dao.observeEntries(party).first() }.sortedBy { it.timestamp }
+            var bal = 0.0
+            val rows = entries.map { e ->
+                bal += if (e.isGiven) e.amount else -e.amount
+                com.innovation313.roshankhata.data.PdfExport.StatementRow(e, bal)
+            }
+            val file = com.innovation313.roshankhata.data.PdfExport.buildStatement(
+                context = app, partyName = BIG_NAME, partyPhone = "03000000001", rows = rows,
+                closingBalance = bal, businessName = "Al-Noor Traders",
+                payBy = System.currentTimeMillis() + 10 * DAY
+            ) ?: return
+            android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY).use { fd ->
+                android.graphics.pdf.PdfRenderer(fd).use { r ->
+                    r.openPage(0).use { pg ->
+                        val bmp = Bitmap.createBitmap(pg.width * 2, pg.height * 2, Bitmap.Config.ARGB_8888)
+                        bmp.eraseColor(android.graphics.Color.WHITE)
+                        pg.render(bmp, null, null, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        save("31-statement.png", bmp)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ScreenProof", "$look/statement failed", e)
         }
     }
 
