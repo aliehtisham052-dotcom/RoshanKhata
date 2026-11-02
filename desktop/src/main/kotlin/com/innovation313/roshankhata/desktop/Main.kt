@@ -202,6 +202,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             // Which computer this is comes from Windows, not from a file anyone can edit (22 Oct 2026, the review).
             com.innovation313.roshankhata.data.Access.machineId = { MachineId.read() }
             com.innovation313.roshankhata.data.Digits.nativeOnPrint = it.nativeDigits()
+            RadarDesk.attach(it)
         }
     }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
@@ -806,6 +807,7 @@ private fun Book(
     // report). Only while the book is open and unlocked (Book is drawn only then); the open business's book.
     val autoSettings = remember { DesktopAutomationSettings(appPrefs) }
     var showAutomations by remember { mutableStateOf(false) }
+    var showRadar by remember { mutableStateOf(false) }
     var orderLowAsked by remember { mutableStateOf(false) }
     var reportWindowAsked by remember { mutableStateOf<Pair<Long, Long>?>(null) }
     LaunchedEffect(activeBusiness) {
@@ -846,6 +848,7 @@ private fun Book(
         }
     }
     if (showAutomations) AutomationsDialog(autoSettings) { showAutomations = false }
+    if (showRadar) RadarSettingsDialog { showRadar = false }
     LaunchedEffect(alerts, lastBackupAt) {
         if (reminded) return@LaunchedEffect
         kotlinx.coroutines.delay(4000)
@@ -967,6 +970,7 @@ private fun Book(
                 MenuLine(word(W.live_title)) { openLiveSync() },
                 MenuLine(word(W.recycle_bin)) { Gates.edit { bin = true } },
                 MenuLine(word(W.auto_title)) { showAutomations = true },
+                MenuLine(word(W.radar_title)) { showRadar = true },
                 MenuLine(word(W.home_sec_business), null),
                 MenuLine(word(W.businesses_title)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingBusiness = true } },
                 MenuLine(word(W.trade_kicker_change)) { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { choosingTrade = true } },
@@ -1258,6 +1262,7 @@ private fun Book(
                                 // With their goods lines, so the search finds what was sold (25 Oct 2026, the audit).
                                 val withItems by remember(party.id, reload) { dao.observeEntriesWithItems(party.id) }.collectAsState(emptyList())
                                 val facts = customerFacts(dao, party, reload)
+                                val radar = rememberRadar(dao, party.id, party.isCustomer, withItems, facts.promiseAt)
                                 CustomerPane(
                                     party, Photos.bitmap(party.photoPath, 120), withItems, facts.identity, facts.promise, facts.seasons,
                                     onGave = { entryWay = true },
@@ -1284,7 +1289,9 @@ private fun Book(
                                         onCancel = { pickingEntries = false; pickedEntries = emptySet() }
                                     ),
                                     onPickEntries = { pickingEntries = true; pickedEntries = emptySet() },
-                                    modifier = Modifier.weight(1f).fillMaxHeight()
+                                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                                    radar = radar,
+                                    radarPromise = facts.promiseAt
                                 )
                             }
                             }

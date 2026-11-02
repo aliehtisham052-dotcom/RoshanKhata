@@ -118,10 +118,15 @@ fun CustomerPane(
     /** Several entries being chosen to delete, or null; [onPickEntries] starts it. */
     pick: EntryPick?,
     onPickEntries: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** The Payment Radar's reading (rememberRadar) and the promised day it weighs; null shows no chip. */
+    radar: com.innovation313.roshankhata.data.PaymentRadar.Reading? = null,
+    radarPromise: Long? = null
 ) {
     val c = LocalRoshanColors.current
     val shape = RoundedCornerShape(16.dp)
+    var explainingRadar by remember(party.id) { mutableStateOf(false) }
+    if (explainingRadar && radar != null) RadarDialog(radar, radarPromise) { explainingRadar = false }
     var query by remember(party.id) { mutableStateOf("") }
     var oldestFirst by remember(party.id) { mutableStateOf(false) }
     var days by remember(party.id) { mutableStateOf(PartyWhen.ALL) }
@@ -187,8 +192,11 @@ fun CustomerPane(
                     }
                 }
             }
-            if (promise != null || seasons.isNotEmpty()) {
+            val radarShown = radar != null && radar.light != com.innovation313.roshankhata.data.PaymentRadar.Light.NONE
+            if (promise != null || seasons.isNotEmpty() || radarShown) {
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Payment Radar (2 Nov 2026): the dot and the likely days; its reasons on a click.
+                    if (radarShown && radar != null) RadarChip(radar) { explainingRadar = true }
                     // "Pays after the harvest" only where the shop has seasons; any other shop's promise is a promised payment (31 Oct 2026).
                     promise?.let { p -> HoverTip(word(if (LocalTrade.current.seasons) W.harvest_promise_menu else W.cf_kind_promised)) { AccountChip(p, Look.warn, Look.warnTint, "ic_calendar", onPromise) } }
                     seasons.forEach { AccountChip(it, Look.olive, Look.oliveTint, null) }

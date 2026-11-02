@@ -90,7 +90,12 @@ object FeatureIntro {
         EXPIRY("expiry", R.string.coach_title_stock, R.string.intro_expiry_body, R.color.tile_stock_bg, R.drawable.ic_tile_expiring, listOf(
             Step(R.drawable.ic_tile_bills, false, R.string.intro_expiry_s1),
             Step(R.drawable.ic_tile_expiring, false, R.string.intro_expiry_s2),
-            Step(R.drawable.ic_undo, true, R.string.intro_expiry_s3)));
+            Step(R.drawable.ic_undo, true, R.string.intro_expiry_s3))),
+        // Payment Radar (2 Nov 2026): shown the first time a customer's page has a reading to show.
+        RADAR("radar", R.string.radar_title, R.string.intro_radar_body, R.color.tile_followup_bg, R.drawable.ic_tile_followup, listOf(
+            Step(R.drawable.ic_tile_khata, false, R.string.intro_radar_s1),
+            Step(R.drawable.ic_calendar, true, R.string.intro_radar_s2),
+            Step(R.drawable.ic_menu_lock, true, R.string.intro_radar_s3)));
     }
 
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

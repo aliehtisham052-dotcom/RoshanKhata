@@ -153,6 +153,26 @@
                     android:textSize="11sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
+
+                <!-- Payment Radar (2 Nov 2026): a coloured dot and the likely days of the next payment;
+                     a tap opens how this customer pays and why. Never the judgement itself on the face:
+                     the customer may be looking at this screen across the counter (RadarUi). -->
+                <TextView
+                    android:id="@+id/tvRadar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_season_chip"
+                    android:minHeight="28dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="9dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="9dp"
+                    android:paddingBottom="2dp"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 
