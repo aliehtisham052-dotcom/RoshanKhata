@@ -2848,6 +2848,17 @@ interface KhataDao {
     @Query("SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC LIMIT :limit")
     suspend fun latestEntriesWithItems(partyId: Long, limit: Int): List<EntryWithItems>
 
+    /**
+     * Every live customer's live entries as the Payment Radar reads them (2 Nov 2026): who, which way, how
+     * much, when — four columns, for the shop's own normal ([PaymentRadar.shopTypicalDays]). Read only.
+     */
+    @Query(
+        "SELECT t.partyId AS partyId, t.isGiven AS isGiven, t.amount AS amount, t.timestamp AS timestamp " +
+            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1"
+    )
+    suspend fun radarRows(): List<RadarRow>
+
     /** One live party's live balance, the list's own SUM, for the first paint above. */
     @Query("SELECT COALESCE(SUM(CASE WHEN isGiven = 1 THEN amount ELSE -amount END), 0) FROM transactions WHERE partyId = :partyId AND isDeleted = 0")
     suspend fun liveBalance(partyId: Long): Double

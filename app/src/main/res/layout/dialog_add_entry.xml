@@ -74,6 +74,20 @@
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
+
+            <!-- Payment Radar on an "I gave" to a customer (2 Nov 2026): only the dot and the feature's
+                 name, since this form faces the counter; a tap shows how he pays and why (RadarUi). -->
+            <TextView
+                android:id="@+id/tvEntryRadar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:minHeight="32dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:textColor="@color/header_on_dark"
+                android:textSize="12sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

@@ -426,6 +426,9 @@ class PartyDetailActivity : BaseActivity() {
     private lateinit var tvPartyName: TextView
     private lateinit var tvPartyIdentity: TextView
     private lateinit var tvSeasonRecord: TextView
+    private lateinit var tvRadar: TextView
+    /** The Payment Radar's last reading for this customer (2 Nov 2026); null when off, a supplier, or not read yet. */
+    private var radarReading: com.innovation313.roshankhata.data.PaymentRadar.Reading? = null
     private lateinit var tvPartyPhone: TextView
     private lateinit var tvPartyBalance: TextView
     private lateinit var tvBalanceHint: TextView
@@ -493,6 +496,10 @@ class PartyDetailActivity : BaseActivity() {
         tvPartyName = findViewById(R.id.tvPartyName)
         tvPartyIdentity = findViewById(R.id.tvPartyIdentity)
         tvSeasonRecord = findViewById(R.id.tvSeasonRecord)
+        tvRadar = findViewById(R.id.tvRadar)
+        tvRadar.setOnClickListener {
+            radarReading?.let { r -> com.innovation313.roshankhata.ui.RadarUi.explain(this, r, harvestPromise) { refreshRadar() } }
+        }
         tvPartyPhone = findViewById(R.id.tvPartyPhone)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
         tvPartyBalance.setOnClickListener { copyBalance() }
@@ -644,6 +651,8 @@ class PartyDetailActivity : BaseActivity() {
                 tvPartyIdentity.visibility = if (identity.isEmpty()) View.GONE else View.VISIBLE
 
                 refreshAvatar()
+                // The entries may have arrived before the party said it is a customer.
+                refreshRadar()
             }
         }
     }
@@ -700,6 +709,7 @@ class PartyDetailActivity : BaseActivity() {
     private fun updateBalanceHeader(balance: Double) {
         currentBalance = balance
         refreshSeasonRecord()
+        refreshRadar()
         tvPartyBalance.text = Format.customerBalance(balance)
         // The paper balance card (7 Oct): the figure, the chip's fill and its
         // glyph all follow the direction — the Khata list's "I have to get"
@@ -2159,6 +2169,14 @@ class PartyDetailActivity : BaseActivity() {
             color(if (isGiven) R.color.red_gave else R.color.white)
         )
         tvDirection.setTextColor(color(if (isGiven) R.color.white else R.color.brand_green))
+        // Payment Radar, where credit is given (2 Nov 2026): the dot only — the reasons open on a tap.
+        view.findViewById<TextView>(R.id.tvEntryRadar)?.let { tv ->
+            val r = radarReading?.takeIf { isGiven && editing == null && partyIsCustomerAccount && com.innovation313.roshankhata.ui.RadarUi.on(this) }
+            val mark = r?.let { com.innovation313.roshankhata.ui.RadarUi.mark(this, it) }
+            tv.text = mark
+            tv.visibility = if (mark == null) View.GONE else View.VISIBLE
+            if (r != null) tv.setOnClickListener { com.innovation313.roshankhata.ui.RadarUi.explain(this, r, harvestPromise) { refreshRadar(); tv.visibility = View.GONE } }
+        }
         etAmount.setTextColor(color(if (isGiven) R.color.red_gave_text else R.color.brand_green_text))
 
         val preview = view.findViewById<View>(R.id.entryBalancePreview)
@@ -3174,6 +3192,31 @@ class PartyDetailActivity : BaseActivity() {
         AppScope.launch {
             dao.setHarvestPromise(partyId, at)
             withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) refreshSeasonRecord() }
+        }
+    }
+
+    /**
+     * The Payment Radar's chip under the name (2 Nov 2026): this customer's own entries, already on this
+     * screen, read against the shop's normal (RadarUi). Customers only; off on a helper's phone or when the
+     * owner turned it off; hidden while there is nothing to say. The first time it shows, its sheet says what
+     * it is and that only the owner sees it.
+     */
+    private fun refreshRadar() {
+        if (!partyIsCustomerAccount || !com.innovation313.roshankhata.ui.RadarUi.on(this)) {
+            radarReading = null
+            tvRadar.visibility = View.GONE
+            return
+        }
+        val entries = allRows.map { it.entry }
+        val promise = harvestPromise
+        lifecycleScope.launch {
+            val r = runCatching { com.innovation313.roshankhata.ui.RadarUi.read(dao, partyId, entries, promise) }.getOrNull()
+            if (isFinishing || isDestroyed) return@launch
+            radarReading = r
+            val chip = r?.let { com.innovation313.roshankhata.ui.RadarUi.chip(this@PartyDetailActivity, it) }
+            tvRadar.text = chip
+            tvRadar.visibility = if (chip == null) View.GONE else View.VISIBLE
+            if (chip != null) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this@PartyDetailActivity, com.innovation313.roshankhata.ui.FeatureIntro.Topic.RADAR)
         }
     }
 

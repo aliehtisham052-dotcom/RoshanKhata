@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,705 strings and 58 plurals (2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,725 strings and 59 plurals (2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1475,6 +1475,36 @@ strings. CI only. The first push left the band at `0dp` wide and the screen blan
   typed, green when it matches, red short, amber over; the pad starts in "Cash counted now" when the opening is the
   last count's figure. Windows' dialog has the same top line and first-box words. Strings (nine languages):
   dayclose_opening_first, dayclose_since_last, dayclose_since_first. CI only.
+
+### The Payment Radar (2 Nov 2026, kmp-desktop-16 — the owner: "a blockbuster, not a generic automation; worldwide, every business")
+
+How each customer usually pays, worked out on the device from the shop's own khata — no server, no AI model, no
+network, no cost — said with its reasons. Both platforms; CI only.
+
+- **The rule** (`PaymentRadar`, shared; PaymentRadarTest): each "I gave" is a lot, each "I got" pays the oldest
+  lots first (FIFO, money paid ahead taken by the next credit); a lot cleared within the hour is a paid-now sale,
+  not credit. A customer's pace is the median days of his last 12 repaid lots (from 3), judged against **this
+  shop's own** median over every customer (`shopTypicalDays`, from 8 lots; else 30 days; never under 7) — a
+  grocer's week and a wholesaler's two months both read right. Light: GREEN at or under 1.5× the norm, AMBER
+  over 1.5×, RED over 2.5×; an amount unpaid over max(2× norm, 30 days) is at least AMBER, over max(4×, 90) RED;
+  a promised day passed with money owed at least AMBER; NONE (nothing shown) with too little history. The next
+  payment: a day of the month he keeps to (three of four of his last six payments within two days of one day,
+  over three months; the month's end and start are one habit), else his usual gap from his last payment.
+  `KhataDao.radarRows` (read only, four columns) feeds the shop's norm, cached ten minutes per book.
+- **Not in it, with the reason:** broken promises counted over time (no promise history is kept — only the
+  current `harvestPromise`; it needs a log, a schema change); the morning list ranked by the Radar and which
+  reminder tone works for whom (the next step, needs the reminder outcomes read against payments).
+- **Phone** (`ui/RadarUi`): a chip under the customer's name (`tvRadar`: the dot in the ledger's got/gold/gave
+  text colours on the season chip's gold, and "Likely 8 Nov – 12 Nov", else the feature's name), never the
+  judgement on the face — the customer may be looking across the counter; a tap opens the reasons and Turn off.
+  On a new "I gave" the form's band shows the dot and the name only (`tvEntryRadar`). More → Payment Radar is the
+  switch (prefs "payment_radar", on by default, per phone). A helper's read-only phone shows none of it. The
+  first chip opens its FeatureIntro sheet (`Topic.RADAR`).
+- **Windows** (`Radar.kt`): `RadarChip` in the account's chip row, `RadarDialog` with the reasons and Turn off,
+  More → Payment Radar (`RadarSettingsDialog`, app.properties `radar_on`, `RadarDesk.attach`).
+- Strings (nine languages): radar_title, _on_time, _late, _very_late, _new, _typical, _shop_typical, _oldest,
+  _pay_day, _next, _next_short, _promise_passed, _private, _switch_help, _turn_on, _turn_off, intro_radar_body,
+  _s1-_s3; plurals radar_days.
 
 ### The shared module (KMP)
 
