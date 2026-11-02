@@ -123,10 +123,21 @@ class ProductsActivity : BaseActivity() {
 
         // Add product (30 Oct 2026): the one form that edits a product, opened on a blank one.
         // A helper's read-only phone cannot write, so the button is not offered there.
-        findViewById<View>(R.id.fabAddProduct).apply {
+        val fab = findViewById<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>(R.id.fabAddProduct)
+        fab.apply {
             if (com.innovation313.roshankhata.data.ViewerMode.isOn(this@ProductsActivity)) visibility = View.GONE
             else setOnClickListener { addProduct() }
         }
+        // The button keeps out of the way while the owner reads down the list (2 Nov 2026, his photo at
+        // 150% text: "Add product" sat over the products): its "+" alone while scrolling down, the
+        // words again on the way back up or at the top.
+        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val atTop = !recyclerView.canScrollVertically(-1)
+                if (dy > 6 && fab.isExtended && !atTop) fab.shrink()
+                else if ((dy < -6 || atTop) && !fab.isExtended) fab.extend()
+            }
+        })
 
         // The stock register an inspection asks for. It opens from here, on the
         // screen whose figures it prints, rather than from a settings list
