@@ -259,7 +259,8 @@ class CashbookActivity : BaseActivity() {
         val dp = resources.displayMetrics.density
         lines.forEachIndexed { i, line ->
             val total = i == lines.lastIndex
-            val mark = Regex("%(\\d)\\$s").find(line)
+            // "%1$s" in the words: "\$" keeps Kotlin from reading "$s" as a template.
+            val mark = Regex("%(\\d)\\\$s").find(line)
             val figure = mark?.groupValues?.get(1)?.toIntOrNull()?.let { figures.getOrNull(it - 1) }.orEmpty()
             val words = (if (mark != null) line.removeRange(mark.range) else line).trim().replace(Regex("\\s{2,}"), " ")
             if (total) container.addView(View(this).apply {

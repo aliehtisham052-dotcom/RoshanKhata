@@ -1839,6 +1839,11 @@ Each of these cost a build or a bug.
     crashed). When a view changes parent, every `0dp` and every `layout_constraint*` on it is re-read; and the
     proof pictures are looked at after any layout change (lesson 16), not only the checks.
 
+64. **`$` in a Kotlin string is a template, in a regex too.** `Regex("%(\\d)\\$s")` read `$s` as a variable
+    and the build failed ("Unresolved reference 's'", 266487c); a literal dollar in an ordinary string is `\$`
+    (`"%(\\d)\\\$s"`). Python checks cannot catch it — no local Gradle — so a new regex with `$` is read twice
+    before the push.
+
 ---
 
 ## Working with the owner
