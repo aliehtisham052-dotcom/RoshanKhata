@@ -21,8 +21,9 @@ import kotlin.math.min
  *
  * 18 Oct: kept stroke by stroke, so a slip can be taken back ([undo]) without
  * starting over, and [onInkChanged] tells the screen when there is something
- * to save. A small "✕" at the start of the line shows where to sign, as on
- * a paper form.
+ * to save. The line shows where to sign. The paper form's "✕" at its start
+ * was taken out on 1 Nov 2026: on a screen it read as a close or delete button
+ * that did nothing (the owner's photo).
  */
 class SignaturePad @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
@@ -33,9 +34,6 @@ class SignaturePad @JvmOverloads constructor(context: Context, attrs: AttributeS
         strokeCap = Paint.Cap.ROUND; strokeJoin = Paint.Join.ROUND
     }
     private val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFC9C5B8.toInt(); strokeWidth = density }
-    private val mark = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF8A877E.toInt(); textSize = 18f * density; typeface = android.graphics.Typeface.DEFAULT_BOLD
-    }
 
     /** Every finished stroke, oldest first; [current] is the one being drawn. */
     private val strokes = mutableListOf<Path>()
@@ -46,6 +44,13 @@ class SignaturePad @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     /** Told true when the first ink goes down, false when the pad is empty again. */
     var onInkChanged: ((Boolean) -> Unit)? = null
+
+    /**
+     * Told the moment a finger touches the pad (1 Nov 2026, the owner's photo): [hasInk] turns
+     * true only when the first stroke ends, and the "Sign here" words stayed behind the line
+     * being drawn until the finger came up.
+     */
+    var onPenDown: (() -> Unit)? = null
 
     var hasInk = false
         private set(value) {
@@ -70,7 +75,6 @@ class SignaturePad @JvmOverloads constructor(context: Context, attrs: AttributeS
         val y = height * 0.74f
         val start = width * 0.06f
         canvas.drawLine(start, y, width * 0.94f, y, line)
-        canvas.drawText("\u2715", start, y - 8 * density, mark)
         for (p in strokes) canvas.drawPath(p, ink)
         current?.let { canvas.drawPath(it, ink) }
     }
@@ -80,6 +84,7 @@ class SignaturePad @JvmOverloads constructor(context: Context, attrs: AttributeS
         parent?.requestDisallowInterceptTouchEvent(true)
         when (e.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                onPenDown?.invoke()
                 current = Path().apply { moveTo(e.x, e.y) }
                 lastX = e.x; lastY = e.y; grow(e.x, e.y)
             }
@@ -96,6 +101,8 @@ class SignaturePad @JvmOverloads constructor(context: Context, attrs: AttributeS
                 current?.let { strokes.add(it) }
                 current = null
                 hasInk = strokes.isNotEmpty()
+                // A touch taken away before any ink: the pad is empty, so its words come back.
+                if (!hasInk) onInkChanged?.invoke(false)
             }
         }
         invalidate()
