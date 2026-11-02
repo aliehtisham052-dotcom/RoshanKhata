@@ -1448,6 +1448,17 @@ Phone only (`data/PdfExport.buildStatement`); Windows' StatementPrint is its own
   line, account and wallet numbers shrink instead of being cut, and the How to pay box grows to its lines. Strings: pdf_stmt_amount_still_to_pay, _date_details, _gap_title, _gap_pay,
   _gap_phone, _gap_address, _gap_fix.
 
+### Products & stock: the list gets the screen (2 Nov 2026, kmp-desktop-16 — the owner's photos at 150% text)
+
+Phone only. The two register cards, the tie button and Add product stood fixed under the list, leaving room
+for one product with the button over it. Now (`activity_products.xml`) the band with the search stays, and the
+figures, the registers (one card, two rows: `btnInspectorReport`, `btnRegisterReport` are the rows) and the note
+with its tie button inside it (`btnLinkGoods`, a text button under "use the button below") sit in an
+AppBarLayout over the list (`scroll|enterAlways`): scrolled away as the list goes up, back as it comes down.
+Add product is in the CoordinatorLayout's corner and shrinks to its "+" while the list scrolls down
+(`ProductsActivity`, `shrink()`/`extend()`); the list keeps 88 dp under its last row. Nothing removed, no
+strings. CI only.
+
 ### The shared module (KMP)
 
 ```
