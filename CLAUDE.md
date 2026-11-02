@@ -1444,7 +1444,8 @@ Phone only (`data/PdfExport.buildStatement`); Windows' StatementPrint is its own
   foot (`endPage`; the count line no longer carries it). "Total taken" stays (the mockup's "Goods taken" is wrong
   for cash lent). The closing bar, QR and signature break a page earlier (190/210/180 from the foot): on a full
   page the call-us line, the QR and the signature's name ran into the foot. The proof fills a made-up profile
-  for the drawing and puts it back. Strings: pdf_stmt_amount_still_to_pay, _date_details, _gap_title, _gap_pay,
+  for the drawing and puts it back; its first picture showed the IBAN cut to "PK00TEST000…", so the IBAN has its own
+  line, account and wallet numbers shrink instead of being cut, and the How to pay box grows to its lines. Strings: pdf_stmt_amount_still_to_pay, _date_details, _gap_title, _gap_pay,
   _gap_phone, _gap_address, _gap_fix.
 
 ### The shared module (KMP)
