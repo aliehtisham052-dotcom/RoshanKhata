@@ -503,14 +503,19 @@ object PdfExport {
         y += 8f
         // How to pay (2 Nov 2026): the shop's bank and wallet beside what is owed, with the
         // number to quote — only on a customer's statement that has something to pay.
-        val bank = listOfNotNull(
-            BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context), BusinessProfile.bankIban(context)
-        ).map { it.trim() }.filter { it.isNotEmpty() }.joinToString("  \u00b7  ").takeIf { it.isNotEmpty() }
+        // The IBAN has a line of its own and is never cut (the first proof, 2 Nov 2026: "Test Bank \u00b7
+        // PK00TEST000\u2026" \u2014 a customer cannot pay into an account number that ends in dots).
+        val bankWho = listOfNotNull(BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context))
+            .map { it.trim() }.filter { it.isNotEmpty() }.joinToString("  \u00b7  ").takeIf { it.isNotEmpty() }
+        val iban = BusinessProfile.bankIban(context)?.trim()?.takeIf { it.isNotEmpty() }
         val wallet = BusinessProfile.bankJazzCash(context)?.trim()?.takeIf { it.isNotEmpty() }
         val quote = rows.lastOrNull { it.entry.isGiven }?.entry?.entryNumber?.takeIf { it.isNotBlank() }
-        val howToPay = isCustomer && closingBalance > 0 && (bank != null || wallet != null)
+        val howToPay = isCustomer && closingBalance > 0 && (bankWho != null || iban != null || wallet != null)
         val dueDay = payBy?.takeIf { isCustomer && closingBalance > 0 && it >= DayMath.startOfDay(System.currentTimeMillis()) }
         val barH = if (dueDay != null) 60f else 52f
+        // The box grows to hold every line it has: head, bank, IBAN, wallet, the number to quote.
+        val payLines = listOfNotNull(bankWho ?: iban, iban.takeIf { bankWho != null }, wallet, quote).size
+        val boxH = if (howToPay) maxOf(barH, 25f + 11f * (payLines - 1) + 8f) else barH
         val barRight = if (howToPay) PAGE_W - MARGIN - 212f else PAGE_W - MARGIN
         c.drawRect(MARGIN, y, barRight, y + barH, navyFill)
         c.drawRect(MARGIN, y, MARGIN + 4f, y + barH, goldFill)
@@ -538,22 +543,34 @@ object PdfExport {
 
         if (howToPay) {
             val boxL = PAGE_W - MARGIN - 200f
-            val box = RectF(boxL, y, PAGE_W - MARGIN, y + barH)
+            val box = RectF(boxL, y, PAGE_W - MARGIN, y + boxH)
             boxStroke.color = BOX_EDGE; boxStroke.strokeWidth = 0.8f
             c.drawRoundRect(box, 5f, 5f, boxStroke)
             val headP = Paint(header).apply { textSize = 8f }
             PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_how_to_pay), boxL + 8f, y + 13f, headP)
-            val lineP = Paint(body).apply { textSize = 8f; color = Color.BLACK }
             var ly = y + 25f
-            bank?.let { PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_bank, it), lineP, 184f), boxL + 8f, ly, lineP); ly += 11f }
-            wallet?.let { PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_wallet, it), lineP, 184f), boxL + 8f, ly, lineP); ly += 11f }
+            // A name may be cut; an account or wallet number only gets smaller, never shorter.
+            fun payLine(text: String, number: Boolean) {
+                val p = Paint(body).apply { textSize = 8f; color = Color.BLACK }
+                if (number) shrinkToFit(text, p, 184f, 5.5f)
+                PdfRtl.drawText(c, if (number) text else fitted(text, p, 184f), boxL + 8f, ly, p)
+                ly += 11f
+            }
+            when {
+                bankWho != null -> {
+                    payLine(context.getString(R.string.pdf_stmt_bank, bankWho), number = false)
+                    iban?.let { payLine(it, number = true) }
+                }
+                iban != null -> payLine(context.getString(R.string.pdf_stmt_bank, iban), number = true)
+            }
+            wallet?.let { payLine(context.getString(R.string.pdf_stmt_wallet, it), number = true) }
             quote?.let {
                 val q = Paint(muted).apply { textSize = 7f }
-                if (ly < y + barH - 2f) PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_mention_ref, it), q, 184f), boxL + 8f, ly, q)
+                PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_mention_ref, it), q, 184f), boxL + 8f, ly, q)
             }
         }
 
-        y += barH + 14f
+        y += boxH + 14f
 
         // If something does not match, who to call — the shop's own number.
         shopPhone?.let {
