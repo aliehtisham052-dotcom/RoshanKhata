@@ -1457,7 +1457,7 @@ with its tie button inside it (`btnLinkGoods`, a text button under "use the butt
 AppBarLayout over the list (`scroll|enterAlways`): scrolled away as the list goes up, back as it comes down.
 Add product is in the CoordinatorLayout's corner and shrinks to its "+" while the list scrolls down
 (`ProductsActivity`, `shrink()`/`extend()`); the list keeps 88 dp under its last row. Nothing removed, no
-strings. CI only.
+strings. CI only. The first push left the band at `0dp` wide and the screen blank (lesson 63).
 
 ### The shared module (KMP)
 
@@ -1814,6 +1814,13 @@ Each of these cost a build or a bug.
     row to another customer: a blank card-sized gap (the owner's photo, 1 Nov 2026). Every bind makes a row plain
     (`RowToScreen.plain`: visible, opaque, no transition name) and the list settles its rows after resuming
     (`RowToScreen.settle`). A party never written to reads "No entries", not "Settled" (`party_no_entries`).
+
+63. **A `0dp` width means "let the constraints decide" only inside a ConstraintLayout.** Moving the Products
+    band out of one into a LinearLayout (2 Nov 2026) kept its `layout_width="0dp"`: the band measured at no
+    width, its words broke a letter a line, it grew taller than the screen and the list under it got nothing
+    — the screen proof was blank in all four looks while every test passed (the screen opened, nothing
+    crashed). When a view changes parent, every `0dp` and every `layout_constraint*` on it is re-read; and the
+    proof pictures are looked at after any layout change (lesson 16), not only the checks.
 
 ---
 
