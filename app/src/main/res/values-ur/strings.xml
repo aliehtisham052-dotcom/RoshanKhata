@@ -3659,4 +3659,11 @@
     <string name="pdf_stmt_wallet">والیٹ: %1$s</string>
     <string name="pdf_stmt_mention_ref">ادائیگی کے ساتھ %1$s کا حوالہ دیں۔</string>
     <string name="pdf_stmt_query">اگر کچھ آپ کے حساب سے مختلف ہو تو ہمیں %1$s پر فون کریں۔</string>
+    <string name="pdf_stmt_amount_still_to_pay">آپ کے ذمے باقی رقم</string>
+    <string name="pdf_stmt_date_details">تاریخ اور تفصیل</string>
+    <string name="pdf_stmt_gap_title">یہ ابھی اس اسٹیٹمنٹ پر نہیں:</string>
+    <string name="pdf_stmt_gap_pay">ادائیگی کا طریقہ: آپ کا بینک یا والیٹ</string>
+    <string name="pdf_stmt_gap_phone">آپ کی دکان کا فون نمبر</string>
+    <string name="pdf_stmt_gap_address">آپ کی دکان کا پتا</string>
+    <string name="pdf_stmt_gap_fix">تفصیل لکھیں</string>
 </resources>

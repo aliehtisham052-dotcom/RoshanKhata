@@ -32,14 +32,27 @@ object PdfShare {
      *
      * @param titleRes the dialog title (e.g. "Report ready").
      */
-    fun present(context: Context, file: File, titleRes: Int = R.string.pdf_ready_title) {
+    fun present(
+        context: Context,
+        file: File,
+        titleRes: Int = R.string.pdf_ready_title,
+        /**
+         * What the sheet is missing that the owner can add (PdfExport.gapsOf), said under the
+         * dialog's words; with it, [fixLabel] takes Close's place and runs [fix] (back and a tap
+         * outside still close). Null keeps the dialog as it always was.
+         */
+        note: String? = null,
+        fixLabel: Int = 0,
+        fix: (() -> Unit)? = null
+    ) {
         val uri = FileProvider.getUriForFile(
             context, "${context.packageName}.fileprovider", file
         )
 
-        MaterialAlertDialogBuilder(context)
+        val body = context.getString(R.string.pdf_ready_body)
+        val builder = MaterialAlertDialogBuilder(context)
             .setTitle(titleRes)
-            .setMessage(R.string.pdf_ready_body)
+            .setMessage(if (note != null) body + "\n\n" + note else body)
             // Primary: open the document so it can be read before anything else.
             .setPositiveButton(R.string.pdf_open) { _, _ ->
                 val view = Intent(Intent.ACTION_VIEW).apply {
@@ -67,8 +80,32 @@ object PdfShare {
             }
             // Secondary: send it on, once they have chosen to.
             .setNeutralButton(R.string.share) { _, _ -> share(context, uri, file.name) }
-            .setNegativeButton(R.string.close, null)
-            .show()
+        if (note != null && fix != null && fixLabel != 0) builder.setNegativeButton(fixLabel) { _, _ -> fix() }
+        else builder.setNegativeButton(R.string.close, null)
+        builder.show()
+    }
+
+    /**
+     * A customer statement's [present]: when the Business Profile lacks what the sheet would print
+     * (the way to pay, the shop's phone or address — PdfExport.gapsOf), the dialog says so and
+     * "Add details" opens the profile at the first missing part (2 Nov 2026, the owner's review).
+     */
+    fun presentStatement(
+        context: Context,
+        file: File,
+        isCustomer: Boolean,
+        closingBalance: Double,
+        titleRes: Int = R.string.statement_ready_title
+    ) {
+        val gaps = com.innovation313.roshankhata.data.PdfExport.gapsOf(context, isCustomer, closingBalance)
+        present(context, file, titleRes, gaps?.note, R.string.pdf_stmt_gap_fix) {
+            val focus = if (gaps?.payMissing == true) com.innovation313.roshankhata.BusinessSettingsActivity.FOCUS_PAYMENT
+            else com.innovation313.roshankhata.BusinessSettingsActivity.FOCUS_PHONE
+            context.startActivity(
+                Intent(context, com.innovation313.roshankhata.BusinessSettingsActivity::class.java)
+                    .putExtra(com.innovation313.roshankhata.BusinessSettingsActivity.EXTRA_FOCUS, focus)
+            )
+        }
     }
 
     /**

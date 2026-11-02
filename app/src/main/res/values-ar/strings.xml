@@ -3891,4 +3891,11 @@
     <string name="pdf_stmt_wallet">المحفظة: %1$s</string>
     <string name="pdf_stmt_mention_ref">اذكر %1$s مع دفعتك.</string>
     <string name="pdf_stmt_query">إذا لم يطابق شيء هنا سجلاتك فاتصل بنا على %1$s.</string>
+    <string name="pdf_stmt_amount_still_to_pay">المبلغ المتبقي عليك</string>
+    <string name="pdf_stmt_date_details">التاريخ والتفاصيل</string>
+    <string name="pdf_stmt_gap_title">لم يظهر في هذا الكشف بعد:</string>
+    <string name="pdf_stmt_gap_pay">طريقة الدفع: بنكك أو محفظتك</string>
+    <string name="pdf_stmt_gap_phone">رقم هاتف متجرك</string>
+    <string name="pdf_stmt_gap_address">عنوان متجرك</string>
+    <string name="pdf_stmt_gap_fix">أضف التفاصيل</string>
 </resources>

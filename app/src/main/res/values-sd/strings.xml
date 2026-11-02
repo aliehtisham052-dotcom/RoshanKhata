@@ -3687,4 +3687,11 @@
     <string name="pdf_stmt_wallet">والٽ: %1$s</string>
     <string name="pdf_stmt_mention_ref">ادائيگي سان %1$s جو حوالو ڏيو.</string>
     <string name="pdf_stmt_query">جيڪڏهن ڪجهه توهان جي حساب سان نه ملي ته اسان کي %1$s تي فون ڪريو.</string>
+    <string name="pdf_stmt_amount_still_to_pay">توهان جي ذمي باقي رقم</string>
+    <string name="pdf_stmt_date_details">تاريخ ۽ تفصيل</string>
+    <string name="pdf_stmt_gap_title">اهو اڃا هن اسٽيٽمينٽ تي ناهي:</string>
+    <string name="pdf_stmt_gap_pay">ادائيگي جو طريقو: توهان جي بئنڪ يا والٽ</string>
+    <string name="pdf_stmt_gap_phone">توهان جي دڪان جو فون نمبر</string>
+    <string name="pdf_stmt_gap_address">توهان جي دڪان جو پتو</string>
+    <string name="pdf_stmt_gap_fix">تفصيل لکو</string>
 </resources>

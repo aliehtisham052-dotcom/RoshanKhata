@@ -3707,4 +3707,11 @@
     <string name="pdf_stmt_wallet">वॉलेट: %1$s</string>
     <string name="pdf_stmt_mention_ref">भुगतान के साथ %1$s बताएँ।</string>
     <string name="pdf_stmt_query">अगर कुछ आपके हिसाब से मेल न खाए तो हमें %1$s पर फ़ोन करें।</string>
+    <string name="pdf_stmt_amount_still_to_pay">आपको अभी जितना देना है</string>
+    <string name="pdf_stmt_date_details">तारीख़ और विवरण</string>
+    <string name="pdf_stmt_gap_title">यह अभी इस स्टेटमेंट पर नहीं है:</string>
+    <string name="pdf_stmt_gap_pay">भुगतान कैसे करें: आपका बैंक या वॉलेट</string>
+    <string name="pdf_stmt_gap_phone">आपकी दुकान का फ़ोन नंबर</string>
+    <string name="pdf_stmt_gap_address">आपकी दुकान का पता</string>
+    <string name="pdf_stmt_gap_fix">विवरण जोड़ें</string>
 </resources>

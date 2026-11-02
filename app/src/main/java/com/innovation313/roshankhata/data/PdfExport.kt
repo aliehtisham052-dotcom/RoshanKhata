@@ -55,6 +55,46 @@ object PdfExport {
 
     private fun latinOnly(word: String): Boolean = word.all { it.code < 0x0250 }
 
+    /**
+     * "s/o Muhammad · Khichi": the line under the customer's name on his page in the app
+     * (PartyDetailActivity.loadParty), whichever parts are known; null when neither is.
+     */
+    fun identityOf(context: Context, party: Party?): String? = party?.let { p ->
+        listOfNotNull(
+            p.fatherName?.trim()?.takeIf { it.isNotEmpty() }?.let { context.getString(R.string.son_of_prefix, it) },
+            p.village?.trim()?.takeIf { it.isNotEmpty() }
+        ).joinToString("  ·  ").ifEmpty { null }
+    }
+
+    /**
+     * What a statement would print but the Business Profile does not hold yet, said to the owner
+     * when the sheet is ready (2 Nov 2026, the owner's review: a statement went out with no way to
+     * pay and no shop phone, because the profile was empty and those parts print only when filled).
+     * The sheet never prints a placeholder — the customer would read "[YOUR BANK]". The way to pay
+     * matters only on a customer's statement that owes, as [buildStatement] prints it. Null when
+     * nothing is missing, and on a helper's read-only phone, which cannot change the profile.
+     */
+    class Gaps(val note: String, val payMissing: Boolean)
+
+    fun gapsOf(context: Context, isCustomer: Boolean, closingBalance: Double): Gaps? {
+        if (ViewerMode.isOn(context)) return null
+        fun blank(s: String?) = s.isNullOrBlank()
+        val missing = buildList {
+            if (isCustomer && closingBalance > 0 &&
+                blank(BusinessProfile.bankName(context)) && blank(BusinessProfile.bankAccountTitle(context)) &&
+                blank(BusinessProfile.bankIban(context)) && blank(BusinessProfile.bankJazzCash(context))
+            ) add(R.string.pdf_stmt_gap_pay)
+            if (blank(BusinessProfile.businessPhone(context))) add(R.string.pdf_stmt_gap_phone)
+            if (blank(BusinessProfile.businessAddress(context))) add(R.string.pdf_stmt_gap_address)
+        }
+        if (missing.isEmpty()) return null
+        return Gaps(
+            context.getString(R.string.pdf_stmt_gap_title) + "\n" +
+                missing.joinToString("\n") { "• " + context.getString(it) },
+            payMissing = R.string.pdf_stmt_gap_pay in missing
+        )
+    }
+
     data class StatementRow(
         val entry: LedgerEntry,
         val runningBalance: Double,
@@ -95,7 +135,9 @@ object PdfExport {
         /** A supplier's statement is read by the supplier: the columns say it from their side (21 Oct 2026). */
         isCustomer: Boolean = true,
         /** The day the customer promised to pay (Party.harvestPromise); said under what is owed when it is today or later. */
-        payBy: Long? = null
+        payBy: Long? = null,
+        /** "s/o Muhammad · Khichi" under the customer's name ([identityOf]); null prints nothing. */
+        partyIdentity: String? = null
     ): File? {
         // Oldest first, as every statement reads (21 Oct 2026, the critical review): the screen's
         // newest-first list printed the period backwards and put the opening line above the newest
@@ -186,6 +228,20 @@ object PdfExport {
         var y: Float
 
         val brandLogo = PdfBranding.logo(context)
+
+        // Every page names the shop and says which page it is (2 Nov 2026, the owner's review
+        // against the mockup): a page lost from a printed or forwarded statement still says whose
+        // it is and where it belongs. It sits just above the foot line, clear of the content, whose
+        // page breaks leave room for it. On the counting pass the total is not known yet; the line
+        // is the same height either way, so nothing moves.
+        fun endPage() {
+            val shop = businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name)
+            val words = shop + "  ·  " +
+                Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages ?: pageNo)
+            val p = Paint().apply { color = GREY; textSize = 7f; isAntiAlias = true }
+            PdfRtl.drawText(c, fitted(words, p, PAGE_W - 2 * MARGIN), MARGIN, PAGE_H - MARGIN - 26f, p)
+            doc.finishPage(page)
+        }
 
         // The three figures a customer looks for first, computed once: what
         // was given in all, what came back in all, and where that leaves
@@ -289,7 +345,13 @@ object PdfExport {
                 val who = Paint(header).apply { textSize = 13f; color = Color.BLACK }
                 PdfRtl.drawText(c, fitted(partyName, who, 300f), nameX, yy + 15f, who)
                 val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
-                phone?.let { PdfRtl.drawText(c, it, nameX, yy + 27f, Paint(periodPaint).apply { textSize = 8.5f }) }
+                val factsPaint = Paint(periodPaint).apply { textSize = 8.5f }
+                phone?.let { PdfRtl.drawText(c, it, nameX, yy + 27f, factsPaint) }
+                // Father's name and village under it (2 Nov 2026, the mockup's line): in a village
+                // two customers often share a name, and this is how the shop tells them apart.
+                val identity = partyIdentity?.takeIf { it.isNotBlank() }
+                val identityY = if (phone != null) yy + 38f else yy + 27f
+                identity?.let { PdfRtl.drawText(c, fitted(it, factsPaint, 300f), nameX, identityY, factsPaint) }
 
                 val right = PAGE_W - MARGIN
                 val smallR = Paint(small).apply { textAlign = Paint.Align.RIGHT }
@@ -300,13 +362,11 @@ object PdfExport {
                     if (from == till) from else "$from \u2013 $till"
                 } else context.getString(R.string.pdf_stmt_no_entries)
                 PdfRtl.drawText(c, periodText, right, yy + 13f, Paint(header).apply { textSize = 9f; color = Color.BLACK; textAlign = Paint.Align.RIGHT })
-                val countLine = Digits.quantity(context.resources, R.plurals.pdf_stmt_entries, rows.size, rows.size) +
-                    if (totalPages != null && totalPages > 1)
-                        "  \u00b7  " + Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages)
-                    else ""
+                // The page is said once, at every page's foot (endPage).
+                val countLine = Digits.quantity(context.resources, R.plurals.pdf_stmt_entries, rows.size, rows.size)
                 PdfRtl.drawText(c, countLine, right, yy + 25f, Paint(periodPaint).apply { textSize = 8f; textAlign = Paint.Align.RIGHT })
 
-                yy += 34f
+                yy += if (identity != null && phone != null) 46f else 34f
                 c.drawLine(MARGIN, yy, PAGE_W - MARGIN, yy, lineFill)
                 yy += 10f
 
@@ -342,7 +402,8 @@ object PdfExport {
             // The column heads on the brand's green bar, white words, on every page.
             c.drawRoundRect(RectF(MARGIN, yy - 11f, PAGE_W - MARGIN, yy + 6f), 3f, 3f, navyFill)
             val headW = Paint(header).apply { color = Color.WHITE; textSize = 9f }
-            PdfRtl.drawText(c, context.getString(R.string.pdf_label_date), xDate + 6f, yy, headW)
+            // "Date & details": each row's second line carries its number, goods and note.
+            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_date_details), headW, xGave - xDate - 12f), xDate + 6f, yy, headW)
             PdfRtl.drawText(c, fitted(owedLabel, headW, xGot - xGave - 6f), xGave, yy, headW)
             PdfRtl.drawText(c, fitted(paidLabel, headW, xBal - xGot - 6f), xGot, yy, headW)
             PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_balance), headW, PAGE_W - MARGIN - xBal - 4f), xBal, yy, headW)
@@ -376,7 +437,7 @@ object PdfExport {
         for (row in rows) {
             // Two lines per entry (details + reference), so break before we run off.
             if (y > PAGE_H - 110f) {
-                doc.finishPage(page)
+                endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
@@ -429,9 +490,10 @@ object PdfExport {
         }
 
         // Closing balance — stated in the customer's terms, not accounting signs. Room for the
-        // bar, its pay-by line and the call-us line above the foot.
-        if (y > PAGE_H - 130f) {
-            doc.finishPage(page)
+        // bar, its pay-by line and the call-us line above the page line and the foot (130 let the
+        // call-us line run into the foot on a full page).
+        if (y > PAGE_H - 190f) {
+            endPage()
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             c = page.canvas
@@ -453,7 +515,10 @@ object PdfExport {
         c.drawRect(MARGIN, y, barRight, y + barH, navyFill)
         c.drawRect(MARGIN, y, MARGIN + 4f, y + barH, goldFill)
 
+        // "Amount you still have to pay" on a customer's statement (2 Nov 2026, the mockup's words):
+        // the sum after everything paid, not a new demand.
         val closingLabel = when {
+            closingBalance > 0 && isCustomer -> context.getString(R.string.pdf_stmt_amount_still_to_pay)
             closingBalance > 0 -> context.getString(R.string.pdf_stmt_you_will_pay)
             closingBalance < 0 -> context.getString(R.string.pdf_stmt_you_will_receive)
             else -> context.getString(R.string.pdf_stmt_settled)
@@ -461,7 +526,7 @@ object PdfExport {
 
         subtitle.color = GOLD
         subtitle.textSize = 10f
-        PdfRtl.drawText(c, closingLabel, MARGIN + 16f, y + 18f, subtitle)
+        PdfRtl.drawText(c, fitted(closingLabel, subtitle, barRight - MARGIN - 24f), MARGIN + 16f, y + 18f, subtitle)
 
         title.textSize = 18f
         title.color = Color.WHITE
@@ -501,8 +566,8 @@ object PdfExport {
         // the customer to pay. Printing "scan to pay me" on a statement where
         // we owe them would be tone-deaf.
         if (paymentQr != null && closingBalance > 0) {
-            if (y > PAGE_H - 190f) {
-                doc.finishPage(page)
+            if (y > PAGE_H - 210f) {
+                endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
@@ -559,8 +624,8 @@ object PdfExport {
         // line, where a signature goes on paper.
         val signature = BusinessProfile.loadSignature(context)
         if (signature != null) {
-            if (y > PAGE_H - 150f) {
-                doc.finishPage(page)
+            if (y > PAGE_H - 180f) {
+                endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
@@ -602,7 +667,7 @@ object PdfExport {
             context, doc, c, MARGIN, PAGE_H - MARGIN, PAGE_W - MARGIN, brandLogo
         )
 
-        doc.finishPage(page)
+        endPage()
         return doc to pageNo
         }
 

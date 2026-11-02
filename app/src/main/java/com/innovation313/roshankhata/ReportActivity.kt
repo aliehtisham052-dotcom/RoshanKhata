@@ -276,6 +276,7 @@ class ReportActivity : BaseActivity() {
                     isCustomer = partyIsCustomer,
                     // The promised day, said under what is owed (2 Nov 2026).
                     payBy = dao.getParty(partyId)?.harvestPromise,
+                    partyIdentity = PdfExport.identityOf(this@ReportActivity, dao.getParty(partyId)),
                     businessName = BusinessProfile.businessName(this@ReportActivity),
                     paymentQr = BusinessProfile.loadQr(this@ReportActivity),
                     // Only if the owner has turned it on. Off by default.
@@ -293,7 +294,12 @@ class ReportActivity : BaseActivity() {
                 return@launch
             }
 
-            com.innovation313.roshankhata.ui.PdfShare.present(this@ReportActivity, file)
+            com.innovation313.roshankhata.ui.PdfShare.presentStatement(
+                this@ReportActivity, file,
+                isCustomer = partyIsCustomer,
+                closingBalance = closingBalance,
+                titleRes = R.string.pdf_ready_title
+            )
         }
     }
 

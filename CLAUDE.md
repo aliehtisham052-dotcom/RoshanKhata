@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,695 strings and 58 plurals (2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,702 strings and 58 plurals (2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1433,6 +1433,19 @@ Phone only (`data/PdfExport.buildStatement`); Windows' StatementPrint is its own
 - Strings (nine languages): pdf_stmt_doc_title, _made_on, _for, _period_label, _taken, _paid, _total_taken,
   _total_paid, _still_to_pay, _settled_short, _pay_by, _how_to_pay, _bank, _wallet, _mention_ref, _query.
   Proof: 31-statement (ScreenProofPhoneTest, drawn with the app's context, so in English in every look).
+- **The second pass, the same day (the owner's photo of a real statement beside the mockup):** How to pay, the shop's
+  address/phone and the call-us line print only when the Business Profile holds them, and his was empty — so the
+  sheet still never prints a placeholder, but the ready dialog says what is missing (`PdfExport.gapsOf`,
+  `PdfShare.presentStatement`: the way to pay only on a customer's statement that owes; nothing on a helper's
+  phone) and "Add details" takes Close's place, opening the profile at the payment or phone box. The bar says
+  "Amount you still have to pay" on a customer's statement (`pdf_stmt_amount_still_to_pay`), the first column
+  "Date & details" (`pdf_stmt_date_details`), the father's name and village sit under the customer's name
+  (`PdfExport.identityOf`, the customer page's own line), and every page says "<shop> · Page n of m" above the
+  foot (`endPage`; the count line no longer carries it). "Total taken" stays (the mockup's "Goods taken" is wrong
+  for cash lent). The closing bar, QR and signature break a page earlier (190/210/180 from the foot): on a full
+  page the call-us line, the QR and the signature's name ran into the foot. The proof fills a made-up profile
+  for the drawing and puts it back. Strings: pdf_stmt_amount_still_to_pay, _date_details, _gap_title, _gap_pay,
+  _gap_phone, _gap_address, _gap_fix.
 
 ### The shared module (KMP)
 

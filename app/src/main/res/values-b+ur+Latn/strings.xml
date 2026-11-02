@@ -3659,4 +3659,11 @@
     <string name="pdf_stmt_wallet">Wallet: %1$s</string>
     <string name="pdf_stmt_mention_ref">Adaigi ke saath %1$s ka hawala dein.</string>
     <string name="pdf_stmt_query">Agar kuch aap ke hisaab se mukhtalif ho to hamein %1$s par phone karein.</string>
+    <string name="pdf_stmt_amount_still_to_pay">Aap ke zimme baqi raqam</string>
+    <string name="pdf_stmt_date_details">Tareekh aur tafseel</string>
+    <string name="pdf_stmt_gap_title">Yeh abhi is statement par nahi:</string>
+    <string name="pdf_stmt_gap_pay">Adaigi ka tareeqa: aap ka bank ya wallet</string>
+    <string name="pdf_stmt_gap_phone">Aap ki dukaan ka phone number</string>
+    <string name="pdf_stmt_gap_address">Aap ki dukaan ka pata</string>
+    <string name="pdf_stmt_gap_fix">Tafseel likhein</string>
 </resources>

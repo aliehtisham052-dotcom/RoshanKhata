@@ -3707,4 +3707,11 @@
     <string name="pdf_stmt_wallet">ওয়ালেট: %1$s</string>
     <string name="pdf_stmt_mention_ref">পরিশোধের সময় %1$s উল্লেখ করুন।</string>
     <string name="pdf_stmt_query">কিছু না মিললে আমাদের %1$s নম্বরে ফোন করুন।</string>
+    <string name="pdf_stmt_amount_still_to_pay">আপনাকে এখনও যত দিতে হবে</string>
+    <string name="pdf_stmt_date_details">তারিখ ও বিবরণ</string>
+    <string name="pdf_stmt_gap_title">এই স্টেটমেন্টে এখনও নেই:</string>
+    <string name="pdf_stmt_gap_pay">কীভাবে পরিশোধ করবেন: আপনার ব্যাংক বা ওয়ালেট</string>
+    <string name="pdf_stmt_gap_phone">আপনার দোকানের ফোন নম্বর</string>
+    <string name="pdf_stmt_gap_address">আপনার দোকানের ঠিকানা</string>
+    <string name="pdf_stmt_gap_fix">বিবরণ যোগ করুন</string>
 </resources>
