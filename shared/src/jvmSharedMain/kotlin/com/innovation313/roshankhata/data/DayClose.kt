@@ -71,24 +71,36 @@ object DayCloseMath {
      * computer had it as a function and the phone's day-close dialog wrote the
      * same four queries and arithmetic inline).
      *
-     * Since the last count ([KhataDao.lastDayClose], or the beginning of the
-     * book): cashbook money in and out that moved in cash (an unmarked row is
-     * cash, a bank, online, wallet or cheque row is not), plus khata receipts
-     * and payments marked Cash — unmarked khata entries are not guessed. The
-     * stretch is `closedAt < t <= now`, the DAO's own bounds.
+     * Since the last count ([KhataDao.lastDayClose]), or — when the drawer was
+     * never counted — since the start of today's working day ([firstCountFrom]):
+     * cashbook money in and out that moved in cash (an unmarked row is cash, a
+     * bank, online, wallet or cheque row is not), plus khata receipts and
+     * payments marked Cash — unmarked khata entries are not guessed. The
+     * stretch is `from < t <= now`, the DAO's own bounds.
      */
     suspend fun drawerByTheBooks(dao: KhataDao, now: Long = System.currentTimeMillis()): DrawerFigures {
         val last = dao.lastDayClose()
-        val from = last?.closedAt ?: 0L
+        val from = last?.closedAt ?: firstCountFrom(now)
         return DrawerFigures(
             now = now,
             last = last,
             cbIn = dao.cashbookCashBetween(true, from, now),
             cbOut = dao.cashbookCashBetween(false, from, now),
             kIn = dao.khataCashBetween(false, from, now),
-            kOut = dao.khataCashBetween(true, from, now)
+            kOut = dao.khataCashBetween(true, from, now),
+            from = from
         )
     }
+
+    /**
+     * Where a drawer never counted starts (2 Nov 2026, the owner's first Close the day): the start of today's
+     * working day ([businessDayOf], so a count after midnight still takes the evening before). It started at the
+     * book's first entry, so the first count added every cash receipt the shop ever wrote ("Khata cash received
+     * Rs 1,652", "Should be in drawer Rs 1,695.89") against a drawer the owner had emptied many times since. The
+     * owner types the cash the day started with as the opening.
+     */
+    fun firstCountFrom(now: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long =
+        startOf(businessDayOf(now, tz), tz) - 1
 }
 
 /**
@@ -108,7 +120,9 @@ data class DrawerFigures(
     /** Khata "I got" marked Cash since the count. */
     val kIn: Double,
     /** Khata "I gave" marked Cash since the count. */
-    val kOut: Double
+    val kOut: Double,
+    /** Where the stretch starts (exclusive): the last count's moment, or [DayCloseMath.firstCountFrom]. */
+    val from: Long = 0L
 ) {
     val cashIn: Double get() = cbIn + kIn
     val cashOut: Double get() = cbOut + kOut

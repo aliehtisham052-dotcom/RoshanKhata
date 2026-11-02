@@ -141,8 +141,13 @@ class CashbookActivity : BaseActivity() {
             val etOpening = view.findViewById<EditText>(R.id.etOpening)
             val etCounted = view.findViewById<EditText>(R.id.etCounted)
             val etNote = view.findViewById<EditText>(R.id.etCloseNote)
-            val tvBreak = view.findViewById<TextView>(R.id.tvBreakdown)
+            val rows = view.findViewById<android.widget.LinearLayout>(R.id.breakdownRows)
             val tvDiff = view.findViewById<TextView>(R.id.tvDifference)
+            // Which stretch the figures cover, and what the first box is (2 Nov 2026, the owner's first close:
+            // a blank "at the last count" box over figures that ran from the book's first entry).
+            view.findViewById<TextView>(R.id.tvSince).text = if (last == null) getString(R.string.dayclose_since_first)
+            else getString(R.string.dayclose_since_last, Format.dateTime(last.closedAt))
+            if (last == null) view.findViewById<TextView>(R.id.tvOpeningLabel).setText(R.string.dayclose_opening_first)
             com.innovation313.roshankhata.ui.TextFit.relax(view)
             last?.let { etOpening.setText(Format.plain(it.counted)) }
 
@@ -164,23 +169,24 @@ class CashbookActivity : BaseActivity() {
             fun refresh() {
                 val opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                 val expected = DayCloseMath.expected(opening, cashIn, cashOut)
-                tvBreak.text = getString(
-                    R.string.dayclose_breakdown,
-                    Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected)
-                )
+                breakdownRows(rows, listOf(Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected)))
                 val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
-                tvDiff.text = when {
-                    counted == null -> ""
-                    else -> {
-                        val d = DayCloseMath.difference(counted, expected)
-                        // A difference needs its reason: the note box says so before Save is pressed (R155).
-                        etNote.hint = getString(if (kotlin.math.abs(d) >= 0.005) R.string.z_variance_reason else R.string.dayclose_note_hint)
-                        when {
-                            Money.isPositive(d) -> getString(R.string.dayclose_over, Format.money(d))
-                            Money.isPositive(-d) -> getString(R.string.dayclose_short, Format.money(-d))
-                            else -> getString(R.string.dayclose_match)
-                        }
+                if (counted == null) {
+                    tvDiff.visibility = View.GONE
+                    etNote.setHint(R.string.dayclose_note_hint)
+                } else {
+                    val d = DayCloseMath.difference(counted, expected)
+                    // A difference needs its reason: the note box says so before Save is pressed (R155).
+                    etNote.hint = getString(if (kotlin.math.abs(d) >= 0.005) R.string.z_variance_reason else R.string.dayclose_note_hint)
+                    // Matches in green, short in red, more than the books in amber: the line the owner acts on.
+                    val (words, colour) = when {
+                        Money.isPositive(d) -> getString(R.string.dayclose_over, Format.money(d)) to R.color.note_text
+                        Money.isPositive(-d) -> getString(R.string.dayclose_short, Format.money(-d)) to R.color.red_gave_text
+                        else -> getString(R.string.dayclose_match) to R.color.green_got_text
                     }
+                    tvDiff.text = words
+                    tvDiff.setTextColor(androidx.core.content.ContextCompat.getColor(this@CashbookActivity, colour))
+                    tvDiff.visibility = View.VISIBLE
                 }
             }
             val watcher = object : android.text.TextWatcher {
@@ -202,6 +208,9 @@ class CashbookActivity : BaseActivity() {
                 .show().also { dialog ->
                     com.innovation313.roshankhata.ui.CalcPad.dock(dialog, view, view.findViewById(R.id.closeKeypad))
                     com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                    // The pad types into the box with the focus: the count, once the opening is the last count's
+                    // figure; the opening first only when there was no count to start from.
+                    if (last != null) etCounted.requestFocus() else etOpening.requestFocus()
                     dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
                         val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                         if (counted == null) {
@@ -235,6 +244,53 @@ class CashbookActivity : BaseActivity() {
                     }
                 }
         }
+    }
+
+    /**
+     * The books' sum as rows (2 Nov 2026, the owner's screenshot: five lines of words and figures run together).
+     * Each line of `dayclose_breakdown` in the owner's language is one row — its words at the start, its figure
+     * (the line's own %n$s) at the end, left to right — and the last line, the total, under a rule in bold. The
+     * placeholders are found in the words, so a language that puts the figure first still reads right.
+     */
+    private fun breakdownRows(container: android.widget.LinearLayout, figures: List<String>) {
+        container.removeAllViews()
+        val lines = getString(R.string.dayclose_breakdown).split("\n").filter { it.isNotBlank() }
+        val ink = ContextCompat.getColor(this, R.color.ink)
+        val dp = resources.displayMetrics.density
+        lines.forEachIndexed { i, line ->
+            val total = i == lines.lastIndex
+            val mark = Regex("%(\\d)\\$s").find(line)
+            val figure = mark?.groupValues?.get(1)?.toIntOrNull()?.let { figures.getOrNull(it - 1) }.orEmpty()
+            val words = (if (mark != null) line.removeRange(mark.range) else line).trim().replace(Regex("\\s{2,}"), " ")
+            if (total) container.addView(View(this).apply {
+                setBackgroundColor(ContextCompat.getColor(this@CashbookActivity, R.color.page_line))
+            }, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (1 * dp).toInt().coerceAtLeast(1)).apply {
+                topMargin = (6 * dp).toInt(); bottomMargin = (6 * dp).toInt()
+            })
+            val row = android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, (3 * dp).toInt(), 0, (3 * dp).toInt())
+            }
+            row.addView(TextView(this).apply {
+                text = words
+                textSize = if (total) 15f else 14f
+                setTextColor(ink)
+                textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                if (total) setTypeface(typeface, android.graphics.Typeface.BOLD)
+            }, android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(TextView(this).apply {
+                text = figure
+                textSize = if (total) 15f else 14f
+                setTextColor(ink)
+                textDirection = View.TEXT_DIRECTION_LTR
+                if (total) setTypeface(typeface, android.graphics.Typeface.BOLD)
+            }, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                marginStart = (12 * dp).toInt()
+            })
+            container.addView(row)
+        }
+        com.innovation313.roshankhata.ui.TextFit.relax(container)
     }
 
     /** The Z report for today: every figure summed from the rows, shown and shareable. */

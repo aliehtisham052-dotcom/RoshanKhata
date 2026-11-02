@@ -1802,6 +1802,9 @@
     <string name="dayclose_short">%1$s گهٽ</string>
     <string name="dayclose_match">گلو حساب سان ملي ويو</string>
     <string name="dayclose_need_count">ڳڻيل ڪيش لکو</string>
+    <string name="dayclose_opening_first">ڏينهن شروع ٿيڻ وقت گلي ۾ ڪيش</string>
+    <string name="dayclose_since_last">پوئين ڳڻپ کان پوءِ، %1$s</string>
+    <string name="dayclose_since_first">پهرين ڳڻپ: اڄ جو ڪيش، ڏينهن جي شروعات کان</string>
     <string name="return_action">سپلائر کي واپس موڪليو</string>
     <string name="return_title">سپلائر کي واپسي</string>
     <string name="return_info">%1$s · بيچ %2$s\nشيلف تي: %3$s\nسپلائر: %4$s</string>

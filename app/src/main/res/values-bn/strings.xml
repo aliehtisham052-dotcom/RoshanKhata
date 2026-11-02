@@ -1822,6 +1822,9 @@
     <string name="dayclose_short">%1$s কম</string>
     <string name="dayclose_match">বাক্স খাতার সঙ্গে মিলেছে</string>
     <string name="dayclose_need_count">গোনা নগদ লিখুন</string>
+    <string name="dayclose_opening_first">দিনের শুরুতে ক্যাশবাক্সে নগদ</string>
+    <string name="dayclose_since_last">শেষ গণনার পর থেকে, %1$s</string>
+    <string name="dayclose_since_first">প্রথম গণনা: আজকের নগদ, দিনের শুরু থেকে</string>
     <string name="return_action">সরবরাহকারীকে ফেরত পাঠান</string>
     <string name="return_title">সরবরাহকারীকে ফেরত</string>
     <string name="return_info">%1$s · ব্যাচ %2$s\nতাকে আছে: %3$s\nসরবরাহকারী: %4$s</string>

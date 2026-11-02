@@ -1774,6 +1774,9 @@
     <string name="dayclose_short">%1$s kam</string>
     <string name="dayclose_match">Galla hisaab se mil gaya</string>
     <string name="dayclose_need_count">Gina hua cash likhein</string>
+    <string name="dayclose_opening_first">Din shuru hote waqt galle mein cash</string>
+    <string name="dayclose_since_last">Pichli ginti ke baad se, %1$s</string>
+    <string name="dayclose_since_first">Pehli ginti: aaj ka cash, din ke shuru se</string>
     <string name="return_action">Supplier ko wapas bhejein</string>
     <string name="return_title">Supplier ko wapsi</string>
     <string name="return_info">%1$s · batch %2$s\nShelf par: %3$s\nSupplier: %4$s</string>

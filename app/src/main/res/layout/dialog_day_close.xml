@@ -13,7 +13,19 @@
         android:paddingTop="8dp"
         android:paddingEnd="24dp">
 
+        <!-- Which stretch these figures cover (2 Nov 2026): since the last count, with its day and
+             time, or — the first time — today from the start of the day. -->
         <TextView
+            android:id="@+id/tvSince"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvOpeningLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/etOpening"
@@ -46,14 +58,19 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
-        <TextView
-            android:textAlignment="viewStart"
-            android:id="@+id/tvBreakdown"
+        <!-- The books' sum as a small table: each line's words at the start, its figure at the end,
+             the total under a rule (CashbookActivity.breakdownRows). -->
+        <LinearLayout
+            android:id="@+id/breakdownRows"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/ink"
-            android:textSize="14sp" />
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_editor_card"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -89,6 +106,7 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
+        <!-- Shown once a count is typed: matches (green), short (red), more than the books (amber). -->
         <TextView
             android:textAlignment="viewStart"
             android:id="@+id/tvDifference"
@@ -97,7 +115,8 @@
             android:layout_marginTop="6dp"
             android:textColor="@color/ink"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <!-- One pad for both figures: it types into whichever of the two
              has the focus, and steps aside for the note (CalcPad.bindAll). -->

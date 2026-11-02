@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,702 strings and 58 plurals (2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,705 strings and 58 plurals (2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1458,6 +1458,23 @@ AppBarLayout over the list (`scroll|enterAlways`): scrolled away as the list goe
 Add product is in the CoordinatorLayout's corner and shrinks to its "+" while the list scrolls down
 (`ProductsActivity`, `shrink()`/`extend()`); the list keeps 88 dp under its last row. Nothing removed, no
 strings. CI only. The first push left the band at `0dp` wide and the screen blank (lesson 63).
+
+### Close the day: the first count and the figures as a table (2 Nov 2026, kmp-desktop-16 — the owner's screenshot from the 21:00 automation)
+
+- **The rule (both platforms, Home/Cashbook on Windows and the automation too):** a drawer never counted ran from
+  the book's first entry (`from = 0`), so the first close added every cash receipt ever written ("Khata cash
+  received Rs 1,652") against a blank "at the last count" box. Now `DayCloseMath.drawerByTheBooks` starts a
+  never-counted drawer at today's working day (`firstCountFrom`: the start of `businessDayOf(now)`, minus 1 ms for
+  the DAO's `from < t`), and `DrawerFigures.from` says where it started. DrawerByTheBooksTest holds it (three-day-old
+  cash left out). After the first count nothing changes: the stretch runs from the last count's moment.
+- **The phone's dialog** (`dialog_day_close.xml`, `CashbookActivity.showDayClose`): a line on top says the stretch
+  ("Since the last count, <day and time>" / "First count: today's cash, from the start of the day"); the first box
+  reads "Cash in the drawer when the day started" when there was no count; the five sums are rows
+  (`breakdownRows`: each line of `dayclose_breakdown` split at its own %n$s, words at the start, the figure at the
+  end, the total bold under a rule — any language's order reads right); the difference shows only once a count is
+  typed, green when it matches, red short, amber over; the pad starts in "Cash counted now" when the opening is the
+  last count's figure. Windows' dialog has the same top line and first-box words. Strings (nine languages):
+  dayclose_opening_first, dayclose_since_last, dayclose_since_first. CI only.
 
 ### The shared module (KMP)
 

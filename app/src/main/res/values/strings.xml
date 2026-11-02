@@ -1827,6 +1827,9 @@
     <string name="dayclose_short">%1$s short</string>
     <string name="dayclose_match">Drawer matches the books</string>
     <string name="dayclose_need_count">Enter the counted cash</string>
+    <string name="dayclose_opening_first">Cash in the drawer when the day started</string>
+    <string name="dayclose_since_last">Since the last count, %1$s</string>
+    <string name="dayclose_since_first">First count: today\'s cash, from the start of the day</string>
     <string name="return_action">Send back to supplier</string>
     <string name="return_title">Return to supplier</string>
     <string name="return_info">%1$s · batch %2$s\nOn the shelf: %3$s\nSupplier: %4$s</string>
