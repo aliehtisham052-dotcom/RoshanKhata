@@ -164,11 +164,24 @@ class ScreenProofPhoneTest(
                 bal += if (e.isGiven) e.amount else -e.amount
                 com.innovation313.roshankhata.data.PdfExport.StatementRow(e, bal)
             }
-            val file = com.innovation313.roshankhata.data.PdfExport.buildStatement(
-                context = app, partyName = BIG_NAME, partyPhone = "03000000001", rows = rows,
-                closingBalance = bal, businessName = "Al-Noor Traders",
-                payBy = System.currentTimeMillis() + 10 * DAY
-            ) ?: return
+            // The whole sheet as a filled profile prints it (2 Nov 2026): the shop's address and
+            // phone, How to pay and the call-us line show only when the profile has them. Made-up
+            // details, put back as they were once drawn.
+            val bp = com.innovation313.roshankhata.data.BusinessProfile
+            val before = listOf(bp.businessAddress(app), bp.businessPhone(app), bp.bankName(app), bp.bankIban(app), bp.bankJazzCash(app))
+            bp.setBusinessAddress(app, "Main Bazar, Test City"); bp.setBusinessPhone(app, "03000000000")
+            bp.setBankName(app, "Test Bank"); bp.setBankIban(app, "PK00TEST0000000000000000"); bp.setBankJazzCash(app, "03000000002")
+            val file = (try {
+                com.innovation313.roshankhata.data.PdfExport.buildStatement(
+                    context = app, partyName = BIG_NAME, partyPhone = "03000000001", rows = rows,
+                    closingBalance = bal, businessName = "Al-Noor Traders",
+                    payBy = System.currentTimeMillis() + 10 * DAY,
+                    partyIdentity = com.innovation313.roshankhata.data.PdfExport.identityOf(app, runBlocking { dao.getParty(party) })
+                )
+            } finally {
+                bp.setBusinessAddress(app, before[0]); bp.setBusinessPhone(app, before[1])
+                bp.setBankName(app, before[2]); bp.setBankIban(app, before[3]); bp.setBankJazzCash(app, before[4])
+            }) ?: return
             android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY).use { fd ->
                 android.graphics.pdf.PdfRenderer(fd).use { r ->
                     r.openPage(0).use { pg ->

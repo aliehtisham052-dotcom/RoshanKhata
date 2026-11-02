@@ -2635,6 +2635,8 @@ class PartyDetailActivity : BaseActivity() {
                     isCustomer = partyIsCustomerAccount,
                     // The promised day, said under what is owed (2 Nov 2026).
                     payBy = harvestPromise,
+                    // Father's name and village under his name, as on this screen.
+                    partyIdentity = PdfExport.identityOf(this@PartyDetailActivity, dao.getParty(partyId)),
                     businessName = BusinessProfile.businessName(this@PartyDetailActivity),
                     paymentQr = BusinessProfile.loadQr(this@PartyDetailActivity),
                     // Only if the owner has turned it on. Off by default.
@@ -2659,10 +2661,13 @@ class PartyDetailActivity : BaseActivity() {
             // a viewer first, sharing one deliberate tap later. This used to
             // jump straight to the share sheet, so the owner was choosing
             // where to send a document they had never seen open.
-            com.innovation313.roshankhata.ui.PdfShare.present(
+            // With a word on what the profile still lacks (the way to pay, the shop's phone or
+            // address), since the sheet prints only what is filled in.
+            com.innovation313.roshankhata.ui.PdfShare.presentStatement(
                 this@PartyDetailActivity,
                 file,
-                R.string.statement_ready_title
+                isCustomer = partyIsCustomerAccount,
+                closingBalance = currentBalance
             )
         }
     }

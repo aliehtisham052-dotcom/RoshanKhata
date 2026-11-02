@@ -3687,4 +3687,11 @@
     <string name="pdf_stmt_wallet">کیف پول: %1$s</string>
     <string name="pdf_stmt_mention_ref">هنگام پرداخت %1$s را ذکر کنید.</string>
     <string name="pdf_stmt_query">اگر چیزی با حساب شما نمی‌خواند، با %1$s تماس بگیرید.</string>
+    <string name="pdf_stmt_amount_still_to_pay">مبلغی که هنوز باید بپردازید</string>
+    <string name="pdf_stmt_date_details">تاریخ و جزئیات</string>
+    <string name="pdf_stmt_gap_title">هنوز در این صورت‌حساب نیست:</string>
+    <string name="pdf_stmt_gap_pay">روش پرداخت: بانک یا کیف پول شما</string>
+    <string name="pdf_stmt_gap_phone">شماره تلفن فروشگاه شما</string>
+    <string name="pdf_stmt_gap_address">نشانی فروشگاه شما</string>
+    <string name="pdf_stmt_gap_fix">افزودن جزئیات</string>
 </resources>

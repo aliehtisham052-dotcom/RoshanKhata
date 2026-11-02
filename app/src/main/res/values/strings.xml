@@ -3871,4 +3871,11 @@
     <string name="pdf_stmt_wallet">Wallet: %1$s</string>
     <string name="pdf_stmt_mention_ref">Mention %1$s with your payment.</string>
     <string name="pdf_stmt_query">If anything here does not match your records, call us on %1$s.</string>
+    <string name="pdf_stmt_amount_still_to_pay">Amount you still have to pay</string>
+    <string name="pdf_stmt_date_details">Date &amp; details</string>
+    <string name="pdf_stmt_gap_title">Not on this statement yet:</string>
+    <string name="pdf_stmt_gap_pay">How to pay: your bank or wallet</string>
+    <string name="pdf_stmt_gap_phone">Your shop\'s phone number</string>
+    <string name="pdf_stmt_gap_address">Your shop\'s address</string>
+    <string name="pdf_stmt_gap_fix">Add details</string>
 </resources>

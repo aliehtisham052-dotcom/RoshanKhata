@@ -3649,4 +3649,11 @@
     <string name="pdf_stmt_wallet">Dompet: %1$s</string>
     <string name="pdf_stmt_mention_ref">Sebutkan %1$s saat membayar.</string>
     <string name="pdf_stmt_query">Jika ada yang tidak cocok dengan catatan Anda, hubungi kami di %1$s.</string>
+    <string name="pdf_stmt_amount_still_to_pay">Jumlah yang masih harus Anda bayar</string>
+    <string name="pdf_stmt_date_details">Tanggal &amp; rincian</string>
+    <string name="pdf_stmt_gap_title">Belum ada di laporan ini:</string>
+    <string name="pdf_stmt_gap_pay">Cara membayar: bank atau dompet Anda</string>
+    <string name="pdf_stmt_gap_phone">Nomor telepon toko Anda</string>
+    <string name="pdf_stmt_gap_address">Alamat toko Anda</string>
+    <string name="pdf_stmt_gap_fix">Tambah rincian</string>
 </resources>
