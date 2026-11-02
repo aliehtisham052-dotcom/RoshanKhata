@@ -65,6 +65,8 @@ object SignatureSheet {
             clear.alpha = if (hasInk) 1f else 0.4f
         }
         pad.onInkChanged = { paint(it) }
+        // The words go as the finger touches, not when it lifts.
+        pad.onPenDown = { placeholder.animate().cancel(); placeholder.alpha = 0f }
         paint(false)
 
         undo.setOnClickListener { pad.undo(); paint(pad.hasInk) }
