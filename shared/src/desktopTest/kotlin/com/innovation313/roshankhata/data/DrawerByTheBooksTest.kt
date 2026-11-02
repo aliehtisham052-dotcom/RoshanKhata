@@ -20,7 +20,8 @@ class DrawerByTheBooksTest {
     /** The phone's inline arithmetic, line for line as CashbookActivity.showDayClose had it. */
     private suspend fun phoneFigures(dao: KhataDao, now: Long): PhoneFigures {
         val last = dao.lastDayClose()
-        val from = last?.closedAt ?: 0L
+        // Never counted: today's working day only (2 Nov 2026), not the whole book.
+        val from = last?.closedAt ?: DayCloseMath.firstCountFrom(now)
         val cbIn = dao.cashbookCashBetween(true, from, now)
         val cbOut = dao.cashbookCashBetween(false, from, now)
         val kIn = dao.khataCashBetween(false, from, now)
@@ -90,6 +91,36 @@ class DrawerByTheBooksTest {
 
             // The computer's old pair (expected, last) is the same two values.
             assertEquals(after.expected, DayCloseMath.expected(after.last?.counted ?: 0.0, after.cbIn + after.kIn, after.cbOut + after.kOut), 0.0)
+        } finally {
+            db.close()
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `a drawer never counted starts at today's working day, not the book's first entry`() = runBlocking {
+        val dir = Files.createTempDirectory("rk-drawer-first").toFile()
+        val db = DesktopDatabase.open(dir.resolve("khata.db"))
+        try {
+            val dao = db.khataDao()
+            // Noon today, local: every moment below sits clear of the 04:00 day line.
+            val noon = DayCloseMath.startOf(DayCloseMath.dayOf(System.currentTimeMillis())) + 12L * 60 * 60 * 1000
+            val day = 24L * 60 * 60 * 1000
+            val aslam = dao.insertParty(Party(name = "Aslam"))
+            // Three days ago: cash that went through a drawer long since emptied.
+            dao.insertCashEntry(CashEntry(amount = 43.89, isIncome = true, category = "Sale", timestamp = noon - 3 * day))
+            dao.insertEntry(LedgerEntry(partyId = aslam, amount = 1_652.0, isGiven = false, entryNumber = "RK-1", timestamp = noon - 3 * day, paymentMethod = PaymentMethod.CASH))
+            // Today.
+            dao.insertCashEntry(CashEntry(amount = 500.0, isIncome = true, category = "Sale", timestamp = noon - 60 * 60 * 1000))
+            dao.insertEntry(LedgerEntry(partyId = aslam, amount = 200.0, isGiven = false, entryNumber = "RK-2", timestamp = noon - 30 * 60 * 1000, paymentMethod = PaymentMethod.CASH))
+
+            val d = DayCloseMath.drawerByTheBooks(dao, noon)
+            assertNull(d.last)
+            assertAgree(phoneFigures(dao, noon), d)
+            assertEquals("only today's 500", 500.0, d.cbIn, 0.0)
+            assertEquals("only today's 200", 200.0, d.kIn, 0.0)
+            assertEquals("the day's opening typed by the owner, plus today's cash", 1_700.0, d.expectedFrom(1_000.0), 0.0005)
+            assertEquals(DayCloseMath.firstCountFrom(noon), d.from)
         } finally {
             db.close()
             dir.deleteRecursively()

@@ -1781,6 +1781,9 @@
     <string name="dayclose_short">kurang %1$s</string>
     <string name="dayclose_match">Laci cocok dengan pembukuan</string>
     <string name="dayclose_need_count">Masukkan uang yang dihitung</string>
+    <string name="dayclose_opening_first">Uang tunai di laci saat hari dimulai</string>
+    <string name="dayclose_since_last">Sejak hitungan terakhir, %1$s</string>
+    <string name="dayclose_since_first">Hitungan pertama: uang tunai hari ini, sejak awal hari</string>
     <string name="return_action">Kembalikan ke pemasok</string>
     <string name="return_title">Retur ke pemasok</string>
     <string name="return_info">%1$s · batch %2$s\nDi rak: %3$s\nPemasok: %4$s</string>

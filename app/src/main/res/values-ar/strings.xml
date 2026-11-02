@@ -1938,6 +1938,9 @@
     <string name="dayclose_short">نقص %1$s</string>
     <string name="dayclose_match">الدرج يطابق الدفاتر</string>
     <string name="dayclose_need_count">أدخل النقد المعدود</string>
+    <string name="dayclose_opening_first">النقد في الدرج عند بداية اليوم</string>
+    <string name="dayclose_since_last">منذ آخر عدّ، %1$s</string>
+    <string name="dayclose_since_first">أول عدّ: نقد اليوم، من بداية اليوم</string>
     <string name="return_action">إرجاع إلى المورّد</string>
     <string name="return_title">إرجاع إلى المورّد</string>
     <string name="return_info">%1$s · دفعة %2$s\nعلى الرف: %3$s\nالمورّد: %4$s</string>

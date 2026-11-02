@@ -1822,6 +1822,9 @@
     <string name="dayclose_short">%1$s कम</string>
     <string name="dayclose_match">गल्ला खाते से मिलता है</string>
     <string name="dayclose_need_count">गिना हुआ नकद लिखें</string>
+    <string name="dayclose_opening_first">दिन शुरू होते समय गल्ले में कैश</string>
+    <string name="dayclose_since_last">पिछली गिनती के बाद से, %1$s</string>
+    <string name="dayclose_since_first">पहली गिनती: आज का कैश, दिन की शुरुआत से</string>
     <string name="return_action">सप्लायर को वापस भेजें</string>
     <string name="return_title">सप्लायर को वापसी</string>
     <string name="return_info">%1$s · बैच %2$s\nशेल्फ़ पर: %3$s\nसप्लायर: %4$s</string>

@@ -1802,6 +1802,9 @@
     <string name="dayclose_short">%1$s کسری</string>
     <string name="dayclose_match">صندوق با حساب می‌خواند</string>
     <string name="dayclose_need_count">نقد شمرده‌شده را وارد کنید</string>
+    <string name="dayclose_opening_first">پول نقد صندوق در شروع روز</string>
+    <string name="dayclose_since_last">از آخرین شمارش، %1$s</string>
+    <string name="dayclose_since_first">اولین شمارش: نقد امروز، از شروع روز</string>
     <string name="return_action">برگشت به تأمین‌کننده</string>
     <string name="return_title">برگشت به تأمین‌کننده</string>
     <string name="return_info">%1$s · بچ %2$s\nروی قفسه: %3$s\nتأمین‌کننده: %4$s</string>

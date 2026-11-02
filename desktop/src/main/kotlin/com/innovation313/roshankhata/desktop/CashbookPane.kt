@@ -347,7 +347,14 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                     }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = !saving)
                 }
             ) {
-                FluentField(opening, { opening = it }, Modifier.fillMaxWidth(), label = word(W.dayclose_opening), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+                // Which stretch the figures cover, and the first box's question when there was no count before
+                // (2 Nov 2026, the phone's dialog; the never-counted drawer now runs from today's start).
+                val since = f.last
+                Text(if (since == null) word(W.dayclose_since_first) else word(W.dayclose_since_last, Format.dateTime(since.closedAt)),
+                    color = c.textMuted, fontSize = 12.sp)
+                FluentField(opening, { opening = it }, Modifier.fillMaxWidth(),
+                    label = word(if (since == null) W.dayclose_opening_first else W.dayclose_opening),
+                    calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected)),
                     color = c.inkSoft, fontSize = 13.sp)
                 Text(word(W.dayclose_help), color = c.textMuted, fontSize = 12.sp)

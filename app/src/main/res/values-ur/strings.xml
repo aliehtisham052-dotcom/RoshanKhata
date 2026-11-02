@@ -1774,6 +1774,9 @@
     <string name="dayclose_short">%1$s کم</string>
     <string name="dayclose_match">گلہ حساب سے مل گیا</string>
     <string name="dayclose_need_count">گنا ہوا کیش لکھیں</string>
+    <string name="dayclose_opening_first">دن شروع ہوتے وقت گلے میں کیش</string>
+    <string name="dayclose_since_last">پچھلی گنتی کے بعد سے، %1$s</string>
+    <string name="dayclose_since_first">پہلی گنتی: آج کا کیش، دن کے شروع سے</string>
     <string name="return_action">سپلائر کو واپس بھیجیں</string>
     <string name="return_title">سپلائر کو واپسی</string>
     <string name="return_info">%1$s · بیچ %2$s\nشیلف پر: %3$s\nسپلائر: %4$s</string>
