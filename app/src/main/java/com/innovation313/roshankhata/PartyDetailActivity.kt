@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.promiseDay
 import com.innovation313.roshankhata.data.audit
 import com.innovation313.roshankhata.data.record
 import com.innovation313.roshankhata.data.state
@@ -498,7 +499,7 @@ class PartyDetailActivity : BaseActivity() {
         tvSeasonRecord = findViewById(R.id.tvSeasonRecord)
         tvRadar = findViewById(R.id.tvRadar)
         tvRadar.setOnClickListener {
-            radarReading?.let { r -> com.innovation313.roshankhata.ui.RadarUi.explain(this, r, harvestPromise) { refreshRadar() } }
+            radarReading?.let { r -> com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, harvestPromise) { refreshRadar() } }
         }
         tvPartyPhone = findViewById(R.id.tvPartyPhone)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
@@ -2175,7 +2176,7 @@ class PartyDetailActivity : BaseActivity() {
             val mark = r?.let { com.innovation313.roshankhata.ui.RadarUi.mark(this, it) }
             tv.text = mark
             tv.visibility = if (mark == null) View.GONE else View.VISIBLE
-            if (r != null) tv.setOnClickListener { com.innovation313.roshankhata.ui.RadarUi.explain(this, r, harvestPromise) { refreshRadar(); tv.visibility = View.GONE } }
+            if (r != null) tv.setOnClickListener { com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, harvestPromise) { refreshRadar(); tv.visibility = View.GONE } }
         }
         etAmount.setTextColor(color(if (isGiven) R.color.red_gave_text else R.color.brand_green_text))
 
@@ -3190,8 +3191,9 @@ class PartyDetailActivity : BaseActivity() {
     private fun saveHarvestPromise(at: Long?) {
         harvestPromise = at
         AppScope.launch {
-            dao.setHarvestPromise(partyId, at)
-            withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) refreshSeasonRecord() }
+            // A new day also goes into the promise history the Payment Radar counts kept or broken (PromiseLog).
+            dao.promiseDay(partyId, at)
+            withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) { refreshSeasonRecord(); refreshRadar() } }
         }
     }
 

@@ -1825,6 +1825,12 @@
     <string name="intro_radar_s1">از پرداخت‌های گذشته یاد می‌گیرد</string>
     <string name="intro_radar_s2">می‌گوید بعدی کی محتمل است</string>
     <string name="intro_radar_s3">فقط شما می‌بینید</string>
+    <string name="radar_promises">وعده‌های عمل‌شده: %1$s از %2$s</string>
+    <string name="radar_behind">دیرتر از پرداخت‌های معمولش</string>
+    <string name="radar_tone">یادآوری که دفعه قبل اثر کرد: %1$s</string>
+    <string name="radar_likely_now">معمولاً همین روزها می‌پردازد</string>
+    <string name="auto_collect_likely">معمولاً همین روزها می‌پردازند: %1$s</string>
+    <string name="audit_promise_set">روز وعده ثبت شد</string>
     <plurals name="radar_days">
         <item quantity="one">%d روز</item>
         <item quantity="other">%d روز</item>

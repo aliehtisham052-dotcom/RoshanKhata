@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,8 +73,19 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
     // computer against the customer's newest payment, from the points already read for his habit.
     val lastReminded = remember(reminders, closed) { reminders.lastReminded() }
     val lastGot = remember(points) { PaymentRequest.lastGotAt(points) }
-    val ordered = remember(debtors, habits, promises, reminded) { FollowUpRank.order(debtors, habits, promises, now, tz, reminded) }
-    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, reminded) }
+    // Those in their usual paying days lead after promises come due (the Payment Radar, 2 Nov 2026).
+    val radarOn = RadarDesk.on
+    var likely by remember { mutableStateOf<Set<Long>>(emptySet()) }
+    LaunchedEffect(points, promiseRows, radarOn) {
+        likely = if (!radarOn) emptySet() else runCatching {
+            val shop = RadarDesk.shopDays(dao)
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                com.innovation313.roshankhata.data.PaymentRadar.likelyNow(points, shop, promises, System.currentTimeMillis(), tz)
+            }
+        }.getOrDefault(emptySet())
+    }
+    val ordered = remember(debtors, habits, promises, reminded, likely) { FollowUpRank.order(debtors, habits, promises, now, tz, reminded, likely) }
+    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, reminded, likely) }
 
     FluentPage(word(W.followup_title), word(W.followup_subtitle), scroll = false) {
         if (ordered.isEmpty()) {
@@ -100,15 +112,17 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
                             )
                             val habit = habits[p.id]
                             val promise = promises[p.id]
+                            val likelyNow = p.id in likely
                             val line = listOfNotNull(
                                 promise?.let { word(W.followup_promised, Format.dateOnly(it)) },
+                                if (likelyNow) word(W.radar_likely_now) else null,
                                 habit?.let {
                                     if (it.isLate) plural(WP.followup_habit_late, it.waitingDays, it.waitingDays, it.typicalDays)
                                     else plural(WP.followup_habit, it.typicalDays, it.typicalDays)
                                 }
                             ).joinToString("  \u00b7  ")
                             if (line.isNotEmpty()) {
-                                val urgent = FollowUpRank.lateByHabit(p.id, habits, promises, now, tz) || FollowUpRank.isDue(promise, now, tz)
+                                val urgent = FollowUpRank.lateByHabit(p.id, habits, promises, now, tz) || FollowUpRank.isDue(promise, now, tz) || likelyNow
                                 Text(line, color = if (urgent) c.owedToMe else c.textMuted, fontSize = 12.sp,
                                     fontWeight = if (urgent) FontWeight.SemiBold else FontWeight.Normal, maxLines = 2, overflow = TextOverflow.Ellipsis)
                             }

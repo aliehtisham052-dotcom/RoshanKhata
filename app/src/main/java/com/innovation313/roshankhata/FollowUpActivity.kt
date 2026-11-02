@@ -160,6 +160,9 @@ class FollowUpActivity : BaseActivity() {
 
     private fun observeDebtors() {
         lifecycleScope.launch {
+            // The Payment Radar (2 Nov 2026): this shop's normal, read once here, and the switch on this phone.
+            val radarOn = com.innovation313.roshankhata.ui.RadarUi.on(this@FollowUpActivity)
+            val shopDays = if (radarOn) com.innovation313.roshankhata.ui.RadarUi.shopDays(dao) else null
             dao.observePartiesWithBalance()
                 .combine(dao.observeOwingLedgerPoints()) { all, points -> all to points }
                 .combine(dao.observePromises()) { (all, points), promiseRows -> Triple(all, points, promiseRows) }
@@ -173,17 +176,19 @@ class FollowUpActivity : BaseActivity() {
                     val tz = java.util.TimeZone.getDefault()
                     // Promise due first, then late by habit, then quiet longest:
                     // see FollowUpRank.
-                    val ordered = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday)
-                    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday) }
+                    // Those in their usual paying days lead the list after promises come due (the Payment Radar).
+                    val likely = if (radarOn) com.innovation313.roshankhata.data.PaymentRadar.likelyNow(points, shopDays, promises, now, tz) else emptySet()
+                    val ordered = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday, likely)
+                    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday, likely) }
                     val due = ordered.filter {
                         !it.phone.isNullOrBlank() &&
-                            FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday)
+                            FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday, likely)
                     }
                     // "Reminded on …, nothing received since" (PaymentRequest, 29 Oct 2026): the ladder's last
                     // time on this phone, re-read with the marks (a reminder opened just now moves it), against
                     // the newest payment in the points already read for the habit.
                     val lastReminded = com.innovation313.roshankhata.data.ReminderLadder.lastReminded(this@FollowUpActivity)
-                    FollowUpState(ordered, habits, promises, today, remindedToday, due, lastReminded, PaymentRequest.lastGotAt(points))
+                    FollowUpState(ordered, habits, promises, today, remindedToday, due, lastReminded, PaymentRequest.lastGotAt(points), likely)
                 }
                 // A big book is thousands of lines; the arithmetic stays off
                 // the main thread.
@@ -194,6 +199,7 @@ class FollowUpActivity : BaseActivity() {
                     adapter.promises = state.promises
                     adapter.lastReminded = state.lastReminded
                     adapter.lastGot = state.lastGot
+                    adapter.likely = state.likely
                     // Rows are compared by party only, so a new mark needs a rebind.
                     val marksChanged = adapter.remindedToday != state.remindedToday
                     adapter.remindedToday = state.remindedToday
@@ -263,5 +269,6 @@ private class FollowUpState(
     val remindedToday: Set<Long>,
     val dueWithPhone: List<PartyWithBalance>,
     val lastReminded: Map<Long, Long>,
-    val lastGot: Map<Long, Long>
+    val lastGot: Map<Long, Long>,
+    val likely: Set<Long> = emptySet()
 )

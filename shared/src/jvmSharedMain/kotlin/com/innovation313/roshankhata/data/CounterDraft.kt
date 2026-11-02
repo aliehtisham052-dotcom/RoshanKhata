@@ -565,7 +565,7 @@ object Counter {
         // and the sale is already written: a failure here must never read as "not posted" (the cashier would
         // ring the same goods up again), so it is passed over.
         val partyId = ticket.sale.partyId
-        if (ticket.due != null && partyId != null) runCatching { dao.setHarvestPromise(partyId, ticket.due) }
+        if (ticket.due != null && partyId != null) runCatching { dao.promiseDay(partyId, ticket.due) }
         return id
     }
 

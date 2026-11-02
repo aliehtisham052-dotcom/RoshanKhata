@@ -1845,6 +1845,12 @@
     <string name="intro_radar_s1">আগের পরিশোধ থেকে শেখে</string>
     <string name="intro_radar_s2">পরেরটি কবে সম্ভব বলে</string>
     <string name="intro_radar_s3">শুধু আপনি দেখেন</string>
+    <string name="radar_promises">রাখা প্রতিশ্রুতি: %2$s-এর মধ্যে %1$s</string>
+    <string name="radar_behind">তাঁর সাধারণ পরিশোধের চেয়ে দেরি</string>
+    <string name="radar_tone">গতবার কাজ করা রিমাইন্ডার: %1$s</string>
+    <string name="radar_likely_now">সাধারণত এই দিনগুলোতে দেন</string>
+    <string name="auto_collect_likely">সাধারণত এই দিনগুলোতে দেন: %1$s</string>
+    <string name="audit_promise_set">প্রতিশ্রুত দিন লেখা হয়েছে</string>
     <plurals name="radar_days">
         <item quantity="one">%d দিন</item>
         <item quantity="other">%d দিন</item>

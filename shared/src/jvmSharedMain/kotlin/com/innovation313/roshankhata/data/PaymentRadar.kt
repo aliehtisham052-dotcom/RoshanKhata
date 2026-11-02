@@ -4,18 +4,6 @@ import java.util.Calendar
 import java.util.TimeZone
 
 /**
- * One khata row as the Payment Radar reads it: who, which way, how much, when
- * ([KhataDao.radarRows]). Nothing else of the entry is needed, so nothing else
- * is read.
- */
-data class RadarRow(
-    val partyId: Long,
-    val isGiven: Boolean,
-    val amount: Double,
-    val timestamp: Long
-)
-
-/**
  * The Payment Radar (2 Nov 2026, the owner: "a blockbuster feature, for every
  * business worldwide"): how a customer usually pays, worked out on the device
  * from the shop's own khata — no server, no model, no network — and said with
@@ -29,9 +17,12 @@ data class RadarRow(
  *   grocer's week, a wholesaler's two months), so a customer is judged against
  *   the median of all this shop's customers ([shopTypicalDays]), never a fixed
  *   number — which is what makes it work for every business in every country.
- * - **When the next payment is likely.** A customer who pays near the same day
- *   of every month is said so; otherwise his usual gap between payments, from
- *   his last one.
+ * - **The same rhythm Follow-up reads.** His usual gap between payments and
+ *   whether he is behind it are [PaymentHabit]'s, so the Radar and Follow-up's
+ *   "late" never disagree; a customer who keeps to one day of the month is told
+ *   that day instead.
+ * - **Promises kept.** Each promised day the owner set is in the audit log
+ *   ([PromiseLog]); one is kept when money came in by two days after it.
  *
  * Only for customers; only what the khata says (no guessing at entries never
  * written); and only shown to the owner — the screens keep it off a helper's
@@ -54,14 +45,29 @@ object PaymentRadar {
         val oldestOpenDays: Int?,
         /** The day of the month he usually pays on (1..31), when his payments keep to one. */
         val payDay: Int?,
-        /** The likely window of his next payment (start and end of days), when anything is owed and a pattern exists. */
+        /** The likely window of his next payment (start of its first and last day), when he owes and keeps a rhythm. */
         val nextFrom: Long?,
         val nextTo: Long?,
         /** The day he promised has passed and he still owes. */
         val promiseOverdue: Boolean,
         /** What he owes now (positive) or has paid ahead (negative). */
-        val balance: Double
-    )
+        val balance: Double,
+        /** Behind his own rhythm, as Follow-up says it ([PaymentHabit.Habit.isLate]). */
+        val behindHabit: Boolean = false,
+        /** Promised days that have come and gone: kept (money came by two days after) and not. */
+        val promisesKept: Int = 0,
+        val promisesBroken: Int = 0
+    ) {
+        /** He owes, and today is within the days he usually pays: the morning list's "likely now". */
+        fun likelyNow(now: Long): Boolean {
+            val from = nextFrom ?: return false
+            val to = nextTo ?: return false
+            return balance > 0.5 && now >= from && now < to + DAY
+        }
+    }
+
+    /** One promise: when the owner wrote it, and the day promised. */
+    data class Promise(val madeAt: Long, val day: Long)
 
     /** Lots paid back before a customer's own pace is trusted. */
     const val MIN_REPAID = 3
@@ -73,6 +79,8 @@ object PaymentRadar {
     const val FALLBACK_DAYS = 30
     /** No shop's normal is taken as less than a week: a shop of mostly cash sales would call every credit late. */
     const val FLOOR_DAYS = 7
+    /** A promise is kept when money came in by this many days after the day promised. */
+    const val PROMISE_GRACE_DAYS = 2
 
     private const val DAY = 24L * 60 * 60 * 1000
     private const val HOUR = 60L * 60 * 1000
@@ -82,15 +90,15 @@ object PaymentRadar {
     internal class Book(val repaidDays: List<Int>, val openSince: Long?, val payments: List<Long>, val balance: Double)
 
     /** [rows] of one customer, any order. */
-    internal fun book(rows: List<RadarRow>): Book {
+    internal fun book(rows: List<LedgerPoint>): Book {
         class Lot(var left: Double, val at: Long)
         val lots = ArrayDeque<Lot>()
         val repaid = ArrayList<Int>()
         val payments = ArrayList<Long>()
         var ahead = 0.0 // paid before it was owed: the next credit takes from it first
         var balance = 0.0
-        for (r in rows.sortedWith(compareBy<RadarRow> { it.timestamp }.thenBy { if (it.isGiven) 0 else 1 })) {
-            if (!(r.amount > 0.0) || r.amount.isNaN()) continue
+        for (r in rows.sortedWith(compareBy<LedgerPoint> { it.timestamp }.thenBy { if (it.isGiven) 0 else 1 })) {
+            if (r.amount.isNaN() || r.amount <= 0.0) continue
             if (r.isGiven) {
                 balance += r.amount
                 val fromAhead = minOf(ahead, r.amount)
@@ -124,20 +132,43 @@ object PaymentRadar {
      * This shop's normal: the median days a credit took to come back, over every customer's recent repaid
      * lots ([rows] of all customers, [KhataDao.radarRows]); null below [MIN_SHOP_REPAID] lots.
      */
-    fun shopTypicalDays(rows: List<RadarRow>): Int? {
+    fun shopTypicalDays(rows: List<LedgerPoint>): Int? {
         val all = rows.groupBy { it.partyId }.values.flatMap { book(it).repaidDays.takeLast(RECENT) }
         return if (all.size < MIN_SHOP_REPAID) null else median(all)
     }
 
     /**
+     * Promises that have come and gone, counted kept or not ([PROMISE_GRACE_DAYS]); a promise replaced by a
+     * newer one before its day had passed was moved, not broken, and is not counted.
+     */
+    internal fun promiseRecord(promises: List<Promise>, payments: List<Long>, now: Long, tz: TimeZone): Pair<Int, Int> {
+        val sorted = promises.sortedBy { it.madeAt }
+        var kept = 0
+        var broken = 0
+        sorted.forEachIndexed { i, p ->
+            val end = DayMath.startOfDay(p.day, tz) + (PROMISE_GRACE_DAYS + 1) * DAY
+            val paid = payments.any { it >= p.madeAt && it < end }
+            val replacedBeforeEnd = sorted.getOrNull(i + 1)?.let { it.madeAt < end } == true
+            when {
+                paid -> kept++
+                replacedBeforeEnd -> Unit
+                now >= end -> broken++
+            }
+        }
+        return kept to broken
+    }
+
+    /**
      * The reading for one customer from his own [rows] (any order), at [now], against [shopDays] (null: the
-     * shop has no normal yet, [FALLBACK_DAYS] stands in) and his promised day [promise] (Party.harvestPromise).
+     * shop has no normal yet, [FALLBACK_DAYS] stands in), his current promised day [promise]
+     * (Party.harvestPromise) and the promises he was ever given ([promises], the audit log's).
      */
     fun read(
-        rows: List<RadarRow>,
+        rows: List<LedgerPoint>,
         now: Long,
         shopDays: Int?,
         promise: Long? = null,
+        promises: List<Promise> = emptyList(),
         tz: TimeZone = TimeZone.getDefault()
     ): Reading {
         val b = book(rows)
@@ -147,6 +178,8 @@ object PaymentRadar {
         val oldest = if (owes) b.openSince?.let { ((now - it).coerceAtLeast(0) / DAY).toInt() } else null
         val today = DayMath.startOfDay(now, tz)
         val promiseOverdue = owes && promise != null && promise < today
+        val habit = PaymentHabit.of(rows, now, tz)
+        val (kept, broken) = promiseRecord(promises, b.payments, now, tz)
 
         val norm = maxOf(shopDays ?: FALLBACK_DAYS, FLOOR_DAYS)
         var light = Light.NONE
@@ -166,6 +199,12 @@ object PaymentRadar {
             }
         }
         if (promiseOverdue) atLeast(Light.AMBER)
+        if (habit?.isLate == true) atLeast(Light.AMBER)
+        // Promises: two broken and more broken than kept is a pattern; three broken and none kept, a strong one.
+        if (broken >= 3 && kept == 0) atLeast(Light.RED)
+        else if (broken >= 2 && broken > kept) atLeast(Light.AMBER)
+        // A customer who keeps his promises but has few repaid lots yet is still worth a green.
+        if (light == Light.NONE && kept >= 2 && broken == 0) atLeast(Light.GREEN)
 
         val payDay = payDayOf(b.payments, tz)
         var from: Long? = null
@@ -175,20 +214,34 @@ object PaymentRadar {
                 val day = nextDayOfMonth(payDay, today, tz)
                 from = maxOf(today, day - 2 * DAY)
                 to = DayMath.startOfDay(day + 2 * DAY + HOUR * 12, tz)
-            } else {
-                val gaps = b.payments.sorted().zipWithNext { a, c -> ((c - a) / DAY).toInt() }.filter { it > 0 }.takeLast(RECENT)
-                val last = b.payments.maxOrNull()
-                if (last != null && gaps.size >= MIN_REPAID - 1) {
-                    val gap = median(gaps)
-                    val spread = maxOf(1, gap / 4)
-                    val due = DayMath.startOfDay(last + gap * DAY, tz)
-                    from = maxOf(today, due - spread * DAY)
-                    to = maxOf(from + DAY, DayMath.startOfDay(due + spread * DAY + HOUR * 12, tz))
-                }
+            } else if (habit != null) {
+                // Follow-up's own rhythm: his usual gap from the later of his last payment and the debt's start.
+                val gap = habit.typicalDays
+                val spread = maxOf(1, gap / 4)
+                val due = DayMath.startOfDay(today + (gap - habit.waitingDays).toLong() * DAY + HOUR * 12, tz)
+                from = maxOf(today, due - spread * DAY)
+                to = maxOf(from + DAY, DayMath.startOfDay(due + spread * DAY + HOUR * 12, tz))
             }
         }
-        return Reading(light, b.repaidDays.size, typical, shopDays, oldest, payDay, from, to, promiseOverdue, b.balance)
+        return Reading(
+            light, b.repaidDays.size, typical, shopDays, oldest, payDay, from, to, promiseOverdue, b.balance,
+            behindHabit = habit?.isLate == true, promisesKept = kept, promisesBroken = broken
+        )
     }
+
+    /**
+     * The customers who owe and are in their usual paying days today ([Reading.likelyNow]) — the morning
+     * list's first names. [points] are the owing customers' lines ([KhataDao.observeOwingLedgerPoints]).
+     */
+    fun likelyNow(
+        points: List<LedgerPoint>,
+        shopDays: Int?,
+        promises: Map<Long, Long>,
+        now: Long,
+        tz: TimeZone = TimeZone.getDefault()
+    ): Set<Long> = points.groupBy { it.partyId }.mapNotNull { (id, rows) ->
+        id.takeIf { read(rows, now, shopDays, promises[id], tz = tz).likelyNow(now) }
+    }.toSet()
 
     /**
      * The day of the month a customer keeps to, when at least three of his last six payments fall in three
@@ -229,4 +282,25 @@ object PaymentRadar {
         val s = xs.sorted()
         return if (s.size % 2 == 1) s[s.size / 2] else (s[s.size / 2 - 1] + s[s.size / 2]) / 2
     }
+}
+
+/**
+ * Promised days kept as history (2 Nov 2026, for the Payment Radar): the party row holds only the current
+ * promise, so each one the owner sets is also written to the audit log ([AuditAction.PROMISE_SET], the
+ * party's id, the day's millis as the detail) — no schema change, and "who did what" shows it. Per device,
+ * as the audit log is.
+ */
+object PromiseLog {
+    fun of(rows: List<AuditLog>): List<PaymentRadar.Promise> =
+        rows.mapNotNull { a -> a.detail?.toLongOrNull()?.let { PaymentRadar.Promise(a.timestamp, it) } }
+}
+
+/**
+ * Sets the promised day as the party row keeps it, and — for a new day — writes it to the promise history
+ * ([PromiseLog]). Clearing a promise, or putting back the same day, writes nothing.
+ */
+suspend fun KhataDao.promiseDay(partyId: Long, at: Long?) {
+    val before = getParty(partyId)?.harvestPromise
+    setHarvestPromise(partyId, at)
+    if (at != null && at != before) audit(AuditAction.PROMISE_SET, "parties", partyId, at.toString())
 }

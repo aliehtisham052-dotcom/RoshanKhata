@@ -56,6 +56,9 @@ class FollowUpAdapter(
     /** Party id → his newest live "I got" (PaymentRequest.lastGotAt); set with [habits], before submitList. */
     var lastGot: Map<Long, Long> = emptyMap()
 
+    /** Those in their usual paying days today (the Payment Radar, PaymentRadar.likelyNow); set with [habits]. */
+    var likely: Set<Long> = emptySet()
+
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFollowUpName)
         val tvAge: TextView = view.findViewById(R.id.tvFollowUpAge)
@@ -98,7 +101,8 @@ class FollowUpAdapter(
         // above and the two are different facts.
         val habit = habits[p.id]
         val promise = promises[p.id]
-        if (habit == null && promise == null) {
+        val likelyNow = p.id in likely
+        if (habit == null && promise == null && !likelyNow) {
             holder.tvHabit.visibility = View.GONE
         } else {
             holder.tvHabit.visibility = View.VISIBLE
@@ -109,12 +113,14 @@ class FollowUpAdapter(
             }
             // The customer's own date comes first: it is what the reminder quotes.
             val promiseText = promise?.let { ctx.getString(R.string.followup_promised, Format.dateOnly(it)) }
-            holder.tvHabit.text = listOfNotNull(promiseText, habitText).joinToString("  ·  ")
+            // "Usually pays around now" (the Payment Radar): the day to ask is today.
+            val likelyText = if (likelyNow) ctx.getString(R.string.radar_likely_now) else null
+            holder.tvHabit.text = listOfNotNull(promiseText, likelyText, habitText).joinToString("  ·  ")
             val now = System.currentTimeMillis()
             val tz = java.util.TimeZone.getDefault()
             // A promise still ahead keeps the row calm even if the habit says late.
             val urgent = FollowUpRank.lateByHabit(p.id, habits, promises, now, tz) ||
-                FollowUpRank.isDue(promise, now, tz)
+                FollowUpRank.isDue(promise, now, tz) || likelyNow
             holder.tvHabit.setTextColor(
                 ContextCompat.getColor(ctx, if (urgent) R.color.gold_accent else R.color.text_muted)
             )

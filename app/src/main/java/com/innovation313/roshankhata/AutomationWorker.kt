@@ -52,7 +52,8 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
                 money = { Format.money(it) },
                 date = { DateWords.format("d MMM", it) },
                 monthName = { DateWords.format("MMMM yyyy", it) },
-                remindedToday = ReminderLog.openedToday(ctx)
+                remindedToday = ReminderLog.openedToday(ctx),
+                radar = com.innovation313.roshankhata.ui.RadarUi.on(ctx)
             )
         }.getOrDefault(emptyList())
         notices.forEach { post(ctx, it) }

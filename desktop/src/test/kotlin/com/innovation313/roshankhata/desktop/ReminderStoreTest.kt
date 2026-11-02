@@ -25,8 +25,8 @@ class ReminderStoreTest {
             val again = ReminderStore.forBusiness(home, 1L)
             assertEquals(2, again.state(7L)!!.count)
             assertEquals(ReminderLadder.SERIOUS, ReminderLadder.step(again.state(7L), 5_000.0, 102 * day))
-            // A payment since starts the chase again, gently.
-            assertEquals(ReminderLadder.GENTLE, ReminderLadder.step(again.state(7L), 3_000.0, 102 * day))
+            // A payment since starts the chase again — at the step he paid after (the plain one, 2 Nov 2026).
+            assertEquals(ReminderLadder.PLAIN, ReminderLadder.step(again.state(7L), 3_000.0, 102 * day))
             // Another business keeps its own.
             assertNull(ReminderStore.forBusiness(home, 2L).state(7L))
         } finally {

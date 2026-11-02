@@ -32,9 +32,11 @@ object FollowUpRank {
         promises: Map<Long, Long>,
         now: Long,
         tz: TimeZone,
-        remindedToday: Set<Long> = emptySet()
+        remindedToday: Set<Long> = emptySet(),
+        /** In his usual paying days today (PaymentRadar.likelyNow, 2 Nov 2026): a reminder now lands when he pays. */
+        likely: Set<Long> = emptySet()
     ): Boolean = partyId !in remindedToday &&
-        (isDue(promises[partyId], now, tz) || lateByHabit(partyId, habits, promises, now, tz))
+        (isDue(promises[partyId], now, tz) || lateByHabit(partyId, habits, promises, now, tz) || partyId in likely)
 
     /**
      * Late by his own habit — unless he named a day that has not come yet
@@ -59,12 +61,15 @@ object FollowUpRank {
         promises: Map<Long, Long>,
         now: Long = System.currentTimeMillis(),
         tz: TimeZone = TimeZone.getDefault(),
-        remindedToday: Set<Long> = emptySet()
+        remindedToday: Set<Long> = emptySet(),
+        likely: Set<Long> = emptySet()
     ): List<PartyWithBalance> = debtors.sortedWith(
         // Already reminded today: to the bottom, whatever else is true.
         compareBy<PartyWithBalance> { it.id in remindedToday }
             .thenByDescending { isDue(promises[it.id], now, tz) }
             .thenBy { p -> promises[p.id]?.takeIf { isDue(it, now, tz) } ?: Long.MAX_VALUE }
+            // Then those in their usual paying days (the Payment Radar): the likeliest money today.
+            .thenByDescending { it.id in likely }
             .thenByDescending { lateByHabit(it.id, habits, promises, now, tz) }
             .thenByDescending { p ->
                 habits[p.id]?.takeIf { lateByHabit(p.id, habits, promises, now, tz) }

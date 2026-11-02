@@ -121,12 +121,14 @@ fun CustomerPane(
     modifier: Modifier = Modifier,
     /** The Payment Radar's reading (rememberRadar) and the promised day it weighs; null shows no chip. */
     radar: com.innovation313.roshankhata.data.PaymentRadar.Reading? = null,
-    radarPromise: Long? = null
+    radarPromise: Long? = null,
+    /** The reminder step he last paid after (ReminderLadder.learned), said among the reasons; 0 when not learnt. */
+    radarTone: Int = 0
 ) {
     val c = LocalRoshanColors.current
     val shape = RoundedCornerShape(16.dp)
     var explainingRadar by remember(party.id) { mutableStateOf(false) }
-    if (explainingRadar && radar != null) RadarDialog(radar, radarPromise) { explainingRadar = false }
+    if (explainingRadar && radar != null) RadarDialog(radar, radarPromise, radarTone) { explainingRadar = false }
     var query by remember(party.id) { mutableStateOf("") }
     var oldestFirst by remember(party.id) { mutableStateOf(false) }
     var days by remember(party.id) { mutableStateOf(PartyWhen.ALL) }

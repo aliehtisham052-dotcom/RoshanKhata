@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,725 strings and 59 plurals (2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,731 strings and 59 plurals (2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1491,9 +1491,22 @@ network, no cost — said with its reasons. Both platforms; CI only.
   payment: a day of the month he keeps to (three of four of his last six payments within two days of one day,
   over three months; the month's end and start are one habit), else his usual gap from his last payment.
   `KhataDao.radarRows` (read only, four columns) feeds the shop's norm, cached ten minutes per book.
-- **Not in it, with the reason:** broken promises counted over time (no promise history is kept — only the
-  current `harvestPromise`; it needs a log, a schema change); the morning list ranked by the Radar and which
-  reminder tone works for whom (the next step, needs the reminder outcomes read against payments).
+- **Completed the same night (the owner: "jo reh gaya complete karo"):**
+  - *One rhythm with Follow-up:* the gap-based next payment and "behind" are `PaymentHabit`'s own (a customer
+    Follow-up calls late is at least AMBER); rows are `LedgerPoint` (the old `RadarRow` is gone).
+  - *Promise history, no schema change:* every new promised day goes through `KhataDao.promiseDay` (phone's
+    saveHarvestPromise, Windows' DueDialog and entry save, the counter's ticket) and is also an audit row
+    (`AuditAction.PROMISE_SET`, refId the party, detail the day's millis; "Promised day set" in who did what);
+    `promiseLog` reads them, `PromiseLog.of` turns them into promises; kept = money in by two days after the day,
+    a promise replaced before its day passed is "moved", not broken. Two broken and more broken than kept is
+    AMBER, three broken and none kept RED. Per device, as the audit log is.
+  - *The morning list:* `PaymentRadar.likelyNow` (owing, inside his usual paying days) — `FollowUpRank.order`
+    puts them after promises come due and `remindToday` includes them; Follow-up rows say "Usually pays around
+    now" (both platforms); the 09:00 notice adds "Usually pay around now: N" (`Automations.collect(radar)`,
+    `noticesDue(radar)` from each device's switch).
+  - *Which tone works:* `ReminderLadder.State.worked` (a fifth stored field; four-field states read as before):
+    a payment after a reminder, within the chase's 60 days, teaches that step; a new chase starts at it, and the
+    Radar's reasons say "Reminder that worked last: Plain". ReminderLadderTest and ReminderStoreTest follow.
 - **Phone** (`ui/RadarUi`): a chip under the customer's name (`tvRadar`: the dot in the ledger's got/gold/gave
   text colours on the season chip's gold, and "Likely 8 Nov – 12 Nov", else the feature's name), never the
   judgement on the face — the customer may be looking across the counter; a tap opens the reasons and Turn off.

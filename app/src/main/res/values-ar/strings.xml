@@ -1961,6 +1961,12 @@
     <string name="intro_radar_s1">يتعلّم من الدفعات السابقة</string>
     <string name="intro_radar_s2">يخبرك متى يُرجَّح أن تأتي التالية</string>
     <string name="intro_radar_s3">أنت فقط تراه</string>
+    <string name="radar_promises">الوعود المُنجَزة: %1$s من %2$s</string>
+    <string name="radar_behind">متأخر عن دفعاته المعتادة</string>
+    <string name="radar_tone">التذكير الذي نجح آخر مرة: %1$s</string>
+    <string name="radar_likely_now">يدفع عادةً في هذه الأيام</string>
+    <string name="auto_collect_likely">يدفعون عادةً في هذه الأيام: %1$s</string>
+    <string name="audit_promise_set">حُدِّد يوم الوعد</string>
     <plurals name="radar_days">
         <item quantity="zero">%d يوم</item>
         <item quantity="one">يوم واحد</item>

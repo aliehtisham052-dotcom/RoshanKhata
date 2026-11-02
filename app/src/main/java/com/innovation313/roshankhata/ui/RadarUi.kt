@@ -9,10 +9,15 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.DateWords
+import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.PaymentRadar
-import com.innovation313.roshankhata.data.RadarRow
+import com.innovation313.roshankhata.data.LedgerPoint
+import com.innovation313.roshankhata.data.PromiseLog
+import com.innovation313.roshankhata.data.ReminderLadder
+import com.innovation313.roshankhata.data.state
 import com.innovation313.roshankhata.data.ViewerMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -54,16 +59,21 @@ object RadarUi {
         return days
     }
 
-    /** One customer's reading from the entries his screen already holds. */
+    /** One customer's reading from the entries his screen already holds, and his promised days (PromiseLog). */
     suspend fun read(dao: KhataDao, partyId: Long, entries: List<LedgerEntry>, promise: Long?): PaymentRadar.Reading {
         val shop = shopDays(dao)
+        val promises = withContext(Dispatchers.IO) { runCatching { PromiseLog.of(dao.promiseLog(partyId)) }.getOrDefault(emptyList()) }
         return withContext(Dispatchers.Default) {
             PaymentRadar.read(
-                entries.filter { !it.isDeleted }.map { RadarRow(partyId, it.isGiven, it.amount, it.timestamp) },
-                System.currentTimeMillis(), shop, promise
+                entries.filter { !it.isDeleted }.map { LedgerPoint(partyId, it.timestamp, it.amount, it.isGiven) },
+                System.currentTimeMillis(), shop, promise, promises
             )
         }
     }
+
+    /** The reminder step he last paid after, on this phone (ReminderLadder.learned); 0 when not learnt. */
+    fun toneThatWorked(context: Context, partyId: Long, balance: Double): Int =
+        ReminderLadder.learned(ReminderLadder.state(context, partyId), balance, System.currentTimeMillis())
 
     /**
      * The dot's colour on the header's gold chip (tile_bills_bg): the ledger's own got/gave text colours and
@@ -111,10 +121,11 @@ object RadarUi {
         }
     }
 
-    private fun days(context: Context, n: Int) = context.resources.getQuantityString(R.plurals.radar_days, n, n)
+    // Through Digits, as every count on a screen (CountDigitsTest): 0-9 in every language.
+    private fun days(context: Context, n: Int) = Digits.quantity(context.resources, R.plurals.radar_days, n, n)
 
-    /** Every reason, one line each, in the owner's language. */
-    fun reasons(context: Context, r: PaymentRadar.Reading, promise: Long?): String = buildList {
+    /** Every reason, one line each, in the owner's language; [tone] the reminder step that worked (0: none). */
+    fun reasons(context: Context, r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String = buildList {
         add(context.getString(when (r.light) {
             PaymentRadar.Light.GREEN -> R.string.radar_on_time
             PaymentRadar.Light.AMBER -> R.string.radar_late
@@ -129,14 +140,26 @@ object RadarUi {
         val to = r.nextTo
         if (from != null && to != null) add(context.getString(R.string.radar_next, short(from), short(to)))
         if (r.promiseOverdue && promise != null) add(context.getString(R.string.radar_promise_passed, Format.dateOnly(promise)))
+        if (r.behindHabit) add(context.getString(R.string.radar_behind))
+        val promised = r.promisesKept + r.promisesBroken
+        if (promised > 0) add(context.getString(R.string.radar_promises, r.promisesKept.toString(), promised.toString()))
+        toneWord(tone)?.let { add(context.getString(R.string.radar_tone, context.getString(it))) }
     }.joinToString("\n") { "• $it" } + "\n\n" + context.getString(R.string.radar_private)
 
+    /** The ladder's step as its chip's word. */
+    private fun toneWord(step: Int): Int? = when (step) {
+        ReminderLadder.GENTLE -> R.string.reminder_step_gentle
+        ReminderLadder.PLAIN -> R.string.reminder_step_plain
+        ReminderLadder.SERIOUS -> R.string.reminder_step_serious
+        else -> null
+    }
+
     /** The reasons in a dialog, with the switch to turn the Radar off on this phone. */
-    fun explain(activity: Activity, r: PaymentRadar.Reading, promise: Long?, onTurnedOff: () -> Unit) {
+    fun explain(activity: Activity, partyId: Long, r: PaymentRadar.Reading, promise: Long?, onTurnedOff: () -> Unit) {
         if (activity.isFinishing || activity.isDestroyed) return
         MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.radar_title)
-            .setMessage(reasons(activity, r, promise))
+            .setMessage(reasons(activity, r, promise, toneThatWorked(activity, partyId, r.balance)))
             .setPositiveButton(R.string.close, null)
             .setNeutralButton(R.string.radar_turn_off) { _, _ -> set(activity, false); onTurnedOff() }
             .show()

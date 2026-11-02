@@ -1825,6 +1825,12 @@
     <string name="intro_radar_s1">پوين ادائيگين مان سکي ٿو</string>
     <string name="intro_radar_s2">ٻڌائي ٿو ايندڙ ڪڏهن متوقع آهي</string>
     <string name="intro_radar_s3">صرف توهان ڏسو ٿا</string>
+    <string name="radar_promises">واعدا پورا ڪيا: %2$s مان %1$s</string>
+    <string name="radar_behind">پنهنجين عام ادائيگين کان دير</string>
+    <string name="radar_tone">گذريل ڀيري اثر ڪندڙ ياد ڏياريندڙ: %1$s</string>
+    <string name="radar_likely_now">عام طور انهن ڏينهن ۾ ادا ڪري ٿو</string>
+    <string name="auto_collect_likely">عام طور انهن ڏينهن ۾ ادا ڪن ٿا: %1$s</string>
+    <string name="audit_promise_set">واعدي جو ڏينهن لکيو ويو</string>
     <plurals name="radar_days">
         <item quantity="one">%d ڏينهن</item>
         <item quantity="other">%d ڏينهن</item>

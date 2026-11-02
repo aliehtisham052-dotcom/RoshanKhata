@@ -1797,6 +1797,12 @@
     <string name="intro_radar_s1">Pichli adaigiyon se seekhta hai</string>
     <string name="intro_radar_s2">Batata hai agli kab mutawaqqa hai</string>
     <string name="intro_radar_s3">Sirf aap dekhte hain</string>
+    <string name="radar_promises">Waade pooray kiye: %2$s mein se %1$s</string>
+    <string name="radar_behind">Apni aam adaigiyon se der</string>
+    <string name="radar_tone">Pichli baar asar karne wali yaad dehani: %1$s</string>
+    <string name="radar_likely_now">Aam tor par inhi dinon ada karta hai</string>
+    <string name="auto_collect_likely">Aam tor par inhi dinon ada karte hain: %1$s</string>
+    <string name="audit_promise_set">Waade ka din likha gaya</string>
     <plurals name="radar_days">
         <item quantity="one">%d din</item>
         <item quantity="other">%d din</item>

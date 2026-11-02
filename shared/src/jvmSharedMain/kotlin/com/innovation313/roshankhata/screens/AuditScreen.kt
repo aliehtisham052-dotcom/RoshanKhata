@@ -113,6 +113,8 @@ fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staf
             val rows = listOf("entries", "cash", "sales", "other").sumOf { n[it] ?: 0 }
             if (n.isEmpty()) detail else word(W.merge_done, rows, n["renumbered"] ?: 0)
         }
+        // The promised day as a date (PromiseLog keeps its millis).
+        AuditAction.PROMISE_SET -> detail.toLongOrNull()?.let { Format.dateOnly(it) } ?: detail
         else -> detail
     }
 }
@@ -167,5 +169,6 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.DOC_ACCEPTED -> word(W.audit_doc_accepted)
     AuditAction.DOC_CANCELLED -> word(W.audit_doc_cancelled)
     AuditAction.DOC_DELETED -> word(W.audit_doc_deleted)
+    AuditAction.PROMISE_SET -> word(W.audit_promise_set)
     else -> a.action
 }
