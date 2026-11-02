@@ -27,7 +27,9 @@ import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.EntryWithItems
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.PaymentRadar
-import com.innovation313.roshankhata.data.RadarRow
+import com.innovation313.roshankhata.data.LedgerPoint
+import com.innovation313.roshankhata.data.PromiseLog
+import com.innovation313.roshankhata.data.ReminderLadder
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
@@ -85,10 +87,12 @@ fun rememberRadar(dao: KhataDao, partyId: Long, isCustomer: Boolean, entries: Li
     LaunchedEffect(partyId, entries, promise, on) {
         reading = if (!on) null else runCatching {
             val shop = RadarDesk.shopDays(dao)
+            // The promised days written on this computer (PromiseLog), for promises kept and broken.
+            val promises = withContext(Dispatchers.IO) { runCatching { PromiseLog.of(dao.promiseLog(partyId)) }.getOrDefault(emptyList()) }
             withContext(Dispatchers.Default) {
                 PaymentRadar.read(
-                    entries.map { RadarRow(partyId, it.entry.isGiven, it.entry.amount, it.entry.timestamp) },
-                    System.currentTimeMillis(), shop, promise
+                    entries.map { LedgerPoint(partyId, it.entry.timestamp, it.entry.amount, it.entry.isGiven) },
+                    System.currentTimeMillis(), shop, promise, promises
                 )
             }
         }.getOrNull()
@@ -126,9 +130,9 @@ fun RadarChip(r: PaymentRadar.Reading, onClick: () -> Unit) {
     }
 }
 
-/** Every reason, one line each, in the owner's language (the phone's RadarUi.reasons). */
+/** Every reason, one line each, in the owner's language (the phone's RadarUi.reasons); [tone] the step that worked. */
 @Composable
-fun radarReasons(r: PaymentRadar.Reading, promise: Long?): String {
+fun radarReasons(r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String {
     val lines = mutableListOf<String>()
     lines += word(when (r.light) {
         PaymentRadar.Light.GREEN -> W.radar_on_time
@@ -144,15 +148,24 @@ fun radarReasons(r: PaymentRadar.Reading, promise: Long?): String {
     val to = r.nextTo
     if (from != null && to != null) lines += word(W.radar_next, short(from), short(to))
     if (r.promiseOverdue && promise != null) lines += word(W.radar_promise_passed, Format.dateOnly(promise))
+    if (r.behindHabit) lines += word(W.radar_behind)
+    val promised = r.promisesKept + r.promisesBroken
+    if (promised > 0) lines += word(W.radar_promises, r.promisesKept.toString(), promised.toString())
+    when (tone) {
+        ReminderLadder.GENTLE -> W.reminder_step_gentle
+        ReminderLadder.PLAIN -> W.reminder_step_plain
+        ReminderLadder.SERIOUS -> W.reminder_step_serious
+        else -> null
+    }?.let { lines += word(W.radar_tone, word(it)) }
     return lines.joinToString("\n") { "• $it" } + "\n\n" + word(W.radar_private)
 }
 
 /** The reasons, with the switch to turn the Radar off on this computer. */
 @Composable
-fun RadarDialog(r: PaymentRadar.Reading, promise: Long?, onClose: () -> Unit) {
+fun RadarDialog(r: PaymentRadar.Reading, promise: Long?, tone: Int = 0, onClose: () -> Unit) {
     AskDialog(
         title = word(W.radar_title),
-        text = radarReasons(r, promise),
+        text = radarReasons(r, promise, tone),
         confirm = word(W.radar_turn_off),
         onConfirm = { RadarDesk.set(false); onClose() },
         onDismiss = onClose,

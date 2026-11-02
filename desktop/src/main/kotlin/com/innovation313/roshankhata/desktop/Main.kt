@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.promiseDay
 import com.innovation313.roshankhata.data.PartyWhen
 import com.innovation313.roshankhata.data.audit
 import com.innovation313.roshankhata.data.auditAmount
@@ -819,7 +820,8 @@ private fun Book(
                         dao, autoSettings, words, money = { Format.money(it) },
                         date = { com.innovation313.roshankhata.data.DateWords.format("d MMM", it) },
                         monthName = { com.innovation313.roshankhata.data.DateWords.format("MMMM yyyy", it) },
-                        remindedToday = reminders.openedToday()
+                        remindedToday = reminders.openedToday(),
+                        radar = RadarDesk.on
                     )
                 }.getOrDefault(emptyList())
             }
@@ -1291,7 +1293,8 @@ private fun Book(
                                     onPickEntries = { pickingEntries = true; pickedEntries = emptySet() },
                                     modifier = Modifier.weight(1f).fillMaxHeight(),
                                     radar = radar,
-                                    radarPromise = facts.promiseAt
+                                    radarPromise = facts.promiseAt,
+                                    radarTone = com.innovation313.roshankhata.data.ReminderLadder.learned(reminders.state(party.id), party.balance, System.currentTimeMillis())
                                 )
                             }
                             }
@@ -1306,7 +1309,7 @@ private fun Book(
                             DueDialog(p.name, at, onPick = { day ->
                                 promising = null
                                 scope.launch {
-                                    withContext(Dispatchers.IO) { runCatching { dao.setHarvestPromise(p.id, day) } }
+                                    withContext(Dispatchers.IO) { runCatching { dao.promiseDay(p.id, day) } }
                                         .onFailure { told = words.text(W.cf_kind_promised) to failText(words, it) }
                                     reload++
                                 }
@@ -1555,7 +1558,7 @@ private fun Book(
     /** After an entry is written: the promised day kept only while money is owed (the phone's saveEntry rule). */
     suspend fun keepPromise(partyId: Long, d: EntryDraft, after: Double) {
         if (partyRow?.harvestPromise != null && !Money.isPositive(after)) dao.setHarvestPromise(partyId, null)
-        else if (d.dueTouched) dao.setHarvestPromise(partyId, if (Money.isPositive(after)) d.due else null)
+        else if (d.dueTouched) dao.promiseDay(partyId, if (Money.isPositive(after)) d.due else null)
     }
     fun saveNew(d: EntryDraft) {
         val before = forParty?.balance ?: 0.0

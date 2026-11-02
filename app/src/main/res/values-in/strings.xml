@@ -1804,6 +1804,12 @@
     <string name="intro_radar_s1">Belajar dari pembayaran lalu</string>
     <string name="intro_radar_s2">Memberi tahu kapan berikutnya</string>
     <string name="intro_radar_s3">Hanya Anda yang melihat</string>
+    <string name="radar_promises">Janji ditepati: %1$s dari %2$s</string>
+    <string name="radar_behind">Lebih lambat dari pembayaran biasanya</string>
+    <string name="radar_tone">Pengingat yang berhasil terakhir: %1$s</string>
+    <string name="radar_likely_now">Biasanya membayar sekitar hari ini</string>
+    <string name="auto_collect_likely">Biasanya membayar sekitar hari ini: %1$s</string>
+    <string name="audit_promise_set">Hari janji dicatat</string>
     <plurals name="radar_days">
         <item quantity="other">%d hari</item>
     </plurals>

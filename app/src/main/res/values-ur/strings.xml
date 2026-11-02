@@ -1797,6 +1797,12 @@
     <string name="intro_radar_s1">پچھلی ادائیگیوں سے سیکھتا ہے</string>
     <string name="intro_radar_s2">بتاتا ہے اگلی کب متوقع ہے</string>
     <string name="intro_radar_s3">صرف آپ دیکھتے ہیں</string>
+    <string name="radar_promises">وعدے پورے کیے: %2$s میں سے %1$s</string>
+    <string name="radar_behind">اپنی عام ادائیگیوں سے دیر</string>
+    <string name="radar_tone">پچھلی بار اثر کرنے والی یاد دہانی: %1$s</string>
+    <string name="radar_likely_now">عموماً انہی دنوں ادا کرتا ہے</string>
+    <string name="auto_collect_likely">عموماً انہی دنوں ادا کرتے ہیں: %1$s</string>
+    <string name="audit_promise_set">وعدے کا دن لکھا گیا</string>
     <plurals name="radar_days">
         <item quantity="one">%d دن</item>
         <item quantity="other">%d دن</item>

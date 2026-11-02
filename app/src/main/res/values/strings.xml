@@ -1850,6 +1850,12 @@
     <string name="intro_radar_s1">Learns from past payments</string>
     <string name="intro_radar_s2">Says when the next is likely</string>
     <string name="intro_radar_s3">Only you see it</string>
+    <string name="radar_promises">Promises kept: %1$s of %2$s</string>
+    <string name="radar_behind">Later than his usual payments</string>
+    <string name="radar_tone">Reminder that worked last: %1$s</string>
+    <string name="radar_likely_now">Usually pays around now</string>
+    <string name="auto_collect_likely">Usually pay around now: %1$s</string>
+    <string name="audit_promise_set">Promised day set</string>
     <plurals name="radar_days">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>

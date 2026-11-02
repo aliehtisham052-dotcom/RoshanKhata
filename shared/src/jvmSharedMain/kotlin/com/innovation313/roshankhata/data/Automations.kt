@@ -72,21 +72,32 @@ object Automations {
 
     // ---------------------------------------------------------------- the five
 
-    data class Collect(val count: Int, val total: Double, val names: List<String>)
+    data class Collect(val count: Int, val total: Double, val names: List<String>, val likely: Int = 0)
 
     /**
      * Follow-up's "remind today" (a promise come due, or late by his own habit), less those already
      * reminded today ([remindedToday]: the phone's ReminderLog, the computer's ReminderStore), with a phone.
      */
-    suspend fun collect(dao: KhataDao, remindedToday: Set<Long>, now: Long, tz: TimeZone = TimeZone.getDefault()): Collect {
+    suspend fun collect(
+        dao: KhataDao,
+        remindedToday: Set<Long>,
+        now: Long,
+        tz: TimeZone = TimeZone.getDefault(),
+        /** The Payment Radar's switch on this device: those in their usual paying days join the list and lead it. */
+        radar: Boolean = false
+    ): Collect {
         val debtors = dao.partiesWithBalanceOnce().filter { Money.isPositive(it.balance) }
         if (debtors.isEmpty()) return Collect(0, 0.0, emptyList())
-        val habits = PaymentHabit.forAll(dao.observeOwingLedgerPoints().first())
+        val points = dao.observeOwingLedgerPoints().first()
+        val habits = PaymentHabit.forAll(points)
         val promises = dao.observePromises().first().associate { it.partyId to it.due }
-        val due = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday).filter {
-            !it.phone.isNullOrBlank() && FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday)
+        val likely = if (!radar) emptySet() else runCatching {
+            PaymentRadar.likelyNow(points, PaymentRadar.shopTypicalDays(dao.radarRows()), promises, now, tz)
+        }.getOrDefault(emptySet())
+        val due = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday, likely).filter {
+            !it.phone.isNullOrBlank() && FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday, likely)
         }
-        return Collect(due.size, due.sumOf { it.balance }, due.take(3).map { it.name })
+        return Collect(due.size, due.sumOf { it.balance }, due.take(3).map { it.name }, due.count { it.id in likely })
     }
 
     data class DayEnd(val sales: Double, val received: Double, val drawer: Double, val counted: Boolean, val moved: Boolean)
@@ -201,12 +212,14 @@ object Automations {
         monthName: (Long) -> String,
         remindedToday: Set<Long>,
         now: Long = System.currentTimeMillis(),
-        tz: TimeZone = TimeZone.getDefault()
+        tz: TimeZone = TimeZone.getDefault(),
+        /** The Payment Radar's switch on this device (the morning list's likely names, [collect]). */
+        radar: Boolean = false
     ): List<Notice> {
         val out = mutableListOf<Notice>()
         for (kind in Kind.values()) {
             if (!due(kind, settings, now, tz)) continue
-            val notice = runCatching { noticeOf(kind, dao, words, money, date, monthName, remindedToday, now, tz) }.getOrNull()
+            val notice = runCatching { noticeOf(kind, dao, words, money, date, monthName, remindedToday, now, tz, radar) }.getOrNull()
             settings.setSaid(kind, stamp(kind, now, tz))
             if (notice != null) out += notice
         }
@@ -215,12 +228,14 @@ object Automations {
 
     private suspend fun noticeOf(
         kind: Kind, dao: KhataDao, words: Words, money: (Double) -> String, date: (Long) -> String,
-        monthName: (Long) -> String, remindedToday: Set<Long>, now: Long, tz: TimeZone
+        monthName: (Long) -> String, remindedToday: Set<Long>, now: Long, tz: TimeZone, radar: Boolean
     ): Notice? = when (kind) {
-        Kind.COLLECT -> collect(dao, remindedToday, now, tz).takeIf { it.count > 0 }?.let { c ->
+        Kind.COLLECT -> collect(dao, remindedToday, now, tz, radar).takeIf { it.count > 0 }?.let { c ->
             val names = c.names.joinToString(", ") { Format.isolate(it) }
+            // How many of them usually pay around now (the Payment Radar) — they lead the names.
+            val likely = if (c.likely > 0) "\n" + words.text(W.auto_collect_likely, c.likely.toString()) else ""
             Notice(kind, words.text(W.auto_collect_title),
-                words.plural(WP.auto_collect_body, c.count, c.count, money(c.total)) + "\n" + names)
+                words.plural(WP.auto_collect_body, c.count, c.count, money(c.total)) + "\n" + names + likely)
         }
         Kind.DAY_END -> dayEnd(dao, now, tz).takeIf { it.moved }?.let { d ->
             val body = words.text(W.auto_dayend_body, money(d.sales), money(d.received), money(d.drawer))

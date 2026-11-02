@@ -22,11 +22,11 @@ class PaymentRadarTest {
         clear(); set(y, m - 1, d, h, 0, 0)
     }.timeInMillis
 
-    private fun gave(amount: Double, t: Long, party: Long = 1) = RadarRow(party, true, amount, t)
-    private fun got(amount: Double, t: Long, party: Long = 1) = RadarRow(party, false, amount, t)
+    private fun gave(amount: Double, t: Long, party: Long = 1) = LedgerPoint(party, t, amount, true)
+    private fun got(amount: Double, t: Long, party: Long = 1) = LedgerPoint(party, t, amount, false)
 
     /** [n] credits of 1,000, each paid back in full after [days] days, a month apart, from 1 Jan 2026. */
-    private fun steady(days: Int, n: Int = 4, party: Long = 1): List<RadarRow> = (0 until n).flatMap { i ->
+    private fun steady(days: Int, n: Int = 4, party: Long = 1): List<LedgerPoint> = (0 until n).flatMap { i ->
         val t = at(2026, 1, 1) + i * 30L * day
         listOf(gave(1_000.0, t, party), got(1_000.0, t + days * day, party))
     }
@@ -135,6 +135,52 @@ class PaymentRadarTest {
         assertNull(PaymentRadar.shopTypicalDays(steady(10, n = 3, party = 1) + steady(20, n = 3, party = 2) + steady(30, n = 1, party = 3)))
         val enough = steady(10, n = 4, party = 1) + steady(20, n = 4, party = 2)
         assertEquals("the median of 10s and 20s", 15, PaymentRadar.shopTypicalDays(enough))
+    }
+
+    @Test
+    fun `promises kept and broken come from the promised days written, and a moved one is not counted`() {
+        val payments = listOf(at(2026, 1, 11))
+        val promises = listOf(
+            PaymentRadar.Promise(at(2026, 1, 1), at(2026, 1, 10)),  // paid on the 11th: kept (two days' grace)
+            PaymentRadar.Promise(at(2026, 2, 1), at(2026, 2, 10)),  // nothing came: broken
+            PaymentRadar.Promise(at(2026, 3, 1), at(2026, 3, 10)),  // moved on the 5th, before its day: not counted
+            PaymentRadar.Promise(at(2026, 3, 5), at(2026, 3, 20)),  // nothing came: broken
+            PaymentRadar.Promise(at(2026, 5, 1), at(2026, 6, 10))   // still ahead: not counted
+        )
+        assertEquals(1 to 2, PaymentRadar.promiseRecord(promises, payments, at(2026, 5, 2), utc))
+    }
+
+    @Test
+    fun `broken promises and falling behind his own rhythm raise the light`() {
+        val now = at(2026, 6, 1)
+        val owing = listOf(gave(5_000.0, at(2026, 4, 1)))
+        val broken = listOf(
+            PaymentRadar.Promise(at(2026, 4, 2), at(2026, 4, 10)),
+            PaymentRadar.Promise(at(2026, 4, 20), at(2026, 5, 1)),
+            PaymentRadar.Promise(at(2026, 5, 5), at(2026, 5, 15))
+        )
+        val r = PaymentRadar.read(owing, now, shopDays = 45, promises = broken, tz = utc)
+        assertEquals(0, r.promisesKept)
+        assertEquals(3, r.promisesBroken)
+        assertEquals("three broken, none kept", PaymentRadar.Light.RED, r.light)
+
+        // A weekly payer silent for a month: Follow-up calls him late, and so does the Radar.
+        val start = at(2026, 4, 1)
+        val weekly = listOf(gave(10_000.0, start)) + (1..3).map { got(500.0, start + it * 7 * day) }
+        val behind = PaymentRadar.read(weekly, start + 51 * day, shopDays = 45, tz = utc)
+        assertTrue(behind.behindHabit)
+        assertEquals(PaymentRadar.Light.AMBER, behind.light)
+    }
+
+    @Test
+    fun `the morning list's likely names are those inside their usual paying days`() {
+        val rows = listOf(
+            gave(5_000.0, at(2026, 1, 2)),
+            got(1_000.0, at(2026, 1, 10)), got(1_000.0, at(2026, 2, 11)),
+            got(1_000.0, at(2026, 3, 9)), got(1_000.0, at(2026, 4, 10))
+        )
+        assertEquals(setOf(1L), PaymentRadar.likelyNow(rows, 15, emptyMap(), at(2026, 5, 9), utc))
+        assertTrue("not on the 20th", PaymentRadar.likelyNow(rows, 15, emptyMap(), at(2026, 5, 20), utc).isEmpty())
     }
 
     @Test

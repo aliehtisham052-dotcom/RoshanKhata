@@ -23,10 +23,26 @@ class ReminderLadderTest {
     }
 
     @Test
-    fun `any payment since the last reminder starts the chase again`() {
+    fun `a payment since the last reminder starts the chase again, at the step he paid after`() {
+        // He paid after the plain one (2 Nov 2026, the Payment Radar): the next chase starts plain, and says so.
         val s = State(2, t0, t0 + 5 * day, 12_000.0)
-        assertEquals(1, ReminderLadder.step(s, 9_000.0, t0 + 6 * day))
-        assertEquals(State(1, t0 + 6 * day, t0 + 6 * day, 9_000.0), ReminderLadder.next(s, 9_000.0, t0 + 6 * day))
+        assertEquals(2, ReminderLadder.learned(s, 9_000.0, t0 + 6 * day))
+        assertEquals(2, ReminderLadder.step(s, 9_000.0, t0 + 6 * day))
+        assertEquals(State(2, t0 + 6 * day, t0 + 6 * day, 9_000.0, worked = 2), ReminderLadder.next(s, 9_000.0, t0 + 6 * day))
+        // One who paid after the gentle one is never pushed past it.
+        val gentle = State(1, t0, t0, 12_000.0)
+        assertEquals(1, ReminderLadder.step(gentle, 9_000.0, t0 + day))
+    }
+
+    @Test
+    fun `what worked is kept through a chase that runs quiet, and reads back from its stored form`() {
+        val learnt = State(3, t0, t0 + 5 * day, 12_000.0, worked = 2)
+        // Sixty quiet days end the chase; the next starts at the step that worked last time, not gently.
+        assertEquals(2, ReminderLadder.step(learnt, 12_000.0, t0 + 70 * day))
+        assertEquals(learnt, ReminderLadder.decode(ReminderLadder.encode(learnt)))
+        assertEquals("3,${t0},${t0 + 5 * day},12000.0,2", ReminderLadder.encode(learnt))
+        // Nothing learnt: the old four fields, as every phone has them.
+        assertEquals("2,10,20,300.5", ReminderLadder.encode(State(2, 10L, 20L, 300.5)))
     }
 
     @Test

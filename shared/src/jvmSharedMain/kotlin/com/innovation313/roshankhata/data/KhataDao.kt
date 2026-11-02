@@ -2857,7 +2857,11 @@ interface KhataDao {
             "FROM transactions t JOIN parties p ON p.id = t.partyId " +
             "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1"
     )
-    suspend fun radarRows(): List<RadarRow>
+    suspend fun radarRows(): List<LedgerPoint>
+
+    /** One customer's promised days as written ([PromiseLog], [promiseDay]): the Radar's promises kept and broken. */
+    @Query("SELECT * FROM audit_log WHERE action = 'promise_set' AND refTable = 'parties' AND refId = :partyId ORDER BY timestamp")
+    suspend fun promiseLog(partyId: Long): List<AuditLog>
 
     /** One live party's live balance, the list's own SUM, for the first paint above. */
     @Query("SELECT COALESCE(SUM(CASE WHEN isGiven = 1 THEN amount ELSE -amount END), 0) FROM transactions WHERE partyId = :partyId AND isDeleted = 0")

@@ -500,4 +500,6 @@ object AuditAction {
     const val DOC_ACCEPTED = "doc_accepted"
     const val DOC_CANCELLED = "doc_cancelled"
     const val DOC_DELETED = "doc_deleted"
+    /** A promised day set for a party (PromiseLog): refId the party, detail the day's millis. */
+    const val PROMISE_SET = "promise_set"
 }
