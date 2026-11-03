@@ -544,11 +544,6 @@ class CounterSaleActivity : BaseActivity() {
     }
 
     /**
-     * A return as a credit note ([com.innovation313.roshankhata.data.NoteDocument.creditNote]): what came back
-     * and what the customer is credited, in the shop's invoice design, opened to read, print or share. Drawn
-     * from the return itself and never saved — the return already holds the money.
-     */
-    /**
      * The exchange's second half (3 Nov 2026, [CounterDraft.startExchange]): the empty counter takes the same
      * customer and, for a cash refund, that refund as its first cash payment, so only the difference is collected.
      */
@@ -592,6 +587,11 @@ class CounterSaleActivity : BaseActivity() {
         }
     }
 
+    /**
+     * A return as a credit note ([com.innovation313.roshankhata.data.NoteDocument.creditNote]): what came back
+     * and what the customer is credited, in the shop's invoice design, opened to read, print or share. Drawn
+     * from the return itself and never saved — the return already holds the money.
+     */
     private fun openCreditNote(returnId: Long) {
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
