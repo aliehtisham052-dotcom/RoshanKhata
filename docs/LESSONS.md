@@ -97,6 +97,8 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
   own as well: a form's `draft` inside a function is not the counter's `draft`.
 - A Kotlin property delegate (`var x by remember { … }`) needs `getValue`/`setValue` imported even when every
   other name in the line is written out in full; a new file's first delegate brings its two imports.
+- A parameter made required is given at every caller — the test sources' too; a search of the app's own code
+  alone left a screen-proof test calling the old shape, and the test compile failed.
 - Gradle stops at the first failing task: one failing test hides every later failure. Fix it, push, and read the
   next run before calling anything green.
 - A test that asserts the old behaviour is changed in the same commit as the behaviour, with the reason written in it.
