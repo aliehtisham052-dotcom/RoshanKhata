@@ -101,10 +101,20 @@ class RestoreSteps private constructor(
             note.text = message
             note.visibility = View.VISIBLE
             MotionKit.riseIn(note, duration = 200)
-            // What to know is brought into sight under the steps, once it is laid out (the button stays in sight
-            // below them).
+            // What to know is brought into sight under the steps, once it is laid out (the title and the button stay
+            // in sight). The view stops at a step's top, never half way through one: at the first step from which the
+            // whole note shows, else at the note's own first line, the rest of it below (the proof pictures at 150%
+            // and 85%: scrolled to the very end, the top step was cut through its words).
             val scroll = root.findViewById<androidx.core.widget.NestedScrollView>(R.id.stepsScroll)
-            note.doOnNextLayout { scroll.smoothScrollTo(0, (scroll.getChildAt(0)?.height ?: 0) - scroll.height) }
+            note.doOnNextLayout {
+                val content = scroll.getChildAt(0) ?: return@doOnNextLayout
+                val most = (content.height - scroll.height).coerceAtLeast(0)
+                val need = note.bottom - scroll.height
+                val list = root.findViewById<LinearLayout>(R.id.stepsList)
+                val tops = (0 until list.childCount).map { list.top + list.getChildAt(it).top }
+                val target = if (need <= 0) 0 else tops.firstOrNull { it >= need } ?: note.top
+                scroll.smoothScrollTo(0, target.coerceIn(0, most))
+            }
         }
         button.text = action
         button.visibility = View.VISIBLE

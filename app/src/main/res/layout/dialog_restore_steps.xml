@@ -38,12 +38,15 @@
         android:textSize="13sp"
         android:visibility="gone" />
 
+    <!-- Its edges fade where more lies beyond them, so a step cut by the edge reads as "more above". -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/stepsScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fadingEdgeLength="28dp"
+        android:requiresFadingEdge="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
