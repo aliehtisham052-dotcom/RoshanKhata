@@ -65,13 +65,15 @@ class RestoreRun(val labels: List<String>, val details: List<String?>, val sub: 
 /** What a copy holds, as its question counted it: "1240 entries · 86 customers · 12 suppliers" (the phone's line). */
 fun restoreCounts(data: com.innovation313.roshankhata.data.BackupCodec.ParsedBackup, words: com.innovation313.roshankhata.words.Words): String {
     val customers = data.parties.count { it.isCustomer }
-    val suppliers = data.parties.size - customers
-    return listOfNotNull(
-        words.plural(com.innovation313.roshankhata.words.WP.bin_party_entries, data.entries.size, data.entries.size),
-        if (customers > 0) words.plural(com.innovation313.roshankhata.words.WP.customer_count, customers, customers) else null,
-        if (suppliers > 0) words.plural(com.innovation313.roshankhata.words.WP.supplier_count, suppliers, suppliers) else null
-    ).joinToString(" \u00B7 ")
+    return restoreCounts(data.entries.size, customers, data.parties.size - customers, words)
 }
+
+/** [restoreCounts] from the three figures: the one line the restore and its proof picture both say. */
+fun restoreCounts(entries: Int, customers: Int, suppliers: Int, words: com.innovation313.roshankhata.words.Words): String = listOfNotNull(
+    words.plural(com.innovation313.roshankhata.words.WP.bin_party_entries, entries, entries),
+    if (customers > 0) words.plural(com.innovation313.roshankhata.words.WP.customer_count, customers, customers) else null,
+    if (suppliers > 0) words.plural(com.innovation313.roshankhata.words.WP.supplier_count, suppliers, suppliers) else null
+).joinToString(" \u00B7 ")
 
 /** The dialog for [run]. It cannot be closed while the restore runs; at the end, OK closes it. */
 @Composable

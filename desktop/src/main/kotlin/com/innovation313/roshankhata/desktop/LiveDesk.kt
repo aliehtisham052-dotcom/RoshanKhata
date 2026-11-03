@@ -485,11 +485,14 @@ object LiveDesk {
         // Stopped for everyone (LiveControl): the computer answers nothing, as the phone asks nothing. The word as
         // last read — the network read is the cloud thread's, never a phone's connection waiting 10 s for GitHub.
         if (LiveControl.haltedCached()) return null
+        // The book's tick for a parcel that wrote rows, before and after (LiveSync.changes).
+        val before = LiveSync.changes.value
         val reply = runBlocking { LiveRound.answer(d.syncSql(), r) } ?: return null
         lastWifi = System.currentTimeMillis()
         noteRound(d)
-        // What this round really carried, for the window's dots (3 Nov 2026): the phone's changes in, this book's out.
-        val came = (r.optJSONObject("parcel")?.optJSONArray("c")?.length() ?: 0) > 0 && !reply.has("refused")
+        // What this round really carried, for the window's dots (3 Nov 2026): the phone's changes in only when they
+        // wrote rows here — a parcel sent again, or one answered with a gap, writes none (the review); this book's out.
+        val came = LiveSync.changes.value != before
         val went = (reply.optJSONObject("parcel")?.optJSONArray("c")?.length() ?: 0) > 0
         if (came || went) traffic.tryEmit(Traffic(out = went, came = came, relay = false))
         return reply

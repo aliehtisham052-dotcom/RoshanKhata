@@ -5,15 +5,14 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.DocChain
+import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 
 /**
  * A document stepped on (3 Nov 2026, the owner's mockup "Documents — the chain"; the new PDF used to open with
@@ -22,6 +21,17 @@ import com.innovation313.roshankhata.data.DocChain
  * opens the new document as before; Close leaves it in the list. With animations off it is all there at once.
  */
 object DocConvertedSheet {
+
+    /**
+     * Who the new document is for and what it holds — "Test Customer · 3 items · Rs 54,000" — the line [show] is
+     * given. A challan prints no prices (DocKind.showsPrices), so its line says none either; the sign and its figure
+     * stay on one line (a no-break space) whichever way the line runs. The convert and its proof picture both say it.
+     */
+    fun line(res: android.content.res.Resources, name: String, items: Int, total: Double, kind: String): String = listOfNotNull(
+        name,
+        Digits.quantity(res, R.plurals.items_count, items, items),
+        if (com.innovation313.roshankhata.data.DocKind.showsPrices(kind)) Format.ltr(Format.money(total).replace(' ', '\u00A0')) else null
+    ).joinToString(" \u00B7 ")
 
     fun show(
         activity: Activity,
@@ -65,7 +75,8 @@ object DocConvertedSheet {
                     if (i == current) setTypeface(typeface, android.graphics.Typeface.BOLD)
                 })
                 node.number?.let { n ->
-                    addView(TextView(activity).apply {
+                    // AppCompat's view: below Android 8.1 a plain TextView ignores the size it is told to fit in.
+                    addView(androidx.appcompat.widget.AppCompatTextView(activity).apply {
                         text = Format.ltr(n)
                         gravity = Gravity.CENTER
                         maxLines = 1
@@ -85,9 +96,7 @@ object DocConvertedSheet {
         val sheet = BottomSheetDialog(activity)
         view.findViewById<MaterialButton>(R.id.btnDocOpen).setOnClickListener { sheet.dismiss(); onOpen() }
         view.findViewById<MaterialButton>(R.id.btnDocClose).setOnClickListener { sheet.dismiss() }
-        (activity as? ComponentActivity)?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
-            override fun onDestroy(owner: LifecycleOwner) { if (sheet.isShowing) sheet.dismiss() }
-        })
+        DialogLife.bind(activity, sheet)
         TextFit.relax(view)
         sheet.setContentView(view)
         sheet.behavior.skipCollapsed = true

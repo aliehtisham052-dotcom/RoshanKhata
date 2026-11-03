@@ -8,15 +8,14 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 
 /**
  * A restore, step by step (3 Nov 2026, the owner's mockup "Restore steps"; it took the place of a
@@ -117,12 +116,18 @@ class RestoreSteps private constructor(
         if (Motion.enabled(activity)) 260L else 0L
     }
 
-    /** Closes it without an answer (the screen is going). */
-    fun dismiss() = main.post {
-        gone = true
-        queue.clear()
-        marks.forEach { it.stop() }
-        if (dialog.isShowing) runCatching { dialog.dismiss() }
+    /**
+     * Closes it without an answer (the screen is going): at once on the main thread — posted, it was still on the
+     * screen when Android closed the screen's windows, and Android logged it as leaked (3 Nov 2026, the review).
+     */
+    fun dismiss() {
+        val close = {
+            gone = true
+            queue.clear()
+            marks.forEach { it.stop() }
+            if (dialog.isShowing) runCatching { dialog.dismiss() }
+        }
+        if (Looper.myLooper() == Looper.getMainLooper()) close() else main.post { close() }
     }
 
     /** Each label's own face (Urdu's, a language's), bold only while its step runs. */
@@ -194,14 +199,22 @@ class RestoreSteps private constructor(
                 .setCancelable(false)
                 .create()
             dialog.setCanceledOnTouchOutside(false)
-            // Nothing turns on once it is closed, whether or not its rows were ever drawn.
-            dialog.setOnDismissListener { marks.forEach { it.stop() } }
             val steps2 = RestoreSteps(activity, dialog, root, marks, labels, details)
-            (activity as? ComponentActivity)?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
-                override fun onDestroy(owner: LifecycleOwner) { steps2.dismiss() }
-            })
+            // Nothing turns on once it is closed, whether or not its rows were ever drawn; it goes with the screen,
+            // and the screen lets go of it once it is closed.
+            DialogLife.bind(activity, dialog, onDismiss = { marks.forEach { it.stop() } }, whenScreenGoes = { steps2.dismiss() })
             dialog.show()
             return steps2
         }
+
+        /**
+         * What a copy holds, as the restore question counted it: "1240 entries · 86 customers · 12 suppliers", its
+         * figures in 0-9 like the money beside them. The one line the restore and its proof picture both say.
+         */
+        fun counts(res: android.content.res.Resources, entries: Int, customers: Int, suppliers: Int): String = listOfNotNull(
+            Digits.quantity(res, R.plurals.bin_party_entries, entries, entries),
+            if (customers > 0) Digits.quantity(res, R.plurals.customer_count, customers, customers) else null,
+            if (suppliers > 0) Digits.quantity(res, R.plurals.supplier_count, suppliers, suppliers) else null
+        ).joinToString(" · ")
     }
 }

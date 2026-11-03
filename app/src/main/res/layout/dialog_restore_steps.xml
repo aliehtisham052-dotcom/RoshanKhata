@@ -2,8 +2,9 @@
 <!--
   A restore's steps (3 Nov 2026, the owner's mockup "Restore steps"): the title, which backup, each step
   ticked as it really finishes, then what to know and Open the book. ui/RestoreSteps builds the rows
-  (item_restore_step) into stepsList. The words scroll; the button stays in sight under them (the proof
-  pictures at 150% put it below the dialog's edge when it scrolled with them).
+  (item_restore_step) into stepsList. The title and the backup's line stay in sight above the steps, and the
+  button below them; only the steps and what to know scroll (the proof pictures at 150%: the button went below
+  the dialog's edge when it scrolled with them, and "Restored" went above it once the note was brought in).
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,10 +12,37 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/tvStepsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="24dp"
+        android:accessibilityHeading="true"
+        android:accessibilityLiveRegion="polite"
+        android:textAlignment="viewStart"
+        android:textColor="@color/ink"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvStepsSub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="24dp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/stepsScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="1">
 
         <LinearLayout
@@ -22,36 +50,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="24dp"
-            android:paddingTop="22dp"
+            android:paddingTop="8dp"
             android:paddingEnd="24dp"
             android:paddingBottom="8dp">
-
-            <TextView
-                android:id="@+id/tvStepsTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:accessibilityHeading="true"
-                android:accessibilityLiveRegion="polite"
-                android:textAlignment="viewStart"
-                android:textColor="@color/ink"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvStepsSub"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textAlignment="viewStart"
-                android:textColor="@color/text_muted"
-                android:textSize="13sp"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/stepsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
                 android:orientation="vertical" />
 
             <TextView

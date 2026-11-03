@@ -116,8 +116,10 @@ object Reminder {
 
     /**
      * Opens WhatsApp with the message ready. The user presses send. The plane lifts out of [from] when the
-     * caller gives the button that was tapped (Follow-up's Message pill). [opened] runs only once WhatsApp has
-     * really opened (3 Nov 2026): with no WhatsApp on the phone nothing is counted as reminded; [failed] then.
+     * caller gives the button that was tapped (Follow-up's Message pill). [opened] runs only once WhatsApp (or
+     * WhatsApp Business) has opened — never a browser, which a phone without WhatsApp opened the wa.me link in, and
+     * that counted as reminded (3 Nov 2026, the review); [failed] then. With both WhatsApps on the phone Android asks
+     * which, as it always did, and a question the owner closes still counts: Android does not say it was closed.
      */
     fun sendViaWhatsApp(
         context: Context,
@@ -134,17 +136,43 @@ object Reminder {
             return
         }
 
-        val uri = Uri.parse("https://wa.me/$number?text=${Uri.encode(message)}")
+        val tries = whatsAppIntents(context, number, message)
         // The golden plane takes the message out (5 Oct; the 3 Nov 2026 flight); WhatsApp opens as it leaves.
         fly(context, from) {
-            try {
-                context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                opened?.invoke()
-            } catch (e: ActivityNotFoundException) {
+            val sent = tries.any { intent ->
+                try { context.startActivity(intent); true } catch (e: ActivityNotFoundException) { false }
+            }
+            if (sent) opened?.invoke()
+            else {
                 Toast.makeText(context, R.string.whatsapp_not_installed, Toast.LENGTH_LONG).show()
                 failed?.invoke()
             }
         }
+    }
+
+    /** WhatsApp and WhatsApp Business, the two that open a wa.me link as a chat. */
+    private val WHATSAPP = listOf("com.whatsapp", "com.whatsapp.w4b")
+
+    /**
+     * The ways into the chat that no browser takes, tried in turn until one opens. First WhatsApp's own wa.me link:
+     * on Android 11 and later the system refuses a browser for it (FLAG_ACTIVITY_REQUIRE_NON_BROWSER) and keeps the
+     * owner's own choice between the two WhatsApps; before Android 11 every app is visible, so the one WhatsApp that is
+     * there is named. Then the app's own whatsapp:// address, which only the two WhatsApps answer — for a phone whose
+     * link settings send wa.me to the browser, and for one with both WhatsApps before Android 11.
+     */
+    private fun whatsAppIntents(context: Context, number: String, message: String): List<Intent> {
+        val text = Uri.encode(message)
+        val link = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$number?text=$text")).addCategory(Intent.CATEGORY_BROWSABLE)
+        val own = Intent(Intent.ACTION_VIEW, Uri.parse("whatsapp://send?phone=$number&text=$text"))
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            return listOf(link.addFlags(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER), own)
+        }
+        @Suppress("DEPRECATION")
+        val here = runCatching {
+            context.packageManager.queryIntentActivities(link, 0).map { it.activityInfo.packageName }
+        }.getOrDefault(emptyList())
+        val apps = WHATSAPP.filter { it in here }
+        return if (apps.size == 1) listOf(link.setPackage(apps[0]), own) else listOf(own)
     }
 
     private fun fly(context: Context, from: android.view.View?, then: () -> Unit) {

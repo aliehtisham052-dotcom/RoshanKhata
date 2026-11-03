@@ -109,4 +109,17 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
   only when it changes from short to matches to over.
 - **Report counts the engine really has.** "Changes waiting" is the log not yet acknowledged; "page 2 of 5" is the
   writer's own page; a relay message of acknowledgements only carried no change, so no dots move for it.
+- **A dialog's watcher on its screen goes with the dialog.** A lifecycle observer added at each show and never
+  removed keeps every dialog alive until the screen closes — on a counter open all day, one sheet per sale.
+  `ui/DialogLife.bind` closes the dialog with the screen and removes the watcher when the dialog closes.
+- **A proof picture says what the app says.** Two proofs built their own lines (`getQuantityString`, a typed
+  "Rs 1,234,567") and showed Bengali digits and a "Rs" split from its figure that the app never shows; a proof
+  calls the screen's own builder (`RestoreSteps.counts`, `DocConvertedSheet.line`, `restoreCounts`).
+- **A link is not the app.** wa.me with no package opens in a browser on a phone without WhatsApp, and
+  `startActivity` succeeding counted the reminder as sent: WhatsApp only, by `FLAG_ACTIVITY_REQUIRE_NON_BROWSER`
+  (Android 11+) and the app's own `whatsapp://` address.
+- **The heading follows what happened to the book.** A book replaced and then not joined to live sync is restored:
+  "Not restored" under a ticked "Book replaced" told the owner his old book was still there.
+- **A one-time play is ended by the owner, not by what is on screen.** An effect that cleared the "just made" mark
+  when another row was open fired before the list had brought the new document in, so the step never played.
 

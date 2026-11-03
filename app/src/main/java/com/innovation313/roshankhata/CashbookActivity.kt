@@ -208,7 +208,9 @@ class CashbookActivity : BaseActivity() {
                         val from = resultPanel.backgroundTintList?.defaultColor ?: washColour
                         resultPanel.visibility = View.VISIBLE
                         if (first) {
-                            resultPanel.backgroundTintList = android.content.res.ColorStateList.valueOf(washColour)
+                            // Through tintTo, which first stops a change of wash still running (the count cleared and
+                            // typed again within it would have left the old wash under the new words).
+                            com.innovation313.roshankhata.ui.MotionKit.tintTo(resultPanel, washColour, washColour)
                             com.innovation313.roshankhata.ui.MotionKit.fadeIn(resultPanel, duration = 160)
                         } else {
                             com.innovation313.roshankhata.ui.MotionKit.tintTo(resultPanel, from, washColour)

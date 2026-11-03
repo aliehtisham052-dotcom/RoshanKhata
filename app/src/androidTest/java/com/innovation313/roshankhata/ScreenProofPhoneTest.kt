@@ -18,6 +18,7 @@ import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.data.quantity
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.TextSize
@@ -160,11 +161,9 @@ class ScreenProofPhoneTest(
                 a, a.getString(R.string.restoring),
                 a.getString(R.string.restore_backup_of, com.innovation313.roshankhata.ui.Format.dateTime(System.currentTimeMillis() - DAY)),
                 listOf(
+                    // The counts as the restore says them (RestoreSteps.counts: figures in 0-9), not a line of the proof's own.
                     com.innovation313.roshankhata.ui.RestoreSteps.Step(
-                        a.getString(R.string.restore_step_checked),
-                        r.getQuantityString(R.plurals.bin_party_entries, 1240, 1240) + " \u00b7 " +
-                            r.getQuantityString(R.plurals.customer_count, 86, 86) + " \u00b7 " +
-                            r.getQuantityString(R.plurals.supplier_count, 12, 12)
+                        a.getString(R.string.restore_step_checked), com.innovation313.roshankhata.ui.RestoreSteps.counts(r, 1240, 86, 12)
                     ),
                     com.innovation313.roshankhata.ui.RestoreSteps.Step(a.getString(R.string.restore_step_kept), a.getString(R.string.restore_step_kept_why)),
                     com.innovation313.roshankhata.ui.RestoreSteps.Step(a.getString(R.string.restore_step_replaced)),
@@ -185,7 +184,8 @@ class ScreenProofPhoneTest(
                     com.innovation313.roshankhata.data.DocChain.Node(kinds.INVOICE, null)
                 ),
                 { k -> a.getString(com.innovation313.roshankhata.data.WordIds.string(kinds.wordKey(k))) },
-                BIG_NAME + " \u00b7 " + a.resources.getQuantityString(R.plurals.items_count, 3, 3) + " \u00b7 Rs 1,234,567"
+                // The line as the convert says it (DocConvertedSheet.line), money in the shop's own format.
+                com.innovation313.roshankhata.ui.DocConvertedSheet.line(a.resources, BIG_NAME, 3, 1_234_567.0, kinds.SALES_ORDER)
             ) {}
         }
         shoot("34-pdf-making", open(PartyDetailActivity::class.java) { putExtra(PartyDetailActivity.EXTRA_PARTY_ID, big) }) { a ->
@@ -196,7 +196,7 @@ class ScreenProofPhoneTest(
             roads.visibility = android.view.View.VISIBLE
             roads.road = com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN
             a.findViewById<android.widget.TextView>(R.id.tvLiveWaiting).apply {
-                text = a.resources.getQuantityString(R.plurals.live_changes_waiting, 3, 3)
+                text = com.innovation313.roshankhata.data.Digits.quantity(a.resources, R.plurals.live_changes_waiting, 3, 3)
                 visibility = android.view.View.VISIBLE
             }
             // The live card is far down the Backup screen: brought into the picture.

@@ -1518,6 +1518,10 @@ interface KhataDao {
     @Query("SELECT COUNT(*) FROM invoices WHERE sourceDocId = :sourceId AND isDeleted = 0")
     suspend fun docsMadeFrom(sourceId: Long): Int
 
+    /** The document made from [sourceId] and not binned, the newest if ever more than one: a chain's next real step (DocChain). */
+    @Query("SELECT * FROM invoices WHERE sourceDocId = :sourceId AND isDeleted = 0 ORDER BY id DESC LIMIT 1")
+    suspend fun newestMadeFrom(sourceId: Long): Invoice?
+
     /**
      * The owner's Delete on a document: binned only while live; the document it was made from goes back to OPEN
      * when nothing else made from it is left (a quotation whose sales order was deleted can be stepped on again,

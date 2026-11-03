@@ -4,9 +4,6 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import androidx.activity.ComponentActivity
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -44,11 +41,8 @@ object SaleSavedSheet {
         view.findViewById<MaterialButton>(R.id.btnSalePrint).setOnClickListener { onPrint() }
         view.findViewById<MaterialButton>(R.id.btnSaleShare).setOnClickListener { onShare() }
         view.findViewById<MaterialButton>(R.id.btnSaleClose).setOnClickListener { sheet.dismiss() }
-        (activity as? ComponentActivity)?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
-            override fun onDestroy(owner: LifecycleOwner) {
-                if (sheet.isShowing) sheet.dismiss()
-            }
-        })
+        // Closed with the screen, and let go of once closed: a counter shows one per sale all day.
+        DialogLife.bind(activity, sheet)
 
         TextFit.relax(view)
         sheet.setContentView(view)
