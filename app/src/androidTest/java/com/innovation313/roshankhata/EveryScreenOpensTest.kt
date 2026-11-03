@@ -259,15 +259,17 @@ class EveryScreenOpensTest(
                     )
                 )
 
+                // A picture's path on each (schema 43): the rows wear the camera, the screens open with it. No file
+                // behind either — a picture not on this phone is said, never an error.
                 dao.insertCheque(
                     Cheque(
                         partyId = customer, amount = 2000.0, isReceived = true,
-                        chequeNumber = "000123", dueDate = now + day
+                        chequeNumber = "000123", dueDate = now + day, photoPath = "/proof/bills/bill_cheque.jpg"
                     )
                 )
 
                 dao.insertCashEntry(
-                    CashEntry(amount = 300.0, isIncome = false, category = "Test kharcha")
+                    CashEntry(amount = 300.0, isIncome = false, category = "Test kharcha", photoPath = "/proof/bills/bill_receipt.jpg")
                 )
 
                 // Goods in from the supplier, one item close to expiry — so

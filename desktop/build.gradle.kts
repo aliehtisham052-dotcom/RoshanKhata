@@ -135,6 +135,8 @@ val syncTileIcons by tasks.registering(Sync::class) {
             "drawable/ic_download.xml", "drawable/ic_check_circle.xml",
             // Invoices (Marhala 4, part 5): delete beside the invoice's other actions.
             "drawable/ic_delete.xml",
+            // Schema 43 (4 Nov 2026): a cashbook row's and a cheque's picture, and a party's private note.
+            "drawable/ic_camera.xml", "drawable/ic_note_small.xml",
             // The shop-type picker's twenty-five trade icons (TradeKit).
             "drawable/ic_trade_*.xml"
         )

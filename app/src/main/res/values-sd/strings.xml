@@ -3773,4 +3773,13 @@
         <item quantity="other">%d تبديليون وڃڻ جي انتظار ۾</item>
     </plurals>
     <string name="doc_kind_invoice">انوائس</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">ذاتي نوٽ</string>
+    <string name="party_note_help">رڳو توهان لاءِ: هي ڪڏهن به اسٽيٽمينٽ، ياد ڏيارڻ يا گراهڪ جي ڪارڊ تي نٿو اچي.</string>
+    <string name="attach_photo">تصوير لڳايو</string>
+    <string name="photo_attached">تصوير لڳي وئي — بدلائڻ لاءِ دٻايو</string>
+    <string name="view_photo">تصوير ڏسو</string>
+    <string name="cheque_photo">چيڪ جي تصوير</string>
+    <string name="cash_photo">رسيد جي تصوير</string>
+    <string name="photo_missing">هيءَ تصوير هن ڊيوائس تي موجود ناهي</string>
 </resources>

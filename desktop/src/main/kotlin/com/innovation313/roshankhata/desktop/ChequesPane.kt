@@ -72,9 +72,36 @@ import java.time.temporal.ChronoUnit
  * put back to pending; only a pending cheque may be edited.
  */
 @Composable
-fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLedgerChanged: () -> Unit) {
+fun ChequesPane(
+    dao: KhataDao, parties: List<PartyWithBalance>, words: Words,
+    /** The app's folder on this computer, where the cheques' pictures are kept (schema 43). */
+    home: java.io.File,
+    /** The pictures the other businesses' books point at, so a changed picture is never deleted from under them. */
+    otherBooks: suspend () -> Set<String>? = { emptySet() },
+    onLedgerChanged: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
+    // A cheque's picture (schema 43): shown large with Change and Remove, or chosen for one that has none — whatever
+    // its state; a bounced cheque's picture, with the bank's memo, is the one most worth keeping.
+    var viewingPhoto by remember { mutableStateOf<ChequeWithParty?>(null) }
+    var photoProblem by remember { mutableStateOf<String?>(null) }
+    val pickTitle = word(W.cheque_photo)
+    fun setPhoto(id: Long, path: String?) {
+        scope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching { Photos.purgingOrphans(dao, home, otherBooks) { dao.setChequePhotoPath(id, path) } }.isSuccess
+            }
+            if (!ok) photoProblem = words.text(W.photo_save_failed)
+        }
+    }
+    fun pickFor(id: Long) {
+        val src = Photos.pick(pickTitle) ?: return
+        scope.launch {
+            val path = withContext(Dispatchers.IO) { Photos.keep(home, src) }
+            if (path == null) photoProblem = words.text(W.photo_save_failed) else setPhoto(id, path)
+        }
+    }
     val cheques by remember { dao.observeCheques() }.collectAsState(emptyList())
     var form by remember { mutableStateOf<ChequeForm?>(null) }
     var acting by remember { mutableStateOf<ChequeWithParty?>(null) }
@@ -170,7 +197,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
     acting?.let { ch ->
         val pending = ch.status == ChequeStatus.PENDING
         val canReopen = ch.status == ChequeStatus.BOUNCED || ch.status == ChequeStatus.CANCELLED
-        AppDialog(onCloseRequest = { acting = null }, title = word(W.cheque_actions), state = rememberDialogState(width = fitW(460.dp), height = fitH(420.dp))) {
+        AppDialog(onCloseRequest = { acting = null }, title = word(W.cheque_actions), state = rememberDialogState(width = fitW(460.dp), height = fitH(540.dp))) {
             DialogFrame(Format.name(ch.partyName), subtitle = chequeLine(ch), onClose = { acting = null },
                 footer = { FluentButton(word(W.cancel), { acting = null }, kind = ButtonKind.STANDARD) }) {
                 Column {
@@ -187,6 +214,9 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
                         // Bounced and cancelled never posted anything: back to pending moves no money.
                         Action(word(W.cheque_reopen), c.ink) { settle(ch, null) }
                     }
+                    // Its picture (schema 43), whatever its state.
+                    if (!ch.photoPath.isNullOrBlank()) Action(word(W.view_photo), c.ink) { viewingPhoto = ch }
+                    else Action(word(W.attach_photo), c.ink) { Gates.edit { pickFor(ch.id) } }
                     Action(word(W.delete_cheque), c.owedToMe) {
                         Gates.edit { scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCheque(ch.id) } } }
                     }
@@ -228,12 +258,13 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
                 ChequeEditor(
                     existing = f.existing,
                     parties = parties,
-                    onSave = { cheque ->
+                    onSave = { cheque, photo ->
                         scope.launch {
                             withContext(Dispatchers.IO) {
                                 val old = f.existing
                                 if (old == null) {
-                                    dao.insertCheque(cheque)
+                                    // The cheque's picture is copied in only now, with the cheque (a form left leaves nothing).
+                                    dao.insertCheque(cheque.copy(photoPath = photo?.let { Photos.keep(home, it) }))
                                 } else {
                                     // copy() off the stored row: status, settledAt, ledgerEntryId and
                                     // createdAt survive; only what the form shows may change.
@@ -260,6 +291,14 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
             }
         }
     }
+    viewingPhoto?.let { ch ->
+        PhotoDialog(
+            word(W.cheque_photo), ch.photoPath, onClose = { viewingPhoto = null },
+            onChange = { viewingPhoto = null; Gates.edit { pickFor(ch.id) } },
+            onRemove = { viewingPhoto = null; Gates.edit { setPhoto(ch.id, null) } }
+        )
+    }
+    photoProblem?.let { TellDialog(word(W.cheque_photo), it, onClose = { photoProblem = null }) }
 }
 
 @Composable
@@ -312,7 +351,11 @@ private fun ChequeRow(ch: ChequeWithParty, index: Int, stamp: Int?, modifier: Mo
             }
         }
         Column(Modifier.width(160.dp)) {
-            Text(ch.chequeNumber?.takeIf { it.isNotBlank() }?.let { "#$it" } ?: "—", color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(ch.chequeNumber?.takeIf { it.isNotBlank() }?.let { "#$it" } ?: "—", Modifier.weight(1f, fill = false), color = c.ink, fontSize = 13.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                // Its picture is kept (schema 43).
+                if (!ch.photoPath.isNullOrBlank()) Glyph("ic_camera", c.textMuted, 14)
+            }
             ch.bankName?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }
         }
         Column(Modifier.width(170.dp)) {
@@ -400,7 +443,8 @@ private fun daysUntil(due: Long): Int {
 private fun ChequeEditor(
     existing: ChequeWithParty?,
     parties: List<PartyWithBalance>,
-    onSave: (Cheque) -> Unit,
+    /** The cheque, and for a new one the picture chosen (schema 43), copied in when it is written. */
+    onSave: (Cheque, java.io.File?) -> Unit,
     onCancel: () -> Unit
 ) {
     val c = LocalRoshanColors.current
@@ -412,6 +456,7 @@ private fun ChequeEditor(
     var bank by remember { mutableStateOf(existing?.bankName.orEmpty()) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var due by remember { mutableStateOf(existing?.dueDate) }
+    var photo by remember { mutableStateOf<java.io.File?>(null) }
     var picking by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     val amount = Calc.evalAmount(amountText)
@@ -442,7 +487,8 @@ private fun ChequeEditor(
                             bankName = bank.trim().ifEmpty { null },
                             dueDate = date,
                             note = note.trim().ifEmpty { null }
-                        )
+                        ),
+                        photo
                     )
                 }
             })
@@ -461,6 +507,8 @@ private fun ChequeEditor(
             FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.cheque_number_hint))
         }
         FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
+        // A new cheque's picture (schema 43); one already written changes it from its own actions.
+        if (existing == null) FormPhoto(word(W.cheque_photo), photo) { photo = it }
     }
 
     if (picking) {

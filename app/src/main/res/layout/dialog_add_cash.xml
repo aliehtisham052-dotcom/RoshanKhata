@@ -144,5 +144,21 @@
         app:iconGravity="textStart"
         app:iconTint="@color/brand_green_text" />
 
+    <!-- The receipt's picture (schema 43): kept on this phone with the row, as a bill's photo is. The camera, the
+         scanner or the gallery (BillScanFlow); once taken it says so, and a tap changes or removes it. -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCashPhoto"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
+        android:text="@string/attach_photo"
+        android:textAllCaps="false"
+        android:textColor="@color/brand_green_text"
+        android:textSize="14sp"
+        app:icon="@drawable/ic_camera"
+        app:iconGravity="textStart"
+        app:iconTint="@color/brand_green_text" />
+
 </LinearLayout>
 </ScrollView>

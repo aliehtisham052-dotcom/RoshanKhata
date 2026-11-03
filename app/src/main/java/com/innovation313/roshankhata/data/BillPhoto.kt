@@ -90,9 +90,12 @@ object BillPhoto {
         return result
     }
 
+    // A cashbook row's and a cheque's picture (schema 43) live in the same folder by the same rules.
     private suspend fun referenced(dao: KhataDao): Set<String> =
         (dao.entriesWithBillPhoto().map { it.billPhotoPath } +
-            dao.supplierBillsWithPhoto().map { it.photoPath })
+            dao.supplierBillsWithPhoto().map { it.photoPath } +
+            dao.cashWithPhoto().map { it.photoPath } +
+            dao.chequesWithPhoto().map { it.photoPath })
             .filterNotNull().filter { it.isNotBlank() }.toSet()
 
     /** Which of [paths] another shop's book on this phone still points at. */

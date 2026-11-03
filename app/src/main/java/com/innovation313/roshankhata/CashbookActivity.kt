@@ -64,8 +64,37 @@ class CashbookActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
+    // ---------- A receipt's picture (schema 43, 4 Nov 2026) ----------
+    //
+    // A bill photo's rules: the scanner, the camera or the gallery (BillScanFlow), the picture kept in the app's
+    // own bills folder (BillPhoto) and pointed at by the row. On the money form it waits ([pendingPhoto]) until
+    // Save, and goes if the form is left; on a row already written it is set at once ([photoForRow]), the old
+    // picture going once no row points at it.
+
+    /** The form's picture, taken but not yet written; also kept across a rebuild while the camera was in front. */
+    private var pendingPhoto: String? = null
+    private var photoButton: com.google.android.material.button.MaterialButton? = null
+    /** The row whose picture is being set or changed, while the camera or the gallery is open; null: the form's. */
+    private var photoForRow: Long? = null
+
+    private val photoFlow = com.innovation313.roshankhata.ui.BillScanFlow(
+        activity = this,
+        onPhoto = { uri, temp -> keepPhoto(uri, temp) },
+        onNothing = { photoForRow = null }
+    )
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        photoFlow.saveState(outState, STATE_PHOTO_CAMERA)
+        pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
+        photoForRow?.let { outState.putLong(STATE_PHOTO_ROW, it) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        photoFlow.restoreState(savedInstanceState, STATE_PHOTO_CAMERA)
+        pendingPhoto = savedInstanceState?.getString(STATE_PHOTO_PENDING)
+        photoForRow = savedInstanceState?.getLong(STATE_PHOTO_ROW, -1L)?.takeIf { it > 0 }
         setContentView(R.layout.activity_cashbook)
         // How this works, the first time (1 Nov 2026) - not when a notification brought the owner here to act.
         if (!intent.getBooleanExtra(EXTRA_CLOSE_DAY, false)) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CASHBOOK)
@@ -84,7 +113,7 @@ class CashbookActivity : BaseActivity() {
         tvNet = findViewById(R.id.tvCashNet)
         tvEmpty = findViewById(R.id.tvNoCash)
 
-        adapter = CashAdapter { entry -> confirmDelete(entry) }
+        adapter = CashAdapter(onLongClick = { entry -> confirmDelete(entry) }, onClick = { entry -> showCashActions(entry) })
         val rv: RecyclerView = findViewById(R.id.rvCash)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
@@ -448,10 +477,36 @@ class CashbookActivity : BaseActivity() {
             initial = chosenTime
         ) { chosenTime = it }
 
+        // The receipt's picture (schema 43): one taken while the screen was rebuilt waits here for this form.
+        val btnPhoto: com.google.android.material.button.MaterialButton = view.findViewById(R.id.btnCashPhoto)
+        photoButton = btnPhoto
+        btnPhoto.setText(if (pendingPhoto != null) R.string.photo_attached else R.string.attach_photo)
+        btnPhoto.setOnClickListener {
+            if (pendingPhoto == null) { photoForRow = null; photoFlow.chooseSource(R.string.cash_photo); return@setOnClickListener }
+            ChoiceSheet.show(this, getString(R.string.cash_photo), listOf(
+                ChoiceSheet.photo(getString(R.string.view_photo)),
+                ChoiceSheet.camera(getString(R.string.change_photo)),
+                ChoiceSheet.delete(getString(R.string.remove_photo))
+            )) { which ->
+                when (which) {
+                    0 -> pendingPhoto?.let { com.innovation313.roshankhata.ui.KeptPhoto.show(this, it, getString(R.string.cash_photo)) }
+                    1 -> { photoForRow = null; photoFlow.chooseSource(R.string.cash_photo) }
+                    else -> { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null; btnPhoto.setText(R.string.attach_photo) }
+                }
+            }
+        }
+        // Written with the row, or gone with the form: a picture no row points at is nothing but bytes.
+        var written = false
+
         MaterialAlertDialogBuilder(this)
             .setTitle(if (isIncome) R.string.cash_income else R.string.cash_expense)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
+            .setOnDismissListener {
+                photoButton = null
+                // A dismiss for the camera's sake never happens (the form stays behind it); a closed form's picture goes.
+                if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }
+            }
             .setPositiveButton(R.string.save) { _, _ ->
                 val amount = Calc.evalAmount(etAmount.text.toString())
                 if (amount == null) {
@@ -470,6 +525,10 @@ class CashbookActivity : BaseActivity() {
                 // progress, so a quick Back press right after could cancel the
                 // write before it landed, taking the typed amount, category,
                 // note and date with it.
+                // The picture goes with the row; the form lets go of it before the dialog's dismiss runs.
+                val photo = pendingPhoto
+                written = true
+                pendingPhoto = null
                 AppScope.launch {
                     dao.insertCashEntryAudited(
                         CashEntry(
@@ -479,12 +538,87 @@ class CashbookActivity : BaseActivity() {
                             note = etNote.text.toString().trim().ifEmpty { null },
                             timestamp = chosenTime,
                             paymentMethod = chosenMethod(),
-                            paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString())
+                            paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString()),
+                            photoPath = photo
                         )
                     )
                 }
             }
             .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.cashKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+    }
+
+    /**
+     * A picture that came back from the scanner, the camera or the gallery (schema 43): copied into the bills folder,
+     * then the form's, or the row's it was taken for. [temp] is the camera's own working file, deleted once read.
+     */
+    private fun keepPhoto(uri: android.net.Uri, temp: java.io.File?) {
+        val row = photoForRow
+        photoForRow = null
+        lifecycleScope.launch {
+            val path = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.BillPhoto.save(this@CashbookActivity, uri) }
+            temp?.delete()
+            if (path == null) {
+                Toast.makeText(this@CashbookActivity, R.string.bill_photo_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            if (row == null) {
+                // Replacing the form's earlier pick: that one is nothing but bytes now.
+                com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto)
+                pendingPhoto = path
+                photoButton?.setText(R.string.photo_attached)
+                return@launch
+            }
+            // A row already written: its new picture at once, the old one gone once nothing points at it.
+            val app = applicationContext
+            val done = AppScope.async {
+                runCatching { com.innovation313.roshankhata.data.BillPhoto.purgingOrphans(app, dao) { dao.setCashPhotoPath(row, path) } }.isSuccess
+            }.await()
+            if (!done) com.innovation313.roshankhata.data.BillPhoto.delete(path)
+            if (!isFinishing && !isDestroyed) Toast.makeText(this@CashbookActivity, if (done) R.string.photo_saved else R.string.photo_save_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * A tap on a row (schema 43): its receipt's picture — seen, taken, changed or taken away — and the delete a long
+     * press has always offered. A helper's read-only phone sees the picture and nothing that would change the row.
+     */
+    private fun showCashActions(entry: CashEntry) {
+        val photo = entry.photoPath?.takeIf { it.isNotBlank() }
+        val readOnly = com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+        val actions = ArrayList<Pair<ChoiceSheet.Option, () -> Unit>>()
+        if (photo != null) actions += ChoiceSheet.photo(getString(R.string.view_photo)) to {
+            com.innovation313.roshankhata.ui.KeptPhoto.show(this, photo, getString(R.string.cash_photo))
+        }
+        if (!readOnly) {
+            actions += ChoiceSheet.camera(getString(if (photo == null) R.string.attach_photo else R.string.change_photo)) to {
+                com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { photoForRow = entry.id; photoFlow.chooseSource(R.string.cash_photo) }
+            }
+            if (photo != null) actions += ChoiceSheet.stop(getString(R.string.remove_photo)) to {
+                com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { removeRowPhoto(entry.id) }
+            }
+            actions += ChoiceSheet.delete(getString(R.string.delete)) to { confirmDelete(entry) }
+        }
+        if (actions.isEmpty()) return
+        val title = listOf(cashCategoryWord(entry.category), Format.money(entry.amount)).joinToString(" · ")
+        ChoiceSheet.show(this, title, actions.map { it.first }) { which -> actions.getOrNull(which)?.second?.invoke() }
+    }
+
+    /** The row's picture taken away; the file goes once no row of any shop on this phone points at it. */
+    private fun removeRowPhoto(id: Long) {
+        val app = applicationContext
+        lifecycleScope.launch {
+            val done = AppScope.async {
+                runCatching { com.innovation313.roshankhata.data.BillPhoto.purgingOrphans(app, dao) { dao.setCashPhotoPath(id, null) } }.isSuccess
+            }.await()
+            if (done && !isFinishing && !isDestroyed) Toast.makeText(this@CashbookActivity, R.string.photo_removed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** The counter's own categories in the owner's language, the owner's as he typed them (the rows' rule). */
+    private fun cashCategoryWord(category: String): String = when (category) {
+        com.innovation313.roshankhata.data.CashCategory.SALE -> getString(R.string.cash_category_sale)
+        com.innovation313.roshankhata.data.CashCategory.RETURN -> getString(R.string.cash_category_return)
+        else -> category
     }
 
     private fun confirmDelete(entry: CashEntry) {
@@ -524,5 +658,8 @@ class CashbookActivity : BaseActivity() {
     companion object {
         /** Open Close the day at once (the closing automation's notification, 31 Oct 2026). */
         const val EXTRA_CLOSE_DAY = "close_day"
+        private const val STATE_PHOTO_CAMERA = "photo_camera_path"
+        private const val STATE_PHOTO_PENDING = "photo_pending"
+        private const val STATE_PHOTO_ROW = "photo_row"
     }
 }

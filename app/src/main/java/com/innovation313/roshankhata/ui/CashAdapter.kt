@@ -10,7 +10,9 @@ import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.CashEntry
 
 class CashAdapter(
-    private val onLongClick: (CashEntry) -> Unit
+    private val onLongClick: (CashEntry) -> Unit,
+    /** A tap: the row's picture and its other actions (schema 43, CashbookActivity.showCashActions). */
+    private val onClick: (CashEntry) -> Unit = {}
 ) : RecyclerView.Adapter<CashAdapter.VH>() {
 
     private var items: List<CashEntry> = emptyList()
@@ -50,6 +52,8 @@ class CashAdapter(
         holder.tvNote.visibility = if (e.note.isNullOrBlank()) View.GONE else View.VISIBLE
 
         holder.tvDate.text = Format.dateTime(e.timestamp)
+        // A small camera when the row keeps its receipt's picture (schema 43).
+        KeptPhoto.mark(holder.tvDate, !e.photoPath.isNullOrBlank())
 
         // A leading sign, not just colour — colour alone fails anyone who
         // cannot tell red from green, and this is money.
@@ -66,5 +70,6 @@ class CashAdapter(
             onLongClick(e)
             true
         }
+        holder.itemView.setOnClickListener { onClick(e) }
     }
 }

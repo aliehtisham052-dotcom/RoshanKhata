@@ -66,6 +66,13 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
   keep the store listing's words true to it.
 - **Check 16 KB page alignment of native libraries on every build** (`scripts/check_16kb.py`); a new library or a
   new version of one can break it without a sound.
+- **A private note shows that it exists, never its words, on a screen the customer may see.** The owner's note on a
+  customer ("only cash", "slow payer") opens on a tap from a chip, and is never printed on a statement, a reminder,
+  a receipt or a card.
+- **A row's picture is a file on one device.** It travels in a backup as a path and in an archive the owner chose
+  as a file, never in a live sync; it is deleted only from the app's own folder, and only once no row of any book on
+  the device points at it. A copy given to a helper leaves out what the helper has no need of (a cheque carries the
+  payer's account number and signature).
 
 ## Speed with a big book
 
@@ -85,6 +92,9 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
 ## Working without a local build
 
 - When CI fails, read the check-run annotations through the GitHub API; do not guess.
+- Look for a name in the whole interface before adding one: a DAO read with an existing read's name and
+  parameters but another return type failed both builds ("Conflicting overloads"). A local name hides the screen's
+  own as well: a form's `draft` inside a function is not the counter's `draft`.
 - Gradle stops at the first failing task: one failing test hides every later failure. Fix it, push, and read the
   next run before calling anything green.
 - A test that asserts the old behaviour is changed in the same commit as the behaviour, with the reason written in it.

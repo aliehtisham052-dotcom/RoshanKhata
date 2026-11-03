@@ -156,6 +156,8 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun updateEntry(entry: LedgerEntry): Unit = refused()
     override suspend fun setBillPhotoPath(id: Long, path: String): Unit = refused()
     override suspend fun setSupplierBillPhotoPath(id: Long, path: String): Unit = refused()
+    override suspend fun setCashPhotoPath(id: Long, path: String?): Unit = refused()
+    override suspend fun setChequePhotoPath(id: Long, path: String?): Unit = refused()
     override suspend fun clearSupplierBillPhoto(id: Long): Unit = refused()
     override suspend fun reassignEntriesToParty(loserId: Long, survivorId: Long): Unit = refused()
     override suspend fun reassignBillsToParty(loserId: Long, survivorId: Long): Unit = refused()

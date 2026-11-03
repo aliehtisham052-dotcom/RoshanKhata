@@ -36,6 +36,7 @@ import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.ui.ChequeAdapter
 import com.innovation313.roshankhata.ui.Format
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -61,8 +62,35 @@ class ChequesActivity : BaseActivity() {
 
     private var parties: List<PartyWithBalance> = emptyList()
 
+    // ---------- The cheque's picture (schema 43, 4 Nov 2026) ----------
+    //
+    // A bill photo's rules, as the cashbook's receipts: the scanner, the camera or the gallery (BillScanFlow), the
+    // picture kept in the bills folder (BillPhoto). On a new cheque's form it waits ([pendingPhoto]) until Save; a
+    // cheque already written — pending, cleared, bounced (the bank's memo) or cancelled — changes it from its menu
+    // ([photoForCheque]), the old picture going once nothing points at it.
+
+    private var pendingPhoto: String? = null
+    private var photoButton: MaterialButton? = null
+    private var photoForCheque: Long? = null
+
+    private val photoFlow = com.innovation313.roshankhata.ui.BillScanFlow(
+        activity = this,
+        onPhoto = { uri, temp -> keepPhoto(uri, temp) },
+        onNothing = { photoForCheque = null }
+    )
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        photoFlow.saveState(outState, STATE_PHOTO_CAMERA)
+        pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
+        photoForCheque?.let { outState.putLong(STATE_PHOTO_CHEQUE, it) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        photoFlow.restoreState(savedInstanceState, STATE_PHOTO_CAMERA)
+        pendingPhoto = savedInstanceState?.getString(STATE_PHOTO_PENDING)
+        photoForCheque = savedInstanceState?.getLong(STATE_PHOTO_CHEQUE, -1L)?.takeIf { it > 0 }
         setContentView(R.layout.activity_cheques)
         // How this works, the first time it opens on this phone (1 Nov 2026).
         com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
@@ -148,6 +176,29 @@ class ChequesActivity : BaseActivity() {
         val etBank: EditText = view.findViewById(R.id.etBankName)
         val etNote: EditText = view.findViewById(R.id.etChequeNote)
 
+        // A new cheque's picture (schema 43); one written changes its picture from its menu.
+        val btnPhoto: MaterialButton = view.findViewById(R.id.btnChequePhoto)
+        var written = false
+        if (existing == null) {
+            btnPhoto.visibility = View.VISIBLE
+            photoButton = btnPhoto
+            btnPhoto.setText(if (pendingPhoto != null) R.string.photo_attached else R.string.attach_photo)
+            btnPhoto.setOnClickListener {
+                if (pendingPhoto == null) { photoForCheque = null; photoFlow.chooseSource(R.string.cheque_photo); return@setOnClickListener }
+                ChoiceSheet.show(this, getString(R.string.cheque_photo), listOf(
+                    ChoiceSheet.photo(getString(R.string.view_photo)),
+                    ChoiceSheet.camera(getString(R.string.change_photo)),
+                    ChoiceSheet.delete(getString(R.string.remove_photo))
+                )) { which ->
+                    when (which) {
+                        0 -> pendingPhoto?.let { com.innovation313.roshankhata.ui.KeptPhoto.show(this, it, getString(R.string.cheque_photo)) }
+                        1 -> { photoForCheque = null; photoFlow.chooseSource(R.string.cheque_photo) }
+                        else -> { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null; btnPhoto.setText(R.string.attach_photo) }
+                    }
+                }
+            }
+        }
+
         // The app's own calculator pad for the amount (21 Oct), shown while
         // the amount has the focus; party, number, bank and note keep the
         // phone's keyboard.
@@ -209,6 +260,13 @@ class ChequesActivity : BaseActivity() {
             .setTitle(if (existing == null) R.string.add_cheque else R.string.edit_cheque)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
+            .setOnDismissListener {
+                if (existing == null) {
+                    photoButton = null
+                    // A closed form's picture goes; one written went with its cheque.
+                    if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }
+                }
+            }
             .setPositiveButton(R.string.save) { _, _ ->
                 val partyName = etParty.text.toString().trim()
                 val party = parties.firstOrNull { it.name.equals(partyName, ignoreCase = true) }
@@ -233,6 +291,9 @@ class ChequesActivity : BaseActivity() {
                 val number = etNumber.text.toString().trim().ifEmpty { null }
                 val bank = etBank.text.toString().trim().ifEmpty { null }
                 val note = etNote.text.toString().trim().ifEmpty { null }
+                // A new cheque's picture goes with it; the form lets go of it before the dismiss runs.
+                val photo = if (existing == null) pendingPhoto else null
+                if (existing == null) { written = true; pendingPhoto = null }
 
                 // AppScope, not lifecycleScope — see AppScope's own comment.
                 // This dialog is already gone by the time the write finishes;
@@ -248,7 +309,8 @@ class ChequesActivity : BaseActivity() {
                                 chequeNumber = number,
                                 bankName = bank,
                                 dueDate = due,
-                                note = note
+                                note = note,
+                                photoPath = photo
                             )
                         )
                     } else {
@@ -275,6 +337,27 @@ class ChequesActivity : BaseActivity() {
     }
 
     private fun showChequeActions(cheque: ChequeWithParty) {
+        // Its picture first (schema 43, 4 Nov 2026): seen, taken, changed or taken away, whatever the cheque's
+        // state — a bounced cheque's picture, with the bank's memo, is the one most worth keeping. A helper's
+        // read-only phone sees it and changes nothing.
+        val readOnly = com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+        val photo = cheque.photoPath?.takeIf { it.isNotBlank() }
+        val photoActions = ArrayList<Pair<ChoiceSheet.Option, () -> Unit>>()
+        if (photo != null) photoActions += ChoiceSheet.photo(getString(R.string.view_photo)) to {
+            com.innovation313.roshankhata.ui.KeptPhoto.show(this, photo, getString(R.string.cheque_photo))
+        }
+        if (!readOnly) {
+            photoActions += ChoiceSheet.camera(getString(if (photo == null) R.string.attach_photo else R.string.change_photo)) to {
+                com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { photoForCheque = cheque.id; photoFlow.chooseSource(R.string.cheque_photo) }
+            }
+            if (photo != null) photoActions += ChoiceSheet.stop(getString(R.string.remove_photo)) to {
+                com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { removeChequePhoto(cheque.id) }
+            }
+        }
+        val delete = ChoiceSheet.delete(getString(R.string.delete_cheque)) to {
+            com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
+        }
+
         if (cheque.status != ChequeStatus.PENDING) {
             // Bounced and cancelled never created a ledger entry — the cheque
             // simply stopped being expected — so putting one back to pending
@@ -283,17 +366,13 @@ class ChequesActivity : BaseActivity() {
             // its own job, not a line in this menu.
             val canReopen =
                 cheque.status == ChequeStatus.BOUNCED || cheque.status == ChequeStatus.CANCELLED
-            val settledOptions = listOfNotNull(
-                if (canReopen) ChoiceSheet.Option(getString(R.string.cheque_reopen), icon = R.drawable.ic_swap,
-                    iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg) else null,
-                ChoiceSheet.delete(getString(R.string.delete_cheque))
-            )
-            ChoiceSheet.show(this, cheque.partyName, settledOptions) { which ->
-                when {
-                    canReopen && which == 0 -> reopen(cheque)
-                    else -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
-                }
-            }
+            val settled = ArrayList<Pair<ChoiceSheet.Option, () -> Unit>>()
+            if (canReopen && !readOnly) settled += ChoiceSheet.Option(getString(R.string.cheque_reopen), icon = R.drawable.ic_swap,
+                iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg) to { reopen(cheque) }
+            settled += photoActions
+            if (!readOnly) settled += delete
+            if (settled.isEmpty()) return
+            ChoiceSheet.show(this, cheque.partyName, settled.map { it.first }) { which -> settled.getOrNull(which)?.second?.invoke() }
             return
         }
 
@@ -302,23 +381,57 @@ class ChequesActivity : BaseActivity() {
         // written on paper and can be corrected freely. Once cleared, the
         // amount is also an entry in the books, and letting the two drift
         // apart would leave the cheque saying one thing and the khata another.
-        val options = listOf(
-            ChoiceSheet.edit(getString(R.string.edit_cheque)),
-            ChoiceSheet.done(getString(R.string.mark_cleared)),
-            ChoiceSheet.Option(getString(R.string.mark_bounced), icon = R.drawable.ic_close,
-                iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg),
-            ChoiceSheet.stop(getString(R.string.mark_cancelled)),
-            ChoiceSheet.delete(getString(R.string.delete_cheque))
-        )
+        val options = ArrayList<Pair<ChoiceSheet.Option, () -> Unit>>()
+        if (!readOnly) {
+            options += ChoiceSheet.edit(getString(R.string.edit_cheque)) to { com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { showChequeDialog(cheque) } }
+            options += ChoiceSheet.done(getString(R.string.mark_cleared)) to { confirmCleared(cheque) }
+            options += ChoiceSheet.Option(getString(R.string.mark_bounced), icon = R.drawable.ic_close,
+                iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg) to { confirmBounced(cheque) }
+            options += ChoiceSheet.stop(getString(R.string.mark_cancelled)) to { settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled) }
+        }
+        options += photoActions
+        if (!readOnly) options += delete
+        if (options.isEmpty()) return
+        ChoiceSheet.show(this, getString(R.string.cheque_actions), options.map { it.first }) { which -> options.getOrNull(which)?.second?.invoke() }
+    }
 
-        ChoiceSheet.show(this, getString(R.string.cheque_actions), options) { which ->
-            when (which) {
-                0 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { showChequeDialog(cheque) }
-                1 -> confirmCleared(cheque)
-                2 -> confirmBounced(cheque)
-                3 -> settle(cheque, ChequeStatus.CANCELLED, R.string.cheque_marked_cancelled)
-                4 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
+    /**
+     * A picture back from the scanner, the camera or the gallery (schema 43): copied into the bills folder, then the
+     * new cheque's form's, or the written cheque's it was taken for. [temp] is the camera's own file, deleted once read.
+     */
+    private fun keepPhoto(uri: android.net.Uri, temp: java.io.File?) {
+        val chequeId = photoForCheque
+        photoForCheque = null
+        lifecycleScope.launch {
+            val path = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.BillPhoto.save(this@ChequesActivity, uri) }
+            temp?.delete()
+            if (path == null) {
+                Toast.makeText(this@ChequesActivity, R.string.bill_photo_failed, Toast.LENGTH_LONG).show()
+                return@launch
             }
+            if (chequeId == null) {
+                com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto)
+                pendingPhoto = path
+                photoButton?.setText(R.string.photo_attached)
+                return@launch
+            }
+            val app = applicationContext
+            val done = AppScope.async {
+                runCatching { com.innovation313.roshankhata.data.BillPhoto.purgingOrphans(app, dao) { dao.setChequePhotoPath(chequeId, path) } }.isSuccess
+            }.await()
+            if (!done) com.innovation313.roshankhata.data.BillPhoto.delete(path)
+            if (!isFinishing && !isDestroyed) Toast.makeText(this@ChequesActivity, if (done) R.string.photo_saved else R.string.photo_save_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** The cheque's picture taken away; the file goes once no row of any shop on this phone points at it. */
+    private fun removeChequePhoto(id: Long) {
+        val app = applicationContext
+        lifecycleScope.launch {
+            val done = AppScope.async {
+                runCatching { com.innovation313.roshankhata.data.BillPhoto.purgingOrphans(app, dao) { dao.setChequePhotoPath(id, null) } }.isSuccess
+            }.await()
+            if (done && !isFinishing && !isDestroyed) Toast.makeText(this@ChequesActivity, R.string.photo_removed, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -431,5 +544,11 @@ class ChequesActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val STATE_PHOTO_CAMERA = "photo_camera_path"
+        private const val STATE_PHOTO_PENDING = "photo_pending"
+        private const val STATE_PHOTO_CHEQUE = "photo_cheque"
     }
 }

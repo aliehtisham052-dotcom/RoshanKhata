@@ -428,6 +428,9 @@ class PartyDetailActivity : BaseActivity() {
     private lateinit var tvPartyIdentity: TextView
     private lateinit var tvSeasonRecord: TextView
     private lateinit var tvRadar: TextView
+    /** The owner's private note's chip (schema 43); its words are [partyNote], opened on a tap. */
+    private lateinit var tvPartyNote: TextView
+    private var partyNote: String? = null
     /** The Payment Radar's last reading for this customer (2 Nov 2026); null when off, a supplier, or not read yet. */
     private var radarReading: com.innovation313.roshankhata.data.PaymentRadar.Reading? = null
     private lateinit var tvPartyPhone: TextView
@@ -498,6 +501,8 @@ class PartyDetailActivity : BaseActivity() {
         tvPartyIdentity = findViewById(R.id.tvPartyIdentity)
         tvSeasonRecord = findViewById(R.id.tvSeasonRecord)
         tvRadar = findViewById(R.id.tvRadar)
+        tvPartyNote = findViewById(R.id.tvPartyNote)
+        tvPartyNote.setOnClickListener { showPartyNote() }
         tvRadar.setOnClickListener {
             radarReading?.let { r -> com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, harvestPromise) { refreshRadar() } }
         }
@@ -650,6 +655,10 @@ class PartyDetailActivity : BaseActivity() {
                 ).joinToString("  ·  ")
                 tvPartyIdentity.text = identity
                 tvPartyIdentity.visibility = if (identity.isEmpty()) View.GONE else View.VISIBLE
+
+                // That there is a private note, never its words, on the face of the page (schema 43).
+                partyNote = p.note?.takeIf { it.isNotBlank() }
+                tvPartyNote.visibility = if (partyNote == null) View.GONE else View.VISIBLE
 
                 refreshAvatar()
                 // The entries may have arrived before the party said it is a customer.
@@ -3512,6 +3521,7 @@ class PartyDetailActivity : BaseActivity() {
             val etPhone: EditText = view.findViewById(R.id.etEditPhone)
             val etFather: EditText = view.findViewById(R.id.etEditFatherName)
             val etVillage: EditText = view.findViewById(R.id.etEditVillage)
+            val etNote: EditText = view.findViewById(R.id.etEditNote)
             val cbNoShare: com.google.android.material.checkbox.MaterialCheckBox =
                 view.findViewById(R.id.cbNoEntryShare)
             cbNoShare.isChecked = party.noEntryShare
@@ -3522,6 +3532,7 @@ class PartyDetailActivity : BaseActivity() {
             etPhone.setText(party.phone)
             etFather.setText(party.fatherName)
             etVillage.setText(party.village)
+            etNote.setText(party.note)
 
             MaterialAlertDialogBuilder(this@PartyDetailActivity)
                 .setTitle(R.string.edit_details)
@@ -3543,7 +3554,8 @@ class PartyDetailActivity : BaseActivity() {
                         phone = typed(etPhone),
                         fatherName = typed(etFather),
                         village = typed(etVillage),
-                        noEntryShare = cbNoShare.isChecked
+                        noEntryShare = cbNoShare.isChecked,
+                        note = com.innovation313.roshankhata.data.PartyNote.clean(etNote.text.toString())
                     )
 
                     // AppScope for the write — leaving right after Save must
@@ -3558,6 +3570,20 @@ class PartyDetailActivity : BaseActivity() {
                 }
                 .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
+    }
+
+    /**
+     * The owner's private note, opened from its chip (schema 43): the words, and Edit details to change them. Never
+     * on a statement, a reminder or the customer's card; a helper's read-only phone reads it and changes nothing.
+     */
+    private fun showPartyNote() {
+        val note = partyNote ?: return
+        val b = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.party_note_label)
+            .setMessage(note)
+            .setPositiveButton(R.string.close, null)
+        if (!com.innovation313.roshankhata.data.ViewerMode.isOn(this)) b.setNeutralButton(R.string.edit_details) { _, _ -> showEditPartyDialog() }
+        b.show()
     }
 
     private fun showCreditLimitDialog() {

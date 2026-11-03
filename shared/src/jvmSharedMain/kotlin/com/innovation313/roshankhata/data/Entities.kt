@@ -78,7 +78,14 @@ data class Party(
      */
     val harvestPromise: Long? = null,
     /** This row's identity across devices and backups (schema 38, live sync). */
-    val uid: String? = Uid.next()
+    val uid: String? = Uid.next(),
+
+    /**
+     * The owner's private note on this person (schema 43, 4 Nov 2026): "pays on the 10th", "only cash". Never
+     * printed on a statement, a reminder or the customer's card; the page shows only that there is one. See
+     * [PartyNote]. Null on every party written before, and wherever nothing was written.
+     */
+    val note: String? = null
 )
 
 /**

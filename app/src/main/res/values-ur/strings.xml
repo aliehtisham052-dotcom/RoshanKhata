@@ -3745,4 +3745,13 @@
         <item quantity="other">%d تبدیلیاں جانے کے انتظار میں</item>
     </plurals>
     <string name="doc_kind_invoice">انوائس</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">نجی نوٹ</string>
+    <string name="party_note_help">صرف آپ کے لیے: یہ کبھی اسٹیٹمنٹ، یاد دہانی یا گاہک کے کارڈ پر نہیں آتا۔</string>
+    <string name="attach_photo">تصویر لگائیں</string>
+    <string name="photo_attached">تصویر لگ گئی — بدلنے کے لیے ٹیپ کریں</string>
+    <string name="view_photo">تصویر دیکھیں</string>
+    <string name="cheque_photo">چیک کی تصویر</string>
+    <string name="cash_photo">رسید کی تصویر</string>
+    <string name="photo_missing">یہ تصویر اس ڈیوائس پر موجود نہیں</string>
 </resources>

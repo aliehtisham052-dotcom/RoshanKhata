@@ -123,10 +123,17 @@ fun CustomerPane(
     radar: com.innovation313.roshankhata.data.PaymentRadar.Reading? = null,
     radarPromise: Long? = null,
     /** The reminder step he last paid after (ReminderLadder.learned), said among the reasons; 0 when not learnt. */
-    radarTone: Int = 0
+    radarTone: Int = 0,
+    /**
+     * The owner's private note (schema 43), or null: only that there is one shows, as a chip; its words open on a
+     * click, as the Radar's reasons do — the customer may be looking at the screen across the counter.
+     */
+    note: String? = null
 ) {
     val c = LocalRoshanColors.current
     val shape = RoundedCornerShape(16.dp)
+    var readingNote by remember(party.id) { mutableStateOf(false) }
+    if (readingNote && note != null) NoteDialog(party.name, note, onEdit = { readingNote = false; onEdit() }) { readingNote = false }
     var explainingRadar by remember(party.id) { mutableStateOf(false) }
     if (explainingRadar && radar != null) RadarDialog(radar, radarPromise, radarTone) { explainingRadar = false }
     var query by remember(party.id) { mutableStateOf("") }
@@ -195,13 +202,14 @@ fun CustomerPane(
                 }
             }
             val radarShown = radar != null && radar.light != com.innovation313.roshankhata.data.PaymentRadar.Light.NONE
-            if (promise != null || seasons.isNotEmpty() || radarShown) {
+            if (promise != null || seasons.isNotEmpty() || radarShown || note != null) {
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     // Payment Radar (2 Nov 2026): the dot and the likely days; its reasons on a click.
                     if (radarShown && radar != null) RadarChip(radar) { explainingRadar = true }
                     // "Pays after the harvest" only where the shop has seasons; any other shop's promise is a promised payment (31 Oct 2026).
                     promise?.let { p -> HoverTip(word(if (LocalTrade.current.seasons) W.harvest_promise_menu else W.cf_kind_promised)) { AccountChip(p, Look.warn, Look.warnTint, "ic_calendar", onPromise) } }
                     seasons.forEach { AccountChip(it, Look.olive, Look.oliveTint, null) }
+                    if (note != null) AccountChip(word(W.party_note_label), c.inkSoft, Look.subtle, "ic_note_small") { readingNote = true }
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -456,6 +464,22 @@ private fun figure(v: Double, signed: Boolean = false): String {
     val minus = signed && Money.isNegative(v)
     val m = Format.money(if (Money.isZero(v)) 0.0 else v)
     return Format.ltr((if (minus) "−" else "") + m.substringAfter(' ', m))
+}
+
+/** The owner's private note read (schema 43): its words, and Edit details to change them. Never printed anywhere. */
+@Composable
+private fun NoteDialog(name: String, note: String, onEdit: () -> Unit, onClose: () -> Unit) {
+    val title = word(W.party_note_label)
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title,
+        state = androidx.compose.ui.window.rememberDialogState(width = fitW(500.dp), height = fitH(380.dp))) {
+        DialogFrame(title, subtitle = Format.name(name), onClose = onClose, footer = {
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.edit_details), onEdit, kind = ButtonKind.ACCENT, icon = "ic_edit")
+        }) {
+            Text(note, color = LocalRoshanColors.current.ink, fontSize = 14.sp)
+            Text(word(W.party_note_help), color = LocalRoshanColors.current.textMuted, fontSize = 12.sp)
+        }
+    }
 }
 
 /** A small fact under the name: the promised day (a click changes it), a season paid on time. */

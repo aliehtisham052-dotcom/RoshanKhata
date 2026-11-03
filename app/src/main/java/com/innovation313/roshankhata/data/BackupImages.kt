@@ -25,7 +25,10 @@ import java.util.zip.ZipOutputStream
  *   party_photos/party_<id>.jpg   — a customer's recognition thumbnail
  *   bills/bill_<timestamp>.jpg    — a photographed bill, pointed at by an
  *                                   entry's billPhotoPath (an ABSOLUTE path —
- *                                   see the restore note about re-mapping)
+ *                                   see the restore note about re-mapping),
+ *                                   a cash bill's, and since schema 43 a
+ *                                   cashbook row's receipt and a cheque's
+ *                                   picture (CashEntry / Cheque.photoPath)
  *   payment_qr.png                — the shop's payment QR
  *   signature.png                 — the owner's signature
  *   stamp.png                     — the shop's stamp
@@ -93,7 +96,7 @@ object BackupImages {
 
     /** How heavy the photos would make a helper's copy. 0 = there are none. */
     suspend fun copyImageBytes(context: Context, dao: KhataDao): Long =
-        collectFiles(context, dao).filter { helperMayHold(it.first) }.sumOf { it.second.length() }
+        collectFiles(context, dao, forHelper = true).filter { helperMayHold(it.first) }.sumOf { it.second.length() }
 
     /**
      * The owner's book and its photos as one file to send, or null if it
@@ -116,7 +119,7 @@ object BackupImages {
         val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.US).format(Date())
         val zip = File(dir, "$COPY_PREFIX$stamp.zip")
         return try {
-            val sources = collectFiles(context, dao).filter { helperMayHold(it.first) }
+            val sources = collectFiles(context, dao, forHelper = true).filter { helperMayHold(it.first) }
             ZipOutputStream(FileOutputStream(zip).buffered()).use { out ->
                 out.putNextEntry(ZipEntry(COPY_TEXT))
                 writeText(out)
@@ -185,7 +188,11 @@ object BackupImages {
         return text?.let { CopyFile(it, images) }
     }
 
-    /** The owner's signature and stamp stay on the owner's phone. */
+    /**
+     * The owner's signature and stamp stay on the owner's phone. So do the pictures of cheques (schema 43, 4 Nov
+     * 2026): a cheque carries the payer's account number and signature, and a helper chasing payments has no use for
+     * them ([collectFiles] leaves them out of a helper's copy by name).
+     */
     private fun helperMayHold(entryName: String): Boolean =
         entryName != ROOT_SIGNATURE && entryName != ROOT_STAMP
 
@@ -247,17 +254,21 @@ object BackupImages {
      *   entries are the allow-list — without it, one shop's backup would
      *   carry every OTHER shop's photographed bills too.
      */
-    private suspend fun collectFiles(context: Context, dao: KhataDao): List<Pair<String, File>> {
+    private suspend fun collectFiles(context: Context, dao: KhataDao, forHelper: Boolean = false): List<Pair<String, File>> {
         val out = mutableListOf<Pair<String, File>>()
 
         PartyPhoto.folder(context).listFiles()
             ?.filter { it.isFile }
             ?.forEach { out += "$PARTY_DIR/${it.name}" to it }
 
+        // Bills, cash bills, the cashbook's receipts and the cheques (schema 43) share the bills folder; a helper's
+        // copy carries no cheque ([helperMayHold]).
+        val cheques = dao.chequesWithPhoto().mapNotNull { it.photoPath?.substringAfterLast('/') }.toSet()
         val ownBills = (dao.entriesWithBillPhoto().map { it.billPhotoPath } +
-            dao.supplierBillsWithPhoto().map { it.photoPath })
+            dao.supplierBillsWithPhoto().map { it.photoPath } +
+            dao.cashWithPhoto().map { it.photoPath })
             .mapNotNull { it?.substringAfterLast('/') }
-            .toSet()
+            .toSet() + (if (forHelper) emptySet() else cheques)
         File(context.filesDir, BILLS_DIR).listFiles()
             ?.filter { it.isFile && it.name in ownBills }
             ?.forEach { out += "$BILLS_DIR/${it.name}" to it }
@@ -360,6 +371,17 @@ object BackupImages {
             val oldPath = row.photoPath ?: continue
             val newPath = File(billsDir, oldPath.substringAfterLast('/')).absolutePath
             if (newPath != oldPath) dao.setSupplierBillPhotoPath(row.id, newPath)
+        }
+        // A cashbook row's and a cheque's picture (schema 43): the same.
+        for (row in dao.cashWithPhoto()) {
+            val oldPath = row.photoPath ?: continue
+            val newPath = File(billsDir, oldPath.substringAfterLast('/')).absolutePath
+            if (newPath != oldPath) dao.setCashPhotoPath(row.id, newPath)
+        }
+        for (row in dao.chequesWithPhoto()) {
+            val oldPath = row.photoPath ?: continue
+            val newPath = File(billsDir, oldPath.substringAfterLast('/')).absolutePath
+            if (newPath != oldPath) dao.setChequePhotoPath(row.id, newPath)
         }
     }
 

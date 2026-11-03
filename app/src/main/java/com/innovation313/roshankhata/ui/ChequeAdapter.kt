@@ -143,6 +143,8 @@ class ChequeAdapter(
             c.bankName?.takeIf { it.isNotBlank() }?.let { add(it) }
         }.joinToString(" · ")
         holder.tvDetail.text = detail
+        // A small camera when the cheque's picture is kept (schema 43).
+        KeptPhoto.mark(holder.tvDetail, !c.photoPath.isNullOrBlank())
 
         holder.tvAmount.text = Format.money(c.amount)
         holder.tvAmount.setTextColor(
