@@ -61,7 +61,7 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
     var reminding by remember { mutableStateOf<Pair<PartyWithBalance, ReminderText.Facts>?>(null) }
     var closed by remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
-    val points by remember { dao.observeOwingLedgerPoints() }.collectAsState(emptyList())
+    val points by remember { com.innovation313.roshankhata.data.LedgerLines.observeOwing(dao) }.collectAsState(emptyList())
     val promiseRows by remember { dao.observePromises() }.collectAsState(emptyList())
     val now = System.currentTimeMillis()
     val tz = TimeZone.getDefault()

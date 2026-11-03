@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -35,7 +34,7 @@ class Schema42Test {
         d.insertEntryWithItems(LedgerEntry(partyId = ali, amount = 250.5, isGiven = false, entryNumber = ""), emptyList())
         d.insertEntryWithItems(LedgerEntry(partyId = bilal, amount = 300.0, isGiven = false, entryNumber = ""), emptyList())
         val balancesBefore = d.partiesWithBalanceOnce().associate { it.name to it.balance }
-        val owingBefore = d.observeOwingLedgerPoints().first()
+        val owingBefore = LedgerLines.owingOf(d, d.partiesWithBalanceOnce())
         file.close()
         SQLiteDatabase.openDatabase(context.getDatabasePath(name).path, null, SQLiteDatabase.OPEN_READWRITE).use { raw ->
             SchemaRewind.undo42(raw); raw.version = 41
@@ -45,7 +44,7 @@ class Schema42Test {
             val a = again.khataDao()
             assertEquals(mapOf("Ali" to 649.5, "Bilal" to -300.0), balancesBefore)
             assertEquals(balancesBefore, a.partiesWithBalanceOnce().associate { it.name to it.balance })
-            assertEquals("who owes and his lines, as before", owingBefore, a.observeOwingLedgerPoints().first())
+            assertEquals("who owes and his lines, as before", owingBefore, LedgerLines.owingOf(a, a.partiesWithBalanceOnce()))
             assertEquals(listOf(ali, ali), owingBefore.map { it.partyId })
             val db = again.openHelper.readableDatabase
             val indexes = db.query("SELECT name FROM sqlite_master WHERE type = 'index'").use { c ->

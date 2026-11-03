@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -158,13 +159,15 @@ class FollowUpActivity : BaseActivity() {
         observeDebtors()
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun observeDebtors() {
         lifecycleScope.launch {
             // The Payment Radar (2 Nov 2026): this shop's normal, read once here, and the switch on this phone.
             val radarOn = com.innovation313.roshankhata.ui.RadarUi.on(this@FollowUpActivity)
             val shopDays = if (radarOn) com.innovation313.roshankhata.ui.RadarUi.shopDays(dao) else null
             dao.observePartiesWithBalance()
-                .combine(dao.observeOwingLedgerPoints()) { all, points -> all to points }
+                // The owing customers' lines a slice at a time, from these same parties (LedgerLines, 3 Nov 2026).
+                .mapLatest { all -> all to com.innovation313.roshankhata.data.LedgerLines.owingOf(dao, all) }
                 .combine(dao.observePromises()) { (all, points), promiseRows -> Triple(all, points, promiseRows) }
                 .combine(reminded) { (all, points, promiseRows), remindedToday ->
                     // balance > 0 means they owe the shop — the only rows

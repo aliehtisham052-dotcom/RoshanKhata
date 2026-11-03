@@ -90,7 +90,7 @@ object BigBookSeed {
         val dao = db.khataDao()
         val now = System.currentTimeMillis()
 
-        // Goods first, from their own random numbers, so the khata below is the same book it was before goods came.
+        // Goods from their own random numbers, so what the goods draw never moves the khata's draw below.
         val goods = Random(3131)
         val items = (0 until PRODUCTS).map { i ->
             val (kind, unit) = KINDS[i % KINDS.size]
@@ -107,10 +107,10 @@ object BigBookSeed {
             Item(id, name, unit, price, cost)
         }
 
-        // The customers, and when each of their lines was written, drawn in the 7 Oct seed's order (the same
-        // khata); then the lines are written in the order a shop writes them — by the clock, each customer's among
-        // everyone else's (3 Nov 2026). Written customer by customer, one customer's lines sat side by side in the
-        // file, and every read by customer looked quicker than a real shop's book lets it be.
+        // The customers, and when each of their lines was written; then the lines are written in the order a shop
+        // writes them — by the clock, each customer's among everyone else's (3 Nov 2026). Written customer by
+        // customer, one customer's lines sat side by side in the file, and every read by customer looked quicker
+        // than a real shop's book lets it be.
         val rnd = Random(313)
         val lineCount = if (customers <= 0) 0 else HEAVY_ENTRIES + (customers - 1) * entriesEach
         require(lineCount < LINE_LIMIT) { "the big book holds fewer than $LINE_LIMIT lines" }
@@ -145,17 +145,24 @@ object BigBookSeed {
                 partyIds[i] = id
                 customerAt[i] = parties[k].isCustomer
                 if (!parties[k].isCustomer) suppliers += id
-                var t = now - rnd.nextLong(0, 700 * DAY)
                 val count = if (i == 0) HEAVY_ENTRIES else entriesEach
+                // The gaps between his lines first, then where the run starts: anywhere it still ends by now
+                // (3 Nov 2026). A start drawn first ran past today for four customers in ten, and every line past
+                // today was put at this very moment — 70,000 lines "today", and every day and month window of the
+                // measurement read a pile no shop has.
+                val firstLine = lines
+                var span = 0L
                 repeat(count) {
-                    t += if (count > entriesEach) rnd.nextLong(1, 4 * 60 * 60 * 1000) else rnd.nextLong(DAY / 4, 20 * DAY)
+                    span += if (count > entriesEach) rnd.nextLong(1, 4 * 60 * 60 * 1000) else rnd.nextLong(DAY / 4, 20 * DAY)
+                    whenOf[lines] = span
                     fiftiesOf[lines] = rnd.nextInt(1, 400)
                     givenOf[lines] = rnd.nextInt(5) != 0
                     notedOf[lines] = rnd.nextInt(4) == 0
                     whoOf[lines] = i
-                    whenOf[lines] = minOf(t, now)
                     lines++
                 }
+                val startAt = now - span - rnd.nextLong(0, maxOf(1L, 700 * DAY - span))
+                for (j in firstLine until lines) whenOf[j] += startAt
             }
             done = end
             progress?.invoke(done)

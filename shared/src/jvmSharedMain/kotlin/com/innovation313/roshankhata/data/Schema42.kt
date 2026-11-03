@@ -14,8 +14,8 @@ package com.innovation313.roshankhata.data
  *    one served — a customer's page newest first, his newest 50 — it serves the same way.
  *
  * Measured on a copy of the schema with the big book written by the clock (10,000 customers, 300,000
- * lines): every party's balance 285 → 126 ms, who owes 213 → 54 ms (with [KhataDao.observeOwingLedgerPoints]
- * reading the customers first), the file 1.8 MB larger (3%), writes unchanged.
+ * lines): every party's balance 285 → 126 ms, the owing customers' lines 504 → 227 ms ([KhataDao.ledgerPointsOf]),
+ * the file 1.8 MB larger (3%), writes unchanged.
  *
  * The new index is created before the old one is dropped. Each name and its columns are Room's own for the
  * entity's @Index, or the book fails Room's check on opening.

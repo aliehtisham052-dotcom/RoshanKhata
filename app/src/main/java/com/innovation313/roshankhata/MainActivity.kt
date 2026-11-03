@@ -27,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -656,6 +657,7 @@ class MainActivity : BaseActivity() {
      * open book); a failure here only hides the note, since the totals
      * collector is the one that reports a ledger that will not open.
      */
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun observeLate() {
         lateJob?.cancel()
         tvHomeLate.visibility = View.GONE
@@ -663,7 +665,9 @@ class MainActivity : BaseActivity() {
             try {
                 val dao = KhataDatabase.get(this@MainActivity).khataDao()
                 dao.observePartiesWithBalance()
-                    .combine(dao.observeOwingLedgerPoints()) { parties, points -> parties to points }
+                    // The owing customers' lines a slice at a time, from these same parties (LedgerLines, 3 Nov 2026:
+                    // in one answer they took 10.8 s on CI's emulator for a wholesaler's book).
+                    .mapLatest { parties -> parties to com.innovation313.roshankhata.data.LedgerLines.owingOf(dao, parties) }
                     .combine(dao.observePromises()) { (parties, points), promiseRows ->
                         val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
                         val habits = PaymentHabit.forAll(points)
