@@ -84,7 +84,8 @@ class BigBookPerfTest {
             // garbage-collection pause on CI's emulator put one keystroke at
             // 46-81 ms on unchanged code while the others took 3-17 ms. Slow
             // code is slow all three times, so the budget still catches it.
-            val worst = listOf("b", "bi", "bil", "bila", "asg", "lapewali").maxOf { q ->
+            // "thalewala" is "Thallay Wala" typed as it is said (the seed's names hold no place of the owner's, 3 Nov 2026).
+            val worst = listOf("b", "bi", "bil", "bila", "asg", "thalewala").maxOf { q ->
                 val runs = (1..3).map {
                     var ms = 0L
                     InstrumentationRegistry.getInstrumentation().runOnMainSync {
@@ -119,6 +120,58 @@ class BigBookPerfTest {
             val report = "customer screen (${BigBook.HEAVY_ENTRIES} lines): first line after $open ms (budget $DETAIL_BUDGET_MS)"
             Log.i(TAG, report)
             assertTrue(report, open in 0..DETAIL_BUDGET_MS)
+        }
+    }
+
+    /**
+     * Every heavy read the screens make, timed on the device by the list the computer's test runs too
+     * (BigBookProbe, 3 Nov 2026, the speed work): Home, the bell, Follow-up, the Radar, the reports, stock,
+     * the counter, and what is read again after a sale is saved. Logged line by line under [TAG].
+     */
+    @Test
+    fun everyHeavyReadIsTimed() {
+        val db = KhataDatabase.get(context)
+        val timings = runBlocking {
+            com.innovation313.roshankhata.data.BigBookProbe.run(db, com.innovation313.roshankhata.data.AndroidWords(context))
+        }
+        for (t in timings) Log.i(TAG, "probe: $t")
+        assertTrue("the probe read nothing", timings.isNotEmpty())
+    }
+
+    /**
+     * A sale saved while the customer's screen is open: how long until its line is on the screen — what the
+     * owner waits for after every entry. The customer is an ordinary one (30 lines), in a book of 300,000.
+     */
+    @Test
+    fun aSavedEntryReachesTheCustomerScreen() {
+        val dao = KhataDatabase.get(context).khataDao()
+        val id = runBlocking { dao.seededPartyId("%${BigBook.MARK}") } + 1
+        val intent = Intent(context, PartyDetailActivity::class.java)
+            .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, id)
+        ActivityScenario.launch<Activity>(intent).use { scenario ->
+            assertTrue("the customer screen showed nothing", waitForRows(scenario, R.id.rvEntries, 30_000) >= 0)
+            SystemClock.sleep(500)
+            fun shown(): Int {
+                var n = 0
+                scenario.onActivity { n = it.findViewById<RecyclerView>(R.id.rvEntries).adapter?.itemCount ?: 0 }
+                return n
+            }
+            val before = shown()
+            val t = SystemClock.elapsedRealtime()
+            runBlocking {
+                dao.insertEntryWithItems(
+                    com.innovation313.roshankhata.data.LedgerEntry(partyId = id, amount = 700.0, isGiven = true, entryNumber = ""),
+                    emptyList()
+                )
+            }
+            var ms = -1L
+            while (SystemClock.elapsedRealtime() - t < 10_000) {
+                if (shown() > before) { ms = SystemClock.elapsedRealtime() - t; break }
+                SystemClock.sleep(10)
+            }
+            val report = "after a save: the new line on the customer's screen in $ms ms (budget $SAVED_BUDGET_MS)"
+            Log.i(TAG, report)
+            assertTrue(report, ms in 0..SAVED_BUDGET_MS)
         }
     }
 
@@ -172,5 +225,7 @@ class BigBookPerfTest {
         const val OPEN_BUDGET_MS = 2_000L
         const val KEY_BUDGET_MS = 50L
         const val DETAIL_BUDGET_MS = 1_500L
+        /** The emulator's, several times a phone's: a line that takes longer than this after Save is felt. */
+        const val SAVED_BUDGET_MS = 3_000L
     }
 }

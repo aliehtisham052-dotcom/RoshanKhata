@@ -60,6 +60,20 @@ jobs:
           gradle :shared:desktopTest :desktop:test :desktop:packageMsi :desktop:createDistributable --no-daemon --stacktrace 2>&1 | tee /tmp/msi_output.txt
           exit ${PIPESTATUS[0]}
 
+      # The big book's numbers (BigBookDesktopPerfTest, 3 Nov 2026): one annotation, pass or fail, so a
+      # slower build says by how much and the restore's row-by-row check is read from outside.
+      - name: Big book numbers (Windows)
+        if: always()
+        shell: bash
+        run: |
+          f=desktop/build/perf/bigbook-desktop.txt
+          if [ -f "$f" ]; then
+            body=$(tr -d '\r' < "$f" | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::notice title=Big book on Windows (10,000 customers, 300,000 lines)::$body"
+          else
+            echo "::warning title=Big book on Windows::the test wrote no numbers"
+          fi
+
       - name: Publish the cause
         if: failure()
         shell: bash

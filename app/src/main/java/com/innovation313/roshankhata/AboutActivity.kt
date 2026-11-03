@@ -32,14 +32,24 @@ class AboutActivity : BaseActivity() {
         toast.show()
         lifecycleScope.launch {
             val started = android.os.SystemClock.elapsedRealtime()
-            val n = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                if (seed) com.innovation313.roshankhata.data.BigBook.seed(this@AboutActivity)
-                else { com.innovation313.roshankhata.data.BigBook.clear(this@AboutActivity); 0 }
+            // A book that syncs is refused (BigBookSeed), a full disk fails: said, never a crash.
+            val n = try {
+                Result.success(kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    if (seed) com.innovation313.roshankhata.data.BigBook.seed(this@AboutActivity)
+                    else { com.innovation313.roshankhata.data.BigBook.clear(this@AboutActivity); 0 }
+                })
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                Result.failure(e)
             }
             val secs = (android.os.SystemClock.elapsedRealtime() - started) / 1000
             android.widget.Toast.makeText(
                 this@AboutActivity,
-                if (seed) "Seeded $n customers in ${secs}s" else "Seeded book removed in ${secs}s",
+                n.fold(
+                    { if (seed) "Seeded $it customers in ${secs}s" else "Seeded book removed in ${secs}s" },
+                    { "Not done: " + (it.message ?: it.javaClass.simpleName) }
+                ),
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }
