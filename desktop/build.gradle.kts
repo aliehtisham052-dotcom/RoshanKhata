@@ -165,6 +165,10 @@ sourceSets["main"].resources.srcDir(syncPrintAssets)
 // A failing test's own message in the log, so the workflow's annotation carries it
 // (the log itself is not readable from outside).
 tasks.withType<Test>().configureEach {
+    // What the app's own Java takes on a 4 GB laptop (a quarter of the memory; the MSI sets no -Xmx), so
+    // BigBookDesktopPerfTest reads the big book's backup with the room the owner's computer has, not
+    // Gradle's 512 MB for a test (3 Nov 2026).
+    maxHeapSize = "1g"
     testLogging {
         events("failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL

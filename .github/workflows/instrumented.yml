@@ -41,7 +41,8 @@ concurrency:
 jobs:
   instrumented:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    # 45 until 3 Nov 2026: the run took 33 minutes, and the big book's richer seed and the probe add a few.
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v5
@@ -212,7 +213,9 @@ jobs:
           fi
           # The big-book timings, every query, pass or fail: a budget that is
           # nearly used up shows here before it turns red.
-          perf=$(grep "BigBookPerf" /tmp/poster3d_log.txt 2>/dev/null | sed 's/^.*BigBookPerf[^:]*: //' | head -20 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          # Only the test's own log tag ("I/BigBookPerf(pid): …"): the test runner's lines name the class too and
+          # filled the list (3 Nov 2026). Room for the probe's list (BigBookProbe, ~32 reads).
+          perf=$(grep "/BigBookPerf" /tmp/poster3d_log.txt 2>/dev/null | sed 's/^.*BigBookPerf[^:]*: //' | head -80 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
           [ -n "$perf" ] && echo "::notice title=Big book timings::$perf"
           # The failure MESSAGES, not just the count: the assertion text lives
           # in the JUnit XML, which (like the log) is otherwise unreachable

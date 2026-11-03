@@ -855,7 +855,7 @@ interface KhataDao {
     @Insert
     suspend fun restoreEntries(items: List<LedgerEntry>)
 
-    /** The seeded big book's lines (see [BigBook]): every line of a customer whose name carries the mark. */
+    /** The seeded big book's lines (see [BigBookSeed]): every line of a customer whose name carries the mark. */
     @Query("DELETE FROM transactions WHERE partyId IN (SELECT id FROM parties WHERE name LIKE :namePattern)")
     suspend fun purgeSeededEntries(namePattern: String)
 
