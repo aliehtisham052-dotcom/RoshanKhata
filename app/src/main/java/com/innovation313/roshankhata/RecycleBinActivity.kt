@@ -114,17 +114,23 @@ class RecycleBinActivity : BaseActivity() {
     }
 
     private fun confirmRestore(item: BinItem) {
-        val message = when (item) {
-            is BinItem.DeletedParty -> getString(R.string.restore_party_confirm, item.name)
-            is BinItem.DeletedEntry -> getString(R.string.restore_entry_confirm)
-        }
+        lifecycleScope.launch {
+            // The other half of a cash sale, binned too, comes back with it: said before it does (3 Nov 2026 audit, M13).
+            val pair = (item as? BinItem.DeletedEntry)?.let { withContext(Dispatchers.IO) { runCatching { dao.binnedPairOf(it.id) }.getOrNull() } }
+            if (isFinishing || isDestroyed) return@launch
+            val message = when (item) {
+                is BinItem.DeletedParty -> getString(R.string.restore_party_confirm, item.name)
+                is BinItem.DeletedEntry -> getString(R.string.restore_entry_confirm) +
+                    (pair?.let { "\n\n" + getString(R.string.restore_pair_too, it.entryNumber) } ?: "")
+            }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.restore)
-            .setMessage(message)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.restore) { _, _ -> restore(item) }
-            .show()
+            MaterialAlertDialogBuilder(this@RecycleBinActivity)
+                .setTitle(R.string.restore)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.restore) { _, _ -> restore(item) }
+                .show()
+        }
     }
 
     /**
@@ -143,8 +149,9 @@ class RecycleBinActivity : BaseActivity() {
                 }
                 is BinItem.DeletedEntry -> {
                     // Guard: an entry must not surface into a ledger whose
-                    // party is still sitting in the bin.
-                    dao.restoreEntry(item.id)
+                    // party is still sitting in the bin. A cash sale's binned
+                    // other half comes back with it (3 Nov 2026 audit, M13).
+                    dao.restoreEntryWithPair(item.id)
                 }
             }
             withContext(Dispatchers.Main) {

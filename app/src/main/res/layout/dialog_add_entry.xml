@@ -91,11 +91,15 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- The foot fades while more of the form is below (3 Nov 2026 audit, M35): at large text the balance
+         after the entry sits under the amount, and nothing said it was there to scroll to. -->
     <ScrollView
         android:id="@+id/entryScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:fadingEdgeLength="28dp"
+        android:requiresFadingEdge="vertical"
         android:fillViewport="false">
 
         <LinearLayout

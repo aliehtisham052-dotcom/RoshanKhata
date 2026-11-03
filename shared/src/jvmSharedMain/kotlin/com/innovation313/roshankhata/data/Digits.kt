@@ -89,8 +89,17 @@ object Digits {
      * replaces — null for blank or unreadable input — so every caller's
      * existing "is it missing / is it positive" check keeps its meaning.
      */
-    fun parse(text: CharSequence?): Double? =
-        text?.toString()?.trim()?.let { toLatin(it) }?.toDoubleOrNull()
+    fun parse(text: CharSequence?): Double? {
+        val typed = text?.toString()?.trim()?.let { toLatin(it) } ?: return null
+        // Where the comma marks the fraction (3 Nov 2026 audit, M41), the box reads as the pad does: "2,5" is two
+        // and a half, "4.000" four thousand, "1.250,50" as written ([com.innovation313.roshankhata.ui.Calc.normalize]).
+        // It was read as 4 — and "2,5" never reached here: Android's filter made it 25.
+        if (decimalComma()) return com.innovation313.roshankhata.ui.Calc.normalize(typed).toDoubleOrNull()
+        return typed.toDoubleOrNull()
+    }
+
+    /** The reader's language writes the fraction after a comma and groups thousands with dots: Indonesian. */
+    fun decimalComma(locale: Locale = Locale.getDefault()): Boolean = locale.language == "in" || locale.language == "id"
 
     /**
      * The owner's choice to print a language's own digits (21 Oct 2026, the

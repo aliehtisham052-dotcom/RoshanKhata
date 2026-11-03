@@ -47,6 +47,27 @@ class AuditMoneyTest {
     }
 
     @Test
+    fun `a cash sale comes back from the bin whole, and an edit can take its other half along`() = withBook { dao ->
+        val party = dao.insertParty(Party(name = "Test Customer", phone = null, isCustomer = true))
+        val sale = LedgerEntry(partyId = party, amount = 600.0, isGiven = true, entryNumber = "", rateType = RateType.CASH)
+        val (saleId, gotId) = dao.insertEntryWithItemsPaidNow(sale, emptyList())
+        val got = gotId!!
+        dao.deleteEntryAudited(saleId, 600.0, got)
+        assertEquals("the binned half's number is said first", got, dao.binnedPairOf(saleId)?.id)
+        assertEquals(got, dao.restoreEntryWithPair(saleId))
+        assertEquals("both halves back: nothing owed", 0.0, dao.liveBalance(party), 0.001)
+
+        // The sale corrected from 600 to 800: its "I got" still says 600, so it is asked about, and follows on "Change both".
+        val before = dao.getEntry(saleId)!!
+        dao.updateEntry(before.copy(amount = 800.0))
+        val pair = dao.pairToFollow(before, before.amount)
+        assertEquals(got, pair?.id)
+        assertEquals(true, dao.setPairAmount(got, saleId, 800.0))
+        assertEquals(0.0, dao.liveBalance(party), 0.001)
+        assertNull("once they differ, nothing is asked", dao.pairToFollow(dao.getEntry(saleId)!!, 600.0))
+    }
+
+    @Test
     fun `a deleted plan no longer holds its instalments`() = withBook { dao ->
         val party = dao.insertParty(Party(name = "Test Customer", phone = null, isCustomer = true))
         val plan = dao.insertPlan(PaymentPlan(partyId = party, totalAmount = 5_000.0, installmentAmount = 1_000.0))

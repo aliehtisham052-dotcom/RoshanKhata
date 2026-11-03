@@ -1420,6 +1420,10 @@
     <string name="delete_pair_message">यह एंट्री एक नकद बिक्री (%1$s) का आधा हिस्सा है। सिर्फ़ एक हिस्सा मिटाने से बैलेंस गलत हो जाता है।</string>
     <string name="delete_pair_both">दोनों मिटाएँ</string>
     <string name="delete_pair_one">सिर्फ़ यही</string>
+    <string name="restore_pair_too">इस नकद बिक्री का दूसरा हिस्सा (%1$s) भी रीसायकल बिन में है और इसके साथ वापस आएगा।</string>
+    <string name="edit_pair_title">इसका दूसरा हिस्सा भी बदलें?</string>
+    <string name="edit_pair_message">यह एंट्री और %1$s एक नकद बिक्री के दो हिस्से हैं, अब तक दोनों %2$s। क्या %1$s को भी %3$s कर दें? उसे वैसा ही तभी रहने दें जब मौके पर दी गई रकम सच में अलग थी।</string>
+    <string name="edit_pair_both">दोनों बदलें</string>
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">भुगतान कैसे हुआ?</string>
@@ -3407,6 +3411,7 @@
     <string name="audit_cash_edited">कैशबुक की एंट्री बदली</string>
     <string name="audit_cash_deleted">कैशबुक की एंट्री मिटाई</string>
     <string name="audit_party_deleted">ग्राहक मिटाया गया</string>
+    <string name="audit_party_merged">ग्राहक मिला दिए गए</string>
     <string name="audit_day_closed">दिन बंद किया गया</string>
     <string name="audit_import">आयात</string>
     <string name="audit_bill_deleted">बिल मिटाया गया</string>

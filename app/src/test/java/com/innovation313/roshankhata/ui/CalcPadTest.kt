@@ -116,4 +116,18 @@ class CalcPadTest {
         view.tap(R.id.calcPlus, R.id.calc1, R.id.calcEquals)
         assertEquals("10", amount.text.toString())
     }
+
+    /** 3 Nov 2026 audit, M35: the pad is 40% of the screen, between keys of 48 dp and the 330 dp it had. */
+    @Test
+    fun theDockedPadTakesItsShareOfTheScreenWithinItsBounds() {
+        assertEquals("a 720 dp phone keeps 48 dp keys", 278f, CalcPad.padHeightDp(648), 0.01f)
+        assertEquals("a taller phone takes 40%", 320f, CalcPad.padHeightDp(800), 0.01f)
+        assertEquals("never past what it always was", 330f, CalcPad.padHeightDp(1_000), 0.01f)
+        val view = inflate(R.layout.dialog_add_entry)
+        val pad = view.findViewById<View>(R.id.entryKeypad)
+        CalcPad.fitHeight(pad)
+        val res = pad.resources
+        val expected = (CalcPad.padHeightDp(res.configuration.screenHeightDp) * res.displayMetrics.density).toInt()
+        assertEquals(expected, pad.layoutParams.height)
+    }
 }

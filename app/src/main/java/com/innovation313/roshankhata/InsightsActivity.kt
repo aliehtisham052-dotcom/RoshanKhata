@@ -81,11 +81,12 @@ class InsightsActivity : BaseActivity() {
                 trend.setTextColor(ContextCompat.getColor(this, R.color.text_muted))
             }
             pct >= 0 -> {
-                trend.text = Digits.string(resources, R.string.insights_up, pct, Format.money(data.lastMonthTotal))
+                // Sealed left-to-right (3 Nov 2026 audit, L34): in Urdu the figure split with its bracket mirrored.
+                trend.text = Digits.string(resources, R.string.insights_up, pct, Format.moneyLtr(data.lastMonthTotal))
                 trend.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe))
             }
             else -> {
-                trend.text = Digits.string(resources, R.string.insights_down, -pct, Format.money(data.lastMonthTotal))
+                trend.text = Digits.string(resources, R.string.insights_down, -pct, Format.moneyLtr(data.lastMonthTotal))
                 trend.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me))
             }
         }

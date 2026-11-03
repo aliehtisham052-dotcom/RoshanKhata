@@ -85,7 +85,7 @@
                     <FrameLayout
                         android:layout_width="46dp"
                         android:layout_height="46dp"
-                        android:background="@drawable/bg_business_logo">
+                        android:background="@drawable/bg_business_logo_solid">
 
                         <TextView
                             android:id="@+id/tvPreviewInitials"

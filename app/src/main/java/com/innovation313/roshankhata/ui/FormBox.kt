@@ -26,6 +26,14 @@ object FormBox {
         setTextColor(ContextCompat.getColor(context, R.color.ink))
         setHintTextColor(ContextCompat.getColor(context, R.color.text_muted))
         HintFit.apply(this)
+        // The input type is set after this returns; by the time the box is on screen it is known (3 Nov 2026 audit, M41).
+        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                v.removeOnAttachStateChangeListener(this)
+                DecimalBoxes.widen(v as EditText)
+            }
+            override fun onViewDetachedFromWindow(v: View) = Unit
+        })
     }
 
     /**

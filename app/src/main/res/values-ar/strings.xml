@@ -1510,6 +1510,10 @@
     <string name="delete_pair_message">هذا القيد نصف عملية بيع نقدية (%1$s). حذف نصف واحد فقط يجعل الرصيد خاطئًا.</string>
     <string name="delete_pair_both">احذف الاثنين</string>
     <string name="delete_pair_one">هذا فقط</string>
+    <string name="restore_pair_too">النصف الآخر من عملية البيع النقدية هذه (%1$s) في سلة المحذوفات أيضًا وسيعود معه.</string>
+    <string name="edit_pair_title">هل تغيّر الجزء الآخر أيضًا؟</string>
+    <string name="edit_pair_message">هذا القيد و%1$s نصفا عملية بيع نقدية واحدة، وكلاهما %2$s حتى الآن. هل تغيّر %1$s إلى %3$s أيضًا؟ اتركه كما هو فقط إذا كان المبلغ المدفوع في الحال مختلفًا فعلًا.</string>
+    <string name="edit_pair_both">غيّر الاثنين</string>
 
     <string name="payment_method_label">كيف تم الدفع؟</string>
     <string name="payment_method_cash">نقدًا</string>
@@ -3551,6 +3555,7 @@
     <string name="audit_cash_edited">تم تغيير قيد في دفتر النقد</string>
     <string name="audit_cash_deleted">تم حذف قيد من دفتر النقد</string>
     <string name="audit_party_deleted">تم حذف عميل</string>
+    <string name="audit_party_merged">تم دمج عملاء</string>
     <string name="audit_day_closed">تم إغلاق اليوم</string>
     <string name="audit_import">استيراد</string>
     <string name="audit_bill_deleted">تم حذف فاتورة</string>

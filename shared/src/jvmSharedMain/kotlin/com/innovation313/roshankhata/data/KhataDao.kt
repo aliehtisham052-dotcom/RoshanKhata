@@ -282,6 +282,30 @@ interface KhataDao {
     )
     suspend fun restoreEntry(id: Long)
 
+    /**
+     * One entry back from the bin, with the other half of its cash sale when that half is in the bin too (3 Nov 2026
+     * audit, M13): brought back alone, a sale returned without the cash that paid it — the customer owed what he had
+     * paid — or a payment without its sale. One transaction; a half a void holds back stays where [restoreEntry]
+     * keeps it. Returns the other half's id when it came back with it.
+     */
+    @Transaction
+    suspend fun restoreEntryWithPair(id: Long): Long? {
+        restoreEntry(id)
+        val entry = getEntry(id)?.takeIf { !it.isDeleted } ?: return null
+        val pair = entry.pairedEntryId?.let { getEntry(it) } ?: return null
+        if (!pair.isDeleted || pair.partyId != entry.partyId || pair.pairedEntryId != entry.id) return null
+        restoreEntry(pair.id)
+        return pair.id.takeIf { getEntry(it)?.isDeleted == false }
+    }
+
+    /** The other half [restoreEntryWithPair] would bring back with [id], for the bin's question: binned, same party. */
+    @Transaction
+    suspend fun binnedPairOf(id: Long): LedgerEntry? {
+        val entry = getEntry(id) ?: return null
+        val pair = entry.pairedEntryId?.let { getEntry(it) } ?: return null
+        return pair.takeIf { it.isDeleted && it.partyId == entry.partyId && it.pairedEntryId == entry.id }
+    }
+
     // ---------- Recycle Bin: listing ----------
 
     @Query("SELECT * FROM parties WHERE isDeleted = 1 ORDER BY deletedAt DESC")
@@ -1027,7 +1051,9 @@ interface KhataDao {
     suspend fun editSupplierBill(bill: SupplierBill, entryNote: String?) {
         updateBill(bill)
         bill.ledgerEntryId?.let { id ->
-            getEntry(id)?.let { e -> updateEntry(e.copy(amount = bill.totalAmount, note = entryNote)) }
+            // The bill's day moves its khata entry too (3 Nov 2026 audit, L09): the supplier's statement, Aging and the
+            // month's report kept the old day.
+            getEntry(id)?.let { e -> updateEntry(e.copy(amount = bill.totalAmount, note = entryNote, timestamp = onBillDay(e.timestamp, bill.billDate))) }
         }
         // Who changed a bill, and to what (22 Oct 2026, the review: bills changed with nothing written down).
         log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", bill.id, "%.2f".format(Digits.FIGURES, bill.totalAmount))
@@ -1701,8 +1727,12 @@ interface KhataDao {
 
     // ---------- Galla milan (v26) ----------
 
-    @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
-    suspend fun lastDayClose(): DayClose?
+    /**
+     * The newest count made by [now] (3 Nov 2026 audit, L10): a close stamped in the future — the clock ahead, or a
+     * synced computer's wrong clock — made `from > now`, and the drawer stood still at that count for days.
+     */
+    @Query("SELECT * FROM day_close WHERE closedAt <= :now ORDER BY day DESC, closedAt DESC LIMIT 1")
+    suspend fun lastDayClose(now: Long = System.currentTimeMillis()): DayClose?
 
     @Query("SELECT * FROM day_close WHERE day = :day LIMIT 1")
     suspend fun dayCloseFor(day: Long): DayClose?
@@ -2923,6 +2953,33 @@ interface KhataDao {
         }
     }
 
+    /**
+     * The live other half of [entry]'s cash sale while its amount still matched [oldAmount]: the half an edit of
+     * [entry]'s amount asks about (3 Nov 2026 audit, M13). Null when there is none, or the two already differed.
+     */
+    @Transaction
+    suspend fun pairToFollow(entry: LedgerEntry, oldAmount: Double): LedgerEntry? {
+        val pair = entry.pairedEntryId?.let { getEntry(it) } ?: return null
+        return pair.takeIf {
+            !it.isDeleted && it.partyId == entry.partyId && it.pairedEntryId == entry.id && Money.isZero(it.amount - oldAmount)
+        }
+    }
+
+    /**
+     * The other half of a cash sale takes the edited half's new [amount] (3 Nov 2026 audit, M13: a sale of 600 edited
+     * to 800 kept its "I got" of 600, and the customer owed 200 he may have paid). Asked first on both platforms — part
+     * may really have been paid now. One transaction with its audit row; nothing when the half is gone, binned or no
+     * longer paired with [withId].
+     */
+    @Transaction
+    suspend fun setPairAmount(pairId: Long, withId: Long, amount: Double): Boolean {
+        val pair = getEntry(pairId) ?: return false
+        if (pair.isDeleted || pair.pairedEntryId != withId) return false
+        updateEntry(pair.copy(amount = amount))
+        log(AuditAction.ENTRY_EDITED, Access.userName, "transactions", pairId, auditAmount(amount))
+        return true
+    }
+
     @Transaction
     suspend fun insertEntryWithItemsPaidNow(entry: LedgerEntry, items: List<EntryItem>): Pair<Long, Long?> {
         val saleId = insertEntryWithItems(entry, items)
@@ -3019,7 +3076,9 @@ interface KhataDao {
         bill: SupplierBill,
         items: List<BillItem>
     ): List<Product> {
-        val ledgerId = entry?.let { insertEntryNumbered(it) }
+        // On the bill's own day (3 Nov 2026 audit, L09): a bill dated 1 Oct typed on 2 Nov was in October's register
+        // and November's supplier statement.
+        val ledgerId = entry?.let { insertEntryNumbered(it.copy(timestamp = onBillDay(it.timestamp, bill.billDate))) }
         val billId = insertBill(bill.copy(ledgerEntryId = ledgerId))
         return items.map { item ->
             // The product the line already names comes first (23 Oct 2026, the review: a purchase order's line
@@ -3142,6 +3201,8 @@ interface KhataDao {
         for (loserId in loserIds) {
             mergeParty(loserId, survivorId, now)
         }
+        // Who merged whom, in the same transaction (3 Nov 2026 audit, L14): the customers merged away, by id.
+        log(AuditAction.PARTY_MERGED, Access.userName, "parties", survivorId, loserIds.joinToString(","))
     }
 
     /**
@@ -4618,3 +4679,7 @@ interface KhataDao {
     @Query("SELECT * FROM audit_log ORDER BY id")
     suspend fun auditInOrder(): List<AuditLog>
 }
+
+/** A bill's entry time: its own when the bill is dated that same day, else the bill's day (3 Nov 2026 audit, L09). */
+private fun onBillDay(entryTime: Long, billDate: Long): Long =
+    if (DayMath.dayNumber(entryTime) == DayMath.dayNumber(billDate)) entryTime else billDate

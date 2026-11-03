@@ -591,6 +591,8 @@ private fun Book(
         images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { javax.imageio.ImageIO.read(it) }
     }.getOrNull()
     var halves by remember { mutableStateOf<Pair<LedgerEntry, LedgerEntry>?>(null) }
+    // An edited half of a cash sale: its other half and the two amounts, for the question (3 Nov 2026 audit, M13).
+    var pairEdit by remember { mutableStateOf<PairEdit?>(null) }
     // An entry shown as its receipt (Marhala 4, part 6b: a click opened its editor), and a sale becoming an invoice.
     var viewing by remember { mutableStateOf<LedgerEntry?>(null) }
     var invoiceFrom by remember { mutableStateOf<Pair<LedgerEntry, List<com.innovation313.roshankhata.data.EntryItem>>?>(null) }
@@ -1686,7 +1688,7 @@ private fun Book(
                     signature = signed,
                     onSave = { d -> Gates.edit {
                         scope.launch {
-                            withContext(Dispatchers.IO) {
+                            val follow = withContext(Dispatchers.IO) {
                                 // The phone's edit: the entry and its whole list of goods, all or nothing (every line is on the
                                 // form since Marhala 4, part 6).
                                 dao.updateEntryWithItems(d.entry.copy(billPhotoPath = photoPathOf(d)), d.items.map { linked(dao, it) ?: it })
@@ -1694,9 +1696,13 @@ private fun Book(
                                 dao.audit(AuditActs.ENTRY_EDITED, "transactions", d.entry.id, auditAmount(d.entry.amount))
                                 val sign = { x: LedgerEntry -> if (x.isGiven) x.amount else -x.amount }
                                 if (d.dueTouched) keepPromise(e.partyId, d, (forParty?.balance ?: 0.0) - sign(e) + sign(d.entry))
+                                // Half of a cash sale whose amount changed: its other half is asked about (3 Nov 2026 audit, M13).
+                                if (Money.isZero(d.entry.amount - e.amount)) null
+                                else runCatching { dao.pairToFollow(e, e.amount) }.getOrNull()?.let { PairEdit(it, e.amount, d.entry.amount) }
                             }
                             editing = null
                             reload++
+                            pairEdit = follow
                         }
                     } },
                     onCancel = { editing = null },
@@ -1782,6 +1788,28 @@ private fun Book(
             },
             onDismiss = { deleting = null }
         )
+    }
+    pairEdit?.let { p ->
+        fun answer(both: Boolean) {
+            pairEdit = null
+            if (!both) return
+            scope.launch {
+                // One transaction with its audit row; nothing if the half changed meanwhile (3 Nov 2026 audit, M13).
+                withContext(Dispatchers.IO) { runCatching { dao.setPairAmount(p.pair.id, p.pair.pairedEntryId ?: 0L, p.now) } }
+                reload++
+            }
+        }
+        AppDialog(onCloseRequest = { pairEdit = null }, title = word(W.edit_pair_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(320.dp))) {
+            DialogFrame(word(W.edit_pair_title), onClose = { pairEdit = null }, footer = {
+                FluentButton(word(W.delete_pair_one), { answer(both = false) }, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.edit_pair_both), { answer(both = true) }, kind = ButtonKind.ACCENT)
+            }) {
+                Text(
+                    word(W.edit_pair_message, p.pair.entryNumber, Format.money(p.was), Format.money(p.now)),
+                    color = c.ink, fontSize = 14.sp
+                )
+            }
+        }
     }
     halves?.let { (e, pair) ->
         fun deleteHalves(both: Boolean) {
@@ -1951,7 +1979,8 @@ private fun Book(
                 },
                 onRestoreEntry = { e ->
                     scope.launch {
-                        withContext(Dispatchers.IO) { dao.restoreEntry(e.id) }
+                        // A cash sale's binned other half comes back with it, as on the phone (3 Nov 2026 audit, M13).
+                        withContext(Dispatchers.IO) { dao.restoreEntryWithPair(e.id) }
                         reload++
                     }
                 },
@@ -2443,6 +2472,9 @@ private fun customerFacts(dao: KhataDao, party: PartyWithBalance, reload: Int): 
 
 /** What the account's head says beyond the list's row: who he is, the promised day (and its moment), the seasons. */
 private class CustomerFacts(val identity: String?, val promiseAt: Long?, val promise: String?, val seasons: List<String>)
+
+/** The other half of an edited cash sale, what both were, and what the edited half is now (3 Nov 2026 audit, M13). */
+private data class PairEdit(val pair: LedgerEntry, val was: Double, val now: Double)
 
 /** The Khata head's line: customers and suppliers counted apart (25 Oct 2026, the audit: suppliers were "customers"). */
 @Composable

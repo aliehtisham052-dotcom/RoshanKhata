@@ -1406,6 +1406,10 @@
     <string name="delete_pair_message">هي انٽري هڪ نقد سودي جو هڪ حصو آهي (%1$s). صرف هڪ حصو ميٽڻ سان بيلنس غلط ٿي ويندو.</string>
     <string name="delete_pair_both">ٻئي ميٽيو</string>
     <string name="delete_pair_one">صرف هي</string>
+    <string name="restore_pair_too">هن نقد سودي جو ٻيو حصو (%1$s) به ردي جي ٽوڪري ۾ آهي ۽ ان سان گڏ واپس ايندو.</string>
+    <string name="edit_pair_title">ان جو ٻيو حصو به بدلايو؟</string>
+    <string name="edit_pair_message">هي انٽري ۽ %1$s هڪ نقد سودي جا ٻه حصا آهن، هيستائين ٻئي %2$s. ڇا %1$s کي به %3$s ڪريون؟ ان کي ائين ئي تڏهن رهڻ ڏيو جڏهن موقعي تي ڏنل رقم واقعي مختلف هئي.</string>
+    <string name="edit_pair_both">ٻئي بدلايو</string>
 
     <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
     <string name="payment_method_cash">نقد</string>
@@ -3387,6 +3391,7 @@
     <string name="audit_cash_edited">ڪيش بڪ جي داخلا بدلائي</string>
     <string name="audit_cash_deleted">ڪيش بڪ جي داخلا ميٽي</string>
     <string name="audit_party_deleted">گراهڪ ميٽيو ويو</string>
+    <string name="audit_party_merged">گراهڪ گڏ ڪيا ويا</string>
     <string name="audit_day_closed">ڏينهن بند ڪيو ويو</string>
     <string name="audit_import">امپورٽ</string>
     <string name="audit_bill_deleted">بل ميٽيو ويو</string>

@@ -72,7 +72,8 @@ class CsvImportTest {
     @Test
     fun `rows without a name are left out, an unreadable balance is zero`() {
         val csv = "Name,Phone,Balance\n,0300,500\nKashif,,n/a\n"
-        assertEquals(listOf(CsvImport.Row("Kashif", null, 0.0)), CsvImport.parse(csv))
+        // Zero, and said to be unread (3 Nov 2026 audit): the preview counts such rows before anything is written.
+        assertEquals(listOf(CsvImport.Row("Kashif", null, 0.0, unreadable = true)), CsvImport.parse(csv))
     }
 
     @Test

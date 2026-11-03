@@ -1406,6 +1406,10 @@
     <string name="delete_pair_message">این ثبت نیمی از یک فروش نقدی است (%1$s). حذف فقط یک نیمه، مانده را اشتباه می‌کند.</string>
     <string name="delete_pair_both">هر دو حذف شوند</string>
     <string name="delete_pair_one">فقط همین</string>
+    <string name="restore_pair_too">نیمه دیگر این فروش نقدی (%1$s) هم در سطل بازیافت است و همراه آن برمی‌گردد.</string>
+    <string name="edit_pair_title">نیمه دیگرش هم تغییر کند؟</string>
+    <string name="edit_pair_message">این ثبت و %1$s دو نیمه یک فروش نقدی‌اند و تا حالا هر دو %2$s بوده‌اند. %1$s هم به %3$s تغییر کند؟ فقط وقتی آن را دست نزنید که مبلغ پرداخت‌شده در همان لحظه واقعاً فرق داشته است.</string>
+    <string name="edit_pair_both">هر دو تغییر کنند</string>
 
     <string name="payment_method_label">پرداخت چگونه انجام شد؟</string>
     <string name="payment_method_cash">نقدی</string>
@@ -3387,6 +3391,7 @@
     <string name="audit_cash_edited">ردیف دفتر نقدی تغییر کرد</string>
     <string name="audit_cash_deleted">ردیف دفتر نقدی حذف شد</string>
     <string name="audit_party_deleted">مشتری حذف شد</string>
+    <string name="audit_party_merged">مشتری‌ها ادغام شدند</string>
     <string name="audit_day_closed">روز بسته شد</string>
     <string name="audit_import">ورودی</string>
     <string name="audit_bill_deleted">صورت‌حساب حذف شد</string>

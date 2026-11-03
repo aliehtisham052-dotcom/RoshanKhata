@@ -158,7 +158,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // not the cheque list: the cheque list can only ever show the shop
         // that is currently open, so sending the owner there would show them
         // the wrong book. Switching first is the step that actually helps.
-        val openId = Businesses.active(ctx).id
+        // The shop read once, at the start (3 Nov 2026 audit, L18): read again here, a switch during the upload
+        // counted the old shop twice and the new one never.
+        val openId = businessId
         for (biz in Businesses.list(ctx)) {
             if (biz.id == openId) continue
             // A shop whose file cannot be opened or read (a corrupt file, a

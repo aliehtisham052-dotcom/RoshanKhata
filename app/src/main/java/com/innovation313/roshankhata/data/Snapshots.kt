@@ -163,9 +163,11 @@ object Snapshots {
         // The old write-ahead log must not survive its database — only now, once the new file is ready.
         File(live.parentFile, live.name + "-wal").delete()
         File(live.parentFile, live.name + "-shm").delete()
-        live.delete()
+        // One rename over the book, never a delete first (3 Nov 2026 audit, L01): a rename replaces the file in one
+        // step, while "delete, then rename" left a moment with no book at all — a kill there opened an empty one,
+        // and a rename that failed after the delete threw the restored copy away too.
         if (!tmp.renameTo(live)) {
-            tmp.delete()
+            // Kept beside the book (".restoring") for the owner's safety copy is not the only way back.
             return RestoreResult.Failed
         }
         return RestoreResult.Ok

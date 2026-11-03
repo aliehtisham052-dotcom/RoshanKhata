@@ -161,6 +161,7 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.CASH_EDITED -> word(W.audit_cash_edited)
     AuditAction.CASH_DELETED -> word(W.audit_cash_deleted)
     AuditAction.PARTY_DELETED -> word(W.audit_party_deleted)
+    AuditAction.PARTY_MERGED -> word(W.audit_party_merged)
     AuditAction.DAY_CLOSED -> word(W.audit_day_closed)
     AuditAction.IMPORT -> word(W.audit_import)
     AuditAction.BILL_DELETED -> word(W.audit_bill_deleted)
