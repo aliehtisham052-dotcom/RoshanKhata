@@ -25,13 +25,16 @@ object DocConvertedSheet {
     /**
      * Who the new document is for and what it holds — "Test Customer · 3 items · Rs 54,000" — the line [show] is
      * given. A challan prints no prices (DocKind.showsPrices), so its line says none either; the sign and its figure
-     * stay on one line (a no-break space) whichever way the line runs. The convert and its proof picture both say it.
+     * stay on one line (a no-break space) whichever way the line runs. The name is isolated (lesson 30), so the line
+     * runs the reader's way even when the name is in another script (an English name in an Urdu line ran left to
+     * right), and each dot stays with the word before it, so no line starts with one. The convert and its proof
+     * picture both say it.
      */
     fun line(res: android.content.res.Resources, name: String, items: Int, total: Double, kind: String): String = listOfNotNull(
-        name,
+        Format.isolate(name),
         Digits.quantity(res, R.plurals.items_count, items, items),
         if (com.innovation313.roshankhata.data.DocKind.showsPrices(kind)) Format.ltr(Format.money(total).replace(' ', '\u00A0')) else null
-    ).joinToString(" \u00B7 ")
+    ).joinToString("\u00A0\u00B7 ")
 
     fun show(
         activity: Activity,
