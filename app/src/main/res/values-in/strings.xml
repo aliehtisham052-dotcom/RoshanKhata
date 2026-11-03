@@ -3113,6 +3113,8 @@
     <string name="po_status_closed">Ditutup</string>
     <string name="po_none">Belum ada pesanan</string>
     <string name="po_lines_empty">Tambahkan barang yang dipesan</string>
+    <string name="po_no_suppliers">Belum ada pemasok di buku Anda. Tambahkan pemasok di Buku dulu, lalu buat pesanan.</string>
+    <string name="po_pick_supplier">Pilih pemasok untuk menyimpan pesanan</string>
     <string name="po_message_head">Pesanan %1$s — %2$s</string>
     <string name="po_from_low">Pesan stok yang menipis</string>
     <string name="po_book">Buku</string>

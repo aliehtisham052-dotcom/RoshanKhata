@@ -3160,6 +3160,8 @@
     <string name="po_status_closed">बंद</string>
     <string name="po_none">अभी कोई ऑर्डर नहीं</string>
     <string name="po_lines_empty">ऑर्डर के आइटम जोड़ें</string>
+    <string name="po_no_suppliers">आपके खाते में अभी कोई सप्लायर नहीं है। पहले खाता में सप्लायर जोड़ें, फिर ऑर्डर बनाएं।</string>
+    <string name="po_pick_supplier">ऑर्डर सेव करने के लिए सप्लायर चुनें</string>
     <string name="po_message_head">ऑर्डर %1$s — %2$s</string>
     <string name="po_from_low">कम स्टॉक का ऑर्डर</string>
     <string name="po_book">बही</string>

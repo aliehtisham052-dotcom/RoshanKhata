@@ -3300,6 +3300,8 @@
     <string name="po_status_closed">مغلق</string>
     <string name="po_none">لا أوامر بعد</string>
     <string name="po_lines_empty">أضف الأصناف المطلوبة</string>
+    <string name="po_no_suppliers">لا يوجد مورّد في دفترك بعد. أضف مورّدًا في الدفتر أولًا، ثم أنشئ الأمر.</string>
+    <string name="po_pick_supplier">اختر المورّد لحفظ الأمر</string>
     <string name="po_message_head">أمر %1$s — %2$s</string>
     <string name="po_from_low">اطلب المخزون المنخفض</string>
     <string name="po_book">الدفتر</string>

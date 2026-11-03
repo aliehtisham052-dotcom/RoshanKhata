@@ -3112,6 +3112,8 @@
     <string name="po_status_closed">Band</string>
     <string name="po_none">Abhi koi order nahi</string>
     <string name="po_lines_empty">Order ke item shamil karein</string>
+    <string name="po_no_suppliers">Aap ke khate mein abhi koi supplier nahi. Pehle Khata mein supplier shamil karein, phir order banayein.</string>
+    <string name="po_pick_supplier">Order save karne ke liye supplier chunein</string>
     <string name="po_message_head">Order %1$s — %2$s</string>
     <string name="po_from_low">Kam stock ka order</string>
     <string name="po_book">Kitab</string>

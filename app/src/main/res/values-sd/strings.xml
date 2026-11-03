@@ -3140,6 +3140,8 @@
     <string name="po_status_closed">بند</string>
     <string name="po_none">اڃا ڪو آرڊر ناهي</string>
     <string name="po_lines_empty">آرڊر جون شيون شامل ڪريو</string>
+    <string name="po_no_suppliers">توهان جي کاتي ۾ اڃا ڪو سپلائر ناهي. پهريان کاتي ۾ سپلائر شامل ڪريو، پوءِ آرڊر ٺاهيو.</string>
+    <string name="po_pick_supplier">آرڊر محفوظ ڪرڻ لاءِ سپلائر چونڊيو</string>
     <string name="po_message_head">آرڊر %1$s — %2$s</string>
     <string name="po_from_low">گهٽ اسٽاڪ جو آرڊر</string>
     <string name="po_book">ڪتاب</string>
