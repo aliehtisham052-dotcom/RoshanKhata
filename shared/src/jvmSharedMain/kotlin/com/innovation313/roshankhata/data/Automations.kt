@@ -100,13 +100,14 @@ object Automations {
         /** The Payment Radar's switch on this device: those in their usual paying days join the list and lead it. */
         radar: Boolean = false
     ): Collect {
-        val debtors = dao.partiesWithBalanceOnce().filter { Money.isPositive(it.balance) }
+        val parties = dao.partiesWithBalanceOnce()
+        val debtors = parties.filter { Money.isPositive(it.balance) }
         if (debtors.isEmpty()) return Collect(0, 0.0, emptyList())
-        val points = dao.observeOwingLedgerPoints().first()
+        val points = LedgerLines.owingOf(dao, parties)
         val habits = PaymentHabit.forAll(points)
         val promises = dao.observePromises().first().associate { it.partyId to it.due }
         val likely = if (!radar) emptySet() else runCatching {
-            PaymentRadar.likelyNow(points, PaymentRadar.shopTypicalDays(dao.radarRows()), promises, now, tz)
+            PaymentRadar.likelyNow(points, PaymentRadar.shopTypicalDays(LedgerLines.customers(dao)), promises, now, tz)
         }.getOrDefault(emptySet())
         val due = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday, likely).filter {
             !it.phone.isNullOrBlank() && FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday, likely)

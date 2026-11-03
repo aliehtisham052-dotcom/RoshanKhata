@@ -75,7 +75,7 @@ object RadarDesk {
         val key = System.identityHashCode(dao)
         val now = System.currentTimeMillis()
         if (key == shopFor && now - shopAt < SHOP_TTL_MS) return shopDays
-        val days = withContext(Dispatchers.IO) { runCatching { PaymentRadar.shopTypicalDays(dao.radarRows()) }.getOrNull() }
+        val days = withContext(Dispatchers.IO) { runCatching { PaymentRadar.shopTypicalDays(com.innovation313.roshankhata.data.LedgerLines.customers(dao)) }.getOrNull() }
         shopFor = key; shopAt = now; shopDays = days
         return days
     }

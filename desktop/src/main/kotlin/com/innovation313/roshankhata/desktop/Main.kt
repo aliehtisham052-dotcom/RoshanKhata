@@ -90,6 +90,7 @@ import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import androidx.compose.ui.focus.focusRequester
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import com.innovation313.roshankhata.data.LiveSync
@@ -2417,9 +2418,11 @@ class KeyActions {
  * phone's Home note (MainActivity.observeLate), the same rule as Follow-up:
  * a customer who named a day still ahead is not late.
  */
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 private fun lateCount(dao: KhataDao): kotlinx.coroutines.flow.Flow<Int> =
     dao.observePartiesWithBalance()
-        .combine(dao.observeOwingLedgerPoints()) { parties, points -> parties to points }
+        // The owing customers' lines a slice at a time, from these same parties (LedgerLines, 3 Nov 2026).
+        .mapLatest { parties -> parties to com.innovation313.roshankhata.data.LedgerLines.owingOf(dao, parties) }
         .combine(dao.observePromises()) { (parties, points), promiseRows ->
             val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
             val habits = com.innovation313.roshankhata.data.PaymentHabit.forAll(points)

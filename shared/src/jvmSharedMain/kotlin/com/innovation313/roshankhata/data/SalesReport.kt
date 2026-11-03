@@ -75,6 +75,32 @@ data class KhataSaleRow(
  * Each sale is its own ticket in the counts (a negative id, never a counter ticket's).
  */
 object KhataSales {
+
+    /** A fortnight: a wholesaler's khata sales of 14 days fit one of Android's 2 MB answers. */
+    private const val SLICE_MS = 14L * 24 * 60 * 60 * 1000
+    /** Past this many fortnights (some fifteen years, or a window left open) the rows are read in one go, as before. */
+    private const val MAX_SLICES = 400
+
+    /**
+     * [KhataDao.khataSaleRowsBetween] a fortnight at a time (3 Nov 2026, the speed work): a year of a wholesaler's
+     * khata sales is some 130,000 rows, and Android hands an answer over 2 MB at a time, running the query again
+     * from its first row for each — the year's sales report took 8.8 s on CI's emulator. The rows and their order
+     * are the single query's: each window is [a, b), the next starts where it ended, and a sale's goods share its
+     * moment, so they are never split.
+     */
+    suspend fun rowsBetween(dao: KhataDao, from: Long, to: Long): List<KhataSaleRow> {
+        if (to <= from) return emptyList()
+        if ((to - from) / SLICE_MS > MAX_SLICES) return dao.khataSaleRowsBetween(from, to)
+        val out = ArrayList<KhataSaleRow>()
+        var a = from
+        while (a < to) {
+            val b = if (to - a > SLICE_MS) a + SLICE_MS else to
+            out += dao.khataSaleRowsBetween(a, b)
+            a = b
+        }
+        return out
+    }
+
     suspend fun lines(dao: KhataDao, rows: List<KhataSaleRow>): List<SoldLine> {
         val unitCost = HashMap<Long, Pair<Product?, Double?>>()
         suspend fun costRate(r: KhataSaleRow, qty: Double): Double? {
@@ -279,7 +305,7 @@ class SalesReport(
 
         suspend fun compute(dao: KhataDao, from: Long, to: Long): SalesReport {
             // The counter's tickets and the khata's own sales (Marhala 3): what Sale Insights counts, line by line.
-            val lines = (dao.soldLinesBetween(from, to) + KhataSales.lines(dao, dao.khataSaleRowsBetween(from, to)))
+            val lines = (dao.soldLinesBetween(from, to) + KhataSales.lines(dao, KhataSales.rowsBetween(dao, from, to)))
                 .sortedBy { it.timestamp }
             val expenses = dao.cashbookExpensesBetween(from - 1, to - 1)
             val returns = dao.returnsBetween(from, to).filter { it.status == SaleStatus.DONE }.sumOf { it.total }

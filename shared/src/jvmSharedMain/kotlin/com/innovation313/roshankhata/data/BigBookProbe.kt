@@ -80,10 +80,10 @@ object BigBookProbe {
         time("Bell: every alert", { "${it.size} rows" }) { LedgerAlerts.compute(words, dao, money) }
 
         // Who owes and how they pay: Home's late count, Follow-up, the Payment Radar.
-        val points = time("Owing customers' lines", { "${it.size} lines" }) { dao.observeOwingLedgerPoints().first() }
+        val points = time("Owing customers' lines", { "${it.size} lines" }) { LedgerLines.owingOf(dao, parties) }
         val habits = time("Paying habit of every customer", { "${it.size} customers" }) { PaymentHabit.forAll(points) }
         val promises = dao.observePromises().first().associate { it.partyId to it.due }
-        val shop = time("Payment Radar: the shop's own pace") { PaymentRadar.shopTypicalDays(dao.radarRows()) }
+        val shop = time("Payment Radar: the shop's own pace") { PaymentRadar.shopTypicalDays(LedgerLines.customers(dao)) }
         val likely = time("Payment Radar: who usually pays now", { "${it.size} customers" }) {
             PaymentRadar.likelyNow(points, shop, promises, now, tz)
         }
@@ -127,9 +127,9 @@ object BigBookProbe {
             )
         }
         time(AFTER_SAVE) {
-            dao.partiesWithBalanceOnce()
+            val fresh = dao.partiesWithBalanceOnce()
             LedgerAlerts.compute(words, dao, money)
-            PaymentHabit.forAll(dao.observeOwingLedgerPoints().first())
+            PaymentHabit.forAll(LedgerLines.owingOf(dao, fresh))
             dao.latestEntriesWithItems(customer, Int.MAX_VALUE)
         }
         return out

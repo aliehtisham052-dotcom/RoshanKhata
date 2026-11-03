@@ -84,6 +84,10 @@ object Aging {
         )
     }
 
-    suspend fun compute(dao: KhataDao, now: Long = System.currentTimeMillis()): Report =
-        compute(dao.partiesWithBalanceOnce(), dao.agingMoves(), now)
+    suspend fun compute(dao: KhataDao, now: Long = System.currentTimeMillis()): Report {
+        val parties = dao.partiesWithBalanceOnce()
+        // The moves a slice of parties at a time (LedgerLines, 3 Nov 2026): every entry of the book in one answer
+        // took 7.3 s on CI's Android emulator.
+        return compute(parties, LedgerLines.agingMoves(dao, parties), now)
+    }
 }

@@ -156,7 +156,7 @@ object PaymentRadar {
 
     /**
      * This shop's normal: the median days a credit took to come back, over every customer's recent repaid
-     * lots ([rows] of all customers, [KhataDao.radarRows]); null below [MIN_SHOP_REPAID] lots.
+     * lots ([rows] of all customers, [LedgerLines.customers]); null below [MIN_SHOP_REPAID] lots.
      */
     fun shopTypicalDays(rows: List<LedgerPoint>): Int? {
         val all = rows.groupBy { it.partyId }.values.flatMap { book(it).repaidDays.takeLast(RECENT) }
@@ -270,7 +270,7 @@ object PaymentRadar {
 
     /**
      * The customers who owe and are in their usual paying days today ([Reading.likelyNow]) — the morning
-     * list's first names. [points] are the owing customers' lines ([KhataDao.observeOwingLedgerPoints]).
+     * list's first names. [points] are the owing customers' lines ([LedgerLines.owingOf]).
      */
     fun likelyNow(
         points: List<LedgerPoint>,

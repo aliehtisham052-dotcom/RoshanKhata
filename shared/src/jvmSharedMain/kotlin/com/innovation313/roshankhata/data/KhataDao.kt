@@ -92,40 +92,26 @@ interface KhataDao {
     fun observePartiesWithBalance(): Flow<List<PartyWithBalance>>
 
     /**
-     * Every live ledger line, reduced to what [PaymentHabit] reads (whose,
-     * when, how much, which way), for the customers who OWE something only
-     * (P3 of the scaling work, 7 Oct 2026). Deleted (recycle-bin) lines are
-     * left out, the same as the balance above, so the habit and the balance
-     * agree.
+     * [partyIds]' live lines, reduced to what [PaymentHabit] and the Payment Radar read (whose, when, how much,
+     * which way), by party and time — a slice of customers at a time ([LedgerLines], 3 Nov 2026, the speed work).
+     * Deleted (recycle-bin) lines are left out, the same as the balance, so the habit and the balance agree.
      *
-     * Home's "paying late" count and the Follow-up screen read every live
-     * line of the whole book, then threw away every customer who owed
-     * nothing — on the owner's book that is 1,203 of 1,205 customers, and on
-     * a wholesaler's it is 300,000 rows into memory on every Home and after
-     * every entry, for a count that only ever concerns the owing few. The
-     * HAVING keeps the SUM rule of observePartiesWithBalance (deleted lines
-     * out) and the same epsilon Money.isPositive uses, so "owes" means the
-     * same here as on the list.
-     *
-     * CROSS JOIN (3 Nov 2026, the speed work) is SQLite's way of saying "the customers first": left to choose,
-     * SQLite walked every line of the book by date and fetched its customer, and then sorted them all to sum
-     * them — 213 ms on a book of 300,000 lines. Customer by customer, each one's lines are read off schema
-     * 42's covering index alone, already grouped: 54 ms. The rows are the same either way.
+     * Until 3 Nov 2026 this was one query for every owing customer at once (P3 of the scaling work, 7 Oct, which
+     * had already left out those who owe nothing) and another for every customer. On a wholesaler's book that is
+     * 275,000 rows in one answer, and Android hands an answer to the app 2 MB at a time, running the query again
+     * from its first row for every 2 MB: 10.8 seconds on CI's emulator for Home's late count, Follow-up and every
+     * save while Home was open. A slice's lines fit one such window; the covering index of schema 42 reads them.
+     * Up to [LedgerLines.SLICE] ids: SQLite before 3.32 (Android 10 and older) takes at most 999 values.
      */
     @Query(
-        """
-        SELECT t.partyId, t.timestamp, t.amount, t.isGiven, t.id, t.pairedEntryId, t.isQarzeHasna FROM transactions t
-        WHERE t.isDeleted = 0 AND t.partyId IN (
-            SELECT p.id FROM parties p
-            CROSS JOIN transactions x ON x.partyId = p.id AND x.isDeleted = 0
-            WHERE p.isDeleted = 0 AND p.isCustomer = 1
-            GROUP BY p.id
-            HAVING SUM(CASE WHEN x.isGiven = 1 THEN x.amount ELSE -x.amount END) >= 0.005
-        )
-        ORDER BY t.partyId, t.timestamp
-        """
+        "SELECT t.partyId, t.timestamp, t.amount, t.isGiven, t.id, t.pairedEntryId, t.isQarzeHasna FROM transactions t " +
+            "WHERE t.isDeleted = 0 AND t.partyId IN (:partyIds) ORDER BY t.partyId, t.timestamp"
     )
-    fun observeOwingLedgerPoints(): Flow<List<LedgerPoint>>
+    suspend fun ledgerPointsOf(partyIds: List<Long>): List<LedgerPoint>
+
+    /** Every live customer's id (the Payment Radar's whole-shop pace reads their lines a slice at a time). */
+    @Query("SELECT id FROM parties WHERE isDeleted = 0 AND isCustomer = 1 ORDER BY id")
+    suspend fun liveCustomerIds(): List<Long>
 
     /**
      * Fasal ka Hisaab: the live lines of live CUSTOMERS (suppliers are not
@@ -3012,18 +2998,6 @@ interface KhataDao {
     @Query("SELECT * FROM transactions WHERE partyId = :partyId AND isDeleted = 0 ORDER BY timestamp DESC LIMIT :limit")
     suspend fun latestEntriesWithItems(partyId: Long, limit: Int): List<EntryWithItems>
 
-    /**
-     * Every live customer's live entries as the Payment Radar reads them (2 Nov 2026): who, which way, how
-     * much, when — four columns, for the shop's own normal ([PaymentRadar.shopTypicalDays]). Read only.
-     */
-    @Query(
-        "SELECT t.partyId AS partyId, t.isGiven AS isGiven, t.amount AS amount, t.timestamp AS timestamp, " +
-            "t.id AS id, t.pairedEntryId AS pairedEntryId, t.isQarzeHasna AS isQarzeHasna " +
-            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1"
-    )
-    suspend fun radarRows(): List<LedgerPoint>
-
     /** One customer's promised days as written ([PromiseLog], [promiseDay]): the Radar's promises kept and broken. */
     @Query("SELECT * FROM audit_log WHERE action = 'promise_set' AND refTable = 'parties' AND refId = :partyId ORDER BY timestamp")
     suspend fun promiseLog(partyId: Long): List<AuditLog>
@@ -4627,9 +4601,15 @@ interface KhataDao {
         return done
     }
 
-    /** Every live khata entry as [Aging] needs it, newest first. */
-    @Query("SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC")
-    suspend fun agingMoves(): List<AgingMove>
+    /**
+     * [partyIds]' live khata entries as [Aging] needs them, each party's newest first — a slice of parties at a time
+     * ([LedgerLines.agingMoves]; until 3 Nov 2026 every entry of the book in one answer, 7.3 s on CI's emulator).
+     */
+    @Query(
+        "SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 AND partyId IN (:partyIds) " +
+            "ORDER BY partyId DESC, timestamp DESC, id DESC"
+    )
+    suspend fun agingMovesOf(partyIds: List<Long>): List<AgingMove>
 
     /**
      * Cash taken on [user]'s counter sales (null = the owner's) in [from, to): a shift's drawer ([ShiftMath]).
