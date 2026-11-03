@@ -684,7 +684,7 @@ interface KhataDao {
         ORDER BY sp.timestamp ASC
         """
     )
-    suspend fun staffPaidBetween(from: Long, to: Long): List<DayBookStaffPay>
+    suspend fun staffPaymentsBetween(from: Long, to: Long): List<DayBookStaffPay>
 
     /**
      * Each regular customer's buying (3 Nov 2026, [Lapsed]): the days he bought on (a khata "I gave", not

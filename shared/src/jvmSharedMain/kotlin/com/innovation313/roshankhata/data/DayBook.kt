@@ -69,7 +69,7 @@ object DayBook {
         dao.cashBillsBetween(from, to).forEach { b ->
             out += Row(b.createdAt, Kind.BILL_PAID, b.partyName, PaymentMethod.CASH, b.totalAmount, b.billNumber?.takeIf { it.isNotBlank() }, ref = b.id)
         }
-        dao.staffPaidBetween(from, to).forEach { s ->
+        dao.staffPaymentsBetween(from, to).forEach { s ->
             out += Row(s.timestamp, Kind.STAFF_PAID, s.staffName, PaymentMethod.CASH, s.amount, s.note?.takeIf { it.isNotBlank() }, staffKind = s.kind, ref = s.id)
         }
         return out.sortedBy { it.at }
