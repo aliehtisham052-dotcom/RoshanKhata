@@ -541,7 +541,6 @@
         <item quantity="other">ڈرائیو پر %1$d کاروبار ملے</item>
     </plurals>
     <string name="drive_restore_all">سب بحال کریں</string>
-    <string name="drive_restored_these">بحال ہو گئے:\n%1$s</string>
     <string name="drive_restore_missed">بحال نہیں ہو سکے:\n%1$s</string>
     <string name="business_numbered">کاروبار %1$d</string>
     <string name="backup_for_business">بیک اپ ہو رہا ہے: %1$s</string>
@@ -3713,4 +3712,19 @@
     <string name="pdf_stmt_gap_phone">آپ کی دکان کا فون نمبر</string>
     <string name="pdf_stmt_gap_address">آپ کی دکان کا پتا</string>
     <string name="pdf_stmt_gap_fix">تفصیل لکھیں</string>
+    <string name="restore_backup_of">%1$s کا بیک اپ</string>
+    <string name="restore_step_checked">بیک اپ جانچ لیا گیا</string>
+    <string name="restore_step_kept">یہ کھاتہ روزانہ کاپیوں میں محفوظ ہو گیا</string>
+    <string name="restore_step_kept_why">تاکہ یہ ریسٹور واپس ہو سکے</string>
+    <string name="restore_step_replaced">کھاتہ بیک اپ سے بدل دیا گیا</string>
+    <string name="restore_step_photos">تصویریں واپس آ گئیں</string>
+    <string name="restore_step_joined">لائیو سنک میں شامل ہو گیا</string>
+    <string name="restore_keep_open">یہ مکمل ہونے تک ایپ کھلی رکھیں۔</string>
+    <string name="restore_open_book">کھاتہ کھولیں</string>
+    <string name="restore_not_done">بحال نہیں ہوا</string>
+    <string name="restore_join_failed">کھاتہ بدل دیا گیا، مگر لائیو سنک شروع نہیں ہوا۔ دکان کا کھاتہ اس فون پر دوبارہ لیں۔</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%d تبدیلی جانے کے انتظار میں</item>
+        <item quantity="other">%d تبدیلیاں جانے کے انتظار میں</item>
+    </plurals>
 </resources>

@@ -561,7 +561,6 @@
         <item quantity="other">%1$d کسب‌وکار در درایو پیدا شد</item>
     </plurals>
     <string name="drive_restore_all">بازیابی همه</string>
-    <string name="drive_restored_these">بازیابی شد:\n%1$s</string>
     <string name="drive_restore_missed">بازیابی نشد:\n%1$s</string>
     <string name="business_numbered">کسب‌وکار %1$d</string>
     <string name="backup_for_business">در حال پشتیبان‌گیری: %1$s</string>
@@ -3741,4 +3740,19 @@
     <string name="pdf_stmt_gap_phone">شماره تلفن فروشگاه شما</string>
     <string name="pdf_stmt_gap_address">نشانی فروشگاه شما</string>
     <string name="pdf_stmt_gap_fix">افزودن جزئیات</string>
+    <string name="restore_backup_of">پشتیبان تاریخ %1$s</string>
+    <string name="restore_step_checked">پشتیبان بررسی شد</string>
+    <string name="restore_step_kept">این دفتر در نسخه‌های روزانه نگه داشته شد</string>
+    <string name="restore_step_kept_why">تا این بازگردانی قابل برگشت باشد</string>
+    <string name="restore_step_replaced">دفتر با پشتیبان جایگزین شد</string>
+    <string name="restore_step_photos">عکس‌ها برگردانده شد</string>
+    <string name="restore_step_joined">به همگام‌سازی زنده پیوست</string>
+    <string name="restore_keep_open">تا پایان این کار، برنامه را باز نگه دارید.</string>
+    <string name="restore_open_book">باز کردن دفتر</string>
+    <string name="restore_not_done">بازگردانی نشد</string>
+    <string name="restore_join_failed">دفتر جایگزین شد، اما همگام‌سازی زنده شروع نشد. دفتر مغازه را دوباره روی این گوشی بگیرید.</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%d تغییر در انتظار ارسال</item>
+        <item quantity="other">%d تغییر در انتظار ارسال</item>
+    </plurals>
 </resources>

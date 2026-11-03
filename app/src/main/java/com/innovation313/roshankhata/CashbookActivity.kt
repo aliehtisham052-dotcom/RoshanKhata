@@ -143,6 +143,11 @@ class CashbookActivity : BaseActivity() {
             val etNote = view.findViewById<EditText>(R.id.etCloseNote)
             val rows = view.findViewById<android.widget.LinearLayout>(R.id.breakdownRows)
             val tvDiff = view.findViewById<TextView>(R.id.tvDifference)
+            val resultPanel = view.findViewById<View>(R.id.dayCloseResult)
+            val resultMark = view.findViewById<com.innovation313.roshankhata.ui.ResultMark>(R.id.dayCloseMark)
+            // Which answer is on show (match / short / over): the panel moves only when that changes, not at
+            // every figure typed (3 Nov 2026, the owner's mockup "Close the day — the difference").
+            var shownKind: com.innovation313.roshankhata.ui.ResultMark.Glyph? = null
             // Which stretch the figures cover, and what the first box is (2 Nov 2026, the owner's first close:
             // a blank "at the last count" box over figures that ran from the book's first entry).
             view.findViewById<TextView>(R.id.tvSince).text = if (last == null) getString(R.string.dayclose_since_first)
@@ -172,21 +177,45 @@ class CashbookActivity : BaseActivity() {
                 breakdownRows(rows, listOf(Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected), Format.money(figures.otherOut)))
                 val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                 if (counted == null) {
-                    tvDiff.visibility = View.GONE
+                    resultPanel.visibility = View.GONE
+                    shownKind = null
                     etNote.setHint(R.string.dayclose_note_hint)
                 } else {
                     val d = DayCloseMath.difference(counted, expected)
                     // A difference needs its reason: the note box says so before Save is pressed (R155).
                     etNote.hint = getString(if (kotlin.math.abs(d) >= 0.005) R.string.z_variance_reason else R.string.dayclose_note_hint)
-                    // Matches in green, short in red, more than the books in amber: the line the owner acts on.
-                    val (words, colour) = when {
-                        Money.isPositive(d) -> getString(R.string.dayclose_over, Format.money(d)) to R.color.note_text
-                        Money.isPositive(-d) -> getString(R.string.dayclose_short, Format.money(-d)) to R.color.red_gave_text
-                        else -> getString(R.string.dayclose_match) to R.color.green_got_text
+                    // Matches in green, short in red, more than the books in gold: the line the owner acts on,
+                    // each on its own wash with its mark (a check, a minus, a plus).
+                    val glyph = when {
+                        Money.isPositive(d) -> com.innovation313.roshankhata.ui.ResultMark.Glyph.PLUS
+                        Money.isPositive(-d) -> com.innovation313.roshankhata.ui.ResultMark.Glyph.MINUS
+                        else -> com.innovation313.roshankhata.ui.ResultMark.Glyph.CHECK
                     }
+                    val (words, colour, wash) = when (glyph) {
+                        com.innovation313.roshankhata.ui.ResultMark.Glyph.PLUS ->
+                            Triple(getString(R.string.dayclose_over, Format.money(d)), R.color.gold_ink, R.color.wash_gold)
+                        com.innovation313.roshankhata.ui.ResultMark.Glyph.MINUS ->
+                            Triple(getString(R.string.dayclose_short, Format.money(-d)), R.color.red_gave_text, R.color.wash_gave)
+                        else -> Triple(getString(R.string.dayclose_match), R.color.green_got_text, R.color.wash_got)
+                    }
+                    val ink = androidx.core.content.ContextCompat.getColor(this@CashbookActivity, colour)
+                    val washColour = androidx.core.content.ContextCompat.getColor(this@CashbookActivity, wash)
                     tvDiff.text = words
-                    tvDiff.setTextColor(androidx.core.content.ContextCompat.getColor(this@CashbookActivity, colour))
-                    tvDiff.visibility = View.VISIBLE
+                    tvDiff.setTextColor(ink)
+                    resultMark.show(glyph, ink, androidx.core.content.ContextCompat.getColor(this@CashbookActivity, R.color.surface))
+                    if (glyph != shownKind) {
+                        val first = resultPanel.visibility != View.VISIBLE
+                        val from = resultPanel.backgroundTintList?.defaultColor ?: washColour
+                        resultPanel.visibility = View.VISIBLE
+                        if (first) {
+                            resultPanel.backgroundTintList = android.content.res.ColorStateList.valueOf(washColour)
+                            com.innovation313.roshankhata.ui.MotionKit.fadeIn(resultPanel, duration = 160)
+                        } else {
+                            com.innovation313.roshankhata.ui.MotionKit.tintTo(resultPanel, from, washColour)
+                            com.innovation313.roshankhata.ui.MotionKit.fadeIn(tvDiff, duration = 160)
+                        }
+                        shownKind = glyph
+                    }
                 }
             }
             val watcher = object : android.text.TextWatcher {

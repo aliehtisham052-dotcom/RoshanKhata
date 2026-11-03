@@ -166,6 +166,10 @@ fun CounterSalePane(
 
     var query by remember { mutableStateOf("") }
     var told by remember { mutableStateOf<String?>(null) }
+    // The sale just written (3 Nov 2026): its note with the drawn tick and the change to hand back, until the
+    // next ticket begins. Each sale draws the tick again (seq).
+    var saved by remember { mutableStateOf<SavedSale?>(null) }
+    LaunchedEffect(draft.lines.size) { if (draft.lines.isNotEmpty()) saved = null }
     var choosingParty by remember { mutableStateOf(false) }
     var voiding by remember { mutableStateOf<SaleSummary?>(null) }
     var returning by remember { mutableStateOf<com.innovation313.roshankhata.screens.ReturnDraft?>(null) }
@@ -304,9 +308,10 @@ fun CounterSalePane(
                     }
                 }
                 result.onSuccess { (sale, balance, points) ->
-                    // The change to hand back, said with the sale (21 Oct 2026).
-                    told = words.text(W.pos_posted, sale.sale.saleNumber) +
-                        (if (change > 0.005) "  ·  " + words.text(W.pos_change) + " " + Format.money(change) else "")
+                    // The change to hand back, said with the sale (21 Oct 2026) — on its own gold chip beside a
+                    // tick that draws itself since 3 Nov 2026 (SavedSaleNote).
+                    told = null
+                    saved = SavedSale(sale.sale.saleNumber, change, (saved?.seq ?: 0) + 1)
                     // Cash in the drawer: the drawer opens with the receipt, or alone when none is printed.
                     val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
                     if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, balance, points), cash, direct = true))
@@ -381,7 +386,7 @@ fun CounterSalePane(
             // their own they took a line of the ticket).
             PageHeader(word(W.pos_title), word(W.pos_keys_help), actions = {
                 FluentButton(word(W.pos_hold), { hold() }, kind = ButtonKind.STANDARD, enabled = draft.lines.isNotEmpty())
-                FluentButton(word(W.pos_clear), { draft.clear(); told = null }, kind = ButtonKind.SUBTLE, enabled = !draft.isEmpty)
+                FluentButton(word(W.pos_clear), { draft.clear(); told = null; saved = null }, kind = ButtonKind.SUBTLE, enabled = !draft.isEmpty)
                 IconAction("ic_tune", word(W.counter_settings), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.SETTINGS) { settingUp = true } })
             })
             val access = com.innovation313.roshankhata.data.Access
@@ -609,6 +614,7 @@ fun CounterSalePane(
                 Text(Format.money(draft.totals.grandTotal), color = c.ink, fontSize = totalSize(Format.money(draft.totals.grandTotal)), fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
             }
             val problem = draft.problem
+            SavedSaleNote(saved)
             told?.let { Text(it, color = if (problem == null) c.inkSoft else c.owedToMe, fontSize = 13.sp) }
             if (problem != null && draft.lines.isNotEmpty()) Text(problemWords(problem), color = c.textMuted, fontSize = 12.sp)
             val ready = problem == null && !draft.posting
@@ -750,6 +756,52 @@ fun CounterSalePane(
 }
 
 /** A label on the start side, a figure on the end side. */
+/** A sale just written: its number, the change to hand back, and which one it is (the tick draws again for each). */
+private class SavedSale(val number: String, val change: Double, val seq: Int)
+
+/**
+ * The sale is written (3 Nov 2026, the phone's sale-saved sheet as a counter on a computer wants it): a note in
+ * the foot, not a window to close — a gold ring and green check drawing themselves, "Sale S-000013 saved", and
+ * the change to hand back on its own gold chip. It rises in, and stays until the next ticket begins.
+ */
+@Composable
+private fun SavedSaleNote(saved: SavedSale?) {
+    val c = LocalRoshanColors.current
+    val last = remember { androidx.compose.runtime.mutableStateOf<SavedSale?>(null) }
+    if (saved != null) last.value = saved
+    androidx.compose.animation.AnimatedVisibility(
+        visible = saved != null,
+        enter = androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(180, easing = DeskMotion.Standard)) +
+            androidx.compose.animation.slideInVertically(androidx.compose.animation.core.tween(240, easing = DeskMotion.EmphasizedDecelerate)) { it / 3 },
+        exit = androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(120))
+    ) {
+        val s = last.value ?: return@AnimatedVisibility
+        Row(
+            Modifier.fillMaxWidth().background(Look.accentTint, androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            DrawnCheck(s.seq, ring = Look.gold, check = Look.accent, size = 26.dp)
+            Text(
+                word(W.pos_posted, s.number), Modifier.weight(1f), color = c.ink, fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
+            if (s.change > 0.005) {
+                val chip = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                Row(
+                    Modifier.background(Look.warnTint, chip).border(1.dp, Look.goldEdge, chip).padding(horizontal = 10.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(word(W.pos_change), color = Look.warn, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                    Text(Format.money(s.change), color = Look.warn, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun FigureRow(label: String, figure: String, color: androidx.compose.ui.graphics.Color? = null) {
     val c = LocalRoshanColors.current

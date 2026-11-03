@@ -410,23 +410,23 @@ class CounterSaleActivity : BaseActivity() {
                     val words = AndroidWords(this@CounterSaleActivity)
                     val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
                     val text = SaleReceiptText.build(words, shop, sale, balance, points)
-                    // The change to hand back, in the title (21 Oct 2026).
-                    val title = getString(R.string.pos_posted, sale.sale.saleNumber) +
-                        (if (change > 0.005) "  ·  " + getString(R.string.pos_change) + " " + com.innovation313.roshankhata.ui.Format.money(change) else "")
-                    MaterialAlertDialogBuilder(this@CounterSaleActivity)
-                        .setTitle(title)
-                        .setMessage(text)
-                        .setPositiveButton(R.string.share) { _, _ ->
-                            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
-                        }
+                    // The sale-saved sheet (3 Nov 2026, the owner's mockup): the tick, the number, and the change
+                    // to hand back on its own gold chip — it was a few words at the end of a dialog's title.
+                    com.innovation313.roshankhata.ui.SaleSavedSheet.show(
+                        this@CounterSaleActivity,
+                        title = getString(R.string.pos_posted, sale.sale.saleNumber),
+                        change = change,
+                        receipt = text,
                         // The paired Bluetooth receipt printer (POS Phase 8), the ticket as a picture the roll's width.
-                        .setNeutralButton(R.string.print_receipt) { _, _ ->
+                        onPrint = {
                             // Paid at least partly in cash: the drawer opens as the ticket prints (when it is set to).
                             val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
                             com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash, direct = true)
+                        },
+                        onShare = {
+                            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
                         }
-                        .setNegativeButton(R.string.close, null)
-                        .show()
+                    )
                 }.onFailure { e ->
                     android.util.Log.w("RoshanKhata", "sale not posted", e)
                     message = when (e) {

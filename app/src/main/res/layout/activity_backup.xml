@@ -404,6 +404,31 @@
                     android:textColor="@color/text_muted"
                     android:textSize="13sp" />
 
+                <!-- The two roads, with dots only when a round carried changes (3 Nov 2026, the owner's mockup);
+                     shown while the book syncs with a computer. ui/LiveTrafficView. -->
+                <com.innovation313.roshankhata.ui.LiveTrafficView
+                    android:id="@+id/liveTraffic"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" />
+
+                <!-- This phone's changes not yet taken by the other device, while no road answers. -->
+                <TextView
+                    android:id="@+id/tvLiveWaiting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_change_chip"
+                    android:paddingStart="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/gold_ink"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
                 <TextView
                     android:textAlignment="viewStart"
                     android:id="@+id/tvLiveStatus"

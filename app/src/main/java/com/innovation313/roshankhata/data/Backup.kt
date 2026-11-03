@@ -78,18 +78,30 @@ object Backup {
      * The backup, written straight to [out] by the shared format
      * ([BackupCodec.exportTo]), with this shop's name and Profile.
      */
-    suspend fun exportTo(context: Context, dao: KhataDao, out: java.io.Writer, secrets: Boolean = true) =
-        BackupCodec.exportTo(dao, BusinessProfile.businessName(context), businessProfileToJson(context), out, secrets)
+    suspend fun exportTo(
+        context: Context,
+        dao: KhataDao,
+        out: java.io.Writer,
+        secrets: Boolean = true,
+        /** How far the book is written, a whole percent (Back up now's ring, 3 Nov 2026); called off the main thread. */
+        progress: ((Int) -> Unit)? = null
+    ) = BackupCodec.exportTo(dao, BusinessProfile.businessName(context), businessProfileToJson(context), out, secrets, progress)
 
     /**
      * The backup to a file, buffered, for the paths that hand a file on
      * (Downloads, Drive, the helper's copy). [secrets] false leaves the PINs'
      * hashes out (the helper's copy, BackupCodec.exportTo).
      */
-    suspend fun exportToFile(context: Context, dao: KhataDao, file: File, secrets: Boolean = true): File {
+    suspend fun exportToFile(
+        context: Context,
+        dao: KhataDao,
+        file: File,
+        secrets: Boolean = true,
+        progress: ((Int) -> Unit)? = null
+    ): File {
         file.parentFile?.mkdirs()
         java.io.BufferedWriter(java.io.OutputStreamWriter(java.io.FileOutputStream(file), Charsets.UTF_8), 64 * 1024)
-            .use { exportTo(context, dao, it, secrets) }
+            .use { exportTo(context, dao, it, secrets, progress) }
         return file
     }
 
@@ -166,9 +178,14 @@ object Backup {
      * the system does not clear it behind the owner's back.
      */
     /** The streamed backup's cache file (P6): the one copy every other path copies from. */
-    suspend fun exportToCache(context: Context, dao: KhataDao, secrets: Boolean = true): File {
+    suspend fun exportToCache(
+        context: Context,
+        dao: KhataDao,
+        secrets: Boolean = true,
+        progress: ((Int) -> Unit)? = null
+    ): File {
         val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-        val file = exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets)
+        val file = exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets, progress)
         sweepCache(dir, file)
         return file
     }

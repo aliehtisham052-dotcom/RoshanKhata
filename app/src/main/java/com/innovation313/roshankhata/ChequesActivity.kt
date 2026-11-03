@@ -341,7 +341,11 @@ class ChequesActivity : BaseActivity() {
             .setTitle(R.string.mark_cleared)
             .setMessage(getString(R.string.cleared_confirm, cheque.partyName))
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.mark_cleared) { _, _ -> postCleared(cheque) }
+            .setPositiveButton(R.string.mark_cleared) { _, _ ->
+                // Its row stays where it is until the stamp has landed (3 Nov 2026, the owner's mockup).
+                adapter.hold()
+                postCleared(cheque)
+            }
             .show()
     }
 
@@ -371,16 +375,24 @@ class ChequesActivity : BaseActivity() {
             // The entry and the cheque's new status in ONE transaction, and only while it is still
             // pending (21 Oct 2026): two quick taps, or a tap after the computer's copy cleared it,
             // posted the money twice. Null: nothing was posted.
-            val posted = dao.clearCheque(cheque.id, note)
-            if (posted == null) return@launch
-
-            withContext(Dispatchers.Main) {
-                if (!isFinishing && !isDestroyed) {
-                    Toast.makeText(
-                        this@ChequesActivity,
-                        R.string.cheque_cleared_posted,
-                        Toast.LENGTH_SHORT
-                    ).show()
+            var posted: Long? = null
+            try {
+                posted = dao.clearCheque(cheque.id, note)
+            } finally {
+                // Written: the CLEARED stamp lands on its row, then the list moves on. Not written (or a
+                // failure, which AppScope's handler still reports): the list moves on at once.
+                withContext(kotlinx.coroutines.NonCancellable + Dispatchers.Main) {
+                    if (!isFinishing && !isDestroyed) {
+                        if (posted == null) adapter.releaseNow()
+                        else {
+                            adapter.stamp(cheque.id, ChequeStatus.CLEARED)
+                            Toast.makeText(
+                                this@ChequesActivity,
+                                R.string.cheque_cleared_posted,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
         }
@@ -402,12 +414,22 @@ class ChequesActivity : BaseActivity() {
     }
 
     private fun settle(cheque: ChequeWithParty, status: Int, messageRes: Int) {
+        // Its row stays where it is until the stamp has landed (3 Nov 2026, the owner's mockup).
+        adapter.hold()
         lifecycleScope.launch {
             // Only while it is still pending (25 Oct 2026, the audit): a cheque the computer cleared
             // meanwhile is never marked bounced here, so its payment cannot be posted twice.
             var done = false
-            AppScope.launch { done = dao.settleCheque(cheque.id, status) }.join()
-            if (done) Toast.makeText(this@ChequesActivity, messageRes, Toast.LENGTH_SHORT).show()
+            try {
+                AppScope.launch { done = dao.settleCheque(cheque.id, status) }.join()
+            } finally {
+                if (!isDestroyed) {
+                    if (done) {
+                        adapter.stamp(cheque.id, status)
+                        Toast.makeText(this@ChequesActivity, messageRes, Toast.LENGTH_SHORT).show()
+                    } else adapter.releaseNow()
+                }
+            }
         }
     }
 }

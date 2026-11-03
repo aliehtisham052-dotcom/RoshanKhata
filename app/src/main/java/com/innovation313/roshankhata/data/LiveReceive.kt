@@ -142,13 +142,19 @@ class LiveReceive(private val context: Context) {
          * The owner said yes: this phone's book kept as a copy first (no copy, no replace), then replaced by
          * the shop's, then joined to the shop's devices. Returns false when the copy could not be kept.
          */
-        suspend fun take(context: Context, arrived: Arrived): Boolean {
+        /**
+         * [step] is told as each part is really done (the restore's steps on screen, 3 Nov 2026): 0 this book
+         * kept, 1 replaced with the shop's, 2 live sync joined.
+         */
+        suspend fun take(context: Context, arrived: Arrived, step: (Int) -> Unit = {}): Boolean {
             val app = context.applicationContext
             if (!Snapshots.keepNow(app)) return false
+            step(0)
             val dao = KhataDatabase.get(app).khataDao()
             // The shop's book exactly, its access keys too (else this phone kept its own owner PIN and
             // counter keys wherever the copy said nothing of them, and those never travel in live sync).
             Backup.restore(app, dao, arrived.data, keepAccess = false)
+            step(1)
             val sql = KhataDatabase.get(app).syncSql()
             LiveCrew.join(sql, LiveRunner.install(app), LiveRunner.deviceName(), arrived.offer, arrived.offer.peers, LiveRunner.marks(app))
             // A computer's book: the computer is this phone's WiFi road too, as when the phone joined it. Its first
@@ -159,6 +165,7 @@ class LiveReceive(private val context: Context) {
                 )
             }
             NumberMark.mark = LiveSync.mark(sql)
+            step(2)
             runCatching { arrived.file.delete() }
             // The rounds begin at once (through the relay: a phone has no WiFi road of its own).
             LiveRunner.stop()

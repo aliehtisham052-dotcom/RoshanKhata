@@ -339,6 +339,7 @@ object LiveDesk {
                     is LiveCloud.Result.Done -> {
                         noteRound(d)
                         relayState.value = RelayState.Live(now, r.took)
+                        if (r.carried > 0 || r.wrote > 0) traffic.tryEmit(Traffic(out = r.carried > 0, came = r.wrote > 0, relay = true))
                         // A device whose parcels come by the owner's hosting: no line, nudge or Firebase there wakes
                         // this computer for its changes, so the HTTP clock (15 s up to a minute) stands (R83).
                         val lineless = runCatching { runBlocking { LiveCloud.peerOnLinelessRoad(d.syncSql()) } }.getOrDefault(false)
@@ -386,6 +387,18 @@ object LiveDesk {
         data class Down(val why: String) : RelayState
     }
     val relayState = MutableStateFlow<RelayState>(RelayState.Unknown)
+
+    /**
+     * A round that carried changes (3 Nov 2026, the window's moving dots, the phone's LiveRunner.Traffic): [out] this
+     * computer's changes went, [came] another device's were written here, [relay] by the relay. Never for a quiet round.
+     */
+    data class Traffic(val out: Boolean, val came: Boolean, val relay: Boolean)
+    val traffic = kotlinx.coroutines.flow.MutableSharedFlow<Traffic>(
+        extraBufferCapacity = 4, onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    /** Whether a phone did a WiFi round here lately: the window draws the shop's WiFi as the road in use. */
+    fun wifiRecently(now: Long = System.currentTimeMillis()): Boolean = now - lastWifi < WIFI_QUIET_MS
+
     /** [RelayState.Down]'s word for the kill switch: the window says live sync is paused, not that a relay is down. */
     const val HALTED = "halted"
 
@@ -475,6 +488,10 @@ object LiveDesk {
         val reply = runBlocking { LiveRound.answer(d.syncSql(), r) } ?: return null
         lastWifi = System.currentTimeMillis()
         noteRound(d)
+        // What this round really carried, for the window's dots (3 Nov 2026): the phone's changes in, this book's out.
+        val came = (r.optJSONObject("parcel")?.optJSONArray("c")?.length() ?: 0) > 0 && !reply.has("refused")
+        val went = (reply.optJSONObject("parcel")?.optJSONArray("c")?.length() ?: 0) > 0
+        if (came || went) traffic.tryEmit(Traffic(out = went, came = came, relay = false))
         return reply
     }
 
@@ -658,6 +675,28 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
             else {
                 // The relay road, as it stands: live, off, or down with the relay's own word.
                 val rs by LiveDesk.relayState.collectAsState()
+                // The two roads drawn (3 Nov 2026, the owner's mockup): the WiFi while a phone was here lately, else
+                // the relay as it stands; dots only when a round carried changes (LiveRoads reads LiveDesk.traffic).
+                var wifiNow by remember { mutableStateOf(LiveDesk.wifiRecently()) }
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        wifiNow = LiveDesk.wifiRecently()
+                        kotlinx.coroutines.delay(2_000)
+                    }
+                }
+                val road = when {
+                    wifiNow -> LiveRoad.WIFI
+                    relay && rs is LiveDesk.RelayState.Live -> LiveRoad.RELAY
+                    relay && rs is LiveDesk.RelayState.Down -> LiveRoad.DOWN
+                    else -> LiveRoad.IDLE
+                }
+                LiveRoads(road)
+                // This book's changes no road can carry right now: how many wait to go.
+                val waiting = s.waiting.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+                if ((road == LiveRoad.DOWN || road == LiveRoad.IDLE) && waiting > 0) Tag(
+                    com.innovation313.roshankhata.words.plural(com.innovation313.roshankhata.words.WP.live_changes_waiting, waiting, waiting),
+                    Look.warn, Look.warnTint
+                )
                 if (relay) when (val r = rs) {
                     is LiveDesk.RelayState.Live -> Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = Look.accent, fontSize = 13.sp)
                     // The kill switch is its own sentence; a reason code in the owner's language (LiveWhy, as the phone).

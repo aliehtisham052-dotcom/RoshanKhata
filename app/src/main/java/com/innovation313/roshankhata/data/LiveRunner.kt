@@ -77,6 +77,17 @@ object LiveRunner {
     private var job: Job? = null
     private val state = MutableStateFlow<Status>(Status.Off)
     val status: StateFlow<Status> get() = state
+
+    /**
+     * A round that carried changes (3 Nov 2026, the live card's moving dots, the owner's mockup): [out] this phone's
+     * changes went, [came] the other device's were written here, [relay] by the relay rather than the shop's WiFi.
+     * Told only when something really moved, never for a quiet round, so the card shows nothing moving for nothing.
+     */
+    data class Traffic(val out: Boolean, val came: Boolean, val relay: Boolean, val at: Long = System.currentTimeMillis())
+    private val traffic = kotlinx.coroutines.flow.MutableSharedFlow<Traffic>(
+        extraBufferCapacity = 4, onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val carried: kotlinx.coroutines.flow.SharedFlow<Traffic> get() = traffic
     private var lastFingerprint = 0L
     private var lastSeek = 0L
     private var quietCloud = 0
@@ -300,6 +311,9 @@ object LiveRunner {
                 }
                 LiveSync.noteMark(sql, marks(app))
                 markFrom(db, sql)
+                // What this round really carried, for the card's dots: this phone's parcel out, the computer's in.
+                val wentOut = (request.optJSONObject("parcel")?.optJSONArray("c")?.length() ?: 0) > 0
+                if (wentOut || took.wrote > 0) traffic.tryEmit(Traffic(out = wentOut, came = took.wrote > 0, relay = false))
                 // Only a check made while nothing was on its way counts; a busy round asks again in the next.
                 took.fingerprintMatches?.let { same ->
                     fingerprintBad.value = !same
@@ -400,6 +414,8 @@ object LiveRunner {
                 LiveSync.noteMark(sql, marks(app))
                 markFrom(db, sql)
                 if (!side) state.value = Status.Live(System.currentTimeMillis(), peerName ?: computer, relay = true)
+                // What this round really carried, for the card's dots (a side round's too: it is the relay road).
+                if (r.carried > 0 || r.wrote > 0) traffic.tryEmit(Traffic(out = r.carried > 0, came = r.wrote > 0, relay = true))
                 // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
                 quietCloud = if (r.took > 0 || r.more) 0 else minOf(quietCloud + 1, 2)
                 when {

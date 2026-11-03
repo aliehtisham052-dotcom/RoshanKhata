@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- View tags used by ui/Motion (5 Oct). -->
+<!-- View tags used by ui/Motion (5 Oct) and the 3 Nov 2026 animations. -->
 <resources>
     <item name="motion_pulse" type="id" />
+    <!-- A pill's running animators (ui/SendPill), cancelled when the row is bound again. -->
+    <item name="motion_pill" type="id" />
+    <!-- Whose row a pill was bound for, so a recycled pill is never animated for someone else. -->
+    <item name="motion_pill_party" type="id" />
+    <!-- A view's running result animators (ui/MotionKit), cancelled before the next result. -->
+    <item name="motion_result" type="id" />
 </resources>

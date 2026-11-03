@@ -568,7 +568,6 @@
         <item quantity="other">Drive-এ %1$dটি ব্যবসা</item>
     </plurals>
     <string name="drive_restore_all">সব রিস্টোর করুন</string>
-    <string name="drive_restored_these">রিস্টোর হয়েছে:\n%1$s</string>
     <string name="drive_restore_missed">রিস্টোর করা যায়নি:\n%1$s</string>
     <string name="business_numbered">ব্যবসা %1$d</string>
     <string name="backup_for_business">ব্যাকআপ হচ্ছে: %1$s</string>
@@ -3761,4 +3760,19 @@
     <string name="pdf_stmt_gap_phone">আপনার দোকানের ফোন নম্বর</string>
     <string name="pdf_stmt_gap_address">আপনার দোকানের ঠিকানা</string>
     <string name="pdf_stmt_gap_fix">বিবরণ যোগ করুন</string>
+    <string name="restore_backup_of">%1$s-এর ব্যাকআপ</string>
+    <string name="restore_step_checked">ব্যাকআপ যাচাই হয়েছে</string>
+    <string name="restore_step_kept">এই খাতা দৈনিক কপিতে রাখা হয়েছে</string>
+    <string name="restore_step_kept_why">যাতে এই রিস্টোর ফেরানো যায়</string>
+    <string name="restore_step_replaced">খাতা ব্যাকআপ দিয়ে বদলানো হয়েছে</string>
+    <string name="restore_step_photos">ছবি ফিরে এসেছে</string>
+    <string name="restore_step_joined">লাইভ সিঙ্কে যুক্ত হয়েছে</string>
+    <string name="restore_keep_open">এটি শেষ না হওয়া পর্যন্ত অ্যাপটি খোলা রাখুন।</string>
+    <string name="restore_open_book">খাতা খুলুন</string>
+    <string name="restore_not_done">রিস্টোর হয়নি</string>
+    <string name="restore_join_failed">খাতা বদলানো হয়েছে, কিন্তু লাইভ সিঙ্ক শুরু হয়নি। দোকানের খাতা এই ফোনে আবার নিন।</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%dটি বদল পাঠানোর অপেক্ষায়</item>
+        <item quantity="other">%dটি বদল পাঠানোর অপেক্ষায়</item>
+    </plurals>
 </resources>

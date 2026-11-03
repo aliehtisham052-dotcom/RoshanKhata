@@ -561,7 +561,6 @@
         <item quantity="other">ڊرائيو تي %1$d ڪاروبار مليا</item>
     </plurals>
     <string name="drive_restore_all">سڀ بحال ڪريو</string>
-    <string name="drive_restored_these">بحال ٿي ويا:\n%1$s</string>
     <string name="drive_restore_missed">بحال نه ٿي سگهيا:\n%1$s</string>
     <string name="business_numbered">ڪاروبار %1$d</string>
     <string name="backup_for_business">بيڪ اپ ٿي رهيو آهي: %1$s</string>
@@ -3741,4 +3740,19 @@
     <string name="pdf_stmt_gap_phone">توهان جي دڪان جو فون نمبر</string>
     <string name="pdf_stmt_gap_address">توهان جي دڪان جو پتو</string>
     <string name="pdf_stmt_gap_fix">تفصيل لکو</string>
+    <string name="restore_backup_of">%1$s جو بيڪ اپ</string>
+    <string name="restore_step_checked">بيڪ اپ جانچيو ويو</string>
+    <string name="restore_step_kept">هي کاتو روزاني ڪاپين ۾ محفوظ ٿيو</string>
+    <string name="restore_step_kept_why">ته جيئن هي ريسٽور واپس ٿي سگهي</string>
+    <string name="restore_step_replaced">کاتو بيڪ اپ سان مٽايو ويو</string>
+    <string name="restore_step_photos">تصويرون واپس آيون</string>
+    <string name="restore_step_joined">لائيو سنڪ ۾ شامل ٿيو</string>
+    <string name="restore_keep_open">هي مڪمل ٿيڻ تائين ايپ کليل رکو.</string>
+    <string name="restore_open_book">کاتو کوليو</string>
+    <string name="restore_not_done">بحال نه ٿيو</string>
+    <string name="restore_join_failed">کاتو مٽايو ويو، پر لائيو سنڪ شروع نه ٿيو. دڪان جو کاتو هن فون تي ٻيهر وٺو.</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%d تبديلي وڃڻ جي انتظار ۾</item>
+        <item quantity="other">%d تبديليون وڃڻ جي انتظار ۾</item>
+    </plurals>
 </resources>

@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,745 strings and 59 plurals (2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,755 strings and 60 plurals (2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1596,6 +1596,54 @@ not on a real phone or the owner's laptop.
   "All" lists every entry of the book; the bell is worked out again on every page switch on Windows (background).
 - The purchase order form (the owner's photo, same day): the supplier list has its heading and scrolls, and Save
   says why it waits (`po_pick_supplier`, `po_no_suppliers`), phone and Windows.
+
+### The animations (3 Nov 2026, kmp-desktop-16 — the owner: "professional animation, mockup pehle", then "implement all animations carefully")
+
+Nine moments, from the owner's approved mockups (the animations design canvas), on the phone and,
+where the moment exists, on Windows. Rules kept everywhere: each is feedback for something that really happened
+(a tick never comes before its work; dots move only when changes moved); Material's own curves and lengths
+(`MotionKit` on both: emphasized decelerate 0.05,0.7,0.1,1; standard 0.2,0,0,1; 50–600 ms); nothing bounces; with the
+phone's animations off (`Motion.enabled`) the end state is drawn at once; figures never count up. CI only — nothing
+was seen on a real phone or the laptop.
+
+- **Follow-up's Message** (`SendPill`, `Motion.paperPlane`, `PlaneFlight` in MotionShapes, the faceted
+  `ic_paper_plane_gold`): the plane crouches, is thrown out of the pill and fades (110/280/150 ms); the pill reads
+  "Opened today" with a drawn check (`avd_pill_check`) only once WhatsApp really opened (`Reminder.sendViaWhatsApp`'s
+  `opened` callback — a phone without WhatsApp no longer counts as reminded); the row glides to the foot after the
+  owner comes back (`moveDuration` 320, payload `MARKS`), not under the flying plane; `Motion.settleFlights` in
+  BaseActivity.onResume ends a flight left behind.
+- **Counter sale saved** (`SaleSavedSheet`, `sheet_sale_saved`; Windows `SavedSaleNote` with `DrawnCheck`): the gold
+  ringed tick draws itself, the number and receipt rise, the change to hand back arrives last on its gold chip.
+- **Back up now** (`BackupButtonMotion`, `ProgressRing`; Windows `BackupChip(progress, done)`, `BackupRing`): the
+  ring fills with the real share written (`BackupCodec.exportTo(progress)` over `KhataDao.backupStreamedRows`),
+  "Creating backup… 42%", then a disc and check; taps are not taken meanwhile (not disabled, lesson 10).
+- **Restore** (`ui/RestoreSteps`, `StepMark`, `dialog_restore_steps`; Windows `RestoreRun`/`RestoreStepsDialog`):
+  the steps in their real order — backup checked (before the question), this book kept in Daily copies, replaced,
+  and photos (Drive) or live sync joined (a phone taking a shop's book, `LiveReceive.take(step)`; a Windows pairing)
+  — each ticked when its call returns; a failure crosses its own step and says what it means (`restore_not_done`;
+  `restore_join_failed` when the book was replaced but the join failed); the end says the bin and photo notes and
+  "Open the book" (goHome). The several-shops Drive restore ticks one row per shop. `BackupCodec.ParsedBackup`
+  carries `exportedAt` ("Backup of …"). `drive_restored_these` went (the ticks say it).
+- **Cheques** (`ChequeAdapter.hold/stamp/releaseNow`, item_cheque's `chequeStamp`; Windows `ChequesPane.stamped`,
+  `ChequeStamp`): the write happens at once; the list is held while CLEARED / BOUNCED / CANCELLED lands on the row
+  (180 ms from 1.5×, an echo of its edge, the status word turns), then the row moves on (phone: DiffUtil with stable
+  ids glides it below the pending ones; Windows: `animateItem` fades it out of its tab). Nothing written (another
+  device settled it): released at once, no stamp.
+- **Close the day** (`ResultMark`, `dayCloseResult`; Windows `DrawerResult`): matches / short / more than the books
+  on its own wash with a drawn check, minus or plus — redrawn only when the answer changes kind, not per digit.
+- **Documents** (`data/DocChain` shared + DocChainTest; phone `DocConvertedSheet`, `DocChainMarks`; Windows
+  `DocChainStrip` on the open document): the real chain by `sourceDocId` (a sales order written fresh starts at
+  itself), then the steps still to come; a convert plays the line, the old step's check and the new step's arrival.
+  On the phone the sheet's Preview opens the PDF the convert used to open at once.
+- **Live sync** (`LiveRunner.carried` / `LiveDesk.traffic` — `LiveCloud.Result.Done.carried`/`wrote`, the WiFi
+  parcel's own `c` count; phone `LiveTrafficView` on the Backup card, Windows `LiveRoads` in the window): two roads,
+  the one in use green; three gold dots only when a round carried changes, out or in; no road answering — dashes,
+  a red cross on the cloud and "N changes waiting to go" (`live_changes_waiting`, `LiveSync.State.waiting`).
+- **Statement PDF** (`PdfMaking`, `PageStack`, `dialog_pdf_making`; `PdfExport.buildStatement(onPage)`): nothing for
+  a statement made within 0.4 s; else "Preparing statement…" with a page joining the stack as each is really
+  finished ("Page 2 of 5"), a check, then the usual ready dialog. Windows' statements already preview page by page.
+- Strings (nine languages): restore_backup_of, restore_step_checked/_kept/_kept_why/_replaced/_photos/_joined,
+  restore_keep_open, restore_open_book, restore_not_done, restore_join_failed; plural live_changes_waiting.
 
 ### The shared module (KMP)
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The small check that draws itself inside a pill button (3 Nov 2026): Follow-up's "Opened today",
+  and any other button that turns into what it did. Stroke traced in 240 ms; the colour is the
+  night-aware green_got_text, so it reads on the light and the dark pill alike.
+-->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:name="check"
+                android:pathData="M5,12.5 L9.2,16.7 L19,7"
+                android:strokeWidth="2.6"
+                android:strokeColor="@color/green_got_text"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:trimPathEnd="0" />
+        </vector>
+    </aapt:attr>
+    <target android:name="check">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="240"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathEnd"
+                android:startOffset="40"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType" />
+        </aapt:attr>
+    </target>
+</animated-vector>

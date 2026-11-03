@@ -114,28 +114,42 @@ object Reminder {
     private fun toPlainText(message: String): String =
         message.replace("*", "")
 
-    /** Opens WhatsApp with the message ready. The user presses send. */
-    fun sendViaWhatsApp(context: Context, phone: String?, message: String) {
+    /**
+     * Opens WhatsApp with the message ready. The user presses send. The plane lifts out of [from] when the
+     * caller gives the button that was tapped (Follow-up's Message pill). [opened] runs only once WhatsApp has
+     * really opened (3 Nov 2026): with no WhatsApp on the phone nothing is counted as reminded; [failed] then.
+     */
+    fun sendViaWhatsApp(
+        context: Context,
+        phone: String?,
+        message: String,
+        from: android.view.View? = null,
+        opened: (() -> Unit)? = null,
+        failed: (() -> Unit)? = null
+    ) {
         val number = phone?.let { toWhatsAppNumber(it) }
         if (number.isNullOrBlank()) {
             Toast.makeText(context, R.string.no_phone_number, Toast.LENGTH_SHORT).show()
+            failed?.invoke()
             return
         }
 
         val uri = Uri.parse("https://wa.me/$number?text=${Uri.encode(message)}")
-        // The golden plane takes the message out (5 Oct); WhatsApp opens as it leaves.
-        fly(context) {
+        // The golden plane takes the message out (5 Oct; the 3 Nov 2026 flight); WhatsApp opens as it leaves.
+        fly(context, from) {
             try {
                 context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                opened?.invoke()
             } catch (e: ActivityNotFoundException) {
                 Toast.makeText(context, R.string.whatsapp_not_installed, Toast.LENGTH_LONG).show()
+                failed?.invoke()
             }
         }
     }
 
-    private fun fly(context: Context, then: () -> Unit) {
+    private fun fly(context: Context, from: android.view.View?, then: () -> Unit) {
         val activity = context as? android.app.Activity
-        if (activity == null) then() else Motion.paperPlane(activity, then)
+        if (activity == null) then() else Motion.paperPlane(activity, from, then)
     }
 
     /** Opens the SMS app with the message ready. The user presses send. */
@@ -149,7 +163,7 @@ object Reminder {
         val intent = Intent(Intent.ACTION_SENDTO, uri).apply {
             putExtra("sms_body", message)
         }
-        fly(context) {
+        fly(context, null) {
             try {
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {

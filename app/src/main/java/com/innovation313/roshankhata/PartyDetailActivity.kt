@@ -2664,13 +2664,16 @@ class PartyDetailActivity : BaseActivity() {
             return
         }
 
-        Toast.makeText(this, R.string.generating_statement, Toast.LENGTH_SHORT).show()
+        // Its pages as they are made, when making takes longer than a moment (3 Nov 2026, the owner's mockup;
+        // a "Preparing statement…" toast said nothing of a long account).
+        val making = com.innovation313.roshankhata.ui.PdfMaking.start(this)
 
         lifecycleScope.launch {
             // Rendering a long ledger is real work — keep it off the main thread.
             val file = withContext(Dispatchers.IO) {
                 PdfExport.buildStatement(
                     context = this@PartyDetailActivity,
+                    onPage = { done, all -> making.page(done, all) },
                     partyName = partyName,
                     partyPhone = partyPhone,
                     // Always the full ledger, in the ledger's own order —
@@ -2706,6 +2709,7 @@ class PartyDetailActivity : BaseActivity() {
             }
 
             if (file == null) {
+                making.failed()
                 Toast.makeText(
                     this@PartyDetailActivity,
                     R.string.statement_failed,
@@ -2720,12 +2724,14 @@ class PartyDetailActivity : BaseActivity() {
             // where to send a document they had never seen open.
             // With a word on what the profile still lacks (the way to pay, the shop's phone or
             // address), since the sheet prints only what is filled in.
-            com.innovation313.roshankhata.ui.PdfShare.presentStatement(
-                this@PartyDetailActivity,
-                file,
-                isCustomer = partyIsCustomerAccount,
-                closingBalance = currentBalance
-            )
+            making.done {
+                com.innovation313.roshankhata.ui.PdfShare.presentStatement(
+                    this@PartyDetailActivity,
+                    file,
+                    isCustomer = partyIsCustomerAccount,
+                    closingBalance = currentBalance
+                )
+            }
         }
     }
 

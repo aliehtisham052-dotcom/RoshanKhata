@@ -146,7 +146,11 @@ object LiveCloud {
     /** How a cloud round went. */
     sealed interface Result {
         /** [took] messages written in, [sent] whether one was left for the others. */
-        data class Done(val took: Int, val sent: Boolean, val more: Boolean) : Result
+        /**
+         * [carried]: how many changes this device's message held (0 for one of acknowledgements only); [wrote]: the
+         * rows the others' changes wrote here.
+         */
+        data class Done(val took: Int, val sent: Boolean, val more: Boolean, val carried: Int = 0, val wrote: Int = 0) : Result
         object Off : Result
         object NotPaired : Result
         /** Live sync is stopped for everyone ([LiveControl]); the relay is not asked. */
@@ -213,7 +217,8 @@ object LiveCloud {
     /** Why the last parcel [absorb] refused was refused (the engine's word, e.g. "schema 39"), for the round's answer. */
     @Volatile private var lastRefusal: String? = null
 
-    suspend fun absorb(sql: SyncSql, msg: JSONObject, now: Long = System.currentTimeMillis()): Boolean {
+    /** [wrote], when given, gains the rows the message's changes wrote here (the screens' moving dots, 3 Nov 2026). */
+    suspend fun absorb(sql: SyncSql, msg: JSONObject, now: Long = System.currentTimeMillis(), wrote: IntArray? = null): Boolean {
         lastRefusal = null
         val id = LiveSync.identity(sql) ?: return false
         val dev = msg.optString("dev")
@@ -243,7 +248,10 @@ object LiveCloud {
         return when (val r = applied) {
             is LiveSync.Applied.Refused -> { lastRefusal = r.why; false }
             is LiveSync.Applied.Gap -> { setMeta(sql, k("need_" + dev, id.book), parcel.from.toString()); if (back) setMeta(sql, k("lowered", id.book), "1"); true }
-            else -> { setMeta(sql, k("need_" + dev, id.book), ""); if (back) setMeta(sql, k("lowered", id.book), "1"); true }
+            else -> {
+                if (r is LiveSync.Applied.Done) wrote?.let { it[0] += r.rows }
+                setMeta(sql, k("need_" + dev, id.book), ""); if (back) setMeta(sql, k("lowered", id.book), "1"); true
+            }
         }
     }
 
@@ -389,6 +397,7 @@ object LiveCloud {
             var sealed: ByteArray? = null
             var parcelTo = 0L
             var parcelMore = false
+            var parcelCount = 0
             if (send && (last > posted || acksNow != acksTold || needNow != needTold || heartbeat)) {
                 // Kept under the relay's own limit: a page of long rows goes as several smaller ones
                 // (22 Oct 2026, the review: a page over 1 MB was refused and sent again, unchanged, for ever).
@@ -407,6 +416,7 @@ object LiveCloud {
                 sealed = s
                 val parcel = msg.getJSONObject("parcel")
                 parcelTo = parcel.getLong("to")
+                parcelCount = parcel.optJSONArray("c")?.length() ?: 0
                 // A resend is one page: the rest of the backlog waits for the next resend (or for the peer's "need").
                 parcelMore = parcel.optBoolean("more", false) && !resending
             }
@@ -469,6 +479,7 @@ object LiveCloud {
 
             // The others' messages, in order, from where this device last read.
             var took = 0
+            val wroteRows = IntArray(1)
             var refusedWhy: String? = null
             // One parcel that does not read (not base64, no body) is passed over like one that will not open, and
             // the cursor moves past it (23 Oct 2026, the review's R54: it threw at the same row every round for ever).
@@ -483,7 +494,7 @@ object LiveCloud {
                     // filed under another device (a bug or a lie there) is not taken as that device's.
                     val from = p.optString("from")
                     val same = msg != null && (from.isBlank() || from == msg.optString("dev"))
-                    if (msg != null && same && absorb(sql, msg, now)) {
+                    if (msg != null && same && absorb(sql, msg, now, wroteRows)) {
                         took++
                         // Which relay that device's parcels come by: this device sends there too (roundAll).
                         setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
@@ -527,7 +538,7 @@ object LiveCloud {
                 if (resending) setMeta(sql, k("resend_from", id.book, tag), "$acked|$highWater")
                 sent = true
             }
-            return Result.Done(took, sent, more)
+            return Result.Done(took, sent, more, carried = if (sent) parcelCount else 0, wrote = wroteRows[0])
         } catch (e: java.io.IOException) {
             return Result.Unreachable
         } catch (e: org.json.JSONException) {

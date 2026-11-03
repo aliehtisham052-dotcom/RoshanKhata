@@ -66,10 +66,37 @@ object BackupCodec {
      * book. The document is the same the owner's old backups are: an object
      * whose keys are the tables, restore reads it with the same parser.
      */
-    suspend fun exportTo(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer, secrets: Boolean = true) =
-        dao.readAsOne { exportInside(dao, businessName, profile, out, secrets) }
+    /**
+     * [progress], when given, hears how far the book is written as a whole percent (3 Nov 2026, Back up now's
+     * progress ring on both platforms): the streamed tables' rows written of [KhataDao.backupStreamedRows],
+     * each percent once, 100 only when the last brace is written. It changes nothing in the file.
+     */
+    suspend fun exportTo(
+        dao: KhataDao,
+        businessName: String?,
+        profile: JSONObject,
+        out: java.io.Writer,
+        secrets: Boolean = true,
+        progress: ((Int) -> Unit)? = null
+    ) = dao.readAsOne { exportInside(dao, businessName, profile, out, secrets, progress) }
 
-    private suspend fun exportInside(dao: KhataDao, businessName: String?, profile: JSONObject, out: java.io.Writer, secrets: Boolean) {
+    private suspend fun exportInside(
+        dao: KhataDao,
+        businessName: String?,
+        profile: JSONObject,
+        out: java.io.Writer,
+        secrets: Boolean,
+        progress: ((Int) -> Unit)?
+    ) {
+        val total = if (progress != null) dao.backupStreamedRows().coerceAtLeast(1L) else 1L
+        var written = 0L
+        var said = -1
+        fun tell() {
+            if (progress == null) return
+            val pct = ((written * 100) / total).toInt().coerceIn(0, 99)
+            if (pct != said) { said = pct; progress(pct) }
+        }
+        tell()
         val small = exportSmall(dao, businessName, profile, secrets).toString(2)
         // The small document ends in "\n}" — drop that brace and add the
         // three streamed tables before closing the object ourselves.
@@ -86,6 +113,8 @@ object BackupCodec {
                     first = false
                     out.write(json(r).toString())
                 }
+                written += rows.size
+                tell()
                 after = id(rows.last())
                 if (rows.size < PAGE) break
             }
@@ -102,6 +131,7 @@ object BackupCodec {
         table("auditLog", dao::auditPageForBackup, { it.id }, ::auditToJson)
         out.write("\n}")
         out.flush()
+        progress?.invoke(100)
     }
 
 
@@ -648,7 +678,8 @@ object BackupCodec {
                 settings = settings,
                 loyalty = loyalty,
                 shifts = shifts,
-                version = version
+                version = version,
+                exportedAt = root.optLong("exportedAt", 0L).takeIf { it > 0L }
             )
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
@@ -703,7 +734,9 @@ object BackupCodec {
          * can say exactly what it would take away ([RestoreCheck]); an older
          * file is matched by what its rows say.
          */
-        val version: Int = FORMAT_VERSION
+        val version: Int = FORMAT_VERSION,
+        /** When the copy was written (every backup carries it); null for a file that does not say. */
+        val exportedAt: Long? = null
     )
 
     /**

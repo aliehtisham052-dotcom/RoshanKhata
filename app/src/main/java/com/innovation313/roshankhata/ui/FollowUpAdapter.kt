@@ -34,7 +34,8 @@ import com.innovation313.roshankhata.data.PaymentRequest
  */
 class FollowUpAdapter(
     private val onOpen: (PartyWithBalance) -> Unit,
-    private val onSend: (PartyWithBalance) -> Unit
+    /** The row's party and its Message pill: the plane lifts out of the pill (3 Nov 2026). */
+    private val onSend: (PartyWithBalance, com.google.android.material.button.MaterialButton) -> Unit
 ) : ListAdapter<PartyWithBalance, FollowUpAdapter.VH>(DIFF) {
 
     /**
@@ -59,13 +60,20 @@ class FollowUpAdapter(
     /** Those in their usual paying days today (the Payment Radar, PaymentRadar.likelyNow); set with [habits]. */
     var likely: Set<Long> = emptySet()
 
+    /**
+     * Opened from this screen just now (3 Nov 2026): the pill says "Opened today" at once, though the list is
+     * ranked again only when the owner comes back from WhatsApp — then the row glides to the foot.
+     */
+    val openedHere = mutableSetOf<Long>()
+
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFollowUpName)
         val tvAge: TextView = view.findViewById(R.id.tvFollowUpAge)
         val tvHabit: TextView = view.findViewById(R.id.tvFollowUpHabit)
         val tvWaiting: TextView = view.findViewById(R.id.tvFollowUpWaiting)
         val tvAmount: TextView = view.findViewById(R.id.tvFollowUpAmount)
-        val tvSend: TextView = view.findViewById(R.id.tvFollowUpSend)
+        val tvSend: com.google.android.material.button.MaterialButton = view.findViewById(R.id.tvFollowUpSend)
+        val tvNoPhone: TextView = view.findViewById(R.id.tvFollowUpNoPhone)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -140,15 +148,19 @@ class FollowUpAdapter(
         // A customer with no number cannot be messaged, and the row should
         // say so rather than opening WhatsApp to nothing.
         val hasPhone = !p.phone.isNullOrBlank()
-        holder.tvSend.text = ctx.getString(
-            when {
-                !hasPhone -> R.string.no_phone_number
-                p.id in remindedToday -> R.string.followup_reminded_today
-                else -> R.string.promo_send
-            }
-        )
-        holder.tvSend.isEnabled = hasPhone
-        holder.tvSend.setOnClickListener { if (hasPhone) onSend(p) }
+        holder.tvSend.setTag(R.id.motion_pill_party, p.id)
+        if (hasPhone) {
+            holder.tvNoPhone.visibility = View.GONE
+            holder.tvSend.visibility = View.VISIBLE
+            // The pill (3 Nov 2026): Message with the plane, or Opened today with the check.
+            if (p.id in remindedToday || p.id in openedHere) SendPill.opened(holder.tvSend) else SendPill.message(holder.tvSend)
+            holder.tvSend.setOnClickListener { onSend(p, holder.tvSend) }
+        } else {
+            holder.tvSend.visibility = View.GONE
+            holder.tvSend.setOnClickListener(null)
+            holder.tvNoPhone.visibility = View.VISIBLE
+            holder.tvNoPhone.text = ctx.getString(R.string.no_phone_number)
+        }
 
         // The row itself opens the ledger — the reminder is the shortcut on
         // the side, not the only thing a row can do.
@@ -156,6 +168,12 @@ class FollowUpAdapter(
     }
 
     companion object {
+        /**
+         * The payload for a change of marks only (reminded today, waiting): the rows are bound again in place,
+         * so the move of a reminded row to the foot still glides. notifyDataSetChanged() made it jump.
+         */
+        const val MARKS = "marks"
+
         private val DIFF = object : DiffUtil.ItemCallback<PartyWithBalance>() {
             override fun areItemsTheSame(a: PartyWithBalance, b: PartyWithBalance) = a.id == b.id
             override fun areContentsTheSame(a: PartyWithBalance, b: PartyWithBalance) = a == b

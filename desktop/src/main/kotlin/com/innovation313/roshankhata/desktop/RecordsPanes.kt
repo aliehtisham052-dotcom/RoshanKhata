@@ -431,6 +431,8 @@ fun InvoicesPane(
     // What a refused or failed write said, in the owner's words (doc_locked for a document no longer live).
     var refused by remember { mutableStateOf<String?>(null) }
     var chosen by remember(openId) { mutableStateOf(openId) }
+    // The document a convert just made: its chain plays the step once when it opens.
+    var justMade by remember { mutableStateOf<Long?>(null) }
     deletingInvoice?.let { inv ->
         // The app's question, titled (Marhala 4, the audit: it was Material's, with no title).
         AskDialog(
@@ -519,7 +521,8 @@ fun InvoicesPane(
     fun convert(id: Long, to: String) {
         scope.launch {
             withContext(Dispatchers.IO) { runCatching { dao.convertDocument(id, to) } }
-                .onSuccess { made -> kind = null; chosen = made }
+                // The new one opens with its chain playing the step just taken (3 Nov 2026, the owner's mockup).
+                .onSuccess { made -> kind = null; justMade = made; chosen = made }
                 .onFailure { refused = docFailText(words, it) }
         }
     }
@@ -682,6 +685,8 @@ fun InvoicesPane(
                         // and its pages in its own design.
                         var full by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
                         var source by remember(open.id) { mutableStateOf<com.innovation313.roshankhata.data.Invoice?>(null) }
+                        // Its chain: what it came through, itself, what may follow (DocChain, 3 Nov 2026).
+                        var chain by remember(open.id) { mutableStateOf<List<com.innovation313.roshankhata.data.DocChain.Node>>(emptyList()) }
                         var sheets by remember(open.id) { mutableStateOf<Sheets?>(null) }
                         // The design on show: the saved one until the owner steps through the
                         // phone's ten (only one could be seen before, 20 Oct); Apply keeps it.
@@ -691,6 +696,7 @@ fun InvoicesPane(
                             val row = withContext(Dispatchers.IO) { dao.getInvoice(open.id)?.let { it to dao.invoiceItems(open.id) } }
                             full = row?.first
                             source = row?.first?.sourceDocId?.let { withContext(Dispatchers.IO) { dao.getInvoice(it) } }
+                            chain = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.DocChain.of(dao, open.id) }.getOrDefault(emptyList()) }
                             // What Print and WhatsApp send: the design, else the plain layout (sheetOf).
                             sheets = row?.let { (inv, lines) ->
                                 withContext(Preview.drawing) { runCatching { Sheets.of(sheetOf(inv.copy(templateId = look ?: inv.templateId), lines)) }.getOrNull() }
@@ -754,6 +760,10 @@ fun InvoicesPane(
                                 )
                             }
                         }
+                        // Its chain, the step just taken played once (DocChainStrip draws nothing for a lone document);
+                        // another document opened ends that, so coming back does not play it again.
+                        LaunchedEffect(open.id) { if (justMade != null && justMade != open.id) justMade = null }
+                        DocChainStrip(chain, play = justMade == open.id)
                         // Where the document goes next, by its status (DocActions): the same three words on the phone.
                         val target = com.innovation313.roshankhata.data.DocActions.convertTarget(kindNow, status)
                         val mayAccept = com.innovation313.roshankhata.data.DocActions.canAccept(kindNow, status)

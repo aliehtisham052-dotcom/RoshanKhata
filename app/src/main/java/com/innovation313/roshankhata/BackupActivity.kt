@@ -146,6 +146,12 @@ class BackupActivity : BaseActivity() {
             }
         }
         lifecycleScope.launch { LiveRunner.status.collect { showLive(it) } }
+        // Dots on the roads only when a round really carried changes (3 Nov 2026, the owner's mockup).
+        lifecycleScope.launch {
+            LiveRunner.carried.collect { t ->
+                findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)?.carry(t.out, t.came, t.relay)
+            }
+        }
 
         if (DriveFeature.ENABLED) {
             findViewById<android.view.View>(R.id.driveSection).visibility = android.view.View.VISIBLE
@@ -222,14 +228,25 @@ class BackupActivity : BaseActivity() {
      * copy the app can always restore from without the owner hunting for
      * anything, and only then the share sheet as an extra.
      */
+    /** Back up now is writing (3 Nov 2026): a second tap waits for this one. */
+    private var backingUp = false
+
     private fun createBackup() {
-        Toast.makeText(this, R.string.creating_backup, Toast.LENGTH_SHORT).show()
+        if (backingUp) return
+        backingUp = true
+        // The button itself shows how far the book is written (3 Nov 2026; a "Creating backup…" toast before).
+        val motion = com.innovation313.roshankhata.ui.BackupButtonMotion(findViewById(R.id.btnBackup))
+        motion.start()
 
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
                 // Streamed to one cache file, then copied (P6, 7 Oct): the
                 // book is never held in memory as a string, however big.
-                val shareFile = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
+                val shareFile = try {
+                    Backup.exportToCache(this@BackupActivity, dao, progress = { pct ->
+                        runOnUiThread { if (!isFinishing && !isDestroyed) motion.progress(pct) }
+                    })
+                } catch (e: Exception) { null }
                 val downloadPath = shareFile?.let { Backup.saveToDownloads(this@BackupActivity, it) }
                 shareFile?.let { Backup.writeInternalCopy(this@BackupActivity, it) }
 
@@ -239,6 +256,8 @@ class BackupActivity : BaseActivity() {
             val (downloadPath, shareFile) = result
 
             if (downloadPath == null && shareFile == null) {
+                backingUp = false
+                motion.failed()
                 Toast.makeText(this@BackupActivity, R.string.backup_failed, Toast.LENGTH_LONG)
                     .show()
                 return@launch
@@ -247,22 +266,26 @@ class BackupActivity : BaseActivity() {
             // A successful backup clears the home-screen reminder.
             com.innovation313.roshankhata.data.BackupReminder.recordBackup(this@BackupActivity)
 
-            // Tell the owner exactly where it went. "Backup created" is useless
-            // if they cannot then find the thing.
-            MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(R.string.backup_done_title)
-                .setMessage(
-                    if (downloadPath != null) {
-                        getString(R.string.backup_done_saved, downloadPath)
-                    } else {
-                        getString(R.string.backup_done_internal)
+            // The ring closes into its check first, then: tell the owner exactly where it went. "Backup
+            // created" is useless if they cannot then find the thing.
+            motion.done {
+                backingUp = false
+                if (isFinishing || isDestroyed) return@done
+                MaterialAlertDialogBuilder(this@BackupActivity)
+                    .setTitle(R.string.backup_done_title)
+                    .setMessage(
+                        if (downloadPath != null) {
+                            getString(R.string.backup_done_saved, downloadPath)
+                        } else {
+                            getString(R.string.backup_done_internal)
+                        }
+                    )
+                    .setNegativeButton(R.string.ok, null)
+                    .setPositiveButton(R.string.share_copy) { _, _ ->
+                        if (shareFile != null) shareBackup(shareFile)
                     }
-                )
-                .setNegativeButton(R.string.ok, null)
-                .setPositiveButton(R.string.share_copy) { _, _ ->
-                    if (shareFile != null) shareBackup(shareFile)
-                }
-                .show()
+                    .show()
+            }
         }
     }
 
@@ -379,6 +402,21 @@ class BackupActivity : BaseActivity() {
         }
         val shown = if (LiveRunner.mismatch.value) text + "\n" + getString(R.string.live_mismatch) else text
         findViewById<android.widget.TextView>(R.id.tvLiveStatus).text = shown
+        // The two roads (3 Nov 2026): the one in use, or none answering; hidden until a computer keeps this book.
+        val road = when (s) {
+            is LiveRunner.Status.Live -> if (s.relay) com.innovation313.roshankhata.ui.LiveTrafficView.Road.RELAY
+                else com.innovation313.roshankhata.ui.LiveTrafficView.Road.WIFI
+            LiveRunner.Status.Unreachable, is LiveRunner.Status.RelayDown -> com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN
+            LiveRunner.Status.NotHere, LiveRunner.Status.Halted, is LiveRunner.Status.Failed,
+            is LiveRunner.Status.UpdateNeeded, is LiveRunner.Status.KeyBusy -> com.innovation313.roshankhata.ui.LiveTrafficView.Road.IDLE
+            else -> null
+        }
+        findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic).apply {
+            visibility = if (road == null) android.view.View.GONE else android.view.View.VISIBLE
+            road?.let { this.road = it }
+        }
+        val waitingChip = findViewById<android.widget.TextView>(R.id.tvLiveWaiting)
+        if (road != com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN) waitingChip.visibility = android.view.View.GONE
         val off = s == LiveRunner.Status.Off || s == LiveRunner.Status.Rejoin || s == LiveRunner.Status.NotAccepted
         findViewById<MaterialButton>(R.id.btnLiveStop).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
         findViewById<MaterialButton>(R.id.btnLiveDevices).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
@@ -391,7 +429,17 @@ class BackupActivity : BaseActivity() {
             // Changes from the other device this book could not take yet, said here too (R52: only the computer's
             // window said it). A day later they are given up into the conflicts list (Devices and conflicts).
             val app = applicationContext
-            val held = withContext(Dispatchers.IO) { runCatching { LiveSync.state(KhataDatabase.get(app).syncSql()).held }.getOrDefault(0) }
+            val syncState = withContext(Dispatchers.IO) { runCatching { LiveSync.state(KhataDatabase.get(app).syncSql()) }.getOrNull() }
+            val held = syncState?.held ?: 0
+            // While no road answers: how many of this phone's changes wait to go (they go once a road answers).
+            val waiting = (syncState?.waiting ?: 0L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+            if (road == com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN && waiting > 0) {
+                waitingChip.text = Digits.quantity(resources, R.plurals.live_changes_waiting, waiting, waiting)
+                if (waitingChip.visibility != android.view.View.VISIBLE) {
+                    waitingChip.visibility = android.view.View.VISIBLE
+                    com.innovation313.roshankhata.ui.MotionKit.popIn(waitingChip, duration = 200, from = 0.92f)
+                }
+            } else waitingChip.visibility = android.view.View.GONE
             // The relay cannot ring this phone (no Firebase key there, R70): said, instead of "fine" everywhere.
             val wakeOff = on && withContext(Dispatchers.IO) {
                 runCatching { com.innovation313.roshankhata.data.LiveCloud.wakeOff(KhataDatabase.get(app).syncSql()) }.getOrDefault(false)
@@ -690,27 +738,47 @@ class BackupActivity : BaseActivity() {
     }
 
     private fun takeReceived(receive: com.innovation313.roshankhata.data.LiveReceive, arrived: com.innovation313.roshankhata.data.LiveReceive.Arrived) {
-        Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
+        // The same steps as a restore (3 Nov 2026): this book kept, replaced with the shop's, live sync joined.
+        val steps = com.innovation313.roshankhata.ui.RestoreSteps.show(
+            this, getString(R.string.restoring), arrived.data.businessName,
+            listOf(
+                com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_kept), getString(R.string.restore_step_kept_why)),
+                com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_replaced)),
+                com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_joined))
+            )
+        )
+        steps.start(0)
         val appContext = applicationContext
         lifecycleScope.launch {
+            // How far it got, so a failure after the book was replaced is not called "nothing changed".
+            var reached = -1
             // On the app's own scope: a screen turned mid-way does not leave the book half replaced.
             val outcome = com.innovation313.roshankhata.data.AppScope.async {
-                runCatching { com.innovation313.roshankhata.data.LiveReceive.take(appContext, arrived) }
+                runCatching {
+                    com.innovation313.roshankhata.data.LiveReceive.take(appContext, arrived) { i ->
+                        reached = i
+                        steps.done(i)
+                        if (i < 2) steps.start(i + 1)
+                    }
+                }
             }.await()
             receive.close()
-            if (isFinishing || isDestroyed) return@launch
             val ok = outcome.getOrDefault(false)
-            MaterialAlertDialogBuilder(this@BackupActivity)
-                .setTitle(R.string.live_title)
-                .setMessage(
-                    when {
-                        ok -> getString(R.string.live_receive_done)
-                        outcome.isSuccess -> getString(R.string.restore_keep_failed)
-                        else -> getString(R.string.snapshot_restore_failed)
-                    }
-                )
-                .setPositiveButton(R.string.ok) { _, _ -> recreate() }
-                .show()
+            when {
+                ok -> steps.finish(getString(R.string.restore_done), getString(R.string.live_receive_done), getString(R.string.ok)) { recreate() }
+                outcome.isSuccess -> {
+                    steps.failed(0)
+                    steps.finish(getString(R.string.restore_not_done), getString(R.string.restore_keep_failed), getString(R.string.ok)) {}
+                }
+                else -> {
+                    steps.failRunning()
+                    steps.finish(
+                        getString(R.string.restore_not_done),
+                        getString(if (reached >= 1) R.string.restore_join_failed else R.string.snapshot_restore_failed),
+                        getString(R.string.ok)
+                    ) { if (reached >= 1) recreate() }
+                }
+            }
         }
     }
 
@@ -947,8 +1015,37 @@ class BackupActivity : BaseActivity() {
         }
     }
 
+    /** What a backup holds, as its question counted it: "1240 entries · 86 customers · 12 suppliers". */
+    private fun restoreCounts(data: BackupCodec.ParsedBackup): String {
+        val customers = data.parties.count { it.isCustomer }
+        val suppliers = data.parties.size - customers
+        return listOfNotNull(
+            Digits.quantity(resources, R.plurals.bin_party_entries, data.entries.size, data.entries.size),
+            if (customers > 0) Digits.quantity(resources, R.plurals.customer_count, customers, customers) else null,
+            if (suppliers > 0) Digits.quantity(resources, R.plurals.supplier_count, suppliers, suppliers) else null
+        ).joinToString(" \u00B7 ")
+    }
+
+    /** "Backup of 2 Nov 2026, 9:14 PM": the copy's own time, else Drive's. */
+    private fun restoreSub(data: BackupCodec.ParsedBackup, driveAt: Long?): String? =
+        (data.exportedAt ?: driveAt?.takeIf { it > 0L })?.let { getString(R.string.restore_backup_of, Format.dateTime(it)) }
+
     private fun doRestore(data: BackupCodec.ParsedBackup, drive: DriveSource? = null) {
-        Toast.makeText(this, R.string.restoring, Toast.LENGTH_SHORT).show()
+        // The restore's steps, each ticked when its work has really finished (3 Nov 2026, the owner's mockup
+        // "Restore steps"; a "Restoring…" toast said nothing until the end): the backup was read and checked
+        // before the question, then this book is kept in Daily copies, then replaced, then, from Drive, its
+        // photos. A failure shows on its step, in the step's own words.
+        val steps = com.innovation313.roshankhata.ui.RestoreSteps.show(
+            this, getString(R.string.restoring), restoreSub(data, drive?.let { it.biz.modifiedAt }),
+            listOfNotNull(
+                com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_checked), restoreCounts(data)),
+                com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_kept), getString(R.string.restore_step_kept_why)),
+                com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_replaced)),
+                if (drive != null) com.innovation313.roshankhata.ui.RestoreSteps.Step(getString(R.string.restore_step_photos)) else null
+            )
+        )
+        steps.done(0)
+        steps.start(1)
 
         lifecycleScope.launch {
             // The restore itself on the app's own scope (21 Oct 2026): a screen turned mid-restore no
@@ -959,32 +1056,31 @@ class BackupActivity : BaseActivity() {
                     // This book as it stands, kept first (Daily copies), so the restore can be undone.
                     // No copy, no restore (21 Oct 2026).
                     val kept = com.innovation313.roshankhata.data.Snapshots.keepNow(appContext)
-                        .also { if (it) Backup.restore(appContext, dao, data) }
-                    // From Drive (23 Oct 2026, the review): this phone now stands on that shop's backup, so
-                    // its next upload continues it instead of being asked about "another phone's" file.
-                    if (kept && drive != null && Businesses.active(appContext).id == drive.biz.id) {
-                        BackupReminder.recordBackupOf(appContext, drive.biz.id)
-                        DriveBackup.rememberSeen(appContext, drive.biz.modifiedAt, drive.biz.id)
+                    if (kept) {
+                        steps.done(1)
+                        steps.start(2)
+                        Backup.restore(appContext, dao, data)
+                        steps.done(2)
+                        // From Drive (23 Oct 2026, the review): this phone now stands on that shop's backup, so
+                        // its next upload continues it instead of being asked about "another phone's" file.
+                        // Bookkeeping only: the book is already back, so a slip here is not a failed restore.
+                        if (drive != null && Businesses.active(appContext).id == drive.biz.id) runCatching {
+                            BackupReminder.recordBackupOf(appContext, drive.biz.id)
+                            DriveBackup.rememberSeen(appContext, drive.biz.modifiedAt, drive.biz.id)
+                        }
                     }
                     kept
                 }
             }.await()
             // A restore that failed rolled back whole (22 Oct 2026, the review: it crashed the app and said nothing).
             if (outcome.isFailure) {
-                if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
-                    .setTitle(R.string.restore_warning_title)
-                    .setMessage(R.string.snapshot_restore_failed)
-                    .setPositiveButton(R.string.ok, null)
-                    .show()
+                steps.failRunning()
+                steps.finish(getString(R.string.restore_not_done), getString(R.string.snapshot_restore_failed), getString(R.string.ok)) {}
                 return@launch
             }
-            val kept = outcome.getOrDefault(false)
-            if (!kept) {
-                if (!isFinishing) MaterialAlertDialogBuilder(this@BackupActivity)
-                    .setTitle(R.string.restore_warning_title)
-                    .setMessage(R.string.restore_keep_failed)
-                    .setPositiveButton(R.string.ok, null)
-                    .show()
+            if (!outcome.getOrDefault(false)) {
+                steps.failed(1)
+                steps.finish(getString(R.string.restore_not_done), getString(R.string.restore_keep_failed), getString(R.string.ok)) {}
                 return@launch
             }
 
@@ -999,6 +1095,7 @@ class BackupActivity : BaseActivity() {
             // simply were not in this backup. Say which of the two happened.
             var noImages = false
             if (drive != null) {
+                steps.start(3)
                 imagesFailed = withContext(Dispatchers.IO) {
                     // That shop's own archive, by its Drive number (23 Oct 2026, the review).
                     val result = DriveBackup.readImagesForBusiness(appContext, drive.account, drive.biz.id)
@@ -1009,16 +1106,13 @@ class BackupActivity : BaseActivity() {
                         else -> runCatching { BackupImages.restore(appContext, dao, bytes) }.isFailure
                     }
                 }
+                when {
+                    imagesFailed -> steps.failed(3)
+                    noImages -> steps.skipped(3)
+                    else -> steps.done(3)
+                }
             } else {
                 noImages = true
-            }
-
-            if (imagesFailed) {
-                Toast.makeText(
-                    this@BackupActivity,
-                    R.string.drive_images_restore_failed,
-                    Toast.LENGTH_LONG
-                ).show()
             }
 
             // A backup preserves EXACTLY what was in the ledger when it was
@@ -1033,31 +1127,17 @@ class BackupActivity : BaseActivity() {
             // fault, so the wording differs from a Drive backup that simply
             // had no archive beside it.
             val imagesNote = when {
+                imagesFailed -> getString(R.string.drive_images_restore_failed)
                 !noImages -> null
                 drive == null -> getString(R.string.restore_file_no_images)
                 else -> getString(R.string.restore_no_images)
             }
-
-            if (deletedParties > 0 || imagesNote != null) {
-                val body = listOfNotNull(
-                    if (deletedParties > 0)
-                        Digits.string(resources, R.string.restore_done_with_bin, deletedParties) else null,
-                    imagesNote
-                ).joinToString("\n\n")
-                MaterialAlertDialogBuilder(this@BackupActivity)
-                    .setTitle(R.string.restore_done)
-                    .setMessage(body)
-                    .setPositiveButton(R.string.ok) { _, _ -> goHome() }
-                    .setCancelable(false)
-                    .show()
-            } else {
-                Toast.makeText(
-                    this@BackupActivity,
-                    R.string.restore_done,
-                    Toast.LENGTH_LONG
-                ).show()
-                goHome()
-            }
+            val body = listOfNotNull(
+                if (deletedParties > 0) Digits.string(resources, R.string.restore_done_with_bin, deletedParties) else null,
+                imagesNote
+            ).joinToString("\n\n")
+            // Every screen is started again on the restored book (goHome), once the owner has seen it is done.
+            steps.finish(getString(R.string.restore_done), body, getString(R.string.restore_open_book)) { goHome() }
         }
     }
 
@@ -1712,18 +1792,24 @@ class BackupActivity : BaseActivity() {
      * the screen; with the screen gone the app is simply restarted on the shop it ends on.
      */
     private fun restoreAll(account: String, plans: List<DrivePlan>) {
-        Toast.makeText(this, R.string.drive_restoring, Toast.LENGTH_SHORT).show()
+        // One step per shop, ticked once that shop's book is kept, replaced and its photos are back
+        // (3 Nov 2026, the owner's mockup "Restore steps"); a shop that could not be restored gets its cross.
+        val steps = com.innovation313.roshankhata.ui.RestoreSteps.show(
+            this, getString(R.string.drive_restoring), null,
+            plans.map { com.innovation313.roshankhata.ui.RestoreSteps.Step(it.label) }
+        )
         val app = applicationContext
         val startId = Businesses.active(app).id
         com.innovation313.roshankhata.data.AppScope.launch {
             val done = mutableListOf<String>()
             val failed = mutableListOf<String>()
-            for (p in plans) {
+            for ((i, p) in plans.withIndex()) {
                 val file = p.file
-                if (file == null) { failed += p.label; continue }
+                if (file == null) { failed += p.label; steps.failed(i); continue }
+                steps.start(i)
                 try {
                     val (result, data) = Backup.parseFile(file)
-                    if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += p.label; continue }
+                    if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += p.label; steps.failed(i); continue }
                     val target = if (p.asNew) Businesses.create(app, p.biz.name.orEmpty())
                         else Businesses.ensure(app, p.biz.id, p.biz.name)
                     withContext(Dispatchers.Main) { Businesses.switchTo(app, target.id) }
@@ -1735,7 +1821,7 @@ class BackupActivity : BaseActivity() {
                         com.innovation313.roshankhata.data.Snapshots.keepNow(app)
                             .also { if (it) Backup.restore(app, liveDao, data) }
                     }.getOrDefault(false)
-                    if (!kept) { failed += p.label; continue }
+                    if (!kept) { failed += p.label; steps.failed(i); continue }
 
                     // Images from the Drive shop's own archive, by its Drive number (23 Oct 2026, the
                     // review: a shop given a new number here took another shop's photos). A shop without
@@ -1751,8 +1837,10 @@ class BackupActivity : BaseActivity() {
                         DriveBackup.rememberSeen(app, p.biz.modifiedAt, target.id)
                     }
                     done += p.label
+                    steps.done(i)
                 } catch (e: Exception) {
                     failed += p.label
+                    steps.failed(i)
                 } finally {
                     file.delete()
                 }
@@ -1762,21 +1850,15 @@ class BackupActivity : BaseActivity() {
                 withContext(Dispatchers.Main) { Businesses.switchTo(app, startId) }
             }
 
-            val body = buildString {
-                if (done.isNotEmpty()) append(getString(R.string.drive_restored_these, done.joinToString("\n") { "• $it" }))
-                if (failed.isNotEmpty()) {
-                    if (isNotEmpty()) append("\n\n")
-                    append(getString(R.string.drive_restore_missed, failed.joinToString("\n") { "• $it" }))
-                }
-            }
+            // Each shop's tick or cross says which came back; the words name only the ones that did not.
+            val body = if (failed.isEmpty()) null
+                else getString(R.string.drive_restore_missed, failed.joinToString("\n") { "• $it" })
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
-                    MaterialAlertDialogBuilder(this@BackupActivity)
-                        .setTitle(R.string.restore_done)
-                        .setMessage(body)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.ok) { _, _ -> goHome() }
-                        .show()
+                    steps.finish(
+                        getString(if (done.isEmpty()) R.string.restore_not_done else R.string.restore_done),
+                        body, getString(R.string.restore_open_book)
+                    ) { goHome() }
                 } else {
                     // Every screen still holds the book it was opened on: start them again on this one.
                     app.startActivity(
