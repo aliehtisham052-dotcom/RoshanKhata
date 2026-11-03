@@ -325,32 +325,15 @@ class CashbookActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.TextFit.relax(container)
     }
 
-    /** The Z report for today: every figure summed from the rows, shown and shareable. */
+    /**
+     * The day report: since 3 Nov 2026 the day book (DayBookActivity), the same figures with the day's every entry
+     * under them and any day stepped back to; it was a dialog of today's totals.
+     */
     private fun showDayReport() {
         // The day's profit, expected cash and the till's difference are the shop's figures (23 Oct 2026, the
         // review): a cashier needs a manager's PIN, as for every other report.
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.REPORTS) { showDayReport() }) return
-        lifecycleScope.launch {
-            val now = System.currentTimeMillis()
-            val day = DayCloseMath.dayOf(now)
-            val from = DayCloseMath.startOf(day)
-            val report = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.ZReport.compute(dao, from, from + 24L * 60 * 60 * 1000) }
-            val words = com.innovation313.roshankhata.data.AndroidWords(this@CashbookActivity)
-            val lines: List<Pair<String, String>> = report.lines(words) { v: Double -> Format.money(v) }
-            val text = Format.dateOnly(now) + "\n" +
-                lines.joinToString("\n") { (k, v) -> "$k: $v" } +
-                (if (report.counted == null) "\n\n" + getString(R.string.z_no_close) else "")
-            MaterialAlertDialogBuilder(this@CashbookActivity)
-                .setTitle(R.string.z_title)
-                .setMessage(text)
-                .setPositiveButton(R.string.share) { _, _ ->
-                    startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
-                        .putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.z_title) + "\n" + text), getString(R.string.z_title)))
-                }
-                .setNeutralButton(R.string.print_receipt) { _, _ -> com.innovation313.roshankhata.ui.TextReceipt.print(this@CashbookActivity, lifecycleScope, getString(R.string.z_title) + "\n" + text) }
-                .setNegativeButton(R.string.close, null)
-                .show()
-        }
+        startActivity(android.content.Intent(this, DayBookActivity::class.java))
     }
 
     private val listLimit = kotlinx.coroutines.flow.MutableStateFlow(com.innovation313.roshankhata.data.ListWindow.PAGE)

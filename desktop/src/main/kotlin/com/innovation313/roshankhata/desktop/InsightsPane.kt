@@ -54,14 +54,17 @@ import kotlinx.coroutines.withContext
  * phone's (Insights.thisMonth, Profit.thisMonth / lastMonth).
  */
 @Composable
-fun InsightsPane(dao: KhataDao, reload: Int) {
+fun InsightsPane(dao: KhataDao, reload: Int, onOpen: (Long) -> Unit = {}) {
     val c = LocalRoshanColors.current
     var data by remember { mutableStateOf<SaleInsights?>(null) }
     var profit by remember { mutableStateOf<Pair<Profit.ProfitReport, Profit.ProfitReport>?>(null) }
+    var lapsed by remember { mutableStateOf<List<com.innovation313.roshankhata.data.Lapsed.Customer>?>(null) }
     LaunchedEffect(reload) {
         data = withContext(Dispatchers.IO) { Insights.thisMonth(dao) }
         // Profit reads the sale and bill lines twice more; it comes after, so the first figures are not held up.
         profit = withContext(Dispatchers.IO) { runCatching { Profit.thisMonth(dao) to Profit.lastMonth(dao) }.getOrNull() }
+        // Customers who stopped coming (3 Nov 2026), read last: one grouped read of the khata.
+        lapsed = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Lapsed.list(dao) }.getOrNull() }
     }
     FluentPage(word(W.insights_title), word(W.insights_subtitle)) {
         val d = data ?: return@FluentPage
@@ -99,9 +102,24 @@ fun InsightsPane(dao: KhataDao, reload: Int) {
                 products(Modifier.fillMaxWidth()); earned(Modifier.fillMaxWidth()); customers(Modifier.fillMaxWidth())
             }
         }
+        // Customers who stopped coming (3 Nov 2026): the biggest buyers first; a click opens the customer.
+        lapsed?.let { list ->
+            InsightCard(word(W.lapsed_title), Modifier.fillMaxWidth()) {
+                Text(word(W.lapsed_help), color = c.textMuted, fontSize = 12.sp)
+                if (list.isEmpty()) Text(word(W.lapsed_none), color = c.inkSoft, fontSize = 13.sp)
+                list.take(LAPSED_SHOWN).forEach { row ->
+                    com.innovation313.roshankhata.screens.LapsedRow(row, onClick = { onOpen(row.habit.partyId) })
+                    Rule()
+                }
+                if (list.size > LAPSED_SHOWN) Text(plural(WP.customer_count, list.size, list.size), color = c.textMuted, fontSize = 12.sp)
+            }
+        }
         Text(word(W.insights_profit_note), color = c.textMuted, fontSize = 12.sp)
     }
 }
+
+/** How many of the customers who stopped coming the page lists; the count says the rest. */
+private const val LAPSED_SHOWN = 12
 
 @Composable
 private fun InsightCard(title: String, modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {

@@ -838,6 +838,11 @@
     <string name="insights_total_sale">کل فروش \u00b7 این ماه</string>
     <string name="insights_top_products">پرفروش‌ترین محصولات</string>
     <string name="insights_top_customers">بهترین مشتریان</string>
+    <string name="lapsed_title">دیگر نمی‌آیند</string>
+    <string name="lapsed_help">مشتری‌های همیشگی که به اندازهٔ دو برابر فاصلهٔ معمولشان، و دست‌کم 30 روز، خریدی نکرده‌اند. پرخریدها اول. مشتری را باز کنید تا تماس بگیرید یا در واتس‌اپ پیام دهید.</string>
+    <string name="lapsed_last">آخرین خرید %1$s، %2$s پیش</string>
+    <string name="lapsed_usual">معمولاً هر %1$s یک بار می‌خرید · روی هم %2$s</string>
+    <string name="lapsed_none">هیچ مشتری همیشگی‌ای آمدن را کنار نگذاشته است.</string>
     <string name="insights_up">\u25b2 %1$d%% بیشتر از ماه گذشته (%2$s)</string>
     <string name="insights_down">\u25bc %1$d%% کمتر از ماه گذشته (%2$s)</string>
     <string name="insights_no_compare">نخستین ماه فروش \u2014 هنوز چیزی برای مقایسه نیست.</string>
@@ -3001,6 +3006,9 @@
     <string name="pos_void_reason">دلیل ابطال</string>
     <string name="pos_void_confirm">%1$s باطل شود؟ ردیف‌های دفتر و صندوق به سطل می‌روند.</string>
     <string name="pos_voided">باطل</string>
+    <string name="pos_void_correct">ابطال و اصلاح</string>
+    <string name="pos_void_corrected">%1$s باطل شد. کالاهایش روی فاکتور است: اصلاح کنید، سپس فروش را تکمیل کنید.</string>
+    <string name="pos_void_till_busy">یک فاکتور روی پیشخوان باز است. اول آن را تکمیل کنید یا نگه دارید.</string>
     <string name="pos_status_done">انجام‌شده</string>
     <string name="pos_status_void">باطل</string>
     <string name="pos_recent">فروش‌های اخیر</string>
@@ -3051,6 +3059,9 @@
     <string name="pos_refund_account">در حساب بماند</string>
     <string name="pos_return_qty_help">فروخته %1$s · تاکنون برگشته %2$s</string>
     <string name="pos_return_posted">مرجوعی %1$s ذخیره شد</string>
+    <string name="pos_exchange_start">ثبت تعویض</string>
+    <string name="pos_exchange_started">تعویض %1$s: کالاهای تازه را برای همین مشتری ثبت کنید.</string>
+    <string name="pos_exchange_started_cash">تعویض %1$s: کالاهای تازه را ثبت کنید. بازپرداخت %2$s در صندوق می‌ماند و اولین پرداخت این فاکتور است؛ فقط مابه‌التفاوت را بگیرید.</string>
     <string name="pos_returns">مرجوعی‌ها</string>
     <string name="pos_err_over_sold">بیش از مقدار فروخته‌شده برمی‌گردد</string>
     <string name="pos_err_walk_in_cash">به مشتری گذری کل مبلغ نقدی برگردانده می‌شود</string>
@@ -3624,6 +3635,10 @@
     <string name="documents_title">اسناد</string>
     <string name="doc_add">افزودن سند</string>
     <string name="doc_pick_kind">کدام سند؟</string>
+    <string name="order_paste">چسباندن سفارش واتس‌اپ</string>
+    <string name="order_paste_empty">اول پیام سفارش مشتری را کپی کنید، سپس اینجا بچسبانید.</string>
+    <string name="order_paste_check">از پیام خوانده شد: پیش از ذخیره، هر کالا، مقدار و نرخ را بررسی کنید.</string>
+    <string name="order_paste_none">هیچ کالایی از پیام خوانده نشد. فقط سطرهای سفارش را کپی کنید و دوباره امتحان کنید.</string>
     <string name="doc_accept">علامت «پذیرفته‌شده»</string>
     <string name="doc_cancel_confirm">%1$s لغو شود؟ با شماره خود در سوابق می‌ماند و پس از آن قابل تغییر نیست.</string>
     <string name="audit_doc_converted">سند تبدیل شد</string>

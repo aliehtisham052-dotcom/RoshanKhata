@@ -80,6 +80,8 @@ class InvoiceEditorActivity : BaseActivity() {
         const val EXTRA_FROM_ENTRY_ID = "from_entry_id"
         /** Which document a NEW one is (schema 40, one of [DocKind.saved]); absent means the invoice. */
         const val EXTRA_KIND = "doc_kind"
+        /** A customer's order message pasted from WhatsApp (3 Nov 2026): the new document's lines are read from it. */
+        const val EXTRA_PASTED_ORDER = "pasted_order"
         private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
     }
 
@@ -369,8 +371,11 @@ class InvoiceEditorActivity : BaseActivity() {
             applyKind()
             val fromEntry = intent.getLongExtra(EXTRA_FROM_ENTRY_ID, -1L).takeIf { it > 0 }
             // Read again after a rotation too, the same way an edited invoice is.
+            val pasted = intent.getStringExtra(EXTRA_PASTED_ORDER)?.takeIf { it.isNotBlank() }
             if (fromEntry != null) {
                 lifecycleScope.launch { loadFromEntry(fromEntry) }
+            } else if (pasted != null) {
+                lifecycleScope.launch { loadFromPaste(pasted, announce = savedInstanceState == null) }
             } else {
                 addRow()
                 showStep(1)
@@ -425,6 +430,21 @@ class InvoiceEditorActivity : BaseActivity() {
         btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
         EntryInvoice.rows(entry, dao.itemsOfEntry(entryId)).forEach { addRow(it) }
         showStep(1)
+    }
+
+    /**
+     * A new sales order from a pasted WhatsApp order (3 Nov 2026, [com.innovation313.roshankhata.data.OrderPaste]):
+     * a row per item the message names, the shop's product where its words name one (its price as the rate), the
+     * customer's own words where none does. Still a NEW document: nothing is written until Save. Read again after a
+     * rotation, as an entry's lines are; said once.
+     */
+    private suspend fun loadFromPaste(text: String, announce: Boolean) {
+        val products = withContext(Dispatchers.IO) { runCatching { dao.productsOnce() }.getOrDefault(emptyList()) }
+        val lines = com.innovation313.roshankhata.data.OrderPaste.parse(text, products)
+        if (lines.isEmpty()) addRow()
+        else lines.forEach { l -> addRow(InvoiceItem(invoiceId = 0, itemName = l.name, quantity = l.quantity, unit = l.unit, rate = l.rate)) }
+        showStep(1)
+        if (announce) Toast.makeText(this, if (lines.isEmpty()) R.string.order_paste_none else R.string.order_paste_check, Toast.LENGTH_LONG).show()
     }
 
     /**

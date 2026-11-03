@@ -727,18 +727,30 @@ fun CounterSalePane(
             }
         }
     }
-    // A return just written: its slip on the receipt printer, asked once (3 Nov 2026). Its refund line is the question's body.
+    // A return just written (3 Nov 2026): what may follow it — its slip on the receipt printer, and on an empty counter
+    // the exchange's new goods ([com.innovation313.roshankhata.data.CounterDraft.startExchange]). Its refund line is the body.
     slip?.let { (ret, lines) ->
-        AskDialog(
-            words.text(W.pos_return_posted, ret.returnNumber),
-            lines.firstOrNull { it.kind == com.innovation313.roshankhata.data.ReturnReceiptText.Kind.PLAIN }?.text.orEmpty(),
-            word(W.print_receipt),
-            onConfirm = {
-                onReceipt(ThermalReceipt.Job(ReturnReceipt.lines(lines), com.innovation313.roshankhata.data.ReturnReceiptText.cashOut(ret), direct = true))
-                slip = null
-            },
-            onDismiss = { slip = null }
-        )
+        val close = { slip = null }
+        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = words.text(W.pos_return_posted, ret.returnNumber),
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(260.dp))) {
+            DialogFrame(words.text(W.pos_return_posted, ret.returnNumber), onClose = close, footer = {
+                FluentButton(word(W.close), close, kind = ButtonKind.SUBTLE)
+                FluentButton(word(W.print_receipt), {
+                    onReceipt(ThermalReceipt.Job(ReturnReceipt.lines(lines), com.innovation313.roshankhata.data.ReturnReceiptText.cashOut(ret), direct = true))
+                }, kind = ButtonKind.STANDARD, icon = "ic_print")
+                if (draft.isEmpty) FluentButton(word(W.pos_exchange_start), {
+                    draft.startExchange(ret)
+                    saved = null
+                    told = if (ret.refundMethod == PaymentMethod.CASH && ret.refundAmount > 0.0)
+                        words.text(W.pos_exchange_started_cash, ret.returnNumber, Format.money(ret.refundAmount))
+                    else words.text(W.pos_exchange_started, ret.returnNumber)
+                    slip = null
+                }, kind = ButtonKind.ACCENT)
+            }) {
+                Text(lines.firstOrNull { it.kind == com.innovation313.roshankhata.data.ReturnReceiptText.Kind.PLAIN }?.text.orEmpty(),
+                    color = LocalRoshanColors.current.ink, fontSize = 14.sp)
+            }
+        }
     }
     voidingReturn?.let { r ->
         var reason by remember(r.id) { mutableStateOf("") }
@@ -766,20 +778,39 @@ fun CounterSalePane(
     }
     voiding?.let { s ->
         var reason by remember(s.id) { mutableStateOf("") }
-        AppDialog(onCloseRequest = { voiding = null }, onPreviewKeyEvent = escCloses { voiding = null }, title = word(W.pos_void), state = rememberDialogState(width = fitW(480.dp), height = fitH(300.dp))) {
+        /**
+         * The void; with [correct] (3 Nov 2026, "Sale theek karein") the ticket's goods then come back on the empty
+         * counter as a new ticket to fix and complete ([com.innovation313.roshankhata.data.CounterDraft.reRing]); the
+         * voided one stays in the book with its reason.
+         */
+        fun runVoid(correct: Boolean) {
+            scope.launch {
+                // A ticket with goods already back, or from a day that is closed, is not voided:
+                // a return is the way (21 Oct 2026), and the screen says which.
+                val refusal = withContext(Dispatchers.IO) { runCatching { dao.voidRefusal(s.id) }.getOrNull() }
+                val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason, allowedBy = voidingBy) }.getOrDefault(false) }
+                voiding = null; tick++; onChanged()
+                if (ok && correct && draft.isEmpty) {
+                    val again = withContext(Dispatchers.IO) { runCatching { dao.saleWithLines(s.id) to com.innovation313.roshankhata.data.Counter.onHand(dao) }.getOrNull() }
+                    val full = again?.first
+                    val stock = again?.second
+                    if (full != null && stock != null) {
+                        draft.reRing(full, onHandOf = { stock[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
+                        saved = null
+                        told = words.text(W.pos_void_corrected, s.saleNumber)
+                        return@launch
+                    }
+                }
+                told = if (ok) words.text(W.pos_voided) + " " + s.saleNumber
+                    else words.text(com.innovation313.roshankhata.screens.voidRefusalWord(refusal, W.pos_void_failed))
+            }
+        }
+        AppDialog(onCloseRequest = { voiding = null }, onPreviewKeyEvent = escCloses { voiding = null }, title = word(W.pos_void), state = rememberDialogState(width = fitW(560.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.pos_void), subtitle = words.text(W.pos_void_confirm, s.saleNumber), onClose = { voiding = null }, footer = {
                 FluentButton(word(W.cancel), { voiding = null }, kind = ButtonKind.STANDARD)
-                FluentButton(word(W.pos_void), {
-                    scope.launch {
-                        // A ticket with goods already back, or from a day that is closed, is not voided:
-                        // a return is the way (21 Oct 2026), and the screen says which.
-                        val refusal = withContext(Dispatchers.IO) { runCatching { dao.voidRefusal(s.id) }.getOrNull() }
-                        val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason, allowedBy = voidingBy) }.getOrDefault(false) }
-                        voiding = null; tick++; onChanged()
-                        told = if (ok) words.text(W.pos_voided) + " " + s.saleNumber
-                            else words.text(com.innovation313.roshankhata.screens.voidRefusalWord(refusal, W.pos_void_failed))
-                    }
-                }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
+                // Onto an empty counter only: the ticket being rung up is never cleared to make room.
+                if (draft.isEmpty) FluentButton(word(W.pos_void_correct), { runVoid(correct = true) }, kind = ButtonKind.STANDARD, enabled = reason.isNotBlank())
+                FluentButton(word(W.pos_void), { runVoid(correct = false) }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())
             }) {
                 FluentField(reason, { reason = it }, Modifier.fillMaxWidth(), label = word(W.pos_void_reason))
             }

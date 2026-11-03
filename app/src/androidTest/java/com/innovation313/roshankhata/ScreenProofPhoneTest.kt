@@ -139,6 +139,9 @@ class ScreenProofPhoneTest(
         shoot("26-staff", open(StaffActivity::class.java))
         shoot("27-zakat", open(ZakatActivity::class.java))
         shoot("28-calculator", open(CalculatorActivity::class.java))
+        // The day book (3 Nov 2026): the day report's figures over the day's every entry.
+        shoot("37-day-book", open(DayBookActivity::class.java), settleMs = 2000)
+        shoot("38-lapsed", open(LapsedActivity::class.java), settleMs = 2000)
         // A feature's first-open sheet (1 Nov 2026), as the owner meets it.
         com.innovation313.roshankhata.ui.FeatureIntro.forget(app, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
         shoot("29-intro-cheques", open(ChequesActivity::class.java), settleMs = 2000)

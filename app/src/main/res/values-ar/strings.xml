@@ -886,6 +886,11 @@
     <string name="insights_total_sale">إجمالي المبيعات \u00b7 هذا الشهر</string>
     <string name="insights_top_products">أكثر المنتجات مبيعًا</string>
     <string name="insights_top_customers">أكبر العملاء</string>
+    <string name="lapsed_title">لم يعودوا يأتون</string>
+    <string name="lapsed_help">زبائن منتظمون لم يشتروا منذ ضعف مدتهم المعتادة، و30 يومًا على الأقل. الأكثر شراءً أولًا. افتح الزبون لتتصل به أو ترسل رسالة واتساب.</string>
+    <string name="lapsed_last">آخر شراء %1$s، قبل %2$s</string>
+    <string name="lapsed_usual">كان يشتري كل %1$s · %2$s إجمالًا</string>
+    <string name="lapsed_none">لم يتوقف أي زبون منتظم عن المجيء.</string>
     <string name="insights_up">\u25b2 %1$d%% أكثر من الشهر الماضي (%2$s)</string>
     <string name="insights_down">\u25bc %1$d%% أقل من الشهر الماضي (%2$s)</string>
     <string name="insights_no_compare">أول شهر مبيعات \u2014 لا شيء للمقارنة بعد.</string>
@@ -3161,6 +3166,9 @@
     <string name="pos_void_reason">سبب الإلغاء</string>
     <string name="pos_void_confirm">إلغاء %1$s؟ ستذهب سطور الدفتر والصندوق إلى السلة.</string>
     <string name="pos_voided">ملغى</string>
+    <string name="pos_void_correct">إلغاء وتصحيح</string>
+    <string name="pos_void_corrected">أُلغي %1$s. أصنافه على الفاتورة الآن: صحّحها ثم أتمّ البيع.</string>
+    <string name="pos_void_till_busy">توجد فاتورة مفتوحة على الكاونتر. أتمّها أو علّقها أولاً.</string>
     <string name="pos_status_done">تم</string>
     <string name="pos_status_void">ملغى</string>
     <string name="pos_recent">آخر المبيعات</string>
@@ -3211,6 +3219,9 @@
     <string name="pos_refund_account">يبقى في الحساب</string>
     <string name="pos_return_qty_help">بيع %1$s · أُرجع حتى الآن %2$s</string>
     <string name="pos_return_posted">تم حفظ الإرجاع %1$s</string>
+    <string name="pos_exchange_start">تسجيل الاستبدال</string>
+    <string name="pos_exchange_started">استبدال %1$s: سجّل الأصناف الجديدة للزبون نفسه.</string>
+    <string name="pos_exchange_started_cash">استبدال %1$s: سجّل الأصناف الجديدة. يبقى المبلغ المسترد %2$s في الدرج كأول دفعة لهذه الفاتورة؛ اقبض الفرق فقط.</string>
     <string name="pos_returns">المرتجعات</string>
     <string name="pos_err_over_sold">المرتجع أكثر مما بيع</string>
     <string name="pos_err_walk_in_cash">الزبون العابر يُرد له المبلغ كاملًا نقدًا</string>
@@ -3820,6 +3831,10 @@
     <string name="documents_title">المستندات</string>
     <string name="doc_add">إضافة مستند</string>
     <string name="doc_pick_kind">أي مستند؟</string>
+    <string name="order_paste">لصق طلب من واتساب</string>
+    <string name="order_paste_empty">انسخ رسالة طلب الزبون أولاً، ثم الصقها هنا.</string>
+    <string name="order_paste_check">قُرئ من الرسالة: راجع كل صنف وكميته وسعره قبل الحفظ.</string>
+    <string name="order_paste_none">لم يُقرأ أي صنف من الرسالة. انسخ سطور الطلب فقط وحاول مرة أخرى.</string>
     <string name="doc_accept">تعليم كمقبول</string>
     <string name="doc_cancel_confirm">إلغاء %1$s؟ يبقى في السجل برقمه ولا يمكن تغييره بعد ذلك.</string>
     <string name="audit_doc_converted">تم تحويل مستند</string>

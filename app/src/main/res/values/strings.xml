@@ -852,6 +852,11 @@
     <string name="insights_total_sale">Total Sale \u00b7 This month</string>
     <string name="insights_top_products">Top Products</string>
     <string name="insights_top_customers">Top Customers</string>
+    <string name="lapsed_title">Stopped coming</string>
+    <string name="lapsed_help">Regular customers who have not bought for twice their usual gap, and at least 30 days. Biggest buyers first. Open one to call or send a WhatsApp.</string>
+    <string name="lapsed_last">Last bought %1$s, %2$s ago</string>
+    <string name="lapsed_usual">Used to buy every %1$s · %2$s in all</string>
+    <string name="lapsed_none">No regular customer has stopped coming.</string>
     <string name="insights_up">\u25b2 %1$d%% more than last month (%2$s)</string>
     <string name="insights_down">\u25bc %1$d%% less than last month (%2$s)</string>
     <string name="insights_no_compare">First month of sales \u2014 nothing to compare yet.</string>
@@ -3185,6 +3190,9 @@
     <string name="pos_void_reason">Reason for void</string>
     <string name="pos_void_confirm">Void %1$s? Its khata and cashbook rows go to the bin.</string>
     <string name="pos_voided">Voided</string>
+    <string name="pos_void_correct">Void and correct</string>
+    <string name="pos_void_corrected">%1$s voided. Its items are on the ticket: correct them, then complete the sale.</string>
+    <string name="pos_void_till_busy">A ticket is open on the counter. Complete it or hold it first.</string>
     <string name="pos_status_done">Done</string>
     <string name="pos_status_void">Void</string>
     <string name="pos_recent">Recent sales</string>
@@ -3235,6 +3243,9 @@
     <string name="pos_refund_account">Keep on account</string>
     <string name="pos_return_qty_help">Sold %1$s · back so far %2$s</string>
     <string name="pos_return_posted">Return %1$s saved</string>
+    <string name="pos_exchange_start">Ring up the exchange</string>
+    <string name="pos_exchange_started">Exchange for %1$s: ring up the new goods for the same customer.</string>
+    <string name="pos_exchange_started_cash">Exchange for %1$s: ring up the new goods. The %2$s refund stays in the drawer as this ticket\'s first payment; collect only the difference.</string>
     <string name="pos_returns">Returns</string>
     <string name="pos_err_over_sold">More than was sold is coming back</string>
     <string name="pos_err_walk_in_cash">A walk-in customer is refunded in full, in money</string>
@@ -3808,6 +3819,10 @@
     <string name="documents_title">Documents</string>
     <string name="doc_add">Add document</string>
     <string name="doc_pick_kind">Which document?</string>
+    <string name="order_paste">Paste a WhatsApp order</string>
+    <string name="order_paste_empty">Copy the customer\'s order message first, then paste it here.</string>
+    <string name="order_paste_check">Read from the message: check each item, quantity and rate before saving.</string>
+    <string name="order_paste_none">No item could be read from the message. Copy only the order lines and try again.</string>
     <string name="doc_accept">Mark as Accepted</string>
     <string name="doc_cancel_confirm">Cancel %1$s? It stays on record under its number and cannot be changed afterwards.</string>
     <string name="audit_doc_converted">Document converted</string>

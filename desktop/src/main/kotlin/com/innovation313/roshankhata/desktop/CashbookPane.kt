@@ -52,6 +52,8 @@ import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.WP
+import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -397,13 +399,22 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
     val words = com.innovation313.roshankhata.words.LocalWords.current
     var day by remember { mutableStateOf(com.innovation313.roshankhata.data.DayCloseMath.dayOf(System.currentTimeMillis())) }
     var report by remember { mutableStateOf<com.innovation313.roshankhata.data.ZReport?>(null) }
+    // The day's every entry under its figures (3 Nov 2026, the day book): the phone's DayBookScreen draws the same rows.
+    var rows by remember { mutableStateOf<List<com.innovation313.roshankhata.data.DayBook.Row>?>(null) }
     LaunchedEffect(day) {
         val from = com.innovation313.roshankhata.data.DayCloseMath.startOf(day)
-        report = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ZReport.compute(dao, from, from + 24L * 60 * 60 * 1000) }.getOrNull() }
+        val to = com.innovation313.roshankhata.data.DayCloseMath.startOf(day + 1)
+        report = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ZReport.compute(dao, from, to) }.getOrNull() }
+        rows = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.DayBook.rows(dao, from, to) }.getOrDefault(emptyList()) }
+    }
+    /** The entries as the sheet's lines: time, who and what, and the amount. */
+    fun entryLines(list: List<com.innovation313.roshankhata.data.DayBook.Row>): List<Pair<String, String>> = list.map { r ->
+        (com.innovation313.roshankhata.data.DateWords.formatter("h:mm a").format(java.util.Date(r.at)) + "  " +
+            com.innovation313.roshankhata.data.DayBook.whoText(words, r) + "  ·  " + com.innovation313.roshankhata.data.DayBook.kindText(words, r)) to Format.money(r.amount)
     }
     val title = word(W.z_title)
     val dateLine = Format.dateOnly(com.innovation313.roshankhata.data.DayCloseMath.startOf(day) + 12L * 60 * 60 * 1000)
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(700.dp))) {
         DialogFrame(title, subtitle = dateLine, onClose = onClose, footerStart = {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 // The earlier day: the chevron turned to point back (and mirrored again in RTL, as the next one is).
@@ -420,7 +431,10 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
             }
             FluentButton(word(W.pdf_preview), {
                 val r2 = report ?: return@FluentButton
-                StatementPrint.show(LinesPrint(title, dateLine, r2.lines(words) { Format.money(it) }), title)
+                // The day's entries print under its figures, as the page shows them.
+                val list = rows.orEmpty()
+                StatementPrint.show(LinesPrint(title, dateLine, r2.lines(words) { Format.money(it) } +
+                    listOf(("" to ""), (words.plural(WP.bin_party_entries, list.size, list.size) to "")) + entryLines(list)), title)
             }, kind = ButtonKind.ACCENT, icon = "ic_print", enabled = report != null)
         }) {
             val r = report
@@ -434,6 +448,16 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
                     Rule()
                 }
                 if (r.counted == null) Text(word(W.z_no_close), Modifier.padding(top = 8.dp), color = c.textMuted, fontSize = 12.sp)
+            }
+            val list = rows
+            if (list != null) {
+                Text(plural(WP.bin_party_entries, list.size, list.size), Modifier.padding(top = 14.dp, bottom = 2.dp),
+                    color = c.inkSoft, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                if (list.isEmpty()) Text(word(W.party_no_entries), Modifier.padding(vertical = 8.dp), color = c.textMuted, fontSize = 13.sp)
+                list.forEach { e ->
+                    com.innovation313.roshankhata.screens.DayBookRow(e)
+                    Rule()
+                }
             }
         }
     }
