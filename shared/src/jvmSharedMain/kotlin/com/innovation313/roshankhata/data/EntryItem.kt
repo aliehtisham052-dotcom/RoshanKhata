@@ -173,6 +173,15 @@ data class LastRate(val rate: Double, val unit: String?)
 object RateType {
     const val CREDIT = "CREDIT"
     const val CASH = "CASH"
+
+    /**
+     * Which price list an entry was at: the one rule both entry forms keep (3 Nov 2026 audit, C2). A sale records the
+     * chip when a goods line carries a rate, or when its money was taken on the spot ([paidNow]: the cash "I got" is
+     * paired only with a CASH sale — the phone left a sale of unpriced goods with no rate type, so the ticked payment
+     * was never written and the customer owed money he had paid). Otherwise what the entry already had ([kept]).
+     */
+    fun forEntry(isSale: Boolean, goodsHaveRate: Boolean, cashRate: Boolean, paidNow: Boolean, kept: String?): String? =
+        if (isSale && (goodsHaveRate || paidNow)) (if (cashRate) CASH else CREDIT) else kept
 }
 
 /**

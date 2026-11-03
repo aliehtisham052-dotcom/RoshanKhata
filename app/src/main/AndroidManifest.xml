@@ -129,10 +129,14 @@
             </intent-filter>
         </activity>
 
+        <!--
+          Not noHistory (3 Nov 2026 audit, C3): on Android 7-10 the phone's PIN is asked on a screen of its own and
+          its answer comes back to this one, which Android never delivers to a noHistory screen (it is closed the
+          moment it is hidden), so a PIN-only phone could never be unlocked. Every way out finishes it itself.
+        -->
         <activity
             android:name=".LockActivity"
             android:exported="false"
-            android:noHistory="true"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity

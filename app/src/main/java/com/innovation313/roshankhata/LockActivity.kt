@@ -26,16 +26,33 @@ class LockActivity : BaseActivity() {
         prompt()
     }
 
+    /** The prompt answered — a success or an error: nothing is asked again ([onRestart]). */
+    private var settled = false
+
+    /**
+     * Back from the background with the prompt never answered (3 Nov 2026 audit, C3). This screen is no longer
+     * `noHistory` — on Android 7-10 the phone's PIN is asked on a screen of its own and its answer comes back here,
+     * which a `noHistory` screen never receives (Android closes it the moment it is hidden: the owner was shut out
+     * on every PIN-only phone). Kept instead, it may come back with nothing asking, if a fingerprint dialog was
+     * dropped while away: it asks again, a moment later, unless the PIN screen's answer arrived first.
+     */
+    override fun onRestart() {
+        super.onRestart()
+        window.decorView.postDelayed({ if (!settled && !isFinishing && !isDestroyed) prompt() }, 400L)
+    }
+
     private fun prompt() {
         val executor = ContextCompat.getMainExecutor(this)
 
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                settled = true
                 // Asked again on coming back: the screen underneath is the owner's again.
                 if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
             }
 
             override fun onAuthenticationError(code: Int, message: CharSequence) {
+                settled = true
                 when (code) {
                     // The phone cannot ask at all (no screen lock any more, the sensor and its fallback not there):
                     // the lock cannot be honoured, and saying so beats tearing the app down on every return — a

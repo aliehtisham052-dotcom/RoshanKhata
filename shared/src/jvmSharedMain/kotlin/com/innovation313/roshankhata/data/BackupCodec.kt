@@ -389,7 +389,8 @@ object BackupCodec {
     private fun parseRoot(
         root: JSONObject,
         parties: List<Party>,
-        entries: List<LedgerEntry>,
+        // Mutable: a pairing whose other half is gone is cleared in place (C1, below).
+        entries: MutableList<LedgerEntry>,
         entryItems: List<EntryItem>?,
         streamed: Streamed = Streamed()
     ): Pair<ImportResult, ParsedBackup?> {
@@ -578,6 +579,14 @@ object BackupCodec {
             // only point at products and batches the file also carries. A
             // cash-sale pairing must lead to an entry that exists.
             val entryIds = entries.map { it.id }.toSet()
+            // A cash-sale pairing whose other half the bin purged for good (3 Nov 2026 audit, C1). The link is
+            // a note between two rows, not a foreign key: the survivor stands on its own. Counted as a hole, it
+            // made every copy of such a book refuse to restore — Drive, the daily copies, a phone's pairing — so
+            // it is cleared here instead, which also rescues the copies already made.
+            for (i in entries.indices) {
+                val other = entries[i].pairedEntryId
+                if (other != null && other !in entryIds) entries[i] = entries[i].copy(pairedEntryId = null)
+            }
             // A sale line or payment cascades off its sale, as an invoice line does.
             val saleIds = sales.map { it.id }.toSet()
             val returnIds = returns.map { it.id }.toSet()
@@ -594,7 +603,6 @@ object BackupCodec {
                 entryItems.count { it.entryId !in entryIds } +
                 entryItems.count { it.productId != null && it.productId !in productIds } +
                 entryItems.count { it.billItemId != null && it.billItemId !in billItemIds } +
-                entries.count { it.pairedEntryId != null && it.pairedEntryId !in entryIds } +
                 entries.count { it.billItemId != null && it.billItemId !in billItemIds } +
                 billItems.count { it.productId != null && it.productId !in productIds } +
                 entries.count { it.partyId !in partyIds } +

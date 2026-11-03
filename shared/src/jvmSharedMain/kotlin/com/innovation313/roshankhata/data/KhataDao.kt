@@ -351,7 +351,17 @@ interface KhataDao {
     suspend fun purgeOldEntries(cutoff: Long) {
         keepEntryNumberHigh()
         purgeOldEntryRows(cutoff)
+        clearDanglingPairs()
     }
+
+    /**
+     * A cash sale and its "I got" point at each other (pairedEntryId, not a foreign key). When one half is purged
+     * for good — "only this one" was deleted and the bin emptied — the other must stop pointing at it (3 Nov 2026
+     * audit, C1): a pointer into nothing made every backup of the book refuse to restore. Clears every such
+     * pointer, so a book that already has one is mended by its next purge.
+     */
+    @Query("UPDATE transactions SET pairedEntryId = NULL WHERE pairedEntryId IS NOT NULL AND pairedEntryId NOT IN (SELECT id FROM transactions)")
+    suspend fun clearDanglingPairs()
 
     /*
      * A party is never purged while it still has cheques, payment plans or
@@ -389,6 +399,7 @@ interface KhataDao {
     suspend fun purgeAllEntries() {
         keepEntryNumberHigh()
         purgeAllEntryRows()
+        clearDanglingPairs()
     }
 
     /** Customers in the bin: after emptying it, the ones kept by their bills, cheques, plans or counter tickets. */
@@ -444,6 +455,7 @@ interface KhataDao {
     suspend fun purgeEntry(id: Long) {
         keepEntryNumberHigh()
         purgeEntryRow(id)
+        clearDanglingPairs()
     }
 
     // ---------- Totals ----------
@@ -2829,6 +2841,18 @@ interface KhataDao {
         )
         setPairedEntry(saleId, gotId)
         return gotId
+    }
+
+    /**
+     * A sale written with its money taken on the spot: the sale, its goods lines and the paired cash "I got" in ONE
+     * transaction (3 Nov 2026 audit, M10). Written as two, an app killed between them left a credit sale with no
+     * payment, and a second step that failed showed "not saved" over a sale already written — saved again, it
+     * doubled. Returns the sale's id and the "I got"'s (null only if the pairing was refused).
+     */
+    @Transaction
+    suspend fun insertEntryWithItemsPaidNow(entry: LedgerEntry, items: List<EntryItem>): Pair<Long, Long?> {
+        val saleId = insertEntryWithItems(entry, items)
+        return saleId to recordCashForSale(saleId)
     }
 
     /** One party's entries with their lines, newest first — the khata screen. */

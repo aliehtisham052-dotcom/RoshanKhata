@@ -1564,11 +1564,14 @@ private fun Book(
         val before = forParty?.balance ?: 0.0
         scope.launch {
             withContext(Dispatchers.IO) {
-                val id = dao.insertEntryWithItems(d.entry.copy(billPhotoPath = photoPathOf(d)), d.items.map { linked(dao, it) ?: it })
+                // Ticked on the form: the money came with the goods, so its cash "I got" is written, paired — in the
+                // sale's own transaction (3 Nov 2026 audit, M10: two steps left a sale without its payment if cut).
+                val entry = d.entry.copy(billPhotoPath = photoPathOf(d))
+                val lines = d.items.map { linked(dao, it) ?: it }
+                val (id, gotId) = if (d.paidNow && d.entry.isGiven && d.entry.rateType == com.innovation313.roshankhata.data.RateType.CASH)
+                    dao.insertEntryWithItemsPaidNow(entry, lines)
+                else dao.insertEntryWithItems(entry, lines) to null
                 keepSignature(id, d)
-                // Ticked on the form: the money came with the goods, so its cash "I got" is written, paired.
-                val gotId = if (d.paidNow && d.entry.isGiven && d.entry.rateType == com.innovation313.roshankhata.data.RateType.CASH)
-                    dao.recordCashForSale(id) else null
                 val after = if (gotId != null) before else before + if (d.entry.isGiven) d.entry.amount else -d.entry.amount
                 keepPromise(d.entry.partyId, d, after)
             }
