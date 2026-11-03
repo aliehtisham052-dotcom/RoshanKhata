@@ -223,7 +223,8 @@ class InvoicesActivity : BaseActivity() {
                 invoice.customerName,
                 Digits.quantity(resources, R.plurals.items_count, invoice.itemCount, invoice.itemCount),
                 // A challan prints no prices (DocKind.showsPrices), so its sheet says none either.
-                if (DocKind.showsPrices(to)) Format.money(invoice.grandTotal) else null
+                // The sign and its figure kept on one line (a no-break space), whichever way the line runs.
+                if (DocKind.showsPrices(to)) Format.ltr(Format.money(invoice.grandTotal).replace(' ', '\u00A0')) else null
             ).joinToString(" \u00B7 ")
             com.innovation313.roshankhata.ui.DocConvertedSheet.show(this@InvoicesActivity, chain, { kindWord(it) }, what, open)
         }

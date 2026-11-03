@@ -3755,4 +3755,5 @@
         <item quantity="one">%d تغییر در انتظار ارسال</item>
         <item quantity="other">%d تغییر در انتظار ارسال</item>
     </plurals>
+    <string name="doc_kind_invoice">فاکتور</string>
 </resources>

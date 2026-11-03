@@ -3727,4 +3727,5 @@
         <item quantity="one">%d تبدیلی جانے کے انتظار میں</item>
         <item quantity="other">%d تبدیلیاں جانے کے انتظار میں</item>
     </plurals>
+    <string name="doc_kind_invoice">انوائس</string>
 </resources>

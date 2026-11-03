@@ -67,12 +67,17 @@ object DocConvertedSheet {
                 node.number?.let { n ->
                     addView(TextView(activity).apply {
                         text = Format.ltr(n)
-                        textSize = 11f
                         gravity = Gravity.CENTER
                         maxLines = 1
-                        ellipsize = android.text.TextUtils.TruncateAt.END
                         setTextColor(muted)
-                    })
+                        // A whole number always: smaller when its step's share of the width is narrow (150% text).
+                        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                            this, 7, 11, 1, android.util.TypedValue.COMPLEX_UNIT_SP
+                        )
+                    }, LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, 16f, activity.resources.displayMetrics).toInt()
+                    ))
                 }
             }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         }

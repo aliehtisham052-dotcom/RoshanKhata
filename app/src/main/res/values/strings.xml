@@ -3939,4 +3939,5 @@
         <item quantity="one">%d change waiting to go</item>
         <item quantity="other">%d changes waiting to go</item>
     </plurals>
+    <string name="doc_kind_invoice">Invoice</string>
 </resources>

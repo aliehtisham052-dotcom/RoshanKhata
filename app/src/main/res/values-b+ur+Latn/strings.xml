@@ -3727,4 +3727,5 @@
         <item quantity="one">%d tabdeeli jane ke intezar mein</item>
         <item quantity="other">%d tabdeeliyan jane ke intezar mein</item>
     </plurals>
+    <string name="doc_kind_invoice">Invoice</string>
 </resources>

@@ -209,7 +209,8 @@ class DocumentsTest {
         // Every kind and status has a word in strings.xml.
         val words = com.innovation313.roshankhata.words.desktopWords(java.util.Locale.ENGLISH)
         assertEquals("Delivery Challan", words.text(DocKind.wordKey(DocKind.CHALLAN)))
-        assertEquals("INVOICE", words.text(DocKind.wordKey(DocKind.INVOICE)))
+        // The screen's word in the case of its neighbours (3 Nov 2026); the printed heading is InvoiceTemplateKit's.
+        assertEquals("Invoice", words.text(DocKind.wordKey(DocKind.INVOICE)))
         for (k in DocKind.ALL) assertTrue(words.text(DocKind.wordKey(k)).isNotBlank())
         for (s in DocStatus.ALL) assertTrue(words.text(DocStatus.wordKey(s)).isNotBlank())
     }

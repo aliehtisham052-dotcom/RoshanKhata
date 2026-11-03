@@ -3715,4 +3715,5 @@
     <plurals name="live_changes_waiting">
         <item quantity="other">%d perubahan menunggu dikirim</item>
     </plurals>
+    <string name="doc_kind_invoice">Faktur</string>
 </resources>
