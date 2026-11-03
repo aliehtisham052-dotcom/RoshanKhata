@@ -544,6 +544,34 @@ class CounterSaleActivity : BaseActivity() {
      * and what the customer is credited, in the shop's invoice design, opened to read, print or share. Drawn
      * from the return itself and never saved — the return already holds the money.
      */
+    /**
+     * A return's slip on the paired receipt printer (3 Nov 2026): the lines the computer prints too
+     * ([com.innovation313.roshankhata.data.ReturnReceiptText]), read back from the rows just written. A cash refund
+     * opens the drawer as the slip prints, when the drawer is set to (the money goes back out of it).
+     */
+    private fun printReturnSlip(returnId: Long) {
+        lifecycleScope.launch {
+            val words = AndroidWords(this@CounterSaleActivity)
+            val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
+            val slip = withContext(Dispatchers.IO) {
+                runCatching {
+                    val ret = dao.getReturn(returnId)?.takeIf { !it.isDeleted } ?: return@runCatching null
+                    val saleNumber = ret.saleId?.let { dao.getSale(it)?.saleNumber }
+                    val balance = ret.partyId?.let { dao.liveBalance(it) }
+                    ret to com.innovation313.roshankhata.data.ReturnReceiptText.lines(words, shop, ret, dao.returnItems(returnId), saleNumber, balance)
+                }.getOrNull()
+            }
+            // The return is written either way; only its slip could not be read back to print.
+            if (slip == null) { toast(R.string.ledger_report_failed); return@launch }
+            if (isFinishing || isDestroyed) return@launch
+            com.innovation313.roshankhata.ui.TextReceipt.print(
+                this@CounterSaleActivity, lifecycleScope,
+                com.innovation313.roshankhata.data.ReturnReceiptText.text(slip.second),
+                cash = com.innovation313.roshankhata.data.ReturnReceiptText.cashOut(slip.first), direct = true
+            )
+        }
+    }
+
     private fun openCreditNote(returnId: Long) {
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
@@ -626,10 +654,13 @@ class CounterSaleActivity : BaseActivity() {
                                         val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                         message = getString(R.string.pos_return_posted, number)
                                         dialog.dismiss(); reload()
-                                        // The return's paper, offered at once: a credit note from the row just written.
+                                        // The return's paper, offered at once: a credit note from the row just written, or
+                                        // the slip on the receipt printer (3 Nov 2026: the customer handing goods back had
+                                        // no paper for them unless the A4 note was made).
                                         if (!isFinishing && !isDestroyed) MaterialAlertDialogBuilder(this@CounterSaleActivity)
                                             .setTitle(getString(R.string.pos_return_posted, number))
                                             .setPositiveButton(R.string.doc_kind_credit_note) { _, _ -> openCreditNote(id) }
+                                            .setNeutralButton(R.string.print_receipt) { _, _ -> printReturnSlip(id) }
                                             .setNegativeButton(R.string.close, null)
                                             .show()
                                     }.onFailure {

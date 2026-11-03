@@ -43,7 +43,9 @@ object DocConvertedSheet {
         kindWord: (String) -> String,
         /** Who it is for and what it holds: "Test Customer · 3 items · Rs 54,000". */
         what: String,
-        onOpen: () -> Unit
+        onOpen: () -> Unit,
+        /** The new document to the customer's WhatsApp chat (3 Nov 2026); null shows no such button. */
+        onSend: (() -> Unit)? = null
     ): BottomSheetDialog {
         val view = LayoutInflater.from(activity).inflate(R.layout.sheet_doc_converted, null)
         // The document just made is the last with a number; the one before it is what it was made from.
@@ -98,6 +100,10 @@ object DocConvertedSheet {
 
         val sheet = BottomSheetDialog(activity)
         view.findViewById<MaterialButton>(R.id.btnDocOpen).setOnClickListener { sheet.dismiss(); onOpen() }
+        if (onSend != null) view.findViewById<MaterialButton>(R.id.btnDocSend).apply {
+            visibility = android.view.View.VISIBLE
+            setOnClickListener { sheet.dismiss(); onSend() }
+        }
         view.findViewById<MaterialButton>(R.id.btnDocClose).setOnClickListener { sheet.dismiss() }
         DialogLife.bind(activity, sheet)
         TextFit.relax(view)

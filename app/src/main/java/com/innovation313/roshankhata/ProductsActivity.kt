@@ -51,6 +51,11 @@ class ProductsActivity : BaseActivity() {
     private var allStock: List<Stock.ProductStock> = emptyList()
     /** Each product's technical / generic name, so the search finds a medicine by its salt (31 Oct 2026). */
     private var technicalById: Map<Long, String> = emptyMap()
+    /** Each product's barcode and note (its place), so the search finds a scanned code or "Rack 3" (3 Nov 2026). */
+    private var barcodeById: Map<Long, String> = emptyMap()
+    private var noteById: Map<Long, String> = emptyMap()
+    /** The products themselves, for the price check a scanned code opens. */
+    private var allProducts: List<com.innovation313.roshankhata.data.Product> = emptyList()
     private lateinit var btnLink: MaterialButton
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -112,6 +117,20 @@ class ProductsActivity : BaseActivity() {
                 override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
                 override fun afterTextChanged(s: android.text.Editable?) = show()
             })
+        // The price check (3 Nov 2026): a code typed by a Bluetooth scanner, then its Enter, shows that product's
+        // prices and stock; anything else typed only narrows the list, as before.
+        findViewById<android.widget.EditText>(R.id.etProductSearch).setOnEditorActionListener { v, actionId, event ->
+            val enter = actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
+                actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == android.view.KeyEvent.KEYCODE_ENTER && event.action == android.view.KeyEvent.ACTION_DOWN)
+            val found = if (enter) com.innovation313.roshankhata.data.ProductFind.byCode(allProducts, v.text.toString()) else null
+            if (found != null) showPriceCheck(found)
+            found != null
+        }
+        findViewById<View>(R.id.btnProductScan).apply {
+            androidx.appcompat.widget.TooltipCompat.setTooltipText(this, getString(R.string.pos_scan))
+            setOnClickListener { scanForPrice() }
+        }
         btnLink = findViewById(R.id.btnLinkGoods)
 
         adapter = ProductAdapter { stock -> openCustomers(stock) }
@@ -293,7 +312,11 @@ class ProductsActivity : BaseActivity() {
     private fun refresh() {
         lifecycleScope.launch {
             val stock = com.innovation313.roshankhata.data.NameOrder.sortedBy(Stock.of(dao)) { it.name }
-            technicalById = dao.productsOnce().mapNotNull { p -> p.technicalName?.takeIf { it.isNotBlank() }?.let { p.id to it } }.toMap()
+            val products = dao.productsOnce()
+            technicalById = products.mapNotNull { p -> p.technicalName?.takeIf { it.isNotBlank() }?.let { p.id to it } }.toMap()
+            barcodeById = products.mapNotNull { p -> p.barcode?.trim()?.takeIf { it.isNotEmpty() }?.let { p.id to it } }.toMap()
+            noteById = products.mapNotNull { p -> p.note?.trim()?.takeIf { it.isNotEmpty() }?.let { p.id to it } }.toMap()
+            allProducts = products
 
             allStock = stock
             show()
@@ -308,12 +331,12 @@ class ProductsActivity : BaseActivity() {
      */
     private fun show() {
         val q = findViewById<android.widget.EditText>(R.id.etProductSearch).text.toString().trim()
+        // By name, technical name, barcode (whole, or four of its digits) or note: one rule with the computer's page.
         val shown = if (q.isEmpty()) allStock
         else allStock.filter {
-            com.innovation313.roshankhata.ui.NameSearch.matches(it.name, null, q.lowercase()) ||
-                (technicalById[it.productId]?.let { t -> com.innovation313.roshankhata.ui.NameSearch.matches(t, null, q.lowercase()) } ?: false)
+            com.innovation313.roshankhata.data.ProductFind.matches(it.name, technicalById[it.productId], barcodeById[it.productId], noteById[it.productId], q)
         }
-        adapter.submitList(shown)
+        adapter.submitList(shown.map { ProductAdapter.Row(it, noteById[it.productId]) })
         tvEmptyText.setText(if (allStock.isEmpty()) R.string.no_products else R.string.products_no_match)
         tvEmpty.visibility = if (shown.isEmpty()) View.VISIBLE else View.GONE
         val figures = com.innovation313.roshankhata.data.Digits.FIGURES
@@ -338,6 +361,42 @@ class ProductsActivity : BaseActivity() {
                 1 -> editProduct(stock)
             }
         }
+    }
+
+    /** The camera as a scanner for the price check (3 Nov 2026): a known code shows its product; an unknown one says so. */
+    private fun scanForPrice() {
+        val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_ALL_FORMATS)
+            .enableAutoZoom()
+            .build()
+        com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(this, options).startScan()
+            .addOnSuccessListener { barcode ->
+                val code = barcode.rawValue?.trim().orEmpty()
+                if (code.isEmpty() || isFinishing || isDestroyed) return@addOnSuccessListener
+                val found = com.innovation313.roshankhata.data.ProductFind.byCode(allProducts, code)
+                if (found != null) { showPriceCheck(found); return@addOnSuccessListener }
+                // Nobody carries it: said with the code, and on a phone that may add products, a new one can start from it.
+                val ask = MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.pos_barcode_unknown)
+                    .setMessage(com.innovation313.roshankhata.ui.Format.ltr(code))
+                    .setNegativeButton(R.string.close, null)
+                if (!com.innovation313.roshankhata.data.ViewerMode.isOn(this)) ask.setPositiveButton(R.string.product_add) { _, _ -> addProduct(barcode = code) }
+                ask.show()
+            }
+            .addOnFailureListener { if (!isFinishing && !isDestroyed) Toast.makeText(this, R.string.qr_scan_failed, Toast.LENGTH_SHORT).show() }
+    }
+
+    /** A product's prices, stock and place with nothing put on a ticket ([com.innovation313.roshankhata.ui.PriceCheckSheet]). */
+    private fun showPriceCheck(product: com.innovation313.roshankhata.data.Product) {
+        if (isFinishing || isDestroyed) return
+        val stock = allStock.firstOrNull { it.productId == product.id }
+        // Every product has its line in the stock figures (an untouched one too); this only stands in should one be missing.
+        val fallback = stock ?: Stock.ProductStock(product.id, product.name, 0.0, 0.0, 0.0, null, null)
+        com.innovation313.roshankhata.ui.PriceCheckSheet.show(
+            this, product, stock,
+            onBuyers = { openProductCustomers(fallback) },
+            onEdit = if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) null else ({ editProduct(fallback) })
+        )
     }
 
     private fun openProductCustomers(stock: Stock.ProductStock) {
@@ -375,12 +434,14 @@ class ProductsActivity : BaseActivity() {
      * both ask the same questions. The search box's words start the name, since "no match"
      * is the moment an owner reaches for Add. The list is read again once it is saved.
      */
-    private fun addProduct() {
-        val typed = findViewById<android.widget.EditText>(R.id.etProductSearch).text.toString().trim()
+    private fun addProduct(barcode: String? = null) {
+        // A code scanned for a price that no product carries starts a new product with it, its name left to type.
+        val typed = if (barcode != null) "" else findViewById<android.widget.EditText>(R.id.etProductSearch).text.toString().trim()
         val blank = com.innovation313.roshankhata.data.Product(
             name = typed,
             nameKey = com.innovation313.roshankhata.data.ProductName.key(typed),
-            normalisedName = com.innovation313.roshankhata.data.ProductName.normalised(typed)
+            normalisedName = com.innovation313.roshankhata.data.ProductName.normalised(typed),
+            barcode = barcode
         )
         ProductDetailsDialog.show(activity = this, product = blank, dao = dao, onSaved = {
             findViewById<android.widget.EditText>(R.id.etProductSearch).text.clear()

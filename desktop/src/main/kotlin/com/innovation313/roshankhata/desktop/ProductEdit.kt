@@ -59,6 +59,8 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     var formulation by remember { mutableStateOf(product.formulation.orEmpty()) }
     var registration by remember { mutableStateOf(product.registrationNumber.orEmpty()) }
     var barcode by remember { mutableStateOf(product.barcode.orEmpty()) }
+    // Where it is kept, or a word about it (3 Nov 2026): the product's note, on a form for the first time.
+    var note by remember { mutableStateOf(product.note.orEmpty()) }
     var cost by remember { mutableStateOf(product.costPrice?.let { Calc.trim(it) }.orEmpty()) }
     var lowStock by remember { mutableStateOf(product.lowStockLevel?.let { Calc.trim(it) }.orEmpty()) }
     var packUnit by remember { mutableStateOf(product.packUnit.orEmpty()) }
@@ -111,6 +113,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             salePrice = typed(cash)?.let { Calc.evalPad(it) },
             creditPrice = typed(credit)?.let { Calc.evalPad(it) },
             barcode = typed(barcode),
+            note = typed(note),
             costPrice = typed(cost)?.let { Calc.evalPad(it) },
             lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) },
             // A pack needs both its name and how many are in it; half of one is no pack.
@@ -163,6 +166,8 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             // The counter (POS Phase 2): the pack's barcode (a USB scanner types it here), the
             // unit's cost to the shop, and the stock level that warns in the bell.
             Field(word(W.product_barcode_hint), barcode) { barcode = it; problem = null }
+            Outlined(note, { note = it }, label = { Text(word(W.product_note_label)) }, placeholder = { Text(word(W.product_note_hint)) },
+                singleLine = true, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 Outlined(lowStock, { lowStock = it }, label = { Text(word(W.product_low_stock_hint)) }, singleLine = true, modifier = Modifier.weight(1f), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)

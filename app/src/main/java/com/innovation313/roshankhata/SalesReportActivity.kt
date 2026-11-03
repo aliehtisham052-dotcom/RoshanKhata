@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import android.content.Intent
 import android.os.Bundle
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.innovation313.roshankhata.data.AndroidWords
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -12,10 +13,21 @@ import com.innovation313.roshankhata.screens.RoshanTheme
 import com.innovation313.roshankhata.screens.SalesReportScreen
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.ProvideWords
+import kotlinx.coroutines.launch
 
 /** The sales report (POS Phase 7): the shared screen; the profit summary shared as text. */
 class SalesReportActivity : BaseActivity() {
     private var latest: SalesReport? = null
+    /** The rows on screen and their heading, for Excel (3 Nov 2026): what the computer's page exports. */
+    private var latestRows: Triple<String, List<String>, List<List<String>>>? = null
+    private val dao by lazy { KhataDatabase.get(this).khataDao() }
+
+    /** Excel: the system's save sheet names the file; the rows on screen are written to it, as on the computer. */
+    private val saveCsv = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/csv")) { uri: android.net.Uri? ->
+        val rows = latestRows
+        if (uri == null || rows == null) return@registerForActivityResult
+        writeCsv(uri, rows)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,15 +36,20 @@ class SalesReportActivity : BaseActivity() {
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
             setNavigationOnClickListener { finish() }
             menu.add(R.string.share).setOnMenuItemClickListener { share(); true }
+            // The rows on screen as a spreadsheet (3 Nov 2026, the competitor study: the phone shared text only). An
+            // export waits for a manager's PIN where a cashier may not export, as the computer's does.
+            menu.add(R.string.export_excel).setOnMenuItemClickListener { exportExcel(); true }
             // Dues by age (21 Oct 2026): who owes what, and for how long.
             menu.add(R.string.aging_title).setOnMenuItemClickListener { startActivity(Intent(this@SalesReportActivity, AgingActivity::class.java)); true }
         }
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
             android.content.res.Configuration.UI_MODE_NIGHT_YES
         val words = AndroidWords(this)
-        val dao = KhataDatabase.get(this).khataDao()
         findViewById<ComposeView>(R.id.reportCompose).setContent {
-            RoshanTheme(dark = dark) { ProvideWords(words) { SalesReportScreen(dao, onReport = { latest = it }, pickRange = { current, picked -> pickRange(current, picked) }) } }
+            RoshanTheme(dark = dark) { ProvideWords(words) {
+                SalesReportScreen(dao, onReport = { latest = it }, pickRange = { current, picked -> pickRange(current, picked) },
+                    onRows = { heading, head, rows -> latestRows = Triple(heading, head, rows) })
+            } }
         }
     }
 
@@ -57,6 +74,39 @@ class SalesReportActivity : BaseActivity() {
             picked(toLocal(a) to toLocal(b))
         }
         picker.show(supportFragmentManager, "report_range")
+    }
+
+    private fun exportExcel() {
+        if (latestRows == null) return
+        val p = com.innovation313.roshankhata.data.Access.Permission.EXPORT
+        val go = { saveCsv.launch("RoshanKhata_Sales_" + java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).format(java.util.Date()) + ".csv") }
+        if (com.innovation313.roshankhata.data.Access.can(p)) go()
+        else com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, p, com.innovation313.roshankhata.ui.AccessUi.what(this, p)) { _ -> go() }
+    }
+
+    /** The heading, the column names and the rows, quoted cell by cell (CsvCell), with the mark Excel reads UTF-8 by. */
+    private fun writeCsv(uri: android.net.Uri, rows: Triple<String, List<String>, List<List<String>>>) {
+        lifecycleScope.launch {
+            // The name the save sheet gave the file, as the owner will look for it.
+            val name = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                runCatching {
+                    contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)
+                        ?.use { c -> if (c.moveToFirst()) c.getString(0) else null }
+                }.getOrNull()
+            } ?: "RoshanKhata_Sales.csv"
+            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                runCatching {
+                    val csv = StringBuilder("\ufeff")
+                    com.innovation313.roshankhata.data.CsvCell.appendRow(csv, listOf(rows.first))
+                    (listOf(rows.second) + rows.third).forEach { row -> com.innovation313.roshankhata.data.CsvCell.appendRow(csv, row) }
+                    contentResolver.openOutputStream(uri)!!.use { it.write(csv.toString().toByteArray(Charsets.UTF_8)) }
+                    // Who did what (25 Oct 2026, the computer's rule): a file of the shop's sales left the app.
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = name) }
+                }.isSuccess
+            }
+            android.widget.Toast.makeText(this@SalesReportActivity,
+                if (ok) getString(R.string.report_saved_to, name) else getString(R.string.ledger_report_failed), android.widget.Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun share() {

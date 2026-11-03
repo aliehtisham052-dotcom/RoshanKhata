@@ -133,6 +133,8 @@ object ProductDetailsDialog {
         etSalePrice.isEnabled = mayPrice; etCreditPrice.isEnabled = mayPrice
         // The counter (POS Phase 2): barcode (typed, or read by the camera), cost, warning level.
         val etBarcode = field(R.id.etBarcode).apply { setText(product.barcode ?: "") }
+        // Where it is kept, or a word about it (3 Nov 2026): the product's note, on a form for the first time.
+        val etNote = field(R.id.etProductNote).apply { setText(product.note ?: "") }
         val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
         val etLowStock = field(R.id.etLowStock).apply { setText(product.lowStockLevel?.let { Format.plain(it) } ?: "") }
         // Packs and tax (schema 36). The pack price and the tax are prices: a cashier sees them, the owner sets them.
@@ -203,6 +205,7 @@ object ProductDetailsDialog {
             salePrice = Digits.parse(typed(etSalePrice)),
             creditPrice = Digits.parse(typed(etCreditPrice)),
             barcode = typed(etBarcode),
+            note = typed(etNote),
             costPrice = Digits.parse(typed(etCostPrice)),
             lowStockLevel = Digits.parse(typed(etLowStock)),
             // A pack needs both its name and how many are in it; half of one is no pack.

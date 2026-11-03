@@ -201,6 +201,28 @@
                 app:strokeColor="@color/page_line" />
         </LinearLayout>
 
+        <!-- Where it is kept, or a word about it (3 Nov 2026): the product's note, in the book, its backups and
+             live sync since the first products, and on no form until now. The products list, its search and the
+             price check show it. -->
+        <TextView
+            android:id="@+id/tvProductNoteLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="12dp"
+            android:labelFor="@+id/etProductNote"
+            android:text="@string/product_note_label" />
+
+        <EditText
+            style="@style/EditorField"
+            android:id="@+id/etProductNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="@string/product_note_hint"
+            android:importantForAutofill="no"
+            android:inputType="textCapSentences"
+            android:maxLength="120"
+            android:textAlignment="viewStart" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

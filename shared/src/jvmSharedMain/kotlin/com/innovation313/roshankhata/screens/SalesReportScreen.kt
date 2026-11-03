@@ -122,7 +122,12 @@ fun periodLabel(p: ReportPeriod, custom: Pair<Long, Long>?): String =
 @Composable
 fun SalesReportScreen(
     dao: KhataDao, reload: Int = 0, modifier: Modifier = Modifier, onReport: ((SalesReport) -> Unit)? = null,
-    pickRange: ((current: Pair<Long, Long>?, onPicked: (Pair<Long, Long>) -> Unit) -> Unit)? = null
+    pickRange: ((current: Pair<Long, Long>?, onPicked: (Pair<Long, Long>) -> Unit) -> Unit)? = null,
+    /**
+     * The rows on screen and their heading ("By item · This month"), each time they change: what the phone's
+     * Excel writes (3 Nov 2026), the same rows the computer's page exports ([reportRows]).
+     */
+    onRows: ((heading: String, head: List<String>, rows: List<List<String>>) -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     var period by remember { mutableStateOf(ReportPeriod.TODAY) }
@@ -162,6 +167,8 @@ fun SalesReportScreen(
             }
         }
         val (head, rows) = reportRows(r, view)
+        val heading = word(view.wordKey) + "  ·  " + periodLabel(period, custom)
+        androidx.compose.runtime.SideEffect { onRows?.invoke(heading, head, rows) }
         if (rows.isEmpty()) { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { Text(word(W.srep_none), color = c.textMuted) }; return }
         LazyColumn(Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 4.dp)) {
             item(key = "chart") {

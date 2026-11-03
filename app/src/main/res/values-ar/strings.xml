@@ -3186,6 +3186,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">الباركود (اختياري)</string>
+    <string name="product_note_label">ملاحظة أو مكان (اختياري)</string>
+    <string name="product_note_hint">مثلاً الرف 3، المخزن</string>
     <string name="product_cost_hint">سعر التكلفة (اختياري)</string>
     <string name="product_low_stock_hint">تنبيه عند مخزون (اختياري)</string>
     <string name="product_barcode_taken">هذا الباركود موجود على %1$s</string>

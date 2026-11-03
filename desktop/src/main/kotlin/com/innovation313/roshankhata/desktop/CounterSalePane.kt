@@ -176,6 +176,8 @@ fun CounterSalePane(
     var voiding by remember { mutableStateOf<SaleSummary?>(null) }
     var returning by remember { mutableStateOf<com.innovation313.roshankhata.screens.ReturnDraft?>(null) }
     var voidingReturn by remember { mutableStateOf<com.innovation313.roshankhata.data.ReturnSummary?>(null) }
+    // A return just written and its slip's lines, until the owner prints it or says no.
+    var slip by remember { mutableStateOf<Pair<com.innovation313.roshankhata.data.SaleReturn, List<com.innovation313.roshankhata.data.ReturnReceiptText.Line>>?>(null) }
     // Who gave their PIN for the void or return now open (null: the user's own right); the DAO refuses one nobody allowed (23 Oct 2026).
     var voidingBy by remember { mutableStateOf<String?>(null) }
     var returningBy by remember { mutableStateOf<String?>(null) }
@@ -703,15 +705,40 @@ fun CounterSalePane(
                         try {
                             val r = withContext(Dispatchers.IO) { runCatching { dao.postReturn(draft.toReturn(), draft.toItems(), allowedBy = returningBy) } }
                             r.onSuccess { id ->
-                                val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
+                                // The rows just written, read back for the slip the receipt printer may print (3 Nov 2026).
+                                val made = withContext(Dispatchers.IO) {
+                                    runCatching {
+                                        val ret = dao.getReturn(id) ?: return@runCatching null
+                                        val saleNumber = ret.saleId?.let { dao.getSale(it)?.saleNumber }
+                                        val balance = ret.partyId?.let { dao.liveBalance(it) }
+                                        ret to com.innovation313.roshankhata.data.ReturnReceiptText.lines(
+                                            words, shopName ?: words.text(W.app_name), ret, dao.returnItems(id), saleNumber, balance
+                                        )
+                                    }.getOrNull()
+                                }
+                                val number = made?.first?.returnNumber.orEmpty()
                                 told = words.text(W.pos_return_posted, number)
                                 returning = null; tick++; onChanged()
+                                slip = made
                             }.onFailure { problem = counterFail(it) }
                         } finally { draft.posting = false }
                     }
                 })
             }
         }
+    }
+    // A return just written: its slip on the receipt printer, asked once (3 Nov 2026). Its refund line is the question's body.
+    slip?.let { (ret, lines) ->
+        AskDialog(
+            words.text(W.pos_return_posted, ret.returnNumber),
+            lines.firstOrNull { it.kind == com.innovation313.roshankhata.data.ReturnReceiptText.Kind.PLAIN }?.text.orEmpty(),
+            word(W.print_receipt),
+            onConfirm = {
+                onReceipt(ThermalReceipt.Job(ReturnReceipt.lines(lines), com.innovation313.roshankhata.data.ReturnReceiptText.cashOut(ret), direct = true))
+                slip = null
+            },
+            onDismiss = { slip = null }
+        )
     }
     voidingReturn?.let { r ->
         var reason by remember(r.id) { mutableStateOf("") }
@@ -963,7 +990,8 @@ object SaleReceipt {
             out += ThermalReceipt.Line(words.text(W.pos_subtotal) + ": " + Format.money(sale.subtotal), 18f)
             if (sale.discountAmount > 0.0) out += ThermalReceipt.Line(words.text(W.pos_discount) + ": −" + Format.money(sale.discountAmount), 18f)
             if (sale.taxAmount > 0.0) out += ThermalReceipt.Line(words.text(W.pos_tax) + ": " + Format.money(sale.taxAmount), 18f)
-            if (sale.roundOff != 0.0) out += ThermalReceipt.Line(words.text(W.pos_round_off) + ": " + Format.money(sale.roundOff), 18f)
+            // A round-off down keeps its minus, as the phone's receipt does (3 Nov 2026: "Rs 0.40" read as forty paisa added).
+            if (sale.roundOff != 0.0) out += ThermalReceipt.Line(words.text(W.pos_round_off) + ": " + Format.signedIfNegative(sale.roundOff), 18f)
         }
         out += ThermalReceipt.Line(words.text(W.pos_grand_total) + "  " + Format.money(sale.grandTotal), 30f, bold = true, centre = true)
         // Tax that was inside the prices (schema 36): said, not added.
@@ -974,7 +1002,8 @@ object SaleReceipt {
             out += ThermalReceipt.Line(m + ": " + Format.money(p.amount) + (p.reference?.let { "  $it" } ?: ""), 18f)
         }
         if (sale.creditAmount > 0.005) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)
-        balance?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + Format.money(it), 18f) }
+        // The balance in the customer's words, its side said, as the phone's receipt says it (3 Nov 2026).
+        balance?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.text(words, it), 18f) }
         // Loyalty (21 Oct 2026): spent, earned, held now.
         points?.let { pt ->
             if (pt.used > 0.0) out += ThermalReceipt.Line(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue)), 18f)
@@ -983,6 +1012,24 @@ object SaleReceipt {
         out += ThermalReceipt.Line("")
         out += ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
         return out
+    }
+}
+
+/** A return's slip on the receipt printer (3 Nov 2026): the shared lines ([com.innovation313.roshankhata.data.ReturnReceiptText]) at the ticket's sizes. */
+object ReturnReceipt {
+    fun lines(lines: List<com.innovation313.roshankhata.data.ReturnReceiptText.Line>): List<ThermalReceipt.Line> = lines.map { l ->
+        when (l.kind) {
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.SHOP -> ThermalReceipt.Line(l.text, 26f, bold = true, centre = true)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.HEADING -> ThermalReceipt.Line(l.text, 24f, bold = true, centre = true)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.META -> ThermalReceipt.Line(l.text, 18f, centre = true)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.NAME -> ThermalReceipt.Line(l.text, 22f, bold = true)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.ITEM -> ThermalReceipt.Line(l.text, 20f)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.DETAIL -> ThermalReceipt.Line(l.text, 18f)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.TOTAL -> ThermalReceipt.Line(l.text, 26f, bold = true, centre = true)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.PLAIN -> ThermalReceipt.Line(l.text, 18f)
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.BLANK -> ThermalReceipt.Line("")
+            com.innovation313.roshankhata.data.ReturnReceiptText.Kind.FOOT -> ThermalReceipt.Line(l.text, 16f, centre = true)
+        }
     }
 }
 

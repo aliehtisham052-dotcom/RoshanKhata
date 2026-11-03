@@ -58,7 +58,6 @@ import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
-import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.plural
@@ -255,8 +254,8 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     val c = LocalRoshanColors.current
     val products by remember { dao.observeProducts() }.collectAsState(emptyList())
     var query by remember { mutableStateOf("") }
-    val q = query.trim().lowercase()
-    val shown = products.filter { NameSearch.matches(it.name, it.company, q) }
+    // By name, company, barcode (a USB scanner types it here) or note: one rule with the phone's page (3 Nov 2026).
+    val shown = products.filter { com.innovation313.roshankhata.data.ProductFind.matches(it.name, it.company, it.barcode, it.note, query) }
     var buyersOf by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     buyersOf?.let { ProductBuyers(dao, words, it) { buyersOf = null } }
     var editing by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
@@ -356,6 +355,8 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                             Text(p.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             val sub = listOfNotNull(p.company, p.category, p.defaultUnit?.let { com.innovation313.roshankhata.data.UnitWords.label(it) }).filter { it.isNotBlank() }
                             if (sub.isNotEmpty()) Text(sub.joinToString("  ·  "), color = c.textMuted, fontSize = 13.sp)
+                            // Where it is kept (its note), under the facts.
+                            p.note?.trim()?.takeIf { it.isNotEmpty() }?.let { Text(it, color = c.inkSoft, fontSize = 13.sp, maxLines = 2) }
                         }
                         p.barcode?.let { Text(Format.ltr(it), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false) }
                         Spacer(Modifier.width(12.dp))
