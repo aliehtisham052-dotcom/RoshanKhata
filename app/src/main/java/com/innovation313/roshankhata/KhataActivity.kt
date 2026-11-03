@@ -406,13 +406,6 @@ class KhataActivity : BaseActivity() {
         // customer's page, it re-read the whole book on every save made there.
         lifecycleScope.launch { repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
             dao.observePartiesWithBalance().collectLatest { list ->
-                // The search keys for this book, folded once, off the main
-                // thread (P1, 7 Oct) — see NameSearch.Key.
-                searchKeys = withContext(Dispatchers.Default) {
-                    HashMap<Long, NameSearch.Key>(list.size * 2).also { m ->
-                        for (p in list) m[p.id] = NameSearch.Key(p.name, p.phone)
-                    }
-                }
                 allParties = list
 
                 // The book has arrived at least once. Until it has, this list
@@ -448,6 +441,18 @@ class KhataActivity : BaseActivity() {
                 renderPartySummary(list)
                 render()
                 startDailyCopy()
+
+                // The search keys for this book, folded once, off the main thread (P1, 7 Oct) — see NameSearch.Key.
+                // After the list is drawn, not before (3 Nov 2026, the speed work): only a typed search reads them,
+                // and on a 10,000-name book folding them held back the first row. Until they are ready a search
+                // matches by the plain rule (rank's fallback, the same answer), and a search already typed is
+                // ranked again once they are.
+                searchKeys = withContext(Dispatchers.Default) {
+                    HashMap<Long, NameSearch.Key>(list.size * 2).also { m ->
+                        for (p in list) m[p.id] = NameSearch.Key(p.name, p.phone)
+                    }
+                }
+                if (etSearch.text.isNotEmpty()) render()
             }
         } }
 
