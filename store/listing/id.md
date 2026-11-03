@@ -1,5 +1,7 @@
 # Play listing — Indonesian (id)
 
+<!-- 3 Nov 2026: the privacy line corrected (Drive backup and copies sent to the owner's own devices take the ledger off the phone, by his choice). The rest of this listing describes the older build; en-US.md and ur.md were rewritten for the next upload. -->
+
 ## App name (max 30)
 Roshan Khata – Buku Utang
 
@@ -36,7 +38,7 @@ FAKTUR DAN PRODUK
 
 BUKU ANDA, DI PONSEL ANDA
 • Tanpa akun, tanpa daftar, tanpa iklan — aplikasi berjalan penuh secara offline
-• Buku Anda tidak pernah dikumpulkan atau dikirim ke mana pun; tetap di ponsel Anda
+• Buku Anda tetap di ponsel Anda, dan kami tidak pernah mengumpulkannya. Data hanya keluar bila Anda memilih: cadangan ke Google Drive Anda sendiri, atau salinan yang Anda kirim ke perangkat Anda sendiri
 • Cadangan ke Google Drive Anda sendiri, otomatis jika Anda mau
 • Kunci aplikasi dengan sidik jari atau PIN; sembunyikan saldo saat ada yang melihat
 • Punya beberapa toko? Setiap usaha punya bukunya sendiri

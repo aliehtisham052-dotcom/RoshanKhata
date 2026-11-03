@@ -1,5 +1,7 @@
 # Play listing — Hindi (hi-IN)
 
+<!-- 3 Nov 2026: the privacy line corrected (Drive backup and copies sent to the owner's own devices take the ledger off the phone, by his choice). The rest of this listing describes the older build; en-US.md and ur.md were rewritten for the next upload. -->
+
 ## App name (max 30)
 Roshan Khata – उधार बही खाता
 
@@ -35,7 +37,7 @@ Roshan Khata दुकान के काउंटर का खाता ह�
 
 आपकी बही, आपके फ़ोन में
 • न अकाउंट, न साइन-अप, न विज्ञापन — ऐप पूरी तरह ऑफ़लाइन चलता है
-• आपका खाता कहीं जमा या भेजा नहीं जाता; वह आपके फ़ोन में रहता है
+• आपका खाता आपके फ़ोन में रहता है, हम इसे कभी इकट्ठा नहीं करते। यह सिर्फ़ आपकी मर्ज़ी से बाहर जाता है: आपकी अपनी Google Drive पर बैकअप, या आपके अपने किसी डिवाइस पर भेजी गई कॉपी
 • आपकी अपनी Google Drive पर बैकअप, चाहें तो अपने-आप
 • फ़िंगरप्रिंट या PIN से ऐप लॉक; कोई देख रहा हो तो बैलेंस छिपाएँ
 • कई दुकानें? हर कारोबार की अपनी अलग बही
