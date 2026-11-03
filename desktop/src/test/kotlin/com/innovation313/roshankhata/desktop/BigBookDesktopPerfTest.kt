@@ -50,9 +50,10 @@ class BigBookDesktopPerfTest {
         try {
             var t = System.nanoTime()
             val customers = BigBookSeed.seed(db)
+            // map, not joinToString's transform: only an inline lambda may call a suspend function.
             report += "Seed: $customers customers in ${since(t)} ms; " + listOf(
                 "transactions", "entry_items", "products", "supplier_bills", "bill_items", "sales", "sale_items", "cashbook"
-            ).joinToString(", ") { "$it ${count(db, it)}" }
+            ).map { "$it ${count(db, it)}" }.joinToString(", ")
 
             report += BigBookProbe.run(db, desktopWords(Locale.ENGLISH)).map { it.toString() }
             probeRan = true
