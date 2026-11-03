@@ -623,6 +623,10 @@ object LiveCloud {
         var failed: Result? = null
         var took = 0
         var more = false
+        // What the later relays carried too, for the dots (3 Nov 2026, the review: only the first relay's were kept,
+        // so changes that came by the owner's hosting never moved them).
+        var carried = 0
+        var wrote = 0
         for (road in roads) {
             if (mine == null) {
                 when (val r = round(sql, http, road.base, now, road.tag, send = true, useLines = road.tag == "", halted = { false })) {
@@ -642,12 +646,12 @@ object LiveCloud {
             val used = id != null && LiveSync.state(sql).peers.any { getMeta(sql, k("via_" + it.device, id.book)) == road.tag }
             if (!readOthers && !used) continue
             val r = round(sql, http, road.base, now, road.tag, send = used, useLines = road.tag == "", halted = { false })
-            if (r is Result.Done) { took += r.took; more = more || r.more }
+            if (r is Result.Done) { took += r.took; more = more || r.more; carried += r.carried; wrote += r.wrote }
         }
         // The later relays were read in this round: the next reading of them is OTHERS_MS from now (othersDue).
         if (readOthers && id != null) othersAt[id.book] = now
         val first = mine ?: return failed ?: Result.Unreachable
-        return first.copy(took = first.took + took, more = first.more || more)
+        return first.copy(took = first.took + took, more = first.more || more, carried = first.carried + carried, wrote = first.wrote + wrote)
     }
 
     /**

@@ -76,16 +76,26 @@ class FollowUpActivity : BaseActivity() {
             // not while the plane was still flying (3 Nov 2026).
             backFromReminder = false
             window.decorView.postDelayed({
-                if (!isFinishing && !isDestroyed) reminded.value = ReminderLog.openedToday(this)
+                if (!isFinishing && !isDestroyed) markReminded()
             }, 260)
         } else {
-            reminded.value = ReminderLog.openedToday(this)
+            markReminded()
         }
         // Back from WhatsApp in the middle of "remind all": offer the next one.
         if (queueWaiting) {
             queueWaiting = false
             showQueueStep()
         }
+    }
+
+    /**
+     * Today's reminded, from the log: the list ranks by it, and the pills marked "Opened today" on this screen keep
+     * only today's — a screen kept past midnight showed yesterday's as opened today (3 Nov 2026, the review).
+     */
+    private fun markReminded() {
+        val today = ReminderLog.openedToday(this)
+        adapter.openedHere.retainAll(today)
+        reminded.value = today
     }
 
     // ---------- Remind all, one by one (2 Oct) ----------

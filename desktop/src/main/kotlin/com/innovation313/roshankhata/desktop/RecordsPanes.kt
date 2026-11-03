@@ -555,7 +555,7 @@ fun InvoicesPane(
                         adding = null
                         scope.launch {
                             val saved = withContext(Dispatchers.IO) { runCatching { dao.saveInvoiceWithItems(inv, lines) } }
-                            saved.onSuccess { id -> kind = null; chosen = id; print(id) }
+                            saved.onSuccess { id -> kind = null; justMade = null; chosen = id; print(id) }
                                 .onFailure { refused = docFailText(words, it) }
                         }
                     },
@@ -650,7 +650,7 @@ fun InvoicesPane(
                             val cancelled = i.status == com.innovation313.roshankhata.data.DocStatus.CANCELLED
                             Row(
                                 Modifier.fillMaxWidth().background(eased(if (on) Look.accentTint else androidx.compose.ui.graphics.Color.Transparent))
-                                    .press { chosen = i.id }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp)
+                                    .press { chosen = i.id; if (i.id != justMade) justMade = null }.padding(end = 12.dp, top = 9.dp, bottom = 9.dp)
                                     // A cancelled document is read as a record, not a bill: muted and struck.
                                     .alpha(if (cancelled) 0.55f else 1f),
                                 verticalAlignment = Alignment.CenterVertically
@@ -721,7 +721,7 @@ fun InvoicesPane(
                                 source?.let { from ->
                                     Text(
                                         word(W.doc_converted_from, Format.ltr(from.invoiceNumber)),
-                                        Modifier.press { kind = null; chosen = from.id },
+                                        Modifier.press { kind = null; justMade = null; chosen = from.id },
                                         color = Look.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false
                                     )
                                 }
@@ -760,10 +760,16 @@ fun InvoicesPane(
                                 )
                             }
                         }
-                        // Its chain, the step just taken played once (DocChainStrip draws nothing for a lone document);
-                        // another document opened ends that, so coming back does not play it again.
-                        LaunchedEffect(open.id) { if (justMade != null && justMade != open.id) justMade = null }
+                        // Its chain, the step just taken played once (DocChainStrip draws nothing for a lone document).
+                        // Only the owner opening another document ends that (3 Nov 2026, the review: an effect on the open
+                        // row cleared it while the list had not yet brought the new document in, so it never played).
                         DocChainStrip(chain, play = justMade == open.id)
+                        // Played once, it is an ordinary chain: a later change to it (accepted, cancelled) never plays
+                        // the step again.
+                        if (justMade == open.id && chain.size >= 2) LaunchedEffect(open.id) {
+                            kotlinx.coroutines.delay(DOC_CHAIN_PLAYED_MS)
+                            justMade = null
+                        }
                         // Where the document goes next, by its status (DocActions): the same three words on the phone.
                         val target = com.innovation313.roshankhata.data.DocActions.convertTarget(kindNow, status)
                         val mayAccept = com.innovation313.roshankhata.data.DocActions.canAccept(kindNow, status)
@@ -1318,3 +1324,6 @@ private fun Chip(text: String, on: Boolean, onClick: () -> Unit) = FluentPill(te
  * pane, and is only ever scaled down (the phone draws its preview at 2).
  */
 private const val SHARP = 3f
+
+/** How long a convert's chain is the one just made: its step has played (DocChainStrip takes 440 ms) and it is ordinary again. */
+private const val DOC_CHAIN_PLAYED_MS = 600L

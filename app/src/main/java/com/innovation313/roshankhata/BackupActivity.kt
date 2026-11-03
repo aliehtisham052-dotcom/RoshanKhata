@@ -377,6 +377,9 @@ class BackupActivity : BaseActivity() {
         }
     }
 
+    /** The live card's second reading (relay switch, held changes, what waits) for the status shown last. */
+    private var liveExtras: kotlinx.coroutines.Job? = null
+
     /** What live sync is doing, in a line; and whether it may be turned off. */
     private fun showLive(s: LiveRunner.Status) {
         val bidi = androidx.core.text.BidiFormatter.getInstance()
@@ -416,14 +419,20 @@ class BackupActivity : BaseActivity() {
             road?.let { this.road = it }
         }
         val waitingChip = findViewById<android.widget.TextView>(R.id.tvLiveWaiting)
-        if (road != com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN) waitingChip.visibility = android.view.View.GONE
+        // While no road carries (none answering, or the other device not here), as the computer's window says it.
+        val roadsWait = road == com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN ||
+            road == com.innovation313.roshankhata.ui.LiveTrafficView.Road.IDLE
+        if (!roadsWait) waitingChip.visibility = android.view.View.GONE
         val off = s == LiveRunner.Status.Off || s == LiveRunner.Status.Rejoin || s == LiveRunner.Status.NotAccepted
         findViewById<MaterialButton>(R.id.btnLiveStop).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
         findViewById<MaterialButton>(R.id.btnLiveDevices).visibility = if (off) android.view.View.GONE else android.view.View.VISIBLE
         val relay = if (off) android.view.View.GONE else android.view.View.VISIBLE
         findViewById<android.view.View>(R.id.switchLiveRelay).visibility = relay
         findViewById<android.view.View>(R.id.tvLiveRelayHint).visibility = relay
-        if (!off) lifecycleScope.launch {
+        // One reading at a time, for the newest status: an older one finishing late put "changes waiting" under a
+        // Live card (3 Nov 2026, the review).
+        liveExtras?.cancel()
+        liveExtras = if (off) null else lifecycleScope.launch {
             val on = withContext(Dispatchers.IO) { runCatching { dao.settingValue(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY) == "1" }.getOrDefault(false) }
             showRelay(on)
             // Changes from the other device this book could not take yet, said here too (R52: only the computer's
@@ -433,7 +442,7 @@ class BackupActivity : BaseActivity() {
             val held = syncState?.held ?: 0
             // While no road answers: how many of this phone's changes wait to go (they go once a road answers).
             val waiting = (syncState?.waiting ?: 0L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-            if (road == com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN && waiting > 0) {
+            if (roadsWait && waiting > 0) {
                 waitingChip.text = Digits.quantity(resources, R.plurals.live_changes_waiting, waiting, waiting)
                 if (waitingChip.visibility != android.view.View.VISIBLE) {
                     waitingChip.visibility = android.view.View.VISIBLE
@@ -765,15 +774,19 @@ class BackupActivity : BaseActivity() {
             receive.close()
             val ok = outcome.getOrDefault(false)
             when {
-                ok -> steps.finish(getString(R.string.restore_done), getString(R.string.live_receive_done), getString(R.string.ok)) { recreate() }
+                // Joined (step 2) is done even when what followed it failed (the rounds' restart): the book is the
+                // shop's and syncs, so it is said as done — not "Not restored" under three ticks (3 Nov 2026, the review).
+                ok || reached >= 2 -> steps.finish(getString(R.string.restore_done), getString(R.string.live_receive_done), getString(R.string.ok)) { recreate() }
                 outcome.isSuccess -> {
                     steps.failed(0)
                     steps.finish(getString(R.string.restore_not_done), getString(R.string.restore_keep_failed), getString(R.string.ok)) {}
                 }
                 else -> {
                     steps.failRunning()
+                    // Replaced but not joined is still a restore: the heading says what happened to the book, the
+                    // crossed step and the words what did not.
                     steps.finish(
-                        getString(R.string.restore_not_done),
+                        getString(if (reached >= 1) R.string.restore_done else R.string.restore_not_done),
                         getString(if (reached >= 1) R.string.restore_join_failed else R.string.snapshot_restore_failed),
                         getString(R.string.ok)
                     ) { if (reached >= 1) recreate() }
@@ -1018,12 +1031,7 @@ class BackupActivity : BaseActivity() {
     /** What a backup holds, as its question counted it: "1240 entries · 86 customers · 12 suppliers". */
     private fun restoreCounts(data: BackupCodec.ParsedBackup): String {
         val customers = data.parties.count { it.isCustomer }
-        val suppliers = data.parties.size - customers
-        return listOfNotNull(
-            Digits.quantity(resources, R.plurals.bin_party_entries, data.entries.size, data.entries.size),
-            if (customers > 0) Digits.quantity(resources, R.plurals.customer_count, customers, customers) else null,
-            if (suppliers > 0) Digits.quantity(resources, R.plurals.supplier_count, suppliers, suppliers) else null
-        ).joinToString(" \u00B7 ")
+        return com.innovation313.roshankhata.ui.RestoreSteps.counts(resources, data.entries.size, customers, data.parties.size - customers)
     }
 
     /** "Backup of 2 Nov 2026, 9:14 PM": the copy's own time, else Drive's. */

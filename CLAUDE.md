@@ -1608,8 +1608,8 @@ was seen on a real phone or the laptop.
 
 - **Follow-up's Message** (`SendPill`, `Motion.paperPlane`, `PlaneFlight` in MotionShapes, the faceted
   `ic_paper_plane_gold`): the plane crouches, is thrown out of the pill and fades (110/280/150 ms); the pill reads
-  "Opened today" with a drawn check (`avd_pill_check`) only once WhatsApp really opened (`Reminder.sendViaWhatsApp`'s
-  `opened` callback — a phone without WhatsApp no longer counts as reminded); the row glides to the foot after the
+  "Opened today" with a drawn check (`avd_pill_check`) only once WhatsApp or WhatsApp Business opened
+  (`Reminder.sendViaWhatsApp`'s `opened` callback; never a browser — see the review below); the row glides to the foot after the
   owner comes back (`moveDuration` 320, payload `MARKS`), not under the flying plane; `Motion.settleFlights` in
   BaseActivity.onResume ends a flight left behind.
 - **Counter sale saved** (`SaleSavedSheet`, `sheet_sale_saved`; Windows `SavedSaleNote` with `DrawnCheck`): the gold
@@ -1644,6 +1644,23 @@ was seen on a real phone or the laptop.
   finished ("Page 2 of 5"), a check, then the usual ready dialog. Windows' statements already preview page by page.
 - Strings (nine languages): restore_backup_of, restore_step_checked/_kept/_kept_why/_replaced/_photos/_joined,
   restore_keep_open, restore_open_book, restore_not_done, restore_join_failed; plural live_changes_waiting.
+- **The review (the same day, two reviewers, every point read in the code first; 0 critical, 3 medium, 13 low and 2
+  smaller; no data path writes differently):** a restore that replaced the book and then failed to join live sync says
+  "Restored" (both platforms; Windows reads the new book — shop name, pages); the phone's "taken" flow likewise when
+  only the rounds' restart failed. A reminder counts only when WhatsApp itself opened: wa.me with
+  `FLAG_ACTIVITY_REQUIRE_NON_BROWSER` on Android 11+, the one WhatsApp by package before it, then `whatsapp://send`
+  (a browser took the link on a phone without WhatsApp and it counted); with both WhatsApps a chooser the owner
+  closes still counts (Android does not tell). The four new dialogs go with their screen and let it go when closed
+  (`ui/DialogLife`; a counter kept one sale sheet per sale). Also: Windows' convert chain plays when the new document
+  arrives and only once (`justMade` cleared by the owner's click, then after 600 ms), a converted document's chain
+  shows the step made from it (`KhataDao.newestMadeFrom`) and a cancelled one no step after it, the counter's change
+  note survives an item scanned while the sale was written, one backup at a time from every button, the WiFi "in"
+  dots only when rows were written (`LiveSync.changes`), every relay's counts summed, an `Error` mid-restore still
+  ends the steps; on the phone: "Opened today" keeps only today's, the live card reads once per newest status and
+  shows "changes waiting" when no road carries (as Windows), the restore heading stays above the scrolling steps,
+  dismiss at once on the screen's end, the wash change stops before a first show, the chain's numbers fit on
+  Android 7-8 (AppCompatTextView), the statement's pages mirror in RTL. The proofs call the screens' own builders
+  (`RestoreSteps.counts`, `DocConvertedSheet.line`, `restoreCounts`). DocChainTest +2.
 
 ### The shared module (KMP)
 

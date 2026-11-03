@@ -92,6 +92,11 @@ class PageStack @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         val h = 96 * dp
         val left = (width - w) / 2f
         val top = 20 * dp
+        // A right-to-left page (Urdu, Arabic, Sindhi, Farsi): its head and lines start at the right and the check
+        // sits at its top-left corner; the check itself is drawn as it is, never mirrored.
+        val rtl = layoutDirection == LAYOUT_DIRECTION_RTL
+        canvas.save()
+        if (rtl) canvas.scale(-1f, 1f, width / 2f, 0f)
         for (i in 0 until shown) {
             val k = arrived[i]
             if (k <= 0f) continue
@@ -122,10 +127,11 @@ class PageStack @JvmOverloads constructor(context: Context, attrs: AttributeSet?
             }
             canvas.restore()
         }
+        canvas.restore()
         if (done <= 0f) return
-        // The check, at the top page's corner: the disc on the emphasized curve, the check traced after it.
+        // The check, at the top page's end corner: the disc on the emphasized curve, the check traced after it.
         val pop = MotionKit.EMPHASIZED_DECELERATE.getInterpolation((done / 0.7f).coerceIn(0f, 1f))
-        val cx = left + w - 2 * dp
+        val cx = if (rtl) width - (left + w - 2 * dp) else left + w - 2 * dp
         val cy = top + 4 * dp
         val r = 16 * dp * (0.6f + 0.4f * pop)
         fill.color = paper; fill.alpha = (255 * pop).toInt()

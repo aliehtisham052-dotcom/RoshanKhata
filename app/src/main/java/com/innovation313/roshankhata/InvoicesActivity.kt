@@ -1,8 +1,6 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.get
-import com.innovation313.roshankhata.data.Digits
-import com.innovation313.roshankhata.data.quantity
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.content.Intent
@@ -219,13 +217,7 @@ class InvoicesActivity : BaseActivity() {
             }
             val chain = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.DocChain.of(dao, id) }.getOrDefault(emptyList()) }
             if (chain.size < 2 || isFinishing || isDestroyed) { if (!isFinishing && !isDestroyed) open(); return@launch }
-            val what = listOfNotNull(
-                invoice.customerName,
-                Digits.quantity(resources, R.plurals.items_count, invoice.itemCount, invoice.itemCount),
-                // A challan prints no prices (DocKind.showsPrices), so its sheet says none either.
-                // The sign and its figure kept on one line (a no-break space), whichever way the line runs.
-                if (DocKind.showsPrices(to)) Format.ltr(Format.money(invoice.grandTotal).replace(' ', '\u00A0')) else null
-            ).joinToString(" \u00B7 ")
+            val what = com.innovation313.roshankhata.ui.DocConvertedSheet.line(resources, invoice.customerName, invoice.itemCount, invoice.grandTotal, to)
             com.innovation313.roshankhata.ui.DocConvertedSheet.show(this@InvoicesActivity, chain, { kindWord(it) }, what, open)
         }
     }

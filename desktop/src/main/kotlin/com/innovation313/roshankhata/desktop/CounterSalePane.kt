@@ -167,9 +167,11 @@ fun CounterSalePane(
     var query by remember { mutableStateOf("") }
     var told by remember { mutableStateOf<String?>(null) }
     // The sale just written (3 Nov 2026): its note with the drawn tick and the change to hand back, until the
-    // next ticket begins. Each sale draws the tick again (seq).
+    // next ticket begins — an item rung up after it (ring, a scale's label, a free line, a held ticket brought
+    // back), never a line count changing: an item scanned while the sale was written stays on the next ticket, and
+    // the count's change took the note and its change figure away the moment it came (the review). Each sale draws
+    // the tick again (seq).
     var saved by remember { mutableStateOf<SavedSale?>(null) }
-    LaunchedEffect(draft.lines.size) { if (draft.lines.isNotEmpty()) saved = null }
     var choosingParty by remember { mutableStateOf(false) }
     var voiding by remember { mutableStateOf<SaleSummary?>(null) }
     var returning by remember { mutableStateOf<com.innovation313.roshankhata.screens.ReturnDraft?>(null) }
@@ -205,6 +207,7 @@ fun CounterSalePane(
 
     fun ring(p: Product) {
         val line = draft.add(p, onHand[p.id])
+        saved = null
         query = ""
         told = line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(onHand[p.id] ?: 0.0)) }
     }
@@ -218,6 +221,7 @@ fun CounterSalePane(
         val weighed = if (exact == null) com.innovation313.roshankhata.data.ScaleCode.line(q, scaleRule, products) { draft.unitRate(it) } else null
         if (weighed != null) {
             val line = draft.addWeighed(weighed, onHand[weighed.product.id])
+            saved = null
             query = ""
             told = line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(onHand[weighed.product.id] ?: 0.0)) }
             return
@@ -226,7 +230,7 @@ fun CounterSalePane(
             exact != null -> ring(exact)
             matches.size == 1 -> ring(matches[0])
             matches.isEmpty() && q.any { it.isDigit() } && q.all { it.isDigit() || it == '-' } -> told = words.text(W.pos_barcode_unknown)
-            matches.isEmpty() -> { draft.addFree(q); query = ""; told = words.text(W.pos_product_new, q) }
+            matches.isEmpty() -> { draft.addFree(q); saved = null; query = ""; told = words.text(W.pos_product_new, q) }
             else -> ring(matches[0])
         }
     }
@@ -659,6 +663,7 @@ fun CounterSalePane(
                             scope.launch {
                                 val full = withContext(Dispatchers.IO) { dao.saleWithLines(h.id) } ?: return@launch
                                 draft.load(full, onHandOf = { onHand[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
+                                saved = null
                                 showHeld = false
                             }
                         }, kind = ButtonKind.ACCENT)

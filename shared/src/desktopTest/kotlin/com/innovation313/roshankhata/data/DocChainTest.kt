@@ -64,6 +64,32 @@ class DocChainTest {
     }
 
     @Test
+    fun `a converted quotation shows the sales order made from it as done and then what is left`() = runBlocking {
+        val q = dao.saveInvoiceWithItems(Invoice(customerName = "Test Customer", kind = DocKind.QUOTATION), lines)
+        dao.convertDocument(q, DocKind.SALES_ORDER)
+        assertEquals(
+            listOf(
+                DocChain.Node(DocKind.QUOTATION, "Q-000001"),
+                DocChain.Node(DocKind.SALES_ORDER, "SO-000001"),
+                DocChain.Node(DocKind.CHALLAN, null),
+                DocChain.Node(DocKind.INVOICE, null)
+            ),
+            DocChain.of(dao, q)
+        )
+    }
+
+    @Test
+    fun `a cancelled document has no step after it`() = runBlocking {
+        val q = dao.saveInvoiceWithItems(Invoice(customerName = "Test Customer", kind = DocKind.QUOTATION), lines)
+        val so = dao.convertDocument(q, DocKind.SALES_ORDER)
+        dao.cancelDocument(so)
+        val chain = listOf(DocChain.Node(DocKind.QUOTATION, "Q-000001"), DocChain.Node(DocKind.SALES_ORDER, "SO-000001"))
+        assertEquals(chain, DocChain.of(dao, so))
+        // From the quotation it was made from too: the chain ends at the cancelled order.
+        assertEquals(chain, DocChain.of(dao, q))
+    }
+
+    @Test
     fun `a proforma's chain is the proforma and the invoice`() = runBlocking {
         val pi = dao.saveInvoiceWithItems(Invoice(customerName = "Test Customer", kind = DocKind.PROFORMA), lines)
         val inv = dao.convertDocument(pi, DocKind.INVOICE)

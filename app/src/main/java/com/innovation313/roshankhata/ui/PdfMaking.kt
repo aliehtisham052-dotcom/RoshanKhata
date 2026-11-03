@@ -5,10 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Digits
@@ -43,10 +40,7 @@ class PdfMaking private constructor(private val activity: Activity) {
             // Back only hides it: the statement is still made and offered.
             .setCancelable(true)
             .create()
-            .also { it.setCanceledOnTouchOutside(false); it.show() }
-        (activity as? ComponentActivity)?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
-            override fun onDestroy(owner: LifecycleOwner) { dialog?.let { if (it.isShowing) it.dismiss() } }
-        })
+            .also { it.setCanceledOnTouchOutside(false); DialogLife.bind(activity, it); it.show() }
         say()
     }
 

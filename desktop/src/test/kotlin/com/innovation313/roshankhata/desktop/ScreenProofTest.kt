@@ -674,9 +674,12 @@ class ScreenProofTest {
                     com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_joined)
                 )
                 val why = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_kept_why)
-                val note = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_join_failed)
+                // What the computer says when the phone's join fails after the book was replaced (Main.kt).
+                val note = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.live_join_failed, "Read timed out")
+                // The counts as the restore says them (restoreCounts), not a line of the proof's own.
+                val counts = restoreCounts(1240, 86, 12, com.innovation313.roshankhata.words.LocalWords.current)
                 val run = androidx.compose.runtime.remember {
-                    RestoreRun(labels, listOf("1240 \u00b7 86 \u00b7 12", why, null, null), null).apply {
+                    RestoreRun(labels, listOf(counts, why, null, null), null).apply {
                         done(0); done(1); done(2); start(3); failRunning(); finish("", note)
                     }
                 }

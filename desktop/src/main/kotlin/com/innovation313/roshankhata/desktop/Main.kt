@@ -913,7 +913,12 @@ private fun Book(
         // the audit log says who took it. Owner-only BACKUP, as the phone's BackupActivity (R33,
         // 23 Oct 2026): the file carries the owner's and staff PIN hashes, and EXPORT let a manager
         // (or a cashier with a manager's PIN) carry them off. The CSV exports stay on EXPORT.
-        fun backupNow() = Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) backup@{
+        fun backupNow() {
+          // One at a time, whichever place asked (the header, the bell's row, Home): a second started while one was
+          // written ended the first one's ring and showed its check while the second still wrote (3 Nov 2026).
+          if (backingUp != null) return
+          Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) backup@{
+            if (backingUp != null) return@backup
             val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
             // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
             // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
@@ -923,9 +928,10 @@ private fun Book(
             dialog.isVisible = true
             val name = dialog.file ?: return@backup
             val file = File(dialog.directory, name)
+            // The header's chip shows how far the book is written, then its check (3 Nov 2026); set before the work
+            // starts, so a click meanwhile finds one running.
+            backingUp = 0
             scope.launch {
-                // The header's chip shows how far the book is written, then its check (3 Nov 2026).
-                backingUp = 0
                 val written = runCatching { backup(file) { pct -> backingUp = pct } }
                 backingUp = null
                 if (written.isSuccess) backupDone++
@@ -939,6 +945,7 @@ private fun Book(
                     }
                     .getOrElse { words.text(W.backup_failed) }
             }
+          }
         }
         backupHook = { backupNow() }
         fun restoreFromFile() {
@@ -1500,6 +1507,10 @@ private fun Book(
                         run.done(0)
                         run.start(1)
                         restoreRun = run
+                        // Whether the book was really replaced: a failure after it (the phone's join) is still a
+                        // restore — the window reads the new book and the heading says so (3 Nov 2026, the review:
+                        // "Not restored" stood under a ticked "Book replaced", over the old shop name and figures).
+                        var replaced = false
                         scope.launch {
                             try {
                                 // This book as it stands, kept first: the restore can be undone from Daily copies.
@@ -1527,40 +1538,55 @@ private fun Book(
                                             if (wasLive) runCatching { LiveSync.resume(sql) }
                                             return@withContext e
                                         }
+                                        replaced = true
                                         run.done(2)
+                                        // A phone's pairing: the old sync turned off is the join's first part, so a
+                                        // failure there crosses the join's step, not none.
+                                        if (p.live != null) run.start(3)
                                         if (wasLive) LiveSync.disable(sql, LiveSync.OFF_RESTORED)
                                         else if (p.live != null) runCatching { LiveSync.disable(sql) }
                                         com.innovation313.roshankhata.data.NumberMark.mark = null
                                         p.live?.let { offer ->
-                                            run.start(3)
                                             runCatching { LiveDesk.join(db, home, dbFile, offer) }.exceptionOrNull()?.let { return@withContext it }
                                             run.done(3)
                                         }
                                         null
                                     }
                                     if (p.live != null) LiveDesk.offers.value = null
+                                    if (replaced) {
+                                        shop = shopName()
+                                        reload++
+                                    }
                                     if (failure != null) {
                                         run.failRunning()
                                         run.finish(
-                                            words.text(W.restore_not_done),
+                                            words.text(if (replaced) W.restore_done else W.restore_not_done),
                                             if (p.live != null) words.text(W.live_join_failed, failure.message ?: failure.javaClass.simpleName)
                                             else failText(words, failure)
                                         )
                                     } else {
                                         if (p.live == null && !LiveDesk.windowOpen()) LiveDesk.stop()
-                                        shop = shopName()
-                                        reload++
                                         // A file carries records only: said where the steps end, as the phone says it.
                                         run.finish(words.text(W.restore_done), if (p.live == null) words.text(W.restore_file_no_images) else null)
                                     }
                                 }
                             } catch (e: Exception) {
+                                if (replaced) {
+                                    shop = shopName()
+                                    reload++
+                                }
                                 run.failRunning()
-                                run.finish(words.text(W.restore_not_done), failText(words, e))
+                                run.finish(words.text(if (replaced) W.restore_done else W.restore_not_done), failText(words, e))
                             } finally {
                                 busy = false
                                 picked = null
                                 letGo()
+                                // An Error (out of memory, a class the runtime lacks) passes the catch: the steps still
+                                // end, so the dialog can be closed and the window's keys work again.
+                                if (run.heading == null) {
+                                    run.failRunning()
+                                    run.finish(words.text(if (replaced) W.restore_done else W.restore_not_done), null)
+                                }
                             }
                         }
                     }
