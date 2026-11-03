@@ -2114,6 +2114,11 @@ Each of these cost a build or a bug.
     `draft.isEmpty` meant the counter's ticket and failed the build (af5dd4d). Inside a scope with its own, say the
     screen's: `this@CounterSaleActivity.draft`.
 
+75. **A `by` delegate needs its operators imported.** `var failed by androidx.compose.runtime.remember { … }` with the
+    names written out in full still needs `import androidx.compose.runtime.getValue` and `setValue`; Photos.kt had
+    none and :desktop failed ("has no method 'setValue'", 2d437cd). A file that starts using `by remember` gets the
+    two imports first.
+
 ---
 
 ## Working with the owner
