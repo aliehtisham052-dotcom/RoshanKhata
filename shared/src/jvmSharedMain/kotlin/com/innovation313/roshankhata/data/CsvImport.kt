@@ -18,7 +18,8 @@ package com.innovation313.roshankhata.data
  */
 object CsvImport {
 
-    data class Row(val name: String, val phone: String?, val balance: Double)
+    /** [unreadable]: the balance cell held something that is not a figure; the row comes in at 0, and is counted. */
+    data class Row(val name: String, val phone: String?, val balance: Double, val unreadable: Boolean = false)
 
     private val NAME_WORDS = listOf(
         "name", "naam", "nama", "customer", "party", "نام", "اسم", "گاہک", "نالو", "नाम", "নাম"
@@ -78,8 +79,10 @@ object CsvImport {
             val name = r.getOrNull(nameCol).orEmpty().trim().replace(Regex("\\s+"), " ")
             if (name.isEmpty()) return@mapNotNull null
             val phone = phoneCol?.let { r.getOrNull(it) }?.trim()?.takeIf { it.any(Char::isDigit) }
-            val balance = balanceCol?.let { r.getOrNull(it) }?.let { figure(it) } ?: 0.0
-            Row(name, phone, balance)
+            val cell = balanceCol?.let { r.getOrNull(it) }?.trim().orEmpty()
+            val read = cell.takeIf { it.isNotEmpty() }?.let { figure(it) }
+            // Something written that is not a figure is said before anything is written (3 Nov 2026 audit, M40).
+            Row(name, phone, read ?: 0.0, unreadable = cell.isNotEmpty() && read == null)
         }
     }
 
@@ -126,13 +129,20 @@ object CsvImport {
             }
         }
         val rupiah = Regex("(?i)rp").containsMatchIn(s)
-        s = s.replace(Regex("(?i)rs\\.?|pkr|inr|rp|₹|৳|﷼"), "").replace(" ", "").replace(" ", "")
+        // A ledger's Dr / Cr (Tally and others write "1,250 Dr"): Dr is owed to the shop, Cr owed by it.
+        val credit = Regex("(?i)(^|[^\\p{L}])cr\\.?($|[^\\p{L}])").containsMatchIn(s)
+        // Every currency sign and every word (3 Nov 2026 audit, M40): "$1,200.50", "1,200 AED", "SAR 1,200",
+        // "۱٬۲۰۰ ریال", "Tk 1,200", "€1.200,50", "KSh 2,500" were read as nothing and came in as a 0 balance.
+        // A word with dots in it ("Rs.", "ر.س") goes whole, so its dot is never taken for a decimal point.
+        s = s.replace(Regex("\\p{L}[\\p{L}.]*"), "").replace(Regex("\\p{Sc}"), "")
+            .replace(" ", "").replace("\u00A0", "").replace("\u202F", "")
         // The rupee's "/-" ("1,200/-") closes a figure; it is not a minus (21 Oct 2026: such a balance
         // was read as nothing, or as owed the other way).
         s = s.replace("/-", "").replace("/=", "")
         var negative = false
         if (s.startsWith("(") && s.endsWith(")")) { negative = true; s = s.substring(1, s.length - 1) }
         if (s.endsWith("-")) { negative = true; s = s.dropLast(1) }
+        if (credit) negative = !negative
         s = decimalPoint(s, groupDots || rupiah)
         if (s.isEmpty() || s.none { it.isDigit() }) return null
         val v = s.toDoubleOrNull() ?: return null

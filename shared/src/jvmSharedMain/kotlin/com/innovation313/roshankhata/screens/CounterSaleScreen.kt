@@ -223,15 +223,19 @@ fun CounterSaleScreen(
                 }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     val side = Modifier.weight(1f)
-                    if (heldCount > 0) OutlinedButton(onClick = onShowHeld, modifier = side) { Text(word(W.pos_held_tickets, heldCount), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
-                    else if (draft.lines.isNotEmpty()) OutlinedButton(onClick = onHold, modifier = side) { Text(word(W.pos_hold), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    // 12 dp sides and two centred lines (3 Nov 2026 audit, M37): Material's 24 dp sides left a label
+                    // 111 dp, and "Next: payment" read "Next: pa…" at 150% and in Indonesian at 85%.
+                    val pad = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    val two = androidx.compose.ui.text.style.TextAlign.Center
+                    if (heldCount > 0) OutlinedButton(onClick = onShowHeld, modifier = side, contentPadding = pad) { Text(word(W.pos_held_tickets, heldCount), color = c.ink, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = two) }
+                    else if (draft.lines.isNotEmpty()) OutlinedButton(onClick = onHold, modifier = side, contentPadding = pad) { Text(word(W.pos_hold), color = c.ink, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = two) }
                     // Recent sales in sight (24 Oct 2026: they were only in the top bar's menu, and never found).
-                    else if (onShowRecent != null) OutlinedButton(onClick = onShowRecent, modifier = side.testTag("posRecent")) { Text(word(W.pos_recent), color = c.ink, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    else if (onShowRecent != null) OutlinedButton(onClick = onShowRecent, modifier = side.testTag("posRecent"), contentPadding = pad) { Text(word(W.pos_recent), color = c.ink, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = two) }
                     Button(
                         onClick = { paying = true }, enabled = draft.lines.isNotEmpty(),
-                        colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.weight(1f).testTag("posPay")
+                        colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen), modifier = Modifier.weight(1f).testTag("posPay"), contentPadding = pad
                     // Disabled, the fill fades to grey: white words on it could not be read (lesson 10).
-                    ) { Text(word(W.pos_next_pay), color = if (draft.lines.isNotEmpty()) Color.White else c.textMuted, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    ) { Text(word(W.pos_next_pay), color = if (draft.lines.isNotEmpty()) Color.White else c.textMuted, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = two) }
                 }
             }
         } else {

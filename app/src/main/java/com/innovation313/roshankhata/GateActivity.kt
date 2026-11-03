@@ -54,9 +54,11 @@ class GateActivity : BaseActivity() {
         startActivity(
             Intent(this, next)
                 .putExtra(MainActivity.EXTRA_UNLOCKED, !locked)
-                // A notification's screen, carried through the lock unopened.
-                .putExtra(MainActivity.EXTRA_OPEN, intent.getStringExtra(MainActivity.EXTRA_OPEN))
-                .putExtra(MainActivity.EXTRA_OPEN_ARGS, intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS))
+                // A notification's screen, carried through the lock unopened. Read with care (3 Nov 2026 audit,
+                // L24): this door is exported, and on Android 7-12 a stranger's unreadable extra threw here.
+                .putExtra(MainActivity.EXTRA_OPEN, runCatching { intent.getStringExtra(MainActivity.EXTRA_OPEN) }.getOrNull())
+                .putExtra(MainActivity.EXTRA_OPEN_ARGS, runCatching { intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS) }.getOrNull())
+                .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, runCatching { intent.getLongExtra(MainActivity.EXTRA_OPEN_BUSINESS, -1L) }.getOrDefault(-1L))
         )
         finish()
     }

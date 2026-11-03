@@ -212,14 +212,21 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
+                <!-- Shrinks to the line (3 Nov 2026 audit, M38): a ten-digit balance at 150% broke after "Rs" and showed
+                     only "- Rs", as Home and the Khata totals did before 31 Oct. -->
                 <TextView
                     android:id="@+id/tvPartyBalance"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
+                    android:textAlignment="viewStart"
                     android:textColor="@color/bal_owed_to_me"
                     android:textSize="21sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    app:autoSizeMaxTextSize="21sp"
+                    app:autoSizeMinTextSize="11sp"
+                    app:autoSizeStepGranularity="0.5sp"
+                    app:autoSizeTextType="uniform" />
 
                 <TextView
                     android:id="@+id/tvBalanceHint"

@@ -415,7 +415,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         activeBusiness = active,
                         // Another shop's book: whoever was signed in here is not signed in there (22 Oct 2026, the review:
                         // shop A's manager stayed a manager in shop B, and B's sales carried A's staff name).
-                        onSwitch = { id -> if (id != active) switchingTo = id },
+                        onSwitch = { id -> if (id != active) { Reminders.forgetClick(); switchingTo = id } },
                         dailyDir = dailyDir,
                         images = images,
                         home = home,
@@ -1787,10 +1787,8 @@ private fun Book(
         fun deleteHalves(both: Boolean) {
             halves = null
             scope.launch {
-                withContext(Dispatchers.IO) {
-                    dao.softDeleteEntry(e.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", e.id, auditAmount(e.amount))
-                    if (both) { dao.softDeleteEntry(pair.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id) }
-                }
+                // One transaction, the pair and the audit rows with it (3 Nov 2026 audit, M13).
+                withContext(Dispatchers.IO) { dao.deleteEntryAudited(e.id, e.amount, pair.id.takeIf { both }) }
                 reload++
             }
         }
@@ -1946,8 +1944,7 @@ private fun Book(
                     scope.launch {
                         // The phone's restore: the customer and the entries binned with them.
                         withContext(Dispatchers.IO) {
-                            dao.restoreParty(p.id)
-                            p.deletedAt?.let { dao.restoreEntriesOfParty(p.id, it) }
+                            dao.restorePartyWithEntries(p.id, p.deletedAt)
                         }
                         reload++
                     }

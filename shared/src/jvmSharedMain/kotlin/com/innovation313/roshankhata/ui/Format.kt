@@ -77,11 +77,16 @@ object Format {
 
     // [sign]: another shop's own sign, for a figure read from a shop that is not open (23 Oct 2026).
     fun money(value: Double, sign: String = Currency.symbol): String {
-        val rounded = abs(value)
+        val decimals = Currency.decimals(sign)
         // The sign is the shop's own choice (Profile → Currency); see [Currency].
         // A fraction is printed to the currency's own decimals (21 Oct 2026): 3 for KWD/BHD/OMR, none for IRR/Rp.
-        val figure = if (rounded % 1.0 == 0.0 || Currency.decimals(sign) == 0) "%,.0f".format(Digits.FIGURES, rounded)
-            else "%,.${Currency.decimals(sign)}f".format(Digits.FIGURES, rounded)
+        // Rounded to those decimals BEFORE asking whether it is whole (3 Nov 2026 audit, M05): a residue of a
+        // sum (2e-14) printed "Rs 0.00", and 3750.9999999 printed "Rs 3,751.00" where 3,751 reads as written.
+        val figure = if (!value.isFinite()) "%,.${decimals}f".format(Digits.FIGURES, abs(value)) else {
+            val rounded = java.math.BigDecimal.valueOf(abs(value)).setScale(decimals, java.math.RoundingMode.HALF_UP)
+            if (decimals == 0 || rounded.signum() == 0 || rounded.stripTrailingZeros().scale() <= 0) "%,.0f".format(Digits.FIGURES, rounded)
+            else "%,.${decimals}f".format(Digits.FIGURES, rounded)
+        }
         return "$sign " + groupedForReader(figure)
     }
 
@@ -123,7 +128,8 @@ object Format {
      * cashbook rows already use, not a hyphen.
      */
     fun signedIfNegative(value: Double): String =
-        if (value < 0) "\u2212 ${money(value)}" else money(value)
+        // Money's half-paisa line (3 Nov 2026 audit): a residue of -2e-14 printed "− Rs 0".
+        if (com.innovation313.roshankhata.data.Money.isNegative(value)) "\u2212 ${money(value)}" else money(value)
 
     /**
      * A plain in-minus-out total, carrying its arithmetic sign.
@@ -223,7 +229,11 @@ object Format {
 
     /** Bare number for an input field — no currency symbol, no thousands separator. */
     fun plain(value: Double): String =
-        if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
+        if (value % 1.0 == 0.0) value.toLong().toString()
+        // Never E-notation (3 Nov 2026 audit, M42): a fraction of ten million or more pre-filled an edit box as
+        // "1.23456785E7".
+        else if (value.isFinite()) java.math.BigDecimal.valueOf(value).stripTrailingZeros().toPlainString()
+        else value.toString()
 
     /**
      * Quantity and unit alone — "5 bottles", "12.5 litre".

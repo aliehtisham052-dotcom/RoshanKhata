@@ -80,7 +80,7 @@ object PdfExport {
         if (ViewerMode.isOn(context)) return null
         fun blank(s: String?) = s.isNullOrBlank()
         val missing = buildList {
-            if (isCustomer && closingBalance > 0 &&
+            if (isCustomer && Money.isPositive(closingBalance) &&
                 blank(BusinessProfile.bankName(context)) && blank(BusinessProfile.bankAccountTitle(context)) &&
                 blank(BusinessProfile.bankIban(context)) && blank(BusinessProfile.bankJazzCash(context))
             ) add(R.string.pdf_stmt_gap_pay)
@@ -500,6 +500,21 @@ object PdfExport {
             y = drawHeader(first = false)
         }
 
+        // A period that ended before the account's last entry (3 Nov 2026 audit, M06): its own last balance said
+        // here, plainly, because the figure below is the whole account today — an October statement with a
+        // November sale behind it read "still to pay 2,000" under rows that ended at 1,300.
+        rows.lastOrNull()?.runningBalance?.let { atEnd ->
+            if (Money.isNotZero(atEnd - closingBalance)) {
+                y += 4f
+                val endLine = context.getString(
+                    R.string.pdf_stmt_period_end_balance,
+                    Format.dateOnly(rows.last().entry.timestamp), Format.signedIfNegative(atEnd)
+                )
+                PdfRtl.drawText(c, fitted(endLine, muted, PAGE_W - 2 * MARGIN), MARGIN, y + 8f, muted)
+                y += 14f
+            }
+        }
+
         y += 8f
         // How to pay (2 Nov 2026): the shop's bank and wallet beside what is owed, with the
         // number to quote — only on a customer's statement that has something to pay.
@@ -510,8 +525,8 @@ object PdfExport {
         val iban = BusinessProfile.bankIban(context)?.trim()?.takeIf { it.isNotEmpty() }
         val wallet = BusinessProfile.bankJazzCash(context)?.trim()?.takeIf { it.isNotEmpty() }
         val quote = rows.lastOrNull { it.entry.isGiven }?.entry?.entryNumber?.takeIf { it.isNotBlank() }
-        val howToPay = isCustomer && closingBalance > 0 && (bankWho != null || iban != null || wallet != null)
-        val dueDay = payBy?.takeIf { isCustomer && closingBalance > 0 && it >= DayMath.startOfDay(System.currentTimeMillis()) }
+        val howToPay = isCustomer && Money.isPositive(closingBalance) && (bankWho != null || iban != null || wallet != null)
+        val dueDay = payBy?.takeIf { isCustomer && Money.isPositive(closingBalance) && it >= DayMath.startOfDay(System.currentTimeMillis()) }
         val barH = if (dueDay != null) 60f else 52f
         // The box grows to hold every line it has: head, bank, IBAN, wallet, the number to quote.
         val payLines = listOfNotNull(bankWho ?: iban, iban.takeIf { bankWho != null }, wallet, quote).size
@@ -523,9 +538,11 @@ object PdfExport {
         // "Amount you still have to pay" on a customer's statement (2 Nov 2026, the mockup's words):
         // the sum after everything paid, not a new demand.
         val closingLabel = when {
-            closingBalance > 0 && isCustomer -> context.getString(R.string.pdf_stmt_amount_still_to_pay)
-            closingBalance > 0 -> context.getString(R.string.pdf_stmt_you_will_pay)
-            closingBalance < 0 -> context.getString(R.string.pdf_stmt_you_will_receive)
+            // Money's half-paisa line, not > 0 (3 Nov 2026 audit, M05): 1000.10 - 1000.00 - 0.10 is 2e-14, and a
+            // settled account read "Amount you still have to pay Rs 0.00" beside the "Settled" box.
+            Money.isPositive(closingBalance) && isCustomer -> context.getString(R.string.pdf_stmt_amount_still_to_pay)
+            Money.isPositive(closingBalance) -> context.getString(R.string.pdf_stmt_you_will_pay)
+            Money.isNegative(closingBalance) -> context.getString(R.string.pdf_stmt_you_will_receive)
             else -> context.getString(R.string.pdf_stmt_settled)
         }
 
@@ -582,7 +599,7 @@ object PdfExport {
         // The payment code goes in only when there is actually something for
         // the customer to pay. Printing "scan to pay me" on a statement where
         // we owe them would be tone-deaf.
-        if (paymentQr != null && closingBalance > 0) {
+        if (paymentQr != null && Money.isPositive(closingBalance)) {
             if (y > PAGE_H - 210f) {
                 endPage()
                 pageNo++

@@ -65,7 +65,10 @@ object RadarUi {
         val promises = withContext(Dispatchers.IO) { runCatching { PromiseLog.of(dao.promiseLog(partyId)) }.getOrDefault(emptyList()) }
         return withContext(Dispatchers.Default) {
             PaymentRadar.read(
-                entries.filter { !it.isDeleted }.map { LedgerPoint(partyId, it.timestamp, it.amount, it.isGiven) },
+                // With their pairing and loan mark (3 Nov 2026 audit, M26/M34): a paid-now sale nets out, a loan is left out.
+                entries.filter { !it.isDeleted }.map {
+                    LedgerPoint(partyId, it.timestamp, it.amount, it.isGiven, id = it.id, pairedEntryId = it.pairedEntryId, isQarzeHasna = it.isQarzeHasna)
+                },
                 System.currentTimeMillis(), shop, promise, promises
             )
         }
@@ -97,6 +100,24 @@ object RadarUi {
     private fun short(t: Long) = DateWords.format("d MMM", t)
 
     /**
+     * The mark's shape by light (3 Nov 2026 audit, M45): colour alone told nothing to an owner who cannot tell red
+     * from green. A circle, a diamond, a triangle — still no word on the face for the customer to read.
+     */
+    private fun shape(r: PaymentRadar.Reading): String = when (r.light) {
+        PaymentRadar.Light.AMBER -> "\u25C6"
+        PaymentRadar.Light.RED -> "\u25B2"
+        else -> "\u25CF"
+    }
+
+    /** What a screen reader says for the mark: the light in words, for the owner's ears only (M45). */
+    fun spoken(context: Context, r: PaymentRadar.Reading): String? = when (r.light) {
+        PaymentRadar.Light.GREEN -> context.getString(R.string.radar_on_time)
+        PaymentRadar.Light.AMBER -> context.getString(R.string.radar_late)
+        PaymentRadar.Light.RED -> context.getString(R.string.radar_very_late)
+        PaymentRadar.Light.NONE -> null
+    }
+
+    /**
      * The customer page's chip: the dot and the likely days of the next payment, else the feature's name.
      * Null when the Radar has nothing to say (too little history and nothing long unpaid).
      */
@@ -106,7 +127,7 @@ object RadarUi {
         val to = r.nextTo
         val words = if (from != null && to != null) context.getString(R.string.radar_next_short, short(from), short(to))
         else context.getString(R.string.radar_title)
-        return SpannableStringBuilder("●  ").apply {
+        return SpannableStringBuilder(shape(r) + "  ").apply {
             setSpan(ForegroundColorSpan(ContextCompat.getColor(context, dot)), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             append(words)
         }
@@ -115,7 +136,7 @@ object RadarUi {
     /** The I-gave form's mark: the dot alone and the feature's name — the form is in front of the customer. */
     fun mark(context: Context, r: PaymentRadar.Reading): CharSequence? {
         val dot = dotOnDark(r) ?: return null
-        return SpannableStringBuilder("●  ").apply {
+        return SpannableStringBuilder(shape(r) + "  ").apply {
             setSpan(ForegroundColorSpan(ContextCompat.getColor(context, dot)), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             append(context.getString(R.string.radar_title))
         }

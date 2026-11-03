@@ -1907,7 +1907,8 @@ class PartyDetailActivity : BaseActivity() {
         // amount is not a positive figure; the old dialog button closed the
         // form even then, throwing away whatever had been typed.
         fun trySave(): Boolean {
-            val amount = Calc.evalAmount(etAmount.text.toString())
+            // Kept to the shop's coin (3 Nov 2026 audit, M08): a typed 1000/3 was saved as 333.3333333333333.
+            val amount = Calc.evalAmount(etAmount.text.toString())?.let { com.innovation313.roshankhata.data.LineMath.round(it) }
             if (amount == null) {
                 Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                 return false
@@ -2390,10 +2391,9 @@ class PartyDetailActivity : BaseActivity() {
                     // Half of a cash sale: ask about the other half first.
                     val pair = entry.pairedEntryId?.let { dao.getEntry(it) }?.takeIf { !it.isDeleted }
                     val alsoPair = if (pair == null) false else askDeletePair(pair.entryNumber)
+                    // One transaction, the pair and the audit rows with it (3 Nov 2026 audit, M13).
                     AppScope.launch {
-                        dao.softDeleteEntry(entry.id)
-                        dao.audit(AuditActs.ENTRY_DELETED, "transactions", entry.id, auditAmount(entry.amount))
-                        if (alsoPair && pair != null) { dao.softDeleteEntry(pair.id); dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id) }
+                        dao.deleteEntryAudited(entry.id, entry.amount, pair?.id?.takeIf { alsoPair })
                     }.join()
                     offerUndo(listOfNotNull(entry.id, pair?.id?.takeIf { alsoPair }))
                 }
@@ -2504,8 +2504,9 @@ class PartyDetailActivity : BaseActivity() {
      */
     private fun copyBalance() {
         val line = when {
-            currentBalance > 0 -> getString(R.string.copy_balance_owed, partyName, Format.money(currentBalance))
-            currentBalance < 0 -> getString(R.string.copy_balance_i_owe, partyName, Format.money(-currentBalance))
+            // The half-paisa line (3 Nov 2026 audit, M05): a settled account copied as "Ali owes Rs 0.00".
+            Money.isPositive(currentBalance) -> getString(R.string.copy_balance_owed, partyName, Format.money(currentBalance))
+            Money.isNegative(currentBalance) -> getString(R.string.copy_balance_i_owe, partyName, Format.money(-currentBalance))
             else -> getString(R.string.copy_balance_settled, partyName, Format.money(0.0))
         }
         val clip = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
@@ -3211,6 +3212,8 @@ class PartyDetailActivity : BaseActivity() {
      * owner turned it off; hidden while there is nothing to say. The first time it shows, its sheet says what
      * it is and that only the owner sees it.
      */
+    private var radarJob: kotlinx.coroutines.Job? = null
+
     private fun refreshRadar() {
         if (!partyIsCustomerAccount || !com.innovation313.roshankhata.ui.RadarUi.on(this)) {
             radarReading = null
@@ -3219,12 +3222,18 @@ class PartyDetailActivity : BaseActivity() {
         }
         val entries = allRows.map { it.entry }
         val promise = harvestPromise
-        lifecycleScope.launch {
+        // One reading at a time (3 Nov 2026 audit, L29): a first reading of the newest rows, finishing late, wrote
+        // over the full one.
+        radarJob?.cancel()
+        radarJob = lifecycleScope.launch {
             val r = runCatching { com.innovation313.roshankhata.ui.RadarUi.read(dao, partyId, entries, promise) }.getOrNull()
+            // Replaced by a newer reading meanwhile: it writes nothing (runCatching above kept the cancellation quiet).
+            if (coroutineContext[kotlinx.coroutines.Job]?.isCancelled == true) return@launch
             if (isFinishing || isDestroyed) return@launch
             radarReading = r
             val chip = r?.let { com.innovation313.roshankhata.ui.RadarUi.chip(this@PartyDetailActivity, it) }
             tvRadar.text = chip
+            tvRadar.contentDescription = r?.let { com.innovation313.roshankhata.ui.RadarUi.spoken(this@PartyDetailActivity, it) }
             tvRadar.visibility = if (chip == null) View.GONE else View.VISIBLE
             if (chip != null) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this@PartyDetailActivity, com.innovation313.roshankhata.ui.FeatureIntro.Topic.RADAR)
         }
@@ -3307,7 +3316,9 @@ class PartyDetailActivity : BaseActivity() {
         AppScope.launch {
             dao.softDeleteEntry(id)
             dao.audit(AuditActs.ENTRY_DELETED, "transactions", id, auditAmount(amount))
-            if (harvestPromise != promiseBefore) dao.setHarvestPromise(partyId, promiseBefore)
+            // Through the promise history (3 Nov 2026 audit, M29): the undone day stayed in it and the day put back
+            // was later counted as replaced, never kept or broken.
+            if (harvestPromise != promiseBefore) dao.promiseDay(partyId, promiseBefore)
             withContext(Dispatchers.Main) {
                 if (isFinishing || isDestroyed) return@withContext
                 harvestPromise = promiseBefore
@@ -3518,7 +3529,7 @@ class PartyDetailActivity : BaseActivity() {
         val etLimit: EditText = view.findViewById(R.id.etCreditLimit)
         val tvOwed: TextView = view.findViewById(R.id.tvCurrentOwed)
 
-        tvOwed.text = if (currentBalance > 0) {
+        tvOwed.text = if (Money.isPositive(currentBalance)) {
             getString(R.string.credit_limit_current, Format.money(currentBalance))
         } else {
             getString(R.string.settled)

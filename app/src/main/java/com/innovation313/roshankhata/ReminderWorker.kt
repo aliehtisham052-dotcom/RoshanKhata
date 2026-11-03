@@ -75,7 +75,14 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // interrupting the owner, and a due-but-failed backup also asks the
         // system to retry with backoff.
         var autoBackupFailed = false
-        when (val auto = DriveBackup.autoBackupIfDue(ctx, dao, businessId = businessId)) {
+        // Offline: no backup this run, and no word of one (the change-triggered backup waits for a network itself).
+        // A backup that throws — the phone's storage full, the commonest real failure — is a failed backup, said
+        // as one; it no longer ends the sweep before the cheque, plan and expiry notices (3 Nov 2026 audit, M18).
+        val autoResult = if (!com.innovation313.roshankhata.data.AutoBackup.online(ctx)) DriveBackup.AutoResult.Skipped
+            else try { DriveBackup.autoBackupIfDue(ctx, dao, businessId = businessId) }
+            catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (e: Exception) { DriveBackup.AutoResult.Failed(e) }
+        when (val auto = autoResult) {
             is DriveBackup.AutoResult.Failed -> {
                 autoBackupFailed = true
                 AlertNotes.backupFailed(ctx, businessId)
@@ -116,20 +123,28 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // The shop that is open: its own screens can show every one of these,
         // so each notification lands on the list it is about.
         val here = countDue(dao, endOfToday, expiryWindow)
+        // A count gone to nothing takes its notice with it (3 Nov 2026 audit, M21): yesterday's "2 cheques" stood.
+        cancelIfNone(ctx, ID_CHEQUES, here.cheques)
+        cancelIfNone(ctx, ID_PLANS, here.plans)
+        cancelIfNone(ctx, ID_EXPIRY, here.expiring)
         if (here.cheques > 0) notify(
             ctx, ID_CHEQUES, AlertsActivity::class.java,
             ctx.getString(R.string.notif_cheques_title),
-            Digits.quantity(ctx.resources, R.plurals.notif_cheques_body, here.cheques, here.cheques)
+            Digits.quantity(ctx.resources, R.plurals.notif_cheques_body, here.cheques, here.cheques),
+            business = businessId
         )
         if (here.plans > 0) notify(
             ctx, ID_PLANS, AlertsActivity::class.java,
             ctx.getString(R.string.notif_plans_title),
-            Digits.quantity(ctx.resources, R.plurals.notif_plans_body, here.plans, here.plans)
+            Digits.quantity(ctx.resources, R.plurals.notif_plans_body, here.plans, here.plans),
+            business = businessId
         )
-        if (here.expiring > 0) notify(
+        // Said by the 10:00 Expiry automation when it is on, with the batch and its day (M14: said twice before).
+        if (here.expiring > 0 && !AndroidAutomationSettings(ctx).isOn(com.innovation313.roshankhata.data.Automations.Kind.EXPIRY)) notify(
             ctx, ID_EXPIRY, AlertsActivity::class.java,
             ctx.getString(R.string.notif_expiry_title),
-            Digits.quantity(ctx.resources, R.plurals.notif_expiry_body, here.expiring, here.expiring)
+            Digits.quantity(ctx.resources, R.plurals.notif_expiry_body, here.expiring, here.expiring),
+            business = businessId
         )
 
         // EVERY OTHER SHOP. Until now the sweep saw only the open one, so a
@@ -160,6 +175,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 other?.close()
             }
             if (due == null) continue
+            cancelIfNone(ctx, ID_CHEQUES_BUSINESS + biz.id.toInt(), due.cheques)
+            cancelIfNone(ctx, ID_PLANS_BUSINESS + biz.id.toInt(), due.plans)
+            cancelIfNone(ctx, ID_EXPIRY_BUSINESS + biz.id.toInt(), due.expiring)
 
             val shop = Businesses.displayName(ctx, biz)
                 ?: Digits.string(ctx.resources, R.string.business_numbered, biz.id)
@@ -215,8 +233,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 if (!BackupReminder.isLapsedBackup(ctx, biz.id)) continue
                 val shop = Businesses.displayName(ctx, biz)
                     ?: Digits.string(ctx.resources, R.string.business_numbered, biz.id)
+                // The switcher, not Backup (3 Nov 2026 audit, M20): Backup backs up the OPEN shop, so the shop
+                // named here stayed unprotected while another was backed up.
                 notify(
-                    ctx, ID_BACKUP_BUSINESS + biz.id.toInt(), BackupActivity::class.java,
+                    ctx, ID_BACKUP_BUSINESS + biz.id.toInt(), BusinessSwitchActivity::class.java,
                     ctx.getString(R.string.notif_backup_title),
                     ctx.getString(R.string.notif_backup_body_named, shop)
                 )
@@ -224,6 +244,11 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         }
 
         return Result.success()
+    }
+
+    /** Takes a notice down when what it counted is gone. */
+    private fun cancelIfNone(ctx: Context, id: Int, count: Int) {
+        if (count == 0) runCatching { NotificationManagerCompat.from(ctx).cancel(id) }
     }
 
     /** What one shop's book owes the owner's attention today. */
@@ -236,23 +261,11 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
      * the open one is, rather than a second copy that drifts from it.
      */
     private suspend fun countDue(dao: KhataDao, endOfToday: Long, expiryWindow: Long): Due {
-        // Cheques: still pending, written date reached or passed.
-        val cheques = dao.allChequesForBackup().count {
-            !it.isDeleted && it.status == ChequeStatus.PENDING && it.dueDate <= endOfToday
-        }
-        // Payment plans: open, with an agreed date that has arrived.
-        val plans = dao.allPlansForBackup().count {
-            !it.isDeleted && !it.isClosed &&
-                (it.nextDueDate ?: Long.MAX_VALUE) <= endOfToday
-        }
-        // Expiring stock: items with a recorded expiry inside the 60-day
-        // window (or already past it), on bills that still exist.
-        val liveBills = dao.allBillsForBackup()
-            .filter { !it.isDeleted }.map { it.id }.toSet()
-        val expiring = dao.allBillItemsForBackup().count {
-            it.billId in liveBills && (it.expiryDate ?: Long.MAX_VALUE) <= expiryWindow
-        }
-        return Due(cheques, plans, expiring)
+        // The bell's own rules (LedgerAlerts.dueCounts, 3 Nov 2026 audit, M14): the notice counted every dated bill
+        // line as expiring — sold out, written off, years past — and plans with nothing left, so the bell it
+        // opened showed none of it. [endOfToday] and [expiryWindow] are the bell's own (today, 60 days).
+        val due = com.innovation313.roshankhata.data.LedgerAlerts.dueCounts(dao)
+        return Due(due.cheques, due.plans, due.expiring)
     }
 
     /**
@@ -276,16 +289,20 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
     }
 
     private fun notify(
-        ctx: Context, id: Int, target: Class<*>, title: String, body: String
+        ctx: Context, id: Int, target: Class<*>, title: String, body: String,
+        /** The shop the notice is about, when it opens that shop's own screen (3 Nov 2026 audit, M19). */
+        business: Long? = null
     ) {
         // Through the gate, never straight to the screen. Opened directly, the
         // screen skipped App Lock (Backup, with Erase all data, opened with no
         // fingerprint) and stood alone in its task, so Back closed the app.
         // The gate checks the lock, the home screen opens, and the screen the
         // reminder is about opens on top of it: Back lands on the home screen.
+        // Not CLEAR_TASK (3 Nov 2026 audit, M16): it wiped a half-rung ticket or a half-typed entry under it.
         val intent = Intent(ctx, GateActivity::class.java)
             .putExtra(MainActivity.EXTRA_OPEN, target.name)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .apply { if (business != null) putExtra(MainActivity.EXTRA_OPEN_BUSINESS, business) }
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         val pending = PendingIntent.getActivity(
             ctx, id, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -298,6 +315,12 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
             .setContentIntent(pending)
             .setAutoCancel(true)
+            // A shop's name and counts only behind the lock (3 Nov 2026 audit, M22): its public face is the title.
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setPublicVersion(
+                NotificationCompat.Builder(ctx, CHANNEL_ID).setSmallIcon(R.drawable.ic_stat_notify)
+                    .setColor(ContextCompat.getColor(ctx, R.color.brand_green)).setContentTitle(title).build()
+            )
             .build()
         try {
             NotificationManagerCompat.from(ctx).notify(id, notification)
@@ -348,15 +371,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
 
         /** Idempotent: safe to call on every launch. */
         fun schedule(ctx: Context) {
-            // Needs a network: the daily sweep now also carries automatic
-            // backup, which uploads to Drive. A connection is required for that
-            // to mean anything; the reminder checks are cheap enough to ride
-            // the same wake-up. WorkManager holds the run until the device is
-            // online, and if backup still fails once running, the worker asks
-            // for a backoff retry rather than giving up.
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
+            // No network needed (3 Nov 2026 audit, M17): the sweep's cheque, plan and expiry notices are read from
+            // the book on the phone, and a phone offline for days heard none of them. Its backup checks for a
+            // network itself ([AutoBackup.online]) and is skipped without one.
+            val constraints = Constraints.Builder().build()
 
             val request = PeriodicWorkRequestBuilder<ReminderWorker>(24, TimeUnit.HOURS)
                 .setConstraints(constraints)

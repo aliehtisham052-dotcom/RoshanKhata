@@ -58,6 +58,10 @@ fun ImportPreviewDialog(
                     Text(word(W.you_will_give) + "  " + Format.money(rows.filter { it.balance < 0 }.sumOf { -it.balance }), color = c.iOwe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 }
                 if (skipped > 0) Text(word(W.import_csv_skipped, skipped), color = c.textMuted, fontSize = 13.sp)
+                // Balances not read as figures, said before anything is written (3 Nov 2026 audit, M40).
+                fresh.count { it.unreadable }.takeIf { it > 0 }?.let { n ->
+                    Text(word(W.import_csv_unreadable, n), color = c.iOwe, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                }
                 Text(word(W.import_csv_sign), color = c.ink, fontSize = 13.sp)
                 TwoWay(word(W.import_csv_owes_me), word(W.import_csv_i_owe), owesMe) { owesMe = it }
                 Rule()

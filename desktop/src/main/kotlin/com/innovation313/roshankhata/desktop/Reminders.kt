@@ -51,9 +51,14 @@ object Reminders {
     /** A Windows notification [title] / [text]; a click on it runs [open] (the automations' page), if given. */
     fun show(appName: String, title: String, text: String, open: (() -> Unit)? = null) {
         val t = icon(appName) ?: return
-        if (open != null) onClick = open
+        // Each notice's own click, none for one that names no page (3 Nov 2026 audit, M19): the daily notice took
+        // whichever automation's page came last.
+        onClick = open
         java.awt.EventQueue.invokeLater { runCatching { t.displayMessage(title, text, TrayIcon.MessageType.INFO) } }
     }
+
+    /** A shop switch: the notices said were the other shop's, and a click no longer opens its page (M19). */
+    fun forgetClick() { onClick = null }
 
     private fun today() = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date())
 

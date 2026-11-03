@@ -203,7 +203,7 @@ class VoiceLanguageTest {
     /** Names with no letters at all — a phone number saved as a name — abstain. */
     @Test
     fun `names without letters are not counted either way`() {
-        val digits = (1..40).map { "+92348723946$it" }
+        val digits = (1..40).map { "+9230000000" + it.toString().padStart(2, '0') } // made-up numbers (3 Nov 2026 audit, L23)
         assertEquals("ur", VoiceLanguage.forBook("ur", digits))
     }
 }

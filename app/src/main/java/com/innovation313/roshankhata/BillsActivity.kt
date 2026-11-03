@@ -1186,15 +1186,10 @@ class BillsActivity : BaseActivity() {
             if (which == items.size) {
                 showAddItemDialog { newItem ->
                     AppScope.launch {
-                        // Same birth rule as saveBill: naming a product on
-                        // a bill line creates it if it does not exist yet.
-                        val product = dao.findOrCreateProduct(
-                            name = newItem.productName,
-                            defaultUnit = newItem.unit
-                        )
-                        dao.insertBillItem(
-                            newItem.copy(billId = billId, productId = product.id)
-                        )
+                        // Same birth rule as saveBill: naming a product on a bill line creates it if it does not
+                        // exist yet. Through the DAO's one transaction with its audit row, as the computer does
+                        // (3 Nov 2026 audit, M12): two separate writes and no BILL_EDITED row before.
+                        dao.saveBillLine(billId, newItem.copy(id = 0L))
                         withContext(Dispatchers.Main) {
                             if (!isFinishing && !isDestroyed) manageItems(billId)
                         }
@@ -1224,13 +1219,8 @@ class BillsActivity : BaseActivity() {
                         // link is re-derived from the final name — created
                         // if that product does not exist yet, same as a
                         // new line.
-                        val product = dao.findOrCreateProduct(
-                            name = updated.productName,
-                            defaultUnit = updated.unit
-                        )
-                        dao.updateBillItem(
-                            updated.copy(id = item.id, billId = billId, productId = product.id)
-                        )
+                        // One transaction with its audit row (M12), the computer's saveBillLine.
+                        dao.saveBillLine(billId, updated.copy(id = item.id))
                         withContext(Dispatchers.Main) {
                             if (!isFinishing && !isDestroyed) manageItems(billId)
                         }
@@ -1293,10 +1283,9 @@ class BillsActivity : BaseActivity() {
                     // screen closes mid-flight; join keeps the toast honest
                     // by showing it only after the write is truly done.
                     AppScope.launch {
-                        dao.getBill(bill.id)?.ledgerEntryId?.let { entryId ->
-                            dao.softDeleteEntry(entryId)
-                        }
-                        dao.softDeleteBill(bill.id)
+                        // The entry and the bill in ONE transaction, with its BILL_DELETED row (3 Nov 2026 audit,
+                        // M12): two writes left the supplier's debt binned while the bill and its stock stayed.
+                        dao.deleteSupplierBill(bill.id)
                         // A cash bill has no recycle-bin way back, so its
                         // photo goes now; a credit bill's photo stays on its
                         // binned entry until that is purged.

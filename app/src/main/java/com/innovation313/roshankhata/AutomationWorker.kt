@@ -60,6 +60,17 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         return Result.success()
     }
 
+    /** Milliseconds until the working day ends (04:00, DayCloseMath.businessDayOf's line), at least an hour. */
+    private fun untilDayEnds(now: Long = System.currentTimeMillis()): Long {
+        val c = java.util.Calendar.getInstance().apply {
+            timeInMillis = now
+            if (get(java.util.Calendar.HOUR_OF_DAY) >= 4) add(java.util.Calendar.DAY_OF_YEAR, 1)
+            set(java.util.Calendar.HOUR_OF_DAY, 4); set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
+        }
+        return maxOf(60L * 60 * 1000, c.timeInMillis - now)
+    }
+
     private fun post(ctx: Context, n: Automations.Notice) {
         val args = Bundle()
         val target = when (n.kind) {
@@ -74,11 +85,14 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
             }
             Automations.Kind.EXPIRY -> ExpiringActivity::class.java
         }
-        // Through the gate, as every reminder goes: the lock first, Home under it, the place on top.
+        // Through the gate, as every reminder goes: the lock first, Home under it, the place on top. Not
+        // CLEAR_TASK (3 Nov 2026 audit, M16): it wiped a half-rung ticket or a half-typed entry under it. The
+        // shop the notice is about rides along (M19): a tap after a switch asks which shop first.
         val intent = Intent(ctx, GateActivity::class.java)
             .putExtra(MainActivity.EXTRA_OPEN, target.name)
             .putExtra(MainActivity.EXTRA_OPEN_ARGS, args)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, com.innovation313.roshankhata.data.Businesses.active(ctx).id)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         val id = ID_BASE + n.kind.ordinal
         val pending = PendingIntent.getActivity(ctx, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(ctx, CHANNEL_ID)
@@ -89,6 +103,14 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
             .setStyle(NotificationCompat.BigTextStyle().bigText(n.body))
             .setContentIntent(pending)
             .setAutoCancel(true)
+            // Names and cash stay off the lock screen (3 Nov 2026 audit, M22): its public face is the title alone.
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setPublicVersion(
+                NotificationCompat.Builder(ctx, CHANNEL_ID).setSmallIcon(R.drawable.ic_stat_notify)
+                    .setColor(ContextCompat.getColor(ctx, R.color.brand_green)).setContentTitle(n.title).build()
+            )
+            // A day's notice is gone with its working day (04:00): yesterday's "to collect" is not today's (M21).
+            .apply { if (!n.kind.monthly) setTimeoutAfter(untilDayEnds()) }
             .build()
         try {
             NotificationManagerCompat.from(ctx).notify(id, notification)
@@ -125,9 +147,13 @@ class AndroidAutomationSettings(context: Context) : Automations.Settings {
     private val prefs = context.applicationContext.getSharedPreferences("automations", Context.MODE_PRIVATE)
     override fun isOn(kind: Automations.Kind) = prefs.getBoolean("on_${kind.key}", true)
     override fun hour(kind: Automations.Kind) = prefs.getInt("hour_${kind.key}", kind.defaultHour)
+    // When each was last said, per shop (3 Nov 2026 audit, M19): one mark for the phone meant a shop opened later
+    // that day never heard its own notices. The switches and hours stay the phone's.
+    private val shop = com.innovation313.roshankhata.data.Businesses.active(context.applicationContext).id
+    private fun saidKey(kind: Automations.Kind) = "said_${kind.key}_b$shop"
     override fun lastSaid(kind: Automations.Kind): Long? =
-        if (prefs.contains("said_${kind.key}")) prefs.getLong("said_${kind.key}", 0L) else null
-    override fun setSaid(kind: Automations.Kind, stamp: Long) { prefs.edit().putLong("said_${kind.key}", stamp).apply() }
+        if (prefs.contains(saidKey(kind))) prefs.getLong(saidKey(kind), 0L) else null
+    override fun setSaid(kind: Automations.Kind, stamp: Long) { prefs.edit().putLong(saidKey(kind), stamp).apply() }
     fun setOn(kind: Automations.Kind, on: Boolean) { prefs.edit().putBoolean("on_${kind.key}", on).apply() }
     fun setHour(kind: Automations.Kind, hour: Int) { prefs.edit().putInt("hour_${kind.key}", hour.coerceIn(0, 23)).apply() }
 }

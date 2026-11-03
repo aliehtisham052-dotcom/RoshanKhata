@@ -169,6 +169,23 @@ object ReturnMath {
     }
 
     fun total(lines: List<SaleReturnItem>): Double = LineMath.round(lines.filter { !it.isDeleted }.sumOf { it.lineTotal })
+
+    /**
+     * What a return against [sale] credits (3 Nov 2026 audit, M07): its lines at what was paid for them, each
+     * rounded — except the return that brings the last of the ticket back, which credits exactly what is left of
+     * the ticket's total after the earlier returns ([returnedBefore]). Each line rounded on its own, 3 × 100 with
+     * 20 off came back as 279.99 of the 280 paid: a paisa owed for ever, red in Follow-up and Aging. [soldLeft]:
+     * per sale line, what was sold less what came back before this return. The form and the DAO both call this.
+     */
+    fun totalFor(lines: List<SaleReturnItem>, sale: Sale?, soldLeft: Map<Long, Double>, returnedBefore: Double): Double {
+        val linesTotal = total(lines)
+        if (sale == null || soldLeft.isEmpty()) return linesTotal
+        val live = lines.filter { !it.isDeleted }
+        val finishes = soldLeft.all { (id, left) ->
+            kotlin.math.abs(left - live.filter { it.saleItemId == id }.sumOf { it.quantity }) < 0.000001
+        }
+        return if (finishes) LineMath.round(maxOf(0.0, sale.grandTotal - returnedBefore)) else linesTotal
+    }
 }
 
 /** What version 33 adds (returns), as the SQL both migrations run — see [Schema32]. */

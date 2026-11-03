@@ -1055,6 +1055,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">Pengingat</string>
     <string name="notif_channel_desc">Cek jatuh tempo, cicilan jatuh tempo, stok hampir kedaluwarsa, dan pengingat cadangan</string>
+    <string name="notif_permission_why">Roshan Khata memberi tahu Anda saat cek jatuh tempo, cicilan tiba, stok hampir kedaluwarsa, atau cadangan gagal. Izinkan notifikasi agar Anda tahu.</string>
     <string name="notif_cheques_title">Cek siap dicairkan</string>
     <plurals name="notif_cheques_body">
         <item quantity="other">%1$d cek jatuh tempo hari ini atau terlambat.</item>
@@ -1776,7 +1777,7 @@
     <string name="dayclose_counted">Uang yang dihitung sekarang</string>
     <string name="dayclose_note_hint">Keterangan, mis. teh, upah</string>
     <string name="dayclose_help">Hanya catatan buku bertanda Tunai yang dihitung; catatan tanpa metode pembayaran tidak ditebak.</string>
-    <string name="dayclose_breakdown">+ Buku kas masuk %1$s\n+ Tunai diterima di buku %2$s\n− Buku kas keluar %3$s\n− Tunai dibayar di buku %4$s\n= Seharusnya di laci %5$s</string>
+    <string name="dayclose_breakdown">+ Buku kas masuk %1$s\n+ Tunai diterima di buku %2$s\n− Buku kas keluar %3$s\n− Tunai dibayar di buku %4$s\n− Tagihan tunai dan bayaran karyawan %6$s\n= Seharusnya di laci %5$s</string>
     <string name="dayclose_over">%1$s lebih dari pembukuan</string>
     <string name="dayclose_short">kurang %1$s</string>
     <string name="dayclose_match">Laci cocok dengan pembukuan</string>
@@ -2889,6 +2890,7 @@
     <string name="auto_folder_missing">Folder itu tidak dapat dijangkau sekarang. Pasang flashdisk USB, atau pilih folder lain.</string>
     <string name="import_csv">Impor pelanggan</string>
     <string name="import_csv_skipped">Sudah ada di buku kas, dibiarkan apa adanya: %1$d</string>
+    <string name="import_csv_unreadable">Saldo yang tidak terbaca, masuk sebagai 0 — periksa berkasnya: %1$d</string>
     <string name="import_csv_sign">Dalam file ini, saldo positif berarti:</string>
     <string name="import_csv_owes_me">Mereka berutang kepada saya</string>
     <string name="import_csv_i_owe">Saya berutang kepada mereka</string>
@@ -3375,7 +3377,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">Ubah di tempat ia dibuat</string>
     <string name="entry_linked_bill">Tagihan pemasok menulis catatan ini. Ubah atau hapus tagihannya, dan buku kas mengikuti.</string>
-    <string name="entry_linked_plan">Cicilan rencana pembayaran menulis catatan ini. Ubah dari Rencana pembayaran.</string>
+    <string name="entry_linked_plan">Cicilan rencana pembayaran menulis catatan ini. Untuk memperbaikinya, hapus rencananya di Rencana pembayaran (pembayarannya tetap di buku), lalu ubah catatan ini.</string>
     <string name="entry_linked_cheque">Cek yang sudah cair menulis catatan ini. Ubah dari halaman Cek.</string>
     <string name="entry_linked_sale">Penjualan kasir menulis catatan ini. Batalkan penjualan, atau buat retur.</string>
     <string name="entry_linked_return">Retur menulis catatan ini. Batalkan returnya saja.</string>
@@ -3588,6 +3590,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">Otomatisasi</string>
     <string name="auto_help">Masing-masing memberi tahu pada waktunya dan membuka halaman yang tepat. Tidak ada yang dikirim atau ditulis dengan sendirinya.</string>
+    <string name="auto_notifications_turn_on">Nyalakan notifikasi</string>
+    <string name="auto_notifications_off">Notifikasi Roshan Khata mati, jadi tidak satu pun dari ini bisa sampai ke Anda. Nyalakan di pengaturan ponsel.</string>
     <string name="auto_collect_name">Daftar penagihan pagi</string>
     <string name="auto_collect_title">Tagih hari ini</string>
     <string name="auto_dayend_name">Ringkasan tutup toko</string>
@@ -3602,6 +3606,8 @@
     <string name="auto_expiry_name">Tindakan kedaluwarsa</string>
     <string name="auto_expiry_title">Bertindak sebelum kedaluwarsa</string>
     <string name="auto_expiry_body">%1$s, batch %2$s: sisa %3$s, kedaluwarsa %4$s. Jual, beri diskon, atau kembalikan.</string>
+    <string name="auto_expiry_expired_body">%1$s, batch %2$s: sisa %3$s, kedaluwarsa sejak %4$s. Jangan dijual: hapus dari stok atau kembalikan ke pemasok.</string>
+    <string name="auto_expiry_expired_title">Stok kedaluwarsa di rak</string>
     <string name="auto_at_time">Pukul %1$s</string>
     <string name="auto_pick_hour">Pilih jam</string>
     <plurals name="auto_collect_body">
@@ -3674,6 +3680,7 @@
     <string name="pdf_stmt_total_taken">Total diambil</string>
     <string name="pdf_stmt_total_paid">Total dibayar</string>
     <string name="pdf_stmt_still_to_pay">Sisa yang harus dibayar</string>
+    <string name="pdf_stmt_period_end_balance">Saldo pada %1$s, akhir periode ini: %2$s. Catatan sesudahnya sudah termasuk dalam jumlah di bawah.</string>
     <string name="pdf_stmt_settled_short">Lunas</string>
     <string name="pdf_stmt_pay_by">Mohon bayar sebelum %1$s</string>
     <string name="pdf_stmt_how_to_pay">CARA MEMBAYAR</string>

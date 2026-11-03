@@ -298,7 +298,8 @@ fun EntryEditor(
     // A return of more than this customer holds on the book: asked first, never refused (goods may predate the app).
     var overReturn by remember { mutableStateOf<Pair<EntryDraft, String>?>(null) }
 
-    val amount = Calc.evalAmount(amountText)
+    // Kept to the shop's coin (3 Nov 2026 audit, M08), as the phone keeps it.
+    val amount = Calc.evalAmount(amountText)?.let { com.innovation313.roshankhata.data.LineMath.round(it) }
     fun draft(): EntryDraft? {
         val a = amount ?: return null
         // With a list, the boxes hold a whole item or nothing: half an item is not saved in silence.

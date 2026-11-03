@@ -249,7 +249,7 @@ fun InvoiceForm(
             SumLine(word(W.invoice_sum_total), Format.money(t.grandTotal), bold = true)
             if (t.received > 0) {
                 SumLine(word(W.invoice_sum_received), Format.money(t.received))
-                SumLine(word(W.invoice_sum_balance), Format.money(t.balanceDue), bold = true)
+                SumLine(word(W.invoice_sum_balance), Format.signedIfNegative(t.balanceDue), bold = true)
             }
         }
     }
@@ -482,7 +482,7 @@ class InvoicePrint(
         sum(words.text(W.invoice_sum_total), Format.money(t.grandTotal), bold = true)
         if (t.received > 0) {
             sum(words.text(W.invoice_sum_received), Format.money(t.received))
-            sum(words.text(W.invoice_sum_balance), Format.money(t.balanceDue), bold = true)
+            sum(words.text(W.invoice_sum_balance), Format.signedIfNegative(t.balanceDue), bold = true)
         }
         invoice.note?.let { g.color = Color.DARK_GRAY; g.font = Font(PrintFonts.family, Font.PLAIN, 10); g.text(it, margin, y + 20) }
         return Printable.PAGE_EXISTS

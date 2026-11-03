@@ -19,8 +19,11 @@ import kotlin.math.abs
  */
 object Money {
 
-    /** Half a paisa. Below this there is no amount a person could settle. */
-    private const val EPSILON = 0.005
+    /**
+     * Half the shop's smallest coin (3 Nov 2026 audit, M08: it was half a paisa for every currency). Below this
+     * there is no amount a person could settle: 0.005 for Rs, 0.0005 for KWD, 0.5 for Rp.
+     */
+    private val EPSILON: Double get() = 0.5 / Math.pow(10.0, Currency.decimals().toDouble())
 
     fun isZero(value: Double): Boolean = abs(value) < EPSILON
 

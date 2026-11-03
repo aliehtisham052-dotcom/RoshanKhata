@@ -126,7 +126,8 @@ object Insights {
             topProducts = dao.topProductsBetween(thisStart, thisEnd, 5),
             topCustomers = dao.topCustomersBetween(thisStart, thisEnd, 3),
             todayGiven = dao.givenBetween(todayStart(), now),
-            todayReceived = dao.receivedBetween(todayStart(), now),
+            // Money from customers and walk-ins, not a supplier's credit bill (3 Nov 2026 audit, M15).
+            todayReceived = dao.customerReceivedBetween(todayStart(), now),
             todayCount = dao.entryCountBetween(todayStart(), now),
             monthlySales = lastTwelveMonths(dao)
         )

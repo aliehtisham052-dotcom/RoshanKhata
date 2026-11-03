@@ -1077,6 +1077,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">रिमाइंडर</string>
     <string name="notif_channel_desc">देय चेक, देय किस्तें, एक्सपायर होता स्टॉक और बैकअप की याद</string>
+    <string name="notif_permission_why">रोशन खाता आपको बताता है जब चेक का दिन आए, किस्त आए, माल एक्सपायर होने वाला हो या बैकअप नाकाम हो। यह जानने के लिए नोटिफ़िकेशन की अनुमति दें।</string>
     <string name="notif_cheques_title">बैंक में लगाने को तैयार चेक</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$d चेक आज देय है या देरी में है।</item>
@@ -1817,7 +1818,7 @@
     <string name="dayclose_counted">अभी गिना हुआ नकद</string>
     <string name="dayclose_note_hint">नोट, जैसे चाय, मज़दूरी</string>
     <string name="dayclose_help">सिर्फ़ नकद चिह्नित खाता एंट्रियाँ गिनी जाती हैं; जिनमें भुगतान का तरीका नहीं लिखा, उनका अंदाज़ा नहीं लगाया जाता।</string>
-    <string name="dayclose_breakdown">+ कैशबुक में आया %1$s\n+ खाते का नकद मिला %2$s\n− कैशबुक से गया %3$s\n− खाते का नकद दिया %4$s\n= गल्ले में होना चाहिए %5$s</string>
+    <string name="dayclose_breakdown">+ कैशबुक में आया %1$s\n+ खाते का नकद मिला %2$s\n− कैशबुक से गया %3$s\n− खाते का नकद दिया %4$s\n− नकद बिल और स्टाफ़ को भुगतान %6$s\n= गल्ले में होना चाहिए %5$s</string>
     <string name="dayclose_over">खाते से %1$s ज़्यादा</string>
     <string name="dayclose_short">%1$s कम</string>
     <string name="dayclose_match">गल्ला खाते से मिलता है</string>
@@ -2936,6 +2937,7 @@
     <string name="auto_folder_missing">यह फ़ोल्डर अभी उपलब्ध नहीं है। USB लगाएँ, या कोई और फ़ोल्डर चुनें।</string>
     <string name="import_csv">ग्राहक इंपोर्ट करें</string>
     <string name="import_csv_skipped">पहले से खाते में, जैसे थे वैसे छोड़े गए: %1$d</string>
+    <string name="import_csv_unreadable">बकाया जो पढ़ा न जा सका, 0 के रूप में आएगा — फ़ाइल देखें: %1$d</string>
     <string name="import_csv_sign">इस फ़ाइल में पॉज़िटिव बैलेंस का मतलब है:</string>
     <string name="import_csv_owes_me">उन्हें मुझे देना है</string>
     <string name="import_csv_i_owe">मुझे उन्हें देना है</string>
@@ -3423,7 +3425,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">जहाँ बना था वहीं बदलें</string>
     <string name="entry_linked_bill">यह एंट्री सप्लायर बिल ने लिखी है। बिल बदलें या मिटाएँ, खाता अपने आप साथ बदल जाएगा।</string>
-    <string name="entry_linked_plan">यह एंट्री किस्त प्लान की अदायगी ने लिखी है। इसे किस्त प्लान से बदलें।</string>
+    <string name="entry_linked_plan">यह एंट्री किस्त प्लान की अदायगी ने लिखी है। ठीक करने के लिए पहले किस्त प्लान मिटाएँ (उसकी अदायगियाँ खाते में रहेंगी), फिर यह एंट्री बदलें।</string>
     <string name="entry_linked_cheque">यह एंट्री क्लियर हुए चेक ने लिखी है। इसे चेक वाले पेज से बदलें।</string>
     <string name="entry_linked_sale">यह एंट्री काउंटर की बिक्री ने लिखी है। बिक्री रद्द करें या वापसी करें।</string>
     <string name="entry_linked_return">यह एंट्री वापसी ने लिखी है। इसकी जगह वापसी रद्द करें।</string>
@@ -3644,6 +3646,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">अपने-आप होने वाले काम</string>
     <string name="auto_help">हर एक अपने समय पर बताता है और सही पेज खोलता है। कुछ भी अपने-आप भेजा या लिखा नहीं जाता।</string>
+    <string name="auto_notifications_turn_on">नोटिफ़िकेशन चालू करें</string>
+    <string name="auto_notifications_off">रोशन खाता की नोटिफ़िकेशन बंद हैं, इसलिए इनमें से कोई भी आप तक नहीं पहुँच सकती। फ़ोन की सेटिंग्स में इन्हें चालू करें।</string>
     <string name="auto_collect_name">सुबह की वसूली सूची</string>
     <string name="auto_collect_title">आज की वसूली</string>
     <string name="auto_dayend_name">दुकान बंद करने का सारांश</string>
@@ -3658,6 +3662,8 @@
     <string name="auto_expiry_name">एक्सपायरी से पहले कदम</string>
     <string name="auto_expiry_title">एक्सपायर होने से पहले कदम उठाएँ</string>
     <string name="auto_expiry_body">%1$s, बैच %2$s: %3$s बाकी, %4$s को एक्सपायर। बेचें, छूट दें या वापस करें।</string>
+    <string name="auto_expiry_expired_body">%1$s, बैच %2$s: %3$s बाकी, %4$s को एक्सपायर हो चुका। इसे न बेचें: बट्टे खाते में डालें या सप्लायर को लौटाएँ।</string>
+    <string name="auto_expiry_expired_title">एक्सपायर माल शेल्फ़ पर</string>
     <string name="auto_at_time">%1$s बजे</string>
     <string name="auto_pick_hour">समय चुनें</string>
     <plurals name="auto_collect_body">
@@ -3733,6 +3739,7 @@
     <string name="pdf_stmt_total_taken">कुल लिया</string>
     <string name="pdf_stmt_total_paid">कुल चुकाया</string>
     <string name="pdf_stmt_still_to_pay">अभी देना है</string>
+    <string name="pdf_stmt_period_end_balance">%1$s को, इस अवधि के अंत में, बकाया: %2$s। उसके बाद की एंट्रियाँ नीचे वाली रकम में शामिल हैं।</string>
     <string name="pdf_stmt_settled_short">हिसाब बराबर</string>
     <string name="pdf_stmt_pay_by">कृपया %1$s तक भुगतान करें</string>
     <string name="pdf_stmt_how_to_pay">भुगतान कैसे करें</string>

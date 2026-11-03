@@ -1080,6 +1080,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">Reminders</string>
     <string name="notif_channel_desc">Cheques due, instalments due, expiring stock and backup nudges</string>
+    <string name="notif_permission_why">Roshan Khata tells you when a cheque is due, an instalment comes up, stock is about to expire or a backup failed. Allow notifications to hear about them.</string>
     <string name="notif_cheques_title">Cheques ready to bank</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$d cheque is due today or overdue.</item>
@@ -1822,7 +1823,7 @@
     <string name="dayclose_counted">Cash counted now</string>
     <string name="dayclose_note_hint">Note, e.g. tea, labour</string>
     <string name="dayclose_help">Only khata entries marked Cash are counted; entries with no payment method are not guessed.</string>
-    <string name="dayclose_breakdown">+ Cashbook in %1$s\n+ Khata cash received %2$s\n− Cashbook out %3$s\n− Khata cash paid %4$s\n= Should be in drawer %5$s</string>
+    <string name="dayclose_breakdown">+ Cashbook in %1$s\n+ Khata cash received %2$s\n− Cashbook out %3$s\n− Khata cash paid %4$s\n− Bills and staff paid in cash %6$s\n= Should be in drawer %5$s</string>
     <string name="dayclose_over">%1$s more than the books</string>
     <string name="dayclose_short">%1$s short</string>
     <string name="dayclose_match">Drawer matches the books</string>
@@ -3100,6 +3101,7 @@
     <string name="auto_folder_missing">That folder cannot be reached right now. Plug in the USB stick, or choose another folder.</string>
     <string name="import_csv">Import customers</string>
     <string name="import_csv_skipped">Already in your khata, left as they are: %1$d</string>
+    <string name="import_csv_unreadable">Balances that could not be read, coming in as 0 — check the file: %1$d</string>
     <string name="import_csv_sign">In this file, a positive balance means:</string>
     <string name="import_csv_owes_me">They owe me</string>
     <string name="import_csv_i_owe">I owe them</string>
@@ -3587,7 +3589,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">Change it where it was made</string>
     <string name="entry_linked_bill">A supplier bill wrote this entry. Change or delete the bill, and the khata follows.</string>
-    <string name="entry_linked_plan">A payment plan\'s instalment wrote this entry. Change it from Payment plans.</string>
+    <string name="entry_linked_plan">A payment plan\'s instalment wrote this entry. To correct it, delete the plan in Payment plans (its payments stay in the khata), then change this entry.</string>
     <string name="entry_linked_cheque">A cleared cheque wrote this entry. Change it from Cheques.</string>
     <string name="entry_linked_sale">A counter sale wrote this entry. Void the sale, or make a return.</string>
     <string name="entry_linked_return">A return wrote this entry. Void the return instead.</string>
@@ -3808,6 +3810,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">Automations</string>
     <string name="auto_help">Each one tells you at its time and opens the right page. Nothing is sent or written on its own.</string>
+    <string name="auto_notifications_turn_on">Turn on notifications</string>
+    <string name="auto_notifications_off">Notifications are off for Roshan Khata, so none of these can reach you. Turn them on in the phone\'s settings.</string>
     <string name="auto_collect_name">Morning collection list</string>
     <string name="auto_collect_title">Collect today</string>
     <string name="auto_dayend_name">Closing summary</string>
@@ -3822,6 +3826,8 @@
     <string name="auto_expiry_name">Expiry action</string>
     <string name="auto_expiry_title">Act before it expires</string>
     <string name="auto_expiry_body">%1$s, batch %2$s: %3$s left, expires %4$s. Sell it, give a discount or return it.</string>
+    <string name="auto_expiry_expired_body">%1$s, batch %2$s: %3$s left, expired %4$s. Do not sell it: write it off or return it to the supplier.</string>
+    <string name="auto_expiry_expired_title">Expired stock on the shelf</string>
     <string name="auto_at_time">At %1$s</string>
     <string name="auto_pick_hour">Choose the hour</string>
     <plurals name="auto_collect_body">
@@ -3897,6 +3903,7 @@
     <string name="pdf_stmt_total_taken">Total taken</string>
     <string name="pdf_stmt_total_paid">Total paid</string>
     <string name="pdf_stmt_still_to_pay">Still to pay</string>
+    <string name="pdf_stmt_period_end_balance">Balance on %1$s, the end of this period: %2$s. Entries after it are included in the amount below.</string>
     <string name="pdf_stmt_settled_short">Settled</string>
     <string name="pdf_stmt_pay_by">Please pay by %1$s</string>
     <string name="pdf_stmt_how_to_pay">HOW TO PAY</string>

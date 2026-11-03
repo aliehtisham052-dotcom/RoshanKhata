@@ -58,6 +58,8 @@ object EraseAll {
      * that no longer exists.
      */
     fun wipe(context: Context) {
+        // Customer names in the shade outlived the erase (3 Nov 2026 audit, M21).
+        runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancelAll() }
         // Close the open ledger first: deleting a database out from under a
         // live connection is the one order of operations that can corrupt
         // instead of remove.

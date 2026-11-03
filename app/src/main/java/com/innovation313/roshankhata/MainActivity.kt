@@ -64,6 +64,22 @@ class MainActivity : BaseActivity() {
      */
     private var builtInLocale: String? = null
 
+    /**
+     * The automations' words for the screen they open, read key by key and typed (3 Nov 2026 audit, L24): only
+     * these five ever pass, as true or a time — a crafted bundle from another app is dropped whole.
+     */
+    private fun openArgs(): Bundle {
+        val out = Bundle()
+        val args = runCatching { intent.getBundleExtra(EXTRA_OPEN_ARGS) }.getOrNull() ?: return out
+        runCatching {
+            for (key in listOf(FollowUpActivity.EXTRA_START_QUEUE, CashbookActivity.EXTRA_CLOSE_DAY, OrdersActivity.EXTRA_START_LOW))
+                if (args.getBoolean(key, false)) out.putBoolean(key, true)
+            for (key in listOf(LedgerReportActivity.EXTRA_FROM, LedgerReportActivity.EXTRA_TO))
+                if (args.containsKey(key)) out.putLong(key, args.getLong(key))
+        }
+        return out
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -75,11 +91,19 @@ class MainActivity : BaseActivity() {
         // A reminder's screen, now that the gate (and the lock) are behind us.
         // Only the screens reminders open; anything else is ignored.
         if (savedInstanceState == null) {
-            OPENABLE.firstOrNull { it.name == intent.getStringExtra(EXTRA_OPEN) }
+            OPENABLE.firstOrNull { it.name == runCatching { intent.getStringExtra(EXTRA_OPEN) }.getOrNull() }
                 ?.let { target ->
-                    // The automation's own words for the screen (start the queue, last month's window…).
-                    val args = intent.getBundleExtra(EXTRA_OPEN_ARGS)
-                    startActivity(Intent(this, target).apply { if (args != null) putExtras(args) })
+                    // A notice about another shop than the open one (3 Nov 2026 audit, M19): the shop is chosen
+                    // first, never the open shop's list shown under the other's words.
+                    val about = runCatching { intent.getLongExtra(EXTRA_OPEN_BUSINESS, -1L) }.getOrDefault(-1L)
+                    if (about >= 0 && about != com.innovation313.roshankhata.data.Businesses.active(this).id) {
+                        startActivity(Intent(this, BusinessSwitchActivity::class.java))
+                    } else {
+                        // Only the automations' own words for the screen (start the queue, last month's window…),
+                        // typed (3 Nov 2026 audit, L24): this door is exported, and another app's extras are not
+                        // passed on to a screen.
+                        startActivity(Intent(this, target).apply { putExtras(openArgs()) })
+                    }
                 }
         }
 
@@ -935,6 +959,9 @@ class MainActivity : BaseActivity() {
 
         /** The screen a reminder notification asked for; see ReminderWorker. */
         const val EXTRA_OPEN = "open_screen"
+
+        /** The shop a notice is about (its id); a tap in another shop asks which first. */
+        const val EXTRA_OPEN_BUSINESS = "open_business"
 
         /** Extras for the screen EXTRA_OPEN names, carried through the gate and the lock (Automations). */
         const val EXTRA_OPEN_ARGS = "open_screen_args"

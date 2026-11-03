@@ -139,8 +139,7 @@ class RecycleBinActivity : BaseActivity() {
                 is BinItem.DeletedParty -> {
                     // Bring the party back together with the entries that
                     // were swept in with it, so the ledger is whole again.
-                    dao.restoreParty(item.id)
-                    dao.restoreEntriesOfParty(item.id, item.deletedAt)
+                    dao.restorePartyWithEntries(item.id, item.deletedAt)
                 }
                 is BinItem.DeletedEntry -> {
                     // Guard: an entry must not surface into a ledger whose

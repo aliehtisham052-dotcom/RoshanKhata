@@ -604,7 +604,8 @@ class CounterSaleActivity : BaseActivity() {
         lifecycleScope.launch {
             val full = withContext(Dispatchers.IO) { dao.saleWithLines(saleId) } ?: return@launch
             val back = withContext(Dispatchers.IO) { dao.returnedOfSale(saleId) }.associate { it.saleItemId to it.qty }
-            val draft = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
+            val creditedBefore = withContext(Dispatchers.IO) { dao.returnedTotalOfSale(saleId) }
+            val draft = com.innovation313.roshankhata.screens.ReturnDraft(full, back, creditedBefore)
             val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
                 android.content.res.Configuration.UI_MODE_NIGHT_YES
             val words = AndroidWords(this@CounterSaleActivity)

@@ -74,7 +74,7 @@ object EntryLines {
             val t = line.total() ?: return null
             sum = sum.add(BigDecimal.valueOf(t))
         }
-        return sum.setScale(2, RoundingMode.HALF_UP).toDouble()
+        return sum.setScale(LineMath.scale(), RoundingMode.HALF_UP).toDouble()
     }
 
     sealed class AmountCheck {
@@ -87,7 +87,7 @@ object EntryLines {
     /** The written amount against the lines' total, compared to the paisa. */
     fun compare(total: Double, amount: Double): AmountCheck {
         val diff = BigDecimal.valueOf(amount).subtract(BigDecimal.valueOf(total))
-            .setScale(2, RoundingMode.HALF_UP)
+            .setScale(LineMath.scale(), RoundingMode.HALF_UP)
         return when (diff.signum()) {
             0 -> AmountCheck.Equal
             -1 -> AmountCheck.Less(diff.negate().toDouble())

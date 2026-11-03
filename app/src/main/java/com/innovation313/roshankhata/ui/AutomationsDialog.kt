@@ -58,7 +58,24 @@ object AutomationsDialog {
                 addView(time, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             }
         }
-        val body = FormBox.column(activity, help, *blocks.toTypedArray())
+        // Notifications off for the app (3 Nov 2026 audit, M24): every switch read ON while nothing could be said.
+        // Said first, with the way to turn them on in the phone's own settings.
+        val off = !androidx.core.app.NotificationManagerCompat.from(activity).areNotificationsEnabled()
+        val warning: List<View> = if (!off) emptyList() else listOf<View>(
+            TextView(activity).apply {
+                text = activity.getString(R.string.auto_notifications_off)
+                textSize = 14f
+                textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                setTextColor(ContextCompat.getColor(activity, R.color.red_gave_text))
+            },
+            MaterialButton(activity).apply {
+                isAllCaps = false
+                text = activity.getString(R.string.auto_notifications_turn_on)
+                setOnClickListener { openNotificationSettings(activity) }
+            }
+        )
+        val views = ArrayList<View>().apply { addAll(warning); add(help); addAll(blocks) }
+        val body = FormBox.column(activity, *views.toTypedArray())
         body.setPadding(body.paddingLeft, body.paddingTop, body.paddingRight, (8 * d).toInt())
         val scroll = ScrollView(activity).apply { addView(body) }
         TextFit.relax(scroll)
@@ -68,6 +85,16 @@ object AutomationsDialog {
             .setPositiveButton(R.string.ok) { _, _ -> }
             .setOnDismissListener { AutomationWorker.schedule(activity) }
             .show()
+    }
+
+    /** The phone's notification settings for this app (Android 8+), else its app page. */
+    fun openNotificationSettings(activity: Activity) {
+        val intent = if (android.os.Build.VERSION.SDK_INT >= 26)
+            android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, activity.packageName)
+        else android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            .setData(android.net.Uri.fromParts("package", activity.packageName, null))
+        runCatching { activity.startActivity(intent) }
     }
 
     /** An hour in the shop's clock ("9:00 AM", or "09:00" where the country writes 24 hours). */

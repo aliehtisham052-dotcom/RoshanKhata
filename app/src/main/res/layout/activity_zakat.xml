@@ -102,23 +102,19 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSilver"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/SegmentButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/nisab_silver"
-                    android:textColor="@color/ink"
-                    app:strokeColor="@color/section_tools_text" />
+                    android:text="@string/nisab_silver" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnGold"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/SegmentButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/nisab_gold"
-                    android:textColor="@color/ink"
-                    app:strokeColor="@color/section_tools_text" />
+                    android:text="@string/nisab_gold" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <!--
@@ -151,23 +147,19 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPerTola"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/SegmentButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/per_tola"
-                    android:textColor="@color/ink"
-                    app:strokeColor="@color/section_tools_text" />
+                    android:text="@string/per_tola" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPerGram"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/SegmentButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/per_gram"
-                    android:textColor="@color/ink"
-                    app:strokeColor="@color/section_tools_text" />
+                    android:text="@string/per_gram" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <EditText

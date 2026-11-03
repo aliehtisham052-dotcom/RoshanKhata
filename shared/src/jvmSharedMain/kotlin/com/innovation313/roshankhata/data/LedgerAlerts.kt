@@ -25,6 +25,24 @@ object LedgerAlerts {
         set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
     }.timeInMillis
 
+    /** The three counts the phone's daily notice says, by this bell's own rules (3 Nov 2026 audit, M14). */
+    data class Due(val cheques: Int, val plans: Int, val expiring: Int)
+
+    /**
+     * What the daily notice counts, by the rules [compute] shows (3 Nov 2026 audit, M14): the notice had its own —
+     * every dated bill line as "expiring", sold out or written off, and plans with nothing left to pay — so it
+     * named things the bell it opens did not show. Any shop's book, open or not.
+     */
+    suspend fun dueCounts(dao: KhataDao): Due {
+        val t0 = today()
+        val t1 = t0 + DAY
+        val cheques = dao.pendingChequesOnce().count { it.status == ChequeStatus.PENDING && it.dueDate < t1 }
+        val plans = dao.openPlansOnce().count { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }
+        val low = runCatching { Stock.of(dao) }.getOrDefault(emptyList())
+        val expiring = runCatching { Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, low.associate { it.productId to it.onHand }).size }.getOrDefault(0)
+        return Due(cheques, plans, expiring)
+    }
+
     /** In the phone's order: cheques, plans, bills, expiring stock, then the cash-flow gap last. */
     /**
      * [syncConflicts]: rows carrying money that both devices changed at once (LiveSync.moneyConflicts) — said
@@ -42,10 +60,12 @@ object LedgerAlerts {
         val parties = dao.partiesWithBalanceOnce()
         val names = parties.associate { it.id to it.name }
 
-        dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && it.dueDate in t0 until t1 }.forEach { c ->
+        // Due today, or past its day and still pending (3 Nov 2026 audit, M14: a cheque one day late left the bell
+        // while it was still to be banked).
+        dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && it.dueDate < t1 }.forEach { c ->
             out += Alert(Kind.CHEQUE,
                 words.text(if (c.isReceived) W.na_cheque_in else W.na_cheque_out),
-                (names[c.partyId] ?: "") + " · " + money(c.amount), words.text(W.na_tag_today))
+                (names[c.partyId] ?: "") + " · " + money(c.amount), words.text(if (c.dueDate < t0) W.na_tag_late else W.na_tag_today))
         }
         dao.openPlansOnce().filter { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }.forEach { p ->
             val late = p.nextDueDate!! < t0
