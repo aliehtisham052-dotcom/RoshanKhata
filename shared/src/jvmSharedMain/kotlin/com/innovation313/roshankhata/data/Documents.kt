@@ -162,3 +162,33 @@ class DocRefused(val why: Why, message: String) : IllegalArgumentException(messa
         NOT_OPEN
     }
 }
+
+/**
+ * A document's place in its chain (3 Nov 2026, the convert's animation, the owner's mockup "Documents — the
+ * chain"): what it was made from, by [Invoice.sourceDocId] back to the first, then itself, then the steps that
+ * may still follow it ([DocKind.next]). A sales order written fresh starts its chain at itself: nothing before it
+ * is shown as done that never was.
+ */
+object DocChain {
+    /** One step: its kind, and its number once it exists (null for a step still to come). */
+    data class Node(val kind: String, val number: String?)
+
+    /** The longest chain there is (quotation, sales order, challan, invoice) and room to spare for an odd one. */
+    private const val MOST = 6
+
+    suspend fun of(dao: KhataDao, newest: Long): List<Node> {
+        val made = ArrayList<Node>()
+        val seen = HashSet<Long>()
+        var at: Invoice? = dao.getInvoice(newest)
+        while (at != null && seen.add(at.id) && made.size < MOST) {
+            made.add(0, Node(at.kind, at.invoiceNumber))
+            at = at.sourceDocId?.let { dao.getInvoice(it) }
+        }
+        var next = made.lastOrNull()?.kind?.let { DocKind.next(it) }
+        while (next != null && made.size < MOST) {
+            made += Node(next, null)
+            next = DocKind.next(next)
+        }
+        return made
+    }
+}

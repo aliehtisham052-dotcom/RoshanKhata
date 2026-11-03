@@ -255,10 +255,13 @@ class ReportActivity : BaseActivity() {
             return
         }
 
+        // Its pages as they are made, when making takes longer than a moment (3 Nov 2026, the owner's mockup).
+        val making = com.innovation313.roshankhata.ui.PdfMaking.start(this)
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
                 PdfExport.buildStatement(
                     context = this@ReportActivity,
+                    onPage = { done, all -> making.page(done, all) },
                     partyName = partyName,
                     partyPhone = partyPhone,
                     rows = rows.map { PdfExport.StatementRow(it.entry, it.runningBalance, it.items) },
@@ -289,17 +292,20 @@ class ReportActivity : BaseActivity() {
             }
 
             if (file == null) {
+                making.failed()
                 Toast.makeText(this@ReportActivity, R.string.statement_failed, Toast.LENGTH_LONG)
                     .show()
                 return@launch
             }
 
-            com.innovation313.roshankhata.ui.PdfShare.presentStatement(
-                this@ReportActivity, file,
-                isCustomer = partyIsCustomer,
-                closingBalance = closingBalance,
-                titleRes = R.string.pdf_ready_title
-            )
+            making.done {
+                com.innovation313.roshankhata.ui.PdfShare.presentStatement(
+                    this@ReportActivity, file,
+                    isCustomer = partyIsCustomer,
+                    closingBalance = closingBalance,
+                    titleRes = R.string.pdf_ready_title
+                )
+            }
         }
     }
 

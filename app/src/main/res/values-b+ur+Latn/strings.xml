@@ -541,7 +541,6 @@
         <item quantity="other">Drive par %1$d business mile</item>
     </plurals>
     <string name="drive_restore_all">Sab bahal karein</string>
-    <string name="drive_restored_these">Bahal ho gaye:\n%1$s</string>
     <string name="drive_restore_missed">Bahal nahi ho sake:\n%1$s</string>
     <string name="business_numbered">Business %1$d</string>
     <string name="backup_for_business">Backup ho raha hai: %1$s</string>
@@ -3713,4 +3712,19 @@
     <string name="pdf_stmt_gap_phone">Aap ki dukaan ka phone number</string>
     <string name="pdf_stmt_gap_address">Aap ki dukaan ka pata</string>
     <string name="pdf_stmt_gap_fix">Tafseel likhein</string>
+    <string name="restore_backup_of">%1$s ka backup</string>
+    <string name="restore_step_checked">Backup jaanch liya gaya</string>
+    <string name="restore_step_kept">Yeh khata rozana copies mein mehfooz ho gaya</string>
+    <string name="restore_step_kept_why">Taake yeh restore wapas ho sake</string>
+    <string name="restore_step_replaced">Khata backup se badal diya gaya</string>
+    <string name="restore_step_photos">Tasveerein wapas aa gayin</string>
+    <string name="restore_step_joined">Live sync mein shamil ho gaya</string>
+    <string name="restore_keep_open">Yeh mukammal hone tak app khuli rakhein.</string>
+    <string name="restore_open_book">Khata kholein</string>
+    <string name="restore_not_done">Bahal nahi hua</string>
+    <string name="restore_join_failed">Khata badal diya gaya, magar live sync shuru nahi hua. Dukaan ka khata is phone par dobara lein.</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%d tabdeeli jane ke intezar mein</item>
+        <item quantity="other">%d tabdeeliyan jane ke intezar mein</item>
+    </plurals>
 </resources>

@@ -568,7 +568,6 @@
         <item quantity="other">Drive पर %1$d बिज़नेस</item>
     </plurals>
     <string name="drive_restore_all">सब रीस्टोर करें</string>
-    <string name="drive_restored_these">रीस्टोर हुए:\n%1$s</string>
     <string name="drive_restore_missed">रीस्टोर नहीं हो सके:\n%1$s</string>
     <string name="business_numbered">बिज़नेस %1$d</string>
     <string name="backup_for_business">बैकअप हो रहा है: %1$s</string>
@@ -3761,4 +3760,19 @@
     <string name="pdf_stmt_gap_phone">आपकी दुकान का फ़ोन नंबर</string>
     <string name="pdf_stmt_gap_address">आपकी दुकान का पता</string>
     <string name="pdf_stmt_gap_fix">विवरण जोड़ें</string>
+    <string name="restore_backup_of">%1$s का बैकअप</string>
+    <string name="restore_step_checked">बैकअप जाँच लिया गया</string>
+    <string name="restore_step_kept">यह खाता रोज़ की कॉपियों में रख लिया गया</string>
+    <string name="restore_step_kept_why">ताकि यह रीस्टोर वापस हो सके</string>
+    <string name="restore_step_replaced">खाता बैकअप से बदल दिया गया</string>
+    <string name="restore_step_photos">फ़ोटो वापस आ गईं</string>
+    <string name="restore_step_joined">लाइव सिंक में शामिल हो गया</string>
+    <string name="restore_keep_open">यह पूरा होने तक ऐप खुला रखें।</string>
+    <string name="restore_open_book">खाता खोलें</string>
+    <string name="restore_not_done">रीस्टोर नहीं हुआ</string>
+    <string name="restore_join_failed">खाता बदल दिया गया, लेकिन लाइव सिंक शुरू नहीं हुआ। दुकान का खाता इस फ़ोन पर दोबारा लें।</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%d बदलाव भेजे जाने के इंतज़ार में</item>
+        <item quantity="other">%d बदलाव भेजे जाने के इंतज़ार में</item>
+    </plurals>
 </resources>

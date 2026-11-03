@@ -556,7 +556,6 @@
         <item quantity="other">%1$d usaha di Drive</item>
     </plurals>
     <string name="drive_restore_all">Pulihkan semua</string>
-    <string name="drive_restored_these">Dipulihkan:\n%1$s</string>
     <string name="drive_restore_missed">Tidak dapat dipulihkan:\n%1$s</string>
     <string name="business_numbered">Usaha %1$d</string>
     <string name="backup_for_business">Mencadangkan: %1$s</string>
@@ -3702,4 +3701,18 @@
     <string name="pdf_stmt_gap_phone">Nomor telepon toko Anda</string>
     <string name="pdf_stmt_gap_address">Alamat toko Anda</string>
     <string name="pdf_stmt_gap_fix">Tambah rincian</string>
+    <string name="restore_backup_of">Cadangan %1$s</string>
+    <string name="restore_step_checked">Cadangan diperiksa</string>
+    <string name="restore_step_kept">Buku ini disimpan di Salinan harian</string>
+    <string name="restore_step_kept_why">Agar pemulihan ini bisa dibatalkan</string>
+    <string name="restore_step_replaced">Buku diganti dengan cadangan</string>
+    <string name="restore_step_photos">Foto dipulihkan</string>
+    <string name="restore_step_joined">Bergabung ke sinkron langsung</string>
+    <string name="restore_keep_open">Biarkan aplikasi tetap terbuka sampai ini selesai.</string>
+    <string name="restore_open_book">Buka buku</string>
+    <string name="restore_not_done">Tidak dipulihkan</string>
+    <string name="restore_join_failed">Buku sudah diganti, tetapi sinkron langsung tidak dimulai. Ambil lagi buku toko di ponsel ini.</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="other">%d perubahan menunggu dikirim</item>
+    </plurals>
 </resources>

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.provider.Settings
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.TextView
 
 /**
@@ -136,41 +137,69 @@ object Motion {
     }
 
     /**
-     * The golden paper plane: from the owner's last tap (or the foot of the
-     * screen, if that tap was in a dialog or long ago) up to the far top
-     * corner — top-left in Urdu and Arabic. [then] runs at 70 % of the
-     * flight, so WhatsApp opens as the plane leaves: about 0.4 s added.
-     * With animations off, [then] runs at once.
+     * The golden paper plane (3 Nov 2026; PlaneFlight has the choreography). It lifts out of [from] — the
+     * button that sent it, from its icon when it has one — else from the owner's last tap, else from the
+     * foot of the screen (a tap in a dialog, or long ago). [then] runs at [PlaneFlight.OPEN_AT] (280 ms),
+     * so WhatsApp opens while the plane leans away; the 5 Oct flight waited 488 ms. A small tap is felt
+     * as it lifts. With animations off, [then] runs at once.
      */
-    fun paperPlane(activity: android.app.Activity, then: () -> Unit) {
+    fun paperPlane(activity: android.app.Activity, from: android.view.View? = null, then: () -> Unit) {
         val root = activity.findViewById<android.view.ViewGroup>(android.R.id.content)
         if (root == null || !enabled(activity) || !root.isLaidOut) { then(); return }
         val o = IntArray(2).also { root.getLocationOnScreen(it) }
+        val origin = from?.takeIf { it.isAttachedToWindow && it.isLaidOut && it.isShown }?.let { iconCentre(it) }
         val tap = lastTap.takeIf { System.currentTimeMillis() - lastTapAt < 1500 }
-        val sx = (tap?.first ?: (o[0] + root.width / 2f)) - o[0]
-        val sy = (tap?.second ?: (o[1] + root.height * 0.85f)) - o[1]
+        val sx = (origin?.first ?: tap?.first ?: (o[0] + root.width / 2f)) - o[0]
+        val sy = (origin?.second ?: tap?.second ?: (o[1] + root.height * 0.85f)) - o[1]
         val rtl = root.layoutDirection == android.view.View.LAYOUT_DIRECTION_RTL
-        val ex = if (rtl) root.width * 0.06f else root.width * 0.94f
-        val ey = -root.height * 0.02f
-        val flight = PlaneFlight(activity, sx, sy, ex, ey)
+        val flight = PlaneFlight(activity, if (rtl) root.width - sx else sx, sy, rtl)
         flight.layout(0, 0, root.width, root.height)
         root.overlay.add(flight)
+        if (from != null) confirm(from)
         var sent = false
-        android.animation.ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 560
-            interpolator = android.view.animation.AccelerateInterpolator(1.3f)
+        val run = android.animation.ValueAnimator.ofFloat(0f, PlaneFlight.TOTAL_MS).apply {
+            duration = PlaneFlight.TOTAL_MS.toLong()
+            interpolator = LinearInterpolator()
             addUpdateListener {
-                flight.t = it.animatedValue as Float
-                if (!sent && flight.t >= 0.7f) { sent = true; then() }
+                flight.ms = it.animatedValue as Float
+                if (!sent && flight.ms >= PlaneFlight.OPEN_AT) { sent = true; then() }
             }
             addListener(object : android.animation.AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: android.animation.Animator) {
                     if (!sent) { sent = true; then() }
                     root.overlay.remove(flight)
+                    flights.remove(animation)
                 }
             })
-            start()
         }
+        flights.add(run)
+        run.start()
+    }
+
+    /**
+     * Flights still running when a screen comes back (BaseActivity.onResume): ended at once. WhatsApp opens
+     * in the middle of the flight; a phone that held the frames while it was away must not show the rest of
+     * a plane over the list on the way back.
+     */
+    fun settleFlights() {
+        if (flights.isEmpty()) return
+        flights.toList().forEach { it.end() }
+    }
+
+    private val flights = mutableSetOf<android.animation.Animator>()
+
+    /** Where a button's icon sits on the screen (raw px): its start icon for a MaterialButton, else its middle. */
+    private fun iconCentre(view: android.view.View): Pair<Float, Float> {
+        val at = IntArray(2).also { view.getLocationOnScreen(it) }
+        val mid = at[1] + view.height / 2f
+        val button = view as? com.google.android.material.button.MaterialButton
+        if (button?.icon != null && button.iconSize > 0) {
+            val rtl = view.layoutDirection == android.view.View.LAYOUT_DIRECTION_RTL
+            val x = if (rtl) at[0] + view.width - view.paddingStart - button.iconSize / 2f
+                else at[0] + view.paddingStart + button.iconSize / 2f
+            return x to mid
+        }
+        return at[0] + view.width / 2f to mid
     }
 
     /** Where the owner last touched the screen (raw px), kept by BaseActivity. */

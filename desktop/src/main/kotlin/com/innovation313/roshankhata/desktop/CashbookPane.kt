@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -362,13 +364,20 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                 FluentField(counted, { counted = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_counted), big = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                 if (count != null) {
                     val d = com.innovation313.roshankhata.data.DayCloseMath.difference(count, expected)
-                    Text(
-                        when {
-                            com.innovation313.roshankhata.data.Money.isPositive(d) -> word(W.dayclose_over, Format.money(d))
-                            com.innovation313.roshankhata.data.Money.isPositive(-d) -> word(W.dayclose_short, Format.money(-d))
-                            else -> word(W.dayclose_match)
-                        },
-                        color = if (com.innovation313.roshankhata.data.Money.isPositive(-d)) c.owedToMe else c.iOwe, fontWeight = FontWeight.Bold
+                    // Matches, short, more than the books: each on its own wash with a mark that draws itself when
+                    // the answer changes (3 Nov 2026, the owner's mockup "Close the day — the difference").
+                    val kind = when {
+                        com.innovation313.roshankhata.data.Money.isPositive(d) -> DrawerKind.OVER
+                        com.innovation313.roshankhata.data.Money.isPositive(-d) -> DrawerKind.SHORT
+                        else -> DrawerKind.MATCH
+                    }
+                    DrawerResult(
+                        kind,
+                        when (kind) {
+                            DrawerKind.OVER -> word(W.dayclose_over, Format.money(d))
+                            DrawerKind.SHORT -> word(W.dayclose_short, Format.money(-d))
+                            DrawerKind.MATCH -> word(W.dayclose_match)
+                        }
                     )
                 }
                 FluentField(note, { note = it; problem = null }, Modifier.fillMaxWidth(), placeholder = word(W.dayclose_note_hint))
@@ -505,4 +514,71 @@ private fun cashCategoryWord(category: String): String = when (category) {
     com.innovation313.roshankhata.data.CashCategory.SALE -> word(W.cash_category_sale)
     com.innovation313.roshankhata.data.CashCategory.RETURN -> word(W.cash_category_return)
     else -> category
+}
+
+/** What the counted drawer says against the books. */
+enum class DrawerKind { MATCH, SHORT, OVER }
+
+/**
+ * The drawer's answer (3 Nov 2026, the phone's ResultMark): the words on the answer's own wash, after a disc with
+ * a check, a minus or a plus. The wash eases and the mark is drawn again only when the answer changes kind, so a
+ * figure typed digit by digit does not flicker it.
+ */
+@Composable
+fun DrawerResult(kind: DrawerKind, words: String) {
+    val c = LocalRoshanColors.current
+    val (ink, wash) = when (kind) {
+        DrawerKind.MATCH -> Look.accent to Look.accentTint
+        DrawerKind.SHORT -> c.owedToMe to Look.getTint
+        DrawerKind.OVER -> Look.warn to Look.warnTint
+    }
+    val shownWash = eased(wash)
+    val shownInk = eased(ink)
+    val onInk = Look.onAccent
+    val p = androidx.compose.runtime.remember { androidx.compose.animation.core.Animatable(1f) }
+    androidx.compose.runtime.LaunchedEffect(kind) {
+        // The first answer arrives too; each later one only when it is a different answer.
+        p.snapTo(0f)
+        p.animateTo(1f, androidx.compose.animation.core.tween(380, easing = androidx.compose.animation.core.LinearEasing))
+    }
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 52.dp).background(shownWash, RoundedCornerShape(12.dp)).padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        androidx.compose.foundation.Canvas(Modifier.size(28.dp)) {
+            val ms = p.value * 380f
+            val pop = DeskMotion.EmphasizedDecelerate.transform(motionSeg(ms, 0f, 180f))
+            val trace = DeskMotion.Standard.transform(motionSeg(ms, 80f, 320f))
+            val r = size.minDimension / 2f
+            val cx = size.width / 2f
+            val cy = size.height / 2f
+            drawCircle(ink, radius = r * (0.8f + 0.2f * pop), alpha = pop)
+            val s = r * 0.38f
+            val sw = 2.6.dp.toPx()
+            fun line(a: androidx.compose.ui.geometry.Offset, b: androidx.compose.ui.geometry.Offset) =
+                drawLine(onInk, a, b, strokeWidth = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+            if (trace > 0f) when (kind) {
+                DrawerKind.MATCH -> {
+                    val a = androidx.compose.ui.geometry.Offset(cx - s, cy + 0.05f * r)
+                    val b = androidx.compose.ui.geometry.Offset(cx - 0.3f * s, cy + 0.65f * s)
+                    val t = androidx.compose.ui.geometry.Offset(cx + s, cy - 0.55f * s)
+                    val ab = (b - a).getDistance()
+                    val bt = (t - b).getDistance()
+                    val dist = (ab + bt) * trace
+                    if (dist <= ab) line(a, a + (b - a) * (dist / ab))
+                    else { line(a, b); line(b, b + (t - b) * ((dist - ab) / bt)) }
+                }
+                DrawerKind.SHORT -> line(androidx.compose.ui.geometry.Offset(cx - s, cy), androidx.compose.ui.geometry.Offset(cx - s + 2 * s * trace, cy))
+                DrawerKind.OVER -> {
+                    val k1 = (trace * 2f).coerceAtMost(1f)
+                    line(androidx.compose.ui.geometry.Offset(cx - s, cy), androidx.compose.ui.geometry.Offset(cx - s + 2 * s * k1, cy))
+                    if (trace > 0.5f) {
+                        val k2 = (trace - 0.5f) * 2f
+                        line(androidx.compose.ui.geometry.Offset(cx, cy - s), androidx.compose.ui.geometry.Offset(cx, cy - s + 2 * s * k2))
+                    }
+                }
+            }
+        }
+        Text(words, Modifier.weight(1f), color = shownInk, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+    }
 }

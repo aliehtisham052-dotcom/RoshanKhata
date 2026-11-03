@@ -589,7 +589,6 @@
         <item quantity="other">تم العثور على %1$d نشاط تجاري في درايف</item>
     </plurals>
     <string name="drive_restore_all">استعادة الكل</string>
-    <string name="drive_restored_these">تمت الاستعادة:\n%1$s</string>
     <string name="drive_restore_missed">تعذرت الاستعادة:\n%1$s</string>
     <string name="business_numbered">نشاط %1$d</string>
     <string name="backup_for_business">جارٍ النسخ الاحتياطي: %1$s</string>
@@ -3949,4 +3948,23 @@
     <string name="pdf_stmt_gap_phone">رقم هاتف متجرك</string>
     <string name="pdf_stmt_gap_address">عنوان متجرك</string>
     <string name="pdf_stmt_gap_fix">أضف التفاصيل</string>
+    <string name="restore_backup_of">نسخة احتياطية بتاريخ %1$s</string>
+    <string name="restore_step_checked">فُحصت النسخة الاحتياطية</string>
+    <string name="restore_step_kept">حُفظ هذا الدفتر في النسخ اليومية</string>
+    <string name="restore_step_kept_why">حتى يمكن التراجع عن هذه الاستعادة</string>
+    <string name="restore_step_replaced">استُبدل الدفتر بالنسخة الاحتياطية</string>
+    <string name="restore_step_photos">استُعيدت الصور</string>
+    <string name="restore_step_joined">انضمّ إلى المزامنة المباشرة</string>
+    <string name="restore_keep_open">أبقِ التطبيق مفتوحًا حتى ينتهي هذا.</string>
+    <string name="restore_open_book">افتح الدفتر</string>
+    <string name="restore_not_done">لم تتم الاستعادة</string>
+    <string name="restore_join_failed">استُبدل الدفتر، لكن المزامنة المباشرة لم تبدأ. خذ دفتر المتجر على هذا الهاتف مرة أخرى.</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="zero">%d تغيير ينتظر الإرسال</item>
+        <item quantity="one">تغيير واحد ينتظر الإرسال</item>
+        <item quantity="two">تغييران ينتظران الإرسال</item>
+        <item quantity="few">%d تغييرات تنتظر الإرسال</item>
+        <item quantity="many">%d تغييرًا ينتظر الإرسال</item>
+        <item quantity="other">%d تغيير ينتظر الإرسال</item>
+    </plurals>
 </resources>

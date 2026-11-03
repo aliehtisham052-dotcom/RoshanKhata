@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.desktop
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -79,12 +81,41 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
     var clearing by remember { mutableStateOf<ChequeWithParty?>(null) }
     var bouncing by remember { mutableStateOf<ChequeWithParty?>(null) }
 
-    fun settle(ch: ChequeWithParty, status: Int?) {
+    // The stamp (3 Nov 2026, the owner's mockup "Cheque — cleared / bounced stamp"): while it lands on the
+    // cheque's row the list stays as it was; then the row leaves its tab and the rows below rise into its place.
+    var frozen by remember { mutableStateOf<List<ChequeWithParty>?>(null) }
+    var stamping by remember { mutableStateOf<Pair<Long, Int>?>(null) }
+    // Which stamp is the latest: an earlier one ending never cuts a later one short.
+    val stampTurn = remember { intArrayOf(0) }
+
+    /** Writes [write] at once; once it is written the stamp lands, and only then does the list move on. */
+    fun stamped(ch: ChequeWithParty, status: Int, after: () -> Unit = {}, write: suspend () -> Boolean) {
+        val turn = ++stampTurn[0]
+        frozen = cheques
         scope.launch {
-            // Only from the state that allows it, in one transaction (25 Oct 2026, the audit): a cheque the
-            // phone cleared meanwhile is never marked bounced here, so its payment cannot be posted twice.
-            withContext(Dispatchers.IO) { runCatching { dao.settleCheque(ch.id, status) } }
+            try {
+                if (withContext(Dispatchers.IO) { write() }) {
+                    after()
+                    if (turn == stampTurn[0]) stamping = ch.id to status
+                    kotlinx.coroutines.delay(CHEQUE_STAMP_MS)
+                }
+            } finally {
+                if (turn == stampTurn[0]) {
+                    stamping = null
+                    frozen = null
+                }
+            }
         }
+    }
+
+    fun settle(ch: ChequeWithParty, status: Int?) {
+        // Only from the state that allows it, in one transaction (25 Oct 2026, the audit): a cheque the
+        // phone cleared meanwhile is never marked bounced here, so its payment cannot be posted twice.
+        if (status != null) {
+            stamped(ch, status) { runCatching { dao.settleCheque(ch.id, status) }.getOrDefault(false) }
+            return
+        }
+        scope.launch { withContext(Dispatchers.IO) { runCatching { dao.settleCheque(ch.id, null) } } }
     }
 
     val pending = cheques.count { it.status == ChequeStatus.PENDING }
@@ -95,7 +126,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
     }
     // The Figma screen's three pills: pending, cleared, bounced (cancelled rides with bounced).
     var shownStatus by remember { mutableStateOf(ChequeStatus.PENDING) }
-    val shown = cheques.filter { ch ->
+    val shown = (frozen ?: cheques).filter { ch ->
         when (shownStatus) {
             ChequeStatus.PENDING -> ch.status == ChequeStatus.PENDING
             ChequeStatus.CLEARED -> ch.status == ChequeStatus.CLEARED
@@ -124,7 +155,13 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
         } else ListCard(Modifier.weight(1f)) {
             TableHead(listOf(word(W.customer) to 0, word(W.cheque_number_hint).substringBefore("(").trim() to 160, word(W.date_label) to 170, word(W.amount) to 120), endAligned = setOf(3))
             LazyColumn(Modifier.fillMaxSize()) {
-                itemsIndexed(shown, key = { _, it -> it.id }) { i, ch -> ChequeRow(ch, i) { acting = ch } }
+                itemsIndexed(shown, key = { _, it -> it.id }) { i, ch ->
+                    ChequeRow(ch, i, stamp = stamping?.takeIf { it.first == ch.id }?.second, modifier = Modifier.animateItem(
+                        fadeInSpec = androidx.compose.animation.core.tween(200),
+                        placementSpec = androidx.compose.animation.core.tween(260, easing = DeskMotion.Standard),
+                        fadeOutSpec = androidx.compose.animation.core.tween(200, easing = DeskMotion.StandardAccelerate)
+                    )) { acting = ch }
+                }
             }
         }
     }
@@ -167,10 +204,7 @@ fun ChequesPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, on
                     append(words.text(W.cheque_note_prefix, ch.chequeNumber?.takeIf { it.isNotBlank() }?.let { "#$it" }.orEmpty()).trim())
                     ch.bankName?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
                 }
-                scope.launch {
-                    withContext(Dispatchers.IO) { dao.clearCheque(ch.id, note) }
-                    onLedgerChanged()
-                }
+                stamped(ch, ChequeStatus.CLEARED, after = onLedgerChanged) { dao.clearCheque(ch.id, note) != null }
             },
             onDismiss = { clearing = null }
         )
@@ -248,19 +282,26 @@ private fun chequeLine(ch: ChequeWithParty): String = listOfNotNull(
     Format.dateOnly(ch.dueDate)
 ).joinToString(" · ")
 
+/** How long a stamp is on its row before the list moves on: it lands, is held to be read, and fades. */
+private const val CHEQUE_STAMP_MS = 180L + 560L + 180L + 40L
+
 @Composable
-private fun ChequeRow(ch: ChequeWithParty, index: Int, onClick: () -> Unit) {
+private fun ChequeRow(ch: ChequeWithParty, index: Int, stamp: Int?, modifier: Modifier, onClick: () -> Unit) {
     val c = LocalRoshanColors.current
-    val pending = ch.status == ChequeStatus.PENDING
-    val (statusWord, statusColour, statusTint) = when (ch.status) {
+    // While the stamp lands, the row wears the status it was given (its tag turns under the stamp).
+    val status = stamp ?: ch.status
+    val pending = status == ChequeStatus.PENDING
+    val (statusWord, statusColour, statusTint) = when (status) {
         ChequeStatus.PENDING -> Triple(W.cheque_pending, Look.warn, Look.warnTint)
         ChequeStatus.CLEARED -> Triple(W.cheque_cleared, Look.accent, Look.accentTint)
         ChequeStatus.BOUNCED -> Triple(W.cheque_bounced, c.owedToMe, Look.getTint)
         else -> Triple(W.cheque_cancelled, c.textMuted, Look.subtle)
     }
-    // Settled cheques stay as a record, faded: history, not something to act on.
+    Column(modifier) {
+    Box {
+    // Settled cheques stay as a record, faded: history, not something to act on (not while their stamp lands).
     Row(
-        Modifier.fillMaxWidth().alpha(if (pending) 1f else 0.7f).press(onClick = onClick).padding(horizontal = 16.dp, vertical = 9.dp),
+        Modifier.fillMaxWidth().alpha(if (pending || stamp != null) 1f else 0.7f).press(onClick = onClick).padding(horizontal = 16.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -295,7 +336,56 @@ private fun ChequeRow(ch: ChequeWithParty, index: Int, onClick: () -> Unit) {
             fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
         )
     }
+    if (stamp != null) ChequeStamp(stamp, Modifier.align(Alignment.Center))
+    }
     Rule()
+    }
+}
+
+/**
+ * The stamp itself (the owner's mockup): CLEARED in green, BOUNCED in red, CANCELLED in grey, a little turned. It
+ * lands in 180 ms from half again its size, an echo of its edge spreads and fades behind it, it is held to be read
+ * and fades before the row leaves.
+ */
+@Composable
+private fun ChequeStamp(status: Int, modifier: Modifier) {
+    val c = LocalRoshanColors.current
+    val (wordName, ink) = when (status) {
+        ChequeStatus.CLEARED -> W.cheque_cleared to Look.accent
+        ChequeStatus.BOUNCED -> W.cheque_bounced to c.owedToMe
+        else -> W.cheque_cancelled to c.textMuted
+    }
+    val land = androidx.compose.runtime.remember { androidx.compose.animation.core.Animatable(0f) }
+    val echo = androidx.compose.runtime.remember { androidx.compose.animation.core.Animatable(0f) }
+    val leave = androidx.compose.runtime.remember { androidx.compose.animation.core.Animatable(0f) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        launch { land.animateTo(1f, androidx.compose.animation.core.tween(180, easing = DeskMotion.EmphasizedDecelerate)) }
+        launch { echo.animateTo(1f, androidx.compose.animation.core.tween(300, delayMillis = 120, easing = DeskMotion.Standard)) }
+        launch { leave.animateTo(1f, androidx.compose.animation.core.tween(180, delayMillis = 180 + 560, easing = DeskMotion.StandardAccelerate)) }
+    }
+    val text = word(wordName).uppercase()
+    // Spaced capitals read as a stamp in Latin letters; joined scripts are never spaced apart.
+    val latin = text.all { !it.isLetter() || it.code < 0x0250 }
+    val shape = RoundedCornerShape(8.dp)
+    Box(modifier.graphicsLayer { rotationZ = -10f }) {
+        Box(
+            Modifier.matchParentSize().graphicsLayer {
+                val k = 1f + 0.14f * echo.value
+                scaleX = k; scaleY = k
+                alpha = if (echo.value > 0f) 0.35f * (1f - echo.value) else 0f
+            }.border(3.dp, ink, shape)
+        )
+        Text(
+            text,
+            Modifier.graphicsLayer {
+                val k = 1.5f - 0.5f * land.value
+                scaleX = k; scaleY = k
+                alpha = land.value * (1f - leave.value)
+            }.border(3.dp, ink, shape).padding(horizontal = 12.dp, vertical = 3.dp),
+            color = ink, fontSize = 20.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false,
+            letterSpacing = if (latin) 2.sp else 0.sp
+        )
+    }
 }
 
 /** Whole days from today to [due], negative once overdue. */

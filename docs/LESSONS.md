@@ -91,3 +91,22 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
 - Look at the proof pictures after any change to a screen. Passing tests have shown blank screens.
 - Verify every audit finding in the code before fixing it, and research platform behaviour in the official
   documentation before deciding. Write down what was not tested on a real device.
+
+## Animations
+
+- **A tick follows its work, never a clock.** Each step, stamp or dot is moved by the call that did the work; an
+  arrival may wait for the one before it (a third of a second), never come early. A mockup's order is checked
+  against the code's real order before it is built (the restore checks the backup before it keeps the book).
+- **A view's animator keeps its last start delay.** `view.animate()` returns the same ViewPropertyAnimator; a delay
+  set for one run stays for the next unless set again. Every run sets its own `setStartDelay`.
+- **Cancelling a ValueAnimator calls its end listener.** A run started from an end listener must not cancel the
+  run it came from, or it starts itself again.
+- **A list that moves under a running animation hands its rows to other items.** Hold the list (or freeze it)
+  while the row's moment plays, reset every animated part in bind, and let the list move on afterwards.
+- **Letter spacing breaks joined scripts.** Urdu, Arabic and the headline of Hindi and Bengali come apart when
+  spaced: spaced capitals only for Latin letters.
+- **Animate on a change of answer, not on every keystroke.** A difference typed digit by digit redraws its mark
+  only when it changes from short to matches to over.
+- **Report counts the engine really has.** "Changes waiting" is the log not yet acknowledged; "page 2 of 5" is the
+  writer's own page; a relay message of acknowledgements only carried no change, so no dots move for it.
+

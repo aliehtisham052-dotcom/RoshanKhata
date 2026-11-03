@@ -169,4 +169,10 @@
     <!-- The Khata Report's gave/got share bar (24 Oct 2026): fills, so mid-tone at night. -->
     <color name="lr_bar_gave">#D16565</color>
     <color name="lr_bar_got">#4F8F68</color>
+    <!-- Motion (3 Nov 2026): dark washes under the night-aware *_text inks. -->
+    <color name="pill_done_bg">#183A31</color>
+    <color name="wash_got">#163A30</color>
+    <color name="wash_gave">#3A1E1E</color>
+    <color name="wash_gold">#3A3218</color>
+    <color name="gold_ink">#E8CF84</color>
 </resources>

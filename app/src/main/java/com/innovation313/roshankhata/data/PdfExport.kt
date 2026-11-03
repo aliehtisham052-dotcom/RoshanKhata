@@ -137,7 +137,12 @@ object PdfExport {
         /** The day the customer promised to pay (Party.harvestPromise); said under what is owed when it is today or later. */
         payBy: Long? = null,
         /** "s/o Muhammad · Khichi" under the customer's name ([identityOf]); null prints nothing. */
-        partyIdentity: String? = null
+        partyIdentity: String? = null,
+        /**
+         * Told as each page of the statement is really finished — page n of all (3 Nov 2026, the screen's page
+         * stack): only on the pass that counts, once the total is known; from the thread that writes.
+         */
+        onPage: ((done: Int, all: Int) -> Unit)? = null
     ): File? {
         // Oldest first, as every statement reads (21 Oct 2026, the critical review): the screen's
         // newest-first list printed the period backwards and put the opening line above the newest
@@ -241,6 +246,7 @@ object PdfExport {
             val p = Paint().apply { color = GREY; textSize = 7f; isAntiAlias = true }
             PdfRtl.drawText(c, fitted(words, p, PAGE_W - 2 * MARGIN), MARGIN, PAGE_H - MARGIN - 26f, p)
             doc.finishPage(page)
+            if (totalPages != null) onPage?.invoke(pageNo, totalPages)
         }
 
         // The three figures a customer looks for first, computed once: what

@@ -119,30 +119,76 @@ fun ShopCard(shopName: String, logo: ImageBitmap?, live: String?, onProfile: () 
  * [compact] keeps only the cloud, its words as the hover tip.
  */
 @Composable
-fun BackupChip(at: Long?, old: Boolean, compact: Boolean, onClick: () -> Unit) {
+fun BackupChip(
+    at: Long?,
+    old: Boolean,
+    compact: Boolean,
+    onClick: () -> Unit,
+    /** Back up now writing: a whole percent, or null (3 Nov 2026). The cloud gives way to a ring that fills. */
+    progress: Int? = null,
+    /** How many backups this window finished: each new one shows a check that draws itself, for a moment. */
+    done: Int = 0
+) {
     val c = LocalRoshanColors.current
     val now = System.currentTimeMillis()
     val days = at?.let { ((now - it) / (24L * 60 * 60 * 1000)).toInt() }
+    var justDone by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(done) {
+        if (done > 0) {
+            justDone = true
+            kotlinx.coroutines.delay(1800)
+            justDone = false
+        }
+    }
     val top = when {
+        progress != null -> word(W.creating_backup)
+        justDone -> word(W.backup_saved_flash)
         at == null -> word(W.summary_backup_never)
         old -> com.innovation313.roshankhata.words.plural(com.innovation313.roshankhata.words.WP.summary_backup_days, days ?: 0, days ?: 0)
         else -> word(W.header_backed_up)
     }
-    val bottom = if (at == null || old) word(W.backup_now) else whenWords(at)
-    val ink = if (at == null || old) Look.warn else Look.accent
-    val tint = if (at == null || old) Look.warnTint else Look.accentTint
+    val bottom = when {
+        progress != null -> "$progress%"
+        at == null || old -> word(W.backup_now)
+        else -> whenWords(at)
+    }
+    val warn = progress == null && !justDone && (at == null || old)
+    val ink = if (warn) Look.warn else Look.accent
+    val tint = if (warn) Look.warnTint else Look.accentTint
     Tip("$top · $bottom", show = compact) {
         Row(
             Modifier.heightIn(min = 40.dp).clip(Look.ctl).background(Look.control).border(1.dp, Look.edge, Look.ctl)
                 .press(Look.ctl, onClick = onClick).padding(start = 6.dp, end = if (compact) 6.dp else 12.dp, top = 3.dp, bottom = 3.dp),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Box(Modifier.size(28.dp).background(tint, Look.ctl), contentAlignment = Alignment.Center) { Glyph("ic_feature_backup", ink, 17) }
+            Box(Modifier.size(28.dp).background(tint, Look.ctl), contentAlignment = Alignment.Center) {
+                when {
+                    progress != null -> BackupRing(progress / 100f, Look.accent)
+                    justDone -> DrawnCheck(done, ring = Look.gold, check = Look.accent, size = 22.dp, stroke = 2.2.dp)
+                    else -> Glyph("ic_feature_backup", ink, 17)
+                }
+            }
             if (!compact) Column {
-                Text(top, color = if (at == null || old) Look.warn else c.textMuted, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1, softWrap = false)
+                Text(top, color = if (warn) Look.warn else c.textMuted, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1, softWrap = false)
                 Text(bottom, color = c.ink, fontSize = 13.sp, lineHeight = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
             }
         }
+    }
+}
+
+/** The backup's ring while it writes: the share written so far, eased between the writer's percents. */
+@Composable
+private fun BackupRing(share: Float, ink: androidx.compose.ui.graphics.Color) {
+    val shown = androidx.compose.animation.core.animateFloatAsState(
+        share, androidx.compose.animation.core.tween(120, easing = DeskMotion.Standard), label = "backupRing"
+    ).value
+    androidx.compose.foundation.Canvas(Modifier.size(20.dp)) {
+        val sw = 2.4.dp.toPx()
+        val box = androidx.compose.ui.geometry.Size(size.width - sw, size.height - sw)
+        val at = androidx.compose.ui.geometry.Offset(sw / 2f, sw / 2f)
+        val stroke = androidx.compose.ui.graphics.drawscope.Stroke(width = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+        drawArc(ink.copy(alpha = 0.22f), -90f, 360f, false, topLeft = at, size = box, style = stroke)
+        drawArc(ink, -90f, 360f * shown, false, topLeft = at, size = box, style = stroke)
     }
 }
 
@@ -159,6 +205,9 @@ fun AppHeader(
     backupAt: Long?,
     /** A week or more since [backupAt], or never. */
     backupOld: Boolean,
+    /** Back up now writing, a whole percent, or null; and how many it finished in this window (3 Nov 2026). */
+    backupProgress: Int? = null,
+    backupDone: Int = 0,
     onBackup: () -> Unit,
     onPhone: () -> Unit,
     alerts: Int,
@@ -190,7 +239,7 @@ fun AppHeader(
                 ) { pageActions() }
                 Spacer(Modifier.width(4.dp))
             }
-            BackupChip(backupAt, backupOld, compact = !roomy, onClick = onBackup)
+            BackupChip(backupAt, backupOld, compact = !roomy, onClick = onBackup, progress = backupProgress, done = backupDone)
             IconAction("ic_phone", word(W.wifi_pc_button), onPhone, size = 36)
             // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
             Box {

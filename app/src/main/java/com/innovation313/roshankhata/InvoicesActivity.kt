@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.quantity
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.content.Intent
@@ -207,8 +209,23 @@ class InvoicesActivity : BaseActivity() {
                 if (ch.tag == "") group.check(ch.id)
             }
             kindShown.value = null
-            val file = buildPdfFile(id) ?: return@launch
-            com.innovation313.roshankhata.ui.PdfShare.open(this@InvoicesActivity, file)
+            // The step shown in its chain first (3 Nov 2026, the owner's mockup "Documents — the chain"); Preview
+            // opens the new document as the convert used to at once.
+            val open: () -> Unit = {
+                lifecycleScope.launch {
+                    val file = buildPdfFile(id) ?: return@launch
+                    com.innovation313.roshankhata.ui.PdfShare.open(this@InvoicesActivity, file)
+                }
+            }
+            val chain = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.DocChain.of(dao, id) }.getOrDefault(emptyList()) }
+            if (chain.size < 2 || isFinishing || isDestroyed) { if (!isFinishing && !isDestroyed) open(); return@launch }
+            val what = listOfNotNull(
+                invoice.customerName,
+                Digits.quantity(resources, R.plurals.items_count, invoice.itemCount, invoice.itemCount),
+                // A challan prints no prices (DocKind.showsPrices), so its sheet says none either.
+                if (DocKind.showsPrices(to)) Format.money(invoice.grandTotal) else null
+            ).joinToString(" \u00B7 ")
+            com.innovation313.roshankhata.ui.DocConvertedSheet.show(this@InvoicesActivity, chain, { kindWord(it) }, what, open)
         }
     }
 

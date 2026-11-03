@@ -117,6 +117,8 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     override fun onResume() {
         super.onResume()
+        // A paper plane still in the air when WhatsApp took the screen ends now, not over the list (3 Nov 2026).
+        com.innovation313.roshankhata.ui.Motion.settleFlights()
         // The shop may have been switched, restored or loaded since this
         // screen last showed; figures must wear its sign (see Currency).
         Currency.refresh(this)

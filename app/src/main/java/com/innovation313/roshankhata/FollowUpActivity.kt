@@ -66,9 +66,21 @@ class FollowUpActivity : BaseActivity() {
     /** Reminders opened today (ReminderLog); re-read on return from WhatsApp. */
     private val reminded = kotlinx.coroutines.flow.MutableStateFlow<Set<Long>>(emptySet())
 
+    /** A reminder opened WhatsApp from here; on the way back the list is ranked again (3 Nov 2026). */
+    private var backFromReminder = false
+
     override fun onResume() {
         super.onResume()
-        reminded.value = ReminderLog.openedToday(this)
+        if (backFromReminder) {
+            // Back from WhatsApp: the reminded row glides to the foot a moment after the screen shows,
+            // not while the plane was still flying (3 Nov 2026).
+            backFromReminder = false
+            window.decorView.postDelayed({
+                if (!isFinishing && !isDestroyed) reminded.value = ReminderLog.openedToday(this)
+            }, 260)
+        } else {
+            reminded.value = ReminderLog.openedToday(this)
+        }
         // Back from WhatsApp in the middle of "remind all": offer the next one.
         if (queueWaiting) {
             queueWaiting = false
@@ -148,11 +160,13 @@ class FollowUpActivity : BaseActivity() {
                         .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party.id)
                 )
             },
-            onSend = { party -> sendReminder(party) }
+            onSend = { party, pill -> sendReminder(party, pill) }
         )
         findViewById<RecyclerView>(R.id.rvFollowUp).apply {
             layoutManager = LinearLayoutManager(this@FollowUpActivity)
             adapter = this@FollowUpActivity.adapter
+            // The reminded row's glide to the foot (3 Nov 2026): a little slower than the default 250 ms.
+            (itemAnimator as? androidx.recyclerview.widget.DefaultItemAnimator)?.moveDuration = 320
         }
 
         queueAsked = savedInstanceState == null && intent.getBooleanExtra(EXTRA_START_QUEUE, false)
@@ -203,14 +217,17 @@ class FollowUpActivity : BaseActivity() {
                     adapter.lastReminded = state.lastReminded
                     adapter.lastGot = state.lastGot
                     adapter.likely = state.likely
-                    // Rows are compared by party only, so a new mark needs a rebind.
+                    // Rows are compared by party only, so a new mark needs a rebind: in place, with a payload,
+                    // so the reminded row's move to the foot still glides (notifyDataSetChanged made it jump).
                     val marksChanged = adapter.remindedToday != state.remindedToday
                     adapter.remindedToday = state.remindedToday
                     dueToday = state.dueWithPhone
                     // The morning automation's tap: the queue, once, as soon as there is someone to remind.
                     if (queueAsked && dueToday.isNotEmpty() && queue.isEmpty()) { queueAsked = false; startQueue() }
                     btnRemindAll.visibility = if (dueToday.size >= 2) View.VISIBLE else View.GONE
-                    adapter.submitList(debtors) { if (marksChanged) adapter.notifyDataSetChanged() }
+                    adapter.submitList(debtors) {
+                        if (marksChanged) adapter.notifyItemRangeChanged(0, adapter.itemCount, FollowUpAdapter.MARKS)
+                    }
 
                     val total = debtors.sumOf { it.balance }
                     val summary = Digits.quantity(resources, 
@@ -232,7 +249,10 @@ class FollowUpActivity : BaseActivity() {
      * handed to WhatsApp with the text ready. Nothing is sent silently —
      * WhatsApp itself is where the owner reads it and presses send.
      */
-    private fun sendReminder(party: PartyWithBalance) {
+    private fun sendReminder(party: PartyWithBalance, pill: com.google.android.material.button.MaterialButton? = null) {
+        // The pill still belongs to this party's row (a recycled one is never animated for someone else).
+        fun own() = pill?.takeIf { it.getTag(R.id.motion_pill_party) == party.id }
+        own()?.let { com.innovation313.roshankhata.ui.SendPill.sending(it) }
         // Room's suspend queries run off the main thread themselves, so this
         // reads the agreed date without blocking the tap.
         lifecycleScope.launch {
@@ -251,10 +271,20 @@ class FollowUpActivity : BaseActivity() {
                 firstSentAt = state?.firstAt,
                 reference = facts.reference
             )
-            Reminder.sendViaWhatsApp(this@FollowUpActivity, party.phone, message)
-            ReminderLog.record(this@FollowUpActivity, party.id)
-            com.innovation313.roshankhata.data.ReminderLadder.record(this@FollowUpActivity, party.id, party.balance)
-            reminded.value = ReminderLog.openedToday(this@FollowUpActivity)
+            // Counted as reminded only once WhatsApp has really opened (3 Nov 2026): with no WhatsApp on the
+            // phone it was marked "opened today" all the same. The list is ranked again on the way back
+            // (onResume), so the row no longer jumps to the foot under the flying plane.
+            Reminder.sendViaWhatsApp(
+                this@FollowUpActivity, party.phone, message, from = own(),
+                opened = {
+                    ReminderLog.record(this@FollowUpActivity, party.id)
+                    com.innovation313.roshankhata.data.ReminderLadder.record(this@FollowUpActivity, party.id, party.balance)
+                    adapter.openedHere += party.id
+                    backFromReminder = true
+                    own()?.let { com.innovation313.roshankhata.ui.SendPill.openedNow(it) }
+                },
+                failed = { own()?.let { com.innovation313.roshankhata.ui.SendPill.back(it) } }
+            )
         }
     }
 

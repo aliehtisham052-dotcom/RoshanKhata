@@ -798,6 +798,18 @@ interface KhataDao {
     @Query("SELECT * FROM entry_items WHERE id > :after ORDER BY id LIMIT :limit")
     suspend fun entryItemsPageForBackup(after: Long, limit: Int): List<EntryItem>
 
+    /**
+     * How many rows a backup writes a page at a time (3 Nov 2026, Back up now's real progress): every row of
+     * the eight streamed tables, the bin's too, as the *PageForBackup reads give them. Read inside the same
+     * read as the pages (BackupCodec.exportTo), so the count and the rows are of one moment.
+     */
+    @Query(
+        "SELECT (SELECT COUNT(*) FROM parties) + (SELECT COUNT(*) FROM transactions) + " +
+            "(SELECT COUNT(*) FROM entry_items) + (SELECT COUNT(*) FROM cashbook) + (SELECT COUNT(*) FROM sales) + " +
+            "(SELECT COUNT(*) FROM sale_items) + (SELECT COUNT(*) FROM sale_payments) + (SELECT COUNT(*) FROM audit_log)"
+    )
+    suspend fun backupStreamedRows(): Long
+
     @Query("SELECT * FROM cheques")
     suspend fun allChequesForBackup(): List<Cheque>
 

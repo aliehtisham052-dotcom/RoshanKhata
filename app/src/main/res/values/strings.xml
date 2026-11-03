@@ -568,7 +568,6 @@
         <item quantity="other">%1$d businesses on Drive</item>
     </plurals>
     <string name="drive_restore_all">Restore all</string>
-    <string name="drive_restored_these">Restored:\n%1$s</string>
     <string name="drive_restore_missed">Could not restore:\n%1$s</string>
     <string name="business_numbered">Business %1$d</string>
     <string name="backup_for_business">Backing up: %1$s</string>
@@ -3925,4 +3924,19 @@
     <string name="pdf_stmt_gap_phone">Your shop\'s phone number</string>
     <string name="pdf_stmt_gap_address">Your shop\'s address</string>
     <string name="pdf_stmt_gap_fix">Add details</string>
+    <string name="restore_backup_of">Backup of %1$s</string>
+    <string name="restore_step_checked">Backup checked</string>
+    <string name="restore_step_kept">This book kept in Daily copies</string>
+    <string name="restore_step_kept_why">So this restore can be undone</string>
+    <string name="restore_step_replaced">Book replaced with the backup</string>
+    <string name="restore_step_photos">Photos brought back</string>
+    <string name="restore_step_joined">Live sync joined</string>
+    <string name="restore_keep_open">Keep the app open until this is done.</string>
+    <string name="restore_open_book">Open the book</string>
+    <string name="restore_not_done">Not restored</string>
+    <string name="restore_join_failed">The book was replaced, but live sync did not start. Take the shop\'s book on this phone again.</string>
+    <plurals name="live_changes_waiting">
+        <item quantity="one">%d change waiting to go</item>
+        <item quantity="other">%d changes waiting to go</item>
+    </plurals>
 </resources>

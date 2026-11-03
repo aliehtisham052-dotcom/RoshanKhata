@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
@@ -73,14 +74,44 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <TextView
+        <!-- The Message pill (3 Nov 2026): the gold plane is its icon and flies out of it; once WhatsApp
+             has opened it reads "Opened today" with a check that draws itself (ui/SendPill). Visual 36dp
+             inside a 48dp touch target (MaterialButton's own insets). -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/tvFollowUpSend"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:minWidth="0dp"
+            android:minHeight="48dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="12dp"
+            android:maxLines="1"
+            android:textAllCaps="false"
+            android:letterSpacing="0"
             android:textColor="@color/green_got_text"
             android:textSize="13sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:cornerRadius="18dp"
+            app:icon="@drawable/ic_paper_plane_gold"
+            app:iconGravity="start"
+            app:iconPadding="6dp"
+            app:iconSize="18dp"
+            app:iconTint="@null"
+            app:strokeColor="@color/green_got_text"
+            app:strokeWidth="1.5dp" />
+
+        <!-- No number, no pill: said plainly where the pill would be. -->
+        <TextView
+            android:id="@+id/tvFollowUpNoPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:maxWidth="150dp"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

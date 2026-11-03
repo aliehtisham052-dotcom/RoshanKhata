@@ -402,7 +402,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         shopName = { settings.businessName() },
                         settings = settings,
                         restore = { data, keepAccess -> restore(data, db, settings, keepAccess) },
-                        backup = { file -> backup(file, db, settings) },
+                        backup = { file, progress -> backup(file, db, settings, progress) },
                         onLanguage = { tag -> appPrefs.setLanguage(tag); language = tag },
                         theme = theme,
                         onTheme = { t -> appPrefs.setTheme(t); theme = t },
@@ -482,12 +482,14 @@ private sealed interface Picked {
 private suspend fun backup(
     file: File,
     db: com.innovation313.roshankhata.data.KhataDatabase,
-    settings: FileShopSettings
+    settings: FileShopSettings,
+    /** How far the book is written, a whole percent (the header's backup chip, 3 Nov 2026). */
+    progress: (Int) -> Unit = {}
 ): Long = withContext(Dispatchers.IO) {
     val local = File.createTempFile("rk-backup-", ".tmp")
     try {
         local.bufferedWriter(Charsets.UTF_8).use {
-            BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it)
+            BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it, progress = progress)
         }
         java.nio.file.Files.copy(local.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
     } finally {
@@ -530,7 +532,7 @@ private fun Book(
     shopName: () -> String?,
     settings: FileShopSettings,
     restore: suspend (BackupCodec.ParsedBackup, Boolean) -> Unit,
-    backup: suspend (File) -> Long,
+    backup: suspend (File, (Int) -> Unit) -> Long,
     onLanguage: (String) -> Unit,
     theme: ThemeChoice,
     onTheme: (ThemeChoice) -> Unit,
@@ -559,7 +561,8 @@ private fun Book(
     var query by remember { mutableStateOf("") }
     var picked by remember { mutableStateOf<Picked?>(null) }
     var busy by remember { mutableStateOf(false) }
-    var done by remember { mutableStateOf(false) }
+    // A restore's steps while it runs and once it is through (3 Nov 2026, the owner's mockup "Restore steps").
+    var restoreRun by remember { mutableStateOf<RestoreRun?>(null) }
     var about by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf<Long?>(null) }
     var entryWay by remember { mutableStateOf<Boolean?>(null) }
@@ -672,6 +675,9 @@ private fun Book(
     var showAlerts by remember { mutableStateOf(false) }
     // The newest backup this computer holds: a daily copy, or one saved by hand this session.
     var lastBackupAt by remember { mutableStateOf<Long?>(null) }
+    // Back up now while it writes (a whole percent) and how many it has finished here, for the chip (3 Nov 2026).
+    var backingUp by remember { mutableStateOf<Int?>(null) }
+    var backupDone by remember { mutableStateOf(0) }
     // The counter's open ticket lives as long as this business's window, not the page (25 Oct 2026, the audit).
     val counterDraft = remember { com.innovation313.roshankhata.data.CounterDraft() }
     // Home's You gave, You got and Statement: the customer is chosen in a small window first.
@@ -918,7 +924,12 @@ private fun Book(
             val name = dialog.file ?: return@backup
             val file = File(dialog.directory, name)
             scope.launch {
-                backedUp = runCatching { backup(file) }
+                // The header's chip shows how far the book is written, then its check (3 Nov 2026).
+                backingUp = 0
+                val written = runCatching { backup(file) { pct -> backingUp = pct } }
+                backingUp = null
+                if (written.isSuccess) backupDone++
+                backedUp = written
                     .map { size ->
                         lastBackupAt = System.currentTimeMillis()
                         // Kept, so the header and the week-old reminder still know after a restart.
@@ -963,7 +974,9 @@ private fun Book(
             head = pageHeads[section],
             backupAt = lastBackupAt,
             backupOld = backupOld,
-            onBackup = { backupNow() },
+            backupProgress = backingUp,
+            backupDone = backupDone,
+            onBackup = { if (backingUp == null) backupNow() },
             onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
             // The late payers' row counts as Home counts it (3 Nov 2026 audit, L50: Home said 4 while the bell said 3).
             alerts = bookAlerts.size + extraAlerts.size + (if (late > 0) 1 else 0),
@@ -1368,7 +1381,8 @@ private fun Book(
     }
     when (val p = picked) {
         is Picked.Refused -> TellDialog(word(W.restore_from_file), word(W.restore_failed, p.why), { picked = null })
-        is Picked.Ready -> {
+        // The question gives way to its steps once Replace is clicked.
+        is Picked.Ready -> if (restoreRun == null) {
           // Whatever the answer, a book that came from a phone is not left on disk (R41, 23 Oct 2026);
           // a backup file the owner chose himself is never touched (forgetIncoming checks the folder).
           val letGo = { PhoneSync.forgetIncoming(home, p.file) }
@@ -1472,6 +1486,20 @@ private fun Book(
                     enabled = !busy && mayReplace(loss, agreed),
                     onClick = {
                         busy = true
+                        // Its steps, each moved when its work is really through: the copy was read and checked
+                        // before this question; then kept, replaced and, for a phone's pairing, joined.
+                        val run = RestoreRun(
+                            labels = listOfNotNull(
+                                words.text(W.restore_step_checked), words.text(W.restore_step_kept), words.text(W.restore_step_replaced),
+                                if (p.live != null) words.text(W.restore_step_joined) else null
+                            ),
+                            details = listOfNotNull(restoreCounts(p.data, words), words.text(W.restore_step_kept_why)) +
+                                List(if (p.live != null) 2 else 1) { null },
+                            sub = p.data.exportedAt?.let { words.text(W.restore_backup_of, Format.dateTime(it)) }
+                        )
+                        run.done(0)
+                        run.start(1)
+                        restoreRun = run
                         scope.launch {
                             try {
                                 // This book as it stands, kept first: the restore can be undone from Daily copies.
@@ -1479,8 +1507,11 @@ private fun Book(
                                 // the book replaced anyway, while the screen promised it could be undone).
                                 val kept = runCatching { DailyCopies.makeToday(dao, settings, dailyDir, label = "before-restore-" + System.currentTimeMillis()) }.getOrNull()
                                 if (kept == null) {
-                                    told = words.text(W.restore_warning_title) to words.text(W.restore_keep_failed)
+                                    run.failed(1)
+                                    run.finish(words.text(W.restore_not_done), words.text(W.restore_keep_failed))
                                 } else {
+                                    run.done(1)
+                                    run.start(2)
                                     // A replaced book is no longer the one any phone was syncing: live sync pauses
                                     // first (so the restore's own writes are not sent), stops once the restore went
                                     // through, and a live pairing then joins anew. Run whole even when the screen
@@ -1496,28 +1527,36 @@ private fun Book(
                                             if (wasLive) runCatching { LiveSync.resume(sql) }
                                             return@withContext e
                                         }
+                                        run.done(2)
                                         if (wasLive) LiveSync.disable(sql, LiveSync.OFF_RESTORED)
                                         else if (p.live != null) runCatching { LiveSync.disable(sql) }
                                         com.innovation313.roshankhata.data.NumberMark.mark = null
                                         p.live?.let { offer ->
+                                            run.start(3)
                                             runCatching { LiveDesk.join(db, home, dbFile, offer) }.exceptionOrNull()?.let { return@withContext it }
+                                            run.done(3)
                                         }
                                         null
                                     }
                                     if (p.live != null) LiveDesk.offers.value = null
                                     if (failure != null) {
-                                        told = words.text(W.restore_warning_title) to
+                                        run.failRunning()
+                                        run.finish(
+                                            words.text(W.restore_not_done),
                                             if (p.live != null) words.text(W.live_join_failed, failure.message ?: failure.javaClass.simpleName)
                                             else failText(words, failure)
+                                        )
                                     } else {
                                         if (p.live == null && !LiveDesk.windowOpen()) LiveDesk.stop()
-                                        done = true
                                         shop = shopName()
                                         reload++
+                                        // A file carries records only: said where the steps end, as the phone says it.
+                                        run.finish(words.text(W.restore_done), if (p.live == null) words.text(W.restore_file_no_images) else null)
                                     }
                                 }
                             } catch (e: Exception) {
-                                told = words.text(W.restore_warning_title) to failText(words, e)
+                                run.failRunning()
+                                run.finish(words.text(W.restore_not_done), failText(words, e))
                             } finally {
                                 busy = false
                                 picked = null
@@ -1532,7 +1571,7 @@ private fun Book(
         }
         null -> {}
     }
-    if (done) TellDialog(word(W.restore_done), word(W.restore_file_no_images), { done = false }, height = 300)
+    restoreRun?.let { run -> RestoreStepsDialog(run) { restoreRun = null } }
     val way = entryWay
     val forParty = parties.firstOrNull { it.id == selected }
     // A new entry asks twice before it saves, as the phone does: the same amount the
@@ -2172,7 +2211,7 @@ private fun Book(
     // One lambda for this book's life: it reads the states themselves, so it always sees the current answer.
     val questionOpen: () -> Boolean = remember {
         {
-            picked != null || done || confirming != null || editing != null || deleting != null || halves != null ||
+            picked != null || restoreRun != null || confirming != null || editing != null || deleting != null || halves != null ||
                 deletingMany || deletingParty != null || told != null || backedUp != null || clockBehind != null || namingShop ||
                 promising != null || deletingEntries != null
         }

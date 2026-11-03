@@ -430,4 +430,10 @@
     <!-- The Khata Report's gave/got share bar (24 Oct 2026): fills, so mid-tone at night. -->
     <color name="lr_bar_gave">#A32D2D</color>
     <color name="lr_bar_got">#0F6E56</color>
+    <!-- Motion (3 Nov 2026): a pill that did its job, the washes behind a result, the gold chip's ink. -->
+    <color name="pill_done_bg">#E3F1EC</color>
+    <color name="wash_got">#E6F2EE</color>
+    <color name="wash_gave">#F7E7E6</color>
+    <color name="wash_gold">#FFF4D6</color>
+    <color name="gold_ink">#5C4A16</color>
 </resources>
