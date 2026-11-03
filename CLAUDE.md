@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,731 strings and 59 plurals (2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,743 strings and 59 plurals (2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1519,6 +1519,43 @@ network, no cost — said with its reasons. Both platforms; CI only.
   _pay_day, _next, _next_short, _promise_passed, _private, _switch_help, _turn_on, _turn_off, intro_radar_body,
   _s1-_s3; plurals radar_days.
 
+### The 3 Nov 2026 audit (kmp-desktop-16 — the owner: "data safety sab se pehle, facts aur figures pehle")
+
+Eight reviewers (data, money, alignment, notifications, stability, release, tests, screens) and the owner's brief;
+every point read in the code first; the report is the Claude Doc "Roshan Khata — Poora Audit (Nov 2026)". 3
+critical, 48 medium, 52 low. CI only — nothing on a real device; docs/LESSONS.md carries what it taught.
+
+- **Critical (27688b8):** a backup taken after one half of a cash sale was purged could not be restored (the other
+  half pointed at nothing): the parser drops dangling `pairedEntryId`s and every purge clears them
+  (`clearDanglingPairs`). A paid-now sale of unpriced goods wrote no payment (`RateType.forEntry`, one rule on both,
+  `insertEntryWithItemsPaidNow` in one transaction). App Lock shut out every PIN-only Android 7-10 phone
+  (`noHistory` lost the device-credential answer; the lock re-asks on return, turning it on needs one success).
+- **Medium (6a26212, 459511e):** money compared through `Money` with an epsilon per currency (`LineMath.scale()` =
+  `Currency.decimals()`), no E-notation, the statement's period-end balance, an invoice's balance due with its minus;
+  writes made one transaction or audited (`restorePartyWithEntries`, `insertCashEntryAudited`, `deleteEntryAudited`);
+  returns by `ReturnMath.totalFor`; the drawer counts bills and staff paid in cash (`DrawerFigures.otherOut`, the
+  breakdown's 6th line); notices private on the lock screen, timed out, per shop, a notifications-off warning; the
+  Radar nets a cash sale's halves and leaves Qarz-e-Hasna out; CSV import reads any currency sign and Dr/Cr and
+  counts unreadable balances; the add-entry pad is 40% of the screen (`CalcPad.fitHeight`, 278-330 dp) with a fade
+  at the form's foot; decimal boxes take the language's mark and every keyboard's digits (`DecimalBoxes`, run by
+  `TextFit.relax` and `FormBox`; `Digits.parse` reads Indonesian "2,5" and "4.000" as the pad does); an edit of one
+  half of a cash sale asks about the other (`pairToFollow`, `setPairAmount`) and the bin brings a binned other half
+  back with it (`restoreEntryWithPair`, `binnedPairOf`, said first on the phone).
+- **Low:** daily-copy restore renames without a gap; the newest day close is never a future one; a bill's entry on
+  the bill's day; merges audited (`PARTY_MERGED`); the bell's cash-flow gap counts promises; workers `UPDATE`; a
+  deleted bill's own entry is out of the bin (`observeDeletedEntries`, `restoreEntry`); the counter receipt keeps the
+  round-off's minus and the balance's side (`ReceiptBalance.text`); the Radar only for REPORTS (owner, manager);
+  names sort past a leading bracket or emoji (`NameOrder.key`); Windows' bell counts and lists the late payers as Home
+  does; crash records and errors.log clean every message (`LogText`, shared; the phone's `SyncLog.clean` calls it);
+  the stock register's date and quantity wrap; `scripts/check_16kb.py` in build.yml.
+- **Left, with the reason (the report has each):** M02 Drive auto-backup stays opt-in (offered on connecting;
+  `allowBackup=false` on purpose); M39 proof looks on Android 15, 200% text and Windows dark dialogs; M47 the Downloads
+  backup's PIN hashes (the owner's decision: a password backup); M48 Play's Data safety form must declare what ML Kit
+  sends (the owner, in Play Console) and the listing's "never sent anywhere" line; L36 the checkbox/switch colour
+  (3.18:1, a theme-wide look change); L38 Home's pill and slide at 150%; L15 status-guarded writes for invoice design,
+  party dialog, order status and cheque; L16 the stock transfer's two books; L20 FCM priority (a Worker deploy);
+  L21, L35, L39, L41, L43, L44, L46-L49, L52 as the report says.
+
 ### The shared module (KMP)
 
 ```
@@ -1886,6 +1923,22 @@ Each of these cost a build or a bug.
     and the build failed ("Unresolved reference 's'", 266487c); a literal dollar in an ordinary string is `\$`
     (`"%(\\d)\\\$s"`). Python checks cannot catch it — no local Gradle — so a new regex with `$` is read twice
     before the push.
+
+65. **Two rows that must agree are one thing.** A cash sale and the payment taken with it point at each other: they
+    are written in one transaction, deleted and restored together, an edit of one asks about the other, and a purge
+    clears the link. A backup made after one half was purged could not be restored (27688b8).
+
+66. **`noHistory` and a result never meet.** Android 7-10 asks the phone's PIN on a screen of its own and returns
+    its answer to the screen that asked; a `noHistory` lock screen was already gone, and the owner was locked out.
+    The lock is tested on the oldest supported Android with a PIN-only phone.
+
+67. **`inputType="numberDecimal"` filters by its own rule, not the language's.** Without `imeHintLocales` it passes
+    0-9 and "." only: an Indonesian "2,5" became 25 in silence. Decimal boxes go through `DecimalBoxes` (run by
+    `TextFit.relax`); a typed number is read by `Digits.parse`, never `toDouble`.
+
+68. **A failing test hides everything after it.** Gradle stopped at `:shared:desktopTest` (CsvImportTest asserted the
+    behaviour the same audit changed), so the app's tests never ran on 6a26212. A behaviour change and its test change
+    go in one commit, and a green build is read only on the run that followed the fix.
 
 ---
 

@@ -35,8 +35,6 @@ import com.innovation313.roshankhata.words.word
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -67,8 +65,9 @@ object CrashLog {
     fun write(home: File, where: String, e: Throwable) {
         val f = file(home)
         f.parentFile?.mkdirs()
-        val sw = StringWriter()
-        e.printStackTrace(PrintWriter(sw))
+        // Each message cleaned, as the phone's (3 Nov 2026 audit, L25): the report sends this file's newest record,
+        // and a message can carry what was typed — a phone number, an amount, a name in a path.
+        val sw = com.innovation313.roshankhata.data.LogText.trace(e)
         val stamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).format(Date())
         val entry = "=== $stamp  v${UpdateCheck.installed() ?: "dev"}  $where\n$sw\n"
         val old = if (f.isFile) f.readText(Charsets.UTF_8) else ""

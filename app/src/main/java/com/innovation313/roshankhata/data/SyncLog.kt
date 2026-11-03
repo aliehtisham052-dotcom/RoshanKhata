@@ -83,17 +83,7 @@ object SyncLog {
      * tokens); on one line, at most [MESSAGE_CHARS] characters. Kinds of failure and short figures
      * (an HTTP status, a port) stay, as they are what makes the note useful.
      */
-    fun clean(message: String?): String? {
-        if (message.isNullOrBlank()) return null
-        return message
-            .replace(Regex("[\\r\\n\\t]+"), " ")
-            .replace(Regex("\"[^\"]*\""), "\"…\"")
-            .replace(Regex("'[^']*'"), "'…'")
-            .replace(Regex("(?=[A-Za-z0-9+/=_-]*\\d)(?=[A-Za-z0-9+/=_-]*[A-Za-z])[A-Za-z0-9+/=_-]{16,}"), "…")
-            .replace(Regex("\\d{6,}"), "#")
-            .trim()
-            .let { if (it.length <= MESSAGE_CHARS) it else it.take(MESSAGE_CHARS) + "…" }
-    }
+    fun clean(message: String?): String? = LogText.clean(message, MESSAGE_CHARS)
 
     /** The newest lines that fit in [bytes] (a long file cut down to its latest half). */
     fun trimmed(lines: List<String>, bytes: Int): List<String> {

@@ -48,7 +48,11 @@ object NameOrder {
 
     /** The name as compared: lowercase, decomposed, marks and tatweel gone, same-sound letters one. */
     fun key(name: String): IntArray {
-        val s = Normalizer.normalize(name.trim(), Normalizer.Form.NFD).lowercase()
+        val raw = Normalizer.normalize(name.trim(), Normalizer.Form.NFD).lowercase()
+        // A name written after a bracket, a mark or an emoji sorts by its first letter (3 Nov 2026 audit, L45):
+        // "(Ali)" and "⭐ Bilal" sat after every letter of every alphabet.
+        val first = raw.indexOfFirst { Character.isLetterOrDigit(it) }
+        val s = if (first > 0) raw.substring(first) else raw
         val out = ArrayList<Int>(s.length)
         for (c in s) {
             if (isMark(c) || Character.getType(c) == Character.NON_SPACING_MARK.toInt() && c !in 'ऀ'..'৿') continue

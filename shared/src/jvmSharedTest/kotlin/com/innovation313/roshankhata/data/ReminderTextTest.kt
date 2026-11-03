@@ -72,4 +72,14 @@ class ReminderTextTest {
         assertNull(ReminderLadder.decode("2,10,20"))
         assertNull(ReminderLadder.decode("two,10,20,300"))
     }
+
+    @Test
+    fun `the step the owner sent is the one the ladder remembers`() {
+        val day = 86_400_000L
+        // The ladder offered Gentle; the owner chose Serious (3 Nov 2026 audit, M33).
+        val sent = ReminderLadder.next(null, 12_000.0, 1_000L, sent = ReminderLadder.SERIOUS)
+        assertEquals(ReminderLadder.SERIOUS, sent.count)
+        // He paid two days later: Serious is what worked, not Gentle.
+        assertEquals(ReminderLadder.SERIOUS, ReminderLadder.learned(sent, 9_000.0, 1_000L + 2 * day))
+    }
 }

@@ -29,6 +29,15 @@ class DecimalBoxesTest {
     @After
     fun putBack() = Locale.setDefault(before)
 
+    /**
+     * Typed, as a keyboard types: into the box's own Editable, whose filters the key listener is. setText() is not
+     * typing — Android fills a new Editable before the listener's filter is attached, so it never filters.
+     */
+    private fun EditText.type(text: String) {
+        this.text.clear()
+        this.text.append(text)
+    }
+
     private fun form(): View {
         val themed = ContextThemeWrapper(ApplicationProvider.getApplicationContext<Context>(), R.style.Theme_RoshanKhata)
         return LayoutInflater.from(themed).inflate(R.layout.dialog_add_entry, null).also { TextFit.relax(it) }
@@ -38,10 +47,10 @@ class DecimalBoxesTest {
     fun anIndonesianQuantityKeepsItsComma() {
         Locale.setDefault(Locale("in", "ID"))
         val qty = form().findViewById<EditText>(R.id.etQuantity)
-        qty.setText("2,5")
+        qty.type("2,5")
         assertEquals("2,5", qty.text.toString())
         assertEquals(2.5, Digits.parse(qty.text)!!, 1e-9)
-        qty.setText("4.000")
+        qty.type("4.000")
         assertEquals("four thousand, as written there", 4000.0, Digits.parse(qty.text)!!, 1e-9)
     }
 
@@ -50,15 +59,15 @@ class DecimalBoxesTest {
         Locale.setDefault(Locale.ENGLISH)
         val form = form()
         val qty = form.findViewById<EditText>(R.id.etQuantity)
-        qty.setText("2,5")
-        assertEquals("as before: a comma never reaches an English box", "25", qty.text.toString())
-        qty.setText("٢٫٥")
+        qty.type("2,5")
+        assertEquals("as before: a comma typed into an English box is left out", "25", qty.text.toString())
+        qty.type("٢٫٥")
         assertEquals(2.5, Digits.parse(qty.text)!!, 1e-9)
-        qty.setText("۱۲")
+        qty.type("۱۲")
         assertEquals(12.0, Digits.parse(qty.text)!!, 1e-9)
         // The amount box keeps its own characters: the pad's sums are not a decimal box's.
         val amount = form.findViewById<EditText>(R.id.etAmount)
-        amount.setText("12+3")
+        amount.type("12+3")
         assertEquals("12+3", amount.text.toString())
     }
 

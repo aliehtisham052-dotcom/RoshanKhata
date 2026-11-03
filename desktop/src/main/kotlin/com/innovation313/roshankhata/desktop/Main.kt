@@ -891,6 +891,8 @@ private fun Book(
     }
     // The ledger's own rows, each opening its page; live sync's went to extraAlerts above.
     val bookAlerts = alerts.filter { it.kind != com.innovation313.roshankhata.data.LedgerAlerts.Kind.SYNC }
+    // Customers paying later than their habit: one row on Home and in the bell alike (3 Nov 2026 audit, L50).
+    val late by remember(reload) { lateCount(dao) }.collectAsState(0)
 
     Column(Modifier.fillMaxSize().background(Look.base)) {
         // What needs the owner today, as the phone's Home: cheques due, stock expiring
@@ -899,7 +901,6 @@ private fun Book(
         val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
         // Batches that still hold something, by the one rule (Marhala 3): a sold-out or written-off lot no longer counts.
         val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
-        val late by remember(reload) { lateCount(dao) }.collectAsState(0)
         // The whole book out is gated wherever it is asked for — the header, Home's quick action,
         // the bell's row (21 Oct 2026: only the header's button asked a cashier for the PIN) — and
         // the audit log says who took it. Owner-only BACKUP, as the phone's BackupActivity (R33,
@@ -963,7 +964,8 @@ private fun Book(
             backupOld = backupOld,
             onBackup = { backupNow() },
             onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
-            alerts = bookAlerts.size + extraAlerts.size,
+            // The late payers' row counts as Home counts it (3 Nov 2026 audit, L50: Home said 4 while the bell said 3).
+            alerts = bookAlerts.size + extraAlerts.size + (if (late > 0) 1 else 0),
             onAlerts = { showAlerts = true },
             // What the rail does not hold, in the phone's groups (25 Oct 2026, the audit: the menu repeated the
             // rail's Daily copies, Help and Business Profile, and filed the shop's own settings under Display).
@@ -2241,7 +2243,7 @@ private fun Book(
             title = word(W.na_title),
             state = rememberDialogState(width = fitW(520.dp), height = fitH(600.dp))
         ) {
-            AlertsList(bookAlerts, extraAlerts) { s -> showAlerts = false; section = s }
+            AlertsList(bookAlerts, extraAlerts, late) { s -> showAlerts = false; section = s }
         }
     }
     if (choosingTextSize) {

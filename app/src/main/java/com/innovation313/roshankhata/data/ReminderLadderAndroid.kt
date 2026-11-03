@@ -15,8 +15,8 @@ private fun ladderPrefs(context: Context) =
 fun ReminderLadder.state(context: Context, partyId: Long): ReminderLadder.State? =
     decode(ladderPrefs(context).getString(partyId.toString(), null))
 
-fun ReminderLadder.record(context: Context, partyId: Long, balanceNow: Double, now: Long = System.currentTimeMillis()) {
-    val s = next(state(context, partyId), balanceNow, now)
+fun ReminderLadder.record(context: Context, partyId: Long, balanceNow: Double, now: Long = System.currentTimeMillis(), sent: Int? = null) {
+    val s = next(state(context, partyId), balanceNow, now, sent)
     ladderPrefs(context).edit().putString(partyId.toString(), encode(s)).apply()
 }
 

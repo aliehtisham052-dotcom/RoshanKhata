@@ -55,12 +55,16 @@ object ReminderLadder {
         if (reset(state, balanceNow, now)) learned(state, balanceNow, now).coerceIn(GENTLE, SERIOUS)
         else minOf(SERIOUS, state!!.count + 1)
 
-    /** The state after one more reminder at [balanceNow], sent at [step]'s step. */
-    fun next(state: State?, balanceNow: Double, now: Long): State =
+    /**
+     * The state after one more reminder at [balanceNow]: sent at [step]'s step, or at [sent] when the owner chose
+     * another (3 Nov 2026 audit, M33: a Serious reminder the owner picked was remembered as the Gentle one the ladder
+     * offered, so a payment after it taught "Gentle works").
+     */
+    fun next(state: State?, balanceNow: Double, now: Long, sent: Int? = null): State =
         if (reset(state, balanceNow, now)) {
             val worked = learned(state, balanceNow, now)
-            State(worked.coerceIn(GENTLE, SERIOUS), now, now, balanceNow, worked)
-        } else state!!.copy(count = minOf(SERIOUS, state.count + 1), lastAt = now, balanceAtLast = balanceNow)
+            State((sent ?: worked).coerceIn(GENTLE, SERIOUS), now, now, balanceNow, worked)
+        } else state!!.copy(count = (sent ?: minOf(SERIOUS, state.count + 1)).coerceIn(GENTLE, SERIOUS), lastAt = now, balanceAtLast = balanceNow)
 
     /** The stored form, the same on both platforms: "count,firstAt,lastAt,balanceAtLast[,worked]". */
     fun encode(s: State): String =

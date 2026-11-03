@@ -58,7 +58,9 @@ object CrashLog {
             appendLine("Android: ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
             appendLine("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
             appendLine()
-            appendLine(android.util.Log.getStackTraceString(e))
+            // Each message cleaned (3 Nov 2026 audit, L25): a record goes out with Report a Problem, and a message can
+            // carry what was typed — a phone number, an amount, a name in a path.
+            appendLine(LogText.trace(e))
         })
         dir.listFiles()?.sortedByDescending { it.name }?.drop(KEEP)?.forEach { it.delete() }
     }

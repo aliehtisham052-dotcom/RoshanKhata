@@ -1,9 +1,11 @@
 package com.innovation313.roshankhata.data
 
 import com.innovation313.roshankhata.ui.Format
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
 
@@ -65,6 +67,22 @@ class AuditMoneyTest {
         assertEquals(true, dao.setPairAmount(got, saleId, 800.0))
         assertEquals(0.0, dao.liveBalance(party), 0.001)
         assertNull("once they differ, nothing is asked", dao.pairToFollow(dao.getEntry(saleId)!!, 600.0))
+    }
+
+    @Test
+    fun `a deleted bill's debt stays out of the bin's restore`() = withBook { dao ->
+        val supplier = dao.insertParty(Party(name = "Test Supplier", phone = null, isCustomer = false))
+        dao.insertSupplierBill(
+            LedgerEntry(partyId = supplier, amount = 8_000.0, isGiven = false, entryNumber = ""),
+            SupplierBill(partyId = supplier, billNumber = "7", totalAmount = 8_000.0, isPaidInFull = false),
+            emptyList()
+        )
+        val bill = dao.observeBills().first().single()
+        val entry = dao.latestEntriesWithItems(supplier, 10).single().entry.id
+        dao.deleteSupplierBill(bill.id)
+        assertTrue("not offered alone", dao.observeDeletedEntries().first().none { it.id == entry })
+        dao.restoreEntry(entry)
+        assertEquals("no debt with no bill behind it", 0.0, dao.liveBalance(supplier), 0.001)
     }
 
     @Test
