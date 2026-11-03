@@ -62,6 +62,9 @@ import com.innovation313.roshankhata.data.Digits
 class KhataActivity : BaseActivity() {
 
     companion object {
+        /** How long after the list's first rows the day's safety copy starts ([startDailyCopy]). */
+        private const val DAILY_COPY_DELAY_MS = 4_000L
+
         /**
          * An amount brought from the calculator (13 Oct): the next customer
          * tapped opens with an entry already filled in with it, to check and
@@ -209,13 +212,8 @@ class KhataActivity : BaseActivity() {
         }
         onBackPressedDispatcher.addCallback(this, selectionBack)
 
-        // The day's ledger snapshot, off the main thread, at most once a day.
-        // Here rather than in the Application class so it runs when the ledger
-        // is actually opened, and so the trigger is visible on the screen that
-        // owns the data it protects.
+        // The day's ledger snapshot is started once the list has its first rows (startDailyCopy, 3 Nov 2026).
         lifecycleScope.launch(Dispatchers.IO) {
-            com.innovation313.roshankhata.data.Snapshots.maybeToday(applicationContext)
-
             // The voice diagnostic log is gone, but the files it already wrote
             // are still on the phones it wrote them on — spoken customer names
             // and amounts, sitting in app storage. Deleting the code does not
@@ -449,10 +447,32 @@ class KhataActivity : BaseActivity() {
                 renderTotals()
                 renderPartySummary(list)
                 render()
+                startDailyCopy()
             }
         } }
 
         setupReminders()
+    }
+
+    private var dailyCopyStarted = false
+
+    /**
+     * The day's ledger snapshot (Snapshots.maybeToday), at most once a day, off the main thread. Here rather than
+     * in the Application class so it runs when the ledger is actually opened, on the screen that owns the data.
+     *
+     * Started a few seconds AFTER the list has its first rows (3 Nov 2026, the speed work): the copy holds the
+     * book's one write connection while the whole file is copied, and Room's first read of the list waits for that
+     * connection to set up its change triggers. On CI's big book (196 MB) the day's first open showed its first row
+     * after 3.8 s instead of 1.9 s. On AppScope, so leaving the screen does not cancel the day's copy.
+     */
+    private fun startDailyCopy() {
+        if (dailyCopyStarted) return
+        dailyCopyStarted = true
+        val app = applicationContext
+        com.innovation313.roshankhata.data.AppScope.launch(Dispatchers.IO) {
+            kotlinx.coroutines.delay(DAILY_COPY_DELAY_MS)
+            com.innovation313.roshankhata.data.Snapshots.maybeToday(app)
+        }
     }
 
     /**
