@@ -41,8 +41,9 @@ concurrency:
 jobs:
   instrumented:
     runs-on: ubuntu-24.04
-    # 45 until 3 Nov 2026: the run took 33 minutes, and the big book's richer seed and the probe add a few.
-    timeout-minutes: 60
+    # 45 until 3 Nov 2026: the run took 33 minutes; the big book written by the clock seeds in ~40 s for each of its six
+    # tests, and 60 minutes stopped the run before the monkey (3 Nov 2026).
+    timeout-minutes: 80
 
     steps:
       - uses: actions/checkout@v5
