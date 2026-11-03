@@ -57,15 +57,29 @@ object Automations {
     }
 
     /**
-     * Whether [kind] should be said now: switched on, its hour reached today, and not said yet in this day
-     * (month). A phone asleep through the hour says it when it wakes — late, never twice.
+     * Whether [kind] should be said now: switched on, its hour reached today, not past its last hour
+     * ([lastHour]), and not said yet in this day (month). A phone asleep through the hour says it when it wakes —
+     * late, never twice — but not into the night (3 Nov 2026 audit, M23: a phone that first ran the check at
+     * 23:30 said the morning's collection, orders and expiry together, with sound). A day missed is missed; the
+     * month's report is asked again the next day, as its once is the month.
      */
     fun due(kind: Kind, settings: Settings, now: Long, tz: TimeZone = TimeZone.getDefault()): Boolean {
         if (!settings.isOn(kind)) return false
         val c = Calendar.getInstance(tz).apply { timeInMillis = now }
-        if (c.get(Calendar.HOUR_OF_DAY) < settings.hour(kind).coerceIn(0, 23)) return false
+        val hour = settings.hour(kind).coerceIn(0, 23)
+        val nowHour = c.get(Calendar.HOUR_OF_DAY)
+        if (nowHour < hour || nowHour >= lastHour(hour)) return false
         return settings.lastSaid(kind) != stamp(kind, now, tz)
     }
+
+    /**
+     * The hour a notice set for [hour] is said no later than (exclusive): 22:00, the start of the quiet night —
+     * or three hours after its own hour when the owner set it late (21:00's closing summary until midnight).
+     */
+    fun lastHour(hour: Int): Int = maxOf(QUIET_FROM, hour + 3).coerceAtMost(24)
+
+    /** Nothing is said from this hour to midnight unless the owner set a notice that late. */
+    const val QUIET_FROM = 22
 
     /** One thing to say: [title] and [body] in the owner's language, and where a tap goes. */
     data class Notice(val kind: Kind, val title: String, val body: String, val extra: Long? = null)
@@ -108,9 +122,11 @@ object Automations {
         // The whole day, not up to [now]: an entry dated later today (a clock set back, a synced device) is today's.
         val to = DayMath.startOfDay(from + 36L * 60 * 60 * 1000, tz)
         val sales = dao.salesTotalBetween(from, to)
-        val received = dao.receivedBetween(from, to)
+        // From customers and walk-ins, not a supplier's credit bill (3 Nov 2026 audit, M15).
+        val received = dao.customerReceivedBetween(from, to)
         val drawer = DayCloseMath.drawerByTheBooks(dao, now)
-        val counted = drawer.last?.let { DayMath.dayNumber(it.closedAt, tz) == DayMath.dayNumber(now, tz) } == true
+        // By working day, as the close is filed (M15: a close at 00:20 is the evening before's).
+        val counted = drawer.last?.let { it.day == DayCloseMath.businessDayOf(now, tz) } == true
         val moved = Money.isPositive(sales) || Money.isPositive(received) ||
             Money.isPositive(drawer.cashIn) || Money.isPositive(drawer.cashOut)
         return DayEnd(sales, received, drawer.expected, counted, moved)
@@ -130,7 +146,9 @@ object Automations {
         val low = runCatching { Valuation.compute(dao).low }.getOrDefault(emptyList())
         if (low.isEmpty()) return emptyList()
         val onOrder = mutableSetOf<Long>()
-        dao.observeOrders().first().filter { it.status != OrderStatus.RECEIVED }.forEach { o ->
+        // Only an order still on its way (3 Nov 2026 audit, M30): a CLOSED one carried its lines for ever and the
+        // product was never offered again.
+        dao.observeOrders().first().filter { it.status == OrderStatus.DRAFT || it.status == OrderStatus.SENT }.forEach { o ->
             dao.orderItems(o.id).filter { !it.isDeleted }.forEach { i -> i.productId?.let(onOrder::add) }
         }
         val sold = dao.topProductsBetween(now - SALES_WINDOW_MS, now + 24L * 60 * 60 * 1000, 10_000)
@@ -148,9 +166,12 @@ object Automations {
         return low.filter { it.productId !in onOrder }.map { r ->
             val p = products[r.productId]
             val unit = r.unit ?: p?.defaultUnit
+            // Packs counted in the product's own unit (3 Nov 2026 audit, M31): 8 cartons of 12 and 10 bottles are
+            // 106 bottles, not 10.
             val month = sold[key(r.name)].orEmpty()
-                .filter { s -> s.unit.isNullOrBlank() || unit.isNullOrBlank() || UnitWords.canonical(s.unit) == UnitWords.canonical(unit) }
-                .sumOf { it.qty }
+                .map { s -> Units.toBase(p, s.qty, s.unit) }
+                .filter { (_, u) -> u.isNullOrBlank() || unit.isNullOrBlank() || UnitWords.canonical(u) == UnitWords.canonical(unit) }
+                .sumOf { it.first }
             val onHand = r.onHand ?: 0.0
             val want = maxOf(month, (r.lowStockLevel ?: 0.0) * 2) - onHand
             val supplier = (lastSupplier["#${r.productId}"] ?: lastSupplier[key(r.name)])?.second
@@ -253,10 +274,13 @@ object Automations {
         Kind.EXPIRY -> expiring(dao, now).takeIf { it.isNotEmpty() }?.let { list ->
             val b = list.first()
             val left = Format.qty(b.quantity, b.unit)
-            val head = words.text(W.auto_expiry_body, Format.isolate(b.productName),
+            // Already past its day (3 Nov 2026 audit, M32): never "sell it, give a discount" — for medicine and
+            // sprays that is unsafe advice. Written off or sent back.
+            val expired = b.expiryDate < DayMath.startOfDay(now)
+            val head = words.text(if (expired) W.auto_expiry_expired_body else W.auto_expiry_body, Format.isolate(b.productName),
                 b.batchNumber?.takeIf { it.isNotBlank() } ?: "-", left, date(b.expiryDate))
             val more = if (list.size > 1) "\n" + words.plural(WP.auto_expiry_more, list.size - 1, list.size - 1) else ""
-            Notice(kind, words.text(W.auto_expiry_title), head + more, extra = b.itemId)
+            Notice(kind, words.text(if (expired) W.auto_expiry_expired_title else W.auto_expiry_title), head + more, extra = b.itemId)
         }
     }
 

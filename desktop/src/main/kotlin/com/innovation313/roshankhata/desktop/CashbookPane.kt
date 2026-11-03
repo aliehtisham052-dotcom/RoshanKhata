@@ -178,7 +178,7 @@ fun CashbookPane(dao: KhataDao) {
                     income = way,
                     onSave = { entry ->
                         scope.launch {
-                            withContext(Dispatchers.IO) { val id = dao.insertCashEntry(entry); dao.audit(AuditActs.CASH_ADDED, "cashbook", id, auditAmount(entry.amount)) }
+                            withContext(Dispatchers.IO) { dao.insertCashEntryAudited(entry) }
                             adding = null
                         }
                     },
@@ -333,7 +333,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                             day = com.innovation313.roshankhata.data.DayCloseMath.businessDayOf(f.now),
                             opening = open,
                             cashIn = com.innovation313.roshankhata.data.LineMath.round(f.cbIn + f.kIn),
-                            cashOut = com.innovation313.roshankhata.data.LineMath.round(f.cbOut + f.kOut),
+                            cashOut = com.innovation313.roshankhata.data.LineMath.round(f.cashOut),
                             counted = n,
                             note = note.trim().ifEmpty { null },
                             closedAt = f.now
@@ -355,7 +355,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                 FluentField(opening, { opening = it }, Modifier.fillMaxWidth(),
                     label = word(if (since == null) W.dayclose_opening_first else W.dayclose_opening),
                     calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-                Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected)),
+                Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected), Format.money(f.otherOut)),
                     color = c.inkSoft, fontSize = 13.sp)
                 Text(word(W.dayclose_help), color = c.textMuted, fontSize = 12.sp)
                 FluentField(counted, { counted = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_counted), big = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)

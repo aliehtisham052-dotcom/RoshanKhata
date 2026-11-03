@@ -1065,6 +1065,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">یادآوری‌ها</string>
     <string name="notif_channel_desc">چک‌های سررسید، اقساط، کالای رو به انقضا و یادآوری پشتیبان‌گیری</string>
+    <string name="notif_permission_why">روشن خاتا به شما می‌گوید وقتی موعد یک چک یا قسط برسد، کالایی نزدیک انقضا باشد یا پشتیبان‌گیری ناموفق شود. برای باخبر شدن، اجازهٔ اعلان بدهید.</string>
     <string name="notif_cheques_title">چک‌ها آماده وصول</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$d چک امروز یا پیش‌تر سررسید شده است.</item>
@@ -1797,7 +1798,7 @@
     <string name="dayclose_counted">نقد شمرده‌شده اکنون</string>
     <string name="dayclose_note_hint">یادداشت، مثلاً چای، کارگر</string>
     <string name="dayclose_help">فقط ثبت‌های دفتر با روش نقد شمرده می‌شوند؛ ثبت‌های بدون روش پرداخت حدس زده نمی‌شوند.</string>
-    <string name="dayclose_breakdown">+ ورودی صندوق‌دفتر %1$s\n+ نقد دریافتی از دفتر %2$s\n− خروجی صندوق‌دفتر %3$s\n− نقد پرداختی از دفتر %4$s\n= باید در صندوق باشد %5$s</string>
+    <string name="dayclose_breakdown">+ ورودی صندوق‌دفتر %1$s\n+ نقد دریافتی از دفتر %2$s\n− خروجی صندوق‌دفتر %3$s\n− نقد پرداختی از دفتر %4$s\n− فاکتورهای نقدی و پرداخت به کارکنان %6$s\n= باید در صندوق باشد %5$s</string>
     <string name="dayclose_over">%1$s بیشتر از حساب</string>
     <string name="dayclose_short">%1$s کسری</string>
     <string name="dayclose_match">صندوق با حساب می‌خواند</string>
@@ -2916,6 +2917,7 @@
     <string name="auto_folder_missing">اکنون به این پوشه دسترسی نیست. فلش USB را وصل کنید یا پوشهٔ دیگری انتخاب کنید.</string>
     <string name="import_csv">وارد کردن مشتریان</string>
     <string name="import_csv_skipped">از قبل در دفتر هستند، دست‌نخورده ماندند: %1$d</string>
+    <string name="import_csv_unreadable">مانده‌هایی که خوانده نشد و صفر وارد می‌شود — فایل را بررسی کنید: %1$d</string>
     <string name="import_csv_sign">در این فایل، ماندهٔ مثبت یعنی:</string>
     <string name="import_csv_owes_me">آن‌ها به من بدهکارند</string>
     <string name="import_csv_i_owe">من به آن‌ها بدهکارم</string>
@@ -3403,7 +3405,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">آن را همان‌جا که ساخته شد تغییر دهید</string>
     <string name="entry_linked_bill">این ثبت را فاکتور تأمین‌کننده نوشته است. فاکتور را تغییر دهید یا حذف کنید، دفتر هم همراه آن تغییر می‌کند.</string>
-    <string name="entry_linked_plan">این ثبت را قسط یک طرح پرداخت نوشته است. آن را از طرح‌های پرداخت تغییر دهید.</string>
+    <string name="entry_linked_plan">این ثبت را قسط یک طرح پرداخت نوشته است. برای اصلاح، اول طرح را از طرح‌های پرداخت حذف کنید (پرداخت‌هایش در دفتر می‌ماند)، بعد این ثبت را تغییر دهید.</string>
     <string name="entry_linked_cheque">این ثبت را چکی که وصول شده نوشته است. آن را از صفحهٔ چک‌ها تغییر دهید.</string>
     <string name="entry_linked_sale">این ثبت را یک فروش صندوق نوشته است. فروش را باطل کنید یا برگشت ثبت کنید.</string>
     <string name="entry_linked_return">این ثبت را یک برگشت نوشته است. به جای آن برگشت را باطل کنید.</string>
@@ -3624,6 +3626,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">کارهای خودکار</string>
     <string name="auto_help">هر کدام سر وقت خودش به شما خبر می‌دهد و صفحهٔ درست را باز می‌کند. هیچ چیزی خودبه‌خود فرستاده یا نوشته نمی‌شود.</string>
+    <string name="auto_notifications_turn_on">روشن کردن اعلان‌ها</string>
+    <string name="auto_notifications_off">اعلان‌های روشن خاتا خاموش است، پس هیچ‌کدام از این‌ها به شما نمی‌رسد. آن‌ها را در تنظیمات گوشی روشن کنید.</string>
     <string name="auto_collect_name">فهرست وصول صبحگاهی</string>
     <string name="auto_collect_title">وصول امروز</string>
     <string name="auto_dayend_name">خلاصهٔ پایان روز</string>
@@ -3638,6 +3642,8 @@
     <string name="auto_expiry_name">اقدام پیش از انقضا</string>
     <string name="auto_expiry_title">پیش از انقضا اقدام کنید</string>
     <string name="auto_expiry_body">%1$s، بچ %2$s: %3$s مانده، انقضا %4$s. بفروشید، تخفیف دهید یا برگردانید.</string>
+    <string name="auto_expiry_expired_body">%1$s، بچ %2$s: %3$s مانده، منقضی شده در %4$s. نفروشید: آن را ضایعات ثبت کنید یا به تأمین‌کننده برگردانید.</string>
+    <string name="auto_expiry_expired_title">کالای منقضی در قفسه</string>
     <string name="auto_at_time">ساعت %1$s</string>
     <string name="auto_pick_hour">ساعت را انتخاب کنید</string>
     <plurals name="auto_collect_body">
@@ -3713,6 +3719,7 @@
     <string name="pdf_stmt_total_taken">جمع گرفته‌شده</string>
     <string name="pdf_stmt_total_paid">جمع پرداختی</string>
     <string name="pdf_stmt_still_to_pay">باقی‌مانده برای پرداخت</string>
+    <string name="pdf_stmt_period_end_balance">مانده در %1$s، پایان این دوره: %2$s. ثبت‌های بعد از آن در مبلغ پایین آمده‌اند.</string>
     <string name="pdf_stmt_settled_short">تسویه شده</string>
     <string name="pdf_stmt_pay_by">لطفاً تا %1$s پرداخت کنید</string>
     <string name="pdf_stmt_how_to_pay">روش پرداخت</string>

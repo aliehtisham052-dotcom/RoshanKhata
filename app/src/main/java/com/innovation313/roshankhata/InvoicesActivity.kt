@@ -412,7 +412,7 @@ class InvoicesActivity : BaseActivity() {
                     append("\n")
                     append(getString(R.string.invoice_received_line, Format.money(totals.received)))
                     append("\n")
-                    append(getString(R.string.invoice_balance_due_line, Format.money(totals.balanceDue)))
+                    append(getString(R.string.invoice_balance_due_line, Format.signedIfNegative(totals.balanceDue)))
                 }
                 append("\n")
                 append(NumberWords.amountInWords(this@InvoicesActivity, totals.grandTotal))

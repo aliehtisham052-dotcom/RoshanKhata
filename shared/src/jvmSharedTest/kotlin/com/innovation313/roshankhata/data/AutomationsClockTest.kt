@@ -38,7 +38,17 @@ class AutomationsClockTest {
     fun `a phone asleep through the hour says it when it wakes, late but once`() {
         val p = Prefs(hour = 9)
         val k = Automations.Kind.DAY_END
-        assertTrue(Automations.due(k, p, at(2026, 10, 31, 23, 50), tz))
+        assertTrue(Automations.due(k, p, at(2026, 10, 31, 15, 0), tz))
+    }
+
+    @Test
+    fun `nothing is said into the night unless the owner set it that late`() {
+        // 3 Nov 2026 audit, M23: a phone first awake at 23:50 said the morning's notices with sound.
+        assertFalse(Automations.due(Automations.Kind.COLLECT, Prefs(hour = 9), at(2026, 10, 31, 23, 50), tz))
+        assertTrue("the next morning it is said again", Automations.due(Automations.Kind.COLLECT, Prefs(hour = 9), at(2026, 11, 1, 9, 10), tz))
+        assertTrue("a 21:00 closing summary until midnight", Automations.due(Automations.Kind.DAY_END, Prefs(hour = 21), at(2026, 10, 31, 23, 50), tz))
+        assertEquals(22, Automations.lastHour(9))
+        assertEquals(24, Automations.lastHour(21))
     }
 
     @Test

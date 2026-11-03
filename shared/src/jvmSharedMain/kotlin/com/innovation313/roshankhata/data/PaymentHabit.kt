@@ -7,7 +7,12 @@ data class LedgerPoint(
     val partyId: Long,
     val timestamp: Long,
     val amount: Double,
-    val isGiven: Boolean
+    val isGiven: Boolean,
+    /** The entry's id and the other half of its cash sale, ticket payment or refund (3 Nov 2026 audit, M26). */
+    val id: Long = 0,
+    val pairedEntryId: Long? = null,
+    /** A loan of goodwill, never judged as trade credit (3 Nov 2026 audit, M34). */
+    val isQarzeHasna: Boolean = false
 )
 
 /**
@@ -63,7 +68,9 @@ object PaymentHabit {
     ): Map<Long, Habit> {
         val out = HashMap<Long, Habit>()
         for ((partyId, lines) in points.groupBy { it.partyId }) {
-            of(lines, now, tz)?.let { out[partyId] = it }
+            // A paid-now sale's or a ticket's own payment is not a payment of the debt (3 Nov 2026 audit, M26):
+            // netted first, as the Payment Radar reads them, so the two never disagree on who is late.
+            of(PaymentRadar.netPairs(lines), now, tz)?.let { out[partyId] = it }
         }
         return out
     }

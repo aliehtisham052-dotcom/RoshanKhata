@@ -117,6 +117,7 @@ class LockActivity : BaseActivity() {
                 .putExtra(MainActivity.EXTRA_UNLOCKED, true)
                 .putExtra(MainActivity.EXTRA_OPEN, intent.getStringExtra(MainActivity.EXTRA_OPEN))
                 .putExtra(MainActivity.EXTRA_OPEN_ARGS, intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS))
+                .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, intent.getLongExtra(MainActivity.EXTRA_OPEN_BUSINESS, -1L))
         )
         finish()
     }

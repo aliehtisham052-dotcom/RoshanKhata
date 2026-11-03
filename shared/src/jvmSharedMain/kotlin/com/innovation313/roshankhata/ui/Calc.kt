@@ -154,6 +154,8 @@ object Calc {
     /** Drop a trailing .0 so a whole number reads as one. */
     fun trim(value: Double): String =
         if (value == value.toLong().toDouble()) value.toLong().toString()
+        // Never E-notation (3 Nov 2026 audit, M42): 11111111.01 read "1.111111101E7", which the pad then refused.
+        else if (value.isFinite()) java.math.BigDecimal.valueOf(value).stripTrailingZeros().toPlainString()
         else value.toString()
 
     /**

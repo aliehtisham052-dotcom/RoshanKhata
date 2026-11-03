@@ -188,6 +188,9 @@ object Businesses {
         // businesses — a warm cache would put one shop's faces on another's
         // customers. See PartyPhoto.dropCaches.
         PartyPhoto.dropCaches()
+        // The notices in the shade were the left shop's (3 Nov 2026 audit, M21): its counts, its names, under the
+        // other shop's screens. The next sweep says the open shop's own.
+        runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancelAll() }
     }
 
     /**
@@ -254,6 +257,8 @@ object Businesses {
      */
     @Synchronized
     fun delete(context: Context, id: Long) {
+        // Its notices go with it (3 Nov 2026 audit, M21): a deleted shop's names stayed in the shade.
+        runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancelAll() }
         require(canDelete(context, id)) {
             "business $id cannot be deleted (either Business 1, or the business currently open)"
         }

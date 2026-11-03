@@ -4,6 +4,7 @@ import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.PurchaseRegisterRow
 import com.innovation313.roshankhata.data.SaleRegisterRow
 import com.innovation313.roshankhata.data.ShopCountry
+import com.innovation313.roshankhata.data.taxLabelFor
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
@@ -48,7 +49,7 @@ class RegisterPrint(
                 when (country) {
                     ShopCountry.PAKISTAN -> words.text(W.pdf_reg_ntn, n)
                     ShopCountry.OTHER -> words.text(W.tax_number_label) + ": " + n
-                    else -> country.taxIdName.ifEmpty { words.text(W.tax_number_label) } + ": " + n
+                    else -> country.taxLabelFor(words.text(W.tax_number_label)) + ": " + n
                 }
             }
             return listOfNotNull(address?.trim()?.takeIf { it.isNotEmpty() }, tax).joinToString(" · ").ifEmpty { null }

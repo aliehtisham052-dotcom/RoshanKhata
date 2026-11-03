@@ -27,14 +27,15 @@ object NameSearch {
         val words: List<String> = lower.split(*SEPARATORS)
         val folded: String = fold(lower)
         val foldedWords: List<String> = words.mapNotNull { fold(it).takeIf { f -> f.isNotEmpty() } }
-        val digits: String = phone?.filter { it.isDigit() } ?: ""
+        // 0-9 on both sides (3 Nov 2026 audit, M43): ۰۳۰۰ typed on a Persian, Arabic or Bengali keyboard found nothing.
+        val digits: String = phone?.let { com.innovation313.roshankhata.data.Digits.toLatin(it) }?.filter { it in '0'..'9' } ?: ""
     }
 
     /** What was typed, prepared once per keystroke rather than once per name. */
     class Query(raw: String) {
         val text: String = raw.trim().lowercase()
         val folded: String = fold(text)
-        val digits: String = text.filter { it.isDigit() }
+        val digits: String = com.innovation313.roshankhata.data.Digits.toLatin(text).filter { it in '0'..'9' }
         val isEmpty: Boolean get() = text.isEmpty()
     }
 
@@ -158,9 +159,9 @@ object NameSearch {
             return true
         }
 
-        val digits = query.filter { it.isDigit() }
+        val digits = com.innovation313.roshankhata.data.Digits.toLatin(query).filter { it in '0'..'9' }
         if (digits.isEmpty()) return false
-        return phone?.filter { it.isDigit() }?.contains(digits) == true
+        return phone?.let { com.innovation313.roshankhata.data.Digits.toLatin(it) }?.filter { it in '0'..'9' }?.contains(digits) == true
     }
 
     /** Shortest query worth forgiving a typo in. Measured, not guessed — see matches(). */

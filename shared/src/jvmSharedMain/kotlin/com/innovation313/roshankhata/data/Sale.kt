@@ -236,7 +236,7 @@ object SaleMath {
     fun lineTotal(quantity: Double, rate: Double, discount: Double = 0.0): Double =
         BigDecimal.valueOf(quantity).multiply(BigDecimal.valueOf(rate))
             .subtract(BigDecimal.valueOf(discount))
-            .setScale(2, RoundingMode.HALF_UP).toDouble()
+            .setScale(LineMath.scale(), RoundingMode.HALF_UP).toDouble()
 
     data class Totals(
         val subtotal: Double,

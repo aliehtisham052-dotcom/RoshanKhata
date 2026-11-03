@@ -1175,7 +1175,8 @@ object InvoicePdfExport {
             PdfRtl.drawText(c, numberOnly(totals.received), pageW - pad, y, monoR)
             y += 13f
             PdfRtl.drawText(c, labels.balanceDue, pad, y, monoBold)
-            PdfRtl.drawText(c, numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
+            // With its minus when more was received than the total (3 Nov 2026 audit, M04).
+            PdfRtl.drawText(c, (if (com.innovation313.roshankhata.data.Money.isNegative(totals.balanceDue)) "\u2212 " else "") + numberOnly(totals.balanceDue), pageW - pad, y, Paint(monoR).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context) })
             y += 12f
         }
         if (prices) {

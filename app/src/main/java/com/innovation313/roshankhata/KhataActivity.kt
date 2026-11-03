@@ -465,11 +465,21 @@ class KhataActivity : BaseActivity() {
         ReminderWorker.schedule(this)
         AutomationWorker.ensureChannel(this)
         AutomationWorker.schedule(this)
-        if (Build.VERSION.SDK_INT >= 33) {
+        // Never on a helper's read-only phone, which is told nothing (3 Nov 2026 audit, M24).
+        if (Build.VERSION.SDK_INT >= 33 && !com.innovation313.roshankhata.data.ViewerMode.isOn(this)) {
             val granted = ContextCompat.checkSelfPermission(
                 this, android.Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
-            if (!granted) {
+            // Said no once: the reason first, in the owner's words, then Android's own question (M24).
+            if (!granted && ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.notif_permission_why)
+                    .setPositiveButton(R.string.ok) { _, _ ->
+                        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 313)
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            } else if (!granted) {
                 // No "asked once" flag: allowBackup restores SharedPreferences
                 // across reinstalls, so a remembered flag silently blocked the
                 // dialog forever (found on the owner's device). Android itself

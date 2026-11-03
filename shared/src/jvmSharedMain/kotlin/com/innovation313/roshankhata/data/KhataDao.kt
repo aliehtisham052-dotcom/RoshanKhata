@@ -109,11 +109,11 @@ interface KhataDao {
      */
     @Query(
         """
-        SELECT t.partyId, t.timestamp, t.amount, t.isGiven FROM transactions t
+        SELECT t.partyId, t.timestamp, t.amount, t.isGiven, t.id, t.pairedEntryId, t.isQarzeHasna FROM transactions t
         WHERE t.isDeleted = 0 AND t.partyId IN (
             SELECT p.id FROM parties p
             JOIN transactions x ON x.partyId = p.id AND x.isDeleted = 0
-            WHERE p.isDeleted = 0
+            WHERE p.isDeleted = 0 AND p.isCustomer = 1
             GROUP BY p.id
             HAVING SUM(CASE WHEN x.isGiven = 1 THEN x.amount ELSE -x.amount END) >= 0.005
         )
@@ -260,6 +260,17 @@ interface KhataDao {
         """
     )
     suspend fun restoreEntriesOfParty(partyId: Long, deletedAt: Long)
+
+    /**
+     * A party back from the bin with the entries binned with him, in ONE transaction (3 Nov 2026 audit, M11). As two
+     * writes, a kill between them left him live with his entries still binned "on their own" — and the bin's
+     * 30-day purge then erased them for good. [deletedAt] null: a party binned before the time was kept.
+     */
+    @Transaction
+    suspend fun restorePartyWithEntries(partyId: Long, deletedAt: Long?) {
+        restoreParty(partyId)
+        if (deletedAt != null) restoreEntriesOfParty(partyId, deletedAt)
+    }
 
     @Query(
         """
@@ -702,6 +713,18 @@ interface KhataDao {
     @Insert
     suspend fun insertCashEntry(entry: CashEntry): Long
 
+    /**
+     * Money in or out typed into the cashbook, with its CASH_ADDED row in one transaction (3 Nov 2026 audit, M12):
+     * the computer wrote the row after the insert and the phone wrote none, so who-did-what missed every cashbook
+     * entry typed on the phone.
+     */
+    @Transaction
+    suspend fun insertCashEntryAudited(entry: CashEntry): Long {
+        val id = insertCashEntry(entry)
+        log(AuditAction.CASH_ADDED, Access.userName, "cashbook", id, auditAmount(entry.amount))
+        return id
+    }
+
     @Query("SELECT * FROM cashbook WHERE isDeleted = 0 ORDER BY timestamp DESC")
     fun observeCashEntries(): Flow<List<CashEntry>>
 
@@ -900,13 +923,16 @@ interface KhataDao {
      * the critical review): "bill", "plan", "cheque", "sale" or "return"; null
      * for an entry of its own. Such an entry is changed from its owner — editing
      * or deleting it from the khata left the bill, plan, cheque or ticket
-     * saying something else.
+     * saying something else. A plan holds its instalments only while it is
+     * live (3 Nov 2026 audit, M09): a wrong instalment could never be
+     * corrected, since no screen edits one and a deleted plan kept them locked.
      */
     @Query(
         """
         SELECT CASE
           WHEN EXISTS (SELECT 1 FROM supplier_bills WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'bill'
-          WHEN EXISTS (SELECT 1 FROM installments WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'plan'
+          WHEN EXISTS (SELECT 1 FROM installments i JOIN payment_plans pp ON pp.id = i.planId
+                       WHERE i.ledgerEntryId = :entryId AND i.isDeleted = 0 AND pp.isDeleted = 0) THEN 'plan'
           WHEN EXISTS (SELECT 1 FROM cheques WHERE ledgerEntryId = :entryId AND isDeleted = 0) THEN 'cheque'
           WHEN EXISTS (SELECT 1 FROM sales WHERE ledgerEntryId = :entryId AND isDeleted = 0 AND status = 'done')
             OR EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.ledgerEntryId = :entryId AND s.isDeleted = 0 AND s.status = 'done') THEN 'sale'
@@ -963,7 +989,8 @@ interface KhataDao {
         )
         insertInstallment(Installment(planId = planId, amount = amount, ledgerEntryId = entryId, paidAt = now, note = note))
         getPlan(planId)?.let { plan ->
-            if (paidBefore + amount >= plan.totalAmount && !plan.isClosed) updatePlan(plan.copy(isClosed = true, closedAt = now))
+            // The half-paisa line (3 Nov 2026 audit): 1,250.10 + 2,500.20 is 3750.2999…, and a 3,750.30 plan stayed open.
+            if (!Money.isPositive(plan.totalAmount - (paidBefore + amount)) && !plan.isClosed) updatePlan(plan.copy(isClosed = true, closedAt = now))
         }
         return entryId
     }
@@ -1728,6 +1755,22 @@ interface KhataDao {
     /** Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' AND timestamp > :from AND timestamp <= :to")
     suspend fun khataCashBetween(given: Boolean, from: Long, to: Long): Double
+
+    /**
+     * Cash that left the drawer with no cashbook or khata row of its own (3 Nov 2026 audit, M03): supplier bills
+     * paid in cash on the spot (a cash bill writes no khata entry) and staff advances and salary. Left out, every
+     * day the shop paid from the drawer read as a shortage at Close the day. By when each was written.
+     */
+    @Query(
+        "SELECT COALESCE((SELECT SUM(totalAmount) FROM supplier_bills WHERE isDeleted = 0 AND isPaidInFull = 1 AND ledgerEntryId IS NULL " +
+            "AND createdAt > :from AND createdAt <= :to), 0) + " +
+        "COALESCE((SELECT SUM(amount) FROM staff_payments WHERE isDeleted = 0 AND timestamp > :from AND timestamp <= :to), 0)"
+    )
+    suspend fun billsAndStaffCashBetween(from: Long, to: Long): Double
+
+    /** Staff advances and salary paid in (from, to]: a cost of the month for profit (3 Nov 2026 audit, M03). */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM staff_payments WHERE isDeleted = 0 AND timestamp > :from AND timestamp <= :to")
+    suspend fun staffPaidBetween(from: Long, to: Long): Double
 
     @Query("SELECT * FROM day_close ORDER BY day")
     suspend fun allDayClosesForBackup(): List<DayClose>
@@ -2566,6 +2609,22 @@ interface KhataDao {
            "WHERE isGiven = 0 AND isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
     suspend fun receivedBetween(from: Long, to: Long): Double
 
+    /**
+     * Money that came IN from customers in [from, to) (3 Nov 2026 audit, M15): their "I got" entries that are money
+     * (a goods return carries its goods as lines and is not), and the counter's walk-in payments (cashbook, Sale).
+     * [receivedBetween] counted every "I got", a supplier's credit bill too: 40,000 of goods on credit read as
+     * "Received 40,000" in the closing summary, while walk-in takings were missing.
+     */
+    @Query(
+        "SELECT COALESCE((SELECT SUM(t.amount) FROM transactions t JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.isGiven = 0 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
+            "AND NOT EXISTS (SELECT 1 FROM entry_items i WHERE i.entryId = t.id) " +
+            "AND t.timestamp >= :from AND t.timestamp < :to), 0) + " +
+        "COALESCE((SELECT SUM(amount) FROM cashbook WHERE isIncome = 1 AND isDeleted = 0 AND category = 'Sale' " +
+            "AND timestamp >= :from AND timestamp < :to), 0)"
+    )
+    suspend fun customerReceivedBetween(from: Long, to: Long): Double
+
     /** How many ledger entries in a time range. */
     @Query("SELECT COUNT(*) FROM transactions " +
            "WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to")
@@ -2849,6 +2908,21 @@ interface KhataDao {
      * payment, and a second step that failed showed "not saved" over a sale already written — saved again, it
      * doubled. Returns the sale's id and the "I got"'s (null only if the pairing was refused).
      */
+    /**
+     * One khata entry to the bin with its ENTRY_DELETED row and, when [pairId] is given, the other half of its cash
+     * sale with its own — in ONE transaction (3 Nov 2026 audit, M13). Two to four separate writes left half a pair
+     * binned when cut, and the receipt screen ran them on a scope a rotation cancelled. [amount] goes in the log.
+     */
+    @Transaction
+    suspend fun deleteEntryAudited(id: Long, amount: Double?, pairId: Long? = null) {
+        softDeleteEntry(id)
+        log(AuditAction.ENTRY_DELETED, Access.userName, "transactions", id, amount?.let { auditAmount(it) })
+        if (pairId != null) {
+            softDeleteEntry(pairId)
+            log(AuditAction.ENTRY_DELETED, Access.userName, "transactions", pairId, null)
+        }
+    }
+
     @Transaction
     suspend fun insertEntryWithItemsPaidNow(entry: LedgerEntry, items: List<EntryItem>): Pair<Long, Long?> {
         val saleId = insertEntryWithItems(entry, items)
@@ -2877,7 +2951,8 @@ interface KhataDao {
      * much, when — four columns, for the shop's own normal ([PaymentRadar.shopTypicalDays]). Read only.
      */
     @Query(
-        "SELECT t.partyId AS partyId, t.isGiven AS isGiven, t.amount AS amount, t.timestamp AS timestamp " +
+        "SELECT t.partyId AS partyId, t.isGiven AS isGiven, t.amount AS amount, t.timestamp AS timestamp, " +
+            "t.id AS id, t.pairedEntryId AS pairedEntryId, t.isQarzeHasna AS isQarzeHasna " +
             "FROM transactions t JOIN parties p ON p.id = t.partyId " +
             "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1"
     )
@@ -3659,6 +3734,10 @@ interface KhataDao {
     )
     suspend fun returnedOfSale(saleId: Long): List<ReturnedQty>
 
+    /** What the ticket's posted returns credited so far, for [ReturnMath.totalFor]. */
+    @Query("SELECT COALESCE(SUM(total), 0) FROM sale_returns WHERE saleId = :saleId AND status = 'done' AND isDeleted = 0")
+    suspend fun returnedTotalOfSale(saleId: Long): Double
+
     @Query(
         """
         SELECT r.id, r.returnNumber, s.saleNumber AS saleNumber, r.customerName, r.timestamp, r.total, r.refundMethod, r.refundAmount, r.status
@@ -3748,7 +3827,6 @@ interface KhataDao {
                     billItemId = sold.billItemId, itemName = sold.itemName)
             }
         }
-        val total = ReturnMath.total(lines)
         val hasParty = ret.partyId != null
         if (hasParty && getParty(ret.partyId!!)?.isDeleted != false)
             throw CounterRefused(CounterRefused.Why.CUSTOMER_BINNED, "return refused: the customer is in the recycle bin")
@@ -3757,6 +3835,8 @@ interface KhataDao {
             val back = returnedOfSale(sale.id).associate { it.saleItemId to it.qty }
             soldItems.associate { it.id to it.quantity - (back[it.id] ?: 0.0) }
         } ?: emptyMap()
+        // The last of a ticket back credits exactly what is left of it (3 Nov 2026 audit, M07; the form's own rule).
+        val total = ReturnMath.totalFor(lines, ticket, soldLeft, ticket?.let { returnedTotalOfSale(it.id) } ?: 0.0)
         ReturnMath.check(lines, ret.refundMethod, refund, total, hasParty, ret.reason, soldLeft)?.let {
             throw ReturnMath.Refused(it)
         }

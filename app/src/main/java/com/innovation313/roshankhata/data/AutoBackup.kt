@@ -109,6 +109,16 @@ object AutoBackup {
      * phone has right now. Unknown counts as metered — when in doubt, assume
      * the owner is paying.
      */
+    /**
+     * Whether the phone has a network that reaches the internet right now (3 Nov 2026 audit, M17): the daily
+     * sweep no longer waits for one — its cheque, plan and expiry notices need none — so its backup asks here.
+     */
+    fun online(context: Context): Boolean {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+        val caps = runCatching { cm.getNetworkCapabilities(cm.activeNetwork) }.getOrNull() ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
     fun minIntervalFor(context: Context): Long {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
             ?: return METERED_INTERVAL_MS

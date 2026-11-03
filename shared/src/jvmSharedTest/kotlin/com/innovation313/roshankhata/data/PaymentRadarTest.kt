@@ -91,8 +91,10 @@ class PaymentRadarTest {
     fun `a promised day that has passed with money owed is at least amber`() {
         val now = at(2026, 6, 1)
         val rows = steady(10) + gave(800.0, now - 5 * day)
-        val r = PaymentRadar.read(rows, now, shopDays = 15, promise = now - 2 * day, tz = utc)
+        // Past its day and the promise's two days of grace (3 Nov 2026 audit: the record and the light agree).
+        val r = PaymentRadar.read(rows, now, shopDays = 15, promise = now - 4 * day, tz = utc)
         assertTrue(r.promiseOverdue)
+        assertFalse("within the grace days, not yet", PaymentRadar.read(rows, now, shopDays = 15, promise = now - 1 * day, tz = utc).promiseOverdue)
         assertEquals(PaymentRadar.Light.AMBER, r.light)
         assertFalse(PaymentRadar.read(rows, now, shopDays = 15, promise = now + 3 * day, tz = utc).promiseOverdue)
     }
@@ -181,6 +183,73 @@ class PaymentRadarTest {
         )
         assertEquals(setOf(1L), PaymentRadar.likelyNow(rows, 15, emptyMap(), at(2026, 5, 9), utc))
         assertTrue("not on the 20th", PaymentRadar.likelyNow(rows, 15, emptyMap(), at(2026, 5, 20), utc).isEmpty())
+    }
+
+    @Test
+    fun `a sale paid on the spot does not pay an old debt`() {
+        // 3 Nov 2026 audit, M26: through FIFO a cash buy cleared the oldest lot, and a 61-day debt read as 24 days.
+        val now = at(2026, 11, 1)
+        val old = LedgerPoint(1, at(2026, 9, 1), 2_000.0, true, id = 1)
+        val sales = (0..2).flatMap { i ->
+            val t = at(2026, 10, 1 + 7 * i)
+            listOf(LedgerPoint(1, t, 1_000.0, true, id = 10L + i, pairedEntryId = 20L + i),
+                LedgerPoint(1, t + 1, 1_000.0, false, id = 20L + i, pairedEntryId = 10L + i))
+        }
+        val r = PaymentRadar.read(listOf(old) + sales, now, shopDays = 15, tz = utc)
+        assertEquals("the old debt is still the oldest", 61, r.oldestOpenDays)
+        assertEquals(0, r.repaid)
+    }
+
+    @Test
+    fun `a loan of goodwill is not judged as trade credit`() {
+        // M34: a Qarz-e-Hasna loan of 30,000 read "pays very late" after 120 days.
+        val now = at(2026, 11, 1)
+        val loan = LedgerPoint(1, at(2026, 7, 1), 30_000.0, true, id = 1, isQarzeHasna = true)
+        assertEquals(PaymentRadar.Light.NONE, PaymentRadar.read(listOf(loan), now, shopDays = 15, tz = utc).light)
+    }
+
+    @Test
+    fun `a customer paying his instalments on time is not called late`() {
+        // M27: 50,000 cleared 5,000 a month, never late, read RED from day 95.
+        val start = at(2026, 1, 1)
+        val rows = listOf(gave(50_000.0, start)) + (1..4).map { got(5_000.0, start + it * 30L * day) }
+        val r = PaymentRadar.read(rows, start + 125 * day, shopDays = 20, tz = utc)
+        assertFalse(r.behindHabit)
+        assertTrue("not RED for an old lot he is paying down", r.light != PaymentRadar.Light.RED)
+    }
+
+    @Test
+    fun `month-end payers are told the end of the month`() {
+        // M28: the 31st, 1st, 2nd and 30th made "the 16th".
+        val pays = listOf(at(2026, 1, 31), at(2026, 3, 1), at(2026, 4, 2), at(2026, 4, 30))
+        val day = PaymentRadar.payDayOf(pays, utc)!!
+        assertTrue("near the month's turn, not mid-month: $day", day >= 29 || day <= 2)
+    }
+
+    @Test
+    fun `a promised day still ahead keeps him off the likely list`() {
+        // M25: "usually pays around now" overrode his own promised day.
+        val rows = listOf(
+            gave(5_000.0, at(2026, 1, 2)),
+            got(1_000.0, at(2026, 1, 10)), got(1_000.0, at(2026, 2, 11)),
+            got(1_000.0, at(2026, 3, 9)), got(1_000.0, at(2026, 4, 10))
+        )
+        val now = at(2026, 5, 9)
+        assertTrue(PaymentRadar.likelyNow(rows, 15, mapOf(1L to at(2026, 5, 30)), now, utc).isEmpty())
+    }
+
+    @Test
+    fun `one payment keeps one promise and a promise taken back is no promise`() {
+        // M29: three reschedules and one small payment read "3 of 3 kept".
+        val payments = listOf(at(2026, 1, 5))
+        val promises = listOf(
+            PaymentRadar.Promise(at(2026, 1, 1), at(2026, 1, 6)),
+            PaymentRadar.Promise(at(2026, 1, 2), at(2026, 1, 7)),
+            PaymentRadar.Promise(at(2026, 1, 3), 0L)
+        )
+        val (kept, broken) = PaymentRadar.promiseRecord(promises, payments, at(2026, 3, 1), utc)
+        assertEquals(1, kept)
+        assertEquals(0, broken)
     }
 
     @Test

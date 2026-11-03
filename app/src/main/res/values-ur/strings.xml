@@ -1037,6 +1037,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">یاد دہانیاں</string>
     <string name="notif_channel_desc">چیک، قسطیں، ایکسپائر ہوتا مال اور بیک اپ کی یاد دہانی</string>
+    <string name="notif_permission_why">روشن کھاتہ آپ کو بتاتا ہے جب چیک کا دن آئے، قسط آئے، مال ایکسپائر ہونے والا ہو یا بیک اپ ناکام ہو۔ یہ سننے کے لیے نوٹیفکیشن کی اجازت دیں۔</string>
     <string name="notif_cheques_title">چیک بینک میں لگانے کے لیے تیار</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$d چیک آج یا پہلے کا واجب ہے۔</item>
@@ -1769,7 +1770,7 @@
     <string name="dayclose_counted">ابھی گنا ہوا کیش</string>
     <string name="dayclose_note_hint">نوٹ، مثلاً چائے، مزدوری</string>
     <string name="dayclose_help">صرف وہ کھاتہ انٹریاں گنی جاتی ہیں جن پر کیش لکھا ہو؛ بغیر طریقے والی انٹریوں کا اندازہ نہیں لگایا جاتا۔</string>
-    <string name="dayclose_breakdown">+ کیش بک آمد %1$s\n+ کھاتے سے کیش وصول %2$s\n− کیش بک خرچ %3$s\n− کھاتے سے کیش ادا %4$s\n= گلے میں ہونا چاہیے %5$s</string>
+    <string name="dayclose_breakdown">+ کیش بک آمد %1$s\n+ کھاتے سے کیش وصول %2$s\n− کیش بک خرچ %3$s\n− کھاتے سے کیش ادا %4$s\n− نقد بل اور عملے کو ادائیگی %6$s\n= گلے میں ہونا چاہیے %5$s</string>
     <string name="dayclose_over">حساب سے %1$s زیادہ</string>
     <string name="dayclose_short">%1$s کم</string>
     <string name="dayclose_match">گلہ حساب سے مل گیا</string>
@@ -2888,6 +2889,7 @@
     <string name="auto_folder_missing">یہ فولڈر ابھی دستیاب نہیں۔ یو ایس بی لگائیں، یا کوئی اور فولڈر چنیں۔</string>
     <string name="import_csv">گاہک امپورٹ کریں</string>
     <string name="import_csv_skipped">پہلے سے کھاتے میں، جوں کے توں چھوڑ دیے: %1$d</string>
+    <string name="import_csv_unreadable">بقایا جو پڑھا نہ جا سکا، 0 کے طور پر آئے گا — فائل دیکھیں: %1$d</string>
     <string name="import_csv_sign">اس فائل میں مثبت بیلنس کا مطلب ہے:</string>
     <string name="import_csv_owes_me">انہوں نے مجھے دینا ہے</string>
     <string name="import_csv_i_owe">میں نے انہیں دینا ہے</string>
@@ -3375,7 +3377,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">جہاں بنا تھا وہیں بدلیں</string>
     <string name="entry_linked_bill">یہ اندراج سپلائر بل نے لکھا ہے۔ بل بدلیں یا مٹائیں، کھاتہ خود ساتھ بدل جائے گا۔</string>
-    <string name="entry_linked_plan">یہ اندراج قسط پلان کی ادائیگی نے لکھا ہے۔ اسے قسط پلان سے بدلیں۔</string>
+    <string name="entry_linked_plan">یہ اندراج قسط پلان کی ادائیگی نے لکھا ہے۔ درست کرنے کے لیے پہلے قسط پلان حذف کریں (اس کی ادائیگیاں کھاتے میں رہیں گی)، پھر یہ اندراج بدلیں۔</string>
     <string name="entry_linked_cheque">یہ اندراج کلیئر ہونے والے چیک نے لکھا ہے۔ اسے چیک والے صفحے سے بدلیں۔</string>
     <string name="entry_linked_sale">یہ اندراج کاؤنٹر کی سیل نے لکھا ہے۔ سیل منسوخ کریں یا واپسی کریں۔</string>
     <string name="entry_linked_return">یہ اندراج واپسی نے لکھا ہے۔ اس کے بجائے واپسی منسوخ کریں۔</string>
@@ -3596,6 +3598,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">خودکار کام</string>
     <string name="auto_help">ہر ایک اپنے وقت پر بتاتا ہے اور صحیح صفحہ کھولتا ہے۔ کچھ بھی خود سے بھیجا یا لکھا نہیں جاتا۔</string>
+    <string name="auto_notifications_turn_on">نوٹیفکیشن آن کریں</string>
+    <string name="auto_notifications_off">روشن کھاتہ کے نوٹیفکیشن بند ہیں، اس لیے ان میں سے کوئی بھی آپ تک نہیں پہنچ سکتا۔ فون کی سیٹنگز میں انہیں آن کریں۔</string>
     <string name="auto_collect_name">صبح کی وصولی لسٹ</string>
     <string name="auto_collect_title">آج کی وصولی</string>
     <string name="auto_dayend_name">دکان بند کرنے کا خلاصہ</string>
@@ -3610,6 +3614,8 @@
     <string name="auto_expiry_name">ایکسپائری پر عمل</string>
     <string name="auto_expiry_title">ایکسپائر ہونے سے پہلے قدم اٹھائیں</string>
     <string name="auto_expiry_body">%1$s، بیچ %2$s: %3$s باقی، %4$s کو ایکسپائر۔ بیچیں، رعایت دیں یا واپس کریں۔</string>
+    <string name="auto_expiry_expired_body">%1$s، بیچ %2$s: %3$s باقی، %4$s کو ایکسپائر ہو چکا۔ اسے نہ بیچیں: ضائع درج کریں یا سپلائر کو واپس کریں۔</string>
+    <string name="auto_expiry_expired_title">ایکسپائر مال شیلف پر</string>
     <string name="auto_at_time">%1$s بجے</string>
     <string name="auto_pick_hour">وقت چنیں</string>
     <plurals name="auto_collect_body">
@@ -3685,6 +3691,7 @@
     <string name="pdf_stmt_total_taken">کل لیا</string>
     <string name="pdf_stmt_total_paid">کل ادا کیا</string>
     <string name="pdf_stmt_still_to_pay">ابھی ادا کرنا ہے</string>
+    <string name="pdf_stmt_period_end_balance">%1$s کو، اس مدت کے آخر میں، بقایا: %2$s۔ اس کے بعد کے اندراج نیچے والی رقم میں شامل ہیں۔</string>
     <string name="pdf_stmt_settled_short">حساب برابر</string>
     <string name="pdf_stmt_pay_by">براہِ کرم %1$s تک ادا کریں</string>
     <string name="pdf_stmt_how_to_pay">ادائیگی کا طریقہ</string>

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.desktop
 
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -91,7 +93,8 @@ fun rememberRadar(dao: KhataDao, partyId: Long, isCustomer: Boolean, entries: Li
             val promises = withContext(Dispatchers.IO) { runCatching { PromiseLog.of(dao.promiseLog(partyId)) }.getOrDefault(emptyList()) }
             withContext(Dispatchers.Default) {
                 PaymentRadar.read(
-                    entries.map { LedgerPoint(partyId, it.entry.timestamp, it.entry.amount, it.entry.isGiven) },
+                    // With their pairing and loan mark (3 Nov 2026 audit, M26/M34), as the phone reads them.
+                    entries.map { LedgerPoint(partyId, it.entry.timestamp, it.entry.amount, it.entry.isGiven, id = it.entry.id, pairedEntryId = it.entry.pairedEntryId, isQarzeHasna = it.entry.isQarzeHasna) },
                     System.currentTimeMillis(), shop, promise, promises
                 )
             }
@@ -124,7 +127,16 @@ fun RadarChip(r: PaymentRadar.Reading, onClick: () -> Unit) {
             Modifier.height(26.dp).clip(shape).background(Look.subtle).press(shape, onClick = onClick).padding(horizontal = 9.dp),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Box(Modifier.size(8.dp).clip(CircleShape).background(dot))
+            // A shape by light, not colour alone (3 Nov 2026 audit, M45): circle, diamond, triangle — and the light
+            // in words for a screen reader. Still no word on the face for a customer to read.
+            val mark = when (r.light) { PaymentRadar.Light.AMBER -> "\u25C6"; PaymentRadar.Light.RED -> "\u25B2"; else -> "\u25CF" }
+            val said = when (r.light) {
+                PaymentRadar.Light.GREEN -> word(W.radar_on_time)
+                PaymentRadar.Light.AMBER -> word(W.radar_late)
+                PaymentRadar.Light.RED -> word(W.radar_very_late)
+                PaymentRadar.Light.NONE -> ""
+            }
+            Text(mark, color = dot, fontSize = 11.sp, modifier = Modifier.semantics { contentDescription = said })
             Text(text, color = c.inkSoft, fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
         }
     }

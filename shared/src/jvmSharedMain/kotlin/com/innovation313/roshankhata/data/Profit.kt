@@ -270,7 +270,8 @@ object Profit {
             salesTotal = dao.salesTotalBetween(from, to),
             // (from, to]; shift by one to read [from, to). A walk-in's refund (category Return) is a
             // return, not an expense (23 Oct 2026, the review: it came off in full, as if it were rent).
-            expenses = dao.cashbookExpensesBetween(from - 1, to - 1),
+            // Staff pay is a cost too (3 Nov 2026 audit, M03): it lives in its own table, so profit never saw it.
+            expenses = dao.cashbookExpensesBetween(from - 1, to - 1) + dao.staffPaidBetween(from - 1, to - 1),
             walkIns = dao.walkInSoldLinesBetween(from, to),
             walkInReturns = dao.walkInReturnedLinesBetween(from, to)
         )

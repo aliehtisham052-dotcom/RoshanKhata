@@ -169,7 +169,7 @@ class CashbookActivity : BaseActivity() {
             fun refresh() {
                 val opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                 val expected = DayCloseMath.expected(opening, cashIn, cashOut)
-                breakdownRows(rows, listOf(Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected)))
+                breakdownRows(rows, listOf(Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected), Format.money(figures.otherOut)))
                 val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                 if (counted == null) {
                     tvDiff.visibility = View.GONE
@@ -457,7 +457,7 @@ class CashbookActivity : BaseActivity() {
                 // write before it landed, taking the typed amount, category,
                 // note and date with it.
                 AppScope.launch {
-                    dao.insertCashEntry(
+                    dao.insertCashEntryAudited(
                         CashEntry(
                             amount = amount,
                             isIncome = isIncome,

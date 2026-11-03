@@ -501,7 +501,8 @@ fun CounterSalePane(
                     scope.launch {
                         val full = withContext(Dispatchers.IO) { dao.saleWithLines(s.id) } ?: return@launch
                         val back = withContext(Dispatchers.IO) { dao.returnedOfSale(s.id) }.associate { it.saleItemId to it.qty }
-                        returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back)
+                        val creditedBefore = withContext(Dispatchers.IO) { dao.returnedTotalOfSale(s.id) }
+                        returning = com.innovation313.roshankhata.screens.ReturnDraft(full, back, creditedBefore)
                     }
                 }
             }

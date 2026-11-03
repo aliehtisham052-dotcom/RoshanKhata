@@ -66,6 +66,13 @@ class StatementPrint(
         closing = accountBalance ?: running
     }
 
+    /**
+     * The period's own last balance when later entries moved the account (3 Nov 2026 audit, M06): said above the
+     * closing box, which is the whole account today. Null when the rows end where the account stands.
+     */
+    private val periodEnd: Double? = rows.lastOrNull()?.running
+        ?.takeIf { atEnd -> accountBalance != null && Money.isNotZero(atEnd - accountBalance) }
+
     // A4 in points, the phone's margins.
     private val pageW = 595.0
     private val margin = 36.0
@@ -260,6 +267,13 @@ class StatementPrint(
         // The closing balance, in the customer's terms, on the last page.
         if (pageIndex == pageCount() - 1) {
             y += 8
+            periodEnd?.let { atEnd ->
+                g.color = muted
+                g.font = Font(PrintFonts.family, Font.PLAIN, 9)
+                g.text(words.text(W.pdf_stmt_period_end_balance, Format.dateOnly(rows.last().e.entry.timestamp), Format.signedIfNegative(atEnd)), margin, y + 6)
+            }
+            // Room for that line always (CLOSING_H), so a page holds the same rows either way.
+            y += 14
             g.color = navy
             g.fillRect(margin.toInt(), y.toInt(), (pageW - 2 * margin).toInt(), 52)
             g.color = gold
@@ -283,8 +297,8 @@ class StatementPrint(
         const val PAGE_H = 842.0
         const val ROW_H = 36.0
         const val ROW_BOTTOM = 20.0
-        /** The closing box under the last row: 8 pt of space and the 52 pt box. */
-        const val CLOSING_H = 60.0
+        /** The closing box under the last row: 8 pt of space, the period's last balance (14 pt) and the 52 pt box. */
+        const val CLOSING_H = 74.0
 
         /**
          * Any sheet the owner asked for (a statement, an invoice, a report): opened in the

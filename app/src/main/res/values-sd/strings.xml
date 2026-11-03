@@ -1065,6 +1065,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">ياد ڏياريندڙ</string>
     <string name="notif_channel_desc">چيڪ، قسطون، ختم ٿيندڙ مال ۽ بيڪ اپ جي يادگيري</string>
+    <string name="notif_permission_why">روشن کاتو اوهان کي ٻڌائي ٿو جڏهن چيڪ جو ڏينهن اچي، قسط اچي، مال ختم ٿيڻ وارو هجي يا بيڪ اپ ناڪام ٿئي. اهو ٻڌڻ لاءِ نوٽيفڪيشن جي اجازت ڏيو.</string>
     <string name="notif_cheques_title">چيڪ بينڪ ۾ رکڻ لاءِ تيار</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$d چيڪ اڄ يا اڳ جو مقرر آهي.</item>
@@ -1797,7 +1798,7 @@
     <string name="dayclose_counted">هاڻي ڳڻيل ڪيش</string>
     <string name="dayclose_note_hint">نوٽ، مثال چانهه، مزدوري</string>
     <string name="dayclose_help">رڳو اهي کاتي جون انٽريون ڳڻيون وڃن ٿيون جن تي ڪيش لکيل هجي؛ طريقي کان سواءِ انٽرين جو اندازو نه ٿو لڳايو وڃي.</string>
-    <string name="dayclose_breakdown">+ ڪيش بُڪ آمد %1$s\n+ کاتي مان ڪيش وصول %2$s\n− ڪيش بُڪ خرچ %3$s\n− کاتي مان ڪيش ادا %4$s\n= گلي ۾ هجڻ گهرجي %5$s</string>
+    <string name="dayclose_breakdown">+ ڪيش بُڪ آمد %1$s\n+ کاتي مان ڪيش وصول %2$s\n− ڪيش بُڪ خرچ %3$s\n− کاتي مان ڪيش ادا %4$s\n− نقد بل ۽ عملي کي ادائگي %6$s\n= گلي ۾ هجڻ گهرجي %5$s</string>
     <string name="dayclose_over">حساب کان %1$s وڌيڪ</string>
     <string name="dayclose_short">%1$s گهٽ</string>
     <string name="dayclose_match">گلو حساب سان ملي ويو</string>
@@ -2916,6 +2917,7 @@
     <string name="auto_folder_missing">هي فولڊر هن وقت پهچ ۾ ناهي. يو ايس بي لڳايو، يا ٻيو فولڊر چونڊيو.</string>
     <string name="import_csv">گراهڪ امپورٽ ڪريو</string>
     <string name="import_csv_skipped">اڳ ۾ ئي کاتي ۾، جيئن جو تيئن ڇڏيا ويا: %1$d</string>
+    <string name="import_csv_unreadable">بقايا جيڪا پڙهي نه سگهجي، 0 طور ايندي — فائل ڏسو: %1$d</string>
     <string name="import_csv_sign">هن فائل ۾ مثبت بيلنس جو مطلب آهي:</string>
     <string name="import_csv_owes_me">انهن مون کي ڏيڻو آهي</string>
     <string name="import_csv_i_owe">مون انهن کي ڏيڻو آهي</string>
@@ -3403,7 +3405,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">جتي ٺهيو هو اتي ئي بدلايو</string>
     <string name="entry_linked_bill">هي داخلا سپلائر بل لکي آهي. بل بدلايو يا ميٽيو، کاتو پاڻ ساڻ بدلجي ويندو.</string>
-    <string name="entry_linked_plan">هي داخلا قسط پلان جي ادائگي لکي آهي. ان کي قسط پلان مان بدلايو.</string>
+    <string name="entry_linked_plan">هي داخلا قسط پلان جي ادائگي لکي آهي. درست ڪرڻ لاءِ پهريان قسط پلان هٽايو (ان جون ادائگيون کاتي ۾ رهنديون)، پوءِ هي داخلا بدلايو.</string>
     <string name="entry_linked_cheque">هي داخلا ڪليئر ٿيل چيڪ لکي آهي. ان کي چيڪ واري صفحي مان بدلايو.</string>
     <string name="entry_linked_sale">هي داخلا ڪائونٽر جي وڪري لکي آهي. وڪرو منسوخ ڪريو يا واپسي ڪريو.</string>
     <string name="entry_linked_return">هي داخلا واپسي لکي آهي. ان بدران واپسي منسوخ ڪريو.</string>
@@ -3624,6 +3626,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">پاڻمرادو ڪم</string>
     <string name="auto_help">هر هڪ پنهنجي وقت تي ٻڌائي ٿو ۽ صحيح صفحو کولي ٿو. ڪجهه به پاڻمرادو نه موڪليو ويندو آهي ۽ نه لکيو ويندو آهي.</string>
+    <string name="auto_notifications_turn_on">نوٽيفڪيشن آن ڪريو</string>
+    <string name="auto_notifications_off">روشن کاتي جا نوٽيفڪيشن بند آهن، تنهن ڪري انهن مان ڪو به اوهان تائين نٿو پهچي سگهي. فون جي سيٽنگز ۾ انهن کي آن ڪريو.</string>
     <string name="auto_collect_name">صبح جي وصولي لسٽ</string>
     <string name="auto_collect_title">اڄ جي وصولي</string>
     <string name="auto_dayend_name">دڪان بند ڪرڻ جو خلاصو</string>
@@ -3638,6 +3642,8 @@
     <string name="auto_expiry_name">ختم ٿيڻ کان اڳ عمل</string>
     <string name="auto_expiry_title">ختم ٿيڻ کان اڳ قدم کڻو</string>
     <string name="auto_expiry_body">%1$s، بيچ %2$s: %3$s باقي، %4$s تي ختم. وڪڻو، رعايت ڏيو يا واپس ڪريو.</string>
+    <string name="auto_expiry_expired_body">%1$s، بيچ %2$s: %3$s باقي، %4$s تي ختم ٿي چڪو. ان کي نه وڪڻو: ضايع لکو يا سپلائر کي واپس ڪريو.</string>
+    <string name="auto_expiry_expired_title">ختم ٿيل مال شيلف تي</string>
     <string name="auto_at_time">%1$s وڳي</string>
     <string name="auto_pick_hour">وقت چونڊيو</string>
     <plurals name="auto_collect_body">
@@ -3713,6 +3719,7 @@
     <string name="pdf_stmt_total_taken">ڪل ورتو</string>
     <string name="pdf_stmt_total_paid">ڪل ادا ڪيو</string>
     <string name="pdf_stmt_still_to_pay">اڃا ادا ڪرڻو آهي</string>
+    <string name="pdf_stmt_period_end_balance">%1$s تي، هن عرصي جي آخر ۾، بقايا: %2$s. ان کان پوءِ جا داخلا هيٺ ڏنل رقم ۾ شامل آهن.</string>
     <string name="pdf_stmt_settled_short">حساب برابر</string>
     <string name="pdf_stmt_pay_by">مهرباني ڪري %1$s تائين ادا ڪريو</string>
     <string name="pdf_stmt_how_to_pay">ادائيگي جو طريقو</string>

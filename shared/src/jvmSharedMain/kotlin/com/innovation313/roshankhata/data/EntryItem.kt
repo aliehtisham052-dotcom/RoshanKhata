@@ -194,8 +194,15 @@ object RateType {
  */
 object LineMath {
 
+    /**
+     * The shop's smallest coin, in decimals (3 Nov 2026 audit, M08): 2 for Rs, 3 for KWD/BHD/OMR/JOD/TND/LYD, none
+     * for Rp/IRR/IQD/LBP/SYP/YER — the figures are kept as they are printed. Every sum rounded to two decimals
+     * kept Rp 16,927.50 while printing Rp 16.928, and wrote 1 × 0.125 KWD as 0.13.
+     */
+    fun scale(): Int = Currency.decimals()
+
     fun round(value: Double): Double =
-        BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+        BigDecimal.valueOf(value).setScale(scale(), RoundingMode.HALF_UP).toDouble()
 
     /**
      * What one line comes to. Zero for a bonus line, whatever its rate. Null
@@ -206,7 +213,7 @@ object LineMath {
         if (quantity == null || rate == null) return null
         return BigDecimal.valueOf(quantity)
             .multiply(BigDecimal.valueOf(rate))
-            .setScale(2, RoundingMode.HALF_UP)
+            .setScale(scale(), RoundingMode.HALF_UP)
             .toDouble()
     }
 
@@ -217,6 +224,6 @@ object LineMath {
             val t = lineTotal(item.quantity, item.rate, item.isBonus) ?: return null
             sum = sum.add(BigDecimal.valueOf(t))
         }
-        return sum.setScale(2, RoundingMode.HALF_UP).toDouble()
+        return sum.setScale(scale(), RoundingMode.HALF_UP).toDouble()
     }
 }

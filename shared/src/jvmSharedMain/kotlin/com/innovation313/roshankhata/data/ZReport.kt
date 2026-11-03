@@ -42,10 +42,12 @@ data class ZReport(
      * the close keeps its own figures, so a sale rung up after the count does
      * not show as a shortage in the count. Null when the day was not closed.
      */
-    val closeExpected: Double? = null
+    val closeExpected: Double? = null,
+    /** Cash bills and staff pay that day (3 Nov 2026 audit, M03): cash out with no cashbook or khata row. */
+    val otherCashOut: Double = 0.0
 ) {
     /** Cash in the drawer by the books: the close's own figure, else opening + every cash in − every cash out. */
-    val expectedCash: Double? get() = closeExpected ?: opening?.let { LineMath.round(it + khataCashIn + cashbookIn - khataCashOut - cashbookOut) }
+    val expectedCash: Double? get() = closeExpected ?: opening?.let { LineMath.round(it + khataCashIn + cashbookIn - khataCashOut - cashbookOut - otherCashOut) }
     val variance: Double? get() = if (counted != null && expectedCash != null) LineMath.round(counted - expectedCash!!) else null
 
     companion object {
@@ -90,7 +92,8 @@ data class ZReport(
                 cashbookIn = dao.cashbookCashBetween(true, from - 1, to - 1), cashbookOut = dao.cashbookCashBetween(false, from - 1, to - 1),
                 opening = close?.opening, counted = close?.counted,
                 profit = if (costKnown && returned.all { it.cost != null } && done.isNotEmpty()) LineMath.round(salesTotal - tax - cost - returnedMargin) else null,
-                closeExpected = close?.expected?.let { LineMath.round(it) }
+                closeExpected = close?.expected?.let { LineMath.round(it) },
+                otherCashOut = dao.billsAndStaffCashBetween(from - 1, to - 1)
             )
         }
     }
@@ -111,7 +114,7 @@ data class ZReport(
             refundsByMethod.forEach { (k, v) -> out += ("  " + m(k)) to money(v) }
         }
         out += words.text(W.z_cash_in) to money(khataCashIn + cashbookIn)
-        out += words.text(W.z_cash_out) to money(khataCashOut + cashbookOut)
+        out += words.text(W.z_cash_out) to money(khataCashOut + cashbookOut + otherCashOut)
         opening?.let { out += words.text(W.dc_opening) to money(it) }
         expectedCash?.let { out += words.text(W.z_expected) to money(it) }
         counted?.let { out += words.text(W.dc_counted) to money(it) }

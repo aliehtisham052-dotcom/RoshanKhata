@@ -428,7 +428,10 @@ class CounterDraft {
         fun search(products: List<Product>, query: String, limit: Int = 12): List<Product> {
             val q = query.trim()
             if (q.isEmpty()) return products.take(limit)
-            products.firstOrNull { it.barcode != null && it.barcode == q }?.let { return listOf(it) }
+            // In 0-9 both ways (3 Nov 2026 audit, M46): a scanner typing through a Persian keyboard sends ۶۲۹…, and a
+            // barcode saved that way never matched one scanned on another layout.
+            val code = Digits.toLatin(q)
+            products.firstOrNull { it.barcode != null && Digits.toLatin(it.barcode) == code }?.let { return listOf(it) }
             val typed = q.lowercase()
             return products.filter {
                 // The label's technical / generic name too (31 Oct 2026): a pharmacy finds "Panadol" by "paracetamol",

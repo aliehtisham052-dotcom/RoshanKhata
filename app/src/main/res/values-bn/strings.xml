@@ -1077,6 +1077,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">রিমাইন্ডার</string>
     <string name="notif_channel_desc">প্রদেয় চেক, প্রদেয় কিস্তি, মেয়াদ শেষ হতে চলা স্টক ও ব্যাকআপের তাগিদ</string>
+    <string name="notif_permission_why">চেকের দিন এলে, কিস্তি এলে, মাল মেয়াদোত্তীর্ণ হতে চললে বা ব্যাকআপ ব্যর্থ হলে রোশন খাতা আপনাকে জানায়। জানতে নোটিফিকেশনের অনুমতি দিন।</string>
     <string name="notif_cheques_title">ব্যাংকে জমার জন্য তৈরি চেক</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$dটি চেক আজ প্রদেয় বা দেরি হয়েছে।</item>
@@ -1817,7 +1818,7 @@
     <string name="dayclose_counted">এখন গোনা নগদ</string>
     <string name="dayclose_note_hint">নোট, যেমন চা, মজুরি</string>
     <string name="dayclose_help">শুধু নগদ চিহ্নিত খাতার এন্ট্রি গোনা হয়; যেগুলোতে পেমেন্টের ধরন নেই সেগুলো আন্দাজ করা হয় না।</string>
-    <string name="dayclose_breakdown">+ ক্যাশবুকে এসেছে %1$s\n+ খাতার নগদ পাওয়া %2$s\n− ক্যাশবুক থেকে গেছে %3$s\n− খাতার নগদ দেওয়া %4$s\n= বাক্সে থাকার কথা %5$s</string>
+    <string name="dayclose_breakdown">+ ক্যাশবুকে এসেছে %1$s\n+ খাতার নগদ পাওয়া %2$s\n− ক্যাশবুক থেকে গেছে %3$s\n− খাতার নগদ দেওয়া %4$s\n− নগদ বিল ও কর্মীদের দেওয়া %6$s\n= বাক্সে থাকার কথা %5$s</string>
     <string name="dayclose_over">খাতার চেয়ে %1$s বেশি</string>
     <string name="dayclose_short">%1$s কম</string>
     <string name="dayclose_match">বাক্স খাতার সঙ্গে মিলেছে</string>
@@ -2936,6 +2937,7 @@
     <string name="auto_folder_missing">এই ফোল্ডারে এখন পৌঁছানো যাচ্ছে না। USB লাগান, অথবা অন্য ফোল্ডার বেছে নিন।</string>
     <string name="import_csv">গ্রাহক ইমপোর্ট করুন</string>
     <string name="import_csv_skipped">আগে থেকেই খাতায় আছে, যেমন ছিল তেমন রাখা হলো: %1$d</string>
+    <string name="import_csv_unreadable">যে বাকি পড়া গেল না, 0 হিসেবে আসবে — ফাইলটি দেখুন: %1$d</string>
     <string name="import_csv_sign">এই ফাইলে ধনাত্মক ব্যালেন্স মানে:</string>
     <string name="import_csv_owes_me">তারা আমার কাছে দেনা</string>
     <string name="import_csv_i_owe">আমি তাদের কাছে দেনা</string>
@@ -3423,7 +3425,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">যেখানে তৈরি হয়েছিল সেখানেই বদলান</string>
     <string name="entry_linked_bill">এই এন্ট্রি সরবরাহকারীর বিল লিখেছে। বিল বদলান বা মুছুন, খাতা নিজেই সাথে বদলাবে।</string>
-    <string name="entry_linked_plan">এই এন্ট্রি কিস্তি প্ল্যানের পেমেন্ট লিখেছে। কিস্তি প্ল্যান থেকে বদলান।</string>
+    <string name="entry_linked_plan">এই এন্ট্রি কিস্তি প্ল্যানের পেমেন্ট লিখেছে। ঠিক করতে আগে কিস্তি প্ল্যান মুছুন (এর পেমেন্টগুলো খাতায় থাকবে), তারপর এই এন্ট্রি বদলান।</string>
     <string name="entry_linked_cheque">এই এন্ট্রি ক্লিয়ার হওয়া চেক লিখেছে। চেকের পাতা থেকে বদলান।</string>
     <string name="entry_linked_sale">এই এন্ট্রি কাউন্টারের বিক্রি লিখেছে। বিক্রি বাতিল করুন বা ফেরত নিন।</string>
     <string name="entry_linked_return">এই এন্ট্রি একটি ফেরত লিখেছে। তার বদলে ফেরত বাতিল করুন।</string>
@@ -3644,6 +3646,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">স্বয়ংক্রিয় কাজ</string>
     <string name="auto_help">প্রতিটি নিজের সময়ে জানায় এবং সঠিক পাতা খোলে। কিছুই নিজে থেকে পাঠানো বা লেখা হয় না।</string>
+    <string name="auto_notifications_turn_on">নোটিফিকেশন চালু করুন</string>
+    <string name="auto_notifications_off">রোশন খাতার নোটিফিকেশন বন্ধ, তাই এগুলোর কোনোটিই আপনার কাছে পৌঁছাবে না। ফোনের সেটিংসে চালু করুন।</string>
     <string name="auto_collect_name">সকালের আদায় তালিকা</string>
     <string name="auto_collect_title">আজকের আদায়</string>
     <string name="auto_dayend_name">দোকান বন্ধের সারাংশ</string>
@@ -3658,6 +3662,8 @@
     <string name="auto_expiry_name">মেয়াদ শেষের আগে ব্যবস্থা</string>
     <string name="auto_expiry_title">মেয়াদ শেষের আগে ব্যবস্থা নিন</string>
     <string name="auto_expiry_body">%1$s, ব্যাচ %2$s: %3$s বাকি, মেয়াদ শেষ %4$s। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</string>
+    <string name="auto_expiry_expired_body">%1$s, ব্যাচ %2$s: %3$s বাকি, মেয়াদ শেষ হয়েছে %4$s। বিক্রি করবেন না: বাতিল হিসেবে লিখুন বা সাপ্লায়ারকে ফেরত দিন।</string>
+    <string name="auto_expiry_expired_title">মেয়াদোত্তীর্ণ মাল তাকে</string>
     <string name="auto_at_time">%1$sটায়</string>
     <string name="auto_pick_hour">সময় বেছে নিন</string>
     <plurals name="auto_collect_body">
@@ -3733,6 +3739,7 @@
     <string name="pdf_stmt_total_taken">মোট নিয়েছেন</string>
     <string name="pdf_stmt_total_paid">মোট দিয়েছেন</string>
     <string name="pdf_stmt_still_to_pay">এখনও দিতে হবে</string>
+    <string name="pdf_stmt_period_end_balance">%1$s তারিখে, এই সময়ের শেষে, বাকি: %2$s। এর পরের এন্ট্রিগুলো নিচের অঙ্কে ধরা আছে।</string>
     <string name="pdf_stmt_settled_short">হিসাব মিটে গেছে</string>
     <string name="pdf_stmt_pay_by">অনুগ্রহ করে %1$s-এর মধ্যে পরিশোধ করুন</string>
     <string name="pdf_stmt_how_to_pay">কীভাবে পরিশোধ করবেন</string>

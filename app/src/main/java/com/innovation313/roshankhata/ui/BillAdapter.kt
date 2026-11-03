@@ -66,7 +66,7 @@ class BillAdapter(
             holder.tvStatus.setText(R.string.plan_closed)
             holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got_text))
             holder.tvStatus.visibility = View.VISIBLE
-        } else if (b.supplierBalance >= 0) {
+        } else if (!com.innovation313.roshankhata.data.Money.isNegative(b.supplierBalance)) {
             // Owe them nothing right now — the account is clear.
             holder.tvStatus.setText(R.string.bill_account_settled)
             holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got_text))

@@ -525,7 +525,9 @@ object InvoiceTemplateKit {
         if (invoice.receivedAmount != null) {
             totalRow(labels.received, Format.money(totals.received))
             PdfRtl.drawText(c, labels.balanceDue, totalsX + 10f, ty + 10f, paint(fonts, 10f, palette.muted, bold = true))
-            PdfRtl.drawText(c, Format.money(totals.balanceDue), right - 10f, ty + 10f, paint(fonts, 10f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
+            // Its minus when more was received than the total (3 Nov 2026 audit, M04): an advance carried down a sales
+            // order printed "Balance due Rs 5,000" where the shop owed the customer 5,000.
+            PdfRtl.drawText(c, Format.signedIfNegative(totals.balanceDue), right - 10f, ty + 10f, paint(fonts, 10f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
             ty += 17f
         }
 

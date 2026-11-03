@@ -1037,6 +1037,7 @@
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">Yaad-dehaniyan</string>
     <string name="notif_channel_desc">Cheque, qistain, expire hota maal aur backup ki yaad-dehani</string>
+    <string name="notif_permission_why">Roshan Khata aap ko batata hai jab cheque ka din aaye, qist aaye, maal expire hone wala ho ya backup nakaam ho. Yeh sunne ke liye notifications ki ijazat dein.</string>
     <string name="notif_cheques_title">Cheque bank mein lagane ke liye tayyar</string>
     <plurals name="notif_cheques_body">
         <item quantity="one">%1$d cheque aaj ya pehle ka wajib hai.</item>
@@ -1769,7 +1770,7 @@
     <string name="dayclose_counted">Abhi gina hua cash</string>
     <string name="dayclose_note_hint">Note, maslan chai, mazdoori</string>
     <string name="dayclose_help">Sirf woh khata entries gini jati hain jin par Cash likha ho; baghair tareeqe wali entries ka andaza nahi lagaya jata.</string>
-    <string name="dayclose_breakdown">+ Cashbook aamad %1$s\n+ Khate se cash wusool %2$s\n− Cashbook kharch %3$s\n− Khate se cash ada %4$s\n= Galle mein hona chahiye %5$s</string>
+    <string name="dayclose_breakdown">+ Cashbook aamad %1$s\n+ Khate se cash wusool %2$s\n− Cashbook kharch %3$s\n− Khate se cash ada %4$s\n− Cash bill aur staff ko adaigi %6$s\n= Galle mein hona chahiye %5$s</string>
     <string name="dayclose_over">Hisaab se %1$s zyada</string>
     <string name="dayclose_short">%1$s kam</string>
     <string name="dayclose_match">Galla hisaab se mil gaya</string>
@@ -2888,6 +2889,7 @@
     <string name="auto_folder_missing">Ye folder abhi dastiyab nahi. USB lagayein, ya koi aur folder chunein.</string>
     <string name="import_csv">Customers import karein</string>
     <string name="import_csv_skipped">Pehle se khate mein, jon ke ton chhor diye: %1$d</string>
+    <string name="import_csv_unreadable">Baqaya jo parha na ja saka, 0 ke taur par aayega — file dekhein: %1$d</string>
     <string name="import_csv_sign">Is file mein musbat balance ka matlab hai:</string>
     <string name="import_csv_owes_me">Unhon ne mujhe dena hai</string>
     <string name="import_csv_i_owe">Main ne unhein dena hai</string>
@@ -3375,7 +3377,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">Jahan bana tha wahin badlen</string>
     <string name="entry_linked_bill">Yeh indiraaj supplier bill ne likha hai. Bill badlen ya mitayen, khata khud saath badal jayega.</string>
-    <string name="entry_linked_plan">Yeh indiraaj qist plan ki adaigi ne likha hai. Isay qist plan se badlen.</string>
+    <string name="entry_linked_plan">Yeh indiraaj qist plan ki adaigi ne likha hai. Durust karne ke liye pehle qist plan delete karein (us ki adaigiyan khate mein rahengi), phir yeh indiraaj badlen.</string>
     <string name="entry_linked_cheque">Yeh indiraaj clear hone wale cheque ne likha hai. Isay cheque wale safhe se badlen.</string>
     <string name="entry_linked_sale">Yeh indiraaj counter ki sale ne likha hai. Sale mansookh karen ya wapsi karen.</string>
     <string name="entry_linked_return">Yeh indiraaj wapsi ne likha hai. Is ke bajaye wapsi mansookh karen.</string>
@@ -3596,6 +3598,8 @@
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">Khudkaar kaam</string>
     <string name="auto_help">Har ek apne waqt par batata hai aur sahi safha kholta hai. Kuch bhi khud se bheja ya likha nahi jata.</string>
+    <string name="auto_notifications_turn_on">Notifications on karein</string>
+    <string name="auto_notifications_off">Roshan Khata ke notifications band hain, is liye in mein se koi bhi aap tak nahi pohanch sakta. Phone ki settings mein inhein on karein.</string>
     <string name="auto_collect_name">Subah ki wusooli list</string>
     <string name="auto_collect_title">Aaj ki wusooli</string>
     <string name="auto_dayend_name">Dukaan band karne ka khulasa</string>
@@ -3610,6 +3614,8 @@
     <string name="auto_expiry_name">Expiry par amal</string>
     <string name="auto_expiry_title">Expire hone se pehle qadam uthayein</string>
     <string name="auto_expiry_body">%1$s, batch %2$s: %3$s baqi, %4$s ko expire. Bechein, riayat dein ya wapas karein.</string>
+    <string name="auto_expiry_expired_body">%1$s, batch %2$s: %3$s baqi, %4$s ko expire ho chuka. Isay na bechein: zaya darj karein ya supplier ko wapas karein.</string>
+    <string name="auto_expiry_expired_title">Expire maal shelf par</string>
     <string name="auto_at_time">%1$s baje</string>
     <string name="auto_pick_hour">Waqt chunein</string>
     <plurals name="auto_collect_body">
@@ -3685,6 +3691,7 @@
     <string name="pdf_stmt_total_taken">Kul liya</string>
     <string name="pdf_stmt_total_paid">Kul ada kiya</string>
     <string name="pdf_stmt_still_to_pay">Abhi ada karna hai</string>
+    <string name="pdf_stmt_period_end_balance">%1$s ko, is muddat ke aakhir mein, baqaya: %2$s. Us ke baad ke indiraaj neeche wali raqam mein shamil hain.</string>
     <string name="pdf_stmt_settled_short">Hisaab barabar</string>
     <string name="pdf_stmt_pay_by">Barah-e-karam %1$s tak ada karein</string>
     <string name="pdf_stmt_how_to_pay">ADAIGI KA TAREEQA</string>

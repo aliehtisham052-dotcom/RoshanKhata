@@ -52,7 +52,7 @@ import com.innovation313.roshankhata.words.word
  * on the account. The same form on the phone and inside the computer's
  * dialog frame; the host posts it ([ReturnDraft.toReturn]).
  */
-class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>) {
+class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>, private val returnedMoney: Double = 0.0) {
     /**
      * What each rupee of the sold lines came to in the end (21 Oct 2026): the
      * ticket's discount (with any points spent), the tax added on top and the
@@ -82,7 +82,8 @@ class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>) {
     var refundText by mutableStateOf("")
 
     val hasParty: Boolean get() = sale.sale.partyId != null
-    val total: Double get() = ReturnMath.total(toItems())
+    /** The DAO's own figure: the last of the ticket back credits exactly what is left of it (3 Nov 2026 audit, M07). */
+    val total: Double get() = ReturnMath.totalFor(toItems(), sale.sale, lines.associate { it.item.id to it.left }, returnedMoney)
     /**
      * The money handed back: what is typed, or the whole return when the box is
      * empty. Something typed that is not a figure is refused below, not taken

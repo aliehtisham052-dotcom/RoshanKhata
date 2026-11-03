@@ -138,3 +138,16 @@ enum class ShopCountry(
         }
     }
 }
+
+/**
+ * What a sheet calls the shop's tax registration, in [language] (3 Nov 2026 audit, M44). A country's name for it is
+ * kept when it is an acronym read as it is (NTN, GSTIN, NPWP, TRN…); a descriptive English phrase ("VAT No.",
+ * "Economic Code", "Tax ID") is printed in the sheet's own language instead — an Arabic invoice read "VAT No." and a
+ * Farsi one "Economic Code" — as [generic], the language's "Tax No.". Blank: [generic] too.
+ */
+fun ShopCountry.taxLabelFor(generic: String, language: String = java.util.Locale.getDefault().language): String {
+    val name = taxIdName
+    if (name.isEmpty()) return generic
+    val descriptive = name.any { it == ' ' } && name != "NTN / STRN" && name != "KRA PIN" && name != "GST/HST No."
+    return if (descriptive && language != "en") generic else name
+}

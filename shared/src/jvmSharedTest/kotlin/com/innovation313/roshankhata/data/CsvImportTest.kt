@@ -118,4 +118,19 @@ class CsvImportTest {
         val rows = ProductCsv.parse("Nama;Harga\nBeras;15.000\nGula;12,5\n")
         assertEquals(listOf(15000.0, 12.5), rows.map { it.salePrice })
     }
+
+    @Test
+    fun `any currency's sign or code and a ledger's Dr or Cr are read, never taken as nothing`() {
+        // 3 Nov 2026 audit, M40: each of these came in as a 0 balance.
+        assertEquals(1200.5, CsvImport.amount("$1,200.50", groupDots = false)!!, 0.0)
+        assertEquals(1200.0, CsvImport.amount("1,200 AED", groupDots = false)!!, 0.0)
+        assertEquals(1200.0, CsvImport.amount("SAR 1,200", groupDots = false)!!, 0.0)
+        assertEquals(1200.0, CsvImport.amount("۱٬۲۰۰ ریال", groupDots = false)!!, 0.0)
+        assertEquals(1200.0, CsvImport.amount("Tk 1,200", groupDots = false)!!, 0.0)
+        assertEquals(1200.5, CsvImport.amount("€1.200,50", groupDots = false)!!, 0.0)
+        assertEquals(2500.0, CsvImport.amount("KSh 2,500", groupDots = false)!!, 0.0)
+        assertEquals(1250.0, CsvImport.amount("1,250 Dr", groupDots = false)!!, 0.0)
+        assertEquals(-1250.0, CsvImport.amount("1,250 Cr", groupDots = false)!!, 0.0)
+        assertEquals(500.0, CsvImport.amount("ر.س 500", groupDots = false)!!, 0.0)
+    }
 }

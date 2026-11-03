@@ -89,6 +89,32 @@ object PaymentRadar {
     /** One customer's repaid lots (days each took, oldest first), what is still open, and his payments. */
     internal class Book(val repaidDays: List<Int>, val openSince: Long?, val payments: List<Long>, val balance: Double)
 
+    /**
+     * A sale paid on the spot, a ticket's payments and a return's refund are each one dealing written as two or
+     * more lines that point at each other (pairedEntryId): netted here before the lots are made (3 Nov 2026 audit,
+     * M26). Through FIFO, a cash buy paid an OLD debt — a 61-day debt read as 24 days, a promise read as kept
+     * when the balance never moved. Loans (Qarz-e-Hasna) are left out: goodwill, not trade credit (M34).
+     */
+    internal fun settled(rows: List<LedgerPoint>): List<LedgerPoint> = netPairs(rows.filter { !it.isQarzeHasna })
+
+    /** The paired lines netted against each other ([settled] without leaving loans out): Follow-up's rhythm too. */
+    fun netPairs(trade: List<LedgerPoint>): List<LedgerPoint> {
+        val byId = trade.filter { it.id != 0L }.associateBy { it.id }
+        if (byId.isEmpty()) return trade
+        val left = HashMap<Long, Double>()
+        byId.values.forEach { left[it.id] = it.amount }
+        val done = HashSet<Pair<Long, Long>>()
+        for (r in trade) {
+            val other = r.pairedEntryId?.let { byId[it] } ?: continue
+            if (other.isGiven == r.isGiven || r.id == 0L) continue
+            if (!done.add(minOf(r.id, other.id) to maxOf(r.id, other.id))) continue
+            val m = minOf(left.getValue(r.id), left.getValue(other.id))
+            left[r.id] = left.getValue(r.id) - m
+            left[other.id] = left.getValue(other.id) - m
+        }
+        return trade.mapNotNull { r -> if (r.id == 0L) r else left.getValue(r.id).takeIf { it > PENNY }?.let { r.copy(amount = it) } }
+    }
+
     /** [rows] of one customer, any order. */
     internal fun book(rows: List<LedgerPoint>): Book {
         class Lot(var left: Double, val at: Long)
@@ -97,7 +123,7 @@ object PaymentRadar {
         val payments = ArrayList<Long>()
         var ahead = 0.0 // paid before it was owed: the next credit takes from it first
         var balance = 0.0
-        for (r in rows.sortedWith(compareBy<LedgerPoint> { it.timestamp }.thenBy { if (it.isGiven) 0 else 1 })) {
+        for (r in settled(rows).sortedWith(compareBy<LedgerPoint> { it.timestamp }.thenBy { if (it.isGiven) 0 else 1 })) {
             if (r.amount.isNaN() || r.amount <= 0.0) continue
             if (r.isGiven) {
                 balance += r.amount
@@ -145,13 +171,20 @@ object PaymentRadar {
         val sorted = promises.sortedBy { it.madeAt }
         var kept = 0
         var broken = 0
+        // Each payment keeps one promise at most (3 Nov 2026 audit, M29): one Rs 100 kept three reschedules.
+        val used = HashSet<Long>()
         sorted.forEachIndexed { i, p ->
-            val end = DayMath.startOfDay(p.day, tz) + (PROMISE_GRACE_DAYS + 1) * DAY
-            val paid = payments.any { it >= p.madeAt && it < end }
-            val replacedBeforeEnd = sorted.getOrNull(i + 1)?.let { it.madeAt < end } == true
+            // A promise taken back (day 0, [promiseDay] with nothing) is not a promise; it only ends the one before.
+            if (p.day <= 0L) return@forEachIndexed
+            val dayEnd = DayMath.startOfDay(p.day, tz) + DAY
+            val end = dayEnd + PROMISE_GRACE_DAYS * DAY
+            val paid = payments.sorted().firstOrNull { it >= p.madeAt && it < end && it !in used }
+            // Moved only when changed before the promised day was over (M29): re-promised in the grace days
+            // after it had passed unpaid, it was broken, not moved.
+            val movedInTime = sorted.getOrNull(i + 1)?.let { it.madeAt < dayEnd } == true
             when {
-                paid -> kept++
-                replacedBeforeEnd -> Unit
+                paid != null -> { kept++; used += paid }
+                movedInTime -> Unit
                 now >= end -> broken++
             }
         }
@@ -177,8 +210,12 @@ object PaymentRadar {
         val owes = b.balance > PENNY
         val oldest = if (owes) b.openSince?.let { ((now - it).coerceAtLeast(0) / DAY).toInt() } else null
         val today = DayMath.startOfDay(now, tz)
-        val promiseOverdue = owes && promise != null && promise < today
-        val habit = PaymentHabit.of(rows, now, tz)
+        // Past its day AND its grace, as the promise record counts it (3 Nov 2026 audit, L28).
+        val promiseOverdue = owes && promise != null && DayMath.startOfDay(promise, tz) + (PROMISE_GRACE_DAYS + 1) * DAY <= now
+        val promiseAhead = promise != null && promise >= today
+        val habit = PaymentHabit.of(settled(rows), now, tz)
+        // Behind his rhythm only while no promised day is still ahead — Follow-up's own rule (L28).
+        val behind = habit?.isLate == true && !promiseAhead
         val (kept, broken) = promiseRecord(promises, b.payments, now, tz)
 
         val norm = maxOf(shopDays ?: FALLBACK_DAYS, FLOOR_DAYS)
@@ -191,15 +228,16 @@ object PaymentRadar {
                 else -> atLeast(Light.GREEN)
             }
         }
-        // An amount long unpaid is evidence of its own, even with little history behind it.
-        if (oldest != null) {
+        // An amount long unpaid is evidence of its own, even with little history behind it — unless he is paying
+        // it down in his own rhythm (3 Nov 2026 audit, M27: 50,000 cleared 5,000 a month, never late, read RED).
+        if (oldest != null && habit?.isLate != false) {
             when {
                 oldest > maxOf(norm * 4, 90) -> atLeast(Light.RED)
                 oldest > maxOf(norm * 2, 30) -> atLeast(Light.AMBER)
             }
         }
         if (promiseOverdue) atLeast(Light.AMBER)
-        if (habit?.isLate == true) atLeast(Light.AMBER)
+        if (behind) atLeast(Light.AMBER)
         // Promises: two broken and more broken than kept is a pattern; three broken and none kept, a strong one.
         if (broken >= 3 && kept == 0) atLeast(Light.RED)
         else if (broken >= 2 && broken > kept) atLeast(Light.AMBER)
@@ -214,8 +252,9 @@ object PaymentRadar {
                 val day = nextDayOfMonth(payDay, today, tz)
                 from = maxOf(today, day - 2 * DAY)
                 to = DayMath.startOfDay(day + 2 * DAY + HOUR * 12, tz)
-            } else if (habit != null) {
+            } else if (habit != null && habit.waitingDays <= habit.typicalDays + maxOf(1, habit.typicalDays / 4)) {
                 // Follow-up's own rhythm: his usual gap from the later of his last payment and the debt's start.
+                // Once past it he is late, not "likely now" (3 Nov 2026 audit, M25: a late customer was likely daily).
                 val gap = habit.typicalDays
                 val spread = maxOf(1, gap / 4)
                 val due = DayMath.startOfDay(today + (gap - habit.waitingDays).toLong() * DAY + HOUR * 12, tz)
@@ -225,7 +264,7 @@ object PaymentRadar {
         }
         return Reading(
             light, b.repaidDays.size, typical, shopDays, oldest, payDay, from, to, promiseOverdue, b.balance,
-            behindHabit = habit?.isLate == true, promisesKept = kept, promisesBroken = broken
+            behindHabit = behind, promisesKept = kept, promisesBroken = broken
         )
     }
 
@@ -239,9 +278,14 @@ object PaymentRadar {
         promises: Map<Long, Long>,
         now: Long,
         tz: TimeZone = TimeZone.getDefault()
-    ): Set<Long> = points.groupBy { it.partyId }.mapNotNull { (id, rows) ->
-        id.takeIf { read(rows, now, shopDays, promises[id], tz = tz).likelyNow(now) }
-    }.toSet()
+    ): Set<Long> {
+        val today = DayMath.startOfDay(now, tz)
+        return points.groupBy { it.partyId }.mapNotNull { (id, rows) ->
+            // A promised day still ahead is his word (3 Nov 2026 audit, M25): not on the list before it.
+            if ((promises[id] ?: Long.MIN_VALUE) >= today) return@mapNotNull null
+            id.takeIf { read(rows, now, shopDays, promises[id], tz = tz).likelyNow(now) }
+        }.toSet()
+    }
 
     /**
      * The day of the month a customer keeps to, when at least three of his last six payments fall in three
@@ -258,7 +302,11 @@ object PaymentRadar {
         fun apart(a: Int, b: Int): Int { val d = kotlin.math.abs(a - b); return minOf(d, 31 - d) }
         val best = (1..31).maxByOrNull { c -> days.count { apart(it, c) <= 2 } } ?: return null
         val near = days.count { apart(it, best) <= 2 }
-        return if (near * 4 >= days.size * 3) median(days.filter { apart(it, best) <= 2 }) else null
+        if (near * 4 < days.size * 3) return null
+        // Around [best], not along 1..31 (3 Nov 2026 audit, M28): the 31st, 1st, 2nd and 30th made "the 16th".
+        fun signed(d: Int): Int { var x = d - best; if (x > 15) x -= 31; if (x < -15) x += 31; return x }
+        val day = best + median(days.filter { apart(it, best) <= 2 }.map { signed(it) })
+        return when { day < 1 -> day + 31; day > 31 -> day - 31; else -> day }
     }
 
     /** The start of the next day numbered [dayOfMonth] (clamped to the month's length) on or after [today]. */
@@ -303,4 +351,7 @@ suspend fun KhataDao.promiseDay(partyId: Long, at: Long?) {
     val before = getParty(partyId)?.harvestPromise
     setHarvestPromise(partyId, at)
     if (at != null && at != before) audit(AuditAction.PROMISE_SET, "parties", partyId, at.toString())
+    // A promise taken back is written too, as day 0 (3 Nov 2026 audit, M29): unwritten, the one before it was later
+    // counted as broken.
+    else if (at == null && before != null) audit(AuditAction.PROMISE_SET, "parties", partyId, "0")
 }

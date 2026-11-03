@@ -88,7 +88,8 @@ object DayCloseMath {
             cbOut = dao.cashbookCashBetween(false, from, now),
             kIn = dao.khataCashBetween(false, from, now),
             kOut = dao.khataCashBetween(true, from, now),
-            from = from
+            from = from,
+            otherOut = dao.billsAndStaffCashBetween(from, now)
         )
     }
 
@@ -122,10 +123,12 @@ data class DrawerFigures(
     /** Khata "I gave" marked Cash since the count. */
     val kOut: Double,
     /** Where the stretch starts (exclusive): the last count's moment, or [DayCloseMath.firstCountFrom]. */
-    val from: Long = 0L
+    val from: Long = 0L,
+    /** Cash bills and staff pay since the count ([KhataDao.billsAndStaffCashBetween], 3 Nov 2026 audit, M03). */
+    val otherOut: Double = 0.0
 ) {
     val cashIn: Double get() = cbIn + kIn
-    val cashOut: Double get() = cbOut + kOut
+    val cashOut: Double get() = cbOut + kOut + otherOut
 
     /** What should be in the drawer, opening on the last count (nothing when never counted). */
     val expected: Double get() = expectedFrom(last?.counted ?: 0.0)
