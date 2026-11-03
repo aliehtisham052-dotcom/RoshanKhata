@@ -20,7 +20,7 @@ import java.nio.file.Files
  * itself wrote for version 31 (app/schemas/…/31.json), fills every table with two made-up rows, opens it through
  * the migrations to [KHATA_DB_VERSION] — Room refuses to open a file whose result differs from the entities in
  * any column or index — and checks that every row, sum and balance came through. The phone runs the same
- * statement lists (Schema32 … Schema41).
+ * statement lists (Schema32 … Schema42).
  */
 class PlayBookMigrationTest {
 

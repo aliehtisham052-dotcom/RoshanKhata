@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -64,7 +65,13 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
     val promiseRows by remember { dao.observePromises() }.collectAsState(emptyList())
     val now = System.currentTimeMillis()
     val tz = TimeZone.getDefault()
-    val habits = remember(points) { PaymentHabit.forAll(points) }
+    // Worked out off the window's thread, as the phone's FollowUpActivity does (3 Nov 2026, the speed work): every
+    // owing customer's lines made into habits, and everyone who owes put in order, ran inside the page's own drawing
+    // — on a wholesaler's book (275,000 owing lines) that held the whole window still on opening and after every save.
+    val read by produceState(FollowRead.NONE, points) {
+        value = withContext(Dispatchers.Default) { FollowRead(PaymentHabit.forAll(points), PaymentRequest.lastGotAt(points)) }
+    }
+    val habits = read.habits
     val promises = promiseRows.associate { it.partyId to it.due }
     val debtors = parties.filter { Money.isPositive(it.balance) }
     // Re-read when a reminder closes: one opened just now counts.
@@ -72,7 +79,7 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
     // "Reminded on …, nothing received since" (PaymentRequest, 29 Oct 2026): the last reminder from this
     // computer against the customer's newest payment, from the points already read for his habit.
     val lastReminded = remember(reminders, closed) { reminders.lastReminded() }
-    val lastGot = remember(points) { PaymentRequest.lastGotAt(points) }
+    val lastGot = read.lastGot
     // Those in their usual paying days lead after promises come due (the Payment Radar, 2 Nov 2026).
     val radarOn = RadarDesk.on
     var likely by remember { mutableStateOf<Set<Long>>(emptySet()) }
@@ -84,10 +91,16 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
             }
         }.getOrDefault(emptySet())
     }
-    val ordered = remember(debtors, habits, promises, reminded, likely) { FollowUpRank.order(debtors, habits, promises, now, tz, reminded, likely) }
-    val today = ordered.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, reminded, likely) }
+    // Null only until the first order is known (a moment): the page then shows nothing rather than "no one owes".
+    val ranked by produceState<Pair<List<PartyWithBalance>, Int>?>(null, debtors, habits, promises, reminded, likely) {
+        value = withContext(Dispatchers.Default) {
+            val order = FollowUpRank.order(debtors, habits, promises, now, tz, reminded, likely)
+            order to order.count { FollowUpRank.remindToday(it.id, habits, promises, now, tz, reminded, likely) }
+        }
+    }
 
     FluentPage(word(W.followup_title), word(W.followup_subtitle), scroll = false) {
+        val (ordered, today) = ranked ?: return@FluentPage
         if (ordered.isEmpty()) {
             EmptyState("ic_tile_followup", word(W.followup_empty), null, Modifier.weight(1f))
             return@FluentPage
@@ -148,3 +161,10 @@ fun FollowUpPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, s
 /** ReminderText.facts with a book that cannot be read as nothing: the reminder still goes, without a date or number. */
 suspend fun reminderFacts(dao: KhataDao, partyId: Long): ReminderText.Facts =
     runCatching { ReminderText.facts(dao, partyId) }.getOrDefault(ReminderText.Facts(null, null))
+
+/** What Follow-up reads from the owing customers' lines, worked out together off the window's thread. */
+private class FollowRead(val habits: Map<Long, PaymentHabit.Habit>, val lastGot: Map<Long, Long>) {
+    companion object {
+        val NONE = FollowRead(emptyMap(), emptyMap())
+    }
+}
