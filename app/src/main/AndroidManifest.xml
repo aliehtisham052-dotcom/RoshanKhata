@@ -309,6 +309,16 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".DayBookActivity"
+            android:exported="false"
+            android:parentActivityName=".CashbookActivity" />
+
+        <activity
+            android:name=".LapsedActivity"
+            android:exported="false"
+            android:parentActivityName=".InsightsActivity" />
+
+        <activity
             android:name=".AuditActivity"
             android:exported="false"
             android:parentActivityName=".StaffActivity" />

@@ -838,6 +838,11 @@
     <string name="insights_total_sale">ڪل وڪرو \u00b7 هي مهينو</string>
     <string name="insights_top_products">مٿيان پراڊڪٽ</string>
     <string name="insights_top_customers">مٿيان گراهڪ</string>
+    <string name="lapsed_title">هاڻي نٿا اچن</string>
+    <string name="lapsed_help">باقاعده گراهڪ جن پنهنجي معمول جي وقفي کان ٻيڻو وقت، ۽ گهٽ ۾ گهٽ 30 ڏينهن، ڪجهه نه خريد ڪيو آهي. وڏا خريدار پهريان. ڪال يا واٽس ايپ لاءِ گراهڪ کوليو.</string>
+    <string name="lapsed_last">آخري خريداري %1$s، %2$s اڳ</string>
+    <string name="lapsed_usual">اڳ هر %1$s کانپوءِ خريد ڪندا هئا · ڪل %2$s</string>
+    <string name="lapsed_none">ڪنهن به باقاعده گراهڪ اچڻ نه ڇڏيو آهي.</string>
     <string name="insights_up">\u25b2 گذريل مهيني کان %1$d%% وڌيڪ (%2$s)</string>
     <string name="insights_down">\u25bc گذريل مهيني کان %1$d%% گهٽ (%2$s)</string>
     <string name="insights_no_compare">وڪري جو پهريون مهينو \u2014 اڃا ڀيٽ لاءِ ڪجهه ناهي.</string>
@@ -3001,6 +3006,9 @@
     <string name="pos_void_reason">منسوخي جو سبب</string>
     <string name="pos_void_confirm">%1$s منسوخ ڪريو؟ ان جون کاتي ۽ ڪيش بڪ جون قطارون ردي ۾ وينديون.</string>
     <string name="pos_voided">منسوخ</string>
+    <string name="pos_void_correct">منسوخ ڪري درست ڪريو</string>
+    <string name="pos_void_corrected">%1$s منسوخ ٿي وئي. ان جون شيون بل تي آهن: درست ڪريو، پوءِ وڪرو مڪمل ڪريو.</string>
+    <string name="pos_void_till_busy">ڪائونٽر تي هڪ بل کليل آهي. پهريان ان کي مڪمل ڪريو يا روڪيو.</string>
     <string name="pos_status_done">مڪمل</string>
     <string name="pos_status_void">منسوخ</string>
     <string name="pos_recent">تازا وڪرا</string>
@@ -3051,6 +3059,9 @@
     <string name="pos_refund_account">کاتي ۾ رکو</string>
     <string name="pos_return_qty_help">وڪيو %1$s · هيستائين واپس %2$s</string>
     <string name="pos_return_posted">واپسي %1$s محفوظ ٿي</string>
+    <string name="pos_exchange_start">بدلي جو مال لکو</string>
+    <string name="pos_exchange_started">%1$s جي بدلي: ساڳئي گراهڪ لاءِ نئون مال لکو.</string>
+    <string name="pos_exchange_started_cash">%1$s جي بدلي: نئون مال لکو. %2$s جي رقم واپسي گلي ۾ ئي رهي ٿي ۽ هن بل جي پهرين ادائگي آهي؛ رڳو فرق وصول ڪريو.</string>
     <string name="pos_returns">واپسيون</string>
     <string name="pos_err_over_sold">جيترو وڪيو ان کان وڌيڪ واپس اچي رهيو آهي</string>
     <string name="pos_err_walk_in_cash">عام گراهڪ کي پوري رقم نقد/بئنڪ واپس ٿئي ٿي</string>
@@ -3624,6 +3635,10 @@
     <string name="documents_title">دستاويز</string>
     <string name="doc_add">دستاويز شامل ڪريو</string>
     <string name="doc_pick_kind">ڪهڙو دستاويز؟</string>
+    <string name="order_paste">واٽس ايپ آرڊر پيسٽ ڪريو</string>
+    <string name="order_paste_empty">پهريان گراهڪ جو آرڊر وارو پيغام ڪاپي ڪريو، پوءِ هتي پيسٽ ڪريو.</string>
+    <string name="order_paste_check">پيغام مان پڙهيو ويو: محفوظ ڪرڻ کان اڳ هر شيءِ، مقدار ۽ ريٽ ڏسو.</string>
+    <string name="order_paste_none">پيغام مان ڪا شيءِ پڙهي نه سگهي. رڳو آرڊر جون لائينون ڪاپي ڪري ٻيهر ڪوشش ڪريو.</string>
     <string name="doc_accept">منظور ٿيل نشان لڳايو</string>
     <string name="doc_cancel_confirm">%1$s منسوخ ڪريو؟ هي پنهنجي نمبر سان رڪارڊ ۾ رهندو ۽ پوءِ بدلائي نٿو سگهجي.</string>
     <string name="audit_doc_converted">دستاويز تبديل ٿيو</string>

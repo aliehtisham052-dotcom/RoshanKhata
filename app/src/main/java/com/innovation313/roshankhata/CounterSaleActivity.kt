@@ -516,7 +516,8 @@ class CounterSaleActivity : BaseActivity() {
                     lifecycleScope.launch {
                         // The ticket's posted returns: each can be printed as a credit note (29 Oct 2026).
                         val back = withContext(Dispatchers.IO) { runCatching { dao.returnsOfSale(s.id) }.getOrDefault(emptyList()) }
-                        val actions = arrayListOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void)) +
+                        // Void and correct (3 Nov 2026): the void, then the ticket's goods back on the counter to fix.
+                        val actions = arrayListOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void), getString(R.string.pos_void_correct)) +
                             back.map { getString(R.string.doc_kind_credit_note) + " · " + it.returnNumber }
                         MaterialAlertDialogBuilder(this@CounterSaleActivity)
                             .setTitle(s.saleNumber)
@@ -527,7 +528,10 @@ class CounterSaleActivity : BaseActivity() {
                                     // Who allowed it goes to the DAO, which refuses a void or return nobody allowed (23 Oct 2026).
                                     1 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.RETURN, getString(R.string.pos_return) + " " + s.saleNumber) { by -> startReturn(s.id, by) }
                                     2 -> com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { by -> askVoid(s.id, s.saleNumber, by) }
-                                    else -> back.getOrNull(which - 3)?.let { openCreditNote(it.id) }
+                                    // Only onto an empty counter: the ticket being rung up is never cleared to make room.
+                                    3 -> if (!draft.isEmpty) { message = getString(R.string.pos_void_till_busy); toast(R.string.pos_void_till_busy) }
+                                        else com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { by -> askVoid(s.id, s.saleNumber, by, correct = true) }
+                                    else -> back.getOrNull(which - 4)?.let { openCreditNote(it.id) }
                                 }
                             }
                             .setNegativeButton(R.string.cancel, null)
@@ -544,6 +548,22 @@ class CounterSaleActivity : BaseActivity() {
      * and what the customer is credited, in the shop's invoice design, opened to read, print or share. Drawn
      * from the return itself and never saved — the return already holds the money.
      */
+    /**
+     * The exchange's second half (3 Nov 2026, [CounterDraft.startExchange]): the empty counter takes the same
+     * customer and, for a cash refund, that refund as its first cash payment, so only the difference is collected.
+     */
+    private fun startExchange(returnId: Long) {
+        lifecycleScope.launch {
+            val ret = withContext(Dispatchers.IO) { runCatching { dao.getReturn(returnId) }.getOrNull() }?.takeIf { !it.isDeleted } ?: return@launch
+            if (isFinishing || isDestroyed) return@launch
+            if (!draft.isEmpty) { message = getString(R.string.pos_void_till_busy); return@launch }
+            draft.startExchange(ret)
+            message = if (ret.refundMethod == com.innovation313.roshankhata.data.PaymentMethod.CASH && ret.refundAmount > 0.0)
+                getString(R.string.pos_exchange_started_cash, ret.returnNumber, com.innovation313.roshankhata.ui.Format.money(ret.refundAmount))
+            else getString(R.string.pos_exchange_started, ret.returnNumber)
+        }
+    }
+
     /**
      * A return's slip on the paired receipt printer (3 Nov 2026): the lines the computer prints too
      * ([com.innovation313.roshankhata.data.ReturnReceiptText]), read back from the rows just written. A cash refund
@@ -596,7 +616,12 @@ class CounterSaleActivity : BaseActivity() {
         }
     }
 
-    private fun askVoid(saleId: Long, number: String, allowedBy: String?) {
+    /**
+     * Voids a ticket with its reason. With [correct] (3 Nov 2026, "Sale theek karein"), its goods then come back on
+     * the empty counter as a new ticket to fix and complete ([CounterDraft.reRing]): the voided one stays in the
+     * book with its reason and its audit row, and the money is taken again on the corrected ticket.
+     */
+    private fun askVoid(saleId: Long, number: String, allowedBy: String?, correct: Boolean = false) {
         val input = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this)).apply { hint = getString(R.string.pos_void_reason) }
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.pos_void)
@@ -613,6 +638,19 @@ class CounterSaleActivity : BaseActivity() {
                     val ok = voided?.getOrNull() == true
                     if (ok) com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity)
                     voided?.exceptionOrNull()?.let { android.util.Log.w("RoshanKhata", "sale not voided", it) }
+                    if (ok && correct && draft.isEmpty) {
+                        val again = withContext(Dispatchers.IO) {
+                            runCatching { dao.saleWithLines(saleId) to Counter.onHand(dao) }.getOrNull()
+                        }
+                        val full = again?.first
+                        val stock = again?.second
+                        if (full != null && stock != null) {
+                            draft.reRing(full, onHandOf = { stock[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
+                            message = getString(R.string.pos_void_corrected, number)
+                            reload()
+                            return@launch
+                        }
+                    }
                     message = when {
                         ok -> getString(R.string.pos_voided) + " " + number
                         refusal != null -> com.innovation313.roshankhata.screens.voidRefusalWord(refusal, "")
@@ -654,15 +692,20 @@ class CounterSaleActivity : BaseActivity() {
                                         val number = withContext(Dispatchers.IO) { dao.getReturn(id)?.returnNumber }.orEmpty()
                                         message = getString(R.string.pos_return_posted, number)
                                         dialog.dismiss(); reload()
-                                        // The return's paper, offered at once: a credit note from the row just written, or
-                                        // the slip on the receipt printer (3 Nov 2026: the customer handing goods back had
-                                        // no paper for them unless the A4 note was made).
-                                        if (!isFinishing && !isDestroyed) MaterialAlertDialogBuilder(this@CounterSaleActivity)
-                                            .setTitle(getString(R.string.pos_return_posted, number))
-                                            .setPositiveButton(R.string.doc_kind_credit_note) { _, _ -> openCreditNote(id) }
-                                            .setNeutralButton(R.string.print_receipt) { _, _ -> printReturnSlip(id) }
-                                            .setNegativeButton(R.string.close, null)
-                                            .show()
+                                        // What may follow a return (3 Nov 2026): the new goods of an exchange rung up on the
+                                        // empty counter, the slip on the receipt printer (the customer handing goods back had no
+                                        // paper for them unless the A4 note was made), or that credit note.
+                                        if (!isFinishing && !isDestroyed) {
+                                            val next = ArrayList<Pair<String, () -> Unit>>()
+                                            if (draft.isEmpty) next += getString(R.string.pos_exchange_start) to { startExchange(id) }
+                                            next += getString(R.string.print_receipt) to { printReturnSlip(id) }
+                                            next += getString(R.string.doc_kind_credit_note) to { openCreditNote(id) }
+                                            MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                                                .setTitle(getString(R.string.pos_return_posted, number))
+                                                .setItems(next.map { it.first }.toTypedArray()) { _, w -> next.getOrNull(w)?.second?.invoke() }
+                                                .setNegativeButton(R.string.close, null)
+                                                .show()
+                                        }
                                     }.onFailure {
                                         android.util.Log.w("RoshanKhata", "return not posted", it)
                                         problem = failWord(it, R.string.pos_return_failed)

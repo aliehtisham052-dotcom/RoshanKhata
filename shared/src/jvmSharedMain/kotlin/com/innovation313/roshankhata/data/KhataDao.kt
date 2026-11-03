@@ -641,6 +641,69 @@ interface KhataDao {
     )
     suspend fun entriesInRange(from: Long, to: Long): List<EntryWithParty>
 
+    // ---------- The day book (3 Nov 2026): one day's money, row by row (DayBook) ----------
+
+    /** A day's khata entries, `from <= t < to`, with their party and how the money moved. */
+    @Query(
+        """
+        SELECT t.id, p.name AS partyName, p.isCustomer, t.amount, t.isGiven, t.note, t.entryNumber, t.timestamp,
+               t.paymentMethod, t.isQarzeHasna
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.timestamp >= :from AND t.timestamp < :to
+        ORDER BY t.timestamp ASC, t.id ASC
+        """
+    )
+    suspend fun dayBookEntries(from: Long, to: Long): List<DayBookEntry>
+
+    /** A day's cashbook rows, `from <= t < to`, oldest first. */
+    @Query("SELECT * FROM cashbook WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to ORDER BY timestamp ASC, id ASC")
+    suspend fun cashbookRowsBetween(from: Long, to: Long): List<CashEntry>
+
+    /** Bills paid in cash on delivery with no khata entry of their own (the drawer's rule, [billsAndStaffCashBetween]). */
+    @Query(
+        """
+        SELECT b.id, b.billNumber, b.totalAmount, b.createdAt, p.name AS partyName
+        FROM supplier_bills b
+        JOIN parties p ON p.id = b.partyId
+        WHERE b.isDeleted = 0 AND b.isPaidInFull = 1 AND b.ledgerEntryId IS NULL
+          AND b.createdAt >= :from AND b.createdAt < :to
+        ORDER BY b.createdAt ASC
+        """
+    )
+    suspend fun cashBillsBetween(from: Long, to: Long): List<DayBookBill>
+
+    /** Staff paid in a day (advances and salaries), with the person's name. */
+    @Query(
+        """
+        SELECT sp.id, s.name AS staffName, sp.amount, sp.kind, sp.timestamp, sp.note
+        FROM staff_payments sp
+        JOIN staff s ON s.id = sp.staffId
+        WHERE sp.isDeleted = 0 AND sp.timestamp >= :from AND sp.timestamp < :to
+        ORDER BY sp.timestamp ASC
+        """
+    )
+    suspend fun staffPaidBetween(from: Long, to: Long): List<DayBookStaffPay>
+
+    /**
+     * Each regular customer's buying (3 Nov 2026, [Lapsed]): the days he bought on (a khata "I gave", not
+     * Qarz-e-Hasna; each day once), the first and the last, and how much. Read off the per-party index.
+     */
+    @Query(
+        """
+        SELECT t.partyId AS partyId, p.name AS name, p.phone AS phone,
+               COUNT(DISTINCT t.timestamp / 86400000) AS days,
+               MIN(t.timestamp) AS firstAt, MAX(t.timestamp) AS lastAt, SUM(t.amount) AS total
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0 AND p.isDeleted = 0 AND p.isCustomer = 1
+        GROUP BY t.partyId
+        HAVING COUNT(DISTINCT t.timestamp / 86400000) >= 3
+        """
+    )
+    suspend fun buyingHabits(): List<BuyingHabit>
+
     /**
      * The book's last [limit] entries, newest first, with their party's name — the computer's Home
      * "Recent dealings" (25 Oct 2026, the owner's mockup): never bare on a quiet morning.

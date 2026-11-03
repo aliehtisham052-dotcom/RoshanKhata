@@ -810,6 +810,11 @@
     <string name="insights_total_sale">Kul Farokht \u00b7 Is mahine</string>
     <string name="insights_top_products">Sab Se Zyada Bikne Wali Cheezein</string>
     <string name="insights_top_customers">Sab Se Bare Gahak</string>
+    <string name="lapsed_title">Ab nahi aate</string>
+    <string name="lapsed_help">Baqaida gahak jinhon ne apne mamool ke waqfe se dugna waqt, aur kam az kam 30 din, kuch nahi khareeda. Bare khareedar pehle. Call ya WhatsApp ke liye gahak kholein.</string>
+    <string name="lapsed_last">Aakhri khareedari %1$s, %2$s pehle</string>
+    <string name="lapsed_usual">Pehle har %1$s baad khareedte the · kul %2$s</string>
+    <string name="lapsed_none">Kisi baqaida gahak ne aana nahi chhora.</string>
     <string name="insights_up">\u25b2 Pichle mahine se %1$d%% zyada (%2$s)</string>
     <string name="insights_down">\u25bc Pichle mahine se %1$d%% kam (%2$s)</string>
     <string name="insights_no_compare">Farokht ka pehla mahina \u2014 muwazne ke liye abhi kuch nahi.</string>
@@ -2973,6 +2978,9 @@
     <string name="pos_void_reason">Mansookhi ki wajah</string>
     <string name="pos_void_confirm">%1$s mansookh karein? Is ki khata aur cashbook ki qatarein raddi mein jayengi.</string>
     <string name="pos_voided">Mansookh</string>
+    <string name="pos_void_correct">Mansookh kar ke durust karein</string>
+    <string name="pos_void_corrected">%1$s mansookh ho gayi. Is ki cheezein bill par aa gayi hain: durust karein, phir sale mukammal karein.</string>
+    <string name="pos_void_till_busy">Counter par ek bill khula hai. Pehle use mukammal karein ya rok lein.</string>
     <string name="pos_status_done">Mukammal</string>
     <string name="pos_status_void">Mansookh</string>
     <string name="pos_recent">Haliya sales</string>
@@ -3023,6 +3031,9 @@
     <string name="pos_refund_account">Khate mein rakhein</string>
     <string name="pos_return_qty_help">Bika %1$s · ab tak wapas %2$s</string>
     <string name="pos_return_posted">Wapsi %1$s mehfooz ho gayi</string>
+    <string name="pos_exchange_start">Badle ka maal likhein</string>
+    <string name="pos_exchange_started">%1$s ka badla: isi gahak ke liye naya maal likhein.</string>
+    <string name="pos_exchange_started_cash">%1$s ka badla: naya maal likhein. %2$s ki raqam wapsi galle mein hi rehti hai aur is bill ki pehli adaigi hai; sirf farq wusool karein.</string>
     <string name="pos_returns">Wapsiyan</string>
     <string name="pos_err_over_sold">Jitna bika us se zyada wapas aa raha hai</string>
     <string name="pos_err_walk_in_cash">Aam gahak ko poori raqam naqad/bank wapas hoti hai</string>
@@ -3596,6 +3607,10 @@
     <string name="documents_title">Documents</string>
     <string name="doc_add">Document shamil karein</string>
     <string name="doc_pick_kind">Kaun si document?</string>
+    <string name="order_paste">WhatsApp order paste karein</string>
+    <string name="order_paste_empty">Pehle gahak ka order wala paigham copy karein, phir yahan paste karein.</string>
+    <string name="order_paste_check">Paigham se parha gaya: mehfooz karne se pehle har cheez, miqdar aur rate dekh lein.</string>
+    <string name="order_paste_none">Paigham se koi cheez nahi parhi ja saki. Sirf order ki lines copy kar ke dobara koshish karein.</string>
     <string name="doc_accept">Manzoor Shuda Nishan Zad Karein</string>
     <string name="doc_cancel_confirm">%1$s mansookh karein? Yeh apne number ke saath record mein rahegi aur baad mein badli nahi ja sakegi.</string>
     <string name="audit_doc_converted">Document convert hua</string>

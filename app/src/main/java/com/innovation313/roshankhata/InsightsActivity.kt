@@ -44,6 +44,8 @@ class InsightsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_insights)
         findViewById<View>(R.id.btnAskVoice).setOnClickListener { askByVoice() }
+        // Customers who stopped coming (3 Nov 2026): their list, a tap away.
+        findViewById<View>(R.id.cardLapsed).setOnClickListener { startActivity(android.content.Intent(this, LapsedActivity::class.java)) }
         // Cash flow has its own tile on Home (13 Oct): the second door to it here is gone.
 
         // Edge-to-edge, the mechanism proven on the Home screen.
@@ -60,6 +62,13 @@ class InsightsActivity : BaseActivity() {
             // held up by it.
             val profit = withContext(Dispatchers.IO) { Profit.thisMonth(dao) to Profit.lastMonth(dao) }
             renderProfit(profit.first, profit.second)
+            // How many regulars stopped coming, read last (one grouped read of the khata).
+            val lapsed = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.Lapsed.list(dao).size }.getOrNull() }
+            findViewById<TextView>(R.id.tvLapsedCount).text = when {
+                lapsed == null -> "–"
+                lapsed == 0 -> getString(R.string.lapsed_none)
+                else -> Digits.quantity(resources, R.plurals.customer_count, lapsed, lapsed)
+            }
         }
     }
 

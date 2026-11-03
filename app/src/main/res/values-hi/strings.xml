@@ -850,6 +850,11 @@
     <string name="insights_total_sale">कुल बिक्री \u00b7 इस महीने</string>
     <string name="insights_top_products">सबसे ज़्यादा बिकने वाले प्रोडक्ट</string>
     <string name="insights_top_customers">सबसे बड़े ग्राहक</string>
+    <string name="lapsed_title">अब नहीं आते</string>
+    <string name="lapsed_help">नियमित ग्राहक जिन्होंने अपने सामान्य अंतर से दोगुने समय, और कम से कम 30 दिन, कुछ नहीं खरीदा। बड़े खरीदार पहले। कॉल या WhatsApp के लिए ग्राहक खोलें।</string>
+    <string name="lapsed_last">आखिरी खरीद %1$s, %2$s पहले</string>
+    <string name="lapsed_usual">पहले हर %1$s में खरीदते थे · कुल %2$s</string>
+    <string name="lapsed_none">किसी नियमित ग्राहक ने आना नहीं छोड़ा।</string>
     <string name="insights_up">\u25b2 पिछले महीने से %1$d%% ज़्यादा (%2$s)</string>
     <string name="insights_down">\u25bc पिछले महीने से %1$d%% कम (%2$s)</string>
     <string name="insights_no_compare">बिक्री का पहला महीना \u2014 अभी तुलना के लिए कुछ नहीं।</string>
@@ -3021,6 +3026,9 @@
     <string name="pos_void_reason">रद्द करने का कारण</string>
     <string name="pos_void_confirm">%1$s रद्द करें? इसकी खाता और कैशबुक पंक्तियाँ बिन में जाएँगी।</string>
     <string name="pos_voided">रद्द</string>
+    <string name="pos_void_correct">रद्द करके सुधारें</string>
+    <string name="pos_void_corrected">%1$s रद्द हो गई। इसके आइटम बिल पर आ गए हैं: सुधारें, फिर बिक्री पूरी करें।</string>
+    <string name="pos_void_till_busy">काउंटर पर एक बिल खुला है। पहले उसे पूरा करें या रोकें।</string>
     <string name="pos_status_done">पूरी</string>
     <string name="pos_status_void">रद्द</string>
     <string name="pos_recent">हाल की बिक्री</string>
@@ -3071,6 +3079,9 @@
     <string name="pos_refund_account">खाते में रखें</string>
     <string name="pos_return_qty_help">बिका %1$s · अब तक वापस %2$s</string>
     <string name="pos_return_posted">वापसी %1$s सहेजी गई</string>
+    <string name="pos_exchange_start">बदले का माल लिखें</string>
+    <string name="pos_exchange_started">%1$s का बदला: उसी ग्राहक के लिए नया माल लिखें।</string>
+    <string name="pos_exchange_started_cash">%1$s का बदला: नया माल लिखें। %2$s का रिफंड गल्ले में ही रहता है और इस बिल का पहला भुगतान है; सिर्फ़ फ़र्क वसूल करें।</string>
     <string name="pos_returns">वापसियाँ</string>
     <string name="pos_err_over_sold">जितना बिका उससे ज़्यादा वापस आ रहा है</string>
     <string name="pos_err_walk_in_cash">आम ग्राहक को पूरी रकम नकद वापस होती है</string>
@@ -3644,6 +3655,10 @@
     <string name="documents_title">दस्तावेज़</string>
     <string name="doc_add">दस्तावेज़ जोड़ें</string>
     <string name="doc_pick_kind">कौन सा दस्तावेज़?</string>
+    <string name="order_paste">WhatsApp ऑर्डर पेस्ट करें</string>
+    <string name="order_paste_empty">पहले ग्राहक का ऑर्डर वाला संदेश कॉपी करें, फिर यहाँ पेस्ट करें।</string>
+    <string name="order_paste_check">संदेश से पढ़ा गया: सहेजने से पहले हर आइटम, मात्रा और रेट देख लें।</string>
+    <string name="order_paste_none">संदेश से कोई आइटम नहीं पढ़ा जा सका। सिर्फ़ ऑर्डर की लाइनें कॉपी करके फिर कोशिश करें।</string>
     <string name="doc_accept">स्वीकृत चिह्नित करें</string>
     <string name="doc_cancel_confirm">%1$s रद्द करें? यह अपने नंबर के साथ रिकॉर्ड में रहेगा और बाद में बदला नहीं जा सकेगा।</string>
     <string name="audit_doc_converted">दस्तावेज़ परिवर्तित</string>

@@ -416,6 +416,8 @@ fun InvoicesPane(
     // Add: the kind is asked first (Invoice by default), then the form opens with it.
     var pickingKind by remember { mutableStateOf(false) }
     var adding by remember { mutableStateOf<String?>(null) }
+    // A customer's WhatsApp order, copied and pasted (3 Nov 2026): the new sales order's lines, read from it.
+    var pasted by remember { mutableStateOf<List<com.innovation313.roshankhata.data.InvoiceItem>>(emptyList()) }
     if (pickingKind) {
         PickDialog(
             word(W.doc_pick_kind),
@@ -552,15 +554,17 @@ fun InvoicesPane(
                     products = rememberProductShelf(dao),
                     kind = newKind,
                     nextNumber = { dao.nextDocNumber(newKind) },
+                    startLines = pasted,
                     onSave = { inv, lines ->
                         adding = null
+                        pasted = emptyList()
                         scope.launch {
                             val saved = withContext(Dispatchers.IO) { runCatching { dao.saveInvoiceWithItems(inv, lines) } }
                             saved.onSuccess { id -> kind = null; justMade = null; chosen = id; print(id) }
                                 .onFailure { refused = docFailText(words, it) }
                         }
                     },
-                    onCancel = { adding = null }
+                    onCancel = { adding = null; pasted = emptyList() }
                 )
             }
         }
@@ -622,6 +626,21 @@ fun InvoicesPane(
             // Invoice settings as an icon with its words as the hover tip (30 Oct 2026, the proof picture): as a
             // worded button it took the title's room and "Documents" read "Docume…" on the laptop.
             IconAction("ic_tile_settings", word(W.invoice_settings_title), { settingFields = true })
+            // The order the owner copied from WhatsApp opens as a new sales order, read against the shop's products
+            // (OrderPaste); nothing is saved until he checks it. The clipboard is read only now, when he asks.
+            FluentButton(word(W.order_paste), {
+                scope.launch {
+                    val text = runCatching {
+                        java.awt.Toolkit.getDefaultToolkit().systemClipboard.getData(java.awt.datatransfer.DataFlavor.stringFlavor) as? String
+                    }.getOrNull()?.trim().orEmpty()
+                    if (text.isEmpty()) { refused = words.text(W.order_paste_empty); return@launch }
+                    val products = withContext(Dispatchers.IO) { runCatching { dao.productsOnce() }.getOrDefault(emptyList()) }
+                    val lines = com.innovation313.roshankhata.data.OrderPaste.parse(text, products)
+                    if (lines.isEmpty()) { refused = words.text(W.order_paste_none); return@launch }
+                    pasted = lines.map { com.innovation313.roshankhata.data.InvoiceItem(invoiceId = 0, itemName = it.name, quantity = it.quantity, unit = it.unit, rate = it.rate) }
+                    adding = com.innovation313.roshankhata.data.DocKind.SALES_ORDER
+                }
+            }, kind = ButtonKind.STANDARD)
             FluentButton(word(W.doc_add), { pickingKind = true }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
         }
     ) {

@@ -831,6 +831,11 @@
     <string name="insights_total_sale">Total Penjualan \u00b7 Bulan ini</string>
     <string name="insights_top_products">Produk Terlaris</string>
     <string name="insights_top_customers">Pelanggan Teratas</string>
+    <string name="lapsed_title">Berhenti datang</string>
+    <string name="lapsed_help">Pelanggan tetap yang belum membeli selama dua kali jarak biasanya, dan paling sedikit 30 hari. Pembeli terbesar lebih dulu. Buka pelanggan untuk menelepon atau mengirim WhatsApp.</string>
+    <string name="lapsed_last">Terakhir membeli %1$s, %2$s lalu</string>
+    <string name="lapsed_usual">Biasanya membeli tiap %1$s · total %2$s</string>
+    <string name="lapsed_none">Tidak ada pelanggan tetap yang berhenti datang.</string>
     <string name="insights_up">\u25b2 %1$d%% lebih tinggi dari bulan lalu (%2$s)</string>
     <string name="insights_down">\u25bc %1$d%% lebih rendah dari bulan lalu (%2$s)</string>
     <string name="insights_no_compare">Bulan pertama penjualan \u2014 belum ada pembanding.</string>
@@ -2974,6 +2979,9 @@
     <string name="pos_void_reason">Alasan pembatalan</string>
     <string name="pos_void_confirm">Batalkan %1$s? Baris buku dan kas-nya masuk ke tempat sampah.</string>
     <string name="pos_voided">Dibatalkan</string>
+    <string name="pos_void_correct">Batalkan dan perbaiki</string>
+    <string name="pos_void_corrected">%1$s dibatalkan. Barangnya sudah ada di struk: perbaiki, lalu selesaikan penjualan.</string>
+    <string name="pos_void_till_busy">Ada struk yang terbuka di kasir. Selesaikan atau tahan dulu.</string>
     <string name="pos_status_done">Selesai</string>
     <string name="pos_status_void">Batal</string>
     <string name="pos_recent">Penjualan terbaru</string>
@@ -3024,6 +3032,9 @@
     <string name="pos_refund_account">Simpan di akun</string>
     <string name="pos_return_qty_help">Terjual %1$s · sudah kembali %2$s</string>
     <string name="pos_return_posted">Retur %1$s tersimpan</string>
+    <string name="pos_exchange_start">Catat penukaran</string>
+    <string name="pos_exchange_started">Penukaran %1$s: catat barang baru untuk pelanggan yang sama.</string>
+    <string name="pos_exchange_started_cash">Penukaran %1$s: catat barang baru. Pengembalian uang %2$s tetap di laci sebagai pembayaran pertama struk ini; tagih selisihnya saja.</string>
     <string name="pos_returns">Retur</string>
     <string name="pos_err_over_sold">Yang kembali lebih banyak dari yang terjual</string>
     <string name="pos_err_walk_in_cash">Pelanggan umum dikembalikan uangnya penuh, tunai</string>
@@ -3588,6 +3599,10 @@
     <string name="documents_title">Dokumen</string>
     <string name="doc_add">Tambah dokumen</string>
     <string name="doc_pick_kind">Dokumen yang mana?</string>
+    <string name="order_paste">Tempel pesanan WhatsApp</string>
+    <string name="order_paste_empty">Salin pesan pesanan pelanggan dulu, lalu tempel di sini.</string>
+    <string name="order_paste_check">Dibaca dari pesan: periksa setiap barang, jumlah, dan harga sebelum menyimpan.</string>
+    <string name="order_paste_none">Tidak ada barang yang terbaca dari pesan. Salin baris pesanannya saja lalu coba lagi.</string>
     <string name="doc_accept">Tandai Diterima</string>
     <string name="doc_cancel_confirm">Batalkan %1$s? Dokumen tetap tercatat dengan nomornya dan tidak dapat diubah setelahnya.</string>
     <string name="audit_doc_converted">Dokumen dikonversi</string>

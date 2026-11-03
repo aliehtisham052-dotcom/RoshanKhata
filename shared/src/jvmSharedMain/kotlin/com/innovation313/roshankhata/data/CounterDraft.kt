@@ -389,6 +389,33 @@ class CounterDraft {
         }
     }
 
+    /**
+     * A voided ticket's goods back on the counter to be corrected and rung up again (3 Nov 2026, "Sale theek
+     * karein": a cashier's 3 bags that were 5 meant voiding and typing every line again). The same customer,
+     * lines, discount, tax and note as [load] brings a held ticket back, but it is a new ticket: no held id (the
+     * voided one is not dropped, it stays in the book as voided with its reason) and no payments — what was paid
+     * went back with the void, and the money is taken again on the corrected ticket.
+     */
+    fun reRing(voided: SaleWithLines, onHandOf: (Long) -> Double? = { null }, productOf: (Long) -> Product? = { null }) {
+        load(voided, onHandOf, productOf)
+        heldId = null
+    }
+
+    /**
+     * An exchange begins (3 Nov 2026, the competitor study): goods came back on [ret], and the new goods are rung up
+     * on this empty ticket for the same customer. A cash refund is not handed over and taken back: it stays in the
+     * drawer as this ticket's first cash payment, its reference the return's number (the receipt says it), so the
+     * cashier collects only the difference — or hands back as change what the new goods leave over. A refund kept on
+     * the customer's account needs nothing: the khata nets the return and the sale. Two documents still, each written
+     * and reversed by its own rules; nothing new is posted until the sale is completed.
+     */
+    fun startExchange(ret: SaleReturn) {
+        clear()
+        if (ret.partyId != null) setParty(ret.partyId, ret.customerName)
+        if (ret.refundMethod == PaymentMethod.CASH && ret.refundAmount > 0.0)
+            addPayment(PaymentMethod.CASH, ret.refundAmount).reference = ret.returnNumber
+    }
+
     /** The document [KhataDao.postSale] is given; its figures are recomputed there. */
     fun toSale(createdBy: String? = Access.userName, timestamp: Long = System.currentTimeMillis()) = Sale(
         partyId = partyId, customerName = partyName?.trim()?.ifBlank { null },

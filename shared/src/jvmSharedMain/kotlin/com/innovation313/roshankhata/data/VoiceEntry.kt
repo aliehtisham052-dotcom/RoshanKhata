@@ -177,6 +177,15 @@ object VoiceEntry {
     )
 
     /**
+     * A count written as a word — "do", "teen", "دو", "three", "سه" — or null (3 Nov 2026, the WhatsApp order paste:
+     * "do bori DAP"). The same words the spoken amounts are read with; scales ("sau", "hazaar") are not counts here.
+     */
+    fun countWord(word: String): Double? {
+        val w = nfc(word.trim())
+        return UNITS[w.lowercase()] ?: UNITS[w] ?: PERSIAN_UNITS[w]
+    }
+
+    /**
      * Read [spoken] against the shop's own customer names.
      *
      * [knownNames] is passed in rather than looked up, so this stays pure and

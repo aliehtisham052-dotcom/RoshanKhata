@@ -144,10 +144,31 @@ class InvoicesActivity : BaseActivity() {
             .setTitle(R.string.doc_pick_kind)
             .setSingleChoiceItems(kinds.map { kindWord(it) }.toTypedArray(), picked) { _, which -> picked = which }
             .setNegativeButton(R.string.cancel, null)
+            // A customer's WhatsApp order, copied and pasted (3 Nov 2026): a sales order with its lines read from it.
+            .setNeutralButton(R.string.order_paste) { _, _ -> pasteOrder() }
             .setPositiveButton(R.string.ok) { _, _ ->
                 startActivity(Intent(this, InvoiceEditorActivity::class.java).putExtra(InvoiceEditorActivity.EXTRA_KIND, kinds[picked]))
             }
             .show()
+    }
+
+    /**
+     * The order the owner copied from the customer's WhatsApp chat opens as a new sales order, its lines read from
+     * the message against the shop's products ([com.innovation313.roshankhata.data.OrderPaste]); nothing is saved
+     * until he checks it and presses Save. Read from the clipboard only now, when he asks.
+     */
+    private fun pasteOrder() {
+        val clip = getSystemService(android.content.ClipboardManager::class.java)
+        val text = runCatching { clip?.primaryClip?.getItemAt(0)?.coerceToText(this)?.toString() }.getOrNull()?.trim().orEmpty()
+        if (text.isEmpty()) {
+            Toast.makeText(this, R.string.order_paste_empty, Toast.LENGTH_LONG).show()
+            return
+        }
+        startActivity(
+            Intent(this, InvoiceEditorActivity::class.java)
+                .putExtra(InvoiceEditorActivity.EXTRA_KIND, DocKind.SALES_ORDER)
+                .putExtra(InvoiceEditorActivity.EXTRA_PASTED_ORDER, text.take(com.innovation313.roshankhata.data.OrderPaste.MAX_CHARS))
+        )
     }
 
     // ---------- Viewing / deleting a saved invoice ----------
