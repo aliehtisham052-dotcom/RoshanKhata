@@ -99,6 +99,8 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
   other name in the line is written out in full; a new file's first delegate brings its two imports.
 - A parameter made required is given at every caller — the test sources' too; a search of the app's own code
   alone left a screen-proof test calling the old shape, and the test compile failed.
+- A text arrow (‹ ›, brackets) is mirrored by the text engine in a right-to-left line; swapped by hand as well, it
+  turns twice. Only icon arrows are flipped by the code. The Urdu proof picture showed it; no test did.
 - Gradle stops at the first failing task: one failing test hides every later failure. Fix it, push, and read the
   next run before calling anything green.
 - A test that asserts the old behaviour is changed in the same commit as the behaviour, with the reason written in it.

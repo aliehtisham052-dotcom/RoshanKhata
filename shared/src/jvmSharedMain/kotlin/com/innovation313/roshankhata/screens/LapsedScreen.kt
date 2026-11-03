@@ -56,9 +56,9 @@ fun LapsedRow(c: Lapsed.Customer, onClick: () -> Unit, modifier: Modifier = Modi
                 color = colours.textMuted, fontSize = 12.sp)
         }
         Spacer(Modifier.width(8.dp))
-        // Forward points the reading way: left in Urdu, Sindhi, Arabic and Persian.
-        Text(if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) "‹" else "›",
-            color = colours.textMuted, fontSize = 20.sp)
+        // Forward points the reading way: left in Urdu, Sindhi, Arabic and Persian — the text mirrors › itself in a
+        // right-to-left page (Bidi_Mirrored), so it is never swapped here.
+        Text("›", color = colours.textMuted, fontSize = 20.sp)
     }
 }
 
