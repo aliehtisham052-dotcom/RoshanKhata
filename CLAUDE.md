@@ -19,12 +19,12 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,743 strings and 59 plurals (2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,745 strings and 59 plurals (2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 41 (41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
+- Room database, version 42 (42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
   backup format 17 (documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
@@ -1556,6 +1556,43 @@ critical, 48 medium, 52 low. CI only — nothing on a real device; docs/LESSONS.
   party dialog, order status and cheque; L16 the stock transfer's two books; L20 FCM priority (a Worker deploy);
   L21, L35, L39, L41, L43, L44, L46-L49, L52 as the report says.
 
+### The speed work (3 Nov 2026, kmp-desktop-16 — the owner: "data bohat zyada ho jaye to quick response, koi data loss na ho")
+
+Measured first, then fixed only what the numbers showed; no stored data and no backup format changed. CI only —
+not on a real phone or the owner's laptop.
+
+- **The measurement (both platforms, one list):** `BigBookSeed` (shared; the phone's `BigBook` calls it) writes a
+  wholesaler's book — 10,000 customers × 30 lines (one of 5,000), 300 products, goods on a third of the sales, two
+  bills per supplier with batches, 20,000 cashbook rows, 20,000 walk-in tickets — **by the clock, as a shop writes
+  it**, each customer's run ending by now; every seeded row found again by its mark, so `clear` takes it all out;
+  refused for a book that syncs. `BigBookProbe` (shared) times every heavy read the screens make (Khata, customer,
+  Home, bell, Follow-up, Radar, reports, stock and its six sums, counter, the reads after a save). Windows:
+  `BigBookDesktopPerfTest` in a temporary folder, then the whole book backed up, restored into a second book and
+  compared row by row (`LiveSync.fingerprint`); numbers to build/perf, one annotation in desktop.yml; test heap 1 GB
+  (a 4 GB laptop's). Phone: `BigBookPerfTest.everyHeavyReadIsTimed` and `aSavedEntryReachesTheCustomerScreen`.
+- **Schema 42** (`Schema42`, both migrations, Schema42Test, `SchemaRewind.undo42`): transactions (partyId,
+  isDeleted, timestamp, isGiven, amount, pairedEntryId, isQarzeHasna) replaces (partyId, isDeleted, timestamp):
+  every per-party sum is read off the index. Live sync needs both devices at 42.
+- **Big answers a slice at a time** (`LedgerLines`: `ledgerPointsOf`, `liveCustomerIds`, `agingMovesOf`, 400
+  ids a read; `KhataSales.rowsBetween`, a fortnight a read): Android hands an answer over 2 MB at a time and runs the
+  query again from its first row for each 2 MB — 275,000 owing lines took 10.8 s on the emulator against 0.67 s on
+  the computer. `observeOwingLedgerPoints`, `radarRows` and `agingMoves` are gone; LedgerLinesTest holds each slice
+  read to the old single query as written.
+- Stock's khata sums read the goods lines first (CROSS JOIN, `+ei.productId`); Windows Follow-up works out habits
+  and order on Dispatchers.Default (the phone already did).
+- **Windows runner, before → after:** every party's balance 834 → 197 ms; owing lines 666 → 82; bell 1,214 → 517;
+  Dues by age 1,074 → 411; stock 289 → 186; the reads after a save 2,989 → 928; restore heap 327 → 215 MB; the
+  restored big book the same row by row. (The "before" seed had 70,000 lines at this moment, so day and month
+  windows are not compared.)
+- **Phone (CI emulator), before:** owing lines 10.8 s, Radar pace 4.8 s, Dues by age 7.3 s, a year's sales report
+  8.8 s, the reads after a save 13.8 s, the Khata list's first row 2.3 s (its 2 s budget failed). After: the
+  on-device run's "Big book timings" annotation.
+- **Left, with the reason:** reading a 197 MB backup holds it in memory — 141 of the emulator's 192 MB before the
+  fixes; a streamed restore is the real fix (it touches the restore core, a task of its own); the Khata Report's
+  "All" lists every entry of the book; the bell is worked out again on every page switch on Windows (background).
+- The purchase order form (the owner's photo, same day): the supplier list has its heading and scrolls, and Save
+  says why it waits (`po_pick_supplier`, `po_no_suppliers`), phone and Windows.
+
 ### The shared module (KMP)
 
 ```
@@ -1939,6 +1976,22 @@ Each of these cost a build or a bug.
 68. **A failing test hides everything after it.** Gradle stopped at `:shared:desktopTest` (CsvImportTest asserted the
     behaviour the same audit changed), so the app's tests never ran on 6a26212. A behaviour change and its test change
     go in one commit, and a green build is read only on the run that followed the fix.
+
+69. **Measure against a book written the way a shop writes it.** The big book wrote each customer's lines side by
+    side, and every read by customer looked twice as fast as on a real book, whose lines lie by the clock among
+    everyone else's; lines drawn past today were clamped to now, and 70,000 of them sat "today". Seed by the clock,
+    every run ending by now, and look at the day and month counts before believing a figure.
+
+70. **On Android a big answer is read many times over.** A cursor's answer comes 2 MB at a time and the query runs
+    again from its first row for each 2 MB: 275,000 rows took 10.8 s on the emulator and 0.67 s on the computer.
+    Read big answers a slice at a time (`LedgerLines`, at most 400 ids — SQLite before 3.32 takes 999 values) or a
+    window of time at a time, and measure on the phone, not only the computer.
+
+71. **A suspend call only goes inside an inline lambda.** `joinToString { count(it) }` failed both builds
+    ("Suspension functions can only be called within coroutine body"); `map { }` is inline.
+
+72. **No heavy work inside a Compose page's drawing.** `remember(points) { PaymentHabit.forAll(points) }` ran on the
+    window's thread; work it out in `produceState`/`LaunchedEffect` on Dispatchers.Default, as the phone's screens do.
 
 ---
 

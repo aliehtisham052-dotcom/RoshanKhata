@@ -67,6 +67,21 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
 - **Check 16 KB page alignment of native libraries on every build** (`scripts/check_16kb.py`); a new library or a
   new version of one can break it without a sound.
 
+## Speed with a big book
+
+- **Measure before fixing, on a book the size of the biggest shop, written the way a shop writes it.** By the
+  clock, each customer's lines among everyone else's, nothing piled at "now". A seed written customer by customer
+  made per-customer reads look twice as fast as they are.
+- **Measure on the phone too.** Android reads a query's answer 2 MB at a time and runs the query again from its first
+  row for each 2 MB: an answer of 275,000 rows took 10.8 s on the emulator and 0.67 s on the computer. Read big
+  answers in slices (ids under SQLite's old limit of 999 values, or windows of time).
+- **A covering index for the sum read most.** Every party's balance after every save read each line from the
+  table; an index holding the summed columns made it four times faster for 3% more file.
+- **Tell SQLite the order when it chooses badly, and check the plan.** `CROSS JOIN` keeps the left table first;
+  `+column` keeps an index out. `EXPLAIN QUERY PLAN` on the big book, in a test.
+- **A faster read must give the same rows.** Each rewritten query is tested against the old one, as it was written.
+- **Nothing heavy inside a screen's drawing.** Work it out on a background dispatcher and show the last answer.
+
 ## Working without a local build
 
 - When CI fails, read the check-run annotations through the GitHub API; do not guess.
