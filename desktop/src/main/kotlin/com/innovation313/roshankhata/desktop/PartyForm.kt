@@ -49,6 +49,8 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     var village by remember { mutableStateOf(existing?.village.orEmpty()) }
     var customer by remember { mutableStateOf(existing?.isCustomer ?: true) }
     var limit by remember { mutableStateOf(existing?.creditLimit?.let { Calc.trim(it) }.orEmpty()) }
+    // The owner's private note (schema 43), on an existing party, as the phone's Edit details has it.
+    var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var photo by remember { mutableStateOf(existing?.photoPath) }
     var photoVersion by remember { mutableStateOf(0) }
     var photoFailed by remember { mutableStateOf(false) }
@@ -99,6 +101,10 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
         }
         if (existing != null) {
             FluentField(limit, { limit = it }, Modifier.fillMaxWidth(), label = word(W.credit_limit), placeholder = word(W.credit_limit_hint), help = word(W.credit_limit_help), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            FluentField(
+                note, { note = it.take(com.innovation313.roshankhata.data.PartyNote.MAX) }, Modifier.fillMaxWidth(),
+                label = word(W.party_note_label), help = word(W.party_note_help), singleLine = false
+            )
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
             FluentButton(word(W.cancel), onCancel)
@@ -111,7 +117,8 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
                         isCustomer = customer,
                         photoPath = if (existing == null) null else photo,
                         // A cleared limit is "no limit", never zero.
-                        creditLimit = if (existing == null) null else Calc.evalAmount(limit)
+                        creditLimit = if (existing == null) null else Calc.evalAmount(limit),
+                        note = if (existing == null) null else com.innovation313.roshankhata.data.PartyNote.clean(note)
                     )
                 )
             })

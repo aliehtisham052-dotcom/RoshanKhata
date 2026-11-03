@@ -66,9 +66,37 @@ import kotlinx.coroutines.withContext
  * anyone owes.
  */
 @Composable
-fun CashbookPane(dao: KhataDao) {
+fun CashbookPane(
+    dao: KhataDao,
+    /** The app's folder on this computer, where the receipts' pictures are kept (schema 43). */
+    home: java.io.File,
+    /** The pictures the other businesses' books point at, so a changed picture is never deleted from under them. */
+    otherBooks: suspend () -> Set<String>? = { emptySet() }
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
+    val words = com.innovation313.roshankhata.words.LocalWords.current
+    // A row's receipt picture (schema 43): shown large with Change and Remove, or chosen for a row that has none.
+    var viewingPhoto by remember { mutableStateOf<CashEntry?>(null) }
+    var photoProblem by remember { mutableStateOf<String?>(null) }
+    val pickTitle = word(W.cash_photo)
+    /** [path] (or none) on the row, the old picture deleted once no row of any business points at it. */
+    fun setPhoto(id: Long, path: String?) {
+        scope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching { Photos.purgingOrphans(dao, home, otherBooks) { dao.setCashPhotoPath(id, path) } }.isSuccess
+            }
+            if (!ok) photoProblem = words.text(W.photo_save_failed)
+        }
+    }
+    /** The owner picks a picture for row [id]; copied in at once, as the row is already written. */
+    fun pickFor(id: Long) {
+        val src = Photos.pick(pickTitle) ?: return
+        scope.launch {
+            val path = withContext(Dispatchers.IO) { Photos.keep(home, src) }
+            if (path == null) photoProblem = words.text(W.photo_save_failed) else setPhoto(id, path)
+        }
+    }
     // The newest page of lines, more as the owner scrolls (23 Oct 2026, the review: every line ever
     // written was read after each write); the count and the figures are the whole table's.
     var limit by remember { mutableStateOf(com.innovation313.roshankhata.data.ListWindow.PAGE) }
@@ -135,7 +163,7 @@ fun CashbookPane(dao: KhataDao) {
             EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f))
         } else ListCard(Modifier.weight(1f)) {
             ListHead(word(W.cashbook), lineCount.toString())
-            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32), endAligned = setOf(2))
+            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32, "" to 32), endAligned = setOf(2))
             LazyColumn(Modifier.fillMaxSize(), state = listState) {
                 items(entries, key = { it.id }) { e ->
                     Row(
@@ -155,6 +183,12 @@ fun CashbookPane(dao: KhataDao) {
                             color = if (e.isIncome) Look.accent else c.owedToMe,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                         )
+                        // The receipt's picture (schema 43): the camera filled when one is kept; a click shows it, or
+                        // chooses one for a row that has none (a change to the book: a cashier waits for a manager's PIN).
+                        val kept = !e.photoPath.isNullOrBlank()
+                        IconAction("ic_camera", word(if (kept) W.view_photo else W.attach_photo), {
+                            if (kept) viewingPhoto = e else Gates.edit { pickFor(e.id) }
+                        }, Modifier.width(32.dp), filled = kept)
                         IconAction("ic_close", word(W.delete), {
                             Gates.edit {
                                 scope.launch {
@@ -181,9 +215,12 @@ fun CashbookPane(dao: KhataDao) {
                 CashForm(
                     dao = dao,
                     income = way,
-                    onSave = { entry ->
+                    onSave = { entry, photo ->
                         scope.launch {
-                            withContext(Dispatchers.IO) { dao.insertCashEntryAudited(entry) }
+                            withContext(Dispatchers.IO) {
+                                // The receipt's picture is copied in only now, with the row (a form left leaves nothing).
+                                dao.insertCashEntryAudited(entry.copy(photoPath = photo?.let { Photos.keep(home, it) }))
+                            }
                             adding = null
                         }
                     },
@@ -211,11 +248,19 @@ fun CashbookPane(dao: KhataDao) {
     ownedBy?.let { owner ->
         TellDialog(word(W.entry_linked_title), word(if (owner == "return") W.entry_linked_return else W.entry_linked_sale), onClose = { ownedBy = null })
     }
+    viewingPhoto?.let { e ->
+        PhotoDialog(
+            word(W.cash_photo), e.photoPath, onClose = { viewingPhoto = null },
+            onChange = { viewingPhoto = null; Gates.edit { pickFor(e.id) } },
+            onRemove = { viewingPhoto = null; Gates.edit { setPhoto(e.id, null) } }
+        )
+    }
+    photoProblem?.let { TellDialog(word(W.cash_photo), it, onClose = { photoProblem = null }) }
 }
 
 /** Money in or out: an amount (sums allowed, as on the phone's pad), a category, a note. */
 @Composable
-private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit, onCancel: () -> Unit) {
+private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry, java.io.File?) -> Unit, onCancel: () -> Unit) {
     val c = LocalRoshanColors.current
     val words = com.innovation313.roshankhata.words.LocalWords.current
     var isIncome by remember { mutableStateOf(income) }
@@ -227,6 +272,8 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
     // its reference (CashEntry.paymentRef).
     var method by remember { mutableStateOf<String?>(PaymentMethod.CASH) }
     var paymentRef by remember { mutableStateOf("") }
+    // The receipt's picture (schema 43): the file chosen, copied in when the row is written.
+    var photo by remember { mutableStateOf<java.io.File?>(null) }
     var used by remember { mutableStateOf<List<String>>(emptyList()) }
     var problem by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) { used = withContext(Dispatchers.IO) { dao.cashCategories() } }
@@ -252,7 +299,8 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
                             note = note.trim().ifEmpty { null },
                             paymentMethod = method,
                             paymentRef = PaymentRef.clean(method, paymentRef)
-                        )
+                        ),
+                        photo
                     )
                 }
             })
@@ -279,6 +327,7 @@ private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry) -> Unit
             FluentField(paymentRef, { paymentRef = it }, Modifier.fillMaxWidth(), label = word(W.pos_reference_hint), ltr = true)
         }
         FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
+        FormPhoto(word(W.cash_photo), photo) { photo = it }
     }
 }
 

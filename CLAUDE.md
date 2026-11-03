@@ -19,13 +19,13 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,755 strings and 60 plurals (2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,781 strings and 60 plurals (2,781 with the competitor study's batch and schema 43's words, 4 Nov 2026; 2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 42 (42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
-  backup format 17 (documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
+- Room database, version 43 (43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
+  backup format 18 (the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -1662,6 +1662,50 @@ was seen on a real phone or the laptop.
   Android 7-8 (AppCompatTextView), the statement's pages mirror in RTL. The proofs call the screens' own builders
   (`RestoreSteps.counts`, `DocConvertedSheet.line`, `restoreCounts`). DocChainTest +2.
 
+### The competitor study, built (3–4 Nov 2026, kmp-desktop-16 — the owner: "jo jo cheezein aapko sahi lagti hain professionally unko implement kar do")
+
+The study of other ledger and counter apps (the Claude Doc "Roshan Khata — Competitors se kya seekhein", rev 14), every
+point read in the code first: what the app already had was not built again (a customer's lifetime figure is ⋮ → Report
+on "All"; sales by way of paying is the sales report's own view). CI only — nothing on a real device.
+
+- **Price check** (`ProductFind`, shared): a product by name, second name, its barcode whole or 4+ of its digits, or its
+  note — the product's note is now its place on the shelf (`product_note_label`, both platforms). The phone's Products
+  scans (`btnProductScan`) and shows a price sheet (`PriceCheckSheet`: cash and credit price, stock, place, Who bought,
+  Edit); a code no product has offers Add product with it.
+- **Return slip** (`ReturnReceiptText`, shared): a return prints on the receipt printer on both platforms, a cash refund
+  opening the drawer. The Windows sale receipt's round-off keeps its minus and its balance its side (they did not).
+- **WhatsApp after a convert** (phone): the converted document's sheet has Send (`DocConvertedSheet(onSend)`).
+- **The phone's sales report to Excel** (EXPORT, audited; `SalesReportScreen(onRows)`).
+- **Day book** (`DayBook`, shared `DayBookScreen`, phone `DayBookActivity` in place of the Z dialog; Windows' day report
+  lists the same rows and prints them): the day report's figures over every money movement of the day in time order —
+  khata entries, cashbook rows, bills paid in cash on delivery, staff paid (`staffPaymentsBetween`) — any day stepped back to.
+- **Void and correct** (`CounterDraft.reRing`): a voided ticket's lines come back on an empty counter as a new ticket (no
+  held id, no payments); never onto a ticket being rung up.
+- **Customers who stopped coming** (`Lapsed`, `KhataDao.buyingHabits`): 3+ buying days, gone past twice the usual gap
+  and at least 30 days, not over two years; biggest buyers first; Sale Insights on both (phone `LapsedActivity`).
+- **Exchange** (`CounterDraft.startExchange`): after a return, the empty counter for the same customer; a cash refund
+  stays as the new ticket's first cash payment, its reference the return's number. Two documents still.
+- **WhatsApp order paste** (`OrderPaste`): a copied order message opens a new sales order, a line per item (the shop's
+  product and price where the words name one, the customer's words where none does; digits in any script, count words,
+  the app's unit words; greetings left out). Nothing is saved until Save.
+- **Schema 43, backup 18** (`Schema43`): `parties.note` — the owner's private note (`PartyNote`: 500 characters, kept whole
+  by a restore, joined on a merge; never on a statement, a reminder, a receipt or the customer's card; the customer's page
+  shows only a chip, its words on a tap, as the Radar's) — and `cashbook.photoPath`, `cheques.photoPath`: a receipt's and
+  a cheque's picture by a bill photo's rules (the bills folder; `SyncSchema` local, so a picture set writes nothing to
+  the sync's log; the Drive image archive packs and re-points them; a picture goes once no row of any shop points at it,
+  `BillPhoto`/`Photos.purgingOrphans`; a helper's copy carries no cheque picture — the payer's account and signature).
+  A new money row's or cheque's form takes the picture (phone `BillScanFlow`: scanner, camera, gallery; Windows
+  `FormPhoto`, copied in only when the row is written); a written row changes it from its menu (EDIT_BOOK). Live sync
+  needs both devices at 43.
+- **Store listing** (store/listing): the privacy line in seven languages; English and Urdu rewritten for the next upload
+  (Data safety must declare ML Kit and FCM's "Device or other IDs").
+- Not built: Pashto (no checker to verify the words).
+- Strings (nine languages): product_note_*, pos_void_correct/_corrected/_till_busy, lapsed_*, pos_exchange_*,
+  order_paste_*, party_note_label/_help, attach_photo, photo_attached, view_photo, cheque_photo, cash_photo,
+  photo_missing. Tests: ProductFindTest, ReturnReceiptTextTest, DayBookTest, VoidCorrectTest, LapsedTest,
+  OrderPasteTest, PartyNoteTest, NoteAndPhotosTest, Schema43Test, BinPhotosTest; proofs 36-price-check, 37-day-book,
+  38-lapsed (03-customer, 11-cashbook and 12-cheques now show the note's chip and the cameras).
+
 ### The shared module (KMP)
 
 ```
@@ -2061,6 +2105,14 @@ Each of these cost a build or a bug.
 
 72. **No heavy work inside a Compose page's drawing.** `remember(points) { PaymentHabit.forAll(points) }` ran on the
     window's thread; work it out in `produceState`/`LaunchedEffect` on Dispatchers.Default, as the phone's screens do.
+
+73. **A DAO name is looked for before it is added.** `staffPaidBetween(from, to)` already summed the staff's pay for
+    profit; a second one returning the day's rows failed both builds ("Conflicting overloads", 5a20ebf). As string keys
+    (lesson 7): grep the interface for the name first.
+
+74. **A local name hides the screen's own.** In `startReturn` a local `draft` is the ReturnDraft; the exchange's check
+    `draft.isEmpty` meant the counter's ticket and failed the build (af5dd4d). Inside a scope with its own, say the
+    screen's: `this@CounterSaleActivity.draft`.
 
 ---
 

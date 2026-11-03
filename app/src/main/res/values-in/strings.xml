@@ -3733,4 +3733,13 @@
         <item quantity="other">%d perubahan menunggu dikirim</item>
     </plurals>
     <string name="doc_kind_invoice">Faktur</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">Catatan pribadi</string>
+    <string name="party_note_help">Hanya untuk Anda: tidak pernah tampil di laporan, pengingat, atau kartu pelanggan.</string>
+    <string name="attach_photo">Lampirkan foto</string>
+    <string name="photo_attached">Foto terlampir — ketuk untuk mengganti</string>
+    <string name="view_photo">Lihat foto</string>
+    <string name="cheque_photo">Foto cek</string>
+    <string name="cash_photo">Foto kuitansi</string>
+    <string name="photo_missing">Foto ini tidak ada di perangkat ini</string>
 </resources>

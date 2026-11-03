@@ -173,6 +173,30 @@
                     android:textSize="11sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
+
+                <!-- The owner's private note (schema 43, 4 Nov 2026): only that there is one, as a chip; its words open
+                     on a tap (showPartyNote), for the same reason as the Radar's — the customer may be looking at this
+                     screen across the counter. -->
+                <TextView
+                    android:id="@+id/tvPartyNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_season_chip"
+                    android:minHeight="28dp"
+                    android:drawableStart="@drawable/ic_note_small"
+                    android:drawablePadding="5dp"
+                    android:drawableTint="@color/ink_soft"
+                    android:gravity="center_vertical"
+                    android:paddingStart="9dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="9dp"
+                    android:paddingBottom="2dp"
+                    android:text="@string/party_note_label"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 

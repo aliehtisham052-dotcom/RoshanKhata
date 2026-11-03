@@ -3957,4 +3957,13 @@
         <item quantity="other">%d changes waiting to go</item>
     </plurals>
     <string name="doc_kind_invoice">Invoice</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">Private note</string>
+    <string name="party_note_help">Only for you: never on a statement, a reminder or the customer\'s card.</string>
+    <string name="attach_photo">Attach photo</string>
+    <string name="photo_attached">Photo attached — tap to change</string>
+    <string name="view_photo">View photo</string>
+    <string name="cheque_photo">Photo of the cheque</string>
+    <string name="cash_photo">Photo of the receipt</string>
+    <string name="photo_missing">This photo is not on this device</string>
 </resources>

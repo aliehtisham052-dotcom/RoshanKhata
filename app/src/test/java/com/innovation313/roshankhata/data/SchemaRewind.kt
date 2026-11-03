@@ -52,8 +52,22 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 42: the covering index out, version 41's (partyId, isDeleted, timestamp) back (3 Nov 2026). */
+    /** Undo version 43: a party's note, a cashbook row's and a cheque's photo path (4 Nov 2026). */
+    fun undo43(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for ((table, cols) in Schema43.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema43.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
+    /** Undo version 42: the covering index out, version 41's (partyId, isDeleted, timestamp) back (3 Nov 2026). Undoes 43 first. */
     fun undo42(raw: SQLiteDatabase) {
+        undo43(raw)
         for (idx in Schema42.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
         for (create in Schema42.droppedIndices.values) raw.execSQL(create)
         val left = raw.rawQuery("SELECT name FROM sqlite_master WHERE type = 'index'", null).use { c ->

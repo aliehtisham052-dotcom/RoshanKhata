@@ -267,7 +267,8 @@ class ScreenProofPhoneTest(
     private fun bigAccount(): Long = runBlocking {
         val dao = KhataDatabase.get(app).khataDao()
         dao.partiesWithBalanceOnce().firstOrNull { it.name == BIG_NAME }?.let { return@runBlocking it.id }
-        val id = dao.insertParty(Party(name = BIG_NAME, phone = "03000000001", village = "Test Village"))
+        // A private note (schema 43): its chip under the name on 03-customer.
+        val id = dao.insertParty(Party(name = BIG_NAME, phone = "03000000001", village = "Test Village", note = "Test note: pays on the 10th"))
         val now = System.currentTimeMillis()
         dao.insertEntry(LedgerEntry(partyId = id, amount = 2_345_678.0, isGiven = true, entryNumber = "RK-900101", timestamp = now - 5 * DAY, note = "Test sale"))
         dao.insertEntry(LedgerEntry(partyId = id, amount = 1_111_111.0, isGiven = false, entryNumber = "RK-900102", timestamp = now - DAY))

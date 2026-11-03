@@ -610,7 +610,7 @@ interface KhataDao {
         """
         SELECT c.id, c.partyId, p.name AS partyName, p.phone AS partyPhone,
                c.amount, c.isReceived, c.chequeNumber, c.bankName,
-               c.dueDate, c.status, c.note
+               c.dueDate, c.status, c.note, c.photoPath
         FROM cheques c
         JOIN parties p ON p.id = c.partyId
         WHERE c.isDeleted = 0 AND p.isDeleted = 0
@@ -3182,6 +3182,26 @@ interface KhataDao {
     @Query("SELECT photoPath FROM parties WHERE photoPath IS NOT NULL AND photoPath != ''")
     suspend fun partyPhotoPaths(): List<String>
 
+    /**
+     * Cashbook rows and cheques that kept a picture (schema 43, 4 Nov 2026), binned ones included: the image backup's
+     * allow-list, the restore's re-point and the bin's "no row points at it any more" read them as they read bills'.
+     */
+    @Query("SELECT id, photoPath FROM cashbook WHERE photoPath IS NOT NULL AND photoPath != ''")
+    suspend fun cashWithPhoto(): List<RowPhoto>
+
+    @Query("SELECT id, photoPath FROM cheques WHERE photoPath IS NOT NULL AND photoPath != ''")
+    suspend fun chequesWithPhoto(): List<RowPhoto>
+
+    /**
+     * A cashbook row's or a cheque's picture set, changed or taken away (null). Only the path: a picture is no money,
+     * and the sync never carries it ([SyncSchema]: local), so the row's other device hears nothing of it.
+     */
+    @Query("UPDATE cashbook SET photoPath = :path WHERE id = :id")
+    suspend fun setCashPhotoPath(id: Long, path: String?)
+
+    @Query("UPDATE cheques SET photoPath = :path WHERE id = :id")
+    suspend fun setChequePhotoPath(id: Long, path: String?)
+
     @Query("UPDATE supplier_bills SET photoPath = NULL WHERE id = :id")
     suspend fun clearSupplierBillPhoto(id: Long)
 
@@ -3235,6 +3255,13 @@ interface KhataDao {
      */
     @Transaction
     suspend fun mergeParty(loserId: Long, survivorId: Long, now: Long = System.currentTimeMillis()) {
+        // The owner's note on the merged-away record joins the kept one's (schema 43): nothing he wrote about either
+        // goes into the bin unseen.
+        val loserNote = getParty(loserId)?.note
+        if (!loserNote.isNullOrBlank()) getParty(survivorId)?.let { kept ->
+            val joined = PartyNote.join(kept.note, loserNote)
+            if (joined != kept.note) updateParty(kept.copy(note = joined))
+        }
         reassignEntriesToParty(loserId, survivorId)
         reassignBillsToParty(loserId, survivorId)
         reassignChequesToParty(loserId, survivorId)

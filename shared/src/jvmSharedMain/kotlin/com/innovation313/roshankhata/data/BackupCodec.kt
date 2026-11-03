@@ -44,7 +44,10 @@ object BackupCodec {
      * (quotation, proforma, sales order, challan, invoice), its status and the
      * document it was converted from (sourceDocId, a row id: a restore keeps
      * every id as written, so it points where it did; a merge re-points it
-     * through the invoice map, as sourceEntryId is through the entry map).
+     * through the invoice map, as sourceEntryId is through the entry map); 18
+     * (4 Nov 2026, schema 43) the owner's private note on a party, and the
+     * picture path of a cashbook row and of a cheque (paths, as a bill photo's
+     * — the files themselves travel only in a Drive backup's image archive).
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -53,7 +56,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 17
+    const val FORMAT_VERSION = 18
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -839,6 +842,8 @@ object BackupCodec {
         // The customer's card QR (22 Oct 2026): kept by a restore, so a printed card still opens its customer
         // and a live pairing gives the computer the very same book. Older files had none: a new one is made.
         put("qrToken", p.qrToken ?: JSONObject.NULL)
+        // Format 18 (schema 43): the owner's private note on this person.
+        put("note", p.note ?: JSONObject.NULL)
     }
 
     private fun jsonToParty(o: JSONObject) = Party(
@@ -858,7 +863,9 @@ object BackupCodec {
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt"),
-        qrToken = o.optNullableString("qrToken")?.takeIf { it.isNotBlank() } ?: QrTag.newToken()
+        qrToken = o.optNullableString("qrToken")?.takeIf { it.isNotBlank() } ?: QrTag.newToken(),
+        // Absent before format 18.
+        note = o.optNullableString("note")?.takeIf { it.isNotBlank() }
     )
 
     private fun entryToJson(e: LedgerEntry) = JSONObject().apply {
@@ -988,6 +995,8 @@ object BackupCodec {
         put("isDeleted", c.isDeleted)
         put("deletedAt", c.deletedAt ?: JSONObject.NULL)
         put("uid", c.uid ?: JSONObject.NULL)
+        // Format 18 (schema 43): where the cheque's picture is kept.
+        put("photoPath", c.photoPath ?: JSONObject.NULL)
     }
 
     private fun jsonToCheque(o: JSONObject) = Cheque(
@@ -1005,7 +1014,9 @@ object BackupCodec {
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         isDeleted = o.optBoolean("isDeleted", false),
         deletedAt = o.optNullableLong("deletedAt"),
-        uid = o.uid()
+        uid = o.uid(),
+        // Absent before format 18.
+        photoPath = o.optNullableString("photoPath")?.takeIf { it.isNotBlank() }
     )
 
     private fun cashToJson(c: CashEntry) = JSONObject().apply {
@@ -1022,6 +1033,8 @@ object BackupCodec {
         put("paymentRef", c.paymentRef ?: JSONObject.NULL)
         put("saleId", c.saleId ?: JSONObject.NULL)
         put("uid", c.uid ?: JSONObject.NULL)
+        // Format 18 (schema 43): where the receipt's picture is kept.
+        put("photoPath", c.photoPath ?: JSONObject.NULL)
     }
 
     private fun jsonToCash(o: JSONObject) = CashEntry(
@@ -1038,7 +1051,9 @@ object BackupCodec {
         // Absent before format 16.
         paymentRef = o.optNullableString("paymentRef"),
         saleId = o.optNullableLong("saleId"),
-        uid = o.uid()
+        uid = o.uid(),
+        // Absent before format 18.
+        photoPath = o.optNullableString("photoPath")?.takeIf { it.isNotBlank() }
     )
 
 

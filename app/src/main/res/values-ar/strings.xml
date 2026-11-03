@@ -3985,4 +3985,13 @@
         <item quantity="other">%d تغيير ينتظر الإرسال</item>
     </plurals>
     <string name="doc_kind_invoice">فاتورة</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">ملاحظة خاصة</string>
+    <string name="party_note_help">لك وحدك: لا تظهر أبدًا في كشف الحساب أو التذكير أو بطاقة العميل.</string>
+    <string name="attach_photo">أرفق صورة</string>
+    <string name="photo_attached">أُرفقت الصورة — اضغط للتغيير</string>
+    <string name="view_photo">عرض الصورة</string>
+    <string name="cheque_photo">صورة الشيك</string>
+    <string name="cash_photo">صورة الإيصال</string>
+    <string name="photo_missing">هذه الصورة غير موجودة على هذا الجهاز</string>
 </resources>

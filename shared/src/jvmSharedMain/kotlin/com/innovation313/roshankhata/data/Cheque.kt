@@ -79,7 +79,14 @@ data class Cheque(
      * to say what would be lost, and what a merge matches rows by. Null only
      * for a moment on a row restored from an old file; restoreAll fills it.
      */
-    val uid: String? = Uid.next()
+    val uid: String? = Uid.next(),
+
+    /**
+     * A picture of the cheque itself (schema 43, 4 Nov 2026): what was written on it, and the bank's memo when it
+     * came back bounced. A bill photo's rules ([Schema43]): kept on this device in the app's own bills folder, never
+     * in a live sync, never on a statement or a share. Null on every cheque written before, and where none was taken.
+     */
+    val photoPath: String? = null
 )
 
 /** A cheque together with the name of the party it belongs to. */
@@ -94,5 +101,7 @@ data class ChequeWithParty(
     val bankName: String?,
     val dueDate: Long,
     val status: Int,
-    val note: String?
+    val note: String?,
+    /** The cheque's picture, when one was kept (schema 43). */
+    val photoPath: String? = null
 )

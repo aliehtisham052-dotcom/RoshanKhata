@@ -1097,8 +1097,8 @@ private fun Book(
                     Section.INVENTORY -> Box(Modifier.fillMaxSize()) { InventoryPane(dao, words, reload, businesses = businesses, activeBusiness = activeBusiness) { reload++ } }
                     Section.SALES -> Box(Modifier.fillMaxSize()) { SalesReportPane(dao, words, rtl, shop, reload) }
                     Section.ORDERS -> Box(Modifier.fillMaxSize()) { OrdersPane(dao, parties, words, rtl, shop, startLow = orderLowAsked, onStartedLow = { orderLowAsked = false }) { reload++ } }
-                    Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao) }
-                    Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words) { reload++ } }
+                    Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao, home, otherBooks = { picturesOfOtherBooks(businesses, activeBusiness) }) }
+                    Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words, home, otherBooks = { picturesOfOtherBooks(businesses, activeBusiness) }) { reload++ } }
                     Section.PLANS -> Box(Modifier.fillMaxSize()) { PlansPane(dao, parties, words) { reload++ } }
                     Section.EXPIRY -> Box(Modifier.fillMaxSize()) { ExpiryPane(dao) }
                     Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home, startAdding = newBill, onStarted = { newBill = false }, onExpiry = { section = Section.EXPIRY }) { reload++ } }
@@ -1319,7 +1319,8 @@ private fun Book(
                                     modifier = Modifier.weight(1f).fillMaxHeight(),
                                     radar = radar,
                                     radarPromise = facts.promiseAt,
-                                    radarTone = com.innovation313.roshankhata.data.ReminderLadder.learned(reminders.state(party.id), party.balance, System.currentTimeMillis())
+                                    radarTone = com.innovation313.roshankhata.data.ReminderLadder.learned(reminders.state(party.id), party.balance, System.currentTimeMillis()),
+                                    note = facts.note
                                 )
                             }
                             }
@@ -2077,17 +2078,6 @@ private fun Book(
             )
             // What the other businesses' books point at, so a purge here never takes one of their pictures (the bills
             // folder is every business's); null when one of them cannot be read — then no picture is removed.
-            suspend fun picturesOfOtherBooks(): Set<String>? = runCatching {
-                val out = HashSet<String>()
-                for (b in businesses.list()) {
-                    if (b.id == activeBusiness) continue
-                    val f = businesses.dbFile(b.id)
-                    if (!f.isFile) continue
-                    val other = com.innovation313.roshankhata.data.DesktopDatabase.open(f)
-                    try { out += Photos.referenced(other.khataDao()) } finally { other.close() }
-                }
-                out
-            }.getOrNull()
             purging?.let { (text, go) ->
                 AskDialog(
                     word(W.delete_forever), text, word(W.delete_forever), danger = true, height = 300,
@@ -2098,7 +2088,7 @@ private fun Book(
                             // A failure says what went wrong (it said "backup failed" for a delete). The pictures the
                             // purge leaves with no row go too, unless another business's book points at them.
                             val said = withContext(Dispatchers.IO) {
-                                runCatching { Photos.purgingOrphans(dao, home, { picturesOfOtherBooks() }) { go() } }.getOrElse { failText(words, it) }
+                                runCatching { Photos.purgingOrphans(dao, home, { picturesOfOtherBooks(businesses, activeBusiness) }) { go() } }.getOrElse { failText(words, it) }
                             }
                             reload++
                             if (said != null) told = words.text(W.delete_forever) to said
@@ -2537,11 +2527,29 @@ private fun customerFacts(dao: KhataDao, party: PartyWithBalance, reload: Int): 
         row?.village?.trim()?.takeIf { it.isNotEmpty() }?.let { Format.isolate(it) }
     ).joinToString("  \u00b7  ").ifEmpty { null }
     val promiseAt = row?.harvestPromise
-    return CustomerFacts(identity, promiseAt, promiseAt?.let { word(W.harvest_promise_header, Format.dateOnly(it)) }, seasons)
+    return CustomerFacts(identity, promiseAt, promiseAt?.let { word(W.harvest_promise_header, Format.dateOnly(it)) }, seasons,
+        row?.note?.takeIf { it.isNotBlank() })
 }
 
 /** What the account's head says beyond the list's row: who he is, the promised day (and its moment), the seasons. */
-private class CustomerFacts(val identity: String?, val promiseAt: Long?, val promise: String?, val seasons: List<String>)
+private class CustomerFacts(val identity: String?, val promiseAt: Long?, val promise: String?, val seasons: List<String>, val note: String? = null)
+
+/**
+ * Every picture the other businesses' books on this computer point at (the bin's purge, and since schema 43 a
+ * cashbook row's or a cheque's picture changed or taken away): one is deleted only when none of them does. Null when
+ * a book could not be read — then nothing is deleted.
+ */
+internal suspend fun picturesOfOtherBooks(businesses: Businesses, activeBusiness: Long): Set<String>? = runCatching {
+    val out = HashSet<String>()
+    for (b in businesses.list()) {
+        if (b.id == activeBusiness) continue
+        val f = businesses.dbFile(b.id)
+        if (!f.isFile) continue
+        val other = com.innovation313.roshankhata.data.DesktopDatabase.open(f)
+        try { out += Photos.referenced(other.khataDao()) } finally { other.close() }
+    }
+    out
+}.getOrNull()
 
 /** The other half of an edited cash sale, what both were, and what the edited half is now (3 Nov 2026 audit, M13). */
 private data class PairEdit(val pair: LedgerEntry, val was: Double, val now: Double)

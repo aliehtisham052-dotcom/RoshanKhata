@@ -3745,4 +3745,13 @@
         <item quantity="other">%d tabdeeliyan jane ke intezar mein</item>
     </plurals>
     <string name="doc_kind_invoice">Invoice</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">Niji note</string>
+    <string name="party_note_help">Sirf aap ke liye: ye kabhi statement, yaad dehani ya gahak ke card par nahi aata.</string>
+    <string name="attach_photo">Tasveer lagayein</string>
+    <string name="photo_attached">Tasveer lag gayi — badalne ke liye tap karein</string>
+    <string name="view_photo">Tasveer dekhein</string>
+    <string name="cheque_photo">Cheque ki tasveer</string>
+    <string name="cash_photo">Raseed ki tasveer</string>
+    <string name="photo_missing">Ye tasveer is device par maujood nahi</string>
 </resources>

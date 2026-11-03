@@ -3793,4 +3793,13 @@
         <item quantity="other">%dটি বদল পাঠানোর অপেক্ষায়</item>
     </plurals>
     <string name="doc_kind_invoice">ইনভয়েস</string>
+    <!-- Schema 43 (4 Nov 2026): a party's private note; a cashbook row's and a cheque's picture. -->
+    <string name="party_note_label">ব্যক্তিগত নোট</string>
+    <string name="party_note_help">শুধু আপনার জন্য: এটি কখনো স্টেটমেন্ট, রিমাইন্ডার বা গ্রাহকের কার্ডে আসে না।</string>
+    <string name="attach_photo">ছবি যুক্ত করুন</string>
+    <string name="photo_attached">ছবি যুক্ত হয়েছে — বদলাতে ট্যাপ করুন</string>
+    <string name="view_photo">ছবি দেখুন</string>
+    <string name="cheque_photo">চেকের ছবি</string>
+    <string name="cash_photo">রসিদের ছবি</string>
+    <string name="photo_missing">এই ছবিটি এই ডিভাইসে নেই</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.CashEntry
+import com.innovation313.roshankhata.data.Cheque
 import com.innovation313.roshankhata.data.DesktopDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
@@ -90,6 +92,36 @@ class BinPhotosTest {
             assertFalse(Photos.ours(home, File(home, "bills/../khata.db")))
             assertFalse(Photos.ours(home, File(home.parentFile, "bills/bill_1.jpg")))
         } finally {
+            home.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `a cashbook row's and a cheque's picture go once no row points at them`() {
+        val home = Files.createTempDirectory("rk-binphotos3").toFile()
+        val book = Book(home)
+        try {
+            runBlocking {
+                // Schema 43 (4 Nov 2026): a receipt changed — the old picture goes, the new one stays; then taken away.
+                val receipt = book.picture("bills/bill_10.jpg")
+                val newer = book.picture("bills/bill_11.jpg")
+                val cash = book.dao.insertCashEntry(CashEntry(amount = 300.0, isIncome = false, category = "Rent", photoPath = receipt.absolutePath))
+                assertTrue(receipt.absolutePath in Photos.referenced(book.dao))
+                Photos.purgingOrphans(book.dao, home, { emptySet() }) { book.dao.setCashPhotoPath(cash, newer.absolutePath) }
+                assertFalse("the old receipt went", receipt.exists())
+                assertTrue(newer.exists())
+                Photos.purgingOrphans(book.dao, home, { emptySet() }) { book.dao.setCashPhotoPath(cash, null) }
+                assertFalse("taken away, it went", newer.exists())
+
+                // A cheque's picture another business's book also points at stays.
+                val chequePic = book.picture("bills/bill_12.jpg")
+                val id = book.dao.insertParty(Party(name = "Sample Supplier", isCustomer = false))
+                val cheque = book.dao.insertCheque(Cheque(partyId = id, amount = 900.0, isReceived = false, dueDate = 1_000L, photoPath = chequePic.absolutePath))
+                Photos.purgingOrphans(book.dao, home, { setOf(chequePic.absolutePath) }) { book.dao.setChequePhotoPath(cheque, null) }
+                assertTrue("another book points at it", chequePic.exists())
+            }
+        } finally {
+            book.db.close()
             home.deleteRecursively()
         }
     }

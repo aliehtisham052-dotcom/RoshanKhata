@@ -52,8 +52,9 @@ object SyncSchema {
         ),
         Table("entry_items", fks = mapOf("entryId" to "transactions", "productId" to "products", "billItemId" to "bill_items")),
         Table("installments", fks = mapOf("planId" to "payment_plans", "ledgerEntryId" to "transactions")),
-        Table("cheques", fks = mapOf("partyId" to "parties", "ledgerEntryId" to "transactions")),
-        Table("cashbook", fks = mapOf("saleId" to "sales")),
+        // A cheque's and a cashbook row's picture (schema 43) are files on this device, as a bill's is.
+        Table("cheques", fks = mapOf("partyId" to "parties", "ledgerEntryId" to "transactions"), localOnly = setOf("photoPath")),
+        Table("cashbook", fks = mapOf("saleId" to "sales"), localOnly = setOf("photoPath")),
         Table("supplier_bills", fks = mapOf("partyId" to "parties", "ledgerEntryId" to "transactions"), localOnly = setOf("photoPath")),
         Table("bill_items", fks = mapOf("billId" to "supplier_bills", "productId" to "products")),
         // sourceDocId (schema 40) points at an older row of the same table, as a product variant's parentId does.

@@ -61,8 +61,18 @@ data class CashEntry(
      * to say what would be lost, and what a merge matches rows by. Null only
      * for a moment on a row restored from an old file; restoreAll fills it.
      */
-    val uid: String? = Uid.next()
+    val uid: String? = Uid.next(),
+
+    /**
+     * A picture of the receipt or slip behind this money (schema 43, 4 Nov 2026): an electricity bill paid, a
+     * deposit slip. A bill photo's rules ([Schema43]): a file in the app's own bills folder on this device, never
+     * in a live sync, never on a statement or a share. Null on every row written before, and where none was taken.
+     */
+    val photoPath: String? = null
 )
+
+/** A row's id and its photo's path, for the pictures a backup packs and a restore re-points (schema 43). */
+data class RowPhoto(val id: Long, val photoPath: String?)
 
 /**
  * The one category the app writes itself (POS Phase 1): a walk-in counter

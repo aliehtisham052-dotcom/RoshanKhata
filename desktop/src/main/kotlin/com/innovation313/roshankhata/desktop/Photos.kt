@@ -4,6 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -67,10 +70,24 @@ object Photos {
         }
     }
 
-    /** The pictures a book points at: its entries' and supplier bills' photos and its customers' faces. */
+    /**
+     * The pictures a book points at: its entries' and supplier bills' photos, its customers' faces, and since schema 43
+     * its cashbook rows' receipts and its cheques.
+     */
     suspend fun referenced(dao: com.innovation313.roshankhata.data.KhataDao): Set<String> =
-        (dao.entriesWithBillPhoto().map { it.billPhotoPath } + dao.supplierBillsWithPhoto().map { it.photoPath } + dao.partyPhotoPaths())
+        (dao.entriesWithBillPhoto().map { it.billPhotoPath } + dao.supplierBillsWithPhoto().map { it.photoPath } + dao.partyPhotoPaths() +
+            dao.cashWithPhoto().map { it.photoPath } + dao.chequesWithPhoto().map { it.photoPath })
             .filterNotNull().filter { it.isNotBlank() }.toSet()
+
+    /**
+     * [source] copied into the bills folder as a new picture for a row (schema 43: a cashbook receipt, a cheque), its
+     * path, or null when it is not a picture. The copy is made only when the row is written: a form left leaves
+     * nothing behind (the entry form's rule, Marhala 4).
+     */
+    fun keep(home: File, source: File): String? {
+        val target = billFile(home)
+        return if (save(source, target)) target.absolutePath else null
+    }
 
     /**
      * A permanent delete, then the pictures it left with no row pointing at them (the phone's BillPhoto.purgingOrphans;
@@ -175,17 +192,62 @@ object Photos {
     }
 }
 
-/** A photo shown large, or the phone's "not on this device" line when its file is elsewhere. */
+/**
+ * A photo shown large, or the phone's "not on this device" line when its file is elsewhere. [onChange] and [onRemove],
+ * when given (a cashbook row's or a cheque's picture, schema 43), are the footer's Change photo and Remove photo.
+ */
 @Composable
-fun PhotoDialog(title: String, path: String?, onClose: () -> Unit) {
+fun PhotoDialog(
+    title: String,
+    path: String?,
+    onChange: (() -> Unit)? = null,
+    onRemove: (() -> Unit)? = null,
+    // Last, so a trailing lambda is still the close (every caller before schema 43 passes it so).
+    onClose: () -> Unit
+) {
     val bmp = Photos.bitmap(path, 1400)
     // In the app's frame (Marhala 4), the picture as large as the window allows, whole (never cropped).
     AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(900.dp), height = fitH(760.dp))) {
-        DialogFrame(title, onClose = onClose, scroll = false, footer = { FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD) }) {
+        DialogFrame(title, onClose = onClose, scroll = false, footer = {
+            onRemove?.let { FluentButton(word(W.remove_photo), it, kind = ButtonKind.DANGER) }
+            onChange?.let { FluentButton(word(W.change_photo), it, kind = ButtonKind.STANDARD, icon = "ic_camera") }
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+        }) {
             Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = androidx.compose.ui.Alignment.Center) {
                 if (bmp != null) Image(bmp, contentDescription = title, modifier = Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Fit)
                 else Text(word(W.bill_photo_missing), color = com.innovation313.roshankhata.screens.LocalRoshanColors.current.inkSoft)
             }
         }
+    }
+}
+
+/**
+ * A form's picture (schema 43: a new cashbook row's receipt, a new cheque): what was chosen as a small preview, and
+ * Attach / Change / Remove. Only the chosen file is held; it is copied in when the row is written ([Photos.keep]).
+ * A file that is not a picture is refused here, with the phone's words.
+ */
+@Composable
+fun FormPhoto(title: String, source: File?, onChange: (File?) -> Unit) {
+    val c = com.innovation313.roshankhata.screens.LocalRoshanColors.current
+    var failed by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    val bmp = androidx.compose.runtime.remember(source) { source?.let { Photos.bitmap(it.path, 160) } }
+    androidx.compose.foundation.layout.Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)) {
+        androidx.compose.foundation.layout.Row(
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp)
+        ) {
+            if (bmp != null) Image(
+                bmp, contentDescription = title,
+                modifier = Modifier.size(56.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(6.dp)),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
+            FluentButton(word(if (source == null) W.attach_photo else W.change_photo), {
+                Photos.pick(title)?.let { f ->
+                    if (Photos.bitmap(f.path, 160) == null) failed = true else { failed = false; onChange(f) }
+                }
+            }, kind = ButtonKind.STANDARD, icon = "ic_camera")
+            if (source != null) FluentButton(word(W.remove_photo), { failed = false; onChange(null) }, kind = ButtonKind.SUBTLE)
+        }
+        if (failed) Text(word(W.photo_save_failed), color = c.owedToMe, fontSize = 12.sp)
     }
 }
