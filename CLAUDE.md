@@ -2119,6 +2119,10 @@ Each of these cost a build or a bug.
     none and :desktop failed ("has no method 'setValue'", 2d437cd). A file that starts using `by remember` gets the
     two imports first.
 
+76. **A parameter made required is given at every caller, the tests' too.** `CashbookPane(dao, home)` and
+    `ChequesPane(…, home)` were updated in Main.kt only; ScreenProofTest still called `CashbookPane(dao)` and
+    :desktop:compileTestKotlin failed (ebccb87). grep `src/test` and `src/androidTest` as well as `src/main`.
+
 ---
 
 ## Working with the owner
