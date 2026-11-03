@@ -14,7 +14,10 @@ import kotlin.random.Random
  * customer [HEAVY_ENTRIES] — and, since 3 Nov 2026, what a real shop's book also holds, because a book of
  * bare amounts measured the khata and nothing else (Sale Insights, stock, the counter and the bell read
  * goods): [PRODUCTS] products, goods on a third of the customers' sales, two bills from every supplier
- * with batches and expiry days, [CASH_ROWS] cashbook rows and [TICKETS] walk-in counter tickets.
+ * with batches and expiry days, [CASH_ROWS] cashbook rows and [TICKETS] walk-in counter tickets. Every
+ * table is written by the clock, as a shop writes it: the 7 Oct seed wrote a customer's lines side by side,
+ * and a read by customer then found them together on disk — on a shop's real book they lie among everyone
+ * else's, and the same read took twice as long (measured on 3 Nov 2026).
  *
  * Every seeded row can be found again from [MARK] — in a customer's or a product's name, in a cashbook
  * row's or a ticket's note — or through a row that carries it (a customer's lines and their goods, a
@@ -41,6 +44,9 @@ object BigBookSeed {
     private const val DAY = 24L * 60 * 60 * 1000
     /** Ids are given from this far above the highest in use, so a row the app writes meanwhile never meets one. */
     private const val ID_GAP = 1_000L
+    /** A line's place among all the lines, in the low bits of its sort key under the moment it was written. */
+    private const val LINE_BITS = 20
+    private const val LINE_LIMIT = 1 shl LINE_BITS
 
     private val FIRST = listOf(
         "Muhammad", "Ali", "Asghar", "Bilal", "Tousif", "Yaseen", "Abbas", "Amir", "Amin", "Aslam",
@@ -101,9 +107,21 @@ object BigBookSeed {
             Item(id, name, unit, price, cost)
         }
 
-        var nextEntry = highest(sql, "transactions") + ID_GAP
+        // The customers, and when each of their lines was written, drawn in the 7 Oct seed's order (the same
+        // khata); then the lines are written in the order a shop writes them — by the clock, each customer's among
+        // everyone else's (3 Nov 2026). Written customer by customer, one customer's lines sat side by side in the
+        // file, and every read by customer looked quicker than a real shop's book lets it be.
         val rnd = Random(313)
-        var entryNo = 0
+        val lineCount = if (customers <= 0) 0 else HEAVY_ENTRIES + (customers - 1) * entriesEach
+        require(lineCount < LINE_LIMIT) { "the big book holds fewer than $LINE_LIMIT lines" }
+        val partyIds = LongArray(customers)
+        val customerAt = BooleanArray(customers)
+        val whoOf = IntArray(lineCount)
+        val whenOf = LongArray(lineCount)
+        val fiftiesOf = IntArray(lineCount)
+        val givenOf = BooleanArray(lineCount)
+        val notedOf = BooleanArray(lineCount)
+        var lines = 0
         var done = 0
         val batch = 500
         var start = 0
@@ -111,7 +129,6 @@ object BigBookSeed {
         while (start < customers) {
             val end = minOf(start + batch, customers)
             val parties = (start until end).map { i ->
-                // In the order the 7 Oct seed drew them, so the khata is the same book it measured.
                 val name = name(i, rnd)
                 val phone = "03%02d%07d".format(Locale.ROOT, rnd.nextInt(0, 50), rnd.nextInt(0, 10_000_000))
                 val isCustomer = rnd.nextInt(10) != 0
@@ -123,54 +140,71 @@ object BigBookSeed {
                 )
             }
             val ids = dao.insertParties(parties)
-            val entries = ArrayList<LedgerEntry>(ids.size * entriesEach)
-            val lines = ArrayList<EntryItem>()
             for ((k, id) in ids.withIndex()) {
-                val customer = parties[k].isCustomer
-                if (!customer) suppliers += id
+                val i = start + k
+                partyIds[i] = id
+                customerAt[i] = parties[k].isCustomer
+                if (!parties[k].isCustomer) suppliers += id
                 var t = now - rnd.nextLong(0, 700 * DAY)
-                val count = if (start == 0 && k == 0) HEAVY_ENTRIES else entriesEach
+                val count = if (i == 0) HEAVY_ENTRIES else entriesEach
                 repeat(count) {
                     t += if (count > entriesEach) rnd.nextLong(1, 4 * 60 * 60 * 1000) else rnd.nextLong(DAY / 4, 20 * DAY)
-                    entryNo++
-                    var amount = (rnd.nextInt(1, 400) * 50).toDouble()
-                    val isGiven = rnd.nextInt(5) != 0
-                    val note = if (rnd.nextInt(4) == 0) "Urea 2 bori" else null
-                    val entryId = nextEntry++
-                    // A third of a customer's sales carry their goods, as the khata writes them.
-                    if (customer && isGiven && goods.nextInt(3) == 0) {
-                        var sum = 0.0
-                        repeat(1 + goods.nextInt(2)) { n ->
-                            val p = items[goods.nextInt(items.size)]
-                            val qty = (1 + goods.nextInt(10)).toDouble()
-                            sum += qty * p.price
-                            lines += EntryItem(entryId = entryId, lineNo = n, itemName = p.name, quantity = qty, unit = p.unit, rate = p.price, productId = p.id)
-                        }
-                        amount = LineMath.round(sum)
-                    }
-                    entries.add(
-                        LedgerEntry(
-                            id = entryId, partyId = id, amount = amount, isGiven = isGiven, note = note,
-                            entryNumber = "BB-%06d".format(Locale.ROOT, entryNo), timestamp = minOf(t, now)
-                        )
-                    )
+                    fiftiesOf[lines] = rnd.nextInt(1, 400)
+                    givenOf[lines] = rnd.nextInt(5) != 0
+                    notedOf[lines] = rnd.nextInt(4) == 0
+                    whoOf[lines] = i
+                    whenOf[lines] = minOf(t, now)
+                    lines++
                 }
             }
-            dao.restoreEntries(entries)
-            if (lines.isNotEmpty()) dao.restoreEntryItems(lines)
             done = end
             progress?.invoke(done)
             start = end
         }
+        // By the clock, two lines of one moment in the order they were drawn: the moment above, the line below.
+        val byClock = LongArray(lines) { (whenOf[it] shl LINE_BITS) or it.toLong() }
+        byClock.sort()
+        var nextEntry = highest(sql, "transactions") + ID_GAP
+        var at = 0
+        while (at < lines) {
+            val until = minOf(at + 5_000, lines)
+            val entries = ArrayList<LedgerEntry>(until - at)
+            val goodsLines = ArrayList<EntryItem>()
+            while (at < until) {
+                val e = (byClock[at] and (LINE_LIMIT - 1).toLong()).toInt()
+                val entryId = nextEntry++
+                var amount = fiftiesOf[e] * 50.0
+                // A third of a customer's sales carry their goods, as the khata writes them.
+                if (customerAt[whoOf[e]] && givenOf[e] && goods.nextInt(3) == 0) {
+                    var sum = 0.0
+                    repeat(1 + goods.nextInt(2)) { n ->
+                        val p = items[goods.nextInt(items.size)]
+                        val qty = (1 + goods.nextInt(10)).toDouble()
+                        sum += qty * p.price
+                        goodsLines += EntryItem(entryId = entryId, lineNo = n, itemName = p.name, quantity = qty, unit = p.unit, rate = p.price, productId = p.id)
+                    }
+                    amount = LineMath.round(sum)
+                }
+                at++
+                entries += LedgerEntry(
+                    id = entryId, partyId = partyIds[whoOf[e]], amount = amount, isGiven = givenOf[e],
+                    note = if (notedOf[e]) "Urea 2 bori" else null,
+                    entryNumber = "BB-%06d".format(Locale.ROOT, at), timestamp = whenOf[e]
+                )
+            }
+            dao.restoreEntries(entries)
+            if (goodsLines.isNotEmpty()) dao.restoreEntryItems(goodsLines)
+        }
 
-        // Two bills from every supplier, with batches: some expired, some within the warning window, most later.
+        // Two bills from every supplier, by their day, with batches: some expired, some within the warning
+        // window, most later.
         var nextBill = highest(sql, "supplier_bills") + ID_GAP
+        val billDays = suppliers.flatMap { s -> List(2) { s to now - goods.nextLong(0, 700 * DAY) } }.sortedBy { it.second }
         val bills = ArrayList<SupplierBill>()
         val billLines = ArrayList<BillItem>()
         var lot = 0
-        for (s in suppliers) repeat(2) {
+        for ((s, day) in billDays) {
             val billId = nextBill++
-            val day = now - goods.nextLong(0, 700 * DAY)
             var total = 0.0
             repeat(1 + goods.nextInt(4)) {
                 val p = items[goods.nextInt(items.size)]
@@ -189,9 +223,22 @@ object BigBookSeed {
         for (part in bills.chunked(1_000)) dao.restoreBills(part)
         for (part in billLines.chunked(1_000)) dao.restoreBillItems(part)
 
-        // Walk-in tickets over the counter, each paid in cash into the cashbook as the counter writes it.
-        var nextSale = highest(sql, "sales") + ID_GAP
+        // Walk-in tickets over the counter, each paid in cash into the cashbook as the counter writes it, and the
+        // cashbook's own rows (the shop's expenses, money in that was not a ticket): the cashbook by the clock too.
+        val ticketAt = LongArray(TICKETS) { now - goods.nextLong(0, 700 * DAY) }.also { it.sort() }
+        val otherAt = LongArray(CASH_ROWS) { now - goods.nextLong(0, 700 * DAY) }.also { it.sort() }
         var nextCash = highest(sql, "cashbook") + ID_GAP
+        val ticketCash = LongArray(TICKETS)
+        val otherCash = LongArray(CASH_ROWS)
+        run {
+            var a = 0
+            var b = 0
+            while (a < TICKETS || b < CASH_ROWS) {
+                if (b >= CASH_ROWS || (a < TICKETS && ticketAt[a] <= otherAt[b])) ticketCash[a++] = nextCash++
+                else otherCash[b++] = nextCash++
+            }
+        }
+        var nextSale = highest(sql, "sales") + ID_GAP
         var ticket = 0
         while (ticket < TICKETS) {
             val sales = ArrayList<Sale>()
@@ -199,10 +246,10 @@ object BigBookSeed {
             val payments = ArrayList<SalePayment>()
             val cash = ArrayList<CashEntry>()
             repeat(minOf(1_000, TICKETS - ticket)) {
-                ticket++
                 val saleId = nextSale++
-                val cashId = nextCash++
-                val at = now - goods.nextLong(0, 700 * DAY)
+                val cashId = ticketCash[ticket]
+                val moment = ticketAt[ticket]
+                ticket++
                 var sum = 0.0
                 repeat(1 + goods.nextInt(3)) { n ->
                     val p = items[goods.nextInt(items.size)]
@@ -213,13 +260,13 @@ object BigBookSeed {
                 val total = LineMath.round(sum)
                 val number = "BB-S-%06d".format(Locale.ROOT, ticket)
                 sales += Sale(
-                    id = saleId, saleNumber = number, timestamp = at, subtotal = total, grandTotal = total, paidTotal = total,
+                    id = saleId, saleNumber = number, timestamp = moment, subtotal = total, grandTotal = total, paidTotal = total,
                     status = SaleStatus.DONE, note = "Test$MARK"
                 )
                 payments += SalePayment(saleId = saleId, method = PaymentMethod.CASH, amount = total, cashEntryId = cashId)
                 cash += CashEntry(
                     id = cashId, amount = total, isIncome = true, category = CashCategory.SALE, note = "$number$MARK",
-                    timestamp = at, paymentMethod = PaymentMethod.CASH, saleId = saleId
+                    timestamp = moment, paymentMethod = PaymentMethod.CASH, saleId = saleId
                 )
             }
             dao.restoreSales(sales)
@@ -227,16 +274,14 @@ object BigBookSeed {
             dao.restoreSalePayments(payments)
             dao.restoreCash(cash)
         }
-
-        // The cashbook's own rows: the shop's expenses, and money in that was not a ticket.
         val outWords = listOf("Rent", "Electricity", "Wages", "Fuel", "Tea")
         for (part in (0 until CASH_ROWS).chunked(1_000)) {
-            dao.restoreCash(part.map {
+            dao.restoreCash(part.map { j ->
                 val income = goods.nextInt(10) < 3
                 CashEntry(
-                    id = nextCash++, amount = (goods.nextInt(1, 200) * 50).toDouble(), isIncome = income,
+                    id = otherCash[j], amount = (goods.nextInt(1, 200) * 50).toDouble(), isIncome = income,
                     category = if (income) "Other" else outWords[goods.nextInt(outWords.size)], note = "Test$MARK",
-                    timestamp = now - goods.nextLong(0, 700 * DAY), paymentMethod = PaymentMethod.CASH
+                    timestamp = otherAt[j], paymentMethod = PaymentMethod.CASH
                 )
             })
         }
