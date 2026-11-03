@@ -24,11 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.DateWords
@@ -96,16 +94,17 @@ fun DayBookScreen(
         onLoaded(z, list)
     }
     val today = DayCloseMath.dayOf(System.currentTimeMillis())
-    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     LazyColumn(modifier.fillMaxSize().background(c.pageBg), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)) {
         item(key = "day") {
-            // The day between its two steps; each arrow points the way its day lies in the reader's direction.
+            // The day between its two steps; each arrow points the way its day lies in the reader's direction. ‹ and ›
+            // are mirrored by the text itself in a right-to-left page (Unicode's Bidi_Mirrored), so they are never
+            // swapped here: swapped, they were turned twice and pointed inwards in Urdu (the 2d437cd proof).
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { onDay(day - 1) }) { Text(if (rtl) "›" else "‹", color = c.brandGreenText, fontSize = 22.sp) }
+                TextButton(onClick = { onDay(day - 1) }) { Text("‹", color = c.brandGreenText, fontSize = 22.sp) }
                 Text(dayWords(day, today, words), Modifier.weight(1f), color = c.ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center, maxLines = 2)
                 TextButton(onClick = { if (day < today) onDay(day + 1) }, enabled = day < today) {
-                    Text(if (rtl) "‹" else "›", color = if (day < today) c.brandGreenText else c.textMuted, fontSize = 22.sp)
+                    Text("›", color = if (day < today) c.brandGreenText else c.textMuted, fontSize = 22.sp)
                 }
             }
         }

@@ -2123,6 +2123,11 @@ Each of these cost a build or a bug.
     `ChequesPane(…, home)` were updated in Main.kt only; ScreenProofTest still called `CashbookPane(dao)` and
     :desktop:compileTestKotlin failed (ebccb87). grep `src/test` and `src/androidTest` as well as `src/main`.
 
+77. **‹ › ( ) [ ] < > are mirrored by the text itself in a right-to-left page.** They are Unicode Bidi_Mirrored: in an
+    Urdu line Android and Skia both draw "‹" as "›". The day book swapped them for RTL as well, so they were turned
+    twice and both pointed inwards (the 2d437cd proof). A text arrow is written once, as for LTR; an icon arrow is
+    what is flipped by hand (`Glyph`, `check_icon_direction.py`).
+
 ---
 
 ## Working with the owner
