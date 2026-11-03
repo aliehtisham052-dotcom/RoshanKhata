@@ -90,15 +90,20 @@ fun RestoreStepsDialog(run: RestoreRun, onClose: () -> Unit) {
                 if (heading != null) FluentButton(word(W.ok), close, kind = ButtonKind.ACCENT)
                 else Text(word(W.restore_keep_open), color = c.textMuted, fontSize = 12.sp)
             }
-        ) {
-            Column {
-                run.labels.forEachIndexed { i, label ->
-                    StepRow(label, run.details[i], run.states[i], last = i == run.labels.lastIndex)
-                }
-            }
-            run.message?.let { Text(it, color = c.ink, fontSize = 14.sp) }
+        ) { RestoreStepsBody(run) }
+    }
+}
+
+/** The steps and, at the end, what to know: the dialog's body (drawn on its own by the proof pictures too). */
+@Composable
+fun RestoreStepsBody(run: RestoreRun) {
+    val c = LocalRoshanColors.current
+    Column {
+        run.labels.forEachIndexed { i, label ->
+            StepRow(label, run.details[i], run.states[i], last = i == run.labels.lastIndex)
         }
     }
+    run.message?.let { Text(it, color = c.ink, fontSize = 14.sp) }
 }
 
 @Composable

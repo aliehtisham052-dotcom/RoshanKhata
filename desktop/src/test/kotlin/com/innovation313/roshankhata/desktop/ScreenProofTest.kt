@@ -633,6 +633,82 @@ class ScreenProofTest {
     }
 
     /**
+     * The 3 Nov 2026 animations as each ends (the owner's mockups): a restore's steps, a document's chain, live sync's
+     * roads with what waits, and the drawer's three answers — in English by day and in Urdu by night, a second in.
+     */
+    @Test
+    fun `the animations end where they should`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        fun frame(name: String, ur: Boolean, body: @androidx.compose.runtime.Composable () -> Unit): File {
+            val before = Locale.getDefault()
+            val locale = Locale.forLanguageTag(if (ur) "ur" else "en").also { Locale.setDefault(it) }
+            val words = desktopWords(locale)
+            val scene = ImageComposeScene(width = 600, height = 560, density = Density(1.25f)) {
+                DeskTheme(dark = ur) {
+                    ProvideWords(words) {
+                        CompositionLocalProvider(LocalLayoutDirection provides if (ur) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+                            DialogFrame(name, onClose = {}, footer = {}) { body() }
+                        }
+                    }
+                }
+            }
+            try {
+                scene.render(0); scene.render(16_000_000)
+                scene.render(500_000_000)
+                val png = scene.render(1_500_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                return File(dir, "$name.png").also { it.writeBytes(png) }
+            } finally {
+                scene.close()
+                Locale.setDefault(before)
+            }
+        }
+        val shots = mutableListOf<File>()
+        for (ur in listOf(false, true)) {
+            val tag = if (ur) "ur" else "en"
+            shots += frame("anim-restore-steps-$tag", ur) {
+                val labels = listOf(
+                    com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_checked),
+                    com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_kept),
+                    com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_replaced),
+                    com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_joined)
+                )
+                val why = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_step_kept_why)
+                val note = com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.restore_join_failed)
+                val run = androidx.compose.runtime.remember {
+                    RestoreRun(labels, listOf("1240 \u00b7 86 \u00b7 12", why, null, null), null).apply {
+                        done(0); done(1); done(2); start(3); failRunning(); finish("", note)
+                    }
+                }
+                RestoreStepsBody(run)
+            }
+            shots += frame("anim-doc-chain-$tag", ur) {
+                val kinds = com.innovation313.roshankhata.data.DocKind
+                DocChainStrip(
+                    listOf(
+                        com.innovation313.roshankhata.data.DocChain.Node(kinds.QUOTATION, "Q-000012"),
+                        com.innovation313.roshankhata.data.DocChain.Node(kinds.SALES_ORDER, "SO-000008"),
+                        com.innovation313.roshankhata.data.DocChain.Node(kinds.CHALLAN, null),
+                        com.innovation313.roshankhata.data.DocChain.Node(kinds.INVOICE, null)
+                    ),
+                    play = false
+                )
+            }
+            shots += frame("anim-live-roads-$tag", ur) {
+                LiveRoads(LiveRoad.DOWN)
+                Tag(com.innovation313.roshankhata.words.plural(com.innovation313.roshankhata.words.WP.live_changes_waiting, 3, 3), Look.warn, Look.warnTint)
+                LiveRoads(LiveRoad.WIFI)
+            }
+            shots += frame("anim-drawer-$tag", ur) {
+                DrawerResult(DrawerKind.MATCH, com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.dayclose_match))
+                DrawerResult(DrawerKind.SHORT, com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.dayclose_short, "Rs 200"))
+                DrawerResult(DrawerKind.OVER, com.innovation313.roshankhata.words.word(com.innovation313.roshankhata.words.W.dayclose_over, "Rs 250"))
+            }
+        }
+        for (f in shots) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 6_000)
+    }
+
+    /**
      * The counter's extras and the new reports (21 Oct 2026), drawn from a small
      * made-up book: the item grid with a product's variants, the customer's
      * screen, dues by age and the sales report's chart.

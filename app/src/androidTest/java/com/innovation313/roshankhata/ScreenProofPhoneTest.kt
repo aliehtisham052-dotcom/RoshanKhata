@@ -152,6 +152,56 @@ class ScreenProofPhoneTest(
                 anchor = d.findViewById(R.id.bottomBarContainer), onUndo = {}, onShare = {}, millis = 15000
             )
         }
+        // The 3 Nov 2026 animations, as each ends (this emulator runs with animations off, so every one is drawn in
+        // its last state): their words at 150%, in Urdu, by night, on the phone's own width.
+        shoot("32-restore-steps", open(BackupActivity::class.java)) { a ->
+            val r = a.resources
+            val steps = com.innovation313.roshankhata.ui.RestoreSteps.show(
+                a, a.getString(R.string.restoring),
+                a.getString(R.string.restore_backup_of, com.innovation313.roshankhata.ui.Format.dateTime(System.currentTimeMillis() - DAY)),
+                listOf(
+                    com.innovation313.roshankhata.ui.RestoreSteps.Step(
+                        a.getString(R.string.restore_step_checked),
+                        r.getQuantityString(R.plurals.bin_party_entries, 1240, 1240) + " \u00b7 " +
+                            r.getQuantityString(R.plurals.customer_count, 86, 86) + " \u00b7 " +
+                            r.getQuantityString(R.plurals.supplier_count, 12, 12)
+                    ),
+                    com.innovation313.roshankhata.ui.RestoreSteps.Step(a.getString(R.string.restore_step_kept), a.getString(R.string.restore_step_kept_why)),
+                    com.innovation313.roshankhata.ui.RestoreSteps.Step(a.getString(R.string.restore_step_replaced)),
+                    com.innovation313.roshankhata.ui.RestoreSteps.Step(a.getString(R.string.restore_step_photos))
+                )
+            )
+            steps.done(0); steps.done(1); steps.done(2); steps.skipped(3)
+            steps.finish(a.getString(R.string.restore_done), a.getString(R.string.restore_no_images), a.getString(R.string.restore_open_book)) {}
+        }
+        shoot("33-doc-converted", open(InvoicesActivity::class.java)) { a ->
+            val kinds = com.innovation313.roshankhata.data.DocKind
+            com.innovation313.roshankhata.ui.DocConvertedSheet.show(
+                a,
+                listOf(
+                    com.innovation313.roshankhata.data.DocChain.Node(kinds.QUOTATION, "Q-000012"),
+                    com.innovation313.roshankhata.data.DocChain.Node(kinds.SALES_ORDER, "SO-000008"),
+                    com.innovation313.roshankhata.data.DocChain.Node(kinds.CHALLAN, null),
+                    com.innovation313.roshankhata.data.DocChain.Node(kinds.INVOICE, null)
+                ),
+                { k -> a.getString(com.innovation313.roshankhata.data.WordIds.string(kinds.wordKey(k))) },
+                BIG_NAME + " \u00b7 " + a.resources.getQuantityString(R.plurals.items_count, 3, 3) + " \u00b7 Rs 1,234,567"
+            ) {}
+        }
+        shoot("34-pdf-making", open(PartyDetailActivity::class.java) { putExtra(PartyDetailActivity.EXTRA_PARTY_ID, big) }) { a ->
+            com.innovation313.roshankhata.ui.PdfMaking.start(a).page(2, 5)
+        }
+        shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
+            val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)
+            roads.visibility = android.view.View.VISIBLE
+            roads.road = com.innovation313.roshankhata.ui.LiveTrafficView.Road.DOWN
+            a.findViewById<android.widget.TextView>(R.id.tvLiveWaiting).apply {
+                text = a.resources.getQuantityString(R.plurals.live_changes_waiting, 3, 3)
+                visibility = android.view.View.VISIBLE
+            }
+            // The live card is far down the Backup screen: brought into the picture.
+            roads.post { roads.requestRectangleOnScreen(android.graphics.Rect(0, -200, roads.width, roads.height + 600), true) }
+        }
     }
 
     /** The customer statement's first page as the customer gets it (2 Nov 2026), drawn from its PDF. */
