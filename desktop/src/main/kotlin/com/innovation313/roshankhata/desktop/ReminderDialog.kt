@@ -40,8 +40,9 @@ class ReminderStore(private val file: File) {
 
     /** One more reminder opened for [partyId] at [balanceNow]. A failed write is passed over: the next one counts again. */
     @Synchronized
-    fun record(partyId: Long, balanceNow: Double, now: Long = System.currentTimeMillis()) {
-        props.setProperty(partyId.toString(), ReminderLadder.encode(ReminderLadder.next(state(partyId), balanceNow, now)))
+    fun record(partyId: Long, balanceNow: Double, now: Long = System.currentTimeMillis(), sent: Int? = null) {
+        // The step the owner sent, not only the one offered (3 Nov 2026 audit, M33).
+        props.setProperty(partyId.toString(), ReminderLadder.encode(ReminderLadder.next(state(partyId), balanceNow, now, sent)))
         runCatching {
             val tmp = File(file.path + ".tmp")
             tmp.outputStream().use { props.store(it, "Roshan Khata: reminders opened on this computer") }
@@ -128,7 +129,7 @@ fun ReminderDialog(
                             java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
                     }
                     opened.onSuccess {
-                        if (owes) store.record(partyId, balance)
+                        if (owes) store.record(partyId, balance, sent = step)
                         onClose()
                     }.onFailure { trouble = failText(words, it) }
                 }, kind = ButtonKind.ACCENT, icon = "ic_action_whatsapp")

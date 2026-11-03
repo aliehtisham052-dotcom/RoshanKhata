@@ -85,7 +85,9 @@ object RadarDesk {
 @Composable
 fun rememberRadar(dao: KhataDao, partyId: Long, isCustomer: Boolean, entries: List<EntryWithItems>, promise: Long?): PaymentRadar.Reading? {
     var reading by remember(partyId) { mutableStateOf<PaymentRadar.Reading?>(null) }
-    val on = RadarDesk.on && isCustomer
+    // The owner's and a manager's to read, not a cashier's at the counter (3 Nov 2026 audit, L31).
+    val on = RadarDesk.on && isCustomer &&
+        com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.REPORTS)
     LaunchedEffect(partyId, entries, promise, on) {
         reading = if (!on) null else runCatching {
             val shop = RadarDesk.shopDays(dao)

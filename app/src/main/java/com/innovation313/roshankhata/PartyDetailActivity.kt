@@ -2581,7 +2581,10 @@ class PartyDetailActivity : BaseActivity() {
         // The ladder (6 Oct): the app picks the next step, the owner can change it.
         val ladder = com.innovation313.roshankhata.data.ReminderLadder
         val state = ladder.state(this, partyId)
+        // The step on the chip the owner left chosen: the one the ladder remembers as sent (3 Nov 2026 audit, M33).
+        var chosenStep = ladder.GENTLE
         fun fill(step: Int) {
+            chosenStep = step
             etMessage.setText(
                 Reminder.buildMessage(
                     context = this,
@@ -2639,7 +2642,7 @@ class PartyDetailActivity : BaseActivity() {
             ) { _, _ ->
                 val message = etMessage.text.toString()
                 if (com.innovation313.roshankhata.data.Money.isPositive(currentBalance)) {
-                    ladder.record(this, partyId, currentBalance)
+                    ladder.record(this, partyId, currentBalance, sent = chosenStep)
                 }
                 if (viaWhatsApp) {
                     Reminder.sendViaWhatsApp(this, partyPhone, message)
@@ -3242,7 +3245,9 @@ class PartyDetailActivity : BaseActivity() {
     private var radarJob: kotlinx.coroutines.Job? = null
 
     private fun refreshRadar() {
-        if (!partyIsCustomerAccount || !com.innovation313.roshankhata.ui.RadarUi.on(this)) {
+        // How a customer pays is the owner's and a manager's to read, not a cashier's at the counter (3 Nov 2026 audit, L31).
+        val mayRead = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.REPORTS)
+        if (!partyIsCustomerAccount || !mayRead || !com.innovation313.roshankhata.ui.RadarUi.on(this)) {
             radarReading = null
             tvRadar.visibility = View.GONE
             return

@@ -32,30 +32,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:maxLines="1"
+            android:maxLines="2"
             android:ellipsize="end"
             android:textColor="@color/text_muted"
             android:textSize="11sp" />
     </LinearLayout>
 
+    <!-- Two lines rather than a cut (3 Nov 2026 audit, L33): at 150% text "12 Nov 2026" read "12 Nov 20…" and a
+         quantity "12 bottle" would have lost its unit. The columns keep the widths their heads have. -->
     <TextView
         android:id="@+id/tvInsRowExpiry"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:maxLines="1"
-        android:textSize="12sp"
-        android:ellipsize="end" />
+        android:maxLines="2"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/tvInsRowLeft"
         android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:maxLines="1"
+        android:maxLines="2"
         android:textColor="@color/ink"
         android:textSize="13sp"
-        android:textStyle="bold"
-        android:ellipsize="end" />
+        android:textStyle="bold" />
 
 </LinearLayout>

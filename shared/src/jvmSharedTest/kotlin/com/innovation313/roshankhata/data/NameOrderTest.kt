@@ -32,4 +32,10 @@ class NameOrderTest {
         assertEquals(listOf("Bilal", "Zara", "علی", "अमित", "कमल", "राम", "আলী", "করিম", "রহিম"),
             order("राम", "রহিম", "علی", "Zara", "कमल", "করিম", "Bilal", "अमित", "আলী"))
     }
+
+    @Test
+    fun `a bracket, a mark or an emoji before a name does not send it to the end`() {
+        assertEquals(listOf("(Ali)", "\u2B50 Bilal", "Zara"), order("Zara", "\u2B50 Bilal", "(Ali)"))
+        assertEquals(listOf("Ali", "\"Kashif\"", "علی"), order("علی", "\"Kashif\"", "Ali"))
+    }
 }

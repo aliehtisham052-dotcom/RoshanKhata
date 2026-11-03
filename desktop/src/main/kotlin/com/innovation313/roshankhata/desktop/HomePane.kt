@@ -475,10 +475,12 @@ class ExtraAlert(val section: Section, val title: String, val sub: String, val o
 
 /** The bell's list (the phone's AlertsActivity): each alert on its page's tile, a click opens the page. */
 @Composable
-fun AlertsList(alerts: List<LedgerAlerts.Alert>, extra: List<ExtraAlert> = emptyList(), onOpen: (Section) -> Unit) {
+fun AlertsList(alerts: List<LedgerAlerts.Alert>, extra: List<ExtraAlert> = emptyList(), late: Int = 0, onOpen: (Section) -> Unit) {
     val c = LocalRoshanColors.current
     Column(Modifier.fillMaxSize().background(Look.layer).verticalScroll(rememberScrollState()).padding(8.dp)) {
-        if (alerts.isEmpty() && extra.isEmpty()) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp)
+        if (alerts.isEmpty() && extra.isEmpty() && late <= 0) Text(word(W.na_none), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp)
+        // The late payers first, as Home and the phone's list have them (3 Nov 2026 audit, L50).
+        if (late > 0) LookRow(plural(WP.home_paying_late, late, late), null, Section.FOLLOWUP) { onOpen(Section.FOLLOWUP) }
         extra.forEach { x -> LookRow(x.title, x.sub, x.section, x.onClick) }
         alerts.forEach { a ->
             val s = alertSection(a.kind)

@@ -278,6 +278,7 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND b.ledgerEntryId = transactions.id)
         """
     )
     suspend fun restoreEntry(id: Long)
@@ -314,7 +315,9 @@ interface KhataDao {
     /**
      * Entries shown in the bin are only those deleted *on their own*.
      * Entries that were swept in alongside a deleted party are hidden here —
-     * they reappear automatically when the party is restored.
+     * they reappear automatically when the party is restored. A deleted bill's
+     * own "I owe them" stays out too (3 Nov 2026 audit, L07): restored alone it
+     * brought the debt back with no bill behind it, and a bill has no restore.
      */
     @Query(
         """
@@ -324,6 +327,7 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = t.id)
         AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = t.id)
         AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = t.id OR r.refundEntryId = t.id))
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND b.ledgerEntryId = t.id)
         ORDER BY t.deletedAt DESC
         """
     )

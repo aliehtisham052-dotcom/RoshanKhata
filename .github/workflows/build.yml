@@ -197,6 +197,12 @@ jobs:
           print(f"::notice title=APK size {total/1e6:.2f} MB::" + ", ".join(f"{k} {v/1e6:.2f}" for k, v in g.most_common()))
           PY
 
+      # Play's 16 KB page rule (3 Nov 2026 audit, L51): every 64-bit native library aligned, checked on
+      # every build so a new library or a new version of one cannot break it unseen.
+      - name: 16 KB pages
+        if: success()
+        run: python3 scripts/check_16kb.py out/RoshanKhata-latest.apk
+
       # A rolling "latest" release: one clean, permanent download link that
       # always points at the newest build. No zip, no login, no digging
       # through Actions artifacts — just tap and install on the phone.
