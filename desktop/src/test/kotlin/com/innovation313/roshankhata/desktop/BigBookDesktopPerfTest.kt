@@ -57,6 +57,18 @@ class BigBookDesktopPerfTest {
             report += BigBookProbe.run(db, desktopWords(Locale.ENGLISH)).map { it.toString() }
             probeRan = true
 
+            // The Khata page's search runs on the window's own thread, once per key (shownBy): what a key waits for.
+            val parties = db.khataDao().partiesWithBalanceOnce()
+            for (q in listOf("b", "bil", "thalewala")) {
+                var keyBest = Long.MAX_VALUE
+                repeat(BigBookProbe.RUNS) {
+                    val k = System.nanoTime()
+                    parties.shownBy(q, PartySide.ALL, PartyType.ALL, PartySort.RECENT)
+                    keyBest = minOf(keyBest, System.nanoTime() - k)
+                }
+                report += "Khata search on the window's thread, \"$q\": " + "%.1f".format(Locale.ROOT, keyBest / 1e6) + " ms"
+            }
+
             // Windows' own Home read (homeFigures): the cashbook's sums, the drawer, today's and the last entries.
             var best = Long.MAX_VALUE
             var first = -1L
