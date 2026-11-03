@@ -90,7 +90,7 @@ object Calc {
     }
 
     /** The reader's language groups thousands with a dot ([Format.money] prints it so). */
-    private fun dotGroups(): Boolean = java.util.Locale.getDefault().language.let { it == "in" || it == "id" }
+    private fun dotGroups(): Boolean = Digits.decimalComma()
 
     /**
      * A box that holds a PERCENT — a tax rate, a discount in percent — where

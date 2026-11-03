@@ -648,6 +648,9 @@ class EntryDetailActivity : BaseActivity() {
                         else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
                     }
                     val savedItems = dao.itemsOfEntry(updated.id)
+                    // Half of a cash sale whose amount changed: its other half is asked about (3 Nov 2026 audit, M13).
+                    val pair = if (e.pairedEntryId == null || !com.innovation313.roshankhata.data.Money.isNotZero(amount - e.amount)) null
+                        else runCatching { dao.pairToFollow(e, e.amount) }.getOrNull()
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             entry = updated
@@ -656,6 +659,18 @@ class EntryDetailActivity : BaseActivity() {
                             if (sigChanged) showSignature()
                             Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
                                 .show()
+                            if (pair != null) {
+                                AlertDialog.Builder(this@EntryDetailActivity)
+                                    .setTitle(R.string.edit_pair_title)
+                                    .setMessage(getString(R.string.edit_pair_message, pair.entryNumber,
+                                        com.innovation313.roshankhata.ui.Format.money(e.amount),
+                                        com.innovation313.roshankhata.ui.Format.money(amount)))
+                                    .setPositiveButton(R.string.edit_pair_both) { _, _ ->
+                                        AppScope.launch { dao.setPairAmount(pair.id, e.id, amount) }
+                                    }
+                                    .setNegativeButton(R.string.delete_pair_one, null)
+                                    .show()
+                            }
                         }
                     }
                 }

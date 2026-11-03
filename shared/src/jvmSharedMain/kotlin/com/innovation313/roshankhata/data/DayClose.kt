@@ -79,7 +79,7 @@ object DayCloseMath {
      * stretch is `from < t <= now`, the DAO's own bounds.
      */
     suspend fun drawerByTheBooks(dao: KhataDao, now: Long = System.currentTimeMillis()): DrawerFigures {
-        val last = dao.lastDayClose()
+        val last = dao.lastDayClose(now)
         val from = last?.closedAt ?: firstCountFrom(now)
         return DrawerFigures(
             now = now,

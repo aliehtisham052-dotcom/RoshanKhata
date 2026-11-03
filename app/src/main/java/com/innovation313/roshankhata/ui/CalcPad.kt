@@ -191,6 +191,30 @@ object CalcPad {
     }
 
     /**
+     * The docked pad's height for this screen (3 Nov 2026 audit, M35): [PAD_SHARE] of the screen's height,
+     * never taller than the [PAD_MAX_DP] it always had and never shorter than keys of 48 dp ([PAD_MIN_DP]:
+     * five rows of 48 dp keys with their 3 dp margins, and the pad's 4 dp padding). A fixed 330 dp on a
+     * 720 dp phone at 150% text left about 190 dp above it, and the balance after the entry sat below the
+     * amount, out of sight, while he typed. Best effort: a pad without layout params is left as it is.
+     */
+    fun fitHeight(pad: View) {
+        val res = pad.resources
+        val screenDp = res.configuration.screenHeightDp
+        val params = pad.layoutParams ?: return
+        if (screenDp <= 0) return
+        val dp = padHeightDp(screenDp)
+        params.height = (dp * res.displayMetrics.density).toInt()
+        pad.layoutParams = params
+    }
+
+    /** [fitHeight]'s rule alone, for a test: the pad's height in dp for a screen [screenDp] tall. */
+    fun padHeightDp(screenDp: Int): Float = (screenDp * PAD_SHARE).coerceIn(PAD_MIN_DP, PAD_MAX_DP)
+
+    const val PAD_SHARE = 0.40f
+    const val PAD_MIN_DP = 278f
+    const val PAD_MAX_DP = 330f
+
+    /**
      * The window part of [dock] alone, for a form whose pad is already docked in its own layout (the
      * add-entry layout, which a plan's instalment also opens): full screen, [content] given the height.
      */

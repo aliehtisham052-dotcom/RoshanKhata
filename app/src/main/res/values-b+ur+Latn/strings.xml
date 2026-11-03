@@ -1378,6 +1378,10 @@
     <string name="delete_pair_message">Ye entry ek naqd sauday ka ek hissa hai (%1$s). Sirf ek hissa mitane se balance ghalat ho jayega.</string>
     <string name="delete_pair_both">Dono mitayein</string>
     <string name="delete_pair_one">Sirf ye</string>
+    <string name="restore_pair_too">Is naqd saude ka doosra hissa (%1$s) bhi Recycle Bin mein hai aur is ke saath wapas aayega.</string>
+    <string name="edit_pair_title">Is ka doosra hissa bhi badlein?</string>
+    <string name="edit_pair_message">Ye entry aur %1$s ek naqd saude ke do hisse hain, ab tak dono %2$s. Kya %1$s bhi %3$s kar dein? Usay waisa hi sirf tab rehne dein jab mauqe par di gayi raqam waqai mukhtalif thi.</string>
+    <string name="edit_pair_both">Dono badlein</string>
 
     <string name="payment_method_label">Adaigi kaise hui?</string>
     <string name="payment_method_cash">Naqd</string>
@@ -3359,6 +3363,7 @@
     <string name="audit_cash_edited">Cashbook ka indiraaj badla</string>
     <string name="audit_cash_deleted">Cashbook ka indiraaj mitaya</string>
     <string name="audit_party_deleted">Gahak mitaya gaya</string>
+    <string name="audit_party_merged">Gahak mila diye gaye</string>
     <string name="audit_day_closed">Din band kiya gaya</string>
     <string name="audit_import">Import</string>
     <string name="audit_bill_deleted">Bill mitaya gaya</string>

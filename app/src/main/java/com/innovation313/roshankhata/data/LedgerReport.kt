@@ -54,6 +54,9 @@ object LedgerReport {
             render(context, entries, rangeLabel)
         } catch (e: Exception) {
             null
+        } catch (e: OutOfMemoryError) {
+            // A whole big book in one PDF (3 Nov 2026 audit, L22): said as "could not make it", never a crash.
+            null
         }
     }
 
@@ -290,6 +293,9 @@ object LedgerReport {
             file
         } catch (e: Exception) {
             doc.close()
+            null
+        } catch (e: OutOfMemoryError) {
+            runCatching { doc.close() }
             null
         }
     }

@@ -147,8 +147,10 @@ object Downloads {
             .setAutoCancel(true)
             .build()
         try {
+            // Under its own tag (3 Nov 2026 audit, L19): by id alone it could replace a cheque, plan or automation
+            // notice, whose ids share the same numbers.
             NotificationManagerCompat.from(context)
-                .notify((System.currentTimeMillis() % 100000).toInt() + 2000, notification)
+                .notify("download", (System.currentTimeMillis() % 100000).toInt() + 2000, notification)
         } catch (_: SecurityException) {
             // Notifications denied; the toast already named the location.
         }

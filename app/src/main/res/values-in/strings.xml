@@ -1387,6 +1387,10 @@
     <string name="delete_pair_message">Catatan ini adalah separuh dari penjualan tunai (%1$s). Menghapus hanya satu bagian membuat saldo menjadi salah.</string>
     <string name="delete_pair_both">Hapus keduanya</string>
     <string name="delete_pair_one">Hanya yang ini</string>
+    <string name="restore_pair_too">Separuh lain dari penjualan tunai ini (%1$s) juga ada di tempat sampah dan ikut dipulihkan.</string>
+    <string name="edit_pair_title">Ubah pasangannya juga?</string>
+    <string name="edit_pair_message">Catatan ini dan %1$s adalah dua bagian dari satu penjualan tunai, sampai sekarang keduanya %2$s. Ubah %1$s menjadi %3$s juga? Biarkan saja hanya jika uang yang dibayar di tempat memang berbeda.</string>
+    <string name="edit_pair_both">Ubah keduanya</string>
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">Dibayar dengan apa?</string>
@@ -3359,6 +3363,7 @@
     <string name="audit_cash_edited">Baris buku kas diubah</string>
     <string name="audit_cash_deleted">Baris buku kas dihapus</string>
     <string name="audit_party_deleted">Pelanggan dihapus</string>
+    <string name="audit_party_merged">Pelanggan digabung</string>
     <string name="audit_day_closed">Hari ditutup</string>
     <string name="audit_import">Diimpor</string>
     <string name="audit_bill_deleted">Tagihan dihapus</string>

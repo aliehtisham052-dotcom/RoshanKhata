@@ -1424,6 +1424,10 @@
     <string name="delete_pair_message">This entry is one half of a cash sale (%1$s). Deleting only one half leaves the balance wrong.</string>
     <string name="delete_pair_both">Delete both</string>
     <string name="delete_pair_one">Only this one</string>
+    <string name="restore_pair_too">The other half of this cash sale (%1$s) is in the Recycle Bin too and comes back with it.</string>
+    <string name="edit_pair_title">Change its other half too?</string>
+    <string name="edit_pair_message">This entry and %1$s are the two halves of one cash sale, both %2$s until now. Change %1$s to %3$s too? Keep it only if the money paid on the spot really was different.</string>
+    <string name="edit_pair_both">Change both</string>
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">How was it paid?</string>
@@ -3571,6 +3575,7 @@
     <string name="audit_cash_edited">Cashbook row changed</string>
     <string name="audit_cash_deleted">Cashbook row deleted</string>
     <string name="audit_party_deleted">Customer deleted</string>
+    <string name="audit_party_merged">Customers merged</string>
     <string name="audit_day_closed">Day closed</string>
     <string name="audit_import">Imported</string>
     <string name="audit_bill_deleted">Bill deleted</string>

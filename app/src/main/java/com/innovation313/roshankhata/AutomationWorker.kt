@@ -137,7 +137,7 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         /** Idempotent: safe on every launch. */
         fun schedule(ctx: Context) {
             val request = PeriodicWorkRequestBuilder<AutomationWorker>(1, TimeUnit.HOURS).build()
-            WorkManager.getInstance(ctx).enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+            WorkManager.getInstance(ctx).enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.UPDATE, request) // UPDATE: a changed interval or constraint reaches installed phones (3 Nov 2026 audit, L17)
         }
     }
 }

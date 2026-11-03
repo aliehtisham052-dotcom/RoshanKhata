@@ -2079,7 +2079,11 @@ class PartyDetailActivity : BaseActivity() {
                     paymentRef = entry.paymentRef,
                     rateType = rateType
                 )
-                AppScope.launch { dao.updateEntryWithItems(updated, items); dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount)) }
+                val written = AppScope.launch { dao.updateEntryWithItems(updated, items); dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount)) }
+                // Half of a cash sale whose amount changed: ask about the other half (3 Nov 2026 audit, M13).
+                if (editing.entry.pairedEntryId != null && Money.isNotZero(amount - editing.entry.amount)) {
+                    askPairFollows(editing.entry, amount, written)
+                }
                 if (sigRow.changed) {
                     val sig = sigRow.current
                     val ctx = applicationContext
@@ -2273,6 +2277,8 @@ class PartyDetailActivity : BaseActivity() {
                 val stepOne = view.findViewById<View>(R.id.stepOne)
                 val stepTwo = view.findViewById<View>(R.id.stepTwo)
                 val keypad = view.findViewById<View>(R.id.entryKeypad)
+                // Sized to the screen, so the balance after the entry has room above it (3 Nov 2026 audit, M35).
+                com.innovation313.roshankhata.ui.CalcPad.fitHeight(keypad)
                 val more = view.findViewById<MaterialButton>(R.id.btnMoreDetails)
 
                 // The chip shows whether details are open (green outline and
@@ -2399,6 +2405,27 @@ class PartyDetailActivity : BaseActivity() {
                 }
             }
             .show()
+    }
+
+    /**
+     * [before] (one half of a cash sale) was saved at [now]: when its other half still has the old amount, ask whether
+     * it changes too (3 Nov 2026 audit, M13: a sale of 600 edited to 800 kept its "I got" of 600 and the customer owed
+     * 200 he may have paid). Asked after the edit is written ([written]); "Only this one" leaves the other half as it is.
+     */
+    private fun askPairFollows(before: LedgerEntry, now: Double, written: kotlinx.coroutines.Job) {
+        lifecycleScope.launch {
+            written.join()
+            val pair = runCatching { dao.pairToFollow(before, before.amount) }.getOrNull() ?: return@launch
+            if (isFinishing || isDestroyed) return@launch
+            MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                .setTitle(R.string.edit_pair_title)
+                .setMessage(getString(R.string.edit_pair_message, pair.entryNumber, Format.money(before.amount), Format.money(now)))
+                .setPositiveButton(R.string.edit_pair_both) { _, _ ->
+                    AppScope.launch { dao.setPairAmount(pair.id, before.id, now) }
+                }
+                .setNegativeButton(R.string.delete_pair_one, null)
+                .show()
+        }
     }
 
     /** Delete the other half of a cash sale too? Suspends until answered; true = both. */

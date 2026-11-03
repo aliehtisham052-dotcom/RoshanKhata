@@ -1378,6 +1378,10 @@
     <string name="delete_pair_message">یہ انٹری ایک نقد سودے کا ایک حصہ ہے (%1$s)۔ صرف ایک حصہ مٹانے سے بیلنس غلط ہو جائے گا۔</string>
     <string name="delete_pair_both">دونوں مٹائیں</string>
     <string name="delete_pair_one">صرف یہ</string>
+    <string name="restore_pair_too">اس نقد سودے کا دوسرا حصہ (%1$s) بھی ری سائیکل بن میں ہے اور اس کے ساتھ واپس آئے گا۔</string>
+    <string name="edit_pair_title">اس کا دوسرا حصہ بھی بدلیں؟</string>
+    <string name="edit_pair_message">یہ انٹری اور %1$s ایک نقد سودے کے دو حصے ہیں، اب تک دونوں %2$s۔ کیا %1$s بھی %3$s کر دیں؟ اسے ویسا ہی صرف تب رہنے دیں جب موقع پر دی گئی رقم واقعی مختلف تھی۔</string>
+    <string name="edit_pair_both">دونوں بدلیں</string>
 
     <string name="payment_method_label">ادائیگی کیسے ہوئی؟</string>
     <string name="payment_method_cash">نقد</string>
@@ -3359,6 +3363,7 @@
     <string name="audit_cash_edited">کیش بک کا اندراج بدلا</string>
     <string name="audit_cash_deleted">کیش بک کا اندراج مٹایا</string>
     <string name="audit_party_deleted">گاہک مٹایا گیا</string>
+    <string name="audit_party_merged">گاہک ملا دیے گئے</string>
     <string name="audit_day_closed">دن بند کیا گیا</string>
     <string name="audit_import">امپورٹ</string>
     <string name="audit_bill_deleted">بل مٹایا گیا</string>

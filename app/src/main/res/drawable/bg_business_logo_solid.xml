@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The logo tile in the Business Profile's preview card (3 Nov 2026 audit, L37): the preview sits on a light card,
+  where the header's see-through tile left the gold initials at 1.36:1. A solid brand green, as the header behind
+  the real one, keeps them at the header's own contrast.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/brand_green" />
+    <corners android:radius="11dp" />
+</shape>

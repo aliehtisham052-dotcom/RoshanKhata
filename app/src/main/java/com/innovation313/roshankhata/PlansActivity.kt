@@ -304,6 +304,7 @@ class PlansActivity : BaseActivity() {
         // were dead and the phone's keyboard came up instead (21 Oct). Bound
         // now as on the add-entry form; the note gets the phone's keyboard
         // and the pad steps aside for it.
+        com.innovation313.roshankhata.ui.CalcPad.fitHeight(view.findViewById(R.id.entryKeypad))
         com.innovation313.roshankhata.ui.CalcPad.bindAll(
             root = view,
             pad = view.findViewById(R.id.entryKeypad),

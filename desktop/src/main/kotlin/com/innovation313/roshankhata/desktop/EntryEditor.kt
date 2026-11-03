@@ -686,7 +686,7 @@ fun SignatureDialog(title: String, subtitle: String?, onDone: (java.awt.image.Bu
                     }
                 }
                 // Where to sign, faint, until the first stroke.
-                if (strokes.isEmpty() && current.isEmpty()) Text(word(W.sig_title), Modifier.align(Alignment.Center), color = Color(0xFFB8B8B8), fontSize = 18.sp)
+                if (strokes.isEmpty() && current.isEmpty()) Text(word(W.sig_title), Modifier.align(Alignment.Center), color = Color(0xFF86827A), fontSize = 18.sp) // 3.83:1 on white, the phone's (3 Nov 2026 audit, L40; was 1.98:1)
             }
             if (empty) Text(word(W.sig_empty), color = c.owedToMe, fontSize = 13.sp)
         }

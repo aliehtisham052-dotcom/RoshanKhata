@@ -140,7 +140,8 @@ fun CashbookPane(dao: KhataDao) {
                     ) {
                         Text(Format.dateTime(e.timestamp), Modifier.width(150.dp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                         Column(Modifier.weight(1f)) {
-                            Text(e.category, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                            // The counter's own categories in the owner's language, as the phone says them (3 Nov 2026 audit, L42).
+                            Text(cashCategoryWord(e.category), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             e.note?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }
                         }
                         // A sign as well as a colour: colour alone fails anyone who cannot tell red from green.
@@ -190,7 +191,7 @@ fun CashbookPane(dao: KhataDao) {
     deleting?.let { e ->
         AskDialog(
             word(W.delete_cash_entry), word(W.delete_cash_confirm), word(W.delete),
-            subtitle = e.category + " · " + (if (e.isIncome) "+ " else "− ") + Format.money(e.amount),
+            subtitle = cashCategoryWord(e.category) + " · " + (if (e.isIncome) "+ " else "− ") + Format.money(e.amount),
             danger = true,
             onConfirm = {
                 deleting = null
@@ -496,4 +497,12 @@ class LinesPrint(
         }
         return java.awt.print.Printable.PAGE_EXISTS
     }
+}
+
+/** The counter's own cashbook categories in the owner's language; a typed category as typed (the phone's CashAdapter). */
+@Composable
+private fun cashCategoryWord(category: String): String = when (category) {
+    com.innovation313.roshankhata.data.CashCategory.SALE -> word(W.cash_category_sale)
+    com.innovation313.roshankhata.data.CashCategory.RETURN -> word(W.cash_category_return)
+    else -> category
 }
