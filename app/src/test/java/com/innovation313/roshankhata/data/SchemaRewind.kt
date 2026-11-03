@@ -52,8 +52,20 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 41: indexes only (30 Oct 2026). */
+    /** Undo version 42: the covering index out, version 41's (partyId, isDeleted, timestamp) back (3 Nov 2026). */
+    fun undo42(raw: SQLiteDatabase) {
+        for (idx in Schema42.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
+        for (create in Schema42.droppedIndices.values) raw.execSQL(create)
+        val left = raw.rawQuery("SELECT name FROM sqlite_master WHERE type = 'index'", null).use { c ->
+            buildSet { while (c.moveToNext()) add(c.getString(0)) }
+        }
+        assertTrue("rewind left ${Schema42.newIndices.filter { it in left }}", Schema42.newIndices.none { it in left })
+        assertTrue("rewind did not put back ${Schema42.droppedIndices.keys - left}", left.containsAll(Schema42.droppedIndices.keys))
+    }
+
+    /** Undo version 41: indexes only (30 Oct 2026). Undoes 42 first. */
     fun undo41(raw: SQLiteDatabase) {
+        undo42(raw)
         for (idx in Schema41.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
         val left = raw.rawQuery("SELECT name FROM sqlite_master WHERE type = 'index'", null).use { c ->
             buildSet { while (c.moveToNext()) add(c.getString(0)) }

@@ -106,13 +106,18 @@ interface KhataDao {
      * HAVING keeps the SUM rule of observePartiesWithBalance (deleted lines
      * out) and the same epsilon Money.isPositive uses, so "owes" means the
      * same here as on the list.
+     *
+     * CROSS JOIN (3 Nov 2026, the speed work) is SQLite's way of saying "the customers first": left to choose,
+     * SQLite walked every line of the book by date and fetched its customer, and then sorted them all to sum
+     * them — 213 ms on a book of 300,000 lines. Customer by customer, each one's lines are read off schema
+     * 42's covering index alone, already grouped: 54 ms. The rows are the same either way.
      */
     @Query(
         """
         SELECT t.partyId, t.timestamp, t.amount, t.isGiven, t.id, t.pairedEntryId, t.isQarzeHasna FROM transactions t
         WHERE t.isDeleted = 0 AND t.partyId IN (
             SELECT p.id FROM parties p
-            JOIN transactions x ON x.partyId = p.id AND x.isDeleted = 0
+            CROSS JOIN transactions x ON x.partyId = p.id AND x.isDeleted = 0
             WHERE p.isDeleted = 0 AND p.isCustomer = 1
             GROUP BY p.id
             HAVING SUM(CASE WHEN x.isGiven = 1 THEN x.amount ELSE -x.amount END) >= 0.005

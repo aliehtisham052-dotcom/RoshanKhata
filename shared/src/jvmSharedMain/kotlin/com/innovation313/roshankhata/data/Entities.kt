@@ -162,12 +162,18 @@ object PaymentMethod {
             onDelete = ForeignKey.CASCADE
         )
     ],
-    // (partyId, isDeleted, timestamp): a customer's live lines in order, and
-    // the balance SUM per party, each read straight off the index (P2, 7 Oct).
+    // (partyId, isDeleted, timestamp, …): a customer's live lines in order (P2, 7 Oct), and since schema 42
+    // (3 Nov 2026, the speed work) the columns every per-party sum and habit reads — isGiven, amount,
+    // pairedEntryId, isQarzeHasna — so a balance is read off the index alone; the 7 Oct index of the first
+    // three found a party's lines and then fetched each from the table ([Schema42]).
     // The single partyId index stays: Room expects every declared index to
     // exist, and dropping it would be a migration of its own for no gain.
     // isDeleted+timestamp and entryNumber: schema 41 (30 Oct 2026, the speed review — every whole-book date window read the whole table).
-    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"]), Index("uid"), Index(value = ["isDeleted", "timestamp"]), Index("entryNumber")]
+    indices = [
+        Index("partyId"), Index("productId"), Index("billItemId"),
+        Index(value = ["partyId", "isDeleted", "timestamp", "isGiven", "amount", "pairedEntryId", "isQarzeHasna"]),
+        Index("uid"), Index(value = ["isDeleted", "timestamp"]), Index("entryNumber")
+    ]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
