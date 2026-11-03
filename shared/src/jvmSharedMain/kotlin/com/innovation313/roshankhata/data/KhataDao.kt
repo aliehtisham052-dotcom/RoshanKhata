@@ -4446,23 +4446,28 @@ interface KhataDao {
     )
     suspend fun boughtPerProductUnit(): List<Stock.ProductQty>
 
+    // The goods lines first, in the order they lie in the file, each line's entry then found by its id (3 Nov 2026,
+    // the speed work): left to choose, SQLite walked all 300,000 entries of the big book by date and looked each one
+    // up among the goods lines, though two in three have none — 168 ms against 86 on a copy of the schema. CROSS
+    // JOIN keeps that order; the "+" before ei.productId keeps SQLite from reading the lines by product instead,
+    // which sends every entry lookup somewhere else on the disk. The sums and rows are the same.
     @Query(
         "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, ei.unit AS unit " +
-        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "FROM entry_items ei CROSS JOIN transactions t ON t.id = ei.entryId " +
         "JOIN parties p ON p.id = t.partyId " +
-        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
+        "WHERE +ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
         "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
-        "GROUP BY ei.productId, ei.unit"
+        "GROUP BY +ei.productId, ei.unit"
     )
     suspend fun soldPerProductUnit(): List<Stock.ProductQty>
 
     @Query(
         "SELECT ei.productId AS productId, SUM(ei.quantity) AS qty, ei.unit AS unit " +
-        "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
+        "FROM entry_items ei CROSS JOIN transactions t ON t.id = ei.entryId " +
         "JOIN parties p ON p.id = t.partyId " +
-        "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
+        "WHERE +ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
         "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
-        "GROUP BY ei.productId, ei.unit"
+        "GROUP BY +ei.productId, ei.unit"
     )
     suspend fun returnedPerProductUnit(): List<Stock.ProductQty>
 
