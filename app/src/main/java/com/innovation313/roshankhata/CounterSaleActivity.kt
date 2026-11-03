@@ -697,7 +697,8 @@ class CounterSaleActivity : BaseActivity() {
                                         // paper for them unless the A4 note was made), or that credit note.
                                         if (!isFinishing && !isDestroyed) {
                                             val next = ArrayList<Pair<String, () -> Unit>>()
-                                            if (draft.isEmpty) next += getString(R.string.pos_exchange_start) to { startExchange(id) }
+                                            // The counter's ticket, not this return's form (the local draft above is the ReturnDraft).
+                                            if (this@CounterSaleActivity.draft.isEmpty) next += getString(R.string.pos_exchange_start) to { startExchange(id) }
                                             next += getString(R.string.print_receipt) to { printReturnSlip(id) }
                                             next += getString(R.string.doc_kind_credit_note) to { openCreditNote(id) }
                                             MaterialAlertDialogBuilder(this@CounterSaleActivity)
