@@ -9,6 +9,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -229,8 +233,8 @@ fun PhotoDialog(
 @Composable
 fun FormPhoto(title: String, source: File?, onChange: (File?) -> Unit) {
     val c = com.innovation313.roshankhata.screens.LocalRoshanColors.current
-    var failed by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-    val bmp = androidx.compose.runtime.remember(source) { source?.let { Photos.bitmap(it.path, 160) } }
+    var failed by remember { mutableStateOf(false) }
+    val bmp = remember(source) { source?.let { Photos.bitmap(it.path, 160) } }
     androidx.compose.foundation.layout.Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)) {
         androidx.compose.foundation.layout.Row(
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
