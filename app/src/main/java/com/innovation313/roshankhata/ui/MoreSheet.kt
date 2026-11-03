@@ -237,17 +237,18 @@ object MoreSheet {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                // Turning the lock OFF takes the phone's own fingerprint or screen lock first
-                // (21 Oct 2026): anyone holding the open app could switch it off in two taps.
-                val host = activity as? androidx.fragment.app.FragmentActivity
-                if (!enabled || host == null) { if (!enabled) flip(); return@setPositiveButton }
+                // Both ways take the phone's own fingerprint or screen lock first. OFF (21 Oct 2026): anyone
+                // holding the open app could switch it off in two taps. ON (3 Nov 2026 audit, C3): the lock is
+                // proven to answer on THIS phone before it guards the book — a lock that could not be answered
+                // shut the owner out of his own ledger at the next opening.
+                val host = activity as? androidx.fragment.app.FragmentActivity ?: return@setPositiveButton
                 val prompt = androidx.biometric.BiometricPrompt(host, androidx.core.content.ContextCompat.getMainExecutor(host),
                     object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
                         override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) { flip() }
                     })
                 prompt.authenticate(
                     androidx.biometric.BiometricPrompt.PromptInfo.Builder()
-                        .setTitle(activity.getString(R.string.app_lock_turn_off))
+                        .setTitle(activity.getString(if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on))
                         .setSubtitle(activity.getString(R.string.lock_subtitle))
                         .setAllowedAuthenticators(AppLock.AUTHENTICATORS)
                         .build()

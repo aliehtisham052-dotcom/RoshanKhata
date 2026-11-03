@@ -88,7 +88,7 @@ class EntryDraft(
  * then read as owing what he had paid. Anything else keeps what it had.
  */
 fun entryRateType(isSale: Boolean, goodsHaveRate: Boolean, cashRate: Boolean, paidNow: Boolean, kept: String?): String? =
-    if (isSale && (goodsHaveRate || paidNow)) (if (cashRate) RateType.CASH else RateType.CREDIT) else kept
+    RateType.forEntry(isSale, goodsHaveRate, cashRate, paidNow, kept) // the phone's rule too (3 Nov 2026 audit, C2)
 
 /** One goods line as a short text: name, quantity with its unit, rate, and the free mark. */
 fun goodsLineText(line: EntryItem, freeWord: String): String = listOfNotNull(

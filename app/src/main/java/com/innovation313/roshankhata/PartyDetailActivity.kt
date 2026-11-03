@@ -2025,7 +2025,14 @@ class PartyDetailActivity : BaseActivity() {
 
             // Which price list the sale was at — recorded when a rate was.
             // Fixed now, never recalculated (see LedgerEntry.rateType).
-            val rateType = if (isSale() && items.any { it.rate != null }) chosenRateType() else null
+            // The one rule both platforms keep (3 Nov 2026 audit, C2): a ticked "money received now" makes the sale a
+            // CASH one even when no goods line has a rate — the paired "I got" is written only for a CASH sale, and
+            // a sale of unpriced goods left the customer owing money he had paid.
+            val rateType = RateType.forEntry(
+                isSale = isSale(), goodsHaveRate = items.any { it.rate != null },
+                cashRate = chosenRateType() == RateType.CASH, paidNow = cbPaidNow.isChecked,
+                kept = editing?.entry?.rateType
+            )
 
             val entry = LedgerEntry(
                 partyId = partyId,
@@ -3114,14 +3121,15 @@ class PartyDetailActivity : BaseActivity() {
             // DAO's own transaction — see insertEntryNumbered for why the count
             // must not be read out here, and insertEntryWithItems for why the
             // lines are written in the same step.
-            val id = dao.insertEntryWithItems(entry, items)
+            // Ticked on the form: the money came with the goods. The sale and its paired cash "I got" are one
+            // transaction (3 Nov 2026 audit, M10): written in two, a kill between them left a credit sale with
+            // no payment, and a retry after a failed second step wrote the sale twice.
+            val (id, gotId) = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)
+                dao.insertEntryWithItemsPaidNow(entry, items)
+            else dao.insertEntryWithItems(entry, items) to null
             if (signature != null) withContext(Dispatchers.IO) {
                 runCatching { com.innovation313.roshankhata.data.EntrySignature.save(appContext, id, signature) }
             }
-            // Ticked on the form: the money came with the goods. Its cash
-            // "I got" is written straight after, paired with the sale.
-            val gotId = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)
-                dao.recordCashForSale(id) else null
             // Balance as it stands once this entry counts (positive = owed to me).
             val after = if (gotId != null) before
                 else before + if (entry.isGiven) entry.amount else -entry.amount
