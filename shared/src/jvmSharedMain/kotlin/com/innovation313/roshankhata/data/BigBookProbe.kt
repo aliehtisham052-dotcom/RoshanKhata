@@ -102,6 +102,14 @@ object BigBookProbe {
 
         // Stock and the counter.
         time("Stock of every product", { "${it.size} products" }) { Stock.of(dao) }
+        // Its six sums apart, so a slow one is named (Stock.of is read by the bell, the counter's every ticket,
+        // the stock, expiry and orders pages and the sales report).
+        time("  stock: bought") { dao.boughtPerProductUnit() }
+        time("  stock: sold on the khata") { dao.soldPerProductUnit() }
+        time("  stock: back on the khata") { dao.returnedPerProductUnit() }
+        time("  stock: sold over the counter") { dao.walkInSoldPerProductUnit() }
+        time("  stock: back over the counter") { dao.walkInReturnedPerProductUnit() }
+        time("  stock: counted and adjusted") { dao.adjustedPerProductUnit() }
         time("Stock value") { Valuation.compute(dao) }
         time("Expiring batches", { "${it.size} batches" }) { Fefo.expiring(dao, now + ExpiryWindow.WARN_MS) }
         time("Stock register", { "${it.size} batches" }) { Fefo.register(dao) }
