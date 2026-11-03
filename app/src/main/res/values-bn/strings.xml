@@ -3775,4 +3775,5 @@
         <item quantity="one">%dটি বদল পাঠানোর অপেক্ষায়</item>
         <item quantity="other">%dটি বদল পাঠানোর অপেক্ষায়</item>
     </plurals>
+    <string name="doc_kind_invoice">ইনভয়েস</string>
 </resources>

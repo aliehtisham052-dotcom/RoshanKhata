@@ -3755,4 +3755,5 @@
         <item quantity="one">%d تبديلي وڃڻ جي انتظار ۾</item>
         <item quantity="other">%d تبديليون وڃڻ جي انتظار ۾</item>
     </plurals>
+    <string name="doc_kind_invoice">انوائس</string>
 </resources>

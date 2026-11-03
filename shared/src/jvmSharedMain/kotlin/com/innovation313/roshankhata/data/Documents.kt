@@ -57,7 +57,9 @@ object DocKind {
         PROFORMA -> W.doc_kind_proforma
         SALES_ORDER -> W.doc_kind_sales_order
         CHALLAN -> W.doc_kind_challan
-        INVOICE -> W.pdf_label_invoice
+        // The screen's word, in the case of its neighbours (3 Nov 2026: "INVOICE" stood in capitals beside
+        // "Quotation" on the pills and the convert's chain); the printed heading keeps its own (InvoiceTemplateKit).
+        INVOICE -> W.doc_kind_invoice
         CREDIT_NOTE -> W.doc_kind_credit_note
         DEBIT_NOTE -> W.doc_kind_debit_note
         else -> throw IllegalArgumentException("not a document kind: $kind")

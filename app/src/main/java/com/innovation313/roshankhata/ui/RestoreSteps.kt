@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.button.MaterialButton
@@ -101,6 +102,10 @@ class RestoreSteps private constructor(
             note.text = message
             note.visibility = View.VISIBLE
             MotionKit.riseIn(note, duration = 200)
+            // What to know is brought into sight under the steps, once it is laid out (the button stays in sight
+            // below them).
+            val scroll = root.findViewById<androidx.core.widget.NestedScrollView>(R.id.stepsScroll)
+            note.doOnNextLayout { scroll.smoothScrollTo(0, (scroll.getChildAt(0)?.height ?: 0) - scroll.height) }
         }
         button.text = action
         button.visibility = View.VISIBLE

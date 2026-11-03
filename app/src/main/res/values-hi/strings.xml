@@ -3775,4 +3775,5 @@
         <item quantity="one">%d बदलाव भेजे जाने के इंतज़ार में</item>
         <item quantity="other">%d बदलाव भेजे जाने के इंतज़ार में</item>
     </plurals>
+    <string name="doc_kind_invoice">इनवॉइस</string>
 </resources>

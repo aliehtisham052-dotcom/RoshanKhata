@@ -3967,4 +3967,5 @@
         <item quantity="many">%d تغييرًا ينتظر الإرسال</item>
         <item quantity="other">%d تغيير ينتظر الإرسال</item>
     </plurals>
+    <string name="doc_kind_invoice">فاتورة</string>
 </resources>
