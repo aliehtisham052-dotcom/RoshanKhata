@@ -42,4 +42,18 @@
         android:textColor="@color/text_muted"
         android:textSize="12sp" />
 
+    <!-- Where it is kept (the product's note, 3 Nov 2026); gone when none was written. -->
+    <TextView
+        android:id="@+id/tvProdPlace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:drawablePadding="4dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textAlignment="viewStart"
+        android:textColor="@color/ink_soft"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
 </LinearLayout>

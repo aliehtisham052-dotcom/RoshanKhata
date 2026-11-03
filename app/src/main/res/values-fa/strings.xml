@@ -3026,6 +3026,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">بارکد (اختیاری)</string>
+    <string name="product_note_label">یادداشت یا محل (اختیاری)</string>
+    <string name="product_note_hint">مثلاً قفسه 3، انبار</string>
     <string name="product_cost_hint">قیمت خرید (اختیاری)</string>
     <string name="product_low_stock_hint">هشدار در موجودی (اختیاری)</string>
     <string name="product_barcode_taken">این بارکد قبلاً روی %1$s است</string>

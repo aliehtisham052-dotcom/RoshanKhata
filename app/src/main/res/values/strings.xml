@@ -3210,6 +3210,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">Barcode (optional)</string>
+    <string name="product_note_label">Note or place (optional)</string>
+    <string name="product_note_hint">e.g. Rack 3, store room</string>
     <string name="product_cost_hint">Cost price (optional)</string>
     <string name="product_low_stock_hint">Warn at stock (optional)</string>
     <string name="product_barcode_taken">That barcode is already on %1$s</string>

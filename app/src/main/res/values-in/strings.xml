@@ -2999,6 +2999,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">Barcode (opsional)</string>
+    <string name="product_note_label">Catatan atau tempat (opsional)</string>
+    <string name="product_note_hint">mis. Rak 3, gudang</string>
     <string name="product_cost_hint">Harga beli (opsional)</string>
     <string name="product_low_stock_hint">Peringatan saat stok (opsional)</string>
     <string name="product_barcode_taken">Barcode itu sudah dipakai %1$s</string>

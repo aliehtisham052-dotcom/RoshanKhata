@@ -3026,6 +3026,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">بارڪوڊ (اختياري)</string>
+    <string name="product_note_label">نوٽ يا جاءِ (اختياري)</string>
+    <string name="product_note_hint">مثال طور ريڪ 3، گودام</string>
     <string name="product_cost_hint">خريد قيمت (اختياري)</string>
     <string name="product_low_stock_hint">اسٽاڪ هن تي خبردار ڪري (اختياري)</string>
     <string name="product_barcode_taken">هي بارڪوڊ اڳ ۾ ئي %1$s تي آهي</string>

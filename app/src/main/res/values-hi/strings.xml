@@ -3046,6 +3046,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">बारकोड (वैकल्पिक)</string>
+    <string name="product_note_label">नोट या जगह (वैकल्पिक)</string>
+    <string name="product_note_hint">जैसे रैक 3, गोदाम</string>
     <string name="product_cost_hint">खरीद मूल्य (वैकल्पिक)</string>
     <string name="product_low_stock_hint">इतने स्टॉक पर चेतावनी (वैकल्पिक)</string>
     <string name="product_barcode_taken">यह बारकोड पहले से %1$s पर है</string>

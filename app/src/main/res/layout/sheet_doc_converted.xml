@@ -94,6 +94,27 @@
             app:backgroundTint="@color/brand_green"
             app:cornerRadius="14dp" />
 
+        <!-- The new document to the customer's own chat (3 Nov 2026): a sales order made into a challan is the moment
+             "your order is ready" is said. Shown only when the screen can send it. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDocSend"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="52dp"
+            android:text="@string/invoice_send_whatsapp"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_green_text"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_action_whatsapp"
+            app:iconGravity="textStart"
+            app:iconTint="@color/brand_green_text"
+            app:strokeColor="@color/brand_green_text" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDocClose"
             style="@style/Widget.MaterialComponents.Button.TextButton"

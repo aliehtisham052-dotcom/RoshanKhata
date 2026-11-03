@@ -185,11 +185,24 @@ class ScreenProofPhoneTest(
                 ),
                 { k -> a.getString(com.innovation313.roshankhata.data.WordIds.string(kinds.wordKey(k))) },
                 // The line as the convert says it (DocConvertedSheet.line), money in the shop's own format.
-                com.innovation313.roshankhata.ui.DocConvertedSheet.line(a.resources, BIG_NAME, 3, 1_234_567.0, kinds.SALES_ORDER)
-            ) {}
+                com.innovation313.roshankhata.ui.DocConvertedSheet.line(a.resources, BIG_NAME, 3, 1_234_567.0, kinds.SALES_ORDER),
+                onOpen = {},
+                // The new document to the customer's chat (3 Nov 2026), shown as the convert shows it.
+                onSend = {}
+            )
         }
         shoot("34-pdf-making", open(PartyDetailActivity::class.java) { putExtra(PartyDetailActivity.EXTRA_PARTY_ID, big) }) { a ->
             com.innovation313.roshankhata.ui.PdfMaking.start(a).page(2, 5)
+        }
+        // The price check (3 Nov 2026): a made-up product's two prices, its shelf and its place.
+        shoot("36-price-check", open(ProductsActivity::class.java)) { a ->
+            val product = com.innovation313.roshankhata.data.Product(
+                id = 987_654, name = "Confidor 250 ml", nameKey = "confidor 250 ml", normalisedName = "confidor 250 ml",
+                company = "Test Co.", defaultUnit = "bottle", salePrice = 1_250.0, creditPrice = 1_350.0,
+                barcode = "8964000123457", note = "Rack 3, store room"
+            )
+            val stock = com.innovation313.roshankhata.data.Stock.ProductStock(product.id, product.name, 30.0, 6.0, 0.0, "bottle", "bottle")
+            com.innovation313.roshankhata.ui.PriceCheckSheet.show(a, product, stock, onBuyers = {}, onEdit = {})
         }
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)

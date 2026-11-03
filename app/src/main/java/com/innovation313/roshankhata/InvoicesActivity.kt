@@ -164,8 +164,8 @@ class InvoicesActivity : BaseActivity() {
         val options = ArrayList<Pair<ChoiceSheet.Option, () -> Unit>>()
         options += ChoiceSheet.view(getString(R.string.view)) to { viewInvoice(invoice) }
         if (live) options += ChoiceSheet.edit(getString(R.string.edit)) to { editInvoice(invoice) }
-        options += ChoiceSheet.whatsapp(getString(R.string.invoice_send_whatsapp)) to { sendPdfToCustomer(invoice) }
-        options += ChoiceSheet.pdf(getString(R.string.invoice_share_pdf)) to { sharePdf(invoice) }
+        options += ChoiceSheet.whatsapp(getString(R.string.invoice_send_whatsapp)) to { sendPdfToCustomer(invoice.id, invoice.invoiceNumber) }
+        options += ChoiceSheet.pdf(getString(R.string.invoice_share_pdf)) to { sharePdf(invoice.id, invoice.invoiceNumber) }
         if (DocActions.canAccept(invoice.kind, invoice.status)) options += ChoiceSheet.done(getString(R.string.doc_accept)) to { acceptDocument(invoice) }
         if (target != null) options += ChoiceSheet.Option(getString(R.string.doc_convert_to, kindWord(target)), icon = R.drawable.ic_arrow_forward, iconTint = R.color.tile_invoice_fg, tile = R.color.tile_invoice_bg) to { convertDocument(invoice, target) }
         if (DocActions.canCancel(invoice.status)) options += ChoiceSheet.stop(getString(R.string.mark_cancelled)) to { confirmCancelDocument(invoice) }
@@ -218,7 +218,11 @@ class InvoicesActivity : BaseActivity() {
             val chain = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.DocChain.of(dao, id) }.getOrDefault(emptyList()) }
             if (chain.size < 2 || isFinishing || isDestroyed) { if (!isFinishing && !isDestroyed) open(); return@launch }
             val what = com.innovation313.roshankhata.ui.DocConvertedSheet.line(resources, invoice.customerName, invoice.itemCount, invoice.grandTotal, to)
-            com.innovation313.roshankhata.ui.DocConvertedSheet.show(this@InvoicesActivity, chain, { kindWord(it) }, what, open)
+            // The new document to the customer's chat from the same sheet (3 Nov 2026): a sales order made into a challan
+            // is when "your order is ready" is said, and the document itself says it.
+            val madeNumber = chain.lastOrNull { it.number != null }?.number ?: invoice.invoiceNumber
+            com.innovation313.roshankhata.ui.DocConvertedSheet.show(this@InvoicesActivity, chain, { kindWord(it) }, what, open,
+                onSend = { sendPdfToCustomer(id, madeNumber) })
         }
     }
 
@@ -254,9 +258,9 @@ class InvoicesActivity : BaseActivity() {
      * WhatsApp is not installed at all the plain chooser opens instead, so
      * the invoice can still go out by email or Bluetooth.
      */
-    private fun sendPdfToCustomer(invoice: InvoiceSummary) {
+    private fun sendPdfToCustomer(invoiceId: Long, docNumber: String) {
         lifecycleScope.launch {
-            val full = dao.getInvoice(invoice.id) ?: return@launch
+            val full = dao.getInvoice(invoiceId) ?: return@launch
 
             val number = full.customerPhone?.let { Reminder.toWhatsAppNumber(it) }
             if (number.isNullOrBlank()) {
@@ -271,7 +275,7 @@ class InvoicesActivity : BaseActivity() {
             val send = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, invoice.invoiceNumber)
+                putExtra(Intent.EXTRA_SUBJECT, docNumber)
                 putExtra("jid", "$number@s.whatsapp.net")
                 setPackage("com.whatsapp")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -283,7 +287,7 @@ class InvoicesActivity : BaseActivity() {
                 Toast.makeText(
                     this@InvoicesActivity, R.string.whatsapp_not_installed, Toast.LENGTH_LONG
                 ).show()
-                sharePdf(invoice)
+                sharePdf(invoiceId, docNumber)
             }
         }
     }
@@ -345,14 +349,14 @@ class InvoicesActivity : BaseActivity() {
      * sharing it. Changing the design now belongs where it always belonged,
      * in Edit, which reopens that same step 3 carousel.
      */
-    private fun sharePdf(invoice: InvoiceSummary) {
+    private fun sharePdf(invoiceId: Long, docNumber: String) {
         lifecycleScope.launch {
-            val uri = buildPdfUri(invoice.id) ?: return@launch
+            val uri = buildPdfUri(invoiceId) ?: return@launch
 
             val share = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, invoice.invoiceNumber)
+                putExtra(Intent.EXTRA_SUBJECT, docNumber)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             startActivity(Intent.createChooser(share, getString(R.string.invoice_share_pdf)))

@@ -3046,6 +3046,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">বারকোড (ঐচ্ছিক)</string>
+    <string name="product_note_label">নোট বা জায়গা (ঐচ্ছিক)</string>
+    <string name="product_note_hint">যেমন তাক 3, গুদাম</string>
     <string name="product_cost_hint">ক্রয়মূল্য (ঐচ্ছিক)</string>
     <string name="product_low_stock_hint">এই স্টকে সতর্ক করুন (ঐচ্ছিক)</string>
     <string name="product_barcode_taken">এই বারকোড ইতিমধ্যে %1$s-এ আছে</string>

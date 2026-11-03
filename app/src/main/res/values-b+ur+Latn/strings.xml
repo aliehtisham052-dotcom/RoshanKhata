@@ -2998,6 +2998,8 @@
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">Barcode (ikhtiyari)</string>
+    <string name="product_note_label">Note ya jagah (ikhtiyari)</string>
+    <string name="product_note_hint">Masalan Rack 3, godaam</string>
     <string name="product_cost_hint">Khareed qeemat (ikhtiyari)</string>
     <string name="product_low_stock_hint">Stock is par khabardar kare (ikhtiyari)</string>
     <string name="product_barcode_taken">Ye barcode pehle hi %1$s par hai</string>

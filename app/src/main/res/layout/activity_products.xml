@@ -109,24 +109,53 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Find a product by name (13 Oct): a dealer stocks dozens. -->
-        <EditText
-            android:id="@+id/etProductSearch"
+        <!-- Find a product by name (13 Oct): a dealer stocks dozens. By its barcode or its note too, and the
+             camera beside it reads a code (3 Nov 2026, the price check): the product's prices and stock, with
+             nothing put on a ticket. A Bluetooth scanner types the code and Enter into the box. -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:background="@drawable/bg_header_search"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="10dp"
-            android:drawableTint="@color/section_bills_soft"
-            android:hint="@string/products_search_hint"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:textColor="@color/white"
-            android:textColorHint="@color/section_bills_soft"
-            android:textSize="15sp" />
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etProductSearch"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_header_search"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/section_bills_soft"
+                android:hint="@string/products_search_hint"
+                android:imeOptions="actionSearch"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/section_bills_soft"
+                android:textSize="15sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProductScan"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/pos_scan"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="@color/header_tile_fill"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_qr_scan"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/header_tile_stroke" />
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

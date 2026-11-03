@@ -27,12 +27,16 @@ import com.innovation313.roshankhata.data.Stock
  */
 class ProductAdapter(
     private val onClick: (Stock.ProductStock) -> Unit
-) : ListAdapter<Stock.ProductStock, ProductAdapter.VH>(DIFF) {
+) : ListAdapter<ProductAdapter.Row, ProductAdapter.VH>(DIFF) {
+
+    /** A product's stock, and where it is kept or a word about it (its note, 3 Nov 2026) when the owner wrote one. */
+    data class Row(val stock: Stock.ProductStock, val place: String? = null)
 
     class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvProdName)
         val tvStock: TextView = view.findViewById(R.id.tvProdStock)
         val tvMoved: TextView = view.findViewById(R.id.tvProdMoved)
+        val tvPlace: TextView = view.findViewById(R.id.tvProdPlace)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -42,7 +46,8 @@ class ProductAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val s = getItem(position)
+        val row = getItem(position)
+        val s = row.stock
         val ctx = holder.itemView.context
 
         holder.tvName.text = s.name
@@ -84,15 +89,19 @@ class ProductAdapter(
             Format.qty(s.soldQty, s.soldUnit)
         )
 
+        // Where it is kept ("Rack 3, store room"), under the figures; nothing when no note was written.
+        holder.tvPlace.text = row.place
+        holder.tvPlace.visibility = if (row.place.isNullOrBlank()) View.GONE else View.VISIBLE
+
         holder.itemView.setOnClickListener { onClick(s) }
     }
 
     companion object {
-        private val DIFF = object : DiffUtil.ItemCallback<Stock.ProductStock>() {
-            override fun areItemsTheSame(a: Stock.ProductStock, b: Stock.ProductStock) =
-                a.productId == b.productId
+        private val DIFF = object : DiffUtil.ItemCallback<Row>() {
+            override fun areItemsTheSame(a: Row, b: Row) =
+                a.stock.productId == b.stock.productId
 
-            override fun areContentsTheSame(a: Stock.ProductStock, b: Stock.ProductStock) =
+            override fun areContentsTheSame(a: Row, b: Row) =
                 a == b
         }
     }
