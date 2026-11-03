@@ -1578,6 +1578,9 @@ not on a real phone or the owner's laptop.
   query again from its first row for each 2 MB — 275,000 owing lines took 10.8 s on the emulator against 0.67 s on
   the computer. `observeOwingLedgerPoints`, `radarRows` and `agingMoves` are gone; LedgerLinesTest holds each slice
   read to the old single query as written.
+- The day's safety copy starts 4 s after the Khata list's first rows (`KhataActivity.startDailyCopy`, AppScope): it holds
+  the book's one write connection while the file is copied, and Room's first read of the list waited for it (first row
+  3.8 s instead of 1.9 s on the emulator's big book, the day's first open).
 - Stock's khata sums read the goods lines first (CROSS JOIN, `+ei.productId`); Windows Follow-up works out habits
   and order on Dispatchers.Default (the phone already did).
 - **Windows runner, before → after:** every party's balance 834 → 197 ms; owing lines 666 → 82; bell 1,214 → 517;
