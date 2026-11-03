@@ -1,5 +1,7 @@
 # Play listing — Arabic (ar)
 
+<!-- 3 Nov 2026: the privacy line corrected (Drive backup and copies sent to the owner's own devices take the ledger off the phone, by his choice). The rest of this listing describes the older build; en-US.md and ur.md were rewritten for the next upload. -->
+
 ## App name (max 30)
 Roshan Khata – دفتر الديون
 
@@ -36,7 +38,7 @@ Roshan Khata هو دفتر حسابات المحل، في هاتفك. ديون �
 
 دفاترك في هاتفك
 • بلا حساب، بلا تسجيل، بلا إعلانات — يعمل التطبيق كاملاً دون إنترنت
-• دفترك لا يُجمع ولا يُرسل إلى أي مكان؛ يبقى في هاتفك
+• دفترك يبقى في هاتفك، ولا نجمعه أبدًا. لا يخرج إلا باختيارك: نسخة احتياطية في Google Drive الخاص بك، أو نسخة ترسلها إلى جهازك
 • نسخ احتياطي على Google Drive الخاص بك، تلقائياً إن أردت
 • قفل التطبيق ببصمتك أو رمز PIN؛ أخفِ الرصيد حين ينظر أحد
 • أكثر من محل؟ لكل نشاط دفتره المستقل

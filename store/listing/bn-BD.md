@@ -1,5 +1,7 @@
 # Play listing — Bangla (bn-BD)
 
+<!-- 3 Nov 2026: the privacy line corrected (Drive backup and copies sent to the owner's own devices take the ledger off the phone, by his choice). The rest of this listing describes the older build; en-US.md and ur.md were rewritten for the next upload. -->
+
 ## App name (max 30)
 Roshan Khata – বাকির খাতা
 
@@ -36,7 +38,7 @@ Roshan Khata দোকানের কাউন্টারের খাতা, 
 
 আপনার খাতা, আপনার ফোনে
 • অ্যাকাউন্ট নেই, সাইন-আপ নেই, বিজ্ঞাপন নেই — অ্যাপ পুরোপুরি অফলাইনে চলে
-• আপনার খাতা কোথাও জমা বা পাঠানো হয় না; তা আপনার ফোনেই থাকে
+• আপনার খাতা আপনার ফোনেই থাকে, আমরা কখনো তা সংগ্রহ করি না। শুধু আপনি চাইলে বাইরে যায়: আপনার নিজের Google Drive-এ ব্যাকআপ, অথবা আপনার নিজের কোনো ডিভাইসে পাঠানো কপি
 • আপনার নিজের Google Drive-এ ব্যাকআপ, চাইলে স্বয়ংক্রিয়
 • আঙুলের ছাপ বা PIN দিয়ে অ্যাপ লক; কেউ দেখলে ব্যালান্স লুকান
 • একাধিক দোকান? প্রতিটি ব্যবসার আলাদা খাতা

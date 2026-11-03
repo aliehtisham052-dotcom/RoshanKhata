@@ -1,5 +1,7 @@
 # Play listing — Persian (fa)
 
+<!-- 3 Nov 2026: the privacy line corrected (Drive backup and copies sent to the owner's own devices take the ledger off the phone, by his choice). The rest of this listing describes the older build; en-US.md and ur.md were rewritten for the next upload. -->
+
 ## App name (max 30)
 Roshan Khata – دفتر نسیه
 
@@ -36,7 +38,7 @@ Roshan Khata دفتر حساب پیشخوان مغازه است، در گوشی 
 
 دفترهای شما، در گوشی شما
 • بدون حساب کاربری، بدون ثبت‌نام، بدون تبلیغ — برنامه کاملاً بدون اینترنت کار می‌کند
-• دفتر شما جایی جمع یا فرستاده نمی‌شود؛ در گوشی شما می‌ماند
+• دفتر شما در گوشی خودتان می‌ماند و ما هرگز آن را جمع‌آوری نمی‌کنیم. فقط به انتخاب خودتان بیرون می‌رود: پشتیبان در Google Drive خودتان، یا نسخه‌ای که به دستگاه خودتان می‌فرستید
 • پشتیبان در Google Drive خودتان، در صورت تمایل خودکار
 • قفل برنامه با اثر انگشت یا PIN؛ پنهان‌کردن مانده وقتی کسی نگاه می‌کند
 • چند مغازه دارید؟ هر کسب‌وکار دفتر جداگانهٔ خود را دارد
