@@ -3112,6 +3112,8 @@
     <string name="po_status_closed">بند</string>
     <string name="po_none">ابھی کوئی آرڈر نہیں</string>
     <string name="po_lines_empty">آرڈر کے آئٹم شامل کریں</string>
+    <string name="po_no_suppliers">آپ کے کھاتے میں ابھی کوئی سپلائر نہیں۔ پہلے کھاتہ میں سپلائر شامل کریں، پھر آرڈر بنائیں۔</string>
+    <string name="po_pick_supplier">آرڈر محفوظ کرنے کے لیے سپلائر چنیں</string>
     <string name="po_message_head">آرڈر %1$s — %2$s</string>
     <string name="po_from_low">کم اسٹاک کا آرڈر</string>
     <string name="po_book">کتاب</string>

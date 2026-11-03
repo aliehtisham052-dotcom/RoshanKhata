@@ -3324,6 +3324,8 @@
     <string name="po_status_closed">Closed</string>
     <string name="po_none">No orders yet</string>
     <string name="po_lines_empty">Add the items to order</string>
+    <string name="po_no_suppliers">There is no supplier in your book yet. Add one in Khata as a supplier, then make the order.</string>
+    <string name="po_pick_supplier">Choose the supplier to save the order</string>
     <string name="po_message_head">Order %1$s — %2$s</string>
     <string name="po_from_low">Order the low stock</string>
     <string name="po_book">Book</string>

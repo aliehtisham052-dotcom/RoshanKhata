@@ -212,6 +212,9 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
             }, kind = ButtonKind.ACCENT, enabled = draft.valid)
         }) {
             PartyPicker(suppliers, draft.partyId, onPick = { draft.partyId = it }, label = word(W.po_supplier), hint = word(W.search_parties))
+            // Why Save waits (3 Nov 2026, the owner's photo of the phone's form): no supplier chosen, or none in the book.
+            if (suppliers.isEmpty()) Text(word(W.po_no_suppliers), Modifier.padding(top = 6.dp), color = c.textMuted, fontSize = 13.sp)
+            else if (draft.partyId == null && draft.lines.isNotEmpty()) Text(word(W.po_pick_supplier), Modifier.padding(top = 6.dp), color = c.textMuted, fontSize = 13.sp)
             FluentField(query, { query = it }, Modifier.fillMaxWidth().padding(top = 8.dp), placeholder = word(W.pos_search_hint), leadingIcon = "ic_search")
             if (query.isNotBlank()) Column(Modifier.fillMaxWidth().heightIn(max = 180.dp).card().verticalScroll(rememberScrollState())) {
                 CounterDraft.search(draft.products, query, 8).forEach { p ->

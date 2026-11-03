@@ -3160,6 +3160,8 @@
     <string name="po_status_closed">বন্ধ</string>
     <string name="po_none">এখনো কোনো অর্ডার নেই</string>
     <string name="po_lines_empty">অর্ডারের আইটেম যোগ করুন</string>
+    <string name="po_no_suppliers">আপনার খাতায় এখনও কোনো সরবরাহকারী নেই। আগে খাতায় একজন সরবরাহকারী যোগ করুন, তারপর অর্ডার তৈরি করুন।</string>
+    <string name="po_pick_supplier">অর্ডার সেভ করতে সরবরাহকারী বেছে নিন</string>
     <string name="po_message_head">অর্ডার %1$s — %2$s</string>
     <string name="po_from_low">কম স্টকের অর্ডার</string>
     <string name="po_book">খাতা</string>

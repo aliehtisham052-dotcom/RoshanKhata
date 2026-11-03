@@ -3140,6 +3140,8 @@
     <string name="po_status_closed">بسته</string>
     <string name="po_none">هنوز سفارشی نیست</string>
     <string name="po_lines_empty">کالاهای سفارش را اضافه کنید</string>
+    <string name="po_no_suppliers">هنوز تأمین‌کننده‌ای در دفتر شما نیست. اول در دفتر یک تأمین‌کننده اضافه کنید، سپس سفارش را بسازید.</string>
+    <string name="po_pick_supplier">برای ذخیره کردن سفارش، تأمین‌کننده را انتخاب کنید</string>
     <string name="po_message_head">سفارش %1$s — %2$s</string>
     <string name="po_from_low">سفارش موجودی کم</string>
     <string name="po_book">دفتر</string>

@@ -222,7 +222,11 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, it
             TextButton(onClick = { draft.partyId = null }) { Text(word(W.edit), color = c.brandGreenText) }
         } else {
             OutlinedTextField(partyQuery, { partyQuery = it }, Modifier.fillMaxWidth(), label = { Text(word(W.po_supplier)) }, singleLine = true)
-            Column(Modifier.fillMaxWidth().heightIn(max = 220.dp).background(c.surface, RoundedCornerShape(12.dp))) {
+            // The book's suppliers to tap, under their own heading (3 Nov 2026, the owner's photo: a bare card with one
+            // name read as text, not as a list to choose from); none at all says where one is made.
+            if (suppliers.isEmpty()) Text(word(W.po_no_suppliers), color = c.textMuted, fontSize = 14.sp)
+            else Text(word(W.filter_type_suppliers), color = c.textMuted, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            if (suppliers.isNotEmpty()) Column(Modifier.fillMaxWidth().heightIn(max = 220.dp).verticalScroll(rememberScrollState()).background(c.surface, RoundedCornerShape(12.dp))) {
                 suppliers.filter { NameSearch.matches(it.name, it.phone, partyQuery.trim().lowercase()) }.take(20).forEach { p ->
                     Text(Format.name(p.name), Modifier.fillMaxWidth().clickable { draft.partyId = p.id }.padding(12.dp), color = c.ink, fontSize = 15.sp)
                     HorizontalDivider(color = c.pageBg)
@@ -252,6 +256,9 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, it
         }
         OutlinedButton(onClick = { draft.lines += OrderDraft.Line(null, "", "1", null, "") }) { Text(word(W.add_item), color = c.ink) }
         OutlinedTextField(draft.note, { draft.note = it }, Modifier.fillMaxWidth(), label = { Text(word(W.note_optional)) }, singleLine = true)
+        // Why Save waits: a greyed button with no word (the owner's photo). Lines missing are said above already.
+        if (draft.partyId == null && draft.lines.isNotEmpty() && suppliers.isNotEmpty())
+            Text(word(W.po_pick_supplier), color = c.textMuted, fontSize = 13.sp)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onCancel) { Text(word(W.cancel), color = c.ink) }
             Spacer(Modifier.weight(1f))
