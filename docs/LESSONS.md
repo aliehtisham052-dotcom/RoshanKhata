@@ -95,6 +95,8 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
 - Look for a name in the whole interface before adding one: a DAO read with an existing read's name and
   parameters but another return type failed both builds ("Conflicting overloads"). A local name hides the screen's
   own as well: a form's `draft` inside a function is not the counter's `draft`.
+- A Kotlin property delegate (`var x by remember { … }`) needs `getValue`/`setValue` imported even when every
+  other name in the line is written out in full; a new file's first delegate brings its two imports.
 - Gradle stops at the first failing task: one failing test hides every later failure. Fix it, push, and read the
   next run before calling anything green.
 - A test that asserts the old behaviour is changed in the same commit as the behaviour, with the reason written in it.
