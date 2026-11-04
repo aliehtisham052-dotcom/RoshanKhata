@@ -28,7 +28,8 @@ jobs:
       - run: npx tsc --noEmit
       - name: Smoke test on a local Worker (no account, nothing leaves the runner)
         run: |
-          npx wrangler dev --port 8787 --ip 127.0.0.1 > wr.log 2>&1 &
+          # WARIS_DAY_MS: the heirs' DAY made 2 s here so one check waits a real wait (tests only; never from a request).
+          npx wrangler dev --port 8787 --ip 127.0.0.1 --var WARIS_DAY_MS:2000 > wr.log 2>&1 &
           for i in $(seq 1 60); do curl -sf 127.0.0.1:8787/v1/health && break; sleep 1; done
           B=$(openssl rand -hex 16); T=$(openssl rand -hex 32); W=$(openssl rand -hex 32)
           U=http://127.0.0.1:8787/v1/b/$B

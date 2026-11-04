@@ -89,6 +89,23 @@ function setup(): Promise<void> {
     `);
     // Each book's parcel bytes (phase 2, 23 Oct 2026): a store from before gets the column once, counted from its
     // parcels then; after that it is kept as parcels come and go (bookBytes).
+    // Waris ki Chaabi (heir access, 4 Nov 2026): tables of their own, never touched by the books' sweeps.
+    await sql.unsafe(`
+      CREATE TABLE IF NOT EXISTS rk_relay.waris_vaults (
+        vault TEXT PRIMARY KEY, pass TEXT NOT NULL, created BIGINT NOT NULL, last_owner BIGINT NOT NULL,
+        last_any BIGINT NOT NULL, bytes BIGINT NOT NULL DEFAULT 0,
+        snap_v INTEGER, snap_n INTEGER, snap_bytes BIGINT, snap_at BIGINT);
+      CREATE TABLE IF NOT EXISTS rk_relay.waris_heirs (
+        vault TEXT NOT NULL REFERENCES rk_relay.waris_vaults(vault) ON DELETE CASCADE, hid TEXT NOT NULL,
+        pass TEXT NOT NULL, box TEXT NOT NULL, wait INTEGER NOT NULL, last_seen BIGINT, asked_at BIGINT,
+        rejected_at BIGINT, allowed_at BIGINT, PRIMARY KEY (vault, hid));
+      CREATE TABLE IF NOT EXISTS rk_relay.waris_chunks (
+        vault TEXT NOT NULL REFERENCES rk_relay.waris_vaults(vault) ON DELETE CASCADE, v INTEGER NOT NULL,
+        i INTEGER NOT NULL, n INTEGER NOT NULL, body BYTEA NOT NULL, PRIMARY KEY (vault, v, i));
+      ALTER TABLE rk_relay.waris_vaults ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE rk_relay.waris_heirs ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE rk_relay.waris_chunks ENABLE ROW LEVEL SECURITY;
+    `);
     const has = await sql`SELECT 1 FROM information_schema.columns
                           WHERE table_schema = 'rk_relay' AND table_name = 'books' AND column_name = 'bytes'`;
     if (has.length === 0) {
@@ -198,11 +215,15 @@ async function handle(request: Request): Promise<Response> {
                 FROM (SELECT b2.book, COALESCE((SELECT SUM(octet_length(p.body)) FROM rk_relay.parcels p WHERE p.book = b2.book), 0) AS n
                       FROM rk_relay.books b2) s
                 WHERE b.book = s.book AND b.bytes <> s.n`;
+      // Waris vaults are not books: only one with no owner or heir call for WARIS_IDLE_DAYS (1095) goes.
+      await sql`DELETE FROM rk_relay.waris_vaults WHERE last_any < ${now - WARIS_IDLE_DAYS * 86_400_000}`;
     }
     // "push": this relay sends no push itself (R70: said, as cloud/worker says whether it can).
     return json({ ok: true, live, push: false });
   }
   if (!live) return refuse(503, "halted");
+  const wm = url.pathname.match(/\/v1\/w(\/.*)?$/);
+  if (wm) return await waris(request, url, wm[1] ?? "");
   const m = url.pathname.match(/\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round)$/);
   if (!m) return refuse(404, "no-such-path");
   const [, book, action] = m;
@@ -252,7 +273,7 @@ async function handle(request: Request): Promise<Response> {
       const counts = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d,
                                       COALESCE(SUM(bytes), 0) AS bytes FROM rk_relay.books`)[0];
       if (Number(counts.n) >= MAX_BOOKS) throw new Answer(refuse(507, "full"));
-      if (Number(counts.bytes) + NEW_BOOK_ROOM > STORE_BYTES) throw new Answer(refuse(507, "full"));
+      if (Number(counts.bytes) + await warisBytes(tx) + NEW_BOOK_ROOM > STORE_BYTES) throw new Answer(refuse(507, "full"));
       if (Number(counts.d) >= NEW_BOOKS_DAY) throw new Answer(refuse(429, "new-books"));
       await tx`INSERT INTO rk_relay.books (book, pass, created, seen) VALUES (${book}, ${pass}, ${now}, ${now})
                ON CONFLICT (book) DO NOTHING`;
@@ -354,8 +375,10 @@ async function handle(request: Request): Promise<Response> {
 async function put(tx: any, book: string, device: string, now: number, body: Uint8Array, b: { day: string; day_count: number; day_bytes: string }): Promise<number | [number, string]> {
   if (body.length === 0) return [400, "empty"];
   const stored = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}`)[0].n);
-  // The whole store first, as the hosting does: the other books' figures as kept, this book's counted afresh.
-  const others = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books WHERE book != ${book}`)[0].n);
+  // The whole store first, as the hosting does: the other books' figures as kept, this book's counted afresh,
+  // and the Waris vaults' chunks (4 Nov 2026).
+  const others = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books WHERE book != ${book}`)[0].n)
+    + await warisBytes(tx);
   if (others + stored + body.length > STORE_BYTES) return [507, "full"];
   const day = new Date(now).toISOString().slice(0, 10);
   const count = b.day === day ? Number(b.day_count) : 0;
@@ -411,4 +434,268 @@ async function bookBytes(tx: any, book: string): Promise<void> {
   await tx`UPDATE rk_relay.books SET bytes = s.n
            FROM (SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}) s
            WHERE book = ${book} AND bytes <> s.n`;
+}
+
+// ---------------------------------------------------------------- Waris ki Chaabi (heir access, 4 Nov 2026)
+//
+// The WARIS protocol v1, as cloud/worker and web/relay speak it: a vault per book (an opaque sealed snapshot in
+// chunks, and up to five heirs' key boxes); an heir may ask, the owner may refuse, and after the wait the heir's
+// box opens. Tables rk_relay.waris_* (RLS on, no policy); the books' sweeps never touch them.
+
+/** One DAY of the wait: WARIS_DAY_MS from the function's environment (the tests), never from a request. */
+const WARIS_DAY_MS = (() => {
+  const n = Number(Deno.env.get("WARIS_DAY_MS") ?? "");
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 86_400_000;
+})();
+const WARIS_CHUNK = 524_288;
+const WARIS_SNAP = 8_388_608;
+const WARIS_MAX_N = 16;
+const WARIS_HEIRS = 5;
+const WARIS_BOX = 4096;
+const WARIS_IDLE_DAYS = 1095;
+/** Vaults this relay holds at most (each may hold up to two versions' chunks while one replaces the other). */
+const MAX_VAULTS = Number(Deno.env.get("RK_MAX_VAULTS") ?? "2000");
+const HEX16 = /^[0-9a-f]{16}$/;
+const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
+
+/** Bytes every vault's chunks hold, as kept in waris_vaults.bytes (counted toward STORE_BYTES with the books). */
+// deno-lint-ignore no-explicit-any
+async function warisBytes(tx: any): Promise<number> {
+  return Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.waris_vaults`)[0].n);
+}
+
+function no(status: number, body: Record<string, unknown>): Answer {
+  return new Answer(json({ ok: false, ...body }, status));
+}
+
+type Heir = { hid: string; pass: string; box: string; wait: number; last_seen: string | null; asked_at: string | null;
+  rejected_at: string | null; allowed_at: string | null };
+const n0 = (x: string | number | null) => (x == null ? null : Number(x));
+function openAt(h: Heir): number | null {
+  if (h.allowed_at != null) return Number(h.allowed_at);
+  if (h.asked_at != null) return Number(h.asked_at) + Number(h.wait) * WARIS_DAY_MS;
+  return null;
+}
+function isOpen(h: Heir, now: number): boolean {
+  if (h.allowed_at != null) return true;
+  return h.asked_at != null && now >= Number(h.asked_at) + Number(h.wait) * WARIS_DAY_MS;
+}
+function query(url: URL, name: string): number | null {
+  const v = url.searchParams.get(name);
+  return v != null && /^[0-9]{1,12}$/.test(v) ? Number(v) : null;
+}
+
+async function waris(request: Request, url: URL, rest: string): Promise<Response> {
+  const m = rest.match(/^\/([^/]+)(?:\/(.*))?$/);
+  if (!m) return refuse(404, "no-such-path");
+  const vault = m[1];
+  const tail = (m[2] ?? "").replace(/\/+$/, "");
+  let hid: string | null = null;
+  let routes: Record<string, string>;
+  const top: Record<string, Record<string, string>> = {
+    "": { DELETE: "vault-delete" }, setup: { POST: "setup" }, snap: { PUT: "snap" }, status: { GET: "status" },
+  };
+  if (tail in top) routes = top[tail];
+  else {
+    const hm = tail.match(/^heir\/([^/]+)(?:\/(reject|allow|ask|alive|open|snap))?$/);
+    if (!hm) return refuse(404, "no-such-path");
+    hid = hm[1];
+    const sub = hm[2] ?? "";
+    routes = sub === "" ? { PUT: "heir-put", DELETE: "heir-delete" }
+      : { [sub === "open" || sub === "snap" ? "GET" : "POST"]: sub === "snap" ? "heir-snap" : sub };
+  }
+  const route = routes[request.method];
+  if (!route) return refuse(405, "method");
+  if (!HEX32.test(vault) || (hid != null && !HEX16.test(hid))) return json({ ok: false, why: "bad" }, 400);
+  let token = (request.headers.get("x-rk-pass") ?? "").trim();
+  if (!token) {
+    const auth = request.headers.get("authorization") ?? "";
+    token = auth.startsWith("RK ") ? auth.slice(3).trim() : "";
+  }
+  if (!HEX64.test(token)) return json({ ok: false, why: "pass" }, 403);
+  const hash = await sha256Hex(token);
+  const heirRoute = route === "ask" || route === "alive" || route === "open" || route === "heir-snap";
+
+  // Bodies are read before the transaction (a slow upload never holds the vault's row).
+  let chunk: Uint8Array | null = null;
+  let o: Record<string, unknown> | null = null;
+  let sv = 0, si = 0, sn = 0;
+  if (route === "snap") {
+    const v = query(url, "v"), i = query(url, "i"), n = query(url, "n");
+    if (v == null || i == null || n == null || v < 1 || n < 1 || n > WARIS_MAX_N || i >= n) {
+      await request.body?.cancel().catch(() => null);
+      return json({ ok: false, why: "bad" }, 400);
+    }
+    sv = v; si = i; sn = n;
+    chunk = await readCapped(request, WARIS_CHUNK);
+    if (chunk == null) return json({ ok: false, why: "too-big" }, 413);
+    if (chunk.length === 0) return json({ ok: false, why: "bad" }, 400);
+  } else if (route === "heir-put") {
+    o = parseJson(await readCapped(request, 16 * 1024));
+  }
+
+  const now = Date.now();
+  // A chunk's bytes come back raw, not as JSON: carried out of the transaction here.
+  let raw: Uint8Array | null = null;
+  const res = await sql.begin(async (tx) => {
+    const rows = await tx`SELECT pass, snap_v, snap_n, snap_bytes, snap_at FROM rk_relay.waris_vaults WHERE vault = ${vault} FOR UPDATE`;
+    const vrow = rows[0] as unknown as { pass: string; snap_v: number | null; snap_n: number | null; snap_bytes: string | null; snap_at: string | null } | undefined;
+    if (route === "setup") {
+      if (!vrow) {
+        const c = (await tx`SELECT COUNT(*) AS n FROM rk_relay.waris_vaults`)[0];
+        if (Number(c.n) >= MAX_VAULTS) throw no(507, { why: "full" });
+        const books = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books`)[0].n);
+        if (books + await warisBytes(tx) >= STORE_BYTES) throw no(507, { why: "full" });
+        const made = await tx`INSERT INTO rk_relay.waris_vaults (vault, pass, created, last_owner, last_any)
+                              VALUES (${vault}, ${hash}, ${now}, ${now}, ${now}) ON CONFLICT (vault) DO NOTHING RETURNING 1`;
+        if (made.length > 0) return json({ ok: true, created: true });
+        // Made by a call that ran beside this one: the pass decides, as for any known vault.
+        const again = (await tx`SELECT pass FROM rk_relay.waris_vaults WHERE vault = ${vault} FOR UPDATE`)[0];
+        if (!again || !sameHex(again.pass as string, hash)) throw no(403, { why: "pass" });
+        return json({ ok: true, created: false });
+      }
+      if (!sameHex(vrow.pass, hash)) throw no(403, { why: "pass" });
+      await tx`UPDATE rk_relay.waris_vaults SET last_owner = ${now}, last_any = ${now} WHERE vault = ${vault}`;
+      return json({ ok: true, created: false });
+    }
+    if (!vrow) throw no(404, { why: "unknown" });
+    let heir: Heir | null = null;
+    if (hid != null) {
+      heir = ((await tx`SELECT * FROM rk_relay.waris_heirs WHERE vault = ${vault} AND hid = ${hid} FOR UPDATE`)[0] ?? null) as unknown as Heir | null;
+    }
+    if (heirRoute) {
+      if (!heir) throw no(404, { why: "unknown" });
+      if (!sameHex(heir.pass, hash)) throw no(403, { why: "pass" });
+      await tx`UPDATE rk_relay.waris_heirs SET last_seen = ${now} WHERE vault = ${vault} AND hid = ${hid}`;
+      await tx`UPDATE rk_relay.waris_vaults SET last_any = ${now} WHERE vault = ${vault}`;
+      heir.last_seen = String(now);
+    } else {
+      if (!sameHex(vrow.pass, hash)) throw no(403, { why: "pass" });
+      if (hid != null && !heir && route !== "heir-put") throw no(404, { why: "unknown" });
+      await tx`UPDATE rk_relay.waris_vaults SET last_owner = ${now}, last_any = ${now} WHERE vault = ${vault}`;
+    }
+    const snap = vrow.snap_v == null ? null
+      : { v: Number(vrow.snap_v), n: Number(vrow.snap_n), bytes: Number(vrow.snap_bytes), at: Number(vrow.snap_at) };
+
+    switch (route) {
+      case "snap": {
+        const body = chunk!;
+        const curV = snap ? snap.v : 0;
+        if (sv < curV) throw no(409, { why: "old" });
+        if (snap && sv === curV && sn !== snap.n) throw no(400, { why: "bad" });
+        // Any other unfinished version is abandoned, and so are this version's chunks of another count.
+        await tx`DELETE FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v <> ${sv} AND v <> ${curV}`;
+        await tx`DELETE FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v = ${sv} AND n <> ${sn}`;
+        const mine = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.waris_chunks
+                                      WHERE vault = ${vault} AND v = ${sv} AND i <> ${si}`)[0].n);
+        if (mine + body.length > WARIS_SNAP) throw no(413, { why: "too-big" });
+        const held = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.waris_chunks
+                                      WHERE vault = ${vault} AND NOT (v = ${sv} AND i = ${si})`)[0].n);
+        const otherVaults = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.waris_vaults WHERE vault <> ${vault}`)[0].n);
+        const books = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books`)[0].n);
+        if (books + otherVaults + held + body.length > STORE_BYTES) throw no(507, { why: "full" });
+        await tx`INSERT INTO rk_relay.waris_chunks (vault, v, i, n, body) VALUES (${vault}, ${sv}, ${si}, ${sn}, ${body})
+                 ON CONFLICT (vault, v, i) DO UPDATE SET n = EXCLUDED.n, body = EXCLUDED.body`;
+        const have = Number((await tx`SELECT COUNT(*) AS n FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v = ${sv}`)[0].n);
+        const complete = have === sn;
+        if (complete) {
+          const total = Number((await tx`SELECT SUM(octet_length(body)) AS n FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v = ${sv}`)[0].n);
+          await tx`DELETE FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v <> ${sv}`;
+          await tx`UPDATE rk_relay.waris_vaults SET snap_v = ${sv}, snap_n = ${sn}, snap_bytes = ${total}, snap_at = ${now}
+                   WHERE vault = ${vault}`;
+        }
+        await tx`UPDATE rk_relay.waris_vaults SET bytes = (SELECT COALESCE(SUM(octet_length(body)), 0)
+                 FROM rk_relay.waris_chunks WHERE vault = ${vault}) WHERE vault = ${vault}`;
+        return json({ ok: true, complete });
+      }
+      case "heir-put": {
+        const ph = o?.passHash, box = o?.box, wait = o?.wait;
+        if (typeof ph !== "string" || !HEX64.test(ph) || typeof box !== "string" || box.length === 0
+            || box.length > WARIS_BOX || !B64.test(box) || typeof wait !== "number" || !Number.isInteger(wait)
+            || wait < 1 || wait > 90) throw no(400, { why: "bad" });
+        if (!heir) {
+          const c = Number((await tx`SELECT COUNT(*) AS n FROM rk_relay.waris_heirs WHERE vault = ${vault}`)[0].n);
+          if (c >= WARIS_HEIRS) throw no(409, { why: "full" });
+          await tx`INSERT INTO rk_relay.waris_heirs (vault, hid, pass, box, wait) VALUES (${vault}, ${hid}, ${ph}, ${box}, ${wait})`;
+        } else if (sameHex(heir.pass, ph)) {
+          await tx`UPDATE rk_relay.waris_heirs SET box = ${box}, wait = ${wait} WHERE vault = ${vault} AND hid = ${hid}`;
+        } else {
+          await tx`UPDATE rk_relay.waris_heirs SET pass = ${ph}, box = ${box}, wait = ${wait}, last_seen = NULL,
+                   asked_at = NULL, rejected_at = NULL, allowed_at = NULL WHERE vault = ${vault} AND hid = ${hid}`;
+        }
+        return json({ ok: true });
+      }
+      case "heir-delete": {
+        await tx`DELETE FROM rk_relay.waris_heirs WHERE vault = ${vault} AND hid = ${hid}`;
+        return json({ ok: true });
+      }
+      case "status": {
+        const hs = (await tx`SELECT * FROM rk_relay.waris_heirs WHERE vault = ${vault} ORDER BY hid`) as unknown as Heir[];
+        return json({
+          ok: true, now, snap,
+          heirs: hs.map((h) => ({
+            hid: h.hid, wait: Number(h.wait), lastSeen: n0(h.last_seen), askedAt: n0(h.asked_at),
+            rejectedAt: n0(h.rejected_at), allowedAt: n0(h.allowed_at), openAt: openAt(h),
+          })),
+        });
+      }
+      case "reject": {
+        await tx`UPDATE rk_relay.waris_heirs SET asked_at = NULL, allowed_at = NULL, rejected_at = ${now}
+                 WHERE vault = ${vault} AND hid = ${hid}`;
+        return json({ ok: true });
+      }
+      case "allow": {
+        await tx`UPDATE rk_relay.waris_heirs SET allowed_at = ${now}, asked_at = COALESCE(asked_at, ${now})
+                 WHERE vault = ${vault} AND hid = ${hid}`;
+        return json({ ok: true });
+      }
+      case "ask": {
+        const h = heir!;
+        if (h.asked_at == null) {
+          if (h.rejected_at != null && now - Number(h.rejected_at) < WARIS_DAY_MS) {
+            // Answered, not thrown: the heir's lastSeen above is kept (a refused ask is a sign of life too).
+            return json({ ok: false, why: "wait", retryAt: Number(h.rejected_at) + WARIS_DAY_MS }, 429);
+          }
+          await tx`UPDATE rk_relay.waris_heirs SET asked_at = ${now} WHERE vault = ${vault} AND hid = ${hid}`;
+          h.asked_at = String(now);
+        }
+        return json({ ok: true, askedAt: Number(h.asked_at), openAt: openAt(h) });
+      }
+      case "alive": {
+        const h = heir!;
+        return json({ ok: true, askedAt: n0(h.asked_at), openAt: openAt(h), rejectedAt: n0(h.rejected_at), open: isOpen(h, now) });
+      }
+      case "open": {
+        const h = heir!;
+        if (!isOpen(h, now)) return json({ ok: false, why: "waiting", openAt: openAt(h) }, 403);
+        return json({ ok: true, box: h.box, snap });
+      }
+      case "heir-snap": {
+        const h = heir!;
+        if (!isOpen(h, now)) return json({ ok: false, why: "waiting", openAt: openAt(h) }, 403);
+        const v = query(url, "v"), i = query(url, "i");
+        if (v == null || i == null) return json({ ok: false, why: "bad" }, 400);
+        if (!snap || snap.v !== v) return json({ ok: false, why: "absent" }, 404);
+        const r = await tx`SELECT body FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v = ${v} AND i = ${i}`;
+        if (r.length === 0) return json({ ok: false, why: "absent" }, 404);
+        raw = new Uint8Array(r[0].body as Uint8Array);
+        return null;
+      }
+      case "vault-delete": {
+        await tx`DELETE FROM rk_relay.waris_vaults WHERE vault = ${vault}`;
+        return json({ ok: true });
+      }
+    }
+    throw no(404, { why: "no-such-path" });
+  });
+  if (res) return res;
+  const got = raw as Uint8Array | null;
+  if (!got) return refuse(500, "server");
+  // A fresh ArrayBuffer-backed copy: the driver's buffer type is not a BodyInit for Deno's types.
+  const body = new Uint8Array(got.length);
+  body.set(got);
+  return new Response(body.buffer, {
+    status: 200,
+    headers: { "content-type": "application/octet-stream", "cache-control": "no-store", "content-length": String(body.length) },
+  });
 }
