@@ -639,6 +639,8 @@
     <string name="invoices">Invoices</string>
     <string name="invoices_subtitle">Printable bill — aap ke khate se alag</string>
     <string name="no_invoices">Abhi koi invoice nahi.\n\nCustomer ke liye printable bill banayein — cash sale ya price ka andaza — bina is se aap ke khate ya kisi ke balance ko chhuye.</string>
+    <string name="bill_discard_title">Yeh bill chhor dein?</string>
+    <string name="bill_discard_msg">Is bill par jo aap ne likha hai woh zaya ho jayega.</string>
     <string name="add_invoice">Invoice shamil karein</string>
     <string name="invoice_customer_hint">Gahak ka naam</string>
     <string name="invoice_phone_hint">Phone (ikhtiyari)</string>

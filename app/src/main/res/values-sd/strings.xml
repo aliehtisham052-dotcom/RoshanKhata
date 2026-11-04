@@ -660,6 +660,8 @@
     <string name="invoices">انوائس</string>
     <string name="invoices_subtitle">پرنٽ لائق بل — توهان جي کاتي کان الڳ</string>
     <string name="no_invoices">اڃا ڪا انوائس ناهي.\n\nگراهڪ لاءِ پرنٽ لائق بل ٺاهيو — نقد وڪري يا قيمت جو اندازو — بنا ان جي توهان جي کاتي يا ڪنهن جي بيلنس کي ڇهڻ جي.</string>
+    <string name="bill_discard_title">هي بل ڇڏي ڏيو؟</string>
+    <string name="bill_discard_msg">هن بل تي جيڪو توهان لکيو آهي اهو ضايع ٿي ويندو.</string>
     <string name="add_invoice">انوائس شامل ڪريو</string>
     <string name="invoice_customer_hint">گراهڪ جو نالو</string>
     <string name="invoice_phone_hint">فون (اختياري)</string>
