@@ -703,6 +703,15 @@
     <string name="invoices">فواتير البيع</string>
     <string name="invoices_subtitle">فاتورة قابلة للطباعة — منفصلة عن دفتر حسابك</string>
     <string name="no_invoices">لا توجد فواتير بعد.\n\nأنشئ فاتورة قابلة للطباعة لعميل — بيع نقدي أو عرض سعر — دون أن تمس دفتر حسابك أو رصيد أي شخص.</string>
+    <string name="bill_to_credit">لم تُدفع نقدًا: اجعلها بالآجل</string>
+    <string name="bill_to_credit_msg">سيُضاف %1$s إلى ما عليك لـ %2$s في دفترك، ولن يحسب درج النقد هذه الفاتورة مدفوعة.</string>
+    <string name="bill_paid_how">كيف دُفعت هذه الفاتورة؟</string>
+    <string name="bill_paid_credit">بالآجل</string>
+    <string name="bill_paid_now">مدفوعة الآن · %1$s</string>
+    <string name="bill_cash_note">مدفوعة نقدًا الآن: يخرج %1$s من درج النقد. لا يُضاف شيء إلى حساب المورّد.</string>
+    <string name="bill_other_note">مدفوعة الآن عبر %3$s: يُكتب %1$s في حساب %2$s مستحقًا ومدفوعًا معًا، فلا يبقى شيء. لا يُمسّ درج النقد.</string>
+    <string name="bill_state_paid">مدفوعة</string>
+    <string name="bill_state_paid_by">مدفوعة · %1$s</string>
     <string name="bill_discard_title">تجاهل هذه الفاتورة؟</string>
     <string name="bill_discard_msg">سيضيع ما كتبته في هذه الفاتورة.</string>
     <string name="add_invoice">إضافة فاتورة</string>

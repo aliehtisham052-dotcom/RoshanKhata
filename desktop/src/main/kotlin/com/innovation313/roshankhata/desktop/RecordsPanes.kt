@@ -238,6 +238,15 @@ fun BillsPane(
 @Composable
 private fun BillState(b: BillSummary) {
     val c = LocalRoshanColors.current
+    // Paid at once, and how (4 Nov 2026, the phone's list): a cash bill came from the drawer, another way did not.
+    if (b.isPaidInFull) {
+        val how = if (b.ledgerEntryId == null) com.innovation313.roshankhata.data.PaymentMethod.CASH else b.paidBy
+        Text(
+            how?.let { word(W.bill_state_paid_by, com.innovation313.roshankhata.data.PaymentMethod.label(com.innovation313.roshankhata.words.LocalWords.current, it)) } ?: word(W.bill_state_paid),
+            color = c.iOwe, fontSize = 13.sp
+        )
+        return
+    }
     if (Money.isNegative(b.supplierBalance)) {
         val overdue = b.dueDate?.let { it < System.currentTimeMillis() } == true
         Text(

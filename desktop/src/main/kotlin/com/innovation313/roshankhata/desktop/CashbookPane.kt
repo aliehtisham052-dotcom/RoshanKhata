@@ -409,7 +409,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                 FluentField(opening, { opening = it }, Modifier.fillMaxWidth(),
                     label = word(if (since == null) W.dayclose_opening_first else W.dayclose_opening),
                     calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-                Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.money(expected), Format.money(f.otherOut)),
+                Text(word(W.dayclose_breakdown, Format.money(f.cbIn), Format.money(f.kIn), Format.money(f.cbOut), Format.money(f.kOut), Format.signedIfNegative(expected), Format.money(f.otherOut)),
                     color = c.inkSoft, fontSize = 13.sp)
                 Text(word(W.dayclose_help), color = c.textMuted, fontSize = 12.sp)
                 FluentField(counted, { counted = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_counted), big = true, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)

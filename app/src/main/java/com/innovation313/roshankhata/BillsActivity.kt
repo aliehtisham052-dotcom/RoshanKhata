@@ -40,6 +40,8 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.Product
 import com.innovation313.roshankhata.data.SupplierBill
+import com.innovation313.roshankhata.data.PaymentMethod
+import com.innovation313.roshankhata.data.labelOf
 import com.innovation313.roshankhata.ui.SmartSuggest
 import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
@@ -145,7 +147,7 @@ class BillsActivity : BaseActivity() {
             d.total?.let { outState.putDouble(STATE_SCAN_TOTAL, it) }
             outState.putLong(STATE_SCAN_DATE, d.billDate)
             d.dueDate?.let { outState.putLong(STATE_SCAN_DUE, it) }
-            outState.putBoolean(STATE_SCAN_CASH, d.paidCash)
+            d.paidWith?.let { outState.putString(STATE_SCAN_CASH, it) }
             outState.putString(STATE_SCAN_NOTE, d.note)
         }
     }
@@ -161,7 +163,7 @@ class BillsActivity : BaseActivity() {
             total = if (state.containsKey(STATE_SCAN_TOTAL)) state.getDouble(STATE_SCAN_TOTAL) else null,
             billDate = state.getLong(STATE_SCAN_DATE, System.currentTimeMillis()),
             dueDate = if (state.containsKey(STATE_SCAN_DUE)) state.getLong(STATE_SCAN_DUE) else null,
-            paidCash = state.getBoolean(STATE_SCAN_CASH),
+            paidWith = state.getString(STATE_SCAN_CASH),
             note = state.getString(STATE_SCAN_NOTE)
         )
     }
@@ -270,7 +272,8 @@ class BillsActivity : BaseActivity() {
         val total: Double?,
         val billDate: Long,
         val dueDate: Long?,
-        val paidCash: Boolean,
+        /** How it was paid now: null on credit (udhaar), else a PaymentMethod key ("cash" takes it from the drawer). */
+        val paidWith: String?,
         val note: String?
     )
 
@@ -293,7 +296,7 @@ class BillsActivity : BaseActivity() {
         val etTotal: EditText = view.findViewById(R.id.etBillTotal)
         val btnDate: MaterialButton = view.findViewById(R.id.btnBillDate)
         val btnDue: MaterialButton = view.findViewById(R.id.btnBillDue)
-        val cbPaidCash: CheckBox = view.findViewById(R.id.cbPaidCash)
+        val cgPaid: com.google.android.material.chip.ChipGroup = view.findViewById(R.id.cgBillPaid)
         val tvEffect: TextView = view.findViewById(R.id.tvBillLedgerEffect)
         val etNote: EditText = view.findViewById(R.id.etBillNote)
         val btnScan: MaterialButton = view.findViewById(R.id.btnBillScan)
@@ -315,7 +318,22 @@ class BillsActivity : BaseActivity() {
         restore?.billNumber?.let { etNumber.setText(it) }
         restore?.total?.let { etTotal.setText(com.innovation313.roshankhata.ui.Calc.trim(it)) }
         restore?.note?.let { etNote.setText(it) }
-        cbPaidCash.isChecked = restore?.paidCash ?: false
+        // How it was settled (4 Nov 2026): On credit first and chosen, as most supplier bills are; paid now in cash
+        // (the drawer), or by bank, wallet, cheque or online (not the drawer). The old single "paid in cash" tick was
+        // easy to leave on by mistake, and then the bill was "Complete" and its total came out of the drawer.
+        val paidKeys = HashMap<Int, String?>()
+        (listOf<String?>(null) + PaymentMethod.ALL).forEach { key ->
+            val chip = layoutInflater.inflate(R.layout.item_rate_list_chip, cgPaid, false) as com.google.android.material.chip.Chip
+            chip.id = View.generateViewId()
+            chip.text = if (key == null) getString(R.string.bill_paid_credit)
+                else getString(R.string.bill_paid_now, PaymentMethod.labelOf(this, key) ?: key)
+            paidKeys[chip.id] = key
+            cgPaid.addView(chip)
+            if (key == restore?.paidWith) cgPaid.check(chip.id)
+        }
+        fun paidWith(): String? = paidKeys[cgPaid.checkedChipId]
+        // The old "tick this only if…" help spoke of a tick; the line under the choice now says what each one does.
+        view.findViewById<TextView>(R.id.tvPaidCashHelp).visibility = View.GONE
 
         var billDate = restore?.billDate ?: System.currentTimeMillis()
         var dueDate: Long? = restore?.dueDate
@@ -342,19 +360,21 @@ class BillsActivity : BaseActivity() {
             val amount = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
             val supplier = etSupplier.text.toString().trim()
 
-            if (!cbPaidCash.isChecked && amount != null && amount > 0 && supplier.isNotEmpty()) {
+            val how = paidWith()
+            if (amount != null && amount > 0 && supplier.isNotEmpty()) {
                 tvEffect.visibility = View.VISIBLE
-                tvEffect.text = getString(
-                    R.string.bill_credit_note,
-                    Format.money(amount),
-                    supplier
-                )
+                tvEffect.text = when (how) {
+                    null -> getString(R.string.bill_credit_note, Format.money(amount), supplier)
+                    PaymentMethod.CASH -> getString(R.string.bill_cash_note, Format.money(amount))
+                    else -> getString(R.string.bill_other_note, Format.money(amount), supplier, PaymentMethod.labelOf(this, how) ?: how)
+                }
             } else {
                 tvEffect.visibility = View.GONE
             }
         }
 
-        cbPaidCash.setOnCheckedChangeListener { _, _ -> refreshEffect() }
+        // After the first check (lesson 4): the listener only follows the chip.
+        cgPaid.setOnCheckedStateChangeListener { _, _ -> refreshEffect() }
         etTotal.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshEffect() }
         etSupplier.setOnItemClickListener { _, _, _, _ -> refreshEffect() }
         if (restore != null) refreshEffect()
@@ -386,7 +406,7 @@ class BillsActivity : BaseActivity() {
                     total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
                     dueDate = dueDate,
-                    paidCash = cbPaidCash.isChecked,
+                    paidWith = paidWith(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
@@ -397,7 +417,7 @@ class BillsActivity : BaseActivity() {
                     total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
                     dueDate = dueDate,
-                    paidCash = cbPaidCash.isChecked,
+                    paidWith = paidWith(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
@@ -414,7 +434,7 @@ class BillsActivity : BaseActivity() {
             typed = {
                 etSupplier.text.toString().trim() != prefillSupplier.orEmpty().trim() ||
                     etNumber.text.isNotBlank() || etTotal.text.isNotBlank() || etNote.text.isNotBlank() ||
-                    cbPaidCash.isChecked || dueDate != null || billDate != blankDate ||
+                    paidWith() != null || dueDate != null || billDate != blankDate ||
                     pendingItems.isNotEmpty() || scanKeptPhoto != null
             },
             onDiscard = {
@@ -430,7 +450,7 @@ class BillsActivity : BaseActivity() {
                 total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                 billDate = billDate,
                 dueDate = dueDate,
-                paidCash = cbPaidCash.isChecked,
+                paidWith = paidWith(),
                 note = etNote.text.toString().trim().ifEmpty { null }
             )
             form.dismiss()
@@ -555,7 +575,7 @@ class BillsActivity : BaseActivity() {
     /** The form again, exactly as it was before the scan was started. */
     private fun reopenFromScan(draft: BillDraft? = scanDraft) {
         scanDraft = null
-        startNewBill(restore = draft ?: BillDraft("", null, null, System.currentTimeMillis(), null, false, null))
+        startNewBill(restore = draft ?: BillDraft("", null, null, System.currentTimeMillis(), null, null, null))
     }
 
     private fun readBillPhoto(photo: android.net.Uri, temp: java.io.File?) {
@@ -584,7 +604,7 @@ class BillsActivity : BaseActivity() {
                     dropKeptPhoto()          // a newer scan replaces an earlier one
                     scanKeptPhoto = keptPhoto
                 }
-                val draft = scanDraft ?: BillDraft("", null, null, System.currentTimeMillis(), null, false, null)
+                val draft = scanDraft ?: BillDraft("", null, null, System.currentTimeMillis(), null, null, null)
                 kept.forEach { item ->
                     pendingItems.add(
                         BillItem(
@@ -619,12 +639,12 @@ class BillsActivity : BaseActivity() {
         total: Double?,
         billDate: Long,
         dueDate: Long?,
-        paidCash: Boolean,
+        paidWith: String?,
         note: String?
     ) {
         // The bill typed so far: leaving the item form or the "item added" box
         // goes back to it rather than losing it (4 Nov 2026).
-        val draft = BillDraft(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+        val draft = BillDraft(supplierName, billNumber, total, billDate, dueDate, paidWith, note)
         showAddItemDialog(onClosed = { startNewBill(restore = draft) }) { item ->
             pendingItems.add(item)
 
@@ -635,10 +655,10 @@ class BillsActivity : BaseActivity() {
                     R.plurals.items_count, pendingItems.size, pendingItems.size
                 ))
                 .setNeutralButton(R.string.add_item) { _, _ ->
-                    collectItems(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+                    collectItems(supplierName, billNumber, total, billDate, dueDate, paidWith, note)
                 }
                 .setPositiveButton(R.string.save) { _, _ ->
-                    saveBill(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+                    saveBill(supplierName, billNumber, total, billDate, dueDate, paidWith, note)
                 }
                 .show()
         }
@@ -761,12 +781,12 @@ class BillsActivity : BaseActivity() {
         total: Double?,
         billDate: Long,
         dueDate: Long?,
-        paidCash: Boolean,
+        paidWith: String?,
         note: String?
     ) {
         // The dialog has already closed by the time this runs, so every stop
         // below reopens the form as it was rather than losing the bill.
-        val draft = BillDraft(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+        val draft = BillDraft(supplierName, billNumber, total, billDate, dueDate, paidWith, note)
 
         if (supplierName.isEmpty()) {
             Toast.makeText(this, R.string.enter_supplier, Toast.LENGTH_LONG).show()
@@ -804,11 +824,11 @@ class BillsActivity : BaseActivity() {
                 .setOnCancelListener { startNewBill(restore = draft) }
                 .apply {
                     if (similar != null) setNeutralButton(getString(R.string.bill_use_existing, similar.name)) { _, _ ->
-                        dispatchSaveBill(similar.id, null, billNumber, total, billDate, dueDate, paidCash, note)
+                        dispatchSaveBill(similar.id, null, billNumber, total, billDate, dueDate, paidWith, note)
                     }
                 }
                 .setPositiveButton(R.string.bill_new_supplier_yes) { _, _ ->
-                    dispatchSaveBill(null, supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+                    dispatchSaveBill(null, supplierName, billNumber, total, billDate, dueDate, paidWith, note)
                 }
                 .show()
             return
@@ -829,13 +849,13 @@ class BillsActivity : BaseActivity() {
                 .setNegativeButton(R.string.cancel) { _, _ -> startNewBill(restore = draft) }
                 .setOnCancelListener { startNewBill(restore = draft) }
                 .setPositiveButton(R.string.proceed_anyway) { _, _ ->
-                    dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidCash, note)
+                    dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidWith, note)
                 }
                 .show()
             return
         }
 
-        dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidCash, note)
+        dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidWith, note)
     }
 
     /**
@@ -850,7 +870,7 @@ class BillsActivity : BaseActivity() {
         total: Double,
         billDate: Long,
         dueDate: Long?,
-        paidCash: Boolean,
+        paidWith: String?,
         note: String?
     ) {
         // The three writes below run on AppScope, not lifecycleScope — a
@@ -902,7 +922,10 @@ class BillsActivity : BaseActivity() {
             // product of the same name rather than inserting a twin), so a sale
             // of it can offer its batches at once, with no backfill run needed.
             val createdProducts = dao.insertSupplierBill(
-                entry = if (paidCash) null else LedgerEntry(
+                // Cash now: no entry (the drawer pays it; billsAndStaffCashBetween counts it). On credit: the debt.
+                // By bank, wallet, cheque or online: the debt and its payment together (paidBy), so the supplier's
+                // khata shows both and the drawer neither.
+                entry = if (paidWith == PaymentMethod.CASH) null else LedgerEntry(
                     partyId = partyId,
                     amount = total,
                     isGiven = false,
@@ -917,12 +940,13 @@ class BillsActivity : BaseActivity() {
                     billDate = billDate,
                     dueDate = dueDate,
                     ledgerEntryId = null,
-                    isPaidInFull = paidCash,
+                    isPaidInFull = paidWith != null,
                     note = note,
                     // Cash: no khata entry, so the bill keeps its own picture.
-                    photoPath = if (paidCash) photoForThisBill else null
+                    photoPath = if (paidWith == PaymentMethod.CASH) photoForThisBill else null
                 ),
-                items = itemsForThisBill
+                items = itemsForThisBill,
+                paidBy = paidWith?.takeIf { it != PaymentMethod.CASH }
             )
 
             // The toast touches a screen the owner may already have left, so
@@ -933,7 +957,7 @@ class BillsActivity : BaseActivity() {
                 if (!isFinishing && !isDestroyed) {
                     Toast.makeText(
                         this@BillsActivity,
-                        if (paidCash) R.string.bill_saved else R.string.bill_saved_credit,
+                        if (paidWith == PaymentMethod.CASH) R.string.bill_saved else R.string.bill_saved_credit,
                         Toast.LENGTH_LONG
                     ).show()
 
@@ -1053,22 +1077,37 @@ class BillsActivity : BaseActivity() {
         lifecycleScope.launch {
             // A cash bill may carry its own photo (v21); offer it only then.
             val photo = dao.getBill(bill.id)?.photoPath?.takeIf { it.isNotBlank() }
-            val options = listOfNotNull(
-                ChoiceSheet.edit(getString(R.string.edit_bill)),
-                ChoiceSheet.batch(getString(R.string.manage_items)),
-                ChoiceSheet.delete(getString(R.string.delete_bill)),
-                photo?.let { ChoiceSheet.photo(getString(R.string.view_bill_photo)) }
+            // A bill saved as paid in cash can be put on credit (4 Nov 2026): the owner's own correction.
+            val cashBill = bill.isPaidInFull && bill.ledgerEntryId == null
+            val actions = listOfNotNull<Pair<ChoiceSheet.Option, () -> Unit>>(
+                ChoiceSheet.edit(getString(R.string.edit_bill)) to { startEditBill(bill) },
+                ChoiceSheet.batch(getString(R.string.manage_items)) to { manageItems(bill.id) },
+                if (cashBill) ChoiceSheet.edit(getString(R.string.bill_to_credit)) to { confirmBillToCredit(bill) } else null,
+                ChoiceSheet.delete(getString(R.string.delete_bill)) to { confirmDeleteBill(bill) },
+                photo?.let { p -> ChoiceSheet.photo(getString(R.string.view_bill_photo)) to { showBillPhoto(p) } }
             )
 
-            ChoiceSheet.show(this@BillsActivity, getString(R.string.bill_actions), options) { which ->
-                when (which) {
-                    0 -> startEditBill(bill)
-                    1 -> manageItems(bill.id)
-                    2 -> confirmDeleteBill(bill)
-                    3 -> photo?.let { showBillPhoto(it) }
-                }
+            ChoiceSheet.show(this@BillsActivity, getString(R.string.bill_actions), actions.map { it.first }) { which ->
+                actions.getOrNull(which)?.second?.invoke()
             }
         }
+    }
+
+    /**
+     * "This bill was not paid in cash": its total goes into the supplier's khata as owed, and the cash drawer stops
+     * counting it (KhataDao.billCashToCredit). Asked first; a manager's PIN where editing a bill needs one.
+     */
+    private fun confirmBillToCredit(bill: BillSummary) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmBillToCredit(bill) }) return
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.bill_to_credit)
+            .setMessage(getString(R.string.bill_to_credit_msg, Format.money(bill.totalAmount), bill.partyName))
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.bill_paid_credit) { _, _ ->
+                val note = bill.billNumber?.let { getString(R.string.bill_entry_note, it) } ?: bill.note
+                AppScope.launch { dao.billCashToCredit(bill.id, note) }
+            }
+            .show()
     }
 
     /** The kept picture of a cash bill, full width; decoded off the main thread. */
@@ -1117,7 +1156,7 @@ class BillsActivity : BaseActivity() {
         val etTotal: EditText = view.findViewById(R.id.etBillTotal)
         val btnDate: MaterialButton = view.findViewById(R.id.btnBillDate)
         val btnDue: MaterialButton = view.findViewById(R.id.btnBillDue)
-        val cbPaidCash: CheckBox = view.findViewById(R.id.cbPaidCash)
+        val cgPaid: com.google.android.material.chip.ChipGroup = view.findViewById(R.id.cgBillPaid)
         val tvPaidCashHelp: TextView = view.findViewById(R.id.tvPaidCashHelp)
         val tvEffect: TextView = view.findViewById(R.id.tvBillLedgerEffect)
         val etNote: EditText = view.findViewById(R.id.etBillNote)
@@ -1166,8 +1205,18 @@ class BillsActivity : BaseActivity() {
         // entry, if there is one, is not touched by this screen at all
         // except to keep its amount in step. Settling a debt happens by
         // recording a payment in the ledger, not by editing this checkbox.
-        cbPaidCash.isChecked = existing.isPaidInFull
-        cbPaidCash.isEnabled = false
+        // Shown as it was saved, and not changed here (one chip, not a choice).
+        val method = if (existing.isPaidInFull && existing.ledgerEntryId == null) PaymentMethod.CASH else null
+        cgPaid.addView((layoutInflater.inflate(R.layout.item_rate_list_chip, cgPaid, false) as com.google.android.material.chip.Chip).apply {
+            id = View.generateViewId()
+            text = when {
+                method != null -> getString(R.string.bill_paid_now, PaymentMethod.labelOf(this@BillsActivity, method) ?: method)
+                existing.isPaidInFull -> getString(R.string.bill_state_paid)
+                else -> getString(R.string.bill_paid_credit)
+            }
+            isChecked = true
+            isEnabled = false
+        })
         tvPaidCashHelp.text = getString(R.string.edit_bill_cash_locked)
         tvEffect.visibility = View.GONE
 

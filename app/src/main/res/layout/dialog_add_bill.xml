@@ -159,15 +159,28 @@
             android:paddingEnd="12dp"
             android:paddingBottom="10dp">
 
-            <CheckBox
-                android:id="@+id/cbPaidCash"
+            <!-- How the bill was settled (4 Nov 2026, the owner's phone: three bills ticked "paid in cash"
+                 read "Complete" and took Rs 20,000 off the drawer): on credit (udhaar, the default), or paid now
+                 in cash or by another way. One chip each; BillsActivity fills them. -->
+            <TextView
+                android:id="@+id/tvBillPaidHow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:text="@string/bill_paid_cash"
+                android:paddingStart="8dp"
+                android:paddingTop="6dp"
+                android:text="@string/bill_paid_how"
+                android:textAlignment="viewStart"
                 android:textColor="@color/ink"
                 android:textSize="15sp"
                 android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgBillPaid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                app:selectionRequired="true"
+                app:singleSelection="true" />
 
             <TextView
                 android:textAlignment="viewStart"

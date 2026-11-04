@@ -639,6 +639,15 @@
     <string name="invoices">انوائس</string>
     <string name="invoices_subtitle">پرنٹ ایبل بل — آپ کے کھاتے سے الگ</string>
     <string name="no_invoices">ابھی کوئی انوائس نہیں۔\n\nکسٹمر کے لیے پرنٹ ایبل بل بنائیں — نقد سیل یا قیمت کا تخمینہ — بغیر اس کے آپ کے کھاتے یا کسی کے بیلنس کو چھوئے۔</string>
+    <string name="bill_to_credit">نقد ادا نہیں ہوا: ادھار میں ڈالیں</string>
+    <string name="bill_to_credit_msg">%1$s آپ کے کھاتے میں %2$s کے واجب میں جڑ جائے گا، اور گلا اس بل کو نقد ادا شدہ نہیں گنے گا۔</string>
+    <string name="bill_paid_how">یہ بل کیسے ادا ہوا؟</string>
+    <string name="bill_paid_credit">ادھار پر</string>
+    <string name="bill_paid_now">ابھی ادا · %1$s</string>
+    <string name="bill_cash_note">ابھی نقد ادا: %1$s گلے سے نکلے گا۔ سپلائر کے کھاتے میں کچھ نہیں جائے گا۔</string>
+    <string name="bill_other_note">ابھی %3$s سے ادا: %2$s کے کھاتے میں %1$s واجب اور ادا دونوں لکھے جائیں گے، کچھ باقی نہیں رہے گا۔ گلے کو ہاتھ نہیں لگے گا۔</string>
+    <string name="bill_state_paid">ادا شدہ</string>
+    <string name="bill_state_paid_by">ادا شدہ · %1$s</string>
     <string name="bill_discard_title">یہ بل چھوڑ دیں؟</string>
     <string name="bill_discard_msg">اس بل پر جو آپ نے لکھا ہے وہ ضائع ہو جائے گا۔</string>
     <string name="add_invoice">انوائس شامل کریں</string>

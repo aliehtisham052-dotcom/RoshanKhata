@@ -639,6 +639,15 @@
     <string name="invoices">Invoices</string>
     <string name="invoices_subtitle">Printable bill — aap ke khate se alag</string>
     <string name="no_invoices">Abhi koi invoice nahi.\n\nCustomer ke liye printable bill banayein — cash sale ya price ka andaza — bina is se aap ke khate ya kisi ke balance ko chhuye.</string>
+    <string name="bill_to_credit">Naqd ada nahi hua: udhaar mein daalein</string>
+    <string name="bill_to_credit_msg">%1$s aap ke khate mein %2$s ke wajib mein jur jayega, aur galla is bill ko naqd ada shuda nahi ginega.</string>
+    <string name="bill_paid_how">Ye bill kaise ada hua?</string>
+    <string name="bill_paid_credit">Udhaar par</string>
+    <string name="bill_paid_now">Abhi ada · %1$s</string>
+    <string name="bill_cash_note">Abhi naqd ada: %1$s galle se niklega. Supplier ke khate mein kuch nahi jayega.</string>
+    <string name="bill_other_note">Abhi %3$s se ada: %2$s ke khate mein %1$s wajib aur ada dono likhe jayenge, kuch baqi nahi rahega. Galle ko haath nahi lagega.</string>
+    <string name="bill_state_paid">Ada shuda</string>
+    <string name="bill_state_paid_by">Ada shuda · %1$s</string>
     <string name="bill_discard_title">Yeh bill chhor dein?</string>
     <string name="bill_discard_msg">Is bill par jo aap ne likha hai woh zaya ho jayega.</string>
     <string name="add_invoice">Invoice shamil karein</string>

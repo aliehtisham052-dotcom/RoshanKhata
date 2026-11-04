@@ -260,7 +260,7 @@ object Automations {
                 words.plural(WP.auto_collect_body, c.count, c.count, money(c.total)) + "\n" + names + likely)
         }
         Kind.DAY_END -> dayEnd(dao, now, tz).takeIf { it.moved }?.let { d ->
-            val body = words.text(W.auto_dayend_body, money(d.sales), money(d.received), money(d.drawer))
+            val body = words.text(W.auto_dayend_body, money(d.sales), money(d.received), (if (Money.isNegative(d.drawer)) "\u2212 " else "") + money(d.drawer))
             Notice(kind, words.text(W.auto_dayend_title),
                 if (d.counted) body else body + "\n" + words.text(W.auto_dayend_uncounted))
         }

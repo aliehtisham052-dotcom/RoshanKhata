@@ -116,7 +116,8 @@ data class ZReport(
         out += words.text(W.z_cash_in) to money(khataCashIn + cashbookIn)
         out += words.text(W.z_cash_out) to money(khataCashOut + cashbookOut + otherCashOut)
         opening?.let { out += words.text(W.dc_opening) to money(it) }
-        expectedCash?.let { out += words.text(W.z_expected) to money(it) }
+        // A drawer the books put below zero carries its minus (4 Nov 2026), as the variance does.
+        expectedCash?.let { out += words.text(W.z_expected) to (if (it < -0.005) "\u2212 " else "") + money(it) }
         counted?.let { out += words.text(W.dc_counted) to money(it) }
         // Short or over, said with its sign (the money format drops it).
         variance?.let { out += words.text(W.z_variance) to (if (it < -0.005) "\u2212 " else if (it > 0.005) "+ " else "") + money(it) }

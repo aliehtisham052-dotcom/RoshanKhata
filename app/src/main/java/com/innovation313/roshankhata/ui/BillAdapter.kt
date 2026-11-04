@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.BillSummary
+import com.innovation313.roshankhata.data.labelOf
 
 class BillAdapter(
     private val onClick: (BillSummary) -> Unit
@@ -57,13 +58,16 @@ class BillAdapter(
             }
         }
 
-        // Status, truest first. A cash bill was settled on delivery. Otherwise
-        // the LEDGER decides: if the supplier's account is clear (balance >= 0),
-        // the account is settled — a payment entered in the khata shows here
-        // with nothing more to do. Only when money is still owed do we fall back
-        // to the due-date reminder.
+        // Status, truest first, in plain words (4 Nov 2026: "Complete" did not say the bill was paid, or how).
+        // Paid at once: how (cash came from the drawer; bank, wallet… did not). Otherwise the LEDGER decides: if
+        // the supplier's account is clear (balance >= 0) it is settled — a payment entered in the khata shows here
+        // with nothing more to do. Only when money is still owed do we fall back to the due-date reminder.
         if (b.isPaidInFull) {
-            holder.tvStatus.setText(R.string.plan_closed)
+            // A bill paid in cash on delivery has no khata entry; one paid another way has its payment's method.
+            val how = if (b.ledgerEntryId == null) com.innovation313.roshankhata.data.PaymentMethod.CASH else b.paidBy
+            holder.tvStatus.text = how?.let {
+                ctx.getString(R.string.bill_state_paid_by, com.innovation313.roshankhata.data.PaymentMethod.labelOf(ctx, it) ?: it)
+            } ?: ctx.getString(R.string.bill_state_paid)
             holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.green_got_text))
             holder.tvStatus.visibility = View.VISIBLE
         } else if (!com.innovation313.roshankhata.data.Money.isNegative(b.supplierBalance)) {

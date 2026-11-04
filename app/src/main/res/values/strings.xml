@@ -669,6 +669,15 @@
     <string name="invoices">Invoices</string>
     <string name="invoices_subtitle">Printable bills — separate from your khata ledger</string>
     <string name="no_invoices">No invoices yet.\n\nMake a printable bill for a customer — a cash sale or a price quote — without it touching your ledger or anyone\'s balance.</string>
+    <string name="bill_to_credit">Not paid in cash: put on credit</string>
+    <string name="bill_to_credit_msg">%1$s will be added to what you owe %2$s in your ledger, and the cash drawer will stop counting this bill as paid out.</string>
+    <string name="bill_paid_how">How was this bill paid?</string>
+    <string name="bill_paid_credit">On credit (udhaar)</string>
+    <string name="bill_paid_now">Paid now · %1$s</string>
+    <string name="bill_cash_note">Paid now in cash: %1$s comes out of the cash drawer. Nothing goes on the supplier\'s account.</string>
+    <string name="bill_other_note">Paid now by %3$s: %1$s is written in %2$s\'s account as owed and paid, so nothing stays due. The cash drawer is not touched.</string>
+    <string name="bill_state_paid">Paid</string>
+    <string name="bill_state_paid_by">Paid · %1$s</string>
     <string name="bill_discard_title">Discard this bill?</string>
     <string name="bill_discard_msg">What you typed on this bill will be lost.</string>
     <string name="add_invoice">Add invoice</string>

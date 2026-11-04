@@ -184,6 +184,13 @@ data class BillSummary(
     val billDate: Long,
     val dueDate: Long?,
     val isPaidInFull: Boolean,
+    /** The bill's khata entry (what it owes); null for a bill paid in cash on delivery. */
+    val ledgerEntryId: Long? = null,
+    /**
+     * How a bill paid at once by bank, wallet, cheque or online was paid (the method of its entry's paired payment,
+     * KhataDao.insertSupplierBill's paidBy); null for a cash bill and a credit bill.
+     */
+    val paidBy: String? = null,
     val itemCount: Int,
     val note: String?,
     /**
