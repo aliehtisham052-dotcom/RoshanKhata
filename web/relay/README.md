@@ -32,10 +32,25 @@ once every other device took them, or after 7 days; a book nobody touched for
 `scripts/test_relay.py` holds this relay, the Supabase one and Cloudflare's to
 the same checks (relays.yml, cloud-worker.yml).
 
+## Waris ki Chaabi (heirs' vaults, 4 Nov 2026)
+
+The same `index.php` also keeps the heirs' vaults (`/r/v1/w/...`): one SQLite
+per vault in `rk-relay-data/waris/w-<vault>.sqlite`, a folder the books'
+cleanup never reads. A vault goes only after 1,095 days with no call, or when
+the owner deletes it. Vaults count in the same 1 GB store limit; 2,000 vaults
+at most. A snapshot is sent in chunks of at most 512 KB, as raw PUT bodies:
+if the hosting's own upload limit is lower (`post_max_size` is for forms, not
+PUT, but some hostings cap every body), a chunk is refused before PHP sees it —
+then raise the limit to at least 1 MB in hPanel → PHP Configuration.
+
+Nothing to set by hand for the heirs: `WARIS_DAY_MS` is for tests only and
+must NOT be set on the hosting (the wait is then real days).
+
 ## Updating it
 
 Upload the new `relay-upload.zip` and extract it over `public_html` the same
-way; the books' files are kept. Until the new `index.php` is up, an app of the
-22 Oct 2026 build (one-call `round`) gets 404 from it and falls back to the
+way; the books' files are kept. Until the 4 Nov 2026 `index.php` is up, the
+heirs' routes answer 404 here and the app uses the other relays for them.
+Until the new `index.php` is up, an app of the 22 Oct 2026 build (one-call `round`) gets 404 from it and falls back to the
 older three calls on its own — nothing is lost, only three calls instead of one.
 

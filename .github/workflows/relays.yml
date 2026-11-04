@@ -43,7 +43,8 @@ jobs:
         run: |
           php -l web/relay/index.php
           S=$(mktemp -d)
-          RK_RELAY_DATA=$S php -S 127.0.0.1:8098 web/relay/index.php > php.log 2>&1 &
+          # WARIS_DAY_MS: the heirs' DAY made 2 s here so one check waits a real wait (tests only; never from a request).
+          RK_RELAY_DATA=$S WARIS_DAY_MS=2000 php -S 127.0.0.1:8098 web/relay/index.php > php.log 2>&1 &
           for i in $(seq 1 30); do curl -sf 127.0.0.1:8098/r/v1/health && break; sleep 0.3; done
           python3 scripts/test_relay.py http://127.0.0.1:8098/r
           # The limits, lowered (23 Oct 2026): a refused parcel still brings the page, bytes are counted, idle devices go.
@@ -93,7 +94,8 @@ jobs:
         env:
           SUPABASE_DB_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
         run: |
-          deno run --allow-net --allow-env --allow-read supabase/functions/daakiya/index.ts > deno.log 2>&1 &
+          # WARIS_DAY_MS: the heirs' DAY made 2 s for the plain run, so one check waits a real wait (tests only).
+          WARIS_DAY_MS=2000 deno run --allow-net --allow-env --allow-read supabase/functions/daakiya/index.ts > deno.log 2>&1 &
           for i in $(seq 1 60); do curl -sf 127.0.0.1:8000/daakiya/v1/health && break; sleep 1; done
           python3 scripts/test_relay.py http://127.0.0.1:8000/daakiya
           # The limits, lowered (23 Oct 2026): the same function again with RK_* set, one run each.
@@ -112,6 +114,9 @@ jobs:
             "select count(*) from information_schema.tables where table_schema='public' and table_name in ('books','devices','parcels')" | grep -qx 0
           psql postgres://postgres:postgres@127.0.0.1:5432/postgres -tAc \
             "select bool_and(relrowsecurity) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='rk_relay' and relkind='r'" | grep -qx t
+          # The Waris tables are there too (made by the plain run), in rk_relay with the rest.
+          psql postgres://postgres:postgres@127.0.0.1:5432/postgres -tAc \
+            "select count(*) from information_schema.tables where table_schema='rk_relay' and table_name like 'waris_%'" | grep -qx 3
           echo "tables are in rk_relay, with row level security on"
 
   deploy-supabase:
