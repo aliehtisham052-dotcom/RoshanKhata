@@ -330,6 +330,14 @@ class PartyDetailActivity : BaseActivity() {
     /** Party.harvestPromise (v28): "I'll pay after the harvest" date. */
     private var harvestPromise: Long? = null
 
+    /**
+     * The promised day as the screen says it: only while he still owes (4 Nov 2026, the owner's phone). The day is
+     * kept on the customer for the balance as a whole, and an entry deleted to the bin left "Promised: 11 Nov" over a
+     * settled account. It is not cleared there: a soft delete must lose nothing, and the entry back from the bin
+     * brings the day back with the balance. Follow-up, Home, Cash flow and the statement already read it this way.
+     */
+    private fun livePromise(): Long? = harvestPromise?.takeIf { Money.isPositive(currentBalance) }
+
     /** The due date chosen in the open entry form, and whether it was touched (13 Oct). */
     private var entryDue: Long? = null
     private var entryDueTouched = false
@@ -504,7 +512,7 @@ class PartyDetailActivity : BaseActivity() {
         tvPartyNote = findViewById(R.id.tvPartyNote)
         tvPartyNote.setOnClickListener { showPartyNote() }
         tvRadar.setOnClickListener {
-            radarReading?.let { r -> com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, harvestPromise) { refreshRadar() } }
+            radarReading?.let { r -> com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, livePromise()) { refreshRadar() } }
         }
         tvPartyPhone = findViewById(R.id.tvPartyPhone)
         tvPartyBalance = findViewById(R.id.tvPartyBalance)
@@ -2197,7 +2205,7 @@ class PartyDetailActivity : BaseActivity() {
             val mark = r?.let { com.innovation313.roshankhata.ui.RadarUi.mark(this, it) }
             tv.text = mark
             tv.visibility = if (mark == null) View.GONE else View.VISIBLE
-            if (r != null) tv.setOnClickListener { com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, harvestPromise) { refreshRadar(); tv.visibility = View.GONE } }
+            if (r != null) tv.setOnClickListener { com.innovation313.roshankhata.ui.RadarUi.explain(this, partyId, r, livePromise()) { refreshRadar(); tv.visibility = View.GONE } }
         }
         etAmount.setTextColor(color(if (isGiven) R.color.red_gave_text else R.color.brand_green_text))
 
@@ -2213,7 +2221,7 @@ class PartyDetailActivity : BaseActivity() {
         // pay gave Cash flow nothing to count on. The date is the customer's
         // promise for the balance as a whole — the same one Follow-up and
         // Cash flow already read — set right where the udhar is written.
-        entryDue = harvestPromise
+        entryDue = livePromise()
         entryDueTouched = false
         // A day the owner chose on the form before the rebuild (R41) wins over the customer's saved one.
         if (restore != null && restore.getBoolean(F_DUE_TOUCHED)) {
@@ -3162,6 +3170,8 @@ class PartyDetailActivity : BaseActivity() {
         val before = currentBalance
         // The promised day as it stood, so Undo can put it back if this entry moved it.
         val promiseBefore = harvestPromise
+        // Whether a day was picked on this form, read here with the rest of the form (it is reset on the main thread).
+        val dueTouched = entryDueTouched
         AppScope.launch {
             // Numbering, the entry and its goods lines all happen inside the
             // DAO's own transaction — see insertEntryNumbered for why the count
@@ -3184,6 +3194,12 @@ class PartyDetailActivity : BaseActivity() {
                 dao.setHarvestPromise(partyId, null)
                 harvestPromise = null
                 withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) refreshSeasonRecord() }
+            } else if (harvestPromise != null && !dueTouched && !Money.isPositive(before) && Money.isPositive(after)) {
+                // New udhar on an account that stood settled (its entries deleted to the bin, 4 Nov 2026): the day
+                // he promised for that old balance is not a promise for this one. Through the promise history, as
+                // a day taken back; Undo puts it back (promiseBefore).
+                dao.promiseDay(partyId, null)
+                harvestPromise = null
             }
             withContext(Dispatchers.Main) {
                 if (isFinishing || isDestroyed) return@withContext
@@ -3268,7 +3284,7 @@ class PartyDetailActivity : BaseActivity() {
             return
         }
         val entries = allRows.map { it.entry }
-        val promise = harvestPromise
+        val promise = livePromise()
         // One reading at a time (3 Nov 2026 audit, L29): a first reading of the newest rows, finishing late, wrote
         // over the full one.
         radarJob?.cancel()
@@ -3295,7 +3311,7 @@ class PartyDetailActivity : BaseActivity() {
             } else emptyList()
             if (isFinishing || isDestroyed) return@launch
             // The promised day shows for every shop now that any udhar can carry one (13 Oct).
-            val promise = party?.harvestPromise
+            val promise = party?.harvestPromise?.takeIf { Money.isPositive(currentBalance) }
                 ?.let { getString(R.string.harvest_promise_header, Format.dateOnly(it)) }
             val text = listOfNotNull(promise, SeasonText.record(this@PartyDetailActivity, rows).takeIf { it.isNotEmpty() })
                 .joinToString("  ·  ")

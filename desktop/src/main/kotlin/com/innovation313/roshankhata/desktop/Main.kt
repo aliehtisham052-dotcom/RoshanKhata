@@ -2526,7 +2526,9 @@ private fun customerFacts(dao: KhataDao, party: PartyWithBalance, reload: Int): 
         row?.fatherName?.trim()?.takeIf { it.isNotEmpty() }?.let { word(W.son_of_prefix, Format.isolate(it)) },
         row?.village?.trim()?.takeIf { it.isNotEmpty() }?.let { Format.isolate(it) }
     ).joinToString("  \u00b7  ").ifEmpty { null }
-    val promiseAt = row?.harvestPromise
+    // Only while he still owes (4 Nov 2026, the phone's header): his entries binned left "Promised" over a settled
+    // account. The day itself is kept; the entries back from the bin bring it back.
+    val promiseAt = row?.harvestPromise?.takeIf { Money.isPositive(party.balance) }
     return CustomerFacts(identity, promiseAt, promiseAt?.let { word(W.harvest_promise_header, Format.dateOnly(it)) }, seasons,
         row?.note?.takeIf { it.isNotBlank() })
 }
