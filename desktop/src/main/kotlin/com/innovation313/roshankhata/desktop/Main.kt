@@ -1669,7 +1669,9 @@ private fun Book(
                             ThermalReceipt.Line(""),
                             ThermalReceipt.Line(Format.name(forParty?.name.orEmpty()), 24f, bold = true),
                             forParty?.phone?.let { ThermalReceipt.Line(Format.ltr(it), 18f) },
-                            ThermalReceipt.Line(words.text(if (e.isGiven) W.you_gave else W.you_got), 22f),
+                            // Who gave whom, by name, as the receipt card says it (ReceiptBalance, 4 Nov 2026).
+                            ThermalReceipt.Line(com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven), 18f, centre = true),
+                            ThermalReceipt.Line(com.innovation313.roshankhata.data.ReceiptBalance.way(words, e.isGiven, shopName() ?: words.text(W.app_name), forParty?.name.orEmpty()), 22f),
                             ThermalReceipt.Line(Format.money(e.amount), 34f, bold = true, centre = true)
                         ) + goodsLines + listOfNotNull(
                             e.note?.takeIf { it.isNotBlank() }?.let { ThermalReceipt.Line(it, 18f) },
@@ -1678,7 +1680,7 @@ private fun Book(
                             ThermalReceipt.Line(""),
                             // The customer reads this: his side in his own words, never a bare figure (ReceiptBalance).
                             after?.let { b ->
-                                ThermalReceipt.Line(words.text(W.balance_label) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.text(words, b), 22f, bold = true)
+                                ThermalReceipt.Line(words.text(W.balance_label) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.named(words, b, shopName() ?: words.text(W.app_name), forParty?.name.orEmpty()), 22f, bold = true)
                             },
                             ThermalReceipt.Line(words.text(W.app_name), 16f, centre = true)
                         ))
@@ -1795,6 +1797,7 @@ private fun Book(
             },
             onChanged = { reload++ },
             isCustomer = partyRow?.isCustomer ?: forParty?.isCustomer ?: true,
+            shop = shopName(),
             // Goods sent back to a supplier as a debit note (29 Oct 2026): the entry drawn in the shop's design, never saved.
             onDebitNote = { e, items ->
                 scope.launch {

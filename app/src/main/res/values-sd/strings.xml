@@ -660,6 +660,11 @@
     <string name="invoices">انوائس</string>
     <string name="invoices_subtitle">پرنٽ لائق بل — توهان جي کاتي کان الڳ</string>
     <string name="no_invoices">اڃا ڪا انوائس ناهي.\n\nگراهڪ لاءِ پرنٽ لائق بل ٺاهيو — نقد وڪري يا قيمت جو اندازو — بنا ان جي توهان جي کاتي يا ڪنهن جي بيلنس کي ڇهڻ جي.</string>
+    <string name="receipt_credit_slip">اڌار جي پرچي</string>
+    <string name="receipt_line_gave">%1$s %2$s کي ڏنو</string>
+    <string name="receipt_line_got">%1$s کان وصول ٿيو</string>
+    <string name="receipt_owes">%1$s %2$s کي ڏيڻا آهن</string>
+    <string name="receipt_settled">حساب برابر</string>
     <string name="bill_to_credit">نقد ادا نه ٿيو: اڌار ۾ وجهو</string>
     <string name="bill_to_credit_msg">%1$s توهان جي کاتي ۾ %2$s ڏانهن قرض ۾ وڌندو، ۽ گلو هن بل کي نقد ادا ٿيل نه ڳڻيندو.</string>
     <string name="bill_paid_how">هي بل ڪيئن ادا ٿيو؟</string>

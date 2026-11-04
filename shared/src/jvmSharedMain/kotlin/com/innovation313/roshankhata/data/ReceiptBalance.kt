@@ -26,4 +26,27 @@ object ReceiptBalance {
     fun text(words: Words, balance: Double, sign: String = Currency.symbol): String =
         if (Money.isZero(balance)) words.text(W.pdf_stmt_settled)
         else Format.ltr(Format.money(balance, sign)) + " · " + words.text(sideWord(balance))
+
+    /*
+     * Names, not "you" (4 Nov 2026, the owner's phone): the entry's receipt said "Payment Receipt", "You gave Rs 800"
+     * (the shop speaking) and "Rs 2,800 · You will pay" (the customer spoken to). Handed to the customer, nobody could
+     * tell who "you" was, and nothing was paid. The entry's paper now says what it is and who did what, by name, and
+     * the balance says who owes whom. [shop] is the shop's name (the app's when none is set), [party] the customer's
+     * or supplier's; both are isolated so a Latin name keeps its place in an Urdu line. The sign rule is [sideWord]'s.
+     */
+
+    /** The paper's own name: a credit slip when the shop gave, a payment receipt when it got. */
+    fun title(words: Words, isGiven: Boolean): String = words.text(if (isGiven) W.receipt_credit_slip else W.payment_receipt)
+
+    /** "Bhatti Traders gave Aslam" / "Received from Aslam" — over the amount. */
+    fun way(words: Words, isGiven: Boolean, shop: String, party: String): String =
+        if (isGiven) words.text(W.receipt_line_gave, Format.isolate(shop), Format.isolate(party))
+        else words.text(W.receipt_line_got, Format.isolate(party))
+
+    /** "Rs 2,800 · Aslam owes Bhatti Traders", "Rs 300 · Bhatti Traders owes Aslam", or the settled words alone. */
+    fun named(words: Words, balance: Double, shop: String, party: String, sign: String = Currency.symbol): String {
+        if (Money.isZero(balance)) return words.text(W.receipt_settled)
+        val (who, whom) = if (Money.isPositive(balance)) party to shop else shop to party
+        return Format.ltr(Format.money(balance, sign)) + " · " + words.text(W.receipt_owes, Format.isolate(who), Format.isolate(whom))
+    }
 }
