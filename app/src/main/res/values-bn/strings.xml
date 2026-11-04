@@ -3654,6 +3654,7 @@
     <string name="doc_locked">এই নথি রূপান্তরিত হয়েছে এবং পরিবর্তন করা যাবে না; নতুনটি পরিবর্তন করুন।</string>
     <string name="documents_title">নথিপত্র</string>
     <string name="doc_add">নথি যোগ করুন</string>
+    <string name="doc_add_other">অন্যান্য নথি</string>
     <string name="doc_pick_kind">কোন নথি?</string>
     <string name="order_paste">WhatsApp অর্ডার পেস্ট করুন</string>
     <string name="order_paste_empty">আগে গ্রাহকের অর্ডারের বার্তা কপি করুন, তারপর এখানে পেস্ট করুন।</string>

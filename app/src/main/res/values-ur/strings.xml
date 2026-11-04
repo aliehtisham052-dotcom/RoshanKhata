@@ -3606,6 +3606,7 @@
     <string name="doc_locked">یہ دستاویز تبدیل ہو چکی ہے اور بدلی نہیں جا سکتی؛ نئی والی بدلیں۔</string>
     <string name="documents_title">دستاویزات</string>
     <string name="doc_add">دستاویز شامل کریں</string>
+    <string name="doc_add_other">دیگر دستاویزات</string>
     <string name="doc_pick_kind">کون سی دستاویز؟</string>
     <string name="order_paste">واٹس ایپ آرڈر پیسٹ کریں</string>
     <string name="order_paste_empty">پہلے گاہک کا آرڈر والا پیغام کاپی کریں، پھر یہاں پیسٹ کریں۔</string>

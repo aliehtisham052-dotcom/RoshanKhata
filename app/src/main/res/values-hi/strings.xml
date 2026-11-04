@@ -3654,6 +3654,7 @@
     <string name="doc_locked">यह दस्तावेज़ परिवर्तित हो चुका है और बदला नहीं जा सकता; नया बदलें।</string>
     <string name="documents_title">दस्तावेज़</string>
     <string name="doc_add">दस्तावेज़ जोड़ें</string>
+    <string name="doc_add_other">अन्य दस्तावेज़</string>
     <string name="doc_pick_kind">कौन सा दस्तावेज़?</string>
     <string name="order_paste">WhatsApp ऑर्डर पेस्ट करें</string>
     <string name="order_paste_empty">पहले ग्राहक का ऑर्डर वाला संदेश कॉपी करें, फिर यहाँ पेस्ट करें।</string>

@@ -3598,6 +3598,7 @@
     <string name="doc_locked">Dokumen ini sudah dikonversi dan tidak dapat diubah; ubah yang baru.</string>
     <string name="documents_title">Dokumen</string>
     <string name="doc_add">Tambah dokumen</string>
+    <string name="doc_add_other">Dokumen lain</string>
     <string name="doc_pick_kind">Dokumen yang mana?</string>
     <string name="order_paste">Tempel pesanan WhatsApp</string>
     <string name="order_paste_empty">Salin pesan pesanan pelanggan dulu, lalu tempel di sini.</string>
