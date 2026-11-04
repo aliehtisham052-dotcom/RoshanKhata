@@ -660,6 +660,11 @@
     <string name="invoices">فاکتورهای فروش</string>
     <string name="invoices_subtitle">فاکتور قابل چاپ — جدا از دفتر حساب شما</string>
     <string name="no_invoices">هنوز فاکتوری نیست.\n\nبرای مشتری یک فاکتور قابل چاپ بسازید — فروش نقدی یا برآورد قیمت — بدون اینکه به دفتر حساب یا مانده کسی دست بزند.</string>
+    <string name="receipt_credit_slip">برگهٔ نسیه</string>
+    <string name="receipt_line_gave">%1$s به %2$s داد</string>
+    <string name="receipt_line_got">دریافت از %1$s</string>
+    <string name="receipt_owes">%1$s به %2$s بدهکار است</string>
+    <string name="receipt_settled">حساب تسویه است</string>
     <string name="bill_to_credit">نقدی پرداخت نشد: نسیه کن</string>
     <string name="bill_to_credit_msg">%1$s به بدهی شما به %2$s در دفترتان افزوده می‌شود و صندوق دیگر این فاکتور را پرداخت نقدی حساب نمی‌کند.</string>
     <string name="bill_paid_how">این فاکتور چطور پرداخت شد؟</string>

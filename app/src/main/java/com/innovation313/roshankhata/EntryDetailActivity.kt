@@ -88,9 +88,7 @@ class EntryDetailActivity : BaseActivity() {
 
         // The receipt is the shop's paper, so it carries the shop's name
         // (13 Oct); the app's name only until the owner has entered one.
-        findViewById<TextView>(R.id.tvBusinessName).text =
-            com.innovation313.roshankhata.data.BusinessProfile.businessName(this)
-                ?.trim()?.ifEmpty { null } ?: getString(R.string.app_name)
+        findViewById<TextView>(R.id.tvBusinessName).text = receiptShop()
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
         // An entry a bill, plan, cheque or ticket wrote is changed there, not here (21 Oct 2026).
@@ -259,13 +257,12 @@ class EntryDetailActivity : BaseActivity() {
 
         // "I gave" is money/goods out (a receivable) — red banner; "I got" is a
         // payment in — green banner. Same convention as the ledger colours.
-        if (e.isGiven) {
-            tvDirection.setText(R.string.you_gave)
-            banner.setBackgroundResource(R.drawable.bg_receipt_red)
-        } else {
-            tvDirection.setText(R.string.you_got)
-            banner.setBackgroundResource(R.drawable.bg_receipt_green)
-        }
+        // The card is the customer's paper too (shared, printed): names, never "you" (4 Nov 2026, ReceiptBalance).
+        val words = com.innovation313.roshankhata.data.AndroidWords(this)
+        val shop = receiptShop()
+        findViewById<TextView>(R.id.tvReceiptSub).text = com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven)
+        tvDirection.text = com.innovation313.roshankhata.data.ReceiptBalance.way(words, e.isGiven, shop, partyName)
+        banner.setBackgroundResource(if (e.isGiven) R.drawable.bg_receipt_red else R.drawable.bg_receipt_green)
         tvAmount.text = Format.money(e.amount)
 
         findViewById<TextView>(R.id.tvParty).text = partyName
@@ -335,7 +332,7 @@ class EntryDetailActivity : BaseActivity() {
             val after = runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().balanceAfterEntry(e) }.getOrNull()
             if (isFinishing || isDestroyed) return@launch
             tvBalance.text = after?.let {
-                com.innovation313.roshankhata.data.ReceiptBalance.text(com.innovation313.roshankhata.data.AndroidWords(this@EntryDetailActivity), it)
+                com.innovation313.roshankhata.data.ReceiptBalance.named(words, it, shop, partyName)
             } ?: "—"
         }
     }
@@ -917,6 +914,10 @@ class EntryDetailActivity : BaseActivity() {
             for (i in 0 until from.childCount) mirrorReceipt(from.getChildAt(i), to.getChildAt(i))
         }
     }
+
+    /** The shop's name as the receipt says it; the app's until the owner has entered one. */
+    private fun receiptShop(): String =
+        com.innovation313.roshankhata.data.BusinessProfile.businessName(this)?.trim()?.ifEmpty { null } ?: getString(R.string.app_name)
 
     /** Render the receipt card to an image and offer it to the share sheet. */
     private fun shareReceipt() {

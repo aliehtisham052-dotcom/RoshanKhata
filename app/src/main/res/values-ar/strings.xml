@@ -703,6 +703,11 @@
     <string name="invoices">فواتير البيع</string>
     <string name="invoices_subtitle">فاتورة قابلة للطباعة — منفصلة عن دفتر حسابك</string>
     <string name="no_invoices">لا توجد فواتير بعد.\n\nأنشئ فاتورة قابلة للطباعة لعميل — بيع نقدي أو عرض سعر — دون أن تمس دفتر حسابك أو رصيد أي شخص.</string>
+    <string name="receipt_credit_slip">إشعار دين (بالآجل)</string>
+    <string name="receipt_line_gave">%1$s أعطى %2$s</string>
+    <string name="receipt_line_got">استُلم من %1$s</string>
+    <string name="receipt_owes">على %1$s لـ %2$s</string>
+    <string name="receipt_settled">الحساب مُسوّى</string>
     <string name="bill_to_credit">لم تُدفع نقدًا: اجعلها بالآجل</string>
     <string name="bill_to_credit_msg">سيُضاف %1$s إلى ما عليك لـ %2$s في دفترك، ولن يحسب درج النقد هذه الفاتورة مدفوعة.</string>
     <string name="bill_paid_how">كيف دُفعت هذه الفاتورة؟</string>

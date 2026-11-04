@@ -73,10 +73,12 @@ fun EntryReceiptDialog(
     /** Whether the party is a customer; a supplier's "I gave" with goods is a return to him, printed as a debit note. */
     isCustomer: Boolean = true,
     /** Goods sent back to a supplier as a debit note (NoteDocument, print-only); null offers none. */
-    onDebitNote: ((LedgerEntry, List<EntryItem>) -> Unit)? = null
+    onDebitNote: ((LedgerEntry, List<EntryItem>) -> Unit)? = null,
+    /** The shop's name for the receipt's "who gave whom" (ReceiptBalance); the app's when null. */
+    shop: String? = null
 ) {
     AppDialog(onCloseRequest = onClose, title = word(W.receipt_title), state = rememberDialogState(width = fitW(560.dp), height = fitH(720.dp))) {
-        EntryReceiptCard(dao, entryId, partyName, home, businessId, reload, onClose, onEdit, onDelete, onPrint, onInvoice, onChanged, isCustomer, onDebitNote)
+        EntryReceiptCard(dao, entryId, partyName, home, businessId, reload, onClose, onEdit, onDelete, onPrint, onInvoice, onChanged, isCustomer, onDebitNote, shop)
     }
 }
 
@@ -96,10 +98,13 @@ fun EntryReceiptCard(
     onInvoice: (LedgerEntry, Long?) -> Unit,
     onChanged: () -> Unit,
     isCustomer: Boolean = true,
-    onDebitNote: ((LedgerEntry, List<EntryItem>) -> Unit)? = null
+    onDebitNote: ((LedgerEntry, List<EntryItem>) -> Unit)? = null,
+    shop: String? = null
 ) {
     val c = LocalRoshanColors.current
     val words = LocalWords.current
+    // Names, never "you" (4 Nov 2026, the phone's receipt): who gave whom, and who owes whom (ReceiptBalance).
+    val shopSaid = shop?.trim()?.ifEmpty { null } ?: words.text(W.app_name)
     val trade = LocalTrade.current
     val scope = rememberCoroutineScope()
     var version by remember { mutableIntStateOf(0) }
@@ -131,7 +136,7 @@ fun EntryReceiptCard(
     var choosingSeason by remember { mutableStateOf(false) }
     var signing by remember { mutableStateOf(false) }
     var photo by remember { mutableStateOf(false) }
-    val title = word(if (e?.isGiven != false) W.receipt_title else W.payment_receipt)
+    val title = if (e == null) word(W.receipt_title) else com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven)
     run {
         DialogFrame(
             title,
@@ -162,7 +167,8 @@ fun EntryReceiptCard(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Glyph(if (e.isGiven) "ic_arrow_gave" else "ic_arrow_got", way, 16)
-                        Text(word(if (e.isGiven) W.you_gave else W.you_got), color = way, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                        Text(com.innovation313.roshankhata.data.ReceiptBalance.way(words, e.isGiven, shopSaid, partyName), Modifier.weight(1f, fill = false),
+                            color = way, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                     }
                     Text(Format.money(e.amount), color = c.ink, fontSize = 30.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
                     Text(Format.name(partyName), color = c.inkSoft, fontSize = 14.sp, maxLines = 1)
@@ -176,7 +182,7 @@ fun EntryReceiptCard(
                 // payment's reference after it (schema 39): "Bank transfer · Ref: TID 778…".
                 PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { ReceiptRow(word(W.payment_method_label), it) }
                 // The balance this entry left, in the customer's own words (ReceiptBalance), not today's.
-                ReceiptRow(word(W.balance_label), after?.let { com.innovation313.roshankhata.data.ReceiptBalance.text(words, it) } ?: "—")
+                ReceiptRow(word(W.balance_label), after?.let { com.innovation313.roshankhata.data.ReceiptBalance.named(words, it, shopSaid, partyName) } ?: "—")
 
                 // A sale's season (an agri shop that farms by Rabi and Kharif): by its date, or the one the owner chose.
                 if (e.isGiven && !e.isDeleted && trade.seasons) {

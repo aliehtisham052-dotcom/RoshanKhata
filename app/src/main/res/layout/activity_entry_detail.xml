@@ -116,10 +116,14 @@
                         android:background="@drawable/bg_summary_get"
                         android:padding="18dp">
 
+                        <!-- Who did what, by name (ReceiptBalance.way): long names wrap, three lines at most. -->
                         <TextView
                             android:id="@+id/tvDirection"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="3"
+                            android:textAlignment="viewStart"
                             android:text="@string/you_gave"
                             android:textColor="@color/white"
                             android:textSize="15sp"

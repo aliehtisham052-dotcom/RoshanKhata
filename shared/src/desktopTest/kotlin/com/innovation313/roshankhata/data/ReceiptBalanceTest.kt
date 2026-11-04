@@ -86,4 +86,21 @@ class ReceiptBalanceTest {
         val owed = ReceiptBalance.text(names, 45_000.0, "Rs")
         assertTrue(owed, owed.contains("45,000") && owed.endsWith(W.pdf_stmt_you_will_pay))
     }
+
+    @Test
+    fun `the receipt names who gave and who owes, never you`() {
+        // Each word with its arguments, so the order of the names can be read back.
+        val said = object : Words {
+            override fun text(name: String, vararg args: Any) = name + args.joinToString("") { "|" + it.toString().filter { c -> c.isLetter() } }
+            override fun plural(name: String, count: Int, vararg args: Any) = name
+            override fun list(name: String) = emptyList<String>()
+        }
+        assertEquals(W.receipt_credit_slip, ReceiptBalance.title(said, isGiven = true))
+        assertEquals(W.payment_receipt, ReceiptBalance.title(said, isGiven = false))
+        assertEquals(W.receipt_line_gave + "|Shop|Aslam", ReceiptBalance.way(said, true, "Shop", "Aslam"))
+        assertEquals(W.receipt_line_got + "|Aslam", ReceiptBalance.way(said, false, "Shop", "Aslam"))
+        assertTrue(ReceiptBalance.named(said, 2_800.0, "Shop", "Aslam", "Rs").endsWith(W.receipt_owes + "|Aslam|Shop"))
+        assertTrue(ReceiptBalance.named(said, -300.0, "Shop", "Aslam", "Rs").endsWith(W.receipt_owes + "|Shop|Aslam"))
+        assertEquals(W.receipt_settled, ReceiptBalance.named(said, 0.0000001, "Shop", "Aslam"))
+    }
 }
