@@ -652,6 +652,8 @@
     <string name="invoices">Faktur</string>
     <string name="invoices_subtitle">Nota siap cetak — terpisah dari buku utang Anda</string>
     <string name="no_invoices">Belum ada faktur.\n\nBuat nota siap cetak untuk pelanggan — penjualan tunai atau penawaran harga — tanpa menyentuh buku Anda atau saldo siapa pun.</string>
+    <string name="bill_discard_title">Buang tagihan ini?</string>
+    <string name="bill_discard_msg">Yang sudah Anda ketik di tagihan ini akan hilang.</string>
     <string name="add_invoice">Tambah faktur</string>
     <string name="invoice_customer_hint">Nama pelanggan</string>
     <string name="invoice_phone_hint">Telepon (opsional)</string>

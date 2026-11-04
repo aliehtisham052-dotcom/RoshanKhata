@@ -669,6 +669,8 @@
     <string name="invoices">Invoices</string>
     <string name="invoices_subtitle">Printable bills — separate from your khata ledger</string>
     <string name="no_invoices">No invoices yet.\n\nMake a printable bill for a customer — a cash sale or a price quote — without it touching your ledger or anyone\'s balance.</string>
+    <string name="bill_discard_title">Discard this bill?</string>
+    <string name="bill_discard_msg">What you typed on this bill will be lost.</string>
     <string name="add_invoice">Add invoice</string>
     <string name="invoice_customer_hint">Customer name</string>
     <string name="invoice_phone_hint">Phone (optional)</string>

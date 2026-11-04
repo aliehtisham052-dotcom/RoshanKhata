@@ -668,6 +668,8 @@
     <string name="invoices">इनवॉइस</string>
     <string name="invoices_subtitle">छापने लायक बिल — आपके खाते से अलग</string>
     <string name="no_invoices">अभी कोई इनवॉइस नहीं।\n\nग्राहक के लिए छापने लायक बिल बनाएँ — नकद बिक्री या भाव का कोटेशन — बिना आपके खाते या किसी के बैलेंस को छुए।</string>
+    <string name="bill_discard_title">यह बिल छोड़ दें?</string>
+    <string name="bill_discard_msg">इस बिल में जो आपने लिखा है वह चला जाएगा।</string>
     <string name="add_invoice">इनवॉइस जोड़ें</string>
     <string name="invoice_customer_hint">ग्राहक का नाम</string>
     <string name="invoice_phone_hint">फ़ोन (ज़रूरी नहीं)</string>

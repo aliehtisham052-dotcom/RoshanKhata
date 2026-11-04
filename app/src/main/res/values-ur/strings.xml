@@ -639,6 +639,8 @@
     <string name="invoices">انوائس</string>
     <string name="invoices_subtitle">پرنٹ ایبل بل — آپ کے کھاتے سے الگ</string>
     <string name="no_invoices">ابھی کوئی انوائس نہیں۔\n\nکسٹمر کے لیے پرنٹ ایبل بل بنائیں — نقد سیل یا قیمت کا تخمینہ — بغیر اس کے آپ کے کھاتے یا کسی کے بیلنس کو چھوئے۔</string>
+    <string name="bill_discard_title">یہ بل چھوڑ دیں؟</string>
+    <string name="bill_discard_msg">اس بل پر جو آپ نے لکھا ہے وہ ضائع ہو جائے گا۔</string>
     <string name="add_invoice">انوائس شامل کریں</string>
     <string name="invoice_customer_hint">گاہک کا نام</string>
     <string name="invoice_phone_hint">فون (اختیاری)</string>

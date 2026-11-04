@@ -703,6 +703,8 @@
     <string name="invoices">فواتير البيع</string>
     <string name="invoices_subtitle">فاتورة قابلة للطباعة — منفصلة عن دفتر حسابك</string>
     <string name="no_invoices">لا توجد فواتير بعد.\n\nأنشئ فاتورة قابلة للطباعة لعميل — بيع نقدي أو عرض سعر — دون أن تمس دفتر حسابك أو رصيد أي شخص.</string>
+    <string name="bill_discard_title">تجاهل هذه الفاتورة؟</string>
+    <string name="bill_discard_msg">سيضيع ما كتبته في هذه الفاتورة.</string>
     <string name="add_invoice">إضافة فاتورة</string>
     <string name="invoice_customer_hint">اسم العميل</string>
     <string name="invoice_phone_hint">الهاتف (اختياري)</string>

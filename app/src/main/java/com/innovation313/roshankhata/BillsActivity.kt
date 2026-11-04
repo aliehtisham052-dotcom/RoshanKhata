@@ -403,6 +403,26 @@ class BillsActivity : BaseActivity() {
             }
             .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.billKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
 
+        // Back, a tap beside the form or Cancel threw a typed bill away in
+        // silence (the owner's phone, 4 Nov 2026). An untouched form still
+        // closes at once; anything typed asks first.
+        val blankDate = billDate
+        guardTyped(
+            dialog = form,
+            title = R.string.bill_discard_title,
+            message = R.string.bill_discard_msg,
+            typed = {
+                etSupplier.text.toString().trim() != prefillSupplier.orEmpty().trim() ||
+                    etNumber.text.isNotBlank() || etTotal.text.isNotBlank() || etNote.text.isNotBlank() ||
+                    cbPaidCash.isChecked || dueDate != null || billDate != blankDate ||
+                    pendingItems.isNotEmpty() || scanKeptPhoto != null
+            },
+            onDiscard = {
+                pendingItems.clear()
+                dropKeptPhoto()
+            }
+        )
+
         btnScan.setOnClickListener {
             val draft = BillDraft(
                 supplierName = etSupplier.text.toString().trim(),
@@ -416,6 +436,43 @@ class BillsActivity : BaseActivity() {
             form.dismiss()
             chooseScanSource(draft)
         }
+    }
+
+    /**
+     * Asks before a bill form closes with anything typed in it (4 Nov 2026):
+     * Back and Cancel ask "Discard?" (Keep editing / Discard) when [typed] says
+     * something is there, and close at once when nothing is; a tap beside the
+     * form no longer closes it at all. A callback on the dialog's own
+     * dispatcher, not onBackPressed/KEYCODE_BACK, so it also works on
+     * Android 16+ (as the add-entry form's details step does).
+     */
+    private fun guardTyped(
+        dialog: androidx.appcompat.app.AlertDialog,
+        title: Int,
+        message: Int,
+        typed: () -> Boolean,
+        onDiscard: () -> Unit = {}
+    ) {
+        dialog.setCanceledOnTouchOutside(false)
+        fun leave() {
+            if (!typed()) {
+                dialog.dismiss()
+                return
+            }
+            MaterialAlertDialogBuilder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setNegativeButton(R.string.bp_leave_keep, null)
+                .setPositiveButton(R.string.bp_leave_discard) { _, _ ->
+                    onDiscard()
+                    dialog.dismiss()
+                }
+                .show()
+        }
+        dialog.onBackPressedDispatcher.addCallback(object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = leave()
+        })
+        dialog.getButton(android.content.DialogInterface.BUTTON_NEGATIVE)?.setOnClickListener { leave() }
     }
 
     /**
@@ -565,11 +622,15 @@ class BillsActivity : BaseActivity() {
         paidCash: Boolean,
         note: String?
     ) {
-        showAddItemDialog { item ->
+        // The bill typed so far: leaving the item form or the "item added" box
+        // goes back to it rather than losing it (4 Nov 2026).
+        val draft = BillDraft(supplierName, billNumber, total, billDate, dueDate, paidCash, note)
+        showAddItemDialog(onClosed = { startNewBill(restore = draft) }) { item ->
             pendingItems.add(item)
 
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.item_added)
+                .setOnCancelListener { startNewBill(restore = draft) }
                 .setMessage(Digits.quantity(resources, 
                     R.plurals.items_count, pendingItems.size, pendingItems.size
                 ))
@@ -589,7 +650,7 @@ class BillsActivity : BaseActivity() {
      * unchanged on [BillItem.copy] — only what this form actually shows can
      * be changed by using it.
      */
-    private fun showAddItemDialog(existing: BillItem? = null, onDone: (BillItem) -> Unit) {
+    private fun showAddItemDialog(existing: BillItem? = null, onClosed: (() -> Unit)? = null, onDone: (BillItem) -> Unit) {
         val view = layoutInflater.inflate(R.layout.dialog_add_bill_item, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etProduct: AutoCompleteTextView = view.findViewById(R.id.etProductName)
@@ -634,6 +695,9 @@ class BillsActivity : BaseActivity() {
             expiry?.let { btnExpiry.text = getString(R.string.bill_scan_expiry, Format.dateOnly(it)) }
         }
 
+        // As filled, to tell an item he changed from one he only opened.
+        val loadedItem = listOf(etProduct, etBatch, etQty, etUnit, etRate).map { it.text.toString() }
+
         btnExpiry.setOnClickListener {
             // Opens on TODAY, not a year ahead.
             //
@@ -651,6 +715,7 @@ class BillsActivity : BaseActivity() {
             }
         }
 
+        var done = false
         MaterialAlertDialogBuilder(this)
             .setTitle(if (existing == null) R.string.add_item else R.string.edit_item)
             .setView(view)
@@ -661,6 +726,7 @@ class BillsActivity : BaseActivity() {
                     Toast.makeText(this, R.string.enter_product, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
+                done = true
 
                 val qty = Digits.parse(etQty.text) ?: 1.0
 
@@ -676,7 +742,17 @@ class BillsActivity : BaseActivity() {
                     )
                 )
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { itemForm ->
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(itemForm)
+                guardTyped(
+                    dialog = itemForm,
+                    title = R.string.bp_leave_title,
+                    message = R.string.bp_leave_msg,
+                    typed = { listOf(etProduct, etBatch, etQty, etUnit, etRate).map { it.text.toString() } != loadedItem || expiry != existing?.expiryDate }
+                )
+                // Closed without an item (Cancel, Back, Discard): the caller's form comes back.
+                if (onClosed != null) itemForm.setOnDismissListener { if (!done && !isFinishing && !isDestroyed) onClosed() }
+            }
     }
 
     private fun saveBill(
@@ -1095,6 +1171,13 @@ class BillsActivity : BaseActivity() {
         tvPaidCashHelp.text = getString(R.string.edit_bill_cash_locked)
         tvEffect.visibility = View.GONE
 
+        // As loaded, to tell a corrected bill from an untouched one when he leaves.
+        val loadedNumber = etNumber.text.toString()
+        val loadedTotal = etTotal.text.toString()
+        val loadedNote = etNote.text.toString()
+        val loadedDate = billDate
+        val loadedDue = dueDate
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.edit_bill)
             .setView(view)
@@ -1114,7 +1197,19 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.billKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { editForm ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(editForm, view, view.findViewById(R.id.billKeypad))
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(editForm)
+                guardTyped(
+                    dialog = editForm,
+                    title = R.string.bp_leave_title,
+                    message = R.string.bp_leave_msg,
+                    typed = {
+                        etNumber.text.toString() != loadedNumber || etTotal.text.toString() != loadedTotal ||
+                            etNote.text.toString() != loadedNote || billDate != loadedDate || dueDate != loadedDue
+                    }
+                )
+            }
     }
 
     /**

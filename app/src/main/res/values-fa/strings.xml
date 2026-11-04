@@ -660,6 +660,8 @@
     <string name="invoices">فاکتورهای فروش</string>
     <string name="invoices_subtitle">فاکتور قابل چاپ — جدا از دفتر حساب شما</string>
     <string name="no_invoices">هنوز فاکتوری نیست.\n\nبرای مشتری یک فاکتور قابل چاپ بسازید — فروش نقدی یا برآورد قیمت — بدون اینکه به دفتر حساب یا مانده کسی دست بزند.</string>
+    <string name="bill_discard_title">این فاکتور رها شود؟</string>
+    <string name="bill_discard_msg">آنچه در این فاکتور نوشته‌اید از بین می‌رود.</string>
     <string name="add_invoice">افزودن فاکتور</string>
     <string name="invoice_customer_hint">نام مشتری</string>
     <string name="invoice_phone_hint">تلفن (اختیاری)</string>
