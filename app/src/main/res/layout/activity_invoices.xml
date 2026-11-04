@@ -105,7 +105,10 @@
 
     <!-- 4 Nov 2026: the invoice is what a shop makes daily, so the big button opens it straight away; the
          quotation, proforma, sales order and challan (and a pasted WhatsApp order) sit behind the smaller
-         one above it. Stacked, not side by side: two labels in one row do not fit 360 dp in Urdu (lesson 58). -->
+         one above it. Stacked, not side by side: two labels in one row do not fit 360 dp in Urdu (lesson 58).
+         The smaller one is lighter by fill (outlined), height (48 dp, Google's touch floor, against 56) and
+         text (13sp against 14sp). Its width follows its words: in English "Other documents" is longer than
+         "Add invoice", so there it stays the wider of the two. -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabOtherDocs"
         android:layout_width="wrap_content"
@@ -113,7 +116,9 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="12dp"
         android:maxLines="1"
+        android:minHeight="48dp"
         android:text="@string/doc_add_other"
+        android:textSize="13sp"
         android:textColor="@color/brand_green_text"
         app:backgroundTint="@color/surface"
         app:strokeColor="@color/brand_green_text"
