@@ -68,8 +68,14 @@ class BackupActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_backup)
-        // How this works, the first time it opens on this phone (1 Nov 2026).
-        com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.BACKUP)
+        // How this works, the first time it opens on this phone (1 Nov 2026). Anything that would open over it
+        // (Google's account picker, the automatic-backup question) waits until it is closed (afterIntro, 4 Nov 2026).
+        com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.BACKUP) {
+            introDone = true
+            val waiting = afterIntroQueue.toList()
+            afterIntroQueue.clear()
+            waiting.forEach { it() }
+        }
 
         // The file-backup fold. Closed by default now that Drive is the main
         // path; one tap opens it. The chevron points right when closed and
@@ -195,9 +201,22 @@ class BackupActivity : BaseActivity() {
             if (savedInstanceState == null && intent.getBooleanExtra(EXTRA_CONNECT, false) &&
                 !DriveAuth.isConnected(this)
             ) {
-                window.decorView.post { if (!isFinishing && !isDestroyed) connectDrive() }
+                afterIntro { window.decorView.post { if (!isFinishing && !isDestroyed && !DriveAuth.isConnected(this)) connectDrive() } }
             }
         }
+    }
+
+    /**
+     * The first-open introduction comes first (4 Nov 2026, the owner's phone: Google's account picker opened before
+     * "Backup — Got it"). [introDone] is true once the sheet was closed now or seen before; until then prompts wait
+     * in [afterIntroQueue] and run in order when it closes. The daily automatic backup is a worker and never waits.
+     */
+    private var introDone = false
+    private val afterIntroQueue = ArrayList<() -> Unit>()
+    private var autoBackupWaiting = false
+
+    private fun afterIntro(action: () -> Unit) {
+        if (introDone) action() else afterIntroQueue += action
     }
 
     companion object {
@@ -1414,6 +1433,8 @@ class BackupActivity : BaseActivity() {
     private fun offerAutoBackup() {
         if (isFinishing || isDestroyed) return
         if (DriveBackup.autoBackupAnswered(this)) return
+        // After the screen's introduction, never over it or before it.
+        if (!introDone) { if (!autoBackupWaiting) { autoBackupWaiting = true; afterIntro { autoBackupWaiting = false; offerAutoBackup() } }; return }
         // refreshDriveUi runs several times in one visit — after a backup,
         // after a restore, after a switch is flipped. Answering is what stops
         // the question for good; this stops it stacking before he answers,
