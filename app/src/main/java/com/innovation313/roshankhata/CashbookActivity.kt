@@ -203,7 +203,10 @@ class CashbookActivity : BaseActivity() {
             fun refresh() {
                 val opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                 val expected = DayCloseMath.expected(opening, cashIn, cashOut)
-                breakdownRows(rows, listOf(Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected), Format.money(figures.otherOut)))
+                // The total keeps its sign (4 Nov 2026, the owner's photo: 9,000 − 5,000 − 20,000 read "Rs 16,000"; Format.money
+                // drops the minus by design). Below zero it is a minus in red: the books say more went out than came in.
+                breakdownRows(rows, listOf(Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.signedIfNegative(expected), Format.money(figures.otherOut)),
+                    totalInk = if (Money.isNegative(expected)) R.color.red_gave_text else R.color.ink)
                 val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                 if (counted == null) {
                     resultPanel.visibility = View.GONE
@@ -312,7 +315,7 @@ class CashbookActivity : BaseActivity() {
      * (the line's own %n$s) at the end, left to right — and the last line, the total, under a rule in bold. The
      * placeholders are found in the words, so a language that puts the figure first still reads right.
      */
-    private fun breakdownRows(container: android.widget.LinearLayout, figures: List<String>) {
+    private fun breakdownRows(container: android.widget.LinearLayout, figures: List<String>, totalInk: Int = R.color.ink) {
         container.removeAllViews()
         val lines = getString(R.string.dayclose_breakdown).split("\n").filter { it.isNotBlank() }
         val ink = ContextCompat.getColor(this, R.color.ink)
@@ -343,7 +346,7 @@ class CashbookActivity : BaseActivity() {
             row.addView(TextView(this).apply {
                 text = figure
                 textSize = if (total) 15f else 14f
-                setTextColor(ink)
+                setTextColor(if (total) ContextCompat.getColor(this@CashbookActivity, totalInk) else ink)
                 textDirection = View.TEXT_DIRECTION_LTR
                 if (total) setTypeface(typeface, android.graphics.Typeface.BOLD)
             }, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT).apply {

@@ -668,6 +668,15 @@
     <string name="invoices">इनवॉइस</string>
     <string name="invoices_subtitle">छापने लायक बिल — आपके खाते से अलग</string>
     <string name="no_invoices">अभी कोई इनवॉइस नहीं।\n\nग्राहक के लिए छापने लायक बिल बनाएँ — नकद बिक्री या भाव का कोटेशन — बिना आपके खाते या किसी के बैलेंस को छुए।</string>
+    <string name="bill_to_credit">नकद नहीं चुकाया: उधार में डालें</string>
+    <string name="bill_to_credit_msg">%1$s आपके खाते में %2$s की देनदारी में जुड़ेगा, और गल्ला इस बिल को नकद चुकाया नहीं गिनेगा।</string>
+    <string name="bill_paid_how">यह बिल कैसे चुकाया?</string>
+    <string name="bill_paid_credit">उधार पर</string>
+    <string name="bill_paid_now">अभी चुकाया · %1$s</string>
+    <string name="bill_cash_note">अभी नकद चुकाया: %1$s गल्ले से निकलेगा। सप्लायर के खाते में कुछ नहीं जाएगा।</string>
+    <string name="bill_other_note">अभी %3$s से चुकाया: %2$s के खाते में %1$s देय और चुकाया दोनों लिखे जाएँगे, कुछ बाकी नहीं रहेगा। गल्ले को हाथ नहीं लगेगा।</string>
+    <string name="bill_state_paid">चुकाया</string>
+    <string name="bill_state_paid_by">चुकाया · %1$s</string>
     <string name="bill_discard_title">यह बिल छोड़ दें?</string>
     <string name="bill_discard_msg">इस बिल में जो आपने लिखा है वह चला जाएगा।</string>
     <string name="add_invoice">इनवॉइस जोड़ें</string>

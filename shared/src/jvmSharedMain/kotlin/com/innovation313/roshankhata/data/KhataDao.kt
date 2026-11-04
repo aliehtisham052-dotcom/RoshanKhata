@@ -1123,7 +1123,14 @@ interface KhataDao {
         bill.ledgerEntryId?.let { id ->
             // The bill's day moves its khata entry too (3 Nov 2026 audit, L09): the supplier's statement, Aging and the
             // month's report kept the old day.
-            getEntry(id)?.let { e -> updateEntry(e.copy(amount = bill.totalAmount, note = entryNote, timestamp = onBillDay(e.timestamp, bill.billDate))) }
+            getEntry(id)?.let { e ->
+                updateEntry(e.copy(amount = bill.totalAmount, note = entryNote, timestamp = onBillDay(e.timestamp, bill.billDate)))
+                // A bill paid by bank or wallet (insertSupplierBill's paidBy): its payment follows the total, or the
+                // supplier's khata would say the shop owes or is owed the difference.
+                e.pairedEntryId?.let { getEntry(it) }?.takeIf { !it.isDeleted && it.pairedEntryId == e.id }?.let { pay ->
+                    updateEntry(pay.copy(amount = bill.totalAmount, timestamp = onBillDay(e.timestamp, bill.billDate) + 1))
+                }
+            }
         }
         // Who changed a bill, and to what (22 Oct 2026, the review: bills changed with nothing written down).
         log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", bill.id, "%.2f".format(Digits.FIGURES, bill.totalAmount))
@@ -1158,6 +1165,9 @@ interface KhataDao {
         """
         SELECT b.id, b.partyId, p.name AS partyName, b.billNumber,
                b.totalAmount, b.billDate, b.dueDate, b.isPaidInFull,
+               b.ledgerEntryId,
+               (SELECT pt.paymentMethod FROM transactions pt JOIN transactions bt ON bt.id = b.ledgerEntryId
+                 WHERE pt.id = bt.pairedEntryId AND pt.pairedEntryId = bt.id AND pt.isDeleted = 0) AS paidBy,
                (SELECT COUNT(*) FROM bill_items i
                 WHERE i.billId = b.id AND i.isDeleted = 0) AS itemCount,
                b.note,
@@ -1184,9 +1194,37 @@ interface KhataDao {
     @Transaction
     suspend fun deleteSupplierBill(id: Long, now: Long = System.currentTimeMillis()) {
         val bill = getBill(id)
-        bill?.ledgerEntryId?.let { softDeleteEntry(it, now) }
+        bill?.ledgerEntryId?.let { entryId ->
+            // A bill paid by bank or wallet goes with its payment (insertSupplierBill's paidBy): left, the payment
+            // alone would read as money the supplier owes back.
+            getEntry(entryId)?.pairedEntryId?.let { getEntry(it) }?.takeIf { it.pairedEntryId == entryId && !it.isDeleted }
+                ?.let { softDeleteEntry(it.id, now) }
+            softDeleteEntry(entryId, now)
+        }
         softDeleteBill(id, now)
         log(AuditAction.BILL_DELETED, Access.userName, "supplier_bills", id, bill?.let { "%.2f".format(Digits.FIGURES, it.totalAmount) })
+    }
+
+    /**
+     * A bill saved as paid in cash that was really taken on credit (4 Nov 2026, the owner's phone: three bills ticked
+     * "paid in cash" by mistake took Rs 20,000 off the drawer). The owner's own correction, never done for him: the
+     * bill's debt goes into the supplier's khata on the bill's day ([insertSupplierBill]'s credit entry), the bill is
+     * no longer paid, so the drawer stops counting it. One transaction, written in Who did what. False when the bill is
+     * gone, binned, or not a cash bill. [entryNote] is the khata line's note, as a new credit bill's.
+     */
+    @Transaction
+    suspend fun billCashToCredit(id: Long, entryNote: String?): Boolean {
+        val bill = getBill(id) ?: return false
+        if (bill.isDeleted || !bill.isPaidInFull || bill.ledgerEntryId != null) return false
+        val entryId = insertEntryNumbered(
+            LedgerEntry(
+                partyId = bill.partyId, amount = bill.totalAmount, isGiven = false, note = entryNote, entryNumber = "",
+                timestamp = onBillDay(bill.createdAt, bill.billDate)
+            )
+        )
+        updateBill(bill.copy(isPaidInFull = false, ledgerEntryId = entryId))
+        log(AuditAction.BILL_EDITED, Access.userName, "supplier_bills", id, "credit %.2f".format(Digits.FIGURES, bill.totalAmount))
+        return true
     }
 
     // ---------- Bill items (batch + expiry) ----------
@@ -3136,11 +3174,28 @@ interface KhataDao {
     suspend fun insertSupplierBill(
         entry: LedgerEntry?,
         bill: SupplierBill,
-        items: List<BillItem>
+        items: List<BillItem>,
+        /**
+         * Paid at once by bank, wallet, cheque or online (4 Nov 2026): [entry] (what the bill owes) is written with
+         * its payment, an "I gave" by this method for the same amount, each pointing at the other as a cash sale and
+         * its payment do. The supplier's khata shows both and nets to nothing, and the drawer counts neither (only
+         * "cash" moves it). Null: a credit bill (an [entry] alone) or a cash bill (no [entry]).
+         */
+        paidBy: String? = null
     ): List<Product> {
         // On the bill's own day (3 Nov 2026 audit, L09): a bill dated 1 Oct typed on 2 Nov was in October's register
         // and November's supplier statement.
         val ledgerId = entry?.let { insertEntryNumbered(it.copy(timestamp = onBillDay(it.timestamp, bill.billDate))) }
+        if (ledgerId != null && paidBy != null) {
+            val owed = getEntry(ledgerId)!!
+            val payId = insertEntryNumbered(
+                LedgerEntry(
+                    partyId = owed.partyId, amount = owed.amount, isGiven = true, note = owed.note, entryNumber = "",
+                    timestamp = owed.timestamp + 1, paymentMethod = paidBy, pairedEntryId = ledgerId
+                )
+            )
+            setPairedEntry(ledgerId, payId)
+        }
         val billId = insertBill(bill.copy(ledgerEntryId = ledgerId))
         return items.map { item ->
             // The product the line already names comes first (23 Oct 2026, the review: a purchase order's line
