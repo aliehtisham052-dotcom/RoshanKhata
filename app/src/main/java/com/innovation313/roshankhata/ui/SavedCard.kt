@@ -35,7 +35,16 @@ object SavedCard {
         anchor: View? = null,
         onUndo: (() -> Unit)? = null,
         onShare: (() -> Unit)? = null,
-        millis: Int = 5000
+        millis: Int = 5000,
+        /**
+         * The list the card floats over (4 Nov 2026, the owner's photo: the card sat on the green "New" row it
+         * announced). While the card shows, the list's foot gets the card's room as padding (the list draws under
+         * it with clipToPadding off) and [keepInSight]'s row is scrolled up out from under it; the padding goes
+         * back when the card goes.
+         */
+        list: androidx.recyclerview.widget.RecyclerView? = null,
+        /** The adapter position to keep above the card (the row just written), read when the card has its size. */
+        keepInSight: (() -> Int)? = null
     ): Snackbar? {
         if (activity.isFinishing || activity.isDestroyed) return null
         val root = activity.findViewById<View>(android.R.id.content) ?: return null
@@ -91,11 +100,37 @@ object SavedCard {
         TextFit.relax(card)
         shell.addView(card)
         if (anchor != null && anchor.isShown) bar.anchorView = anchor
+        // The list's own foot, as it was before any card; a card shown over another keeps the first one's figure.
+        val listFoot = list?.let { rv -> (rv.getTag(R.id.saved_card_list_pad) as? Int) ?: rv.paddingBottom.also { rv.setTag(R.id.saved_card_list_pad, it) } }
+        fun makeRoom() {
+            val rv = list ?: return
+            val foot = listFoot ?: return
+            val lp = shell.layoutParams as? ViewGroup.MarginLayoutParams
+            val room = shell.height + (lp?.bottomMargin ?: 0) + (lp?.topMargin ?: 0)
+            if (room <= 0) return
+            rv.setPadding(rv.paddingLeft, rv.paddingTop, rv.paddingRight, foot + room)
+            val at = keepInSight?.invoke() ?: -1
+            if (at >= 0) rv.post { rv.smoothScrollToPosition(at) }
+        }
         bar.addCallback(object : Snackbar.Callback() {
             override fun onShown(sb: Snackbar?) {
                 (tick.drawable as? Animatable)?.start()
+                makeRoom()
+            }
+
+            override fun onDismissed(sb: Snackbar?, event: Int) {
+                val rv = list ?: return
+                // Only the last card gives the room back: one replaced by a newer card leaves it to that one.
+                if (event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE) return
+                val foot = listFoot ?: return
+                rv.setPadding(rv.paddingLeft, rv.paddingTop, rv.paddingRight, foot)
+                rv.setTag(R.id.saved_card_list_pad, null)
             }
         })
+        // The card's height changes with the text size and the stacked actions: measured once laid out.
+        if (list != null) shell.addOnLayoutChangeListener { _, _, top, _, bottom, _, oldTop, _, oldBottom ->
+            if (bar.isShown && bottom - top != oldBottom - oldTop) makeRoom()
+        }
         bar.show()
         return bar
     }

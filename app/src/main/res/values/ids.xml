@@ -10,4 +10,6 @@
     <item name="fit_one_line_base" type="id" />
     <!-- CalcPad.dock: the pad a dialog built in code carries on its scroll. -->
     <item name="calc_pad_view" type="id" />
+    <!-- SavedCard: a list's bottom padding before a saved card gave it the card's room. -->
+    <item name="saved_card_list_pad" type="id" />
 </resources>

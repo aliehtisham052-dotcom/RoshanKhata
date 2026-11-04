@@ -3356,7 +3356,10 @@ class PartyDetailActivity : BaseActivity() {
             line = savedLine(entry.isGiven, entry.amount, entry.entryNumber),
             anchor = bottomBarContainer,
             onUndo = { undoNewEntry(id, entry.amount, promiseBefore) },
-            onShare = share
+            onShare = share,
+            // The row it announces stays in sight above it.
+            list = findViewById(R.id.rvEntries),
+            keepInSight = { if (::adapter.isInitialized) adapter.positionOf(id) else -1 }
         )
     }
 
@@ -3402,6 +3405,8 @@ class PartyDetailActivity : BaseActivity() {
             this,
             title = getString(R.string.cash_paid_recorded, Format.money(amount)),
             anchor = bottomBarContainer,
+            list = findViewById(R.id.rvEntries),
+            keepInSight = { if (::adapter.isInitialized) adapter.positionOf(saleId) else -1 },
             onUndo = { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
         )
     }
