@@ -1706,6 +1706,21 @@ on "All"; sales by way of paying is the sales report's own view). CI only — no
   OrderPasteTest, PartyNoteTest, NoteAndPhotosTest, Schema43Test, BinPhotosTest; proofs 36-price-check, 37-day-book,
   38-lapsed (03-customer, 11-cashbook and 12-cheques now show the note's chip and the cameras).
 
+### Finding the invoice (4 Nov 2026, kmp-desktop-16 — the owner: "invoice banane wala koi option nazar nahi aa raha")
+
+Phone only; Windows unchanged. The owner, looking at his own Home, could not
+find where to make an invoice: the 29 Oct merge had put it under a tile named
+"Documents", and Counter sale wore the same `ic_tile_invoice`, so the two read
+as one feature. The tile is now labelled `coach_title_invoice` ("Invoice",
+already in all nine languages); Counter sale has its own `ic_tile_counter`
+(a cash register, fi_green, in FeatureIntro's TWO_TONE set). On the Documents
+screen the big button (`fabAddInvoice`, `add_invoice`) opens an invoice
+straight away; a smaller outlined one stacked above it (`fabOtherDocs`,
+`doc_add_other`) asks for the other four and keeps "Paste order". Stacked, not
+side by side (lesson 58). `fabOtherDocs` is in ViewerMode's WRITE_BUTTONS:
+**a new button that writes goes into that list the same commit**, or a
+helper's read-only copy is offered a way to make documents.
+
 ### The shared module (KMP)
 
 ```

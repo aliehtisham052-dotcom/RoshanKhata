@@ -46,7 +46,8 @@ import kotlinx.coroutines.withContext
  * anyone's account.
  *
  * The list only — adding one happens on its own screen,
- * [InvoiceEditorActivity], asked its kind first (Invoice by default). The
+ * [InvoiceEditorActivity]: the big button opens an invoice straight away, the
+ * smaller one above it asks which of the other four first (4 Nov 2026). The
  * three-dot actions follow the document's status ([DocActions], the same rule
  * as the computer's): Accept, Convert to the next kind, Mark as Cancelled,
  * Edit and Delete while it is live; a converted or cancelled document is read,
@@ -86,7 +87,11 @@ class InvoicesActivity : BaseActivity() {
         // The newest page first, more as the owner scrolls (23 Oct 2026, the review: every row was read).
         com.innovation313.roshankhata.ui.GrowingList.attach(rv, listLimit) { listShown }
 
-        findViewById<ExtendedFloatingActionButton>(R.id.fabAddInvoice).setOnClickListener { askKindThenAdd() }
+        // The big button is the invoice itself (4 Nov 2026): no picker between a shop and its daily bill.
+        findViewById<ExtendedFloatingActionButton>(R.id.fabAddInvoice).setOnClickListener {
+            startActivity(Intent(this, InvoiceEditorActivity::class.java).putExtra(InvoiceEditorActivity.EXTRA_KIND, DocKind.INVOICE))
+        }
+        findViewById<ExtendedFloatingActionButton>(R.id.fabOtherDocs).setOnClickListener { askKindThenAdd() }
         buildKindPills()
         findViewById<android.widget.ImageButton>(R.id.btnInvoiceSettings).setOnClickListener {
             startActivity(Intent(this, InvoiceSettingsActivity::class.java))
@@ -136,10 +141,13 @@ class InvoicesActivity : BaseActivity() {
         }
     }
 
-    /** Add asks which document first — the invoice marked, the way most are made — then opens the form with it. */
+    /**
+     * "Other documents" asks which one first — the four before the invoice, the quotation marked — then opens
+     * the form with it. The invoice has its own button, so it is not offered twice (4 Nov 2026).
+     */
     private fun askKindThenAdd() {
-        val kinds = DocKind.saved
-        var picked = kinds.indexOf(DocKind.INVOICE)
+        val kinds = DocKind.saved.filter { it != DocKind.INVOICE }
+        var picked = 0
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.doc_pick_kind)
             .setSingleChoiceItems(kinds.map { kindWord(it) }.toTypedArray(), picked) { _, which -> picked = which }

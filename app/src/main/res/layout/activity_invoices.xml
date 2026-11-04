@@ -81,7 +81,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="88dp"
+        android:paddingBottom="160dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -103,12 +103,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/rvInvoices" />
 
+    <!-- 4 Nov 2026: the invoice is what a shop makes daily, so the big button opens it straight away; the
+         quotation, proforma, sales order and challan (and a pasted WhatsApp order) sit behind the smaller
+         one above it. Stacked, not side by side: two labels in one row do not fit 360 dp in Urdu (lesson 58). -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabOtherDocs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="12dp"
+        android:maxLines="1"
+        android:text="@string/doc_add_other"
+        android:textColor="@color/brand_green_text"
+        app:backgroundTint="@color/surface"
+        app:strokeColor="@color/brand_green_text"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toTopOf="@id/fabAddInvoice"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddInvoice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="@string/doc_add"
+        android:maxLines="1"
+        android:text="@string/add_invoice"
         android:textColor="@color/white"
         app:backgroundTint="@color/button_dark"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -194,10 +194,11 @@ class MainActivity : BaseActivity() {
             if (expiryDaily) productsTile else expiryTile,
             // The counter (POS Phase 1, 21 Oct) beside the products it sells: moved out of Every day on
             // 24 Oct 2026 — the owner keeps his sales in Khata and did not use it daily.
-            Feature(R.drawable.ic_tile_invoice, R.string.pos_title, CounterSaleActivity::class.java,
+            Feature(R.drawable.ic_tile_counter, R.string.pos_title, CounterSaleActivity::class.java,
                 R.color.tile_cashbook_bg),
             // Documents since 29 Oct 2026 (schema 40): the invoice and the four documents before it, one tile.
-            Feature(R.drawable.ic_tile_invoice, R.string.documents_title, InvoicesActivity::class.java,
+            // Named "Invoice" since 4 Nov 2026: the owner could not find where to make one under "Documents".
+            Feature(R.drawable.ic_tile_invoice, R.string.coach_title_invoice, InvoicesActivity::class.java,
                 R.color.tile_invoice_bg),
             Feature(R.drawable.ic_tile_price_list, R.string.rate_list_title, RateListActivity::class.java,
                 R.color.tile_calc_bg),

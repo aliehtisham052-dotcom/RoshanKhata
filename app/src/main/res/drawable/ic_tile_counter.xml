@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home tile icon (4 Nov 2026): the counter's own cash register, two tones of the green its tile sits on.
+     Until then Counter sale borrowed ic_tile_invoice, so it and the invoice tile looked like one feature. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp"
+    android:height="26dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="@color/fi_green_a" android:pathData="M6,8h12l2,5H4z M3,13h18v6a2,2 0 0 1 -2,2H5a2,2 0 0 1 -2,-2z" />
+    <path android:fillColor="@color/fi_green_b" android:pathData="M7,2h7a1,1 0 0 1 1,1v3a1,1 0 0 1 -1,1H7a1,1 0 0 1 -1,-1V3a1,1 0 0 1 1,-1z M10,7h2v1h-2z M7,10h2v1.5H7z M11,10h2v1.5h-2z M15,10h2v1.5h-2z M7,16h10v1.5H7z" />
+</vector>

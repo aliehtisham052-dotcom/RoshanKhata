@@ -3818,6 +3818,7 @@
     <string name="doc_locked">This document was converted and cannot be changed; change the new one.</string>
     <string name="documents_title">Documents</string>
     <string name="doc_add">Add document</string>
+    <string name="doc_add_other">Other documents</string>
     <string name="doc_pick_kind">Which document?</string>
     <string name="order_paste">Paste a WhatsApp order</string>
     <string name="order_paste_empty">Copy the customer\'s order message first, then paste it here.</string>

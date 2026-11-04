@@ -47,7 +47,7 @@ object FeatureIntro {
         @DrawableRes val listIcon: Int,
         val steps: List<Step>
     ) {
-        COUNTER("counter", R.string.pos_title, R.string.intro_counter_body, R.color.tile_cashbook_bg, R.drawable.ic_tile_invoice, listOf(
+        COUNTER("counter", R.string.pos_title, R.string.intro_counter_body, R.color.tile_cashbook_bg, R.drawable.ic_tile_counter, listOf(
             Step(R.drawable.ic_tile_products, false, R.string.intro_counter_s1),
             Step(R.drawable.ic_people, true, R.string.intro_counter_s2),
             Step(R.drawable.ic_tile_cashbook, false, R.string.intro_counter_s3))),
@@ -197,7 +197,7 @@ object FeatureIntro {
     private fun Int.isTwoTone(): Boolean = this in TWO_TONE
 
     private val TWO_TONE = setOf(
-        R.drawable.ic_tile_invoice, R.drawable.ic_tile_cashbook, R.drawable.ic_tile_cheques,
+        R.drawable.ic_tile_invoice, R.drawable.ic_tile_counter, R.drawable.ic_tile_cashbook, R.drawable.ic_tile_cheques,
         R.drawable.ic_tile_plans, R.drawable.ic_tile_followup, R.drawable.ic_tile_backup,
         R.drawable.ic_tile_expiring
     )

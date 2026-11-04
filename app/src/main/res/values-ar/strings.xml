@@ -3830,6 +3830,7 @@
     <string name="doc_locked">تم تحويل هذا المستند ولا يمكن تغييره؛ غيّر المستند الجديد.</string>
     <string name="documents_title">المستندات</string>
     <string name="doc_add">إضافة مستند</string>
+    <string name="doc_add_other">مستندات أخرى</string>
     <string name="doc_pick_kind">أي مستند؟</string>
     <string name="order_paste">لصق طلب من واتساب</string>
     <string name="order_paste_empty">انسخ رسالة طلب الزبون أولاً، ثم الصقها هنا.</string>

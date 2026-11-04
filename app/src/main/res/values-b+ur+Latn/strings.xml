@@ -3606,6 +3606,7 @@
     <string name="doc_locked">Yeh document convert ho chuka hai aur badla nahi ja sakta; naya wala badlein.</string>
     <string name="documents_title">Documents</string>
     <string name="doc_add">Document shamil karein</string>
+    <string name="doc_add_other">Doosre documents</string>
     <string name="doc_pick_kind">Kaun si document?</string>
     <string name="order_paste">WhatsApp order paste karein</string>
     <string name="order_paste_empty">Pehle gahak ka order wala paigham copy karein, phir yahan paste karein.</string>

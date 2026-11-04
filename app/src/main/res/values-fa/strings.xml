@@ -3634,6 +3634,7 @@
     <string name="doc_locked">این سند تبدیل شده و قابل تغییر نیست؛ سند جدید را تغییر دهید.</string>
     <string name="documents_title">اسناد</string>
     <string name="doc_add">افزودن سند</string>
+    <string name="doc_add_other">اسناد دیگر</string>
     <string name="doc_pick_kind">کدام سند؟</string>
     <string name="order_paste">چسباندن سفارش واتس‌اپ</string>
     <string name="order_paste_empty">اول پیام سفارش مشتری را کپی کنید، سپس اینجا بچسبانید.</string>

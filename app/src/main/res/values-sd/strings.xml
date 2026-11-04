@@ -3634,6 +3634,7 @@
     <string name="doc_locked">هي دستاويز تبديل ٿي چڪو آهي ۽ بدلائي نٿو سگهجي؛ نئون بدلايو.</string>
     <string name="documents_title">دستاويز</string>
     <string name="doc_add">دستاويز شامل ڪريو</string>
+    <string name="doc_add_other">ٻيا دستاويز</string>
     <string name="doc_pick_kind">ڪهڙو دستاويز؟</string>
     <string name="order_paste">واٽس ايپ آرڊر پيسٽ ڪريو</string>
     <string name="order_paste_empty">پهريان گراهڪ جو آرڊر وارو پيغام ڪاپي ڪريو، پوءِ هتي پيسٽ ڪريو.</string>
