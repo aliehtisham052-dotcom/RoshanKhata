@@ -56,6 +56,25 @@ define('DAY_BYTES', limit('DAY_BYTES', 32 * 1048576));          // bytes one boo
 define('MAX_STORE_BYTES', limit('MAX_STORE_BYTES', 1073741824)); // all books' files together
 define('DEVICE_IDLE_MS', limit('DEVICE_IDLE_MS', 30 * 86400000)); // a device not seen this long goes
 define('SWEEP_EVERY', 6 * 3600);                                 // seconds between idle-book sweeps
+// Waris ki Chaabi (heir access, 4 Nov 2026): one SQLite per vault in $store/waris/, never touched by the books'
+// sweeps (they read only $store/*.sqlite); counted in MAX_STORE_BYTES with the books.
+define('WARIS_DAY_MS', waris_day());                             // one DAY; only the server's environment changes it
+define('WARIS_CHUNK', 524288);                                   // bytes of one snapshot chunk
+define('WARIS_SNAP', 8388608);                                   // bytes of one snapshot version, all chunks
+define('WARIS_MAX_N', 16);                                       // chunks of one version
+define('WARIS_HEIRS', 5);                                        // heirs of one vault
+define('WARIS_BOX', 4096);                                       // base64 characters of one heir's key box
+define('WARIS_IDLE_DAYS', 1095);                                 // a vault nobody called this long may go
+define('MAX_VAULTS', limit('MAX_VAULTS', 2000));                 // vaults on this server
+
+/** DAY for the Waris wait: WARIS_DAY_MS from the server's environment (the tests), else 86,400,000. */
+function waris_day() {
+    foreach (['WARIS_DAY_MS', 'RK_RELAY_WARIS_DAY_MS'] as $n) {
+        $v = getenv($n);
+        if ($v !== false && ctype_digit($v) && (int)$v > 0) return (int)$v;
+    }
+    return 86400000;
+}
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -172,7 +191,10 @@ function store_bytes($store, $fresh = false) {
         if (ctype_digit($v)) return (int)$v;
     }
     $n = 0;
-    foreach (glob($store . '/*.sqlite*') ?: [] as $x) { $z = @filesize($x); if ($z !== false) $n += $z; }
+    // The books' files and the Waris vaults' files (waris/) together: both are on the account's quota.
+    foreach (array_merge(glob($store . '/*.sqlite*') ?: [], glob($store . '/waris/*.sqlite*') ?: []) as $x) {
+        $z = @filesize($x); if ($z !== false) $n += $z;
+    }
     @file_put_contents($f, (string)$n, LOCK_EX);
     return $n;
 }
@@ -259,6 +281,14 @@ function sweep_idle($store, $now, $force = false) {
             @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
         }
     }
+    // Waris vaults are never a book's: only a vault with no owner or heir call for WARIS_IDLE_DAYS goes (every
+    // call writes the vault's file, so its time is the last call's).
+    foreach (glob($store . '/waris/w-*.sqlite') ?: [] as $f) {
+        $m = @filemtime($f);
+        if ($m !== false && ($now / 1000) - $m > WARIS_IDLE_DAYS * 86400) {
+            @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
+        }
+    }
     store_bytes($store, true);
 }
 
@@ -278,6 +308,290 @@ function new_books_today($store) {
     return $n;
 }
 
+// ---------------------------------------------------------------- Waris ki Chaabi (heir access, 4 Nov 2026)
+
+/** A vault's SQLite in $store/waris/ (the books' sweeps and counts read only $store/*.sqlite), made only when $create. */
+function w_open($store, $vault, $create) {
+    $dir = $store . '/waris';
+    if (!is_dir($dir)) @mkdir($dir, 0700, true);
+    $file = $dir . '/w-' . $vault . '.sqlite';
+    if (!$create && !file_exists($file)) return null;
+    $db = new PDO('sqlite:' . $file, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 10]);
+    $db->exec('PRAGMA journal_mode = WAL');
+    $db->exec('PRAGMA synchronous = NORMAL');
+    $db->exec('CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)');
+    $db->exec('CREATE TABLE IF NOT EXISTS heirs (hid TEXT PRIMARY KEY, pass TEXT NOT NULL, box TEXT NOT NULL,
+        wait INTEGER NOT NULL, last_seen INTEGER, asked_at INTEGER, rejected_at INTEGER, allowed_at INTEGER)');
+    $db->exec('CREATE TABLE IF NOT EXISTS chunks (v INTEGER NOT NULL, i INTEGER NOT NULL, n INTEGER NOT NULL,
+        body BLOB NOT NULL, PRIMARY KEY (v, i))');
+    return $db;
+}
+
+function w_int_or_null($x) { return $x === null ? null : (int)$x; }
+
+/** openAt: allowedAt if set, else askedAt + wait x DAY if asked, else null. */
+function w_open_at($h) {
+    if ($h['allowed_at'] !== null) return (int)$h['allowed_at'];
+    if ($h['asked_at'] !== null) return (int)$h['asked_at'] + (int)$h['wait'] * WARIS_DAY_MS;
+    return null;
+}
+function w_is_open($h, $now) {
+    if ($h['allowed_at'] !== null) return true;
+    return $h['asked_at'] !== null && $now >= (int)$h['asked_at'] + (int)$h['wait'] * WARIS_DAY_MS;
+}
+
+/** The current complete snapshot, or null. */
+function w_snap($db) {
+    $v = meta($db, 'snap_v');
+    if ($v === null) return null;
+    return ['v' => (int)$v, 'n' => (int)meta($db, 'snap_n'), 'bytes' => (int)meta($db, 'snap_bytes'), 'at' => (int)meta($db, 'snap_at')];
+}
+
+/** A small JSON body (at most $cap bytes), or null. */
+function w_json_in($cap) {
+    $len = isset($_SERVER['CONTENT_LENGTH']) ? (int)$_SERVER['CONTENT_LENGTH'] : -1;
+    if ($len > $cap) return null;
+    $raw = file_get_contents('php://input', false, null, 0, $cap + 1);
+    if ($raw === false || strlen($raw) > $cap) return null;
+    $o = json_decode($raw, true);
+    return is_array($o) ? $o : null;
+}
+
+/** A query parameter that must be a plain non-negative integer, else null. */
+function w_q($name) {
+    $v = $_GET[$name] ?? null;
+    return (is_string($v) && $v !== '' && strlen($v) <= 12 && ctype_digit($v)) ? (int)$v : null;
+}
+
+/** The 12 Waris routes (WARIS protocol v1) under /v1/w/<vault>. Every answer ends the request. */
+function waris($store, $rest) {
+    $method = $_SERVER['REQUEST_METHOD'] ?? '';
+    if (!preg_match('#^/([^/]+)(?:/(.*))?$#', $rest, $m)) refuse(404, 'no-such-path');
+    $vault = $m[1];
+    $tail = rtrim($m[2] ?? '', '/');
+    $hid = null;
+    $routes = [
+        '' => ['DELETE' => 'vault-delete'], 'setup' => ['POST' => 'setup'], 'snap' => ['PUT' => 'snap'],
+        'status' => ['GET' => 'status'],
+    ];
+    if (isset($routes[$tail])) {
+        $byMethod = $routes[$tail];
+    } elseif (preg_match('#^heir/([^/]+)(?:/(reject|allow|ask|alive|open|snap))?$#', $tail, $hm)) {
+        $hid = $hm[1];
+        $sub = $hm[2] ?? '';
+        $byMethod = $sub === '' ? ['PUT' => 'heir-put', 'DELETE' => 'heir-delete']
+            : [($sub === 'open' || $sub === 'snap') ? 'GET' : 'POST' => ($sub === 'snap' ? 'heir-snap' : $sub)];
+    } else {
+        refuse(404, 'no-such-path');
+    }
+    if (!isset($byMethod[$method])) refuse(405, 'method');
+    $route = $byMethod[$method];
+    if (!preg_match('/^[0-9a-f]{32}$/', $vault)) refuse(400, 'bad');
+    if ($hid !== null && !preg_match('/^[0-9a-f]{16}$/', $hid)) refuse(400, 'bad');
+    $token = trim(header_value('X-RK-Pass'));
+    if ($token === '') {
+        $auth = header_value('Authorization');
+        if (strncmp($auth, 'RK ', 3) === 0) $token = trim(substr($auth, 3));
+    }
+    if (!preg_match('/^[0-9a-f]{64}$/', $token)) refuse(403, 'pass');
+    $hash = hash('sha256', $token);
+    $now = (int)floor(microtime(true) * 1000);
+    $heirRoute = in_array($route, ['ask', 'alive', 'open', 'heir-snap'], true);
+
+    $db = null;
+    try {
+        $db = w_open($store, $vault, false);
+        if ($db === null) {
+            if ($route !== 'setup') refuse(404, 'unknown');
+            // A new vault is taken only while the server has room (vaults and books share the store's bytes).
+            if (count(glob($store . '/waris/w-*.sqlite') ?: []) >= MAX_VAULTS) refuse(507, 'full');
+            if (store_bytes($store) >= MAX_STORE_BYTES) refuse(507, 'full');
+            $free = @disk_free_space($store);
+            if ($free !== false && $free < MIN_FREE) refuse(507, 'full');
+            $db = w_open($store, $vault, true);
+        }
+        $db->exec('BEGIN IMMEDIATE');
+        $no = function ($code, $body) use ($db) {
+            try { $db->exec('ROLLBACK'); } catch (Throwable $_) {}
+            answer($code, ['ok' => false] + $body);
+        };
+        $done = function ($body, $code = 200) use ($db) {
+            $db->exec('COMMIT');
+            answer($code, ['ok' => true] + $body);
+        };
+        $owner = meta($db, 'pass');
+        if ($route === 'setup') {
+            if ($owner === null) {
+                set_meta($db, 'pass', $hash);
+                set_meta($db, 'created', $now);
+                set_meta($db, 'last_owner', $now);
+                $done(['created' => true]);
+            }
+            if (!hash_equals($owner, $hash)) $no(403, ['why' => 'pass']);
+            set_meta($db, 'last_owner', $now);
+            $done(['created' => false]);
+        }
+        // A file left by a setup that never finished is no vault.
+        if ($owner === null) $no(404, ['why' => 'unknown']);
+        $heir = null;
+        if ($hid !== null) {
+            $s = $db->prepare('SELECT * FROM heirs WHERE hid = ?');
+            $s->execute([$hid]);
+            $heir = $s->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+        if ($heirRoute) {
+            if ($heir === null) $no(404, ['why' => 'unknown']);
+            if (!hash_equals($heir['pass'], $hash)) $no(403, ['why' => 'pass']);
+            // Every heir call: that heir's lastSeen.
+            $db->prepare('UPDATE heirs SET last_seen = ? WHERE hid = ?')->execute([$now, $hid]);
+            $heir['last_seen'] = $now;
+        } else {
+            if (!hash_equals($owner, $hash)) $no(403, ['why' => 'pass']);
+            if ($hid !== null && $heir === null && $route !== 'heir-put') $no(404, ['why' => 'unknown']);
+            set_meta($db, 'last_owner', $now);
+        }
+
+        switch ($route) {
+            case 'snap': {
+                $v = w_q('v'); $i = w_q('i'); $n = w_q('n');
+                if ($v === null || $i === null || $n === null || $v < 1 || $n < 1 || $n > WARIS_MAX_N || $i >= $n) $no(400, ['why' => 'bad']);
+                $len = isset($_SERVER['CONTENT_LENGTH']) ? (int)$_SERVER['CONTENT_LENGTH'] : -1;
+                if ($len > WARIS_CHUNK) $no(413, ['why' => 'too-big']);
+                $body = file_get_contents('php://input', false, null, 0, WARIS_CHUNK + 1);
+                if ($body === false || $body === '') $no(400, ['why' => 'bad']);
+                $len = strlen($body);
+                if ($len > WARIS_CHUNK) $no(413, ['why' => 'too-big']);
+                $cur = w_snap($db);
+                $curV = $cur === null ? 0 : $cur['v'];
+                if ($v < $curV) $no(409, ['why' => 'old']);
+                if ($v === $curV && $n !== $cur['n']) $no(400, ['why' => 'bad']);
+                // Any other unfinished version is abandoned (the owner sends one version at a time), and so are
+                // this version's chunks of another count.
+                $db->prepare('DELETE FROM chunks WHERE v != ? AND v != ?')->execute([$v, $curV]);
+                $db->prepare('DELETE FROM chunks WHERE v = ? AND n != ?')->execute([$v, $n]);
+                $mine = (int)one($db, 'SELECT COALESCE(SUM(length(body)), 0) FROM chunks WHERE v = ? AND i != ?', [$v, $i]);
+                if ($mine + $len > WARIS_SNAP) $no(413, ['why' => 'too-big']);
+                $all = (int)one($db, 'SELECT COALESCE(SUM(length(body)), 0) FROM chunks WHERE NOT (v = ? AND i = ?)', [$v, $i]);
+                if ($all + $len > 2 * WARIS_SNAP) $no(413, ['why' => 'too-big']);
+                $free = @disk_free_space($store);
+                if (($free !== false && $free < MIN_FREE) || store_bytes($store) + $len > MAX_STORE_BYTES) $no(507, ['why' => 'full']);
+                $s = $db->prepare('INSERT OR REPLACE INTO chunks (v, i, n, body) VALUES (?, ?, ?, ?)');
+                $s->bindValue(1, $v, PDO::PARAM_INT);
+                $s->bindValue(2, $i, PDO::PARAM_INT);
+                $s->bindValue(3, $n, PDO::PARAM_INT);
+                $s->bindValue(4, $body, PDO::PARAM_LOB);
+                $s->execute();
+                $complete = (int)one($db, 'SELECT COUNT(*) FROM chunks WHERE v = ?', [$v]) === $n;
+                if ($complete) {
+                    set_meta($db, 'snap_v', $v);
+                    set_meta($db, 'snap_n', $n);
+                    set_meta($db, 'snap_bytes', (int)one($db, 'SELECT SUM(length(body)) FROM chunks WHERE v = ?', [$v]));
+                    set_meta($db, 'snap_at', $now);
+                    $db->prepare('DELETE FROM chunks WHERE v != ?')->execute([$v]);
+                }
+                $db->exec('COMMIT');
+                store_grew($store, $len);
+                answer(200, ['ok' => true, 'complete' => $complete]);
+            }
+            case 'heir-put': {
+                $o = w_json_in(16384);
+                $ph = is_array($o) ? ($o['passHash'] ?? null) : null;
+                $box = is_array($o) ? ($o['box'] ?? null) : null;
+                $wait = is_array($o) ? ($o['wait'] ?? null) : null;
+                if (!is_string($ph) || !preg_match('/^[0-9a-f]{64}$/', $ph)
+                    || !is_string($box) || $box === '' || strlen($box) > WARIS_BOX || !preg_match('#^[A-Za-z0-9+/]+={0,2}$#', $box)
+                    || !is_int($wait) || $wait < 1 || $wait > 90) $no(400, ['why' => 'bad']);
+                if ($heir === null) {
+                    if ((int)one($db, 'SELECT COUNT(*) FROM heirs') >= WARIS_HEIRS) $no(409, ['why' => 'full']);
+                    $db->prepare('INSERT INTO heirs (hid, pass, box, wait) VALUES (?, ?, ?, ?)')->execute([$hid, $ph, $box, $wait]);
+                } elseif (hash_equals($heir['pass'], $ph)) {
+                    $db->prepare('UPDATE heirs SET box = ?, wait = ? WHERE hid = ?')->execute([$box, $wait, $hid]);
+                } else {
+                    $db->prepare('UPDATE heirs SET pass = ?, box = ?, wait = ?, last_seen = NULL, asked_at = NULL,
+                        rejected_at = NULL, allowed_at = NULL WHERE hid = ?')->execute([$ph, $box, $wait, $hid]);
+                }
+                $done([]);
+            }
+            case 'heir-delete': {
+                $db->prepare('DELETE FROM heirs WHERE hid = ?')->execute([$hid]);
+                $done([]);
+            }
+            case 'status': {
+                $rows = $db->query('SELECT * FROM heirs ORDER BY hid')->fetchAll(PDO::FETCH_ASSOC);
+                $heirs = array_map(function ($h) {
+                    return ['hid' => $h['hid'], 'wait' => (int)$h['wait'], 'lastSeen' => w_int_or_null($h['last_seen']),
+                        'askedAt' => w_int_or_null($h['asked_at']), 'rejectedAt' => w_int_or_null($h['rejected_at']),
+                        'allowedAt' => w_int_or_null($h['allowed_at']), 'openAt' => w_open_at($h)];
+                }, $rows);
+                $done(['now' => $now, 'snap' => w_snap($db), 'heirs' => $heirs]);
+            }
+            case 'reject': {
+                $db->prepare('UPDATE heirs SET asked_at = NULL, allowed_at = NULL, rejected_at = ? WHERE hid = ?')->execute([$now, $hid]);
+                $done([]);
+            }
+            case 'allow': {
+                $db->prepare('UPDATE heirs SET allowed_at = ?, asked_at = COALESCE(asked_at, ?) WHERE hid = ?')->execute([$now, $now, $hid]);
+                $done([]);
+            }
+            case 'ask': {
+                if ($heir['asked_at'] === null) {
+                    if ($heir['rejected_at'] !== null && $now - (int)$heir['rejected_at'] < WARIS_DAY_MS) {
+                        // The heir's lastSeen is still written: a refused ask is a sign of life too.
+                        $db->exec('COMMIT');
+                        answer(429, ['ok' => false, 'why' => 'wait', 'retryAt' => (int)$heir['rejected_at'] + WARIS_DAY_MS]);
+                    }
+                    $db->prepare('UPDATE heirs SET asked_at = ? WHERE hid = ?')->execute([$now, $hid]);
+                    $heir['asked_at'] = $now;
+                }
+                $done(['askedAt' => (int)$heir['asked_at'], 'openAt' => w_open_at($heir)]);
+            }
+            case 'alive': {
+                $done(['askedAt' => w_int_or_null($heir['asked_at']), 'openAt' => w_open_at($heir),
+                    'rejectedAt' => w_int_or_null($heir['rejected_at']), 'open' => w_is_open($heir, $now)]);
+            }
+            case 'open': {
+                if (!w_is_open($heir, $now)) {
+                    $db->exec('COMMIT');
+                    answer(403, ['ok' => false, 'why' => 'waiting', 'openAt' => w_open_at($heir)]);
+                }
+                $done(['box' => $heir['box'], 'snap' => w_snap($db)]);
+            }
+            case 'heir-snap': {
+                if (!w_is_open($heir, $now)) {
+                    $db->exec('COMMIT');
+                    answer(403, ['ok' => false, 'why' => 'waiting', 'openAt' => w_open_at($heir)]);
+                }
+                $v = w_q('v'); $i = w_q('i');
+                if ($v === null || $i === null) { $db->exec('COMMIT'); answer(400, ['ok' => false, 'why' => 'bad']); }
+                $cur = w_snap($db);
+                $body = false;
+                if ($cur !== null && $cur['v'] === $v) $body = one($db, 'SELECT body FROM chunks WHERE v = ? AND i = ?', [$v, $i]);
+                $db->exec('COMMIT');
+                if ($body === false || $body === null) answer(404, ['ok' => false, 'why' => 'absent']);
+                if (is_resource($body)) $body = stream_get_contents($body);
+                http_response_code(200);
+                header('Content-Type: application/octet-stream');
+                header('Content-Length: ' . strlen($body));
+                echo $body;
+                exit;
+            }
+            case 'vault-delete': {
+                $db->exec('COMMIT');
+                $db = null;
+                $f = $store . '/waris/w-' . $vault . '.sqlite';
+                @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
+                store_bytes($store, true);
+                answer(200, ['ok' => true]);
+            }
+        }
+        $no(404, ['why' => 'no-such-path']);
+    } catch (Throwable $e) {
+        error_log('rk-relay waris: ' . $e->getMessage());
+        if ($db instanceof PDO) { try { $db->exec('ROLLBACK'); } catch (Throwable $_) {} }
+        refuse(500, 'server');
+    }
+}
+
 $store = store_dir();
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $halted = file_exists($store . '/halt');
@@ -288,6 +602,7 @@ if (preg_match('#/v1/health$#', $path)) {
     answer(200, ['ok' => true, 'live' => !$halted, 'push' => false]);
 }
 if ($halted) refuse(503, 'halted');
+if (preg_match('#/v1/w(/.*)?$#', $path, $wm)) waris($store, $wm[1] ?? '');
 if (!preg_match('#/v1/b/([0-9a-f]{32})/(hello|send|take|ack|wake|leave|round)$#', $path, $m)) refuse(404, 'no-such-path');
 $book = $m[1];
 $action = $m[2];

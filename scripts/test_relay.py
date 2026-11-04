@@ -22,6 +22,9 @@ run them against a deployed relay, whose limits are the real ones):
     --idle   a device not seen for 1.5 s is let go (RK_RELAY_DEVICE_IDLE_MS=1500,
              RK_DEVICE_IDLE_MS=1500; the Worker: --var DEVICE_IDLE_MS:1500
              PRUNE_EVERY_MS:1000, its alarm does it)
+    --waris  only the Waris ki Chaabi checks (they also run at the end of the plain run). Its one real-wait
+             check runs only when the relay's DAY is short: WARIS_DAY_MS in the relay's environment (PHP and
+             Supabase: WARIS_DAY_MS=2000; the Worker: --var WARIS_DAY_MS:2000); else it says so and is skipped.
     --store  the whole store (every book together) holds about 300,000 bytes
              (PHP: RK_RELAY_MAX_STORE_BYTES=300000; Supabase: RK_STORE_BYTES=300000;
              the Worker: --var ACCOUNT_BYTES:300000). Each relay counts in its own
@@ -252,7 +255,238 @@ def store():
     check("once the full book went, a new book is taken again", s == 200, (s, o))
 
 
+def wcall(method, path, token=None, body=None, raw=False):
+    """A Waris call (the pass in both headers); raw=True gives the answer's bytes and content type for a chunk."""
+    headers = {}
+    if token is not None:
+        headers["Authorization"] = "RK " + token
+        headers["X-RK-Pass"] = token
+    data = None
+    if isinstance(body, bytes):
+        data = body
+        headers["Content-Type"] = "application/octet-stream"
+    elif body is not None:
+        data = json.dumps(body).encode()
+        headers["Content-Type"] = "application/json"
+    STEP[0] = "%s %s (%d bytes)" % (method, path, len(data or b""))
+    req = urllib.request.Request(BASE + path, data=data, method=method, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            got = r.read()
+            if raw:
+                return r.status, got, r.headers.get("Content-Type", "")
+            return r.status, json.loads(got or b"null")
+    except urllib.error.HTTPError as e:
+        got = e.read()
+        try:
+            o = json.loads(got)
+        except ValueError:
+            o = {"raw": got[:200].decode("latin-1")}
+        return (e.code, o, "") if raw else (e.code, o)
+
+
+def waris():
+    """Waris ki Chaabi (heir access, protocol v1, 4 Nov 2026): the 12 routes under /v1/w/<vault>.
+
+    Safe against a deployed relay (one fresh vault, deleted at the end). The real-wait check runs only when the
+    relay's DAY is short (WARIS_DAY_MS in the test environment, read back from openAt - askedAt); else it is skipped.
+    """
+    import hashlib
+    sha = lambda t: hashlib.sha256(t.encode()).hexdigest()
+    vault = secrets.token_hex(16)
+    w = "/v1/w/" + vault
+    owner = secrets.token_hex(32)
+    h1, h2 = secrets.token_hex(8), secrets.token_hex(8)
+    p1, p2 = secrets.token_hex(32), secrets.token_hex(32)
+    box1 = base64.b64encode(os.urandom(120)).decode()
+    box2 = base64.b64encode(os.urandom(90)).decode()
+
+    s, o = wcall("GET", w + "/status", owner)
+    check("waris: an unknown vault is 404 unknown", s == 404 and o.get("why") == "unknown", (s, o))
+    s, o = wcall("POST", w + "/setup", owner)
+    check("waris: setup makes the vault", s == 200 and o.get("ok") is True and o.get("created") is True, (s, o))
+    s, o = wcall("POST", w + "/setup", owner)
+    check("waris: setup again with the same pass", s == 200 and o.get("created") is False, (s, o))
+    s, o = wcall("POST", w + "/setup", secrets.token_hex(32))
+    check("waris: setup with a wrong pass is refused", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("GET", w + "/status")
+    check("waris: no pass is refused", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("GET", "/v1/w/NOTHEX" + "0" * 26 + "/status", owner)
+    check("waris: a bad vault id is 400", s == 400 and o.get("why") == "bad", (s, o))
+    s, o = wcall("PUT", w + "/heir/xyz", owner, {"passHash": sha(p1), "box": box1, "wait": 1})
+    check("waris: a bad heir id is 400", s == 400 and o.get("why") == "bad", (s, o))
+
+    s, o = wcall("GET", w + "/status", owner)
+    check("waris: a new vault's status", s == 200 and o.get("snap") is None and o.get("heirs") == [] and isinstance(o.get("now"), int), (s, o))
+
+    # The snapshot: three chunks of version 1, byte for byte.
+    parts = [os.urandom(524288), os.urandom(300000), os.urandom(7)]
+    for i, part in enumerate(parts):
+        s, o = wcall("PUT", w + "/snap?v=1&i=%d&n=3" % i, owner, part)
+        check("waris: snap chunk %d of 3 is taken" % i, s == 200 and o.get("complete") is (i == 2), (s, o))
+    s, o = wcall("GET", w + "/status", owner)
+    snap = o.get("snap") or {}
+    check("waris: the complete version is the snapshot",
+          snap.get("v") == 1 and snap.get("n") == 3 and snap.get("bytes") == sum(map(len, parts)) and isinstance(snap.get("at"), int), o)
+    s, o = wcall("PUT", w + "/snap?v=1&i=0&n=1", owner, b"x" * 524289)
+    check("waris: a chunk over 512 KiB is refused too-big", s == 413 and o.get("why") == "too-big", (s, o))
+    s, o = wcall("PUT", w + "/snap?v=1&i=3&n=3", owner, b"x")
+    check("waris: a chunk index past n is 400", s == 400 and o.get("why") == "bad", (s, o))
+    s, o = wcall("PUT", w + "/snap?v=0&i=0&n=1", owner, b"x")
+    check("waris: version 0 is 400", s == 400 and o.get("why") == "bad", (s, o))
+    s, o = wcall("PUT", w + "/snap?v=2&i=0&n=17", owner, b"x")
+    check("waris: more than 16 chunks is 400", s == 400 and o.get("why") == "bad", (s, o))
+    # The largest version there may be: 16 chunks of 512 KiB, exactly 8 MiB (each chunk is at most 512 KiB and a
+    # version at most 16 chunks, so the 8 MiB sum is met exactly, never passed).
+    went = None
+    for i in range(16):
+        s, o = wcall("PUT", w + "/snap?v=5&i=%d&n=16" % i, owner, bytes([i]) * 524288)
+        if s != 200:
+            went = (i, s, o)
+            break
+    check("waris: 16 chunks of 512 KiB (8 MiB) make a version", went is None and o.get("complete") is True, (went, o))
+    s, o = wcall("GET", w + "/status", owner)
+    check("waris: which replaces version 1", (o.get("snap") or {}).get("v") == 5 and (o.get("snap") or {}).get("bytes") == 8388608, o)
+    s, o = wcall("PUT", w + "/snap?v=7&i=0&n=2", owner, b"half")
+    check("waris: half a new version is not complete", s == 200 and o.get("complete") is False, (s, o))
+    s, o = wcall("GET", w + "/status", owner)
+    check("waris: and the complete one stays the snapshot", (o.get("snap") or {}).get("v") == 5, o)
+
+    # A smaller final snapshot for the heirs: version 9, 3 chunks; it replaces 5, and 5's and 7's chunks go.
+    for i, part in enumerate(parts):
+        s, o = wcall("PUT", w + "/snap?v=9&i=%d&n=3" % i, owner, part)
+    check("waris: a higher version replaces the old one", s == 200 and o.get("complete") is True, (s, o))
+    s, o = wcall("PUT", w + "/snap?v=8&i=0&n=1", owner, b"late")
+    check("waris: an older version is refused old", s == 409 and o.get("why") == "old", (s, o))
+
+    # Heirs.
+    s, o = wcall("PUT", w + "/heir/" + h1, owner, {"passHash": sha(p1), "box": box1, "wait": 1})
+    check("waris: an heir is put", s == 200 and o.get("ok") is True, (s, o))
+    s, o = wcall("PUT", w + "/heir/" + h2, owner, {"passHash": sha(p2), "box": box2, "wait": 90})
+    check("waris: a second heir is put", s == 200, (s, o))
+    s, o = wcall("PUT", w + "/heir/" + h2, owner, {"passHash": sha(p2), "box": box2, "wait": 91})
+    check("waris: a wait over 90 days is 400", s == 400 and o.get("why") == "bad", (s, o))
+    s, o = wcall("PUT", w + "/heir/" + h2, owner, {"passHash": "zz", "box": box2, "wait": 3})
+    check("waris: a bad passHash is 400", s == 400 and o.get("why") == "bad", (s, o))
+    s, o = wcall("PUT", w + "/heir/" + h2, owner, {"passHash": sha(p2), "box": "A" * 4100, "wait": 3})
+    check("waris: a box over 4096 characters is 400", s == 400 and o.get("why") == "bad", (s, o))
+    extra = [secrets.token_hex(8) for _ in range(3)]
+    for x in extra:
+        wcall("PUT", w + "/heir/" + x, owner, {"passHash": sha(secrets.token_hex(32)), "box": box2, "wait": 2})
+    s, o = wcall("PUT", w + "/heir/" + secrets.token_hex(8), owner, {"passHash": sha(p2), "box": box2, "wait": 2})
+    check("waris: a sixth heir is refused full", s == 409 and o.get("why") == "full", (s, o))
+    s, o = wcall("PUT", w + "/heir/" + extra[0], owner, {"passHash": sha(secrets.token_hex(32)), "box": box2, "wait": 3})
+    check("waris: a known heir may still be replaced at five", s == 200, (s, o))
+    for x in extra:
+        wcall("DELETE", w + "/heir/" + x, owner)
+
+    s, o = wcall("GET", w + "/status", owner)
+    heirs = {x.get("hid"): x for x in o.get("heirs", [])}
+    keys = {"hid", "wait", "lastSeen", "askedAt", "rejectedAt", "allowedAt", "openAt"}
+    check("waris: status lists the heirs with every field", s == 200 and set(heirs) == {h1, h2}
+          and all(set(x) >= keys for x in heirs.values()) and heirs[h1]["wait"] == 1 and heirs[h1]["askedAt"] is None
+          and heirs[h1]["openAt"] is None, o)
+
+    # Passes do not cross: an heir cannot act as the owner, nor the owner as an heir.
+    s, o = wcall("GET", w + "/status", p1)
+    check("waris: an heir's pass cannot read the status", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/allow", p1)
+    check("waris: nor allow itself", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/ask", owner)
+    check("waris: the owner's pass cannot ask as an heir", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/ask", p2)
+    check("waris: nor another heir's pass", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("POST", w + "/heir/" + secrets.token_hex(8) + "/ask", p1)
+    check("waris: an unknown heir is 404 unknown", s == 404 and o.get("why") == "unknown", (s, o))
+    s, o = wcall("POST", "/v1/w/" + secrets.token_hex(16) + "/heir/" + h1 + "/ask", p1)
+    check("waris: an heir of an unknown vault is 404 unknown", s == 404 and o.get("why") == "unknown", (s, o))
+
+    # Ask, wait, reject, ask again too soon.
+    s, o = wcall("POST", w + "/heir/" + h1 + "/alive", p1)
+    check("waris: alive before asking", s == 200 and o.get("askedAt") is None and o.get("open") is False and o.get("openAt") is None, (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/ask", p1)
+    asked = o.get("askedAt")
+    check("waris: an heir asks", s == 200 and isinstance(asked, int) and isinstance(o.get("openAt"), int) and o["openAt"] > asked, (s, o))
+    day = (o.get("openAt", 0) - (asked or 0))  # wait is 1 day for this heir
+    s, o = wcall("POST", w + "/heir/" + h1 + "/ask", p1)
+    check("waris: asking again changes nothing", s == 200 and o.get("askedAt") == asked, (s, o))
+    s, o = wcall("GET", w + "/status", owner)
+    x = {y["hid"]: y for y in o.get("heirs", [])}.get(h1, {})
+    check("waris: the status shows askedAt and openAt", x.get("askedAt") == asked and x.get("openAt") == asked + day
+          and isinstance(x.get("lastSeen"), int), x)
+    s, o = wcall("GET", w + "/heir/" + h1 + "/open", p1)
+    check("waris: open before the wait is 403 waiting", s == 403 and o.get("why") == "waiting" and o.get("openAt") == asked + day, (s, o))
+    s, b, ct = wcall("GET", w + "/heir/" + h1 + "/snap?v=9&i=0", p1, raw=True)
+    check("waris: a chunk before the wait is 403", s == 403, (s, b))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/reject", owner)
+    check("waris: the owner rejects", s == 200 and o.get("ok") is True, (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/alive", p1)
+    check("waris: alive says rejected", s == 200 and o.get("askedAt") is None and isinstance(o.get("rejectedAt"), int) and o.get("open") is False, (s, o))
+    rejected = o.get("rejectedAt")
+    s, o = wcall("POST", w + "/heir/" + h1 + "/ask", p1)
+    check("waris: asking again within a day is 429 wait", s == 429 and o.get("why") == "wait"
+          and o.get("retryAt") == (rejected or 0) + day, (s, o))
+
+    # Allow: open, the box and the snapshot, each chunk byte for byte.
+    s, o = wcall("POST", w + "/heir/" + h1 + "/allow", owner)
+    check("waris: the owner allows", s == 200, (s, o))
+    s, o = wcall("GET", w + "/heir/" + h1 + "/open", p1)
+    sn = o.get("snap") or {}
+    check("waris: open gives the box and the snapshot", s == 200 and o.get("box") == box1 and sn.get("v") == 9
+          and sn.get("n") == 3 and sn.get("bytes") == sum(map(len, parts)), (s, o))
+    same = True
+    for i, part in enumerate(parts):
+        s, b, ct = wcall("GET", w + "/heir/" + h1 + "/snap?v=9&i=%d" % i, p1, raw=True)
+        same = same and s == 200 and b == part and ct.startswith("application/octet-stream")
+    check("waris: each chunk comes back byte for byte", same, (s, ct))
+    s, o, _ = wcall("GET", w + "/heir/" + h1 + "/snap?v=5&i=0", p1, raw=True)
+    check("waris: a chunk of an old version is 404 absent", s == 404 and o.get("why") == "absent", (s, o))
+    s, o, _ = wcall("GET", w + "/heir/" + h1 + "/snap?v=9&i=5", p1, raw=True)
+    check("waris: a chunk that is not there is 404 absent", s == 404 and o.get("why") == "absent", (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/alive", p1)
+    check("waris: alive says open", s == 200 and o.get("open") is True and isinstance(o.get("openAt"), int), (s, o))
+
+    # Same passHash keeps the heir's state; a new one resets it.
+    s, o = wcall("PUT", w + "/heir/" + h1, owner, {"passHash": sha(p1), "box": box2, "wait": 1})
+    s, o = wcall("GET", w + "/heir/" + h1 + "/open", p1)
+    check("waris: a re-put with the same pass keeps the heir allowed, with the new box", s == 200 and o.get("box") == box2, (s, o))
+    s, o = wcall("PUT", w + "/heir/" + h1, owner, {"passHash": sha(p2), "box": box1, "wait": 1})
+    s, o = wcall("GET", w + "/status", owner)
+    x = {y["hid"]: y for y in o.get("heirs", [])}.get(h1, {})
+    check("waris: a re-put with a new pass resets its state", x.get("allowedAt") is None and x.get("askedAt") is None
+          and x.get("rejectedAt") is None and x.get("lastSeen") is None, x)
+    s, o = wcall("POST", w + "/heir/" + h1 + "/ask", p1)
+    check("waris: the old heir pass no longer works", s == 403 and o.get("why") == "pass", (s, o))
+
+    # A real wait: when the relay's DAY is short (the test environment), ask, sleep past wait x DAY, open.
+    if 0 < day <= 10_000:
+        s, o = wcall("POST", w + "/heir/" + h1 + "/ask", p2)
+        time.sleep(day / 1000.0 + 0.8)
+        s, o = wcall("GET", w + "/heir/" + h1 + "/open", p2)
+        check("waris: after the wait the heir opens without the owner", s == 200 and o.get("box") == box1
+              and (o.get("snap") or {}).get("v") == 9, (s, o))
+    else:
+        print("--   waris: DAY is %d ms here; the real-wait check needs WARIS_DAY_MS (tests only)" % day)
+
+    s, o = wcall("DELETE", w + "/heir/" + h2, owner)
+    check("waris: an heir is deleted", s == 200 and o.get("ok") is True, (s, o))
+    s, o = wcall("POST", w + "/heir/" + h2 + "/alive", p2)
+    check("waris: a deleted heir is 404 unknown", s == 404 and o.get("why") == "unknown", (s, o))
+    s, o = wcall("DELETE", w + "/heir/" + h2, owner)
+    check("waris: deleting it again is 404 unknown", s == 404 and o.get("why") == "unknown", (s, o))
+    s, o = wcall("DELETE", w, p2)
+    check("waris: a wrong pass cannot delete the vault", s == 403 and o.get("why") == "pass", (s, o))
+    s, o = wcall("DELETE", w, owner)
+    check("waris: the vault is deleted", s == 200 and o.get("ok") is True, (s, o))
+    s, o = wcall("GET", w + "/status", owner)
+    check("waris: and is unknown after", s == 404 and o.get("why") == "unknown", (s, o))
+    s, o = wcall("POST", w + "/heir/" + h1 + "/alive", p2)
+    check("waris: its heirs are gone with it", s == 404 and o.get("why") == "unknown", (s, o))
+
+
 def main():
+    if MODE == "--waris":
+        return waris()
     if MODE == "--caps":
         return caps()
     if MODE == "--idle":
@@ -410,6 +644,9 @@ def main():
     check("its parcels go with it", s == 200 and o["parcels"] == [], (s, o))
     s, o = call("GET", p + "take?after=0", token, a)
     check("and it must say hello again", s == 403 and o.get("why") == "say-hello-first", (s, o))
+
+    # Waris ki Chaabi (4 Nov 2026): every relay holds the heirs' vaults the same way.
+    waris()
 
 
 if __name__ == "__main__":

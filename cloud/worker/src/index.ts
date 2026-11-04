@@ -50,6 +50,10 @@ export interface Env {
   MAX_BOOKS?: string;
   /** Bytes every book of the account may hold together (default ACCOUNT_BYTES below). */
   ACCOUNT_BYTES?: string;
+  /** Waris ki Chaabi's DAY in ms (default 86,400,000): only the tests lower it (wrangler dev --var). */
+  WARIS_DAY_MS?: string;
+  /** Vaults the account holds at most (default MAX_VAULTS below). */
+  MAX_VAULTS?: string;
 }
 
 /** A limit from the Worker's vars, else its default. */
@@ -115,6 +119,8 @@ const SEEN_EVERY_MS = 3_600_000;
  */
 const NEW_BOOKS_DAY = 100;
 const MAX_BOOKS = 20_000;
+/** Waris vaults the ledger takes (each holds at most 2 x 8 MiB of chunks while a version replaces another). */
+const MAX_VAULTS = 20_000;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -133,6 +139,17 @@ export default {
     // "push": whether this relay can ring a phone at all (its Firebase key is set) — R70: nothing said so before.
     if (url.pathname === "/v1/health") return json({ ok: true, live: env.LIVE !== "0", push: canPush(env) });
     if (env.LIVE === "0") return refuse(503, "halted");
+    // Waris ki Chaabi (4 Nov 2026): one object per vault, named "w:" + vault — never a book's name (32 hex) nor
+    // the "!ledger" — so no book's pruning, alarm or count ever meets a vault's rows.
+    const wm = url.pathname.match(/^\/v1\/w(\/.*)?$/);
+    if (wm) {
+      const r = warisRoute(wm[1] ?? "", request.method);
+      if (r instanceof Response) {
+        await readCapped(request, 0).catch(() => null);
+        return r;
+      }
+      return env.BOOKS.get(env.BOOKS.idFromName("w:" + r.vault)).fetch(request);
+    }
     const m = url.pathname.match(/^\/v1\/b\/([0-9a-f]{32})\/(hello|send|take|ack|wake|leave|round|live)$/);
     if (!m) return refuse(404, "no-such-path");
     const [, book, action] = m;
@@ -203,6 +220,83 @@ function toBase64(bytes: Uint8Array): string {
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(s);
 }
+
+// ---------------------------------------------------------------- Waris ki Chaabi (heir access, 4 Nov 2026)
+
+const WARIS_CHUNK = 524_288;
+const WARIS_SNAP = 8_388_608;
+const WARIS_MAX_N = 16;
+const WARIS_HEIRS = 5;
+const WARIS_BOX = 4096;
+/** A vault with no owner or heir call this long may go (the protocol's retention; the vault's own alarm). */
+const WARIS_IDLE_MS = 1095 * 86_400_000;
+const HEX16 = /^[0-9a-f]{16}$/;
+const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
+
+/** One DAY of the wait: WARIS_DAY_MS from the Worker's vars (the tests), never from a request. */
+function warisDay(env: Env): number {
+  const n = Number(env.WARIS_DAY_MS);
+  return env.WARIS_DAY_MS && Number.isFinite(n) && n > 0 ? Math.floor(n) : 86_400_000;
+}
+
+/** A body read to its end, at most [cap] bytes kept; null when it was longer (as the Supabase relay's). */
+async function readCapped(request: Request, cap: number): Promise<Uint8Array | null> {
+  const reader = request.body?.getReader();
+  if (!reader) return new Uint8Array(0);
+  const parts: Uint8Array[] = [];
+  let n = 0;
+  let over = false;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    n += value.length;
+    if (n > cap) over = true;
+    if (!over) parts.push(value);
+  }
+  if (over) return null;
+  const out = new Uint8Array(n);
+  let at = 0;
+  for (const c of parts) { out.set(c, at); at += c.length; }
+  return out;
+}
+
+function wNo(status: number, why: string, more: Record<string, unknown> = {}): Response {
+  return json({ ok: false, why, ...more }, status);
+}
+
+/**
+ * A Waris path (the part after /v1/w) and method: the route, its vault and heir, or the refusal — the same rule
+ * at the Worker's door and inside the vault's object. Shape and method first (404/405), then the ids (400).
+ */
+function warisRoute(rest: string, method: string): { route: string; vault: string; hid: string | null } | Response {
+  const m = rest.match(/^\/([^/]+)(?:\/(.*))?$/);
+  if (!m) return refuse(404, "no-such-path");
+  const vault = m[1];
+  const tail = (m[2] ?? "").replace(/\/+$/, "");
+  const top: Record<string, Record<string, string>> = {
+    "": { DELETE: "vault-delete" }, setup: { POST: "setup" }, snap: { PUT: "snap" }, status: { GET: "status" },
+  };
+  let hid: string | null = null;
+  let routes: Record<string, string>;
+  if (tail in top) routes = top[tail];
+  else {
+    const hm = tail.match(/^heir\/([^/]+)(?:\/(reject|allow|ask|alive|open|snap))?$/);
+    if (!hm) return refuse(404, "no-such-path");
+    hid = hm[1];
+    const sub = hm[2] ?? "";
+    routes = sub === "" ? { PUT: "heir-put", DELETE: "heir-delete" }
+      : { [sub === "open" || sub === "snap" ? "GET" : "POST"]: sub === "snap" ? "heir-snap" : sub };
+  }
+  const route = routes[method];
+  if (!route) return refuse(405, "method");
+  if (!HEX32.test(vault) || (hid != null && !HEX16.test(hid))) return wNo(400, "bad");
+  return { route, vault, hid };
+}
+
+type Heir = {
+  hid: string; pass: string; box: string; wait: number; last_seen: number | null; asked_at: number | null;
+  rejected_at: number | null; allowed_at: number | null;
+};
 
 /** A round's body, over HTTP ("round") or the live line. */
 interface RoundBody { after?: number; upTo?: number | null; parcel?: string | null }
@@ -332,6 +426,7 @@ export class Daakiya extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     if (url.hostname === "ledger") return this.ledger(url, request.method);
+    if (url.pathname.startsWith("/v1/w/")) return this.waris(request, url);
     const parts = url.pathname.split("/");
     const action = parts.pop()!;
     const book = parts.pop()!;
@@ -397,10 +492,14 @@ export class Daakiya extends DurableObject<Env> {
       // A ledger from before the sizes gains their column (an older book counts at the floor until it reports).
       const made = this.sql.exec<{ sql: string }>(`SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'books'`).one().sql;
       if (!/\bbytes\b/.test(made)) this.sql.exec(`ALTER TABLE books ADD COLUMN bytes INTEGER NOT NULL DEFAULT 0`);
+      // Waris vaults (4 Nov 2026): a table of their own, so MAX_BOOKS and the day's new books never count them;
+      // their chunk bytes are in the account's 'bytes' with the books'.
+      this.sql.exec(`CREATE TABLE IF NOT EXISTS vaults (vault TEXT PRIMARY KEY, at INTEGER NOT NULL, bytes INTEGER NOT NULL DEFAULT 0)`);
       this.ledgerReady = true;
     }
     const cap = limit(this.env.ACCOUNT_BYTES, ACCOUNT_BYTES);
     const path = url.pathname.slice(1);
+    if (path.startsWith("vault/") || path.startsWith("vsize/")) return this.ledgerVaults(path, url, method, cap);
     if (path.startsWith("size/")) {
       const book = path.slice(5);
       const raw = Number(url.searchParams.get("bytes"));
@@ -443,11 +542,49 @@ export class Daakiya extends DurableObject<Env> {
     return json({ ok: true, full: bytes + BOOK_FLOOR >= cap });
   }
 
-  /** The account's bytes as the ledger counts them (each book at no less than BOOK_FLOOR); counted once from the rows. */
+  /**
+   * The ledger's vaults (Waris, 4 Nov 2026): POST vault/<v> counts a new vault (507 "full" past MAX_VAULTS or a
+   * full account), DELETE vault/<v> forgets it, POST vsize/<v>?bytes=n[&grow=1] keeps its chunk bytes — refused
+   * 507 when growing would pass the account's cap. A vault's bytes are its chunks' (no floor: an empty vault is a
+   * few rows).
+   */
+  private ledgerVaults(path: string, url: URL, method: string, cap: number): Response {
+    const vault = path.slice(6);
+    if (!HEX32.test(vault)) return refuse(400, "bad-vault");
+    const row = this.sql.exec<{ bytes: number }>(`SELECT bytes FROM vaults WHERE vault = ?`, vault).toArray();
+    const total = this.ledgerBytes();
+    if (path.startsWith("vault/")) {
+      if (method === "DELETE") {
+        if (row.length) {
+          this.sql.exec(`DELETE FROM vaults WHERE vault = ?`, vault);
+          this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, total - row[0].bytes));
+        }
+        return json({ ok: true });
+      }
+      if (row.length) return json({ ok: true });
+      const count = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM vaults`).one().n;
+      if (count >= limit(this.env.MAX_VAULTS, MAX_VAULTS) || total >= cap) return wNo(507, "full");
+      this.sql.exec(`INSERT INTO vaults (vault, at, bytes) VALUES (?, ?, 0)`, vault, Date.now());
+      return json({ ok: true });
+    }
+    const raw = Number(url.searchParams.get("bytes"));
+    if (!Number.isFinite(raw) || raw < 0) return refuse(400, "bad-size");
+    const bytes = Math.floor(raw);
+    const old = row.length ? row[0].bytes : 0;
+    const next = total - old + bytes;
+    if (url.searchParams.get("grow") === "1" && bytes > old && next > cap) return wNo(507, "full");
+    if (!row.length) this.sql.exec(`INSERT INTO vaults (vault, at, bytes) VALUES (?, ?, ?)`, vault, Date.now(), bytes);
+    else if (old !== bytes) this.sql.exec(`UPDATE vaults SET bytes = ? WHERE vault = ?`, bytes, vault);
+    if (next !== total) this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, next));
+    return json({ ok: true, full: next >= cap });
+  }
+
+  /** The account's bytes as the ledger counts them (each book at no less than BOOK_FLOOR, and every vault's chunks); counted once from the rows. */
   private ledgerBytes(): number {
     const r = this.sql.exec<{ n: number }>(`SELECT n FROM counts WHERE k = 'bytes'`).toArray();
     if (r.length) return r[0].n;
-    const n = this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(MAX(bytes, ?)), 0) AS n FROM books`, BOOK_FLOOR).one().n;
+    const n = this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(MAX(bytes, ?)), 0) AS n FROM books`, BOOK_FLOOR).one().n
+      + this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(bytes), 0) AS n FROM vaults`).one().n;
     this.sql.exec(`INSERT INTO counts (k, n) VALUES ('bytes', ?)`, n);
     return n;
   }
@@ -710,6 +847,7 @@ export class Daakiya extends DurableObject<Env> {
    * device left, or nobody seen for 30 days, is emptied.
    */
   async alarm(): Promise<void> {
+    if (this.isVault()) return this.vaultAlarm();
     if (!this.haveTables(false)) return;
     const now = Date.now();
     const keep = Math.max(1, Number(this.env.KEEP_DAYS || "7")) * 86_400_000;
@@ -752,6 +890,264 @@ export class Daakiya extends DurableObject<Env> {
     // And the ledger's figure for this book put right too, whenever it differs.
     await this.reportIfDue(now, true).catch(() => null);
     await this.ctx.storage.setAlarm(now + limit(this.env.PRUNE_EVERY_MS, PRUNE_EVERY_MS));
+  }
+
+  // -------------------------------------------------------------- Waris ki Chaabi: this object as a vault
+  //
+  // A vault object is named "w:" + vault and holds only w_meta, w_heirs and w_chunks (never meta/devices/parcels),
+  // so a book's checks (haveTables) refuse it and a book's prune, alarm and forget never run on it; its alarm is
+  // its own (vaultAlarm). The ledger keeps vaults in a table of their own: never counted among MAX_BOOKS or the
+  // day's new books, but their chunk bytes count in the account's bytes (ACCOUNT_BYTES).
+
+  private vault = false;
+
+  /** Whether this object is a Waris vault (its tables exist). */
+  private isVault(): boolean {
+    if (this.vault) return true;
+    this.vault = this.sql.exec(`SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'w_meta'`).toArray().length > 0;
+    return this.vault;
+  }
+
+  private makeVault(): void {
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS w_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS w_heirs (hid TEXT PRIMARY KEY, pass TEXT NOT NULL, box TEXT NOT NULL,
+      wait INTEGER NOT NULL, last_seen INTEGER, asked_at INTEGER, rejected_at INTEGER, allowed_at INTEGER)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS w_chunks (v INTEGER NOT NULL, i INTEGER NOT NULL, n INTEGER NOT NULL,
+      body BLOB NOT NULL, PRIMARY KEY (v, i))`);
+    this.vault = true;
+  }
+
+  private wMeta(k: string): string | null {
+    const r = this.sql.exec<{ v: string }>(`SELECT v FROM w_meta WHERE k = ?`, k).toArray();
+    return r.length ? r[0].v : null;
+  }
+
+  private setWMeta(k: string, v: string | number): void {
+    this.sql.exec(`INSERT OR REPLACE INTO w_meta (k, v) VALUES (?, ?)`, k, String(v));
+  }
+
+  private wSnap(): { v: number; n: number; bytes: number; at: number } | null {
+    const v = this.wMeta("snap_v");
+    if (v == null) return null;
+    return { v: Number(v), n: Number(this.wMeta("snap_n")), bytes: Number(this.wMeta("snap_bytes")), at: Number(this.wMeta("snap_at")) };
+  }
+
+  private wHeld(): number {
+    return this.sql.exec<{ b: number | null }>(`SELECT SUM(length(body)) AS b FROM w_chunks`).one().b ?? 0;
+  }
+
+  /** Tells the ledger this vault's bytes ([grow]: refused 507 when they would pass the account's cap). */
+  private async ledgerVault(vault: string, bytes: number, grow: boolean): Promise<Response | null> {
+    const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
+    return ledger.fetch(new Request(`https://ledger/vsize/${vault}?bytes=${bytes}${grow ? "&grow=1" : ""}`, { method: "POST" }))
+      .catch(() => null);
+  }
+
+  /** The vault and every byte of it go; the ledger forgets it. */
+  private async dropVault(vault: string): Promise<void> {
+    const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
+    await ledger.fetch(new Request("https://ledger/vault/" + vault, { method: "DELETE" })).catch(() => null);
+    await this.ctx.storage.deleteAlarm();
+    await this.ctx.storage.deleteAll();
+    this.vault = false;
+  }
+
+  /** The vault's own alarm: gone after WARIS_IDLE_MS without an owner or heir call, else asked again later. */
+  private async vaultAlarm(): Promise<void> {
+    const now = Date.now();
+    const last = Number(this.wMeta("last_any") ?? "0");
+    const vault = this.wMeta("vault");
+    if (vault && now - last > WARIS_IDLE_MS) { await this.dropVault(vault); return; }
+    await this.ctx.storage.setAlarm(Math.max(now + 86_400_000, last + WARIS_IDLE_MS + 1));
+  }
+
+  private async waris(request: Request, url: URL): Promise<Response> {
+    const r = warisRoute(url.pathname.slice("/v1/w".length), request.method);
+    if (r instanceof Response) return r;
+    const { route, vault, hid } = r;
+    const day = warisDay(this.env);
+    const heirRoute = route === "ask" || route === "alive" || route === "open" || route === "heir-snap";
+
+    // A chunk's body is read before anything is written (and before any await that could let another call in).
+    let chunk: Uint8Array | null = null;
+    let o: Record<string, unknown> | null = null;
+    let sv = 0, si = 0, sn = 0;
+    if (route === "snap") {
+      // Read to its end first, keeping at most a chunk and one byte: a refusal given before the body was read
+      // leaves the runtime reading a stream whose answer has gone (wrangler dev then spoils the next request).
+      const got = await readCapped(request, WARIS_CHUNK);
+      const q = (k: string) => { const v = url.searchParams.get(k); return v != null && /^[0-9]{1,12}$/.test(v) ? Number(v) : null; };
+      const v = q("v"), i = q("i"), n = q("n");
+      if (v == null || i == null || n == null || v < 1 || n < 1 || n > WARIS_MAX_N || i >= n) return wNo(400, "bad");
+      sv = v; si = i; sn = n;
+      if (got == null) return wNo(413, "too-big");
+      if (got.length === 0) return wNo(400, "bad");
+      chunk = got;
+    } else if (route === "heir-put") {
+      const text = await request.text().catch(() => "");
+      if (text.length > 16384) return wNo(400, "bad");
+      try { const x = JSON.parse(text); o = x && typeof x === "object" ? x : null; } catch { o = null; }
+    } else {
+      await readCapped(request, 0).catch(() => null);
+    }
+    // The pass after the body (a refusal never leaves a body unread).
+    const token = passOf(request);
+    if (!HEX64.test(token)) return wNo(403, "pass");
+    const hash = await sha256Hex(token);
+
+    const now = Date.now();
+    if (route === "setup") {
+      if (!this.isVault()) {
+        // A new vault: the ledger counts it (and refuses one past MAX_VAULTS or a full account).
+        const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
+        const ok = await ledger.fetch(new Request("https://ledger/vault/" + vault, { method: "POST" }));
+        if (ok.status !== 200) return ok;
+        if (!this.isVault()) {
+          this.makeVault();
+          this.setWMeta("vault", vault);
+          this.setWMeta("pass", hash);
+          this.setWMeta("created", now);
+          this.setWMeta("last_owner", now);
+          this.setWMeta("last_any", now);
+          await this.ctx.storage.setAlarm(now + WARIS_IDLE_MS + 1);
+          return json({ ok: true, created: true });
+        }
+      }
+      const known = this.wMeta("pass");
+      if (known == null || !sameHex(known, hash)) return wNo(403, "pass");
+      this.setWMeta("last_owner", now);
+      this.setWMeta("last_any", now);
+      return json({ ok: true, created: false });
+    }
+    if (!this.isVault()) return wNo(404, "unknown");
+    const owner = this.wMeta("pass");
+    if (owner == null) return wNo(404, "unknown");
+    let heir: Heir | null = null;
+    if (hid != null) heir = this.sql.exec<Heir>(`SELECT * FROM w_heirs WHERE hid = ?`, hid).toArray()[0] ?? null;
+    if (heirRoute) {
+      if (!heir) return wNo(404, "unknown");
+      if (!sameHex(heir.pass, hash)) return wNo(403, "pass");
+      this.sql.exec(`UPDATE w_heirs SET last_seen = ? WHERE hid = ?`, now, hid);
+      heir.last_seen = now;
+    } else {
+      if (!sameHex(owner, hash)) return wNo(403, "pass");
+      if (hid != null && !heir && route !== "heir-put") return wNo(404, "unknown");
+      this.setWMeta("last_owner", now);
+    }
+    this.setWMeta("last_any", now);
+    const openAt = (h: Heir): number | null =>
+      h.allowed_at != null ? h.allowed_at : h.asked_at != null ? h.asked_at + h.wait * day : null;
+    const isOpen = (h: Heir): boolean => h.allowed_at != null || (h.asked_at != null && now >= h.asked_at + h.wait * day);
+
+    switch (route) {
+      case "snap": {
+        const body = chunk!;
+        const snap = this.wSnap();
+        const curV = snap ? snap.v : 0;
+        if (sv < curV) return wNo(409, "old");
+        if (snap && sv === curV && sn !== snap.n) return wNo(400, "bad");
+        const mine = this.sql.exec<{ b: number | null }>(
+          `SELECT SUM(length(body)) AS b FROM w_chunks WHERE v = ? AND i != ? AND n = ?`, sv, si, sn).one().b ?? 0;
+        if (mine + body.length > WARIS_SNAP) return wNo(413, "too-big");
+        // What the vault would hold once this chunk is in (other unfinished versions abandoned): the account's cap.
+        const keep = this.sql.exec<{ b: number | null }>(
+          `SELECT SUM(length(body)) AS b FROM w_chunks WHERE (v = ? OR (v = ? AND n = ? AND i != ?))`, curV, sv, sn, si).one().b ?? 0;
+        const said = await this.ledgerVault(vault, keep + body.length, true);
+        if (said && said.status === 507) return wNo(507, "full");
+        // Another call may have come in during the ledger's answer: the version is checked again.
+        const now2 = this.wSnap();
+        if (now2 && sv < now2.v) return wNo(409, "old");
+        const cur2 = now2 ? now2.v : 0;
+        this.sql.exec(`DELETE FROM w_chunks WHERE v != ? AND v != ?`, sv, cur2);
+        this.sql.exec(`DELETE FROM w_chunks WHERE v = ? AND n != ?`, sv, sn);
+        this.sql.exec(`INSERT OR REPLACE INTO w_chunks (v, i, n, body) VALUES (?, ?, ?, ?)`, sv, si, sn, body);
+        const have = this.sql.exec<{ c: number }>(`SELECT COUNT(*) AS c FROM w_chunks WHERE v = ?`, sv).one().c;
+        const complete = have === sn;
+        if (complete) {
+          const total = this.sql.exec<{ b: number }>(`SELECT SUM(length(body)) AS b FROM w_chunks WHERE v = ?`, sv).one().b;
+          this.sql.exec(`DELETE FROM w_chunks WHERE v != ?`, sv);
+          this.setWMeta("snap_v", sv);
+          this.setWMeta("snap_n", sn);
+          this.setWMeta("snap_bytes", total);
+          this.setWMeta("snap_at", now);
+        }
+        // The ledger's figure put right to what is held now (a chunk replaced or versions dropped shrink it).
+        await this.ledgerVault(vault, this.wHeld(), false);
+        return json({ ok: true, complete });
+      }
+      case "heir-put": {
+        const ph = o?.passHash, box = o?.box, wait = o?.wait;
+        if (typeof ph !== "string" || !HEX64.test(ph) || typeof box !== "string" || box.length === 0
+            || box.length > WARIS_BOX || !B64.test(box) || typeof wait !== "number" || !Number.isInteger(wait)
+            || wait < 1 || wait > 90) return wNo(400, "bad");
+        if (!heir) {
+          const c = this.sql.exec<{ c: number }>(`SELECT COUNT(*) AS c FROM w_heirs`).one().c;
+          if (c >= WARIS_HEIRS) return wNo(409, "full");
+          this.sql.exec(`INSERT INTO w_heirs (hid, pass, box, wait) VALUES (?, ?, ?, ?)`, hid, ph, box, wait);
+        } else if (sameHex(heir.pass, ph)) {
+          this.sql.exec(`UPDATE w_heirs SET box = ?, wait = ? WHERE hid = ?`, box, wait, hid);
+        } else {
+          this.sql.exec(`UPDATE w_heirs SET pass = ?, box = ?, wait = ?, last_seen = NULL, asked_at = NULL,
+            rejected_at = NULL, allowed_at = NULL WHERE hid = ?`, ph, box, wait, hid);
+        }
+        return json({ ok: true });
+      }
+      case "heir-delete":
+        this.sql.exec(`DELETE FROM w_heirs WHERE hid = ?`, hid);
+        return json({ ok: true });
+      case "status": {
+        const hs = this.sql.exec<Heir>(`SELECT * FROM w_heirs ORDER BY hid`).toArray();
+        return json({
+          ok: true, now, snap: this.wSnap(),
+          heirs: hs.map((h) => ({
+            hid: h.hid, wait: h.wait, lastSeen: h.last_seen, askedAt: h.asked_at, rejectedAt: h.rejected_at,
+            allowedAt: h.allowed_at, openAt: openAt(h),
+          })),
+        });
+      }
+      case "reject":
+        this.sql.exec(`UPDATE w_heirs SET asked_at = NULL, allowed_at = NULL, rejected_at = ? WHERE hid = ?`, now, hid);
+        return json({ ok: true });
+      case "allow":
+        this.sql.exec(`UPDATE w_heirs SET allowed_at = ?, asked_at = COALESCE(asked_at, ?) WHERE hid = ?`, now, now, hid);
+        return json({ ok: true });
+      case "ask": {
+        const h = heir!;
+        if (h.asked_at == null) {
+          if (h.rejected_at != null && now - h.rejected_at < day) return wNo(429, "wait", { retryAt: h.rejected_at + day });
+          this.sql.exec(`UPDATE w_heirs SET asked_at = ? WHERE hid = ?`, now, hid);
+          h.asked_at = now;
+        }
+        return json({ ok: true, askedAt: h.asked_at, openAt: openAt(h) });
+      }
+      case "alive": {
+        const h = heir!;
+        return json({ ok: true, askedAt: h.asked_at, openAt: openAt(h), rejectedAt: h.rejected_at, open: isOpen(h) });
+      }
+      case "open": {
+        const h = heir!;
+        if (!isOpen(h)) return wNo(403, "waiting", { openAt: openAt(h) });
+        return json({ ok: true, box: h.box, snap: this.wSnap() });
+      }
+      case "heir-snap": {
+        const h = heir!;
+        if (!isOpen(h)) return wNo(403, "waiting", { openAt: openAt(h) });
+        const q = (k: string) => { const v = url.searchParams.get(k); return v != null && /^[0-9]{1,12}$/.test(v) ? Number(v) : null; };
+        const v = q("v"), i = q("i");
+        if (v == null || i == null) return wNo(400, "bad");
+        const snap = this.wSnap();
+        if (!snap || snap.v !== v) return wNo(404, "absent");
+        const rows = this.sql.exec<{ body: ArrayBuffer }>(`SELECT body FROM w_chunks WHERE v = ? AND i = ?`, v, i).toArray();
+        if (rows.length === 0) return wNo(404, "absent");
+        return new Response(rows[0].body, {
+          status: 200, headers: { "content-type": "application/octet-stream", "cache-control": "no-store" },
+        });
+      }
+      case "vault-delete":
+        await this.dropVault(vault);
+        return json({ ok: true });
+    }
+    return refuse(404, "no-such-path");
   }
 
   /** Carried parcels per device in the current minute (kept in memory: a reset only lets a few more through). */
