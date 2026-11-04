@@ -1983,7 +1983,7 @@
     <string name="vocab_item_hint">Cheez (%1$s…)</string>
     <string name="vocab_unit_hint">Unit (%1$s…)</string>
     <string name="vocab_type_hint">Qism — %1$s</string>
-    <string name="vocab_goods_help">Agar is entry ke saath maal bhi gaya — %1$s — to yahan likhein. Sada naqd entry ke liye khali chhorein.</string>
+    <string name="vocab_goods_help">Ikhtiyari. Sirf tab bharein jab is entry ke saath maal bhi gaya ho (masalan %1$s). Agar ye cheez aap ki product list mein hai to us ka stock bhi badlega. Sirf raqam ke liye khali chhor dein.</string>
     <string name="vocab_unit_optional">Unit — %1$s (ikhtiyari)</string>
     <string-array name="vocab_agri_items">
         <item>Urea</item>

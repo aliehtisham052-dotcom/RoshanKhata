@@ -2042,7 +2042,7 @@
     <string name="vocab_item_hint">Item (%1$s…)</string>
     <string name="vocab_unit_hint">Unit (%1$s…)</string>
     <string name="vocab_type_hint">Type — %1$s</string>
-    <string name="vocab_goods_help">If stock moved with this entry — %1$s — record it here. Leave blank for a plain cash entry.</string>
+    <string name="vocab_goods_help">Optional. Fill this only if goods went with this entry (for example %1$s). If the item is in your products list, its stock changes too. For money only, leave it empty.</string>
     <string name="vocab_unit_optional">Unit — %1$s (optional)</string>
     <string-array name="vocab_agri_items">
         <item>Urea</item>

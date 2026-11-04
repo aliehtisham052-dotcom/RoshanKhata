@@ -1983,7 +1983,7 @@
     <string name="vocab_item_hint">شے (%1$s…)</string>
     <string name="vocab_unit_hint">اکائی (%1$s…)</string>
     <string name="vocab_type_hint">قسم — %1$s</string>
-    <string name="vocab_goods_help">اگر اس اندراج کے ساتھ مال بھی گیا — %1$s — تو یہاں درج کریں۔ سادہ نقد اندراج کے لیے خالی چھوڑیں۔</string>
+    <string name="vocab_goods_help">اختیاری۔ صرف تب بھریں جب اس اندراج کے ساتھ مال بھی گیا ہو (مثلاً %1$s)۔ اگر یہ چیز آپ کی پروڈکٹ لسٹ میں ہے تو اس کا اسٹاک بھی بدلے گا۔ صرف رقم کے لیے خالی چھوڑ دیں۔</string>
     <string name="vocab_unit_optional">یونٹ — %1$s (اختیاری)</string>
     <string-array name="vocab_agri_items">
         <item>یوریا</item>

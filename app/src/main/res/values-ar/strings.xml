@@ -2159,7 +2159,7 @@
     <string name="vocab_item_hint">الصنف (%1$s…)</string>
     <string name="vocab_unit_hint">الوحدة (%1$s…)</string>
     <string name="vocab_type_hint">النوع — %1$s</string>
-    <string name="vocab_goods_help">إذا خرجت بضاعة مع هذا القيد — %1$s — سجّلها هنا. اتركه فارغًا لقيد نقدي عادي.</string>
+    <string name="vocab_goods_help">اختياري. املأه فقط إذا خرجت بضاعة مع هذا القيد (مثلًا %1$s). إن كان الصنف في قائمة منتجاتك يتغيّر مخزونه أيضًا. للمال فقط اتركه فارغًا.</string>
     <string name="vocab_unit_optional">الوحدة — %1$s (اختياري)</string>
     <string-array name="vocab_agri_items">
         <item>يوريا</item>

@@ -2011,7 +2011,7 @@
     <string name="vocab_item_hint">کالا (%1$s…)</string>
     <string name="vocab_unit_hint">واحد (%1$s…)</string>
     <string name="vocab_type_hint">نوع — %1$s</string>
-    <string name="vocab_goods_help">اگر با این ثبت کالایی خارج شد — %1$s — اینجا ثبت کنید. برای ثبت نقدی ساده خالی بگذارید.</string>
+    <string name="vocab_goods_help">اختیاری. فقط وقتی پر کنید که با این ثبت کالا هم رفته باشد (مثلاً %1$s). اگر این کالا در فهرست محصولات شما باشد، موجودی‌اش هم تغییر می‌کند. برای فقط پول، خالی بگذارید.</string>
     <string name="vocab_unit_optional">واحد — %1$s (اختیاری)</string>
     <string-array name="vocab_agri_items">
         <item>اوره</item>

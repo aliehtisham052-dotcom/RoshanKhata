@@ -1987,7 +1987,7 @@
     <string name="vocab_item_hint">Barang (%1$s…)</string>
     <string name="vocab_unit_hint">Satuan (%1$s…)</string>
     <string name="vocab_type_hint">Jenis — %1$s</string>
-    <string name="vocab_goods_help">Jika ada barang yang keluar dengan catatan ini — %1$s — catat di sini. Kosongkan untuk catatan tunai biasa.</string>
+    <string name="vocab_goods_help">Opsional. Isi hanya jika ada barang yang ikut dengan catatan ini (misalnya %1$s). Jika barangnya ada di daftar produk Anda, stoknya ikut berubah. Untuk uang saja, biarkan kosong.</string>
     <string name="vocab_unit_optional">Satuan — %1$s (opsional)</string>
     <string-array name="vocab_agri_items">
         <item>Urea</item>
