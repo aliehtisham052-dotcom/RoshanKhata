@@ -2011,7 +2011,7 @@
     <string name="vocab_item_hint">شيءِ (%1$s…)</string>
     <string name="vocab_unit_hint">يونٽ (%1$s…)</string>
     <string name="vocab_type_hint">قسم — %1$s</string>
-    <string name="vocab_goods_help">جيڪڏهن هن داخلا سان مال به ويو — %1$s — ته هتي لکو. سادي نقد داخلا لاءِ خالي ڇڏيو.</string>
+    <string name="vocab_goods_help">اختياري. رڳو تڏهن ڀريو جڏهن هن داخلا سان مال به ويو هجي (مثال طور %1$s). جيڪڏهن هيءَ شيءِ توهان جي پراڊڪٽ لسٽ ۾ آهي ته ان جو اسٽاڪ به بدلبو. رڳو رقم لاءِ خالي ڇڏيو.</string>
     <string name="vocab_unit_optional">يونٽ — %1$s (اختياري)</string>
     <string-array name="vocab_agri_items">
         <item>يوريا</item>

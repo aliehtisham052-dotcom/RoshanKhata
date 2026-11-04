@@ -2031,7 +2031,7 @@
     <string name="vocab_item_hint">পণ্য (%1$s…)</string>
     <string name="vocab_unit_hint">একক (%1$s…)</string>
     <string name="vocab_type_hint">ধরন — %1$s</string>
-    <string name="vocab_goods_help">এই এন্ট্রির সাথে মাল গেলে — %1$s — এখানে লিখুন। সাধারণ নগদ এন্ট্রির জন্য খালি রাখুন।</string>
+    <string name="vocab_goods_help">ঐচ্ছিক। শুধু তখনই পূরণ করুন যখন এই এন্ট্রির সাথে মালও গেছে (যেমন %1$s)। জিনিসটি আপনার পণ্যের তালিকায় থাকলে তার স্টকও বদলাবে। শুধু টাকার জন্য খালি রাখুন।</string>
     <string name="vocab_unit_optional">একক — %1$s (ঐচ্ছিক)</string>
     <string-array name="vocab_agri_items">
         <item>ইউরিয়া</item>

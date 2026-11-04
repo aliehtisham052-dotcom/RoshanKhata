@@ -2031,7 +2031,7 @@
     <string name="vocab_item_hint">आइटम (%1$s…)</string>
     <string name="vocab_unit_hint">इकाई (%1$s…)</string>
     <string name="vocab_type_hint">प्रकार — %1$s</string>
-    <string name="vocab_goods_help">अगर इस एंट्री के साथ माल भी गया — %1$s — तो यहाँ दर्ज करें। सादी नकद एंट्री के लिए खाली छोड़ें।</string>
+    <string name="vocab_goods_help">वैकल्पिक। सिर्फ़ तभी भरें जब इस एंट्री के साथ माल भी गया हो (जैसे %1$s)। अगर यह चीज़ आपकी प्रोडक्ट सूची में है तो उसका स्टॉक भी बदलेगा। सिर्फ़ पैसे के लिए खाली छोड़ दें।</string>
     <string name="vocab_unit_optional">इकाई — %1$s (वैकल्पिक)</string>
     <string-array name="vocab_agri_items">
         <item>यूरिया</item>
