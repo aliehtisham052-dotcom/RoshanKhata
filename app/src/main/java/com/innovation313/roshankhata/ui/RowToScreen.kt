@@ -58,6 +58,14 @@ object RowToScreen {
     fun settle(list: androidx.recyclerview.widget.RecyclerView) {
         list.postDelayed({
             for (i in 0 until list.childCount) plain(list.getChildAt(i))
+            // And every row in its own place (4 Nov 2026, the owner's photo: a wide gap above one card, two cards
+            // touching below it). At the end of the fold-back the framework puts the shared row back by measuring
+            // and laying it out at the bounds it had when the ledger opened (ActivityTransitionCoordinator's
+            // setOriginalSharedElementState). When the list changed meanwhile (entries deleted, the customer moved),
+            // that view already stood for another customer at another place: it was laid over its neighbours at the
+            // old place and size, and a scroll only moves rows by an offset, so it stayed there. A layout pass
+            // puts every row back where the list's own order says.
+            list.requestLayout()
         }, SETTLE_MS)
     }
 
