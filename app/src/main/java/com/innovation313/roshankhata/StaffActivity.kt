@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -26,9 +27,11 @@ import com.innovation313.roshankhata.data.StaffAttendance
 import com.innovation313.roshankhata.data.StaffPayment
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 /**
@@ -197,19 +200,43 @@ class StaffActivity : BaseActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(person.name + " \u00b7 " + getString(if (kind == Payroll.ADVANCE) R.string.staff_advance else R.string.staff_pay))
             .setView(form)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val v = com.innovation313.roshankhata.ui.Calc.evalAmount(amount.text.toString())
-                if (v == null || v <= 0) {
-                    Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
-                }
-                lifecycleScope.launch {
-                    dao.insertStaffPayment(StaffPayment(staffId = person.id, amount = v, kind = kind,
-                        note = note.text.toString().trim().ifEmpty { null }))
-                    com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
-                }
-            }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so an amount the form refused threw the note away with it.
+            .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, form, form.getTag(R.id.calc_pad_view) as View); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { dialog ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(dialog, form, form.getTag(R.id.calc_pad_view) as View)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(dialog) {
+                    val v = com.innovation313.roshankhata.ui.Calc.evalAmount(amount.text.toString())
+                    if (v == null || v <= 0) {
+                        Toast.makeText(this@StaffActivity, R.string.staff_invalid, Toast.LENGTH_LONG).show()
+                        amount.requestFocus()
+                        return@onSave false
+                    }
+                    val payment = StaffPayment(staffId = person.id, amount = v, kind = kind,
+                        note = note.text.toString().trim().ifEmpty { null })
+                    // AppScope, not the screen's own scope (5 Nov 2026), as every other money write: Back right after
+                    // Save closes the screen and cancelled a write still on its way. A failed write is said by AppScope's
+                    // handler ("not saved"); the card is shown only while there is still a screen to show it on.
+                    AppScope.launch {
+                        dao.insertStaffPayment(payment)
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) {
+                                com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
+                            }
+                        }
+                    }
+                    true
+                }
+                // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
+                // bill's flaw). The form opens blank: an amount or a note asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@StaffActivity,
+                    dialog = dialog,
+                    typed = { amount.text.isNotBlank() || note.text.isNotBlank() }
+                )
+            }
     }
 
     private fun editStaff(person: Staff?) {
@@ -230,45 +257,93 @@ class StaffActivity : BaseActivity() {
         val pinNote = android.widget.TextView(this).apply { setText(R.string.staff_pin_keep); textSize = 12f; visibility = if (person?.pinHash != null) View.VISIBLE else View.GONE }
         val views = if (mayEditLogin) arrayOf<View>(name, phone, salary, roleLabel, roleBox, pin, pinNote) else arrayOf<View>(name, phone, salary)
         val form = withPad(box(*views), salary, padShown = false)
+        // The form as it opened (blank, or the person as saved; the PIN box is always blank), to tell what the
+        // owner changed from what he only looked at.
+        val opened = listOf(name, phone, salary).map { it.text.toString() }
+        val openedRole = roleBox.selectedItemPosition
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
             .setView(form)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val n = name.text.toString().trim()
-                val s = com.innovation313.roshankhata.ui.Calc.evalAmount(salary.text.toString())
-                if (n.isEmpty() || s == null || s <= 0) {
-                    Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
-                }
-                val p = phone.text.toString().trim().ifEmpty { null }
-                val role = if (mayEditLogin) roles[roleBox.selectedItemPosition] else person?.role
-                val typedPin = pin.text.toString()
-                val needsPin = mayEditLogin && role != null && (person?.pinHash == null || typedPin.isNotEmpty())
-                if (needsPin && !com.innovation313.roshankhata.data.PinHash.valid(typedPin)) {
-                    Toast.makeText(this, R.string.staff_pin_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
-                }
-                val login: (Staff) -> Staff = { st ->
-                    if (!mayEditLogin) st
-                    else if (role == null) st.copy(role = null, pinHash = null, pinSalt = null)
-                    else if (typedPin.isNotEmpty()) { val salt = com.innovation313.roshankhata.data.PinHash.salt(); st.copy(role = role, pinSalt = salt, pinHash = com.innovation313.roshankhata.data.PinHash.hash(typedPin, salt)) }
-                    else st.copy(role = role)
-                }
-                val save = {
-                    lifecycleScope.launch {
-                        // Two staff of one name would share a shift and a drawer (23 Oct 2026, the review).
-                        if (dao.staffNameTaken(n, person?.id ?: 0L)) {
-                            Toast.makeText(this@StaffActivity, R.string.staff_name_taken, Toast.LENGTH_LONG).show()
-                            return@launch
-                        }
-                        if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
-                        else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
-                    }
-                    Unit
-                }
-                // A staff login without an owner PIN would let anyone sign in as the owner: set it first.
-                if (mayEditLogin && role != null) com.innovation313.roshankhata.ui.AccessUi.requireOwnerPin(this) { save() } else save()
-            }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so a refused name, salary or PIN — or a name already taken, or the
+            // owner PIN question cancelled — threw the typed person away.
+            .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, form, form.getTag(R.id.calc_pad_view) as View); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { dialog ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(dialog, form, form.getTag(R.id.calc_pad_view) as View)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                // Set while a save is on its way (the name is looked up, then written), and kept once it is written:
+                // a second tap, or a second answer from the owner PIN question, saves nothing twice. A flag, not a
+                // disabled button (lesson 10). Cleared when the name is refused or the write failed, for another try.
+                var saving = false
+                dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+                    if (saving) return@setOnClickListener
+                    val n = name.text.toString().trim()
+                    val s = com.innovation313.roshankhata.ui.Calc.evalAmount(salary.text.toString())
+                    if (n.isEmpty() || s == null || s <= 0) {
+                        Toast.makeText(this@StaffActivity, R.string.staff_invalid, Toast.LENGTH_LONG).show()
+                        (if (n.isEmpty()) name else salary).requestFocus()
+                        return@setOnClickListener
+                    }
+                    val p = phone.text.toString().trim().ifEmpty { null }
+                    val role = if (mayEditLogin) roles[roleBox.selectedItemPosition] else person?.role
+                    val typedPin = pin.text.toString()
+                    val needsPin = mayEditLogin && role != null && (person?.pinHash == null || typedPin.isNotEmpty())
+                    if (needsPin && !com.innovation313.roshankhata.data.PinHash.valid(typedPin)) {
+                        Toast.makeText(this@StaffActivity, R.string.staff_pin_invalid, Toast.LENGTH_LONG).show()
+                        pin.requestFocus()
+                        return@setOnClickListener
+                    }
+                    val login: (Staff) -> Staff = { st ->
+                        if (!mayEditLogin) st
+                        else if (role == null) st.copy(role = null, pinHash = null, pinSalt = null)
+                        else if (typedPin.isNotEmpty()) { val salt = com.innovation313.roshankhata.data.PinHash.salt(); st.copy(role = role, pinSalt = salt, pinHash = com.innovation313.roshankhata.data.PinHash.hash(typedPin, salt)) }
+                        else st.copy(role = role)
+                    }
+                    val save: () -> Unit = save@{
+                        if (saving) return@save
+                        saving = true
+                        lifecycleScope.launch {
+                            // The look-up and the write run on AppScope (5 Nov 2026): a failure is said as every other
+                            // AppScope write's is ("not saved", AppFailures) — on the screen's own scope it crashed the
+                            // app — and a turned screen cannot cancel them half way. This screen only waits for them.
+                            var taken = false
+                            val write = AppScope.launch {
+                                // Two staff of one name would share a shift and a drawer (23 Oct 2026, the review).
+                                taken = dao.staffNameTaken(n, person?.id ?: 0L)
+                                if (!taken) {
+                                    if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
+                                    else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
+                                }
+                            }
+                            write.join()
+                            if (write.isCancelled) {
+                                // Not written, and already said: the form stays as it was, for another try.
+                                saving = false
+                            } else if (taken) {
+                                Toast.makeText(this@StaffActivity, R.string.staff_name_taken, Toast.LENGTH_LONG).show()
+                                name.requestFocus()
+                                saving = false
+                            } else {
+                                // Written: the form closes, and Save stays spent.
+                                dialog.dismiss()
+                            }
+                        }
+                    }
+                    // A staff login without an owner PIN would let anyone sign in as the owner: set it first.
+                    if (mayEditLogin && role != null) com.innovation313.roshankhata.ui.AccessUi.requireOwnerPin(this@StaffActivity) { save() } else save()
+                }
+                // Back, a tap beside it or Cancel threw a typed person (or a correction) away in silence (5 Nov 2026,
+                // the supplier bill's flaw): a changed name, phone, salary or role, or a PIN typed, asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@StaffActivity,
+                    dialog = dialog,
+                    typed = {
+                        listOf(name, phone, salary).map { it.text.toString() } != opened ||
+                            roleBox.selectedItemPosition != openedRole || pin.text.isNotEmpty()
+                    }
+                )
+            }
     }
 
     private fun manage(person: Staff) {

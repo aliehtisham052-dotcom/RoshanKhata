@@ -158,6 +158,8 @@ class PartyDetailActivity : BaseActivity() {
         private const val F_DETAILS = "details_open"
         private const val F_DUE = "due"
         private const val F_DUE_TOUCHED = "due_touched"
+        /** The form as it opened (5 Nov 2026), kept with it so a form put back after a rebuild still knows what was typed. */
+        private const val F_BASELINE = "baseline"
 
         /**
          * A spoken entry, handed over from the ledger for the owner to check.
@@ -2157,6 +2159,9 @@ class PartyDetailActivity : BaseActivity() {
         val dialog = MaterialAlertDialogBuilder(this).setView(view).create()
         entryDialog = dialog
 
+        // The form as it opened (5 Nov 2026), set once it is showing: what leaving it is measured against.
+        var formBaseline: Bundle? = null
+
         // What onSaveInstanceState keeps of this form (R41): everything the owner put on it, as text
         // and figures, read back by the restore block above.
         val snapshot: () -> Bundle = {
@@ -2185,6 +2190,9 @@ class PartyDetailActivity : BaseActivity() {
             b.putBoolean(F_DETAILS, view.findViewById<View>(R.id.stepTwo).visibility == View.VISIBLE)
             b.putBoolean(F_DUE_TOUCHED, entryDueTouched)
             entryDue?.let { b.putLong(F_DUE, it) }
+            // The opened form travels with it: put back after a rebuild, it still asks before throwing away
+            // what was typed before the rebuild.
+            formBaseline?.let { b.putBundle(F_BASELINE, it) }
             b
         }
         entryFormState = snapshot
@@ -2350,6 +2358,25 @@ class PartyDetailActivity : BaseActivity() {
                     )
                 }
 
+                // Back on the first step and the header arrow threw the form away in silence, typed or not
+                // (5 Nov 2026, the supplier bill's flaw) — a new entry and an entry being edited alike. The form is
+                // held against how it opened (a new one's blanks and prefills, an edit's own entry; kept across a
+                // rebuild, see F_BASELINE); a signature drawn, or a bill photo waiting for this new entry, counts too.
+                // An untouched form still closes at once. Added before detailsBack: callbacks run newest first, so
+                // Back with the details open still closes the details, as it always has.
+                formBaseline = if (restore == null) snapshot() else restore.getBundle(F_BASELINE)
+                val leave = com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@PartyDetailActivity,
+                    dialog = dialog,
+                    typed = {
+                        // No baseline (a form saved by an older build) or a snapshot that cannot be read: ask.
+                        val changed = formBaseline?.let { from ->
+                            runCatching { entryFormChanged(snapshot(), from) }.getOrDefault(true)
+                        } ?: true
+                        changed || sigRow.changed || (editing == null && pendingBillPhoto != null)
+                    }
+                )
+
                 // Back closes the details before it closes the form. A
                 // callback, not onBackPressed/KEYCODE_BACK, so it also works
                 // on Android 16+ (API 36 target).
@@ -2399,9 +2426,9 @@ class PartyDetailActivity : BaseActivity() {
                         .hideSoftInputFromWindow(etAmount.windowToken, 0)
                 }
 
-                // Header arrow: same as the system Back.
+                // Header arrow: same as the system Back (on the first step, the same question when typed).
                 view.findViewById<View>(R.id.btnEntryBack).setOnClickListener {
-                    if (stepTwo.visibility == View.VISIBLE) closeDetails() else dialog.dismiss()
+                    if (stepTwo.visibility == View.VISIBLE) closeDetails() else leave()
                 }
             }
     }
@@ -3681,6 +3708,23 @@ class PartyDetailActivity : BaseActivity() {
                 ).show()
             }
             .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+    }
+
+    /**
+     * Whether the owner changed the add-entry form since [from], the form as it opened (5 Nov 2026), both read by
+     * the form's own snapshot (the Bundle a rebuild keeps). What the form would write counts: the figures and words,
+     * the items, the day, the chips and ticks, a batch, the promised day. Where he is on it (details open or shut)
+     * and the flags the form keeps for itself (whose figure the amount is, which rate it filled) do not.
+     */
+    private fun entryFormChanged(now: Bundle, from: Bundle): Boolean {
+        val texts = listOf(F_AMOUNT, F_NOTE, F_LINES, F_ITEM, F_QTY, F_UNIT, F_RATE, F_METHOD, F_REF)
+        if (texts.any { now.getString(it) != from.getString(it) }) return true
+        val ticks = listOf(F_CASH, F_QARZ, F_PAID_NOW, F_DUE_TOUCHED)
+        if (ticks.any { now.getBoolean(it) != from.getBoolean(it) }) return true
+        if (now.getLong(F_TIME) != from.getLong(F_TIME)) return true
+        if (now.getInt(F_RECOVERY, View.NO_ID) != from.getInt(F_RECOVERY, View.NO_ID)) return true
+        // Kept only when set: a batch chosen, a promised day.
+        return listOf(F_BATCH, F_DUE).any { now.containsKey(it) != from.containsKey(it) || now.getLong(it) != from.getLong(it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -803,6 +803,8 @@
     <string name="bill_state_paid_by">پرداخت‌شده · %1$s</string>
     <string name="bill_discard_title">این فاکتور رها شود؟</string>
     <string name="bill_discard_msg">آنچه در این فاکتور نوشته‌اید از بین می‌رود.</string>
+    <string name="form_discard_title">آنچه نوشته‌اید رها شود؟</string>
+    <string name="form_discard_msg">آنچه در این فرم نوشته‌اید از بین می‌رود.</string>
     <string name="add_invoice">افزودن فاکتور</string>
     <string name="invoice_customer_hint">نام مشتری</string>
     <string name="invoice_phone_hint">تلفن (اختیاری)</string>

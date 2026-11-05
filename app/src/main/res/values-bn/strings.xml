@@ -811,6 +811,8 @@
     <string name="bill_state_paid_by">পরিশোধিত · %1$s</string>
     <string name="bill_discard_title">এই বিলটি বাদ দেবেন?</string>
     <string name="bill_discard_msg">এই বিলে আপনি যা লিখেছেন তা হারিয়ে যাবে।</string>
+    <string name="form_discard_title">যা লিখেছেন তা বাদ দেবেন?</string>
+    <string name="form_discard_msg">এই ফর্মে আপনি যা লিখেছেন তা হারিয়ে যাবে।</string>
     <string name="add_invoice">ইনভয়েস যোগ করুন</string>
     <string name="invoice_customer_hint">গ্রাহকের নাম</string>
     <string name="invoice_phone_hint">ফোন (ঐচ্ছিক)</string>

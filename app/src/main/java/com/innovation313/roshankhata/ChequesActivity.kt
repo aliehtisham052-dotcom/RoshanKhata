@@ -256,6 +256,12 @@ class ChequesActivity : BaseActivity() {
             ).show()
         }
 
+        // The form as it opened — blank and "received" for a new cheque, the cheque's own values for an edit — to
+        // tell what the owner changed from what he only looked at.
+        val opened = listOf(etParty, etAmount, etNumber, etBank, etNote).map { it.text.toString() }
+        val openedReceived = rbReceived.isChecked
+        val openedDue = dueDate
+
         MaterialAlertDialogBuilder(this)
             .setTitle(if (existing == null) R.string.add_cheque else R.string.edit_cheque)
             .setView(view)
@@ -267,73 +273,102 @@ class ChequesActivity : BaseActivity() {
                     if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }
                 }
             }
-            .setPositiveButton(R.string.save) { _, _ ->
-                val partyName = etParty.text.toString().trim()
-                val party = parties.firstOrNull { it.name.equals(partyName, ignoreCase = true) }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so a party, amount or day the form refused threw the rest away.
+            .setPositiveButton(R.string.save, null)
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.chequeKeypad))
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    val partyName = etParty.text.toString().trim()
+                    val party = parties.firstOrNull { it.name.equals(partyName, ignoreCase = true) }
 
-                if (party == null) {
-                    Toast.makeText(this, R.string.select_party_first, Toast.LENGTH_LONG).show()
-                    return@setPositiveButton
-                }
+                    if (party == null) {
+                        Toast.makeText(this@ChequesActivity, R.string.select_party_first, Toast.LENGTH_LONG).show()
+                        etParty.requestFocus()
+                        return@onSave false
+                    }
 
-                val amount = Calc.evalAmount(etAmount.text.toString())
-                if (amount == null) {
-                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
+                    val amount = Calc.evalAmount(etAmount.text.toString())
+                    if (amount == null) {
+                        Toast.makeText(this@ChequesActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                        etAmount.requestFocus()
+                        return@onSave false
+                    }
 
-                val due = dueDate
-                if (due == null) {
-                    Toast.makeText(this, R.string.pick_date_first, Toast.LENGTH_LONG).show()
-                    return@setPositiveButton
-                }
+                    val due = dueDate
+                    if (due == null) {
+                        Toast.makeText(this@ChequesActivity, R.string.pick_date_first, Toast.LENGTH_LONG).show()
+                        return@onSave false
+                    }
 
-                val number = etNumber.text.toString().trim().ifEmpty { null }
-                val bank = etBank.text.toString().trim().ifEmpty { null }
-                val note = etNote.text.toString().trim().ifEmpty { null }
-                // A new cheque's picture goes with it; the form lets go of it before the dismiss runs.
-                val photo = if (existing == null) pendingPhoto else null
-                if (existing == null) { written = true; pendingPhoto = null }
+                    val number = etNumber.text.toString().trim().ifEmpty { null }
+                    val bank = etBank.text.toString().trim().ifEmpty { null }
+                    val note = etNote.text.toString().trim().ifEmpty { null }
+                    // Read here on the main thread, as the form stands at Save, not inside the write.
+                    val received = rbReceived.isChecked
+                    // A new cheque's picture goes with it; the form lets go of it before the dismiss runs.
+                    val photo = if (existing == null) pendingPhoto else null
+                    if (existing == null) { written = true; pendingPhoto = null }
 
-                // AppScope, not lifecycleScope — see AppScope's own comment.
-                // This dialog is already gone by the time the write finishes;
-                // a quick Back press right after Save must not be able to
-                // cancel a cheque that looked saved.
-                AppScope.launch {
-                    if (existing == null) {
-                        dao.insertCheque(
-                            Cheque(
-                                partyId = party.id,
-                                amount = amount,
-                                isReceived = rbReceived.isChecked,
-                                chequeNumber = number,
-                                bankName = bank,
-                                dueDate = due,
-                                note = note,
-                                photoPath = photo
-                            )
-                        )
-                    } else {
-                        // copy() off the stored row, so status, settledAt,
-                        // ledgerEntryId and createdAt survive untouched. Only
-                        // what the dialog shows is what the dialog may change.
-                        dao.getCheque(existing.id)?.let { stored ->
-                            dao.updateCheque(
-                                stored.copy(
+                    // AppScope, not lifecycleScope — see AppScope's own comment.
+                    // This dialog is already gone by the time the write finishes;
+                    // a quick Back press right after Save must not be able to
+                    // cancel a cheque that looked saved.
+                    AppScope.launch {
+                        if (existing == null) {
+                            dao.insertCheque(
+                                Cheque(
                                     partyId = party.id,
                                     amount = amount,
-                                    isReceived = rbReceived.isChecked,
+                                    isReceived = received,
                                     chequeNumber = number,
                                     bankName = bank,
                                     dueDate = due,
-                                    note = note
+                                    note = note,
+                                    photoPath = photo
                                 )
                             )
+                        } else {
+                            // copy() off the stored row, so status, settledAt,
+                            // ledgerEntryId and createdAt survive untouched. Only
+                            // what the dialog shows is what the dialog may change.
+                            dao.getCheque(existing.id)?.let { stored ->
+                                dao.updateCheque(
+                                    stored.copy(
+                                        partyId = party.id,
+                                        amount = amount,
+                                        isReceived = received,
+                                        chequeNumber = number,
+                                        bankName = bank,
+                                        dueDate = due,
+                                        note = note
+                                    )
+                                )
+                            }
                         }
                     }
+                    true
                 }
+                // Back, a tap beside it or Cancel threw a typed cheque (or a correction) away in silence (5 Nov 2026,
+                // the supplier bill's flaw): any box, the way, the day or a new cheque's waiting picture asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@ChequesActivity,
+                    dialog = form,
+                    typed = {
+                        listOf(etParty, etAmount, etNumber, etBank, etNote).map { it.text.toString() } != opened ||
+                            rbReceived.isChecked != openedReceived || dueDate != openedDue ||
+                            (existing == null && pendingPhoto != null)
+                    },
+                    onDiscard = {
+                        // A new cheque's picture goes with its form, as the bill form's kept photo does.
+                        if (existing == null) {
+                            com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto)
+                            pendingPhoto = null
+                        }
+                    }
+                )
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.chequeKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showChequeActions(cheque: ChequeWithParty) {

@@ -812,6 +812,8 @@
     <string name="bill_state_paid_by">Paid · %1$s</string>
     <string name="bill_discard_title">Discard this bill?</string>
     <string name="bill_discard_msg">What you typed on this bill will be lost.</string>
+    <string name="form_discard_title">Discard what you typed?</string>
+    <string name="form_discard_msg">What you typed in this form will be lost.</string>
     <string name="add_invoice">Add invoice</string>
     <string name="invoice_customer_hint">Customer name</string>
     <string name="invoice_phone_hint">Phone (optional)</string>
