@@ -369,6 +369,7 @@ class EveryScreenOpensTest(
                 putExtra(InvoiceEditorActivity.EXTRA_INVOICE_ID, it.invoiceId)
             },
             open<InvoiceSettingsActivity>("Invoice settings"),
+            open<PaymentVoiceActivity>("Payment voice"),
             open<FollowUpActivity>("Follow-up"),
             open<ZakatActivity>("Zakat"),
             open<CalculatorActivity>("Calculator"),

@@ -160,7 +160,9 @@ object ViewerMode {
         "LiveDevicesActivity",
         "ImageCropActivity",
         // Salaries are private: a helper may be on the list himself.
-        "StaffActivity"
+        "StaffActivity",
+        // Payment voice offers to add a payment to the book, which a read-only phone cannot (5 Nov 2026).
+        "PaymentVoiceActivity"
     )
 
     fun ownerOnly(screen: Class<*>): Boolean = screen.simpleName in OWNER_ONLY

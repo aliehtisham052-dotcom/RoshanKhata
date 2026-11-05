@@ -78,6 +78,21 @@ class MainActivity : BaseActivity() {
             for (key in listOf(LedgerReportActivity.EXTRA_FROM, LedgerReportActivity.EXTRA_TO))
                 if (args.containsKey(key)) out.putLong(key, args.getLong(key))
         }
+        // A payment a wallet app announced (PaymentVoice, 5 Nov 2026): its words pass only with this phone's own
+        // key, which only the app's own notification carries — another app cannot fill a form through this door.
+        runCatching {
+            if (PaymentVoice.doorOpen(this, args.getString(PaymentVoice.ARG_KEY))) {
+                if (args.containsKey(PartyDetailActivity.EXTRA_PARTY_ID)) out.putLong(PartyDetailActivity.EXTRA_PARTY_ID, args.getLong(PartyDetailActivity.EXTRA_PARTY_ID))
+                for (key in listOf(PartyDetailActivity.EXTRA_VOICE_AMOUNT, KhataActivity.EXTRA_CARRY_AMOUNT))
+                    if (args.containsKey(key)) out.putDouble(key, args.getDouble(key))
+                for (key in listOf(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, KhataActivity.EXTRA_CARRY_GOT))
+                    if (args.containsKey(key)) out.putBoolean(key, args.getBoolean(key))
+                for (key in listOf(
+                    PartyDetailActivity.EXTRA_PREFILL_NOTE, PartyDetailActivity.EXTRA_PREFILL_METHOD, PartyDetailActivity.EXTRA_PREFILL_REF,
+                    KhataActivity.EXTRA_CARRY_NOTE, KhataActivity.EXTRA_CARRY_METHOD, KhataActivity.EXTRA_CARRY_REF, KhataActivity.EXTRA_CARRY_SEARCH
+                )) args.getString(key)?.let { out.putString(key, it.take(500)) }
+            }
+        }
         return out
     }
 
@@ -983,7 +998,10 @@ class MainActivity : BaseActivity() {
             FollowUpActivity::class.java,
             CashbookActivity::class.java,
             OrdersActivity::class.java,
-            LedgerReportActivity::class.java
+            LedgerReportActivity::class.java,
+            // A payment a wallet app announced (PaymentVoice): the customer's form, or the list to choose from.
+            PartyDetailActivity::class.java,
+            KhataActivity::class.java
         )
     }
 }
