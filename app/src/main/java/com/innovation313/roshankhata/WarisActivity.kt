@@ -28,6 +28,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.string
 import com.innovation313.roshankhata.data.ViewerMode
 import com.innovation313.roshankhata.data.ViewerSync
 import com.innovation313.roshankhata.data.Waris
