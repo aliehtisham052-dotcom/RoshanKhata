@@ -3923,4 +3923,25 @@
     <string name="cheque_photo">Cheque ki tasveer</string>
     <string name="cash_photo">Raseed ki tasveer</string>
     <string name="photo_missing">Ye tasveer is device par maujood nahi</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="lang_phone_language">Phone ki zaban</string>
+    <string name="lang_gloss_en">Angrezi</string>
+    <string name="lang_gloss_ur_latn">English haroof mein Urdu</string>
+    <string name="lang_gloss_ur">Urdu</string>
+    <string name="lang_gloss_sd">Sindhi</string>
+    <string name="lang_gloss_fa">Farsi</string>
+    <string name="lang_gloss_ar">Arabi</string>
+    <string name="lang_gloss_hi">Hindi</string>
+    <string name="lang_gloss_bn">Bangla</string>
+    <string name="lang_gloss_id">Indonesian</string>
+    <string name="shop_details_title">Aap ki dukaan ki tafseel</string>
+    <string name="shop_preview_label">Aap ki invoice par yun dikhega</string>
+    <string name="country_found_phone">Aap ke phone se maloom hua. Badalne ke liye tap karein.</string>
+    <string name="country_tap_change">Badalne ke liye tap karein.</string>
+    <string name="setup_start">Mera khata shuru karein</string>
+    <string name="country_search_hint">Mulk talaash karein</string>
+    <string name="country_section_phone">Aap ke phone se</string>
+    <string name="country_section_all">Tamam mumalik</string>
+    <string name="country_search_none">Koi mulk nahi mila. Neeche Deegar chunein.</string>
 </resources>

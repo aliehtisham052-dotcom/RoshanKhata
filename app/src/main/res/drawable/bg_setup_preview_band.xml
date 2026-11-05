@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The invoice's own band in the setup's preview (5 Nov 2026): the deep green every invoice
+     design opens with, its gold rule along the foot. Fixed colours by day and by night: it is a
+     picture of a printed sheet, and brand_green is dark both ways (a fill, lesson 60). -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="10dp" />
+            <solid android:color="#F3C552" />
+        </shape>
+    </item>
+    <item android:bottom="3dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="10dp" />
+            <solid android:color="@color/brand_green" />
+        </shape>
+    </item>
+</layer-list>

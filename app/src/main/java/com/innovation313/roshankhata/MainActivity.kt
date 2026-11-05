@@ -3,6 +3,7 @@ package com.innovation313.roshankhata
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.data.quantity
+import com.innovation313.roshankhata.data.set
 
 import android.content.Intent
 import android.os.Bundle
@@ -145,7 +146,7 @@ class MainActivity : BaseActivity() {
 
         buildFeatureGrid()
         sizeGridTail()
-        if (!askTradeIfMissing()) maybeShowCoachMarks()
+        if (!askTradeIfMissing() && !askCountryOnce()) maybeShowCoachMarks()
 
         builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
     }
@@ -837,6 +838,50 @@ class MainActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = true) { trade ->
             com.innovation313.roshankhata.data.BusinessProfile.setTrade(this, trade)
             // Home's tiles, hints and the tour follow the trade: draw Home again with it.
+            recreate()
+        }
+        return true
+    }
+
+    /**
+     * An older book's country, asked once (5 Nov 2026, the owner's yes to the setup plan). A book
+     * set up before the country step (21 Oct 2026), or whose first run was left before it, never
+     * saved one, and an unsaved country reads as Pakistan (+92, Rs, NTN/STRN, Rabi/Kharif). The
+     * new setup always saves one. Here only the SIM's or the network's country counts - a strong
+     * sign, unlike a phone's language region (many Pakistani phones say "English (United
+     * States)"): when it names another country the owner is asked once, that country first on the
+     * page and Pakistan ticked as what the book has used; when it names Pakistan, Pakistan is saved
+     * and nothing is asked. Closing the page keeps Pakistan; Business Profile changes it any time.
+     * The currency sign and calendar change only from their defaults, as in Business Profile. A
+     * helper's read-only phone is not asked.
+     *
+     * @return true when the page was shown (the tour waits for the next Home).
+     */
+    private fun askCountryOnce(): Boolean {
+        val bp = com.innovation313.roshankhata.data.BusinessProfile
+        val setup = com.innovation313.roshankhata.data.SetupProgress
+        if (bp.hasCountry(this) || com.innovation313.roshankhata.data.ViewerMode.isOn(this) || setup.countryAsked(this)) return false
+        val region = com.innovation313.roshankhata.ui.DeviceRegion.ofTelephony(this) ?: return false
+        val pakistan = com.innovation313.roshankhata.data.ShopCountry.PAKISTAN
+        if (region == pakistan.code) {
+            bp.setCountry(this, pakistan)
+            return false
+        }
+        setup.markCountryAsked(this)
+        com.innovation313.roshankhata.ui.CountryPicker.show(this, current = pakistan, fromPhone = region) { picked ->
+            if (isFinishing || isDestroyed) return@show
+            val defaultSign = bp.currency(this) == com.innovation313.roshankhata.data.Currency.DEFAULT
+            val gregorian = bp.calendar(this) == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN
+            bp.setCountry(this, picked)
+            if (defaultSign && picked != com.innovation313.roshankhata.data.ShopCountry.OTHER &&
+                picked.currencySign != com.innovation313.roshankhata.data.Currency.DEFAULT
+            ) {
+                com.innovation313.roshankhata.data.Currency.set(this, picked.currencySign)
+            }
+            if (gregorian && picked.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN) {
+                com.innovation313.roshankhata.data.ShopCalendar.set(this, picked.calendar)
+            }
+            // Home's money, hints and dates follow the country: draw Home again with it.
             recreate()
         }
         return true

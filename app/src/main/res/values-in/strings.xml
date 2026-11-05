@@ -3907,4 +3907,25 @@
     <string name="cheque_photo">Foto cek</string>
     <string name="cash_photo">Foto kuitansi</string>
     <string name="photo_missing">Foto ini tidak ada di perangkat ini</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="lang_phone_language">Bahasa ponsel</string>
+    <string name="lang_gloss_en">Inggris</string>
+    <string name="lang_gloss_ur_latn">Urdu dengan huruf Latin</string>
+    <string name="lang_gloss_ur">Urdu</string>
+    <string name="lang_gloss_sd">Sindhi</string>
+    <string name="lang_gloss_fa">Persia</string>
+    <string name="lang_gloss_ar">Arab</string>
+    <string name="lang_gloss_hi">Hindi</string>
+    <string name="lang_gloss_bn">Bengali</string>
+    <string name="lang_gloss_id">Indonesia</string>
+    <string name="shop_details_title">Rincian toko Anda</string>
+    <string name="shop_preview_label">Tampilan di faktur Anda</string>
+    <string name="country_found_phone">Diambil dari ponsel Anda. Ketuk untuk mengubah.</string>
+    <string name="country_tap_change">Ketuk untuk mengubah.</string>
+    <string name="setup_start">Mulai buku kas saya</string>
+    <string name="country_search_hint">Cari negara</string>
+    <string name="country_section_phone">Dari ponsel Anda</string>
+    <string name="country_section_all">Semua negara</string>
+    <string name="country_search_none">Negara tidak ditemukan. Pilih Lainnya di bawah.</string>
 </resources>

@@ -3951,4 +3951,25 @@
     <string name="cheque_photo">عکس چک</string>
     <string name="cash_photo">عکس رسید</string>
     <string name="photo_missing">این عکس روی این دستگاه نیست</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="lang_phone_language">زبان گوشی</string>
+    <string name="lang_gloss_en">انگلیسی</string>
+    <string name="lang_gloss_ur_latn">اردو با حروف لاتین</string>
+    <string name="lang_gloss_ur">اردو</string>
+    <string name="lang_gloss_sd">سندی</string>
+    <string name="lang_gloss_fa">فارسی</string>
+    <string name="lang_gloss_ar">عربی</string>
+    <string name="lang_gloss_hi">هندی</string>
+    <string name="lang_gloss_bn">بنگالی</string>
+    <string name="lang_gloss_id">اندونزیایی</string>
+    <string name="shop_details_title">مشخصات فروشگاه شما</string>
+    <string name="shop_preview_label">روی فاکتور شما این‌طور دیده می‌شود</string>
+    <string name="country_found_phone">از گوشی شما گرفته شد. برای تغییر ضربه بزنید.</string>
+    <string name="country_tap_change">برای تغییر ضربه بزنید.</string>
+    <string name="setup_start">دفترم را شروع کنید</string>
+    <string name="country_search_hint">جستجوی کشور</string>
+    <string name="country_section_phone">از گوشی شما</string>
+    <string name="country_section_all">همهٔ کشورها</string>
+    <string name="country_search_none">کشوری پیدا نشد. پایین، سایر را بزنید.</string>
 </resources>

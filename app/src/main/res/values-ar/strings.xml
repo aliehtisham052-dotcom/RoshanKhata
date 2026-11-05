@@ -4179,4 +4179,25 @@
     <string name="cheque_photo">صورة الشيك</string>
     <string name="cash_photo">صورة الإيصال</string>
     <string name="photo_missing">هذه الصورة غير موجودة على هذا الجهاز</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="lang_phone_language">لغة الهاتف</string>
+    <string name="lang_gloss_en">الإنجليزية</string>
+    <string name="lang_gloss_ur_latn">الأردية بحروف لاتينية</string>
+    <string name="lang_gloss_ur">الأردية</string>
+    <string name="lang_gloss_sd">السندية</string>
+    <string name="lang_gloss_fa">الفارسية</string>
+    <string name="lang_gloss_ar">العربية</string>
+    <string name="lang_gloss_hi">الهندية</string>
+    <string name="lang_gloss_bn">البنغالية</string>
+    <string name="lang_gloss_id">الإندونيسية</string>
+    <string name="shop_details_title">بيانات متجرك</string>
+    <string name="shop_preview_label">هكذا يظهر على فاتورتك</string>
+    <string name="country_found_phone">مأخوذة من هاتفك. اضغط للتغيير.</string>
+    <string name="country_tap_change">اضغط للتغيير.</string>
+    <string name="setup_start">ابدأ دفتري</string>
+    <string name="country_search_hint">ابحث عن بلد</string>
+    <string name="country_section_phone">من هاتفك</string>
+    <string name="country_section_all">جميع البلدان</string>
+    <string name="country_search_none">لم يُعثر على بلد. اختر أخرى في الأسفل.</string>
 </resources>

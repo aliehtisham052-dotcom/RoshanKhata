@@ -46,7 +46,11 @@ class DeviceSmokeTest {
      */
     @Before
     fun freshInstall() {
-        context.getSharedPreferences("language", Context.MODE_PRIVATE).edit().clear().commit()
+        // The setup's own record too (5 Nov 2026, SetupProgress): "started" without "done" sends
+        // the front door into the setup.
+        for (name in listOf("language", "setup")) {
+            context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
+        }
     }
 
     /** The tap test picks English; do not leave the emulator in it for the next run. */
@@ -55,7 +59,9 @@ class DeviceSmokeTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
         }
+        // Left as the other tests expect a returning owner: language chosen, setup done.
         context.getSharedPreferences("language", Context.MODE_PRIVATE).edit().clear().commit()
+        context.getSharedPreferences("setup", Context.MODE_PRIVATE).edit().clear().commit()
     }
 
     @Test
@@ -97,25 +103,43 @@ class DeviceSmokeTest {
     }
 
     @Test
-    fun aTapOnlyMarksALanguageAndBackClearsTheMark() {
-        // Since 1 Oct a tap only marks; nothing is saved until Continue. A
-        // stray tap followed by Back must leave the app exactly as before.
+    fun aTapOnlyMarksALanguageAndNothingIsSavedBeforeContinue() {
+        // Since 1 Oct a tap only marks; nothing is saved until Continue. Since 5 Nov the phone's
+        // own language (or English, the page's language then) is marked to begin with, so
+        // Continue is ready at once, and one mark at a time.
         ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 val english = activity.findViewById<View>(R.id.langEnglish)
+                val urdu = activity.findViewById<View>(R.id.langUrdu)
                 val go = activity.findViewById<View>(R.id.btnLangContinue)
-                assertFalse("Continue was usable before anything was marked", go.isEnabled)
-                english.performClick()
-                assertTrue("the tapped language was not marked", english.isSelected)
-                assertTrue("Continue stayed disabled after a mark", go.isEnabled)
-                activity.onBackPressedDispatcher.onBackPressed()
-                assertFalse("Back did not clear the mark", english.isSelected)
-                assertFalse("Continue stayed usable after Back cleared the mark", go.isEnabled)
+                assertTrue("nothing was marked to begin with, so Continue was not ready", go.isEnabled)
+                urdu.performClick()
+                assertTrue("the tapped language was not marked", urdu.isSelected)
+                assertFalse("two languages were marked at once", english.isSelected)
+                assertTrue("Continue stopped being ready after a mark", go.isEnabled)
             }
         }
         assertFalse(
             "a tap alone saved the language; it must wait for Continue",
             LanguageActivity.isChosen(context)
+        )
+    }
+
+    @Test
+    fun aSetupIsNotFinishedByItsLanguage() {
+        // 5 Nov 2026, the owner's report: the language alone counted as the whole setup, so a
+        // first run left on the shop type opened Home next time and never asked the shop's name
+        // or country. Now the front door goes on with the setup until its last step.
+        ActivityScenario.launch(LanguageActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                activity.findViewById<View>(R.id.langEnglish).performClick()
+                activity.findViewById<View>(R.id.btnLangContinue).performClick()
+            }
+        }
+        assertTrue("the language choice was not remembered", LanguageActivity.isChosen(context))
+        assertFalse(
+            "the setup counted as finished after its first step",
+            com.innovation313.roshankhata.data.SetupProgress.isDone(context)
         )
     }
 

@@ -32,7 +32,20 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Step 2 of 2 on first run (ShopTypeActivity); otherwise gone. -->
+            <!-- Back to the language, on first run only (5 Nov 2026: the setup walks back as well as on). -->
+            <ImageButton
+                android:id="@+id/btnTradeBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="-14dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:src="@drawable/ic_arrow_back"
+                android:visibility="gone"
+                app:tint="@color/header_light_ink" />
+
+            <!-- Step 2 of 3 on first run (ShopTypeActivity); otherwise gone. -->
             <LinearLayout
                 android:id="@+id/tradeStepDots"
                 android:layout_width="wrap_content"

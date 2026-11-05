@@ -748,8 +748,9 @@ class BusinessSettingsActivity : BaseActivity() {
 
     private fun renderCountry() {
         val c = BusinessProfile.country(this)
-        btnCountry.text = if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER) getString(R.string.country_other)
-            else c.displayName(resources.configuration.locales[0])
+        // The flag as the setup and the country page show it (5 Nov 2026).
+        btnCountry.text = com.innovation313.roshankhata.ui.DeviceRegion.flag(c) + "  " +
+            com.innovation313.roshankhata.ui.CountryPicker.name(this, c)
     }
 
     /**
@@ -759,18 +760,10 @@ class BusinessSettingsActivity : BaseActivity() {
      * rupees; a sign the owner chose himself is kept.
      */
     private fun chooseCountry() {
-        val locale = resources.configuration.locales[0]
         val current = BusinessProfile.country(this)
-        val all = com.innovation313.roshankhata.data.ShopCountry.choices(locale)
-        val choices = all.map { c ->
-            if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER)
-                ChoiceSheet.Option(getString(R.string.country_other), icon = R.drawable.ic_hash,
-                    iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
-            else ChoiceSheet.Option(c.displayName(locale), glyph = c.code, glyphSp = 13f,
-                iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg)
-        }
-        ChoiceSheet.show(this, getString(R.string.bp_country), choices, all.indexOf(current)) { which ->
-            val chosen = all[which]
+        // The setup's own country page (5 Nov 2026): flags, codes, search, the phone's country first.
+        com.innovation313.roshankhata.ui.CountryPicker.show(this, current, title = getString(R.string.bp_country)) { chosen ->
+            if (isFinishing || isDestroyed) return@show
             val wasDefaultCurrency = BusinessProfile.currency(this) == Currency.DEFAULT
             BusinessProfile.setCountry(this, chosen)
             if (wasDefaultCurrency && chosen != com.innovation313.roshankhata.data.ShopCountry.OTHER && chosen.currencySign != Currency.DEFAULT) {
