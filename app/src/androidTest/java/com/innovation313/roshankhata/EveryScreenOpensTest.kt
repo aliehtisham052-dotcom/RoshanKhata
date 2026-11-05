@@ -380,6 +380,7 @@ class EveryScreenOpensTest(
             open<BusinessSwitchActivity>("Business switcher"),
             open<BusinessCardActivity>("Business card"),
             open<SnapshotsActivity>("Snapshots"),
+            open<SealsActivity>("Kitab ki Muhar"),
             open<BackupActivity>("Backup"),
             open<LiveDevicesActivity>("Live sync devices"),
             open<ViewerActivity>("Helper's phone"),
