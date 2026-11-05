@@ -3651,6 +3651,31 @@
     <string name="documents_title">اسناد</string>
     <string name="doc_add">افزودن سند</string>
     <string name="doc_add_other">اسناد دیگر</string>
+    <!-- Kitab ki Muhar, the book's seal (4 Nov 2026): BackupActivity's card, SealsActivity, the entry's proof. -->
+    <string name="muhar_title">مهر دفتر</string>
+    <string name="muhar_explain">روزی یک بار سه سرویس زمانِ مستقل بر اثر انگشت ثبت‌های تازهٔ شما مهر زمان می‌زنند، تا بعداً بتوانید ثابت کنید که یک ثبت در آن روز در دفتر شما بوده است.</string>
+    <string name="muhar_switch">هر روز دفترم را مهر کن</string>
+    <string name="muhar_status_none">هنوز مهری نیست</string>
+    <string name="muhar_status_last">آخرین مهر: %1$s · %2$d از %3$d گواه</string>
+    <string name="muhar_open">دیدن مهرها</string>
+    <string name="muhar_turn_on_body">هر روز فقط اثر انگشت ثبت‌های تازه (32 بایت، هیچ چیز خواندنی) به سه سرویس زمانِ رایگان فرستاده می‌شود: FreeTSA، Sectigo و DigiCert. مهر از امروز آغاز می‌شود: ثبت‌های پیش از آن را نمی‌توان یکی‌یکی ثابت کرد.</string>
+    <string name="muhar_turn_on">روشن کنید</string>
+    <string name="muhar_help">مهر ثابت می‌کند که یک ثبت در روز مهرش در دفتر شما بوده و پس از آن دفتر از نو نوشته نشده است: ثبتی که بعداً تغییر کرده یا حذف شده دیگر با مهرش نمی‌خواند، و تغییر در چه کسی چه کرد آمده است. از این گوشی فقط اثر انگشت بیرون می‌رود، هرگز نام یا مبلغ. مهر از روزی آغاز می‌شود که آن را روشن کنید. برنامه شکل، اثر انگشت و شمارهٔ هر مهر را بررسی می‌کند؛ امضای سرویس‌ها با OpenSSL بررسی می‌شود، چنان‌که فایل گواهِ اشتراک‌گذاشته‌شده می‌گوید. این امضای الکترونیکی پیشرفتهٔ قانونی نیست: یک گواه است و دادگاه وزن آن را تعیین می‌کند.</string>
+    <string name="muhar_witness_legend">✓ مهر خورد · … هنوز درخواست می‌شود · ✕ مهر نخورد (پس از یک هفته رها شد)</string>
+    <string name="muhar_first_seal">نخستین مهر: مهر از اینجا آغاز می‌شود</string>
+    <string name="muhar_proof">گواه مهر</string>
+    <string name="muhar_proof_in">در مهر %1$s، مهرزننده: %2$s.</string>
+    <string name="muhar_proof_in_waiting">در مهر %1$s. هنوز هیچ سرویس زمانی آن را مهر نکرده است؛ برنامه تا یک هفته هر روز دوباره درخواست می‌کند.</string>
+    <string name="muhar_proof_not_yet">هنوز مهر نخورده است. ثبت‌ها روزی یک بار مهر می‌شوند؛ این یکی در مهر بعدی می‌آید.</string>
+    <string name="muhar_proof_before">پیش از روشن شدن مهر نوشته شده، پس در هیچ مهری نیست.</string>
+    <string name="muhar_proof_changed">پس از مهر %1$s تغییر کرده است. تغییر را در چه کسی چه کرد ببینید.</string>
+    <string name="muhar_proof_checks">برنامه شکل، اثر انگشت و شمارهٔ هر مهر را بررسی می‌کند؛ امضا با OpenSSL بررسی می‌شود، چنان‌که فایل گواه می‌گوید.</string>
+    <string name="muhar_proof_share">اشتراک گواه</string>
+    <string name="muhar_seals_empty">هنوز مهری نیست. مهر دفتر را در صفحهٔ پشتیبان‌گیری روشن کنید.</string>
+    <plurals name="muhar_entries">
+        <item quantity="one">%d ثبت مهر شد</item>
+        <item quantity="other">%d ثبت مهر شد</item>
+    </plurals>
     <string name="doc_pick_kind">کدام سند؟</string>
     <string name="order_paste">چسباندن سفارش واتس‌اپ</string>
     <string name="order_paste_empty">اول پیام سفارش مشتری را کپی کنید، سپس اینجا بچسبانید.</string>

@@ -51,6 +51,7 @@ class StaffMigrationOnDeviceTest {
         // schema 41 (30 Oct 2026) adds indexes on those three only, schema 42 (3 Nov 2026) changes one index on
         // transactions and schema 43 (4 Nov 2026) adds a column each to parties, cashbook and cheques: nothing of any
         // of them reaches these three tables.
+        // Schema 44 (4 Nov 2026) adds one table of its own, book_seals, and nothing to these three.
 
         val room = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()
         val fresh = room.openHelper.writableDatabase

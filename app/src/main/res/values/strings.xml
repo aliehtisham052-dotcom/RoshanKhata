@@ -3835,6 +3835,31 @@
     <string name="documents_title">Documents</string>
     <string name="doc_add">Add document</string>
     <string name="doc_add_other">Other documents</string>
+    <!-- Kitab ki Muhar, the book's seal (4 Nov 2026): BackupActivity's card, SealsActivity, the entry's proof. -->
+    <string name="muhar_title">Book seal</string>
+    <string name="muhar_explain">Once a day, three independent time services stamp a fingerprint of your new entries, so you can later prove that an entry was already in your book on that day.</string>
+    <string name="muhar_switch">Seal my book every day</string>
+    <string name="muhar_status_none">No seal yet</string>
+    <string name="muhar_status_last">Last seal: %1$s · %2$d of %3$d witnesses</string>
+    <string name="muhar_open">See the seals</string>
+    <string name="muhar_turn_on_body">Each day only a fingerprint of the new entries (32 bytes, nothing readable) is sent to three free time services: FreeTSA, Sectigo and DigiCert. Sealing starts today: entries written before cannot be proved one by one.</string>
+    <string name="muhar_turn_on">Turn on</string>
+    <string name="muhar_help">The seal proves that an entry was already in your book on the day of its seal, and that the book was not rewritten since: an entry changed or deleted later no longer matches its seal, and the change is listed in Who did what. Only a fingerprint leaves this phone, never a name or an amount. Sealing starts on the day you turn it on. The app checks the form, the fingerprint and the number of each stamp; the services’ signatures are checked with OpenSSL, as the shared proof file explains. It is not a legal advanced electronic signature: it is evidence, and a court decides how much it weighs.</string>
+    <string name="muhar_witness_legend">✓ stamped · … still being asked · ✕ not stamped (given up after a week)</string>
+    <string name="muhar_first_seal">First seal: sealing starts here</string>
+    <string name="muhar_proof">Seal proof</string>
+    <string name="muhar_proof_in">In the seal of %1$s, stamped by %2$s.</string>
+    <string name="muhar_proof_in_waiting">In the seal of %1$s. No time service has stamped it yet; the app asks again each day for a week.</string>
+    <string name="muhar_proof_not_yet">Not sealed yet. Entries are sealed once a day; this one goes into the next seal.</string>
+    <string name="muhar_proof_before">Written before the seal was turned on, so it is in no seal.</string>
+    <string name="muhar_proof_changed">Changed after its seal of %1$s. See Who did what for the change.</string>
+    <string name="muhar_proof_checks">The app checks the form, the fingerprint and the number of each stamp; the signature is checked with OpenSSL, as the proof file explains.</string>
+    <string name="muhar_proof_share">Share proof</string>
+    <string name="muhar_seals_empty">No seal yet. Turn on the book seal on the Backup screen.</string>
+    <plurals name="muhar_entries">
+        <item quantity="one">%d entry sealed</item>
+        <item quantity="other">%d entries sealed</item>
+    </plurals>
     <string name="doc_pick_kind">Which document?</string>
     <string name="order_paste">Paste a WhatsApp order</string>
     <string name="order_paste_empty">Copy the customer\'s order message first, then paste it here.</string>

@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.data.witnessHere
 
 import com.innovation313.roshankhata.data.quantity
 import com.innovation313.roshankhata.data.string
@@ -136,6 +137,8 @@ class BackupActivity : BaseActivity() {
         findViewById<MaterialButton>(R.id.btnLiveDevices).setOnClickListener {
             startActivity(Intent(this, LiveDevicesActivity::class.java))
         }
+        // Kitab ki Muhar, the book's seal (4 Nov 2026): the owner's switch, the last seal, the seals screen.
+        setupSeal()
         // A phone may take a shop's book from another phone (23 Oct 2026): it shows the code, the other scans it.
         findViewById<MaterialButton>(R.id.btnLiveReceive).setOnClickListener { showReceive() }
         // The relay on the internet: the owner's choice for the book (one switch for both devices), off until then.
@@ -217,6 +220,82 @@ class BackupActivity : BaseActivity() {
 
     private fun afterIntro(action: () -> Unit) {
         if (introDone) action() else afterIntroQueue += action
+    }
+
+    // ---------- Kitab ki Muhar, the book's seal (4 Nov 2026) ----------
+
+    /** The switch set from the book, without asking again. */
+    private var showingSeal = false
+
+    override fun onResume() {
+        super.onResume()
+        showSeal()
+    }
+
+    private fun setupSeal() {
+        val sw = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchSeal)
+        sw.setOnCheckedChangeListener { b, on ->
+            if (showingSeal) return@setOnCheckedChangeListener
+            // The switch moves only once the book says so (the relay switch's rule): back until the owner answers.
+            showingSeal = true; b.isChecked = !on; showingSeal = false
+            com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.muhar_title)) {
+                if (on) confirmSealOn() else setSealOff()
+            }
+        }
+        findViewById<MaterialButton>(R.id.btnSeals).setOnClickListener {
+            startActivity(Intent(this, SealsActivity::class.java))
+        }
+    }
+
+    /** What leaves the phone, said before the first seal is made. */
+    private fun confirmSealOn() {
+        if (isFinishing || isDestroyed) return
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.muhar_title)
+            .setMessage(R.string.muhar_turn_on_body)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.muhar_turn_on) { _, _ ->
+                val app = applicationContext
+                lifecycleScope.launch {
+                    val ok = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookSeals.turnOn(dao) }.isSuccess }
+                    showSeal()
+                    if (!ok) { Toast.makeText(this@BackupActivity, R.string.save_failed_not_saved, Toast.LENGTH_LONG).show(); return@launch }
+                    // The first seal's witnesses at once, on AppScope (leaving the screen does not cut them short).
+                    val asking = com.innovation313.roshankhata.data.AppScope.launch(Dispatchers.IO) {
+                        com.innovation313.roshankhata.data.BookSeals.witnessHere(app)
+                    }
+                    asking.join()
+                    if (!isFinishing && !isDestroyed) showSeal()
+                }
+            }
+            .show()
+    }
+
+    private fun setSealOff() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookSeals.turnOff(dao) } }
+            showSeal()
+        }
+    }
+
+    /** The switch and the status line from the book: "Last seal: Today 9:12 AM · 3 of 3 witnesses" or "No seal yet". */
+    private fun showSeal() {
+        lifecycleScope.launch {
+            val st = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookSeals.status(dao) }.getOrNull() }
+                ?: return@launch
+            if (isFinishing || isDestroyed) return@launch
+            val sw = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchSeal)
+            if (sw.isChecked != st.on) { showingSeal = true; sw.isChecked = st.on; showingSeal = false }
+            val last = st.last
+            findViewById<android.widget.TextView>(R.id.tvSealStatus).text = if (last == null) getString(R.string.muhar_status_none) else {
+                val at = com.innovation313.roshankhata.data.WhenWords.whenWords(
+                    last.sealedAt, System.currentTimeMillis(), com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)
+                )
+                Digits.string(resources, R.string.muhar_status_last,
+                    androidx.core.text.BidiFormatter.getInstance().unicodeWrap(Digits.toLatin(at)), st.stamped, st.of)
+            }
+            findViewById<MaterialButton>(R.id.btnSeals).visibility = if (last == null) View.GONE else View.VISIBLE
+        }
     }
 
     companion object {

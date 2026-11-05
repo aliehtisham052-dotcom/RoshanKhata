@@ -140,7 +140,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun linkBillItemsNamed(name: String, productId: Long): Int = refused()
     override suspend fun linkGoodsToProducts(): Int = refused()
     override suspend fun setHarvestPromise(partyId: Long, at: Long?): Unit = refused()
-    override suspend fun restoreAll(parties: List<Party>, entries: List<LedgerEntry>, cheques: List<Cheque>, cash: List<CashEntry>, plans: List<PaymentPlan>, installments: List<Installment>, bills: List<SupplierBill>, billItems: List<BillItem>, products: List<Product>, invoices: List<Invoice>, invoiceItems: List<InvoiceItem>, dismissedDuplicates: List<DismissedDuplicate>, entryItems: List<EntryItem>, dayCloses: List<DayClose>, schemes: List<Scheme>, staff: List<Staff>, attendance: List<StaffAttendance>, staffPayments: List<StaffPayment>, sales: List<Sale>, saleItems: List<SaleItem>, salePayments: List<SalePayment>, audit: List<AuditLog>, returns: List<SaleReturn>, returnItems: List<SaleReturnItem>, adjustments: List<StockAdjustment>, orders: List<PurchaseOrder>, orderItems: List<PurchaseOrderItem>, settings: List<BookSetting>, loyalty: List<LoyaltyEntry>, shifts: List<Shift>, keepAccess: Boolean): Unit = refused()
+    override suspend fun restoreAll(parties: List<Party>, entries: List<LedgerEntry>, cheques: List<Cheque>, cash: List<CashEntry>, plans: List<PaymentPlan>, installments: List<Installment>, bills: List<SupplierBill>, billItems: List<BillItem>, products: List<Product>, invoices: List<Invoice>, invoiceItems: List<InvoiceItem>, dismissedDuplicates: List<DismissedDuplicate>, entryItems: List<EntryItem>, dayCloses: List<DayClose>, schemes: List<Scheme>, staff: List<Staff>, attendance: List<StaffAttendance>, staffPayments: List<StaffPayment>, sales: List<Sale>, saleItems: List<SaleItem>, salePayments: List<SalePayment>, audit: List<AuditLog>, returns: List<SaleReturn>, returnItems: List<SaleReturnItem>, adjustments: List<StockAdjustment>, orders: List<PurchaseOrder>, orderItems: List<PurchaseOrderItem>, settings: List<BookSetting>, loyalty: List<LoyaltyEntry>, shifts: List<Shift>, bookSeals: List<BookSeal>, keepAccess: Boolean): Unit = refused()
     override suspend fun insertEntryNumbered(entry: LedgerEntry): Long = refused()
     override suspend fun keepEntryNumberHigh(): Unit = refused()
     override suspend fun insertEntryItems(items: List<EntryItem>): Unit = refused()
@@ -243,4 +243,8 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun openShift(shift: Shift): Long = refused()
     override suspend fun closeShift(id: Long, counted: Double, note: String?, now: Long): Shift = refused()
     override suspend fun linkSaleInvoice(saleId: Long, invoice: Invoice, items: List<InvoiceItem>): Long = refused()
+    override suspend fun insertSeal(seal: BookSeal): Long = refused()
+    override suspend fun setSealTokens(id: Long, tokens: String?): Unit = refused()
+    override suspend fun wipeSeals(): Unit = refused()
+    override suspend fun restoreSeals(items: List<BookSeal>): Unit = refused()
 }

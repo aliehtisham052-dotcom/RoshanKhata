@@ -3651,6 +3651,31 @@
     <string name="documents_title">دستاويز</string>
     <string name="doc_add">دستاويز شامل ڪريو</string>
     <string name="doc_add_other">ٻيا دستاويز</string>
+    <!-- Kitab ki Muhar, the book's seal (4 Nov 2026): BackupActivity's card, SealsActivity, the entry's proof. -->
+    <string name="muhar_title">ڪتاب جي مهر</string>
+    <string name="muhar_explain">ڏينهن ۾ هڪ ڀيرو ٽي آزاد ٽائيم سروسون توهان جي نين داخلائن جي فنگر پرنٽ تي وقت جي مهر هڻن ٿيون، ته جيئن پوءِ ثابت ڪري سگهو ته ڪا داخلا ان ڏينهن توهان جي ڪتاب ۾ اڳ ۾ ئي موجود هئي.</string>
+    <string name="muhar_switch">هر روز منهنجي ڪتاب تي مهر هڻو</string>
+    <string name="muhar_status_none">اڃا ڪا مهر ناهي</string>
+    <string name="muhar_status_last">آخري مهر: %1$s · %3$d مان %2$d شاهد</string>
+    <string name="muhar_open">مهرون ڏسو</string>
+    <string name="muhar_turn_on_body">هر روز صرف نين داخلائن جو فنگر پرنٽ (32 بائيٽ، پڙهڻ جهڙو ڪجهه به نه) ٽن مفت ٽائيم سروسن ڏانهن وڃي ٿو: FreeTSA، Sectigo ۽ DigiCert. مهر اڄ کان شروع ٿيندي: ان کان اڳ جون داخلائون الڳ الڳ ثابت نٿيون ٿي سگهن.</string>
+    <string name="muhar_turn_on">چالو ڪريو</string>
+    <string name="muhar_help">مهر ثابت ڪري ٿي ته ڪا داخلا پنهنجي مهر واري ڏينهن توهان جي ڪتاب ۾ موجود هئي، ۽ ان کان پوءِ ڪتاب ٻيهر نه لکيو ويو: پوءِ بدليل يا هٽايل داخلا پنهنجي مهر سان نٿي ملي، ۽ تبديلي ڪنهن ڇا ڪيو ۾ لکيل هوندي آهي. هن فون مان صرف فنگر پرنٽ وڃي ٿو، ڪڏهن به نالو يا رقم نه. مهر ان ڏينهن کان شروع ٿئي ٿي جنهن ڏينهن توهان ان کي چالو ڪريو. ايپ هر مهر جي بناوت، فنگر پرنٽ ۽ نمبر جاچي ٿي؛ سروسن جون صحيحون OpenSSL سان جاچيون وڃن ٿيون، جيئن شيئر ڪيل ثبوت فائل ۾ لکيل آهي. اها قانوني ايڊوانسڊ اليڪٽرانڪ صحيح ناهي: اهو هڪ ثبوت آهي، ۽ ان جو وزن عدالت طئي ڪري ٿي.</string>
+    <string name="muhar_witness_legend">✓ مهر لڳي وئي · … اڃا پڇيو پيو وڃي · ✕ مهر نه لڳي (هڪ هفتي کان پوءِ ڇڏي ڏنو)</string>
+    <string name="muhar_first_seal">پهرين مهر: مهر هتان کان شروع</string>
+    <string name="muhar_proof">مهر جو ثبوت</string>
+    <string name="muhar_proof_in">%1$s جي مهر ۾ شامل، مهر هڻڻ وارا: %2$s.</string>
+    <string name="muhar_proof_in_waiting">%1$s جي مهر ۾ شامل. اڃا ڪنهن به ٽائيم سروس مهر نه هنئي آهي؛ ايپ هڪ هفتي تائين روز ٻيهر پڇي ٿي.</string>
+    <string name="muhar_proof_not_yet">اڃا مهر نه لڳي. داخلائن تي ڏينهن ۾ هڪ ڀيرو مهر لڳي ٿي؛ هيءَ ايندڙ مهر ۾ ويندي.</string>
+    <string name="muhar_proof_before">مهر چالو ٿيڻ کان اڳ لکي وئي، ان ڪري ڪنهن به مهر ۾ ناهي.</string>
+    <string name="muhar_proof_changed">%1$s جي مهر کان پوءِ بدلي وئي. تبديلي ڪنهن ڇا ڪيو ۾ ڏسو.</string>
+    <string name="muhar_proof_checks">ايپ هر مهر جي بناوت، فنگر پرنٽ ۽ نمبر جاچي ٿي؛ صحيح OpenSSL سان جاچي وڃي ٿي، جيئن ثبوت فائل ۾ لکيل آهي.</string>
+    <string name="muhar_proof_share">ثبوت شيئر ڪريو</string>
+    <string name="muhar_seals_empty">اڃا ڪا مهر ناهي. بيڪ اپ جي اسڪرين تي ڪتاب جي مهر چالو ڪريو.</string>
+    <plurals name="muhar_entries">
+        <item quantity="one">%d داخلا تي مهر</item>
+        <item quantity="other">%d داخلائن تي مهر</item>
+    </plurals>
     <string name="doc_pick_kind">ڪهڙو دستاويز؟</string>
     <string name="order_paste">واٽس ايپ آرڊر پيسٽ ڪريو</string>
     <string name="order_paste_empty">پهريان گراهڪ جو آرڊر وارو پيغام ڪاپي ڪريو، پوءِ هتي پيسٽ ڪريو.</string>

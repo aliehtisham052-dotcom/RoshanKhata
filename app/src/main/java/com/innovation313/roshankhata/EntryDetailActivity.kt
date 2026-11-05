@@ -228,6 +228,7 @@ class EntryDetailActivity : BaseActivity() {
         // A sale can become an invoice; a payment received cannot.
         renderSeason(e)
         renderAdvice(e)
+        renderSealProof()
 
         // Once invoiced, the same button opens that invoice instead of a twin.
         val btnInvoice = findViewById<MaterialButton>(R.id.btnMakeInvoice)
@@ -937,6 +938,88 @@ class EntryDetailActivity : BaseActivity() {
             startActivity(Intent.createChooser(share, getString(R.string.share)))
         } catch (ex: Exception) {
             Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // ---------- Kitab ki Muhar: this entry's seal proof (4 Nov 2026) ----------
+
+    /** "Seal proof" shows once the book has any seal (the owner turned the seal on at some point). */
+    private fun renderSealProof() {
+        val btn = findViewById<MaterialButton>(R.id.btnSealProof)
+        lifecycleScope.launch {
+            val any = withContext(Dispatchers.IO) {
+                runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().latestSeal() != null }.getOrDefault(false)
+            }
+            if (isFinishing || isDestroyed) return@launch
+            btn.visibility = if (any) View.VISIBLE else View.GONE
+            btn.setOnClickListener { showSealProof() }
+        }
+    }
+
+    private fun showSealProof() {
+        lifecycleScope.launch {
+            val proof = withContext(Dispatchers.IO) {
+                runCatching {
+                    com.innovation313.roshankhata.data.BookSeals.proofOf(KhataDatabase.get(this@EntryDetailActivity).khataDao(), entryId)
+                }.getOrNull()
+            } ?: return@launch
+            if (isFinishing || isDestroyed) return@launch
+            val bidi = androidx.core.text.BidiFormatter.getInstance()
+            fun day(at: Long) = bidi.unicodeWrap(Digits.toLatin(Format.dateTime(at)))
+            val message = when (proof) {
+                is com.innovation313.roshankhata.data.BookSeals.Proof.Sealed -> {
+                    val stamps = com.innovation313.roshankhata.data.BookSeals.stamps(proof.seal)
+                    val by = com.innovation313.roshankhata.data.BookSeals.WITNESSES.mapNotNull { w ->
+                        stamps[w.name]?.let { bidi.unicodeWrap(w.name) + " " + day(it.time) }
+                    }
+                    (if (by.isEmpty()) getString(R.string.muhar_proof_in_waiting, day(proof.seal.sealedAt))
+                    else getString(R.string.muhar_proof_in, day(proof.seal.sealedAt), by.joinToString(", "))) +
+                        "\n\n" + getString(R.string.muhar_proof_checks)
+                }
+                is com.innovation313.roshankhata.data.BookSeals.Proof.Changed -> getString(R.string.muhar_proof_changed, day(proof.seal.sealedAt))
+                com.innovation313.roshankhata.data.BookSeals.Proof.NotYet -> getString(R.string.muhar_proof_not_yet)
+                com.innovation313.roshankhata.data.BookSeals.Proof.Before -> getString(R.string.muhar_proof_before)
+                com.innovation313.roshankhata.data.BookSeals.Proof.Unknown -> getString(R.string.entry_not_found)
+            }
+            val dialog = MaterialAlertDialogBuilder(this@EntryDetailActivity)
+                .setTitle(R.string.muhar_proof)
+                .setMessage(message)
+                .setNegativeButton(R.string.close, null)
+            if (proof is com.innovation313.roshankhata.data.BookSeals.Proof.Sealed) {
+                dialog.setPositiveButton(R.string.muhar_proof_share) { _, _ -> shareSealProof(proof) }
+            }
+            dialog.show()
+        }
+    }
+
+    /** The proof as a JSON file in cache/proofs (file_paths.xml), shared as text: muhar-RK-000123.json. */
+    private fun shareSealProof(proof: com.innovation313.roshankhata.data.BookSeals.Proof.Sealed) {
+        val number = entry?.entryNumber.orEmpty()
+        lifecycleScope.launch {
+            val file = withContext(Dispatchers.IO) {
+                runCatching {
+                    val dir = File(cacheDir, "proofs").apply { mkdirs() }
+                    val safe = number.replace(Regex("[^A-Za-z0-9-]"), "").ifEmpty { "entry-$entryId" }
+                    File(dir, "muhar-$safe.json").apply {
+                        writeText(com.innovation313.roshankhata.data.BookSeals.proofFile(proof, number), Charsets.UTF_8)
+                    }
+                }.getOrNull()
+            }
+            if (isFinishing || isDestroyed) return@launch
+            if (file == null) { Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show(); return@launch }
+            try {
+                val uri = FileProvider.getUriForFile(this@EntryDetailActivity, "$packageName.fileprovider", file)
+                // text/plain, as the backup is: WhatsApp refuses application/json.
+                val share = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    putExtra(Intent.EXTRA_SUBJECT, file.name)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(share, getString(R.string.muhar_proof_share)))
+            } catch (_: Exception) {
+                Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -2526,6 +2526,8 @@ interface KhataDao {
         settings: List<BookSetting> = emptyList(),
         loyalty: List<LoyaltyEntry> = emptyList(),
         shifts: List<Shift> = emptyList(),
+        // The book's seals (schema 44, Kitab ki Muhar). Additive.
+        bookSeals: List<BookSeal> = emptyList(),
         /**
          * Keep this book's owner PIN, recovery code and counter keys where the
          * copy has none (22 Oct 2026, the review: a copy made before the owner
@@ -2573,6 +2575,7 @@ interface KhataDao {
         wipeStaff()
         wipeAttendance()
         wipeStaffPayments()
+        wipeSeals()
 
         restoreProducts(products)
         restoreParties(parties)
@@ -2615,6 +2618,7 @@ interface KhataDao {
         }
         restoreLoyalty(loyalty)
         restoreShifts(shifts)
+        restoreSeals(bookSeals)
     }
 
 
@@ -4833,6 +4837,64 @@ interface KhataDao {
     /** Every row of the log in the order it was written, for [AuditChain.verify]. */
     @Query("SELECT * FROM audit_log ORDER BY id")
     suspend fun auditInOrder(): List<AuditLog>
+
+    // ---------- The book's seal (schema 44, Kitab ki Muhar — BookSeals) ----------
+
+    /** The newest khata entry's id (binned and all); 0 for an empty book. */
+    @Query("SELECT COALESCE(MAX(id), 0) FROM transactions")
+    suspend fun maxEntryId(): Long
+
+    /** Entries with ids in (after, upTo], in id order, at most [limit], with their party's uid — what a seal hashes. */
+    @Query(
+        "SELECT t.id, t.uid, t.entryNumber, t.amount, t.isGiven, t.timestamp, t.note, t.itemName, t.quantity, t.unit, " +
+            "t.paymentRef, p.uid AS partyUid FROM transactions t LEFT JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.id > :after AND t.id <= :upTo ORDER BY t.id LIMIT :limit"
+    )
+    suspend fun sealLinesPage(after: Long, upTo: Long, limit: Int): List<SealLine>
+
+    /** One entry as a seal hashes it. */
+    @Query(
+        "SELECT t.id, t.uid, t.entryNumber, t.amount, t.isGiven, t.timestamp, t.note, t.itemName, t.quantity, t.unit, " +
+            "t.paymentRef, p.uid AS partyUid FROM transactions t LEFT JOIN parties p ON p.id = t.partyId WHERE t.id = :id"
+    )
+    suspend fun sealLineOf(id: Long): SealLine?
+
+    @Insert
+    suspend fun insertSeal(seal: BookSeal): Long
+
+    @Query("SELECT * FROM book_seals ORDER BY id DESC LIMIT 1")
+    suspend fun latestSeal(): BookSeal?
+
+    @Query("SELECT * FROM book_seals WHERE id = :id")
+    suspend fun sealById(id: Long): BookSeal?
+
+    /** Seals made at or after [since], oldest first: the ones whose witnesses are still asked. */
+    @Query("SELECT * FROM book_seals WHERE sealedAt >= :since ORDER BY id")
+    suspend fun sealsSince(since: Long): List<BookSeal>
+
+    @Query("UPDATE book_seals SET tokens = :tokens WHERE id = :id")
+    suspend fun setSealTokens(id: Long, tokens: String?)
+
+    /** The seal whose range (fromId, toId] holds entry [entryId]. */
+    @Query("SELECT * FROM book_seals WHERE fromId < :entryId AND toId >= :entryId ORDER BY id DESC LIMIT 1")
+    suspend fun sealCovering(entryId: Long): BookSeal?
+
+    /** Any seal that reaches entry [entryId] (the first seal's toId too): an entry it reaches but none covers predates sealing. */
+    @Query("SELECT * FROM book_seals WHERE toId >= :entryId ORDER BY id LIMIT 1")
+    suspend fun sealReaching(entryId: Long): BookSeal?
+
+    /** The seals screen: newest first, at most [limit]. */
+    @Query("SELECT * FROM book_seals ORDER BY id DESC LIMIT :limit")
+    suspend fun sealsNewestFirst(limit: Int): List<BookSeal>
+
+    @Query("SELECT * FROM book_seals ORDER BY id")
+    suspend fun allSealsForBackup(): List<BookSeal>
+
+    @Query("DELETE FROM book_seals")
+    suspend fun wipeSeals()
+
+    @Insert
+    suspend fun restoreSeals(items: List<BookSeal>)
 }
 
 /** A bill's entry time: its own when the bill is dated that same day, else the bill's day (3 Nov 2026 audit, L09). */

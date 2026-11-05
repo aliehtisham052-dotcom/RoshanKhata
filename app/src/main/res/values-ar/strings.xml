@@ -3847,6 +3847,35 @@
     <string name="documents_title">المستندات</string>
     <string name="doc_add">إضافة مستند</string>
     <string name="doc_add_other">مستندات أخرى</string>
+    <!-- Kitab ki Muhar, the book's seal (4 Nov 2026): BackupActivity's card, SealsActivity, the entry's proof. -->
+    <string name="muhar_title">ختم الدفتر</string>
+    <string name="muhar_explain">مرة في اليوم تختم ثلاث خدمات توقيت مستقلة بصمة قيودك الجديدة بالوقت، لتتمكن لاحقًا من إثبات أن قيدًا ما كان في دفترك في ذلك اليوم.</string>
+    <string name="muhar_switch">اختم دفتري كل يوم</string>
+    <string name="muhar_status_none">لا يوجد ختم بعد</string>
+    <string name="muhar_status_last">آخر ختم: %1$s · %2$d من %3$d شهود</string>
+    <string name="muhar_open">عرض الأختام</string>
+    <string name="muhar_turn_on_body">كل يوم تُرسل بصمة القيود الجديدة فقط (32 بايت، لا شيء مقروء) إلى ثلاث خدمات توقيت مجانية: FreeTSA وSectigo وDigiCert. يبدأ الختم اليوم: القيود المكتوبة قبله لا يمكن إثباتها واحدًا واحدًا.</string>
+    <string name="muhar_turn_on">تشغيل</string>
+    <string name="muhar_help">يثبت الختم أن القيد كان في دفترك يوم ختمه، وأن الدفتر لم يُعد كتابته بعد ذلك: القيد الذي عُدّل أو حُذف لاحقًا لا يطابق ختمه، والتغيير مسجل في من فعل ماذا. لا يخرج من هذا الهاتف إلا البصمة، لا اسم ولا مبلغ أبدًا. يبدأ الختم من اليوم الذي تشغّله فيه. يفحص التطبيق شكل كل ختم وبصمته ورقمه؛ أما توقيع الخدمات فيُفحص بأداة OpenSSL كما يشرح ملف الإثبات المُشارَك. هذا ليس توقيعًا إلكترونيًا متقدمًا قانونيًا: إنه دليل، والمحكمة تقرر وزنه.</string>
+    <string name="muhar_witness_legend">✓ مختوم · … ما زال يُطلب · ✕ لم يُختم (تُرك بعد أسبوع)</string>
+    <string name="muhar_first_seal">الختم الأول: من هنا يبدأ الختم</string>
+    <string name="muhar_proof">إثبات الختم</string>
+    <string name="muhar_proof_in">ضمن ختم %1$s، ختمه: %2$s.</string>
+    <string name="muhar_proof_in_waiting">ضمن ختم %1$s. لم تختمه أي خدمة توقيت بعد؛ يعيد التطبيق الطلب كل يوم لمدة أسبوع.</string>
+    <string name="muhar_proof_not_yet">لم يُختم بعد. تُختم القيود مرة في اليوم؛ سيدخل هذا القيد في الختم التالي.</string>
+    <string name="muhar_proof_before">كُتب قبل تشغيل الختم، فهو ليس في أي ختم.</string>
+    <string name="muhar_proof_changed">تغيّر بعد ختم %1$s. انظر التغيير في من فعل ماذا.</string>
+    <string name="muhar_proof_checks">يفحص التطبيق شكل كل ختم وبصمته ورقمه؛ أما التوقيع فيُفحص بأداة OpenSSL كما يشرح ملف الإثبات.</string>
+    <string name="muhar_proof_share">مشاركة الإثبات</string>
+    <string name="muhar_seals_empty">لا يوجد ختم بعد. شغّل ختم الدفتر من شاشة النسخ الاحتياطي.</string>
+    <plurals name="muhar_entries">
+        <item quantity="zero">لا قيود مختومة</item>
+        <item quantity="one">قيد واحد مختوم</item>
+        <item quantity="two">قيدان مختومان</item>
+        <item quantity="few">%d قيود مختومة</item>
+        <item quantity="many">%d قيدًا مختومًا</item>
+        <item quantity="other">%d قيد مختوم</item>
+    </plurals>
     <string name="doc_pick_kind">أي مستند؟</string>
     <string name="order_paste">لصق طلب من واتساب</string>
     <string name="order_paste_empty">انسخ رسالة طلب الزبون أولاً، ثم الصقها هنا.</string>

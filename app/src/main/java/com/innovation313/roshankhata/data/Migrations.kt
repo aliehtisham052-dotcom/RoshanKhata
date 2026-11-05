@@ -777,7 +777,7 @@ val MIGRATION_39_40 = object : Migration(39, 40) {
     }
 }
 
-// KHATA_DB_VERSION (43) moved to the shared module with the database class (KMP Phase 3).
+// KHATA_DB_VERSION (44) moved to the shared module with the database class (KMP Phase 3).
 /** v41 (30 Oct 2026, the speed review): indexes only — the shared [Schema41] list. */
 val MIGRATION_40_41 = object : Migration(40, 41) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -796,6 +796,13 @@ val MIGRATION_41_42 = object : Migration(41, 42) {
 val MIGRATION_42_43 = object : Migration(42, 43) {
     override fun migrate(db: SupportSQLiteDatabase) {
         for (sql in Schema43.statements) db.execSQL(sql)
+    }
+}
+
+/** v44 (4 Nov 2026): the book's seal, Kitab ki Muhar — the shared [Schema44] list. */
+val MIGRATION_43_44 = object : Migration(43, 44) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema44.statements) db.execSQL(sql)
     }
 }
 
@@ -842,5 +849,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_39_40,
     MIGRATION_40_41,
     MIGRATION_41_42,
-    MIGRATION_42_43
+    MIGRATION_42_43,
+    MIGRATION_43_44
 )

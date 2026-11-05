@@ -36,7 +36,9 @@ import androidx.room.RoomDatabase
         PurchaseOrderItem::class,
         BookSetting::class,
         LoyaltyEntry::class,
-        Shift::class
+        Shift::class,
+        // The book's seal (schema 44, Kitab ki Muhar).
+        BookSeal::class
     ],
     version = KHATA_DB_VERSION,
     exportSchema = true
@@ -87,7 +89,8 @@ expect object KhataDatabaseConstructor : RoomDatabaseConstructor<KhataDatabase> 
 }
 
 /**
- * The schema version (43 since 4 Nov 2026: the owner's private note on a party, and a picture on a cashbook row and
+ * The schema version (44 since 4 Nov 2026: the book's seal, Kitab ki Muhar — one row a day of sealed entry
+ * fingerprints and their time stamps, [Schema44]; 43 since 4 Nov 2026: the owner's private note on a party, and a picture on a cashbook row and
  * on a cheque — [Schema43]; 42 since 3 Nov 2026: one covering index for every per-party sum, in place of
  * (partyId, isDeleted, timestamp) — [Schema42]; 40 since 29 Oct 2026: the documents — an invoice's kind,
  * status and the document it was made from; 39 since 28 Oct 2026: the payment
@@ -104,7 +107,7 @@ expect object KhataDatabaseConstructor : RoomDatabaseConstructor<KhataDatabase> 
  * with the database class (KMP Phase 3); the Android migrations stay in the
  * app and still end at this number.
  */
-const val KHATA_DB_VERSION = 43
+const val KHATA_DB_VERSION = 44
 
 object EntryNumber {
     fun next(existingCount: Int): String =

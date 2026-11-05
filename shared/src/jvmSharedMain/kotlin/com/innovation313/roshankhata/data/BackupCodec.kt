@@ -47,7 +47,13 @@ object BackupCodec {
      * through the invoice map, as sourceEntryId is through the entry map); 18
      * (4 Nov 2026, schema 43) the owner's private note on a party, and the
      * picture path of a cashbook row and of a cheque (paths, as a bill photo's
-     * — the files themselves travel only in a Drive backup's image archive).
+     * — the files themselves travel only in a Drive backup's image archive); 19
+     * (4 Nov 2026, schema 44) the book's seals (bookSeals: each day's sealed
+     * entry fingerprints as base64, the digests and the witnesses' time-stamp
+     * tokens) — a new table, so an older release refuses the file instead of
+     * restoring a book whose proofs it would drop in silence. The helper's copy
+     * (secrets = false) carries them too: they hold no PIN and no readable
+     * entry, only hashes and the TSAs' signed times.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -56,7 +62,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 18
+    const val FORMAT_VERSION = 19
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -259,6 +265,8 @@ object BackupCodec {
         })
         root.put("loyalty", JSONArray().apply { dao.allLoyaltyForBackup().forEach { put(loyaltyToJson(it)) } })
         root.put("shifts", JSONArray().apply { dao.allShiftsForBackup().forEach { put(shiftToJson(it)) } })
+        // Format 19 (schema 44): the book's seals. One row a day, so small enough to build here.
+        root.put("bookSeals", JSONArray().apply { dao.allSealsForBackup().forEach { put(sealToJson(it)) } })
 
         // The Business Profile — TEXT ONLY. The three image flags
         // (QR/signature/stamp saved) are deliberately excluded: restoring a
@@ -583,6 +591,10 @@ object BackupCodec {
             val shifts = root.optJSONArray("shifts")?.let { arr ->
                 (0 until arr.length()).map { jsonToShift(arr.getJSONObject(it)) }
             } ?: emptyList()
+            // Format 19. Absent before: no seals.
+            val bookSeals = root.optJSONArray("bookSeals")?.let { arr ->
+                (0 until arr.length()).map { jsonToSeal(arr.getJSONObject(it)) }
+            } ?: emptyList()
 
             // Business Profile is a single optional object, not an array. Null
             // in an older file, or in one written before the owner set any
@@ -681,6 +693,7 @@ object BackupCodec {
                 settings = settings,
                 loyalty = loyalty,
                 shifts = shifts,
+                bookSeals = bookSeals,
                 version = version,
                 exportedAt = root.optLong("exportedAt", 0L).takeIf { it > 0L }
             )
@@ -732,6 +745,8 @@ object BackupCodec {
         val settings: List<BookSetting> = emptyList(),
         val loyalty: List<LoyaltyEntry> = emptyList(),
         val shifts: List<Shift> = emptyList(),
+        /** The book's seals (format 19). */
+        val bookSeals: List<BookSeal> = emptyList(),
         /**
          * The file's format. From 12 its rows carry their uids, so a restore
          * can say exactly what it would take away ([RestoreCheck]); an older
@@ -812,7 +827,8 @@ object BackupCodec {
             orderItems = data.orderItems,
             settings = data.settings,
             loyalty = data.loyalty,
-            shifts = data.shifts
+            shifts = data.shifts,
+            bookSeals = data.bookSeals
         )
         // The restore itself is the first row of the restored log (POS Phase 5).
         dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
@@ -1603,6 +1619,22 @@ object BackupCodec {
         put("counted", s.counted ?: JSONObject.NULL); put("expected", s.expected ?: JSONObject.NULL)
         put("note", s.note ?: JSONObject.NULL); put("uid", s.uid ?: JSONObject.NULL)
     }
+
+    // ---------- The book's seals (format 19) ----------
+
+    private fun sealToJson(s: BookSeal) = JSONObject().apply {
+        put("id", s.id); put("sealedAt", s.sealedAt); put("fromId", s.fromId); put("toId", s.toId)
+        put("leafCount", s.leafCount); put("leaves", s.leaves?.let { B64.encode(it) } ?: JSONObject.NULL)
+        put("auditHead", s.auditHead ?: JSONObject.NULL); put("prevDigest", s.prevDigest ?: JSONObject.NULL)
+        put("digest", s.digest); put("tokens", s.tokens ?: JSONObject.NULL)
+    }
+
+    private fun jsonToSeal(o: JSONObject) = BookSeal(
+        id = o.getLong("id"), sealedAt = o.getLong("sealedAt"), fromId = o.getLong("fromId"), toId = o.getLong("toId"),
+        leafCount = o.optInt("leafCount", 0), leaves = o.optNullableString("leaves")?.let { B64.decode(it) },
+        auditHead = o.optNullableString("auditHead"), prevDigest = o.optNullableString("prevDigest"),
+        digest = o.getString("digest"), tokens = o.optNullableString("tokens")
+    )
 
     private fun jsonToShift(o: JSONObject) = Shift(
         id = o.getLong("id"), user = o.optNullableString("user"), device = o.optNullableString("device"),

@@ -78,6 +78,7 @@
         android:label="${appLabel}"
         android:supportsRtl="true"
         android:localeConfig="@xml/locales_config"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.RoshanKhata">
 
         <!--
@@ -258,6 +259,12 @@
 
         <activity
             android:name=".SnapshotsActivity"
+            android:exported="false"
+            android:parentActivityName=".BackupActivity" />
+
+        <!-- The book's seals (Kitab ki Muhar, 4 Nov 2026): each day's seal and its witnesses. -->
+        <activity
+            android:name=".SealsActivity"
             android:exported="false"
             android:parentActivityName=".BackupActivity" />
 
