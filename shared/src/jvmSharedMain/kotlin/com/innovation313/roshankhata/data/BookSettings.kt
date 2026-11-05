@@ -93,8 +93,13 @@ object BookSettings {
     /** The owner's PIN and recovery code: kept together, or not at all. */
     val OWNER_PIN_KEYS = setOf(OWNER_PIN_HASH, OWNER_PIN_SALT, OWNER_RECOVERY_HASH, OWNER_RECOVERY_SALT)
 
-    /** Who may do what on this book's devices: kept by a restore whose copy says nothing of them ([KhataDao.restoreAll]). */
-    val ACCESS_KEYS = OWNER_PIN_KEYS + setOf(COUNTER_USED, OWNER_DEVICES)
+    /**
+     * Who may do what on this book's devices: kept by a restore whose copy says nothing of them ([KhataDao.restoreAll]).
+     * Waris ki Chaabi's keys too (4 Nov 2026): never sent by live sync to the book's other devices (one phone keeps the
+     * vault), left out of the books' fingerprint, and kept when a copy made before Waris was turned on is restored — the
+     * vault on the relays must never be left with nobody able to refuse an heir.
+     */
+    val ACCESS_KEYS = OWNER_PIN_KEYS + setOf(COUNTER_USED, OWNER_DEVICES) + Waris.SECRET_KEYS
 
     /**
      * "1" when live sync may also go through Innovation 313's relay on the

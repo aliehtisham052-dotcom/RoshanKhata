@@ -254,7 +254,9 @@ object BackupCodec {
         root.put("purchaseOrderItems", JSONArray().apply { dao.allOrderItemsForBackup().forEach { put(orderItemToJson(it)) } })
         // Format 12: the book's own settings, loyalty points and shifts.
         root.put("bookSettings", JSONArray().apply {
-            dao.allSettingsForBackup().filter { secrets || it.key !in BookSettings.OWNER_PIN_KEYS }
+            // Waris ki Chaabi's keys (the vault's secrets, the heirs' and an heir's own links) never leave the owner's
+            // hands either: not in a helper's copy, not in the Waris snapshot itself (4 Nov 2026). A full backup keeps them.
+            dao.allSettingsForBackup().filter { secrets || (it.key !in BookSettings.OWNER_PIN_KEYS && !Waris.isSecret(it.key)) }
                 .forEach { put(JSONObject().apply { put("key", it.key); put("value", it.value ?: JSONObject.NULL) }) }
         })
         root.put("loyalty", JSONArray().apply { dao.allLoyaltyForBackup().forEach { put(loyaltyToJson(it)) } })
