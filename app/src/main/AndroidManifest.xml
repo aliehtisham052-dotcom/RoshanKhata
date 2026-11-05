@@ -496,6 +496,12 @@
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />
 
+        <!-- Waris ki Chaabi (4 Nov 2026): the owner's heirs and the books this phone is heir to. -->
+        <activity
+            android:name=".WarisActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
     </application>
 
 </manifest>
