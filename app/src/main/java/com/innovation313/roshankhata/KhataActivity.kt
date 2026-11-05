@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.maybeToday
 import androidx.lifecycle.repeatOnLifecycle
 import com.innovation313.roshankhata.data.get
 
@@ -477,6 +478,9 @@ class KhataActivity : BaseActivity() {
         com.innovation313.roshankhata.data.AppScope.launch(Dispatchers.IO) {
             kotlinx.coroutines.delay(DAILY_COPY_DELAY_MS)
             com.innovation313.roshankhata.data.Snapshots.maybeToday(app)
+            // The book's seal (Kitab ki Muhar, 4 Nov 2026): once a day while the owner keeps it on, after the copy
+            // has let go of the write connection; its time-stamp requests wait on the network, never on the screen.
+            com.innovation313.roshankhata.data.BookSeals.maybeToday(app)
         }
     }
 

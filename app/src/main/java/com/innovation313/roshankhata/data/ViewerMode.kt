@@ -157,6 +157,7 @@ object ViewerMode {
         "DuplicateCustomersActivity",
         "RecycleBinActivity",
         "SnapshotsActivity",
+        "SealsActivity",
         "LiveDevicesActivity",
         "ImageCropActivity",
         // Salaries are private: a helper may be on the list himself.

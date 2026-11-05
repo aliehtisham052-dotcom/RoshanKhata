@@ -43,4 +43,8 @@
     <cache-path
         name="camera"
         path="camera/" />
+    <!-- A khata entry's seal proof (Kitab ki Muhar, EntryDetailActivity): muhar-RK-000123.json. -->
+    <cache-path
+        name="proofs"
+        path="proofs/" />
 </paths>

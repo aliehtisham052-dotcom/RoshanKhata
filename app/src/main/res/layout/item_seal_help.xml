@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The seals screen's head: what the seal proves and what it is not; what the ticks mean; or that none is made yet. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:textAlignment="viewStart"
+        android:id="@+id/tvSealHelp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_note_card"
+        android:lineSpacingMultiplier="1.1"
+        android:padding="14dp"
+        android:text="@string/muhar_help"
+        android:textColor="@color/note_text"
+        android:textSize="13sp" />
+
+    <TextView
+        android:textAlignment="viewStart"
+        android:id="@+id/tvSealLegend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/muhar_witness_legend"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp" />
+
+    <TextView
+        android:textAlignment="viewStart"
+        android:id="@+id/tvSealsEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/muhar_seals_empty"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
+        android:visibility="gone" />
+</LinearLayout>

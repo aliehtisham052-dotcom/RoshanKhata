@@ -330,6 +330,22 @@
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/brand_green_text" />
 
+            <!-- Kitab ki Muhar (4 Nov 2026): where this entry stands in the book's seals, and its proof file.
+                 Outside the receipt card: the card is what the customer is sent. Shown once the book has a seal. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSealProof"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:minHeight="48dp"
+                android:text="@string/muhar_proof"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green_text"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/brand_green_text" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -240,6 +240,8 @@ object AccessUi {
     private val SCREENS = mapOf(
         "BackupActivity" to Access.Permission.BACKUP,
         "SnapshotsActivity" to Access.Permission.BACKUP,
+        // The book's seals (Kitab ki Muhar, 4 Nov 2026): opened from Backup, as the daily copies are.
+        "SealsActivity" to Access.Permission.BACKUP,
         // Removes a device from the book's live sync (23 Oct 2026): as Backup, where it is opened from.
         "LiveDevicesActivity" to Access.Permission.BACKUP,
         "BusinessSwitchActivity" to Access.Permission.SETTINGS,

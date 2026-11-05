@@ -3623,6 +3623,31 @@
     <string name="documents_title">Documents</string>
     <string name="doc_add">Document shamil karein</string>
     <string name="doc_add_other">Doosre documents</string>
+    <!-- Kitab ki Muhar, the book's seal (4 Nov 2026): BackupActivity's card, SealsActivity, the entry's proof. -->
+    <string name="muhar_title">Kitab ki Muhar</string>
+    <string name="muhar_explain">Roz ek baar teen alag time services aap ki nayi entries ke fingerprint par waqt ki muhar lagati hain, taake baad mein saabit kar sakein ke koi entry us din aap ki kitab mein pehle se maujood thi.</string>
+    <string name="muhar_switch">Har roz meri kitab par muhar lagayein</string>
+    <string name="muhar_status_none">Abhi koi muhar nahi</string>
+    <string name="muhar_status_last">Aakhri muhar: %1$s · %3$d mein se %2$d gawah</string>
+    <string name="muhar_open">Muhrein dekhein</string>
+    <string name="muhar_turn_on_body">Har roz sirf nayi entries ka fingerprint (32 bytes, parhne layak kuch nahi) teen muft time services ko jata hai: FreeTSA, Sectigo aur DigiCert. Muhar aaj se shuru hogi: is se pehle ki entries alag alag saabit nahi ho saktin.</string>
+    <string name="muhar_turn_on">Chalu karein</string>
+    <string name="muhar_help">Muhar saabit karti hai ke koi entry apni muhar wale din aap ki kitab mein maujood thi, aur us ke baad kitab dobara nahi likhi gayi: baad mein badli ya delete ki gayi entry apni muhar se nahi milti, aur tabdeeli Kis ne kya kiya mein likhi hoti hai. Is phone se sirf fingerprint jata hai, kabhi naam ya raqam nahi. Muhar usi din se shuru hoti hai jis din aap ise chalu karein. App har muhar ki banawat, fingerprint aur number check karti hai; services ke dastkhat OpenSSL se check hote hain, jaisa share ki gayi saboot file mein likha hai. Ye qanooni advanced electronic signature nahi: ye ek saboot hai, aur is ka wazan adalat tay karti hai.</string>
+    <string name="muhar_witness_legend">✓ muhar lag gayi · … abhi poocha ja raha hai · ✕ muhar nahi lagi (ek hafte baad chhor diya)</string>
+    <string name="muhar_first_seal">Pehli muhar: muhar yahin se shuru</string>
+    <string name="muhar_proof">Muhar ka saboot</string>
+    <string name="muhar_proof_in">%1$s ki muhar mein shamil, muhar lagane wale: %2$s.</string>
+    <string name="muhar_proof_in_waiting">%1$s ki muhar mein shamil. Abhi kisi time service ne muhar nahi lagayi; app ek hafte tak roz dobara poochti hai.</string>
+    <string name="muhar_proof_not_yet">Abhi muhar nahi lagi. Entries par din mein ek baar muhar lagti hai; ye agli muhar mein jayegi.</string>
+    <string name="muhar_proof_before">Muhar chalu hone se pehle likhi gayi, is liye kisi muhar mein nahi.</string>
+    <string name="muhar_proof_changed">%1$s ki muhar ke baad badli gayi. Tabdeeli Kis ne kya kiya mein dekhein.</string>
+    <string name="muhar_proof_checks">App har muhar ki banawat, fingerprint aur number check karti hai; dastkhat OpenSSL se check hote hain, jaisa saboot file mein likha hai.</string>
+    <string name="muhar_proof_share">Saboot share karein</string>
+    <string name="muhar_seals_empty">Abhi koi muhar nahi. Backup ki screen par Kitab ki Muhar chalu karein.</string>
+    <plurals name="muhar_entries">
+        <item quantity="one">%d entry par muhar</item>
+        <item quantity="other">%d entries par muhar</item>
+    </plurals>
     <string name="doc_pick_kind">Kaun si document?</string>
     <string name="order_paste">WhatsApp order paste karein</string>
     <string name="order_paste_empty">Pehle gahak ka order wala paigham copy karein, phir yahan paste karein.</string>

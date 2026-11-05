@@ -3623,6 +3623,31 @@
     <string name="documents_title">دستاویزات</string>
     <string name="doc_add">دستاویز شامل کریں</string>
     <string name="doc_add_other">دیگر دستاویزات</string>
+    <!-- Kitab ki Muhar, the book's seal (4 Nov 2026): BackupActivity's card, SealsActivity, the entry's proof. -->
+    <string name="muhar_title">کتاب کی مہر</string>
+    <string name="muhar_explain">روزانہ ایک بار تین آزاد ٹائم سروسز آپ کے نئے اندراجات کے فنگر پرنٹ پر وقت کی مہر لگاتی ہیں، تاکہ بعد میں ثابت کر سکیں کہ کوئی اندراج اُس دن آپ کی کتاب میں پہلے سے موجود تھا۔</string>
+    <string name="muhar_switch">ہر روز میری کتاب پر مہر لگائیں</string>
+    <string name="muhar_status_none">ابھی کوئی مہر نہیں</string>
+    <string name="muhar_status_last">آخری مہر: %1$s · %3$d میں سے %2$d گواہ</string>
+    <string name="muhar_open">مہریں دیکھیں</string>
+    <string name="muhar_turn_on_body">ہر روز صرف نئے اندراجات کا فنگر پرنٹ (32 بائٹ، پڑھنے کے قابل کچھ نہیں) تین مفت ٹائم سروسز کو جاتا ہے: FreeTSA، Sectigo اور DigiCert۔ مہر آج سے شروع ہوگی: اس سے پہلے کے اندراجات الگ الگ ثابت نہیں ہو سکتے۔</string>
+    <string name="muhar_turn_on">چالو کریں</string>
+    <string name="muhar_help">مہر ثابت کرتی ہے کہ کوئی اندراج اپنی مہر والے دن آپ کی کتاب میں موجود تھا، اور اس کے بعد کتاب دوبارہ نہیں لکھی گئی: بعد میں بدلا یا حذف کیا گیا اندراج اپنی مہر سے نہیں ملتا، اور تبدیلی کس نے کیا کیا میں درج ہوتی ہے۔ اس فون سے صرف فنگر پرنٹ جاتا ہے، کبھی نام یا رقم نہیں۔ مہر اُسی دن سے شروع ہوتی ہے جس دن آپ اسے چالو کریں۔ ایپ ہر مہر کی بناوٹ، فنگر پرنٹ اور نمبر جانچتی ہے؛ سروسز کے دستخط OpenSSL سے جانچے جاتے ہیں، جیسا کہ شیئر کی گئی ثبوت فائل میں لکھا ہے۔ یہ قانونی ایڈوانسڈ الیکٹرانک دستخط نہیں: یہ ایک ثبوت ہے، اور اس کا وزن عدالت طے کرتی ہے۔</string>
+    <string name="muhar_witness_legend">✓ مہر لگ گئی · … ابھی پوچھا جا رہا ہے · ✕ مہر نہیں لگی (ایک ہفتے بعد چھوڑ دیا)</string>
+    <string name="muhar_first_seal">پہلی مہر: مہر یہیں سے شروع</string>
+    <string name="muhar_proof">مہر کا ثبوت</string>
+    <string name="muhar_proof_in">%1$s کی مہر میں شامل، مہر لگانے والے: %2$s۔</string>
+    <string name="muhar_proof_in_waiting">%1$s کی مہر میں شامل۔ ابھی کسی ٹائم سروس نے مہر نہیں لگائی؛ ایپ ایک ہفتے تک روز دوبارہ پوچھتی ہے۔</string>
+    <string name="muhar_proof_not_yet">ابھی مہر نہیں لگی۔ اندراجات پر دن میں ایک بار مہر لگتی ہے؛ یہ اگلی مہر میں جائے گا۔</string>
+    <string name="muhar_proof_before">مہر چالو ہونے سے پہلے لکھا گیا، اس لیے کسی مہر میں نہیں۔</string>
+    <string name="muhar_proof_changed">%1$s کی مہر کے بعد بدلا گیا۔ تبدیلی کس نے کیا کیا میں دیکھیں۔</string>
+    <string name="muhar_proof_checks">ایپ ہر مہر کی بناوٹ، فنگر پرنٹ اور نمبر جانچتی ہے؛ دستخط OpenSSL سے جانچے جاتے ہیں، جیسا کہ ثبوت فائل میں لکھا ہے۔</string>
+    <string name="muhar_proof_share">ثبوت شیئر کریں</string>
+    <string name="muhar_seals_empty">ابھی کوئی مہر نہیں۔ بیک اپ کی سکرین پر کتاب کی مہر چالو کریں۔</string>
+    <plurals name="muhar_entries">
+        <item quantity="one">%d اندراج پر مہر</item>
+        <item quantity="other">%d اندراجات پر مہر</item>
+    </plurals>
     <string name="doc_pick_kind">کون سی دستاویز؟</string>
     <string name="order_paste">واٹس ایپ آرڈر پیسٹ کریں</string>
     <string name="order_paste_empty">پہلے گاہک کا آرڈر والا پیغام کاپی کریں، پھر یہاں پیسٹ کریں۔</string>
