@@ -24,8 +24,8 @@ No account, no server, no ads. Everything stays on the phone.
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 43 (43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
-  backup format 18 (the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
+- Room database, version 44 (44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
+  backup format 19 (the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -1720,6 +1720,49 @@ straight away; a smaller outlined one stacked above it (`fabOtherDocs`,
 side by side (lesson 58). `fabOtherDocs` is in ViewerMode's WRITE_BUTTONS:
 **a new button that writes goes into that list the same commit**, or a
 helper's read-only copy is offered a way to make documents.
+
+### The owner's phone round, the seal, payment voice, heir access (4–5 Nov 2026, kmp-desktop-16)
+
+Phone only for the three features (logic in :shared, no Windows UI yet). CI green at 5faccf3 (484 on-device tests);
+nothing tried on a real phone, a real TSA, a real wallet notification or the deployed relays.
+
+- **Nine fixes from the owner's photos:** Add Bill keeps what was typed (Back/Cancel/outside ask first;
+  `guardTyped`) — the same flaw is still in Cashbook, Close the day, Plans, Cheques, Staff, Schemes and Edit
+  entry; a supplier bill says how it was paid (On credit default / Cash / Bank-wallet chips; only cash bills count
+  in the drawer; the list says "Paid · Cash" or "You owe Rs X"; old cash bills offer "put on credit"); Close the
+  day and the Z report keep the drawer's minus; the promised day shows only while the customer owes; the Saved
+  card pads the list; the receipt names shop and customer ("<Shop> gave <Customer>", "Credit slip", the balance by
+  name, `ReceiptBalance`); RowToScreen.settle re-lays the list; Backup's intro comes before any Google prompt; the
+  goods help says "Optional". The Khata list's default order is most recent activity (a customer whose entries
+  are all deleted drops among the rest by name — by design).
+- **Kitab ki Muhar (schema 44, backup 19, `BookSeals`, `SealMath`, `Rfc3161`):** `book_seals`, no uid, not
+  synced, carried by backups (helper copy too). Once a day from KhataActivity.startDailyCopy, when the book's
+  switch is on: leaves = SHA-256 of each new entry's canonical text (unit via `UnitWords.canonical`, amount
+  %.3f), chained digest with the AuditChain head, stamped by FreeTSA, Sectigo and DigiCert (RFC 3161, DER by
+  hand, no BouncyCastle; cleartext allowed only for the two http TSAs in network_security_config.xml; LiveControl
+  `{"seal":false}` stops requests). The app checks a token's form, imprint and nonce, never its signature — the
+  proof file (entry detail → Seal proof) carries the openssl steps. **The leaf format is frozen once shipped**: a
+  change means a new leaf version prefix ("e2|").
+- **Paisa aaya ki awaaz (`PaymentNotice`, `PaymentListenerService`, `PaymentVoice`):** a NotificationListenerService
+  (exported=false, as the class doc's own example) reads only the wallet/bank apps the owner ticks; other apps give
+  only their name; the default SMS app, Messages and dialers are never read (Play's SMS/Call Log rule); OTP/PIN
+  texts and outgoing words are ignored. Speaks with an Urdu voice when the phone has one, else a chime; "Add to
+  khata" opens the existing I-got form prefilled (amount, wallet method, TID), through Gate with a per-phone key so
+  no other app can prefill; the owner presses Save. Off on a helper's phone. The patterns in `PaymentNotice.Words`
+  are invented — check them against the owner's real JazzCash/Easypaisa screenshots.
+- **Waris ki Chaabi (`Waris`, `WarisCrypto`, `WarisActivity`, `WarisWorker`; relays `/v1/w/{vault}/…` on all three,
+  test_relay.py `waris()` 61 checks):** the owner names up to 5 heirs (two QRs; the heir's P-256 key seals W, the
+  snapshot key); a weekly gzip+AES-GCM copy exported with `secrets = false` waits on the relays in ≤512 KiB chunks
+  (≤8 MiB); the heir can only ask; the owner is warned on Home and by notification and can refuse; after the wait
+  (default 30 days) the relay releases the box and the heir enters the book read-only through ViewerMode's file
+  path. A refusal is re-sent on every status run to any relay that missed it. Waris keys are in
+  `BookSettings.ACCESS_KEYS` (never synced, kept by a restore from a copy without them) and out of every
+  secrets=false copy. Relays keep Waris data out of live sync's cleanup; a vault idle 1095 days is removed.
+  **Not deployed:** the hosting needs relays.yml's relay-upload.zip by hand; Supabase and the Worker need their
+  deploy workflows. The Waris card image holds the heir's private key.
+- Privacy policy sections 20–22 (both languages); "Notification access" in permissions; the short version no
+  longer says there is no server. Data safety: nothing new collected (E2E-encrypted relay copies and on-device
+  notification reading are exempt by Play's own definitions, checked 4 Nov 2026).
 
 ### The shared module (KMP)
 
