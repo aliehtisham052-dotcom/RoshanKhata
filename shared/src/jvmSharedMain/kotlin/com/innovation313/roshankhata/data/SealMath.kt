@@ -28,8 +28,11 @@ data class SealLine(
  * day's seal digest is made of. Pure JVM, the same on the phone and the computer, and written so that anyone with the
  * proof file and `sha256sum` can do it again by hand:
  *
- *  - leaf = SHA-256 of the UTF-8 text `e1|uid|entryNumber|amount (2 decimals)|1 or 0|timestamp|note|itemName|
- *    quantity|unit|paymentRef|party uid` — an absent value is an empty field;
+ *  - leaf = SHA-256 of the UTF-8 text `e1|uid|entryNumber|amount (3 decimals)|1 or 0|timestamp|note|itemName|
+ *    quantity|unit|paymentRef|party uid` — an absent value is an empty field. Three decimals, so a JOD, TND or LYD
+ *    amount (three-decimal currencies) is sealed whole. The unit is written as [UnitWords.canonical] gives it: the
+ *    book's own repair on opening ([UnitWords.normalizeStatements]) turns a saved label ("bori", "بوری") into its
+ *    key ("bag") with the same table, so an old row repaired after it was sealed still matches its seal;
  *  - digest = SHA-256 of the UTF-8 header `rk-seal-v1\n<prevDigest>\n<sealedAt>\n<fromId>-<toId>\n<leafCount>\n
  *    <auditHead>\n` followed by the leaves' 32-byte hashes in id order, written as lowercase hex.
  *
@@ -49,13 +52,13 @@ object SealMath {
         LEAF_TAG,
         l.uid ?: "",
         l.entryNumber,
-        String.format(Locale.ROOT, "%.2f", l.amount),
+        String.format(Locale.ROOT, "%.3f", l.amount),
         if (l.isGiven) "1" else "0",
         l.timestamp.toString(),
         l.note ?: "",
         l.itemName ?: "",
         l.quantity?.toString() ?: "",
-        l.unit ?: "",
+        UnitWords.canonical(l.unit) ?: "",
         l.paymentRef ?: "",
         l.partyUid ?: ""
     ).joinToString("|")

@@ -17,11 +17,27 @@ class SealMathTest {
 
     @Test
     fun theLeafTextIsEveryFieldInOrderWithEmptyForNothing() {
-        assertEquals("e1|u1|RK-000007|1250.50|1|1700000000000||Urea|2.5|bag||p1", SealMath.leafText(line))
-        // printf 'e1|u1|RK-000007|1250.50|1|1700000000000||Urea|2.5|bag||p1' | sha256sum
-        assertEquals("70199e88b9461c40a982d8dbfa86de50b964d011a62d0b421ee2a48ee8827d76", SealMath.hex(SealMath.leafHash(SealMath.leafText(line))))
+        assertEquals("e1|u1|RK-000007|1250.500|1|1700000000000||Urea|2.5|bag||p1", SealMath.leafText(line))
+        // printf 'e1|u1|RK-000007|1250.500|1|1700000000000||Urea|2.5|bag||p1' | sha256sum
+        assertEquals("c3543bf80745578dcedb0758236730098abea0e1fe038eb21083d17d7a58d047", SealMath.hex(SealMath.leafHash(SealMath.leafText(line))))
         val got = line.copy(isGiven = false, amount = 3.0, quantity = null, unit = null, itemName = null, note = "cash", paymentRef = "TID 1", partyUid = null)
-        assertEquals("e1|u1|RK-000007|3.00|0|1700000000000|cash||||TID 1|", SealMath.leafText(got))
+        assertEquals("e1|u1|RK-000007|3.000|0|1700000000000|cash||||TID 1|", SealMath.leafText(got))
+        // A three-decimal currency (JOD, TND, LYD) is sealed whole: 12.345 and 12.346 are two leaves.
+        assertEquals("e1|u1|RK-000007|12.345|1|1700000000000||Urea|2.5|bag||p1", SealMath.leafText(line.copy(amount = 12.345)))
+    }
+
+    @Test
+    fun aUnitIsSealedAsTheBooksRepairWouldSaveItSoARepairedRowStillMatches() {
+        // An old row saved with a label ("bori", "بوری") is turned into its key ("bag") by the repair on opening
+        // (UnitWords.normalizeStatements); before or after, the leaf is the same.
+        val key = SealMath.leafText(line.copy(unit = "bag"))
+        assertEquals(key, SealMath.leafText(line.copy(unit = "bori")))
+        assertEquals(key, SealMath.leafText(line.copy(unit = " بوری ")))
+        assertEquals(key, SealMath.leafText(line.copy(unit = "Bag")))
+        // The owner's own word is kept as written (trimmed), as the repair keeps it.
+        assertEquals("e1|u1|RK-000007|1250.500|1|1700000000000||Urea|2.5|gaddi||p1", SealMath.leafText(line.copy(unit = "gaddi ")))
+        // Every label the repair maps reads as the key it maps to.
+        for ((label, k) in UnitWords.TO_KEY) assertEquals(label, k, UnitWords.canonical(label))
     }
 
     @Test
@@ -30,7 +46,7 @@ class SealMathTest {
         assertEquals("rk-seal-v1\nab\n1700000000123\n6-7\n1\n\n", header)
         val leaf = SealMath.leafHash(SealMath.leafText(line))
         // cat header.txt leaf.bin | sha256sum
-        assertEquals("2ac30e39ef184ab582b5cf629d3669485604822bb6cef3767c25133ba90f1f49", SealMath.digest(header, leaf))
+        assertEquals("1f3e9699238c4bcef0c75808b29fce696f2dad72626573195ffc6917dae512f2", SealMath.digest(header, leaf))
         // The same again is the same: nothing in it reads the clock or a random.
         assertEquals(SealMath.digest(header, leaf), SealMath.digest(SealMath.header("ab", 1_700_000_000_123, 6, 7, 1, null), leaf.copyOf()))
     }
@@ -41,7 +57,7 @@ class SealMathTest {
         val base = SealMath.digest(SealMath.header("ab", 1, 6, 7, 1, "h"), leaf)
         assertNotEquals(base, SealMath.digest(SealMath.header("ac", 1, 6, 7, 1, "h"), leaf))
         assertNotEquals(base, SealMath.digest(SealMath.header("ab", 1, 6, 7, 1, "i"), leaf))
-        assertNotEquals(base, SealMath.digest(SealMath.header("ab", 1, 6, 7, 1, "h"), SealMath.leafHash(SealMath.leafText(line.copy(amount = 1250.51)))))
+        assertNotEquals(base, SealMath.digest(SealMath.header("ab", 1, 6, 7, 1, "h"), SealMath.leafHash(SealMath.leafText(line.copy(amount = 1250.501)))))
         // The first seal: no previous digest, no leaves.
         assertEquals(64, SealMath.digest(SealMath.header(null, 1, 9, 9, 0, null), null).length)
     }
