@@ -176,3 +176,12 @@
 # (or a rule change) can never turn that check into "every screen allowed".
 -keepnames class com.innovation313.roshankhata.**Activity
 
+
+# ---------------------------------------------------------------------------
+# Payment voice (5 Nov 2026)
+# ---------------------------------------------------------------------------
+# Android binds the notification listener by the class name the manifest gives
+# it. AAPT's generated rules keep manifest components already; named here too,
+# with its no-argument constructor, so the feature never depends on that alone
+# (lesson 17: a missing listener fails silently on the phone, not in the build).
+-keep class com.innovation313.roshankhata.PaymentListenerService { <init>(); }

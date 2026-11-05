@@ -72,10 +72,24 @@ class KhataActivity : BaseActivity() {
          * save there. Never saved from here.
          */
         const val EXTRA_CARRY_AMOUNT = "carry_amount"
+
+        /**
+         * A payment a wallet or bank app announced, whose customer was not clear (PaymentVoice, 5 Nov 2026):
+         * the carried amount opens as "I got" ([EXTRA_CARRY_GOT]) with the note, way of paying and reference
+         * ([EXTRA_CARRY_NOTE], [EXTRA_CARRY_METHOD], [EXTRA_CARRY_REF]) on the customer the owner taps, and the
+         * search box starts on the sender's name when several matched ([EXTRA_CARRY_SEARCH]). Never saved here.
+         */
+        const val EXTRA_CARRY_GOT = "carry_got"
+        const val EXTRA_CARRY_NOTE = "carry_note"
+        const val EXTRA_CARRY_METHOD = "carry_method"
+        const val EXTRA_CARRY_REF = "carry_ref"
+        const val EXTRA_CARRY_SEARCH = "carry_search"
     }
 
     /** The calculator's answer waiting for a customer, or 0 for none. */
     private var carryAmount = 0.0
+    /** The carried amount came IN (a payment a wallet app announced), not the calculator's "I gave". */
+    private var carryGot = false
     private var carryBar: com.google.android.material.snackbar.Snackbar? = null
 
     private lateinit var adapter: PartyAdapter
@@ -267,6 +281,7 @@ class KhataActivity : BaseActivity() {
         selectionBar = findViewById(R.id.selectionBar)
 
         carryAmount = intent.getDoubleExtra(EXTRA_CARRY_AMOUNT, 0.0)
+        carryGot = runCatching { intent.getBooleanExtra(EXTRA_CARRY_GOT, false) }.getOrDefault(false)
         if (carryAmount > 0.0) {
             carryBar = com.google.android.material.snackbar.Snackbar.make(
                 findViewById(android.R.id.content),
@@ -313,6 +328,11 @@ class KhataActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) = render()
         })
+        // A payment whose sender matched several customers: the list starts narrowed to that name.
+        if (carryAmount > 0.0 && savedInstanceState == null) {
+            runCatching { intent.getStringExtra(EXTRA_CARRY_SEARCH) }.getOrNull()
+                ?.trim()?.takeIf { it.isNotEmpty() }?.let { etSearch.setText(it.take(60)) }
+        }
 
         // The shop button (11 Oct): the same sheet as Home's - the profile,
         // the Google account and every shop. It replaces the name that
@@ -1358,7 +1378,15 @@ class KhataActivity : BaseActivity() {
             // which the owner can switch there; back from it returns to the
             // calculator rather than to this picking list.
             intent.putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, carryAmount)
-                .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, true)
+                .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, !carryGot)
+            if (carryGot) {
+                // A payment that came in: its note, way and reference go on the form with it.
+                for ((from, to) in listOf(
+                    EXTRA_CARRY_NOTE to PartyDetailActivity.EXTRA_PREFILL_NOTE,
+                    EXTRA_CARRY_METHOD to PartyDetailActivity.EXTRA_PREFILL_METHOD,
+                    EXTRA_CARRY_REF to PartyDetailActivity.EXTRA_PREFILL_REF
+                )) runCatching { this.intent.getStringExtra(from) }.getOrNull()?.let { intent.putExtra(to, it) }
+            }
             carryBar?.dismiss()
             startActivity(intent)
             finish()

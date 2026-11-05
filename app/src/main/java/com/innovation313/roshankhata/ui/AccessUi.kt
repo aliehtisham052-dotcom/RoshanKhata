@@ -247,6 +247,8 @@ object AccessUi {
         "BusinessSwitchActivity" to Access.Permission.SETTINGS,
         "BusinessSettingsActivity" to Access.Permission.SETTINGS,
         "InvoiceSettingsActivity" to Access.Permission.SETTINGS,
+        // Which apps' notifications this phone reads (5 Nov 2026): the owner's or a manager's to decide.
+        "PaymentVoiceActivity" to Access.Permission.SETTINGS,
         "StaffActivity" to Access.Permission.STAFF,
         "RecycleBinActivity" to Access.Permission.EDIT_BOOK,
         "DuplicateCustomersActivity" to Access.Permission.EDIT_BOOK,
