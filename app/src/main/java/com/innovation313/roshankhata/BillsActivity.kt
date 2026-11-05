@@ -427,7 +427,8 @@ class BillsActivity : BaseActivity() {
         // silence (the owner's phone, 4 Nov 2026). An untouched form still
         // closes at once; anything typed asks first.
         val blankDate = billDate
-        guardTyped(
+        com.innovation313.roshankhata.ui.FormGuard.guard(
+            activity = this,
             dialog = form,
             title = R.string.bill_discard_title,
             message = R.string.bill_discard_msg,
@@ -456,43 +457,6 @@ class BillsActivity : BaseActivity() {
             form.dismiss()
             chooseScanSource(draft)
         }
-    }
-
-    /**
-     * Asks before a bill form closes with anything typed in it (4 Nov 2026):
-     * Back and Cancel ask "Discard?" (Keep editing / Discard) when [typed] says
-     * something is there, and close at once when nothing is; a tap beside the
-     * form no longer closes it at all. A callback on the dialog's own
-     * dispatcher, not onBackPressed/KEYCODE_BACK, so it also works on
-     * Android 16+ (as the add-entry form's details step does).
-     */
-    private fun guardTyped(
-        dialog: androidx.appcompat.app.AlertDialog,
-        title: Int,
-        message: Int,
-        typed: () -> Boolean,
-        onDiscard: () -> Unit = {}
-    ) {
-        dialog.setCanceledOnTouchOutside(false)
-        fun leave() {
-            if (!typed()) {
-                dialog.dismiss()
-                return
-            }
-            MaterialAlertDialogBuilder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setNegativeButton(R.string.bp_leave_keep, null)
-                .setPositiveButton(R.string.bp_leave_discard) { _, _ ->
-                    onDiscard()
-                    dialog.dismiss()
-                }
-                .show()
-        }
-        dialog.onBackPressedDispatcher.addCallback(object : androidx.activity.OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = leave()
-        })
-        dialog.getButton(android.content.DialogInterface.BUTTON_NEGATIVE)?.setOnClickListener { leave() }
     }
 
     /**
@@ -764,7 +728,8 @@ class BillsActivity : BaseActivity() {
             }
             .show().also { itemForm ->
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(itemForm)
-                guardTyped(
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@BillsActivity,
                     dialog = itemForm,
                     title = R.string.bp_leave_title,
                     message = R.string.bp_leave_msg,
@@ -1249,7 +1214,8 @@ class BillsActivity : BaseActivity() {
             .show().also { editForm ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(editForm, view, view.findViewById(R.id.billKeypad))
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(editForm)
-                guardTyped(
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@BillsActivity,
                     dialog = editForm,
                     title = R.string.bp_leave_title,
                     message = R.string.bp_leave_msg,

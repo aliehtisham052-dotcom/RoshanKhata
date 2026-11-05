@@ -169,39 +169,55 @@ class PlansActivity : BaseActivity() {
             .setTitle(R.string.add_plan)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val party = parties.firstOrNull {
-                    it.name.equals(etParty.text.toString().trim(), ignoreCase = true)
-                }
-                if (party == null) {
-                    Toast.makeText(this, R.string.select_party_first, Toast.LENGTH_LONG).show()
-                    return@setPositiveButton
-                }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so a customer or total the form refused threw the rest away.
+            .setPositiveButton(R.string.save, null)
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.planKeypad))
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    val party = parties.firstOrNull {
+                        it.name.equals(etParty.text.toString().trim(), ignoreCase = true)
+                    }
+                    if (party == null) {
+                        Toast.makeText(this@PlansActivity, R.string.select_party_first, Toast.LENGTH_LONG).show()
+                        etParty.requestFocus()
+                        return@onSave false
+                    }
 
-                val total = Calc.evalAmount(etTotal.text.toString())
-                if (total == null || total <= 0.0) {
-                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
+                    val total = Calc.evalAmount(etTotal.text.toString())
+                    if (total == null || total <= 0.0) {
+                        Toast.makeText(this@PlansActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                        etTotal.requestFocus()
+                        return@onSave false
+                    }
 
-                // AppScope, not lifecycleScope — a quick Back press right
-                // after Save must not be able to cancel this plan before it
-                // reaches the disk. See AppScope's own comment.
-                AppScope.launch {
+                    // AppScope, not lifecycleScope — a quick Back press right
+                    // after Save must not be able to cancel this plan before it
+                    // reaches the disk. See AppScope's own comment.
                     // Note what is NOT happening here: no ledger entry. The
                     // debt is already recorded. This only writes the promise.
-                    dao.insertPlan(
-                        PaymentPlan(
-                            partyId = party.id,
-                            totalAmount = total,
-                            installmentAmount = Calc.evalAmount(etInstallment.text.toString()),
-                            nextDueDate = nextDue,
-                            note = etNote.text.toString().trim().ifEmpty { null }
-                        )
+                    val plan = PaymentPlan(
+                        partyId = party.id,
+                        totalAmount = total,
+                        installmentAmount = Calc.evalAmount(etInstallment.text.toString()),
+                        nextDueDate = nextDue,
+                        note = etNote.text.toString().trim().ifEmpty { null }
                     )
+                    AppScope.launch { dao.insertPlan(plan) }
+                    true
                 }
+                // Back, a tap beside it or Cancel threw a typed plan away in silence (5 Nov 2026, the supplier
+                // bill's flaw). The form opens blank: a customer, a figure, a day or a note asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@PlansActivity,
+                    dialog = form,
+                    typed = {
+                        etParty.text.isNotBlank() || etTotal.text.isNotBlank() || etInstallment.text.isNotBlank() ||
+                            etNote.text.isNotBlank() || nextDue != null
+                    }
+                )
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.planKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showPlanActions(plan: PlanProgress) {
@@ -311,40 +327,62 @@ class PlansActivity : BaseActivity() {
             fields = listOf(etAmount),
             results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvAmountResult))
         )
+        // The amount as the form put it (the plan's instalment, or blank), to tell it from one the owner changed.
+        val openedAmount = etAmount.text.toString()
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.record_payment_title)
             .setMessage(getString(R.string.record_payment_help, plan.partyName))
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.evalAmount(etAmount.text.toString())
-                if (amount == null) {
-                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so a refused amount — or Cancel on the overpaying question — threw the
+            // typed payment away.
+            .setPositiveButton(R.string.save, null)
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.fullScreen(form, view)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    val amount = Calc.evalAmount(etAmount.text.toString())
+                    if (amount == null) {
+                        Toast.makeText(this@PlansActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                        etAmount.requestFocus()
+                        return@onSave false
+                    }
 
-                // Overpaying is allowed — people do hand over a round figure —
-                // but say so, because it may equally be a typo.
-                if (amount > plan.remaining) {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.record_payment_title)
-                        .setMessage(
-                            getString(
-                                R.string.plan_overpay_warning,
-                                Format.money(plan.remaining)
+                    // Overpaying is allowed — people do hand over a round figure —
+                    // but say so, because it may equally be a typo. Asked over the form:
+                    // Cancel goes back to it as it was, "Proceed anyway" records and closes it.
+                    if (amount > plan.remaining) {
+                        MaterialAlertDialogBuilder(this@PlansActivity)
+                            .setTitle(R.string.record_payment_title)
+                            .setMessage(
+                                getString(
+                                    R.string.plan_overpay_warning,
+                                    Format.money(plan.remaining)
+                                )
                             )
-                        )
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.proceed_anyway) { _, _ ->
-                            recordPayment(plan, amount, etNote.text.toString().trim())
-                        }
-                        .show()
-                } else {
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.proceed_anyway) { _, _ ->
+                                if (form.isShowing) {
+                                    recordPayment(plan, amount, etNote.text.toString().trim())
+                                    form.dismiss()
+                                }
+                            }
+                            .show()
+                        return@onSave false
+                    }
                     recordPayment(plan, amount, etNote.text.toString().trim())
+                    true
                 }
+                // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
+                // bill's flaw): a changed amount or a note asks first; the form as it opened closes at once.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@PlansActivity,
+                    dialog = form,
+                    typed = { etAmount.text.toString() != openedAmount || etNote.text.isNotBlank() }
+                )
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.fullScreen(it, view); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**

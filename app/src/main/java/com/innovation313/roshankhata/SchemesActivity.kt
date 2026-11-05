@@ -187,13 +187,30 @@ class SchemesActivity : BaseActivity() {
             .setTitle(R.string.scheme_mark_claimed)
             .setView(body)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val amount = com.innovation313.roshankhata.ui.CalcPad.figure(et.text)
-                if (amount == null || amount < 0) {
-                    Toast.makeText(this, R.string.scheme_claim_hint, Toast.LENGTH_SHORT).show()
-                } else AppScope.launch { dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so a figure the form could not read closed it with nothing saved.
+            .setPositiveButton(R.string.save, null)
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, body, pad)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    val amount = com.innovation313.roshankhata.ui.CalcPad.figure(et.text)
+                    if (amount == null || amount < 0) {
+                        Toast.makeText(this@SchemesActivity, R.string.scheme_claim_hint, Toast.LENGTH_SHORT).show()
+                        et.requestFocus()
+                        return@onSave false
+                    }
+                    AppScope.launch { dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }
+                    true
+                }
+                // Back, a tap beside it or Cancel threw a typed claim away in silence (5 Nov 2026, the supplier
+                // bill's flaw). The box opens blank: a figure in it asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@SchemesActivity,
+                    dialog = form,
+                    typed = { et.text.isNotBlank() }
+                )
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, body, pad); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     private fun showForm(existing: Scheme?) {
@@ -272,50 +289,90 @@ class SchemesActivity : BaseActivity() {
             btnStart.setOnClickListener { pickDate(start) { start = startOfDay(it); showDates() } }
             btnEnd.setOnClickListener { pickDate(end) { end = endOfDay(it); showDates() } }
 
+            // The form as it opened (a new scheme's blanks and its 90 days, or the scheme as saved), to tell what
+            // the owner changed from what he only looked at.
+            val boxes = listOf(etName, etCompany, etUnit, etNote) + targets + rewards
+            val openedTexts = boxes.map { it.text.toString() }
+            val openedParty = partyId
+            val openedStart = start
+            val openedEnd = end
+            val openedMeasure = rgMeasure.checkedRadioButtonId
+            val openedReward = rgReward.checkedRadioButtonId
+
             MaterialAlertDialogBuilder(this@SchemesActivity)
                 .setTitle(if (existing == null) R.string.schemes_add else R.string.scheme_edit)
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    val name = etName.text.toString().trim()
-                    val slabs = targets.indices.mapNotNull { i ->
-                        val t = Digits.parse(targets[i].text.toString())
-                        val r = Digits.parse(rewards[i].text.toString())
-                        if (t != null && t > 0 && r != null && r > 0) t to r else null
-                    }.sortedBy { it.first }
-                    when {
-                        name.isEmpty() -> Toast.makeText(this@SchemesActivity, R.string.scheme_need_name, Toast.LENGTH_SHORT).show()
-                        slabs.isEmpty() -> Toast.makeText(this@SchemesActivity, R.string.scheme_need_slab, Toast.LENGTH_SHORT).show()
-                        end < start -> Toast.makeText(this@SchemesActivity, R.string.scheme_bad_dates, Toast.LENGTH_SHORT).show()
-                        else -> {
-                            val byQty = rgMeasure.checkedRadioButtonId == R.id.rbQty
-                            val scheme = Scheme(
-                                id = existing?.id ?: 0,
-                                name = name,
-                                partyId = partyId,
-                                company = etCompany.text.toString().trim().ifEmpty { null },
-                                startDate = start,
-                                endDate = end,
-                                measure = if (byQty) SchemeMath.BY_QTY else SchemeMath.BY_VALUE,
-                                unit = if (byQty) UnitWords.canonical(etUnit.text.toString()) else null,
-                                rewardKind = when (rgReward.checkedRadioButtonId) {
-                                    R.id.rbAmount -> SchemeMath.AMOUNT
-                                    R.id.rbUnits -> SchemeMath.UNITS
-                                    else -> SchemeMath.PERCENT
-                                },
-                                target1 = slabs[0].first, reward1 = slabs[0].second,
-                                target2 = slabs.getOrNull(1)?.first, reward2 = slabs.getOrNull(1)?.second,
-                                target3 = slabs.getOrNull(2)?.first, reward3 = slabs.getOrNull(2)?.second,
-                                claimedAmount = existing?.claimedAmount,
-                                claimedAt = existing?.claimedAt,
-                                note = etNote.text.toString().trim().ifEmpty { null },
-                                createdAt = existing?.createdAt ?: System.currentTimeMillis()
-                            )
-                            AppScope.launch { dao.saveScheme(scheme) }
+                // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+                // whatever its listener decides, so a missing name, an empty slab or crossed dates threw the scheme away.
+                .setPositiveButton(R.string.save, null)
+                .show().also { form ->
+                    com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                    com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                        val name = etName.text.toString().trim()
+                        val slabs = targets.indices.mapNotNull { i ->
+                            val t = Digits.parse(targets[i].text.toString())
+                            val r = Digits.parse(rewards[i].text.toString())
+                            if (t != null && t > 0 && r != null && r > 0) t to r else null
+                        }.sortedBy { it.first }
+                        when {
+                            name.isEmpty() -> {
+                                Toast.makeText(this@SchemesActivity, R.string.scheme_need_name, Toast.LENGTH_SHORT).show()
+                                etName.requestFocus()
+                                false
+                            }
+                            slabs.isEmpty() -> {
+                                Toast.makeText(this@SchemesActivity, R.string.scheme_need_slab, Toast.LENGTH_SHORT).show()
+                                // The first slab's box that is missing: its target, else its reward.
+                                val firstTarget = Digits.parse(targets[0].text.toString())
+                                (if (firstTarget == null || firstTarget <= 0) targets[0] else rewards[0]).requestFocus()
+                                false
+                            }
+                            end < start -> {
+                                Toast.makeText(this@SchemesActivity, R.string.scheme_bad_dates, Toast.LENGTH_SHORT).show()
+                                false
+                            }
+                            else -> {
+                                val byQty = rgMeasure.checkedRadioButtonId == R.id.rbQty
+                                val scheme = Scheme(
+                                    id = existing?.id ?: 0,
+                                    name = name,
+                                    partyId = partyId,
+                                    company = etCompany.text.toString().trim().ifEmpty { null },
+                                    startDate = start,
+                                    endDate = end,
+                                    measure = if (byQty) SchemeMath.BY_QTY else SchemeMath.BY_VALUE,
+                                    unit = if (byQty) UnitWords.canonical(etUnit.text.toString()) else null,
+                                    rewardKind = when (rgReward.checkedRadioButtonId) {
+                                        R.id.rbAmount -> SchemeMath.AMOUNT
+                                        R.id.rbUnits -> SchemeMath.UNITS
+                                        else -> SchemeMath.PERCENT
+                                    },
+                                    target1 = slabs[0].first, reward1 = slabs[0].second,
+                                    target2 = slabs.getOrNull(1)?.first, reward2 = slabs.getOrNull(1)?.second,
+                                    target3 = slabs.getOrNull(2)?.first, reward3 = slabs.getOrNull(2)?.second,
+                                    claimedAmount = existing?.claimedAmount,
+                                    claimedAt = existing?.claimedAt,
+                                    note = etNote.text.toString().trim().ifEmpty { null },
+                                    createdAt = existing?.createdAt ?: System.currentTimeMillis()
+                                )
+                                AppScope.launch { dao.saveScheme(scheme) }
+                                true
+                            }
                         }
                     }
+                    // Back, a tap beside it or Cancel threw a typed scheme (or a correction) away in silence (5 Nov
+                    // 2026, the supplier bill's flaw): any box, the supplier, the dates or a choice changed asks first.
+                    com.innovation313.roshankhata.ui.FormGuard.guard(
+                        activity = this@SchemesActivity,
+                        dialog = form,
+                        typed = {
+                            boxes.map { it.text.toString() } != openedTexts || partyId != openedParty ||
+                                start != openedStart || end != openedEnd ||
+                                rgMeasure.checkedRadioButtonId != openedMeasure || rgReward.checkedRadioButtonId != openedReward
+                        }
+                    )
                 }
-                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
     }
 
