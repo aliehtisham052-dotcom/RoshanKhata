@@ -175,6 +175,8 @@ class EntryDetailActivity : BaseActivity() {
         val etPest = view.findViewById<EditText>(R.id.etAdvicePest).apply { setText(item.pest) }
         val etDose = view.findViewById<EditText>(R.id.etAdviceDose).apply { setText(item.dose) }
         fun typed(et: EditText) = et.text.toString().trim().ifEmpty { null }
+        // The advice as the line has it, to tell what the owner changed from what he only looked at.
+        val opened = listOf(etCrop, etPest, etDose).map { it.text.toString() }
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.advice_title, item.itemName.orEmpty()))
             .setView(view)
@@ -188,7 +190,16 @@ class EntryDetailActivity : BaseActivity() {
                     }
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Back, a tap beside it or Cancel threw typed advice away in silence (5 Nov 2026, the supplier bill's
+                // flaw): a change in any of the three boxes asks first; advice only looked at closes at once.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@EntryDetailActivity,
+                    dialog = form,
+                    typed = { listOf(etCrop, etPest, etDose).map { it.text.toString() } != opened }
+                )
+            }
     }
 
     private fun load() {
@@ -602,89 +613,94 @@ class EntryDetailActivity : BaseActivity() {
 
         MaterialAlertDialogBuilder(this)
             .setView(view)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.evalAmount(etAmount.text.toString())
-                if (amount == null) {
-                    Toast.makeText(this, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                // Only money, note and date live on the entry. The legacy goods
-                // columns are carried through untouched (copy keeps them) —
-                // nothing writes them any more.
-                val updated = e.copy(
-                    amount = amount,
-                    note = etNote.text.toString().trim().ifBlank { null },
-                    timestamp = chosenTime
-                )
-                // The goods, as the entry's complete new set of lines. A
-                // several-line entry keeps its lines untouched (see above).
-                // A single line keeps its rate and bonus flag, which this
-                // dialog does not show; everything else is what was typed.
-                val newItems: List<EntryItem> = if (!canEditGoods) {
-                    items
-                } else {
-                    listOfNotNull(
-                        EntryItem.ofGoods(
-                            itemName = etItemName.text.toString().trim().ifEmpty { null },
-                            quantity = Digits.parse(etQuantity.text),
-                            unit = UnitWords.canonical(etUnit.text.toString()),
-                            productId = matchedProductId,
-                            billItemId = selectedBatch?.id,
-                            rate = line?.rate
-                        )?.copy(
-                            isBonus = line?.isBonus ?: false,
-                            // The line's spray advice (v25) is not on this
-                            // small form; it must survive the edit.
-                            crop = line?.crop, pest = line?.pest, dose = line?.dose
-                        )
-                    )
-                }
-                // AppScope, not lifecycleScope — see AppScope's own comment.
-                // This dialog closes the instant Save is tapped, while the
-                // write is still in flight; a quick Back press right after
-                // must not be able to cancel a correction any more than it
-                // could a new entry.
-                val sigChanged = sigRow.changed
-                val sig = sigRow.current
-                AppScope.launch {
-                    dao.updateEntryWithItems(updated, newItems)
-                    dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount))
-                    if (sigChanged) runCatching {
-                        if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(applicationContext, updated.id, sig)
-                        else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
-                    }
-                    val savedItems = dao.itemsOfEntry(updated.id)
-                    // Half of a cash sale whose amount changed: its other half is asked about (3 Nov 2026 audit, M13).
-                    val pair = if (e.pairedEntryId == null || !com.innovation313.roshankhata.data.Money.isNotZero(amount - e.amount)) null
-                        else runCatching { dao.pairToFollow(e, e.amount) }.getOrNull()
-                    withContext(Dispatchers.Main) {
-                        if (!isFinishing && !isDestroyed) {
-                            entry = updated
-                            items = savedItems
-                            render(updated)
-                            if (sigChanged) showSignature()
-                            Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
-                                .show()
-                            if (pair != null) {
-                                AlertDialog.Builder(this@EntryDetailActivity)
-                                    .setTitle(R.string.edit_pair_title)
-                                    .setMessage(getString(R.string.edit_pair_message, pair.entryNumber,
-                                        com.innovation313.roshankhata.ui.Format.money(e.amount),
-                                        com.innovation313.roshankhata.ui.Format.money(amount)))
-                                    .setPositiveButton(R.string.edit_pair_both) { _, _ ->
-                                        AppScope.launch { dao.setPairAmount(pair.id, e.id, amount) }
-                                    }
-                                    .setNegativeButton(R.string.delete_pair_one, null)
-                                    .show()
-                            }
-                        }
-                    }
-                }
-            }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so an amount the form could not read threw the whole correction away.
+            .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, view, pad)
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    val amount = Calc.evalAmount(etAmount.text.toString())
+                    if (amount == null) {
+                        Toast.makeText(this@EntryDetailActivity, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
+                        etAmount.requestFocus()
+                        return@onSave false
+                    }
+                    // Only money, note and date live on the entry. The legacy goods
+                    // columns are carried through untouched (copy keeps them) —
+                    // nothing writes them any more.
+                    val updated = e.copy(
+                        amount = amount,
+                        note = etNote.text.toString().trim().ifBlank { null },
+                        timestamp = chosenTime
+                    )
+                    // The goods, as the entry's complete new set of lines. A
+                    // several-line entry keeps its lines untouched (see above).
+                    // A single line keeps its rate and bonus flag, which this
+                    // dialog does not show; everything else is what was typed.
+                    val newItems: List<EntryItem> = if (!canEditGoods) {
+                        items
+                    } else {
+                        listOfNotNull(
+                            EntryItem.ofGoods(
+                                itemName = etItemName.text.toString().trim().ifEmpty { null },
+                                quantity = Digits.parse(etQuantity.text),
+                                unit = UnitWords.canonical(etUnit.text.toString()),
+                                productId = matchedProductId,
+                                billItemId = selectedBatch?.id,
+                                rate = line?.rate
+                            )?.copy(
+                                isBonus = line?.isBonus ?: false,
+                                // The line's spray advice (v25) is not on this
+                                // small form; it must survive the edit.
+                                crop = line?.crop, pest = line?.pest, dose = line?.dose
+                            )
+                        )
+                    }
+                    // AppScope, not lifecycleScope — see AppScope's own comment.
+                    // This dialog closes the instant Save is tapped, while the
+                    // write is still in flight; a quick Back press right after
+                    // must not be able to cancel a correction any more than it
+                    // could a new entry.
+                    val sigChanged = sigRow.changed
+                    val sig = sigRow.current
+                    AppScope.launch {
+                        dao.updateEntryWithItems(updated, newItems)
+                        dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount))
+                        if (sigChanged) runCatching {
+                            if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(applicationContext, updated.id, sig)
+                            else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
+                        }
+                        val savedItems = dao.itemsOfEntry(updated.id)
+                        // Half of a cash sale whose amount changed: its other half is asked about (3 Nov 2026 audit, M13).
+                        val pair = if (e.pairedEntryId == null || !com.innovation313.roshankhata.data.Money.isNotZero(amount - e.amount)) null
+                            else runCatching { dao.pairToFollow(e, e.amount) }.getOrNull()
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) {
+                                entry = updated
+                                items = savedItems
+                                render(updated)
+                                if (sigChanged) showSignature()
+                                Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
+                                    .show()
+                                if (pair != null) {
+                                    AlertDialog.Builder(this@EntryDetailActivity)
+                                        .setTitle(R.string.edit_pair_title)
+                                        .setMessage(getString(R.string.edit_pair_message, pair.entryNumber,
+                                            com.innovation313.roshankhata.ui.Format.money(e.amount),
+                                            com.innovation313.roshankhata.ui.Format.money(amount)))
+                                        .setPositiveButton(R.string.edit_pair_both) { _, _ ->
+                                            AppScope.launch { dao.setPairAmount(pair.id, e.id, amount) }
+                                        }
+                                        .setNegativeButton(R.string.delete_pair_one, null)
+                                        .show()
+                                }
+                            }
+                        }
+                    }
+                    true
+                }
                 // Back, a tap beside it or Cancel threw a correction away in silence (5 Nov 2026, the supplier bill's
                 // flaw): a changed box, day, batch or signature asks first; an edit only looked at closes at once.
                 com.innovation313.roshankhata.ui.FormGuard.guard(

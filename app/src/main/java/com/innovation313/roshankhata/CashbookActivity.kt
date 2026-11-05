@@ -524,46 +524,50 @@ class CashbookActivity : BaseActivity() {
                 // A dismiss for the camera's sake never happens (the form stays behind it); a closed form's picture goes.
                 if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }
             }
-            .setPositiveButton(R.string.save) { _, _ ->
-                val amount = Calc.evalAmount(etAmount.text.toString())
-                if (amount == null) {
-                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-
-                val category = etCategory.text.toString().trim()
-                if (category.isEmpty()) {
-                    Toast.makeText(this, R.string.enter_category, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-
-                // AppScope, not lifecycleScope — see AppScope's own comment.
-                // This dialog closes the instant Save is tapped and shows no
-                // progress, so a quick Back press right after could cancel the
-                // write before it landed, taking the typed amount, category,
-                // note and date with it.
-                // The picture goes with the row; the form lets go of it before the dialog's dismiss runs.
-                val photo = pendingPhoto
-                written = true
-                pendingPhoto = null
-                AppScope.launch {
-                    dao.insertCashEntryAudited(
-                        CashEntry(
-                            amount = amount,
-                            isIncome = isIncome,
-                            category = category,
-                            note = etNote.text.toString().trim().ifEmpty { null },
-                            timestamp = chosenTime,
-                            paymentMethod = chosenMethod(),
-                            paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString()),
-                            photoPath = photo
-                        )
-                    )
-                }
-            }
+            // Save is wired after show() (5 Nov 2026), as Close the day's: a builder's button closes the dialog
+            // whatever its listener decides, so an amount or a category the form refused threw the rest away.
+            .setPositiveButton(R.string.save, null)
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.cashKeypad))
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    val amount = Calc.evalAmount(etAmount.text.toString())
+                    if (amount == null) {
+                        Toast.makeText(this@CashbookActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                        etAmount.requestFocus()
+                        return@onSave false
+                    }
+
+                    val category = etCategory.text.toString().trim()
+                    if (category.isEmpty()) {
+                        Toast.makeText(this@CashbookActivity, R.string.enter_category, Toast.LENGTH_SHORT).show()
+                        etCategory.requestFocus()
+                        return@onSave false
+                    }
+
+                    // AppScope, not lifecycleScope — see AppScope's own comment.
+                    // This dialog closes the instant Save is tapped and shows no
+                    // progress, so a quick Back press right after could cancel the
+                    // write before it landed, taking the typed amount, category,
+                    // note and date with it.
+                    // The picture goes with the row; the form lets go of it before the dialog's dismiss runs.
+                    val photo = pendingPhoto
+                    written = true
+                    pendingPhoto = null
+                    // What the form says at Save, read here on the main thread rather than inside the write.
+                    val entry = CashEntry(
+                        amount = amount,
+                        isIncome = isIncome,
+                        category = category,
+                        note = etNote.text.toString().trim().ifEmpty { null },
+                        timestamp = chosenTime,
+                        paymentMethod = chosenMethod(),
+                        paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString()),
+                        photoPath = photo
+                    )
+                    AppScope.launch { dao.insertCashEntryAudited(entry) }
+                    true
+                }
                 // Back, a tap beside it or Cancel threw a typed amount (and the receipt's picture) away in silence
                 // (5 Nov 2026, the supplier bill's flaw): the form opens blank, on Cash and now, and anything changed
                 // from that — a picture waiting for Save included — asks first; an untouched form closes at once.
