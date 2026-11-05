@@ -383,6 +383,7 @@ class EveryScreenOpensTest(
             open<BackupActivity>("Backup"),
             open<LiveDevicesActivity>("Live sync devices"),
             open<ViewerActivity>("Helper's phone"),
+            open<WarisActivity>("Waris ki Chaabi"),
             open<ImageCropActivity>("Image crop (no picture)"),
             open<AboutActivity>("About"),
             open<HelpActivity>("Help"),

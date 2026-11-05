@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A Waris code full screen (the owner's QR1, the heir's QR2): the title, the code on white, the plain steps, the buttons. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvQrTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/ivQrCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true"
+            android:background="@color/white"
+            android:contentDescription="@string/waris_title"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/tvQrSteps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="15sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnQrMain"
+            style="@style/BackupPrimaryButton"
+            android:layout_marginTop="20dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnQrClose"
+            style="@style/BackupOutlineButton"
+            android:layout_marginTop="10dp"
+            android:text="@string/close" />
+    </LinearLayout>
+</ScrollView>
