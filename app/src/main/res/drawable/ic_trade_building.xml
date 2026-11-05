@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Bricks: building material. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): a brick wall.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M2,5h9v4H2zM13,5h9v4h-9zM2,11h5v4H2zM9,11h6v4H9zM17,11h5v4h-5zM2,17h9v4H2zM13,17h9v4h-9z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M3.5,9.7H5.95A1,1 0 0,1 6.95,10.7V13.3A1,1 0 0,1 5.95,14.3H3.5A1,1 0 0,1 2.5,13.3V10.7A1,1 0 0,1 3.5,9.7Z M9.05,9.7H14.95A1,1 0 0,1 15.95,10.7V13.3A1,1 0 0,1 14.95,14.3H9.05A1,1 0 0,1 8.05,13.3V10.7A1,1 0 0,1 9.05,9.7Z M18.05,9.7H20.5A1,1 0 0,1 21.5,10.7V13.3A1,1 0 0,1 20.5,14.3H18.05A1,1 0 0,1 17.05,13.3V10.7A1,1 0 0,1 18.05,9.7Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3.5,4H10.45A1,1 0 0,1 11.45,5V7.6A1,1 0 0,1 10.45,8.6H3.5A1,1 0 0,1 2.5,7.6V5A1,1 0 0,1 3.5,4Z M13.55,4H20.5A1,1 0 0,1 21.5,5V7.6A1,1 0 0,1 20.5,8.6H13.55A1,1 0 0,1 12.55,7.6V5A1,1 0 0,1 13.55,4Z M3.5,15.4H10.45A1,1 0 0,1 11.45,16.4V19A1,1 0 0,1 10.45,20H3.5A1,1 0 0,1 2.5,19V16.4A1,1 0 0,1 3.5,15.4Z M13.55,15.4H20.5A1,1 0 0,1 21.5,16.4V19A1,1 0 0,1 20.5,20H13.55A1,1 0 0,1 12.55,19V16.4A1,1 0 0,1 13.55,15.4Z" />
 </vector>
