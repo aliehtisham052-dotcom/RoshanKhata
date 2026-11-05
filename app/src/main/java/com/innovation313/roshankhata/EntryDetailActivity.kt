@@ -488,6 +488,9 @@ class EntryDetailActivity : BaseActivity() {
         var selectedBatch: BatchOption? = null
         var matchedProductId: Long? = line?.productId
         var batchOptions: List<BatchOption> = emptyList()
+        // A batch the owner picked himself. The button is primed with the entry's own batch after the form opens,
+        // so what it shows is not compared; the owner's pick is what counts as a change when he leaves.
+        var batchPicked = false
 
         fun labelFor(batch: BatchOption?) = if (batch == null) {
             getString(R.string.pick_batch)
@@ -499,6 +502,7 @@ class EntryDetailActivity : BaseActivity() {
             btnBatch.setOnClickListener {
                 showBatchPickerDialog(batchOptions) { chosen ->
                     selectedBatch = chosen
+                    batchPicked = true
                     btnBatch.text = labelFor(chosen)
                 }
             }
@@ -592,6 +596,10 @@ class EntryDetailActivity : BaseActivity() {
             initial = chosenTime
         ) { chosenTime = it; editTime = it }
 
+        // The boxes as the entry filled them, to tell a correction from a look.
+        val boxes = listOf(etAmount, etNote, etItemName, etQuantity, etUnit)
+        val opened = boxes.map { it.text.toString() }
+
         MaterialAlertDialogBuilder(this)
             .setView(view)
             .setPositiveButton(R.string.save) { _, _ ->
@@ -674,7 +682,20 @@ class EntryDetailActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, pad); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, view, pad)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Back, a tap beside it or Cancel threw a correction away in silence (5 Nov 2026, the supplier bill's
+                // flaw): a changed box, day, batch or signature asks first; an edit only looked at closes at once.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@EntryDetailActivity,
+                    dialog = form,
+                    typed = {
+                        boxes.map { it.text.toString() } != opened || chosenTime != e.timestamp ||
+                            batchPicked || sigRow.changed
+                    }
+                )
+            }
     }
 
     /**

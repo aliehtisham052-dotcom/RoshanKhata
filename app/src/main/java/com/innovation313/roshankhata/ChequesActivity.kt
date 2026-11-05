@@ -256,6 +256,12 @@ class ChequesActivity : BaseActivity() {
             ).show()
         }
 
+        // The form as it opened — blank and "received" for a new cheque, the cheque's own values for an edit — to
+        // tell what the owner changed from what he only looked at.
+        val opened = listOf(etParty, etAmount, etNumber, etBank, etNote).map { it.text.toString() }
+        val openedReceived = rbReceived.isChecked
+        val openedDue = dueDate
+
         MaterialAlertDialogBuilder(this)
             .setTitle(if (existing == null) R.string.add_cheque else R.string.edit_cheque)
             .setView(view)
@@ -333,7 +339,28 @@ class ChequesActivity : BaseActivity() {
                     }
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.chequeKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.chequeKeypad))
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Back, a tap beside it or Cancel threw a typed cheque (or a correction) away in silence (5 Nov 2026,
+                // the supplier bill's flaw): any box, the way, the day or a new cheque's waiting picture asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@ChequesActivity,
+                    dialog = form,
+                    typed = {
+                        listOf(etParty, etAmount, etNumber, etBank, etNote).map { it.text.toString() } != opened ||
+                            rbReceived.isChecked != openedReceived || dueDate != openedDue ||
+                            (existing == null && pendingPhoto != null)
+                    },
+                    onDiscard = {
+                        // A new cheque's picture goes with its form, as the bill form's kept photo does.
+                        if (existing == null) {
+                            com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto)
+                            pendingPhoto = null
+                        }
+                    }
+                )
+            }
     }
 
     private fun showChequeActions(cheque: ChequeWithParty) {

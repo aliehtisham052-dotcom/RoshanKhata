@@ -782,6 +782,8 @@
     <string name="bill_state_paid_by">ادا شدہ · %1$s</string>
     <string name="bill_discard_title">یہ بل چھوڑ دیں؟</string>
     <string name="bill_discard_msg">اس بل پر جو آپ نے لکھا ہے وہ ضائع ہو جائے گا۔</string>
+    <string name="form_discard_title">جو لکھا ہے اسے چھوڑ دیں؟</string>
+    <string name="form_discard_msg">اس فارم میں جو آپ نے لکھا ہے وہ ضائع ہو جائے گا۔</string>
     <string name="add_invoice">انوائس شامل کریں</string>
     <string name="invoice_customer_hint">گاہک کا نام</string>
     <string name="invoice_phone_hint">فون (اختیاری)</string>
