@@ -91,7 +91,7 @@ class BookSealsTest {
 
     @Test
     fun theNextDaysSealHoldsTheNewEntriesChainedAndEachEntrySaysWhereItStands() = runBlocking {
-        val ali = dao.insertParty(Party(name = "Ali"))
+        val ali = dao.insertParty(Party(name = "Ali", phone = "03000000001"))
         val bilal = dao.insertParty(Party(name = "Bilal"))
         entry(ali, 100.0)
         val first = BookSeals.turnOn(dao, t0)!!
@@ -115,6 +115,12 @@ class BookSealsTest {
         assertEquals(second.id, proof.seal.id)
         val file = JSONObject(BookSeals.proofFile(proof, "RK-000003", madeAt = t0 + day))
         assertEquals(proof.leafText, file.getJSONObject("entry").getString("leafText"))
+        // Three decimals, and nothing of the customer but his random uid: no name, no phone.
+        assertTrue(SealMath.leafText(dao.sealLineOf(e1)!!).contains("|1250.500|1|"))
+        // (The leaves are hashes in base64; taken out so a chance "Ali" in them cannot fail the check.)
+        val whole = JSONObject(BookSeals.proofFile(proof, "RK-000003", madeAt = t0 + day))
+            .also { it.getJSONObject("seal").remove("leaves") }.toString()
+        assertFalse(whole.contains("Ali")); assertFalse(whole.contains("Bilal")); assertFalse(whole.contains("03000000001"))
         assertEquals(second.digest, file.getJSONObject("seal").getString("digest"))
         // A verifier's sum, from the file alone: SHA-256(header + base64-decoded leaves) is the digest.
         val s = file.getJSONObject("seal")

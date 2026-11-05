@@ -278,7 +278,7 @@ object BookSeals {
                 }
             })
             put("howToVerify", JSONArray().apply {
-                put("1. The entry: SHA-256 of the UTF-8 bytes of entry.leafText must equal entry.leafSha256.")
+                put("1. The entry: SHA-256 of the UTF-8 bytes of entry.leafText must equal entry.leafSha256. The leaf text is: e1|entry uid|entry number|amount with 3 decimals|1 for gave or 0 for got|time in ms|note|item|quantity|unit as its saved key (bag, kg, ...)|payment reference|customer uid (a random id, not a name or phone).")
                 put("2. The seal: base64-decode seal.leaves (32 bytes per entry, in id order); the 32 bytes at position entry.indexInSeal must be entry.leafSha256.")
                 put("3. The digest: SHA-256 of the UTF-8 bytes of seal.digestHeader followed by the decoded leaves must equal seal.digest (lowercase hex). The header is: rk-seal-v1, prevDigest, sealedAt, fromId-toId, leafCount, auditHead, each followed by a newline.")
                 put("4. Each witness: base64-decode its token and save it as x.tsr. Read it with: openssl ts -reply -in x.tsr -token_in -text")
