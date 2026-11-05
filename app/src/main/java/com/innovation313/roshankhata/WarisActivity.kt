@@ -332,7 +332,7 @@ class WarisActivity : BaseActivity() {
     private fun addHeir() {
         lifecycleScope.launch {
             val count = withContext(Dispatchers.IO) { runCatching { WarisAndroid.owner(applicationContext).heirs().size }.getOrDefault(0) }
-            if (count >= Waris.MAX_HEIRS) { tell(getString(R.string.waris_max_heirs, Waris.MAX_HEIRS)); return@launch }
+            if (count >= Waris.MAX_HEIRS) { tell(Digits.string(resources, R.string.waris_max_heirs, Waris.MAX_HEIRS)); return@launch }
             val box = FormBox.style(EditText(this@WarisActivity).apply {
                 hint = getString(R.string.waris_heir_name)
                 inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_CAP_WORDS
@@ -362,7 +362,7 @@ class WarisActivity : BaseActivity() {
         ) { which ->
             val shop = WarisAndroid.shopName(this)
             act({ WarisAndroid.owner(applicationContext).startHeir(name, Waris.WAITS[which], shop) }) { made ->
-                made?.let { (h, _) -> showOwnerCode(h) } ?: tell(getString(R.string.waris_max_heirs, Waris.MAX_HEIRS))
+                made?.let { (h, _) -> showOwnerCode(h) } ?: tell(Digits.string(resources, R.string.waris_max_heirs, Waris.MAX_HEIRS))
             }
         }
     }
