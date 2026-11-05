@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material Symbols (Rounded, weight 400), Apache License 2.0 - Google. -->
+<!-- Shop type icon (5 Nov 2026): a smartphone with its screen and home button.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <group android:translateY="960">
-        <path
-            android:fillColor="@android:color/white"
-            android:pathData="M260-40q-24 0-42-18t-18-42v-760q0-24 18-42t42-18h440q24 0 42 18t18 42v760q0 24-18 42t-42 18H260Zm0-90v30h440v-30H260Zm0-60h440v-580H260v580Zm0-640h440v-30H260v30Zm0 0v-30 30Zm0 700v30-30Z" />
-    </group>
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M7.5,4.7H16.5A0.8,0.8 0 0,1 17.3,5.5V16.5A0.8,0.8 0 0,1 16.5,17.3H7.5A0.8,0.8 0 0,1 6.7,16.5V5.5A0.8,0.8 0 0,1 7.5,4.7Z M10.55,19.45A1.45,1.45 0 1,1 13.45,19.45A1.45,1.45 0 1,1 10.55,19.45Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M7.6,2H16.4A2.6,2.6 0 0,1 19,4.6V19.4A2.6,2.6 0 0,1 16.4,22H7.6A2.6,2.6 0 0,1 5,19.4V4.6A2.6,2.6 0 0,1 7.6,2Z M7.6,5A0.6,0.6 0 0,0 7,5.6V16.4A0.6,0.6 0 0,0 7.6,17H16.4A0.6,0.6 0 0,0 17,16.4V5.6A0.6,0.6 0 0,0 16.4,5H7.6Z M10.85,19.45A1.15,1.15 0 1,0 13.15,19.45A1.15,1.15 0 1,0 10.85,19.45Z" />
 </vector>
