@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,781 strings and 60 plurals (2,781 with the competitor study's batch and schema 43's words, 4 Nov 2026; 2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,781 strings and 60 plurals (+21 with the setup's and the form guards' words, 5 Nov 2026; 2,781 with the competitor study's batch and schema 43's words, 4 Nov 2026; 2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1764,6 +1764,79 @@ nothing tried on a real phone, a real TSA, a real wallet notification or the dep
   longer says there is no server. Data safety: nothing new collected (E2E-encrypted relay copies and on-device
   notification reading are exempt by Play's own definitions, checked 4 Nov 2026).
 
+### The setup, redrawn (5 Nov 2026, kmp-desktop-16 — the owner's report and his approved mockups)
+
+Phone only (Windows keeps its own name and trade questions; the trade icons are shared). CI only.
+
+- **The bug:** a first run left after the shop type (Back on the country sheet, or the app closed) opened Home
+  and the walkthrough next time and never asked the name or the country: "language chosen" (written at step 1)
+  was all GateActivity read, Back did nothing on steps 2–3, the country sheet's cancel kept the phone's guess
+  and went on, and an unsaved country reads as Pakistan. **`SetupProgress`** (data): done only by step 3's
+  "Start my khata" or "Maybe later" (`markDone`); the gate opens the first unfinished step (`next`: language,
+  shop type, details); `markStarted` is written (commit) just before the first language, so an install that
+  chose its language before 5 Nov ("started" absent) counts as done and is never sent back. Tests that open
+  Home set the "setup" prefs' `done` (or only "language/chosen", the old-install path) and save the shop's
+  country — **the emulator's SIM says US**, and Home asks an unsaved country once (below).
+- **Back walks back:** step 2 → the language (the one in use marked), step 3 → the shop type (the trade
+  marked; what is typed is saved first), step 1 → leaves the app. ShopType and the details page no longer skip
+  themselves when a trade or name exists. `TradePicker.bindActivity(current, onBack)`; a back arrow in the
+  header (`btnTradeBack`, `btnShopNameBack`).
+- **Step 3, the shop's details** (`ShopNameActivity`, `activity_shop_name.xml`): name, country, phone under a
+  preview of the invoice's band (`bg_setup_preview_band`). The country is a box (the phone's own flag emoji,
+  name, "+92 · Rs" via `CountryPicker.codeLine`, "Found from your phone" only when the shown country IS the
+  phone's region, else "Tap to change"). The phone box carries the calling code (LTR): kept as
+  "+92 300 1234567" (a national 0 dropped; + or 00 kept as typed; digits to 0-9). While the setup runs the
+  currency sign and calendar follow the country shown; opened after the setup they change only from defaults.
+- **`CountryPicker`** (ui, `dialog_country_picker.xml`): a full page — Back, a search (the name in the app's
+  language or English, the code letters, the calling code), "From your phone" (`DeviceRegion.of`) first, then
+  `ShopCountry.choices`, Other last; each row is the chooser's card (`item_choice_row`) with the flag as the
+  glyph. Closing it changes nothing. Business Profile's country uses it (and shows the flag).
+  **`DeviceRegion`**: `of` (SIM, network, the phone's languages, the app's) for a new shop's guess;
+  `ofTelephony` (SIM, network only) for asking an older book — a phone's language region is weak (many
+  Pakistani phones say en-US); `flag` (regional-indicator emoji, a globe for Other).
+- **Older books** (`MainActivity.askCountryOnce`, after the trade question, before the tour): no saved country
+  and the SIM/network names another known country → the country page once (`SetupProgress.countryAsked`),
+  Pakistan ticked as what the book has used; names Pakistan → Pakistan saved silently; no SIM → nothing.
+- **The language page** (`activity_language.xml`, `item_language_row.xml`): a compact brand band (splash_logo,
+  app_name, `brand_tagline` "Har Hisaab Roshan", not translated), "Step 1 of 3", then the nine as a list — the
+  own name in its own script (Arabic-script four in Naskh at 19 sp via textLocale "ar", Devanagari/Bengali
+  17.5 sp, Latin 17 sp), the name in the app's language under it (`lang_gloss_*`, hidden for the same
+  language), "Phone's language" (`lang_phone_language`) on the system language's row, which is marked to begin
+  with (else English), a radio (`bg_lang_radio`). "Bahasa Indonesia". Back during the setup leaves at once
+  (it used to clear the mark first). Night-aware. Gone: the splash painting (`splash_art.webp`, `SplashArt`),
+  the 3 x 3 grid's drawables and `lang_*` colours.
+- Strings (nine languages): lang_phone_language, lang_gloss_en/_ur_latn/_ur/_sd/_fa/_ar/_hi/_bn/_id,
+  shop_details_title, shop_preview_label, country_found_phone, country_tap_change, setup_start,
+  country_search_hint, country_section_phone, country_section_all, country_search_none.
+- Tests: SetupProgressTest (unit), DeviceSmokeTest (the phone's language marked, nothing saved before
+  Continue; the language alone does not finish the setup), screen proof 39–42 (the three steps, the country
+  page).
+
+### Forms keep what was typed (5 Nov 2026, kmp-desktop-16 — the owner: "is dauran koi aur kami nazar aaye to usko bhi fulfill kar lena")
+
+Phone only. CI only. The supplier bill's guard (4 Nov) on every money form that had the same flaw.
+
+- **`ui/FormGuard`:** `guard(activity, dialog, typed, onDiscard, title, message)` (after show(); returns the
+  `leave` function for a form left by a button of its own): a tap beside the form no longer closes it; Back (a
+  callback on the dialog's own dispatcher) and its Cancel close an untouched form at once and ask "Discard what
+  you typed?" (Keep editing / Discard; `form_discard_title`/`_msg`) when anything differs from how the form
+  opened — an edit's own row, a new form's blanks and prefills. `onSave(dialog) { true/false }`: Save wired
+  after show(), as Close the day's was — a save the form's own checks refuse keeps the dialog open with the same
+  message and the focus on the box at fault; one let through closes it and takes no second tap (a flag, lesson 10).
+- **Where:** the supplier bill (its own titles), Cashbook money in/out (new only — the phone has no edit form for
+  a row; a waiting receipt picture is dropped on Discard), Close the day, Plans (a new plan; a payment — an
+  overpay's question no longer loses the typed payment), Cheques (add/edit; its picture), Staff (a person; an
+  advance/salary), Schemes (a scheme; a claim), Edit entry (`EntryDetailActivity`) and its spray advice, and the
+  add-entry form (`PartyDetailActivity`: Back on the first step and the header arrow; judged on the form's own
+  snapshot against the one taken as it opened, `F_BASELINE`, kept across a rebuild; Back with the details open
+  still closes the details first).
+- **Staff:** an advance/salary writes on AppScope (Back right after Save cannot cancel it); a person's name check
+  and write run together off the main thread, and a failure is said ("not saved") with the form kept, instead of
+  crashing.
+- **Not done:** an accepted save closes the form and writes behind it, as Close the day does — a write that then
+  fails says "not saved" (AppFailures) but the form is gone; the "set owner PIN" question can show twice on a
+  fast double tap (needs a cancel callback in `AccessUi.requireOwnerPin`).
+
 ### The shared module (KMP)
 
 ```
@@ -2185,6 +2258,12 @@ Each of these cost a build or a bug.
     Urdu line Android and Skia both draw "‹" as "›". The day book swapped them for RTL as well, so they were turned
     twice and both pointed inwards (the 2d437cd proof). A text arrow is written once, as for LTR; an icon arrow is
     what is flipped by hand (`Glyph`, `check_icon_direction.py`).
+
+78. **A flow's "done" is written at its end, never at its start.** The language picker wrote "chosen" at step 1
+    and the front door read it as the whole setup: a first run left at step 2 or 3 opened Home for good, its name
+    and country never asked, and the unsaved country read as Pakistan (5 Nov 2026). Write "done" on the last
+    step, route to the first unfinished one, and give an older install a way to count as done (`SetupProgress`:
+    a "started" marker it never wrote).
 
 ---
 
