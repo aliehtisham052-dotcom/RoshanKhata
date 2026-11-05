@@ -15,69 +15,229 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.Currency
+import com.innovation313.roshankhata.data.Digits
+import com.innovation313.roshankhata.data.SetupProgress
+import com.innovation313.roshankhata.data.ShopCalendar
+import com.innovation313.roshankhata.data.ShopCountry
 import com.innovation313.roshankhata.data.set
+import com.innovation313.roshankhata.ui.CountryPicker
+import com.innovation313.roshankhata.ui.DeviceRegion
+import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.StepDots
 import com.innovation313.roshankhata.ui.TextFit
 
 /**
- * First run, step 3 of 3: the shop's name (11 Oct).
+ * First run, step 3 of 3: the shop's details (11 Oct; redrawn 5 Nov 2026 from the owner's
+ * approved mockup).
  *
- * Until a name is written the app shows its own name where the shop's
- * belongs - Home, invoices, statements, the business card - and the owner,
- * who saw "Roshan Khata" at the top of his own Home, did not know there was
- * a profile to fill in. So the setup asks: name (required for Continue) and
- * phone (optional), both saved to the shop's profile. Maybe later goes on
- * to Home, where the shop button reads "Add your shop name" until it is.
+ * Until a name is written the app shows its own name where the shop's belongs - Home,
+ * invoices, statements, the business card - so the setup asks for it, with the country and an
+ * optional phone, under a picture of the invoice's band that fills in as they are typed.
  *
- * Skipped when the shop already has a name (a restored backup brings it).
- * Back does nothing: the setup is a straight line, and Maybe later is the
- * way past this step.
+ * The country is a box filled with what the phone names ([DeviceRegion]) and changed on its own
+ * page ([CountryPicker]). Until 5 Nov it was a sheet that opened by itself after the name, and
+ * Back or a tap beside it kept the guess and opened Home - so the owner never saw it, and a
+ * setup closed before it never asked at all: the country stayed unsaved, which reads as
+ * Pakistan everywhere.
+ *
+ * Every way off the page keeps what is on it: Back goes to step 2, "Maybe later" goes on without
+ * a name, "Start my khata" needs one. Only those two end the setup ([SetupProgress.markDone]).
+ * While the setup runs, the currency sign and calendar follow the country shown, since nothing
+ * else has set them yet; a page opened after the setup (a test) changes them only from the
+ * defaults, as Business Profile does.
  */
 class ShopNameActivity : BaseActivity() {
 
+    private companion object {
+        const val STATE_COUNTRY = "country"
+    }
+
+    private lateinit var etName: EditText
+    private lateinit var etPhone: EditText
+    private lateinit var btnStart: MaterialButton
+    private lateinit var country: ShopCountry
+    /** The country the phone itself names (SIM, network, its languages), if any. */
+    private var region: String? = null
+    private var setupRunning = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!BusinessProfile.businessName(this).isNullOrBlank()) {
-            proceed()
-            return
-        }
         setContentView(R.layout.activity_shop_name)
         val root = findViewById<View>(R.id.shopNameRoot)
         fitBars(root)
+        setupRunning = !SetupProgress.isDone(this)
 
         StepDots.show(findViewById(R.id.nameStepDots), findViewById<TextView>(R.id.tvNameKicker), 3)
 
-        val etName = findViewById<EditText>(R.id.etShopName)
-        val etPhone = findViewById<EditText>(R.id.etShopPhone)
-        val btnContinue = findViewById<MaterialButton>(R.id.btnShopNameContinue)
+        etName = findViewById(R.id.etShopName)
+        etPhone = findViewById(R.id.etShopPhone)
+        btnStart = findViewById(R.id.btnShopNameContinue)
+
+        region = DeviceRegion.of(this)
+        val saved = if (BusinessProfile.hasCountry(this)) BusinessProfile.country(this) else null
+        val restored = savedInstanceState?.getString(STATE_COUNTRY)
+        country = when {
+            restored != null -> ShopCountry.of(restored)
+            saved != null -> saved
+            else -> ShopCountry.guess(region, BusinessProfile.currency(this), com.innovation313.roshankhata.ui.LocaleRefresh.tag(this))
+        }
+
+        if (savedInstanceState == null) {
+            BusinessProfile.businessName(this)?.let { etName.setText(it) }
+            BusinessProfile.businessPhone(this)?.let { etPhone.setText(nationalPart(it)) }
+        }
+
         etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                btnContinue.isEnabled = !s.isNullOrBlank()
+                btnStart.isEnabled = !s.isNullOrBlank()
                 styleName(etName)
+                renderPreview()
             }
         })
-        styleName(etName)
-        btnContinue.setOnClickListener {
-            val name = etName.text.toString().trim()
-            if (name.isEmpty()) return@setOnClickListener
-            BusinessProfile.setBusinessName(this, name)
-            etPhone.text.toString().trim().takeIf { it.isNotEmpty() }?.let { BusinessProfile.setBusinessPhone(this, it) }
-            askCountry { proceed() }
-        }
-        findViewById<MaterialButton>(R.id.btnShopNameLater).setOnClickListener { askCountry { proceed() } }
-
-        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = Unit
+        etPhone.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun afterTextChanged(s: Editable?) = renderPreview()
         })
+        btnStart.isEnabled = etName.text.isNotBlank()
+        styleName(etName)
+
+        findViewById<View>(R.id.btnShopCountry).setOnClickListener {
+            CountryPicker.show(this, country, fromPhone = region) { picked ->
+                if (isFinishing || isDestroyed) return@show
+                country = picked
+                applyCountry(picked)
+                renderCountry()
+            }
+        }
+        btnStart.setOnClickListener {
+            if (etName.text.isBlank()) return@setOnClickListener
+            save()
+            finishSetup()
+        }
+        findViewById<MaterialButton>(R.id.btnShopNameLater).setOnClickListener {
+            save()
+            finishSetup()
+        }
+        findViewById<View>(R.id.btnShopNameBack).setOnClickListener { back() }
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = back()
+        })
+
+        findViewById<TextView>(R.id.tvPreviewDoc).text =
+            getString(R.string.coach_title_invoice).uppercase(resources.configuration.locales[0]) + " · " + Format.ltr("INV-000001")
+        findViewById<TextView>(R.id.tvPreviewDate).text = Format.dateOnly(System.currentTimeMillis())
+        renderCountry()
         TextFit.relax(root)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_COUNTRY, country.code)
+    }
+
+    private fun renderCountry() {
+        findViewById<TextView>(R.id.tvShopFlag).text = DeviceRegion.flag(country)
+        findViewById<TextView>(R.id.tvShopCountry).text = CountryPicker.name(this, country)
+        findViewById<TextView>(R.id.tvShopCountryCode).apply {
+            val code = CountryPicker.codeLine(country)
+            text = code
+            visibility = if (code == null) View.GONE else View.VISIBLE
+        }
+        findViewById<View>(R.id.btnShopCountry).contentDescription = listOfNotNull(
+            getString(R.string.bp_country), CountryPicker.name(this, country), CountryPicker.codeLine(country)
+        ).joinToString(", ")
+        // Said only when it is true: the country shown is the one the phone itself names.
+        findViewById<TextView>(R.id.tvShopCountryHelp).setText(
+            if (region != null && country.code == region) R.string.country_found_phone else R.string.country_tap_change
+        )
+        val dialing = country.dialing
+        findViewById<TextView>(R.id.tvShopPhonePrefix).apply {
+            text = "+$dialing"
+            visibility = if (dialing.isEmpty()) View.GONE else View.VISIBLE
+        }
+        findViewById<View>(R.id.shopPhoneRule).visibility = if (dialing.isEmpty()) View.GONE else View.VISIBLE
+        renderPreview()
+    }
+
+    /** The band as an invoice will print it: the name (or its label, faint), then phone · country. */
+    private fun renderPreview() {
+        val name = etName.text.toString().trim()
+        findViewById<TextView>(R.id.tvPreviewName).apply {
+            text = name.ifEmpty { getString(R.string.shop_name_field) }
+            alpha = if (name.isEmpty()) 0.6f else 1f
+        }
+        findViewById<TextView>(R.id.tvPreviewLine).text = listOfNotNull(
+            fullPhone()?.let { Format.ltr(it) },
+            CountryPicker.name(this, country).takeIf { it.isNotBlank() }
+        ).joinToString(" · ")
+    }
+
+    /**
+     * The number as the profile keeps it: with the country's calling code in front, the national
+     * 0 dropped ("0300 1234567" in Pakistan is "+92 300 1234567"); a number typed with + or 00 is
+     * kept as the owner wrote it. Digits in any script are kept as 0-9 (lesson 28).
+     */
+    private fun fullPhone(): String? {
+        val typed = Digits.toLatin(etPhone.text.toString()).trim()
+        if (typed.isEmpty()) return null
+        if (typed.startsWith("+")) return typed
+        if (typed.startsWith("00")) return "+" + typed.drop(2).trimStart()
+        if (country.dialing.isEmpty()) return typed
+        val national = typed.removePrefix("0").trimStart()
+        return if (national.isEmpty()) null else "+${country.dialing} $national"
+    }
+
+    /** What the phone box shows of a kept number: without the shown country's own code. */
+    private fun nationalPart(kept: String): String {
+        val code = "+" + country.dialing
+        return if (country.dialing.isNotEmpty() && kept.startsWith(code)) kept.removePrefix(code).trimStart() else kept
+    }
+
+    /** Keeps everything on the page: the name, the phone and the country. */
+    private fun save() {
+        BusinessProfile.setBusinessName(this, etName.text.toString().trim().ifEmpty { null })
+        BusinessProfile.setBusinessPhone(this, fullPhone())
+        applyCountry(country)
+    }
+
+    private fun applyCountry(c: ShopCountry) {
+        val defaultCurrency = BusinessProfile.currency(this) == Currency.DEFAULT
+        val gregorian = BusinessProfile.calendar(this) == ShopCalendar.Kind.GREGORIAN
+        BusinessProfile.setCountry(this, c)
+        if (setupRunning) {
+            // Nothing but this page has set them during the setup: they follow the country shown,
+            // back again when the owner changes his mind (UAE's AED, then Pakistan's Rs).
+            Currency.set(this, if (c == ShopCountry.OTHER) Currency.DEFAULT else c.currencySign)
+            ShopCalendar.set(this, c.calendar)
+        } else {
+            if (defaultCurrency && c != ShopCountry.OTHER && c.currencySign != Currency.DEFAULT) Currency.set(this, c.currencySign)
+            if (gregorian && c.calendar != ShopCalendar.Kind.GREGORIAN) ShopCalendar.set(this, c.calendar)
+        }
+    }
+
+    /** Back to step 2 with what is typed kept; the shop type shows the trade already chosen. */
+    private fun back() {
+        if (isFinishing || isDestroyed) return
+        save()
+        startActivity(Intent(this, ShopTypeActivity::class.java))
+        @Suppress("DEPRECATION")
+        overridePendingTransition(R.anim.screen_close_enter, R.anim.screen_close_exit)
+        finish()
+    }
+
+    private fun finishSetup() {
+        SetupProgress.markDone(this)
+        proceed()
     }
 
     /**
      * Behind the bars like the shop-type page: the header takes the status
      * bar, the footer the gesture bar or the keyboard, whichever is taller,
-     * so Continue stays above the keyboard while the name is typed.
+     * so the buttons stay above the keyboard while the name is typed.
      */
     private fun fitBars(root: View) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -118,63 +278,6 @@ class ShopNameActivity : BaseActivity() {
     private fun styleName(et: EditText) {
         val style = if (et.text.isNullOrEmpty()) android.graphics.Typeface.NORMAL else android.graphics.Typeface.BOLD
         if (et.typeface?.style != style) et.setTypeface(android.graphics.Typeface.create(et.typeface, style))
-    }
-
-    /**
-     * The shop's country (21 Oct 2026), asked once on the way in, with the
-     * device's own region marked (a phone bought in Dhaka says Bangladesh),
-     * else what the language suggests. WhatsApp numbers, the tax name, the
-     * week and the calendar follow it; Business Profile changes it later.
-     * Dismissing the sheet keeps the marked guess, so nothing blocks the owner.
-     */
-    private fun askCountry(then: () -> Unit) {
-        if (BusinessProfile.hasCountry(this)) { then(); return }
-        val locale = resources.configuration.locales[0]
-        val all = com.innovation313.roshankhata.data.ShopCountry.choices(locale)
-        val guess = com.innovation313.roshankhata.data.ShopCountry.guess(
-            deviceRegion(), BusinessProfile.currency(this), com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
-        )
-        val choices = all.map { c ->
-            if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER)
-                com.innovation313.roshankhata.ui.ChoiceSheet.Option(getString(R.string.country_other), icon = R.drawable.ic_hash,
-                    iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
-            else com.innovation313.roshankhata.ui.ChoiceSheet.Option(c.displayName(locale), glyph = c.code, glyphSp = 13f,
-                iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg)
-        }
-        fun keep(c: com.innovation313.roshankhata.data.ShopCountry) {
-            BusinessProfile.setCountry(this, c)
-            if (BusinessProfile.currency(this) == com.innovation313.roshankhata.data.Currency.DEFAULT &&
-                c != com.innovation313.roshankhata.data.ShopCountry.OTHER && c.currencySign != com.innovation313.roshankhata.data.Currency.DEFAULT
-            ) com.innovation313.roshankhata.data.Currency.set(this, c.currencySign)
-            if (c.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN &&
-                BusinessProfile.calendar(this) == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN
-            ) com.innovation313.roshankhata.data.ShopCalendar.set(this, c.calendar)
-        }
-        com.innovation313.roshankhata.ui.ChoiceSheet.show(
-            this, getString(R.string.country_ask_title), choices, all.indexOf(guess),
-            message = getString(R.string.country_ask_body),
-            onCancel = { keep(guess); then() }
-        ) { which -> keep(all[which]); then() }
-    }
-
-    /**
-     * Where the phone is, never the app's language (23 Oct 2026, the review): the app's locale is the
-     * owner's language choice and carries no region ("ur", "ar"), so a UAE shop in Arabic read as Saudi
-     * Arabia and an English one anywhere as Pakistan. The SIM's country first (no permission needed),
-     * then the network's, then the phone's own system languages, then the app's; the first one that
-     * names a country the app knows.
-     */
-    private fun deviceRegion(): String? {
-        val known = com.innovation313.roshankhata.data.ShopCountry.entries.map { it.code }.filter { it.isNotBlank() }.toSet()
-        val tm = runCatching { getSystemService(TELEPHONY_SERVICE) as? android.telephony.TelephonyManager }.getOrNull()
-        val system = android.content.res.Resources.getSystem().configuration.locales
-        val candidates = buildList {
-            tm?.let { t -> runCatching { t.simCountryIso }.getOrNull()?.let { add(it) }; runCatching { t.networkCountryIso }.getOrNull()?.let { add(it) } }
-            for (i in 0 until system.size()) add(system[i].country)
-            add(resources.configuration.locales[0].country)
-            add(java.util.Locale.getDefault().country)
-        }
-        return candidates.map { it.trim().uppercase(java.util.Locale.ROOT) }.firstOrNull { it in known }
     }
 
     private fun proceed() {

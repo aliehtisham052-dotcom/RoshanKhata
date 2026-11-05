@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The language row's radio (5 Nov 2026): an empty ring, and when the row is chosen the
+     trade card's green disc (bg_trade_check) with its white tick. Driven by the row's
+     selected state, which a ViewGroup passes to its children. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/bg_trade_check" android:state_selected="true" />
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="2dp" android:color="@color/text_muted" />
+        </shape>
+    </item>
+</selector>

@@ -59,6 +59,10 @@ class ScreenProofPhoneTest(
     @Before
     fun ready() {
         app.getSharedPreferences("language", Context.MODE_PRIVATE).edit().putBoolean("chosen", true).commit()
+        // A returning owner: the setup finished (5 Nov 2026, SetupProgress) and the shop's country saved, so
+        // Home does not ask an older book's country over the pictures (this emulator's SIM says US).
+        app.getSharedPreferences("setup", Context.MODE_PRIVATE).edit().putBoolean("done", true).commit()
+        BusinessProfile.setCountry(app, com.innovation313.roshankhata.data.ShopCountry.PAKISTAN)
         app.getSharedPreferences("welcome", Context.MODE_PRIVATE).edit().putBoolean("welcome_seen", true).commit()
         app.getSharedPreferences("home_offers", Context.MODE_PRIVATE).edit().putBoolean("backup_offered", true).commit()
         CoachMarkController.markRun(app)
@@ -206,6 +210,20 @@ class ScreenProofPhoneTest(
             )
             val stock = com.innovation313.roshankhata.data.Stock.ProductStock(product.id, product.name, 30.0, 6.0, 0.0, "bottle", "bottle")
             com.innovation313.roshankhata.ui.PriceCheckSheet.show(a, product, stock, onBuyers = {}, onEdit = {})
+        }
+        // The setup (5 Nov 2026, the owner's approved mockup): its three steps and the country page, as an owner
+        // walking back through them sees them - the language and trade in use marked, the shop's details filled.
+        val setup = app.getSharedPreferences("setup", Context.MODE_PRIVATE)
+        setup.edit().putBoolean("started", true).putBoolean("done", false).commit()
+        try {
+            shoot("39-setup-language", open(LanguageActivity::class.java))
+            shoot("40-setup-shop-type", open(ShopTypeActivity::class.java))
+            shoot("41-setup-details", open(ShopNameActivity::class.java))
+            shoot("42-setup-country", open(ShopNameActivity::class.java)) { a ->
+                a.findViewById<android.view.View>(R.id.btnShopCountry).performClick()
+            }
+        } finally {
+            setup.edit().putBoolean("done", true).commit()
         }
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)

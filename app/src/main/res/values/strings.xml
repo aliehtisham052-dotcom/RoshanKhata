@@ -4135,4 +4135,26 @@
     <string name="cheque_photo">Photo of the cheque</string>
     <string name="cash_photo">Photo of the receipt</string>
     <string name="photo_missing">This photo is not on this device</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="brand_tagline" translatable="false">Har Hisaab Roshan</string>
+    <string name="lang_phone_language">Phone\'s language</string>
+    <string name="lang_gloss_en">English</string>
+    <string name="lang_gloss_ur_latn">Urdu in English letters</string>
+    <string name="lang_gloss_ur">Urdu</string>
+    <string name="lang_gloss_sd">Sindhi</string>
+    <string name="lang_gloss_fa">Persian</string>
+    <string name="lang_gloss_ar">Arabic</string>
+    <string name="lang_gloss_hi">Hindi</string>
+    <string name="lang_gloss_bn">Bengali</string>
+    <string name="lang_gloss_id">Indonesian</string>
+    <string name="shop_details_title">Your shop\'s details</string>
+    <string name="shop_preview_label">Preview on your invoice</string>
+    <string name="country_found_phone">Found from your phone. Tap to change.</string>
+    <string name="country_tap_change">Tap to change.</string>
+    <string name="setup_start">Start my khata</string>
+    <string name="country_search_hint">Search country</string>
+    <string name="country_section_phone">From your phone</string>
+    <string name="country_section_all">All countries</string>
+    <string name="country_search_none">No country found. Choose Other below.</string>
 </resources>

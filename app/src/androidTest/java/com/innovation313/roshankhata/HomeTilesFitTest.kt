@@ -50,6 +50,8 @@ class HomeTilesFitTest(
     fun ready() {
         context.getSharedPreferences("language", Context.MODE_PRIVATE)
             .edit().putBoolean("chosen", true).commit()
+        // A returning owner whose shop has its country (5 Nov 2026): Home does not ask it over the tiles.
+        com.innovation313.roshankhata.data.BusinessProfile.setCountry(context, com.innovation313.roshankhata.data.ShopCountry.PAKISTAN)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language))
         }

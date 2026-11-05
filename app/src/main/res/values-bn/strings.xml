@@ -3971,4 +3971,25 @@
     <string name="cheque_photo">চেকের ছবি</string>
     <string name="cash_photo">রসিদের ছবি</string>
     <string name="photo_missing">এই ছবিটি এই ডিভাইসে নেই</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="lang_phone_language">ফোনের ভাষা</string>
+    <string name="lang_gloss_en">ইংরেজি</string>
+    <string name="lang_gloss_ur_latn">ইংরেজি অক্ষরে উর্দু</string>
+    <string name="lang_gloss_ur">উর্দু</string>
+    <string name="lang_gloss_sd">সিন্ধি</string>
+    <string name="lang_gloss_fa">ফারসি</string>
+    <string name="lang_gloss_ar">আরবি</string>
+    <string name="lang_gloss_hi">হিন্দি</string>
+    <string name="lang_gloss_bn">বাংলা</string>
+    <string name="lang_gloss_id">ইন্দোনেশীয়</string>
+    <string name="shop_details_title">আপনার দোকানের বিবরণ</string>
+    <string name="shop_preview_label">আপনার ইনভয়েসে এমন দেখাবে</string>
+    <string name="country_found_phone">আপনার ফোন থেকে পাওয়া। বদলাতে ট্যাপ করুন।</string>
+    <string name="country_tap_change">বদলাতে ট্যাপ করুন।</string>
+    <string name="setup_start">আমার খাতা শুরু করুন</string>
+    <string name="country_search_hint">দেশ খুঁজুন</string>
+    <string name="country_section_phone">আপনার ফোন থেকে</string>
+    <string name="country_section_all">সব দেশ</string>
+    <string name="country_search_none">কোনো দেশ পাওয়া যায়নি। নিচে অন্যান্য বেছে নিন।</string>
 </resources>

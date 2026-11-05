@@ -3951,4 +3951,25 @@
     <string name="cheque_photo">چيڪ جي تصوير</string>
     <string name="cash_photo">رسيد جي تصوير</string>
     <string name="photo_missing">هيءَ تصوير هن ڊيوائس تي موجود ناهي</string>
+
+    <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
+    <string name="lang_phone_language">فون جي ٻولي</string>
+    <string name="lang_gloss_en">انگريزي</string>
+    <string name="lang_gloss_ur_latn">انگريزي اکرن ۾ اردو</string>
+    <string name="lang_gloss_ur">اردو</string>
+    <string name="lang_gloss_sd">سنڌي</string>
+    <string name="lang_gloss_fa">فارسي</string>
+    <string name="lang_gloss_ar">عربي</string>
+    <string name="lang_gloss_hi">هندي</string>
+    <string name="lang_gloss_bn">بنگالي</string>
+    <string name="lang_gloss_id">انڊونيشيائي</string>
+    <string name="shop_details_title">توهان جي دڪان جا تفصيل</string>
+    <string name="shop_preview_label">توهان جي انوائس تي ائين ڏسبو</string>
+    <string name="country_found_phone">توهان جي فون مان معلوم ٿيو. بدلائڻ لاءِ ٽيپ ڪريو.</string>
+    <string name="country_tap_change">بدلائڻ لاءِ ٽيپ ڪريو.</string>
+    <string name="setup_start">منهنجو کاتو شروع ڪريو</string>
+    <string name="country_search_hint">ملڪ ڳوليو</string>
+    <string name="country_section_phone">توهان جي فون مان</string>
+    <string name="country_section_all">سڀ ملڪ</string>
+    <string name="country_search_none">ڪو ملڪ نه مليو. هيٺ ٻيو چونڊيو.</string>
 </resources>

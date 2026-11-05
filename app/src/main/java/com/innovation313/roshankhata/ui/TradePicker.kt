@@ -75,9 +75,17 @@ object TradePicker {
         activity: Activity,
         root: View,
         step: Int,
+        /** The trade already chosen when the owner walks back to this step (5 Nov 2026): marked, and Continue ready. */
+        current: Trade? = null,
+        /** The header's Back arrow (the setup's way to the step before); none when null. */
+        onBack: (() -> Unit)? = null,
         onPicked: (Trade) -> Unit
     ) {
-        bind(activity, activity.window, root, null, true, step, onClose = {}, onPicked = onPicked)
+        bind(activity, activity.window, root, current, true, step, onClose = {}, onPicked = onPicked)
+        root.findViewById<View>(R.id.btnTradeBack)?.let { back ->
+            back.visibility = if (onBack != null) View.VISIBLE else View.GONE
+            back.setOnClickListener { onBack?.invoke() }
+        }
     }
 
     private fun bind(
@@ -101,7 +109,8 @@ object TradePicker {
         close.setOnClickListener { onClose() }
 
         val go = root.findViewById<MaterialButton>(R.id.btnTradeContinue)
-        if (current != null) go.setText(R.string.save)
+        // Changing a shop's trade saves it; a setup step goes on, whether or not one is marked already.
+        if (current != null && step == null) go.setText(R.string.save)
 
         var chosen: Trade? = current
         go.isEnabled = chosen != null

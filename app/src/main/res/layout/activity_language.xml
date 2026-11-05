@@ -1,107 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The language picker (9 Oct): the splash's own artwork, continued.
+  The language page (5 Nov 2026, the owner's approved setup mockup; the 9 Oct page carried the
+  splash's painting over a 3 x 3 grid of names).
 
-  Two regions, stacked. The artwork region (langStage) takes whatever height
-  is left above the panel and shows splash_art.webp - the same painting the
-  splash shows, so the first two screens are one picture - anchored by its
-  TAGLINE: LanguageActivity scales and places the image so that "Har Hisaab
-  Roshan" ends a fixed distance above the panel on every screen, cropping the
-  top of the painting on a short screen rather than ever letting the panel
-  climb over the words. The last 64dp of the region fade into the page paper
-  (bg_lang_fade) so the heading has clean ground.
+  A compact brand band (the app's own icon, its name, "Har Hisaab Roshan"), the step and the
+  question, then the nine languages as a list: each row the language's own name in its own
+  script, its name in the app's language under it, the phone's own language tagged, and a radio
+  (item_language_row, filled by LanguageActivity). The list scrolls; Continue stays in sight.
 
-  The panel (langPanel) is sized by its own content: the heading and note in
-  the app's current language, nine real buttons of one size in a 3 x 3 grid
-  (bg_lang_button, the paper card the rest of the app is made of; marked, the
-  pill turns brand green with a gold ring), Continue, and the maker's line.
-  Being real views in a LinearLayout, the buttons take every language, every
-  text size and every screen without being placed by hand.
-
-  The grid is forced left-to-right: it is a fixed arrangement, in the order
-  the picker has always had, and under Urdu, Arabic, Sindhi or Persian a
-  mirrored grid would move every language to the other side of the screen
-  from one visit to the next. The heading and note read in their own
-  language's direction (textDirection).
-
-  Ids are the ones LanguageActivity has always bound. Choosing is two steps
-  (1 Oct): a tap only marks a button and Continue applies the choice; the
-  panel's bottom padding takes the navigation bar's height in code.
-
-  Fixed colours by day and by night, like the painting itself.
+  The rows follow the app's direction (an Urdu page reads from the right), each name aligned to
+  its row's start (lesson 61). Night-aware like the setup's other two pages. Ids are the ones
+  LanguageActivity and the tests have always used; choosing is two steps (a tap marks, Continue
+  applies).
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/langRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F6F2">
-
-    <FrameLayout
-        android:id="@+id/langStage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipChildren="true"
-        app:layout_constraintBottom_toTopOf="@id/langPanel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Placed by LanguageActivity.placeArtwork: scaleType matrix. -->
-        <ImageView
-            android:id="@+id/ivLangArt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:importantForAccessibility="no"
-            android:scaleType="matrix"
-            android:src="@drawable/splash_art" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/bg_lang_fade" />
-    </FrameLayout>
+    android:background="@color/page_bg"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/langPanel"
-        android:layout_width="0dp"
+        android:id="@+id/langHeader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layoutDirection="ltr"
+        android:background="@drawable/bg_header_light"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp">
+
+        <ImageView
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/splash_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/google_sans_medium"
+            android:text="@string/app_name"
+            android:textColor="@color/header_light_ink"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:fontFamily="@font/playfair_display_variable"
+            android:text="@string/brand_tagline"
+            android:textColor="@color/gold_accent"
+            android:textSize="14.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_max="420dp">
+        android:paddingTop="14dp"
+        android:paddingEnd="20dp">
 
-        <!-- "Step 1 of 3" and its dots: first run only (LanguageActivity). -->
+        <!-- "Step 1 of 3" and its dots: during the setup only (LanguageActivity). -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:id="@+id/langStepDots"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layoutDirection="ltr"
                 android:orientation="horizontal"
                 android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvLangStep"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:letterSpacing="0.06"
-                android:textColor="#8A6A15"
-                android:textDirection="locale"
-                android:textSize="11.5sp"
+                android:layout_weight="1"
+                android:letterSpacing="0.1"
+                android:textAlignment="viewStart"
+                android:textAllCaps="true"
+                android:textColor="@color/gold_accent"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
         </LinearLayout>
@@ -110,286 +99,119 @@
             android:id="@+id/tvLangTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
+            android:layout_marginTop="6dp"
             android:text="@string/select_language"
-            android:textColor="#0F4A33"
-            android:textDirection="locale"
-            android:textSize="19sp"
+            android:textAlignment="viewStart"
+            android:textColor="@color/header_light_ink"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- The app's own line, in the app's current language. -->
         <TextView
             android:id="@+id/tvLangNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="12dp"
-            android:gravity="center"
-            android:maxLines="2"
             android:text="@string/language_change_note"
-            android:textColor="#3E6B55"
-            android:textDirection="locale"
-            android:textSize="12.5sp" />
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink_soft"
+            android:textSize="13sp" />
+    </LinearLayout>
 
+    <ScrollView
+        android:id="@+id/langScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fadingEdgeLength="16dp"
+        android:requiresFadingEdge="vertical">
+
+        <LinearLayout
+            android:id="@+id/langList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="10dp">
+
+            <include
+                android:id="@+id/langEnglish"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langRomanUrdu"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langUrdu"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langSindhi"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langPersian"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langArabic"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langHindi"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langBengali"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/langIndonesian"
+                layout="@layout/item_language_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Continue and the maker's line; the bottom padding takes the navigation bar's height in code. -->
     <LinearLayout
+        android:id="@+id/langPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:layout_marginTop="0dp"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/langEnglish"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="English"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="English"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-        <TextView
-            android:id="@+id/langRomanUrdu"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="Roman Urdu"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="Roman Urdu"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-        <TextView
-            android:id="@+id/langUrdu"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="اردو"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="اردو"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:layout_marginTop="9dp"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/langSindhi"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="سنڌي"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="سنڌي"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-        <TextView
-            android:id="@+id/langPersian"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="فارسی"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="فارسی"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-        <TextView
-            android:id="@+id/langArabic"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="العربية"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="العربية"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:layout_marginTop="9dp"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/langHindi"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="हिन्दी"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="हिन्दी"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-        <TextView
-            android:id="@+id/langBengali"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="বাংলা"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="বাংলা"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-        <TextView
-            android:id="@+id/langIndonesian"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/bg_lang_button"
-            android:clickable="true"
-            android:contentDescription="Indonesia"
-            android:elevation="1dp"
-            android:focusable="true"
-            android:foreground="@drawable/bg_lang_button_ring"
-            android:fontFamily="@font/google_sans_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="8dp"
-            android:text="Indonesia"
-            android:textColor="@color/lang_button_text"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
+        android:background="@color/page_bg"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="10dp">
 
         <!-- Applies the marked language. Disabled until one is marked; its label
              is drawn in the marked language (LanguageActivity.mark). -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLangContinue"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content"
             android:enabled="false"
+            android:minHeight="52dp"
             android:fontFamily="@font/google_sans_medium"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -397,19 +219,20 @@
             android:maxLines="1"
             android:text="@string/continue_action"
             android:textAllCaps="false"
-            android:textColor="@color/lang_continue_text"
-            android:textSize="15.5sp"
-            app:backgroundTint="@color/lang_continue_fill"
-            app:cornerRadius="15dp" />
+            android:textColor="@color/trade_continue_text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/trade_continue_fill"
+            app:cornerRadius="14dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:letterSpacing="0.04"
             android:text="@string/powered_by"
-            android:textColor="#3E6B55"
-            android:textSize="10.5sp" />
+            android:textColor="@color/text_muted"
+            android:textSize="11sp" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

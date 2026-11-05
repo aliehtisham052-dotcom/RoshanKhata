@@ -34,10 +34,17 @@ class GateActivity : BaseActivity() {
     private fun route() {
         if (isFinishing || isDestroyed) return
 
-        // First run: the language picker, now that the mark has been shown.
-        // Once chosen it never appears here again.
-        if (!LanguageActivity.isChosen(this)) {
-            startActivity(Intent(this, LanguageActivity::class.java))
+        // First run: the setup's first unfinished step, now that the mark has been shown (5 Nov
+        // 2026: a setup left at the shop type or the details used to open Home next time, its
+        // name and country never asked). Once the setup is done it never appears here again.
+        val setupStep = when (com.innovation313.roshankhata.data.SetupProgress.next(this)) {
+            com.innovation313.roshankhata.data.SetupProgress.Step.LANGUAGE -> LanguageActivity::class.java
+            com.innovation313.roshankhata.data.SetupProgress.Step.SHOP_TYPE -> ShopTypeActivity::class.java
+            com.innovation313.roshankhata.data.SetupProgress.Step.SHOP_DETAILS -> ShopNameActivity::class.java
+            com.innovation313.roshankhata.data.SetupProgress.Step.DONE -> null
+        }
+        if (setupStep != null) {
+            startActivity(Intent(this, setupStep))
             finish()
             return
         }

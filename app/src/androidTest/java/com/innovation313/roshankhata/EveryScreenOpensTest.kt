@@ -114,6 +114,10 @@ class EveryScreenOpensTest(
         // Same prefs file and key as LanguageActivity (private there).
         context.getSharedPreferences("language", Context.MODE_PRIVATE)
             .edit().putBoolean("chosen", true).commit()
+        // The setup finished and the shop's country saved (5 Nov 2026): Home does not ask an older book's
+        // country over the screens (this emulator's SIM says US).
+        context.getSharedPreferences("setup", Context.MODE_PRIVATE).edit().putBoolean("done", true).commit()
+        com.innovation313.roshankhata.data.BusinessProfile.setCountry(context, com.innovation313.roshankhata.data.ShopCountry.PAKISTAN)
 
         // A runtime-permission dialog is another app's window: the screen
         // underneath never reaches RESUMED and the launch would time out,
