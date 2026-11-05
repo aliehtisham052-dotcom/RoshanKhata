@@ -59,6 +59,11 @@ object MoreSheet {
             if (viewer) null else e(R.drawable.ic_bell, R.color.tile_followup_bg, R.string.auto_title, data) { AutomationsDialog.show(activity) },
             // Payment Radar's one switch (2 Nov 2026); a read-only phone never shows the Radar at all.
             if (viewer) null else e(R.drawable.ic_tile_followup, R.color.tile_followup_bg, R.string.radar_title, data) { RadarUi.settings(activity) },
+            // Payment voice (5 Nov 2026): a payment a wallet app announced, said aloud and offered to a khata.
+            // Not on a read-only phone, which could not add it.
+            if (viewer) null else e(R.drawable.ic_menu_paisa, R.color.tile_cashbook_bg, R.string.paisa_title, data) {
+                activity.startActivity(Intent(activity, com.innovation313.roshankhata.PaymentVoiceActivity::class.java))
+            },
             e(R.drawable.ic_menu_viewer, R.color.tile_insights_bg, R.string.viewer_menu, data) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
             e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language, display) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
             e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size, display) { textSize(activity) },

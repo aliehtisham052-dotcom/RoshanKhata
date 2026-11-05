@@ -67,6 +67,20 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:mimeType="application/pdf" />
         </intent>
+        <!--
+          Payment voice (5 Nov 2026): the phone's speech engines (TextToSpeech's own documentation asks apps
+          targeting Android 11 to name this); the SMS apps, only so the default one can be found and NEVER read
+          (Telephony.Sms.getDefaultSmsPackage's documentation); and the two wallets offered first, only to say
+          whether this phone has them. No QUERY_ALL_PACKAGES.
+        -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <intent>
+            <action android:name="android.provider.Telephony.SMS_DELIVER" />
+        </intent>
+        <package android:name="com.techlogix.mobilinkcustomer" />
+        <package android:name="pk.com.telenor.phoenix" />
     </queries>
 
     <application
@@ -381,6 +395,31 @@
             android:name=".InvoiceSettingsActivity"
             android:exported="false"
             android:parentActivityName=".InvoicesActivity" />
+
+        <!--
+          Paisa aaya ki awaaz (5 Nov 2026, PaymentVoice): the phone says a payment a ticked wallet or bank app
+          announced, and offers to add it to a khata. Android binds this service only after the owner turns on
+          notification access in the phone's settings; the BIND permission means only the system can bind it.
+          Not exported, as Android's own NotificationListenerService example declares it (the system binds it
+          as itself). Ongoing notices (music, downloads) are not sent to it.
+        -->
+        <service
+            android:name=".PaymentListenerService"
+            android:exported="false"
+            android:label="@string/paisa_title"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.notification.disabled_filter_types"
+                android:value="ongoing" />
+        </service>
+
+        <activity
+            android:name=".PaymentVoiceActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".ImageCropActivity"

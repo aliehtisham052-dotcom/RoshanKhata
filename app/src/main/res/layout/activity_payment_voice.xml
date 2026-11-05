@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Paisa aaya ki awaaz (5 Nov 2026): the switch, notification access, the apps to listen to, the voice, a test,
+  the battery hint and the privacy line. Every button is full width on its own line and every sentence on its
+  own line above it (lesson 58: a 360 dp phone at 150% text leaves no room for words beside a button).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/payToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/section_tools"
+        app:theme="@style/ToolbarInk"
+        app:title="@string/paisa_title"
+        app:titleTextColor="@color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="28dp">
+
+            <TextView
+                android:textAlignment="viewStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="@string/paisa_help"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp" />
+
+            <include
+                android:id="@+id/payRowOn"
+                layout="@layout/row_invoice_feature_switch" />
+
+            <!-- Notification access -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@color/surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvPayAccess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/ink"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPayAccess"
+                    style="@style/BackupPrimaryButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/paisa_access_button" />
+
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvPayRestricted"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/paisa_access_restricted"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- The apps -->
+            <TextView
+                android:textAlignment="viewStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="16dp"
+                android:text="@string/paisa_apps_title"
+                android:textColor="@color/brand_green_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textAlignment="viewStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:text="@string/paisa_apps_help"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:id="@+id/payAppsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/surface"
+                android:orientation="vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+
+            <TextView
+                android:textAlignment="viewStart"
+                android:id="@+id/tvPayAppsNone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/surface"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="12dp"
+                android:text="@string/paisa_seen_none"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <!-- The voice -->
+            <TextView
+                android:textAlignment="viewStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:text="@string/paisa_voice_title"
+                android:textColor="@color/brand_green_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <RadioGroup
+                    android:id="@+id/rgPayVoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:textAlignment="viewStart"
+                        android:id="@+id/rbPayUrdu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/paisa_voice_urdu"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:textAlignment="viewStart"
+                        android:id="@+id/rbPayApp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/paisa_voice_app"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:textAlignment="viewStart"
+                        android:id="@+id/rbPayChime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/paisa_voice_chime"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp" />
+                </RadioGroup>
+
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvPayUrdu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPaySpeech"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/paisa_tts_settings" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPayTest"
+                    style="@style/BackupPrimaryButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/paisa_test" />
+            </LinearLayout>
+
+            <!-- Battery -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@color/surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/paisa_battery_help"
+                    android:textColor="@color/ink"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPayBattery"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/paisa_battery_button" />
+            </LinearLayout>
+
+            <TextView
+                android:textAlignment="viewStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@color/note_bg"
+                android:padding="12dp"
+                android:text="@string/paisa_privacy"
+                android:textColor="@color/note_text"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
