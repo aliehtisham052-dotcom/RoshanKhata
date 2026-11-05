@@ -209,7 +209,17 @@ class StaffActivity : BaseActivity() {
                 }
             }
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, form, form.getTag(R.id.calc_pad_view) as View); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { dialog ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(dialog, form, form.getTag(R.id.calc_pad_view) as View)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
+                // bill's flaw). The form opens blank: an amount or a note asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@StaffActivity,
+                    dialog = dialog,
+                    typed = { amount.text.isNotBlank() || note.text.isNotBlank() }
+                )
+            }
     }
 
     private fun editStaff(person: Staff?) {
@@ -230,6 +240,10 @@ class StaffActivity : BaseActivity() {
         val pinNote = android.widget.TextView(this).apply { setText(R.string.staff_pin_keep); textSize = 12f; visibility = if (person?.pinHash != null) View.VISIBLE else View.GONE }
         val views = if (mayEditLogin) arrayOf<View>(name, phone, salary, roleLabel, roleBox, pin, pinNote) else arrayOf<View>(name, phone, salary)
         val form = withPad(box(*views), salary, padShown = false)
+        // The form as it opened (blank, or the person as saved; the PIN box is always blank), to tell what the
+        // owner changed from what he only looked at.
+        val opened = listOf(name, phone, salary).map { it.text.toString() }
+        val openedRole = roleBox.selectedItemPosition
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
             .setView(form)
@@ -268,7 +282,20 @@ class StaffActivity : BaseActivity() {
                 if (mayEditLogin && role != null) com.innovation313.roshankhata.ui.AccessUi.requireOwnerPin(this) { save() } else save()
             }
             .setNegativeButton(R.string.cancel, null)
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, form, form.getTag(R.id.calc_pad_view) as View); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { dialog ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(dialog, form, form.getTag(R.id.calc_pad_view) as View)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                // Back, a tap beside it or Cancel threw a typed person (or a correction) away in silence (5 Nov 2026,
+                // the supplier bill's flaw): a changed name, phone, salary or role, or a PIN typed, asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@StaffActivity,
+                    dialog = dialog,
+                    typed = {
+                        listOf(name, phone, salary).map { it.text.toString() } != opened ||
+                            roleBox.selectedItemPosition != openedRole || pin.text.isNotEmpty()
+                    }
+                )
+            }
     }
 
     private fun manage(person: Staff) {

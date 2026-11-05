@@ -201,7 +201,20 @@ class PlansActivity : BaseActivity() {
                     )
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.planKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.planKeypad))
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Back, a tap beside it or Cancel threw a typed plan away in silence (5 Nov 2026, the supplier
+                // bill's flaw). The form opens blank: a customer, a figure, a day or a note asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@PlansActivity,
+                    dialog = form,
+                    typed = {
+                        etParty.text.isNotBlank() || etTotal.text.isNotBlank() || etInstallment.text.isNotBlank() ||
+                            etNote.text.isNotBlank() || nextDue != null
+                    }
+                )
+            }
     }
 
     private fun showPlanActions(plan: PlanProgress) {
@@ -311,6 +324,8 @@ class PlansActivity : BaseActivity() {
             fields = listOf(etAmount),
             results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvAmountResult))
         )
+        // The amount as the form put it (the plan's instalment, or blank), to tell it from one the owner changed.
+        val openedAmount = etAmount.text.toString()
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.record_payment_title)
@@ -344,7 +359,17 @@ class PlansActivity : BaseActivity() {
                     recordPayment(plan, amount, etNote.text.toString().trim())
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.fullScreen(it, view); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.fullScreen(form, view)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
+                // bill's flaw): a changed amount or a note asks first; the form as it opened closes at once.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@PlansActivity,
+                    dialog = form,
+                    typed = { etAmount.text.toString() != openedAmount || etNote.text.isNotBlank() }
+                )
+            }
     }
 
     /**

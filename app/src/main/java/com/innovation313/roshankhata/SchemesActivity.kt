@@ -193,7 +193,17 @@ class SchemesActivity : BaseActivity() {
                     Toast.makeText(this, R.string.scheme_claim_hint, Toast.LENGTH_SHORT).show()
                 } else AppScope.launch { dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, body, pad); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { form ->
+                com.innovation313.roshankhata.ui.CalcPad.dock(form, body, pad)
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Back, a tap beside it or Cancel threw a typed claim away in silence (5 Nov 2026, the supplier
+                // bill's flaw). The box opens blank: a figure in it asks first.
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this@SchemesActivity,
+                    dialog = form,
+                    typed = { et.text.isNotBlank() }
+                )
+            }
     }
 
     private fun showForm(existing: Scheme?) {
@@ -272,6 +282,16 @@ class SchemesActivity : BaseActivity() {
             btnStart.setOnClickListener { pickDate(start) { start = startOfDay(it); showDates() } }
             btnEnd.setOnClickListener { pickDate(end) { end = endOfDay(it); showDates() } }
 
+            // The form as it opened (a new scheme's blanks and its 90 days, or the scheme as saved), to tell what
+            // the owner changed from what he only looked at.
+            val boxes = listOf(etName, etCompany, etUnit, etNote) + targets + rewards
+            val openedTexts = boxes.map { it.text.toString() }
+            val openedParty = partyId
+            val openedStart = start
+            val openedEnd = end
+            val openedMeasure = rgMeasure.checkedRadioButtonId
+            val openedReward = rgReward.checkedRadioButtonId
+
             MaterialAlertDialogBuilder(this@SchemesActivity)
                 .setTitle(if (existing == null) R.string.schemes_add else R.string.scheme_edit)
                 .setView(view)
@@ -315,7 +335,20 @@ class SchemesActivity : BaseActivity() {
                         }
                     }
                 }
-                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+                .show().also { form ->
+                    com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                    // Back, a tap beside it or Cancel threw a typed scheme (or a correction) away in silence (5 Nov
+                    // 2026, the supplier bill's flaw): any box, the supplier, the dates or a choice changed asks first.
+                    com.innovation313.roshankhata.ui.FormGuard.guard(
+                        activity = this@SchemesActivity,
+                        dialog = form,
+                        typed = {
+                            boxes.map { it.text.toString() } != openedTexts || partyId != openedParty ||
+                                start != openedStart || end != openedEnd ||
+                                rgMeasure.checkedRadioButtonId != openedMeasure || rgReward.checkedRadioButtonId != openedReward
+                        }
+                    )
+                }
         }
     }
 

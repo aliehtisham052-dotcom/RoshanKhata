@@ -792,6 +792,8 @@
     <string name="bill_state_paid_by">Lunas · %1$s</string>
     <string name="bill_discard_title">Buang tagihan ini?</string>
     <string name="bill_discard_msg">Yang sudah Anda ketik di tagihan ini akan hilang.</string>
+    <string name="form_discard_title">Buang yang sudah diketik?</string>
+    <string name="form_discard_msg">Yang sudah Anda ketik di formulir ini akan hilang.</string>
     <string name="add_invoice">Tambah faktur</string>
     <string name="invoice_customer_hint">Nama pelanggan</string>
     <string name="invoice_phone_hint">Telepon (opsional)</string>

@@ -803,6 +803,8 @@
     <string name="bill_state_paid_by">ادا ٿيل · %1$s</string>
     <string name="bill_discard_title">هي بل ڇڏي ڏيو؟</string>
     <string name="bill_discard_msg">هن بل تي جيڪو توهان لکيو آهي اهو ضايع ٿي ويندو.</string>
+    <string name="form_discard_title">جيڪو لکيو آهي اهو ڇڏي ڏيو؟</string>
+    <string name="form_discard_msg">هن فارم ۾ جيڪو توهان لکيو آهي اهو ضايع ٿي ويندو.</string>
     <string name="add_invoice">انوائس شامل ڪريو</string>
     <string name="invoice_customer_hint">گراهڪ جو نالو</string>
     <string name="invoice_phone_hint">فون (اختياري)</string>
