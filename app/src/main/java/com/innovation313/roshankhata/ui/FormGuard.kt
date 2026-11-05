@@ -56,4 +56,23 @@ object FormGuard {
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.setOnClickListener { leave() }
         return leave
     }
+
+    /**
+     * Save wired after show(), as Close the day's is (R155; every money form since 5 Nov 2026): a builder's Save closes
+     * the dialog whatever its listener decides, so a save the form's own checks refused threw away everything typed
+     * with it. [save] runs on each tap. Refused, it says why as the form always has and returns false: the dialog stays
+     * open as it was. Let through, it starts the write where the form always started it and returns true: the dialog
+     * closes, as Close the day's does. A save let through takes no second tap (a flag, not a disabled button: lesson 10).
+     * Call after show(): the Save button exists only then.
+     */
+    fun onSave(dialog: AlertDialog, save: () -> Boolean) {
+        var handedOn = false
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+            if (handedOn) return@setOnClickListener
+            if (save()) {
+                handedOn = true
+                dialog.dismiss()
+            }
+        }
+    }
 }
