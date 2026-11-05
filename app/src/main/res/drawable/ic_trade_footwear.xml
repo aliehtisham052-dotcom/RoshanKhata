@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A shoe: footwear. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): a shoe.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M3,6h4v5.5l3,-1 4,1.6c3,0.9 5.6,1.9 6.6,3.6L21,19H3z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M2.9,14.7H21.4A0.6,0.6 0 0,1 22,15.3V16.5A1.4,1.4 0 0,1 20.6,17.9H3.9A1.6,1.6 0 0,1 2.3,16.3V15.3A0.6,0.6 0 0,1 2.9,14.7Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4.96,6.58L7.69,7.76A0.6,0.6 0 0,0 8.28,7.7L9.68,6.68A0.67,0.67 0 0,1 10.6,6.8L11,7.3C11.7,8.2 12.6,9 13.8,9.6C15.4,10.4 17.4,10.9 19,11.5C20.6,12.1 21.6,13.1 21.6,14.5L21.6,15.1L2.8,15.1L3.29,7.6A1.2,1.2 0 0,1 4.96,6.58Z" />
 </vector>
