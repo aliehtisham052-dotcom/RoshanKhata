@@ -168,6 +168,15 @@ class PartyDetailActivity : BaseActivity() {
          */
         const val EXTRA_VOICE_AMOUNT = "voice_amount"
         const val EXTRA_VOICE_IS_GIVEN = "voice_is_given"
+
+        /**
+         * A payment a wallet or bank app announced (PaymentVoice, 5 Nov 2026), beside [EXTRA_VOICE_AMOUNT]: the
+         * note, the way it was paid (a PaymentMethod key) and its reference, put in the form for the owner to
+         * check. Like the spoken amount, nothing is saved until Save.
+         */
+        const val EXTRA_PREFILL_NOTE = "prefill_note"
+        const val EXTRA_PREFILL_METHOD = "prefill_method"
+        const val EXTRA_PREFILL_REF = "prefill_ref"
     }
 
     /**
@@ -483,8 +492,13 @@ class PartyDetailActivity : BaseActivity() {
         val spokenAmount = intent.getDoubleExtra(EXTRA_VOICE_AMOUNT, 0.0)
         if (spokenAmount > 0.0 && savedInstanceState == null) {
             val spokenGiven = intent.getBooleanExtra(EXTRA_VOICE_IS_GIVEN, true)
+            val note = runCatching { intent.getStringExtra(EXTRA_PREFILL_NOTE) }.getOrNull()
+            val method = runCatching { intent.getStringExtra(EXTRA_PREFILL_METHOD) }.getOrNull()
+                ?.takeIf { it in PaymentMethod.ALL }
+            val ref = runCatching { intent.getStringExtra(EXTRA_PREFILL_REF) }.getOrNull()
             findViewById<View>(android.R.id.content).post {
-                showAddEntryDialog(spokenGiven, prefillAmount = spokenAmount)
+                showAddEntryDialog(spokenGiven, prefillAmount = spokenAmount,
+                    prefillNote = note, prefillMethod = method, prefillRef = ref)
             }
         }
         if (partyId == 0L) {
@@ -795,7 +809,11 @@ class PartyDetailActivity : BaseActivity() {
         prefillAmount: Double? = null,
         editing: EntryWithItems? = null,
         // The form as it stood before the screen was rebuilt (R41); null for every form the owner opens.
-        restore: Bundle? = null
+        restore: Bundle? = null,
+        // A payment a wallet app announced (EXTRA_PREFILL_*): the note, the way it came and its reference.
+        prefillNote: String? = null,
+        prefillMethod: String? = null,
+        prefillRef: String? = null
     ) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
@@ -1824,6 +1842,16 @@ class PartyDetailActivity : BaseActivity() {
         // After the first check above (lesson 4): the listener only follows the chip, it decides nothing.
         cgPaymentMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
         showRefBox()
+
+        // ---- A payment a wallet or bank app announced (PaymentVoice): put in, never saved ----
+        if (editing == null && restore == null) {
+            if (!isGiven && prefillMethod != null) {
+                checkMethod(prefillMethod)
+                prefillRef?.trim()?.takeIf { it.isNotEmpty() }?.let { etPaymentRef.setText(it) }
+                showRefBox()
+            }
+            prefillNote?.trim()?.takeIf { it.isNotEmpty() }?.let { etNote.setText(it.take(500)) }
+        }
 
         // ---- Editing: put the entry back on the form ----
         if (editing != null) {
