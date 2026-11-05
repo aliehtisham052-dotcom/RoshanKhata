@@ -30,12 +30,14 @@
 
 <h1>Roshan Khata — Privacy Policy</h1>
 <p class="tagline">Har Hisaab Roshan · By Innovation-313</p>
-<p class="updated">Last updated: 22 October 2026 · <a href="privacy-policy-ur.html" hreflang="ur" lang="ur" dir="rtl">اردو میں پڑھیں</a></p>
+<p class="updated">Last updated: 5 November 2026 · <a href="privacy-policy-ur.html" hreflang="ur" lang="ur" dir="rtl">اردو میں پڑھیں</a></p>
 
 <div class="highlight">
   <strong>The short version:</strong> Roshan Khata keeps your business records on
-  your own phone. We do not run a server, we do not collect your ledger, and we
-  never sell or share your data. Cloud backup, if you turn it on, goes to
+  your own phone. We do not collect your ledger, and we never sell or share your data. The few
+  optional features that pass something over the internet (live sync, an heir's
+  copy) send it <strong>locked with a key only your devices hold</strong>, so the
+  servers that carry it cannot read it. Cloud backup, if you turn it on, goes to
   <em>your own</em> Google Drive — not to us.
 </div>
 
@@ -278,7 +280,49 @@
   there goes to Google Play, not to us.
 </p>
 
-<h2>20. What we do NOT do</h2>
+<h2>20. Kitab ki Muhar — the book's daily seal (optional, off until you turn it on)</h2>
+<p>
+  If you turn it on (Backup &rarr; Kitab ki Muhar), once a day the app works out a
+  <strong>fingerprint</strong> of the entries written since the day before: a
+  32-byte SHA-256 number from which nothing about the book can be read back. Only
+  that number is sent to three independent public time-stamping services
+  (FreeTSA, Sectigo and DigiCert, using the RFC 3161 standard), which sign it with
+  the date and time. The signed answers are kept in your book and its backups. They
+  let you show later that an entry was already in your book on that day. No name,
+  amount, phone number or any other part of the book is sent. Each service sees
+  your phone's internet address while it answers, as any website does. Turn it
+  off at any time; seals already made stay in the book.
+</p>
+
+<h2>21. Paisa aaya ki awaaz — payment voice (optional, off until you turn it on)</h2>
+<p>
+  If you turn it on and give Roshan Khata <strong>notification access</strong> in
+  your phone's settings, the app reads, <strong>on your phone only</strong>, the
+  notifications of the wallet or bank apps you tick (for example JazzCash or
+  Easypaisa), says a received payment aloud and offers to add it to a customer's
+  khata — you always press Save yourself. From apps you have not ticked it notes
+  only the app's name, so you can tick it later, and reads none of what they say.
+  It never reads your SMS or call notifications, and ignores codes and PINs.
+  Nothing it reads is sent anywhere or stored, except an entry you choose to save.
+  You can take the access back in your phone's settings at any time.
+</p>
+
+<h2>22. Waris ki Chaabi — heir access (optional, off until you turn it on)</h2>
+<p>
+  If you name an heir, a copy of your book <strong>without your PINs and other
+  secret keys</strong> is locked on your phone (AES-256-GCM, with a key sealed for
+  your heir's phone only, using its own key pair) and kept on the same three
+  relays live sync uses (Cloudflare, Supabase and our own hosting), and refreshed
+  about once a week. The relays hold only locked bytes and cannot read them; they
+  hold no names. Your heir can only <em>ask</em> to open it: you are told at once on
+  your devices and can refuse. Only if you do not refuse within the wait you chose
+  (30 days unless you change it) does the relay hand your heir the locked key, and
+  your heir then sees a <strong>read-only</strong> copy. Removing an heir changes the
+  key; turning Waris off deletes the copy from the relays. The heir's "Waris card"
+  holds their key: keep it as you would keep a key.
+</p>
+
+<h2>23. What we do NOT do</h2>
 <ul>
   <li>We do not sell your data.</li>
   <li>We do not share your data with advertisers or partners.</li>
@@ -287,7 +331,7 @@
   <li>We do not track your location.</li>
 </ul>
 
-<h2>21. Permissions the app uses</h2>
+<h2>24. Permissions the app uses</h2>
 <ul>
   <li><strong>Internet</strong> (and checking the network's state) — only to
       upload/download your backup to your own Google Drive, when you turn cloud
@@ -303,6 +347,9 @@
       automatic backup still happen after the phone restarts.</li>
   <li><strong>Notifications</strong> — only for the app's own reminders on your
       phone, such as a backup being due.</li>
+  <li><strong>Notification access</strong> (only if you turn on payment voice and
+      allow it in your phone's settings) — to read, on the phone, the notifications
+      of the wallet and bank apps you tick, as described above.</li>
   <li><strong>Google Drive (app-data folder only)</strong> — to store your backup
       in your own Drive, as described above.</li>
   <li><strong>Fingerprint / device lock</strong> — only to lock the app on your
@@ -313,7 +360,7 @@
       the app itself never holds the right to your camera or microphone.</li>
 </ul>
 
-<h2>22. Your rights</h2>
+<h2>25. Your rights</h2>
 <ul>
   <li>You can delete any customer, entry, bill or invoice from within the app.
       Deleted items wait in the Recycle Bin for 30 days, so a mistake can be
@@ -329,18 +376,18 @@
       until you delete it there.</li>
 </ul>
 
-<h2>23. Children</h2>
+<h2>26. Children</h2>
 <p>
   The app is intended for business owners and is not directed at children.
 </p>
 
-<h2>24. Changes to this policy</h2>
+<h2>27. Changes to this policy</h2>
 <p>
   If this policy changes, we will update this page and the "last updated" date
   above.
 </p>
 
-<h2>25. Contact</h2>
+<h2>28. Contact</h2>
 <p>
   For any question about your privacy or this policy, contact us at
   <a href="mailto:innovation313.support@gmail.com">innovation313.support@gmail.com</a>.
