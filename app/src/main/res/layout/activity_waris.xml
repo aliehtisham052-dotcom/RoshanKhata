@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Waris ki Chaabi (4 Nov 2026): the owner's heirs (part 1) and the books this phone is heir to (part 2). On a helper's
+  read-only phone only the note at the top shows (warisViewer): a viewer never manages a vault. Every row is built in
+  WarisActivity from item_waris_heir / item_waris_link; words always sit above buttons, never beside them (lesson 58).
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/section_tools"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/white"
+        app:title="@string/waris_title"
+        app:titleTextColor="@color/white" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="32dp">
+
+            <!-- A helper's read-only phone (or the heir's copy open): only this. -->
+            <LinearLayout
+                android:id="@+id/warisViewer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvWarisViewer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/note_bg"
+                    android:padding="14dp"
+                    android:text="@string/waris_viewer_note"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/note_text"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWarisViewerLeave"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/viewer_menu" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/warisMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_profile_card"
+                    android:padding="14dp"
+                    android:text="@string/waris_intro"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp" />
+
+                <!-- ===== Part 1: my heirs ===== -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/waris_my_heirs"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/warisOwnerOff"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/waris_off_note"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnWarisOn"
+                        style="@style/BackupPrimaryButton"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/waris_turn_on" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/warisOwnerOn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/warisHeirs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/tvWarisCopy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/text_muted"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnWarisAddHeir"
+                        style="@style/BackupPrimaryButton"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/waris_add_heir" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnWarisUpdate"
+                        style="@style/BackupOutlineButton"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/waris_update_copy" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnWarisOff"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/waris_turn_off"
+                        android:textAllCaps="false"
+                        android:textColor="@color/red_gave_text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- ===== Part 2: books I am heir to ===== -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:text="@string/waris_heir_to"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvWarisLinksEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/waris_links_empty"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/text_muted"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:id="@+id/warisLinks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWarisScanOwner"
+                    style="@style/BackupOutlineButton"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/waris_scan_owner"
+                    app:icon="@drawable/ic_qr_scan"
+                    app:iconTint="@color/brand_green_text" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

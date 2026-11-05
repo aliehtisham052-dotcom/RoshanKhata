@@ -110,6 +110,8 @@ class MainActivity : BaseActivity() {
 
         // The automations' hourly check (31 Oct 2026): scheduled from Home too, for an owner who never opens Khata.
         runCatching { AutomationWorker.schedule(this) }
+        // Waris ki Chaabi's weekly run (4 Nov 2026): it does nothing for a book without a vault or a link.
+        runCatching { WarisWorker.schedule(this) }
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
         tvHomeLate = findViewById(R.id.tvHomeLate)
@@ -466,6 +468,8 @@ class MainActivity : BaseActivity() {
         paintHeaderLine()
         // Returning from another screen, the bar must point at Home again.
         showViewerNote()
+        // An heir who asked and is neither refused nor allowed: asked every time Home opens (Waris ki Chaabi).
+        com.innovation313.roshankhata.ui.WarisAsk.onHome(this)
     }
 
     /**
@@ -629,7 +633,10 @@ class MainActivity : BaseActivity() {
             return
         }
         val at = viewer.dataAt(this)
-        note.text = getString(
+        // The heir's copy of a shop (Waris ki Chaabi) says whose it is; a helper's copy as before.
+        val heirOf = com.innovation313.roshankhata.data.WarisAndroid.heirCopyOf(this)
+        note.text = if (heirOf != null) getString(R.string.waris_heir_copy_banner, com.innovation313.roshankhata.ui.Format.isolate(heirOf))
+        else getString(
             R.string.viewer_banner,
             if (at > 0L) com.innovation313.roshankhata.ui.Format.dateTime(at)
             else getString(R.string.viewer_unknown_time)

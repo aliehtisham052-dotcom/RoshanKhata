@@ -258,6 +258,8 @@ object AccessUi {
         "AgingActivity" to Access.Permission.REPORTS,
         // The helper's-phone screen loads another book and sends this one away whole (21 Oct 2026).
         "ViewerActivity" to Access.Permission.BACKUP,
+        // Waris ki Chaabi refuses, allows and sends the whole book (4 Nov 2026): the owner's alone.
+        "WarisActivity" to Access.Permission.BACKUP,
         // Every entry of every customer out as a report, and the phone's contacts in (21 Oct 2026).
         "LedgerReportActivity" to Access.Permission.REPORTS,
         "ImportContactsActivity" to Access.Permission.EDIT_BOOK
