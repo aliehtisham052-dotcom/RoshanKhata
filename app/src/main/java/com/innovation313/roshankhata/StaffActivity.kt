@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -26,9 +27,11 @@ import com.innovation313.roshankhata.data.StaffAttendance
 import com.innovation313.roshankhata.data.StaffPayment
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 /**
@@ -213,9 +216,16 @@ class StaffActivity : BaseActivity() {
                     }
                     val payment = StaffPayment(staffId = person.id, amount = v, kind = kind,
                         note = note.text.toString().trim().ifEmpty { null })
-                    lifecycleScope.launch {
+                    // AppScope, not the screen's own scope (5 Nov 2026), as every other money write: Back right after
+                    // Save closes the screen and cancelled a write still on its way. A failed write is said by AppScope's
+                    // handler ("not saved"); the card is shown only while there is still a screen to show it on.
+                    AppScope.launch {
                         dao.insertStaffPayment(payment)
-                        com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
+                        withContext(Dispatchers.Main) {
+                            if (!isFinishing && !isDestroyed) {
+                                com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
+                            }
+                        }
                     }
                     true
                 }
@@ -264,7 +274,7 @@ class StaffActivity : BaseActivity() {
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
                 // Set while a save is on its way (the name is looked up, then written), and kept once it is written:
                 // a second tap, or a second answer from the owner PIN question, saves nothing twice. A flag, not a
-                // disabled button (lesson 10). Cleared when the name is refused, for another try.
+                // disabled button (lesson 10). Cleared when the name is refused or the write failed, for another try.
                 var saving = false
                 dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
                     if (saving) return@setOnClickListener
@@ -294,20 +304,29 @@ class StaffActivity : BaseActivity() {
                         if (saving) return@save
                         saving = true
                         lifecycleScope.launch {
-                            var written = false
-                            try {
+                            // The look-up and the write run on AppScope (5 Nov 2026): a failure is said as every other
+                            // AppScope write's is ("not saved", AppFailures) — on the screen's own scope it crashed the
+                            // app — and a turned screen cannot cancel them half way. This screen only waits for them.
+                            var taken = false
+                            val write = AppScope.launch {
                                 // Two staff of one name would share a shift and a drawer (23 Oct 2026, the review).
-                                if (dao.staffNameTaken(n, person?.id ?: 0L)) {
-                                    Toast.makeText(this@StaffActivity, R.string.staff_name_taken, Toast.LENGTH_LONG).show()
-                                    name.requestFocus()
-                                    return@launch
+                                taken = dao.staffNameTaken(n, person?.id ?: 0L)
+                                if (!taken) {
+                                    if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
+                                    else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
                                 }
-                                if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
-                                else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
-                                written = true
+                            }
+                            write.join()
+                            if (write.isCancelled) {
+                                // Not written, and already said: the form stays as it was, for another try.
+                                saving = false
+                            } else if (taken) {
+                                Toast.makeText(this@StaffActivity, R.string.staff_name_taken, Toast.LENGTH_LONG).show()
+                                name.requestFocus()
+                                saving = false
+                            } else {
+                                // Written: the form closes, and Save stays spent.
                                 dialog.dismiss()
-                            } finally {
-                                if (!written) saving = false
                             }
                         }
                     }
