@@ -1811,6 +1811,17 @@ Phone only (Windows keeps its own name and trade questions; the trade icons are 
 - Tests: SetupProgressTest (unit), DeviceSmokeTest (the phone's language marked, nothing saved before
   Continue; the language alone does not finish the setup), screen proof 39–42 (the three steps, the country
   page).
+- **The 25 shop-type icons** (`ic_trade_*`, phone picker and Windows' TradeKit alike) are one two-tone family:
+  every path white, the main shape at full alpha and the second tone at `fillAlpha="0.4"` exactly, a light part
+  inside a dark one cut out of the dark path (an alpha layer over a full one composites dark). Both platforms
+  tint the whole drawable with SrcIn, which keeps alpha, so the two tones survive with no code change (lesson 56
+  is about two COLOURS; two alphas are safe). Symbols: general storefront, kiryana basket, wholesale cartons,
+  medical capsule, mobile phone, clothing T-shirt, electronics bulb, hardware hammer, agri sprout, dairy milk
+  bottle, bakery cake, meat cut, produce apple, restaurant plate with fork and knife, cosmetics lipstick,
+  footwear shoe, stationery notebook and pencil, tailor spool and needle (it was a shirt, the same as clothing),
+  salon scissors over a comb, auto car, furniture sofa, building bricks, solar panel and sun, fuel pump, other
+  2 x 2 squares. By night the light tone is the dimmer one (alpha over a dark chip). The picker's chip is 40 dp
+  with a 24 dp icon (`item_trade_card`).
 
 ### Forms keep what was typed (5 Nov 2026, kmp-desktop-16 — the owner: "is dauran koi aur kami nazar aaye to usko bhi fulfill kar lena")
 

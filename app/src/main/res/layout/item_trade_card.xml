@@ -23,13 +23,14 @@
         android:paddingEnd="12dp"
         android:paddingBottom="12dp">
 
+        <!-- 40dp chip, 24dp icon (5 Nov 2026, the approved mockup): the two-tone icons read at their own grid size. -->
         <ImageView
             android:id="@+id/ivTradeIcon"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/bg_trade_chip"
             android:importantForAccessibility="no"
-            android:padding="7dp"
+            android:padding="8dp"
             tools:src="@drawable/ic_trade_agri" />
 
         <TextView
