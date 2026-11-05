@@ -443,7 +443,9 @@ class WarisActivity : BaseActivity() {
         getString(R.string.waris_ask), getString(R.string.waris_ask_body, Format.isolate(l.shop)), getString(R.string.waris_ask)
     ) {
         act({ WarisAndroid.heir(applicationContext).ask(l).second }) { r ->
-            if (r is Waris.Result.Failed && r.why == Waris.Why.WAIT && r.at != null) tell(getString(R.string.waris_link_refused, Format.dateTime(r.at)))
+            // `at` comes from :shared — no smart cast across modules, so it is read once into a local.
+            val retryAt = (r as? Waris.Result.Failed)?.takeIf { it.why == Waris.Why.WAIT }?.at
+            if (retryAt != null) tell(getString(R.string.waris_link_refused, Format.dateTime(retryAt)))
             else say(r, getString(R.string.waris_asked_sent))
         }
     }
