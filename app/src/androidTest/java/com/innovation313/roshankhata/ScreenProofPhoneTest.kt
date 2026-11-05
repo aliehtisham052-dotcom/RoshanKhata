@@ -219,6 +219,11 @@ class ScreenProofPhoneTest(
             shoot("39-setup-language", open(LanguageActivity::class.java))
             shoot("40-setup-shop-type", open(ShopTypeActivity::class.java))
             shoot("41-setup-details", open(ShopNameActivity::class.java))
+            // The phone box with the country's calling code in front, scrolled into sight.
+            shoot("43-setup-phone", open(ShopNameActivity::class.java)) { a ->
+                val phone = a.findViewById<android.view.View>(R.id.shopPhoneBox)
+                phone.requestRectangleOnScreen(android.graphics.Rect(0, 0, phone.width, phone.height + 400), true)
+            }
             shoot("42-setup-country", open(ShopNameActivity::class.java)) { a ->
                 a.findViewById<android.view.View>(R.id.btnShopCountry).performClick()
             }
