@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A shirt: clothing and garments. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): a shirt, its raglan sleeves and V collar in the light tone.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M8,3L3,6l2,4 2,-1v12h10V9l2,1 2,-4 -5,-3c0,1.66 -1.79,3 -4,3S8,4.66 8,3z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M7.9,9.8L5.4,10.61A0.8,0.8 0 0,1 4.47,10.26L3.12,8.06A1,1 0 0,1 3.46,6.68L9.2,3.2L9.8,3.2L7.9,9.8Z M14.2,3.2L14.8,3.2L20.54,6.68A1,1 0 0,1 20.88,8.06L19.53,10.26A0.8,0.8 0 0,1 18.6,10.61L16.1,9.8L14.2,3.2Z M9.2,3.2Q12,5.2 14.8,3.2L12,8Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M9.56,3.76L11.58,6.94A0.5,0.5 0 0,0 12.42,6.94L14.44,3.76A0.3,0.3 0 0,1 14.98,3.84L16.68,9.75A0.4,0.4 0 0,1 16.7,9.86L16.7,19.8A1.2,1.2 0 0,1 15.5,21L8.5,21A1.2,1.2 0 0,1 7.3,19.8L7.3,9.86A0.4,0.4 0 0,1 7.32,9.75L9.02,3.84A0.3,0.3 0 0,1 9.56,3.76Z" />
 </vector>

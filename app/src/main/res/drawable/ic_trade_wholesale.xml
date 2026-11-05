@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Stacked cartons: wholesale and distribution. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): three stacked cartons with tape.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M3,12h8v9H3zM13,12h8v9h-8zM8,3h8v8H8z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M8.7,3.2H15.3A1.2,1.2 0 0,1 16.5,4.4V10.5A1.2,1.2 0 0,1 15.3,11.7H8.7A1.2,1.2 0 0,1 7.5,10.5V4.4A1.2,1.2 0 0,1 8.7,3.2Z M5.9,12.8H8.1V16.1H5.9V12.8Z M15.9,12.8H18.1V16.1H15.9V12.8Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3.7,12.8L6,12.8L6,15.3A0.5,0.5 0 0,0 6.5,15.8L7.5,15.8A0.5,0.5 0 0,0 8,15.3L8,12.8L10.3,12.8A1.2,1.2 0 0,1 11.5,14L11.5,20.1A1.2,1.2 0 0,1 10.3,21.3L3.7,21.3A1.2,1.2 0 0,1 2.5,20.1L2.5,14A1.2,1.2 0 0,1 3.7,12.8Z M13.7,12.8L16,12.8L16,15.3A0.5,0.5 0 0,0 16.5,15.8L17.5,15.8A0.5,0.5 0 0,0 18,15.3L18,12.8L20.3,12.8A1.2,1.2 0 0,1 21.5,14L21.5,20.1A1.2,1.2 0 0,1 20.3,21.3L13.7,21.3A1.2,1.2 0 0,1 12.5,20.1L12.5,14A1.2,1.2 0 0,1 13.7,12.8Z M11,3.2H13V5.7A0.5,0.5 0 0,1 12.5,6.2H11.5A0.5,0.5 0 0,1 11,5.7V3.2Z" />
 </vector>

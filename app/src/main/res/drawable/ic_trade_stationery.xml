@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A pencil: stationery and books. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): a notebook and a pencil.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M3,17.25V21h3.75L17.81,9.94l-3.75,-3.75L3,17.25zM20.71,7.04a1,1 0,0 0,0 -1.41l-2.34,-2.34a1,1 0,0 0,-1.41 0l-1.83,1.83 3.75,3.75 1.83,-1.83z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M4.6,3H6.2V21H4.6A1.2,1.2 0 0,1 3.4,19.8V4.2A1.2,1.2 0 0,1 4.6,3Z M8.6,5.9H12.2A0.9,0.9 0 0,1 13.1,6.8V8.2A0.9,0.9 0 0,1 12.2,9.1H8.6A0.9,0.9 0 0,1 7.7,8.2V6.8A0.9,0.9 0 0,1 8.6,5.9Z M16.7,5.4H20.3V17H16.7V5.4Z M16.7,16.6L20.3,16.6L18.78,20.82A0.3,0.3 0 0,1 18.22,20.82L16.7,16.6Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M5.9,3H13.3A1.6,1.6 0 0,1 14.9,4.6V19.4A1.6,1.6 0 0,1 13.3,21H5.9V3Z M8.7,6.2A0.7,0.7 0 0,0 8,6.9V8.1A0.7,0.7 0 0,0 8.7,8.8H12.1A0.7,0.7 0 0,0 12.8,8.1V6.9A0.7,0.7 0 0,0 12.1,6.2H8.7Z M17.9,2.6H19.1A1.2,1.2 0 0,1 20.3,3.8V5.6H16.7V3.8A1.2,1.2 0 0,1 17.9,2.6Z M17.5,19.6L19.5,19.6L18.77,21.06A0.3,0.3 0 0,1 18.23,21.06L17.5,19.6Z" />
 </vector>

@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A layered cake with a flame: bakery and sweets. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): a layer cake with dripping icing and a cherry.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white"
-        android:pathData="M12,2.5c-0.9,0.8 -1.5,1.8 -1.5,2.7 0,0.9 0.7,1.6 1.5,1.6s1.5,-0.7 1.5,-1.6c0,-0.9 -0.6,-1.9 -1.5,-2.7zM11,8h2v3h-2zM4,11h16v4H4zM3,16h18v5H3z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M5.2,8H18.8A1.6,1.6 0 0,1 20.4,9.6V11.5H3.6V9.6A1.6,1.6 0 0,1 5.2,8Z M8.3,11L8.3,12.4A1.5,1.5 0 0,1 5.3,12.4L5.3,11A1.5,1.5 0 0,1 8.3,11Z M13.5,11L13.5,13.2A1.5,1.5 0 0,1 10.5,13.2L10.5,11A1.5,1.5 0 0,1 13.5,11Z M18.7,11L18.7,12.6A1.5,1.5 0 0,1 15.7,12.6L15.7,11A1.5,1.5 0 0,1 18.7,11Z M3.6,15.6H20.4V18H3.6V15.6Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3.6,11.2L5.6,11.2L5.6,12.4A1.2,1.2 0 0,0 8,12.4L8,11.2L10.8,11.2L10.8,13.2A1.2,1.2 0 0,0 13.2,13.2L13.2,11.2L16,11.2L16,12.6A1.2,1.2 0 0,0 18.4,12.6L18.4,11.2L20.4,11.2L20.4,15.9L3.6,15.9Z M3.6,17.7H20.4V19.4A1.6,1.6 0 0,1 18.8,21H5.2A1.6,1.6 0 0,1 3.6,19.4V17.7Z M9.9,5.9A2.1,2.1 0 1,1 14.1,5.9A2.1,2.1 0 1,1 9.9,5.9Z" />
 </vector>

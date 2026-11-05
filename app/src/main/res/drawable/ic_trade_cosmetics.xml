@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A gem: cosmetics and jewellery. (11 Oct) -->
+<!-- Shop type icon (5 Nov 2026): a lipstick.
+     One family of two-tone glyphs: every path is white, the second tone at fillAlpha 0.4, so the one
+     tint the picker gives keeps both; a light part inside a dark one is cut from it (a reversed sub-path). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@android:color/white" android:fillType="evenOdd"
-        android:pathData="M6,3h12l4,6 -10,12L2,9zM6.8,9.6L12,16.3 17.2,9.6zM8.7,5L7,8h4.1l0.9,-3zM15.3,5h-2.4l0.9,3H17z"/>
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.4"
+        android:pathData="M8,10.2H16A0.6,0.6 0 0,1 16.6,10.8V15H7.4V10.8A0.6,0.6 0 0,1 8,10.2Z M10.4,16.7L10.4,19A1.1,1.1 0 0,1 8.2,19L8.2,16.7A1.1,1.1 0 0,1 10.4,16.7Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M9.1,10.45L9.1,7.13A0.8,0.8 0 0,1 9.45,6.46L13.34,3.85A1,1 0 0,1 14.9,4.68L14.9,10.45L9.1,10.45Z M7.2,14.6H16.8A0.8,0.8 0 0,1 17.6,15.4V20.1A1.7,1.7 0 0,1 15.9,21.8H8.1A1.7,1.7 0 0,1 6.4,20.1V15.4A0.8,0.8 0 0,1 7.2,14.6Z M10.1,16.7A0.8,0.8 0 0,0 8.5,16.7L8.5,19A0.8,0.8 0 0,0 10.1,19Z" />
 </vector>
