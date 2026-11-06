@@ -94,6 +94,11 @@
         <item name="buttonBarPositiveButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNeutralButtonStyle">@style/DialogButton</item>
+        <!-- The keyboard moves every dialog clear of it, its buttons with it (6 Nov 2026). Left unset,
+             a dialog with no scrolling part was slid up just far enough for the box being typed in,
+             its OK and Cancel under the keyboard. Bottom sheets have this from Material's own theme;
+             KeyboardFollow keeps the box in the middle of what is left. -->
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <!-- One tab of the All / Customers / Suppliers track (11 Oct). -->

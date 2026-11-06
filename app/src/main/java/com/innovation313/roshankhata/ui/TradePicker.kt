@@ -211,6 +211,8 @@ object TradePicker {
             footer.setPaddingRelative(f[0] + start, f[1], f[2] + end, f[3] + maxOf(bars.bottom, ime))
             insets
         }
+        // The room above is this page's own; KeyboardFollow only keeps the box in the middle (6 Nov 2026).
+        KeyboardFollow.keepFocusedVisible(root)
         ViewCompat.requestApplyInsets(root)
     }
 

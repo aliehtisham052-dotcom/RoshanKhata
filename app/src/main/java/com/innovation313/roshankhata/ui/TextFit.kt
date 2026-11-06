@@ -48,6 +48,8 @@ object TextFit {
 
     fun relax(root: View?) {
         if (root == null) return
+        // Every box typed in stays in the middle of what can be seen, in whatever window it lands (6 Nov 2026).
+        KeyboardFollow.watchAll(root)
         // Hints are read whole at every text size, so this runs before the size check below.
         HintFit.apply(root)
         // A quantity or a price takes the language's decimal mark and every keyboard's digits (3 Nov 2026 audit, M41).

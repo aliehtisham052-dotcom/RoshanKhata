@@ -235,6 +235,8 @@ object CountryPicker {
             scroll.setPaddingRelative(s[0] + start, s[1], s[2] + end, s[3] + maxOf(bars.bottom, ime))
             insets
         }
+        // The room above is this page's own; KeyboardFollow only keeps the box in the middle (6 Nov 2026).
+        KeyboardFollow.keepFocusedVisible(root)
         ViewCompat.requestApplyInsets(root)
     }
 }

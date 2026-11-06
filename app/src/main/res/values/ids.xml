@@ -4,6 +4,10 @@
     <item name="tile_compact" type="id" />
     <!-- KeyboardFollow: marks a root whose focus listener is already added. -->
     <item name="tag_keyboard_follow" type="id" />
+    <!-- KeyboardFollow: on a window's root view, its keyboard is looked after (room and the middle). -->
+    <item name="tag_keyboard_window" type="id" />
+    <!-- KeyboardFollow: on a text box, its window is followed once the box is in one. -->
+    <item name="tag_keyboard_watch" type="id" />
     <!-- HintFit: marks a box whose hint is already watched. -->
     <item name="hint_fit_watched" type="id" />
     <!-- FitOneLine: the size a one-line figure was laid out at, before it was shrunk to fit. -->

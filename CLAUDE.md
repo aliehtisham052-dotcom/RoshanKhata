@@ -1848,6 +1848,41 @@ Phone only. CI only. The supplier bill's guard (4 Nov) on every money form that 
   fails says "not saved" (AppFailures) but the form is gone; the "set owner PIN" question can show twice on a
   fast double tap (needs a cancel callback in `AccessUi.requireOwnerPin`).
 
+### Typing stays in the middle (6 Nov 2026, kmp-desktop-16 — the owner's photo of the invoice's options sheet)
+
+Phone only. CI only until the keyboard check's pictures are looked at.
+
+- **The bug:** tapping the Note in the invoice's "Discount, tax & payment" sheet stood the sheet a keyboard's
+  height above the keyboard on Android 15+: the title at the top, Apply right under it, every field squeezed out
+  between them, an empty band over the keyboard. Bottom sheets were lifted twice — `KeyboardFollow.dialog` padded
+  the window's content by the keyboard and handed the insets on whole, and Material's sheet container
+  (fitsSystemWindows; its theme is adjustResize) took the keyboard again. Below Android 15 the window's own frame
+  took it first and nothing doubled. The keyboard run of 19 Oct had measured it (API 35: the field 867 px above
+  the keyboard) and passed it, because it only asked "above the keyboard?".
+- **Room, once** (`KeyboardFollow.install`): a full-screen dialog or sheet takes the covered part as its content's
+  bottom padding and hands its children insets without the keyboard and without the navigation bar's foot
+  (`withoutKeyboard`); a floating dialog is moved clear by the phone (every MaterialAlertDialog is adjustResize
+  now, `ThemeOverlay.RoshanKhata.Dialog` — a dialog with no scroll was slid up only as far as its box, OK and
+  Cancel under the keyboard). Screens keep ScreenInsets.
+- **The middle** (`reveal`, `centre`, `shift`): the focused box goes to the middle of what its scroll shows —
+  above the keyboard or the app's pad, below the title, inside a pinned footer — not only to the keyboard's edge;
+  a box near a form's start stays (the scroll cannot go above it); a note taller than half the space puts the line
+  being typed on there. Measured from the layout (`offsetDescendantRectToMyCoords`), so a sheet still sliding with
+  the keyboard is measured where it stops. A smooth scroll; nothing moves for a box in sight within 24 dp of the
+  middle. The calculator pad calls `centre` when it takes a box (CalcPad.showPad, again once the keyboard has gone).
+  Compose fields (counter, orders, shift, the stock-count and return dialogs) bring themselves into view (Compose's
+  own rule, not centred).
+- **Every box by itself** (`watchAll`, `watch`): TextFit.relax (every layout made in code, lesson 59) and
+  FormBox.style (every box made in code) hand their boxes to KeyboardFollow; once a box is in a window, that window
+  gets the room and the middle unless its own code already looks after it (`tag_keyboard_window`, set by
+  `keepFocusedVisible`: ScreenInsets, the shop-name page, TradePicker, CountryPicker). The stock adjustment, the
+  counter's forms, the heir dialog and the add-entry form had none before. The 32 explicit `KeyboardFollow.dialog`
+  calls stay (they set adjustResize on the window too).
+- Tests: KeyboardFollowShiftTest (unit); KeyboardDialogsOnDeviceTest now fails a band under a sheet, a field above
+  the window, and a field off the middle of a long form, with "by itself" cases; KeyboardInvoiceSheetOnDeviceTest
+  opens the real sheet (the note with the keyboard, the amount received with the pad). keyboard.yml runs on kmp-*
+  pushes too (API 30 and 35); its pictures go to the `keyboard-proof` release.
+
 ### The shared module (KMP)
 
 ```
@@ -2275,6 +2310,12 @@ Each of these cost a build or a bug.
     and country never asked, and the unsaved country read as Pakistan (5 Nov 2026). Write "done" on the last
     step, route to the first unfinished one, and give an older install a way to count as done (`SetupProgress`:
     a "started" marker it never wrote).
+
+79. **Whatever takes the keyboard as padding takes it out of what it hands on.** `KeyboardFollow.dialog` padded a
+    sheet's content by the keyboard and passed the insets down whole; Material's sheet container (fitsSystemWindows)
+    padded by them again, and on Android 15 the invoice sheet stood a keyboard's height above the keyboard, its form
+    squeezed to nothing (6 Nov 2026). Hand children `withoutKeyboard(insets)`. And a test of "above the keyboard"
+    passes a field 867 px above it: measure that the panel sits on the keyboard and the box is in the middle.
 
 ---
 

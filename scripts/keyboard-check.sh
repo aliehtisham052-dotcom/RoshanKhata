@@ -2,7 +2,8 @@
 # Runs inside reactivecircus/android-emulator-runner (see keyboard.yml).
 # POSIX sh, one process (the runner splits its `script:` on newlines).
 #
-# The keyboard tests (KeyboardOnDeviceTest, KeyboardDialogsOnDeviceTest):
+# The keyboard tests (KeyboardOnDeviceTest, KeyboardDialogsOnDeviceTest,
+# KeyboardInvoiceSheetOnDeviceTest):
 # every text field on every form, and the app's pop-up kinds, with the real
 # on-screen keyboard up. The emulator has a hardware keyboard attached, and
 # Android then hides the soft one; this setting shows it anyway, as on a
@@ -13,7 +14,7 @@ adb logcat -c
 adb logcat -v time KeyboardTest:I TestRunner:I AndroidRuntime:E *:S > /tmp/keyboard_log.txt 2>&1 &
 lg=$!
 gradle connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.innovation313.roshankhata.KeyboardOnDeviceTest,com.innovation313.roshankhata.KeyboardDialogsOnDeviceTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=com.innovation313.roshankhata.KeyboardOnDeviceTest,com.innovation313.roshankhata.KeyboardDialogsOnDeviceTest,com.innovation313.roshankhata.KeyboardInvoiceSheetOnDeviceTest \
   --no-daemon --stacktrace > /tmp/instrumented_output.txt 2>&1
 tests=$?
 kill $lg 2>/dev/null
