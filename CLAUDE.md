@@ -1878,10 +1878,47 @@ Phone only. CI only until the keyboard check's pictures are looked at.
   `keepFocusedVisible`: ScreenInsets, the shop-name page, TradePicker, CountryPicker). The stock adjustment, the
   counter's forms, the heir dialog and the add-entry form had none before. The 32 explicit `KeyboardFollow.dialog`
   calls stay (they set adjustResize on the window too).
+- **The first keyboard run (8542391c) found three more:** a screen whose root IS its ScrollView (the business
+  card) was measured a page off — `offsetDescendantRectToMyCoords` answers in the root's content, so `frameIn` now
+  takes the root's own scroll off (fields scrolled to -1255 px); below Android 15 the window's own frame took part of
+  the keyboard and handed the rest on spent, so a sheet stood a navigation bar under the keyboard, Apply hidden — the
+  covered part is now settled again after each layout against the window's own keyboard; and the pad's box was left at
+  the form's top because a scroll growing as the keyboard leaves stops a smooth scroll under way (`onSizeChanged`) —
+  the pad centres with a plain scroll, on every layout while it settles.
 - Tests: KeyboardFollowShiftTest (unit); KeyboardDialogsOnDeviceTest now fails a band under a sheet, a field above
   the window, and a field off the middle of a long form, with "by itself" cases; KeyboardInvoiceSheetOnDeviceTest
   opens the real sheet (the note with the keyboard, the amount received with the pad). keyboard.yml runs on kmp-*
   pushes too (API 30 and 35); its pictures go to the `keyboard-proof` release.
+
+### Screens from the owner's photos (6 Nov 2026, kmp-desktop-16 — "jab tak test chal raha hai, in ko dekho")
+
+Phone only. CI only.
+
+- **Duplicate customers** (`item_duplicate_group`, `DuplicateGroupAdapter`): a card per group — the reason and a count
+  (`duplicate_count`), a warning where the numbers say something (`DuplicateDetector.caution`: two numbers one digit
+  apart, "perhaps a typing mistake"; a name-only group whose numbers all differ, "may be different people"), each
+  record on two lines (name; number · balance, Settled at zero), "Not a duplicate" and "Review & merge" as buttons
+  sharing the row. Every number in one shape (`DuplicateDetector.displayPhone`: the shop's calling code, ten digits as
+  3 + 7; another country's number as typed). Tests in DuplicateDetectorTest.
+- **Automations:** a row each — name, a line on what it does (`auto_*_desc`), the hour as a small outlined chip, the
+  switch at the end; hairlines between (`bg_row_divider_top`).
+- **Payment Radar** (More): where it stands first (`radar_state_on/off`), then what it does, once (the help and
+  `radar_private` both said the customer never sees it); Turn off in the gave red.
+- **Payment voice:** the switch under the notification access it needs, greyed and saying so until it is given
+  (`paisa_switch_needs_access`); an app not on the phone reads muted.
+- **Every tick, radio and switch is the app's green** (`colorControlActivated` and `android:colorControlActivated` =
+  brand_green_text in Theme.RoshanKhata): they took colorSecondary's gold (3.18:1, the audit's L36) and the phone's own
+  Switch was grey. Text size's "Aa" tiles are the follow-up green, not the invoice pink.
+- **Add buttons:** the extended Add buttons of Bills, Cashbook, Cheques, Plans, Documents and Products are brand_green
+  in sentence case (were near-black, capitals). **Which document?** is a ChoiceSheet: a card per kind with a line on
+  what it is for (`doc_desc_*`), one tap opens it, "Paste a WhatsApp order" the last card.
+- **Supplier bill:** a paid-now bill has no due day — the box goes while a paid-now chip is chosen and nothing is saved
+  for it (`dueToSave`); On credit brings it back with the day picked; a paid bill's edit hides it.
+- **Invoice on WhatsApp:** the file goes with a caption in the shop's voice and the app's language — shop and document,
+  total (not for a challan), due day, thanks (`InvoicesActivity.captionFor`, `invoice_caption_total`); no advertisement
+  for the app (the sheet carries its "Made with"). WhatsApp shows EXTRA_TEXT as the caption on most phones, not all.
+- Strings (nine languages): duplicate_caution_one_digit/_numbers, auto_*_desc (5), radar_state_on/_off,
+  paisa_switch_needs_access, invoice_caption_total, doc_desc_* (5); plural duplicate_count.
 
 ### The shared module (KMP)
 

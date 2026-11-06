@@ -3946,4 +3946,24 @@
     <string name="country_section_phone">Aap ke phone se</string>
     <string name="country_section_all">Tamam mumalik</string>
     <string name="country_search_none">Koi mulk nahi mila. Neeche Deegar chunein.</string>
+    <string name="duplicate_caution_one_digit">Do numbers mein sirf ek hindse ka farq hai — shayad likhne mein ghalti hui.</string>
+    <string name="duplicate_caution_numbers">Naam ek jaisa hai lekin har number alag hai — ho sakta hai yeh alag log hon.</string>
+    <string name="auto_collect_desc">Aaj kis ko yaad dilana hai, aur kitna</string>
+    <string name="auto_reorder_desc">Kam hote maal ka tayyar order</string>
+    <string name="auto_expiry_desc">Miyaad ke qareeb batch, sab se pehle wale upar</string>
+    <string name="auto_month_desc">Pichle mahine ka diya aur liya, har mahine ki pehli tareekh ko</string>
+    <string name="auto_dayend_desc">Aaj ki farokht, wusooliyan aur cash daraz</string>
+    <string name="radar_state_on">On hai — is phone par.</string>
+    <string name="radar_state_off">Band hai — on karein to har gahak ke safhe par nazar aayega.</string>
+    <string name="paisa_switch_needs_access">Pehle upar se notification ki ijazat dein</string>
+    <string name="invoice_caption_total">Kul: %1$s</string>
+    <string name="doc_desc_quotation">Farokht se pehle diye gaye daam. Abhi koi raqam wajib nahi.</string>
+    <string name="doc_desc_proforma">Peshgi bill, maal jane se pehle adaigi ke liye.</string>
+    <string name="doc_desc_sales_order">Gahak ka pakka kiya hua order, baad mein dene ke liye.</string>
+    <string name="doc_desc_challan">Maal ke saath jane wali parchi. Daam nahi.</string>
+    <string name="doc_desc_paste">Gahak ke WhatsApp se copy kiya order, sales order ban jata hai.</string>
+    <plurals name="duplicate_count">
+        <item quantity="one">%d record</item>
+        <item quantity="other">%d record</item>
+    </plurals>
 </resources>

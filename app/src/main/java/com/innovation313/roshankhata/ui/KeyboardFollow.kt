@@ -170,6 +170,20 @@ object KeyboardFollow {
             if (insets.isVisible(WindowInsetsCompat.Type.ime())) v.post { reveal(v) }
             out
         }
+        // What still lies under the keyboard once the window is laid out (6 Nov 2026, the API 30 keyboard
+        // run): below Android 15 the window's own frame (AppCompat's) took part of the keyboard and handed
+        // the rest on spent, and a sheet stood a navigation bar's height under the keyboard, Apply hidden.
+        // Measured after the layout, against the window's own keyboard, whoever took the rest.
+        if (!floating) content.addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
+            v.post {
+                val ime = ViewCompat.getRootWindowInsets(v)?.let { imeBottom(it) } ?: 0
+                val want = base + coveredBy(v, ime)
+                if (v.paddingBottom != want) {
+                    v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, want)
+                    if (ime > 0) v.post { reveal(v) }
+                }
+            }
+        }
         // A window the phone made smaller for the keyboard (a floating dialog, adjustResize): its box
         // goes to the middle of what is left. Below Android 11 such a window is not told the keyboard
         // is up at all, so this is the only signal there.
@@ -232,7 +246,7 @@ object KeyboardFollow {
         if (field !is TextView || !field.isAttachedToWindow || !field.isFocused) return
         val content = field.rootView.findViewById<View>(android.R.id.content) as? ViewGroup ?: return
         if (!isInside(field, content)) return
-        bringToMiddle(field, content, withKeyboard = false)
+        bringToMiddle(field, content, withKeyboard = false, smooth = false)
     }
 
     /**
@@ -242,11 +256,12 @@ object KeyboardFollow {
      */
     fun centreWhenSettled(field: View) {
         field.post { centre(field) }
+        // Every layout until it settles, not only the first: a scroll that grows as the keyboard leaves
+        // scrolls its focused box back into sight itself (onSizeChanged) and stops a scroll under way.
         val listener = object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 val insets = ViewCompat.getRootWindowInsets(field) ?: return
                 if (insets.isVisible(WindowInsetsCompat.Type.ime())) return
-                field.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 field.post { centre(field) }
             }
         }
@@ -259,17 +274,17 @@ object KeyboardFollow {
     /** How long [centreWhenSettled] waits for a keyboard to go. */
     private const val SETTLE_MS = 1500L
 
-    private fun bringToMiddle(field: TextView, root: ViewGroup, withKeyboard: Boolean = true) {
+    private fun bringToMiddle(field: TextView, root: ViewGroup, withKeyboard: Boolean = true, smooth: Boolean = true) {
         // Best effort, run a moment after the keyboard or the focus moved: a box that left its window
         // in between is let go, never a crash.
         try {
-            middle(field, root, withKeyboard)
+            middle(field, root, withKeyboard, smooth)
         } catch (e: IllegalArgumentException) {
             // offsetDescendantRectToMyCoords: no longer under root.
         }
     }
 
-    private fun middle(field: TextView, root: ViewGroup, withKeyboard: Boolean) {
+    private fun middle(field: TextView, root: ViewGroup, withKeyboard: Boolean, smooth: Boolean) {
         val d = root.resources.displayMetrics.density
         val gap = (GAP_DP * d).toInt()
         val still = (STILL_DP * d).toInt()
@@ -293,7 +308,7 @@ object KeyboardFollow {
                 val dy = shift(fieldTop, fieldBottom, top, bottom, gap, still)
                 if (dy == 0) return
                 if (scroller.canScrollVertically(if (dy > 0) 1 else -1)) {
-                    smoothBy(scroller, dy)
+                    if (smooth) smoothBy(scroller, dy) else scroller.scrollBy(0, dy)
                     return
                 }
             }
@@ -327,10 +342,18 @@ object KeyboardFollow {
         return (y + layout.getLineTop(line)) to (y + layout.getLineBottom(line))
     }
 
-    /** [v]'s frame in [root]'s coordinates, by the layout (scrolls counted, translations not). */
+    /**
+     * [v]'s frame in [root]'s own box (0 at its top edge, as it sits on the screen), by the layout: scrolls
+     * counted, translations not. A root that scrolls itself (a screen whose root is its ScrollView, the
+     * business card) has its own scroll taken off too: offsetDescendantRectToMyCoords answers in the
+     * root's content, and the card's lower boxes were measured a page too low and scrolled a page too far
+     * (6 Nov 2026, the keyboard run: "field bottom -1255").
+     */
     private fun frameIn(root: ViewGroup, v: View): Rect {
+        if (v === root) return Rect(0, 0, v.width, v.height)
         val r = Rect(v.scrollX, v.scrollY, v.scrollX + v.width, v.scrollY + v.height)
-        if (v === root) r.offset(-v.scrollX, -v.scrollY) else root.offsetDescendantRectToMyCoords(v, r)
+        root.offsetDescendantRectToMyCoords(v, r)
+        r.offset(-root.scrollX, -root.scrollY)
         return r
     }
 

@@ -146,18 +146,35 @@ class InvoicesActivity : BaseActivity() {
      * the form with it. The invoice has its own button, so it is not offered twice (4 Nov 2026).
      */
     private fun askKindThenAdd() {
+        // One card per kind with a line on what it is for, one tap opens it (6 Nov 2026, the owner: the plain
+        // list of four names with OK and Cancel said nothing about which to choose). The pasted WhatsApp order is
+        // the last card, not a third dialog button.
         val kinds = DocKind.saved.filter { it != DocKind.INVOICE }
-        var picked = 0
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.doc_pick_kind)
-            .setSingleChoiceItems(kinds.map { kindWord(it) }.toTypedArray(), picked) { _, which -> picked = which }
-            .setNegativeButton(R.string.cancel, null)
-            // A customer's WhatsApp order, copied and pasted (3 Nov 2026): a sales order with its lines read from it.
-            .setNeutralButton(R.string.order_paste) { _, _ -> pasteOrder() }
-            .setPositiveButton(R.string.ok) { _, _ ->
-                startActivity(Intent(this, InvoiceEditorActivity::class.java).putExtra(InvoiceEditorActivity.EXTRA_KIND, kinds[picked]))
-            }
-            .show()
+        val looks = mapOf(
+            DocKind.QUOTATION to Triple(R.drawable.ic_feature_invoice, R.color.tile_invoice_fg, R.color.tile_invoice_bg),
+            DocKind.PROFORMA to Triple(R.drawable.ic_pdf_doc, R.color.tile_calc_fg, R.color.tile_calc_bg),
+            DocKind.SALES_ORDER to Triple(R.drawable.ic_feature_bills, R.color.tile_backup_fg, R.color.tile_backup_bg),
+            DocKind.CHALLAN to Triple(R.drawable.ic_truck, R.color.tile_stock_fg, R.color.tile_stock_bg),
+        )
+        val descs = mapOf(
+            DocKind.QUOTATION to R.string.doc_desc_quotation,
+            DocKind.PROFORMA to R.string.doc_desc_proforma,
+            DocKind.SALES_ORDER to R.string.doc_desc_sales_order,
+            DocKind.CHALLAN to R.string.doc_desc_challan,
+        )
+        val options = kinds.map { k ->
+            val (icon, tint, tile) = looks[k] ?: Triple(R.drawable.ic_feature_invoice, R.color.tile_invoice_fg, R.color.tile_invoice_bg)
+            com.innovation313.roshankhata.ui.ChoiceSheet.Option(
+                kindWord(k), descs[k]?.let { getString(it) }, icon = icon, iconTint = tint, tile = tile
+            )
+        } + com.innovation313.roshankhata.ui.ChoiceSheet.Option(
+            getString(R.string.order_paste), getString(R.string.doc_desc_paste),
+            icon = R.drawable.ic_action_whatsapp, iconTint = R.color.tile_followup_fg, tile = R.color.tile_followup_bg
+        )
+        com.innovation313.roshankhata.ui.ChoiceSheet.show(this, getString(R.string.doc_pick_kind), options) { which ->
+            if (which >= kinds.size) pasteOrder()
+            else startActivity(Intent(this, InvoiceEditorActivity::class.java).putExtra(InvoiceEditorActivity.EXTRA_KIND, kinds[which]))
+        }
     }
 
     /**
@@ -301,10 +318,12 @@ class InvoicesActivity : BaseActivity() {
 
             val uri = buildPdfUri(full.id) ?: return@launch
 
+            val caption = captionFor(invoiceId)
             val send = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
                 putExtra(Intent.EXTRA_SUBJECT, docNumber)
+                caption?.let { putExtra(Intent.EXTRA_TEXT, it) }
                 putExtra("jid", "$number@s.whatsapp.net")
                 setPackage("com.whatsapp")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -318,6 +337,28 @@ class InvoicesActivity : BaseActivity() {
                 ).show()
                 sharePdf(invoiceId, docNumber)
             }
+        }
+    }
+
+    /**
+     * The few lines that go with the file (6 Nov 2026, the owner: a bare "INV-000001_Tgg.pdf" told the customer
+     * nothing until opened): the shop and the document, its total, the day it is due, thanks — in the app's
+     * language, in the shop's voice, no advertisement for the app (the sheet itself carries its "Made with").
+     * A challan has no prices, so no total. WhatsApp shows it as the file's caption on most phones; where it
+     * does not, the file still goes.
+     */
+    private suspend fun captionFor(invoiceId: Long): String? {
+        val full = dao.getInvoice(invoiceId) ?: return null
+        val items = dao.invoiceItems(invoiceId)
+        val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this)?.takeIf { it.isNotBlank() }
+        val head = listOfNotNull(shop, kindWord(full.kind) + " " + full.invoiceNumber).joinToString(" — ")
+        return buildString {
+            append(head)
+            if (com.innovation313.roshankhata.data.DocKind.showsPrices(full.kind)) {
+                append("\n").append(getString(R.string.invoice_caption_total, Format.money(full.totals(items).grandTotal)))
+            }
+            full.dueDate?.let { append("\n").append(getString(R.string.due_date_set, Format.dateOnly(it))) }
+            append("\n\n").append(getString(R.string.pdf_label_thank_you))
         }
     }
 
@@ -381,11 +422,13 @@ class InvoicesActivity : BaseActivity() {
     private fun sharePdf(invoiceId: Long, docNumber: String) {
         lifecycleScope.launch {
             val uri = buildPdfUri(invoiceId) ?: return@launch
+            val caption = captionFor(invoiceId)
 
             val share = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"
                 putExtra(Intent.EXTRA_STREAM, uri)
                 putExtra(Intent.EXTRA_SUBJECT, docNumber)
+                caption?.let { putExtra(Intent.EXTRA_TEXT, it) }
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             startActivity(Intent.createChooser(share, getString(R.string.invoice_share_pdf)))

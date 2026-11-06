@@ -4202,4 +4202,28 @@
     <string name="country_section_phone">من هاتفك</string>
     <string name="country_section_all">جميع البلدان</string>
     <string name="country_search_none">لم يُعثر على بلد. اختر أخرى في الأسفل.</string>
+    <string name="duplicate_caution_one_digit">رقمان يختلفان في خانة واحدة فقط — ربما خطأ في الكتابة.</string>
+    <string name="duplicate_caution_numbers">الاسم نفسه لكن كل رقم مختلف — قد يكونون أشخاصًا مختلفين.</string>
+    <string name="auto_collect_desc">من تذكّره اليوم، وكم المبلغ</string>
+    <string name="auto_reorder_desc">طلب جاهز لما أوشك على النفاد</string>
+    <string name="auto_expiry_desc">دفعات قريبة من انتهاء الصلاحية، الأقرب أولًا</string>
+    <string name="auto_month_desc">ما أعطيته وما أخذته في الشهر الماضي، في أول كل شهر</string>
+    <string name="auto_dayend_desc">مبيعات اليوم والمقبوضات ودرج النقد</string>
+    <string name="radar_state_on">مفعّل — على هذا الهاتف.</string>
+    <string name="radar_state_off">متوقف — فعّله ليظهر في صفحة كل عميل.</string>
+    <string name="paisa_switch_needs_access">امنح إذن الإشعارات أولًا (في الأعلى)</string>
+    <string name="invoice_caption_total">الإجمالي: %1$s</string>
+    <string name="doc_desc_quotation">أسعار تعرضها قبل البيع. لا مبلغ مستحق بعد.</string>
+    <string name="doc_desc_proforma">فاتورة مسبقة، تُدفع قبل خروج البضاعة.</string>
+    <string name="doc_desc_sales_order">طلب أكّده العميل، يُسلَّم لاحقًا.</string>
+    <string name="doc_desc_challan">إشعار يرافق البضاعة. بلا أسعار.</string>
+    <string name="doc_desc_paste">طلب منسوخ من واتساب العميل يصبح أمر بيع.</string>
+    <plurals name="duplicate_count">
+        <item quantity="zero">%d سجل</item>
+        <item quantity="one">سجل واحد</item>
+        <item quantity="two">سجلان</item>
+        <item quantity="few">%d سجلات</item>
+        <item quantity="many">%d سجلًا</item>
+        <item quantity="other">%d سجل</item>
+    </plurals>
 </resources>

@@ -98,6 +98,49 @@ object DuplicateDetector {
             .sortedByDescending { it.members.size }
     }
 
+    /** What a group's card warns of beside its reason (6 Nov 2026, the owner's photo). */
+    enum class Caution { NONE, NUMBERS_DIFFER, ONE_DIGIT }
+
+    /**
+     * Two of the group's numbers one digit apart (0300 1234567 / 0300 1244567): most likely one number typed
+     * wrong, the strongest sign of one person. Else, a group found by its name alone whose every number differs:
+     * perhaps two people with one name (five "Khala Naila"s with five numbers), said before anything is merged.
+     */
+    fun caution(group: Group): Caution {
+        val phones = group.members.mapNotNull { normalisedPhone(it.phone) }
+        for (i in phones.indices) for (j in i + 1 until phones.size) {
+            if (oneDigitApart(phones[i], phones[j])) return Caution.ONE_DIGIT
+        }
+        if (group.reason == Reason.NAME && phones.size >= 2 && phones.toSet().size == phones.size) return Caution.NUMBERS_DIFFER
+        return Caution.NONE
+    }
+
+    /** Same length, exactly one place different. */
+    internal fun oneDigitApart(a: String, b: String): Boolean =
+        a.length == b.length && a.indices.count { a[it] != b[it] } == 1
+
+    /**
+     * A number in one shape for every card (6 Nov 2026: "+92 300 0000001", "0300 0000002" and "+923000000003"
+     * on one screen): the shop's calling code, then the national number, ten digits as 3 + 7. A number of
+     * another country, or a shop with no calling code, stays as typed. A blank number is a dash.
+     */
+    fun displayPhone(raw: String?, dialing: String): String {
+        val typed = raw?.trim().orEmpty()
+        if (typed.isEmpty()) return "\u2014"
+        if (dialing.isEmpty()) return Format.ltr(typed)
+        val digits = typed.filter { it.isDigit() }
+        val international = typed.startsWith("+") || typed.startsWith("00")
+        val bare = if (typed.startsWith("00")) digits.drop(2) else digits
+        val national = when {
+            international && bare.startsWith(dialing) -> bare.removePrefix(dialing)
+            international -> return Format.ltr(typed)
+            bare.startsWith("0") -> bare.drop(1)
+            else -> bare
+        }
+        val grouped = if (national.length == 10) national.take(3) + " " + national.drop(3) else national
+        return Format.ltr("+$dialing $grouped")
+    }
+
     /**
      * A single typed name/phone against the book, for the live warning while
      * still typing in Add Party — the same two signals as [find] above, just

@@ -36,26 +36,61 @@ object AutomationsDialog {
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
             setTextColor(ContextCompat.getColor(activity, R.color.text_muted))
         }
-        val blocks = Automations.Kind.values().map { kind ->
-            val time = MaterialButton(activity, null, com.google.android.material.R.attr.borderlessButtonStyle).apply {
+        // One row per automation (6 Nov 2026, the owner's photo: each hour floated on a line of its own, set in
+        // from its name, with wide gaps, and nothing said what the automation does). The name, a line on what it
+        // does and its hour as a small chip, in one column; the switch at the row's end. The column takes the
+        // width the switch leaves, so a long name wraps whole words at 150% (lesson 58).
+        val blocks = Automations.Kind.values().mapIndexed { index, kind ->
+            val time = MaterialButton(activity, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
                 isAllCaps = false
                 letterSpacing = 0f
+                textSize = 13f
+                minHeight = (36 * d).toInt()
+                minimumHeight = (36 * d).toInt()
+                insetTop = 0
+                insetBottom = 0
                 text = activity.getString(R.string.auto_at_time, hourWord(settings.hour(kind)))
                 setTextColor(ContextCompat.getColor(activity, R.color.brand_green_text))
+                strokeColor = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.page_line))
                 isEnabled = settings.isOn(kind)
+                alpha = if (settings.isOn(kind)) 1f else 0.5f
                 setOnClickListener { pickHour(activity, settings.hour(kind)) { h -> settings.setHour(kind, h); text = activity.getString(R.string.auto_at_time, hourWord(h)) } }
             }
-            val switch = SwitchMaterial(activity).apply {
+            val name = TextView(activity).apply {
                 text = words.text(kind.word)
                 textSize = 16f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
                 textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                setTextColor(ContextCompat.getColor(activity, R.color.ink))
+            }
+            val desc = TextView(activity).apply {
+                text = activity.getString(descOf(kind))
+                textSize = 13f
+                textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                setTextColor(ContextCompat.getColor(activity, R.color.text_muted))
+            }
+            val column = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(name)
+                addView(desc, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = (2 * d).toInt() })
+                addView(time, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = (6 * d).toInt() })
+            }
+            val switch = SwitchMaterial(activity).apply {
+                contentDescription = words.text(kind.word)
                 isChecked = settings.isOn(kind)
-                setOnCheckedChangeListener { _, on -> settings.setOn(kind, on); time.isEnabled = on }
+                setOnCheckedChangeListener { _, on ->
+                    settings.setOn(kind, on)
+                    time.isEnabled = on
+                    time.alpha = if (on) 1f else 0.5f
+                }
             }
             LinearLayout(activity).apply {
-                orientation = LinearLayout.VERTICAL
-                addView(switch, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-                addView(time, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, (10 * d).toInt(), 0, (10 * d).toInt())
+                if (index > 0) background = ContextCompat.getDrawable(activity, R.drawable.bg_row_divider_top)
+                addView(column, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                addView(switch, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = (12 * d).toInt() })
             }
         }
         // Notifications off for the app (3 Nov 2026 audit, M24): every switch read ON while nothing could be said.
@@ -95,6 +130,15 @@ object AutomationsDialog {
         else android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             .setData(android.net.Uri.fromParts("package", activity.packageName, null))
         runCatching { activity.startActivity(intent) }
+    }
+
+    /** What each automation does, in a line under its name. */
+    private fun descOf(kind: Automations.Kind): Int = when (kind) {
+        Automations.Kind.COLLECT -> R.string.auto_collect_desc
+        Automations.Kind.REORDER -> R.string.auto_reorder_desc
+        Automations.Kind.EXPIRY -> R.string.auto_expiry_desc
+        Automations.Kind.MONTH -> R.string.auto_month_desc
+        Automations.Kind.DAY_END -> R.string.auto_dayend_desc
     }
 
     /** An hour in the shop's clock ("9:00 AM", or "09:00" where the country writes 24 hours). */

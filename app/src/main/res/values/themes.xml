@@ -19,6 +19,13 @@
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/ink</item>
 
+        <!-- Ticks, radios and switches in the app's green (6 Nov 2026, the owner's photos: gold boxes, gold
+             switches and a grey one on a page of green buttons). They took colorSecondary's gold, 3.18:1 against
+             the page (3 Nov audit, L36); brand_green_text is dark green by day and light by night. The android:
+             one is for the phone's own Switch (Invoice settings, Payment voice), which reads only that. -->
+        <item name="colorControlActivated">@color/brand_green_text</item>
+        <item name="android:colorControlActivated">@color/brand_green_text</item>
+
         <!--
           The status bar sits directly above the section header, which is dark.
           A white strip there would look like a mistake, and the clock would be

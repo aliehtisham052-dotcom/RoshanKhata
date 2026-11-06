@@ -158,4 +158,36 @@ class DuplicateDetectorTest {
         assertEquals(1, groups.size)
         assertEquals(setOf(1L, 2L, 3L), groups[0].members.map { it.partyId }.toSet())
     }
+
+    // ---- the card's warning and the one shape of a number (6 Nov 2026). Made-up numbers only.
+
+    private fun plain(s: String) = s.filter { it !in "\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069" }
+
+    @Test
+    fun `two numbers one digit apart are flagged as a likely typing mistake`() {
+        val g = DuplicateDetector.Group(listOf(c(1, "Test Name", "0300 1111111"), c(2, "Test Name", "+92 300 1112111")), Reason.NAME)
+        assertEquals(DuplicateDetector.Caution.ONE_DIGIT, DuplicateDetector.caution(g))
+    }
+
+    @Test
+    fun `a name group whose numbers all differ may be different people`() {
+        val g = DuplicateDetector.Group(listOf(c(1, "Test Name", "0300 1111111"), c(2, "Test Name", "0301 2222222")), Reason.NAME)
+        assertEquals(DuplicateDetector.Caution.NUMBERS_DIFFER, DuplicateDetector.caution(g))
+    }
+
+    @Test
+    fun `a group with one number or none warns of nothing`() {
+        val g = DuplicateDetector.Group(listOf(c(1, "Test Name", "0300 1111111"), c(2, "Test Name")), Reason.NAME)
+        assertEquals(DuplicateDetector.Caution.NONE, DuplicateDetector.caution(g))
+    }
+
+    @Test
+    fun `every number takes one shape with the shop's calling code`() {
+        assertEquals("+92 300 1234567", plain(DuplicateDetector.displayPhone("0300-1234567", "92")))
+        assertEquals("+92 300 1234567", plain(DuplicateDetector.displayPhone("+923001234567", "92")))
+        assertEquals("+92 300 1234567", plain(DuplicateDetector.displayPhone("0092 300 1234567", "92")))
+        assertEquals("+44 20 7946 0000", plain(DuplicateDetector.displayPhone("+44 20 7946 0000", "92")))
+        assertEquals("0300 1234567", plain(DuplicateDetector.displayPhone("0300 1234567", "")))
+        assertTrue(plain(DuplicateDetector.displayPhone(null, "92")).isNotEmpty())
+    }
 }

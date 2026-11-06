@@ -337,6 +337,10 @@ class BillsActivity : BaseActivity() {
 
         var billDate = restore?.billDate ?: System.currentTimeMillis()
         var dueDate: Long? = restore?.dueDate
+        // Paid now, there is nothing to be due (6 Nov 2026, the owner's photo: "Due: 27 Nov" stood under a bill paid
+        // in cash, and was saved with it). The box goes while a paid-now chip is chosen and the day is not saved;
+        // On credit brings the box back with the day he picked, so a wrong tap loses nothing.
+        fun dueToSave(): Long? = if (paidWith() != null) null else dueDate
 
         btnDate.text = getString(R.string.bill_date_set, Format.dateOnly(billDate))
         dueDate?.let { btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
@@ -374,7 +378,9 @@ class BillsActivity : BaseActivity() {
         }
 
         // After the first check (lesson 4): the listener only follows the chip.
-        cgPaid.setOnCheckedStateChangeListener { _, _ -> refreshEffect() }
+        fun syncDue() { btnDue.visibility = if (paidWith() != null) View.GONE else View.VISIBLE }
+        syncDue()
+        cgPaid.setOnCheckedStateChangeListener { _, _ -> refreshEffect(); syncDue() }
         etTotal.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) refreshEffect() }
         etSupplier.setOnItemClickListener { _, _, _, _ -> refreshEffect() }
         if (restore != null) refreshEffect()
@@ -405,7 +411,7 @@ class BillsActivity : BaseActivity() {
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
                     total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
-                    dueDate = dueDate,
+                    dueDate = dueToSave(),
                     paidWith = paidWith(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
@@ -416,7 +422,7 @@ class BillsActivity : BaseActivity() {
                     billNumber = etNumber.text.toString().trim().ifEmpty { null },
                     total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                     billDate = billDate,
-                    dueDate = dueDate,
+                    dueDate = dueToSave(),
                     paidWith = paidWith(),
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
@@ -450,7 +456,7 @@ class BillsActivity : BaseActivity() {
                 billNumber = etNumber.text.toString().trim().ifEmpty { null },
                 total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString()),
                 billDate = billDate,
-                dueDate = dueDate,
+                dueDate = dueToSave(),
                 paidWith = paidWith(),
                 note = etNote.text.toString().trim().ifEmpty { null }
             )
@@ -1184,6 +1190,8 @@ class BillsActivity : BaseActivity() {
         })
         tvPaidCashHelp.text = getString(R.string.edit_bill_cash_locked)
         tvEffect.visibility = View.GONE
+        // A bill paid in full has nothing due: no due box to pick or read (6 Nov 2026).
+        if (existing.isPaidInFull) btnDue.visibility = View.GONE
 
         // As loaded, to tell a corrected bill from an untouched one when he leaves.
         val loadedNumber = etNumber.text.toString()

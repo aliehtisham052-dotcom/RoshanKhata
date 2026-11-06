@@ -3946,4 +3946,24 @@
     <string name="country_section_phone">آپ کے فون سے</string>
     <string name="country_section_all">تمام ممالک</string>
     <string name="country_search_none">کوئی ملک نہیں ملا۔ نیچے دیگر چنیں۔</string>
+    <string name="duplicate_caution_one_digit">دو نمبروں میں صرف ایک ہندسے کا فرق ہے — شاید لکھنے میں غلطی ہوئی۔</string>
+    <string name="duplicate_caution_numbers">نام ایک جیسا ہے مگر ہر نمبر الگ ہے — ہو سکتا ہے یہ الگ الگ لوگ ہوں۔</string>
+    <string name="auto_collect_desc">آج کس کو یاد دلانا ہے، اور کتنا</string>
+    <string name="auto_reorder_desc">کم ہوتے مال کا تیار آرڈر</string>
+    <string name="auto_expiry_desc">میعاد کے قریب بیچ، سب سے پہلے والے اوپر</string>
+    <string name="auto_month_desc">پچھلے مہینے کا دیا اور لیا، ہر مہینے کی پہلی تاریخ کو</string>
+    <string name="auto_dayend_desc">آج کی فروخت، وصولیاں اور کیش دراز</string>
+    <string name="radar_state_on">آن ہے — اس فون پر۔</string>
+    <string name="radar_state_off">بند ہے — آن کریں تو ہر گاہک کے صفحے پر نظر آئے گا۔</string>
+    <string name="paisa_switch_needs_access">پہلے اوپر سے نوٹیفکیشن کی اجازت دیں</string>
+    <string name="invoice_caption_total">کل: %1$s</string>
+    <string name="doc_desc_quotation">فروخت سے پہلے دیے گئے دام۔ ابھی کوئی رقم واجب نہیں۔</string>
+    <string name="doc_desc_proforma">پیشگی بل، مال جانے سے پہلے ادائیگی کے لیے۔</string>
+    <string name="doc_desc_sales_order">گاہک کا پکا کیا ہوا آرڈر، بعد میں دینے کے لیے۔</string>
+    <string name="doc_desc_challan">مال کے ساتھ جانے والی پرچی۔ دام نہیں۔</string>
+    <string name="doc_desc_paste">گاہک کے واٹس ایپ سے کاپی کیا آرڈر، سیلز آرڈر بن جاتا ہے۔</string>
+    <plurals name="duplicate_count">
+        <item quantity="one">%d ریکارڈ</item>
+        <item quantity="other">%d ریکارڈ</item>
+    </plurals>
 </resources>
