@@ -3994,4 +3994,24 @@
     <string name="country_section_phone">আপনার ফোন থেকে</string>
     <string name="country_section_all">সব দেশ</string>
     <string name="country_search_none">কোনো দেশ পাওয়া যায়নি। নিচে অন্যান্য বেছে নিন।</string>
+    <string name="duplicate_caution_one_digit">দুটি নম্বরে শুধু একটি অঙ্কের পার্থক্য — হয়তো লেখার ভুল।</string>
+    <string name="duplicate_caution_numbers">নাম একই, কিন্তু প্রতিটি নম্বর আলাদা — হয়তো তাঁরা আলাদা মানুষ।</string>
+    <string name="auto_collect_desc">আজ কাকে মনে করাতে হবে, আর কত</string>
+    <string name="auto_reorder_desc">ফুরিয়ে আসা মালের তৈরি অর্ডার</string>
+    <string name="auto_expiry_desc">মেয়াদ শেষের কাছাকাছি ব্যাচ, সবচেয়ে আগেরটি প্রথমে</string>
+    <string name="auto_month_desc">গত মাসের দেওয়া ও নেওয়া, প্রতি মাসের প্রথম দিনে</string>
+    <string name="auto_dayend_desc">আজকের বিক্রি, আদায় আর ক্যাশ ড্রয়ার</string>
+    <string name="radar_state_on">চালু আছে — এই ফোনে।</string>
+    <string name="radar_state_off">বন্ধ আছে — চালু করলে প্রতিটি গ্রাহকের পাতায় দেখা যাবে।</string>
+    <string name="paisa_switch_needs_access">আগে ওপরে নোটিফিকেশনের অনুমতি দিন</string>
+    <string name="invoice_caption_total">মোট: %1$s</string>
+    <string name="doc_desc_quotation">বিক্রির আগে দেওয়া দাম। এখনও কোনো টাকা পাওনা নয়।</string>
+    <string name="doc_desc_proforma">অগ্রিম বিল, মাল যাওয়ার আগে পরিশোধের জন্য।</string>
+    <string name="doc_desc_sales_order">গ্রাহকের পাকা করা অর্ডার, পরে দেওয়ার জন্য।</string>
+    <string name="doc_desc_challan">মালের সঙ্গে যাওয়া চিরকুট। দাম নেই।</string>
+    <string name="doc_desc_paste">গ্রাহকের WhatsApp থেকে কপি করা অর্ডার, সেলস অর্ডার হয়ে যায়।</string>
+    <plurals name="duplicate_count">
+        <item quantity="one">%dটি রেকর্ড</item>
+        <item quantity="other">%dটি রেকর্ড</item>
+    </plurals>
 </resources>

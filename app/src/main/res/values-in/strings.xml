@@ -3930,4 +3930,23 @@
     <string name="country_section_phone">Dari ponsel Anda</string>
     <string name="country_section_all">Semua negara</string>
     <string name="country_search_none">Negara tidak ditemukan. Pilih Lainnya di bawah.</string>
+    <string name="duplicate_caution_one_digit">Dua nomor hanya beda satu angka — mungkin salah ketik.</string>
+    <string name="duplicate_caution_numbers">Namanya sama, tetapi setiap nomor berbeda — mungkin orang yang berbeda.</string>
+    <string name="auto_collect_desc">Siapa yang diingatkan hari ini, dan berapa</string>
+    <string name="auto_reorder_desc">Pesanan siap untuk barang yang hampir habis</string>
+    <string name="auto_expiry_desc">Batch yang hampir kedaluwarsa, yang tercepat dulu</string>
+    <string name="auto_month_desc">Yang diberi dan diterima bulan lalu, setiap tanggal satu</string>
+    <string name="auto_dayend_desc">Penjualan hari ini, penerimaan, dan laci kas</string>
+    <string name="radar_state_on">Aktif — di ponsel ini.</string>
+    <string name="radar_state_off">Mati — aktifkan agar terlihat di halaman setiap pelanggan.</string>
+    <string name="paisa_switch_needs_access">Beri izin notifikasi dulu (di atas)</string>
+    <string name="invoice_caption_total">Total: %1$s</string>
+    <string name="doc_desc_quotation">Harga yang Anda tawarkan sebelum penjualan. Belum ada utang.</string>
+    <string name="doc_desc_proforma">Tagihan di muka, dibayar sebelum barang dikirim.</string>
+    <string name="doc_desc_sales_order">Pesanan yang sudah dikonfirmasi pelanggan, dikirim nanti.</string>
+    <string name="doc_desc_challan">Surat yang menyertai barang. Tanpa harga.</string>
+    <string name="doc_desc_paste">Pesanan yang disalin dari WhatsApp pelanggan menjadi pesanan penjualan.</string>
+    <plurals name="duplicate_count">
+        <item quantity="other">%d catatan</item>
+    </plurals>
 </resources>

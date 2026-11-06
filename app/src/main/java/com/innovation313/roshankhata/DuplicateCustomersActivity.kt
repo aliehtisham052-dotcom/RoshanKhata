@@ -53,7 +53,7 @@ class DuplicateCustomersActivity : BaseActivity() {
 
         tvEmpty = findViewById(R.id.tvNoDuplicates)
 
-        adapter = DuplicateGroupAdapter { group -> reviewGroup(group) }
+        adapter = DuplicateGroupAdapter(onReview = { group -> reviewGroup(group) }, onNotSame = { group -> dismissGroup(group) })
         val rv: RecyclerView = findViewById(R.id.rvDuplicates)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter

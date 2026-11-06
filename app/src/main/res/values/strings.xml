@@ -4159,4 +4159,24 @@
     <string name="country_section_phone">From your phone</string>
     <string name="country_section_all">All countries</string>
     <string name="country_search_none">No country found. Choose Other below.</string>
+    <string name="duplicate_caution_one_digit">Two numbers differ by one digit — perhaps a typing mistake.</string>
+    <string name="duplicate_caution_numbers">Same name, but every number is different — they may be different people.</string>
+    <string name="auto_collect_desc">Who to remind today, and how much</string>
+    <string name="auto_reorder_desc">A ready order for what is running low</string>
+    <string name="auto_expiry_desc">Batches close to expiry, soonest first</string>
+    <string name="auto_month_desc">Last month\'s gave and got, on the 1st of each month</string>
+    <string name="auto_dayend_desc">Today\'s sales, payments and the cash drawer</string>
+    <string name="radar_state_on">On — on this phone.</string>
+    <string name="radar_state_off">Off — turn it on to see it on each customer\'s page.</string>
+    <string name="paisa_switch_needs_access">Give notification access first (above)</string>
+    <string name="invoice_caption_total">Total: %1$s</string>
+    <string name="doc_desc_quotation">Prices you offer before a sale. Nothing is owed yet.</string>
+    <string name="doc_desc_proforma">An advance bill, to be paid before the goods go.</string>
+    <string name="doc_desc_sales_order">An order the customer has confirmed, to deliver later.</string>
+    <string name="doc_desc_challan">A slip that goes with the goods. No prices.</string>
+    <string name="doc_desc_paste">Copied from a customer\'s WhatsApp, it becomes a sales order.</string>
+    <plurals name="duplicate_count">
+        <item quantity="one">%d record</item>
+        <item quantity="other">%d records</item>
+    </plurals>
 </resources>

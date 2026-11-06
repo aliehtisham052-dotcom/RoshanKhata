@@ -80,6 +80,12 @@ class PaymentVoiceActivity : BaseActivity() {
         // Android 13+ may call a sideloaded app's access a "restricted setting": the way past it, said once here.
         findViewById<View>(R.id.tvPayRestricted).visibility =
             if (!access && Build.VERSION.SDK_INT >= 33) View.VISIBLE else View.GONE
+        // Nothing can be said without the access: the switch waits for it, and says so (6 Nov 2026).
+        val row = findViewById<View>(R.id.payRowOn)
+        row.findViewById<Switch>(R.id.switchFeature).isEnabled = access
+        row.alpha = if (access) 1f else 0.55f
+        row.findViewById<TextView>(R.id.tvFeatureDesc)
+            .setText(if (access) R.string.paisa_switch_desc else R.string.paisa_switch_needs_access)
         renderApps()
         checkUrdu()
     }
@@ -93,12 +99,14 @@ class PaymentVoiceActivity : BaseActivity() {
             Triple(pkg, if (PaymentVoice.installed(this, pkg)) name else getString(R.string.paisa_not_installed, name), true)
         } + PaymentVoice.seen(this).map { Triple(it.pkg, it.label, false) }
         val dp = resources.displayMetrics.density
-        for ((pkg, label, _) in rows) {
+        for ((pkg, label, known) in rows) {
+            // An app not on this phone reads muted: ticked, it waits for the app to be installed (6 Nov 2026).
+            val here = !known || PaymentVoice.installed(this, pkg)
             val box = MaterialCheckBox(this).apply {
                 text = label
                 textSize = 15f
                 textAlignment = View.TEXT_ALIGNMENT_VIEW_START
-                setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, R.color.ink))
+                setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, if (here) R.color.ink else R.color.text_muted))
                 minHeight = (48 * dp).toInt()
                 isChecked = pkg in chosen
                 setOnCheckedChangeListener { _, on -> PaymentVoice.setChosen(this@PaymentVoiceActivity, pkg, on) }

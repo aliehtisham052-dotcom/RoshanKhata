@@ -190,11 +190,16 @@ object RadarUi {
     fun settings(activity: Activity) {
         if (activity.isFinishing || activity.isDestroyed) return
         val isOn = on(activity)
-        MaterialAlertDialogBuilder(activity)
+        // Where it stands first, then what it does, said once (6 Nov 2026, the owner's photo: the help and
+        // radar_private said "the customer never sees it" twice). Turning it off reads in the gave red.
+        val dialog = MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.radar_title)
-            .setMessage(activity.getString(R.string.radar_switch_help) + "\n\n" + activity.getString(R.string.radar_private))
+            .setMessage(activity.getString(if (isOn) R.string.radar_state_on else R.string.radar_state_off) +
+                "\n\n" + activity.getString(R.string.radar_switch_help))
             .setPositiveButton(if (isOn) R.string.radar_turn_off else R.string.radar_turn_on) { _, _ -> set(activity, !isOn) }
             .setNegativeButton(R.string.close, null)
             .show()
+        if (isOn) dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+            ?.setTextColor(androidx.core.content.ContextCompat.getColor(activity, R.color.red_gave_text))
     }
 }

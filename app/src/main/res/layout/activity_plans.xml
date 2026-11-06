@@ -80,9 +80,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:textAllCaps="false"
+        android:letterSpacing="0"
         android:text="@string/add_plan"
         android:textColor="@color/white"
-        app:backgroundTint="@color/button_dark"
+        app:backgroundTint="@color/brand_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

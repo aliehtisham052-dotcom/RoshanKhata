@@ -3974,4 +3974,24 @@
     <string name="country_section_phone">از گوشی شما</string>
     <string name="country_section_all">همهٔ کشورها</string>
     <string name="country_search_none">کشوری پیدا نشد. پایین، سایر را بزنید.</string>
+    <string name="duplicate_caution_one_digit">دو شماره فقط در یک رقم فرق دارند — شاید اشتباه تایپی باشد.</string>
+    <string name="duplicate_caution_numbers">نام یکی است اما هر شماره فرق دارد — شاید افراد متفاوتی باشند.</string>
+    <string name="auto_collect_desc">امروز به چه کسی و چقدر یادآوری شود</string>
+    <string name="auto_reorder_desc">سفارش آماده برای کالای رو به اتمام</string>
+    <string name="auto_expiry_desc">بچ‌های نزدیک به انقضا، نزدیک‌ترین اول</string>
+    <string name="auto_month_desc">داده‌ها و گرفته‌های ماه گذشته، در روز اول هر ماه</string>
+    <string name="auto_dayend_desc">فروش امروز، دریافت‌ها و کشوی نقد</string>
+    <string name="radar_state_on">روشن است — روی همین گوشی.</string>
+    <string name="radar_state_off">خاموش است — روشنش کنید تا در صفحهٔ هر مشتری دیده شود.</string>
+    <string name="paisa_switch_needs_access">اول اجازهٔ اعلان‌ها را بدهید (بالا)</string>
+    <string name="invoice_caption_total">جمع کل: %1$s</string>
+    <string name="doc_desc_quotation">قیمت‌هایی که پیش از فروش پیشنهاد می‌دهید. هنوز بدهی‌ای نیست.</string>
+    <string name="doc_desc_proforma">پیش‌فاکتور، برای پرداخت پیش از ارسال کالا.</string>
+    <string name="doc_desc_sales_order">سفارشی که مشتری تأیید کرده، برای تحویل بعدی.</string>
+    <string name="doc_desc_challan">برگه‌ای که همراه کالا می‌رود. بدون قیمت.</string>
+    <string name="doc_desc_paste">سفارشی که از واتس‌اپ مشتری کپی شده، سفارش فروش می‌شود.</string>
+    <plurals name="duplicate_count">
+        <item quantity="one">%d رکورد</item>
+        <item quantity="other">%d رکورد</item>
+    </plurals>
 </resources>

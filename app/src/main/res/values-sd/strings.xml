@@ -3974,4 +3974,24 @@
     <string name="country_section_phone">توهان جي فون مان</string>
     <string name="country_section_all">سڀ ملڪ</string>
     <string name="country_search_none">ڪو ملڪ نه مليو. هيٺ ٻيو چونڊيو.</string>
+    <string name="duplicate_caution_one_digit">ٻن نمبرن ۾ رڳو هڪ انگ جو فرق آهي — شايد لکڻ ۾ غلطي ٿي آهي.</string>
+    <string name="duplicate_caution_numbers">نالو ساڳيو آهي پر هر نمبر الڳ آهي — ٿي سگهي ٿو اهي الڳ ماڻهو هجن.</string>
+    <string name="auto_collect_desc">اڄ ڪنهن کي ياد ڏيارڻو آهي، ۽ ڪيترو</string>
+    <string name="auto_reorder_desc">گهٽجندڙ مال جو تيار آرڊر</string>
+    <string name="auto_expiry_desc">مدي جي ويجهو بيچ، سڀ کان جلدي وارا پهريان</string>
+    <string name="auto_month_desc">گذريل مهيني جو ڏنو ۽ ورتو، هر مهيني جي پهرين تاريخ تي</string>
+    <string name="auto_dayend_desc">اڄ جو وڪرو، وصوليون ۽ نقد دراز</string>
+    <string name="radar_state_on">آن آهي — هن فون تي.</string>
+    <string name="radar_state_off">بند آهي — آن ڪريو ته هر گراهڪ جي صفحي تي نظر ايندو.</string>
+    <string name="paisa_switch_needs_access">پهريان مٿان نوٽيفڪيشن جي اجازت ڏيو</string>
+    <string name="invoice_caption_total">ڪل: %1$s</string>
+    <string name="doc_desc_quotation">وڪري کان اڳ ڏنل اگهه. اڃا ڪا رقم واجب ناهي.</string>
+    <string name="doc_desc_proforma">اڳواٽ بل، مال وڃڻ کان اڳ ادائگي لاءِ.</string>
+    <string name="doc_desc_sales_order">گراهڪ جو پڪو ڪيل آرڊر، پوءِ ڏيڻ لاءِ.</string>
+    <string name="doc_desc_challan">مال سان ويندڙ پرچي. اگهه ناهن.</string>
+    <string name="doc_desc_paste">گراهڪ جي واٽس ايپ مان ڪاپي ڪيل آرڊر، سيلز آرڊر بڻجي ٿو.</string>
+    <plurals name="duplicate_count">
+        <item quantity="one">%d رڪارڊ</item>
+        <item quantity="other">%d رڪارڊ</item>
+    </plurals>
 </resources>

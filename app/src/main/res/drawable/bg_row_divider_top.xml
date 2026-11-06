@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A hairline along a row's top edge: the rows of a list made in code (Automations, 6 Nov 2026). -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="top" android:height="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/page_line" />
+        </shape>
+    </item>
+</layer-list>
