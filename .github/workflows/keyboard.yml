@@ -1,6 +1,7 @@
 name: Keyboard check
 
-# Every text field stays above the on-screen keyboard (18 Oct). Runs the two
+# Every text field stays above the on-screen keyboard (18 Oct), in the middle
+# of what can be seen (6 Nov 2026; on kmp-* pushes too since then). Runs the
 # keyboard tests on Android 11 (API 30, what the other on-device tests use)
 # and Android 15 (API 35, where every app is drawn behind the bars and
 # adjustResize stops shrinking screens). Pictures and measurements go up as
@@ -11,7 +12,7 @@ name: Keyboard check
 
 on:
   push:
-    branches: [main, 'keyboard-*']
+    branches: [main, 'kmp-*', 'keyboard-*']
   workflow_dispatch:
 
 permissions:

@@ -281,6 +281,9 @@ object CalcPad {
             last = field
             pad.visibility = View.VISIBLE
             keyboard?.hideSoftInputFromWindow(field.windowToken, 0)
+            // The box to the middle of what is left above the pad (6 Nov 2026): once laid out with the
+            // pad, and again once a keyboard that was up for another box has gone.
+            KeyboardFollow.centreWhenSettled(field)
         }
 
         fields.forEach { field ->

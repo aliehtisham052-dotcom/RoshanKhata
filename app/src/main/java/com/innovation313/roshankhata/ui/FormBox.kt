@@ -26,6 +26,8 @@ object FormBox {
         setTextColor(ContextCompat.getColor(context, R.color.ink))
         setHintTextColor(ContextCompat.getColor(context, R.color.text_muted))
         HintFit.apply(this)
+        // Typed in, it stays in the middle of what can be seen, in whatever dialog it lands (6 Nov 2026).
+        KeyboardFollow.watch(this)
         // The input type is set after this returns; by the time the box is on screen it is known (3 Nov 2026 audit, M41).
         addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(v: View) {
