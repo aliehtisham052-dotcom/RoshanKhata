@@ -307,7 +307,7 @@ object KeyboardFollow {
                 val (fieldTop, fieldBottom) = span(field, root, bottom - top)
                 val dy = shift(fieldTop, fieldBottom, top, bottom, gap, still)
                 if (dy == 0) return
-                if (scroller.canScrollVertically(if (dy > 0) 1 else -1)) {
+                if (canMove(scroller, dy)) {
                     if (smooth) smoothBy(scroller, dy) else scroller.scrollBy(0, dy)
                     return
                 }
@@ -355,6 +355,22 @@ object KeyboardFollow {
         root.offsetDescendantRectToMyCoords(v, r)
         r.offset(-root.scrollX, -root.scrollY)
         return r
+    }
+
+    /**
+     * Whether [scroller] can move [dy] at all. A ScrollView's own canScrollVertically leaves its padding out
+     * (its extent is its whole height), so a screen whose root is its ScrollView, padded by the keyboard, read
+     * "cannot scroll" with its last boxes under the keyboard (6 Nov 2026, the business card's Website and QR
+     * message); the room is measured as the ScrollView itself clamps a scroll.
+     */
+    private fun canMove(scroller: View, dy: Int): Boolean {
+        if (scroller is ScrollView || scroller is NestedScrollView) {
+            val child = (scroller as ViewGroup).getChildAt(0) ?: return false
+            val seen = scroller.height - scroller.paddingTop - scroller.paddingBottom
+            val max = maxOf(0, child.height - seen)
+            return if (dy > 0) scroller.scrollY < max else scroller.scrollY > 0
+        }
+        return scroller.canScrollVertically(if (dy > 0) 1 else -1)
     }
 
     private fun smoothBy(scroller: View, dy: Int) {
