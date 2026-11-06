@@ -5,7 +5,11 @@ import com.innovation313.roshankhata.ui.DuplicateDetector.Reason
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import androidx.test.ext.junit.runners.AndroidJUnit4
 
+// Robolectric: displayPhone wraps the number with the platform's bidi marks (6 Nov 2026).
+@RunWith(AndroidJUnit4::class)
 class DuplicateDetectorTest {
 
     private fun c(id: Long, name: String, phone: String? = null, balance: Double = 0.0) =
