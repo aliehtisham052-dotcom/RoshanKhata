@@ -3,6 +3,18 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
+      "package_name": "com.innovation313.roshankhata",
+      "sha256_cert_fingerprints": [
+        "49:2D:24:21:ED:B7:23:36:EB:4F:17:7D:2D:B5:DA:C0:F6:88:C0:48:49:04:84:14:C2:5D:B1:EA:D0:08:AC:BA",
+        "8F:01:C2:99:ED:71:FF:B7:6B:F5:2A:2F:DA:3B:C5:11:ED:F7:06:07:03:91:C4:BE:D7:F8:1D:15:2B:2A:5E:4E",
+        "BA:D2:6D:63:BD:A8:8E:93:E1:43:1D:F4:6A:37:7D:88:92:37:69:60:72:A8:CC:23:11:30:9D:BD:3D:B1:0F:D7"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
       "package_name": "com.innovation313.roshankhata.dev",
       "sha256_cert_fingerprints": ["28:4A:0A:1A:03:7F:15:ED:60:FC:9A:BF:3B:5E:A2:AB:C0:DC:A9:19:27:11:22:84:2A:59:73:46:EB:9C:ED:7D"]
     }

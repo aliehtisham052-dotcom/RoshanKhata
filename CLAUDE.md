@@ -1942,8 +1942,9 @@ is the owner's upload (web/khata/README.md), nothing tried on a real phone.
   one; a phone whose setup is not done opens on it from the front door (`GateActivity.EXTRA_SETUP` starts the setup from
   its "Start my own khata" card). In BaseActivity's BEFORE_THE_BOOK (no counter sign-in, no App Lock: never the book).
 - **web/khata:** api.php keeps its store beside public_html even from a subdomain's root (it would have been
-  public_html/rk-khata-data, served); `.well-known/assetlinks.json` has the test build's key — the Play key's SHA-256 is
-  the owner's to copy from Play Console; `scripts/pack_khata_web.sh` makes the upload zip.
+  public_html/rk-khata-data, served); `.well-known/assetlinks.json` names the Play build's three keys (in use, previous, upload)
+  and the test build's, and is live with the page (7 Nov 2026: khata.ehtisham.shop uploaded, the hosting relay
+  replaced and checked by relays.yml); `scripts/pack_khata_web.sh` makes the upload zip.
 - Tests: CustomerPageTest (shared), MeraKhataStoreTest, EveryScreenOpensTest opens Mera Khata; scripts/test_khata_web.sh.
 - Strings (nine languages): clink_* (14), mera_khata_* (23).
 
