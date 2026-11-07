@@ -104,7 +104,7 @@ object DuplicateDetector {
     /**
      * Two of the group's numbers one digit apart (0300 1234567 / 0300 1244567): most likely one number typed
      * wrong, the strongest sign of one person. Else, a group found by its name alone whose every number differs:
-     * perhaps two people with one name (five "Khala Naila"s with five numbers), said before anything is merged.
+     * perhaps two people with one name (five "Ahmed Ali"s with five numbers), said before anything is merged.
      */
     fun caution(group: Group): Caution {
         val phones = group.members.mapNotNull { normalisedPhone(it.phone) }
