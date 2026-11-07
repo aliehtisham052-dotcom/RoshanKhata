@@ -3994,4 +3994,43 @@
         <item quantity="one">%d رکورد</item>
         <item quantity="other">%d رکورد</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">پیوند حساب مشتری</string>
+    <string name="clink_title">پیوند حساب مشتری</string>
+    <string name="clink_body">برای این مشتری پیوندی فرستاده می‌شود که در آن فقط ماندهٔ کل خود را می‌بیند — هیچ چیز دیگری از دفتر شما. هر وقت بخواهید می‌توانید پیوند را متوقف کنید.</string>
+    <string name="clink_body_sent">پیوند قبلاً برای این مشتری فرستاده شده است. دوباره بفرستید یا متوقف کنید: پس از توقف، پیوند قبلی دیگر باز نمی‌شود.</string>
+    <string name="clink_send">فرستادن پیوند</string>
+    <string name="clink_send_again">فرستادن دوباره</string>
+    <string name="clink_stop">توقف پیوند</string>
+    <string name="clink_stop_body">پیوند این مشتری متوقف می‌شود و دیگر نمی‌تواند حسابش را ببیند. بعداً می‌توانید پیوند تازه‌ای بفرستید.</string>
+    <string name="clink_stopped">پیوند متوقف شد. به محض وصل شدن اینترنت از سرور هم برداشته می‌شود.</string>
+    <string name="clink_sending">در حال آماده کردن پیوند…</string>
+    <string name="clink_message">%1$s، حساب خود نزد %2$s را اینجا ببینید:\n%3$s</string>
+    <string name="clink_offline">اینترنت نیست. اینترنت را روشن کنید و دوباره امتحان کنید.</string>
+    <string name="clink_not_now">الان پیوند ساخته نشد. کمی بعد دوباره امتحان کنید.</string>
+    <string name="clink_other_copy">پیوندهای این دفتر از گوشی دیگری (یا نسخهٔ قدیمی‌تر دفتر) فرستاده شده‌اند. اکنون از این گوشی بفرستید؟ آنگاه همین گوشی مانده‌ها را به‌روز نگه می‌دارد.</string>
+    <string name="mera_khata_title">حساب من</string>
+    <string name="mera_khata_help">ماندهٔ شما نزد هر فروشگاهی که پیوند حسابش را برایتان فرستاده است. فروشگاه آن را می‌نویسد؛ اینجا چیزی تغییر نمی‌کند.</string>
+    <string name="mera_khata_empty">هنوز فروشگاهی نیست. پیوند حسابی را که فروشگاهی فرستاده باز کنید تا اینجا بیاید.</string>
+    <string name="mera_khata_refresh">به‌روزرسانی</string>
+    <string name="mera_khata_just_now">همین الان به‌روز شد. یک دقیقه بعد دوباره بزنید.</string>
+    <string name="mera_khata_you_owe">شما به فروشگاه بدهکارید</string>
+    <string name="mera_khata_shop_owes">فروشگاه به شما بدهکار است</string>
+    <string name="mera_khata_settled">حساب تسویه است</string>
+    <string name="mera_khata_updated">آخرین نوشتهٔ فروشگاه: %1$s</string>
+    <string name="mera_khata_line_gave">گرفتید</string>
+    <string name="mera_khata_line_got">پرداختید</string>
+    <string name="mera_khata_unknown_shop">فروشگاه</string>
+    <string name="mera_khata_not_yet">هنوز بارگذاری نشده. اینترنت را روشن کنید و به‌روزرسانی را بزنید.</string>
+    <string name="mera_khata_paused">فروشگاه این حساب را فعلاً متوقف کرده است.</string>
+    <string name="mera_khata_gone">فروشگاه این پیوند را متوقف کرده است. از فروشگاه پیوند تازه بخواهید.</string>
+    <string name="mera_khata_wrong">این پیوند باز نمی‌شود. از فروشگاه بخواهید دوباره بفرستد.</string>
+    <string name="mera_khata_offline">اینترنت نیست. ماندهٔ دفعهٔ قبل نشان داده می‌شود.</string>
+    <string name="mera_khata_bad_link">این پیوند حساب کامل نیست. از فروشگاه بخواهید دوباره بفرستد.</string>
+    <string name="mera_khata_remove">حذف از این فهرست</string>
+    <string name="mera_khata_remove_body">فروشگاه فقط از فهرست این گوشی برداشته می‌شود. حساب شما نزد فروشگاه همان‌طور می‌ماند.</string>
+    <string name="mera_khata_own_title">حساب‌های فروشگاه خودتان را هم نگه دارید</string>
+    <string name="mera_khata_own_body">روشن خاتا رایگان است: نسیه، وصول، صورت‌حساب و انبار — همه روی گوشی شما.</string>
+    <string name="mera_khata_own_button">دفتر خودم را شروع کنم</string>
 </resources>

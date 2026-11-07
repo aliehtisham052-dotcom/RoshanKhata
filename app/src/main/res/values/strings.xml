@@ -4179,4 +4179,43 @@
         <item quantity="one">%d record</item>
         <item quantity="other">%d records</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">Send khata link</string>
+    <string name="clink_title">Customer’s khata link</string>
+    <string name="clink_body">This customer gets a link where they see only their total balance — nothing else of your book. You can stop the link at any time.</string>
+    <string name="clink_body_sent">A link was already sent to this customer. Send it again, or stop it: once stopped, the old link no longer opens.</string>
+    <string name="clink_send">Send link</string>
+    <string name="clink_send_again">Send again</string>
+    <string name="clink_stop">Stop link</string>
+    <string name="clink_stop_body">This customer’s link stops and they can no longer see their khata. You can send a new link later.</string>
+    <string name="clink_stopped">Link stopped. It is taken off the server as soon as there is internet.</string>
+    <string name="clink_sending">Preparing the link…</string>
+    <string name="clink_message">%1$s, see your account with %2$s here:\n%3$s</string>
+    <string name="clink_offline">No internet. Turn it on and try again.</string>
+    <string name="clink_not_now">The link could not be made right now. Try again in a little while.</string>
+    <string name="clink_other_copy">This book’s links were sent from another phone (or an older copy of the book). Send from this phone now? This phone will then keep the balances up to date.</string>
+    <string name="mera_khata_title">My Khata</string>
+    <string name="mera_khata_help">Your balance with each shop that sent you its khata link. The shop writes it; nothing can be changed here.</string>
+    <string name="mera_khata_empty">No shop yet. Open a khata link a shop sent you and it comes here.</string>
+    <string name="mera_khata_refresh">Refresh</string>
+    <string name="mera_khata_just_now">Just refreshed. Try again in a minute.</string>
+    <string name="mera_khata_you_owe">You owe the shop</string>
+    <string name="mera_khata_shop_owes">The shop owes you</string>
+    <string name="mera_khata_settled">All settled</string>
+    <string name="mera_khata_updated">Shop last wrote: %1$s</string>
+    <string name="mera_khata_line_gave">You took</string>
+    <string name="mera_khata_line_got">You paid</string>
+    <string name="mera_khata_unknown_shop">Shop</string>
+    <string name="mera_khata_not_yet">Not loaded yet. Turn on the internet and tap Refresh.</string>
+    <string name="mera_khata_paused">The shop has paused this khata for now.</string>
+    <string name="mera_khata_gone">The shop has stopped this link. Ask the shop for a new one.</string>
+    <string name="mera_khata_wrong">This link does not open. Ask the shop to send it again.</string>
+    <string name="mera_khata_offline">No internet. Showing the balance from the last time.</string>
+    <string name="mera_khata_bad_link">This khata link is not complete. Ask the shop to send it again.</string>
+    <string name="mera_khata_remove">Remove from this list</string>
+    <string name="mera_khata_remove_body">The shop goes only from this phone’s list. Your account at the shop stays as it is.</string>
+    <string name="mera_khata_own_title">Keep your own shop’s accounts too</string>
+    <string name="mera_khata_own_body">Roshan Khata is free: credit, collections, bills and stock — all on your phone.</string>
+    <string name="mera_khata_own_button">Start my own khata</string>
 </resources>

@@ -4226,4 +4226,43 @@
         <item quantity="many">%d سجلًا</item>
         <item quantity="other">%d سجل</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">رابط حساب العميل</string>
+    <string name="clink_title">رابط حساب العميل</string>
+    <string name="clink_body">سيصل إلى هذا العميل رابط يرى فيه رصيده الإجمالي فقط — لا شيء آخر من دفترك. يمكنك إيقاف الرابط متى شئت.</string>
+    <string name="clink_body_sent">أُرسل رابط إلى هذا العميل من قبل. أرسله مرة أخرى أو أوقفه: بعد الإيقاف لن يُفتح الرابط القديم.</string>
+    <string name="clink_send">إرسال الرابط</string>
+    <string name="clink_send_again">إرسال مرة أخرى</string>
+    <string name="clink_stop">إيقاف الرابط</string>
+    <string name="clink_stop_body">سيتوقف رابط هذا العميل ولن يستطيع رؤية حسابه. يمكنك إرسال رابط جديد لاحقًا.</string>
+    <string name="clink_stopped">أُوقف الرابط. سيُزال من الخادم أيضًا فور توفر الإنترنت.</string>
+    <string name="clink_sending">جارٍ تجهيز الرابط…</string>
+    <string name="clink_message">%1$s، اطّلع على حسابك لدى %2$s هنا:\n%3$s</string>
+    <string name="clink_offline">لا يوجد إنترنت. شغّل الإنترنت وحاول مرة أخرى.</string>
+    <string name="clink_not_now">تعذّر إنشاء الرابط الآن. حاول مرة أخرى بعد قليل.</string>
+    <string name="clink_other_copy">أُرسلت روابط هذا الدفتر من هاتف آخر (أو من نسخة أقدم من الدفتر). هل تريد الإرسال من هذا الهاتف الآن؟ عندها سيُبقي هذا الهاتف الأرصدة محدّثة.</string>
+    <string name="mera_khata_title">حسابي</string>
+    <string name="mera_khata_help">رصيدك لدى كل متجر أرسل إليك رابط حسابه. المتجر هو من يكتبه؛ لا يمكن تغيير شيء هنا.</string>
+    <string name="mera_khata_empty">لا توجد متاجر بعد. افتح رابط حساب أرسله إليك متجر وسيظهر هنا.</string>
+    <string name="mera_khata_refresh">تحديث</string>
+    <string name="mera_khata_just_now">تم التحديث للتو. حاول مرة أخرى بعد دقيقة.</string>
+    <string name="mera_khata_you_owe">أنت مدين للمتجر</string>
+    <string name="mera_khata_shop_owes">المتجر مدين لك</string>
+    <string name="mera_khata_settled">الحساب مسدَّد</string>
+    <string name="mera_khata_updated">آخر ما كتبه المتجر: %1$s</string>
+    <string name="mera_khata_line_gave">أخذتَ</string>
+    <string name="mera_khata_line_got">دفعتَ</string>
+    <string name="mera_khata_unknown_shop">متجر</string>
+    <string name="mera_khata_not_yet">لم يُحمَّل بعد. شغّل الإنترنت واضغط تحديث.</string>
+    <string name="mera_khata_paused">أوقف المتجر هذا الحساب مؤقتًا.</string>
+    <string name="mera_khata_gone">أوقف المتجر هذا الرابط. اطلب من المتجر رابطًا جديدًا.</string>
+    <string name="mera_khata_wrong">هذا الرابط لا يُفتح. اطلب من المتجر إرساله مرة أخرى.</string>
+    <string name="mera_khata_offline">لا يوجد إنترنت. يُعرض الرصيد من آخر مرة.</string>
+    <string name="mera_khata_bad_link">رابط الحساب هذا غير مكتمل. اطلب من المتجر إرساله مرة أخرى.</string>
+    <string name="mera_khata_remove">إزالة من هذه القائمة</string>
+    <string name="mera_khata_remove_body">يُزال المتجر من قائمة هذا الهاتف فقط. يبقى حسابك لدى المتجر كما هو.</string>
+    <string name="mera_khata_own_title">احتفظ بحسابات متجرك أيضًا</string>
+    <string name="mera_khata_own_body">روشن كهاتا مجاني: الديون والتحصيل والفواتير والمخزون — كلها على هاتفك.</string>
+    <string name="mera_khata_own_button">ابدأ دفتري الخاص</string>
 </resources>

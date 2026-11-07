@@ -58,8 +58,16 @@ import javax.crypto.spec.SecretKeySpec
  */
 object CustomerLink {
 
-    /** Where web/khata lives, e.g. "https://ehtisham.shop/khata/"; null keeps customer links closed. */
-    @Volatile var base: String? = null
+    /**
+     * Where web/khata lives; null keeps customer links closed. The shop's own subdomain on the owner's hosting
+     * (7 Nov 2026, the owner's choice of 21 Oct): served as plain files, so a customer's look costs no relay
+     * request and no paid credit — live sync's relays are never touched by it.
+     */
+    @Volatile var base: String? = HOME
+
+    /** The customer pages' home, and the host the app's links open from (App Links, MeraKhata). */
+    const val HOST = "khata.ehtisham.shop"
+    const val HOME = "https://$HOST/"
 
     const val MAX_ENTRIES = 3
     /** Pages put or taken back per request, as the server allows. */
@@ -69,10 +77,14 @@ object CustomerLink {
     private const val AAD = "rk-clink-v1"
     private const val DAY_MS = 24L * 60 * 60 * 1000
 
-    /** What a customer's page shows; the book's choice, [Mode.LAST3] unless the owner chose less. */
+    /**
+     * What a customer's page shows; the book's choice. [Mode.BALANCE] unless the owner chose more (7 Nov 2026,
+     * the owner: the customer sees his total balance — a few hundred bytes a page, nothing of his goods on a
+     * phone the family also holds).
+     */
     enum class Mode(val key: String) {
         BALANCE("balance"), LAST3("last3");
-        companion object { fun of(v: String?): Mode = values().firstOrNull { it.key == v } ?: LAST3 }
+        companion object { fun of(v: String?): Mode = values().firstOrNull { it.key == v } ?: BALANCE }
     }
 
     // Book settings (they travel with the book, so the phone and the computer share the same links).

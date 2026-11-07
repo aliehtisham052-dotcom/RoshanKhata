@@ -3823,10 +3823,92 @@ class PartyDetailActivity : BaseActivity() {
         }
     }
 
+    // ---------------------------------------------------------------- the customer's khata link (7 Nov 2026)
+
+    private var linkBusy = false
+
+    /**
+     * The customer's own khata link: he sees his total balance on khata.ehtisham.shop or in Roshan Khata (Mera
+     * Khata), nothing else of the book. Said first what it does; a link already sent can be sent again or stopped.
+     * Sending customer data out is an export (a cashier asks a manager); a helper's read-only phone never sends.
+     */
+    private fun openKhataLink() {
+        if (com.innovation313.roshankhata.data.ViewerMode.refuse(this)) return
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.EXPORT) { openKhataLink() }) return
+        lifecycleScope.launch {
+            val uid = dao.getParty(partyId)?.uid ?: return@launch
+            val has = com.innovation313.roshankhata.data.CustomerLink.linkOf(dao, uid) != null
+            if (isFinishing || isDestroyed) return@launch
+            val b = com.google.android.material.dialog.MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                .setTitle(R.string.clink_title)
+                .setMessage(if (has) R.string.clink_body_sent else R.string.clink_body)
+                .setPositiveButton(if (has) R.string.clink_send_again else R.string.clink_send) { _, _ -> sendKhataLink(uid, claim = false) }
+                .setNegativeButton(android.R.string.cancel, null)
+            if (has) b.setNeutralButton(R.string.clink_stop) { _, _ -> confirmStopLink(uid) }
+            b.show()
+        }
+    }
+
+    private fun sendKhataLink(uid: String, claim: Boolean) {
+        if (linkBusy) return
+        linkBusy = true
+        Toast.makeText(this, R.string.clink_sending, Toast.LENGTH_SHORT).show()
+        val app = applicationContext
+        lifecycleScope.launch {
+            val r = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.CustomerLinkSync.share(app, uid, claim) }
+            linkBusy = false
+            if (isFinishing || isDestroyed) return@launch
+            when (r) {
+                is com.innovation313.roshankhata.data.CustomerLink.Shared.Ready -> {
+                    val shop = BusinessProfile.businessName(this@PartyDetailActivity) ?: getString(R.string.app_name)
+                    val message = getString(R.string.clink_message, partyName, shop, r.url)
+                    if (!partyPhone.isNullOrBlank()) Reminder.sendViaWhatsApp(this@PartyDetailActivity, partyPhone, message)
+                    else runCatching {
+                        startActivity(Intent.createChooser(
+                            Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, message),
+                            getString(R.string.share)))
+                    }.onFailure { Toast.makeText(this@PartyDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show() }
+                }
+                is com.innovation313.roshankhata.data.CustomerLink.Shared.NotYet -> when (r.why) {
+                    com.innovation313.roshankhata.data.CustomerLink.Result.NotHere ->
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                            .setTitle(R.string.clink_title)
+                            .setMessage(R.string.clink_other_copy)
+                            .setPositiveButton(R.string.clink_send) { _, _ -> sendKhataLink(uid, claim = true) }
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show()
+                    com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable ->
+                        Toast.makeText(this@PartyDetailActivity, R.string.clink_offline, Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(this@PartyDetailActivity, R.string.clink_not_now, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun confirmStopLink(uid: String) {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.clink_stop)
+            .setMessage(R.string.clink_stop_body)
+            .setPositiveButton(R.string.clink_stop) { _, _ ->
+                val app = applicationContext
+                AppScope.launch {
+                    val d = com.innovation313.roshankhata.data.KhataDatabase.get(app).khataDao()
+                    com.innovation313.roshankhata.data.CustomerLink.remove(d, uid)
+                    // Taken down at the hosting now, or with the next send if the internet is off.
+                    com.innovation313.roshankhata.data.CustomerLinkSync.flushNow(app)
+                }
+                Toast.makeText(this, R.string.clink_stopped, Toast.LENGTH_LONG).show()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_party_detail, menu)
         // "After the harvest" is an agri customer's promise (4 Oct).
         menu.findItem(R.id.action_harvest_promise)?.isVisible = TradeFeatures.seasons(this)
+        // A helper's read-only phone sends no link: the book is the owner's (7 Nov 2026).
+        menu.findItem(R.id.action_khata_link)?.isVisible = !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
         return true
     }
 
@@ -3835,6 +3917,10 @@ class PartyDetailActivity : BaseActivity() {
             R.id.action_customer_qr -> {
                 // The first time: what the card is for, then the card (1 Nov 2026).
                 com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CUSTOMER_QR) { showCustomerQr() }
+                true
+            }
+            R.id.action_khata_link -> {
+                openKhataLink()
                 true
             }
             R.id.action_report -> {

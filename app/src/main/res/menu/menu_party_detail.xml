@@ -10,6 +10,10 @@
         android:title="@string/customer_qr"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_khata_link"
+        android:title="@string/clink_menu"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_report"
         android:title="@string/report"
         app:showAsAction="never" />

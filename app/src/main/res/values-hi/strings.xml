@@ -4014,4 +4014,43 @@
         <item quantity="one">%d रिकॉर्ड</item>
         <item quantity="other">%d रिकॉर्ड</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">ग्राहक को खाता लिंक</string>
+    <string name="clink_title">ग्राहक का खाता लिंक</string>
+    <string name="clink_body">इस ग्राहक को एक लिंक जाएगा जिस पर वह सिर्फ़ अपना कुल बैलेंस देख सकेगा — आपकी किताब की कोई और चीज़ नहीं। लिंक आप जब चाहें बंद कर सकते हैं।</string>
+    <string name="clink_body_sent">इस ग्राहक को लिंक पहले भेजा जा चुका है। फिर भेजें या बंद करें: बंद होने के बाद पुराना लिंक नहीं खुलेगा।</string>
+    <string name="clink_send">लिंक भेजें</string>
+    <string name="clink_send_again">फिर भेजें</string>
+    <string name="clink_stop">लिंक बंद करें</string>
+    <string name="clink_stop_body">इस ग्राहक का लिंक बंद हो जाएगा और वह अपना खाता नहीं देख सकेगा। बाद में नया लिंक भेज सकते हैं।</string>
+    <string name="clink_stopped">लिंक बंद कर दिया। इंटरनेट मिलते ही सर्वर से भी हट जाएगा।</string>
+    <string name="clink_sending">लिंक तैयार हो रहा है…</string>
+    <string name="clink_message">%1$s, %2$s में आपका खाता यहाँ देखें:\n%3$s</string>
+    <string name="clink_offline">इंटरनेट नहीं मिला। इंटरनेट चालू करके फिर कोशिश करें।</string>
+    <string name="clink_not_now">अभी लिंक नहीं बन सका। थोड़ी देर बाद फिर कोशिश करें।</string>
+    <string name="clink_other_copy">इस किताब के लिंक किसी और फ़ोन (या किताब की पुरानी कॉपी) से भेजे गए थे। अब इस फ़ोन से भेजें? फिर यही फ़ोन बैलेंस ताज़ा रखेगा।</string>
+    <string name="mera_khata_title">मेरा खाता</string>
+    <string name="mera_khata_help">जिन दुकानों ने आपको खाता लिंक भेजा, उनके साथ आपका बैलेंस यहाँ है। इसे दुकान लिखती है; यहाँ कुछ बदला नहीं जा सकता।</string>
+    <string name="mera_khata_empty">अभी कोई दुकान नहीं। दुकान का भेजा खाता लिंक खोलें, वह यहाँ आ जाएगा।</string>
+    <string name="mera_khata_refresh">ताज़ा करें</string>
+    <string name="mera_khata_just_now">अभी ताज़ा किया है। एक मिनट बाद फिर दबाएँ।</string>
+    <string name="mera_khata_you_owe">आपको दुकान को देना है</string>
+    <string name="mera_khata_shop_owes">दुकान को आपको देना है</string>
+    <string name="mera_khata_settled">हिसाब बराबर</string>
+    <string name="mera_khata_updated">दुकान ने आख़िरी बार लिखा: %1$s</string>
+    <string name="mera_khata_line_gave">आपने लिया</string>
+    <string name="mera_khata_line_got">आपने दिया</string>
+    <string name="mera_khata_unknown_shop">दुकान</string>
+    <string name="mera_khata_not_yet">अभी लोड नहीं हुआ। इंटरनेट चालू करके ताज़ा करें दबाएँ।</string>
+    <string name="mera_khata_paused">दुकान ने यह खाता अभी के लिए रोक दिया है।</string>
+    <string name="mera_khata_gone">दुकान ने यह लिंक बंद कर दिया है। दुकान से नया लिंक माँगें।</string>
+    <string name="mera_khata_wrong">यह लिंक नहीं खुल रहा। दुकान से इसे फिर भेजने को कहें।</string>
+    <string name="mera_khata_offline">इंटरनेट नहीं मिला। पिछली बार का बैलेंस दिख रहा है।</string>
+    <string name="mera_khata_bad_link">यह खाता लिंक पूरा नहीं है। दुकान से इसे फिर भेजने को कहें।</string>
+    <string name="mera_khata_remove">इस सूची से हटाएँ</string>
+    <string name="mera_khata_remove_body">दुकान सिर्फ़ इस फ़ोन की सूची से हटेगी। दुकान में आपका हिसाब वैसा ही रहेगा।</string>
+    <string name="mera_khata_own_title">अपनी दुकान का हिसाब भी रखें</string>
+    <string name="mera_khata_own_body">रोशन खाता मुफ़्त है: उधार, वसूली, बिल और स्टॉक — सब आपके फ़ोन पर।</string>
+    <string name="mera_khata_own_button">अपना खाता शुरू करें</string>
 </resources>

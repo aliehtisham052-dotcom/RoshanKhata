@@ -4014,4 +4014,43 @@
         <item quantity="one">%dটি রেকর্ড</item>
         <item quantity="other">%dটি রেকর্ড</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">গ্রাহককে খাতার লিংক</string>
+    <string name="clink_title">গ্রাহকের খাতার লিংক</string>
+    <string name="clink_body">এই গ্রাহক একটি লিংক পাবেন যেখানে তিনি শুধু নিজের মোট ব্যালেন্স দেখতে পারবেন — আপনার খাতার আর কিছু নয়। আপনি যখন খুশি লিংকটি বন্ধ করতে পারেন।</string>
+    <string name="clink_body_sent">এই গ্রাহককে আগে লিংক পাঠানো হয়েছে। আবার পাঠান বা বন্ধ করুন: বন্ধ হলে পুরোনো লিংক আর খুলবে না।</string>
+    <string name="clink_send">লিংক পাঠান</string>
+    <string name="clink_send_again">আবার পাঠান</string>
+    <string name="clink_stop">লিংক বন্ধ করুন</string>
+    <string name="clink_stop_body">এই গ্রাহকের লিংক বন্ধ হবে এবং তিনি আর নিজের খাতা দেখতে পারবেন না। পরে নতুন লিংক পাঠাতে পারবেন।</string>
+    <string name="clink_stopped">লিংক বন্ধ করা হয়েছে। ইন্টারনেট পেলেই সার্ভার থেকেও সরে যাবে।</string>
+    <string name="clink_sending">লিংক তৈরি হচ্ছে…</string>
+    <string name="clink_message">%1$s, %2$s-এ আপনার খাতা এখানে দেখুন:\n%3$s</string>
+    <string name="clink_offline">ইন্টারনেট নেই। ইন্টারনেট চালু করে আবার চেষ্টা করুন।</string>
+    <string name="clink_not_now">এখন লিংক তৈরি করা গেল না। একটু পরে আবার চেষ্টা করুন।</string>
+    <string name="clink_other_copy">এই খাতার লিংক অন্য ফোন (বা খাতার পুরোনো কপি) থেকে পাঠানো হয়েছিল। এখন এই ফোন থেকে পাঠাবেন? তখন এই ফোনই ব্যালেন্স হালনাগাদ রাখবে।</string>
+    <string name="mera_khata_title">আমার খাতা</string>
+    <string name="mera_khata_help">যেসব দোকান আপনাকে খাতার লিংক পাঠিয়েছে, তাদের কাছে আপনার ব্যালেন্স এখানে। দোকান এটি লেখে; এখানে কিছু বদলানো যায় না।</string>
+    <string name="mera_khata_empty">এখনো কোনো দোকান নেই। দোকানের পাঠানো খাতার লিংক খুলুন, সেটি এখানে আসবে।</string>
+    <string name="mera_khata_refresh">রিফ্রেশ করুন</string>
+    <string name="mera_khata_just_now">এইমাত্র রিফ্রেশ হয়েছে। এক মিনিট পরে আবার চাপুন।</string>
+    <string name="mera_khata_you_owe">আপনার কাছে দোকানের পাওনা</string>
+    <string name="mera_khata_shop_owes">দোকানের কাছে আপনার পাওনা</string>
+    <string name="mera_khata_settled">হিসাব মিটে গেছে</string>
+    <string name="mera_khata_updated">দোকান শেষবার লিখেছে: %1$s</string>
+    <string name="mera_khata_line_gave">আপনি নিয়েছেন</string>
+    <string name="mera_khata_line_got">আপনি দিয়েছেন</string>
+    <string name="mera_khata_unknown_shop">দোকান</string>
+    <string name="mera_khata_not_yet">এখনো লোড হয়নি। ইন্টারনেট চালু করে রিফ্রেশ করুন চাপুন।</string>
+    <string name="mera_khata_paused">দোকান আপাতত এই খাতাটি বন্ধ রেখেছে।</string>
+    <string name="mera_khata_gone">দোকান এই লিংকটি বন্ধ করেছে। দোকানের কাছে নতুন লিংক চান।</string>
+    <string name="mera_khata_wrong">এই লিংক খুলছে না। দোকানকে আবার পাঠাতে বলুন।</string>
+    <string name="mera_khata_offline">ইন্টারনেট নেই। আগেরবারের ব্যালেন্স দেখানো হচ্ছে।</string>
+    <string name="mera_khata_bad_link">এই খাতার লিংকটি সম্পূর্ণ নয়। দোকানকে আবার পাঠাতে বলুন।</string>
+    <string name="mera_khata_remove">এই তালিকা থেকে সরান</string>
+    <string name="mera_khata_remove_body">দোকানটি শুধু এই ফোনের তালিকা থেকে সরবে। দোকানে আপনার হিসাব যেমন আছে তেমনই থাকবে।</string>
+    <string name="mera_khata_own_title">নিজের দোকানের হিসাবও রাখুন</string>
+    <string name="mera_khata_own_body">রোশন খাতা বিনামূল্যে: বাকি, আদায়, বিল আর স্টক — সব আপনার ফোনে।</string>
+    <string name="mera_khata_own_button">নিজের খাতা শুরু করুন</string>
 </resources>

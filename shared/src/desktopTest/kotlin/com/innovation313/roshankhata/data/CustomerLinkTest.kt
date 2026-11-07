@@ -100,6 +100,9 @@ class CustomerLinkTest {
         assertEquals(CustomerLink.Result.Off, CustomerLink.flush(d, notes, "khata.db", look, http = server, root = null))
         assertEquals(CustomerLink.Result.Idle, d.flushWith(server, notes))
 
+        // The balance alone unless the shop chooses more (7 Nov 2026); this book chooses the last three entries.
+        assertEquals(CustomerLink.Mode.BALANCE, CustomerLink.Mode.of(null))
+        d.setSetting(CustomerLink.MODE, CustomerLink.Mode.LAST3.key)
         val link = CustomerLink.create(d, uid, look)
         assertEquals(link, CustomerLink.create(d, uid, look))
         assertEquals(22, link.key.length)

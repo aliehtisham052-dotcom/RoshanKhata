@@ -67,6 +67,12 @@ object MoreSheet {
             e(R.drawable.ic_menu_viewer, R.color.tile_insights_bg, R.string.viewer_menu, data) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.ViewerActivity::class.java)) },
             // Waris ki Chaabi (4 Nov 2026): the owner's heirs and the books this phone is heir to; on a read-only phone it only says so.
             e(R.drawable.ic_menu_waris, R.color.tile_bills_bg, R.string.waris_title, data) { activity.startActivity(Intent(activity, com.innovation313.roshankhata.WarisActivity::class.java)) },
+            // Mera Khata (7 Nov 2026): the shops' khata links this phone's owner was sent as a customer; shown
+            // once there is one. Any phone, a helper's too: it is the holder's own, not the book.
+            if (!com.innovation313.roshankhata.MeraKhataActivity.has(activity)) null
+            else e(R.drawable.ic_tile_khata, R.color.tile_khata_bg, R.string.mera_khata_title, data) {
+                activity.startActivity(Intent(activity, com.innovation313.roshankhata.MeraKhataActivity::class.java))
+            },
             e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language, display) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
             e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size, display) { textSize(activity) },
             e(R.drawable.ic_menu_theme, R.color.tile_card_bg, R.string.theme, display) { theme(activity) },

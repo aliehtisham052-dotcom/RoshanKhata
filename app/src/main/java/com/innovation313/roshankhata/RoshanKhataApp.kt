@@ -129,6 +129,9 @@ class RoshanKhataApp : Application() {
                 started = 0
                 runCatching { com.innovation313.roshankhata.data.LiveRunner.stop() }
                 runCatching { AutoBackup.onAppBackgrounded(app) }
+                // The customers' khata pages that changed go to the hosting in a while (7 Nov 2026; nothing when
+                // nothing changed, and never more than one send waiting).
+                runCatching { com.innovation313.roshankhata.data.CustomerLinkSync.soon(app) }
             }
         }
 
