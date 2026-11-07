@@ -429,7 +429,9 @@
           announced, and offers to add it to a khata. Android binds this service only after the owner turns on
           notification access in the phone's settings; the BIND permission means only the system can bind it.
           Not exported, as Android's own NotificationListenerService example declares it (the system binds it
-          as itself). Ongoing notices (music, downloads) are not sent to it.
+          as itself). On Android 12+ ongoing notices (music, downloads) and conversations (chats) are not sent to
+          it; Android 7-11 do not read this filter, and the service passes both over itself (7 Nov 2026, the
+          payment voice's review, P2 and P8).
         -->
         <service
             android:name=".PaymentListenerService"
@@ -441,7 +443,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.service.notification.disabled_filter_types"
-                android:value="ongoing" />
+                android:value="ongoing|conversations" />
         </service>
 
         <activity

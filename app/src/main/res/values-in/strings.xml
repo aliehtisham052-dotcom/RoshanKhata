@@ -3945,6 +3945,11 @@
     <string name="radar_state_on">Aktif — di ponsel ini.</string>
     <string name="radar_state_off">Mati — aktifkan agar terlihat di halaman setiap pelanggan.</string>
     <string name="paisa_switch_needs_access">Beri izin notifikasi dulu (di atas)</string>
+    <string name="paisa_not_from_play">Tidak dipasang dari Play Store: centang hanya jika Anda yakin ini aplikasi yang asli.</string>
+    <string name="paisa_private_chime">Saat ponsel terkunci, atau Kunci Aplikasi aktif, hanya bunyi singkat yang diputar: tidak ada nama atau jumlah yang diucapkan.</string>
+    <string name="paisa_notif_match_locked">Cocok dengan pelanggan di buku Anda. Buka untuk memeriksa lalu simpan.</string>
+    <string name="paisa_already_added">Pembayaran ini (Ref %1$s) sudah dicatat: %2$s, %3$s.</string>
+    <string name="paisa_notice_gone">Notifikasi pembayaran ini tidak bisa dibuka lagi.</string>
     <string name="invoice_caption_total">Total: %1$s</string>
     <string name="doc_desc_quotation">Harga yang Anda tawarkan sebelum penjualan. Belum ada utang.</string>
     <string name="doc_desc_proforma">Tagihan di muka, dibayar sebelum barang dikirim.</string>

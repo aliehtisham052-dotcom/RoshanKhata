@@ -67,6 +67,12 @@ class PaymentNoticeTest {
         assertNull(r.sender) // no "from" and no "se": the name is not guessed from the sentence's start
     }
 
+    @Test fun sentToYouIsIncoming() {
+        // "Successfully sent" alone is money going out (the review's P1); sent TO YOU is money coming in.
+        assertEquals(500.0, p("Rs 500 has been successfully sent to you by Ahmed Ali")!!.amount, 0.001)
+        assertEquals(750.0, p("Money sent to your account: Rs 750. TID 123123123123")!!.amount, 0.001)
+    }
+
     @Test fun paidYouIsIncoming() {
         assertEquals(450.0, p("Imran paid you Rs 450 via Easypaisa")!!.amount, 0.001)
     }
@@ -241,6 +247,143 @@ class PaymentNoticeTest {
         assertNull(p("Received Rs 500 from 03001234567. Ref: 03001234567")!!.reference)
     }
 
+    // ------------------------------------------------------------------ money that has not come in (the review's P1)
+
+    @Test fun aRequestToPayIsNotAPayment() {
+        assertNull(p("Ali Khan has sent you a request of Rs. 2,000. Tap to pay."))
+        assertNull(p("You have received a payment request of Rs 3,000 from Bilal Ahmed"))
+        assertNull(p("Request received: Bilal Ahmed requested Rs 3,000 from you. Tap to pay"))
+    }
+
+    @Test fun anAdvertIsNotAPayment() {
+        assertNull(p("Receive up to Rs 5,000 instantly in your JazzCash account. Apply for a loan now!"))
+        assertNull(p("Deposit Rs 1,000 in your Easypaisa account and win a free bike!"))
+        assertNull(p("Get your salary credited in JazzCash and enjoy Rs 500 off on Daraz"))
+    }
+
+    @Test fun aFailedOrPendingTransferIsNotAPayment() {
+        assertNull(p("Failed: Rs 5,000 could not be credited to your account."))
+        assertNull(p("Transaction of Rs 500 from Ali could not be received. Please try again."))
+        assertNull(p("Your transfer of Rs 5,000 failed. Amount will be credited back to your account."))
+        assertNull(p("Rs 5,000 will be credited to your account within 2 working days"))
+        assertNull(p("Rs 2,000 received from Ahmed is pending"))
+        assertNull(p("Rs 700 from Asif couldn’t be credited to your account"))
+        assertNull(p("Rs 900 credited from Asif was reversed"))
+    }
+
+    @Test fun aRefundOrALoanIsNotACustomersPayment() {
+        assertNull(p("Refund of Rs 1,200 has been credited to your account"))
+        assertNull(p("Your loan of Rs 10,000 has been credited to your account"))
+    }
+
+    @Test fun aBillALoadOrAnOrderIsNotAPayment() {
+        assertNull(p("Your payment of Rs 1,500.00 for K-Electric bill has been received."))
+        assertNull(p("Easyload of Rs 100 for 03001234567 received."))
+        assertNull(p("Your order of Rs 2,000 has been received by Daraz"))
+    }
+
+    @Test fun urduCashbackAndAFutureAreNotAPayment() {
+        assertNull(p("آپ کو 500 روپے کیش بیک ملے گا"))
+        assertNull(p("اپنے اکاؤنٹ میں 1000 روپے جمع کروائیں اور انعام جیتیں"))
+        assertNull(p("آپ کی 2000 روپے کی درخواست موصول ہوئی"))
+    }
+
+    @Test fun romanUrduFutureIsNotAPayment() {
+        assertNull(p("Aap ko Rs 500 cashback mile ga"))
+        assertNull(p("Aap ko Rs 500 mile ga"))
+        assertNull(p("Aap ke account mein Rs 500 wusool ho jayenge"))
+    }
+
+    @Test fun aHiddenMarkDoesNotHideARequest() {
+        assertNull(p("You have received a payment re\u200Bquest of Rs 3,000 from Bilal Ahmed"))
+    }
+
+    @Test fun urduWordsStandAlone() {
+        // "جمعہ" (Friday) holds "جمع" (deposited) but is not it.
+        assertNull(p("جمعہ کو 500 روپے"))
+        assertEquals(3000.0, p("آپ کے اکاؤنٹ میں 3,000 روپے جمع ہو گئے")!!.amount, 0.001)
+    }
+
+    @Test fun moneySentOutIsNotAPayment() {
+        assertNull(p("Money sent! Rs 1,000 to Ali Raza 0300****567 received successfully. TID 556677889900"))
+        assertNull(p("PKR 5,000 transferred from your A/C ****1234 to ALI RAZA has been credited to the beneficiary. Ref FT26309XYZ12"))
+        assertNull(p("Funds transfer of PKR 5,000 to ALI RAZA successful. Beneficiary credited."))
+        assertNull(p("Your funds transfer of Rs 2,000 to 03001234567 has been received by the beneficiary"))
+        assertNull(p("Debit card: -Rs 500 at Daraz. Payment received by merchant"))
+    }
+
+    // ------------------------------------------------------------------ the sender's number (the review's P1)
+
+    @Test fun aNumberOutsideTheSendersPartIsNotHis() {
+        val r = p("You have received Rs 500 from Ahmed Ali via Raast. Call 03111222333 for help")!!
+        assertEquals("Ahmed Ali", r.sender)
+        assertNull(r.phone)
+    }
+
+    @Test fun aNumberAfterToIsNotTheSenders() {
+        assertNull(p("Rs 500 received from your A/C to 03001234567")!!.phone)
+    }
+
+    @Test fun romanUrduSendersNumberIsBeforeSe() {
+        assertEquals("03001234567", p("Aap ko 03001234567 se Rs 1,500 mile")!!.phone)
+    }
+
+    @Test fun urduSendersNumberIsBeforeSe() {
+        val r = p("آپ کو احمد 0300*234567 سے 5000 روپے موصول ہوئے")!!
+        assertEquals("0300*234567", r.phone)
+        assertEquals(5000.0, r.amount, 0.001)
+    }
+
+    @Test fun anInitialDoesNotEndTheSendersPart() {
+        assertEquals("03001234567", p("Received Rs 500 from M. Aslam 03001234567 via IBFT")!!.phone)
+    }
+
+    // ------------------------------------------------------------------ figures and long texts (the review's P5)
+
+    @Test fun aDotGroupedFigureIsNoAmount() {
+        assertNull(p("You have received Rs 5.000 from Ahmed"))
+    }
+
+    @Test fun aFigureRunningIntoLettersIsNoAmount() {
+        assertNull(p("Rs 1e12 received"))
+    }
+
+    @Test fun aMinusIsNeverAPayment() {
+        assertNull(p("-Rs 500 received from Ahmed"))
+        assertNull(p("-500 PKR received from Ahmed"))
+        assertNull(p("\u2212Rs 500 received from Ahmed"))
+    }
+
+    @Test fun aCommaAfterAFigureStillEndsIt() {
+        assertEquals(500.0, p("Received Rs 500, from Ahmed")!!.amount, 0.001)
+    }
+
+    @Test fun aLongRunOfSpacesIsReadQuickly() {
+        val started = System.nanoTime()
+        val r = p("You have received Rs 500 from Ahmed" + " ".repeat(20_000) + "#")
+        val ms = (System.nanoTime() - started) / 1_000_000
+        assertEquals(500.0, r!!.amount, 0.001)
+        // Twelve seconds at 15,000 characters before: a generous bound, not a benchmark.
+        assertTrue("took $ms ms", ms < 3_000)
+    }
+
+    @Test fun aLongChainOfGroupsDoesNotOverflow() {
+        assertNull(p("received Rs 1" + ",000".repeat(5_000) + "x"))
+        assertNull(p("received Rs " + "9".repeat(5_000)))
+    }
+
+    @Test fun manyFromsAreReadQuickly() {
+        val started = System.nanoTime()
+        p("received Rs 500 " + "from a ".repeat(6_000) + "#")
+        assertTrue((System.nanoTime() - started) / 1_000_000 < 3_000)
+    }
+
+    @Test fun tidyCollapsesSpacesAndCutsTheText() {
+        assertEquals("a b\nc", PaymentNotice.tidy("  a \t\u00A0 b\n\n \r\n c  "))
+        assertEquals("request", PaymentNotice.tidy("re\u200Bquest"))
+        assertEquals(PaymentNotice.MAX_TEXT, PaymentNotice.tidy("ab ".repeat(2_000)).length)
+    }
+
     // ------------------------------------------------------------------ the customer in the book
 
     private data class P(val name: String, val phone: String?)
@@ -255,9 +398,16 @@ class PaymentNoticeTest {
 
     private fun match(payment: IncomingPayment) = PaymentNotice.match(book, payment, { it.name }, { it.phone })
 
-    @Test fun maskedNumberFindsTheOne() {
+    @Test fun threeShownDigitsFindNobody() {
+        // "0300****567": the network code and three digits, which thousands of numbers share (the review's P4).
+        assertFalse(PaymentNotice.phoneMatches("0300****567", "03001234567"))
         val m = match(IncomingPayment(500.0, sender = "SOMEONE", phone = "0300****567"))
-        assertEquals("Ahmed Ali", m.one?.name)
+        assertNull(m.one)
+        assertTrue(m.candidates.isEmpty())
+    }
+
+    @Test fun sixShownSubscriberDigitsFindTheOne() {
+        assertEquals("Ahmed Ali", match(IncomingPayment(500.0, phone = "0300*234567")).one?.name)
     }
 
     @Test fun plusNinetyTwoStoredMatchesLocal() {
@@ -266,15 +416,26 @@ class PaymentNoticeTest {
 
     @Test fun maskedDigitThatDisagreesIsNoMatch() {
         assertFalse(PaymentNotice.phoneMatches("0300****568", "03001234567"))
+        assertFalse(PaymentNotice.phoneMatches("0300*234568", "03001234567"))
     }
 
     @Test fun tooFewKnownDigitsIsNoMatch() {
         assertFalse(PaymentNotice.phoneMatches("03********7", "03001234567"))
     }
 
-    @Test fun sevenKnownDigitsAreEnough() {
-        assertTrue(PaymentNotice.phoneMatches("0300****567", "03001234567"))
-        assertTrue(PaymentNotice.phoneMatches("0300****567", "923001234567"))
+    @Test fun theNetworkCodeIsNotCounted() {
+        // Eight digits shown, but four of them are the code: four of the subscriber's own are not enough.
+        assertFalse(PaymentNotice.phoneMatches("0300***4567", "03001234567"))
+    }
+
+    @Test fun sixShownSubscriberDigitsAreEnough() {
+        assertTrue(PaymentNotice.phoneMatches("0300*234567", "03001234567"))
+        assertTrue(PaymentNotice.phoneMatches("0300*234567", "923001234567"))
+        assertTrue(PaymentNotice.phoneMatches("03001234567", "+92 300 1234567"))
+    }
+
+    @Test fun aWholeNumberWithAnotherCodeIsNoMatch() {
+        assertFalse(PaymentNotice.phoneMatches("03451234567", "03001234567"))
     }
 
     @Test fun nameFindsTheOneWhenNoNumber() {
@@ -299,9 +460,20 @@ class PaymentNoticeTest {
         assertTrue(m.candidates.isEmpty())
     }
 
-    @Test fun numberWinsOverAName() {
-        // The notice names Bilal but the number is Ahmed's: the number decides, it identifies a person.
-        assertEquals("Ahmed Ali", match(IncomingPayment(500.0, sender = "Bilal", phone = "03001234567")).one?.name)
+    @Test fun aNumberAndANameThatDisagreeAreAQuestion() {
+        // The notice names Bilal but the number is Ahmed's (the review's P4): the owner chooses between them.
+        val m = match(IncomingPayment(500.0, sender = "Bilal", phone = "03001234567"))
+        assertNull(m.one)
+        assertEquals(setOf("Ahmed Ali", "Bilal Khan"), m.candidates.map { it.name }.toSet())
+    }
+
+    @Test fun aNumberAndItsOwnNameDecide() {
+        assertEquals("Ahmed Ali", match(IncomingPayment(500.0, sender = "AHMED ALI", phone = "03001234567")).one?.name)
+        assertEquals("Ahmed Ali", match(IncomingPayment(500.0, sender = "Muhammad Ahmed", phone = "03001234567")).one?.name)
+    }
+
+    @Test fun aNumberWithNoNameDecides() {
+        assertEquals("Ahmed Ali", match(IncomingPayment(500.0, phone = "03001234567")).one?.name)
     }
 
     // ------------------------------------------------------------------ repeats

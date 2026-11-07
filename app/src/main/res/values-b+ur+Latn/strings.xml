@@ -3961,6 +3961,11 @@
     <string name="radar_state_on">On hai — is phone par.</string>
     <string name="radar_state_off">Band hai — on karein to har gahak ke safhe par nazar aayega.</string>
     <string name="paisa_switch_needs_access">Pehle upar se notification ki ijazat dein</string>
+    <string name="paisa_not_from_play">Play Store se install nahi hui: tick sirf tab karein jab yaqeen ho ke yeh asli app hai.</string>
+    <string name="paisa_private_chime">Jab phone lock ho, ya App Lock on ho, to sirf chhoti si ghanti bajti hai: koi naam ya raqam unchi awaaz mein nahi boli jati.</string>
+    <string name="paisa_notif_match_locked">Aap ke khate mein ek gahak se milta hai. Khol kar dekhein aur mehfooz karein.</string>
+    <string name="paisa_already_added">Yeh raqam (hawala %1$s) pehle hi darj ho chuki hai: %2$s, %3$s.</string>
+    <string name="paisa_notice_gone">Raqam ka yeh notification ab nahi khul sakta.</string>
     <string name="invoice_caption_total">Kul: %1$s</string>
     <string name="doc_desc_quotation">Farokht se pehle diye gaye daam. Abhi koi raqam wajib nahi.</string>
     <string name="doc_desc_proforma">Peshgi bill, maal jane se pehle adaigi ke liye.</string>

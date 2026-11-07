@@ -37,7 +37,8 @@ class PaymentVoiceActivity : BaseActivity() {
         // After the state is set (lesson 4): the listener only follows the owner's taps.
         switch.setOnCheckedChangeListener { _, on ->
             PaymentVoice.setOn(this, on)
-            if (on) askNotifications()
+            // Off lets go of the apps seen (7 Nov 2026, the review's P6): the list says so at once.
+            if (on) askNotifications() else renderApps()
         }
 
         findViewById<MaterialButton>(R.id.btnPayAccess).setOnClickListener {
@@ -90,31 +91,56 @@ class PaymentVoiceActivity : BaseActivity() {
         checkUrdu()
     }
 
-    /** JazzCash and Easypaisa first (shown even before they are seen), then the apps seen since, newest first. */
+    /** One app in the list: its name, its package, whether it is on this phone, and a warning when there is one. */
+    private class AppRow(val pkg: String, val label: String, val here: Boolean, val warning: String?)
+
+    /**
+     * JazzCash and Easypaisa first (shown even before they are seen), then the apps seen since, newest first. Each with
+     * its package name under it (7 Nov 2026, the review's P2: a look-alike can wear a wallet's name, not its package),
+     * and a wallet not put on the phone by the Play Store says so.
+     */
     private fun renderApps() {
         val list = findViewById<LinearLayout>(R.id.payAppsList)
         list.removeAllViews()
         val chosen = PaymentVoice.chosen(this)
         val rows = PaymentVoice.KNOWN.map { (pkg, name) ->
-            Triple(pkg, if (PaymentVoice.installed(this, pkg)) name else getString(R.string.paisa_not_installed, name), true)
-        } + PaymentVoice.seen(this).map { Triple(it.pkg, it.label, false) }
+            val here = PaymentVoice.installed(this, pkg)
+            AppRow(
+                pkg, if (here) name else getString(R.string.paisa_not_installed, name), here,
+                if (here && !PaymentVoice.fromPlay(this, pkg)) getString(R.string.paisa_not_from_play) else null
+            )
+        } + PaymentVoice.seen(this).map { AppRow(it.pkg, it.label, true, null) }
         val dp = resources.displayMetrics.density
-        for ((pkg, label, known) in rows) {
+        for (row in rows) {
             // An app not on this phone reads muted: ticked, it waits for the app to be installed (6 Nov 2026).
-            val here = !known || PaymentVoice.installed(this, pkg)
             val box = MaterialCheckBox(this).apply {
-                text = label
+                text = appText(row)
                 textSize = 15f
                 textAlignment = View.TEXT_ALIGNMENT_VIEW_START
-                setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, if (here) R.color.ink else R.color.text_muted))
+                setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, if (row.here) R.color.ink else R.color.text_muted))
                 minHeight = (48 * dp).toInt()
-                isChecked = pkg in chosen
-                setOnCheckedChangeListener { _, on -> PaymentVoice.setChosen(this@PaymentVoiceActivity, pkg, on) }
+                isChecked = row.pkg in chosen
+                setOnCheckedChangeListener { _, on -> PaymentVoice.setChosen(this@PaymentVoiceActivity, row.pkg, on) }
             }
             list.addView(box, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         }
         findViewById<View>(R.id.tvPayAppsNone).visibility = if (rows.size > PaymentVoice.KNOWN.size) View.GONE else View.VISIBLE
         com.innovation313.roshankhata.ui.TextFit.relax(list)
+    }
+
+    /** The app's name; under it, smaller, its package (left to right in every language) and any warning, in red. */
+    private fun appText(row: AppRow): CharSequence {
+        val text = android.text.SpannableStringBuilder(row.label)
+        fun line(words: String, colour: Int) {
+            val start = text.length
+            text.append('\n').append(words)
+            val flags = android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            text.setSpan(android.text.style.RelativeSizeSpan(0.8f), start, text.length, flags)
+            text.setSpan(android.text.style.ForegroundColorSpan(ContextCompat.getColor(this, colour)), start, text.length, flags)
+        }
+        line(com.innovation313.roshankhata.ui.Format.ltr(row.pkg), R.color.text_muted)
+        row.warning?.let { line(it, R.color.red_gave_text) }
+        return text
     }
 
     private fun speakerNow(): PaymentSpeaker = speaker ?: PaymentSpeaker(this).also { speaker = it }

@@ -4009,6 +4009,11 @@
     <string name="radar_state_on">चालू है — इसी फ़ोन पर।</string>
     <string name="radar_state_off">बंद है — चालू करें तो हर ग्राहक के पेज पर दिखेगा।</string>
     <string name="paisa_switch_needs_access">पहले ऊपर से नोटिफ़िकेशन की अनुमति दें</string>
+    <string name="paisa_not_from_play">Play Store से इंस्टॉल नहीं हुआ: टिक तभी करें जब पक्का हो कि यह असली ऐप है।</string>
+    <string name="paisa_private_chime">जब फ़ोन लॉक हो, या ऐप लॉक चालू हो, तो सिर्फ़ छोटी सी घंटी बजती है: कोई नाम या रकम ज़ोर से नहीं बोली जाती।</string>
+    <string name="paisa_notif_match_locked">आपके खाते में एक ग्राहक से मिलता है। खोलकर देखें और सेव करें।</string>
+    <string name="paisa_already_added">यह भुगतान (रेफ़रेंस %1$s) पहले ही जोड़ा जा चुका है: %2$s, %3$s।</string>
+    <string name="paisa_notice_gone">भुगतान का यह नोटिफ़िकेशन अब खोला नहीं जा सकता।</string>
     <string name="invoice_caption_total">कुल: %1$s</string>
     <string name="doc_desc_quotation">बिक्री से पहले दिए गए दाम। अभी कोई रक़म बाक़ी नहीं।</string>
     <string name="doc_desc_proforma">अग्रिम बिल, माल जाने से पहले भुगतान के लिए।</string>

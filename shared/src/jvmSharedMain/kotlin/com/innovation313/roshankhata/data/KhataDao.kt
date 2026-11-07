@@ -572,6 +572,28 @@ interface KhataDao {
         dayEnd: Long
     ): LedgerEntry?
 
+    /**
+     * The newest live entry already carrying this payment reference, and whose it is (7 Nov 2026, the payment
+     * voice's review, P3): a notice for a payment already in the book says so instead of opening a second form.
+     * Trimmed and without case, as the owner may have typed it; from [since] on, so the walk is the newest stretch
+     * of the (isDeleted, timestamp) index, never the whole book.
+     */
+    @Query(
+        "SELECT t.timestamp AS timestamp, p.name AS partyName FROM transactions t " +
+            "LEFT JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.isDeleted = 0 AND t.timestamp >= :since AND t.paymentRef IS NOT NULL " +
+            "AND LOWER(TRIM(t.paymentRef)) = LOWER(TRIM(:ref)) " +
+            "ORDER BY t.timestamp DESC LIMIT 1"
+    )
+    suspend fun entryWithPaymentRef(ref: String, since: Long): PaymentRefUse?
+
+    /** The same in the cashbook: when the newest live row there carrying this payment reference was written, or null. */
+    @Query(
+        "SELECT timestamp FROM cashbook WHERE isDeleted = 0 AND timestamp >= :since AND paymentRef IS NOT NULL " +
+            "AND LOWER(TRIM(paymentRef)) = LOWER(TRIM(:ref)) ORDER BY timestamp DESC LIMIT 1"
+    )
+    suspend fun cashWithPaymentRef(ref: String, since: Long): Long?
+
     /** Phone numbers already on the books, so a contact is never added twice. */
     @Query("SELECT phone FROM parties WHERE isDeleted = 0 AND phone IS NOT NULL")
     suspend fun existingPhones(): List<String>

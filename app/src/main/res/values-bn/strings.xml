@@ -4009,6 +4009,11 @@
     <string name="radar_state_on">চালু আছে — এই ফোনে।</string>
     <string name="radar_state_off">বন্ধ আছে — চালু করলে প্রতিটি গ্রাহকের পাতায় দেখা যাবে।</string>
     <string name="paisa_switch_needs_access">আগে ওপরে নোটিফিকেশনের অনুমতি দিন</string>
+    <string name="paisa_not_from_play">Play Store থেকে ইনস্টল করা হয়নি: এটি আসল অ্যাপ বলে নিশ্চিত হলেই টিক দিন।</string>
+    <string name="paisa_private_chime">ফোন লক থাকলে, বা অ্যাপ লক চালু থাকলে, শুধু একটি ছোট ঘণ্টা বাজে: কোনো নাম বা টাকার পরিমাণ জোরে বলা হয় না।</string>
+    <string name="paisa_notif_match_locked">আপনার খাতার একজন গ্রাহকের সঙ্গে মেলে। খুলে দেখে সেভ করুন।</string>
+    <string name="paisa_already_added">এই পেমেন্ট (রেফারেন্স %1$s) আগেই যোগ করা হয়েছে: %2$s, %3$s।</string>
+    <string name="paisa_notice_gone">টাকার এই নোটিফিকেশন আর খোলা যাবে না।</string>
     <string name="invoice_caption_total">মোট: %1$s</string>
     <string name="doc_desc_quotation">বিক্রির আগে দেওয়া দাম। এখনও কোনো টাকা পাওনা নয়।</string>
     <string name="doc_desc_proforma">অগ্রিম বিল, মাল যাওয়ার আগে পরিশোধের জন্য।</string>

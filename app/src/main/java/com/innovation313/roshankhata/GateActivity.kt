@@ -65,13 +65,19 @@ class GateActivity : BaseActivity() {
         // them plainly that no screen lock is set.
         val next = if (locked) LockActivity::class.java else MainActivity::class.java
 
+        // A payment notice's ticket (PaymentVoice) is never taken from the recent-apps list (7 Nov 2026, the payment
+        // voice's review, P3): Android hands a task its first intent again there, extras and all.
+        val fromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
+        val openArgs = runCatching { intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS) }.getOrNull()
+            ?.let { if (fromHistory) PaymentVoice.withoutTicket(it) else it }
+
         startActivity(
             Intent(this, next)
                 .putExtra(MainActivity.EXTRA_UNLOCKED, !locked)
                 // A notification's screen, carried through the lock unopened. Read with care (3 Nov 2026 audit,
                 // L24): this door is exported, and on Android 7-12 a stranger's unreadable extra threw here.
                 .putExtra(MainActivity.EXTRA_OPEN, runCatching { intent.getStringExtra(MainActivity.EXTRA_OPEN) }.getOrNull())
-                .putExtra(MainActivity.EXTRA_OPEN_ARGS, runCatching { intent.getBundleExtra(MainActivity.EXTRA_OPEN_ARGS) }.getOrNull())
+                .putExtra(MainActivity.EXTRA_OPEN_ARGS, openArgs)
                 .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, runCatching { intent.getLongExtra(MainActivity.EXTRA_OPEN_BUSINESS, -1L) }.getOrDefault(-1L))
         )
         finish()

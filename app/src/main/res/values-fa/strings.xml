@@ -3989,6 +3989,11 @@
     <string name="radar_state_on">روشن است — روی همین گوشی.</string>
     <string name="radar_state_off">خاموش است — روشنش کنید تا در صفحهٔ هر مشتری دیده شود.</string>
     <string name="paisa_switch_needs_access">اول اجازهٔ اعلان‌ها را بدهید (بالا)</string>
+    <string name="paisa_not_from_play">از Play Store نصب نشده است: فقط وقتی تیک بزنید که مطمئنید این اپ اصلی است.</string>
+    <string name="paisa_private_chime">وقتی گوشی قفل است، یا قفل برنامه روشن است، فقط یک صدای کوتاه پخش می‌شود: هیچ نام یا مبلغی بلند گفته نمی‌شود.</string>
+    <string name="paisa_notif_match_locked">با یک مشتری در دفتر شما می‌خواند. باز کنید، بررسی و ذخیره کنید.</string>
+    <string name="paisa_already_added">این پرداخت (شماره پیگیری %1$s) قبلاً ثبت شده است: %2$s، %3$s.</string>
+    <string name="paisa_notice_gone">این اعلان پرداخت دیگر باز نمی‌شود.</string>
     <string name="invoice_caption_total">جمع کل: %1$s</string>
     <string name="doc_desc_quotation">قیمت‌هایی که پیش از فروش پیشنهاد می‌دهید. هنوز بدهی‌ای نیست.</string>
     <string name="doc_desc_proforma">پیش‌فاکتور، برای پرداخت پیش از ارسال کالا.</string>

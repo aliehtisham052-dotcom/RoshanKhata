@@ -3989,6 +3989,11 @@
     <string name="radar_state_on">آن آهي — هن فون تي.</string>
     <string name="radar_state_off">بند آهي — آن ڪريو ته هر گراهڪ جي صفحي تي نظر ايندو.</string>
     <string name="paisa_switch_needs_access">پهريان مٿان نوٽيفڪيشن جي اجازت ڏيو</string>
+    <string name="paisa_not_from_play">Play Store تان انسٽال ٿيل ناهي: ٽڪ تڏهن ئي ڪريو جڏهن پڪ هجي ته هي اصل ايپ آهي.</string>
+    <string name="paisa_private_chime">جڏهن فون لاڪ هجي، يا ايپ لاڪ آن هجي، ته رڳو ننڍي گھنٽي وڄندي آهي: ڪوبه نالو يا رقم وڏي آواز ۾ نه ٻڌائي ويندي.</string>
+    <string name="paisa_notif_match_locked">توهان جي کاتي ۾ هڪ گراهڪ سان ملي ٿو. کولي ڏسو ۽ محفوظ ڪريو.</string>
+    <string name="paisa_already_added">هي رقم (حوالو %1$s) اڳ ۾ ئي درج ٿي چڪي آهي: %2$s، %3$s.</string>
+    <string name="paisa_notice_gone">رقم جو هي نوٽيفڪيشن هاڻي کولي نٿو سگهجي.</string>
     <string name="invoice_caption_total">ڪل: %1$s</string>
     <string name="doc_desc_quotation">وڪري کان اڳ ڏنل اگهه. اڃا ڪا رقم واجب ناهي.</string>
     <string name="doc_desc_proforma">اڳواٽ بل، مال وڃڻ کان اڳ ادائگي لاءِ.</string>

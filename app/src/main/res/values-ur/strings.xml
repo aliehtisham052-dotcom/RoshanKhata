@@ -3961,6 +3961,11 @@
     <string name="radar_state_on">آن ہے — اس فون پر۔</string>
     <string name="radar_state_off">بند ہے — آن کریں تو ہر گاہک کے صفحے پر نظر آئے گا۔</string>
     <string name="paisa_switch_needs_access">پہلے اوپر سے نوٹیفکیشن کی اجازت دیں</string>
+    <string name="paisa_not_from_play">Play Store سے انسٹال نہیں ہوئی: ٹک صرف تب کریں جب یقین ہو کہ یہ اصل ایپ ہے۔</string>
+    <string name="paisa_private_chime">جب فون لاک ہو، یا ایپ لاک آن ہو، تو صرف چھوٹی سی گھنٹی بجتی ہے: کوئی نام یا رقم اونچی آواز میں نہیں بولی جاتی۔</string>
+    <string name="paisa_notif_match_locked">آپ کے کھاتے میں ایک گاہک سے ملتا ہے۔ کھول کر دیکھیں اور محفوظ کریں۔</string>
+    <string name="paisa_already_added">یہ رقم (حوالہ %1$s) پہلے ہی درج ہو چکی ہے: %2$s، %3$s۔</string>
+    <string name="paisa_notice_gone">رقم کا یہ نوٹیفکیشن اب نہیں کھولا جا سکتا۔</string>
     <string name="invoice_caption_total">کل: %1$s</string>
     <string name="doc_desc_quotation">فروخت سے پہلے دیے گئے دام۔ ابھی کوئی رقم واجب نہیں۔</string>
     <string name="doc_desc_proforma">پیشگی بل، مال جانے سے پہلے ادائیگی کے لیے۔</string>

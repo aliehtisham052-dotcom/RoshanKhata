@@ -4217,6 +4217,11 @@
     <string name="radar_state_on">مفعّل — على هذا الهاتف.</string>
     <string name="radar_state_off">متوقف — فعّله ليظهر في صفحة كل عميل.</string>
     <string name="paisa_switch_needs_access">امنح إذن الإشعارات أولًا (في الأعلى)</string>
+    <string name="paisa_not_from_play">لم يُثبَّت من Play Store: حدّده فقط إذا كنت متأكدًا أنه التطبيق الحقيقي.</string>
+    <string name="paisa_private_chime">عندما يكون الهاتف مقفلًا، أو يكون قفل التطبيق مفعّلًا، تُسمع نغمة قصيرة فقط: لا يُقال أي اسم أو مبلغ بصوت عالٍ.</string>
+    <string name="paisa_notif_match_locked">يطابق زبونًا في دفترك. افتحه لتراجعه ثم احفظ.</string>
+    <string name="paisa_already_added">هذه الدفعة (المرجع %1$s) مضافة من قبل: %2$s، %3$s.</string>
+    <string name="paisa_notice_gone">لم يعد من الممكن فتح إشعار الدفعة هذا.</string>
     <string name="invoice_caption_total">الإجمالي: %1$s</string>
     <string name="doc_desc_quotation">أسعار تعرضها قبل البيع. لا مبلغ مستحق بعد.</string>
     <string name="doc_desc_proforma">فاتورة مسبقة، تُدفع قبل خروج البضاعة.</string>

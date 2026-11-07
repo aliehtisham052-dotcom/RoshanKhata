@@ -4174,6 +4174,11 @@
     <string name="radar_state_on">On — on this phone.</string>
     <string name="radar_state_off">Off — turn it on to see it on each customer\'s page.</string>
     <string name="paisa_switch_needs_access">Give notification access first (above)</string>
+    <string name="paisa_not_from_play">Not installed from the Play Store: tick it only if you are sure it is the real app.</string>
+    <string name="paisa_private_chime">While the phone is locked, or App Lock is on, only the short sound plays: no name or amount is said aloud.</string>
+    <string name="paisa_notif_match_locked">Matches a customer in your khata. Open it to check and save.</string>
+    <string name="paisa_already_added">This payment (Ref %1$s) was already added: %2$s, %3$s.</string>
+    <string name="paisa_notice_gone">This payment notice can no longer be opened.</string>
     <string name="invoice_caption_total">Total: %1$s</string>
     <string name="doc_desc_quotation">Prices you offer before a sale. Nothing is owed yet.</string>
     <string name="doc_desc_proforma">An advance bill, to be paid before the goods go.</string>

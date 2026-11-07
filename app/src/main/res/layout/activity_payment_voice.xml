@@ -192,6 +192,17 @@
                     android:textColor="@color/text_muted"
                     android:textSize="13sp" />
 
+                <!-- 7 Nov 2026, the review's P6: why a locked phone only chimes, said where the voice is chosen. -->
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvPayPrivate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/paisa_private_chime"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPaySpeech"
                     style="@style/BackupOutlineButton"
