@@ -55,9 +55,13 @@ define('BOOK_BYTES', limit('BOOK_BYTES', 16 * 1048576));        // bytes one boo
 define('DAY_BYTES', limit('DAY_BYTES', 32 * 1048576));          // bytes one book may leave in a UTC day
 define('MAX_STORE_BYTES', limit('MAX_STORE_BYTES', 1073741824)); // all books' files together
 define('DEVICE_IDLE_MS', limit('DEVICE_IDLE_MS', 30 * 86400000)); // a device not seen this long goes
-define('SWEEP_EVERY', 6 * 3600);                                 // seconds between idle-book sweeps
+define('SWEEP_EVERY', limit('SWEEP_EVERY', 6 * 3600));          // seconds between idle-book sweeps (the tests: 0)
 // Waris ki Chaabi (heir access, 4 Nov 2026): one SQLite per vault in $store/waris/, never touched by the books'
-// sweeps (they read only $store/*.sqlite); counted in MAX_STORE_BYTES with the books.
+// sweeps (they read only $store/*.sqlite). Since 7 Nov 2026 (R1) the vaults' bytes are their own, WARIS_BYTES, never
+// counted in MAX_STORE_BYTES: anyone may make a vault, and the books' parcels must never be refused for them.
+define('WARIS_BYTES', limit('WARIS_BYTES', 256 * 1048576));      // every vault's files together
+define('NEW_VAULTS_DAY', limit('NEW_VAULTS_DAY', 20));           // new vaults taken in 24 hours, all together
+define('WARIS_JUNK_DAYS', 14);                                   // a vault still bare (no heir, no snapshot) this many DAYs after its setup goes
 define('WARIS_DAY_MS', waris_day());                             // one DAY; only the server's environment changes it
 define('WARIS_CHUNK', 524288);                                   // bytes of one snapshot chunk
 define('WARIS_SNAP', 8388608);                                   // bytes of one snapshot version, all chunks
@@ -180,28 +184,44 @@ function touch_seen($db, $device, $now, $always) {
 function capacity($why) { return in_array($why, ['day-limit', 'day-bytes', 'book-full', 'full'], true); }
 
 /**
- * Bytes of every book's files together, kept in $store/.size and counted again from the files at most every
- * ten minutes (the files are what the hosting account's quota measures).
+ * Bytes of every book's files together, kept in $store/.size-books and counted again from the files at most every
+ * ten minutes (the files are what the hosting account's quota measures). The books' alone: the heirs' vaults
+ * are counted apart (waris_bytes), so a vault never refuses a book's parcel (7 Nov 2026, R1). The file's name is
+ * new with that: the old .size, which held the vaults too, is never read again.
  */
 function store_bytes($store, $fresh = false) {
-    $f = $store . '/.size';
-    $m = @filemtime($f);
+    return kept_bytes($store . '/.size-books', $store . '/*.sqlite*', $fresh);
+}
+
+/** Bytes of every Waris vault's files together (waris/), kept in waris/.size the same way: WARIS_BYTES' count. */
+function waris_bytes($store, $fresh = false) {
+    if (!is_dir($store . '/waris')) @mkdir($store . '/waris', 0700, true);
+    return kept_bytes($store . '/waris/.size', $store . '/waris/*.sqlite*', $fresh);
+}
+
+/** Bytes of the files matching $pattern, kept in $file and counted again from them at most every ten minutes. */
+function kept_bytes($file, $pattern, $fresh) {
+    $m = @filemtime($file);
     if (!$fresh && $m !== false && time() - $m < 600) {
-        $v = trim((string)@file_get_contents($f));
+        $v = trim((string)@file_get_contents($file));
         if (ctype_digit($v)) return (int)$v;
     }
     $n = 0;
-    // The books' files and the Waris vaults' files (waris/) together: both are on the account's quota.
-    foreach (array_merge(glob($store . '/*.sqlite*') ?: [], glob($store . '/waris/*.sqlite*') ?: []) as $x) {
+    foreach (glob($pattern) ?: [] as $x) {
         $z = @filesize($x); if ($z !== false) $n += $z;
     }
-    @file_put_contents($f, (string)$n, LOCK_EX);
+    @file_put_contents($file, (string)$n, LOCK_EX);
     return $n;
 }
 
-/** A parcel written: the kept total grows with it until the next count from the files. */
-function store_grew($store, $len) {
-    $h = @fopen($store . '/.size', 'c+');
+/** A parcel written: the books' kept total grows with it until the next count from the files. */
+function store_grew($store, $len) { kept_grew($store . '/.size-books', $len); }
+
+/** A vault's chunk written: the vaults' kept total grows with it until the next count from the files. */
+function waris_grew($store, $len) { kept_grew($store . '/waris/.size', $len); }
+
+function kept_grew($file, $len) {
+    $h = @fopen($file, 'c+');
     if ($h === false) return;
     if (flock($h, LOCK_EX)) {
         $v = trim((string)stream_get_contents($h));
@@ -281,15 +301,29 @@ function sweep_idle($store, $now, $force = false) {
             @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
         }
     }
-    // Waris vaults are never a book's: only a vault with no owner or heir call for WARIS_IDLE_DAYS goes (every
-    // call writes the vault's file, so its time is the last call's).
+    // Waris vaults are never a book's: a vault with no owner or heir call for WARIS_IDLE_DAYS goes (every call
+    // writes the vault's file, so its time is the last call's).
     foreach (glob($store . '/waris/w-*.sqlite') ?: [] as $f) {
         $m = @filemtime($f);
-        if ($m !== false && ($now / 1000) - $m > WARIS_IDLE_DAYS * 86400) {
-            @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
+        if ($m !== false && ($now / 1000) - $m > WARIS_IDLE_DAYS * 86400) w_drop($store, substr(basename($f, '.sqlite'), 2));
+    }
+    // And a vault still bare WARIS_JUNK_DAYS DAYs after its setup — no heir, no snapshot — is junk (7 Nov 2026, R1:
+    // anyone may make one). Only the bare marks are read; each vault is looked at before it goes.
+    foreach (glob($store . '/waris/bare/*') ?: [] as $mark) {
+        $m = @filemtime($mark);
+        if ($m === false || $now - $m * 1000 < WARIS_JUNK_DAYS * WARIS_DAY_MS) continue;
+        $vault = basename($mark);
+        try {
+            $db = preg_match('/^[0-9a-f]{32}$/', $vault) ? w_open($store, $vault, false) : null;
+            $bare = $db !== null && meta($db, 'snap_v') === null && (int)one($db, 'SELECT COUNT(*) FROM heirs') === 0;
+            $db = null;
+            if ($bare) w_drop($store, $vault); else @unlink($mark);
+        } catch (Throwable $e) {
+            error_log('rk-relay waris sweep: ' . $e->getMessage());
         }
     }
     store_bytes($store, true);
+    waris_bytes($store, true);
 }
 
 /**
@@ -325,6 +359,45 @@ function w_open($store, $vault, $create) {
     $db->exec('CREATE TABLE IF NOT EXISTS chunks (v INTEGER NOT NULL, i INTEGER NOT NULL, n INTEGER NOT NULL,
         body BLOB NOT NULL, PRIMARY KEY (v, i))');
     return $db;
+}
+
+/**
+ * A vault's mark (7 Nov 2026, R1), an empty file named by the vault: waris/new/ (made at its setup: the day's count of
+ * new vaults, as new_books_today) and waris/bare/ (no heir and no snapshot yet: the junk sweep's list, dated from the
+ * setup). Both go with the vault.
+ */
+function w_mark($store, $kind, $vault) {
+    $dir = $store . '/waris/' . $kind;
+    if (!is_dir($dir)) @mkdir($dir, 0700, true);
+    return $dir . '/' . $vault;
+}
+
+/** Vaults made in the last 24 hours that are still here (older marks go). */
+function new_vaults_today($store) {
+    $n = 0;
+    foreach (glob($store . '/waris/new/*') ?: [] as $f) {
+        $m = @filemtime($f);
+        if ($m === false) continue;
+        if (time() - $m < 86400) $n++; else @unlink($f);
+    }
+    return $n;
+}
+
+/** A vault goes: its files and its marks. */
+function w_drop($store, $vault) {
+    $f = $store . '/waris/w-' . $vault . '.sqlite';
+    @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
+    @unlink($store . '/waris/new/' . $vault);
+    @unlink($store . '/waris/bare/' . $vault);
+}
+
+/**
+ * Whether the disk may take $len more bytes of a vault: it keeps MIN_FREE and all the books may still grow to
+ * (MAX_STORE_BYTES), so a vault never takes the books' room (7 Nov 2026, R1).
+ */
+function w_disk($store, $len) {
+    $free = @disk_free_space($store);
+    return $free === false || $free - $len >= MIN_FREE + max(0, MAX_STORE_BYTES - store_bytes($store));
 }
 
 function w_int_or_null($x) { return $x === null ? null : (int)$x; }
@@ -403,12 +476,16 @@ function waris($store, $rest) {
         $db = w_open($store, $vault, false);
         if ($db === null) {
             if ($route !== 'setup') refuse(404, 'unknown');
-            // A new vault is taken only while the server has room (vaults and books share the store's bytes).
+            // A new vault, as a new book: while the server holds fewer than MAX_VAULTS, the vaults' own bytes have room
+            // (never the books', 7 Nov 2026, R1), and fewer than NEW_VAULTS_DAY were made in 24 hours (anyone may make one).
             if (count(glob($store . '/waris/w-*.sqlite') ?: []) >= MAX_VAULTS) refuse(507, 'full');
-            if (store_bytes($store) >= MAX_STORE_BYTES) refuse(507, 'full');
-            $free = @disk_free_space($store);
-            if ($free !== false && $free < MIN_FREE) refuse(507, 'full');
+            if (waris_bytes($store) >= WARIS_BYTES || !w_disk($store, 0)) refuse(507, 'waris-full');
+            if (new_vaults_today($store) >= NEW_VAULTS_DAY) refuse(429, 'waris-day');
             $db = w_open($store, $vault, true);
+            // Made today (the day's count) and bare until an heir or a snapshot comes (the junk sweep's list): marked as
+            // the file is made, so even a setup cut short leaves nothing the sweep cannot find.
+            @touch(w_mark($store, 'new', $vault));
+            @touch(w_mark($store, 'bare', $vault));
         }
         $db->exec('BEGIN IMMEDIATE');
         $no = function ($code, $body) use ($db) {
@@ -473,8 +550,8 @@ function waris($store, $rest) {
                 if ($mine + $len > WARIS_SNAP) $no(413, ['why' => 'too-big']);
                 $all = (int)one($db, 'SELECT COALESCE(SUM(length(body)), 0) FROM chunks WHERE NOT (v = ? AND i = ?)', [$v, $i]);
                 if ($all + $len > 2 * WARIS_SNAP) $no(413, ['why' => 'too-big']);
-                $free = @disk_free_space($store);
-                if (($free !== false && $free < MIN_FREE) || store_bytes($store) + $len > MAX_STORE_BYTES) $no(507, ['why' => 'full']);
+                // The vaults' own bytes, never the books' (7 Nov 2026, R1).
+                if (waris_bytes($store) + $len > WARIS_BYTES || !w_disk($store, $len)) $no(507, ['why' => 'waris-full']);
                 $s = $db->prepare('INSERT OR REPLACE INTO chunks (v, i, n, body) VALUES (?, ?, ?, ?)');
                 $s->bindValue(1, $v, PDO::PARAM_INT);
                 $s->bindValue(2, $i, PDO::PARAM_INT);
@@ -490,7 +567,9 @@ function waris($store, $rest) {
                     $db->prepare('DELETE FROM chunks WHERE v != ?')->execute([$v]);
                 }
                 $db->exec('COMMIT');
-                store_grew($store, $len);
+                waris_grew($store, $len);
+                // A snapshot: the vault is no longer bare (an unfinished version is none).
+                if ($complete) @unlink($store . '/waris/bare/' . $vault);
                 answer(200, ['ok' => true, 'complete' => $complete]);
             }
             case 'heir-put': {
@@ -510,11 +589,19 @@ function waris($store, $rest) {
                     $db->prepare('UPDATE heirs SET pass = ?, box = ?, wait = ?, last_seen = NULL, asked_at = NULL,
                         rejected_at = NULL, allowed_at = NULL WHERE hid = ?')->execute([$ph, $box, $wait, $hid]);
                 }
-                $done([]);
+                $db->exec('COMMIT');
+                // An heir: the vault is no longer bare.
+                @unlink($store . '/waris/bare/' . $vault);
+                answer(200, ['ok' => true]);
             }
             case 'heir-delete': {
                 $db->prepare('DELETE FROM heirs WHERE hid = ?')->execute([$hid]);
-                $done([]);
+                // Its last heir gone and no snapshot: bare again, dated from its setup (the junk sweep's rule).
+                $bare = (int)one($db, 'SELECT COUNT(*) FROM heirs') === 0 && meta($db, 'snap_v') === null;
+                $created = (int)(meta($db, 'created') ?? $now);
+                $db->exec('COMMIT');
+                if ($bare) @touch(w_mark($store, 'bare', $vault), intdiv($created, 1000));
+                answer(200, ['ok' => true]);
             }
             case 'status': {
                 $rows = $db->query('SELECT * FROM heirs ORDER BY hid')->fetchAll(PDO::FETCH_ASSOC);
@@ -578,9 +665,8 @@ function waris($store, $rest) {
             case 'vault-delete': {
                 $db->exec('COMMIT');
                 $db = null;
-                $f = $store . '/waris/w-' . $vault . '.sqlite';
-                @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
-                store_bytes($store, true);
+                w_drop($store, $vault);
+                waris_bytes($store, true);
                 answer(200, ['ok' => true]);
             }
         }

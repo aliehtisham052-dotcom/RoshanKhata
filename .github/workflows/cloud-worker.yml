@@ -54,10 +54,15 @@ jobs:
           # The account-wide cap through the !ledger (phase 2, 23 Oct 2026), lowered to 300,000 bytes.
           npx wrangler dev --port 8790 --inspector-port 9232 --ip 127.0.0.1 --persist-to .wrangler/store \
             --var ACCOUNT_BYTES:300000 > wr-store.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && curl -sf 127.0.0.1:8790/v1/health && break; sleep 1; done
+          # The heirs' vaults' own limits (7 Nov 2026): 6 new vaults a day, their own 3,000,000 bytes beside the books'
+          # 2,000,000, and a DAY of 500 ms (a bare vault's alarm takes it 7 s after its setup).
+          npx wrangler dev --port 8791 --inspector-port 9233 --ip 127.0.0.1 --persist-to .wrangler/wlimits \
+            --var NEW_VAULTS_DAY:6 --var WARIS_BYTES:3000000 --var ACCOUNT_BYTES:2000000 --var WARIS_DAY_MS:500 > wr-wlimits.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && curl -sf 127.0.0.1:8790/v1/health && curl -sf 127.0.0.1:8791/v1/health && break; sleep 1; done
           python3 ../../scripts/test_relay.py http://127.0.0.1:8788 --caps
           python3 ../../scripts/test_relay.py http://127.0.0.1:8789 --idle
           python3 ../../scripts/test_relay.py http://127.0.0.1:8790 --store
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8791 --wlimits
 
   deploy:
     needs: check

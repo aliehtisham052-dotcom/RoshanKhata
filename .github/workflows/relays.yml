@@ -48,14 +48,19 @@ jobs:
           for i in $(seq 1 30); do curl -sf 127.0.0.1:8098/r/v1/health && break; sleep 0.3; done
           python3 scripts/test_relay.py http://127.0.0.1:8098/r
           # The limits, lowered (23 Oct 2026): a refused parcel still brings the page, bytes are counted, idle devices go.
-          C=$(mktemp -d); I=$(mktemp -d); W=$(mktemp -d)
+          C=$(mktemp -d); I=$(mktemp -d); W=$(mktemp -d); L=$(mktemp -d)
           RK_RELAY_DATA=$C RK_RELAY_DAY_LIMIT=4 RK_RELAY_BOOK_BYTES=3000 RK_RELAY_DAY_BYTES=7000 php -S 127.0.0.1:8099 web/relay/index.php > php-caps.log 2>&1 &
           RK_RELAY_DATA=$I RK_RELAY_DEVICE_IDLE_MS=1500 php -S 127.0.0.1:8100 web/relay/index.php > php-idle.log 2>&1 &
           RK_RELAY_DATA=$W RK_RELAY_MAX_STORE_BYTES=300000 php -S 127.0.0.1:8101 web/relay/index.php > php-store.log 2>&1 &
-          for i in $(seq 1 30); do curl -sf 127.0.0.1:8099/r/v1/health && curl -sf 127.0.0.1:8100/r/v1/health && curl -sf 127.0.0.1:8101/r/v1/health && break; sleep 0.3; done
+          # The heirs' vaults' own limits (7 Nov 2026): 6 new vaults a day, their own 3,000,000 bytes beside the books'
+          # 2,000,000, a DAY of 500 ms (a bare vault is junk 7 s after its setup) and the sweep at every health call.
+          RK_RELAY_DATA=$L RK_RELAY_NEW_VAULTS_DAY=6 RK_RELAY_WARIS_BYTES=3000000 RK_RELAY_MAX_STORE_BYTES=2000000 \
+            RK_RELAY_SWEEP_EVERY=0 WARIS_DAY_MS=500 php -S 127.0.0.1:8102 web/relay/index.php > php-wlimits.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf 127.0.0.1:8099/r/v1/health && curl -sf 127.0.0.1:8100/r/v1/health && curl -sf 127.0.0.1:8101/r/v1/health && curl -sf 127.0.0.1:8102/r/v1/health && break; sleep 0.3; done
           python3 scripts/test_relay.py http://127.0.0.1:8099/r --caps
           python3 scripts/test_relay.py http://127.0.0.1:8100/r --idle
           python3 scripts/test_relay.py http://127.0.0.1:8101/r --store
+          python3 scripts/test_relay.py http://127.0.0.1:8102/r --wlimits
           # The owner's switch: an empty "halt" file stops every call but health.
           touch $S/halt
           curl -s 127.0.0.1:8098/r/v1/health | grep -q '"live":false'
@@ -99,12 +104,14 @@ jobs:
           for i in $(seq 1 60); do curl -sf 127.0.0.1:8000/daakiya/v1/health && break; sleep 1; done
           python3 scripts/test_relay.py http://127.0.0.1:8000/daakiya
           # The limits, lowered (23 Oct 2026): the same function again with RK_* set, one run each.
-          for mode in caps idle store; do
+          for mode in caps idle store wlimits; do
             kill $(jobs -p) 2>/dev/null || true; pkill -f "daakiya/[i]ndex.ts" || true; sleep 2
-            unset RK_DAY_LIMIT RK_BOOK_BYTES RK_DAY_BYTES RK_DEVICE_IDLE_MS RK_STORE_BYTES
+            unset RK_DAY_LIMIT RK_BOOK_BYTES RK_DAY_BYTES RK_DEVICE_IDLE_MS RK_STORE_BYTES RK_NEW_VAULTS_DAY RK_WARIS_BYTES WARIS_DAY_MS RK_KEEP_SECRET
             if [ $mode = caps ]; then export RK_DAY_LIMIT=4 RK_BOOK_BYTES=3000 RK_DAY_BYTES=7000
             elif [ $mode = idle ]; then export RK_DEVICE_IDLE_MS=1500
-            else export RK_STORE_BYTES=300000; fi
+            elif [ $mode = store ]; then export RK_STORE_BYTES=300000
+            # The heirs' vaults' own limits (7 Nov 2026); the test sends the keep-alive pass back to run the daily sweep.
+            else export RK_NEW_VAULTS_DAY=6 RK_WARIS_BYTES=3000000 RK_STORE_BYTES=2000000 WARIS_DAY_MS=500 RK_KEEP_SECRET=$(openssl rand -hex 16); fi
             deno run --allow-net --allow-env --allow-read supabase/functions/daakiya/index.ts > deno-$mode.log 2>&1 &
             for i in $(seq 1 60); do curl -sf 127.0.0.1:8000/daakiya/v1/health && break; sleep 1; done
             python3 scripts/test_relay.py http://127.0.0.1:8000/daakiya --$mode

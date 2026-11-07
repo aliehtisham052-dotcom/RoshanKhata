@@ -54,6 +54,10 @@ export interface Env {
   WARIS_DAY_MS?: string;
   /** Vaults the account holds at most (default MAX_VAULTS below). */
   MAX_VAULTS?: string;
+  /** Bytes every vault's chunks may hold together, apart from the books' (default WARIS_BYTES below). */
+  WARIS_BYTES?: string;
+  /** New vaults the ledger takes in 24 hours (default NEW_VAULTS_DAY below). */
+  NEW_VAULTS_DAY?: string;
 }
 
 /** A limit from the Worker's vars, else its default. */
@@ -76,6 +80,7 @@ const PRUNE_EVERY_MS = 6 * 3600_000;
  * SQL storage is 5 GB (4.66 GiB) for the whole account, and BOOK_BYTES alone still let anyone opening fresh books
  * fill 100 books x 16 MiB a day. Past it the "!ledger" refuses new books and every book refuses parcels, 507 "full"
  * (the hosting's word for its own store); taking and acknowledging still work, so devices empty what is there.
+ * The books' bytes alone: Waris vaults have their own, WARIS_BYTES (7 Nov 2026, R1).
  */
 const ACCOUNT_BYTES = 4 * 1024 * 1024 * 1024;
 /**
@@ -121,6 +126,14 @@ const NEW_BOOKS_DAY = 100;
 const MAX_BOOKS = 20_000;
 /** Waris vaults the ledger takes (each holds at most 2 x 8 MiB of chunks while a version replaces another). */
 const MAX_VAULTS = 20_000;
+/**
+ * Bytes every vault's chunks may hold together (7 Nov 2026, R1: anyone may make a vault and fill it). Kept by the
+ * "!ledger" apart from the books' bytes, so vaults never make the account "full" for a book: ACCOUNT_BYTES (4 GiB)
+ * and this (512 MiB) together stay within the free plan's 5 GB (4.66 GiB). Past it: 507 "waris-full".
+ */
+const WARIS_BYTES = 512 * 1024 * 1024;
+/** New vaults the ledger takes in 24 hours (R1), as NEW_BOOKS_DAY for books: past it, 429 "waris-day". */
+const NEW_VAULTS_DAY = 100;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -147,6 +160,13 @@ export default {
       if (r instanceof Response) {
         await readCapped(request, 0).catch(() => null);
         return r;
+      }
+      // An heir's body longer than it may be is refused by its declared length before any object is reached (R2); as
+      // every refusal at this door it is read through and dropped, nothing kept (cancelled, wrangler dev reset the
+      // connection under the answer).
+      if (r.route === "heir-put" && Number(request.headers.get("content-length") ?? "0") > WARIS_HEIR_BODY) {
+        await readCapped(request, 0).catch(() => null);
+        return wNo(400, "bad");
       }
       return env.BOOKS.get(env.BOOKS.idFromName("w:" + r.vault)).fetch(request);
     }
@@ -228,8 +248,12 @@ const WARIS_SNAP = 8_388_608;
 const WARIS_MAX_N = 16;
 const WARIS_HEIRS = 5;
 const WARIS_BOX = 4096;
+/** An heir's JSON body at most (a box of 4,096 base64 characters and three fields), as the other relays (R2). */
+const WARIS_HEIR_BODY = 16 * 1024;
 /** A vault with no owner or heir call this long may go (the protocol's retention; the vault's own alarm). */
 const WARIS_IDLE_MS = 1095 * 86_400_000;
+/** A vault still bare (no heir, no snapshot) this many DAYs after its setup is junk and goes (7 Nov 2026, R1). */
+const WARIS_JUNK_DAYS = 14;
 const HEX16 = /^[0-9a-f]{16}$/;
 const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
 
@@ -492,14 +516,21 @@ export class Daakiya extends DurableObject<Env> {
       // A ledger from before the sizes gains their column (an older book counts at the floor until it reports).
       const made = this.sql.exec<{ sql: string }>(`SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'books'`).one().sql;
       if (!/\bbytes\b/.test(made)) this.sql.exec(`ALTER TABLE books ADD COLUMN bytes INTEGER NOT NULL DEFAULT 0`);
-      // Waris vaults (4 Nov 2026): a table of their own, so MAX_BOOKS and the day's new books never count them;
-      // their chunk bytes are in the account's 'bytes' with the books'.
+      // Waris vaults (4 Nov 2026): a table of their own, so MAX_BOOKS and the day's new books never count them.
+      // Since 7 Nov 2026 (R1) their chunk bytes are counted apart too ('wbytes', never the books' 'bytes'), the
+      // day's new vaults read an index, and their total is kept in a row, as the books'.
       this.sql.exec(`CREATE TABLE IF NOT EXISTS vaults (vault TEXT PRIMARY KEY, at INTEGER NOT NULL, bytes INTEGER NOT NULL DEFAULT 0)`);
+      this.sql.exec(`CREATE INDEX IF NOT EXISTS vaults_at ON vaults (at)`);
+      if (this.sql.exec(`SELECT 1 FROM counts WHERE k = 'wbytes'`).toArray().length === 0) {
+        // A ledger from before kept the vaults' bytes in 'bytes': both are counted again from the rows, apart.
+        this.sql.exec(`DELETE FROM counts WHERE k = 'bytes'`);
+        this.ledgerWarisBytes();
+      }
       this.ledgerReady = true;
     }
-    const cap = limit(this.env.ACCOUNT_BYTES, ACCOUNT_BYTES);
     const path = url.pathname.slice(1);
-    if (path.startsWith("vault/") || path.startsWith("vsize/")) return this.ledgerVaults(path, url, method, cap);
+    if (path.startsWith("vault/") || path.startsWith("vsize/")) return this.ledgerVaults(path, url, method);
+    const cap = limit(this.env.ACCOUNT_BYTES, ACCOUNT_BYTES);
     if (path.startsWith("size/")) {
       const book = path.slice(5);
       const raw = Number(url.searchParams.get("bytes"));
@@ -543,28 +574,35 @@ export class Daakiya extends DurableObject<Env> {
   }
 
   /**
-   * The ledger's vaults (Waris, 4 Nov 2026): POST vault/<v> counts a new vault (507 "full" past MAX_VAULTS or a
-   * full account), DELETE vault/<v> forgets it, POST vsize/<v>?bytes=n[&grow=1] keeps its chunk bytes — refused
-   * 507 when growing would pass the account's cap. A vault's bytes are its chunks' (no floor: an empty vault is a
-   * few rows).
+   * The ledger's vaults (Waris, 4 Nov 2026): POST vault/<v> counts a new vault, as a new book is counted: 507 "full"
+   * past MAX_VAULTS, 507 "waris-full" past the vaults' own bytes, 429 "waris-day" past the day's new vaults (7 Nov
+   * 2026, R1); a vault already here is never refused. DELETE vault/<v> forgets it; POST vsize/<v>?bytes=n[&grow=1]
+   * keeps its chunk bytes — refused 507 "waris-full" when growing would pass WARIS_BYTES. A vault's bytes are its
+   * chunks' (no floor: an empty vault is a few rows), and never the books' ACCOUNT_BYTES.
    */
-  private ledgerVaults(path: string, url: URL, method: string, cap: number): Response {
+  private ledgerVaults(path: string, url: URL, method: string): Response {
     const vault = path.slice(6);
     if (!HEX32.test(vault)) return refuse(400, "bad-vault");
+    const cap = limit(this.env.WARIS_BYTES, WARIS_BYTES);
     const row = this.sql.exec<{ bytes: number }>(`SELECT bytes FROM vaults WHERE vault = ?`, vault).toArray();
-    const total = this.ledgerBytes();
+    const total = this.ledgerWarisBytes();
     if (path.startsWith("vault/")) {
       if (method === "DELETE") {
         if (row.length) {
           this.sql.exec(`DELETE FROM vaults WHERE vault = ?`, vault);
-          this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, total - row[0].bytes));
+          this.sql.exec(`UPDATE counts SET n = MAX(0, n - 1) WHERE k = 'vaults'`);
+          this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'wbytes'`, Math.max(0, total - row[0].bytes));
         }
         return json({ ok: true });
       }
       if (row.length) return json({ ok: true });
-      const count = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM vaults`).one().n;
-      if (count >= limit(this.env.MAX_VAULTS, MAX_VAULTS) || total >= cap) return wNo(507, "full");
-      this.sql.exec(`INSERT INTO vaults (vault, at, bytes) VALUES (?, ?, 0)`, vault, Date.now());
+      if (this.ledgerVaultCount() >= limit(this.env.MAX_VAULTS, MAX_VAULTS)) return wNo(507, "full");
+      if (total >= cap) return wNo(507, "waris-full");
+      const now = Date.now();
+      const today = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM vaults WHERE at > ?`, now - 86_400_000).one().n;
+      if (today >= limit(this.env.NEW_VAULTS_DAY, NEW_VAULTS_DAY)) return wNo(429, "waris-day");
+      this.sql.exec(`INSERT INTO vaults (vault, at, bytes) VALUES (?, ?, 0)`, vault, now);
+      this.sql.exec(`UPDATE counts SET n = n + 1 WHERE k = 'vaults'`);
       return json({ ok: true });
     }
     const raw = Number(url.searchParams.get("bytes"));
@@ -572,20 +610,39 @@ export class Daakiya extends DurableObject<Env> {
     const bytes = Math.floor(raw);
     const old = row.length ? row[0].bytes : 0;
     const next = total - old + bytes;
-    if (url.searchParams.get("grow") === "1" && bytes > old && next > cap) return wNo(507, "full");
-    if (!row.length) this.sql.exec(`INSERT INTO vaults (vault, at, bytes) VALUES (?, ?, ?)`, vault, Date.now(), bytes);
-    else if (old !== bytes) this.sql.exec(`UPDATE vaults SET bytes = ? WHERE vault = ?`, bytes, vault);
-    if (next !== total) this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, next));
+    if (url.searchParams.get("grow") === "1" && bytes > old && next > cap) return wNo(507, "waris-full");
+    if (!row.length) {
+      this.sql.exec(`INSERT INTO vaults (vault, at, bytes) VALUES (?, ?, ?)`, vault, Date.now(), bytes);
+      this.sql.exec(`UPDATE counts SET n = n + 1 WHERE k = 'vaults'`);
+    } else if (old !== bytes) this.sql.exec(`UPDATE vaults SET bytes = ? WHERE vault = ?`, bytes, vault);
+    if (next !== total) this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'wbytes'`, Math.max(0, next));
     return json({ ok: true, full: next >= cap });
   }
 
-  /** The account's bytes as the ledger counts them (each book at no less than BOOK_FLOOR, and every vault's chunks); counted once from the rows. */
+  /** The books' bytes as the ledger counts them (each book at no less than BOOK_FLOOR); counted once from the rows. */
   private ledgerBytes(): number {
     const r = this.sql.exec<{ n: number }>(`SELECT n FROM counts WHERE k = 'bytes'`).toArray();
     if (r.length) return r[0].n;
-    const n = this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(MAX(bytes, ?)), 0) AS n FROM books`, BOOK_FLOOR).one().n
-      + this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(bytes), 0) AS n FROM vaults`).one().n;
+    const n = this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(MAX(bytes, ?)), 0) AS n FROM books`, BOOK_FLOOR).one().n;
     this.sql.exec(`INSERT INTO counts (k, n) VALUES ('bytes', ?)`, n);
+    return n;
+  }
+
+  /** Every vault's chunk bytes together, apart from the books' (R1); counted once from the rows. */
+  private ledgerWarisBytes(): number {
+    const r = this.sql.exec<{ n: number }>(`SELECT n FROM counts WHERE k = 'wbytes'`).toArray();
+    if (r.length) return r[0].n;
+    const n = this.sql.exec<{ n: number }>(`SELECT COALESCE(SUM(bytes), 0) AS n FROM vaults`).one().n;
+    this.sql.exec(`INSERT INTO counts (k, n) VALUES ('wbytes', ?)`, n);
+    return n;
+  }
+
+  /** The vaults the ledger holds, kept in one row as the books' total; counted once from the rows. */
+  private ledgerVaultCount(): number {
+    const r = this.sql.exec<{ n: number }>(`SELECT n FROM counts WHERE k = 'vaults'`).toArray();
+    if (r.length) return r[0].n;
+    const n = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM vaults`).one().n;
+    this.sql.exec(`INSERT INTO counts (k, n) VALUES ('vaults', ?)`, n);
     return n;
   }
 
@@ -897,7 +954,8 @@ export class Daakiya extends DurableObject<Env> {
   // A vault object is named "w:" + vault and holds only w_meta, w_heirs and w_chunks (never meta/devices/parcels),
   // so a book's checks (haveTables) refuse it and a book's prune, alarm and forget never run on it; its alarm is
   // its own (vaultAlarm). The ledger keeps vaults in a table of their own: never counted among MAX_BOOKS or the
-  // day's new books, but their chunk bytes count in the account's bytes (ACCOUNT_BYTES).
+  // day's new books, and since 7 Nov 2026 (R1) their chunk bytes are their own too (WARIS_BYTES), never the books'
+  // ACCOUNT_BYTES: a vault can never make the account "full" for a book's parcel.
 
   private vault = false;
 
@@ -936,7 +994,17 @@ export class Daakiya extends DurableObject<Env> {
     return this.sql.exec<{ b: number | null }>(`SELECT SUM(length(body)) AS b FROM w_chunks`).one().b ?? 0;
   }
 
-  /** Tells the ledger this vault's bytes ([grow]: refused 507 when they would pass the account's cap). */
+  /** No heir and no snapshot (an unfinished version is none): all a junk vault holds. */
+  private bare(): boolean {
+    return this.wMeta("snap_v") == null && this.sql.exec(`SELECT 1 FROM w_heirs LIMIT 1`).toArray().length === 0;
+  }
+
+  /** When a vault still bare becomes junk: WARIS_JUNK_DAYS DAYs after its setup (R1). */
+  private junkAt(): number {
+    return Number(this.wMeta("created") ?? "0") + WARIS_JUNK_DAYS * warisDay(this.env);
+  }
+
+  /** Tells the ledger this vault's bytes ([grow]: refused 507 when they would pass the vaults' own WARIS_BYTES). */
   private async ledgerVault(vault: string, bytes: number, grow: boolean): Promise<Response | null> {
     const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
     return ledger.fetch(new Request(`https://ledger/vsize/${vault}?bytes=${bytes}${grow ? "&grow=1" : ""}`, { method: "POST" }))
@@ -952,12 +1020,20 @@ export class Daakiya extends DurableObject<Env> {
     this.vault = false;
   }
 
-  /** The vault's own alarm: gone after WARIS_IDLE_MS without an owner or heir call, else asked again later. */
+  /**
+   * The vault's own alarm: gone after WARIS_IDLE_MS without an owner or heir call, or when it is still bare
+   * WARIS_JUNK_DAYS DAYs after its setup — junk (7 Nov 2026, R1); else asked again later.
+   */
   private async vaultAlarm(): Promise<void> {
     const now = Date.now();
     const last = Number(this.wMeta("last_any") ?? "0");
     const vault = this.wMeta("vault");
     if (vault && now - last > WARIS_IDLE_MS) { await this.dropVault(vault); return; }
+    if (vault && this.bare()) {
+      if (now >= this.junkAt()) { await this.dropVault(vault); return; }
+      await this.ctx.storage.setAlarm(this.junkAt() + 1);
+      return;
+    }
     await this.ctx.storage.setAlarm(Math.max(now + 86_400_000, last + WARIS_IDLE_MS + 1));
   }
 
@@ -984,9 +1060,10 @@ export class Daakiya extends DurableObject<Env> {
       if (got.length === 0) return wNo(400, "bad");
       chunk = got;
     } else if (route === "heir-put") {
-      const text = await request.text().catch(() => "");
-      if (text.length > 16384) return wNo(400, "bad");
-      try { const x = JSON.parse(text); o = x && typeof x === "object" ? x : null; } catch { o = null; }
+      // At most WARIS_HEIR_BODY kept, however long the body runs (R2: it was read whole before the pass was looked at).
+      const got = await readCapped(request, WARIS_HEIR_BODY).catch(() => null);
+      if (got == null) return wNo(400, "bad");
+      try { const x = JSON.parse(new TextDecoder().decode(got)); o = x && typeof x === "object" ? x : null; } catch { o = null; }
     } else {
       await readCapped(request, 0).catch(() => null);
     }
@@ -998,7 +1075,8 @@ export class Daakiya extends DurableObject<Env> {
     const now = Date.now();
     if (route === "setup") {
       if (!this.isVault()) {
-        // A new vault: the ledger counts it (and refuses one past MAX_VAULTS or a full account).
+        // A new vault: the ledger counts it (and refuses one past MAX_VAULTS, past the vaults' own bytes or past the
+        // day's new vaults); a vault already here is set up again whatever the day's count.
         const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
         const ok = await ledger.fetch(new Request("https://ledger/vault/" + vault, { method: "POST" }));
         if (ok.status !== 200) return ok;
@@ -1009,7 +1087,8 @@ export class Daakiya extends DurableObject<Env> {
           this.setWMeta("created", now);
           this.setWMeta("last_owner", now);
           this.setWMeta("last_any", now);
-          await this.ctx.storage.setAlarm(now + WARIS_IDLE_MS + 1);
+          // The first look comes WARIS_JUNK_DAYS DAYs on: a vault still bare then is junk (vaultAlarm).
+          await this.ctx.storage.setAlarm(now + WARIS_JUNK_DAYS * day + 1);
           return json({ ok: true, created: true });
         }
       }
@@ -1049,11 +1128,11 @@ export class Daakiya extends DurableObject<Env> {
         const mine = this.sql.exec<{ b: number | null }>(
           `SELECT SUM(length(body)) AS b FROM w_chunks WHERE v = ? AND i != ? AND n = ?`, sv, si, sn).one().b ?? 0;
         if (mine + body.length > WARIS_SNAP) return wNo(413, "too-big");
-        // What the vault would hold once this chunk is in (other unfinished versions abandoned): the account's cap.
+        // What the vault would hold once this chunk is in (other unfinished versions abandoned): the vaults' own cap.
         const keep = this.sql.exec<{ b: number | null }>(
           `SELECT SUM(length(body)) AS b FROM w_chunks WHERE (v = ? OR (v = ? AND n = ? AND i != ?))`, curV, sv, sn, si).one().b ?? 0;
         const said = await this.ledgerVault(vault, keep + body.length, true);
-        if (said && said.status === 507) return wNo(507, "full");
+        if (said && said.status === 507) return wNo(507, "waris-full");
         // Another call may have come in during the ledger's answer: the version is checked again.
         const now2 = this.wSnap();
         if (now2 && sv < now2.v) return wNo(409, "old");
@@ -1094,6 +1173,8 @@ export class Daakiya extends DurableObject<Env> {
       }
       case "heir-delete":
         this.sql.exec(`DELETE FROM w_heirs WHERE hid = ?`, hid);
+        // Its last heir gone and no snapshot: bare again, so the junk look comes WARIS_JUNK_DAYS DAYs after its setup.
+        if (this.bare()) await this.ctx.storage.setAlarm(Math.max(now, this.junkAt()) + 1);
         return json({ ok: true });
       case "status": {
         const hs = this.sql.exec<Heir>(`SELECT * FROM w_heirs ORDER BY hid`).toArray();

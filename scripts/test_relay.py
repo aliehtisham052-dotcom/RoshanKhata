@@ -33,6 +33,17 @@ run them against a deployed relay, whose limits are the real ones):
              what all three promise: parcels go, then "full" (507) within 40 of
              30,000 bytes; a new book is refused "full"; a book already there still
              says hello and is read; once its devices left, a new book is taken.
+    --wlimits  the heirs' vaults with their limits lowered (7 Nov 2026): 6 new vaults a
+             day, the vaults' own bytes 3,000,000, the books' store 2,000,000 and a DAY
+             of 500 ms (PHP: RK_RELAY_NEW_VAULTS_DAY=6 RK_RELAY_WARIS_BYTES=3000000
+             RK_RELAY_MAX_STORE_BYTES=2000000 WARIS_DAY_MS=500 RK_RELAY_SWEEP_EVERY=0;
+             Supabase: RK_NEW_VAULTS_DAY, RK_WARIS_BYTES, RK_STORE_BYTES, WARIS_DAY_MS
+             and an RK_KEEP_SECRET that this script, run with the same, sends back as
+             X-RK-Keep; the Worker: --var NEW_VAULTS_DAY:6 WARIS_BYTES:3000000
+             ACCOUNT_BYTES:2000000 WARIS_DAY_MS:500). The 7th new vault is refused
+             429 waris-day while a vault already there is set up again; chunks go until
+             507 waris-full, and a book still takes parcels; 14 DAYs after their setup
+             the vaults with neither an heir nor a snapshot are gone, the others stay.
 """
 import base64
 import json
@@ -370,6 +381,8 @@ def waris():
     check("waris: a bad passHash is 400", s == 400 and o.get("why") == "bad", (s, o))
     s, o = wcall("PUT", w + "/heir/" + h2, owner, {"passHash": sha(p2), "box": "A" * 4100, "wait": 3})
     check("waris: a box over 4096 characters is 400", s == 400 and o.get("why") == "bad", (s, o))
+    s, o = wcall("PUT", w + "/heir/" + h2, owner, {"passHash": sha(p2), "box": box2, "wait": 3, "pad": "x" * 20000})
+    check("waris: an heir's body over 16 KiB is refused 400 bad", s == 400 and o.get("why") == "bad", (s, o))
     extra = [secrets.token_hex(8) for _ in range(3)]
     for x in extra:
         wcall("PUT", w + "/heir/" + x, owner, {"passHash": sha(secrets.token_hex(32)), "box": box2, "wait": 2})
@@ -484,6 +497,114 @@ def waris():
     check("waris: its heirs are gone with it", s == 404 and o.get("why") == "unknown", (s, o))
 
 
+def health(keep=None):
+    """The health call; with [keep], the keep-alive pass (X-RK-Keep) that runs the Supabase relay's daily sweep."""
+    req = urllib.request.Request(BASE + "/v1/health", headers={"X-RK-Keep": keep} if keep else {})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return r.status
+    except urllib.error.HTTPError as e:
+        return e.code
+
+
+def wlimits():
+    """The heirs' vaults with their limits lowered at the relay (7 Nov 2026, R1: anyone may make a vault).
+
+    The relay runs with 6 new vaults a day, the vaults' own bytes at 3,000,000, the books' store at 2,000,000 and a
+    DAY of 500 ms, so a bare vault is junk 7 s after its setup (the module's docstring says how each relay is started).
+    The vaults' bytes are never the books': with them spent, a book still takes parcels.
+    """
+    import hashlib
+    sha = lambda t: hashlib.sha256(t.encode()).hexdigest()
+    started = time.time()
+    owner = secrets.token_hex(32)
+    box = base64.b64encode(os.urandom(64)).decode()
+
+    # The day's cap: new vaults go until the relay says waris-day; a vault already there is still set up again.
+    made, refused = [], None
+    for _ in range(9):
+        w = "/v1/w/" + secrets.token_hex(16)
+        s, o = wcall("POST", w + "/setup", owner)
+        if s != 200:
+            refused = (s, o)
+            break
+        made.append(w)
+    check("wlimits: 6 new vaults are taken, the 7th is refused 429 waris-day",
+          len(made) == 6 and refused is not None and refused[0] == 429 and refused[1].get("why") == "waris-day", (len(made), refused))
+    if len(made) < 4:
+        return
+    va, vs, vd, bare = made[0], made[1], made[2], made[3:]
+    s, o = wcall("POST", va + "/setup", owner)
+    check("wlimits: a vault already there is set up again past the cap", s == 200 and o.get("created") is False, (s, o))
+    s, o = wcall("POST", va + "/setup", secrets.token_hex(32))
+    check("wlimits: and a wrong pass there is still refused pass", s == 403 and o.get("why") == "pass", (s, o))
+
+    # The vaults the junk sweep must keep or take: va an heir, vs a snapshot, vd an heir put and taken away again.
+    ha, pa = secrets.token_hex(8), secrets.token_hex(32)
+    s, o = wcall("PUT", va + "/heir/" + ha, owner, {"passHash": sha(pa), "box": box, "wait": 1})
+    check("wlimits: an heir is put", s == 200, (s, o))
+    s, o = wcall("PUT", vs + "/snap?v=1&i=0&n=1", owner, b"a small snapshot")
+    check("wlimits: a small snapshot is taken", s == 200 and o.get("complete") is True, (s, o))
+    hd = secrets.token_hex(8)
+    s1, _ = wcall("PUT", vd + "/heir/" + hd, owner, {"passHash": sha(secrets.token_hex(32)), "box": box, "wait": 1})
+    s2, o = wcall("DELETE", vd + "/heir/" + hd, owner)
+    check("wlimits: an heir is put and taken away again", s1 == 200 and s2 == 200, (s1, s2, o))
+    # The relay's DAY, read back as the plain checks do: openAt - askedAt of a one-day heir.
+    s, o = wcall("POST", va + "/heir/" + ha + "/ask", pa)
+    day = (o.get("openAt") or 0) - (o.get("askedAt") or 0)
+    check("wlimits: the relay's DAY is short here (WARIS_DAY_MS)", s == 200 and 0 < day <= 2000, (s, o))
+
+    # The vaults' own bytes: 512 KiB chunks until waris-full (3,000,000 bytes: 5 chunks go), so the vaults then hold
+    # more than the books' whole store (2,000,000 here) — counted with the books, they would refuse every book.
+    went, full = 0, None
+    for i in range(16):
+        s, o = wcall("PUT", va + "/snap?v=1&i=%d&n=16" % i, owner, os.urandom(524288))
+        if s != 200:
+            full = (s, o)
+            break
+        went += 1
+    check("wlimits: chunks go past the books' whole store, then 507 waris-full",
+          4 <= went <= 5 and full is not None and full[0] == 507 and full[1].get("why") == "waris-full", (went, full))
+    s, o = wcall("PUT", vs + "/snap?v=2&i=0&n=1", owner, os.urandom(524288))
+    check("wlimits: so is another vault's chunk (the bytes are every vault's)", s == 507 and o.get("why") == "waris-full", (s, o))
+
+    # The books' store counts no vault: a new book is taken and a parcel bigger than a chunk goes.
+    token = secrets.token_hex(32)
+    a, b = secrets.token_hex(8), secrets.token_hex(8)
+    p = "/v1/b/" + secrets.token_hex(16) + "/"
+    s, o = call("POST", p + "hello", token, a)
+    check("wlimits: with the vaults' bytes spent, a new book is taken", s == 200, (s, o))
+    call("POST", p + "hello", token, b)
+    s, o = call("POST", p + "send", token, a, os.urandom(600000))
+    check("wlimits: and a parcel goes", s == 200 and isinstance(o.get("seq"), int), (s, o))
+    s, o = call("POST", p + "round", token, b, {"after": 0, "parcel": base64.b64encode(os.urandom(1000)).decode()})
+    check("wlimits: and a round's parcel", s == 200 and isinstance(o.get("seq"), int) and len(o.get("parcels", [])) == 1,
+          (s, o.get("why"), o.get("seq"), len(o.get("parcels", []))))
+
+    # Junk: a vault still bare 14 DAYs after its setup goes (PHP at a health call, Supabase at the keep-alive health
+    # call, the Worker at the vault's alarm); one with an heir or a snapshot stays.
+    if not 0 < day <= 2000:
+        print("--   wlimits: the relay's DAY is not short; the junk checks need WARIS_DAY_MS")
+        return
+    wait = started + 14 * day / 1000.0 + 0.5 - time.time()
+    if wait > 0:
+        time.sleep(wait)
+    keep = os.environ.get("RK_KEEP_SECRET")
+    deadline = time.time() + 20
+    while True:
+        health(keep)
+        gone = [w for w in [vd] + bare if wcall("GET", w + "/status", owner)[0] == 404]
+        if len(gone) == 1 + len(bare) or time.time() > deadline:
+            break
+        time.sleep(0.5)
+    check("wlimits: vaults still bare 14 DAYs after their setup are gone", all(w in gone for w in bare), (len(gone), len(bare)))
+    check("wlimits: so is one whose only heir was taken away", vd in gone, gone)
+    s, o = wcall("GET", va + "/status", owner)
+    check("wlimits: a vault with an heir stays", s == 200 and [h.get("hid") for h in o.get("heirs", [])] == [ha], (s, o))
+    s, o = wcall("GET", vs + "/status", owner)
+    check("wlimits: a vault with a snapshot stays", s == 200 and (o.get("snap") or {}).get("v") == 1, (s, o))
+
+
 def main():
     if MODE == "--waris":
         return waris()
@@ -493,6 +614,8 @@ def main():
         return idle()
     if MODE == "--store":
         return store()
+    if MODE == "--wlimits":
+        return wlimits()
     book = secrets.token_hex(16)
     token = secrets.token_hex(32)
     a, b, c, d = (secrets.token_hex(8) for _ in range(4))

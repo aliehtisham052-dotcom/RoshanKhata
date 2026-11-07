@@ -215,8 +215,11 @@ async function handle(request: Request): Promise<Response> {
                 FROM (SELECT b2.book, COALESCE((SELECT SUM(octet_length(p.body)) FROM rk_relay.parcels p WHERE p.book = b2.book), 0) AS n
                       FROM rk_relay.books b2) s
                 WHERE b.book = s.book AND b.bytes <> s.n`;
-      // Waris vaults are not books: only one with no owner or heir call for WARIS_IDLE_DAYS (1095) goes.
+      // Waris vaults are not books: one with no owner or heir call for WARIS_IDLE_DAYS (1095) goes, and one still bare
+      // WARIS_JUNK_DAYS DAYs after its setup — no heir, no snapshot — is junk (7 Nov 2026, R1: anyone may make one).
       await sql`DELETE FROM rk_relay.waris_vaults WHERE last_any < ${now - WARIS_IDLE_DAYS * 86_400_000}`;
+      await sql`DELETE FROM rk_relay.waris_vaults v WHERE v.created <= ${now - WARIS_JUNK_DAYS * WARIS_DAY_MS}
+                AND v.snap_v IS NULL AND NOT EXISTS (SELECT 1 FROM rk_relay.waris_heirs h WHERE h.vault = v.vault)`;
     }
     // "push": this relay sends no push itself (R70: said, as cloud/worker says whether it can).
     return json({ ok: true, live, push: false });
@@ -273,7 +276,7 @@ async function handle(request: Request): Promise<Response> {
       const counts = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d,
                                       COALESCE(SUM(bytes), 0) AS bytes FROM rk_relay.books`)[0];
       if (Number(counts.n) >= MAX_BOOKS) throw new Answer(refuse(507, "full"));
-      if (Number(counts.bytes) + await warisBytes(tx) + NEW_BOOK_ROOM > STORE_BYTES) throw new Answer(refuse(507, "full"));
+      if (Number(counts.bytes) + NEW_BOOK_ROOM > STORE_BYTES) throw new Answer(refuse(507, "full"));
       if (Number(counts.d) >= NEW_BOOKS_DAY) throw new Answer(refuse(429, "new-books"));
       await tx`INSERT INTO rk_relay.books (book, pass, created, seen) VALUES (${book}, ${pass}, ${now}, ${now})
                ON CONFLICT (book) DO NOTHING`;
@@ -375,10 +378,9 @@ async function handle(request: Request): Promise<Response> {
 async function put(tx: any, book: string, device: string, now: number, body: Uint8Array, b: { day: string; day_count: number; day_bytes: string }): Promise<number | [number, string]> {
   if (body.length === 0) return [400, "empty"];
   const stored = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.parcels WHERE book = ${book}`)[0].n);
-  // The whole store first, as the hosting does: the other books' figures as kept, this book's counted afresh,
-  // and the Waris vaults' chunks (4 Nov 2026).
-  const others = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books WHERE book != ${book}`)[0].n)
-    + await warisBytes(tx);
+  // The whole store first, as the hosting does: the other books' figures as kept and this book's counted afresh.
+  // The books' alone: Waris vaults have their own bytes (WARIS_BYTES), so a vault never refuses a parcel (7 Nov 2026, R1).
+  const others = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books WHERE book != ${book}`)[0].n);
   if (others + stored + body.length > STORE_BYTES) return [507, "full"];
   const day = new Date(now).toISOString().slice(0, 10);
   const count = b.day === day ? Number(b.day_count) : 0;
@@ -453,12 +455,21 @@ const WARIS_MAX_N = 16;
 const WARIS_HEIRS = 5;
 const WARIS_BOX = 4096;
 const WARIS_IDLE_DAYS = 1095;
+/** A vault still bare (no heir, no snapshot) this many DAYs after its setup is junk and goes at the daily sweep (R1). */
+const WARIS_JUNK_DAYS = 14;
 /** Vaults this relay holds at most (each may hold up to two versions' chunks while one replaces the other). */
 const MAX_VAULTS = Number(Deno.env.get("RK_MAX_VAULTS") ?? "2000");
+/**
+ * Bytes every vault's chunks may hold together (7 Nov 2026, R1: anyone may make a vault and fill it): their own,
+ * never counted in the books' STORE_BYTES, so a vault never refuses a book's parcel. Past it: 507 "waris-full".
+ */
+const WARIS_BYTES = Number(Deno.env.get("RK_WARIS_BYTES") ?? String(128 * 1024 * 1024));
+/** New vaults taken in 24 hours, all together (R1), as NEW_BOOKS_DAY for books: past it, 429 "waris-day". */
+const NEW_VAULTS_DAY = Number(Deno.env.get("RK_NEW_VAULTS_DAY") ?? "50");
 const HEX16 = /^[0-9a-f]{16}$/;
 const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
 
-/** Bytes every vault's chunks hold, as kept in waris_vaults.bytes (counted toward STORE_BYTES with the books). */
+/** Bytes every vault's chunks hold, as kept in waris_vaults.bytes (WARIS_BYTES' count, never the books'). */
 // deno-lint-ignore no-explicit-any
 async function warisBytes(tx: any): Promise<number> {
   return Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.waris_vaults`)[0].n);
@@ -542,10 +553,13 @@ async function waris(request: Request, url: URL, rest: string): Promise<Response
     const vrow = rows[0] as unknown as { pass: string; snap_v: number | null; snap_n: number | null; snap_bytes: string | null; snap_at: string | null } | undefined;
     if (route === "setup") {
       if (!vrow) {
-        const c = (await tx`SELECT COUNT(*) AS n FROM rk_relay.waris_vaults`)[0];
+        // A new vault, as a new book: the count, then the vaults' own bytes (never the books'), then the day's new
+        // vaults (7 Nov 2026, R1: anyone may make one). A vault already here is set up again whatever the day's count.
+        const c = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d
+                            FROM rk_relay.waris_vaults`)[0];
         if (Number(c.n) >= MAX_VAULTS) throw no(507, { why: "full" });
-        const books = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books`)[0].n);
-        if (books + await warisBytes(tx) >= STORE_BYTES) throw no(507, { why: "full" });
+        if (await warisBytes(tx) >= WARIS_BYTES) throw no(507, { why: "waris-full" });
+        if (Number(c.d) >= NEW_VAULTS_DAY) throw no(429, { why: "waris-day" });
         const made = await tx`INSERT INTO rk_relay.waris_vaults (vault, pass, created, last_owner, last_any)
                               VALUES (${vault}, ${hash}, ${now}, ${now}, ${now}) ON CONFLICT (vault) DO NOTHING RETURNING 1`;
         if (made.length > 0) return json({ ok: true, created: true });
@@ -591,9 +605,9 @@ async function waris(request: Request, url: URL, rest: string): Promise<Response
         if (mine + body.length > WARIS_SNAP) throw no(413, { why: "too-big" });
         const held = Number((await tx`SELECT COALESCE(SUM(octet_length(body)), 0) AS n FROM rk_relay.waris_chunks
                                       WHERE vault = ${vault} AND NOT (v = ${sv} AND i = ${si})`)[0].n);
+        // The vaults' own bytes, never the books' (7 Nov 2026, R1).
         const otherVaults = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.waris_vaults WHERE vault <> ${vault}`)[0].n);
-        const books = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books`)[0].n);
-        if (books + otherVaults + held + body.length > STORE_BYTES) throw no(507, { why: "full" });
+        if (otherVaults + held + body.length > WARIS_BYTES) throw no(507, { why: "waris-full" });
         await tx`INSERT INTO rk_relay.waris_chunks (vault, v, i, n, body) VALUES (${vault}, ${sv}, ${si}, ${sn}, ${body})
                  ON CONFLICT (vault, v, i) DO UPDATE SET n = EXCLUDED.n, body = EXCLUDED.body`;
         const have = Number((await tx`SELECT COUNT(*) AS n FROM rk_relay.waris_chunks WHERE vault = ${vault} AND v = ${sv}`)[0].n);
