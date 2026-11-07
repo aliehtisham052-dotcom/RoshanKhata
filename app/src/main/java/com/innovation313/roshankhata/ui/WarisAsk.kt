@@ -54,8 +54,8 @@ object WarisAsk {
             val ask = found.ask
             if (ask != null) show(activity, ask.first, ask.second)
             else if (found.refusalOwed) {
-                // Asked again now too: the run that was owing it may have been cut short.
-                WarisWorker.retryRefusal(app)
+                // A retry is waiting (one that was cut short, by a phone restarted or cleared, is queued again).
+                WarisWorker.retryRefusal(app, restart = false)
                 tellOwed(activity)
             }
         }

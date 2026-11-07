@@ -76,16 +76,19 @@ class WarisWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
 
         /**
          * A refusal some relay did not take (W6): asked again as soon as there is a network, then backing off (30 s,
-         * doubling, as WorkManager allows) until every relay has it. A new refusal starts it afresh.
+         * doubling, as WorkManager allows) until every relay has it. A new refusal starts it afresh ([restart]); Home
+         * only makes sure one is waiting, never cutting one short.
          */
-        fun retryRefusal(ctx: Context) {
+        fun retryRefusal(ctx: Context, restart: Boolean = true) {
             val request = OneTimeWorkRequestBuilder<WarisWorker>()
                 .setInputData(workDataOf(KEY_REFUSE to true))
                 .setConstraints(online())
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
                 .build()
-            WorkManager.getInstance(ctx).enqueueUniqueWork(REFUSE_NAME, ExistingWorkPolicy.REPLACE, request)
+            WorkManager.getInstance(ctx).enqueueUniqueWork(
+                REFUSE_NAME, if (restart) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP, request
+            )
         }
     }
 }
