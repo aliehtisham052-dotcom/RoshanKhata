@@ -355,6 +355,8 @@ class EveryScreenOpensTest(
             open<SupplierRatesActivity>("Purchase rates"),
             open<CashbookActivity>("Cashbook"),
             open<DayBookActivity>("Day book"),
+            // Opened with no link: the empty list (a link would leave a shop in the phone's list for later tests).
+            open<MeraKhataActivity>("Mera Khata"),
             open<ChequesActivity>("Cheques"),
             open<PlansActivity>("Payment plans"),
             open<BillsActivity>("Supplier bills"),

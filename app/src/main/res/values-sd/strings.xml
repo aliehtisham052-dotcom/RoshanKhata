@@ -3994,4 +3994,43 @@
         <item quantity="one">%d رڪارڊ</item>
         <item quantity="other">%d رڪارڊ</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">گراهڪ کي کاتي جي لنڪ</string>
+    <string name="clink_title">گراهڪ جي کاتي جي لنڪ</string>
+    <string name="clink_body">هن گراهڪ کي هڪ لنڪ ويندي جنهن تي هو رڳو پنهنجو ڪل بيلنس ڏسي سگهندو — توهان جي ڪتاب جي ٻي ڪا شيءِ نه. لنڪ توهان جڏهن چاهيو بند ڪري سگهو ٿا.</string>
+    <string name="clink_body_sent">هن گراهڪ کي لنڪ اڳ ۾ موڪلي وئي آهي. ٻيهر موڪليو يا بند ڪريو: بند ٿيڻ کان پوءِ پراڻي لنڪ نه کلندي.</string>
+    <string name="clink_send">لنڪ موڪليو</string>
+    <string name="clink_send_again">ٻيهر موڪليو</string>
+    <string name="clink_stop">لنڪ بند ڪريو</string>
+    <string name="clink_stop_body">هن گراهڪ جي لنڪ بند ٿي ويندي ۽ هو پنهنجو کاتو نه ڏسي سگهندو. بعد ۾ نئين لنڪ موڪلي سگهو ٿا.</string>
+    <string name="clink_stopped">لنڪ بند ڪئي وئي. انٽرنيٽ ملندي ئي سرور تان به هٽي ويندي.</string>
+    <string name="clink_sending">لنڪ تيار ٿي رهي آهي…</string>
+    <string name="clink_message">%1$s، %2$s وٽ توهان جو کاتو هتي ڏسو:\n%3$s</string>
+    <string name="clink_offline">انٽرنيٽ نه مليو. انٽرنيٽ هلائي ٻيهر ڪوشش ڪريو.</string>
+    <string name="clink_not_now">هن وقت لنڪ نه ٺهي سگهي. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
+    <string name="clink_other_copy">هن ڪتاب جون لنڪون ڪنهن ٻئي فون (يا ڪتاب جي پراڻي ڪاپي) تان موڪليون ويون هيون. هاڻي هن فون تان موڪليو؟ پوءِ اهو ئي فون بيلنس تازو رکندو.</string>
+    <string name="mera_khata_title">منهنجو کاتو</string>
+    <string name="mera_khata_help">جن دڪانن توهان کي کاتي جي لنڪ موڪلي، انهن سان توهان جو بيلنس هتي آهي. اهو دڪان لکي ٿو؛ هتي ڪجهه بدلائي نٿو سگهجي.</string>
+    <string name="mera_khata_empty">اڃا ڪو دڪان ناهي. دڪان جي موڪليل کاتي جي لنڪ کوليو، اهو هتي اچي ويندو.</string>
+    <string name="mera_khata_refresh">تازو ڪريو</string>
+    <string name="mera_khata_just_now">هاڻي ئي تازو ڪيو ويو. هڪ منٽ کان پوءِ ٻيهر دٻايو.</string>
+    <string name="mera_khata_you_owe">توهان جي ذمي</string>
+    <string name="mera_khata_shop_owes">دڪان جي ذمي</string>
+    <string name="mera_khata_settled">حساب برابر</string>
+    <string name="mera_khata_updated">دڪان آخري ڀيرو لکيو: %1$s</string>
+    <string name="mera_khata_line_gave">توهان ورتو</string>
+    <string name="mera_khata_line_got">توهان ڏنو</string>
+    <string name="mera_khata_unknown_shop">دڪان</string>
+    <string name="mera_khata_not_yet">اڃا لوڊ ناهي ٿيو. انٽرنيٽ هلائي تازو ڪريو دٻايو.</string>
+    <string name="mera_khata_paused">دڪان هي کاتو في الحال روڪي ڇڏيو آهي.</string>
+    <string name="mera_khata_gone">دڪان هي لنڪ بند ڪري ڇڏي آهي. دڪان کان نئين لنڪ گهرو.</string>
+    <string name="mera_khata_wrong">هي لنڪ نه پئي کلي. دڪان کي ٻيهر موڪلڻ لاءِ چئو.</string>
+    <string name="mera_khata_offline">انٽرنيٽ نه مليو. پوئين ڀيري جو بيلنس ڏيکاريو پيو وڃي.</string>
+    <string name="mera_khata_bad_link">هي کاتي جي لنڪ مڪمل ناهي. دڪان کي ٻيهر موڪلڻ لاءِ چئو.</string>
+    <string name="mera_khata_remove">هن لسٽ مان هٽايو</string>
+    <string name="mera_khata_remove_body">دڪان رڳو هن فون جي لسٽ مان هٽندو. دڪان وٽ توهان جو حساب اهڙو ئي رهندو.</string>
+    <string name="mera_khata_own_title">پنهنجي دڪان جو حساب به رکو</string>
+    <string name="mera_khata_own_body">روشن کاتو مفت آهي: اڌار، وصولي، بل ۽ اسٽاڪ — سڀ توهان جي فون تي.</string>
+    <string name="mera_khata_own_button">پنهنجو کاتو شروع ڪريو</string>
 </resources>

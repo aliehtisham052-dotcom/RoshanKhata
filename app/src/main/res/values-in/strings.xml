@@ -3949,4 +3949,43 @@
     <plurals name="duplicate_count">
         <item quantity="other">%d catatan</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">Tautan buku pelanggan</string>
+    <string name="clink_title">Tautan buku pelanggan</string>
+    <string name="clink_body">Pelanggan ini menerima tautan untuk melihat total saldonya saja — tidak ada hal lain dari buku Anda. Anda bisa menghentikan tautan kapan saja.</string>
+    <string name="clink_body_sent">Tautan sudah pernah dikirim ke pelanggan ini. Kirim lagi atau hentikan: setelah dihentikan, tautan lama tidak terbuka lagi.</string>
+    <string name="clink_send">Kirim tautan</string>
+    <string name="clink_send_again">Kirim lagi</string>
+    <string name="clink_stop">Hentikan tautan</string>
+    <string name="clink_stop_body">Tautan pelanggan ini dihentikan dan ia tidak bisa melihat bukunya lagi. Anda bisa mengirim tautan baru nanti.</string>
+    <string name="clink_stopped">Tautan dihentikan. Tautan juga dihapus dari server begitu ada internet.</string>
+    <string name="clink_sending">Menyiapkan tautan…</string>
+    <string name="clink_message">%1$s, lihat rekening Anda di %2$s di sini:\n%3$s</string>
+    <string name="clink_offline">Tidak ada internet. Nyalakan internet lalu coba lagi.</string>
+    <string name="clink_not_now">Tautan belum bisa dibuat sekarang. Coba lagi sebentar lagi.</string>
+    <string name="clink_other_copy">Tautan buku ini dikirim dari ponsel lain (atau salinan buku yang lebih lama). Kirim dari ponsel ini sekarang? Ponsel ini lalu yang menjaga saldo tetap terbaru.</string>
+    <string name="mera_khata_title">Buku Saya</string>
+    <string name="mera_khata_help">Saldo Anda di setiap toko yang mengirimi Anda tautan bukunya. Toko yang menulisnya; tidak ada yang bisa diubah di sini.</string>
+    <string name="mera_khata_empty">Belum ada toko. Buka tautan buku yang dikirim toko, maka toko itu muncul di sini.</string>
+    <string name="mera_khata_refresh">Muat ulang</string>
+    <string name="mera_khata_just_now">Baru saja dimuat ulang. Coba lagi dalam satu menit.</string>
+    <string name="mera_khata_you_owe">Anda berutang kepada toko</string>
+    <string name="mera_khata_shop_owes">Toko berutang kepada Anda</string>
+    <string name="mera_khata_settled">Lunas</string>
+    <string name="mera_khata_updated">Terakhir ditulis toko: %1$s</string>
+    <string name="mera_khata_line_gave">Anda ambil</string>
+    <string name="mera_khata_line_got">Anda bayar</string>
+    <string name="mera_khata_unknown_shop">Toko</string>
+    <string name="mera_khata_not_yet">Belum dimuat. Nyalakan internet lalu ketuk Muat ulang.</string>
+    <string name="mera_khata_paused">Toko menghentikan buku ini untuk sementara.</string>
+    <string name="mera_khata_gone">Toko telah menghentikan tautan ini. Minta tautan baru ke toko.</string>
+    <string name="mera_khata_wrong">Tautan ini tidak terbuka. Minta toko mengirimnya lagi.</string>
+    <string name="mera_khata_offline">Tidak ada internet. Menampilkan saldo dari terakhir kali.</string>
+    <string name="mera_khata_bad_link">Tautan buku ini tidak lengkap. Minta toko mengirimnya lagi.</string>
+    <string name="mera_khata_remove">Hapus dari daftar ini</string>
+    <string name="mera_khata_remove_body">Toko hanya dihapus dari daftar ponsel ini. Rekening Anda di toko tetap seperti semula.</string>
+    <string name="mera_khata_own_title">Catat juga keuangan toko Anda</string>
+    <string name="mera_khata_own_body">Roshan Khata gratis: utang, penagihan, tagihan, dan stok — semua di ponsel Anda.</string>
+    <string name="mera_khata_own_button">Mulai buku saya sendiri</string>
 </resources>

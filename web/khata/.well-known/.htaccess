@@ -1,0 +1,9 @@
+# Android reads this file to let the shop's links open Roshan Khata (App Links); served as JSON, never listed.
+Options -Indexes
+<Files "assetlinks.json">
+  Require all granted
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/json"
+    Header set Cache-Control "public, max-age=3600"
+  </IfModule>
+</Files>

@@ -158,6 +158,31 @@
             android:name=".MainActivity"
             android:exported="false" />
 
+        <!--
+          Mera Khata (7 Nov 2026): a shop's khata link opens here. The https link is an App Link (the hosting's
+          /.well-known/assetlinks.json names this app's packages and signing keys); the web page's "Open in the
+          app" button uses roshankhata://khata?l=…, which works before that check too. Read only, never the book.
+        -->
+        <activity
+            android:name=".MeraKhataActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="khata.ehtisham.shop" />
+                <data android:pathPrefix="/" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="roshankhata" android:host="khata" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".KhataActivity"
             android:exported="false"

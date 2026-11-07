@@ -73,8 +73,17 @@ function store_dir() {
     if ($env !== false && $env !== '') return rtrim($env, '/');
     $root = isset($_SERVER['DOCUMENT_ROOT']) ? realpath($_SERVER['DOCUMENT_ROOT']) : false;
     if ($root) {
-        $outside = dirname($root) . '/rk-khata-data';
-        if (is_dir($outside) || @mkdir($outside, 0700, true)) return $outside;
+        // Beside the hosting's web root, never inside it (7 Nov 2026): a subdomain's own root is a folder in
+        // public_html (…/public_html/khata), whose parent is still served — so the folder goes beside public_html.
+        $web = $root;
+        $at = strpos($root, '/public_html');
+        if ($at !== false) $web = substr($root, 0, $at) . '/public_html';
+        $outside = dirname($web) . '/rk-khata-data';
+        if (is_dir($outside) || @mkdir($outside, 0700, true)) {
+            // Never served from there, and denied as well should a hosting ever serve it.
+            if (!file_exists("$outside/.htaccess")) @file_put_contents("$outside/.htaccess", "Require all denied\n");
+            return $outside;
+        }
     }
     return __DIR__ . '/data';
 }

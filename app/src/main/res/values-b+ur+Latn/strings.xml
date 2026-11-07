@@ -3966,4 +3966,43 @@
         <item quantity="one">%d record</item>
         <item quantity="other">%d record</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">Customer ko khata link</string>
+    <string name="clink_title">Customer ka khata link</string>
+    <string name="clink_body">Is customer ko ek link jayega jis par woh sirf apna kul balance dekh sakega — aap ki kitaab ki koi aur cheez nahi. Link aap jab chahein band kar sakte hain.</string>
+    <string name="clink_body_sent">Is customer ko link pehle bheja ja chuka hai. Dobara bhejein ya band karein: band hone ke baad purana link nahi khulega.</string>
+    <string name="clink_send">Link bhejein</string>
+    <string name="clink_send_again">Dobara bhejein</string>
+    <string name="clink_stop">Link band karein</string>
+    <string name="clink_stop_body">Is customer ka link band ho jayega aur woh apna khata nahi dekh sakega. Baad mein naya link bhej sakte hain.</string>
+    <string name="clink_stopped">Link band kar diya. Internet milte hi server se bhi hat jayega.</string>
+    <string name="clink_sending">Link tayyar ho raha hai…</string>
+    <string name="clink_message">%1$s, %2$s mein aap ka khata yahan dekhein:\n%3$s</string>
+    <string name="clink_offline">Internet nahi mila. Internet chala kar dobara koshish karein.</string>
+    <string name="clink_not_now">Abhi link nahi ban saka. Thori der baad dobara koshish karein.</string>
+    <string name="clink_other_copy">Is kitaab ke link kisi aur phone (ya kitaab ki purani copy) se bheje gaye thay. Ab is phone se bhejein? Phir yahi phone balance taaza rakhega.</string>
+    <string name="mera_khata_title">Mera Khata</string>
+    <string name="mera_khata_help">Jin dukaanon ne aap ko khata link bheja, un ke saath aap ka balance yahan hai. Ye dukaan likhti hai; yahan kuch badla nahi ja sakta.</string>
+    <string name="mera_khata_empty">Abhi koi dukaan nahi. Dukaan ka bheja hua khata link kholein, woh yahan aa jayega.</string>
+    <string name="mera_khata_refresh">Taaza karein</string>
+    <string name="mera_khata_just_now">Abhi taaza kiya hai. Ek minute baad dobara dabayein.</string>
+    <string name="mera_khata_you_owe">Aap ke zimme</string>
+    <string name="mera_khata_shop_owes">Dukaan ke zimme</string>
+    <string name="mera_khata_settled">Hisaab barabar</string>
+    <string name="mera_khata_updated">Dukaan ne aakhri baar likha: %1$s</string>
+    <string name="mera_khata_line_gave">Aap ne liya</string>
+    <string name="mera_khata_line_got">Aap ne diya</string>
+    <string name="mera_khata_unknown_shop">Dukaan</string>
+    <string name="mera_khata_not_yet">Abhi load nahi hua. Internet chala kar Taaza karein dabayein.</string>
+    <string name="mera_khata_paused">Dukaan ne ye khata filhal rok diya hai.</string>
+    <string name="mera_khata_gone">Dukaan ne ye link band kar diya hai. Dukaan se naya link maangein.</string>
+    <string name="mera_khata_wrong">Ye link nahi khul raha. Dukaan se dobara bhejne ko kahein.</string>
+    <string name="mera_khata_offline">Internet nahi mila. Pichhli baar ka balance dikh raha hai.</string>
+    <string name="mera_khata_bad_link">Ye khata link mukammal nahi. Dukaan se dobara bhejne ko kahein.</string>
+    <string name="mera_khata_remove">Is list se hatayein</string>
+    <string name="mera_khata_remove_body">Dukaan sirf is phone ki list se hategi. Dukaan mein aap ka hisaab waisa hi rahega.</string>
+    <string name="mera_khata_own_title">Apni dukaan ka hisaab bhi rakhein</string>
+    <string name="mera_khata_own_body">Roshan Khata muft hai: udhaar, wusooli, bill aur stock — sab aap ke phone par.</string>
+    <string name="mera_khata_own_button">Apna khata shuru karein</string>
 </resources>

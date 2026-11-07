@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.innovation313.roshankhata.dev",
+      "sha256_cert_fingerprints": ["28:4A:0A:1A:03:7F:15:ED:60:FC:9A:BF:3B:5E:A2:AB:C0:DC:A9:19:27:11:22:84:2A:59:73:46:EB:9C:ED:7D"]
+    }
+  }
+]

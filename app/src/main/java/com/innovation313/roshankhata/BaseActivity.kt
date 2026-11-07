@@ -181,7 +181,8 @@ abstract class BaseActivity : AppCompatActivity() {
         /** The request code of the Downloads permission (Android 7-9). */
         const val REQ_DOWNLOADS = 7313
         /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
-        val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity")
+        // MeraKhataActivity shows only the shops' pages this phone's owner was sent as a customer, never the book.
+        val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity", "MeraKhataActivity")
         /** Away this long, App Lock asks again. */
         const val RELOCK_MS = 5 * 60_000L
         var startedScreens = 0

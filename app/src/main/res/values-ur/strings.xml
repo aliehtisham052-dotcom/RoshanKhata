@@ -3966,4 +3966,43 @@
         <item quantity="one">%d ریکارڈ</item>
         <item quantity="other">%d ریکارڈ</item>
     </plurals>
+
+    <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
+    <string name="clink_menu">کسٹمر کو کھاتہ لنک</string>
+    <string name="clink_title">کسٹمر کا کھاتہ لنک</string>
+    <string name="clink_body">اس کسٹمر کو ایک لنک جائے گا جس پر وہ صرف اپنا کل بیلنس دیکھ سکے گا — آپ کی کتاب کی کوئی اور چیز نہیں۔ لنک آپ جب چاہیں بند کر سکتے ہیں۔</string>
+    <string name="clink_body_sent">اس کسٹمر کو لنک پہلے بھیجا جا چکا ہے۔ دوبارہ بھیجیں یا بند کریں: بند ہونے کے بعد پرانا لنک نہیں کھلے گا۔</string>
+    <string name="clink_send">لنک بھیجیں</string>
+    <string name="clink_send_again">دوبارہ بھیجیں</string>
+    <string name="clink_stop">لنک بند کریں</string>
+    <string name="clink_stop_body">اس کسٹمر کا لنک بند ہو جائے گا اور وہ اپنا کھاتہ نہیں دیکھ سکے گا۔ بعد میں نیا لنک بھیج سکتے ہیں۔</string>
+    <string name="clink_stopped">لنک بند کر دیا۔ انٹرنیٹ ملتے ہی سرور سے بھی ہٹ جائے گا۔</string>
+    <string name="clink_sending">لنک تیار ہو رہا ہے…</string>
+    <string name="clink_message">%1$s، %2$s میں آپ کا کھاتہ یہاں دیکھیں:\n%3$s</string>
+    <string name="clink_offline">انٹرنیٹ نہیں ملا۔ انٹرنیٹ چلا کر دوبارہ کوشش کریں۔</string>
+    <string name="clink_not_now">ابھی لنک نہیں بن سکا۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔</string>
+    <string name="clink_other_copy">اس کتاب کے لنک کسی اور فون (یا کتاب کی پرانی کاپی) سے بھیجے گئے تھے۔ اب اس فون سے بھیجیں؟ پھر یہی فون بیلنس تازہ رکھے گا۔</string>
+    <string name="mera_khata_title">میرا کھاتہ</string>
+    <string name="mera_khata_help">جن دکانوں نے آپ کو کھاتہ لنک بھیجا، ان کے ساتھ آپ کا بیلنس یہاں ہے۔ یہ دکان لکھتی ہے؛ یہاں کچھ بدلا نہیں جا سکتا۔</string>
+    <string name="mera_khata_empty">ابھی کوئی دکان نہیں۔ دکان کا بھیجا ہوا کھاتہ لنک کھولیں، وہ یہاں آ جائے گا۔</string>
+    <string name="mera_khata_refresh">تازہ کریں</string>
+    <string name="mera_khata_just_now">ابھی تازہ کیا ہے۔ ایک منٹ بعد دوبارہ دبائیں۔</string>
+    <string name="mera_khata_you_owe">آپ کے ذمے</string>
+    <string name="mera_khata_shop_owes">دکان کے ذمے</string>
+    <string name="mera_khata_settled">حساب برابر</string>
+    <string name="mera_khata_updated">دکان نے آخری بار لکھا: %1$s</string>
+    <string name="mera_khata_line_gave">آپ نے لیا</string>
+    <string name="mera_khata_line_got">آپ نے دیا</string>
+    <string name="mera_khata_unknown_shop">دکان</string>
+    <string name="mera_khata_not_yet">ابھی لوڈ نہیں ہوا۔ انٹرنیٹ چلا کر تازہ کریں دبائیں۔</string>
+    <string name="mera_khata_paused">دکان نے یہ کھاتہ فی الحال روک دیا ہے۔</string>
+    <string name="mera_khata_gone">دکان نے یہ لنک بند کر دیا ہے۔ دکان سے نیا لنک مانگیں۔</string>
+    <string name="mera_khata_wrong">یہ لنک نہیں کھل رہا۔ دکان سے دوبارہ بھیجنے کو کہیں۔</string>
+    <string name="mera_khata_offline">انٹرنیٹ نہیں ملا۔ پچھلی بار کا بیلنس دکھایا جا رہا ہے۔</string>
+    <string name="mera_khata_bad_link">یہ کھاتہ لنک مکمل نہیں۔ دکان سے دوبارہ بھیجنے کو کہیں۔</string>
+    <string name="mera_khata_remove">اس فہرست سے ہٹائیں</string>
+    <string name="mera_khata_remove_body">دکان صرف اس فون کی فہرست سے ہٹے گی۔ دکان میں آپ کا حساب ویسا ہی رہے گا۔</string>
+    <string name="mera_khata_own_title">اپنی دکان کا حساب بھی رکھیں</string>
+    <string name="mera_khata_own_body">روشن کھاتہ مفت ہے: ادھار، وصولی، بل اور اسٹاک — سب آپ کے فون پر۔</string>
+    <string name="mera_khata_own_button">اپنا کھاتہ شروع کریں</string>
 </resources>

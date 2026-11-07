@@ -1920,6 +1920,33 @@ Phone only. CI only.
 - Strings (nine languages): duplicate_caution_one_digit/_numbers, auto_*_desc (5), radar_state_on/_off,
   paisa_switch_needs_access, invoice_caption_total, doc_desc_* (5); plural duplicate_count.
 
+### The customer's khata link and Mera Khata (7 Nov 2026, kmp-desktop-16 — the owner: "zyada log apna balance dekh sakein", credits not spent by a few)
+
+Phone only (Windows has no button yet; a syncing book shares links through the book key). CI only — the hosting part
+is the owner's upload (web/khata/README.md), nothing tried on a real phone.
+
+- **The shop's side:** the customer page's ⋮ → "Send khata link" (`action_khata_link`, EXPORT, never on a helper's phone)
+  says what goes, then `CustomerLinkSync.share` (CustomerLink.share: the page on the server first) and WhatsApp with
+  `clink_message`; a link sent can be sent again or stopped (`CustomerLink.remove` + `flushNow`). Another copy of the
+  book asks before claiming (`clink_other_copy`).
+- **What the customer sees: the total balance** (`CustomerLink.Mode.of` now defaults to BALANCE; LAST3 stays a book
+  setting with no screen yet). Name, shop, side, amount, the day the shop last wrote.
+- **Load (the owner's rule):** pages are plain files on the hosting (`CustomerLink.HOME` = https://khata.ehtisham.shop/),
+  never live sync's relays or any paid service; the phone sends only changed pages, at most one send waiting
+  (`CustomerLinkSync.soon`, 10 minutes after the app leaves the screen, KEEP), nothing at all on a phone that never sent a
+  link (`clink_used`); the customer's app asks a page only when Mera Khata opens and the last look is 10 minutes old,
+  Refresh once a minute, with the last ETag (`CustomerPage`, 304 when unchanged). api.php's caps hold every shop.
+- **The customer's side:** `MeraKhataActivity` (exported; App Link on khata.ehtisham.shop with `autoVerify`, and
+  roshankhata://khata?l=… from the web page's "Open in the app" button, which falls back to the Play Store), the list
+  kept in prefs "mera_khata" (`MeraKhataStore`, at most 50, never in a book or backup); More → Mera Khata once there is
+  one; a phone whose setup is not done opens on it from the front door (`GateActivity.EXTRA_SETUP` starts the setup from
+  its "Start my own khata" card). In BaseActivity's BEFORE_THE_BOOK (no counter sign-in, no App Lock: never the book).
+- **web/khata:** api.php keeps its store beside public_html even from a subdomain's root (it would have been
+  public_html/rk-khata-data, served); `.well-known/assetlinks.json` has the test build's key — the Play key's SHA-256 is
+  the owner's to copy from Play Console; `scripts/pack_khata_web.sh` makes the upload zip.
+- Tests: CustomerPageTest (shared), MeraKhataStoreTest, EveryScreenOpensTest opens Mera Khata; scripts/test_khata_web.sh.
+- Strings (nine languages): clink_* (14), mera_khata_* (23).
+
 ### The shared module (KMP)
 
 ```

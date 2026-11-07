@@ -35,11 +35,17 @@
   .msg { text-align: center; color: var(--muted); padding: 24px 0 0; margin: 0; }
   .msg.en { padding-top: 8px; font-size: 14px; }
   #page > .msg:last-child { padding-bottom: 24px; }
+  #app { text-align: center; margin-top: 16px; }
+  .app-btn { display: block; background: var(--green); color: #fff; text-decoration: none; font-weight: 600;
+    border-radius: 12px; padding: 14px 16px; min-height: 48px; }
+  @media (prefers-color-scheme: dark) { .app-btn { color: #0c1a13; } }
+  .app-why { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
 </style>
 </head>
 <body>
 <main>
   <div class="card" id="page"><p class="msg">Loading…</p></div>
+  <div id="app"></div>
   <p class="foot" id="foot">Roshan Khata · Innovation-313</p>
 </main>
 <script src="view.js"></script>

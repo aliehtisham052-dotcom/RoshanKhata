@@ -43,6 +43,13 @@ class GateActivity : BaseActivity() {
             com.innovation313.roshankhata.data.SetupProgress.Step.SHOP_DETAILS -> ShopNameActivity::class.java
             com.innovation313.roshankhata.data.SetupProgress.Step.DONE -> null
         }
+        // A phone that only ever opened shops' khata links (a customer, 7 Nov 2026) opens on them, not on a setup
+        // it never asked for; Mera Khata's own button starts the setup (EXTRA_SETUP).
+        if (setupStep != null && runCatching { !intent.getBooleanExtra(EXTRA_SETUP, false) }.getOrDefault(true) && MeraKhataActivity.has(this)) {
+            startActivity(Intent(this, MeraKhataActivity::class.java))
+            finish()
+            return
+        }
         if (setupStep != null) {
             startActivity(Intent(this, setupStep))
             finish()
@@ -68,5 +75,10 @@ class GateActivity : BaseActivity() {
                 .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, runCatching { intent.getLongExtra(MainActivity.EXTRA_OPEN_BUSINESS, -1L) }.getOrDefault(-1L))
         )
         finish()
+    }
+
+    companion object {
+        /** From Mera Khata: start this phone's own setup even though it has shops' links. */
+        const val EXTRA_SETUP = "gate_setup"
     }
 }

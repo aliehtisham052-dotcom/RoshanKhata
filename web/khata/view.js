@@ -23,6 +23,7 @@
       owe: "You owe the shop", owed: "The shop owes you", settled: "All settled", updated: "Updated {d}",
       c_goods: "Goods on credit", c_lent: "Taken on credit", c_back: "Goods returned", c_paid: "Paid",
       s_back: "Goods returned to you", s_paid: "Paid to you", s_goods: "Goods you supplied", s_got: "Received from you",
+      app: "Open in the Roshan Khata app", app_why: "Every shop\u2019s account in one place. The app is free.",
       foot: "Anyone with this link can open this page. The shop writes what it shows; Roshan Khata does not check it."
     },
     "ur": {
@@ -35,6 +36,7 @@
       owe: "آپ کے ذمے", owed: "دکان کے ذمے", settled: "حساب برابر", updated: "تازہ کاری {d}",
       c_goods: "ادھار سامان", c_lent: "ادھار لیا", c_back: "سامان واپس", c_paid: "ادا کیا",
       s_back: "آپ کو سامان واپس", s_paid: "آپ کو ادائیگی", s_goods: "آپ کا دیا سامان", s_got: "آپ سے وصول",
+      app: "روشن کھاتہ ایپ میں کھولیں", app_why: "ہر دکان کا حساب ایک جگہ۔ ایپ مفت ہے۔",
       foot: "جس کے پاس یہ لنک ہو وہ یہ صفحہ کھول سکتا ہے۔ اس میں جو لکھا ہے وہ دکان لکھتی ہے؛ روشن کھاتہ اسے نہیں جانچتا۔"
     },
     "ur-Latn": {
@@ -47,6 +49,7 @@
       owe: "Aap ke zimme", owed: "Dukaan ke zimme", settled: "Hisaab barabar", updated: "Taaza kaari {d}",
       c_goods: "Udhaar samaan", c_lent: "Udhaar liya", c_back: "Samaan wapas", c_paid: "Ada kiya",
       s_back: "Aap ko samaan wapas", s_paid: "Aap ko adaigi", s_goods: "Aap ka diya samaan", s_got: "Aap se wusool",
+      app: "Roshan Khata app mein kholein", app_why: "Har dukaan ka hisaab ek jagah. App muft hai.",
       foot: "Jis ke paas yeh link ho woh yeh safha khol sakta hai. Is mein jo likha hai woh dukaan likhti hai; Roshan Khata ise nahi jaanchta."
     },
     "sd": {
@@ -59,6 +62,7 @@
       owe: "توهان جي ذمي", owed: "دڪان جي ذمي", settled: "حساب برابر", updated: "تازو ڪيو ويو {d}",
       c_goods: "اڌار سامان", c_lent: "اڌار ورتو", c_back: "سامان واپس", c_paid: "ادا ڪيو",
       s_back: "توهان کي سامان واپس", s_paid: "توهان کي ادائيگي", s_goods: "توهان جو ڏنل سامان", s_got: "توهان کان وصول",
+      app: "روشن کاتو ايپ ۾ کوليو", app_why: "هر دڪان جو حساب هڪ هنڌ. ايپ مفت آهي.",
       foot: "جنهن وٽ هي لنڪ هجي اهو هي صفحو کولي سگهي ٿو. ان ۾ جيڪو لکيل آهي اهو دڪان لکي ٿو؛ روشن کاتو ان کي نٿو جانچي."
     },
     "ar": {
@@ -71,6 +75,7 @@
       owe: "أنت مدين للمتجر", owed: "المتجر مدين لك", settled: "الحساب مسدَّد", updated: "آخر تحديث {d}",
       c_goods: "بضاعة بالآجل", c_lent: "أُخذ بالآجل", c_back: "بضاعة مُرتجعة", c_paid: "مدفوع",
       s_back: "بضاعة أُعيدت إليك", s_paid: "دُفع لك", s_goods: "بضاعة وردتها", s_got: "استُلم منك",
+      app: "افتح في تطبيق روشن كهاتا", app_why: "حسابات كل المتاجر في مكان واحد. التطبيق مجاني.",
       foot: "يستطيع أي شخص لديه هذا الرابط فتح هذه الصفحة. المتجر هو من يكتب ما فيها، ولا يتحقق منه روشن كهاتا."
     },
     "fa": {
@@ -83,6 +88,7 @@
       owe: "شما به فروشگاه بدهکارید", owed: "فروشگاه به شما بدهکار است", settled: "حساب تسویه است", updated: "به‌روزرسانی {d}",
       c_goods: "کالای نسیه", c_lent: "نسیه گرفته‌شده", c_back: "کالای برگشتی", c_paid: "پرداخت‌شده",
       s_back: "کالای برگشتی به شما", s_paid: "پرداخت به شما", s_goods: "کالایی که تحویل دادید", s_got: "دریافت از شما",
+      app: "در اپ روشن خاتا باز کنید", app_why: "حساب همهٔ فروشگاه‌ها در یک جا. اپ رایگان است.",
       foot: "هر کسی این پیوند را داشته باشد می‌تواند این صفحه را باز کند. آنچه در آن است را فروشگاه می‌نویسد؛ روشن خاتا آن را بررسی نمی‌کند."
     },
     "hi": {
@@ -95,6 +101,7 @@
       owe: "आपको दुकान को देना है", owed: "दुकान को आपको देना है", settled: "हिसाब बराबर", updated: "अपडेट {d}",
       c_goods: "उधार सामान", c_lent: "उधार लिया", c_back: "सामान वापस", c_paid: "चुकाया",
       s_back: "आपको सामान वापस", s_paid: "आपको भुगतान", s_goods: "आपका दिया सामान", s_got: "आपसे मिला",
+      app: "रोशन खाता ऐप में खोलें", app_why: "हर दुकान का हिसाब एक जगह। ऐप मुफ़्त है।",
       foot: "जिसके पास यह लिंक है वह यह पेज खोल सकता है। इसमें जो लिखा है वह दुकान लिखती है; रोशन खाता इसकी जाँच नहीं करता।"
     },
     "bn": {
@@ -107,6 +114,7 @@
       owe: "আপনার কাছে দোকানের পাওনা", owed: "দোকানের কাছে আপনার পাওনা", settled: "হিসাব মিটে গেছে", updated: "হালনাগাদ {d}",
       c_goods: "বাকিতে পণ্য", c_lent: "বাকিতে নেওয়া", c_back: "পণ্য ফেরত", c_paid: "পরিশোধ",
       s_back: "আপনাকে পণ্য ফেরত", s_paid: "আপনাকে পরিশোধ", s_goods: "আপনার দেওয়া পণ্য", s_got: "আপনার কাছ থেকে পাওয়া",
+      app: "রোশন খাতা অ্যাপে খুলুন", app_why: "সব দোকানের হিসাব এক জায়গায়। অ্যাপটি বিনামূল্যে।",
       foot: "এই লিংক যার কাছে আছে সে-ই এই পাতা খুলতে পারে। এতে যা লেখা থাকে তা দোকান লেখে; রোশন খাতা তা যাচাই করে না।"
     },
     "id": {
@@ -119,6 +127,7 @@
       owe: "Anda berutang kepada toko", owed: "Toko berutang kepada Anda", settled: "Lunas", updated: "Diperbarui {d}",
       c_goods: "Barang dengan utang", c_lent: "Diambil dengan utang", c_back: "Barang dikembalikan", c_paid: "Dibayar",
       s_back: "Barang dikembalikan kepada Anda", s_paid: "Dibayar kepada Anda", s_goods: "Barang yang Anda kirim", s_got: "Diterima dari Anda",
+      app: "Buka di aplikasi Roshan Khata", app_why: "Rekening semua toko di satu tempat. Aplikasinya gratis.",
       foot: "Siapa pun yang memiliki tautan ini dapat membuka halaman ini. Isinya ditulis oleh toko; Roshan Khata tidak memeriksanya."
     }
   };
@@ -127,6 +136,18 @@
 
   var page = document.getElementById("page");
   var foot = document.getElementById("foot");
+  var app = document.getElementById("app");
+  /** Roshan Khata's own address for this link (the app's custom scheme), else the Play Store: Android only. */
+  var PLAY = "https://play.google.com/store/apps/details?id=com.innovation313.roshankhata";
+  function offerApp(w, id, key) {
+    if (!app || !/Android/i.test(navigator.userAgent || "")) return;
+    app.textContent = "";
+    var a = el("a", "app-btn", w.app);
+    a.href = "intent://khata?l=" + id + "." + key + "#Intent;scheme=roshankhata;S.browser_fallback_url=" +
+      encodeURIComponent(PLAY) + ";end";
+    app.appendChild(a);
+    app.appendChild(el("p", "app-why", w.app_why));
+  }
 
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -244,7 +265,9 @@
         key, sealed.slice(12));
     });
   }).then(function (plain) {
-    show(JSON.parse(new TextDecoder().decode(plain)));
+    var d = JSON.parse(new TextDecoder().decode(plain));
+    show(d);
+    offerApp(words(W[d.l] ? d.l : "en"), m[1], m[2]);
   }).catch(function (e) {
     if (e === "gone") say("gone");
     else if (e === "net") say("net");
