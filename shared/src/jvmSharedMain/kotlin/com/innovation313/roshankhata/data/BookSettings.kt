@@ -102,6 +102,19 @@ object BookSettings {
     val ACCESS_KEYS = OWNER_PIN_KEYS + setOf(COUNTER_USED, OWNER_DEVICES) + Waris.SECRET_KEYS
 
     /**
+     * The customer pages' settings ([CustomerLink], 7 Nov 2026, the security review W4): the shop's writer pass at the
+     * page server ([CustomerLink.SHOP], "<shop id>.<token>"), each customer's link id and key ([CustomerLink.PREFIX] +
+     * party uid), the links taken back ([CustomerLink.GONE] + link id) and their count ([CustomerLink.GEN] + party
+     * uid), and how pages look ([CustomerLink.MODE], [CustomerLink.TITLE], [CustomerLink.MONEY], [CustomerLink.LANG]).
+     * All of them, and any later one, start with [CUSTOMER_LINK_PREFIX]. A copy that leaves the owner's hands
+     * (secrets = false: the helper's copy, the Waris snapshot) carries none: with the pass and the keys a helper or
+     * an heir could rewrite every customer's page. They travel with the book everywhere else, as before.
+     */
+    const val CUSTOMER_LINK_PREFIX = "clink"
+
+    fun isCustomerLink(key: String): Boolean = key.startsWith(CUSTOMER_LINK_PREFIX)
+
+    /**
      * "1" when live sync may also go through Innovation 313's relay on the
      * internet (LiveCloud) while the two devices are not on one WiFi (22 Oct
      * 2026, the review: it was on for everyone while the screens said nothing

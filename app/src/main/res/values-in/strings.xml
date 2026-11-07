@@ -94,7 +94,7 @@
     <string name="waris_not_open_yet">Buku belum terbuka.</string>
     <string name="waris_save_card">Simpan kartu ahli waris</string>
     <string name="waris_card_heading">Kartu ahli waris · %1$s</string>
-    <string name="waris_card_steps">Simpan kartu ini baik-baik, seperti kunci. Jika ponsel ini hilang, pindai dari ponsel baru: %1$s → %2$s → Pindai kode pemilik. Kartu ini hanya bisa meminta; pemilik diberi tahu dan bisa menolak.</string>
+    <string name="waris_card_steps">Simpan kartu ini seperti uang tunai atau buku cek: siapa pun yang memegangnya, atau fotonya, bisa meminta buku atas nama Anda dan, jika pemilik tidak menolak tepat waktu, membukanya. Jika ponsel ini hilang, pindai dari ponsel baru: %1$s → %2$s → Pindai kode pemilik.</string>
     <string name="waris_card_read">Anda terhubung lagi dengan %1$s.</string>
     <string name="waris_forget">Lupakan buku ini</string>
     <string name="waris_forget_body">Anda tidak akan bisa meminta buku %1$s dari ponsel ini. Simpan kartu ahli waris Anda jika mungkin diperlukan.</string>
@@ -117,6 +117,11 @@
     <plurals name="waris_opens_in">
         <item quantity="other">Terbuka dalam %d hari</item>
     </plurals>
+    <string name="waris_state_open_now">Sudah meminta, dan masa tunggu selesai: mereka bisa membuka buku sekarang. Tolak untuk menutupnya.</string>
+    <string name="waris_asked_open_body">%1$s meminta membuka buku Anda dan masa tunggu sudah selesai: mereka bisa membukanya sekarang. Tolak untuk menutupnya lagi.</string>
+    <string name="waris_relay_refuses">Satu relai tidak lagi menerima kunci ponsel ini untuk salinan terkunci Anda: mungkin orang lain memegangnya di sana. Jika ini tidak hilang, matikan lalu nyalakan lagi Kunci Ahli Waris dan tambahkan lagi ahli waris Anda.</string>
+    <string name="waris_busy_today">Satu relai tidak menerima apa pun lagi hari ini. Silakan coba lagi besok; aplikasi juga akan mencoba lagi sendiri.</string>
+    <string name="waris_refusal_partial">Penolakan Anda belum sampai ke semua relai. Aplikasi terus mencoba sendiri; biarkan internet tetap menyala.</string>
     <string name="coach_title_products">Produk &amp; Stok</string>
     <string name="coach_desc_products">Stok yang tersedia, kedaluwarsa per batch, dan register stok — disusun dari tagihan yang sudah Anda catat.</string>
     <string name="followup_title">Penagihan</string>

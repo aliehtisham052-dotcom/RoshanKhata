@@ -90,7 +90,7 @@
     <string name="waris_not_open_yet">الدفتر لم يُفتح بعد.</string>
     <string name="waris_save_card">احفظ بطاقة الوارث</string>
     <string name="waris_card_heading">بطاقة الوارث · %1$s</string>
-    <string name="waris_card_steps">احفظ هذه البطاقة في مكان آمن كالمفتاح. إن ضاع هذا الهاتف فامسحها من هاتف جديد: %1$s ← %2$s ← مسح رمز المالك. لا تتيح إلا الطلب؛ ويُبلَّغ المالك ويمكنه الرفض.</string>
+    <string name="waris_card_steps">احفظ هذه البطاقة كما تحفظ النقود أو دفتر الشيكات: من يحملها أو يحمل صورة لها يستطيع أن يطلب الدفتر باسمك، وإن لم يرفض المالك في الوقت المحدد فإنه يستطيع فتحه. إن ضاع هذا الهاتف فامسحها من هاتف جديد: %1$s ← %2$s ← مسح رمز المالك.</string>
     <string name="waris_card_read">ارتبطت من جديد بـ %1$s.</string>
     <string name="waris_forget">انسَ هذا الدفتر</string>
     <string name="waris_forget_body">لن تستطيع طلب دفتر %1$s من هذا الهاتف. احتفظ ببطاقة الوارث إن احتجت إليها.</string>
@@ -128,6 +128,11 @@
         <item quantity="many">يُفتح بعد %d يومًا</item>
         <item quantity="other">يُفتح بعد %d يوم</item>
     </plurals>
+    <string name="waris_state_open_now">طلب الفتح وانتهت مدة الانتظار: يستطيع فتح الدفتر الآن. ارفض لإغلاقه.</string>
+    <string name="waris_asked_open_body">طلب %1$s فتح دفترك وانتهت مدة الانتظار: يستطيع فتحه الآن. ارفض لإغلاقه من جديد.</string>
+    <string name="waris_relay_refuses">أحد خوادم الترحيل لم يعد يقبل مفتاح هذا الهاتف لنسختك المقفلة: ربما يحتفظ بها شخص آخر هناك. إن لم يزل هذا فأوقف مفتاح الوارث ثم شغّله من جديد وأضف ورثتك مرة أخرى.</string>
+    <string name="waris_busy_today">أحد خوادم الترحيل لا يقبل المزيد اليوم. حاول غدًا؛ وسيحاول التطبيق من تلقاء نفسه أيضًا.</string>
+    <string name="waris_refusal_partial">لم يصل رفضك إلى جميع خوادم الترحيل بعد. سيواصل التطبيق المحاولة من تلقاء نفسه؛ أبقِ الإنترنت متصلًا.</string>
     <string name="coach_title_products">المنتجات والمخزون</string>
     <string name="coach_desc_products">المخزون الحالي، تاريخ انتهاء كل دفعة، وسجل المخزون — تُبنى تلقائيًا من نفس الفواتير التي تُسجّلها.</string>
     <string name="followup_title">المتابعة</string>

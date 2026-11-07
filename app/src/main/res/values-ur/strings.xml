@@ -90,7 +90,7 @@
     <string name="waris_not_open_yet">کھاتہ ابھی نہیں کھلا۔</string>
     <string name="waris_save_card">وارث کارڈ محفوظ کریں</string>
     <string name="waris_card_heading">وارث کارڈ · %1$s</string>
-    <string name="waris_card_steps">یہ کارڈ چابی کی طرح سنبھال کر رکھیں۔ اگر یہ فون کھو جائے تو نئے فون سے اسکین کریں: %1$s ← %2$s ← مالک کا کوڈ اسکین کریں۔ اس سے صرف درخواست ہو سکتی ہے؛ مالک کو بتایا جاتا ہے اور وہ منع کر سکتا ہے۔</string>
+    <string name="waris_card_steps">یہ کارڈ نقدی یا چیک بک کی طرح سنبھال کر رکھیں: جس کے پاس یہ کارڈ یا اس کی تصویر ہو، وہ آپ کے نام سے کھاتہ مانگ سکتا ہے، اور اگر مالک وقت پر منع نہ کرے تو اسے کھول بھی سکتا ہے۔ اگر یہ فون کھو جائے تو نئے فون سے اسکین کریں: %1$s ← %2$s ← مالک کا کوڈ اسکین کریں۔</string>
     <string name="waris_card_read">آپ دوبارہ %1$s سے جڑ گئے۔</string>
     <string name="waris_forget">یہ کھاتہ بھول جائیں</string>
     <string name="waris_forget_body">آپ اس فون سے %1$s کے کھاتے کی درخواست نہیں کر سکیں گے۔ ضرورت ہو سکتی ہے تو اپنا وارث کارڈ رکھ لیں۔</string>
@@ -116,6 +116,11 @@
         <item quantity="one">%d دن میں کھلے گا</item>
         <item quantity="other">%d دن میں کھلے گا</item>
     </plurals>
+    <string name="waris_state_open_now">درخواست کی، اور انتظار ختم ہو گیا: وہ اب کھاتہ کھول سکتے ہیں۔ بند کرنے کے لیے منع کریں۔</string>
+    <string name="waris_asked_open_body">%1$s نے آپ کا کھاتہ کھولنے کی درخواست کی تھی اور انتظار ختم ہو گیا ہے: وہ اب اسے کھول سکتے ہیں۔ دوبارہ بند کرنے کے لیے منع کریں۔</string>
+    <string name="waris_relay_refuses">ایک ریلے اب آپ کی بند کاپی کے لیے اس فون کی چابی نہیں مانتا: ہو سکتا ہے وہاں یہ کسی اور کے پاس ہو۔ اگر یہ ٹھیک نہ ہو تو وارث کی چابی بند کر کے دوبارہ چالو کریں اور اپنے وارث دوبارہ شامل کریں۔</string>
+    <string name="waris_busy_today">ایک ریلے آج مزید کچھ نہیں لے رہا۔ کل دوبارہ کوشش کریں؛ ایپ خود بھی دوبارہ کوشش کرے گی۔</string>
+    <string name="waris_refusal_partial">آپ نے جو منع کیا، وہ ابھی ہر ریلے تک نہیں پہنچا۔ ایپ خود کوشش کرتی رہے گی؛ انٹرنیٹ چالو رکھیں۔</string>
     <string name="coach_title_products">پروڈکٹس اور اسٹاک</string>
     <string name="coach_desc_products">دستیاب اسٹاک، بیچ کی میعاد اور اسٹاک رجسٹر — وہی بل جو آپ پہلے سے لکھتے ہیں، انہی سے خود بن جاتے ہیں۔</string>
     <string name="followup_title">وصولی</string>

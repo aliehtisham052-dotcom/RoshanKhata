@@ -124,6 +124,19 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
+                    <!-- A refusal not on every relay yet, a relay that refuses this vault (7 Nov 2026): first, when there. -->
+                    <TextView
+                        android:id="@+id/tvWarisNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/note_bg"
+                        android:padding="14dp"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/note_text"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+
                     <LinearLayout
                         android:id="@+id/warisHeirs"
                         android:layout_width="match_parent"

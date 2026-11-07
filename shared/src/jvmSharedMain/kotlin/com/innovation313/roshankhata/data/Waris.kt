@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.data
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -22,6 +24,13 @@ import java.util.zip.GZIPOutputStream
  * next run does everything idempotent again for it ([Owner.retry]). A refusal is NOT left to that: every status run
  * sends it again to any relay still showing the refused request ([merge]'s rejectAgain) — a relay that missed it
  * would otherwise open the book early.
+ *
+ * The security review (7 Nov 2026): the owner's protective calls — the status, a refusal, an allow, turning off,
+ * a removed heir's delete — never wait for live sync's kill switch, since the relays' wait clocks run on while it is
+ * on; an heir a relay holds that this book does not name is deleted there, and an allow this phone never gave is
+ * refused again ([merge]); W, the key every copy is sealed with, is in no backup any more, and a W that ever was (or
+ * none, after a restore) is replaced before anything is sealed ([Owner.state]); removed heirs and vaults are
+ * remembered for good ([K_REMOVED]), so a copy restored later cannot bring one back ([restored]).
  */
 object Waris {
 
@@ -31,13 +40,18 @@ object Waris {
     // The owner's side.
     const val K_VAULT = "waris_vault"
     const val K_OWNER_SECRET = "waris_owner_secret"
+    /** W, the key every copy is sealed with. Never written into any copy of the book, not even the owner's own backup. */
     const val K_KEY = "waris_key"
     const val K_KEY_VERSION = "waris_key_version"
+    /** "1" once W was made by a build that never puts it into a backup (7 Nov 2026); without it W is replaced first. */
+    const val K_KEY_SAFE = "waris_key_safe"
     const val K_HEIRS = "waris_heirs"
     const val K_SNAP_V = "waris_snap_v"
     const val K_SNAP_AT = "waris_snap_at"
     const val K_SNAP_BYTES = "waris_snap_bytes"
     const val K_SNAP_SIG = "waris_snap_sig"
+    /** The key version the last copy was sealed with: a W moved since needs a new copy before its boxes go. */
+    const val K_SNAP_KV = "waris_snap_kv"
     const val K_STATUS_AT = "waris_status_at"
     /** The merged status as last read (the screens and Home's question read it without a network call). */
     const val K_STATUS = "waris_status"
@@ -47,14 +61,26 @@ object Waris {
     const val K_GONE = "waris_gone"
     /** A vault turned off while some relay could not be told: its id, its owner secret and the relays still holding it. */
     const val K_OFF = "waris_off"
+    /**
+     * Every heir id (16 hex) and vault id (32 hex) ever removed from this book, never cleared: such an heir is never
+     * put on a relay again and such a vault never set up again, whatever a copy restored later says (W5).
+     */
+    const val K_REMOVED = "waris_removed"
+    /** Relays (by road tag) a refusal has not reached yet: asked again in the background until each has it (W6). */
+    const val K_REFUSE_LEFT = "waris_refuse_left"
+    /** Relays (by road tag) that answer this vault's owner pass with a refusal: someone else holds the vault id there. */
+    const val K_RELAY_NO = "waris_relay_no"
     // The heir's side.
     const val K_LINKS = "waris_links"
 
     /** Every key of the feature: none of them leaves the owner's hands (helper's copy, the Waris snapshot itself). */
     val SECRET_KEYS = setOf(
-        K_VAULT, K_OWNER_SECRET, K_KEY, K_KEY_VERSION, K_HEIRS, K_SNAP_V, K_SNAP_AT, K_SNAP_BYTES, K_SNAP_SIG,
-        K_STATUS_AT, K_STATUS, K_DIRTY, K_RELAY_V, K_GONE, K_OFF, K_LINKS
+        K_VAULT, K_OWNER_SECRET, K_KEY, K_KEY_VERSION, K_KEY_SAFE, K_HEIRS, K_SNAP_V, K_SNAP_AT, K_SNAP_BYTES, K_SNAP_SIG,
+        K_SNAP_KV, K_STATUS_AT, K_STATUS, K_DIRTY, K_RELAY_V, K_GONE, K_OFF, K_REMOVED, K_REFUSE_LEFT, K_RELAY_NO, K_LINKS
     )
+
+    /** At most this many removed ids are remembered (the oldest go first); each is a few bytes. */
+    const val MAX_REMOVED = 1000
 
     /** Whether a book setting is one of Waris ki Chaabi's (all of them are secret; a future key is too, by its prefix). */
     fun isSecret(key: String): Boolean = key in SECRET_KEYS || key.startsWith(PREFIX)
@@ -84,7 +110,8 @@ object Waris {
 
     // ------------------------------------------------------------------ outcomes
 
-    enum class Why { OFFLINE, HALTED, FULL, TOO_BIG, BAD_CODE, TOO_MANY, NOT_ON, PASS, WAIT, WAITING, NO_COPY, BROKEN }
+    /** [BUSY]: a relay took all it takes today (429, e.g. "waris-day"): tomorrow, not later today. */
+    enum class Why { OFFLINE, HALTED, FULL, BUSY, TOO_BIG, BAD_CODE, TOO_MANY, NOT_ON, PASS, WAIT, WAITING, NO_COPY, BROKEN }
 
     sealed class Result {
         /** Done on [reached] of [total] relays. */
@@ -100,7 +127,10 @@ object Waris {
         object Unreachable : Reply()
     }
 
-    /** The relays, in LiveCloud's road order; nothing at all while live sync is halted for everyone ([LiveControl]). */
+    /**
+     * The relays, in LiveCloud's road order. While live sync is halted for everyone ([LiveControl], [halted]) no new
+     * vault is made, no copy goes up and the heir's calls wait; the owner's protective calls never do (W1).
+     */
     class Relays(
         val http: LiveCloud.Http = LiveCloud.plain,
         val roads: List<LiveCloud.Road> = LiveCloud.roads(),
@@ -177,7 +207,9 @@ object Waris {
         val snapV: Int,
         val snapAt: Long,
         val snapBytes: Long,
-        val snapSig: String?
+        val snapSig: String?,
+        /** The key version the last copy was sealed with; null before 7 Nov 2026 (unknown: a new copy is due). */
+        val snapKv: Int? = null
     ) {
         val pass: String get() = WarisCrypto.ownerPass(ownerSecret, vault)
     }
@@ -215,20 +247,31 @@ object Waris {
         val hid: String, val lastSeen: Long?, val askedAt: Long?, val rejectedAt: Long?, val allowedAt: Long?, val openAt: Long?
     )
 
-    class Merged(val views: Map<String, HeirView>, val rejectAgain: List<Pair<String, String>>, val allowAgain: List<Pair<String, String>>)
+    class Merged(
+        val views: Map<String, HeirView>,
+        val rejectAgain: List<Pair<String, String>>,
+        val allowAgain: List<Pair<String, String>>,
+        /** (relay tag, hid) of heirs a relay holds that this book does not name: deleted there, never shown (W2). */
+        val unknown: List<Pair<String, String>> = emptyList()
+    )
 
     /**
      * The relays' statuses as one (pure, MergeTest): an heir has asked when ANY relay says so; the earliest openAt
      * wins; the latest lastSeen. A relay's times are moved into this phone's clock by the difference of its `now`.
      *
      * The owner's own last word decides: a request made before he refused (with [SLACK_MS] for the clocks) is not a
-     * request any more, and a relay still showing it — or still showing an allow given before the refusal — is told
-     * again ([Merged.rejectAgain]); after an allow, a relay without it is told again ([Merged.allowAgain]).
+     * request any more, and a relay still showing it is told again ([Merged.rejectAgain]); an allow this phone never
+     * gave — given before a refusal, or by someone else holding the owner's pass (a stolen backup, W3) — is refused
+     * again there and never counts; after the owner's own allow, a relay without it is told again
+     * ([Merged.allowAgain]). An heir a relay holds that is none of [heirs] (linked or still awaiting their code) is
+     * [Merged.unknown]: removed since, or put there by someone else (W2).
      */
     fun merge(heirs: List<HeirEntry>, statuses: List<RelayStatus>, localNow: Long): Merged {
         val views = LinkedHashMap<String, HeirView>()
         val rejectAgain = ArrayList<Pair<String, String>>()
         val allowAgain = ArrayList<Pair<String, String>>()
+        val mine = heirs.map { it.hid }.toSet()
+        val unknown = statuses.flatMap { s -> s.heirs.filter { it.hid !in mine }.map { s.tag to it.hid } }.distinct()
         for (h in heirs.filter { it.linked }) {
             val refused = h.refusedAt
             val allowedHere = h.allowedAt?.takeIf { refused == null || it > refused }
@@ -245,10 +288,11 @@ object Waris {
                 local(r.lastSeen)?.let { lastSeen = maxOf(lastSeen ?: it, it) }
                 val rAsked = local(r.askedAt)
                 val rAllowed = local(r.allowedAt)
-                val stale = { t: Long? -> t != null && refused != null && allowedHere == null && t <= refused + SLACK_MS }
+                val stale = rAsked != null && refused != null && allowedHere == null && rAsked <= refused + SLACK_MS
                 if (allowedHere != null) {
                     if (r.allowedAt == null) allowAgain.add(s.tag to h.hid)
-                } else if (stale(rAsked) || stale(rAllowed)) {
+                } else if (stale || rAllowed != null) {
+                    // A request from before the refusal, or an allow this phone never gave: refused there again.
                     rejectAgain.add(s.tag to h.hid)
                     continue
                 }
@@ -259,25 +303,72 @@ object Waris {
             if (allowedHere != null && openAt == null) openAt = allowedHere
             views[h.hid] = HeirView(h.hid, askedAt != null || allowed, askedAt ?: allowedHere, openAt, allowed, lastSeen, on)
         }
-        return Merged(views, rejectAgain, allowAgain)
+        return Merged(views, rejectAgain, allowAgain, unknown)
     }
 
     // ------------------------------------------------------------------ the owner's steps
 
     class Owner(private val store: Store, private val relays: Relays = Relays()) {
 
+        /**
+         * The vault this book keeps, or null. A vault once turned off here is never one again (W5). W is made new
+         * first when it ever could have gone into a backup — every W made before 7 Nov 2026 — or is missing, as after
+         * a restore (no copy carries W any more): see [key].
+         */
         suspend fun state(): OwnerState? {
             val vault = store.get(K_VAULT)?.takeIf { WarisCrypto.isHex(it, 32) } ?: return null
+            if (vault in removed()) return null
             val secret = store.get(K_OWNER_SECRET)?.let { B64.decodeOrNull(it) }?.takeIf { it.size == 32 } ?: return null
-            val w = store.get(K_KEY)?.let { B64.decodeOrNull(it) }?.takeIf { it.size == 32 } ?: return null
+            val (w, version) = key()
             return OwnerState(
-                vault, secret, w, store.get(K_KEY_VERSION)?.toIntOrNull() ?: 1, heirs(),
+                vault, secret, w, version, heirs(),
                 store.get(K_SNAP_V)?.toIntOrNull() ?: 0, store.get(K_SNAP_AT)?.toLongOrNull() ?: 0L,
-                store.get(K_SNAP_BYTES)?.toLongOrNull() ?: 0L, store.get(K_SNAP_SIG)
+                store.get(K_SNAP_BYTES)?.toLongOrNull() ?: 0L, store.get(K_SNAP_SIG), store.get(K_SNAP_KV)?.toIntOrNull()
             )
         }
 
-        suspend fun heirs(): List<HeirEntry> = jsonArray(store.get(K_HEIRS)).mapNotNull { HeirEntry.of(it) }
+        /**
+         * W and its version. A W not marked [K_KEY_SAFE] (one an older build kept in every full backup) or none at all
+         * (a book restored from a copy) is replaced: a new W, the next version, every relay marked, so the next run
+         * seals a new copy and every heir's box again ([push]) — a W in a backup opens nothing the relays hold from
+         * then on (the security review, W3). Once per book: the new W is marked.
+         */
+        private suspend fun key(): Pair<ByteArray, Int> = keyLock.withLock {
+            val w = store.get(K_KEY)?.let { B64.decodeOrNull(it) }?.takeIf { it.size == 32 }
+            val version = store.get(K_KEY_VERSION)?.toIntOrNull() ?: 1
+            if (w != null && store.get(K_KEY_SAFE) == "1") w to version else newKey(version + 1) to (version + 1)
+        }
+
+        /** A new W at [version], made here and never written into any copy of the book; every relay gets it again. */
+        private suspend fun newKey(version: Int): ByteArray {
+            val w = WarisCrypto.newSecret()
+            store.put(K_KEY, B64.encode(w))
+            store.put(K_KEY_VERSION, version.toString())
+            store.put(K_KEY_SAFE, "1")
+            setDirty(relays.roads.map { it.tag }.toSet())
+            return w
+        }
+
+        /** The heirs this book names; one removed is never among them, whatever a restored copy's list said (W5). */
+        suspend fun heirs(): List<HeirEntry> {
+            val removed = removed()
+            return jsonArray(store.get(K_HEIRS)).mapNotNull { HeirEntry.of(it) }.filter { it.hid !in removed }
+        }
+
+        /** Every heir and vault ever removed from this book ([K_REMOVED]). */
+        suspend fun removed(): Set<String> = idList(store.get(K_REMOVED)).toSet()
+
+        private suspend fun remember(ids: Collection<String>) {
+            val all = LinkedHashSet(idList(store.get(K_REMOVED)))
+            ids.filter { isId(it) }.forEach { all.remove(it); all.add(it) }
+            store.put(K_REMOVED, JSONArray(all.toList().takeLast(MAX_REMOVED)).toString())
+        }
+
+        /** Relays a refusal has not reached yet ([K_REFUSE_LEFT]): Home says so, and the background asks them again. */
+        suspend fun refuseLeft(): Set<String> = stringSet(store.get(K_REFUSE_LEFT))
+
+        /** Relays that refuse this vault's owner pass ([K_RELAY_NO]): the screen says someone else holds it there. */
+        suspend fun relaysRefusing(): Set<String> = stringSet(store.get(K_RELAY_NO))
 
         private suspend fun saveHeirs(list: List<HeirEntry>) =
             store.put(K_HEIRS, JSONArray().apply { list.forEach { put(it.toJson()) } }.toString())
@@ -317,19 +408,22 @@ object Waris {
             val pass = WarisCrypto.ownerPass(secret, vault)
             var ok = 0
             var full = false
+            var busy = false
             val missed = HashSet<String>()
             for (road in relays.roads) {
                 when (val r = relays.call(road, "POST", vault, "/setup", pass)) {
                     is Reply.Ok -> ok++
-                    is Reply.No -> { if (r.code == 507) full = true; missed.add(road.tag) }
+                    is Reply.No -> {
+                        when (stepOf(r)) { Step.FULL -> full = true; Step.BUSY -> busy = true; else -> Unit }
+                        missed.add(road.tag)
+                    }
                     Reply.Unreachable -> missed.add(road.tag)
                 }
             }
-            if (ok == 0) return Result.Failed(if (full) Why.FULL else Why.OFFLINE)
+            if (ok == 0) return Result.Failed(why(full, busy))
             store.put(K_VAULT, vault)
             store.put(K_OWNER_SECRET, B64.encode(secret))
-            store.put(K_KEY, B64.encode(WarisCrypto.newSecret()))
-            store.put(K_KEY_VERSION, "1")
+            newKey(1)
             store.put(K_SNAP_V, "0")
             setDirty(missed)
             return Result.Done(ok, relays.roads.size)
@@ -373,18 +467,20 @@ object Waris {
             return push(book, now, newSnapshot = true)
         }
 
-        /** An heir taken off: a new W (keyVersion + 1), new boxes for the others, a new snapshot, the heir deleted everywhere. */
+        /**
+         * An heir taken off: remembered for good (W5), deleted everywhere before anything else is sent (W2), a new W
+         * (keyVersion + 1), new boxes for the others, a new snapshot.
+         */
         suspend fun removeHeir(hid: String, book: Book?, now: Long = System.currentTimeMillis()): Result {
             val st = state() ?: return Result.Failed(Why.NOT_ON)
             val h = st.heirs.firstOrNull { it.hid == hid } ?: return Result.Done(0, 0)
             saveHeirs(st.heirs.filter { it.hid != hid })
+            remember(listOf(hid))
             if (!h.linked) return Result.Done(relays.roads.size, relays.roads.size)
             // Saved before anything is sent: a run killed half way finds the new key and sends again.
-            store.put(K_KEY, B64.encode(WarisCrypto.newSecret()))
-            store.put(K_KEY_VERSION, (st.keyVersion + 1).toString())
+            newKey(st.keyVersion + 1)
             store.put(K_GONE, JSONArray((stringSet(store.get(K_GONE)) + hid).toList()).toString())
             val views = views().toMutableMap(); views.remove(hid); saveViews(views)
-            setDirty(relays.roads.map { it.tag }.toSet())
             return push(book, now, newSnapshot = true)
         }
 
@@ -400,38 +496,57 @@ object Waris {
         }
 
         /**
-         * Everything the relays should hold, to the relays marked dirty (setup, every linked heir's box, the deletes of
-         * removed heirs) and, when [newSnapshot] or some relay lacks the current version, a snapshot to every relay.
+         * Everything the relays should hold, to the relays marked dirty (the deletes of removed heirs first, then
+         * setup and every linked heir's box) and, when [newSnapshot], when W moved since the last copy, or when some
+         * relay lacks the current version, a snapshot to every relay.
          */
         private suspend fun push(book: Book?, now: Long, newSnapshot: Boolean = false, onlyIfChanged: Boolean = false): Result {
             val st = state() ?: return Result.Failed(Why.NOT_ON)
-            if (relays.roads.isEmpty() || relays.halted()) return Result.Failed(Why.HALTED)
+            if (relays.roads.isEmpty()) return Result.Failed(Why.HALTED)
             val dirty = dirty()
-            val have = relayV()
             val gone = stringSet(store.get(K_GONE))
+            // A removed heir comes off every relay still marked first (W2): before any heir is put — a relay holding
+            // five answers a new one "full" until the removed one is gone — and even while live sync is halted for
+            // everyone (W1): taking a way in away is never held back.
+            val cleared = relays.roads.filter { it.tag in dirty && deleteGone(it, st, gone) }.map { it.tag }.toSet()
+            if (relays.halted()) return Result.Failed(Why.HALTED)
+            val have = relayV()
+            val linked = st.heirs.any { it.linked }
+            // W moved since the copy the relays hold was sealed (an heir removed, a restored book, the review's
+            // turn of every older W): a new copy is due, and the boxes of the new W wait for it.
+            val keyMoved = linked && st.snapKv != st.keyVersion
             var packed: Packed? = null
-            val needSnap = book != null && st.heirs.any { it.linked } &&
-                (newSnapshot || st.snapV == 0 || relays.roads.any { have[it.tag] != st.snapV })
+            val needSnap = book != null && linked &&
+                (newSnapshot || keyMoved || st.snapV == 0 || relays.roads.any { have[it.tag] != st.snapV })
             if (needSnap) {
                 val v = maxOf(st.snapV, have.values.maxOrNull() ?: 0) + 1
                 packed = try { pack(book!!, st, v) } catch (e: TooBig) { return Result.Failed(Why.TOO_BIG) }
-                if (onlyIfChanged && packed.sig == st.snapSig && now - st.snapAt < SNAP_EVERY_MS &&
+                if (onlyIfChanged && !keyMoved && packed.sig == st.snapSig && now - st.snapAt < SNAP_EVERY_MS &&
                     relays.roads.all { have[it.tag] == st.snapV }) packed = null
             }
+            // A box of a W no copy is sealed with yet, beside the copy of the old W, would open nothing for the heir.
+            val boxesWait = keyMoved && packed == null
             var reached = 0
             var full = false
+            var busy = false
             for (road in relays.roads) {
-                var ok = true
+                var ok = road.tag !in dirty || road.tag in cleared
                 // A new copy goes with every heir's box again (they are small): a box and the copy can then never be
                 // of two keys, whatever a restore or a run killed half way left behind.
-                if (road.tag in dirty || packed != null) {
-                    ok = setupAndHeirs(road, st, gone)
+                if (ok && (road.tag in dirty || packed != null)) {
+                    ok = !boxesWait && when (setupAndHeirs(road, st)) {
+                        Step.OK -> true
+                        Step.FULL -> { full = true; false }
+                        Step.BUSY -> { busy = true; false }
+                        Step.FAIL -> false
+                    }
                 }
                 if (ok && packed != null) {
                     when (upload(road, st, packed)) {
-                        Up.OK -> have[road.tag] = packed.v
-                        Up.FULL -> { full = true; ok = false }
-                        Up.FAIL -> ok = false
+                        Step.OK -> have[road.tag] = packed.v
+                        Step.FULL -> { full = true; ok = false }
+                        Step.BUSY -> { busy = true; ok = false }
+                        Step.FAIL -> ok = false
                     }
                 }
                 if (ok) { dirty.remove(road.tag); reached++ } else dirty.add(road.tag)
@@ -444,84 +559,136 @@ object Waris {
                 store.put(K_SNAP_AT, now.toString())
                 store.put(K_SNAP_BYTES, packed.sealed.size.toString())
                 store.put(K_SNAP_SIG, packed.sig)
+                store.put(K_SNAP_KV, st.keyVersion.toString())
             }
-            return if (reached == 0) Result.Failed(if (full) Why.FULL else Why.OFFLINE) else Result.Done(reached, relays.roads.size)
+            return if (reached == 0) Result.Failed(why(full, busy)) else Result.Done(reached, relays.roads.size)
         }
 
-        private fun setupAndHeirs(road: LiveCloud.Road, st: OwnerState, gone: Set<String>): Boolean {
+        /** Every hid in [gone] deleted on one relay (an heir already gone there is gone): true when all went. */
+        private fun deleteGone(road: LiveCloud.Road, st: OwnerState, gone: Set<String>): Boolean =
+            gone.all { hid -> landed(relays.call(road, "DELETE", st.vault, "/heir/$hid", st.pass)) }
+
+        /** The vault set up and every linked heir's box put, on one relay (the removed ones are gone by then). */
+        private fun setupAndHeirs(road: LiveCloud.Road, st: OwnerState): Step {
             val pass = st.pass
-            if (relays.call(road, "POST", st.vault, "/setup", pass) !is Reply.Ok) return false
+            when (val r = relays.call(road, "POST", st.vault, "/setup", pass)) {
+                is Reply.Ok -> Unit
+                is Reply.No -> return stepOf(r)
+                Reply.Unreachable -> return Step.FAIL
+            }
             for (h in st.heirs.filter { it.linked }) {
                 val pub = WarisCrypto.unb64url(h.pub!!) ?: continue
                 val box = WarisCrypto.sealBox(pub, st.w, st.keyVersion, st.vault, h.hid)
                 val body = JSONObject().put("passHash", h.passHash).put("box", B64.encode(box)).put("wait", h.wait)
                     .toString().toByteArray(Charsets.UTF_8)
-                if (relays.call(road, "PUT", st.vault, "/heir/${h.hid}", pass, body, "application/json") !is Reply.Ok) return false
+                when (val r = relays.call(road, "PUT", st.vault, "/heir/${h.hid}", pass, body, "application/json")) {
+                    is Reply.Ok -> Unit
+                    is Reply.No -> return stepOf(r)
+                    Reply.Unreachable -> return Step.FAIL
+                }
             }
-            for (hid in gone) {
-                val r = relays.call(road, "DELETE", st.vault, "/heir/$hid", pass)
-                // Already gone there is gone.
-                if (r !is Reply.Ok && !(r is Reply.No && r.code == 404)) return false
-            }
-            return true
+            return Step.OK
         }
 
-        private enum class Up { OK, FULL, FAIL }
-
-        private fun upload(road: LiveCloud.Road, st: OwnerState, p: Packed): Up {
+        private fun upload(road: LiveCloud.Road, st: OwnerState, p: Packed): Step {
             val n = p.chunks.size
             for ((i, c) in p.chunks.withIndex()) {
                 when (val r = relays.call(road, "PUT", st.vault, "/snap?v=${p.v}&i=$i&n=$n", st.pass, c, "application/octet-stream")) {
-                    is Reply.Ok -> if (i == n - 1 && r.json?.optBoolean("complete", false) != true) return Up.FAIL
-                    is Reply.No -> return if (r.code == 507 || r.code == 413) Up.FULL else Up.FAIL
-                    Reply.Unreachable -> return Up.FAIL
+                    is Reply.Ok -> if (i == n - 1 && r.json?.optBoolean("complete", false) != true) return Step.FAIL
+                    is Reply.No -> return stepOf(r)
+                    Reply.Unreachable -> return Step.FAIL
                 }
             }
-            return Up.OK
+            return Step.OK
         }
 
         /**
          * Every relay's status, merged ([merge]); a refusal a relay missed is sent to it again, an allow likewise;
          * a relay that no longer knows the vault or a linked heir is marked to be set up again. Cached for the screens.
+         *
+         * Never held back by live sync's kill switch (W1): the relays' wait clocks run on while it is on, and the owner
+         * must still see a request and refuse it. An heir a relay holds that this book does not name is deleted there
+         * and remembered for good (W2); a relay that refuses this vault's pass is noted for the screen (W9); a refusal
+         * still owed to a relay is settled once that relay answered and every call sent to it landed (W6).
          */
         suspend fun status(now: Long = System.currentTimeMillis()): Map<String, HeirView>? {
             val st = state() ?: return null
-            if (relays.roads.isEmpty() || relays.halted()) return null
+            if (relays.roads.isEmpty()) return null
             val statuses = ArrayList<RelayStatus>()
             val dirty = dirty()
             val have = relayV()
+            val answered = HashSet<String>()
+            val refusing = HashSet<String>()
             for (road in relays.roads) {
                 when (val r = relays.call(road, "GET", st.vault, "/status", st.pass)) {
                     is Reply.Ok -> {
                         val o = r.json ?: continue
                         val s = relayStatus(road.tag, o) ?: continue
                         statuses.add(s)
+                        answered.add(road.tag)
                         if (s.snapV == null) have.remove(road.tag) else have[road.tag] = s.snapV
                         if (st.heirs.any { h -> h.linked && s.heirs.none { it.hid == h.hid } }) dirty.add(road.tag)
                     }
-                    is Reply.No -> if (r.code == 404) { dirty.add(road.tag); have.remove(road.tag) }
+                    is Reply.No -> when (r.code) {
+                        // No vault there (yet, or any more): set up again; nothing there can open.
+                        404 -> { dirty.add(road.tag); have.remove(road.tag); answered.add(road.tag) }
+                        // Another pass holds this vault id there: nothing of this book's can be done on that relay.
+                        403 -> { refusing.add(road.tag); answered.add(road.tag) }
+                        else -> Unit
+                    }
                     Reply.Unreachable -> Unit
                 }
             }
             setDirty(dirty)
             setRelayV(have)
-            if (statuses.isEmpty()) return null
-            val merged = merge(st.heirs, statuses, now)
-            for ((tag, hid) in merged.rejectAgain) relays.roads.firstOrNull { it.tag == tag }?.let { relays.call(it, "POST", st.vault, "/heir/$hid/reject", st.pass) }
-            for ((tag, hid) in merged.allowAgain) relays.roads.firstOrNull { it.tag == tag }?.let { relays.call(it, "POST", st.vault, "/heir/$hid/allow", st.pass) }
-            saveViews(merged.views)
-            store.put(K_STATUS_AT, now.toString())
-            return merged.views
+            val no = relaysRefusing().toMutableSet()
+            no.removeAll(answered)
+            no.addAll(refusing)
+            store.put(K_RELAY_NO, if (no.isEmpty()) null else JSONArray(no.sorted()).toString())
+            val missed = HashSet<String>()
+            var views: Map<String, HeirView>? = null
+            if (statuses.isNotEmpty()) {
+                // The heirs read again: one named while the relays answered is not a stranger.
+                val merged = merge(heirs(), statuses, now)
+                for ((tag, hid) in merged.rejectAgain) roadOf(tag)?.let {
+                    if (!landed(relays.call(it, "POST", st.vault, "/heir/$hid/reject", st.pass))) missed.add(tag)
+                }
+                for ((tag, hid) in merged.allowAgain) roadOf(tag)?.let { relays.call(it, "POST", st.vault, "/heir/$hid/allow", st.pass) }
+                // Removed since, a copy restored over the list, or put there by someone else holding the owner's pass:
+                // never put back, and deleted wherever it is.
+                if (merged.unknown.isNotEmpty()) remember(merged.unknown.map { it.second })
+                for ((tag, hid) in merged.unknown) roadOf(tag)?.let {
+                    if (!landed(relays.call(it, "DELETE", st.vault, "/heir/$hid", st.pass))) missed.add(tag)
+                }
+                saveViews(merged.views)
+                store.put(K_STATUS_AT, now.toString())
+                views = merged.views
+            }
+            // A refusal is owed to a relay until it answered and took everything sent to it; one refusing this vault's
+            // pass stays owed (a refusal never lands there), and a relay no longer on the road is not asked.
+            val left = refuseLeft().toMutableSet()
+            if (left.isNotEmpty()) {
+                left.removeAll(answered - refusing - missed)
+                left.retainAll(relays.roads.map { it.tag }.toSet())
+                store.put(K_REFUSE_LEFT, if (left.isEmpty()) null else JSONArray(left.sorted()).toString())
+            }
+            return views
         }
 
-        /** The owner refuses: remembered first (every later status run holds every relay to it), then said everywhere. */
+        /**
+         * The owner refuses: remembered first (every later status run holds every relay to it), then said everywhere —
+         * never held back by live sync's kill switch (W1). A relay it did not reach is owed it ([refuseLeft], W6).
+         */
         suspend fun refuse(hid: String, now: Long = System.currentTimeMillis()): Result {
             val st = state() ?: return Result.Failed(Why.NOT_ON)
             saveHeirs(st.heirs.map { if (it.hid == hid) it.copy(refusedAt = now, allowedAt = null) else it })
             views()[hid]?.let { v ->
                 saveViews(views() + (hid to HeirView(hid, false, null, null, false, v.lastSeen, v.onRelays)))
             }
-            return everyRelay(st, "/heir/$hid/reject")
+            // A relay without this heir (or without the vault) has nothing to open: refused there too.
+            val (result, missed) = everyRelay(st, "/heir/$hid/reject", goneIsDone = true)
+            if (missed.isNotEmpty()) store.put(K_REFUSE_LEFT, JSONArray((refuseLeft() + missed).sorted()).toString())
+            return result
         }
 
         /** The owner opens the book to this heir now. */
@@ -531,19 +698,26 @@ object Waris {
             views()[hid]?.let { v ->
                 saveViews(views() + (hid to HeirView(hid, true, v.askedAt ?: now, now, true, v.lastSeen, v.onRelays)))
             }
-            return everyRelay(st, "/heir/$hid/allow")
+            return everyRelay(st, "/heir/$hid/allow").first
         }
 
-        private fun everyRelay(st: OwnerState, path: String): Result {
-            if (relays.roads.isEmpty() || relays.halted()) return Result.Failed(Why.HALTED)
+        /** [path] posted to every relay; the result and the relays it did not reach. */
+        private fun everyRelay(st: OwnerState, path: String, goneIsDone: Boolean = false): Pair<Result, Set<String>> {
+            if (relays.roads.isEmpty()) return Result.Failed(Why.HALTED) to emptySet()
             var ok = 0
-            for (road in relays.roads) if (relays.call(road, "POST", st.vault, path, st.pass) is Reply.Ok) ok++
-            return if (ok == 0) Result.Failed(Why.OFFLINE) else Result.Done(ok, relays.roads.size)
+            val missed = HashSet<String>()
+            for (road in relays.roads) {
+                val r = relays.call(road, "POST", st.vault, path, st.pass)
+                if (r is Reply.Ok || (goneIsDone && landed(r))) ok++ else missed.add(road.tag)
+            }
+            return (if (ok == 0) Result.Failed(Why.OFFLINE) else Result.Done(ok, relays.roads.size)) to missed
         }
 
         /**
-         * Waris off: the vault deleted on every relay and every key cleared here. A relay not reached keeps the vault
-         * id and owner secret in [K_OFF] and is told on the next run ([retryOff]) — never left able to open.
+         * Waris off: the vault deleted on every relay — never held back by live sync's kill switch (W1) — and every key
+         * cleared here but the removed list, which now holds the vault too (a copy restored later never sets it up
+         * again, W5). A relay not reached keeps the vault id and owner secret in [K_OFF] and is told on the next run
+         * ([retryOff]) — never left able to open.
          */
         suspend fun turnOff(): Result {
             retryOff()
@@ -551,10 +725,10 @@ object Waris {
             val left = HashSet<String>()
             var ok = 0
             for (road in relays.roads) {
-                val r = if (relays.halted()) Reply.Unreachable else relays.call(road, "DELETE", st.vault, "", st.pass)
-                if (r is Reply.Ok || (r is Reply.No && r.code == 404)) ok++ else left.add(road.tag)
+                if (landed(relays.call(road, "DELETE", st.vault, "", st.pass))) ok++ else left.add(road.tag)
             }
-            for (k in SECRET_KEYS) if (k != K_LINKS) store.put(k, null)
+            for (k in SECRET_KEYS) if (k != K_LINKS && k != K_REMOVED) store.put(k, null)
+            remember(listOf(st.vault))
             if (left.isNotEmpty()) {
                 store.put(K_OFF, JSONObject().put("vault", st.vault).put("secret", B64.encode(st.ownerSecret))
                     .put("left", JSONArray(left.toList())).toString())
@@ -566,23 +740,87 @@ object Waris {
             val o = store.get(K_OFF)?.let { runCatching { JSONObject(it) }.getOrNull() } ?: return
             val vault = o.optString("vault")
             val secret = B64.decodeOrNull(o.optString("secret")) ?: run { store.put(K_OFF, null); return }
-            if (relays.halted()) return
+            // Never held back by live sync's kill switch (W1): a vault left on a relay is a way in.
             val left = stringSet(o.optJSONArray("left")?.toString())
             val pass = WarisCrypto.ownerPass(secret, vault)
             for (road in relays.roads.filter { it.tag in left }) {
-                val r = relays.call(road, "DELETE", vault, "", pass)
-                if (r is Reply.Ok || (r is Reply.No && r.code == 404)) left.remove(road.tag)
+                if (landed(relays.call(road, "DELETE", vault, "", pass))) left.remove(road.tag)
             }
             store.put(K_OFF, if (left.isEmpty()) null else o.put("left", JSONArray(left.toList())).toString())
         }
 
         /** Whether a vault waits to be removed from some relay (the screen says the off is not finished). */
         suspend fun offPending(): Boolean = store.get(K_OFF) != null
+
+        private fun roadOf(tag: String): LiveCloud.Road? = relays.roads.firstOrNull { it.tag == tag }
+
+        private enum class Step { OK, FULL, BUSY, FAIL }
+
+        /** A relay's refusal read: full (507, or 413 for a chunk), taken all it takes today (429), else a failure. */
+        private fun stepOf(r: Reply.No): Step = when (r.code) {
+            507, 413 -> Step.FULL
+            429 -> Step.BUSY
+            else -> Step.FAIL
+        }
+
+        private fun why(full: Boolean, busy: Boolean): Why = when {
+            full -> Why.FULL
+            busy -> Why.BUSY
+            else -> Why.OFFLINE
+        }
+
+        /** Done there, or nothing there to do: an answer of 404 is "already gone". */
+        private fun landed(r: Reply): Boolean = r is Reply.Ok || (r is Reply.No && r.code == 404)
+    }
+
+    // ------------------------------------------------------------------ a restore
+
+    /**
+     * The Waris settings a restore leaves in the book (7 Nov 2026, the security review: W3, W5), from this book's own
+     * before the restore ([here]: none on a live pairing, which keeps nothing of the device's) and the copy's ([copy];
+     * any settings, only Waris's are read). The keys are the device's, never the copy's to impose:
+     *  - a vault this book keeps stays exactly as it is — its heirs, its W, its marks: an older copy never brings back
+     *    an heir removed since, nor its own list over heirs named since;
+     *  - a book without one takes the copy's (a new phone restored from the owner's backup), but never on a live
+     *    pairing (one device keeps a vault: two would seal its copies under two keys), never a vault turned off, and
+     *    never a W ([K_KEY]): no copy carries one since this review, an older copy's is dropped, and the book makes a
+     *    new one before anything is sealed ([Owner.state]) — every heir's box and the copy then go again;
+     *  - the heirs and vaults removed ([K_REMOVED]) are both lists together, and an heir in them leaves the list;
+     *  - a turn-off still to finish ([K_OFF]) and the heir's own links ([K_LINKS]): this book's, else the copy's (not
+     *    on a pairing: another device's links are that device's heir keys).
+     */
+    fun restored(here: List<BookSetting>, copy: List<BookSetting>, pairing: Boolean): List<BookSetting> {
+        fun settings(list: List<BookSetting>): Map<String, String> =
+            list.mapNotNull { s -> s.value?.takeIf { isSecret(s.key) }?.let { s.key to it } }.toMap()
+        val h = settings(here)
+        val c = settings(copy)
+        val removed = LinkedHashSet(idList(h[K_REMOVED])).apply { addAll(idList(c[K_REMOVED])) }
+        fun keeps(m: Map<String, String>): Boolean {
+            val vault = m[K_VAULT] ?: return false
+            return WarisCrypto.isHex(vault, 32) && vault !in removed && B64.decodeOrNull(m[K_OWNER_SECRET].orEmpty())?.size == 32
+        }
+        val owner: Map<String, String> = when {
+            keeps(h) -> h
+            !pairing && keeps(c) -> c - K_KEY - K_KEY_SAFE
+            else -> emptyMap()
+        }
+        val out = LinkedHashMap<String, String>()
+        for ((k, v) in owner) if (k != K_LINKS && k != K_REMOVED && k != K_OFF) out[k] = v
+        out[K_HEIRS]?.let { text ->
+            out[K_HEIRS] = JSONArray().apply { jsonArray(text).filter { it.optString("hid") !in removed }.forEach { put(it) } }.toString()
+        }
+        (h[K_OFF] ?: c[K_OFF]?.takeIf { !pairing })?.let { out[K_OFF] = it }
+        (h[K_LINKS] ?: c[K_LINKS]?.takeIf { !pairing })?.let { out[K_LINKS] = it }
+        if (removed.isNotEmpty()) out[K_REMOVED] = JSONArray(removed.toList().takeLast(MAX_REMOVED)).toString()
+        return out.map { (k, v) -> BookSetting(k, v) }
     }
 
     // ------------------------------------------------------------------ the snapshot, packed
 
     class TooBig : Exception("the book is too big for a Waris copy")
+
+    /** Thrown by a [Book] whose shop is no longer the one it was taken for (a switch, a helper's copy opened): W8. */
+    class BookMoved : Exception("the book's shop changed while its copy was being made")
 
     class Packed(val v: Int, val sealed: ByteArray, val sig: String) {
         val chunks: List<ByteArray> = WarisCrypto.chunks(sealed) ?: throw TooBig()
@@ -881,6 +1119,18 @@ object Waris {
         val a = text?.let { runCatching { JSONArray(it) }.getOrNull() } ?: return HashSet()
         return (0 until a.length()).map { a.optString(it) }.toMutableSet()
     }
+
+    /** An heir's id (16 hex) or a vault's (32 hex). */
+    private fun isId(s: String): Boolean = WarisCrypto.isHex(s, 16) || WarisCrypto.isHex(s, 32)
+
+    /** The well-formed ids of a JSON array, in their order. */
+    private fun idList(text: String?): List<String> {
+        val a = text?.let { runCatching { JSONArray(it) }.getOrNull() } ?: return emptyList()
+        return (0 until a.length()).map { a.optString(it) }.filter { isId(it) }.distinct()
+    }
+
+    /** One for the process: W is made new at most once, whichever screen or run asks first ([Owner.state]). */
+    private val keyLock = Mutex()
 }
 
 /** Standard Base64 that answers null instead of throwing (a setting that does not read is no key). */

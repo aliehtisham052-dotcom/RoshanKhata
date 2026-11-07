@@ -261,9 +261,13 @@ object BackupCodec {
         // Format 12: the book's own settings, loyalty points and shifts.
         root.put("bookSettings", JSONArray().apply {
             // Waris ki Chaabi's keys (the vault's secrets, the heirs' and an heir's own links) never leave the owner's
-            // hands either: not in a helper's copy, not in the Waris snapshot itself (4 Nov 2026). A full backup keeps them.
-            dao.allSettingsForBackup().filter { secrets || (it.key !in BookSettings.OWNER_PIN_KEYS && !Waris.isSecret(it.key)) }
-                .forEach { put(JSONObject().apply { put("key", it.key); put("value", it.value ?: JSONObject.NULL) }) }
+            // hands either: not in a helper's copy, not in the Waris snapshot itself (4 Nov 2026). A full backup keeps them
+            // all but W, the key the vault's copies are sealed with, which is in no copy at all (7 Nov 2026, W3: a stolen
+            // backup opened every copy; a restored book makes a new W). Nor do the customer pages' pass and keys (W4).
+            dao.allSettingsForBackup().filter {
+                it.key != Waris.K_KEY && (secrets ||
+                    (it.key !in BookSettings.OWNER_PIN_KEYS && !Waris.isSecret(it.key) && !BookSettings.isCustomerLink(it.key)))
+            }.forEach { put(JSONObject().apply { put("key", it.key); put("value", it.value ?: JSONObject.NULL) }) }
         })
         root.put("loyalty", JSONArray().apply { dao.allLoyaltyForBackup().forEach { put(loyaltyToJson(it)) } })
         root.put("shifts", JSONArray().apply { dao.allShiftsForBackup().forEach { put(shiftToJson(it)) } })

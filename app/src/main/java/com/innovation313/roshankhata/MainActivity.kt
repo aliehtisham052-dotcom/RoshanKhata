@@ -126,7 +126,7 @@ class MainActivity : BaseActivity() {
 
         // The automations' hourly check (31 Oct 2026): scheduled from Home too, for an owner who never opens Khata.
         runCatching { AutomationWorker.schedule(this) }
-        // Waris ki Chaabi's weekly run (4 Nov 2026): it does nothing for a book without a vault or a link.
+        // Waris ki Chaabi's run, twice a day since 7 Nov 2026: it does nothing for a phone without a vault or a link.
         runCatching { WarisWorker.schedule(this) }
 
         tvNetBalance = findViewById(R.id.tvNetBalance)
@@ -1053,7 +1053,9 @@ class MainActivity : BaseActivity() {
             LedgerReportActivity::class.java,
             // A payment a wallet app announced (PaymentVoice): the customer's form, or the list to choose from.
             PartyDetailActivity::class.java,
-            KhataActivity::class.java
+            KhataActivity::class.java,
+            // An heir's request (Waris ki Chaabi, 7 Nov 2026): the place to refuse, in the shop it is about.
+            WarisActivity::class.java
         )
     }
 }

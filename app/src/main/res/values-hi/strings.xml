@@ -94,7 +94,7 @@
     <string name="waris_not_open_yet">खाता अभी नहीं खुला।</string>
     <string name="waris_save_card">वारिस कार्ड सहेजें</string>
     <string name="waris_card_heading">वारिस कार्ड · %1$s</string>
-    <string name="waris_card_steps">इस कार्ड को चाबी की तरह सँभालकर रखें। अगर यह फ़ोन खो जाए तो नए फ़ोन से स्कैन करें: %1$s → %2$s → मालिक का कोड स्कैन करें। इससे सिर्फ़ अनुरोध हो सकता है; मालिक को बताया जाता है और वह मना कर सकता है।</string>
+    <string name="waris_card_steps">इस कार्ड को नकद या चेकबुक की तरह सँभालकर रखें: जिसके पास यह कार्ड या इसकी फ़ोटो हो, वह आपके नाम से खाता माँग सकता है, और अगर मालिक समय पर मना न करे तो उसे खोल भी सकता है। अगर यह फ़ोन खो जाए तो नए फ़ोन से स्कैन करें: %1$s → %2$s → मालिक का कोड स्कैन करें।</string>
     <string name="waris_card_read">आप दोबारा %1$s से जुड़ गए।</string>
     <string name="waris_forget">यह खाता भूल जाएँ</string>
     <string name="waris_forget_body">आप इस फ़ोन से %1$s के खाते का अनुरोध नहीं कर सकेंगे। ज़रूरत पड़ सकती है तो अपना वारिस कार्ड रख लें।</string>
@@ -120,6 +120,11 @@
         <item quantity="one">%d दिन में खुलेगा</item>
         <item quantity="other">%d दिन में खुलेगा</item>
     </plurals>
+    <string name="waris_state_open_now">अनुरोध किया, और इंतज़ार पूरा हो गया: वे अब खाता खोल सकते हैं। बंद करने के लिए मना करें।</string>
+    <string name="waris_asked_open_body">%1$s ने आपका खाता खोलने का अनुरोध किया था और इंतज़ार पूरा हो गया है: वे अब इसे खोल सकते हैं। फिर से बंद करने के लिए मना करें।</string>
+    <string name="waris_relay_refuses">एक रिले अब आपकी बंद कॉपी के लिए इस फ़ोन की चाबी नहीं मानता: हो सकता है वहाँ यह किसी और के पास हो। अगर यह ठीक न हो, तो वारिस की चाबी बंद करके फिर से चालू करें और अपने वारिस फिर से जोड़ें।</string>
+    <string name="waris_busy_today">एक रिले आज और कुछ नहीं ले रहा। कल फिर कोशिश करें; ऐप ख़ुद भी दोबारा कोशिश करेगा।</string>
+    <string name="waris_refusal_partial">आपका मना करना अभी हर रिले तक नहीं पहुँचा है। ऐप ख़ुद कोशिश करता रहेगा; इंटरनेट चालू रखें।</string>
     <string name="coach_title_products">प्रोडक्ट और स्टॉक</string>
     <string name="coach_desc_products">मौजूद स्टॉक, बैच की एक्सपायरी और स्टॉक रजिस्टर — उन्हीं बिलों से जो आप पहले से लिखते हैं।</string>
     <string name="followup_title">वसूली</string>

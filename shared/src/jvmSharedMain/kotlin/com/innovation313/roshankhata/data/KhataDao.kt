@@ -2608,11 +2608,17 @@ interface KhataDao {
         restoreAdjustments(adjustments)
         restoreOrders(orders)
         restoreOrderItems(orderItems)
-        restoreSettings(settings)
+        // Waris ki Chaabi's keys by their own rule (7 Nov 2026, the security review W3/W5): a vault this book keeps
+        // stays as it is, removed heirs are both lists together, a pairing takes none of the other device's.
+        restoreSettings(settings.filterNot { Waris.isSecret(it.key) } + Waris.restored(access, settings, pairing = !keepAccess))
         if (access.isNotEmpty()) {
             val copyHasPin = settings.any { it.key == BookSettings.OWNER_PIN_HASH && it.value != null }
             val keep = access.filter { k ->
-                if (k.key in BookSettings.OWNER_PIN_KEYS) !copyHasPin else settings.none { it.key == k.key }
+                when {
+                    Waris.isSecret(k.key) -> false
+                    k.key in BookSettings.OWNER_PIN_KEYS -> !copyHasPin
+                    else -> settings.none { it.key == k.key }
+                }
             }
             if (keep.isNotEmpty()) restoreSettings(keep)
         }

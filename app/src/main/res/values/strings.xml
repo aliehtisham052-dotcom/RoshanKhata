@@ -94,7 +94,7 @@
     <string name="waris_not_open_yet">The book is not open yet.</string>
     <string name="waris_save_card">Save Waris card</string>
     <string name="waris_card_heading">Waris card · %1$s</string>
-    <string name="waris_card_steps">Keep this card safe, like a key. If this phone is lost, scan it from a new phone: %1$s → %2$s → Scan owner\'s code. It can only ask; the owner is told and can refuse.</string>
+    <string name="waris_card_steps">Keep this card like cash or a cheque book: whoever holds it, or a photo of it, can ask for the book in your name and, if the owner does not refuse in time, open it. If this phone is lost, scan it from a new phone: %1$s → %2$s → Scan owner\'s code.</string>
     <string name="waris_card_read">You are linked again to %1$s.</string>
     <string name="waris_forget">Forget this book</string>
     <string name="waris_forget_body">You will not be able to ask for the book of %1$s from this phone. Keep your Waris card if you may need it.</string>
@@ -120,6 +120,11 @@
         <item quantity="one">Opens in %d day</item>
         <item quantity="other">Opens in %d days</item>
     </plurals>
+    <string name="waris_state_open_now">Asked, and the wait is over: they can open the book now. Refuse to close it.</string>
+    <string name="waris_asked_open_body">%1$s asked to open your book and the wait is over: they can open it now. Refuse to close it again.</string>
+    <string name="waris_relay_refuses">A relay no longer accepts this phone\'s key for your locked copy: someone else may hold it there. If this does not go away, turn Waris ki Chaabi off and on again and add your heirs again.</string>
+    <string name="waris_busy_today">A relay is taking nothing more today. Please try again tomorrow; the app will also try again by itself.</string>
+    <string name="waris_refusal_partial">Your refusal has not reached every relay yet. The app keeps trying by itself; keep the internet on.</string>
     <string name="coach_title_products">Products &amp; Stock</string>
     <string name="coach_desc_products">Stock on hand, batch expiry and the stock register — built from the bills you already write.</string>
     <string name="followup_title">Follow-up</string>

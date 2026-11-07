@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.Layout
 import android.text.StaticLayout
@@ -16,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -62,10 +64,22 @@ class WarisActivity : BaseActivity() {
     private var busy = false
     private var codeDialog: AppCompatDialog? = null
 
+    /**
+     * The Waris card's picture goes the moment its share comes back (the security review, W7): whoever holds it, or a
+     * photo of it, can ask in the heir's name. By its path, so a screen rebuilt meanwhile still deletes it.
+     */
+    private val shareCard = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        runCatching { cardFile().delete() }
+    }
+
+    private fun cardFile(): java.io.File = java.io.File(java.io.File(cacheDir, "receipts"), CARD_FILE)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waris)
         ScreenInsets.on(this)
+        // A card left behind by a share that never came back (the app closed meanwhile) goes when the screen opens.
+        if (savedInstanceState == null) lifecycleScope.launch(Dispatchers.IO) { runCatching { cardFile().delete() } }
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
         heirsBox = findViewById(R.id.warisHeirs)
         linksBox = findViewById(R.id.warisLinks)
@@ -94,7 +108,11 @@ class WarisActivity : BaseActivity() {
     private class Read(
         val state: Waris.OwnerState?,
         val views: Map<String, Waris.HeirView>,
-        val links: List<Waris.Link>
+        val links: List<Waris.Link>,
+        /** A refusal some relay has not taken yet (W6). */
+        val refusalOwed: Boolean = false,
+        /** Some relay refuses this vault's owner pass: someone else holds the vault id there (W9). */
+        val relayRefuses: Boolean = false
     )
 
     private fun render() {
@@ -111,7 +129,10 @@ class WarisActivity : BaseActivity() {
             val read = withContext(Dispatchers.IO) {
                 runCatching {
                     val owner = WarisAndroid.owner(applicationContext)
-                    Read(owner.state(), owner.views(), WarisAndroid.heir(applicationContext).links())
+                    Read(
+                        owner.state(), owner.views(), WarisAndroid.heir(applicationContext).links(),
+                        owner.refuseLeft().isNotEmpty(), owner.relaysRefusing().isNotEmpty()
+                    )
                 }.getOrNull()
             } ?: return@launch
             if (isFinishing || isDestroyed) return@launch
@@ -128,6 +149,15 @@ class WarisActivity : BaseActivity() {
         findViewById<View>(R.id.warisOwnerOn).visibility = if (st == null) View.GONE else View.VISIBLE
         heirsBox.removeAllViews()
         if (st == null) return
+        // What the owner must know first: a refusal not on every relay yet (W6), a relay that refuses this vault (W9).
+        findViewById<TextView>(R.id.tvWarisNote).apply {
+            val notes = listOfNotNull(
+                getString(R.string.waris_refusal_partial).takeIf { read.refusalOwed },
+                getString(R.string.waris_relay_refuses).takeIf { read.relayRefuses }
+            )
+            text = notes.joinToString("\n\n")
+            visibility = if (notes.isEmpty()) View.GONE else View.VISIBLE
+        }
         findViewById<TextView>(R.id.tvWarisCopy).text = if (st.snapAt > 0L)
             getString(R.string.waris_copy_line, Format.dateTime(st.snapAt), android.text.format.Formatter.formatShortFileSize(this, st.snapBytes))
         else getString(R.string.waris_copy_none)
@@ -160,7 +190,14 @@ class WarisActivity : BaseActivity() {
                     first.setOnClickListener { showOwnerCode(h) }
                 }
                 v != null && v.pending -> {
-                    state.text = v.openAt?.let { getString(R.string.waris_state_asked, Format.dateOnly(it)) } ?: getString(R.string.waris_asked_title)
+                    // `openAt` comes from :shared — read once into a local (no smart cast across modules).
+                    val at = v.openAt
+                    state.text = when {
+                        at == null -> getString(R.string.waris_asked_title)
+                        // The day has come: open to them now, not "opens on" a day already past (W9).
+                        at <= now -> getString(R.string.waris_state_open_now)
+                        else -> getString(R.string.waris_state_asked, Format.dateOnly(at))
+                    }
                     state.setTextColor(ContextCompat.getColor(this, R.color.red_gave_text))
                     first.setText(R.string.waris_refuse)
                     first.setOnClickListener { refuse(h) }
@@ -272,6 +309,7 @@ class WarisActivity : BaseActivity() {
         when (why) {
             Waris.Why.HALTED -> R.string.waris_halted
             Waris.Why.FULL -> R.string.waris_full
+            Waris.Why.BUSY -> R.string.waris_busy_today
             Waris.Why.TOO_BIG -> R.string.waris_too_big
             Waris.Why.BAD_CODE -> R.string.waris_code_wrong
             Waris.Why.PASS -> R.string.waris_removed_you
@@ -326,8 +364,21 @@ class WarisActivity : BaseActivity() {
 
     private fun askTurnOn() = confirm(getString(R.string.waris_title), getString(R.string.waris_turn_on_body), getString(R.string.waris_turn_on)) {
         act({ WarisAndroid.owner(applicationContext).enable() }) { r ->
-            if (r is Waris.Result.Done) { if (r.partly) tell(getString(R.string.waris_partly)) } else say(r, "")
+            if (r is Waris.Result.Done) {
+                // An heir's request is told by a notification: on Android 13+ only with the app's permission (W6).
+                askNotifications()
+                if (r.partly) tell(getString(R.string.waris_partly))
+            } else say(r, "")
         }
+    }
+
+    private fun askNotifications() {
+        if (Build.VERSION.SDK_INT < 33) return
+        val granted = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (!granted) androidx.core.app.ActivityCompat.requestPermissions(
+            this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 315
+        )
     }
 
     private fun addHeir() {
@@ -408,7 +459,11 @@ class WarisActivity : BaseActivity() {
     }
 
     private fun refuse(h: Waris.HeirEntry) {
-        act({ WarisAndroid.owner(applicationContext).refuse(h.hid) }) { r -> say(r, getString(R.string.waris_refused)) }
+        act({ WarisAndroid.refuse(applicationContext, h.hid) }) { r ->
+            // Not on every relay yet: said as such; the app keeps asking them in the background (W6).
+            if (r is Waris.Result.Done && r.partly) tell(getString(R.string.waris_refusal_partial))
+            else say(r, getString(R.string.waris_refused))
+        }
     }
 
     private fun askAllow(h: Waris.HeirEntry) = confirm(
@@ -474,10 +529,22 @@ class WarisActivity : BaseActivity() {
     }
 
     /**
-     * The Waris card as a picture: its heading, the card's code and the short steps, black on white for print.
-     * Shared through the cache's receipts/ folder (declared in file_paths.xml); the last one is replaced each time.
+     * The Waris card: what it is said first, in the words printed on it (W7: the card holds the heir's keys, so
+     * whoever holds it, or a photo of it, can ask in the heir's name and open the book if the owner does not refuse
+     * in time), then the picture.
      */
-    private fun saveCard(l: Waris.Link) {
+    private fun saveCard(l: Waris.Link) = confirm(
+        getString(R.string.waris_save_card),
+        getString(R.string.waris_card_steps, getString(R.string.app_name), getString(R.string.waris_title)),
+        getString(R.string.waris_save_card)
+    ) { shareCardOf(l) }
+
+    /**
+     * The Waris card as a picture: its heading, the card's code and the short steps, black on white for print.
+     * Shared through the cache's receipts/ folder (declared in file_paths.xml), and deleted as soon as the share
+     * comes back ([shareCard]) or, failing that, when this screen next opens.
+     */
+    private fun shareCardOf(l: Waris.Link) {
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
                 runCatching {
@@ -499,14 +566,14 @@ class WarisActivity : BaseActivity() {
                     c.save(); c.translate(60f, 60f); head.draw(c); c.restore()
                     c.drawBitmap(qr, ((w - qr.width) / 2).toFloat(), (60 + head.height + 40).toFloat(), null)
                     c.save(); c.translate(60f, (60 + head.height + 40 + qr.height + 40).toFloat()); body.draw(c); c.restore()
-                    val dir = java.io.File(cacheDir, "receipts").apply { mkdirs() }
-                    val f = java.io.File(dir, "waris_card.png")
+                    val f = cardFile().apply { parentFile?.mkdirs() }
                     java.io.FileOutputStream(f).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
                     f
                 }.getOrNull()
             }
             if (file == null || isFinishing || isDestroyed) {
                 if (file == null) Toast.makeText(this@WarisActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+                else withContext(Dispatchers.IO) { runCatching { file.delete() } }
                 return@launch
             }
             val uri = FileProvider.getUriForFile(this@WarisActivity, "$packageName.fileprovider", file)
@@ -515,8 +582,13 @@ class WarisActivity : BaseActivity() {
                 putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            startActivity(Intent.createChooser(share, getString(R.string.waris_save_card)))
+            shareCard.launch(Intent.createChooser(share, getString(R.string.waris_save_card)))
         }
+    }
+
+    private companion object {
+        /** The card's picture in the cache's receipts/ folder; never left there (W7). */
+        const val CARD_FILE = "waris_card.png"
     }
 }
 

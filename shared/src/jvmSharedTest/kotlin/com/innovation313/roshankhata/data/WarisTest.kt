@@ -446,6 +446,299 @@ class WarisTest {
         owner.retry(null)
         assertNull(b.vaults[vault])
         assertFalse(owner.offPending())
-        assertTrue(store.map.keys.none { Waris.isSecret(it) })
+        // Nothing of the vault is left but the removed list, which holds the vault itself for good (W5).
+        assertEquals(listOf(Waris.K_REMOVED), store.map.keys.filter { Waris.isSecret(it) })
+        assertTrue(vault in owner.removed())
+    }
+
+    // ------------------------------------------------------------------ the security review (7 Nov 2026)
+
+    /** An owner and [n] linked heirs on the two relays; the heirs' links in order. */
+    private suspend fun ownerWith(n: Int, relays: Waris.Relays, store: MemStore = MemStore(), wait: Int = 30):
+        Pair<Waris.Owner, List<Pair<Waris.HeirEntry, Waris.Link>>> {
+        val owner = Waris.Owner(store, relays)
+        assertTrue(owner.enable() is Waris.Result.Done)
+        val out = ArrayList<Pair<Waris.HeirEntry, Waris.Link>>()
+        repeat(n) { i ->
+            val (e, q) = owner.startHeir("Heir $i", wait, "Shop")!!
+            val (l, r) = Waris.Heir(MemStore(), relays).take(q)!!
+            assertTrue(owner.finishHeir(e.hid, r, book) is Waris.Result.Done)
+            out += owner.heirs().single { it.hid == e.hid } to l
+        }
+        return owner to out
+    }
+
+    /** What someone holding the owner's pass (a stolen backup) can put on a relay: an heir of his own, allowed. */
+    private fun outsider(relays: Waris.Relays, road: LiveCloud.Road, st: Waris.OwnerState, hid: String = WarisCrypto.newHid()): String {
+        val pass = WarisCrypto.heirPass(WarisCrypto.newSecret(), st.vault, hid)
+        val box = WarisCrypto.sealBox(WarisCrypto.newKeyPair().pub, WarisCrypto.newSecret(), 1, st.vault, hid)
+        val body = JSONObject().put("passHash", WarisCrypto.passHash(pass)).put("box", B64.encode(box)).put("wait", 30)
+            .toString().toByteArray()
+        assertTrue(relays.call(road, "PUT", st.vault, "/heir/$hid", st.pass, body, "application/json") is Waris.Reply.Ok)
+        assertTrue(relays.call(road, "POST", st.vault, "/heir/$hid/allow", st.pass) is Waris.Reply.Ok)
+        return hid
+    }
+
+    @Test
+    fun `while live sync is halted the owner still reads, refuses, allows, removes and turns off - new copies and the heir wait`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        var halted = false
+        val relays = Waris.Relays(Both(a, b), roads) { halted }
+        val (owner, heirs) = ownerWith(2, relays, wait = 7)
+        val (e, l) = heirs[0]
+        val heir = Waris.Heir(MemStore(), relays)
+        heir.ask(l)
+        halted = true
+        // The relays' clocks run on: the owner must still see the request and refuse it.
+        assertTrue(owner.status()!!.getValue(e.hid).pending)
+        assertEquals(Waris.Result.Done(2, 2), owner.refuse(e.hid))
+        for (r in listOf(a, b)) {
+            assertNull(r.vaults[l.vault]!!.heirs[e.hid]!!.askedAt)
+            assertNotNull(r.vaults[l.vault]!!.heirs[e.hid]!!.rejectedAt)
+        }
+        assertEquals(Waris.Result.Done(2, 2), owner.allow(e.hid))
+        assertNotNull(a.vaults[l.vault]!!.heirs[e.hid]!!.allowedAt)
+        // A new copy waits, and so does the heir's own call.
+        assertEquals(Waris.Result.Failed(Waris.Why.HALTED), owner.snapshot(book))
+        assertEquals(Waris.Result.Failed(Waris.Why.HALTED), heir.ask(heirs[1].second).second)
+        // A removed heir comes off every relay at once; the rest of the push waits for the switch.
+        val gone = heirs[1].first.hid
+        assertEquals(Waris.Result.Failed(Waris.Why.HALTED), owner.removeHeir(gone, book))
+        assertNull(a.vaults[l.vault]!!.heirs[gone]); assertNull(b.vaults[l.vault]!!.heirs[gone])
+        owner.turnOff()
+        assertNull(a.vaults[l.vault]); assertNull(b.vaults[l.vault])
+        assertFalse(owner.offPending())
+    }
+
+    @Test
+    fun `a removed heir is deleted before any heir is put - a relay that held five takes the new one`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val (owner, heirs) = ownerWith(5, relays)
+        val vault = owner.state()!!.vault
+        val fifth = heirs[4].first.hid
+        b.down = true
+        owner.removeHeir(fifth, book)
+        b.down = false
+        val (e, q) = owner.startHeir("New", 30, "Shop")!!
+        val (_, r) = Waris.Heir(MemStore(), relays).take(q)!!
+        b.calls.clear()
+        assertEquals(Waris.Result.Done(2, 2), owner.finishHeir(e.hid, r, book))
+        assertNull("the removed heir is gone from the relay that missed his removal", b.vaults[vault]!!.heirs[fifth])
+        assertNotNull(b.vaults[vault]!!.heirs[e.hid])
+        val delete = b.calls.indexOfFirst { it == "DELETE $vault/heir/$fifth" }
+        val put = b.calls.indexOfFirst { it.startsWith("PUT $vault/heir/") }
+        assertTrue("the delete comes before every put", delete in 0 until put)
+        assertTrue(fifth in owner.removed())
+    }
+
+    @Test
+    fun `an heir a relay holds that the book does not name is deleted there, remembered, and his allow never counts`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val (owner, heirs) = ownerWith(1, relays)
+        val st = owner.state()!!
+        val stranger = outsider(relays, roads[0], st)
+        val views = owner.status()!!
+        assertEquals(setOf(heirs[0].first.hid), views.keys)
+        assertTrue(views.values.none { it.allowed })
+        assertNull(a.vaults[st.vault]!!.heirs[stranger])
+        assertTrue(stranger in owner.removed())
+        // Put there again with the pass: deleted again, and never put back by the owner's own runs.
+        outsider(relays, roads[1], st, stranger)
+        owner.retry(book)
+        owner.status()
+        assertNull(b.vaults[st.vault]!!.heirs[stranger])
+        assertTrue(owner.heirs().none { it.hid == stranger })
+    }
+
+    @Test
+    fun `merge - a stranger on a relay is unknown, an heir still awaiting their code is not, a foreign allow is refused again`() {
+        val linked = "0011223344556677"; val awaiting = "8899aabbccddeeff"; val stranger = "0123456789abcdef"
+        val heirs = listOf(heir(linked), Waris.HeirEntry(awaiting, "B", null, null, "c2VjcmV0", 30, 0L))
+        val m = Waris.merge(
+            heirs,
+            listOf(
+                Waris.RelayStatus("", 100, 1, listOf(rh(linked, asked = 50, allowed = 60), rh(awaiting), rh(stranger, allowed = 70))),
+                Waris.RelayStatus("hs", 100, 1, listOf(rh(linked, asked = 50, open = 900)))
+            ),
+            100
+        )
+        assertEquals(listOf("" to stranger), m.unknown)
+        assertEquals(listOf("" to linked), m.rejectAgain)
+        val v = m.views.getValue(linked)
+        assertFalse(v.allowed)
+        // Still asked on the other relay, which never saw the foreign allow: the owner is asked.
+        assertTrue(v.pending)
+        assertEquals(900L, v.openAt)
+        assertFalse(stranger in m.views)
+    }
+
+    @Test
+    fun `an allow this phone never gave is refused again on the relay that shows it`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val (owner, heirs) = ownerWith(1, relays)
+        val (e, l) = heirs[0]
+        val st = owner.state()!!
+        assertTrue(relays.call(roads[1], "POST", st.vault, "/heir/${e.hid}/allow", st.pass) is Waris.Reply.Ok)
+        assertFalse(owner.status()!!.getValue(e.hid).allowed)
+        assertNull(b.vaults[l.vault]!!.heirs[e.hid]!!.allowedAt)
+        assertEquals(Waris.Why.WAITING, (Waris.Heir(MemStore(), relays).open(l, ByteArrayOutputStream()) as Waris.Opened.Failed).why)
+        // The owner's own allow still opens the book.
+        owner.allow(e.hid)
+        owner.status()
+        assertNotNull(b.vaults[l.vault]!!.heirs[e.hid]!!.allowedAt)
+        assertEquals(Waris.Opened.Done, Waris.Heir(MemStore(), relays).open(l, ByteArrayOutputStream()))
+    }
+
+    @Test
+    fun `a W from before this review is replaced once, and the heirs open the new copy, which the old W cannot`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val store = MemStore()
+        val (owner, heirs) = ownerWith(1, relays, store)
+        // As an older build left it: W in every full backup, nothing saying which copy it sealed.
+        store.map.remove(Waris.K_KEY_SAFE); store.map.remove(Waris.K_SNAP_KV)
+        val old = B64.decode(store.map.getValue(Waris.K_KEY))
+        val version = store.map.getValue(Waris.K_KEY_VERSION).toInt()
+        val before = owner.state()!!
+        assertFalse(before.w.contentEquals(old))
+        assertEquals(version + 1, before.keyVersion)
+        assertEquals("1", store.map[Waris.K_KEY_SAFE])
+        // Once: the next read keeps the new one.
+        assertTrue(owner.state()!!.w.contentEquals(before.w))
+        assertEquals(Waris.Result.Done(2, 2), owner.retry(book))
+        assertEquals(before.keyVersion.toString(), store.map[Waris.K_SNAP_KV])
+        owner.allow(heirs[0].first.hid)
+        val l = heirs[0].second
+        val out = ByteArrayOutputStream()
+        assertEquals(Waris.Opened.Done, Waris.Heir(MemStore(), relays).open(l, out))
+        assertEquals(bookJson, out.toString("UTF-8"))
+        val v = a.vaults[l.vault]!!
+        val sealed = (0 until v.snap!![1]).fold(ByteArray(0)) { acc, i -> acc + v.chunks.getValue(v.snap!![0] to i) }
+        assertNull("the old W opens nothing the relay holds", WarisCrypto.openSnapshot(old, sealed, l.vault, v.snap!![0]))
+    }
+
+    @Test
+    fun `a book restored without W makes a new one and seals the next copy and every box with it`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val store = MemStore()
+        val (_, heirs) = ownerWith(1, relays, store)
+        // A copy of the book restored on a new phone: everything but W (no copy carries it).
+        val restored = MemStore()
+        Waris.restored(emptyList(), store.map.map { (k, v) -> BookSetting(k, v) }, pairing = false)
+            .forEach { restored.map[it.key] = it.value!! }
+        assertNull(restored.map[Waris.K_KEY])
+        val owner = Waris.Owner(restored, relays)
+        val st = owner.state()!!
+        assertEquals(store.map.getValue(Waris.K_KEY_VERSION).toInt() + 1, st.keyVersion)
+        val dirty = JSONArray(restored.map.getValue(Waris.K_DIRTY))
+        assertEquals(setOf("", "hs"), (0 until dirty.length()).map { dirty.getString(it) }.toSet())
+        assertEquals(Waris.Result.Done(2, 2), owner.retry(book))
+        owner.allow(heirs[0].first.hid)
+        assertEquals(Waris.Opened.Done, Waris.Heir(MemStore(), relays).open(heirs[0].second, ByteArrayOutputStream()))
+    }
+
+    @Test
+    fun `restored - a vault this book keeps stays as it is, a book with none takes the copy's but never its W, a pairing takes none`() {
+        fun s(vararg kv: Pair<String, String>) = kv.map { BookSetting(it.first, it.second) }
+        fun heirsJson(vararg hids: String) = JSONArray().apply { hids.forEach { put(JSONObject().put("hid", it).put("name", "N")) } }.toString()
+        fun map(l: List<BookSetting>): Map<String, String> = l.associate { it.key to it.value.orEmpty() }
+        val secret = B64.encode(ByteArray(32) { 1 })
+        val v1 = "0123456789abcdef0123456789abcdef"; val v2 = "fedcba9876543210fedcba9876543210"
+        val heirA = "00000000000000aa"; val heirB = "00000000000000bb"; val removed1 = "00000000000000e1"; val removed2 = "00000000000000ff"
+        val here = s(
+            Waris.K_VAULT to v1, Waris.K_OWNER_SECRET to secret, Waris.K_KEY to "W-here", Waris.K_KEY_SAFE to "1",
+            Waris.K_HEIRS to heirsJson(heirA, heirB), Waris.K_REMOVED to JSONArray(listOf(removed1)).toString(),
+            Waris.K_LINKS to "links-here"
+        )
+        // An older copy: an heir it had removed still in its list as written before, and an older W.
+        val copy = s(
+            Waris.K_VAULT to v1, Waris.K_OWNER_SECRET to secret, Waris.K_KEY to "W-copy", Waris.K_KEY_SAFE to "1",
+            Waris.K_HEIRS to heirsJson(heirA, removed2), Waris.K_REMOVED to JSONArray(listOf(removed2)).toString(),
+            Waris.K_LINKS to "links-copy", Waris.K_OFF to "off-copy", BookSettings.PRICES_INCLUDE_TAX to "1"
+        )
+        // This book's vault: its own list and W; both removed lists; a turn-off the copy still owed.
+        val kept = map(Waris.restored(here, copy, pairing = false))
+        assertEquals("W-here", kept[Waris.K_KEY])
+        assertEquals(listOf(heirA, heirB), JSONArray(kept.getValue(Waris.K_HEIRS)).let { j -> (0 until j.length()).map { j.getJSONObject(it).getString("hid") } })
+        assertEquals(listOf(removed1, removed2), JSONArray(kept.getValue(Waris.K_REMOVED)).let { j -> (0 until j.length()).map { j.getString(it) } })
+        assertEquals("links-here", kept[Waris.K_LINKS])
+        assertEquals("off-copy", kept[Waris.K_OFF])
+        assertFalse("never another setting", BookSettings.PRICES_INCLUDE_TAX in kept)
+        // A new phone: the copy's vault and heirs, never its W, and never a removed heir.
+        val taken = map(Waris.restored(emptyList(), copy, pairing = false))
+        assertEquals(v1, taken[Waris.K_VAULT])
+        assertNull(taken[Waris.K_KEY]); assertNull(taken[Waris.K_KEY_SAFE])
+        assertEquals(listOf(heirA), JSONArray(taken.getValue(Waris.K_HEIRS)).let { j -> (0 until j.length()).map { j.getJSONObject(it).getString("hid") } })
+        assertEquals("links-copy", taken[Waris.K_LINKS])
+        // A vault turned off here never comes back from a copy.
+        val off = map(Waris.restored(s(Waris.K_REMOVED to JSONArray(listOf(v1)).toString()), copy, pairing = false))
+        assertNull(off[Waris.K_VAULT]); assertNull(off[Waris.K_HEIRS])
+        // A pairing: nothing of the other device's vault or links; this book's own (none on a pairing) stays.
+        val paired = map(Waris.restored(emptyList(), copy, pairing = true))
+        assertNull(paired[Waris.K_VAULT]); assertNull(paired[Waris.K_LINKS]); assertNull(paired[Waris.K_OFF])
+        // A copy whose vault is another: this book's own stays, the copy's is not set up.
+        val other = map(Waris.restored(here, copy.map { if (it.key == Waris.K_VAULT) BookSetting(it.key, v2) else it }, pairing = false))
+        assertEquals(v1, other[Waris.K_VAULT])
+    }
+
+    @Test
+    fun `a book whose shop changed while it was written seals nothing and sends nothing`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val (owner, _) = ownerWith(1, relays)
+        val before = owner.state()!!
+        a.calls.clear(); b.calls.clear()
+        val moved = try {
+            owner.snapshot(Waris.Book { out -> out.write(bookJson.toByteArray()); throw Waris.BookMoved() })
+            false
+        } catch (e: Waris.BookMoved) {
+            true
+        }
+        assertTrue(moved)
+        assertTrue(a.calls.none { it.contains("snap") } && b.calls.none { it.contains("snap") })
+        assertEquals(before.snapV, owner.state()!!.snapV)
+    }
+
+    @Test
+    fun `a refusal a relay did not take is owed to it until it answers, and then it is refused there`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val (owner, heirs) = ownerWith(1, relays)
+        val (e, l) = heirs[0]
+        Waris.Heir(MemStore(), relays).ask(l)
+        b.down = true
+        assertEquals(Waris.Result.Done(1, 2), owner.refuse(e.hid))
+        assertEquals(setOf("hs"), owner.refuseLeft())
+        owner.status()
+        assertEquals(setOf("hs"), owner.refuseLeft())
+        b.down = false
+        owner.status()
+        assertTrue(owner.refuseLeft().isEmpty())
+        assertNull(b.vaults[l.vault]!!.heirs[e.hid]!!.askedAt)
+    }
+
+    @Test
+    fun `a relay that refuses the vault's pass is noted, a relay busy today is said as busy, a full one as full`() = runBlocking {
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val (owner, _) = ownerWith(1, relays)
+        val vault = owner.state()!!.vault
+        // Someone else's pass holds the vault id on the second relay.
+        b.vaults.remove(vault)
+        b.call("POST", "https://two.test/v1/w/$vault/setup", mapOf("x-rk-pass" to "f".repeat(64)), null)
+        owner.status()
+        assertEquals(setOf("hs"), owner.relaysRefusing())
+        b.vaults.remove(vault)
+        owner.status()
+        assertTrue(owner.relaysRefusing().isEmpty())
+        // The relays' daily cap and their full store, on a new vault.
+        fun answering(code: Int, why: String) = Waris.Relays(
+            { _, _, _, _ -> code to JSONObject().put("ok", false).put("why", why).toString().toByteArray() }, roads) { false }
+        assertEquals(Waris.Result.Failed(Waris.Why.BUSY), Waris.Owner(MemStore(), answering(429, "waris-day")).enable())
+        assertEquals(Waris.Result.Failed(Waris.Why.FULL), Waris.Owner(MemStore(), answering(507, "waris-full")).enable())
     }
 }

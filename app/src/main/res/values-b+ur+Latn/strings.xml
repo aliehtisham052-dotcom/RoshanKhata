@@ -90,7 +90,7 @@
     <string name="waris_not_open_yet">Khata abhi nahi khuli.</string>
     <string name="waris_save_card">Waris card save karein</string>
     <string name="waris_card_heading">Waris card · %1$s</string>
-    <string name="waris_card_steps">Yeh card chaabi ki tarah sambhal kar rakhein. Agar yeh phone kho jaye to naye phone se scan karein: %1$s → %2$s → Malik ka code scan karein. Is se sirf darkhwast ho sakti hai; malik ko bataya jata hai aur woh mana kar sakta hai.</string>
+    <string name="waris_card_steps">Yeh card naqdi ya cheque book ki tarah sambhal kar rakhein: jis ke paas yeh card ya is ki tasveer ho, woh aap ke naam se khata maang sakta hai, aur agar malik waqt par mana na kare to use khol bhi sakta hai. Agar yeh phone kho jaye to naye phone se scan karein: %1$s → %2$s → Malik ka code scan karein.</string>
     <string name="waris_card_read">Aap dobara %1$s se jur gaye.</string>
     <string name="waris_forget">Yeh khata bhool jayein</string>
     <string name="waris_forget_body">Aap is phone se %1$s ki khata ki darkhwast nahi kar sakenge. Zaroorat ho sakti hai to apna Waris card rakh lein.</string>
@@ -116,6 +116,11 @@
         <item quantity="one">%d din mein khulegi</item>
         <item quantity="other">%d din mein khulegi</item>
     </plurals>
+    <string name="waris_state_open_now">Darkhwast ki, aur intezar khatam ho gaya: woh ab khata khol sakte hain. Band karne ke liye mana karein.</string>
+    <string name="waris_asked_open_body">%1$s ne aap ki khata kholne ki darkhwast ki thi aur intezar khatam ho gaya hai: woh ab use khol sakte hain. Dobara band karne ke liye mana karein.</string>
+    <string name="waris_relay_refuses">Ek relay ab aap ki band copy ke liye is phone ki chaabi nahi maanta: ho sakta hai wahan yeh kisi aur ke paas ho. Agar yeh theek na ho to Waris ki Chaabi band karke dobara chalu karein aur apne waris dobara shamil karein.</string>
+    <string name="waris_busy_today">Ek relay aaj mazeed kuch nahi le raha. Kal dobara koshish karein; app khud bhi dobara koshish karegi.</string>
+    <string name="waris_refusal_partial">Aap ne jo mana kiya, woh abhi har relay tak nahi pohancha. App khud koshish karti rahegi; internet chalu rakhein.</string>
     <string name="coach_title_products">Products aur Stock</string>
     <string name="coach_desc_products">Hath mein maujooda stock, batch ki expiry aur stock register — wahi bills jo aap pehle se likhte hain, unhi se khud ban jaate hain.</string>
     <string name="followup_title">Wusooli</string>
