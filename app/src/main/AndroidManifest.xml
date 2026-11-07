@@ -162,11 +162,14 @@
           Mera Khata (7 Nov 2026): a shop's khata link opens here. The https link is an App Link (the hosting's
           /.well-known/assetlinks.json names this app's packages and signing keys); the web page's "Open in the
           app" button uses roshankhata://khata?l=…, which works before that check too. Read only, never the book.
+          A task of its own (taskAffinity "", 7 Nov 2026): a shop's link opened from the browser never lands on top of
+          the book, so Back or Recents from it never shows the book past App Lock.
         -->
         <activity
             android:name=".MeraKhataActivity"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:taskAffinity="">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

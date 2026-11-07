@@ -66,4 +66,68 @@ object AppLock {
     /** No screen lock configured on the phone at all. */
     fun noneEnrolled(context: Context): Boolean =
         canAuthenticate(context) == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
+
+    /** Away this long from the book's screens, App Lock asks again. */
+    const val RELOCK_MS = 5 * 60_000L
+
+    /**
+     * When App Lock asks again (21 Oct 2026; 7 Nov 2026, the review's L2). Only the book's own screens count: the
+     * doors before it, the lock itself and Mera Khata (a customer's page, opened by any shop's link) neither start nor
+     * stop the time away — a link opened on a phone left on the counter used to clear it, and Back then showed the
+     * book unlocked. Once due, the lock stays due until it is answered ([unlocked]); a process started afresh (Android
+     * ended it in the background) starts due, so a screen it brings back asks first. Times are the phone's own clock
+     * since it started (elapsedRealtime), which setting the date back does not move. No Android in here, for the tests.
+     */
+    object Away {
+        private var started = 0
+        /** When the last of the book's screens stopped; 0 while one is on screen. */
+        private var leftAt = 0L
+        /** Unlocked in this process (or come in while no lock was needed), and not away long since. */
+        private var open = false
+        /** Unlocks answered in this process: a screen that asked can tell whether one came since. */
+        @Volatile var unlocks = 0
+            private set
+
+        /**
+         * One of the book's screens comes on: true when the lock must be asked first. [required] (AppLock.required)
+         * is asked only when it decides something.
+         */
+        @Synchronized
+        fun bookStarted(now: Long, required: () -> Boolean): Boolean {
+            if (started++ == 0) {
+                if (open && now - leftAt > RELOCK_MS) open = false
+                leftAt = 0L
+            }
+            if (open) return false
+            if (!required()) { open = true; return false }
+            return true
+        }
+
+        @Synchronized
+        fun bookStopped(now: Long) {
+            if (--started <= 0) { started = 0; leftAt = now }
+        }
+
+        /** The lock answered: the book may show. The time away starts again now if none of its screens is on. */
+        @Synchronized
+        fun unlocked(now: Long) {
+            open = true
+            leftAt = if (started == 0) now else 0L
+            unlocks++
+        }
+
+        /** Would a screen that is not the book (Mera Khata) find the lock due now? Counts nothing. */
+        @Synchronized
+        fun due(now: Long, required: () -> Boolean): Boolean {
+            if (open && started == 0 && now - leftAt > RELOCK_MS) open = false
+            return !open && required()
+        }
+
+        @Synchronized
+        fun isOpen(): Boolean = open
+
+        /** Tests only: as a process starting. */
+        @Synchronized
+        fun resetForTest() { started = 0; leftAt = 0L; open = false; unlocks = 0 }
+    }
 }

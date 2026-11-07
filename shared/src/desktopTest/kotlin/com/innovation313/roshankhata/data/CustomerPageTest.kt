@@ -9,6 +9,10 @@ import org.junit.Test
 /**
  * The customer's side of a shop's link (7 Nov 2026, "Mera Khata"): the link in each of its shapes, the page read
  * as the browser reads it, and the server asked only for what changed (304 with the last ETag).
+ *
+ * And the security review of the same day: never a key from an https link's query; a page opens only under its own
+ * link's id; no more is read than the shop's app writes, a day only between 2000 and 2100; the page's counter tells
+ * an older page served again from a newer one.
  */
 class CustomerPageTest {
 
@@ -20,9 +24,13 @@ class CustomerPageTest {
     @Test
     fun `a link is read in each of its shapes and only from the shop's host`() {
         assertEquals(link, CustomerPage.linkFrom("https://khata.ehtisham.shop/#$id.$key"))
-        assertEquals(link, CustomerPage.linkFrom("https://KHATA.ehtisham.shop/app?l=$id.$key"))
+        assertEquals(link, CustomerPage.linkFrom("https://KHATA.ehtisham.shop/#$id.$key"))
         assertEquals(link, CustomerPage.linkFrom("roshankhata://khata?l=$id.$key"))
+        assertEquals(link, CustomerPage.linkFrom("roshankhata://khata#$id.$key"))
         assertEquals(link, CustomerPage.linkFrom("  https://khata.ehtisham.shop/#$id.$key  "))
+        // Never a key in an https link's query: a server on the way could keep it in its logs.
+        assertNull(CustomerPage.linkFrom("https://KHATA.ehtisham.shop/app?l=$id.$key"))
+        assertNull(CustomerPage.linkFrom("https://khata.ehtisham.shop/?l=$id.$key"))
         assertNull(CustomerPage.linkFrom("https://evil.example/#$id.$key"))
         assertNull(CustomerPage.linkFrom("http://khata.ehtisham.shop/#$id.$key"))
         assertNull(CustomerPage.linkFrom("https://khata.ehtisham.shop/#$id"))
@@ -81,7 +89,7 @@ class CustomerPageTest {
     @Test
     fun `the page is asked with its ETag, and every answer means one thing`() {
         val text = CustomerLink.page(look, "Test Customer", false, 100.0, 9L, emptyList(), CustomerLink.Mode.BALANCE, 0L)
-        val host = Host(200, CustomerLink.seal(key, text), "\"v1\"")
+        val host = Host(200, CustomerLink.seal(link, text), "\"v1\"")
         val first = CustomerPage.fetch(link, null, "https://khata.ehtisham.shop/", host)
         first as CustomerPage.Fetched.Ok
         assertEquals(100.0, first.page.balance, 0.0)
@@ -95,11 +103,62 @@ class CustomerPageTest {
         assertEquals(CustomerPage.Fetched.Gone, CustomerPage.fetch(link, first.etag, "https://khata.ehtisham.shop/", host))
         host.code = 404
         assertEquals(CustomerPage.Fetched.Gone, CustomerPage.fetch(link, null, "https://khata.ehtisham.shop/", host))
-        host.code = 200; host.body = CustomerLink.seal("QUFBQUFBQUFBQUFBQUFBQQ", text)
+        host.code = 200; host.body = CustomerLink.seal(link.copy(key = "QUFBQUFBQUFBQUFBQUFBQQ"), text)
+        assertEquals(CustomerPage.Fetched.Wrong, CustomerPage.fetch(link, null, "https://khata.ehtisham.shop/", host))
+        // The right key under another link's id: a page moved from one link to another does not open.
+        host.body = CustomerLink.seal(link.copy(id = "f".repeat(32)), text)
         assertEquals(CustomerPage.Fetched.Wrong, CustomerPage.fetch(link, null, "https://khata.ehtisham.shop/", host))
         host.code = -1
         assertEquals(CustomerPage.Fetched.Offline, CustomerPage.fetch(link, null, "https://khata.ehtisham.shop/", host))
         host.code = 500
         assertEquals(CustomerPage.Fetched.Offline, CustomerPage.fetch(link, null, "https://khata.ehtisham.shop/", host))
+    }
+
+    @Test
+    fun `no more is read than the shop's app writes, and a day outside 2000 to 2100 is no day`() {
+        val long = "x".repeat(80)
+        val text = "{\"v\":3,\"s\":\"$long\",\"n\":\"$long\",\"p\":\"c\",\"b\":12,\"c\":\"RsRsRsRs\",\"k\":9,\"l\":\"xx\"," +
+            "\"t\":9223372036854775807,\"r\":0,\"q\":-5,\"e\":[" +
+            List(5) { "{\"d\":-1,\"a\":1,\"g\":1,\"m\":1,\"x\":\"$long\"}" }.joinToString(",") + "]}"
+        val page = CustomerPage.read(text)!!
+        assertEquals(60, page.shop.length)
+        assertEquals(60, page.name.length)
+        assertEquals("RsRsR", page.currency)
+        assertEquals(2, page.decimals)
+        assertEquals("en", page.language)
+        assertEquals("a day past 2100 (Long.MAX_VALUE crashed the Jalali months) is no day", 0L, page.updated)
+        assertEquals(0L, page.seq)
+        assertEquals(CustomerLink.MAX_ENTRIES, page.lines.size)
+        assertEquals(40, page.lines[0].words!!.length)
+        assertEquals(0L, page.lines[0].at)
+        // A letter written as two is never split at the edge.
+        val emoji = CustomerPage.read("{\"v\":3,\"n\":\"" + "y".repeat(59) + "😀\"}")!!
+        assertEquals("y".repeat(59), emoji.name)
+        // Days inside the years a page may carry are read as written.
+        val fine = CustomerPage.read("{\"v\":3,\"t\":1700000000000,\"q\":1700000000123,\"l\":\"ur-Latn\"}")!!
+        assertEquals(1_700_000_000_000L, fine.updated)
+        assertEquals(1_700_000_000_123L, fine.seq)
+        assertEquals("ur-Latn", fine.language)
+    }
+
+    @Test
+    fun `a page under a lower counter is an older one, unless it is the same page`() {
+        val base = CustomerLink.page(look, "Test Customer", false, 100.0, 9L, emptyList(), CustomerLink.Mode.BALANCE, 0L)
+        val kept = CustomerPage.read(CustomerLink.stamped(base, 200L))!!
+        assertEquals(200L, kept.seq)
+        assertEquals(CustomerPage.Fresh.NEWER, CustomerPage.fresh(null, kept))
+        assertEquals(CustomerPage.Fresh.NEWER, CustomerPage.fresh(kept, CustomerPage.read(CustomerLink.stamped(base, 300L))!!))
+        assertEquals(CustomerPage.Fresh.NEWER, CustomerPage.fresh(kept, CustomerPage.read(CustomerLink.stamped(base, 200L))!!))
+        // The same page under a lower counter: another phone of the shop's book sent it.
+        assertEquals(CustomerPage.Fresh.SAME, CustomerPage.fresh(kept, CustomerPage.read(CustomerLink.stamped(base, 100L))!!))
+        // A different page under a lower counter: an older page served again.
+        val older = CustomerLink.page(look, "Test Customer", false, 50.0, 8L, emptyList(), CustomerLink.Mode.BALANCE, 0L)
+        assertEquals(CustomerPage.Fresh.OLDER, CustomerPage.fresh(kept, CustomerPage.read(CustomerLink.stamped(older, 100L))!!))
+        // A page made before the counter (none in it) reads as 0: older than any page that has one.
+        assertEquals(CustomerPage.Fresh.OLDER, CustomerPage.fresh(kept, CustomerPage.read(older)!!))
+        // Through the seal and back, the counter and the padding change nothing else.
+        val sealed = CustomerLink.seal(link, CustomerLink.stamped(base, 200L))
+        assertEquals(kept, CustomerPage.reopen(link, sealed))
+        assertEquals(CustomerPage.read(base)!!.copy(seq = 200L), kept)
     }
 }

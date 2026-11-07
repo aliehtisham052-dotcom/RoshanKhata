@@ -54,6 +54,17 @@ import javax.crypto.spec.SecretKeySpec
  *    shop or already taken back costs the customer his link (a new one is
  *    made on asking), and a full server is tried again.
  *
+ * After the security review of 7 Nov 2026:
+ *  - The seal names its link ("rk-clink-v2|" + id), and the sealed text
+ *    carries a counter that only grows ("q", this device's note per link):
+ *    a reader keeps the highest it saw and can tell an older page served
+ *    again from a newer one. The sealed text is padded to one of a few sizes.
+ *  - A link stopped (or refused as no longer free) is never made again on
+ *    this device, though a book put back from an older copy names it.
+ *  - Another copy holding the pages ([Result.NotHere]) is noted for the
+ *    owner ([otherCopy]); the owner's word to take over is kept until a
+ *    request carries it.
+ *
  * Closed until [base] is set (after the owner puts web/khata on his hosting).
  */
 object CustomerLink {
@@ -74,7 +85,14 @@ object CustomerLink {
     const val PER_CALL = 200
     /** Every page goes again at least this often; the server lets a page go when it was not sent for 180 days. */
     const val REFRESH_DAYS = 30L
-    private const val AAD = "rk-clink-v1"
+    /** The page's own version: 3 is sealed under its link's id and carries its counter and padding. */
+    const val VERSION = 3
+    /** The seal of a page made before 7 Nov 2026, which named no link: still opened, never made. */
+    private const val AAD_V1 = "rk-clink-v1"
+    /** The seal of a page now: it opens only under its own link's id. */
+    private const val AAD_V2 = "rk-clink-v2|"
+    /** The sizes a sealed page's text is padded to, in bytes: its length then says nothing of the name or the figures. */
+    private val SIZES = intArrayOf(512, 1024, 2048)
     private const val DAY_MS = 24L * 60 * 60 * 1000
 
     /**
@@ -167,18 +185,35 @@ object CustomerLink {
         dao.setSetting(TITLE, clip(look.title?.trim().orEmpty(), 60))
     }
 
-    /** The customer's link, made the first time it is asked for. [bookKey]: the live sync key while the book syncs. */
-    suspend fun create(dao: KhataDao, partyUid: String, look: Look, bookKey: String? = null): Link = lock.withLock {
-        createLocked(dao, partyUid, look, bookKey)
+    /**
+     * The customer's link, made the first time it is asked for. [bookKey]: the live sync key while the book syncs.
+     * [place]: this device's notes, so a link stopped here is never made again.
+     */
+    suspend fun create(dao: KhataDao, partyUid: String, look: Look, bookKey: String? = null, place: Place? = null): Link = lock.withLock {
+        createLocked(dao, partyUid, look, bookKey, place)
     }
 
-    private suspend fun createLocked(dao: KhataDao, partyUid: String, look: Look, bookKey: String?): Link {
-        linkOf(dao, partyUid)?.let { return it }
+    private suspend fun createLocked(dao: KhataDao, partyUid: String, look: Look, bookKey: String?, place: Place?): Link {
+        linkOf(dao, partyUid)?.let { old ->
+            if (place?.get(stopKey(old.id)) == null) return old
+            // Stopped here once: a book put back from an older copy names it again. Its removal goes with the next send.
+            dao.setSetting(GONE + old.id, "1")
+            nextGen(dao, partyUid)
+        }
         keepLook(dao, look)
-        val gen = dao.settingValue(GEN + partyUid)?.toIntOrNull() ?: 0
+        var gen = dao.settingValue(GEN + partyUid)?.toIntOrNull() ?: 0
         val link = if (bookKey != null) {
-            // The same customer linked on two devices while apart: the same link, not two.
-            Link(hexOf(derive(bookKey, "rk-clink-id:$partyUid:$gen").copyOf(16)), b64url(derive(bookKey, "rk-clink-key:$partyUid:$gen").copyOf(16)))
+            // The same customer linked on two devices while apart: the same link, not two. One this device stopped,
+            // or the server refused as no longer free, is passed over (7 Nov 2026): a book put back from an older
+            // copy counts its links lower than they went, and would make a stopped one again.
+            var made = derived(bookKey, partyUid, gen)
+            var passed = 0
+            while (place != null && place.get(stopKey(made.id)) != null && passed < 1000) {
+                gen++; passed++
+                made = derived(bookKey, partyUid, gen)
+            }
+            if (passed > 0) dao.setSetting(GEN + partyUid, gen.toString())
+            made
         } else {
             Link(hex(16), b64url(ByteArray(16).also { random.nextBytes(it) }))
         }
@@ -186,16 +221,28 @@ object CustomerLink {
         return link
     }
 
-    /** Takes a customer's link back: it stops opening once the server has heard (next [flush]). */
-    suspend fun remove(dao: KhataDao, partyUid: String) = lock.withLock { removeLocked(dao, partyUid) }
+    private fun derived(bookKey: String, partyUid: String, gen: Int): Link =
+        Link(hexOf(derive(bookKey, "rk-clink-id:$partyUid:$gen").copyOf(16)), b64url(derive(bookKey, "rk-clink-key:$partyUid:$gen").copyOf(16)))
 
-    private suspend fun removeLocked(dao: KhataDao, partyUid: String) {
+    /**
+     * Takes a customer's link back: it stops opening once the server has heard (next [flush]; the book's
+     * [GONE] mark goes when it has). [place]: this device's notes, where the link is kept as stopped for good.
+     * The link taken back, or null when he had none.
+     */
+    suspend fun remove(dao: KhataDao, partyUid: String, place: Place? = null): Link? = lock.withLock { removeLocked(dao, partyUid, place) }
+
+    private suspend fun removeLocked(dao: KhataDao, partyUid: String, place: Place?): Link? {
         val link = linkOf(dao, partyUid)
         // The removal is written before the link goes, so a crash between them still takes the page down.
-        link?.let { dao.setSetting(GONE + it.id, "1") }
-        dao.setSetting(GEN + partyUid, ((dao.settingValue(GEN + partyUid)?.toIntOrNull() ?: 0) + 1).toString())
+        link?.let { dao.setSetting(GONE + it.id, "1"); place?.put(stopKey(it.id), "1") }
+        nextGen(dao, partyUid)
         dao.setSetting(PREFIX + partyUid, null)
+        return link
     }
+
+    /** The customer's next link is never an old one. */
+    private suspend fun nextGen(dao: KhataDao, partyUid: String) =
+        dao.setSetting(GEN + partyUid, ((dao.settingValue(GEN + partyUid)?.toIntOrNull() ?: 0) + 1).toString())
 
     fun url(link: Link, root: String? = base): String? = root?.let { it.trimEnd('/') + "/#" + link.id + "." + link.key }
 
@@ -242,7 +289,7 @@ object CustomerLink {
     ): String {
         val k = Currency.decimals(look.currency)
         return buildString {
-            append("{\"v\":2,\"s\":").str(clip(look.title.orEmpty(), 60))
+            append("{\"v\":").append(VERSION).append(",\"s\":").str(clip(look.title.orEmpty(), 60))
             append(",\"n\":").str(clip(name, 60))
             append(",\"p\":").str(if (supplier) "s" else "c")
             append(",\"b\":").append(figure(balance, k))
@@ -270,27 +317,48 @@ object CustomerLink {
 
     /** A customer in the bin: a page that says only that it is paused, in the page's language. */
     fun pausedPage(look: Look, now: Long): String = buildString {
-        append("{\"v\":2,\"z\":1,\"l\":").str(pageLanguage(look.language))
+        append("{\"v\":").append(VERSION).append(",\"z\":1,\"l\":").str(pageLanguage(look.language))
         append(",\"r\":").append(bucket(now)).append('}')
     }
 
-    /** [plain] sealed with the link's key (AES-128-GCM, a fresh nonce), as the page's script opens it. */
-    fun seal(key: String, plain: String): String {
-        val raw = unb64url(key)
+    /**
+     * What is sealed: the page's text with its counter [seq] ("q": it only grows, so a reader can tell an older
+     * page from a newer one) and spaces ("_") to the first of [SIZES] it fits, so the sealed length says nothing of
+     * the name, the shop or the figures. The page's own text, which says whether it changed, stays as it was.
+     */
+    fun stamped(text: String, seq: Long): String {
+        require(text.startsWith("{") && text.endsWith("}")) { "not a page" }
+        val head = text.dropLast(1) + ",\"q\":" + seq + ",\"_\":\""
+        val used = head.toByteArray(Charsets.UTF_8).size + 2
+        val size = SIZES.firstOrNull { it >= used } ?: used
+        return head + " ".repeat(size - used) + "\"}"
+    }
+
+    /** [plain] sealed with [link]'s key (AES-128-GCM, a fresh nonce) and bound to its id, as the page's script opens it. */
+    fun seal(link: Link, plain: String): String {
+        val raw = unb64url(link.key)
         require(raw.size == 16) { "a link key is 16 bytes" }
         val nonce = ByteArray(12).also { random.nextBytes(it) }
         val c = Cipher.getInstance("AES/GCM/NoPadding")
         c.init(Cipher.ENCRYPT_MODE, SecretKeySpec(raw, "AES"), GCMParameterSpec(128, nonce))
-        c.updateAAD(AAD.toByteArray(Charsets.US_ASCII))
+        c.updateAAD((AAD_V2 + link.id).toByteArray(Charsets.US_ASCII))
         return b64url(nonce + c.doFinal(plain.toByteArray(Charsets.UTF_8)))
     }
 
-    /** What [seal] made, opened again (for tests and the computer's own preview). */
-    fun open(key: String, sealed: String): String? = runCatching {
-        val b = unb64url(sealed)
+    /**
+     * What [seal] made, opened again under [link]'s id; a page sealed before 7 Nov 2026 (no id in its seal) opens
+     * too. Null when it does not open with this link. The customer's app reads pages through it ([CustomerPage]).
+     */
+    fun open(link: Link, sealed: String): String? {
+        val b = runCatching { unb64url(sealed) }.getOrNull() ?: return null
+        if (b.size < 12 + 16) return null
+        return openWith(link.key, b, AAD_V2 + link.id) ?: openWith(link.key, b, AAD_V1)
+    }
+
+    private fun openWith(key: String, b: ByteArray, aad: String): String? = runCatching {
         val c = Cipher.getInstance("AES/GCM/NoPadding")
         c.init(Cipher.DECRYPT_MODE, SecretKeySpec(unb64url(key), "AES"), GCMParameterSpec(128, b, 0, 12))
-        c.updateAAD(AAD.toByteArray(Charsets.US_ASCII))
+        c.updateAAD(aad.toByteArray(Charsets.US_ASCII))
         String(c.doFinal(b, 12, b.size - 12), Charsets.UTF_8)
     }.getOrNull()
 
@@ -300,6 +368,21 @@ object CustomerLink {
     // ---------------------------------------------------------------- the device's own notes
 
     private fun sentKey(linkId: String) = "clinksent|$linkId"
+    /** The counter this device last sealed a link's page with ([stamped]). */
+    private fun seqKey(linkId: String) = "clinkq|$linkId"
+    /** A link stopped on this device, or refused by the server as no longer free: never made or sent again here. */
+    private fun stopKey(linkId: String) = "clinkstop|$linkId"
+    /** The owner's word that this copy writes the book's pages, kept until a request carries it. */
+    private fun claimKey(scope: String) = "clinkclaim|$scope"
+    /** The last request found another copy of the book writing its pages ([Result.NotHere]). */
+    private fun otherKey(scope: String) = "clinkother|$scope"
+
+    /**
+     * True while another copy of this book writes its customers' pages and this one has not taken over (the
+     * background send found it; 7 Nov 2026, the review's L5): the owner is told where links are sent, with the
+     * way to take over ([flush] with claim = true).
+     */
+    fun otherCopy(place: Place, scope: String): Boolean = place.get(otherKey(scope)) != null
 
     /**
      * Which copy of the book writes the pages. While the book syncs, the same
@@ -367,7 +450,8 @@ object CustomerLink {
      * [place] and [scope] are this device's own notes for this book (its
      * file's name); [bookKey] the live sync key while the book syncs;
      * [look] how pages look where the book has not said; [claim] the owner's
-     * word that this copy of the book writes the pages from now on.
+     * word that this copy of the book writes the pages from now on (kept
+     * until a request carries it, should nothing be due now).
      */
     suspend fun flush(
         dao: KhataDao, place: Place, scope: String, look: Look,
@@ -375,11 +459,18 @@ object CustomerLink {
         http: Http = plain, root: String? = base, now: Long = System.currentTimeMillis()
     ): Result = lock.withLock { flushLocked(dao, place, scope, look, bookKey, claim, http, root, now, only = null) }
 
+    /** [refusals]: why the server would not take a page now (link id to its word: "full", "later", "disk"…). */
     private suspend fun flushLocked(
         dao: KhataDao, place: Place, scope: String, fallback: Look,
-        bookKey: String?, claim: Boolean, http: Http, root: String?, now: Long, only: String?
+        bookKey: String?, claim: Boolean, http: Http, root: String?, now: Long, only: String?,
+        refusals: MutableMap<String, String>? = null
     ): Result {
         val api = root?.trimEnd('/')?.plus("/api.php") ?: return Result.Off
+        if (claim) {
+            // The owner has said: this copy writes. Kept until a request carries it; the other copy is no longer news.
+            place.put(claimKey(scope), "1")
+            place.put(otherKey(scope), null)
+        }
         val settings = dao.allSettingsForBackup().associate { it.key to it.value }
         val links = settings.filterKeys { it.startsWith(PREFIX) }
             .mapNotNull { (k, v) -> parse(v)?.let { k.removePrefix(PREFIX) to it } }
@@ -395,10 +486,13 @@ object CustomerLink {
         val drops = LinkedHashSet<String>(gone)
         for ((uid, link) in links) {
             val p = parties[uid]
-            if (p == null) {
-                // Purged for good: the page goes. The removal is kept in the book until the server confirms it.
+            // Stopped on this device before: a book put back from an older copy names the link again (7 Nov 2026).
+            val stopped = place.get(stopKey(link.id)) != null
+            if (p == null || stopped) {
+                // Purged for good, or stopped: the page goes. The removal is kept in the book until the server confirms it.
                 dao.setSetting(GONE + link.id, "1")
                 dao.setSetting(PREFIX + uid, null)
+                if (p != null) nextGen(dao, uid)
                 place.put(sentKey(link.id), null)
                 drops += link.id
                 continue
@@ -410,8 +504,11 @@ object CustomerLink {
             }
             val h = hash(link.id, text)
             if (place.get(sentKey(link.id)) == h) continue
+            // The counter only grows on this device, whatever its clock or an older copy of the book says.
+            val seq = maxOf(now, (place.get(seqKey(link.id))?.toLongOrNull() ?: 0L) + 1)
             // One link whose key cannot seal (a damaged setting) is left out; the others still go.
-            val blob = runCatching { seal(link.key, text) }.getOrNull() ?: continue
+            val blob = runCatching { seal(link, stamped(text, seq)) }.getOrNull() ?: continue
+            place.put(seqKey(link.id), seq.toString())
             puts += Put(uid, link, blob, h)
         }
         if (puts.isEmpty() && drops.isEmpty()) return Result.Idle
@@ -420,8 +517,8 @@ object CustomerLink {
         val me = writer(place, scope, bookKey)
         val last = place.get("clinklast|$scope")
         // A shared writer (a syncing book) or this device's own that changed (sync turned on or off) takes the
-        // pages over by itself; any other copy waits for the owner's word.
-        var claimNow = claim || bookKey != null || (last != null && last != me)
+        // pages over by itself; any other copy waits for the owner's word (kept until a request carries it).
+        var claimNow = place.get(claimKey(scope)) != null || bookKey != null || (last != null && last != me)
 
         var sent = 0; var removed = 0; var lost = 0; var waiting = 0
         val items: List<Any> = puts + drops.toList()
@@ -438,35 +535,46 @@ object CustomerLink {
                 val (code, bytes) = http.post(api, body.toString().toByteArray(Charsets.UTF_8))
                 val o = runCatching { JSONObject(String(bytes, Charsets.UTF_8)) }.getOrNull()
                 val why = o?.optString("why")?.ifBlank { null }
-                if (code == 409 && why == "writer") return Result.NotHere
+                if (code == 409 && why == "writer") {
+                    // Another copy of the book writes these pages: noted for the owner until a request goes through.
+                    place.put(otherKey(scope), "1")
+                    return Result.NotHere
+                }
                 if (code != 200 || o?.optBoolean("ok") != true) {
                     // What went before this request stays sent; the rest waits for the next flush.
                     return if (sent + removed + lost > 0) Result.Done(sent, removed, lost, items.size - sent - removed - lost)
                     else Result.Refused(why ?: "http $code")
                 }
                 place.put("clinklast|$scope", me)
+                place.put(claimKey(scope), null)
+                place.put(otherKey(scope), null)
                 claimNow = false
                 val refused = HashMap<String, String>()
                 o.optJSONArray("refused")?.let { arr ->
                     for (i in 0 until arr.length()) arr.optJSONObject(i)?.let { r -> r.optString("id").takeIf { it.isNotEmpty() }?.let { refused[it] = r.optString("why") } }
                 }
                 for (p in chunkPuts) {
-                    when (refused[p.link.id]) {
+                    when (val no = refused[p.link.id]) {
                         null -> { place.put(sentKey(p.link.id), p.hash); sent++ }
                         "gone", "taken" -> {
                             // This id is no longer the customer's at the server: his link goes, and the next one is new.
                             if (dao.settingValue(PREFIX + p.partyUid) == p.link.id + "." + p.link.key) {
                                 dao.setSetting(PREFIX + p.partyUid, null)
-                                dao.setSetting(GEN + p.partyUid, ((dao.settingValue(GEN + p.partyUid)?.toIntOrNull() ?: 0) + 1).toString())
+                                nextGen(dao, p.partyUid)
                             }
                             place.put(sentKey(p.link.id), null)
+                            place.put(seqKey(p.link.id), null)
+                            // Never this id again on this device, whatever an older copy of the book says.
+                            place.put(stopKey(p.link.id), "1")
                             lost++
                         }
-                        else -> waiting++
+                        else -> { refusals?.put(p.link.id, no); waiting++ }
                     }
                 }
                 for (id in chunkDrops) {
-                    if (refused[id] == null) { dao.setSetting(GONE + id, null); place.put(sentKey(id), null); removed++ } else waiting++
+                    if (refused[id] == null) {
+                        dao.setSetting(GONE + id, null); place.put(sentKey(id), null); place.put(seqKey(id), null); removed++
+                    } else waiting++
                 }
             }
         } catch (e: java.io.IOException) {
@@ -506,6 +614,11 @@ object CustomerLink {
      * first, so the link never reaches WhatsApp before its page is the shop's
      * at the server (where the customer, holding the link, could otherwise
      * put a page of his own first).
+     *
+     * A link the server says is no longer free (a book put back from an older
+     * copy names one stopped since) is made anew once, at once. Why the page
+     * could not go now (the server busy or full, today's new links used up)
+     * comes back as [Result.Refused] with the server's word, for the owner.
      */
     suspend fun share(
         dao: KhataDao, place: Place, scope: String, look: Look, partyUid: String,
@@ -513,9 +626,17 @@ object CustomerLink {
         http: Http = plain, root: String? = base, now: Long = System.currentTimeMillis()
     ): Shared = lock.withLock {
         if (root == null) return@withLock Shared.NotYet(Result.Off)
-        val link = createLocked(dao, partyUid, look, bookKey)
-        val r = flushLocked(dao, place, scope, look, bookKey, claim, http, root, now, only = partyUid)
+        lateinit var link: Link
+        var r: Result = Result.Idle
+        val refusals = HashMap<String, String>()
+        for (attempt in 0..1) {
+            link = createLocked(dao, partyUid, look, bookKey, place)
+            refusals.clear()
+            r = flushLocked(dao, place, scope, look, bookKey, claim, http, root, now, only = partyUid, refusals = refusals)
+            if (!(r is Result.Done && r.lost > 0)) break
+        }
         val sent = place.get(sentKey(link.id)) != null && linkOf(dao, partyUid) == link
-        if (sent) Shared.Ready(url(link, root)!!, link) else Shared.NotYet(r)
+        if (sent) Shared.Ready(url(link, root)!!, link)
+        else Shared.NotYet(refusals[link.id]?.let { Result.Refused(it) } ?: r)
     }
 }

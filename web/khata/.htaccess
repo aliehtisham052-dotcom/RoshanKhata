@@ -8,6 +8,14 @@ Options -Indexes
   # The page runs only its own script, talks only to this site, and is never framed.
   Header set Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 </IfModule>
+# HTTPS only, for a year, and for this host alone (7 Nov 2026): no includeSubDomains, no preload, and nothing sent
+# should this folder ever be served under another name (ehtisham.shop/khata/). Without mod_setenvif, nothing is sent.
+<IfModule mod_setenvif.c>
+  SetEnvIfNoCase Host "^khata\.ehtisham\.shop(:443)?$" RK_KHATA_HOST
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000" env=RK_KHATA_HOST
+</IfModule>
 # assetlinks.json alone is served (Android's App Links: the shop's link opens Roshan Khata); no other JSON.
 <FilesMatch "^(?!assetlinks\.json$).*\.(md|json|log|tmp)$">
   Require all denied

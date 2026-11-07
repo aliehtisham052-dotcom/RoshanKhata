@@ -3839,6 +3839,11 @@ class PartyDetailActivity : BaseActivity() {
             val uid = dao.getParty(partyId)?.uid ?: return@launch
             val has = com.innovation313.roshankhata.data.CustomerLink.linkOf(dao, uid) != null
             if (isFinishing || isDestroyed) return@launch
+            // The background send found another copy of the book writing its pages (7 Nov 2026): said here, with
+            // the way to take over, before anything else is sent or stopped — the server takes neither from this copy.
+            if (com.innovation313.roshankhata.data.CustomerLinkSync.otherCopy(this@PartyDetailActivity)) {
+                askTakeOver(); return@launch
+            }
             val b = com.google.android.material.dialog.MaterialAlertDialogBuilder(this@PartyDetailActivity)
                 .setTitle(R.string.clink_title)
                 .setMessage(if (has) R.string.clink_body_sent else R.string.clink_body)
@@ -3849,13 +3854,69 @@ class PartyDetailActivity : BaseActivity() {
         }
     }
 
+    /** Another copy of the book writes its customers' pages: this phone takes over only on the owner's word. */
+    private fun askTakeOver() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.clink_title)
+            .setMessage(R.string.clink_other_copy)
+            .setPositiveButton(R.string.clink_take_over) { _, _ -> takeOver() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun takeOver() {
+        if (linkBusy) return
+        linkBusy = true
+        val app = applicationContext
+        lifecycleScope.launch {
+            val r = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.CustomerLinkSync.flushNow(app, claim = true) }
+            linkBusy = false
+            if (isFinishing || isDestroyed) return@launch
+            when (r) {
+                // This phone writes the pages now (or will with its next send): on to the customer's link itself.
+                is com.innovation313.roshankhata.data.CustomerLink.Result.Done,
+                com.innovation313.roshankhata.data.CustomerLink.Result.Idle -> openKhataLink()
+                else -> Toast.makeText(this@PartyDetailActivity, linkTrouble(r), Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /** Why a link could not be sent now, in the owner's words: no internet, the server busy or full, today's limit, or later. */
+    private fun linkTrouble(r: com.innovation313.roshankhata.data.CustomerLink.Result): Int = when (r) {
+        com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable -> R.string.clink_offline
+        is com.innovation313.roshankhata.data.CustomerLink.Result.Refused -> when (r.why) {
+            "busy" -> R.string.clink_busy
+            "later", "day-limit" -> R.string.clink_limit_today
+            "full", "disk", "closed" -> R.string.clink_full
+            else -> R.string.clink_not_now
+        }
+        else -> R.string.clink_not_now
+    }
+
+    /**
+     * Who did what (7 Nov 2026, the review's L7): a customer's page put on the hosting, or taken back, is an export
+     * of the book, written with who did it, as the sales report's file is.
+     */
+    private suspend fun auditLink(d: com.innovation313.roshankhata.data.KhataDao, party: Long, detail: String) {
+        runCatching {
+            d.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName,
+                "parties", party, detail)
+        }
+    }
+
     private fun sendKhataLink(uid: String, claim: Boolean) {
         if (linkBusy) return
         linkBusy = true
         Toast.makeText(this, R.string.clink_sending, Toast.LENGTH_SHORT).show()
         val app = applicationContext
+        val detail = getString(R.string.clink_menu) + " · " + partyName
+        val id = partyId
         lifecycleScope.launch {
-            val r = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.CustomerLinkSync.share(app, uid, claim) }
+            val r = withContext(Dispatchers.IO) {
+                com.innovation313.roshankhata.data.CustomerLinkSync.share(app, uid, claim).also {
+                    if (it is com.innovation313.roshankhata.data.CustomerLink.Shared.Ready) auditLink(dao, id, detail)
+                }
+            }
             linkBusy = false
             if (isFinishing || isDestroyed) return@launch
             when (r) {
@@ -3874,12 +3935,10 @@ class PartyDetailActivity : BaseActivity() {
                         com.google.android.material.dialog.MaterialAlertDialogBuilder(this@PartyDetailActivity)
                             .setTitle(R.string.clink_title)
                             .setMessage(R.string.clink_other_copy)
-                            .setPositiveButton(R.string.clink_send) { _, _ -> sendKhataLink(uid, claim = true) }
+                            .setPositiveButton(R.string.clink_take_over) { _, _ -> sendKhataLink(uid, claim = true) }
                             .setNegativeButton(android.R.string.cancel, null)
                             .show()
-                    com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable ->
-                        Toast.makeText(this@PartyDetailActivity, R.string.clink_offline, Toast.LENGTH_LONG).show()
-                    else -> Toast.makeText(this@PartyDetailActivity, R.string.clink_not_now, Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(this@PartyDetailActivity, linkTrouble(r.why), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -3889,18 +3948,38 @@ class PartyDetailActivity : BaseActivity() {
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setTitle(R.string.clink_stop)
             .setMessage(R.string.clink_stop_body)
-            .setPositiveButton(R.string.clink_stop) { _, _ ->
-                val app = applicationContext
-                AppScope.launch {
-                    val d = com.innovation313.roshankhata.data.KhataDatabase.get(app).khataDao()
-                    com.innovation313.roshankhata.data.CustomerLink.remove(d, uid)
-                    // Taken down at the hosting now, or with the next send if the internet is off.
-                    com.innovation313.roshankhata.data.CustomerLinkSync.flushNow(app)
-                }
-                Toast.makeText(this, R.string.clink_stopped, Toast.LENGTH_LONG).show()
-            }
+            .setPositiveButton(R.string.clink_stop) { _, _ -> stopKhataLink(uid) }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    /**
+     * The link taken back, then taken down at the hosting at once where it can be, and said as it went (7 Nov 2026,
+     * the review's L5: "Link stopped" was said before anything was sent, and a refusal passed unsaid). The work runs
+     * on, should this screen close; what is said waits for it.
+     */
+    private fun stopKhataLink(uid: String) {
+        val app = applicationContext
+        val detail = getString(R.string.clink_stop) + " · " + partyName
+        val id = partyId
+        AppScope.launch {
+            val d = com.innovation313.roshankhata.data.KhataDatabase.get(app).khataDao()
+            val link = com.innovation313.roshankhata.data.CustomerLinkSync.remove(app, uid)
+            auditLink(d, id, detail)
+            val r = com.innovation313.roshankhata.data.CustomerLinkSync.flushNow(app)
+            // Down at the hosting when the book no longer waits to tell it.
+            val down = link == null || d.settingValue(com.innovation313.roshankhata.data.CustomerLink.GONE + link.id) == null
+            withContext(Dispatchers.Main) {
+                val here = !isFinishing && !isDestroyed
+                when {
+                    down -> Toast.makeText(app, R.string.clink_stopped_now, Toast.LENGTH_LONG).show()
+                    r == com.innovation313.roshankhata.data.CustomerLink.Result.NotHere && here -> askTakeOver()
+                    r == com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable ->
+                        Toast.makeText(app, R.string.clink_stopped, Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(app, R.string.clink_stopped_waiting, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

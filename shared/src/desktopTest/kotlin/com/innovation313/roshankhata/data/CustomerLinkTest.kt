@@ -20,6 +20,13 @@ import java.nio.file.Files
  * sent is its own, per link; a removal is never lost; another copy of the
  * book waits for the owner's word; a syncing book makes one shop and one
  * link per customer on both devices; a link is sent before it is shared.
+ *
+ * And the security review of 7 Nov 2026: the seal names its link and the
+ * sealed text carries a counter that only grows, padded to a few sizes; a
+ * link stopped here is never made or sent again, whatever an older copy of
+ * the book says; a link no longer free is made anew once; why a page could
+ * not go is said; another copy's hold is noted, and a take-over is kept
+ * until a request carries it.
  */
 class CustomerLinkTest {
 
@@ -37,10 +44,13 @@ class CustomerLinkTest {
         var unreachable = false
         var refuse: Map<String, String> = emptyMap()
         var down = false
+        /** Every request refused whole, with this status and word ("busy", "full"…). */
+        var whole: Pair<Int, String>? = null
 
         override fun post(url: String, body: ByteArray): Pair<Int, ByteArray> {
             if (unreachable) throw java.io.IOException("no route")
             if (down) return 503 to """{"ok":false,"why":"halted"}""".toByteArray()
+            whole?.let { (code, why) -> return code to """{"ok":false,"why":"$why"}""".toByteArray() }
             val o = JSONObject(String(body, Charsets.UTF_8))
             calls += o
             val token = o.getString("token")
@@ -110,10 +120,11 @@ class CustomerLinkTest {
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes))
         val blob = server.pages.getValue(link.id)
         assertFalse("the server never sees a name", blob.contains("Ali Raza Qureshi") || blob.contains("Qureshi"))
-        val text = CustomerLink.open(link.key, blob)!!
+        val text = CustomerLink.open(link, blob)!!
         assertFalse("the shop's own note never leaves the device", text.contains("cheque") || text.contains("0300"))
         val page = JSONObject(text)
-        assertEquals(2, page.getInt("v"))
+        assertEquals(CustomerLink.VERSION, page.getInt("v"))
+        assertEquals(1_000_000L, page.getLong("q"))
         assertEquals("Ali Raza Qureshi", page.getString("n"))
         assertEquals("Bhatti Traders", page.getString("s"))
         assertEquals("c", page.getString("p"))
@@ -131,7 +142,7 @@ class CustomerLinkTest {
         assertEquals(CustomerLink.Result.Idle, d.flushWith(server, notes))
         d.setSetting(CustomerLink.MODE, CustomerLink.Mode.BALANCE.key)
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes))
-        assertFalse(JSONObject(CustomerLink.open(link.key, server.pages.getValue(link.id))!!).has("e"))
+        assertFalse(JSONObject(CustomerLink.open(link, server.pages.getValue(link.id))!!).has("e"))
         // A month on, every page goes again, so the server keeps it.
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes, now = 1_000_000L + 31L * 24 * 60 * 60 * 1000))
 
@@ -158,7 +169,7 @@ class CustomerLinkTest {
         val b = CustomerLink.page(look, "Ali", false, 10.55, 7L, lines, CustomerLink.Mode.LAST3, 0L)
         assertEquals(a, b)
         assertEquals(
-            "{\"v\":2,\"s\":\"Bhatti Traders\",\"n\":\"Ali\",\"p\":\"c\",\"b\":10.55,\"c\":\"Rs\",\"k\":2,\"l\":\"ur\",\"t\":7,\"r\":0," +
+            "{\"v\":3,\"s\":\"Bhatti Traders\",\"n\":\"Ali\",\"p\":\"c\",\"b\":10.55,\"c\":\"Rs\",\"k\":2,\"l\":\"ur\",\"t\":7,\"r\":0," +
                 "\"e\":[{\"d\":5,\"a\":1500.5,\"g\":0,\"m\":0}]}",
             a
         )
@@ -205,13 +216,13 @@ class CustomerLinkTest {
         d.flushWith(server, notes)
         d.softDeleteParties(listOf(ali))
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes))
-        val paused = CustomerLink.open(link.key, server.pages.getValue(link.id))!!
+        val paused = CustomerLink.open(link, server.pages.getValue(link.id))!!
         assertEquals(1, JSONObject(paused).getInt("z"))
         assertFalse(paused.contains("Ali") || paused.contains("900"))
         val p = d.getParty(ali)!!
         d.restoreParty(ali); d.restoreEntriesOfParty(ali, p.deletedAt!!)
         assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes))
-        assertEquals(900.0, JSONObject(CustomerLink.open(link.key, server.pages.getValue(link.id))!!).getDouble("b"), 0.001)
+        assertEquals(900.0, JSONObject(CustomerLink.open(link, server.pages.getValue(link.id))!!).getDouble("b"), 0.001)
     }
 
     @Test
@@ -325,11 +336,149 @@ class CustomerLinkTest {
         assertTrue(CustomerLink.share(d, notes, "khata.db", look, uid, root = null) is CustomerLink.Shared.NotYet)
     }
 
+    /** A page sealed as before 7 Nov 2026: its seal names no link. */
+    private fun sealedBefore(key: String, plain: String): String {
+        val raw = java.util.Base64.getUrlDecoder().decode(key)
+        val nonce = ByteArray(12).also { java.security.SecureRandom().nextBytes(it) }
+        val c = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+        c.init(javax.crypto.Cipher.ENCRYPT_MODE, javax.crypto.spec.SecretKeySpec(raw, "AES"), javax.crypto.spec.GCMParameterSpec(128, nonce))
+        c.updateAAD("rk-clink-v1".toByteArray(Charsets.US_ASCII))
+        return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(nonce + c.doFinal(plain.toByteArray(Charsets.UTF_8)))
+    }
+
     @Test
-    fun `a page opens only with its own key`() {
-        val key = "AAECAwQFBgcICQoLDA0ODw"
-        val sealed = CustomerLink.seal(key, "{\"n\":\"Ali\"}")
-        assertEquals("{\"n\":\"Ali\"}", CustomerLink.open(key, sealed))
-        assertNull(CustomerLink.open("DwAAAAAAAAAAAAAAAAAAAA", sealed))
+    fun `a page opens only with its own key and under its own link's id`() {
+        val link = CustomerLink.Link("0123456789abcdef0123456789abcdef", "AAECAwQFBgcICQoLDA0ODw")
+        val sealed = CustomerLink.seal(link, "{\"n\":\"Ali\"}")
+        assertEquals("{\"n\":\"Ali\"}", CustomerLink.open(link, sealed))
+        assertNull(CustomerLink.open(link.copy(key = "DwAAAAAAAAAAAAAAAAAAAA"), sealed))
+        // The seal names its link (7 Nov 2026): the same key under another id opens nothing.
+        assertNull(CustomerLink.open(link.copy(id = "f".repeat(32)), sealed))
+        // A page sealed before that still opens, under any id its key belongs to.
+        assertEquals("{\"n\":\"Ali\"}", CustomerLink.open(link, sealedBefore(link.key, "{\"n\":\"Ali\"}")))
+        assertNull(CustomerLink.open(link, "not base64 at all!"))
+        assertNull(CustomerLink.open(link, "AAAA"))
+    }
+
+    @Test
+    fun `the sealed page carries a counter that only grows, and is padded to a few sizes`() = book { d, _ ->
+        val ali = d.insertParty(Party(name = "Ali"))
+        val uid = d.getParty(ali)!!.uid!!
+        val server = Server()
+        val notes = Notes()
+        val link = CustomerLink.create(d, uid, look)
+        assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes, now = 5_000_000L))
+        val first = CustomerLink.open(link, server.pages.getValue(link.id))!!
+        assertEquals(5_000_000L, JSONObject(first).getLong("q"))
+        assertEquals("the page is padded to the first size it fits", 512, first.toByteArray(Charsets.UTF_8).size)
+        // The phone's clock put back: the counter still grows.
+        d.insertEntryNumbered(LedgerEntry(partyId = ali, amount = 75.0, isGiven = true, entryNumber = ""))
+        assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes, now = 4_000_000L))
+        val second = JSONObject(CustomerLink.open(link, server.pages.getValue(link.id))!!)
+        assertEquals(5_000_001L, second.getLong("q"))
+        assertEquals(75.0, second.getDouble("b"), 0.001)
+
+        // The sizes: a short page and a long one, each to its own, the page's own text untouched before the counter.
+        val short = CustomerLink.stamped("{\"v\":3}", 7L)
+        assertEquals(512, short.toByteArray(Charsets.UTF_8).size)
+        assertTrue(short.startsWith("{\"v\":3,\"q\":7,\"_\":\""))
+        assertEquals(7L, JSONObject(short).getLong("q"))
+        val long = CustomerLink.stamped("{\"n\":\"" + "ع".repeat(300) + "\"}", 1L)
+        assertEquals(1024, long.toByteArray(Charsets.UTF_8).size)
+    }
+
+    @Test
+    fun `a link stopped here is never made or sent again, whatever an older copy of the book says`() = book { d, _ ->
+        val ali = d.insertParty(Party(name = "Ali"))
+        val uid = d.getParty(ali)!!.uid!!
+        val server = Server()
+        val notes = Notes()
+
+        // A link of a book that syncs (made from its key): stopped, then the book put back from an older copy.
+        val first = CustomerLink.create(d, uid, look, key, notes)
+        assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, notes, bookKey = key))
+        assertEquals(first, CustomerLink.remove(d, uid, notes))
+        assertEquals(CustomerLink.Result.Done(0, 1), d.flushWith(server, notes, bookKey = key))
+        d.setSetting(CustomerLink.GEN + uid, null)
+        val next = CustomerLink.create(d, uid, look, key, notes)
+        assertNotEquals("the stopped link is passed over", first.id, next.id)
+        assertEquals("1", d.settingValue(CustomerLink.GEN + uid))
+
+        // The older copy names the stopped link itself: it is taken back again, never sent.
+        d.setSetting(CustomerLink.PREFIX + uid, first.id + "." + first.key)
+        val calls = server.calls.size
+        assertEquals(CustomerLink.Result.Done(0, 1), d.flushWith(server, notes, bookKey = key))
+        assertEquals(calls + 1, server.calls.size)
+        assertEquals(0, server.calls.last().getJSONArray("put").length())
+        assertEquals(first.id, server.calls.last().getJSONArray("drop").getString(0))
+        assertNull(CustomerLink.linkOf(d, uid))
+
+        // Asked for again, his link is a new one, and the stopped one goes with the next send.
+        d.setSetting(CustomerLink.PREFIX + uid, first.id + "." + first.key)
+        val again = CustomerLink.create(d, uid, look, key, notes)
+        assertNotEquals(first, again)
+        assertEquals("1", d.settingValue(CustomerLink.GONE + first.id))
+        assertNull(CustomerLink.remove(d, "no-such-customer", notes))
+    }
+
+    @Test
+    fun `a link the server says is no longer free is made anew once, and the new one goes`() = book { d, _ ->
+        val ali = d.insertParty(Party(name = "Ali"))
+        val uid = d.getParty(ali)!!.uid!!
+        val server = Server()
+        val notes = Notes()
+        val old = CustomerLink.create(d, uid, look)
+        server.refuse = mapOf(old.id to "taken")
+        val shared = CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root)
+        assertTrue(shared is CustomerLink.Shared.Ready)
+        shared as CustomerLink.Shared.Ready
+        assertNotEquals(old.id, shared.link.id)
+        assertTrue(shared.link.id in server.pages)
+        assertEquals(shared.link, CustomerLink.linkOf(d, uid))
+    }
+
+    @Test
+    fun `why a page could not go is said - the server busy or full, today's new links used up`() = book { d, _ ->
+        val ali = d.insertParty(Party(name = "Ali"))
+        val uid = d.getParty(ali)!!.uid!!
+        val server = Server()
+        val notes = Notes()
+        server.whole = 429 to "busy"
+        assertEquals(CustomerLink.Shared.NotYet(CustomerLink.Result.Refused("busy")),
+            CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root))
+        server.whole = null
+        val link = CustomerLink.linkOf(d, uid)!!
+        for (why in listOf("later", "full", "disk")) {
+            server.refuse = mapOf(link.id to why)
+            assertEquals(CustomerLink.Shared.NotYet(CustomerLink.Result.Refused(why)),
+                CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root))
+        }
+        assertEquals("the link waits; it is not lost", link, CustomerLink.linkOf(d, uid))
+    }
+
+    @Test
+    fun `another copy's hold is noted for the owner, and a take-over is kept until a request carries it`() = book { d, _ ->
+        val ali = d.insertParty(Party(name = "Ali"))
+        val uid = d.getParty(ali)!!.uid!!
+        val server = Server()
+        val phone = Notes()
+        CustomerLink.create(d, uid, look)
+        assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, phone))
+        val newPhone = Notes()
+        assertFalse(CustomerLink.otherCopy(newPhone, "khata.db"))
+        assertEquals(CustomerLink.Result.NotHere, d.flushWith(server, newPhone))
+        assertTrue("the background send leaves a note for the owner", CustomerLink.otherCopy(newPhone, "khata.db"))
+        // The owner says take over while the internet is off: kept, and the next send claims.
+        server.unreachable = true
+        assertEquals(CustomerLink.Result.Unreachable, d.flushWith(server, newPhone, claim = true))
+        assertFalse(CustomerLink.otherCopy(newPhone, "khata.db"))
+        server.unreachable = false
+        assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, newPhone))
+        assertTrue(server.calls.last().optBoolean("claim"))
+        assertEquals(CustomerLink.writer(newPhone, "khata.db", null), server.writer)
+        // Carried once: the next request claims nothing.
+        d.insertEntryNumbered(LedgerEntry(partyId = ali, amount = 20.0, isGiven = true, entryNumber = ""))
+        assertEquals(CustomerLink.Result.Done(1, 0), d.flushWith(server, newPhone))
+        assertFalse(server.calls.last().has("claim"))
     }
 }

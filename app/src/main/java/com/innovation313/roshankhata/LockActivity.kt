@@ -38,6 +38,9 @@ class LockActivity : BaseActivity() {
      */
     override fun onRestart() {
         super.onRestart()
+        // Answered meanwhile on another of the app's lock screens (Mera Khata keeps its own task, 7 Nov 2026):
+        // nothing is asked twice.
+        if (!settled && intent.getBooleanExtra(EXTRA_RELOCK, false) && AppLock.Away.isOpen()) { settled = true; finish(); return }
         window.decorView.postDelayed({ if (!settled && !isFinishing && !isDestroyed) prompt() }, 400L)
     }
 
@@ -47,6 +50,7 @@ class LockActivity : BaseActivity() {
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 settled = true
+                AppLock.Away.unlocked(android.os.SystemClock.elapsedRealtime())
                 // Asked again on coming back: the screen underneath is the owner's again.
                 if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
             }
@@ -72,6 +76,8 @@ class LockActivity : BaseActivity() {
                                 R.string.app_lock_no_screen_lock else R.string.app_lock_unavailable,
                             android.widget.Toast.LENGTH_LONG
                         ).show()
+                        // Let in as the front door lets in: the screens under it must not ask again at once.
+                        AppLock.Away.unlocked(android.os.SystemClock.elapsedRealtime())
                         if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
                     }
                     // The owner cancelled or backed out, or too many tries: the app closes rather than

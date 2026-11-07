@@ -152,41 +152,44 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     /**
-     * App Lock asks again when the app comes back after [RELOCK_MS] away
+     * App Lock asks again when the app comes back after [com.innovation313.roshankhata.data.AppLock.RELOCK_MS] away
      * (21 Oct 2026, the critical review): it was asked once when the app
      * started, and a phone left unlocked on the counter showed the book to
-     * whoever picked it up hours later. Counted across every screen, so
-     * moving between the app's own screens is not "away".
+     * whoever picked it up hours later. Counted across the book's screens, so
+     * moving between them is not "away" (AppLock.Away). The doors before the
+     * book and Mera Khata do not count (7 Nov 2026, the review's L2: a khata
+     * link opened on a phone left on the counter cleared the time away, and
+     * Back showed the book unlocked); once due, every one of the book's
+     * screens asks until the lock is answered.
      */
     override fun onStart() {
         super.onStart()
-        if (startedScreens++ == 0) {
-            val away = stoppedAt
-            stoppedAt = 0L
-            if (away > 0L && System.currentTimeMillis() - away > RELOCK_MS &&
-                javaClass.simpleName !in BEFORE_THE_BOOK &&
-                com.innovation313.roshankhata.data.AppLock.required(this)
-            ) {
-                startActivity(android.content.Intent(this, LockActivity::class.java).putExtra(LockActivity.EXTRA_RELOCK, true))
-            }
+        if (javaClass.simpleName in BEFORE_THE_BOOK) return
+        val away = com.innovation313.roshankhata.data.AppLock.Away
+        if (away.bookStarted(android.os.SystemClock.elapsedRealtime()) { com.innovation313.roshankhata.data.AppLock.required(this) }) {
+            // Single top: two of the book's screens coming on together (a screen opening another) ask once.
+            startActivity(
+                android.content.Intent(this, LockActivity::class.java)
+                    .putExtra(LockActivity.EXTRA_RELOCK, true)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
         }
     }
 
     override fun onStop() {
         super.onStop()
-        if (--startedScreens <= 0) { startedScreens = 0; stoppedAt = System.currentTimeMillis() }
+        if (javaClass.simpleName !in BEFORE_THE_BOOK) {
+            com.innovation313.roshankhata.data.AppLock.Away.bookStopped(android.os.SystemClock.elapsedRealtime())
+        }
     }
 
     private companion object {
         /** The request code of the Downloads permission (Android 7-9). */
         const val REQ_DOWNLOADS = 7313
         /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
-        // MeraKhataActivity shows only the shops' pages this phone's owner was sent as a customer, never the book.
+        // MeraKhataActivity shows only the shops' pages this phone's owner was sent as a customer, never the book;
+        // it asks App Lock itself when the owner has it on (7 Nov 2026).
         val BEFORE_THE_BOOK = setOf("GateActivity", "LockActivity", "LanguageActivity", "ShopTypeActivity", "ShopNameActivity", "MeraKhataActivity")
-        /** Away this long, App Lock asks again. */
-        const val RELOCK_MS = 5 * 60_000L
-        var startedScreens = 0
-        var stoppedAt = 0L
     }
 
     /** After setContentView: let fixed-height buttons grow if the text did. */

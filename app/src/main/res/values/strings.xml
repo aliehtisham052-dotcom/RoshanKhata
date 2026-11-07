@@ -4188,7 +4188,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">Send khata link</string>
     <string name="clink_title">Customer’s khata link</string>
-    <string name="clink_body">This customer gets a link where they see only their total balance — nothing else of your book. You can stop the link at any time.</string>
+    <string name="clink_body">This customer gets a link where they see their name as written in your book, their total balance and the day of their last entry — nothing else of your book. You can stop the link at any time.</string>
     <string name="clink_body_sent">A link was already sent to this customer. Send it again, or stop it: once stopped, the old link no longer opens.</string>
     <string name="clink_send">Send link</string>
     <string name="clink_send_again">Send again</string>
@@ -4201,7 +4201,7 @@
     <string name="clink_not_now">The link could not be made right now. Try again in a little while.</string>
     <string name="clink_other_copy">This book’s links were sent from another phone (or an older copy of the book). Send from this phone now? This phone will then keep the balances up to date.</string>
     <string name="mera_khata_title">My Khata</string>
-    <string name="mera_khata_help">Your balance with each shop that sent you its khata link. The shop writes it; nothing can be changed here.</string>
+    <string name="mera_khata_help">Your balance with each shop that sent you its khata link. The shop writes it; Roshan Khata does not check it, and nothing can be changed here.</string>
     <string name="mera_khata_empty">No shop yet. Open a khata link a shop sent you and it comes here.</string>
     <string name="mera_khata_refresh">Refresh</string>
     <string name="mera_khata_just_now">Just refreshed. Try again in a minute.</string>
@@ -4223,4 +4223,11 @@
     <string name="mera_khata_own_title">Keep your own shop’s accounts too</string>
     <string name="mera_khata_own_body">Roshan Khata is free: credit, collections, bills and stock — all on your phone.</string>
     <string name="mera_khata_own_button">Start my own khata</string>
+    <string name="clink_take_over">Send from this phone</string>
+    <string name="clink_stopped_now">Link stopped. It no longer opens.</string>
+    <string name="clink_stopped_waiting">Link stopped on this phone. The server has not taken it down yet; it is tried again with the next send.</string>
+    <string name="clink_busy">The khata link server is busy right now. Try again later.</string>
+    <string name="clink_full">The khata link server is full right now. Links already sent keep working. Try again later.</string>
+    <string name="clink_limit_today">The limit for new khata links today is reached. Try again tomorrow.</string>
+    <string name="mera_khata_older">The server sent an older copy of this page. The newest copy this phone has seen is shown.</string>
 </resources>

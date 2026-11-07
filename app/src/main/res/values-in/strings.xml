@@ -3958,7 +3958,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">Tautan buku pelanggan</string>
     <string name="clink_title">Tautan buku pelanggan</string>
-    <string name="clink_body">Pelanggan ini menerima tautan untuk melihat total saldonya saja — tidak ada hal lain dari buku Anda. Anda bisa menghentikan tautan kapan saja.</string>
+    <string name="clink_body">Pelanggan ini menerima tautan untuk melihat namanya seperti tertulis di buku Anda, total saldonya, dan tanggal catatan terakhirnya — tidak ada hal lain dari buku Anda. Anda bisa menghentikan tautan kapan saja.</string>
     <string name="clink_body_sent">Tautan sudah pernah dikirim ke pelanggan ini. Kirim lagi atau hentikan: setelah dihentikan, tautan lama tidak terbuka lagi.</string>
     <string name="clink_send">Kirim tautan</string>
     <string name="clink_send_again">Kirim lagi</string>
@@ -3971,7 +3971,7 @@
     <string name="clink_not_now">Tautan belum bisa dibuat sekarang. Coba lagi sebentar lagi.</string>
     <string name="clink_other_copy">Tautan buku ini dikirim dari ponsel lain (atau salinan buku yang lebih lama). Kirim dari ponsel ini sekarang? Ponsel ini lalu yang menjaga saldo tetap terbaru.</string>
     <string name="mera_khata_title">Buku Saya</string>
-    <string name="mera_khata_help">Saldo Anda di setiap toko yang mengirimi Anda tautan bukunya. Toko yang menulisnya; tidak ada yang bisa diubah di sini.</string>
+    <string name="mera_khata_help">Saldo Anda di setiap toko yang mengirimi Anda tautan bukunya. Toko yang menulisnya; Roshan Khata tidak memeriksanya, dan tidak ada yang bisa diubah di sini.</string>
     <string name="mera_khata_empty">Belum ada toko. Buka tautan buku yang dikirim toko, maka toko itu muncul di sini.</string>
     <string name="mera_khata_refresh">Muat ulang</string>
     <string name="mera_khata_just_now">Baru saja dimuat ulang. Coba lagi dalam satu menit.</string>
@@ -3993,4 +3993,11 @@
     <string name="mera_khata_own_title">Catat juga keuangan toko Anda</string>
     <string name="mera_khata_own_body">Roshan Khata gratis: utang, penagihan, tagihan, dan stok — semua di ponsel Anda.</string>
     <string name="mera_khata_own_button">Mulai buku saya sendiri</string>
+    <string name="clink_take_over">Kirim dari ponsel ini</string>
+    <string name="clink_stopped_now">Tautan dihentikan. Tautan tidak bisa dibuka lagi.</string>
+    <string name="clink_stopped_waiting">Tautan dihentikan di ponsel ini. Server belum menghapusnya; akan dicoba lagi pada pengiriman berikutnya.</string>
+    <string name="clink_busy">Server tautan buku sedang sibuk. Coba lagi nanti.</string>
+    <string name="clink_full">Server tautan buku sedang penuh. Tautan yang sudah dikirim tetap berfungsi. Coba lagi nanti.</string>
+    <string name="clink_limit_today">Batas tautan buku baru untuk hari ini sudah tercapai. Coba lagi besok.</string>
+    <string name="mera_khata_older">Server mengirim salinan lama halaman ini. Salinan terbaru yang pernah dilihat ponsel ini yang ditampilkan.</string>
 </resources>

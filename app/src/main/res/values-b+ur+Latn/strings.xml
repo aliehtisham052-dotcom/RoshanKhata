@@ -3975,7 +3975,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">Customer ko khata link</string>
     <string name="clink_title">Customer ka khata link</string>
-    <string name="clink_body">Is customer ko ek link jayega jis par woh sirf apna kul balance dekh sakega — aap ki kitaab ki koi aur cheez nahi. Link aap jab chahein band kar sakte hain.</string>
+    <string name="clink_body">Is customer ko ek link jayega jis par woh apna naam (jaisa aap ki kitaab mein likha hai), apna kul balance aur aakhri entry ki tareekh dekh sakega — aap ki kitaab ki koi aur cheez nahi. Link aap jab chahein band kar sakte hain.</string>
     <string name="clink_body_sent">Is customer ko link pehle bheja ja chuka hai. Dobara bhejein ya band karein: band hone ke baad purana link nahi khulega.</string>
     <string name="clink_send">Link bhejein</string>
     <string name="clink_send_again">Dobara bhejein</string>
@@ -3988,7 +3988,7 @@
     <string name="clink_not_now">Abhi link nahi ban saka. Thori der baad dobara koshish karein.</string>
     <string name="clink_other_copy">Is kitaab ke link kisi aur phone (ya kitaab ki purani copy) se bheje gaye thay. Ab is phone se bhejein? Phir yahi phone balance taaza rakhega.</string>
     <string name="mera_khata_title">Mera Khata</string>
-    <string name="mera_khata_help">Jin dukaanon ne aap ko khata link bheja, un ke saath aap ka balance yahan hai. Ye dukaan likhti hai; yahan kuch badla nahi ja sakta.</string>
+    <string name="mera_khata_help">Jin dukaanon ne aap ko khata link bheja, un ke saath aap ka balance yahan hai. Ye dukaan likhti hai; Roshan Khata ise nahi jaanchta, aur yahan kuch badla nahi ja sakta.</string>
     <string name="mera_khata_empty">Abhi koi dukaan nahi. Dukaan ka bheja hua khata link kholein, woh yahan aa jayega.</string>
     <string name="mera_khata_refresh">Taaza karein</string>
     <string name="mera_khata_just_now">Abhi taaza kiya hai. Ek minute baad dobara dabayein.</string>
@@ -4010,4 +4010,11 @@
     <string name="mera_khata_own_title">Apni dukaan ka hisaab bhi rakhein</string>
     <string name="mera_khata_own_body">Roshan Khata muft hai: udhaar, wusooli, bill aur stock — sab aap ke phone par.</string>
     <string name="mera_khata_own_button">Apna khata shuru karein</string>
+    <string name="clink_take_over">Is phone se bhejein</string>
+    <string name="clink_stopped_now">Link band kar diya. Ab ye nahi khulega.</string>
+    <string name="clink_stopped_waiting">Link is phone par band kar diya. Server ne abhi ise nahi hataya; agli baar bhejte waqt dobara koshish hogi.</string>
+    <string name="clink_busy">Khata link ka server abhi masroof hai. Kuch der baad dobara koshish karein.</string>
+    <string name="clink_full">Khata link ka server abhi bhara hua hai. Pehle bheje gaye link chalte rahenge. Kuch der baad dobara koshish karein.</string>
+    <string name="clink_limit_today">Aaj naye khata links ki had poori ho gayi. Kal dobara koshish karein.</string>
+    <string name="mera_khata_older">Server ne is safhe ki purani copy bheji. Is phone par dekhi gayi sab se nayi copy dikhayi ja rahi hai.</string>
 </resources>

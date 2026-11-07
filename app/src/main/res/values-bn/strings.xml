@@ -4023,7 +4023,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">গ্রাহককে খাতার লিংক</string>
     <string name="clink_title">গ্রাহকের খাতার লিংক</string>
-    <string name="clink_body">এই গ্রাহক একটি লিংক পাবেন যেখানে তিনি শুধু নিজের মোট ব্যালেন্স দেখতে পারবেন — আপনার খাতার আর কিছু নয়। আপনি যখন খুশি লিংকটি বন্ধ করতে পারেন।</string>
+    <string name="clink_body">এই গ্রাহক একটি লিংক পাবেন যেখানে তিনি আপনার খাতায় যেভাবে লেখা আছে সেভাবে নিজের নাম, নিজের মোট ব্যালেন্স এবং শেষ এন্ট্রির তারিখ দেখতে পারবেন — আপনার খাতার আর কিছু নয়। আপনি যখন খুশি লিংকটি বন্ধ করতে পারেন।</string>
     <string name="clink_body_sent">এই গ্রাহককে আগে লিংক পাঠানো হয়েছে। আবার পাঠান বা বন্ধ করুন: বন্ধ হলে পুরোনো লিংক আর খুলবে না।</string>
     <string name="clink_send">লিংক পাঠান</string>
     <string name="clink_send_again">আবার পাঠান</string>
@@ -4036,7 +4036,7 @@
     <string name="clink_not_now">এখন লিংক তৈরি করা গেল না। একটু পরে আবার চেষ্টা করুন।</string>
     <string name="clink_other_copy">এই খাতার লিংক অন্য ফোন (বা খাতার পুরোনো কপি) থেকে পাঠানো হয়েছিল। এখন এই ফোন থেকে পাঠাবেন? তখন এই ফোনই ব্যালেন্স হালনাগাদ রাখবে।</string>
     <string name="mera_khata_title">আমার খাতা</string>
-    <string name="mera_khata_help">যেসব দোকান আপনাকে খাতার লিংক পাঠিয়েছে, তাদের কাছে আপনার ব্যালেন্স এখানে। দোকান এটি লেখে; এখানে কিছু বদলানো যায় না।</string>
+    <string name="mera_khata_help">যেসব দোকান আপনাকে খাতার লিংক পাঠিয়েছে, তাদের কাছে আপনার ব্যালেন্স এখানে। দোকান এটি লেখে; রোশন খাতা এটি যাচাই করে না, এবং এখানে কিছু বদলানো যায় না।</string>
     <string name="mera_khata_empty">এখনো কোনো দোকান নেই। দোকানের পাঠানো খাতার লিংক খুলুন, সেটি এখানে আসবে।</string>
     <string name="mera_khata_refresh">রিফ্রেশ করুন</string>
     <string name="mera_khata_just_now">এইমাত্র রিফ্রেশ হয়েছে। এক মিনিট পরে আবার চাপুন।</string>
@@ -4058,4 +4058,11 @@
     <string name="mera_khata_own_title">নিজের দোকানের হিসাবও রাখুন</string>
     <string name="mera_khata_own_body">রোশন খাতা বিনামূল্যে: বাকি, আদায়, বিল আর স্টক — সব আপনার ফোনে।</string>
     <string name="mera_khata_own_button">নিজের খাতা শুরু করুন</string>
+    <string name="clink_take_over">এই ফোন থেকে পাঠান</string>
+    <string name="clink_stopped_now">লিংক বন্ধ করা হয়েছে। এটি আর খুলবে না।</string>
+    <string name="clink_stopped_waiting">এই ফোনে লিংক বন্ধ করা হয়েছে। সার্ভার এখনও এটি সরায়নি; পরের বার পাঠানোর সময় আবার চেষ্টা হবে।</string>
+    <string name="clink_busy">খাতার লিংকের সার্ভার এখন ব্যস্ত। একটু পরে আবার চেষ্টা করুন।</string>
+    <string name="clink_full">খাতার লিংকের সার্ভার এখন পূর্ণ। আগে পাঠানো লিংকগুলো কাজ করতে থাকবে। একটু পরে আবার চেষ্টা করুন।</string>
+    <string name="clink_limit_today">আজকের নতুন খাতার লিংকের সীমা পূর্ণ হয়েছে। কাল আবার চেষ্টা করুন।</string>
+    <string name="mera_khata_older">সার্ভার এই পাতার একটি পুরোনো কপি পাঠিয়েছে। এই ফোনে দেখা সবচেয়ে নতুন কপিটি দেখানো হচ্ছে।</string>
 </resources>

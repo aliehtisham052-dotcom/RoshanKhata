@@ -3975,7 +3975,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">کسٹمر کو کھاتہ لنک</string>
     <string name="clink_title">کسٹمر کا کھاتہ لنک</string>
-    <string name="clink_body">اس کسٹمر کو ایک لنک جائے گا جس پر وہ صرف اپنا کل بیلنس دیکھ سکے گا — آپ کی کتاب کی کوئی اور چیز نہیں۔ لنک آپ جب چاہیں بند کر سکتے ہیں۔</string>
+    <string name="clink_body">اس کسٹمر کو ایک لنک جائے گا جس پر وہ اپنا نام (جیسا آپ کی کتاب میں لکھا ہے)، اپنا کل بیلنس اور آخری اندراج کی تاریخ دیکھ سکے گا — آپ کی کتاب کی کوئی اور چیز نہیں۔ لنک آپ جب چاہیں بند کر سکتے ہیں۔</string>
     <string name="clink_body_sent">اس کسٹمر کو لنک پہلے بھیجا جا چکا ہے۔ دوبارہ بھیجیں یا بند کریں: بند ہونے کے بعد پرانا لنک نہیں کھلے گا۔</string>
     <string name="clink_send">لنک بھیجیں</string>
     <string name="clink_send_again">دوبارہ بھیجیں</string>
@@ -3988,7 +3988,7 @@
     <string name="clink_not_now">ابھی لنک نہیں بن سکا۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔</string>
     <string name="clink_other_copy">اس کتاب کے لنک کسی اور فون (یا کتاب کی پرانی کاپی) سے بھیجے گئے تھے۔ اب اس فون سے بھیجیں؟ پھر یہی فون بیلنس تازہ رکھے گا۔</string>
     <string name="mera_khata_title">میرا کھاتہ</string>
-    <string name="mera_khata_help">جن دکانوں نے آپ کو کھاتہ لنک بھیجا، ان کے ساتھ آپ کا بیلنس یہاں ہے۔ یہ دکان لکھتی ہے؛ یہاں کچھ بدلا نہیں جا سکتا۔</string>
+    <string name="mera_khata_help">جن دکانوں نے آپ کو کھاتہ لنک بھیجا، ان کے ساتھ آپ کا بیلنس یہاں ہے۔ یہ دکان لکھتی ہے؛ روشن کھاتہ اسے نہیں جانچتا، اور یہاں کچھ بدلا نہیں جا سکتا۔</string>
     <string name="mera_khata_empty">ابھی کوئی دکان نہیں۔ دکان کا بھیجا ہوا کھاتہ لنک کھولیں، وہ یہاں آ جائے گا۔</string>
     <string name="mera_khata_refresh">تازہ کریں</string>
     <string name="mera_khata_just_now">ابھی تازہ کیا ہے۔ ایک منٹ بعد دوبارہ دبائیں۔</string>
@@ -4010,4 +4010,11 @@
     <string name="mera_khata_own_title">اپنی دکان کا حساب بھی رکھیں</string>
     <string name="mera_khata_own_body">روشن کھاتہ مفت ہے: ادھار، وصولی، بل اور اسٹاک — سب آپ کے فون پر۔</string>
     <string name="mera_khata_own_button">اپنا کھاتہ شروع کریں</string>
+    <string name="clink_take_over">اس فون سے بھیجیں</string>
+    <string name="clink_stopped_now">لنک بند کر دیا۔ اب یہ نہیں کھلے گا۔</string>
+    <string name="clink_stopped_waiting">لنک اس فون پر بند کر دیا۔ سرور نے ابھی اسے نہیں ہٹایا؛ اگلی بار بھیجتے وقت دوبارہ کوشش ہوگی۔</string>
+    <string name="clink_busy">کھاتہ لنک کا سرور ابھی مصروف ہے۔ کچھ دیر بعد دوبارہ کوشش کریں۔</string>
+    <string name="clink_full">کھاتہ لنک کا سرور ابھی بھرا ہوا ہے۔ پہلے بھیجے گئے لنک چلتے رہیں گے۔ کچھ دیر بعد دوبارہ کوشش کریں۔</string>
+    <string name="clink_limit_today">آج نئے کھاتہ لنکس کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔</string>
+    <string name="mera_khata_older">سرور نے اس صفحے کی پرانی کاپی بھیجی۔ اس فون پر دیکھی گئی سب سے نئی کاپی دکھائی جا رہی ہے۔</string>
 </resources>

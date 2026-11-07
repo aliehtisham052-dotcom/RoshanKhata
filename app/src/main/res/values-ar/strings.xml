@@ -4235,7 +4235,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">رابط حساب العميل</string>
     <string name="clink_title">رابط حساب العميل</string>
-    <string name="clink_body">سيصل إلى هذا العميل رابط يرى فيه رصيده الإجمالي فقط — لا شيء آخر من دفترك. يمكنك إيقاف الرابط متى شئت.</string>
+    <string name="clink_body">سيصل إلى هذا العميل رابط يرى فيه اسمه كما هو مكتوب في دفترك ورصيده الإجمالي وتاريخ آخر قيد له — لا شيء آخر من دفترك. يمكنك إيقاف الرابط متى شئت.</string>
     <string name="clink_body_sent">أُرسل رابط إلى هذا العميل من قبل. أرسله مرة أخرى أو أوقفه: بعد الإيقاف لن يُفتح الرابط القديم.</string>
     <string name="clink_send">إرسال الرابط</string>
     <string name="clink_send_again">إرسال مرة أخرى</string>
@@ -4248,7 +4248,7 @@
     <string name="clink_not_now">تعذّر إنشاء الرابط الآن. حاول مرة أخرى بعد قليل.</string>
     <string name="clink_other_copy">أُرسلت روابط هذا الدفتر من هاتف آخر (أو من نسخة أقدم من الدفتر). هل تريد الإرسال من هذا الهاتف الآن؟ عندها سيُبقي هذا الهاتف الأرصدة محدّثة.</string>
     <string name="mera_khata_title">حسابي</string>
-    <string name="mera_khata_help">رصيدك لدى كل متجر أرسل إليك رابط حسابه. المتجر هو من يكتبه؛ لا يمكن تغيير شيء هنا.</string>
+    <string name="mera_khata_help">رصيدك لدى كل متجر أرسل إليك رابط حسابه. المتجر هو من يكتبه؛ لا يتحقق منه روشن كهاتا، ولا يمكن تغيير شيء هنا.</string>
     <string name="mera_khata_empty">لا توجد متاجر بعد. افتح رابط حساب أرسله إليك متجر وسيظهر هنا.</string>
     <string name="mera_khata_refresh">تحديث</string>
     <string name="mera_khata_just_now">تم التحديث للتو. حاول مرة أخرى بعد دقيقة.</string>
@@ -4270,4 +4270,11 @@
     <string name="mera_khata_own_title">احتفظ بحسابات متجرك أيضًا</string>
     <string name="mera_khata_own_body">روشن كهاتا مجاني: الديون والتحصيل والفواتير والمخزون — كلها على هاتفك.</string>
     <string name="mera_khata_own_button">ابدأ دفتري الخاص</string>
+    <string name="clink_take_over">الإرسال من هذا الهاتف</string>
+    <string name="clink_stopped_now">أُوقف الرابط. لم يعد يُفتح.</string>
+    <string name="clink_stopped_waiting">أُوقف الرابط على هذا الهاتف. لم يُزله الخادم بعد؛ ستُعاد المحاولة مع الإرسال التالي.</string>
+    <string name="clink_busy">خادم روابط الحساب مشغول الآن. حاول مرة أخرى لاحقًا.</string>
+    <string name="clink_full">خادم روابط الحساب ممتلئ الآن. الروابط المرسلة سابقًا تبقى تعمل. حاول مرة أخرى لاحقًا.</string>
+    <string name="clink_limit_today">بلغت روابط الحساب الجديدة حدّ اليوم. حاول مرة أخرى غدًا.</string>
+    <string name="mera_khata_older">أرسل الخادم نسخة أقدم من هذه الصفحة. تُعرض أحدث نسخة رآها هذا الهاتف.</string>
 </resources>

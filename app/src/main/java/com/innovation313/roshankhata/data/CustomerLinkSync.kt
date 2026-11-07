@@ -20,9 +20,10 @@ import java.util.concurrent.TimeUnit
  *  - at most one send every [GAP_MIN] minutes: the app leaving the screen asks for one, and asks made while one
  *    waits are the same one (KEEP);
  *  - it goes to the owner's hosting as plain files, never through live sync's relays;
- *  - the hosting's own caps hold everyone (web/khata/api.php: pages and requests per shop a day, shops and files
- *    per server, new shops an hour).
- * A helper's read-only phone never sends (the book is the owner's).
+ *  - the hosting's own caps hold everyone (web/khata/api.php: new pages and requests per shop a day, new shops per
+ *    address a day and an hour in all, shops and files per server, a share of the files kept for older shops).
+ * A helper's read-only phone never sends (the book is the owner's). When another copy of the book writes the pages,
+ * the background send leaves a note ([otherCopy]) and the link menu offers to take over (7 Nov 2026).
  */
 object CustomerLinkSync {
 
@@ -75,14 +76,24 @@ object CustomerLinkSync {
         }
     }
 
-    /** Sends what changed now (after a link was taken back, so it stops opening at once). */
-    suspend fun flushNow(context: Context): CustomerLink.Result {
+    /**
+     * Sends what changed now (after a link was taken back, so it stops opening at once). [claim]: the owner's word
+     * that this copy of the book writes the pages from now on (another copy held them).
+     */
+    suspend fun flushNow(context: Context, claim: Boolean = false): CustomerLink.Result {
         if (ViewerMode.isOn(context)) return CustomerLink.Result.Off
         val dao = KhataDatabase.get(context).khataDao()
         return runCatching {
-            CustomerLink.flush(dao, Prefs(context), scope(context), look(context), bookKey(context))
+            CustomerLink.flush(dao, Prefs(context), scope(context), look(context), bookKey(context), claim)
         }.getOrDefault(CustomerLink.Result.Unreachable)
     }
+
+    /** Another copy of this book writes its customers' pages (the last send was refused for it). */
+    fun otherCopy(context: Context): Boolean = CustomerLink.otherCopy(Prefs(context), scope(context))
+
+    /** The customer's link taken back, noted on this phone so it is never made again here ([CustomerLink.remove]). */
+    suspend fun remove(context: Context, partyUid: String): CustomerLink.Link? =
+        CustomerLink.remove(KhataDatabase.get(context).khataDao(), partyUid, Prefs(context))
 
     /** The customer's link, ready to send, his page on the server first ([CustomerLink.share]). */
     suspend fun share(context: Context, partyUid: String, claim: Boolean = false): CustomerLink.Shared {

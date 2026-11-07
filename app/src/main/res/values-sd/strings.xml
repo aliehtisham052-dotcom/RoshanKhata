@@ -4003,7 +4003,7 @@
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
     <string name="clink_menu">گراهڪ کي کاتي جي لنڪ</string>
     <string name="clink_title">گراهڪ جي کاتي جي لنڪ</string>
-    <string name="clink_body">هن گراهڪ کي هڪ لنڪ ويندي جنهن تي هو رڳو پنهنجو ڪل بيلنس ڏسي سگهندو — توهان جي ڪتاب جي ٻي ڪا شيءِ نه. لنڪ توهان جڏهن چاهيو بند ڪري سگهو ٿا.</string>
+    <string name="clink_body">هن گراهڪ کي هڪ لنڪ ويندي جنهن تي هو پنهنجو نالو (جيئن توهان جي ڪتاب ۾ لکيل آهي)، پنهنجو ڪل بيلنس ۽ آخري داخلا جي تاريخ ڏسي سگهندو — توهان جي ڪتاب جي ٻي ڪا شيءِ نه. لنڪ توهان جڏهن چاهيو بند ڪري سگهو ٿا.</string>
     <string name="clink_body_sent">هن گراهڪ کي لنڪ اڳ ۾ موڪلي وئي آهي. ٻيهر موڪليو يا بند ڪريو: بند ٿيڻ کان پوءِ پراڻي لنڪ نه کلندي.</string>
     <string name="clink_send">لنڪ موڪليو</string>
     <string name="clink_send_again">ٻيهر موڪليو</string>
@@ -4016,7 +4016,7 @@
     <string name="clink_not_now">هن وقت لنڪ نه ٺهي سگهي. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
     <string name="clink_other_copy">هن ڪتاب جون لنڪون ڪنهن ٻئي فون (يا ڪتاب جي پراڻي ڪاپي) تان موڪليون ويون هيون. هاڻي هن فون تان موڪليو؟ پوءِ اهو ئي فون بيلنس تازو رکندو.</string>
     <string name="mera_khata_title">منهنجو کاتو</string>
-    <string name="mera_khata_help">جن دڪانن توهان کي کاتي جي لنڪ موڪلي، انهن سان توهان جو بيلنس هتي آهي. اهو دڪان لکي ٿو؛ هتي ڪجهه بدلائي نٿو سگهجي.</string>
+    <string name="mera_khata_help">جن دڪانن توهان کي کاتي جي لنڪ موڪلي، انهن سان توهان جو بيلنس هتي آهي. اهو دڪان لکي ٿو؛ روشن کاتو ان کي نٿو جانچي، ۽ هتي ڪجهه بدلائي نٿو سگهجي.</string>
     <string name="mera_khata_empty">اڃا ڪو دڪان ناهي. دڪان جي موڪليل کاتي جي لنڪ کوليو، اهو هتي اچي ويندو.</string>
     <string name="mera_khata_refresh">تازو ڪريو</string>
     <string name="mera_khata_just_now">هاڻي ئي تازو ڪيو ويو. هڪ منٽ کان پوءِ ٻيهر دٻايو.</string>
@@ -4038,4 +4038,11 @@
     <string name="mera_khata_own_title">پنهنجي دڪان جو حساب به رکو</string>
     <string name="mera_khata_own_body">روشن کاتو مفت آهي: اڌار، وصولي، بل ۽ اسٽاڪ — سڀ توهان جي فون تي.</string>
     <string name="mera_khata_own_button">پنهنجو کاتو شروع ڪريو</string>
+    <string name="clink_take_over">هن فون تان موڪليو</string>
+    <string name="clink_stopped_now">لنڪ بند ڪئي وئي. هاڻي اها نه کلندي.</string>
+    <string name="clink_stopped_waiting">لنڪ هن فون تي بند ڪئي وئي. سرور اڃا ان کي نه هٽايو آهي؛ ايندڙ ڀيري موڪلڻ وقت ٻيهر ڪوشش ٿيندي.</string>
+    <string name="clink_busy">کاتي جي لنڪ جو سرور هن وقت مصروف آهي. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
+    <string name="clink_full">کاتي جي لنڪ جو سرور هن وقت ڀريل آهي. اڳ ۾ موڪليل لنڪون هلنديون رهنديون. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
+    <string name="clink_limit_today">اڄ نين کاتي جي لنڪن جي حد پوري ٿي وئي. سڀاڻي ٻيهر ڪوشش ڪريو.</string>
+    <string name="mera_khata_older">سرور هن صفحي جي پراڻي ڪاپي موڪلي. هن فون تي ڏٺل سڀ کان نئين ڪاپي ڏيکاري پئي وڃي.</string>
 </resources>
