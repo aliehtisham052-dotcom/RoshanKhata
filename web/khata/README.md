@@ -28,11 +28,12 @@ offers "Open in the app" (roshankhata://khata?l=…) on Android either way.
 ## App Links (the link opens the app without a question)
 
 `assetlinks.json` names each package and the SHA-256 of the key that signs it:
-the test build (`com.innovation313.roshankhata.dev`) is in it; the Play build
-(`com.innovation313.roshankhata`) needs Play Console → Test and release →
-App integrity → App signing → the SHA-256 of the app signing key (both keys,
-if a previous one is listed). Until then the page's "Open in the app" button
-still opens the app.
+the Play build (`com.innovation313.roshankhata`: the app signing key in use, the
+previous app signing key and the upload key, copied from Play Console → Protected
+with Play → Play Store protection → Manage Play app signing → Copy all certificate
+fingerprints, 7 Nov 2026) and the test build (`com.innovation313.roshankhata.dev`).
+A new signing key in Play Console means a new line here, uploaded again. The
+page's "Open in the app" button opens the app either way.
 
 ## The owner's switches (empty files in the store folder)
 
