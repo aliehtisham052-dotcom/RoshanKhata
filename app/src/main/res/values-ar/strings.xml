@@ -4035,6 +4035,8 @@
     <string name="audit_doc_accepted">تم قبول مستند</string>
     <string name="audit_doc_cancelled">تم إلغاء مستند</string>
     <string name="audit_doc_deleted">تم حذف مستند</string>
+    <string name="audit_seal_on">تشغيل ختم الدفتر</string>
+    <string name="audit_seal_off">إيقاف ختم الدفتر</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">المهام التلقائية</string>

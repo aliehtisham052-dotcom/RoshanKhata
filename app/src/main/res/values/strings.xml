@@ -4007,6 +4007,8 @@
     <string name="audit_doc_accepted">Document accepted</string>
     <string name="audit_doc_cancelled">Document cancelled</string>
     <string name="audit_doc_deleted">Document deleted</string>
+    <string name="audit_seal_on">Book seal turned on</string>
+    <string name="audit_seal_off">Book seal turned off</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">Automations</string>

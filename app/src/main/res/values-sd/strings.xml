@@ -3823,6 +3823,8 @@
     <string name="audit_doc_accepted">دستاويز منظور ٿيو</string>
     <string name="audit_doc_cancelled">دستاويز منسوخ ٿيو</string>
     <string name="audit_doc_deleted">دستاويز ميٽيو ويو</string>
+    <string name="audit_seal_on">ڪتاب جي مهر چالو ڪئي</string>
+    <string name="audit_seal_off">ڪتاب جي مهر بند ڪئي</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">پاڻمرادو ڪم</string>

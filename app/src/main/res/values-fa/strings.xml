@@ -3823,6 +3823,8 @@
     <string name="audit_doc_accepted">سند تأیید شد</string>
     <string name="audit_doc_cancelled">سند لغو شد</string>
     <string name="audit_doc_deleted">سند حذف شد</string>
+    <string name="audit_seal_on">مهر دفتر روشن شد</string>
+    <string name="audit_seal_off">مهر دفتر خاموش شد</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">کارهای خودکار</string>

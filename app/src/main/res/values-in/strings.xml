@@ -3783,6 +3783,8 @@
     <string name="audit_doc_accepted">Dokumen diterima</string>
     <string name="audit_doc_cancelled">Dokumen dibatalkan</string>
     <string name="audit_doc_deleted">Dokumen dihapus</string>
+    <string name="audit_seal_on">Segel buku dinyalakan</string>
+    <string name="audit_seal_off">Segel buku dimatikan</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">Otomatisasi</string>

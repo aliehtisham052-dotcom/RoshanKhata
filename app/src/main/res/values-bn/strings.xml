@@ -3843,6 +3843,8 @@
     <string name="audit_doc_accepted">নথি গৃহীত</string>
     <string name="audit_doc_cancelled">নথি বাতিল</string>
     <string name="audit_doc_deleted">নথি মোছা হয়েছে</string>
+    <string name="audit_seal_on">খাতার সিল চালু করা হলো</string>
+    <string name="audit_seal_off">খাতার সিল বন্ধ করা হলো</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">স্বয়ংক্রিয় কাজ</string>

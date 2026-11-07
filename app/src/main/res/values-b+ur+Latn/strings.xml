@@ -3795,6 +3795,8 @@
     <string name="audit_doc_accepted">Document manzoor hua</string>
     <string name="audit_doc_cancelled">Document mansookh hua</string>
     <string name="audit_doc_deleted">Document mitaya gaya</string>
+    <string name="audit_seal_on">Kitab ki Muhar chalu ki</string>
+    <string name="audit_seal_off">Kitab ki Muhar band ki</string>
 
     <!-- Automations (31 Oct 2026): Automations.kt, said at the owner's hours. -->
     <string name="auto_title">Khudkaar kaam</string>

@@ -171,5 +171,8 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.DOC_CANCELLED -> word(W.audit_doc_cancelled)
     AuditAction.DOC_DELETED -> word(W.audit_doc_deleted)
     AuditAction.PROMISE_SET -> word(W.audit_promise_set)
+    // The book seal's switch (7 Nov 2026, the seal's review M9: audited, never synced).
+    com.innovation313.roshankhata.data.BookSeals.AUDIT_ON -> word(W.audit_seal_on)
+    com.innovation313.roshankhata.data.BookSeals.AUDIT_OFF -> word(W.audit_seal_off)
     else -> a.action
 }
