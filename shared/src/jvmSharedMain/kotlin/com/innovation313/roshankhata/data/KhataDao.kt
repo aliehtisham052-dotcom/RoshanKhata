@@ -4867,54 +4867,122 @@ interface KhataDao {
     suspend fun auditInOrder(): List<AuditLog>
 
     // ---------- The book's seal (schema 44, Kitab ki Muhar — BookSeals) ----------
+    //
+    // A seal's leaves can be 160 KB (BookSeals.MAX_LEAVES): only the proof, its chain and the backup read them, and
+    // those a few rows at a time; everything else reads a SealHead (7 Nov 2026, the security review's M5).
 
     /** The newest khata entry's id (binned and all); 0 for an empty book. */
     @Query("SELECT COALESCE(MAX(id), 0) FROM transactions")
     suspend fun maxEntryId(): Long
 
-    /** Entries with ids in (after, upTo], in id order, at most [limit], with their party's uid — what a seal hashes. */
-    @Query(
-        "SELECT t.id, t.uid, t.entryNumber, t.amount, t.isGiven, t.timestamp, t.note, t.itemName, t.quantity, t.unit, " +
-            "t.paymentRef, p.uid AS partyUid FROM transactions t LEFT JOIN parties p ON p.id = t.partyId " +
-            "WHERE t.id > :after AND t.id <= :upTo ORDER BY t.id LIMIT :limit"
-    )
-    suspend fun sealLinesPage(after: Long, upTo: Long, limit: Int): List<SealLine>
-
-    /** One entry as a seal hashes it. */
+    /** One entry as an e1 seal hashed it (seals made before 7 Nov 2026): its own columns and its party's uid. */
     @Query(
         "SELECT t.id, t.uid, t.entryNumber, t.amount, t.isGiven, t.timestamp, t.note, t.itemName, t.quantity, t.unit, " +
             "t.paymentRef, p.uid AS partyUid FROM transactions t LEFT JOIN parties p ON p.id = t.partyId WHERE t.id = :id"
     )
     suspend fun sealLineOf(id: Long): SealLine?
 
+    /** Entries with ids in (after, upTo], in id order, at most [limit], as an e2 leaf reads them (SealMath.leafTextV2). */
+    @Query(
+        "SELECT t.id, t.uid, t.entryNumber, t.amount, t.isGiven, t.timestamp, t.note, t.paymentMethod, t.paymentRef, " +
+            "t.isQarzeHasna, t.isDeleted, p.uid AS partyUid FROM transactions t LEFT JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.id > :after AND t.id <= :upTo ORDER BY t.id LIMIT :limit"
+    )
+    suspend fun sealEntriesPage(after: Long, upTo: Long, limit: Int): List<SealEntry>
+
+    /** One entry as an e2 leaf reads it. */
+    @Query(
+        "SELECT t.id, t.uid, t.entryNumber, t.amount, t.isGiven, t.timestamp, t.note, t.paymentMethod, t.paymentRef, " +
+            "t.isQarzeHasna, t.isDeleted, p.uid AS partyUid FROM transactions t LEFT JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.id = :id"
+    )
+    suspend fun sealEntryOf(id: Long): SealEntry?
+
+    /** The goods lines of the entries with ids in (after, upTo], by entry and line, with their batch's uid. */
+    @Query(
+        "SELECT ei.entryId, ei.lineNo, ei.itemName, ei.quantity, ei.unit, ei.rate, ei.isBonus, bi.uid AS batchUid " +
+            "FROM entry_items ei LEFT JOIN bill_items bi ON bi.id = ei.billItemId " +
+            "WHERE ei.entryId > :after AND ei.entryId <= :upTo ORDER BY ei.entryId, ei.lineNo, ei.id"
+    )
+    suspend fun sealGoodsBetween(after: Long, upTo: Long): List<SealGoods>
+
+    /** One entry's goods lines as an e2 leaf reads them. */
+    @Query(
+        "SELECT ei.entryId, ei.lineNo, ei.itemName, ei.quantity, ei.unit, ei.rate, ei.isBonus, bi.uid AS batchUid " +
+            "FROM entry_items ei LEFT JOIN bill_items bi ON bi.id = ei.billItemId WHERE ei.entryId = :entryId " +
+            "ORDER BY ei.lineNo, ei.id"
+    )
+    suspend fun sealGoodsOf(entryId: Long): List<SealGoods>
+
     @Insert
     suspend fun insertSeal(seal: BookSeal): Long
 
+    /**
+     * [block]'s reads and its seal's write in one transaction (BookSeals.sealIfDue, the review's M6): a seal is made
+     * from one moment of the book, never half from a book a restore replaced under it.
+     */
+    @Transaction
+    suspend fun sealAsOne(block: suspend () -> BookSeal?): BookSeal? = block()
+
+    /** The newest seal, leaves and all. */
     @Query("SELECT * FROM book_seals ORDER BY id DESC LIMIT 1")
     suspend fun latestSeal(): BookSeal?
+
+    /** The newest seal without its leaves: what sealing and the Backup screen read. */
+    @Query("SELECT id, sealedAt, fromId, toId, leafCount, auditHead, prevDigest, digest, tokens FROM book_seals ORDER BY id DESC LIMIT 1")
+    suspend fun latestSealHead(): SealHead?
+
+    /** Whether the book has any seal (the entry screen's Seal proof). */
+    @Query("SELECT EXISTS(SELECT 1 FROM book_seals)")
+    suspend fun hasSeals(): Boolean
 
     @Query("SELECT * FROM book_seals WHERE id = :id")
     suspend fun sealById(id: Long): BookSeal?
 
-    /** Seals made at or after [since], oldest first: the ones whose witnesses are still asked. */
-    @Query("SELECT * FROM book_seals WHERE sealedAt >= :since ORDER BY id")
-    suspend fun sealsSince(since: Long): List<BookSeal>
+    @Query("SELECT id, sealedAt, fromId, toId, leafCount, auditHead, prevDigest, digest, tokens FROM book_seals WHERE id = :id")
+    suspend fun sealHeadById(id: Long): SealHead?
 
-    @Query("UPDATE book_seals SET tokens = :tokens WHERE id = :id")
-    suspend fun setSealTokens(id: Long, tokens: String?)
+    /** Seals made at or after [since], oldest first, without their leaves: the ones whose witnesses are still asked. */
+    @Query("SELECT id, sealedAt, fromId, toId, leafCount, auditHead, prevDigest, digest, tokens FROM book_seals WHERE sealedAt >= :since ORDER BY id")
+    suspend fun sealHeadsSince(since: Long): List<SealHead>
 
-    /** The seal whose range (fromId, toId] holds entry [entryId]. */
+    /** Seal [id]'s answers, only while the row still holds [digest]; how many rows it wrote (0 or 1). */
+    @Query("UPDATE book_seals SET tokens = :tokens WHERE id = :id AND digest = :digest")
+    suspend fun setSealTokens(id: Long, digest: String, tokens: String?): Int
+
+    /**
+     * One witness's answer added to seal [id] — read, joined to the others and written in one transaction, so two
+     * witnesses answering at once both stay — and only while that row still holds [digest]: a restore under a running
+     * witness may have put back another seal with the same id (the review's M6). False when it is not that seal now.
+     */
+    @Transaction
+    suspend fun addSealStamp(id: Long, digest: String, witness: String, stamp: BookSeals.Stamp): Boolean {
+        val here = sealHeadById(id) ?: return false
+        if (here.digest != digest) return false
+        return setSealTokens(id, digest, BookSeals.tokensJson(BookSeals.stamps(here.tokens) + (witness to stamp))) > 0
+    }
+
+    /** The seal whose range (fromId, toId] holds entry [entryId], with its leaves (the proof). */
     @Query("SELECT * FROM book_seals WHERE fromId < :entryId AND toId >= :entryId ORDER BY id DESC LIMIT 1")
     suspend fun sealCovering(entryId: Long): BookSeal?
 
-    /** Any seal that reaches entry [entryId] (the first seal's toId too): an entry it reaches but none covers predates sealing. */
-    @Query("SELECT * FROM book_seals WHERE toId >= :entryId ORDER BY id LIMIT 1")
-    suspend fun sealReaching(entryId: Long): BookSeal?
+    /** The first seal that reaches entry [entryId] (the first seal's toId too): an entry one reaches but none covers predates sealing. */
+    @Query("SELECT id FROM book_seals WHERE toId >= :entryId ORDER BY id LIMIT 1")
+    suspend fun sealReachingId(entryId: Long): Long?
 
-    /** The seals screen: newest first, at most [limit]. */
-    @Query("SELECT * FROM book_seals ORDER BY id DESC LIMIT :limit")
-    suspend fun sealsNewestFirst(limit: Int): List<BookSeal>
+    /** The seals before seal [id], newest first, with their leaves, at most [limit]: the chain the proof follows back. */
+    @Query("SELECT * FROM book_seals WHERE id < :id ORDER BY id DESC LIMIT :limit")
+    suspend fun sealsBefore(id: Long, limit: Int): List<BookSeal>
 
+    /** The seals screen: newest first, at most [limit], without their leaves. */
+    @Query("SELECT id, sealedAt, fromId, toId, leafCount, auditHead, prevDigest, digest, tokens FROM book_seals ORDER BY id DESC LIMIT :limit")
+    suspend fun sealsNewestFirst(limit: Int): List<SealHead>
+
+    /** The backup: seals with ids past [after], with their leaves, at most [limit] (a few: each can be 160 KB). */
+    @Query("SELECT * FROM book_seals WHERE id > :after ORDER BY id LIMIT :limit")
+    suspend fun sealsPageForBackup(after: Long, limit: Int): List<BookSeal>
+
+    /** Every seal at once, leaves and all: tests and comparisons only — the backup reads them a page at a time. */
     @Query("SELECT * FROM book_seals ORDER BY id")
     suspend fun allSealsForBackup(): List<BookSeal>
 
@@ -4923,6 +4991,18 @@ interface KhataDao {
 
     @Insert
     suspend fun restoreSeals(items: List<BookSeal>)
+
+    /**
+     * The seal's switch ([BookSeals.SWITCH], each device's own) turned on or off, and the change written in the audit
+     * log by [user], in one transaction (the review's M9). False when it already stood so: nothing written.
+     */
+    @Transaction
+    suspend fun setSealSwitch(on: Boolean, user: String?): Boolean {
+        if (BookSettings.isOn(settingValue(BookSeals.SWITCH)) == on) return false
+        setSetting(BookSeals.SWITCH, if (on) "1" else null)
+        log(if (on) BookSeals.AUDIT_ON else BookSeals.AUDIT_OFF, user, "book_settings")
+        return true
+    }
 }
 
 /** A bill's entry time: its own when the bill is dated that same day, else the bill's day (3 Nov 2026 audit, L09). */

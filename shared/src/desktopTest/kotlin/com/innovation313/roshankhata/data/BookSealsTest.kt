@@ -10,18 +10,21 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.StringWriter
 import java.nio.file.Files
+import java.util.Collections
 
 /**
- * Kitab ki Muhar on a real book (schema 44 through Room, the computer's driver): off by default; the first seal marks
- * where sealing starts; the next day's seal holds the new entries' leaves, chained; an entry's proof says sealed,
- * changed, not yet or before; the witnesses are asked once each, 15 s apart to one TSA, never while the kill switch
- * says so, and given up after a week; the backup (format 19) carries the seals whole, the helper's copy too.
- * The TSA here is a fake that answers with a structurally valid token for the request's own imprint and nonce (the
- * real replies are Rfc3161Test's). Made-up names and figures only.
+ * Kitab ki Muhar on a real book (schema 44 through Room, the computer's driver): off by default, the switch written in
+ * the audit log and never sent by live sync; the first seal marks where sealing starts; the next day's seal holds the
+ * new entries' leaves — their goods lines, the way they were paid, the loan and bin marks (e2) — chained; a seal made
+ * with e1 still checks; more than 5,000 new entries make several chained seals; an entry's proof works the seal out
+ * again and holds each answer to it, so an edited seal never reads as sealed; the witnesses are asked once each, 15 s
+ * apart to one TSA, each on its own, never while the kill switch says so, and given up after a week; an answer lands
+ * only on the seal it was asked for; the backup (format 19) carries the seals whole, a page at a time, the helper's
+ * copy too. The TSA here signs real tokens with a key and certificate made in the test ([TestTsa]); OpenSSL's own
+ * replies are Rfc3161Test's. Made-up names and figures only.
  */
 class BookSealsTest {
 
@@ -35,44 +38,28 @@ class BookSealsTest {
     @After
     fun close() { db.close(); dir.deleteRecursively() }
 
-    private suspend fun entry(party: Long, amount: Double, note: String? = null): Long =
-        dao.insertEntryWithItems(LedgerEntry(partyId = party, amount = amount, isGiven = true, note = note, entryNumber = ""), emptyList())
+    private suspend fun entry(party: Long, amount: Double, note: String? = null, items: List<EntryItem> = emptyList(), given: Boolean = true,
+                              method: String? = null, loan: Boolean = false): Long =
+        dao.insertEntryWithItems(
+            LedgerEntry(partyId = party, amount = amount, isGiven = given, note = note, entryNumber = "", paymentMethod = method, isQarzeHasna = loan),
+            items
+        )
 
-    // ---------- A fake TSA: a TimeStampResp around a TSTInfo for the request's own imprint and nonce ----------
+    private suspend fun leafOf(id: Long): String = SealMath.leafTextV2(dao.sealEntryOf(id)!!, dao.sealGoodsOf(id))
 
-    private fun len(n: Int): ByteArray = when {
-        n < 0x80 -> byteArrayOf(n.toByte())
-        n < 0x100 -> byteArrayOf(0x81.toByte(), n.toByte())
-        else -> byteArrayOf(0x82.toByte(), (n ushr 8).toByte(), n.toByte())
-    }
+    // ---------- A TSA that signs: every request answered with a real token for its own imprint and nonce ----------
 
-    private fun tlv(tag: Int, vararg parts: ByteArray): ByteArray {
-        val body = ByteArrayOutputStream().also { o -> parts.forEach { o.write(it) } }.toByteArray()
-        return byteArrayOf(tag.toByte()) + len(body.size) + body
-    }
+    private val asked: MutableList<String> = Collections.synchronizedList(mutableListOf())
 
-    private val signedData = byteArrayOf(0x06, 0x09, 0x2A, 0x86.toByte(), 0x48, 0x86.toByte(), 0xF7.toByte(), 0x0D, 0x01, 0x07, 0x02)
-    private val tstInfoOid = byteArrayOf(0x06, 0x0B, 0x2A, 0x86.toByte(), 0x48, 0x86.toByte(), 0xF7.toByte(), 0x0D, 0x01, 0x09, 0x10, 0x01, 0x04)
-
-    private val asked = mutableListOf<String>()
-
-    private val tsa = Rfc3161.Http { url, body ->
-        asked += url
-        val req = Rfc3161.read(body, 0).children()
-        val imprint = req[1].whole
-        val nonce = req[2].whole
-        val info = tlv(0x30, tlv(0x02, byteArrayOf(1)), tlv(0x06, byteArrayOf(0x2A, 0x03)), imprint, tlv(0x02, byteArrayOf(7)),
-            tlv(0x18, "20261105112509Z".toByteArray()), nonce)
-        val encap = tlv(0x30, tstInfoOid, tlv(0xA0, tlv(0x04, info)))
-        val signed = tlv(0x30, tlv(0x02, byteArrayOf(3)), tlv(0x31), encap, tlv(0x31))
-        val token = tlv(0x30, signedData, tlv(0xA0, signed))
-        200 to tlv(0x30, tlv(0x30, tlv(0x02, byteArrayOf(0))), token)
-    }
+    private val tsa = Rfc3161.Http { url, body -> asked += url; 200 to TestTsa.ecdsa.answer(body) }
 
     private val down = Rfc3161.Http { url, _ -> asked += url; throw java.io.IOException("no network") }
 
+    /** A SignedData carrying the digest and the nonce but no signature that holds: the review's forgery. */
+    private val forger = Rfc3161.Http { url, body -> asked += url; 200 to TestTsa.ecdsa.answer(body, fault = TestTsa.Fault.ZERO_SIGNATURE) }
+
     @Test
-    fun offUntilTurnedOnAndTheFirstSealMarksWhereSealingStarts() = runBlocking {
+    fun offUntilTurnedOnTheSwitchIsAuditedAndTheFirstSealMarksWhereSealingStarts() = runBlocking {
         val ali = dao.insertParty(Party(name = "Ali"))
         val before = entry(ali, 500.0)
         assertFalse(BookSeals.isOn(dao))
@@ -84,56 +71,84 @@ class BookSealsTest {
         assertTrue(BookSeals.isOn(dao))
         assertEquals(before, first.fromId); assertEquals(before, first.toId)
         assertEquals(0, first.leafCount); assertNull(first.leaves); assertNull(first.prevDigest)
-        assertEquals(SealMath.digest(SealMath.header(null, t0, before, before, 0, dao.lastAuditHash()), null), first.digest)
+        assertEquals(SealMath.digest(SealMath.headerV2(null, t0, 0, dao.lastAuditHash()), null), first.digest)
+        assertEquals(2, BookSeals.versionOf(first))
         assertNull("turned on again, no second first seal", BookSeals.turnOn(dao, t0))
         assertTrue(BookSeals.proofOf(dao, before) is BookSeals.Proof.Before)
+
+        // The switch is written in Who did what, once per change, and it is this device's own: live sync never sends it.
+        BookSeals.turnOff(dao)
+        BookSeals.turnOff(dao)
+        assertEquals(listOf(BookSeals.AUDIT_ON, BookSeals.AUDIT_OFF), dao.auditInOrder().map { it.action })
+        assertNull(dao.settingValue(BookSeals.SWITCH))
+        assertTrue(BookSeals.SWITCH in BookSettings.ACCESS_KEYS)
     }
 
     @Test
-    fun theNextDaysSealHoldsTheNewEntriesChainedAndEachEntrySaysWhereItStands() = runBlocking {
+    fun theNextDaysSealHoldsTheGoodsTheWayItWasPaidTheLoanAndTheBinAndAChangeToAnyShows() = runBlocking {
         val ali = dao.insertParty(Party(name = "Ali", phone = "03000000001"))
-        val bilal = dao.insertParty(Party(name = "Bilal"))
+        val supplier = dao.insertParty(Party(name = "Supplier One", isCustomer = false))
+        val urea = dao.insertProduct(Product(name = "Urea", nameKey = ProductName.key("Urea"), normalisedName = ProductName.normalised("Urea")))
+        dao.restoreBills(listOf(SupplierBill(id = 1, partyId = supplier, totalAmount = 48_000.0)))
+        dao.restoreBillItems(listOf(BillItem(id = 1, billId = 1, productName = "Urea", batchNumber = "B-7", quantity = 10.0, unit = "bag", productId = urea)))
         entry(ali, 100.0)
         val first = BookSeals.turnOn(dao, t0)!!
-        val e1 = entry(ali, 1250.5, note = "Urea 2 bags")
-        val e2 = entry(bilal, 300.0)
+        val line = EntryItem(entryId = 0, itemName = "Urea", quantity = 2.0, unit = "bori", rate = 4800.0, productId = urea, billItemId = 1)
+        val sale = entry(ali, 9600.0, note = "Urea 2 bags", items = listOf(line))
+        val paid = entry(ali, 3000.0, given = false, method = PaymentMethod.CASH)
+        val loan = entry(ali, 500.0, loan = true)
         assertNull("once a calendar day", BookSeals.sealIfDue(dao, t0 + 1000))
-        assertTrue(BookSeals.proofOf(dao, e1) is BookSeals.Proof.NotYet)
+        assertTrue(BookSeals.proofOf(dao, sale) is BookSeals.Proof.NotYet)
 
         val second = BookSeals.sealIfDue(dao, t0 + day)!!
-        assertEquals(first.toId, second.fromId); assertEquals(e2, second.toId)
-        assertEquals(2, second.leafCount); assertEquals(64, second.leaves!!.size)
+        assertEquals(first.toId, second.fromId); assertEquals(loan, second.toId)
+        assertEquals(3, second.leafCount); assertEquals(96, second.leaves!!.size)
         assertEquals(first.digest, second.prevDigest)
-        val leaves = listOf(e1, e2).map { SealMath.leafHash(SealMath.leafText(dao.sealLineOf(it)!!)) }
-        assertArrayEquals(leaves[0] + leaves[1], second.leaves)
-        assertEquals(SealMath.digest(SealMath.header(first.digest, t0 + day, first.toId, e2, 2, dao.lastAuditHash()), second.leaves), second.digest)
-        // The party's uid is in the leaf: the same entry under another customer is another leaf.
-        assertTrue(SealMath.leafText(dao.sealLineOf(e1)!!).endsWith("|" + dao.getParty(ali)!!.uid))
+        assertEquals(2, BookSeals.versionOf(second))
+        val leaves = listOf(sale, paid, loan).map { SealMath.leafHash(leafOf(it)) }
+        assertArrayEquals(leaves[0] + leaves[1] + leaves[2], second.leaves)
+        assertEquals(SealMath.digest(SealMath.headerV2(first.digest, t0 + day, 3, dao.lastAuditHash()), second.leaves), second.digest)
+        // The goods line with its unit's key and its batch's uid; the customer's uid, never his name.
+        val batchUid = dao.allBillItemsForBackup().single().uid!!
+        assertTrue(leafOf(sale), leafOf(sale).contains("|1:1|4:Urea|1:2|3:bag|4:4800|1:0|${batchUid.length}:$batchUid"))
+        // The product link is not in the leaf: tying the goods to products later (Products' button) is no change.
+        val productUid = dao.allProductsForBackup().single().uid!!
+        assertFalse(leafOf(sale).contains(productUid))
+        assertTrue(leafOf(sale).contains("|" + dao.getParty(ali)!!.uid!!.let { "${it.length}:$it" } + "|1:1|"))
+        assertTrue(leafOf(paid).contains("|4:cash|"))
 
-        val proof = BookSeals.proofOf(dao, e2) as BookSeals.Proof.Sealed
-        assertEquals(1, proof.index)
+        val proof = BookSeals.proofOf(dao, sale) as BookSeals.Proof.Sealed
+        assertEquals(0, proof.index); assertEquals(2, proof.version)
         assertEquals(second.id, proof.seal.id)
-        val file = JSONObject(BookSeals.proofFile(proof, "RK-000003", madeAt = t0 + day))
+        assertTrue(proof.chain.intact); assertEquals(1, proof.chain.seals)
+        assertTrue("no answer yet", proof.answers.isEmpty())
+        val file = JSONObject(BookSeals.proofFile(proof, "RK-000002", madeAt = t0 + day))
         assertEquals(proof.leafText, file.getJSONObject("entry").getString("leafText"))
-        // Three decimals, and nothing of the customer but his random uid: no name, no phone.
-        assertTrue(SealMath.leafText(dao.sealLineOf(e1)!!).contains("|1250.500|1|"))
-        // (The leaves are hashes in base64; taken out so a chance "Ali" in them cannot fail the check.)
-        val whole = JSONObject(BookSeals.proofFile(proof, "RK-000003", madeAt = t0 + day))
-            .also { it.getJSONObject("seal").remove("leaves") }.toString()
-        assertFalse(whole.contains("Ali")); assertFalse(whole.contains("Bilal")); assertFalse(whole.contains("03000000001"))
-        assertEquals(second.digest, file.getJSONObject("seal").getString("digest"))
-        // A verifier's sum, from the file alone: SHA-256(header + base64-decoded leaves) is the digest.
         val s = file.getJSONObject("seal")
+        // No seal id and no entry range: they would tell how many days and entries the shop has written (M7).
+        for (k in listOf("id", "fromId", "toId", "leafCount", "sealedAt")) assertFalse(k, s.has(k))
+        assertEquals(t0 + day, s.getLong("sealedAtByPhoneClock"))
         assertEquals(second.digest, SealMath.digest(s.getString("digestHeader"), B64.decode(s.getString("leaves"))))
+        val whole = JSONObject(file.toString()).also { it.getJSONObject("seal").remove("leaves") }.toString()
+        assertFalse(whole.contains("Ali")); assertFalse(whole.contains("03000000001"))
 
-        // Edited after the seal: the leaf no longer matches, said as changed.
-        dao.updateEntry(dao.getEntry(e1)!!.copy(amount = 1350.5))
-        assertTrue(BookSeals.proofOf(dao, e1) is BookSeals.Proof.Changed)
+        // Each field the seal covers, changed after the seal, shows: a goods line, the way it was paid, the bin, the loan.
+        dao.updateEntryWithItems(dao.getEntry(sale)!!, listOf(line.copy(quantity = 3.0)))
+        assertTrue(BookSeals.proofOf(dao, sale) is BookSeals.Proof.Changed)
+        dao.updateEntryWithItems(dao.getEntry(sale)!!, listOf(line))
+        assertTrue("put back as it was", BookSeals.proofOf(dao, sale) is BookSeals.Proof.Sealed)
+        dao.updateEntry(dao.getEntry(paid)!!.copy(paymentMethod = PaymentMethod.BANK))
+        assertTrue(BookSeals.proofOf(dao, paid) is BookSeals.Proof.Changed)
+        dao.updateEntry(dao.getEntry(loan)!!.copy(isQarzeHasna = false))
+        assertTrue(BookSeals.proofOf(dao, loan) is BookSeals.Proof.Changed)
+        dao.updateEntry(dao.getEntry(loan)!!.copy(isQarzeHasna = true))
+        dao.softDeleteEntry(loan)
+        assertTrue(BookSeals.proofOf(dao, loan) is BookSeals.Proof.Changed)
         assertTrue(BookSeals.proofOf(dao, 99_999) is BookSeals.Proof.Unknown)
 
         // Nothing new the day after: no seal. Only the audit log moved: a seal of no entries, its head the new one.
         assertNull(BookSeals.sealIfDue(dao, t0 + 2 * day))
-        dao.log(AuditAction.ENTRY_EDITED, "Owner", "transactions", e1, "1250.50 -> 1350.50")
+        dao.log(AuditAction.ENTRY_EDITED, "Owner", "transactions", sale, "9600.00 -> 9600.00")
         val third = BookSeals.sealIfDue(dao, t0 + 3 * day)!!
         assertEquals(0, third.leafCount); assertNull(third.leaves)
         assertEquals(dao.lastAuditHash(), third.auditHead)
@@ -141,7 +156,129 @@ class BookSealsTest {
     }
 
     @Test
-    fun theWitnessesAreAskedOnceEachApartAndOnlyWhenAllowed() = runBlocking {
+    fun goodsTiedToProductsAfterTheSealAreNoChangeToIt() = runBlocking {
+        val ali = dao.insertParty(Party(name = "Ali"))
+        BookSeals.turnOn(dao, t0)
+        val loose = entry(ali, 50.0, items = listOf(EntryItem(entryId = 0, itemName = "DAP", quantity = 1.0, unit = "bag", rate = 50.0)))
+        BookSeals.sealIfDue(dao, t0 + day)
+        assertTrue(BookSeals.proofOf(dao, loose) is BookSeals.Proof.Sealed)
+        // Products' "tie the goods" fills the line's product link afterwards: the entry's dealing is as it was.
+        assertTrue(dao.linkGoodsToProducts() > 0)
+        assertNotNull(dao.itemsOfEntry(loose).single().productId)
+        assertTrue(BookSeals.proofOf(dao, loose) is BookSeals.Proof.Sealed)
+    }
+
+    @Test
+    fun aSealMadeWithE1StillChecksAndTheChainGoesOnInE2() = runBlocking {
+        val ali = dao.insertParty(Party(name = "Ali"))
+        val a = entry(ali, 1250.5, note = "Urea 2 bags")
+        // As the 4–6 Nov builds made them: a first seal and one over entry a, both with the version-1 header.
+        val firstDigest = SealMath.digest(SealMath.header(null, t0, 0, 0, 0, null), null)
+        dao.insertSeal(BookSeal(sealedAt = t0, fromId = 0, toId = 0, leafCount = 0, digest = firstDigest))
+        val leaf = SealMath.leafHash(SealMath.leafText(dao.sealLineOf(a)!!))
+        val digest = SealMath.digest(SealMath.header(firstDigest, t0 + day, 0, a, 1, null), leaf)
+        dao.insertSeal(BookSeal(sealedAt = t0 + day, fromId = 0, toId = a, leafCount = 1, leaves = leaf, prevDigest = firstDigest, digest = digest))
+        dao.setSealSwitch(true, Access.OWNER)
+
+        val p = BookSeals.proofOf(dao, a) as BookSeals.Proof.Sealed
+        assertEquals(1, p.version)
+        assertTrue(p.leafText.startsWith("e1|"))
+        assertTrue(p.chain.intact)
+        val header = JSONObject(BookSeals.proofFile(p, "RK-000001", t0)).getJSONObject("seal").getString("digestHeader")
+        assertTrue(header.startsWith("rk-seal-v1\n"))
+
+        val b = entry(ali, 300.0)
+        val next = BookSeals.sealIfDue(dao, t0 + 2 * day)!!
+        assertEquals(2, BookSeals.versionOf(next))
+        assertEquals(digest, next.prevDigest)
+        val pb = BookSeals.proofOf(dao, b) as BookSeals.Proof.Sealed
+        assertEquals(2, pb.version); assertTrue(pb.chain.intact); assertEquals(2, pb.chain.seals)
+    }
+
+    @Test
+    fun aCatchUpPastFiveThousandEntriesIsSeveralChainedSealsAndTheBackupCarriesThemAll() = runBlocking {
+        val ali = dao.insertParty(Party(name = "Ali"))
+        BookSeals.turnOn(dao, t0)
+        dao.restoreEntries((1..BookSeals.MAX_LEAVES + 3).map { i ->
+            LedgerEntry(partyId = ali, amount = i.toDouble(), isGiven = true, entryNumber = "RK-%06d".format(i), timestamp = t0 + i)
+        })
+        val newest = BookSeals.sealIfDue(dao, t0 + day)!!
+        val all = dao.allSealsForBackup()
+        assertEquals(listOf(0, BookSeals.MAX_LEAVES, 3), all.map { it.leafCount })
+        assertEquals(all.last(), newest)
+        for (i in 1 until all.size) {
+            assertEquals(all[i - 1].digest, all[i].prevDigest)
+            assertEquals(all[i - 1].toId, all[i].fromId)
+            assertEquals(2, BookSeals.versionOf(all[i]))
+        }
+        assertEquals(dao.maxEntryId(), newest.toId)
+        val ids = dao.allEntriesForBackup().map { it.id }.sorted()
+        assertEquals(ids[BookSeals.MAX_LEAVES - 1], all[1].toId)
+        val past = BookSeals.proofOf(dao, ids[BookSeals.MAX_LEAVES]) as BookSeals.Proof.Sealed
+        assertEquals(all[2].id, past.seal.id); assertEquals(0, past.index); assertTrue(past.chain.intact)
+        // The backup writes them a few a page and reads them back whole.
+        val text = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()
+        assertEquals(all, BackupCodec.parseText(text).second!!.bookSeals)
+    }
+
+    @Test
+    fun aProofWorksTheSealOutAgainSoAnEditedSealNeverReadsAsSealed() = runBlocking {
+        val ali = dao.insertParty(Party(name = "Ali"))
+        val now = System.currentTimeMillis()
+        BookSeals.turnOn(dao, now - 2 * day)
+        val a = entry(ali, 100.0)
+        BookSeals.sealIfDue(dao, now - day)
+        assertEquals(6, BookSeals.witness(dao, now, tsa, halted = { false }, pause = {}))
+        val sealed = BookSeals.proofOf(dao, a) as BookSeals.Proof.Sealed
+        assertEquals(BookSeals.WITNESSES.map { it.name }, sealed.answers.map { it.name })
+        // Each time is read from the token itself, never from the JSON beside it.
+        for (ans in sealed.answers) assertEquals(Rfc3161.tokenTime(B64.decode(ans.token), SealMath.unhex(sealed.seal.digest)), ans.genTime)
+
+        // An answer that is not for this seal's digest is not counted, and its witness is asked again.
+        val seal = dao.sealCovering(a)!!
+        val elsewhere = TestTsa.ecdsa.token(ByteArray(32) { 7 }, null, now)
+        val tokens = BookSeals.stamps(seal) + ("Sectigo" to BookSeals.Stamp(B64.encode(elsewhere), now))
+        assertEquals(1, dao.setSealTokens(seal.id, seal.digest, BookSeals.tokensJson(tokens)))
+        assertEquals(listOf("FreeTSA", "DigiCert"), (BookSeals.proofOf(dao, a) as BookSeals.Proof.Sealed).answers.map { it.name })
+        asked.clear()
+        assertEquals(1, BookSeals.witness(dao, now, tsa, halted = { false }, pause = {}))
+        assertEquals(listOf("http://timestamp.sectigo.com"), asked.toList())
+        assertEquals(3, BookSeals.status(dao).answered)
+
+        // A backup edited by hand: an entry's leaf slipped into the seal. Restored, the seal does not add up.
+        val text = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()
+        val opened = ArrayList<KhataDatabase>()
+        suspend fun restored(edit: (JSONObject) -> Unit): KhataDao {
+            val root = JSONObject(text)
+            val arr = root.getJSONArray("bookSeals")
+            edit(arr.getJSONObject(arr.length() - 1))
+            val other = DesktopDatabase.open(dir.resolve("other-${opened.size}.db")).also { opened += it }
+            BackupCodec.restoreLedger(other.khataDao(), BackupCodec.parseText(root.toString()).second!!)
+            return other.khataDao()
+        }
+        try {
+            val forged = SealMath.leafHash("e2|forged")
+            val broken = restored { s ->
+                s.put("leaves", B64.encode(B64.decode(s.getString("leaves")) + forged)); s.put("leafCount", 2)
+            }
+            assertTrue(BookSeals.proofOf(broken, a) is BookSeals.Proof.Broken)
+            // The digest worked out again too: the seal adds up, but no witness answered for that digest.
+            val recomputed = restored { s ->
+                val leaves = B64.decode(s.getString("leaves")) + forged
+                s.put("leaves", B64.encode(leaves)); s.put("leafCount", 2)
+                val head = SealMath.headerV2(s.getString("prevDigest"), s.getLong("sealedAt"), 2, s.optString("auditHead", "").ifEmpty { null })
+                s.put("digest", SealMath.digest(head, leaves))
+            }
+            val p = BookSeals.proofOf(recomputed, a) as BookSeals.Proof.Sealed
+            assertTrue("no answer holds for a digest worked out again", p.answers.isEmpty())
+            assertEquals(0, BookSeals.status(recomputed).answered)
+        } finally {
+            opened.forEach { it.close() }
+        }
+    }
+
+    @Test
+    fun theWitnessesAreAskedOnceEachApartOnlyWhenAllowedAndAForgeryIsNotKept() = runBlocking {
         val ali = dao.insertParty(Party(name = "Ali"))
         val now = System.currentTimeMillis()
         BookSeals.turnOn(dao, now - 2 * day)
@@ -153,28 +290,46 @@ class BookSealsTest {
         assertTrue(asked.isEmpty())
 
         // No network: every witness waits, nothing written.
-        val pauses = mutableListOf<Long>()
+        val pauses = Collections.synchronizedList(mutableListOf<Long>())
         assertEquals(0, BookSeals.witness(dao, now, down, halted = { false }, pause = { pauses += it }))
         assertEquals(6, asked.size)
-        assertTrue(dao.sealsSince(0).all { BookSeals.stamps(it).isEmpty() })
+        assertTrue(dao.sealHeadsSince(0).all { BookSeals.stamps(it.tokens).isEmpty() })
         // Two seals waiting for each TSA: one pause of 15 s between them, per TSA.
-        assertEquals(listOf(BookSeals.GAP_MS, BookSeals.GAP_MS, BookSeals.GAP_MS), pauses)
+        assertEquals(listOf(BookSeals.GAP_MS, BookSeals.GAP_MS, BookSeals.GAP_MS), pauses.toList())
+
+        // An answer whose signature does not hold is not kept: the real one can still come.
+        asked.clear()
+        assertEquals(0, BookSeals.witness(dao, now, forger, halted = { false }, pause = {}))
+        assertEquals(6, asked.size)
+        assertTrue(dao.sealHeadsSince(0).all { it.tokens == null })
 
         asked.clear()
         assertEquals(6, BookSeals.witness(dao, now, tsa, halted = { false }, pause = {}))
-        assertEquals(BookSeals.WITNESSES.map { it.url }.flatMap { listOf(it, it) }, asked)
-        for (s in dao.sealsSince(0)) {
-            val stamps = BookSeals.stamps(s)
-            assertEquals(BookSeals.WITNESSES.map { it.name }.toSet(), stamps.keys)
-            assertEquals(Rfc3161.generalizedTime("20261105112509Z"), stamps.getValue("Sectigo").time)
-            assertNotNull(Rfc3161.tokenTime(B64.decode(stamps.getValue("FreeTSA").token), SealMath.unhex(s.digest)))
-        }
-        assertEquals(3, BookSeals.status(dao).stamped)
+        // Each witness on its own, side by side: every TSA asked for both seals, in whatever order they answered.
+        assertEquals(BookSeals.WITNESSES.map { it.url }.flatMap { listOf(it, it) }.sorted(), asked.toList().sorted())
+        for (s in dao.sealHeadsSince(0)) assertEquals(BookSeals.WITNESSES.map { it.name }.toSet(), BookSeals.answers(s).keys)
+        assertEquals(3, BookSeals.status(dao).answered)
 
-        // All stamped: nobody is asked again.
+        // All answered: nobody is asked again.
         asked.clear()
         assertEquals(0, BookSeals.witness(dao, now, tsa, halted = { false }, pause = {}))
         assertTrue(asked.isEmpty())
+    }
+
+    @Test
+    fun anAnswerLandsOnlyOnTheSealItWasAskedFor() = runBlocking {
+        val now = System.currentTimeMillis()
+        val first = BookSeals.turnOn(dao, now - day)!!
+        val token = B64.encode(TestTsa.ecdsa.token(SealMath.unhex(first.digest), null, now))
+        // A restore put back another seal with the same id: an answer for the old digest is not written on it.
+        assertEquals(0, dao.setSealTokens(first.id, "00".repeat(32), "{}"))
+        assertFalse(dao.addSealStamp(first.id, "00".repeat(32), "FreeTSA", BookSeals.Stamp(token, now)))
+        assertFalse(dao.addSealStamp(first.id + 1, first.digest, "FreeTSA", BookSeals.Stamp(token, now)))
+        assertNull(dao.sealById(first.id)!!.tokens)
+        // Its own seal takes it, and a second witness's answer joins the first.
+        assertTrue(dao.addSealStamp(first.id, first.digest, "FreeTSA", BookSeals.Stamp(token, now)))
+        assertTrue(dao.addSealStamp(first.id, first.digest, "DigiCert", BookSeals.Stamp(token, now)))
+        assertEquals(setOf("FreeTSA", "DigiCert"), BookSeals.answers(dao.sealHeadById(first.id)!!).keys)
     }
 
     @Test
@@ -186,15 +341,16 @@ class BookSealsTest {
     }
 
     @Test
-    fun theBackupCarriesTheSealsWholeTheHelpersCopyTooAndARestoreKeepsThem() = runBlocking {
+    fun theBackupCarriesTheSealsWholeAPageAtATimeTheHelpersCopyTooAndARestoreKeepsThem() = runBlocking {
         val ali = dao.insertParty(Party(name = "Ali"))
         val now = System.currentTimeMillis()
-        BookSeals.turnOn(dao, now - day)
-        entry(ali, 100.0); entry(ali, 200.0)
-        BookSeals.sealIfDue(dao, now)
+        BookSeals.turnOn(dao, now - 11 * day)
+        // More seals than one page of the backup holds.
+        for (d in 10 downTo 1) { entry(ali, 100.0 + d); BookSeals.sealIfDue(dao, now - d * day) }
         BookSeals.witness(dao, now, tsa, halted = { false }, pause = {})
         val mine = dao.allSealsForBackup()
-        assertEquals(2, mine.size)
+        assertEquals(11, mine.size)
+        assertTrue(mine.size > BookSeals.WITH_LEAVES_PAGE)
 
         val text = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()
         val (result, data) = BackupCodec.parseText(text)
@@ -207,6 +363,7 @@ class BookSealsTest {
             BackupCodec.restoreLedger(other.khataDao(), data)
             assertEquals(mine, other.khataDao().allSealsForBackup())
             assertEquals("1", other.khataDao().settingValue(BookSeals.SWITCH))
+            assertNotNull(BookSeals.proofOf(other.khataDao(), dao.maxEntryId()) as? BookSeals.Proof.Sealed)
         } finally { other.close() }
 
         // The helper's copy: no PIN, but the seals (hashes and signed times only).

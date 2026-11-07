@@ -110,12 +110,12 @@ object BackupCodec {
         // The small document ends in "\n}" — drop that brace and add the
         // three streamed tables before closing the object ourselves.
         out.write(small.trimEnd().removeSuffix("}").trimEnd())
-        suspend fun <T> table(name: String, page: suspend (Long, Int) -> List<T>, id: (T) -> Long, json: (T) -> JSONObject) {
+        suspend fun <T> table(name: String, page: suspend (Long, Int) -> List<T>, id: (T) -> Long, json: (T) -> JSONObject, size: Int = PAGE) {
             out.write(",\n  \"$name\": [")
             var after = 0L
             var first = true
             while (true) {
-                val rows = page(after, PAGE)
+                val rows = page(after, size)
                 if (rows.isEmpty()) break
                 for (r in rows) {
                     out.write(if (first) "\n    " else ",\n    ")
@@ -125,7 +125,7 @@ object BackupCodec {
                 written += rows.size
                 tell()
                 after = id(rows.last())
-                if (rows.size < PAGE) break
+                if (rows.size < size) break
             }
             out.write(if (first) "]" else "\n  ]")
         }
@@ -138,6 +138,8 @@ object BackupCodec {
         table("saleItems", dao::saleItemsPageForBackup, { it.id }, ::saleItemToJson)
         table("salePayments", dao::salePaymentsPageForBackup, { it.id }, ::salePaymentToJson)
         table("auditLog", dao::auditPageForBackup, { it.id }, ::auditToJson)
+        // Format 19 (schema 44): the book's seals, a few a page — each can hold 5,000 fingerprints (7 Nov 2026, M5).
+        table("bookSeals", dao::sealsPageForBackup, { it.id }, ::sealToJson, BookSeals.WITH_LEAVES_PAGE)
         out.write("\n}")
         out.flush()
         progress?.invoke(100)
@@ -271,8 +273,7 @@ object BackupCodec {
         })
         root.put("loyalty", JSONArray().apply { dao.allLoyaltyForBackup().forEach { put(loyaltyToJson(it)) } })
         root.put("shifts", JSONArray().apply { dao.allShiftsForBackup().forEach { put(shiftToJson(it)) } })
-        // Format 19 (schema 44): the book's seals. One row a day, so small enough to build here.
-        root.put("bookSeals", JSONArray().apply { dao.allSealsForBackup().forEach { put(sealToJson(it)) } })
+        // Format 19 (schema 44): the book's seals are written by exportInside, a few a page (7 Nov 2026, M5).
 
         // The Business Profile — TEXT ONLY. The three image flags
         // (QR/signature/stamp saved) are deliberately excluded: restoring a
@@ -378,6 +379,7 @@ object BackupCodec {
                         "saleItems" -> readRows(r) { streamed.saleItems += jsonToSaleItem(it) }
                         "salePayments" -> readRows(r) { streamed.salePayments += jsonToSalePayment(it) }
                         "auditLog" -> readRows(r) { streamed.audit += jsonToAudit(it) }
+                        "bookSeals" -> readRows(r) { streamed.seals += jsonToSeal(it) }
                         else -> rest.put(key, readValue(r))
                     }
                 }
@@ -431,6 +433,7 @@ object BackupCodec {
         val saleItems = ArrayList<SaleItem>()
         val salePayments = ArrayList<SalePayment>()
         val audit = ArrayList<AuditLog>()
+        val seals = ArrayList<BookSeal>()
     }
 
     private fun parseRoot(
@@ -597,10 +600,8 @@ object BackupCodec {
             val shifts = root.optJSONArray("shifts")?.let { arr ->
                 (0 until arr.length()).map { jsonToShift(arr.getJSONObject(it)) }
             } ?: emptyList()
-            // Format 19. Absent before: no seals.
-            val bookSeals = root.optJSONArray("bookSeals")?.let { arr ->
-                (0 until arr.length()).map { jsonToSeal(arr.getJSONObject(it)) }
-            } ?: emptyList()
+            // Format 19, read row by row off the stream (7 Nov 2026, M5). Absent before: no seals.
+            val bookSeals: List<BookSeal> = streamed.seals
 
             // Business Profile is a single optional object, not an array. Null
             // in an older file, or in one written before the owner set any

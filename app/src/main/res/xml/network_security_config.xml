@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   The book's seal (Kitab ki Muhar, 4 Nov 2026): two of its three free time-stamp
-  services answer only on plain http (Sectigo's and DigiCert's RFC 3161 endpoints).
-  What travels is a 32-byte fingerprint and comes back as a signed time stamp the
-  app checks against that fingerprint, so plain http carries nothing readable.
+  services are asked on plain http (Sectigo's and DigiCert's RFC 3161 endpoints).
+  What travels is a 32-byte fingerprint, so plain http carries nothing readable.
+  What comes back is checked on the phone (Rfc3161.verify, 7 Nov 2026): it is for
+  that fingerprint and nonce, and it is signed with the certificate it carries, a
+  certificate for time-stamping. Whose certificate that is, the phone cannot tell
+  without the services' CA certificates - someone on the network could answer with
+  one of their own - so the app never calls an answer verified, and the proof file
+  says how to check each one with OpenSSL.
   Cleartext is allowed for those two hosts ONLY; everything else keeps Android's
   default for this app's targetSdk: no cleartext, the system's certificates.
 -->

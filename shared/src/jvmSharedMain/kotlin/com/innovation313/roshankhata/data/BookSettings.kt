@@ -94,12 +94,21 @@ object BookSettings {
     val OWNER_PIN_KEYS = setOf(OWNER_PIN_HASH, OWNER_PIN_SALT, OWNER_RECOVERY_HASH, OWNER_RECOVERY_SALT)
 
     /**
+     * "1" while the owner keeps the book's daily seal on (Kitab ki Muhar, [BookSeals]); unset = off. Each device's own
+     * (7 Nov 2026, the security review's M9): the device that seals is the one that sends the daily fingerprint to the
+     * time services, so turning it on is a yes said on that device, after its own question — never one live sync
+     * carries to the book's other devices. Turned on or off through [KhataDao.setSealSwitch], which writes it in the
+     * audit log.
+     */
+    const val BOOK_SEAL = "book_seal"
+
+    /**
      * Who may do what on this book's devices: kept by a restore whose copy says nothing of them ([KhataDao.restoreAll]).
      * Waris ki Chaabi's keys too (4 Nov 2026): never sent by live sync to the book's other devices (one phone keeps the
      * vault), left out of the books' fingerprint, and kept when a copy made before Waris was turned on is restored — the
-     * vault on the relays must never be left with nobody able to refuse an heir.
+     * vault on the relays must never be left with nobody able to refuse an heir. The seal's switch too ([BOOK_SEAL]).
      */
-    val ACCESS_KEYS = OWNER_PIN_KEYS + setOf(COUNTER_USED, OWNER_DEVICES) + Waris.SECRET_KEYS
+    val ACCESS_KEYS = OWNER_PIN_KEYS + setOf(COUNTER_USED, OWNER_DEVICES, BOOK_SEAL) + Waris.SECRET_KEYS
 
     /**
      * The customer pages' settings ([CustomerLink], 7 Nov 2026, the security review W4): the shop's writer pass at the

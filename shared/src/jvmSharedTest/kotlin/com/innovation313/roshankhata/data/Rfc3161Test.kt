@@ -2,9 +2,16 @@ package com.innovation313.roshankhata.data
 
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.ByteArrayOutputStream
 import java.math.BigInteger
+import java.net.InetAddress
+import java.net.ServerSocket
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 /**
  * RFC 3161 by hand (the book seal, 4 Nov 2026), held to OpenSSL 3.0.13 itself. The request bytes are those of
@@ -12,6 +19,11 @@ import java.math.BigInteger
  * throwaway self-signed TSA certificate (CN "Test TSA (throwaway)", made for this test and thrown away) answering a
  * request this code built; the token read out of the first was checked with `openssl ts -verify`. The digest is
  * SHA-256 of the text "rk test".
+ *
+ * Since 7 Nov 2026 (the security review's M1, M4, M8) a token is kept only when its signature holds on the device —
+ * OpenSSL's own tokens above do, and so do tokens signed here with a key and certificate made with the JDK
+ * ([TestTsa]); each broken part is refused for its own reason — its genTime must stand near the moment it was asked,
+ * a request is cut at its whole deadline however slowly the bytes come, and it names only the app.
  */
 class Rfc3161Test {
 
@@ -129,5 +141,155 @@ class Rfc3161Test {
         assertTrue(Rfc3161.stamp(down, "http://example.invalid", digest) is Rfc3161.Reply.Refused)
         val busy = Rfc3161.Http { _, _ -> 503 to ByteArray(0) }
         assertEquals("http 503", (Rfc3161.stamp(busy, "http://example.invalid", digest) as Rfc3161.Reply.Refused).why)
+    }
+
+    // ---------- The signature, on the device (M1) ----------
+
+    private fun why(v: Rfc3161.Verdict): String = (v as? Rfc3161.Verdict.Fails)?.why ?: "holds"
+
+    @Test
+    fun openSslsOwnTokenHoldsAndOneChangedByteInItsSignatureDoesNot() {
+        val token = (Rfc3161.parseReply(granted, digest, nonce) as Rfc3161.Reply.Granted).token
+        assertEquals("holds", why(Rfc3161.verify(token, digest, nonce)))
+        assertEquals("holds", why(Rfc3161.verify(token, digest)))
+        // The signature is the reply's last bytes: one bit of it changed, and the token is no longer kept.
+        val bad = granted.copyOf().also { it[it.size - 1] = (it[it.size - 1].toInt() xor 1).toByte() }
+        assertEquals("signature does not verify", (Rfc3161.parseReply(bad, digest, nonce) as Rfc3161.Reply.Refused).why)
+        assertEquals(null, Rfc3161.tokenTime(bad.copyOfRange(granted.size - token.size, granted.size), digest))
+    }
+
+    @Test
+    fun aTokenSignedHereHoldsWithRsaOrEcdsaAndByIssuerOrKeyIdentifier() {
+        val now = System.currentTimeMillis()
+        for (tsa in listOf(TestTsa.rsa, TestTsa.ecdsa)) {
+            for (byKeyId in listOf(false, true)) {
+                val token = tsa.token(digest, nonce, now, byKeyId = byKeyId)
+                assertEquals("ec=${tsa.ec} keyId=$byKeyId", "holds", why(Rfc3161.verify(token, digest, nonce)))
+                assertEquals(Rfc3161.generalizedTime(TestTsa.generalized(now)), Rfc3161.tokenTime(token, digest))
+            }
+            val r = Rfc3161.parseReply(tsa.reply(digest, nonce, now), digest, nonce)
+            assertTrue("$r", r is Rfc3161.Reply.Granted)
+        }
+    }
+
+    @Test
+    fun eachCheckRefusesTheTokenThatFailsIt() {
+        val now = System.currentTimeMillis()
+        val day = TestTsa.DAY
+        val tsa = TestTsa.rsa
+        fun with(fault: TestTsa.Fault) = why(Rfc3161.verify(tsa.token(digest, nonce, now, fault), digest, nonce))
+        assertEquals("no certificate for the signer", with(TestTsa.Fault.NO_CERT))
+        // A SignedData that carries the digest and the nonce but no signature that holds: the review's forgery.
+        assertEquals("signature does not verify", with(TestTsa.Fault.ZERO_SIGNATURE))
+        assertEquals("signature does not verify", with(TestTsa.Fault.OTHER_KEY))
+        assertEquals("message digest is not the TSTInfo's", with(TestTsa.Fault.WRONG_DIGEST))
+        assertEquals("content type not signed", with(TestTsa.Fault.NO_CONTENT_TYPE))
+        assertEquals("2 signers", with(TestTsa.Fault.TWO_SIGNERS))
+        // The certificate: time-stamping, critical, and valid when the token was made.
+        assertEquals("certificate not for time-stamping",
+            why(Rfc3161.verify(TestTsa(ec = true, eku = false).token(digest, nonce, now), digest, nonce)))
+        assertEquals("certificate not for time-stamping",
+            why(Rfc3161.verify(TestTsa(ec = true, ekuCritical = false).token(digest, nonce, now), digest, nonce)))
+        assertEquals("certificate not valid at genTime",
+            why(Rfc3161.verify(TestTsa(ec = true, validFrom = now - 30 * day, validTo = now - 10 * day).token(digest, nonce, now), digest, nonce)))
+        // A good token for another digest, or another nonce, is not this seal's.
+        assertEquals("imprint is not our digest", why(Rfc3161.verify(tsa.token(ByteArray(32), nonce, now), digest, nonce)))
+        assertEquals("nonce is not ours", why(Rfc3161.verify(tsa.token(digest, BigInteger.TEN, now), digest, nonce)))
+        assertEquals(null, Rfc3161.tokenTime(tsa.token(digest, nonce, now, TestTsa.Fault.OTHER_KEY), digest))
+    }
+
+    @Test
+    fun aGenTimeFarFromTheMomentItWasAskedIsRefused() {
+        val now = System.currentTimeMillis()
+        val day = TestTsa.DAY
+        val tsa = TestTsa(ec = true, validFrom = now - 30 * day, validTo = now + 30 * day)
+        fun at(genTime: Long) = Rfc3161.stamp(Rfc3161.Http { _, body -> 200 to tsa.answer(body, genTime) }, "http://tsa.invalid", digest, clock = { now })
+        assertEquals("genTime outside the window", (at(now - 2 * day) as Rfc3161.Reply.Refused).why)
+        assertEquals("genTime outside the window", (at(now + 2 * day) as Rfc3161.Reply.Refused).why)
+        // A phone's clock some hours off is not refused for it.
+        assertTrue(at(now - 5 * 60 * 60 * 1000) is Rfc3161.Reply.Granted)
+        assertEquals(now + 60_000, (at(now + 60_000) as Rfc3161.Reply.Granted).genTime)
+    }
+
+    @Test
+    fun oidsReadAsDottedText() {
+        for (text in listOf("1.2.840.113549.1.9.4", "2.16.840.1.101.3.4.2.1", "1.3.6.1.5.5.7.3.8", "2.5.29.37", "2.999.3", "0.9.2342"))
+            assertEquals(text, Rfc3161.oid(Rfc3161.read(TestTsa.oid(text), 0).value))
+        assertTrue(runCatching { Rfc3161.oid(byteArrayOf(0x2A, 0x86.toByte())) }.isFailure)
+        assertTrue(runCatching { Rfc3161.oid(byteArrayOf(0x2A, 0x80.toByte(), 0x01)) }.isFailure)
+    }
+
+    // ---------- The road (M4, M8) ----------
+
+    /** A local HTTP server answering one request with [answer] of the request's body. */
+    private fun serveOnce(answer: (ByteArray) -> ByteArray): ServerSocket {
+        val server = ServerSocket(0, 1, InetAddress.getLoopbackAddress())
+        thread(isDaemon = true) {
+            runCatching {
+                server.accept().use { s ->
+                    val input = s.getInputStream()
+                    val got = ByteArrayOutputStream()
+                    while (!got.toString("ISO-8859-1").endsWith("\r\n\r\n")) {
+                        val b = input.read(); if (b < 0) break; got.write(b)
+                    }
+                    val length = Regex("(?im)^content-length:\\s*(\\d+)").find(got.toString("ISO-8859-1"))!!.groupValues[1].toInt()
+                    val body = ByteArray(length)
+                    var at = 0
+                    while (at < length) { val n = input.read(body, at, length - at); if (n < 0) break; at += n }
+                    val reply = answer(body)
+                    val out = s.getOutputStream()
+                    out.write(("HTTP/1.1 200 OK\r\nContent-Type: application/timestamp-reply\r\nContent-Length: ${reply.size}\r\n" +
+                        "Connection: close\r\n\r\n").toByteArray())
+                    out.write(reply)
+                    out.flush()
+                }
+            }
+        }
+        return server
+    }
+
+    @Test
+    fun aTsaOnTheRealRoadIsAskedAndItsSignedAnswerKept() {
+        val server = serveOnce { body -> TestTsa.ecdsa.answer(body) }
+        val r = Rfc3161.stamp(Rfc3161.http(deadlineMs = 10_000, timeoutMs = 5_000), "http://127.0.0.1:${server.localPort}/tsr", digest)
+        server.close()
+        assertTrue("$r", r is Rfc3161.Reply.Granted)
+        assertTrue(Rfc3161.tokenTime((r as Rfc3161.Reply.Granted).token, digest) != null)
+    }
+
+    @Test
+    fun aReplyTricklingAByteAtATimeIsCutAtTheWholeDeadlineAndTheRequestNamesOnlyTheApp() {
+        val server = ServerSocket(0, 1, InetAddress.getLoopbackAddress())
+        val head = StringBuilder()
+        val heard = CountDownLatch(1)
+        thread(isDaemon = true) {
+            runCatching {
+                server.accept().use { s ->
+                    val input = s.getInputStream()
+                    val got = ByteArrayOutputStream()
+                    while (!got.toString("ISO-8859-1").endsWith("\r\n\r\n")) {
+                        val b = input.read(); if (b < 0) break; got.write(b)
+                    }
+                    synchronized(head) { head.append(got.toString("ISO-8859-1")) }
+                    heard.countDown()
+                    // Never a whole status line and headers: a byte every 100 ms, each read well inside its timeout.
+                    val out = s.getOutputStream()
+                    for (b in "HTTP/1.1 200 OK\r\nX-Slow: ".toByteArray() + ByteArray(10_000) { 'a'.code.toByte() }) {
+                        out.write(b.toInt()); out.flush(); Thread.sleep(100)
+                    }
+                }
+            }
+        }
+        val post = Rfc3161.http(deadlineMs = 1_000, timeoutMs = 500)
+        val started = System.nanoTime()
+        val tried = runCatching { post.post("http://127.0.0.1:${server.localPort}/tsr", Rfc3161.request(digest, nonce)) }
+        val took = (System.nanoTime() - started) / 1_000_000
+        server.close()
+        assertTrue("$tried", tried.isFailure)
+        assertTrue("cut after $took ms", took in 900..5_000)
+        assertTrue(heard.await(5, TimeUnit.SECONDS))
+        val said = synchronized(head) { head.toString() }
+        assertTrue(said, said.contains("User-Agent: RoshanKhata\r\n"))
+        assertFalse(said, said.contains("Dalvik") || said.contains("Java/"))
     }
 }

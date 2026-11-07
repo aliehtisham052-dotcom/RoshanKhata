@@ -244,7 +244,9 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun closeShift(id: Long, counted: Double, note: String?, now: Long): Shift = refused()
     override suspend fun linkSaleInvoice(saleId: Long, invoice: Invoice, items: List<InvoiceItem>): Long = refused()
     override suspend fun insertSeal(seal: BookSeal): Long = refused()
-    override suspend fun setSealTokens(id: Long, tokens: String?): Unit = refused()
+    override suspend fun setSealTokens(id: Long, digest: String, tokens: String?): Int = refused()
+    override suspend fun addSealStamp(id: Long, digest: String, witness: String, stamp: BookSeals.Stamp): Boolean = refused()
     override suspend fun wipeSeals(): Unit = refused()
     override suspend fun restoreSeals(items: List<BookSeal>): Unit = refused()
+    override suspend fun setSealSwitch(on: Boolean, user: String?): Boolean = refused()
 }

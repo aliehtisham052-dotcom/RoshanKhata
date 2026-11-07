@@ -278,7 +278,11 @@ class BackupActivity : BaseActivity() {
         }
     }
 
-    /** The switch and the status line from the book: "Last seal: Today 9:12 AM · 3 of 3 witnesses" or "No seal yet". */
+    /**
+     * The switch and the status line from the book: "Last seal: Today 9:12 AM · answers from 3 of 3 time services" or
+     * "No seal yet". An answer is counted only when it adds up on this phone; it is never called verified (7 Nov 2026,
+     * the security review's M1). The switch is this phone's own and its changes are in Who did what (M9).
+     */
     private fun showSeal() {
         lifecycleScope.launch {
             val st = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookSeals.status(dao) }.getOrNull() }
@@ -292,7 +296,7 @@ class BackupActivity : BaseActivity() {
                     last.sealedAt, System.currentTimeMillis(), com.innovation313.roshankhata.data.AndroidWords(this@BackupActivity)
                 )
                 Digits.string(resources, R.string.muhar_status_last,
-                    androidx.core.text.BidiFormatter.getInstance().unicodeWrap(Digits.toLatin(at)), st.stamped, st.of)
+                    androidx.core.text.BidiFormatter.getInstance().unicodeWrap(Digits.toLatin(at)), st.answered, st.of)
             }
             findViewById<MaterialButton>(R.id.btnSeals).visibility = if (last == null) View.GONE else View.VISIBLE
         }

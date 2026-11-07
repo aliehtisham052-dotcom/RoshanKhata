@@ -985,7 +985,7 @@ class EntryDetailActivity : BaseActivity() {
         val btn = findViewById<MaterialButton>(R.id.btnSealProof)
         lifecycleScope.launch {
             val any = withContext(Dispatchers.IO) {
-                runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().latestSeal() != null }.getOrDefault(false)
+                runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().hasSeals() }.getOrDefault(false)
             }
             if (isFinishing || isDestroyed) return@launch
             btn.visibility = if (any) View.VISIBLE else View.GONE
@@ -993,6 +993,11 @@ class EntryDetailActivity : BaseActivity() {
         }
     }
 
+    /**
+     * Where this entry stands, worked out again from the book (7 Nov 2026, the security review's M1, M2): the seal's
+     * digest recomputed, each witness's time read from its own signed answer, the chain before it followed back. The
+     * seal's own date is said as the phone's clock; an answer is said as received, never as verified.
+     */
     private fun showSealProof() {
         lifecycleScope.launch {
             val proof = withContext(Dispatchers.IO) {
@@ -1005,15 +1010,14 @@ class EntryDetailActivity : BaseActivity() {
             fun day(at: Long) = bidi.unicodeWrap(Digits.toLatin(Format.dateTime(at)))
             val message = when (proof) {
                 is com.innovation313.roshankhata.data.BookSeals.Proof.Sealed -> {
-                    val stamps = com.innovation313.roshankhata.data.BookSeals.stamps(proof.seal)
-                    val by = com.innovation313.roshankhata.data.BookSeals.WITNESSES.mapNotNull { w ->
-                        stamps[w.name]?.let { bidi.unicodeWrap(w.name) + " " + day(it.time) }
-                    }
+                    val by = proof.answers.map { a -> bidi.unicodeWrap(a.name) + " " + day(a.genTime) }
                     (if (by.isEmpty()) getString(R.string.muhar_proof_in_waiting, day(proof.seal.sealedAt))
                     else getString(R.string.muhar_proof_in, day(proof.seal.sealedAt), by.joinToString(", "))) +
+                        (if (proof.chain.intact) "" else "\n\n" + getString(R.string.muhar_proof_chain_broken)) +
                         "\n\n" + getString(R.string.muhar_proof_checks)
                 }
                 is com.innovation313.roshankhata.data.BookSeals.Proof.Changed -> getString(R.string.muhar_proof_changed, day(proof.seal.sealedAt))
+                is com.innovation313.roshankhata.data.BookSeals.Proof.Broken -> getString(R.string.muhar_proof_broken)
                 com.innovation313.roshankhata.data.BookSeals.Proof.NotYet -> getString(R.string.muhar_proof_not_yet)
                 com.innovation313.roshankhata.data.BookSeals.Proof.Before -> getString(R.string.muhar_proof_before)
                 com.innovation313.roshankhata.data.BookSeals.Proof.Unknown -> getString(R.string.entry_not_found)

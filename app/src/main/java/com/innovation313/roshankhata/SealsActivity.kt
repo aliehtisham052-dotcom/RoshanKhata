@@ -12,10 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.innovation313.roshankhata.data.BookSeal
 import com.innovation313.roshankhata.data.BookSeals
 import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.KhataDatabase
+import com.innovation313.roshankhata.data.SealHead
 import com.innovation313.roshankhata.data.get
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
@@ -26,12 +26,17 @@ import kotlinx.coroutines.withContext
 
 /**
  * The book's seals (Kitab ki Muhar, 4 Nov 2026), opened from the Backup screen: what the seal proves and what it is
- * not, then each day's seal, newest first — when it was made, how many entries it holds, and a mark per witness
- * (✓ stamped, … still asked, ✕ given up after a week). Read only: nothing here writes the book.
+ * not, then each day's seal, newest first — when it was made (the phone's clock), how many entries it holds, and a mark
+ * per witness (● an answer received that adds up on the phone, … still asked, ✕ given up after a week). Never
+ * "verified": whose signature an answer carries is checked with OpenSSL from the proof file (7 Nov 2026, the security
+ * review's M1). The seals are read without their leaves (M5). Read only: nothing here writes the book.
  */
 class SealsActivity : BaseActivity() {
 
     private lateinit var adapter: Adapter
+
+    /** One seal as the list shows it: the seal, and the witnesses whose answer for it adds up on this phone. */
+    private class Row(val seal: SealHead, val answered: Set<String>)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,22 +53,24 @@ class SealsActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
-            val seals = withContext(Dispatchers.IO) {
-                runCatching { KhataDatabase.get(this@SealsActivity).khataDao().sealsNewestFirst(SHOWN) }.getOrDefault(emptyList())
+            // Each answer's signature is checked here, off the main thread: a few milliseconds each.
+            val rows = withContext(Dispatchers.IO) {
+                runCatching {
+                    KhataDatabase.get(this@SealsActivity).khataDao().sealsNewestFirst(SHOWN).map { Row(it, BookSeals.answers(it).keys) }
+                }.getOrDefault(emptyList())
             }
             if (isFinishing || isDestroyed) return@launch
-            adapter.submit(seals)
+            adapter.submit(rows)
         }
     }
 
-    /** One seal's witnesses as one line: "✓ FreeTSA   ✓ Sectigo   … DigiCert"; names kept whole in a right-to-left line. */
-    private fun witnessLine(seal: BookSeal, now: Long): String {
-        val stamped = BookSeals.stamps(seal)
-        val waiting = now - seal.sealedAt <= BookSeals.RETRY_MS
+    /** One seal's witnesses as one line: "● FreeTSA   ● Sectigo   … DigiCert"; names kept whole in a right-to-left line. */
+    private fun witnessLine(row: Row, now: Long): String {
+        val waiting = now - row.seal.sealedAt <= BookSeals.RETRY_MS
         val bidi = BidiFormatter.getInstance()
         return BookSeals.WITNESSES.joinToString("   ") { w ->
             val mark = when {
-                w.name in stamped -> "✓"
+                w.name in row.answered -> "●"
                 waiting -> "…"
                 else -> "✕"
             }
@@ -73,9 +80,9 @@ class SealsActivity : BaseActivity() {
 
     private inner class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        private var seals: List<BookSeal> = emptyList()
+        private var seals: List<Row> = emptyList()
 
-        fun submit(list: List<BookSeal>) {
+        fun submit(list: List<Row>) {
             seals = list
             notifyDataSetChanged()
         }
@@ -98,12 +105,13 @@ class SealsActivity : BaseActivity() {
                 v.findViewById<TextView>(R.id.tvSealLegend).visibility = if (seals.isEmpty()) View.GONE else View.VISIBLE
                 return
             }
-            val s = seals[position - 1]
+            val row = seals[position - 1]
+            val s = row.seal
             v.findViewById<TextView>(R.id.tvSealDate).text = Digits.toLatin(Format.dateTime(s.sealedAt))
             // The first seal holds no entry: it marks where sealing starts.
             v.findViewById<TextView>(R.id.tvSealEntries).text = if (s.prevDigest == null) getString(R.string.muhar_first_seal)
                 else Digits.quantity(resources, R.plurals.muhar_entries, s.leafCount, s.leafCount)
-            v.findViewById<TextView>(R.id.tvSealWitnesses).text = witnessLine(s, System.currentTimeMillis())
+            v.findViewById<TextView>(R.id.tvSealWitnesses).text = witnessLine(row, System.currentTimeMillis())
         }
     }
 
