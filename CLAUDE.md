@@ -19,7 +19,8 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,781 strings and 60 plurals (+21 with the setup's and the form guards' words, 5 Nov 2026; 2,781 with the competitor study's batch and schema 43's words, 4 Nov 2026; 2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
+- About 2,781 strings and 60 plurals (+21 with the 7 Nov security round — 3,032 string lines and 65 plurals in
+  values/strings.xml; +21 with the setup's and the form guards' words, 5 Nov 2026; 2,781 with the competitor study's batch and schema 43's words, 4 Nov 2026; 2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
   sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
   screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
   queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
@@ -1740,15 +1741,16 @@ nothing tried on a real phone, a real TSA, a real wallet notification or the dep
   switch is on: leaves = SHA-256 of each new entry's canonical text (unit via `UnitWords.canonical`, amount
   %.3f), chained digest with the AuditChain head, stamped by FreeTSA, Sectigo and DigiCert (RFC 3161, DER by
   hand, no BouncyCastle; cleartext allowed only for the two http TSAs in network_security_config.xml; LiveControl
-  `{"seal":false}` stops requests). The app checks a token's form, imprint and nonce, never its signature — the
-  proof file (entry detail → Seal proof) carries the openssl steps. **The leaf format is frozen once shipped**: a
+  `{"seal":false}` stops requests). The app checks a token's form, imprint and nonce and, since 7 Nov, its signature
+  by the token's own certificate (no CA chain: see the security round below) — the proof file (entry detail → Seal
+  proof) carries the openssl steps. **The leaf format is frozen once shipped**: a
   change means a new leaf version prefix ("e2|").
 - **Paisa aaya ki awaaz (`PaymentNotice`, `PaymentListenerService`, `PaymentVoice`):** a NotificationListenerService
   (exported=false, as the class doc's own example) reads only the wallet/bank apps the owner ticks; other apps give
   only their name; the default SMS app, Messages and dialers are never read (Play's SMS/Call Log rule); OTP/PIN
   texts and outgoing words are ignored. Speaks with an Urdu voice when the phone has one, else a chime; "Add to
-  khata" opens the existing I-got form prefilled (amount, wallet method, TID), through Gate with a per-phone key so
-  no other app can prefill; the owner presses Save. Off on a helper's phone. The patterns in `PaymentNotice.Words`
+  khata" opens the existing I-got form prefilled (amount, wallet method, TID), through Gate with a one-time ticket per
+  notice (a fixed per-phone key until 7 Nov — see the security round) so no other app can prefill; the owner presses Save. Off on a helper's phone. The patterns in `PaymentNotice.Words`
   are invented — check them against the owner's real JazzCash/Easypaisa screenshots.
 - **Waris ki Chaabi (`Waris`, `WarisCrypto`, `WarisActivity`, `WarisWorker`; relays `/v1/w/{vault}/…` on all three,
   test_relay.py `waris()` 61 checks):** the owner names up to 5 heirs (two QRs; the heir's P-256 key seals W, the
@@ -1756,8 +1758,8 @@ nothing tried on a real phone, a real TSA, a real wallet notification or the dep
   (≤8 MiB); the heir can only ask; the owner is warned on Home and by notification and can refuse; after the wait
   (default 30 days) the relay releases the box and the heir enters the book read-only through ViewerMode's file
   path. A refusal is re-sent on every status run to any relay that missed it. Waris keys are in
-  `BookSettings.ACCESS_KEYS` (never synced, kept by a restore from a copy without them) and out of every
-  secrets=false copy. Relays keep Waris data out of live sync's cleanup; a vault idle 1095 days is removed.
+  `BookSettings.ACCESS_KEYS` (never synced) and out of every secrets=false copy; since 7 Nov W is in no export at
+  all and a restore follows `Waris.restored` (the security round below). Relays keep Waris data out of live sync's cleanup; a vault idle 1095 days is removed.
   **Not deployed:** the hosting needs relays.yml's relay-upload.zip by hand; Supabase and the Worker need their
   deploy workflows. The Waris card image holds the heir's private key.
 - Privacy policy sections 20–22 (both languages); "Notification access" in permissions; the short version no
@@ -1937,16 +1939,89 @@ is the owner's upload (web/khata/README.md), nothing tried on a real phone.
   link (`clink_used`); the customer's app asks a page only when Mera Khata opens and the last look is 10 minutes old,
   Refresh once a minute, with the last ETag (`CustomerPage`, 304 when unchanged). api.php's caps hold every shop.
 - **The customer's side:** `MeraKhataActivity` (exported; App Link on khata.ehtisham.shop with `autoVerify`, and
-  roshankhata://khata?l=… from the web page's "Open in the app" button, which falls back to the Play Store), the list
-  kept in prefs "mera_khata" (`MeraKhataStore`, at most 50, never in a book or backup); More → Mera Khata once there is
-  one; a phone whose setup is not done opens on it from the front door (`GateActivity.EXTRA_SETUP` starts the setup from
-  its "Start my own khata" card). In BaseActivity's BEFORE_THE_BOOK (no counter sign-in, no App Lock: never the book).
+  roshankhata://khata?l=… from the web page's "Open in the app" button, which names the app's package and falls back to
+  the Play Store), the list kept in prefs "mera_khata" (`MeraKhataStore`, at most 50, a link kept only once its page
+  opened — at most 5 wait —, never in a book or backup); More → Mera Khata once there is one; a phone whose setup is not
+  done opens on it from the front door (`GateActivity.EXTRA_SETUP` starts the setup from its "Start my own khata" card).
+  In BaseActivity's BEFORE_THE_BOOK (no counter sign-in; never the book); since 7 Nov a task of its own
+  (`taskAffinity=""`), and it asks App Lock itself when the owner has it on and it is due (`AppLock.Away`).
 - **web/khata:** api.php keeps its store beside public_html even from a subdomain's root (it would have been
   public_html/rk-khata-data, served); `.well-known/assetlinks.json` names the Play build's three keys (in use, previous, upload)
   and the test build's, and is live with the page (7 Nov 2026: khata.ehtisham.shop uploaded, the hosting relay
   replaced and checked by relays.yml); `scripts/pack_khata_web.sh` makes the upload zip.
 - Tests: CustomerPageTest (shared), MeraKhataStoreTest, EveryScreenOpensTest opens Mera Khata; scripts/test_khata_web.sh.
-- Strings (nine languages): clink_* (14), mera_khata_* (23).
+- Strings (nine languages): clink_* (14; 20 after the security round), mera_khata_* (23; 24).
+
+### The 7 Nov 2026 security round (kmp-desktop-16 — the owner sent "5 Security Checks Before You Launch Your App": "implement with professional skill")
+
+The PDF's five checks (secrets, personal data, launch checklist, login/payment logic, the attacker's view) on this app;
+its web-app items (Stripe, JWT, password reset, NEXT_PUBLIC_) do not apply — no accounts, no gateway. CI only: nothing
+on a device, a real wallet notice, a real TSA or the deployed relays.
+
+- **History scan** (a full mirror: 1,267 commits, 52 refs, 10,564 file versions): no key, token, password or key file
+  in any commit (17 patterns of Gitleaks' kind and Yelp's detect-secrets 1.5.0 — 323 hits, every one a test vector,
+  an alphabet or CI's local Postgres). Gitleaks itself could not be fetched here (GitHub releases and the Go proxy are
+  closed to the session). Personal data: the 6 Nov Duplicate work had written five customers' numbers and a customer's
+  name from the owner's photo into DuplicateDetector's comments — made up now (2e9978e6); the commit that added them
+  (438a7c7b, on kmp-desktop-16 only) and, from Jul–Oct, older ones (the owner's shop number, one other number, another
+  shop's email, two numbers in commit messages) keep them in history. **Rewriting history is the owner's decision**
+  (not done). This clone commits as Claude <noreply>, never the owner's address.
+- **Four reviewers** on what was built after the 3 Nov audit (customer link, Waris, payment voice, seal): 2 critical,
+  21 medium, 20 low; every point read in the code first; fixed by five fixers in worktrees, merged by cherry-pick.
+- **Relays** (5501b0da, all three alike, test_relay.py `--wlimits`): Waris vaults have their own bytes — hosting 256 MiB
+  (`RK_RELAY_WARIS_BYTES`; the books' total moved to `.size-books`), Worker 512 MiB (`wbytes` in the !ledger), Supabase
+  128 MiB (`RK_WARIS_BYTES`) — so a vault can never make a live-sync parcel 507 (anyone may make a vault: it stopped
+  live sync for every shop); 507 "waris-full"; new vaults 20/100/50 a day (429 "waris-day"; a re-setup is never counted);
+  a vault with no heir and no snapshot 14 DAYs after its setup is swept; the Worker refuses an heir body over 16 KiB
+  before reading it. No per-IP limits (carrier NAT).
+- **Waris** (1cc615ff, a6accbf3): the owner's protective calls (status, refuse, allow, turn off) never wait for the
+  kill switch; gone heirs are deleted before any heir is put; a hid a relay holds that this book does not name is
+  deleted there and kept for good in `waris_removed` (≤1000; turned-off vaults too); an allow this phone did not give
+  is refused again; **W (`waris_key`) is in no export at all** — a book with a vault but no W makes a new one
+  (keyVersion+1, `waris_snap_kv`), and every W made before was replaced once (`waris_key_safe`); a restore keeps this
+  book's vault and joins the removed lists (`Waris.restored`), a pairing takes none; the background run is twice a day
+  for every shop (closed ones through `openOther`, only Waris keys written back, a copy pinned to its shop —
+  `Waris.BookMoved`); a refusal some relay missed is asked again at once (`waris_refuse_left`, expedited work) and Home
+  says so; Android 13's notification permission is asked when Waris is turned on; the card's words say whoever holds a
+  photo of it can ask (nine languages) and its picture is deleted after the share; 403 is kept (`waris_relay_no`), 429
+  is `Why.BUSY`; "open to them now" once the day passed. The owner secret stays in full backups by design (the owner
+  keeps Waris on a new phone): if such a backup is lost, turn Waris off and on and link the heirs again.
+- **Customer link** (607f5e1d): api.php — new pages a day per shop (50 in its first 30 days, 500 after), a fifth of
+  MAX_FILES kept for older shops, new shops 10 a day per address (a keyed hash, IPv6 by /64) and 60 an hour, no shop
+  record without a page, a page-less shop gone after 7 days, **ids never freed** (`u/`), HSTS for this host only; pages
+  sealed under `"rk-clink-v2|" + id` with a counter that only grows (`q`), padded to 512/1024/2048 — readers keep the
+  highest and say an older one came (`mera_khata_older`; view.js with localStorage); v1 still opens; "Open in the app"
+  names the package; no key in `?l=` on https. App Lock: `AppLock.Away` (elapsedRealtime; only the book's screens
+  count; due until answered; a fresh process starts due — `AppLockAwayTest`). Stopping a link says the real result;
+  another copy holding the shop offers "Send from this phone"; send and stop are audited (EXPORT); page days outside
+  2000–2100 are none. **web/khata must be uploaded before the new build reaches a phone**: the old view.js cannot
+  open a v2 page.
+- **Payment voice** (ded336db): a reject list (English, Roman Urdu, Urdu — request, failed, refund, loan, offer,
+  cashback, bill, easyload, ملے گا…) before the money-in words; Urdu words whole; the sender's number only after
+  from/se; chat, email, social, call and ongoing notices never read nor listed; each app's package shown; a known wallet
+  ticked by itself only when Play installed it; **a one-time ticket per notice** (`paisa_tickets`: once, 24 h, the
+  feature on, its own shop; taken off a launch from Recents) instead of the fixed door key; the notice cancelled when
+  opened; a payment reference already in the book says so (`entryWithPaymentRef`, `cashWithPaymentRef`); a masked number
+  needs 6 of the 7 digits after 03xx; a sender name that disagrees gives a choice; text cut at 1,000 characters, parsed
+  off the main thread, 3 announcements a minute; only a chime while the phone is locked or App Lock is on, no customer's
+  name in the notice then; an offline voice or the chime; a binned or other party opens the Khata list. **The patterns
+  are still invented** — check them against real JazzCash/Easypaisa/bank notices.
+- **Seal** (e21806cd, 0db534d1): `Rfc3161.verify` — one SignerInfo, contentType TSTInfo, its messageDigest, the RSA or
+  ECDSA signature by the token's own certificate, its critical timeStamping EKU, valid at genTime, genTime within 24 h
+  of the request; a token that fails is not kept and that witness is asked again. No CA chain (the TSAs' CA
+  certificates are not in the repository): the screens say "answers received" (●), never verified. A proof works the
+  digest out again from header and leaves (`Proof.Broken`), takes times from the tokens and follows prevDigest. Leaf
+  **e2** (header `rk-seal-v2`): goods lines, payment method, loan and bin flags, every field length-prefixed, figures
+  by BigDecimal; the product uid left out on purpose (the tie button and live sync change it); e1 seals still check.
+  At most 5,000 leaves a seal (a catch-up chains several); seals go 8 to a page in a backup; each witness has a 45 s
+  whole deadline, the three side by side, a lock per book; tokens written `WHERE id AND digest`; User-Agent
+  "RoshanKhata"; both privacy policies say what the time services and GitHub see. The switch (`BOOK_SEAL`) is in
+  ACCESS_KEYS — never synced — and audited (`seal_on`/`seal_off`, worded in Who did what).
+- **Left, with the reason:** rewriting history (the owner's); full TSA chain validation (needs the TSAs' CA
+  certificates, fetched and checked by hand); a push from the relay to the owner on an heir's ask; a passphrase on the
+  Waris card (decided against: an elderly heir would lose the book); `LiveControl.fetch`'s per-read timeouts and default
+  User-Agent; deploys — the hosting relay's and web/khata's uploads are the owner's, the Worker and Supabase by their
+  workflows.
 
 ### The shared module (KMP)
 
@@ -2381,6 +2456,21 @@ Each of these cost a build or a bug.
     padded by them again, and on Android 15 the invoice sheet stood a keyboard's height above the keyboard, its form
     squeezed to nothing (6 Nov 2026). Hand children `withoutKeyboard(insets)`. And a test of "above the keyboard"
     passes a field 867 px above it: measure that the panel sits on the keyboard and the box is in the middle.
+
+80. **Nothing read off the owner's photos goes into the repository.** Five customers' numbers and a customer's name from
+    his photo of the Duplicate screen were written into a comment of a public file (6 Nov 2026); the history keeps them.
+    Say what a photo shows in words ("two numbers one digit apart") with made-up figures (0300 1234567, 0300 0000001),
+    in code, comments, tests and commit messages alike.
+
+81. **A limit anyone can spend is a limit everyone loses.** A server-wide count an anonymous caller can use up (new
+    shops an hour, files, one byte budget shared with live sync) is a switch that turns the feature off for every shop
+    (7 Nov 2026: Waris vaults could stop live sync; throwaway shops could stop every khata link). Give each feature its
+    own budget, cap what is new per day, let a shop spend only its own share, and sweep what was made and never used.
+
+82. **A key in a copy is a key for whoever holds the copy.** What can be made again (Waris' W) stays out of every export
+    and is made anew after a restore; a copy that leaves the owner's hands (secrets = false) carries no server's pass or
+    keys (the customer pages'); a notice's tap carries a one-time ticket, never a fixed key — Android hands a task its
+    first intent again from Recents.
 
 ---
 
