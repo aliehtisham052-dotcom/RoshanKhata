@@ -4336,4 +4336,21 @@
     <string name="z_expected_at">Should be in drawer at the %1$s count</string>
     <string name="cf_net">Net</string>
     <string name="cf_partial">Short last week · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">Already in khata</string>
+    <string name="contacts_select_all">Select all</string>
+    <string name="contacts_clear">Clear</string>
+    <plurals name="contacts_import_n">
+        <item quantity="one">Import %d customer</item>
+        <item quantity="other">Import %d customers</item>
+    </plurals>
+    <string name="contacts_import_many_title">Import many contacts?</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="one">%d contacts will be added to your khata. Continue only if you ticked them on purpose.</item>
+        <item quantity="other">%d contacts will be added to your khata. Continue only if you ticked them on purpose.</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">Type here</string>
+    <string name="erase_all_instruction">Type %1$s to erase everything</string>
+    <string name="business_delete_instruction">Type %1$s to delete this business</string>
 </resources>

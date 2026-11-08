@@ -4105,4 +4105,19 @@
     <string name="z_expected_at">Seharusnya di laci saat hitung %1$s</string>
     <string name="cf_net">Bersih</string>
     <string name="cf_partial">Minggu terakhir pendek · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">Sudah ada di buku</string>
+    <string name="contacts_select_all">Pilih semua</string>
+    <string name="contacts_clear">Hapus</string>
+    <plurals name="contacts_import_n">
+                <item quantity="other">Impor %d pelanggan</item>
+    </plurals>
+    <string name="contacts_import_many_title">Impor banyak kontak?</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="other">%d kontak akan ditambahkan ke buku Anda. Lanjutkan hanya jika Anda memilihnya dengan sengaja.</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">Ketik di sini</string>
+    <string name="erase_all_instruction">Ketik %1$s untuk menghapus semuanya</string>
+    <string name="business_delete_instruction">Ketik %1$s untuk menghapus bisnis ini</string>
 </resources>

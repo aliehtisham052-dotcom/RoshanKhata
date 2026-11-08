@@ -4151,4 +4151,21 @@
     <string name="z_expected_at">باید هنگام شمارش %1$s در صندوق باشد</string>
     <string name="cf_net">خالص</string>
     <string name="cf_partial">هفته آخر کوتاه · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">از قبل در دفتر هست</string>
+    <string name="contacts_select_all">انتخاب همه</string>
+    <string name="contacts_clear">پاک کردن</string>
+    <plurals name="contacts_import_n">
+        <item quantity="one">افزودن %d مشتری</item>
+        <item quantity="other">افزودن %d مشتری</item>
+    </plurals>
+    <string name="contacts_import_many_title">افزودن تعداد زیادی مخاطب؟</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="one">%d مخاطب به دفتر شما اضافه می‌شود. فقط اگر عمداً انتخاب کرده‌اید ادامه دهید.</item>
+        <item quantity="other">%d مخاطب به دفتر شما اضافه می‌شود. فقط اگر عمداً انتخاب کرده‌اید ادامه دهید.</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">اینجا بنویسید</string>
+    <string name="erase_all_instruction">برای پاک کردن همه چیز %1$s را بنویسید</string>
+    <string name="business_delete_instruction">برای حذف این کسب‌وکار %1$s را بنویسید</string>
 </resources>

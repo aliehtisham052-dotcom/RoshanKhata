@@ -4123,4 +4123,21 @@
     <string name="z_expected_at">%1$s ki ginti par galle mein hona chahiye</string>
     <string name="cf_net">Khalis</string>
     <string name="cf_partial">Aakhri hafta chhota · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">Khata mein pehle se hai</string>
+    <string name="contacts_select_all">Sab chunein</string>
+    <string name="contacts_clear">Saaf karein</string>
+    <plurals name="contacts_import_n">
+        <item quantity="one">%d customer shamil karein</item>
+        <item quantity="other">%d customers shamil karein</item>
+    </plurals>
+    <string name="contacts_import_many_title">Bohat se contacts shamil karein?</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="one">%d contacts aap ke khata mein shamil honge. Aage tab barhein jab aap ne unhein jaan boojh kar chuna ho.</item>
+        <item quantity="other">%d contacts aap ke khata mein shamil honge. Aage tab barhein jab aap ne unhein jaan boojh kar chuna ho.</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">Yahan likhein</string>
+    <string name="erase_all_instruction">Sab kuch mitane ke liye %1$s likhein</string>
+    <string name="business_delete_instruction">Is karobar ko hazf karne ke liye %1$s likhein</string>
 </resources>

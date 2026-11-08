@@ -4171,4 +4171,21 @@
     <string name="z_expected_at">%1$s की गिनती पर गल्ले में होना चाहिए</string>
     <string name="cf_net">शुद्ध</string>
     <string name="cf_partial">आखिरी हफ्ता छोटा · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">खाते में पहले से है</string>
+    <string name="contacts_select_all">सब चुनें</string>
+    <string name="contacts_clear">साफ़ करें</string>
+    <plurals name="contacts_import_n">
+        <item quantity="one">%d ग्राहक जोड़ें</item>
+        <item quantity="other">%d ग्राहक जोड़ें</item>
+    </plurals>
+    <string name="contacts_import_many_title">बहुत सारे संपर्क जोड़ें?</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="one">%d संपर्क आपके खाते में जुड़ेंगे। तभी आगे बढ़ें जब आपने उन्हें जानबूझकर चुना हो।</item>
+        <item quantity="other">%d संपर्क आपके खाते में जुड़ेंगे। तभी आगे बढ़ें जब आपने उन्हें जानबूझकर चुना हो।</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">यहाँ लिखें</string>
+    <string name="erase_all_instruction">सब कुछ मिटाने के लिए %1$s लिखें</string>
+    <string name="business_delete_instruction">इस कारोबार को हटाने के लिए %1$s लिखें</string>
 </resources>

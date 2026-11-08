@@ -167,56 +167,33 @@ class BusinessSwitchActivity : BaseActivity() {
         display: String,
         summary: BusinessDeleteSummary
     ) {
-        val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_delete, null)
-        com.innovation313.roshankhata.ui.TextFit.relax(view)
-        val tvSummary: TextView = view.findViewById(R.id.tvDeleteSummary)
-        val etConfirm: EditText = view.findViewById(R.id.etDeleteConfirmName)
-        tvSummary.text = Digits.string(resources, R.string.business_delete_confirm_body,
+        val body = Digits.string(resources, R.string.business_delete_confirm_body,
             summary.partyCount,
             // In that shop's own sign, not the open shop's (23 Oct 2026, the review).
             Format.money(summary.netBalance, com.innovation313.roshankhata.data.BusinessProfile.currencyOf(this, business.id))
         )
-        etConfirm.hint = getString(R.string.business_delete_type_hint, display)
-
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.business_delete_confirm_title, display))
-            .setView(view)
-            .setPositiveButton(R.string.delete_forever, null)
-            .setNegativeButton(R.string.cancel, null)
-            .create()
-
-        dialog.setOnShowListener {
-            val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            positive.isEnabled = false
-            positive.setOnClickListener {
-                // Disabled at once: file deletion is disk work done off the
-                // main thread below, and a second tap mid-delete must not
-                // start a second one.
-                positive.isEnabled = false
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        Businesses.delete(this@BusinessSwitchActivity, business.id)
-                    }
-                    Toast.makeText(
-                        this@BusinessSwitchActivity,
-                        getString(R.string.business_delete_done, display),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    dialog.dismiss()
-                    refresh()
+        com.innovation313.roshankhata.ui.TypeToConfirm.show(
+            activity = this,
+            title = getString(R.string.business_delete_confirm_title, display),
+            body = body,
+            instructionRes = R.string.business_delete_instruction,
+            word = display
+        ) { dialog ->
+            // Disabled at once: file deletion is disk work done off the main thread below, and a
+            // second tap mid-delete must not start a second one.
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    Businesses.delete(this@BusinessSwitchActivity, business.id)
                 }
+                Toast.makeText(
+                    this@BusinessSwitchActivity,
+                    getString(R.string.business_delete_done, display),
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+                refresh()
             }
-            etConfirm.addTextChangedListener(object : android.text.TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: android.text.Editable?) {
-                    positive.isEnabled = s?.toString()?.trim() == display
-                }
-            })
         }
-        dialog.show()
-        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
-        etConfirm.requestFocus()
     }
 
     /**

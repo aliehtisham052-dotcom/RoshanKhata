@@ -1273,45 +1273,22 @@ class BackupActivity : BaseActivity() {
      */
     private fun confirmEraseAll() {
         val keyword = getString(R.string.erase_all_keyword)
-        val view = android.view.LayoutInflater.from(this)
-            .inflate(R.layout.dialog_business_delete, null)
-        // Its hint carries the word to type: wrapped, never cut, at any text size (31 Oct 2026, the review).
-        com.innovation313.roshankhata.ui.TextFit.relax(view)
-        val tvSummary: android.widget.TextView = view.findViewById(R.id.tvDeleteSummary)
-        val etConfirm: android.widget.EditText = view.findViewById(R.id.etDeleteConfirmName)
-        tvSummary.text = getString(R.string.erase_all_body)
-        etConfirm.hint = getString(R.string.business_delete_type_hint, keyword)
-
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.erase_all_title)
-            .setView(view)
-            .setPositiveButton(R.string.delete_forever, null)
-            .setNegativeButton(R.string.cancel, null)
-            .create()
-
-        dialog.setOnShowListener {
-            val positive = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
-            positive.isEnabled = false
-            positive.setOnClickListener {
-                positive.isEnabled = false
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) { EraseAll.wipe(this@BackupActivity) }
-                    Toast.makeText(this@BackupActivity, R.string.erase_all_done, Toast.LENGTH_LONG).show()
-                    dialog.dismiss()
-                    goHome()
-                }
+        // The explanation scrolls; the instruction and the box stay above the keyboard (TypeToConfirm).
+        com.innovation313.roshankhata.ui.TypeToConfirm.show(
+            activity = this,
+            title = getString(R.string.erase_all_title),
+            body = getString(R.string.erase_all_body),
+            instructionRes = R.string.erase_all_instruction,
+            word = keyword,
+            matches = { EraseAll.confirms(it, keyword) }
+        ) { dialog ->
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) { EraseAll.wipe(this@BackupActivity) }
+                Toast.makeText(this@BackupActivity, R.string.erase_all_done, Toast.LENGTH_LONG).show()
+                dialog.dismiss()
+                goHome()
             }
-            etConfirm.addTextChangedListener(object : android.text.TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: android.text.Editable?) {
-                    positive.isEnabled = EraseAll.confirms(s?.toString(), keyword)
-                }
-            })
         }
-        dialog.show()
-        com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
-        etConfirm.requestFocus()
     }
 
     private fun goHome() {

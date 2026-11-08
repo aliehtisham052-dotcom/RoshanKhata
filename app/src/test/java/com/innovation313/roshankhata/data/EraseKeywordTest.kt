@@ -8,11 +8,12 @@ import org.junit.Test
 class EraseKeywordTest {
 
     @Test
-    fun `the word shown is accepted, whatever the case or the spaces around it`() {
+    fun `the word shown is accepted with spaces around it, but only in the same letter case`() {
         assertTrue(EraseAll.confirms("ERASE", "ERASE"))
-        assertTrue(EraseAll.confirms("  erase ", "ERASE"))
-        assertTrue(EraseAll.confirms("Mitao", "MITAO"))
-        assertTrue(EraseAll.confirms("hapus", "HAPUS"))
+        assertTrue(EraseAll.confirms("  ERASE ", "ERASE"))
+        assertFalse(EraseAll.confirms("erase", "ERASE"))
+        assertFalse(EraseAll.confirms("Mitao", "MITAO"))
+        assertFalse(EraseAll.confirms("hapus", "HAPUS"))
     }
 
     @Test
@@ -31,9 +32,9 @@ class EraseKeywordTest {
     }
 
     @Test
-    fun `the English word works in every language, for a phone with only an English keyboard`() {
-        assertTrue(EraseAll.confirms("ERASE", "حذف"))
-        assertTrue(EraseAll.confirms("erase", "मिटाओ"))
+    fun `another language's word does not confirm`() {
+        assertFalse(EraseAll.confirms("ERASE", "حذف"))
+        assertFalse(EraseAll.confirms("erase", "मिटाओ"))
     }
 
     @Test

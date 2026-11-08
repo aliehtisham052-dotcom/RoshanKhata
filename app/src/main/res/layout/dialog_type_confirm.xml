@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A "type the word to confirm" dialog (8 Nov 2026, the owner's phone test): the explanation scrolls in a box
+  capped by TypeToConfirm, the instruction line and the typing box stay below it, always in sight.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="8dp">
+
+    <com.innovation313.roshankhata.ui.CappedScrollView
+        android:id="@+id/scrollConfirmBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvConfirmBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+    </com.innovation313.roshankhata.ui.CappedScrollView>
+
+    <TextView
+        android:id="@+id/tvConfirmInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:labelFor="@+id/etConfirmWord"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <EditText
+        android:id="@+id/etConfirmWord"
+        style="@style/EditorField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/confirm_box_hint"
+        android:importantForAutofill="noExcludeDescendants"
+        android:inputType="text|textNoSuggestions"
+        android:maxLines="1" />
+
+</LinearLayout>

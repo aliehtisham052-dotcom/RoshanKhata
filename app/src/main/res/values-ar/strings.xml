@@ -4387,4 +4387,30 @@
     <string name="z_expected_at">المفترض في الدرج عند جرد %1$s</string>
     <string name="cf_net">الصافي</string>
     <string name="cf_partial">الأسبوع الأخير قصير · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">موجود بالفعل في الدفتر</string>
+    <string name="contacts_select_all">تحديد الكل</string>
+    <string name="contacts_clear">مسح</string>
+    <plurals name="contacts_import_n">
+        <item quantity="zero">استيراد %d عميل</item>
+        <item quantity="one">استيراد عميل واحد</item>
+        <item quantity="two">استيراد عميلين</item>
+        <item quantity="few">استيراد %d عملاء</item>
+        <item quantity="many">استيراد %d عميلًا</item>
+        <item quantity="other">استيراد %d عميل</item>
+    </plurals>
+    <string name="contacts_import_many_title">استيراد عدد كبير من جهات الاتصال؟</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="zero">سيتم إضافة %d جهة اتصال إلى دفترك. تابع فقط إذا حددتها عن قصد.</item>
+        <item quantity="one">سيتم إضافة %d جهة اتصال إلى دفترك. تابع فقط إذا حددتها عن قصد.</item>
+        <item quantity="two">سيتم إضافة %d جهة اتصال إلى دفترك. تابع فقط إذا حددتها عن قصد.</item>
+        <item quantity="few">سيتم إضافة %d جهة اتصال إلى دفترك. تابع فقط إذا حددتها عن قصد.</item>
+        <item quantity="many">سيتم إضافة %d جهة اتصال إلى دفترك. تابع فقط إذا حددتها عن قصد.</item>
+
+        <item quantity="other">سيتم إضافة %d جهة اتصال إلى دفترك. تابع فقط إذا حددتها عن قصد.</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">اكتب هنا</string>
+    <string name="erase_all_instruction">اكتب %1$s لمسح كل شيء</string>
+    <string name="business_delete_instruction">اكتب %1$s لحذف هذا النشاط التجاري</string>
 </resources>

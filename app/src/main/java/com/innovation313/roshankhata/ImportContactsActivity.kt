@@ -284,13 +284,16 @@ class ImportContactsActivity : BaseActivity() {
     private fun refreshSelectAllLabel() {
         val selectable = visible.filter { !it.alreadyAdded && !it.inRecycleBin }
         val allSelectableSelected = selectable.isNotEmpty() && selectable.all { it.phone in selected }
-        btnSelectAll.setText(if (allSelectableSelected) R.string.clear_all else R.string.select_all)
+        btnSelectAll.setText(if (allSelectableSelected) R.string.contacts_clear else R.string.contacts_select_all)
         btnSelectAll.isEnabled = selectable.isNotEmpty()
     }
 
     private fun updateSelectedCount() {
         tvSelectedCount.text = Digits.quantity(resources, R.plurals.n_selected, selected.size, selected.size)
         btnImport.isEnabled = selected.isNotEmpty()
+        // "Import 3 customers": the count is on the button, so nothing is imported by surprise.
+        btnImport.text = if (selected.isEmpty()) getString(R.string.import_selected)
+        else Digits.quantity(resources, R.plurals.contacts_import_n, selected.size, selected.size)
     }
 
     /**
@@ -310,6 +313,22 @@ class ImportContactsActivity : BaseActivity() {
         val toImport = allContacts.filter { it.phone in selected }
         if (toImport.isEmpty()) return
 
+        // A big batch is asked about once more: one slip must not fill the khata.
+        if (toImport.size > BIG_BATCH) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.contacts_import_many_title)
+                .setMessage(
+                    Digits.quantity(resources, R.plurals.contacts_import_many_body, toImport.size, toImport.size)
+                )
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.continue_action) { _, _ -> askType(toImport) }
+                .show()
+            return
+        }
+        askType(toImport)
+    }
+
+    private fun askType(toImport: List<PhoneContact>) {
         val view = layoutInflater.inflate(R.layout.dialog_import_contact_type, null)
         view.findViewById<TextView>(R.id.tvImportTypeMessage).text =
             Digits.quantity(resources, 
@@ -348,6 +367,11 @@ class ImportContactsActivity : BaseActivity() {
                 }
             }
             .show()
+    }
+
+    private companion object {
+        /** More than this many at once is confirmed first. */
+        const val BIG_BATCH = 50
     }
 
     private fun showStatus(text: String) {

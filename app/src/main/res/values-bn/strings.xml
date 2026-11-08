@@ -4171,4 +4171,21 @@
     <string name="z_expected_at">%1$s-এর গণনায় ক্যাশে থাকার কথা</string>
     <string name="cf_net">নেট</string>
     <string name="cf_partial">শেষ সপ্তাহ ছোট · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">খাতায় আগে থেকেই আছে</string>
+    <string name="contacts_select_all">সব বেছে নিন</string>
+    <string name="contacts_clear">মুছুন</string>
+    <plurals name="contacts_import_n">
+        <item quantity="one">%d জন গ্রাহক আনুন</item>
+        <item quantity="other">%d জন গ্রাহক আনুন</item>
+    </plurals>
+    <string name="contacts_import_many_title">অনেক কন্টাক্ট আনবেন?</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="one">%d কন্টাক্ট আপনার খাতায় যোগ হবে। ইচ্ছা করে বেছে থাকলেই এগিয়ে যান।</item>
+        <item quantity="other">%d কন্টাক্ট আপনার খাতায় যোগ হবে। ইচ্ছা করে বেছে থাকলেই এগিয়ে যান।</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">এখানে লিখুন</string>
+    <string name="erase_all_instruction">সব কিছু মুছতে %1$s লিখুন</string>
+    <string name="business_delete_instruction">এই ব্যবসা মুছতে %1$s লিখুন</string>
 </resources>

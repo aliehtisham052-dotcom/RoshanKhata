@@ -566,17 +566,28 @@ object CardTemplates {
         val right = align == Paint.Align.RIGHT
         for ((ico, value) in list) {
             if (y > bottom) break
-            val iconW = if (ico == Ico.PHONE_WA) size * 1.9f else size * 1.15f
-            val room = max - iconW
+            // One number for call and WhatsApp (PHONE_WA): the handset, a gap, the number, then a small
+            // WhatsApp mark after it (8 Nov 2026 — the two marks used to sit glued together before the number).
+            val both = ico == Ico.PHONE_WA
+            val iconW = size * 1.15f
+            val waGap = size * 0.4f
+            val waSize = size * 0.8f
+            val waW = if (both) waGap + waSize * 1.1f else 0f
+            val room = max - iconW - waW
             val p = paint(size, text, bold = bold, align = align)
-            val ix = if (right) x - size * 0.5f - (if (ico == Ico.PHONE_WA) size * 0.45f else 0f)
-            else x + size * 0.5f + (if (ico == Ico.PHONE_WA) size * 0.36f else 0f)
+            val ix = if (right) x - size * 0.5f else x + size * 0.5f
             val tx = if (right) x - iconW else x + iconW
-            glyph(c, ico, ix, y - size * 0.35f, size, icon)
+            glyph(c, if (both) Ico.PHONE else ico, ix, y - size * 0.35f, size, icon)
             val allowTwo = ico == Ico.PIN && y + gap * 0.75f <= bottom
             val parts = if (allowTwo) wrap(value, p, room, 2) else listOf(ellipsise(value, p, room))
             parts.forEachIndexed { i, part ->
                 text(c, part, tx, y, p)
+                if (both) {
+                    // After the number, in the direction the line runs (the canvas is already mirrored on an Urdu card).
+                    val tw = scriptPaint(part, p).measureText(part)
+                    val wx = if (right) tx - tw - waGap - waSize * 0.5f else tx + tw + waGap + waSize * 0.5f
+                    glyph(c, Ico.WHATSAPP, wx, y - size * 0.35f, waSize, icon)
+                }
                 if (i < parts.size - 1) y += gap * 0.75f
             }
             y += gap
@@ -796,9 +807,25 @@ object CardTemplates {
         list += rows(d)
         val colW = (panel.width() - 80f) / 2
         val mid = (list.size + 1) / 2
-        val rowsTop = panel.top + max(56f, (panel.height() - mid * 50f) / 2 + 34f)
-        rowList(c, list.take(mid), panel.left + 36f, rowsTop, colW, WHITE, Color.parseColor("#9FE1CB"), gap = 50f, bottom = panel.bottom - 20f)
-        rowList(c, list.drop(mid), panel.left + 44f + colW, rowsTop, colW, WHITE, Color.parseColor("#9FE1CB"), gap = 50f, bottom = panel.bottom - 20f)
+        // Larger lines, and the whole block centred in the panel (8 Nov 2026: it sat low, small, in an empty panel).
+        val size = 32f
+        val gap = 60f
+        val sample = paint(size, WHITE)
+        fun colHeight(col: List<Pair<Ico, String>>): Float {
+            var hgt = 0f
+            col.forEachIndexed { i, (ico, v) ->
+                if (i < col.size - 1) hgt += gap
+                if (ico == Ico.PIN && wrap(v, sample, colW - size * 1.15f, 2).size > 1) hgt += gap * 0.75f
+            }
+            return hgt
+        }
+        val left = list.take(mid)
+        val right = list.drop(mid)
+        val block = max(colHeight(left), colHeight(right)) + size * 0.72f
+        val rowsTop = panel.centerY() - block / 2 + size * 0.72f
+        val tint = Color.parseColor("#9FE1CB")
+        rowList(c, left, panel.left + 36f, rowsTop, colW, WHITE, tint, size = size, gap = gap, bottom = panel.bottom - 20f)
+        rowList(c, right, panel.left + 44f + colW, rowsTop, colW, WHITE, tint, size = size, gap = gap, bottom = panel.bottom - 20f)
         watermark(c, d, w - 64f, h - 18f, onDark = true)
     }
 

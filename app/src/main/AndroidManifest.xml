@@ -330,6 +330,7 @@
         <activity
             android:name=".BusinessCardActivity"
             android:exported="false"
+            android:windowSoftInputMode="stateHidden"
             android:parentActivityName=".MainActivity" />
 
         <activity

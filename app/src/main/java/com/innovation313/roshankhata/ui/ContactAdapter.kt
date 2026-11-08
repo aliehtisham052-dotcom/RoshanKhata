@@ -47,6 +47,7 @@ class ContactAdapter(
         val tvName: TextView = view.findViewById(R.id.tvContactName)
         val tvPhone: TextView = view.findViewById(R.id.tvContactPhone)
         val tvAdded: TextView = view.findViewById(R.id.tvAdded)
+        val tvInitials: TextView = view.findViewById(R.id.tvContactInitials)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -60,6 +61,9 @@ class ContactAdapter(
 
         holder.tvName.text = Format.name(c.name)
         holder.tvPhone.text = c.phone
+        // The Khata list's own avatar: initials on a hue taken from the name.
+        holder.tvInitials.text = Format.initials(c.name)
+        AvatarHue.paint(holder.tvInitials, c.name)
 
         if (c.alreadyAdded || c.inRecycleBin) {
             // Already on the books one way or the other — shown, but not
@@ -69,7 +73,7 @@ class ContactAdapter(
             holder.cb.visibility = View.INVISIBLE
             holder.tvAdded.visibility = View.VISIBLE
             holder.tvAdded.setText(
-                if (c.inRecycleBin) R.string.contact_in_recycle_bin else R.string.already_added
+                if (c.inRecycleBin) R.string.contact_in_recycle_bin else R.string.contact_in_khata
             )
             holder.itemView.isEnabled = false
             holder.itemView.alpha = 0.55f

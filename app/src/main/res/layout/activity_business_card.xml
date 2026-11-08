@@ -6,9 +6,12 @@
     android:background="@color/page_bg"
     android:fillViewport="true">
 
+    <!-- Focusable itself, so no box takes the first focus and raises the keyboard (8 Nov 2026, point 22). -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical"
         android:padding="16dp">
 

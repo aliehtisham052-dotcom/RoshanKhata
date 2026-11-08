@@ -4151,4 +4151,21 @@
     <string name="z_expected_at">%1$s جي ڳڻپ تي گلي ۾ هجڻ گهرجي</string>
     <string name="cf_net">خالص</string>
     <string name="cf_partial">آخري هفتو ننڍو · %1$s</string>
+    <!-- Import from Contacts (8 Nov 2026) -->
+    <string name="contact_in_khata">کاتي ۾ اڳ ۾ ئي آهي</string>
+    <string name="contacts_select_all">سڀ چونڊيو</string>
+    <string name="contacts_clear">صاف ڪريو</string>
+    <plurals name="contacts_import_n">
+        <item quantity="one">%d گراهڪ شامل ڪريو</item>
+        <item quantity="other">%d گراهڪ شامل ڪريو</item>
+    </plurals>
+    <string name="contacts_import_many_title">ڪيترائي رابطا شامل ڪجن؟</string>
+    <plurals name="contacts_import_many_body">
+        <item quantity="one">%d رابطا توهانجي کاتي ۾ شامل ٿيندا. صرف تڏهن اڳتي وڌو جڏهن توهان انهن کي ارادي سان چونڊيو هجي.</item>
+        <item quantity="other">%d رابطا توهانجي کاتي ۾ شامل ٿيندا. صرف تڏهن اڳتي وڌو جڏهن توهان انهن کي ارادي سان چونڊيو هجي.</item>
+    </plurals>
+    <!-- Type-the-word confirmations (8 Nov 2026) -->
+    <string name="confirm_box_hint">هتي لکو</string>
+    <string name="erase_all_instruction">سڀ ڪجهه ختم ڪرڻ لاءِ %1$s لکو</string>
+    <string name="business_delete_instruction">هي ڪاروبار ڊيليٽ ڪرڻ لاءِ %1$s لکو</string>
 </resources>
