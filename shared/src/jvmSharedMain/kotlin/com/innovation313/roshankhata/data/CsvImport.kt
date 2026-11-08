@@ -18,6 +18,9 @@ package com.innovation313.roshankhata.data
  */
 object CsvImport {
 
+    /** 8 Nov 2026 (L58): above this a balance cell is a typo or an attack, never an opening entry. */
+    private const val MAX_BALANCE = 1_000_000_000_000.0
+
     /** [unreadable]: the balance cell held something that is not a figure; the row comes in at 0, and is counted. */
     data class Row(val name: String, val phone: String?, val balance: Double, val unreadable: Boolean = false)
 
