@@ -62,9 +62,12 @@ object DriveAuth {
      * access token, refreshed silently by authorize() on each session, is the
      * whole requirement.
      */
-    fun authorizationRequest(): AuthorizationRequest =
+    fun authorizationRequest(accountName: String? = null): AuthorizationRequest =
         AuthorizationRequest.builder()
             .setRequestedScopes(listOf(driveScope))
+            // Bound to the account the owner chose (8 Nov 2026 review, L13): on a phone with two Google accounts the
+            // request otherwise asks for whichever the system picks, and the grant and the account used later can differ.
+            .apply { accountName?.takeIf { it.isNotBlank() }?.let { setAccount(android.accounts.Account(it, "com.google")) } }
             .build()
 
     /**
@@ -74,7 +77,7 @@ object DriveAuth {
      * BackupActivity.
      */
     fun authorize(context: Context): Task<AuthorizationResult> =
-        Identity.getAuthorizationClient(context).authorize(authorizationRequest())
+        Identity.getAuthorizationClient(context).authorize(authorizationRequest(accountName(context)))
 
     /**
      * Pull the result back out of the intent the consent screen returned. Used

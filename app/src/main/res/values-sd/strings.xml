@@ -1082,6 +1082,8 @@
     <string name="na_updated">روشن کاتو %1$s تي اپڊيٽ ٿي ويو</string>
     <string name="na_updated_sub">ڏسو ڇا نئون آهي</string>
     <string name="home_section_tools">اوزار</string>
+    <string name="na_copy_unhealthy">روزاني ڪاپيون بند ٿي ويون: کاتو جاچ ۾ ناڪام</string>
+    <string name="na_copy_unhealthy_sub">هاڻي اهڙي فائيل ۾ بيڪ اپ وٺو جيڪا توهان رکي سگهو، پوءِ روزاني ڪاپي بحال ڪريو يا مدد وٺو.</string>
     <string name="na_backup_never">اڃا تائين بيڪ اپ نه ٿيو</string>
     <string name="na_gap">ڪيش فلو: %1$s واري هفتي ۾ %2$s جي کوٽ</string>
     <string name="staff_title">اسٽاف ۽ پگهار</string>
@@ -3689,7 +3691,7 @@
     <string name="live_join_new_business">نئين ڪاروبار طور ڳنڍيو</string>
     <string name="live_devices">ڳنڍيل ڊوائيس</string>
     <string name="live_remove">هٽايو</string>
-    <string name="live_remove_confirm">%1$s کي هٽايو؟ اهو هن ڪمپيوٽر سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو.</string>
+    <string name="live_remove_confirm">%1$s کي هٽايو؟ اهو هن ڪمپيوٽر سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو. گم ٿيل ڊوائيس کاتي جي چاٻي رکي ٿي ۽ رلي تائين پهچي سگهي ٿي؛ ان کي هميشه لاءِ ڪٽڻ لاءِ لائيو سنڪ بند ڪريو ۽ باقي ڊوائيسز کي ٻيهر ڳنڍيو.</string>
     <string name="live_needs_owner">ڪنهن ڊوائيس کي لائيو سنڪ سان ڳنڍڻ لاءِ مالڪ جو PIN گهرجي.</string>
     <string name="live_badge">لائيو · %1$s</string>
     <string name="live_conflicts_show">ڏسو ڇا بدليو</string>
@@ -3710,7 +3712,7 @@
     <string name="live_devices_none">اڃا هن کاتي ۾ ڪا ٻي ڊوائيس نه ڳنڍي وئي آهي.</string>
     <string name="live_device_seen">آخري ڀيرو ڏٺو ويو: %1$s</string>
     <string name="live_device_never">اڃا ڪو رابطو نه ٿيو</string>
-    <string name="live_remove_confirm_phone">%1$s کي هن کاتي مان هٽايو؟ هي فون ان سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو؛ ٻيهر سنڪ لاءِ ان کي ٻيهر ڳنڍيو.</string>
+    <string name="live_remove_confirm_phone">%1$s کي هن کاتي مان هٽايو؟ هي فون ان سان سنڪ ڪرڻ بند ڪندو. ان جو پنهنجو کاتو ساڳيو رهندو؛ ٻيهر سنڪ لاءِ ان کي ٻيهر ڳنڍيو. گم ٿيل ڊوائيس کاتي جي چاٻي رکي ٿي ۽ رلي تائين پهچي سگهي ٿي؛ ان کي هميشه لاءِ ڪٽڻ لاءِ لائيو سنڪ بند ڪريو ۽ باقي ڊوائيسز کي ٻيهر ڳنڍيو.</string>
     <string name="live_conflicts_none">ڪنهن به شيءِ ۾ ٻن ڊوائيسن تي گڏ تبديلي نه ٿي.</string>
     <string name="live_why_other_computer">ڪنهن ٻئي ڪمپيوٽر جواب ڏنو، اهو نه جنهن سان هي فون ڳنڍيل آهي. ڪمپيوٽر کي ٻيهر ڳنڍيو</string>
     <string name="live_why_other_book">ٻي ڊوائيس تي ٻيو کاتو آهي. ان کي ٻيهر ڳنڍيو</string>

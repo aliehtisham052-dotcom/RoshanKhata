@@ -1054,6 +1054,8 @@
     <string name="na_updated">روشن کھاتہ %1$s پر اپ ڈیٹ ہو گیا</string>
     <string name="na_updated_sub">دیکھیں کیا نیا ہے</string>
     <string name="home_section_tools">اوزار</string>
+    <string name="na_copy_unhealthy">روزانہ کاپیاں رک گئیں: کھاتہ جانچ میں ناکام</string>
+    <string name="na_copy_unhealthy_sub">ابھی ایسی فائل میں بیک اپ لیں جو آپ رکھ سکیں، پھر روزانہ کاپی بحال کریں یا مدد سے رابطہ کریں۔</string>
     <string name="na_backup_never">ابھی تک بیک اپ نہیں ہوا</string>
     <string name="na_gap">کیش فلو: %1$s والے ہفتے میں %2$s کی کمی</string>
     <string name="staff_title">اسٹاف اور تنخواہ</string>
@@ -3661,7 +3663,7 @@
     <string name="live_join_new_business">نئے کاروبار کے طور پر جوڑیں</string>
     <string name="live_devices">جڑے ہوئے آلات</string>
     <string name="live_remove">ہٹائیں</string>
-    <string name="live_remove_confirm">%1$s کو ہٹائیں؟ یہ اس کمپیوٹر کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا۔</string>
+    <string name="live_remove_confirm">%1$s کو ہٹائیں؟ یہ اس کمپیوٹر کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا۔ کھویا ہوا ڈیوائس کھاتے کی چابی رکھتا ہے اور ریلے تک پہنچ سکتا ہے؛ اسے ہمیشہ کے لیے کاٹنے کو لائیو سنک بند کریں اور باقی ڈیوائسز کو دوبارہ جوڑیں۔</string>
     <string name="live_needs_owner">کسی آلے کو لائیو سنک سے جوڑنے کے لیے مالک کا PIN چاہیے۔</string>
     <string name="live_badge">لائیو · %1$s</string>
     <string name="live_conflicts_show">دیکھیں کیا بدلا</string>
@@ -3682,7 +3684,7 @@
     <string name="live_devices_none">ابھی اس کھاتے میں کوئی دوسرا آلہ نہیں جڑا۔</string>
     <string name="live_device_seen">آخری بار دیکھا گیا: %1$s</string>
     <string name="live_device_never">ابھی کوئی رابطہ نہیں ہوا</string>
-    <string name="live_remove_confirm_phone">%1$s کو اس کھاتے سے ہٹائیں؟ یہ فون اس کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا؛ دوبارہ سنک کے لیے اسے پھر سے جوڑیں۔</string>
+    <string name="live_remove_confirm_phone">%1$s کو اس کھاتے سے ہٹائیں؟ یہ فون اس کے ساتھ سنک کرنا بند کر دے گا۔ اس کا اپنا کھاتہ ویسا ہی رہے گا؛ دوبارہ سنک کے لیے اسے پھر سے جوڑیں۔ کھویا ہوا ڈیوائس کھاتے کی چابی رکھتا ہے اور ریلے تک پہنچ سکتا ہے؛ اسے ہمیشہ کے لیے کاٹنے کو لائیو سنک بند کریں اور باقی ڈیوائسز کو دوبارہ جوڑیں۔</string>
     <string name="live_conflicts_none">کسی چیز میں دو آلات پر ایک ساتھ تبدیلی نہیں ہوئی۔</string>
     <string name="live_why_other_computer">کسی دوسرے کمپیوٹر نے جواب دیا، وہ نہیں جس سے یہ فون جڑا ہے۔ کمپیوٹر کو دوبارہ جوڑیں</string>
     <string name="live_why_other_book">دوسرے آلے پر کوئی اور کھاتہ ہے۔ اسے دوبارہ جوڑیں</string>

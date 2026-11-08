@@ -1094,6 +1094,8 @@
     <string name="na_updated">रोशन खाता %1$s पर अपडेट हो गया</string>
     <string name="na_updated_sub">देखें क्या नया है</string>
     <string name="home_section_tools">औज़ार</string>
+    <string name="na_copy_unhealthy">रोज़ की कॉपियाँ रुक गईं: खाता जाँच में फेल हुआ</string>
+    <string name="na_copy_unhealthy_sub">अभी ऐसी फ़ाइल में बैकअप लें जिसे आप रख सकें, फिर रोज़ की कॉपी बहाल करें या मदद लें।</string>
     <string name="na_backup_never">अभी तक बैकअप नहीं हुआ</string>
     <string name="na_gap">कैश फ़्लो: %1$s वाले हफ़्ते में %2$s की कमी</string>
     <string name="staff_title">स्टाफ़ और तनख़्वाह</string>
@@ -3709,7 +3711,7 @@
     <string name="live_join_new_business">नए व्यवसाय के रूप में जोड़ें</string>
     <string name="live_devices">जुड़े हुए डिवाइस</string>
     <string name="live_remove">हटाएँ</string>
-    <string name="live_remove_confirm">%1$s को हटाएँ? यह इस कंप्यूटर के साथ सिंक करना बंद कर देगा। उसका अपना खाता वैसा ही रहेगा।</string>
+    <string name="live_remove_confirm">%1$s को हटाएँ? यह इस कंप्यूटर के साथ सिंक करना बंद कर देगा। उसका अपना खाता वैसा ही रहेगा। खोया हुआ डिवाइस खाते की कुंजी रखता है और रिले तक पहुँच सकता है; उसे हमेशा के लिए काटने के लिए लाइव सिंक बंद करें और बाकी डिवाइस दोबारा जोड़ें।</string>
     <string name="live_needs_owner">किसी डिवाइस को लाइव सिंक से जोड़ने के लिए मालिक का PIN चाहिए।</string>
     <string name="live_badge">लाइव · %1$s</string>
     <string name="live_conflicts_show">देखें क्या बदला</string>
@@ -3730,7 +3732,7 @@
     <string name="live_devices_none">अभी इस खाते में कोई दूसरा डिवाइस नहीं जुड़ा।</string>
     <string name="live_device_seen">आख़िरी बार देखा गया: %1$s</string>
     <string name="live_device_never">अभी कोई संपर्क नहीं हुआ</string>
-    <string name="live_remove_confirm_phone">%1$s को इस खाते से हटाएँ? यह फ़ोन उसके साथ सिंक करना बंद कर देगा। उसका अपना खाता वैसा ही रहेगा; फिर से सिंक के लिए उसे दोबारा जोड़ें।</string>
+    <string name="live_remove_confirm_phone">%1$s को इस खाते से हटाएँ? यह फ़ोन उसके साथ सिंक करना बंद कर देगा। उसका अपना खाता वैसा ही रहेगा; फिर से सिंक के लिए उसे दोबारा जोड़ें। खोया हुआ डिवाइस खाते की कुंजी रखता है और रिले तक पहुँच सकता है; उसे हमेशा के लिए काटने के लिए लाइव सिंक बंद करें और बाकी डिवाइस दोबारा जोड़ें।</string>
     <string name="live_conflicts_none">किसी चीज़ में दो डिवाइस पर एक साथ बदलाव नहीं हुआ।</string>
     <string name="live_why_other_computer">किसी दूसरे कंप्यूटर ने जवाब दिया, वह नहीं जिससे यह फ़ोन जुड़ा है। कंप्यूटर को दोबारा जोड़ें</string>
     <string name="live_why_other_book">दूसरे डिवाइस पर कोई और खाता है। उसे दोबारा जोड़ें</string>

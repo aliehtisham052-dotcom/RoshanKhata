@@ -45,6 +45,8 @@ object HomeAlerts {
                 Alert(kind, a.title, a.sub, a.tag)
             }
         out += ledger.filter { it.kind != Kind.CASHFLOW }
+        if (Snapshots.unhealthySince(context) > 0L) out += Alert(Kind.BACKUP_FAILED, context.getString(R.string.na_copy_unhealthy),
+            context.getString(R.string.na_copy_unhealthy_sub), context.getString(R.string.na_tag_failed))
         val parties = dao.partiesWithBalanceOnce()
         // Backup, in order of urgency: another phone holds it, the automatic
         // one failed, or it is simply old. Each clears itself the moment a

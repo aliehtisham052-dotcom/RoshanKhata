@@ -276,7 +276,7 @@ object LiveCloud {
         // The relay switched off for this book, or live sync stopped everywhere: a parcel pushed in anyway is not
         // written (23 Oct 2026, the review's R53: this was the one road into the book that asked neither). The kill
         // switch's last word, not a network read: this runs on Firebase's callback thread.
-        if (!allowed(sql) || LiveControl.haltedCached()) return Carried.NOT_MINE
+        if (!allowed(sql) || LiveControl.haltedAfterFirstRead(now)) return Carried.NOT_MINE
         val sealedIn = runCatching { B64.decode(bodyB64) }.getOrNull() ?: return Carried.NOT_MINE
         val plain = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY) ?: return Carried.NOT_MINE
         val msg = runCatching { JSONObject(String(plain, Charsets.UTF_8)) }.getOrNull() ?: return Carried.NOT_MINE

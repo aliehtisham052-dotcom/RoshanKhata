@@ -42,11 +42,40 @@ object ViewerSync {
         driveBusinessId: Long,
         images: (() -> InputStream?)? = null
     ): Outcome = withContext(Dispatchers.IO) {
-        val ctx = context.applicationContext
         val (result, data) = Backup.parseText(text)
+        loadParsed(context.applicationContext, result, data, exportedAt(text), source, account, driveBusinessId, images)
+    }
+
+    /**
+     * [load] from a file, read as a stream twice (the date, then the book) and never as one string (8 Nov 2026
+     * review, L11: an heir's 8 MiB copy is ~100 MB of JSON and was read whole into a String).
+     */
+    suspend fun loadFile(
+        context: Context,
+        file: java.io.File,
+        source: String,
+        account: String?,
+        driveBusinessId: Long,
+        images: (() -> InputStream?)? = null
+    ): Outcome = withContext(Dispatchers.IO) {
+        val at = file.inputStream().buffered(64 * 1024).use { exportedAtOf(it) }
+        val (result, data) = file.inputStream().buffered(64 * 1024).use { Backup.parseStream(it) }
+        loadParsed(context.applicationContext, result, data, at, source, account, driveBusinessId, images)
+    }
+
+    private suspend fun loadParsed(
+        ctx: Context,
+        result: BackupCodec.ImportResult,
+        data: BackupCodec.ParsedBackup?,
+        exportedAtMs: Long,
+        source: String,
+        account: String?,
+        driveBusinessId: Long,
+        images: (() -> InputStream?)?
+    ): Outcome {
         if (result is BackupCodec.ImportResult.Failed || data == null) {
             val reason = (result as? BackupCodec.ImportResult.Failed)?.reason(ctx) ?: ""
-            return@withContext Outcome.Rejected(reason)
+            return Outcome.Rejected(reason)
         }
 
         val wasViewer = ViewerMode.isOn(ctx)
@@ -62,7 +91,7 @@ object ViewerSync {
                 account = account,
                 driveBusinessId = driveBusinessId,
                 shopName = data.businessName ?: data.businessProfile?.businessName,
-                dataAt = exportedAt(text)
+                dataAt = exportedAtMs
             )
             val photosOk = try {
                 BackupImages.clearViewerImages(ctx)
@@ -74,10 +103,10 @@ object ViewerSync {
                 false
             }
             PartyPhoto.dropCaches()
-            if (photosOk) Outcome.Loaded else Outcome.LoadedWithoutPhotos
+            return if (photosOk) Outcome.Loaded else Outcome.LoadedWithoutPhotos
         } catch (e: Exception) {
             if (!wasViewer) ViewerMode.leave(ctx)
-            Outcome.Failed(e)
+            return Outcome.Failed(e)
         }
     }
 
@@ -90,8 +119,12 @@ object ViewerSync {
      * streamed it - the very tree the P6/P7 scaling work removed from backup
      * and restore, which at 300,000 lines is what ran out of memory.
      */
-    internal fun exportedAt(text: String): Long = try {
-        android.util.JsonReader(java.io.StringReader(text)).use { r ->
+    internal fun exportedAt(text: String): Long = exportedAtOf(java.io.StringReader(text))
+
+    internal fun exportedAtOf(input: InputStream): Long = exportedAtOf(java.io.InputStreamReader(input, Charsets.UTF_8))
+
+    private fun exportedAtOf(reader: java.io.Reader): Long = try {
+        android.util.JsonReader(reader).use { r ->
             var at = 0L
             r.beginObject()
             while (r.hasNext()) {

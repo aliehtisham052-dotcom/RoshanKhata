@@ -1072,6 +1072,8 @@
     <string name="na_updated">Roshan Khata diperbarui ke %1$s</string>
     <string name="na_updated_sub">Lihat yang baru</string>
     <string name="home_section_tools">Alat</string>
+    <string name="na_copy_unhealthy">Salinan harian berhenti: buku gagal pemeriksaan</string>
+    <string name="na_copy_unhealthy_sub">Cadangkan sekarang ke berkas yang bisa Anda simpan, lalu pulihkan salinan harian atau minta bantuan.</string>
     <string name="na_backup_never">Belum ada cadangan</string>
     <string name="na_gap">Arus kas: minggu %1$s kurang %2$s</string>
     <string name="staff_title">Karyawan &amp; gaji</string>
@@ -3653,7 +3655,7 @@
     <string name="live_join_new_business">Gabung sebagai usaha baru</string>
     <string name="live_devices">Perangkat yang tergabung</string>
     <string name="live_remove">Hapus</string>
-    <string name="live_remove_confirm">Hapus %1$s? Perangkat itu berhenti sinkron dengan komputer ini. Bukunya sendiri tetap seperti apa adanya.</string>
+    <string name="live_remove_confirm">Hapus %1$s? Perangkat itu berhenti sinkron dengan komputer ini. Bukunya sendiri tetap seperti apa adanya. Perangkat yang hilang masih memegang kunci buku dan bisa menjangkau relai; untuk memutusnya selamanya, hentikan sinkron langsung dan pasangkan ulang perangkat yang tersisa.</string>
     <string name="live_needs_owner">Menggabungkan perangkat ke sinkron langsung memerlukan PIN pemilik.</string>
     <string name="live_badge">Langsung · %1$s</string>
     <string name="live_conflicts_show">Lihat yang berubah</string>
@@ -3674,7 +3676,7 @@
     <string name="live_devices_none">Belum ada perangkat lain yang tergabung dengan buku ini.</string>
     <string name="live_device_seen">Terakhir terlihat: %1$s</string>
     <string name="live_device_never">Belum ada kabar</string>
-    <string name="live_remove_confirm_phone">Hapus %1$s dari buku ini? Ponsel ini berhenti sinkron dengannya. Bukunya sendiri tetap seperti apa adanya; untuk sinkron lagi, gabungkan lagi.</string>
+    <string name="live_remove_confirm_phone">Hapus %1$s dari buku ini? Ponsel ini berhenti sinkron dengannya. Bukunya sendiri tetap seperti apa adanya; untuk sinkron lagi, gabungkan lagi. Perangkat yang hilang masih memegang kunci buku dan bisa menjangkau relai; untuk memutusnya selamanya, hentikan sinkron langsung dan pasangkan ulang perangkat yang tersisa.</string>
     <string name="live_conflicts_none">Tidak ada yang diubah di dua perangkat bersamaan.</string>
     <string name="live_why_other_computer">komputer lain yang menjawab, bukan yang tergabung dengan ponsel ini. Gabungkan komputer lagi</string>
     <string name="live_why_other_book">perangkat lain menyimpan buku yang berbeda. Gabungkan lagi</string>

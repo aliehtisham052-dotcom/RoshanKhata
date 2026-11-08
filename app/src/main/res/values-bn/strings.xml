@@ -1094,6 +1094,8 @@
     <string name="na_updated">রোশন খাতা %1$s-এ আপডেট হয়েছে</string>
     <string name="na_updated_sub">দেখুন নতুন কী আছে</string>
     <string name="home_section_tools">সরঞ্জাম</string>
+    <string name="na_copy_unhealthy">প্রতিদিনের কপি বন্ধ: খাতা পরীক্ষায় ব্যর্থ</string>
+    <string name="na_copy_unhealthy_sub">এখনই এমন ফাইলে ব্যাকআপ নিন যা রাখতে পারবেন, তারপর দৈনিক কপি ফিরিয়ে আনুন বা সাহায্য নিন।</string>
     <string name="na_backup_never">এখনো ব্যাকআপ হয়নি</string>
     <string name="na_gap">ক্যাশ ফ্লো: %1$s-এর সপ্তাহে %2$s কম</string>
     <string name="staff_title">কর্মী ও বেতন</string>
@@ -3709,7 +3711,7 @@
     <string name="live_join_new_business">নতুন ব্যবসা হিসেবে যুক্ত করুন</string>
     <string name="live_devices">যুক্ত ডিভাইস</string>
     <string name="live_remove">সরান</string>
-    <string name="live_remove_confirm">%1$s সরাবেন? এটি এই কম্পিউটারের সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে।</string>
+    <string name="live_remove_confirm">%1$s সরাবেন? এটি এই কম্পিউটারের সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে। হারানো ডিভাইস খাতার চাবি রাখে এবং রিলেতে পৌঁছাতে পারে; চিরতরে কাটতে লাইভ সিঙ্ক বন্ধ করুন এবং বাকি ডিভাইসগুলো আবার যুক্ত করুন।</string>
     <string name="live_needs_owner">কোনো ডিভাইসকে লাইভ সিঙ্কে যুক্ত করতে মালিকের PIN লাগবে।</string>
     <string name="live_badge">লাইভ · %1$s</string>
     <string name="live_conflicts_show">কী বদলেছে দেখুন</string>
@@ -3730,7 +3732,7 @@
     <string name="live_devices_none">এখনও এই খাতায় অন্য কোনো ডিভাইস যুক্ত হয়নি।</string>
     <string name="live_device_seen">শেষ দেখা: %1$s</string>
     <string name="live_device_never">এখনও কোনো যোগাযোগ হয়নি</string>
-    <string name="live_remove_confirm_phone">%1$s এই খাতা থেকে সরাবেন? এই ফোন এর সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে; আবার সিঙ্ক করতে এটিকে আবার যুক্ত করুন।</string>
+    <string name="live_remove_confirm_phone">%1$s এই খাতা থেকে সরাবেন? এই ফোন এর সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে; আবার সিঙ্ক করতে এটিকে আবার যুক্ত করুন। হারানো ডিভাইস খাতার চাবি রাখে এবং রিলেতে পৌঁছাতে পারে; চিরতরে কাটতে লাইভ সিঙ্ক বন্ধ করুন এবং বাকি ডিভাইসগুলো আবার যুক্ত করুন।</string>
     <string name="live_conflicts_none">কোনো কিছুই দুটি ডিভাইসে একসাথে বদলায়নি।</string>
     <string name="live_why_other_computer">অন্য একটি কম্পিউটার উত্তর দিয়েছে, যেটির সাথে এই ফোন যুক্ত সেটি নয়। কম্পিউটারটি আবার যুক্ত করুন</string>
     <string name="live_why_other_book">অন্য ডিভাইসে আলাদা খাতা আছে। এটিকে আবার যুক্ত করুন</string>

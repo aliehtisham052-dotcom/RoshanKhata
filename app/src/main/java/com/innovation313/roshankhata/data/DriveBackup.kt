@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.data
 
 import android.content.Context
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.http.ByteArrayContent
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
@@ -67,6 +66,8 @@ object DriveBackup {
     private const val KEY_BACKUP_IMAGES = "drive_backup_images"
     private const val KEY_AUTO_BACKUP = "drive_auto_backup"
     private const val KEY_LAST_SIG = "drive_last_backup_signature"
+    private const val KEY_IMAGES_DIRTY = "drive_images_dirty"
+    private const val KEY_IMAGES_SIG = "drive_images_signature"
     private const val KEY_LAST_COUNT = "drive_last_backup_entry_count"
     private const val MIN_COUNT_GUARD = 10
 
@@ -95,6 +96,8 @@ object DriveBackup {
     private const val KEY_DEVICE = "drive_device_id"
     private const val PROP_DEVICE = "device"
     private const val PROP_DEVICE_NAME = "deviceName"
+    /** The shop's name, kept on the Drive file itself so the restore list never downloads a book for it (8 Nov 2026 review, M7). */
+    private const val PROP_SHOP = "shop"
 
     /** The upload was stopped: another phone wrote this shop's backup last. */
     class OtherPhoneBackup(val at: Long, val device: String?) :
@@ -228,6 +231,8 @@ object DriveBackup {
             .remove(KEY_BACKUP_IMAGES + suffix)
             .remove(KEY_AUTO_BACKUP + suffix)
             .remove(KEY_LAST_SIG + suffix)
+            .remove(KEY_IMAGES_DIRTY + suffix)
+            .remove(KEY_IMAGES_SIG + suffix)
             .remove(KEY_LAST_COUNT + suffix)
             .remove(KEY_SEEN_AT + suffix)
             .remove(KEY_CONFLICT_TOLD + suffix)
@@ -295,6 +300,26 @@ object DriveBackup {
         val text = file.readText(Charsets.UTF_8).replace(Regex("\"exportedAt\"\\s*:\\s*\\d+"), "")
         val digest = java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8))
         return "sha256:" + digest.joinToString("") { "%02x".format(it) }
+    }
+
+    /** SHA-256 of a file, streamed. */
+    private fun fileSignature(file: File): String {
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        file.inputStream().buffered(64 * 1024).use { i -> val buf = ByteArray(64 * 1024); while (true) { val n = i.read(buf); if (n < 0) break; md.update(buf, 0, n) } }
+        return md.digest().joinToString("") { "%02x".format(it) }
+    }
+
+    private fun imagesDirty(context: Context, businessId: Long): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(key(businessId, KEY_IMAGES_DIRTY), false)
+
+    private fun lastImagesSignature(context: Context, businessId: Long): String? =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(key(businessId, KEY_IMAGES_SIG), null)
+
+    private fun markImages(context: Context, businessId: Long, ok: Boolean, signature: String?) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().apply {
+            putBoolean(key(businessId, KEY_IMAGES_DIRTY), !ok)
+            if (ok && signature != null) putString(key(businessId, KEY_IMAGES_SIG), signature)
+        }.apply()
     }
 
     private fun lastSignature(context: Context, businessId: Long): String? =
@@ -391,7 +416,12 @@ object DriveBackup {
                     }
                 }
 
-                val stamp = mapOf(PROP_DEVICE to mine, PROP_DEVICE_NAME to deviceName())
+                // appProperties allow 124 bytes of key + value: the name is cut to fit, on a character boundary.
+                val shop = if (businessId == Businesses.active(context).id) BusinessProfile.businessName(context) else null
+                val stamp = HashMap<String, String>().apply {
+                    put(PROP_DEVICE, mine); put(PROP_DEVICE_NAME, deviceName())
+                    shop?.trim()?.takeIf { it.isNotEmpty() }?.let { put(PROP_SHOP, fitProperty(it, 100)) }
+                }
 
                 val metadata = DriveFile().apply {
                     name = backupName(businessId)
@@ -520,22 +550,36 @@ object DriveBackup {
         // Switched while the copy was being written: its profile may be the other shop's. Nothing goes up.
         if (!stillOpen()) { file.delete(); return@withContext AutoResult.Skipped }
         val signature = contentSignature(file)
-        if (signature == lastSignature(context, businessId)) { file.delete(); return@withContext AutoResult.Skipped }
+        // The text unchanged, but the photos failed last time (8 Nov 2026 review, L10): only the photos go again.
+        val textSame = signature == lastSignature(context, businessId)
+        if (textSame && !(imagesDirty(context, businessId) && includeImages(context, businessId))) { file.delete(); return@withContext AutoResult.Skipped }
 
-        val result = backup(context, account, file, businessId = businessId)
-        file.delete()
-        if (result.isFailure) {
-            val cause = result.exceptionOrNull()
-            return@withContext if (cause is OtherPhoneBackup) AutoResult.OtherPhone(cause)
-            else AutoResult.Failed(cause)
-        }
+        if (!textSame) {
+            val result = backup(context, account, file, businessId = businessId)
+            file.delete()
+            if (result.isFailure) {
+                val cause = result.exceptionOrNull()
+                return@withContext if (cause is OtherPhoneBackup) AutoResult.OtherPhone(cause)
+                else AutoResult.Failed(cause)
+            }
+        } else file.delete()
 
         // Images ride along only if the owner asked for them. An image failure
-        // does not fail the text backup that already succeeded.
+        // does not fail the text backup that already succeeded — it is remembered ([markImages]) and tried again
+        // at the next run even when the book has not changed. An archive identical to the one last sent is not
+        // sent again (8 Nov 2026 review, M89).
         // The photos are read from the open shop's folders: only while it is still this shop.
         if (includeImages(context, businessId) && stillOpen()) {
             val zip = BackupImages.pack(context, dao)
-            if (stillOpen()) backupImages(context, account, zip, businessId)
+            if (stillOpen()) {
+                val zipSig = if (zip != null && zip.exists()) fileSignature(zip) else null
+                if (zipSig != null && zipSig == lastImagesSignature(context, businessId) && !imagesDirty(context, businessId)) {
+                    // the same photos are already on Drive
+                } else {
+                    val r = backupImages(context, account, zip, businessId)
+                    markImages(context, businessId, ok = r.isSuccess, signature = if (r.isSuccess) zipSig else null)
+                }
+            }
         }
 
         // Record success so the home screen's "last backup" updates and the
@@ -654,7 +698,8 @@ object DriveBackup {
                     name = imagesName(businessId)
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
                 }
-                val content = ByteArrayContent("application/zip", zip.readBytes())
+                // From the file, never read whole into memory (8 Nov 2026 review, M89: 800 photos, ~150 MB).
+                val content = com.google.api.client.http.FileContent("application/zip", zip)
 
                 if (existingId == null) {
                     drive.files().create(metadata, content).setFields("id").execute()
@@ -685,7 +730,9 @@ object DriveBackup {
         val id: Long,
         val name: String?,
         val backupFileId: String,
-        val modifiedAt: Long
+        val modifiedAt: Long,
+        /** The shop's name as the Drive file's own property says it, when the backup was written with one. */
+        val nameKnown: String? = null
     )
 
     suspend fun discoverBusinesses(
@@ -705,7 +752,7 @@ object DriveBackup {
                     // that does not fit the pattern is simply ignored instead
                     // of confusing the search.
                     .setQ("name contains 'RoshanKhata_Backup'")
-                    .setFields("nextPageToken, files(id, name, modifiedTime)")
+                    .setFields("nextPageToken, files(id, name, modifiedTime, appProperties)")
                     .setPageToken(pageToken)
                     .execute()
 
@@ -715,7 +762,8 @@ object DriveBackup {
                         id = id,
                         name = null,
                         backupFileId = f.id,
-                        modifiedAt = f.modifiedTime?.value ?: 0L
+                        modifiedAt = f.modifiedTime?.value ?: 0L,
+                        nameKnown = f.appProperties?.get(PROP_SHOP)
                     )
                 }
                 pageToken = page.nextPageToken
@@ -725,11 +773,16 @@ object DriveBackup {
             // before names were recorded simply has none, and is shown by its
             // number instead — worth listing without a name, never worth
             // hiding.
+            // The name on the file's own properties (8 Nov 2026 review, M7: every shop's whole backup was downloaded
+            // into memory just for it). A backup written before this has none: it is streamed, the ledger skipped
+            // value by value, never held.
             val named = found.map { biz ->
-                val name = try {
-                    val out = ByteArrayOutputStream()
-                    drive.files().get(biz.backupFileId).executeMediaAndDownloadTo(out)
-                    Backup.businessNameOf(out.toString("UTF-8"))
+                val name = biz.nameKnown ?: try {
+                    val tmp = File(context.cacheDir, "restore").apply { mkdirs() }.let { File(it, "name-${biz.backupFileId}.tmp") }
+                    try {
+                        tmp.outputStream().buffered(64 * 1024).use { out -> drive.files().get(biz.backupFileId).executeMediaAndDownloadTo(out) }
+                        tmp.inputStream().buffered(64 * 1024).use { nameFromStream(it) }
+                    } finally { tmp.delete() }
                 } catch (e: Exception) {
                     null
                 }
@@ -741,6 +794,28 @@ object DriveBackup {
             Result.failure(e)
         }
     }
+
+    /** [text] cut to at most [maxBytes] UTF-8 bytes, never in the middle of a character. */
+    internal fun fitProperty(text: String, maxBytes: Int): String {
+        var out = text
+        while (out.isNotEmpty() && out.toByteArray(Charsets.UTF_8).size > maxBytes) out = out.dropLast(1)
+        return out
+    }
+
+    /** The backup's top-level "businessName", read with the big tables skipped one value at a time. */
+    internal fun nameFromStream(input: java.io.InputStream): String? = try {
+        android.util.JsonReader(java.io.InputStreamReader(input, Charsets.UTF_8)).use { r ->
+            var found: String? = null
+            r.beginObject()
+            while (r.hasNext()) {
+                if (r.nextName() == "businessName" && r.peek() == android.util.JsonToken.STRING) {
+                    found = r.nextString().takeIf { it.isNotBlank() }
+                    break
+                } else r.skipValue()
+            }
+            found
+        }
+    } catch (e: Exception) { null }
 
     /**
      * "RoshanKhata_Backup.txt" is Business 1 — the name it had before there
@@ -767,9 +842,19 @@ object DriveBackup {
         try {
             val drive = driveFor(context, accountName)
             val dir = File(context.cacheDir, "restore").apply { mkdirs() }
+            // A download that never finished (killed midway) left a whole backup — the PIN hashes and the Waris secret
+            // among it — in the cache for good (8 Nov 2026 review, L12): older ones go before a new one starts.
+            val now = System.currentTimeMillis()
+            dir.listFiles { f -> (f.name.startsWith("drive-") || f.name.startsWith("name-")) && now - f.lastModified() > 60 * 60_000L }
+                ?.forEach { it.delete() }
             val file = File(dir, "drive-$fileId.txt")
-            file.outputStream().buffered(64 * 1024).use { out ->
-                drive.files().get(fileId).executeMediaAndDownloadTo(out)
+            try {
+                file.outputStream().buffered(64 * 1024).use { out ->
+                    drive.files().get(fileId).executeMediaAndDownloadTo(out)
+                }
+            } catch (e: Throwable) {
+                file.delete()
+                throw e
             }
             Result.success(file)
         } catch (e: Exception) {
@@ -812,6 +897,7 @@ object DriveBackup {
             val file = drive.files().list()
                 .setSpaces(APP_DATA_FOLDER)
                 .setQ("name = '$name'")
+                .setOrderBy("modifiedTime desc")
                 .setFields("files(id, modifiedTime)")
                 .execute()
                 .files?.firstOrNull()
@@ -840,6 +926,7 @@ object DriveBackup {
             val file = drive.files().list()
                 .setSpaces(APP_DATA_FOLDER)
                 .setQ("name = '$name'")
+                .setOrderBy("modifiedTime desc")
                 .setFields("files(id)")
                 .execute()
                 .files?.firstOrNull()
@@ -857,6 +944,7 @@ object DriveBackup {
         drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
             .setQ("name = '${backupName(businessId)}'")
+            .setOrderBy("modifiedTime desc")
             .setFields("files(id, modifiedTime, appProperties)")
             .execute()
             .files?.firstOrNull()
@@ -865,6 +953,7 @@ object DriveBackup {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
             .setQ("name = '${backupName(businessId)}'")
+            .setOrderBy("modifiedTime desc")
             .setFields("files(id, modifiedTime)")
             .execute()
 
@@ -875,6 +964,7 @@ object DriveBackup {
         val result = drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
             .setQ("name = '${imagesName(businessId)}'")
+            .setOrderBy("modifiedTime desc")
             .setFields("files(id, modifiedTime)")
             .execute()
 

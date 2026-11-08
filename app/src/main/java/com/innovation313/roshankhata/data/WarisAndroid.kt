@@ -341,9 +341,8 @@ object WarisAndroid {
         try {
             val opened = file.outputStream().buffered(64 * 1024).use { heir(activity).open(link, it) }
             if (opened is Waris.Opened.Failed) return@withContext HeirCopy.NotOpened(opened)
-            val text = file.readText(Charsets.UTF_8)
+            val outcome = ViewerSync.loadFile(activity, file, ViewerMode.SOURCE_FILE, null, 1L)
             file.delete()
-            val outcome = ViewerSync.load(activity, text, ViewerMode.SOURCE_FILE, null, 1L)
             if (outcome is ViewerSync.Outcome.Loaded || outcome is ViewerSync.Outcome.LoadedWithoutPhotos) markHeirCopy(activity, link.shop)
             HeirCopy.Loaded(outcome)
         } finally {

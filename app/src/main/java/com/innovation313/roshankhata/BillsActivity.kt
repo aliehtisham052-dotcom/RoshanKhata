@@ -97,6 +97,7 @@ class BillsActivity : BaseActivity() {
         private const val STATE_SCAN_CASH = "scan_cash"
         private const val STATE_SCAN_NOTE = "scan_note"
         private const val STATE_SCAN_KEPT = "scan_kept"
+        private const val STATE_PENDING_ITEMS = "pending_items"
     }
 
     /** Items being collected for the bill currently being entered. */
@@ -141,6 +142,18 @@ class BillsActivity : BaseActivity() {
         super.onSaveInstanceState(outState)
         scanFlow.saveState(outState, STATE_SCAN_PHOTO)
         scanKeptPhoto?.let { outState.putString(STATE_SCAN_KEPT, it) }
+        // The lines typed so far (8 Nov 2026 review, M86): they were only in memory, so a process killed while the
+        // camera was up (low RAM) reopened the form with its header and none of its lines.
+        if (pendingItems.isNotEmpty()) {
+            val arr = org.json.JSONArray()
+            pendingItems.forEach { i ->
+                arr.put(org.json.JSONObject().put("n", i.productName).put("q", i.quantity)
+                    .put("b", i.batchNumber ?: org.json.JSONObject.NULL).put("e", i.expiryDate ?: org.json.JSONObject.NULL)
+                    .put("u", i.unit ?: org.json.JSONObject.NULL).put("r", i.rate ?: org.json.JSONObject.NULL)
+                    .put("t", i.note ?: org.json.JSONObject.NULL).put("p", i.productId ?: org.json.JSONObject.NULL))
+            }
+            outState.putString(STATE_PENDING_ITEMS, arr.toString())
+        }
         scanDraft?.let { d ->
             outState.putString(STATE_SCAN_SUPPLIER, d.supplierName)
             outState.putString(STATE_SCAN_NUMBER, d.billNumber)
@@ -156,6 +169,24 @@ class BillsActivity : BaseActivity() {
         state ?: return
         scanFlow.restoreState(state, STATE_SCAN_PHOTO)
         scanKeptPhoto = state.getString(STATE_SCAN_KEPT)
+        state.getString(STATE_PENDING_ITEMS)?.let { text ->
+            runCatching {
+                val arr = org.json.JSONArray(text)
+                pendingItems.clear()
+                for (k in 0 until arr.length()) {
+                    val o = arr.getJSONObject(k)
+                    pendingItems.add(BillItem(
+                        billId = 0L, productName = o.getString("n"), quantity = o.getDouble("q"),
+                        batchNumber = if (o.isNull("b")) null else o.getString("b"),
+                        expiryDate = if (o.isNull("e")) null else o.getLong("e"),
+                        unit = if (o.isNull("u")) null else o.getString("u"),
+                        rate = if (o.isNull("r")) null else o.getDouble("r"),
+                        note = if (o.isNull("t")) null else o.getString("t"),
+                        productId = if (o.isNull("p")) null else o.getLong("p")
+                    ))
+                }
+            }
+        }
         val supplier = state.getString(STATE_SCAN_SUPPLIER) ?: return
         scanDraft = BillDraft(
             supplierName = supplier,

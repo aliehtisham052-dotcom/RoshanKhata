@@ -270,6 +270,7 @@ object Businesses {
         // in this file).
         KhataDatabase.openOther(context, target)?.let { db ->
             try {
+                endSharing(context, db)
                 leaveRelays(db)
                 runCatching { kotlinx.coroutines.runBlocking { BillPhoto.forgetShop(context, db.khataDao(), id) } }
             } finally {
@@ -322,6 +323,30 @@ object Businesses {
     }
 
     /**
+     * What this book put in other hands is taken back before it is deleted or erased (8 Nov 2026 review, M91, M92):
+     * Waris' vault is deleted on every relay (the heir's copy of the whole book stayed there) and every customer link
+     * is stopped and its page taken off the server (it stayed online 180 days). Best effort, at most 20 s a shop;
+     * what a relay did not reach stays in the book's own retry marks, which die with the book — so a failure is told
+     * nowhere but here. Off the main thread.
+     */
+    fun endSharing(context: Context, db: KhataDatabase) {
+        runCatching {
+            kotlinx.coroutines.runBlocking {
+                kotlinx.coroutines.withTimeoutOrNull(20_000L) {
+                    val dao = db.khataDao()
+                    runCatching { Waris.Owner(WarisAndroid.BookStore(dao)).turnOff() }
+                    runCatching {
+                        if (CustomerLink.stopAll(dao) > 0 || dao.allSettingsForBackup().any { it.key.startsWith(CustomerLink.GONE) }) {
+                            val scope = db.openHelper.databaseName ?: return@runCatching
+                            CustomerLink.flush(dao, CustomerLinkSync.Prefs(context), scope, CustomerLinkSync.look(context), null)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * The relays are told this phone is done with [db]'s live book (best effort, at most 5 s): a
      * shop deleted or erased here must not keep a computer leaving it parcels, and ringing, for a
      * week. A book that never synced returns at once. Off the main thread.
@@ -335,11 +360,11 @@ object Businesses {
     /** [leaveRelays] for every shop on this phone, the open one through [KhataDatabase.get] (an erase). */
     fun leaveRelaysAll(context: Context) {
         val open = active(context)
-        runCatching { leaveRelays(KhataDatabase.get(context)) }
+        runCatching { val d = KhataDatabase.get(context); endSharing(context, d); leaveRelays(d) }
         for (b in list(context)) {
             if (b.id == open.id) continue
             val db = runCatching { KhataDatabase.openOther(context, b) }.getOrNull() ?: continue
-            try { leaveRelays(db) } finally { runCatching { db.close() } }
+            try { endSharing(context, db); leaveRelays(db) } finally { runCatching { db.close() } }
         }
     }
 

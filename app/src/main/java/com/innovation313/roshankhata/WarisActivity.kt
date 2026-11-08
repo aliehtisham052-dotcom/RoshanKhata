@@ -68,8 +68,11 @@ class WarisActivity : BaseActivity() {
      * The Waris card's picture goes the moment its share comes back (the security review, W7): whoever holds it, or a
      * photo of it, can ask in the heir's name. By its path, so a screen rebuilt meanwhile still deletes it.
      */
+    // Not at once (8 Nov 2026 review, M9): the chooser returns the moment an app is picked, before that app has read the
+    // file. Ten minutes later on AppScope; a process that dies meanwhile loses it to the sweep when this screen next opens.
     private val shareCard = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        runCatching { cardFile().delete() }
+        val card = cardFile()
+        AppScope.launch { kotlinx.coroutines.delay(10 * 60_000L); runCatching { card.delete() } }
     }
 
     private fun cardFile(): java.io.File = java.io.File(java.io.File(cacheDir, "receipts"), CARD_FILE)

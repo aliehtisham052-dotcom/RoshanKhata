@@ -2591,3 +2591,24 @@ has no such screen yet. Merging duplicate parties is built on both platforms.
 
 Smaller and deferred: cashbook and cheque `createdAt` editing, a WhatsApp
 number on the Help screen.
+
+**Marhala 3, data and backup safety (M3-M9, M85, M86, M89-M92, L10-L14; CI only, nothing deployed):**
+- Kill switch (M3): a process Firebase starts cold reads `live.json` once (`LiveControl.haltedAfterFirstRead`, 5 s + 5 s
+  bound) before `takeCarried` writes a pushed parcel. Remove device (M4): the key cannot be rotated without re-pairing,
+  so the two confirmation texts now say a lost device keeps the key and how to cut it off (stop live sync, pair again).
+- Daily-copy restore (M5, `Snapshots.keepAccess`): this book's access keys and Waris secrets are read before the swap
+  and written back after it by `Waris.restored`'s rule (removed heirs of both, this book's vault). RestoreCheck (M6) also
+  counts products, plans, staff, schemes (by uid), seals (by count) and the book's own settings a copy lacks. Merge (M8)
+  matches a customer by uid first. Waris card (M9) is deleted 10 minutes after the share returns (or when the screen next
+  opens). Heir copy (L11) is loaded from the file by `ViewerSync.loadFile`, never one String.
+- Drive: the shop's name is a property of the backup file (`shop`, M7; older files stream the JSON skipping the ledger);
+  the photo archive uploads from the file and is skipped when its SHA-256 is unchanged (M89); a failed photo upload
+  marks `drive_images_dirty` so the next run retries even when the text is unchanged (L10); half-downloaded restore files
+  are deleted and swept after an hour (L12); the authorization request is bound to the chosen account (L13); lookups
+  take the newest file (L14).
+- Daily health check failing (M85) shows a bell row until it passes (`Snapshots.unhealthySince`). Bill lines survive a
+  process kill behind the camera (M86), the Cashbook money form keeps its typed boxes across rotation (M90, partly: not the
+  chips, the day or the picture).
+- Erase and delete shop (M91, M92, `Businesses.endSharing`): before the books go, Waris is turned off on every relay and
+  every customer link is stopped and its page taken off the server (`CustomerLink.stopAll` + flush), each shop, 20 s each.
+  Best effort: a relay or the hosting not reached leaves its copy until its own sweep.

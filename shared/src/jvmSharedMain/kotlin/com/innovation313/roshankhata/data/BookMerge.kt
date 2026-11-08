@@ -76,7 +76,10 @@ object BookMerge {
     fun matchParty(p: Party, hereAll: List<Party>): Party? {
         val here = hereAll.filter { !it.isDeleted }
         val named = here.filter { norm(it.name) == norm(p.name) }
-        return here.firstOrNull { it.id == p.id && norm(it.name) == norm(p.name) }
+        // The same row by its uid first (8 Nov 2026 review, M8): a customer renamed on one device is still that
+        // customer, not a new one with the old name's entries.
+        return p.uid?.let { u -> here.firstOrNull { it.uid == u } }
+            ?: here.firstOrNull { it.id == p.id && norm(it.name) == norm(p.name) }
             ?: named.firstOrNull { phone(p.phone).isNotEmpty() && phone(it.phone) == phone(p.phone) }
             ?: named.singleOrNull()?.takeIf { phone(it.phone).isEmpty() || phone(p.phone).isEmpty() }
     }

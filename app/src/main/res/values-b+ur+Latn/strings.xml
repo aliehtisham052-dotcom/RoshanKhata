@@ -1054,6 +1054,8 @@
     <string name="na_updated">Roshan Khata %1$s par update ho gaya</string>
     <string name="na_updated_sub">Dekhein kya naya hai</string>
     <string name="home_section_tools">Auzaar</string>
+    <string name="na_copy_unhealthy">Rozana copies ruk gayin: khata jaanch mein nakaam</string>
+    <string name="na_copy_unhealthy_sub">Abhi aisi file mein backup lein jo aap rakh sakein, phir rozana copy bahaal karein ya Help se madad lein.</string>
     <string name="na_backup_never">Abhi tak backup nahi hua</string>
     <string name="na_gap">Cash flow: %1$s wale hafte mein %2$s ki kami</string>
     <string name="staff_title">Staff aur tankhwah</string>
@@ -3661,7 +3663,7 @@
     <string name="live_join_new_business">Naye business ke taur par jorein</string>
     <string name="live_devices">Jure hue devices</string>
     <string name="live_remove">Hatayein</string>
-    <string name="live_remove_confirm">%1$s ko hatayein? Yeh is computer ke saath sync karna band kar dega. Us ka apna khata waisa hi rahega.</string>
+    <string name="live_remove_confirm">%1$s ko hatayein? Yeh is computer ke saath sync karna band kar dega. Us ka apna khata waisa hi rahega. Khoya hua device khate ki chabi rakhta hai aur relay tak pahunch sakta hai; use hamesha ke liye kaatne ko live sync band karein aur baaqi devices ko dobara jorein.</string>
     <string name="live_needs_owner">Kisi device ko live sync se jorne ke liye owner ka PIN chahiye.</string>
     <string name="live_badge">Live · %1$s</string>
     <string name="live_conflicts_show">Dekhein kya badla</string>
@@ -3682,7 +3684,7 @@
     <string name="live_devices_none">Abhi is khate mein koi doosra device nahi jura.</string>
     <string name="live_device_seen">Aakhri baar dekha gaya: %1$s</string>
     <string name="live_device_never">Abhi koi rabta nahi hua</string>
-    <string name="live_remove_confirm_phone">%1$s ko is khate se hatayein? Yeh phone us ke saath sync karna band kar dega. Us ka apna khata waisa hi rahega; dobara sync ke liye use phir se jorein.</string>
+    <string name="live_remove_confirm_phone">%1$s ko is khate se hatayein? Yeh phone us ke saath sync karna band kar dega. Us ka apna khata waisa hi rahega; dobara sync ke liye use phir se jorein. Khoya hua device khate ki chabi rakhta hai aur relay tak pahunch sakta hai; use hamesha ke liye kaatne ko live sync band karein aur baaqi devices ko dobara jorein.</string>
     <string name="live_conflicts_none">Kisi cheez mein do devices par ek saath tabdeeli nahi hui.</string>
     <string name="live_why_other_computer">kisi doosre computer ne jawab diya, woh nahi jis se yeh phone jura hai. Computer ko dobara jorein</string>
     <string name="live_why_other_book">doosre device par koi aur khata hai. Use dobara jorein</string>

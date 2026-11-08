@@ -231,6 +231,23 @@ object CustomerLink {
      */
     suspend fun remove(dao: KhataDao, partyUid: String, place: Place? = null): Link? = lock.withLock { removeLocked(dao, partyUid, place) }
 
+    /**
+     * Every link this book has given, taken back (8 Nov 2026 review, M92): each is kept as [GONE] until the server
+     * confirms, which [flush] then does. For an erase or a deleted shop, whose customers' pages would otherwise stay
+     * online for 180 days. Returns how many links were marked.
+     */
+    suspend fun stopAll(dao: KhataDao): Int = lock.withLock {
+        var n = 0
+        for (s in dao.allSettingsForBackup()) {
+            if (!s.key.startsWith(PREFIX)) continue
+            val link = parse(s.value) ?: continue
+            dao.setSetting(GONE + link.id, "1")
+            dao.setSetting(s.key, null)
+            n++
+        }
+        n
+    }
+
     private suspend fun removeLocked(dao: KhataDao, partyUid: String, place: Place?): Link? {
         val link = linkOf(dao, partyUid)
         // The removal is written before the link goes, so a crash between them still takes the page down.

@@ -1142,6 +1142,8 @@
     <string name="na_updated">تم تحديث روشن كهاتا إلى %1$s</string>
     <string name="na_updated_sub">اطّلع على الجديد</string>
     <string name="home_section_tools">أدوات</string>
+    <string name="na_copy_unhealthy">توقفت النسخ اليومية: فشل فحص الدفتر</string>
+    <string name="na_copy_unhealthy_sub">خذ نسخة احتياطية الآن في ملف تحتفظ به، ثم استعد نسخة يومية أو اطلب المساعدة.</string>
     <string name="na_backup_never">لا نسخة احتياطية بعد</string>
     <string name="na_gap">التدفق النقدي: أسبوع %1$s ينقصه %2$s</string>
     <string name="staff_title">الموظفون والرواتب</string>
@@ -3885,7 +3887,7 @@
     <string name="live_join_new_business">الانضمام كنشاط تجاري جديد</string>
     <string name="live_devices">الأجهزة المتصلة</string>
     <string name="live_remove">إزالة</string>
-    <string name="live_remove_confirm">إزالة %1$s؟ سيتوقف عن المزامنة مع هذا الحاسوب. يبقى دفتره كما هو.</string>
+    <string name="live_remove_confirm">إزالة %1$s؟ سيتوقف عن المزامنة مع هذا الحاسوب. يبقى دفتره كما هو. الجهاز المفقود يحتفظ بمفتاح الدفتر ويستطيع الوصول إلى المرحّل؛ لقطعه نهائيًا أوقف المزامنة المباشرة واقرن الأجهزة المتبقية من جديد.</string>
     <string name="live_needs_owner">ربط جهاز بالمزامنة المباشرة يتطلب رمز PIN الخاص بالمالك.</string>
     <string name="live_badge">مباشر · %1$s</string>
     <string name="live_conflicts_show">عرض ما تغيّر</string>
@@ -3906,7 +3908,7 @@
     <string name="live_devices_none">لم يُربط أي جهاز آخر بهذا الدفتر بعد.</string>
     <string name="live_device_seen">آخر ظهور: %1$s</string>
     <string name="live_device_never">لم يتصل بعد</string>
-    <string name="live_remove_confirm_phone">إزالة %1$s من هذا الدفتر؟ سيتوقف هذا الهاتف عن المزامنة معه. يبقى دفتره كما هو؛ للمزامنة معه مجددًا اربطه من جديد.</string>
+    <string name="live_remove_confirm_phone">إزالة %1$s من هذا الدفتر؟ سيتوقف هذا الهاتف عن المزامنة معه. يبقى دفتره كما هو؛ للمزامنة معه مجددًا اربطه من جديد. الجهاز المفقود يحتفظ بمفتاح الدفتر ويستطيع الوصول إلى المرحّل؛ لقطعه نهائيًا أوقف المزامنة المباشرة واقرن الأجهزة المتبقية من جديد.</string>
     <string name="live_conflicts_none">لم يتغيّر أي شيء على جهازين معًا.</string>
     <string name="live_why_other_computer">أجاب حاسوب آخر، لا الحاسوب المربوط به هذا الهاتف. اربط الحاسوب من جديد</string>
     <string name="live_why_other_book">الجهاز الآخر يحمل دفترًا مختلفًا. اربطه من جديد</string>

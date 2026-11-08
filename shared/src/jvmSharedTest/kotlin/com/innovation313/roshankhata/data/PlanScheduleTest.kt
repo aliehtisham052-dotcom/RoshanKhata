@@ -48,6 +48,13 @@ class MergeMatchTest {
         Party(id = id, name = name, phone = phone, isCustomer = true, isDeleted = deleted)
 
     @Test
+    fun `a customer renamed here is still the copy's customer by uid`() {
+        val here = listOf(party(1, "Ali Traders", "03001234567").copy(uid = "u-1"), party(2, "Other", null))
+        val there = party(7, "Ali Trader", "03009999999").copy(uid = "u-1")
+        assertEquals(1L, BookMerge.matchParty(there, here)?.id)
+    }
+
+    @Test
     fun `two customers of one name and no phone are not guessed into one`() {
         val here = listOf(party(1, "Aslam", null), party(2, "Aslam", null))
         assertEquals(null, BookMerge.matchParty(party(9, "Aslam", null), here))

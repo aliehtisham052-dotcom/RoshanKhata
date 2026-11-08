@@ -147,6 +147,17 @@ object RestoreCheck {
             others += missing(dao.allOrdersForBackup(), there.orders, { it.uid }, { !it.isDeleted })
             others += missing(dao.allLoyaltyForBackup(), there.loyalty, { it.uid }, { !it.isDeleted })
             others += missing(dao.allShiftsForBackup(), there.shifts, { it.uid }, { true })
+            // 8 Nov 2026 review (M6): what restoreAll also wipes and a copy may lack — products, plans, staff,
+            // schemes (by uid), the seals (by count) and the book's own settings (by key). Each was lost in silence.
+            others += missing(dao.allProductsForBackup(), there.products, { it.uid }, { !it.isDeleted })
+            others += missing(dao.allPlansForBackup(), there.plans, { it.uid }, { !it.isDeleted })
+            others += missing(dao.allStaffForBackup(), there.staff, { it.uid }, { true })
+            others += missing(dao.allSchemesForBackup(), there.schemes, { it.uid }, { !it.isDeleted })
+            others += maxOf(0, dao.allSealsForBackup().size - there.bookSeals.size)
+            val settingsThere = there.settings.map { it.key }.toHashSet()
+            others += dao.allSettingsForBackup().count { st ->
+                st.key !in settingsThere && st.key !in BookSettings.ACCESS_KEYS && !Waris.isSecret(st.key) && !st.value.isNullOrEmpty()
+            }
             val salesThere = there.sales.filter { it.uid != null }.associateBy { it.uid!! }
             others += salesHere.count { s -> s.uid?.let { salesThere[it] }?.let { t -> t.status != s.status } == true }
             val returnsThere = there.returns.filter { it.uid != null }.associateBy { it.uid!! }

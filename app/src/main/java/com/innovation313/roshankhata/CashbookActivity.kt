@@ -83,8 +83,19 @@ class CashbookActivity : BaseActivity() {
         onNothing = { photoForRow = null }
     )
 
+    /**
+     * The money in/out form while it is open: which way and what is typed in it (8 Nov 2026 review, M90 — a rotation, dark
+     * mode or a process killed behind the camera lost "Money out 4,500 Bijli"). Chips, the day and the picture are not kept.
+     */
+    private var cashFormIncome: Boolean? = null
+    private var cashFormTexts: (() -> List<String>)? = null
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        cashFormIncome?.let { inc ->
+            outState.putBoolean(STATE_FORM_INCOME, inc)
+            cashFormTexts?.let { outState.putStringArrayList(STATE_FORM_TEXTS, ArrayList(it())) }
+        }
         photoFlow.saveState(outState, STATE_PHOTO_CAMERA)
         pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
         photoForRow?.let { outState.putLong(STATE_PHOTO_ROW, it) }
@@ -96,6 +107,11 @@ class CashbookActivity : BaseActivity() {
         pendingPhoto = savedInstanceState?.getString(STATE_PHOTO_PENDING)
         photoForRow = savedInstanceState?.getLong(STATE_PHOTO_ROW, -1L)?.takeIf { it > 0 }
         setContentView(R.layout.activity_cashbook)
+        if (savedInstanceState?.containsKey(STATE_FORM_INCOME) == true) {
+            val inc = savedInstanceState.getBoolean(STATE_FORM_INCOME)
+            val texts = savedInstanceState.getStringArrayList(STATE_FORM_TEXTS)
+            window.decorView.post { if (!isFinishing && !isDestroyed) showAddDialog(inc, texts) }
+        }
         // How this works, the first time (1 Nov 2026) - not when a notification brought the owner here to act.
         if (!intent.getBooleanExtra(EXTRA_CLOSE_DAY, false)) com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CASHBOOK)
         // Owner only, like the screen itself: a helper's phone shows no staff list.
@@ -432,7 +448,7 @@ class CashbookActivity : BaseActivity() {
         }
     }
 
-    private fun showAddDialog(isIncome: Boolean) {
+    private fun showAddDialog(isIncome: Boolean, restore: List<String>? = null) {
         val view = layoutInflater.inflate(R.layout.dialog_add_cash, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etCashAmount)
@@ -453,6 +469,11 @@ class CashbookActivity : BaseActivity() {
             if (key == PaymentMethod.CASH) cgMethod.check(chip.id)
         }
         fun chosenMethod(): String? = chipKeys[cgMethod.checkedChipId]
+        restore?.let { t ->
+            listOf(etAmount, etCategory, etNote, etRef).forEachIndexed { i, box -> t.getOrNull(i)?.let { box.setText(it) } }
+        }
+        cashFormIncome = isIncome
+        cashFormTexts = { listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() } }
         fun showRefBox() { etRef.visibility = if (PaymentRef.applies(chosenMethod())) View.VISIBLE else View.GONE }
         // After the first check (lesson 4): the listener only follows the chip.
         cgMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
@@ -520,6 +541,7 @@ class CashbookActivity : BaseActivity() {
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setOnDismissListener {
+                if (!isChangingConfigurations) { cashFormIncome = null; cashFormTexts = null }
                 photoButton = null
                 // A dismiss for the camera's sake never happens (the form stays behind it); a closed form's picture goes.
                 if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }
@@ -702,5 +724,7 @@ class CashbookActivity : BaseActivity() {
         private const val STATE_PHOTO_CAMERA = "photo_camera_path"
         private const val STATE_PHOTO_PENDING = "photo_pending"
         private const val STATE_PHOTO_ROW = "photo_row"
+        private const val STATE_FORM_INCOME = "form_income"
+        private const val STATE_FORM_TEXTS = "form_texts"
     }
 }

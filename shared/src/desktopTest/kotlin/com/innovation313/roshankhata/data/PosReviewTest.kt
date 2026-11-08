@@ -234,6 +234,19 @@ class PosReviewTest {
     }
 
     @Test
+    fun `a restore says the products and settings a copy lacks`() = runBlocking {
+        val out = java.io.StringWriter()
+        BackupCodec.exportTo(dao, "T", org.json.JSONObject(), out)
+        val copy = BackupCodec.parseText(out.toString()).second!!
+        assertTrue(RestoreCheck.of(dao, copy).none)
+        dao.insertProduct(product("Zinc"))
+        dao.insertProduct(product("Boron"))
+        dao.setSetting(BookSettings.PRICES_INCLUDE_TAX, "1")
+        // Two products and one setting made here since the copy would be wiped by a restore.
+        assertEquals(3, RestoreCheck.of(dao, copy).others)
+    }
+
+    @Test
     fun `a ticket is taken once, and what is scanned while it posts stays for the next`() {
         val urea = product("Urea", price = 1000.0).copy(id = 1)
         val dap = product("DAP", price = 3000.0).copy(id = 2)

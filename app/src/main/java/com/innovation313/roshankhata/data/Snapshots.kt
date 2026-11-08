@@ -171,6 +171,10 @@ object Snapshots {
             if (wal.isFile && wal.length() > 0) wal.inputStream().use { i -> File(keep.path + "-wal").outputStream().use { o -> i.copyTo(o) } }
         }
 
+        // What this book holds that no older day may take back (8 Nov 2026 review, M5): the owner's PIN keys,
+        // the counter keys and Waris' secrets (the keys, the heirs, the removed list). Read before the swap.
+        val here = readAccess(live)
+
         // The copy made whole first, beside the book (23 Oct 2026, review R07): a copy kept with its own
         // log (a damaged book's, or a before-restore copy whose close could not fold) has committed
         // writes in that log. Copied alone, the file came back older than the copy the owner chose.
@@ -187,7 +191,60 @@ object Snapshots {
             // Kept beside the book (".restoring") for the owner's safety copy is not the only way back.
             return RestoreResult.Failed
         }
+        keepAccess(live, here)
         return RestoreResult.Ok
+    }
+
+    /** The access keys of the book file [live] (BookSettings.ACCESS_KEYS and every Waris key), read-only; empty when unreadable. */
+    private fun readAccess(live: File): List<BookSetting> {
+        if (!live.exists()) return emptyList()
+        return try {
+            android.database.sqlite.SQLiteDatabase.openDatabase(live.absolutePath, null, android.database.sqlite.SQLiteDatabase.OPEN_READONLY).use { db ->
+                db.rawQuery("SELECT `key`, value FROM book_settings", null).use { c ->
+                    val out = ArrayList<BookSetting>()
+                    while (c.moveToNext()) {
+                        val k = c.getString(0)
+                        if (k in BookSettings.ACCESS_KEYS || Waris.isSecret(k)) out.add(BookSetting(k, c.getString(1)))
+                    }
+                    out
+                }
+            }
+        } catch (_: Exception) { emptyList() }
+    }
+
+    /**
+     * The restored file takes back this book's access keys where the older day has none, and Waris' lists by
+     * [Waris.restored]'s rule (the removed heirs of both, this book's vault and secrets): the same rule a backup's
+     * restore follows (8 Nov 2026 review, M5). A failure here leaves the restore done: the copy is the owner's choice.
+     */
+    private fun keepAccess(live: File, here: List<BookSetting>) {
+        if (here.isEmpty()) return
+        try {
+            android.database.sqlite.SQLiteDatabase.openDatabase(live.absolutePath, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE).use { db ->
+                val copy = ArrayList<BookSetting>()
+                db.rawQuery("SELECT `key`, value FROM book_settings", null).use { c ->
+                    while (c.moveToNext()) {
+                        val k = c.getString(0)
+                        if (k in BookSettings.ACCESS_KEYS || Waris.isSecret(k)) copy.add(BookSetting(k, c.getString(1)))
+                    }
+                }
+                val out = LinkedHashMap<String, String?>()
+                for (s in here) if (!Waris.isSecret(s.key)) out[s.key] = s.value
+                val copyHas = copy.map { it.key }.toSet()
+                // Keys the copy has for itself stay (an older PIN is still a PIN); this book's fill what it lacks.
+                for (k in copyHas) if (!Waris.isSecret(k)) out.remove(k)
+                for (s in Waris.restored(here, copy, false)) out[s.key] = s.value
+                db.beginTransaction()
+                try {
+                    for (k in Waris.SECRET_KEYS) db.delete("book_settings", "`key` = ?", arrayOf(k))
+                    for ((k, v) in out) {
+                        val cv = android.content.ContentValues().apply { put("key", k); put("value", v) }
+                        db.insertWithOnConflict("book_settings", null, cv, android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE)
+                    }
+                    db.setTransactionSuccessful()
+                } finally { db.endTransaction() }
+            }
+        } catch (_: Exception) {}
     }
 
     /**
@@ -338,6 +395,13 @@ object Snapshots {
         false
     }
 
+    /** When the daily check last found this shop's book damaged and has not passed since; 0 when it is well. */
+    fun unhealthySince(context: Context): Long {
+        val business = Businesses.active(context)
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getLong("copy_unhealthy" + (if (business.id == 1L) "" else "_b${business.id}"), 0L)
+    }
+
     private var afterSaleJob: kotlinx.coroutines.Job? = null
 
     /**
@@ -403,7 +467,11 @@ object Snapshots {
             val healthy = db.query("PRAGMA integrity_check").use {
                 it.moveToFirst() && it.getString(0).equals("ok", ignoreCase = true)
             }
-            if (!healthy) return
+            // Said, not silent (8 Nov 2026 review, M85): daily copies stop while the book fails its check, and the
+            // bell tells the owner (HomeAlerts) until a check passes again.
+            val unhealthyKey = "copy_unhealthy" + (if (business.id == 1L) "" else "_b${business.id}")
+            if (!healthy) { prefs.edit().putLong(unhealthyKey, System.currentTimeMillis()).apply(); return }
+            if (prefs.contains(unhealthyKey)) prefs.edit().remove(unhealthyKey).apply()
 
             // Copy the file the checked database is actually open on — asked
             // of the connection itself, not re-derived, so the integrity

@@ -43,6 +43,16 @@ object LiveControl {
     /** The word as last read, without a network read: for a thread that must answer at once. */
     fun haltedCached(): Boolean = stopped
 
+    /**
+     * Like [haltedCached], but a process that has never read the word (Firebase started it cold, 8 Nov 2026 review M3)
+     * reads it once first: one bounded read (5 s connect + 5 s read), then the cached word as before. A missed read
+     * keeps the word as it was and is tried again at the next call after the six hours.
+     */
+    fun haltedAfterFirstRead(now: Long = System.currentTimeMillis()): Boolean {
+        if (checkedAt == 0L) refresh(now)
+        return stopped
+    }
+
     /** True when the book seal's time-stamp requests are stopped for everyone. Blocking like [halted]. */
     fun sealHalted(now: Long = System.currentTimeMillis()): Boolean {
         refresh(now)
