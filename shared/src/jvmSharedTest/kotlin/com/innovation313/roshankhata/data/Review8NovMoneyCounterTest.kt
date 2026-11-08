@@ -14,7 +14,7 @@ class Review8NovMoneyCounterTest {
         // A 17% on top, B none: 1,000 each. The ticket comes to 2,170; B's return is 1,000, not 1,085 (M63).
         val a = item("A", 1.0, 1_000.0, 17.0)
         val b = item("B", 1.0, 1_000.0)
-        val sale = Sale(subtotal = 2_000.0, taxAmount = 170.0, grandTotal = 2_170.0)
+        val sale = Sale(subtotal = 2_000.0, taxAmount = 170.0, grandTotal = 2_170.0, paidTotal = 0.0)
         assertEquals(1_170.0, ReturnMath.paidRate(sale, a), 0.005)
         assertEquals(1_000.0, ReturnMath.paidRate(sale, b), 0.005)
     }
@@ -22,7 +22,7 @@ class Review8NovMoneyCounterTest {
     @Test
     fun aTicketLevelTaxStillSpreadsOverEveryLine() {
         val a = item("A", 2.0, 500.0)
-        val sale = Sale(subtotal = 1_000.0, taxPercent = 10.0, taxAmount = 100.0, grandTotal = 1_100.0)
+        val sale = Sale(subtotal = 1_000.0, taxPercent = 10.0, taxAmount = 100.0, grandTotal = 1_100.0, paidTotal = 0.0)
         assertEquals(550.0, ReturnMath.paidRate(sale, a), 0.005)
     }
 
