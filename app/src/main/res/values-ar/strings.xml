@@ -841,6 +841,14 @@
     <string name="paisa_apps_help">حدد فقط تطبيقات المحافظ والبنوك التي يدفع لك فيها العملاء. تظهر التطبيقات الأخرى هنا بعد أن تعرض إشعارًا. لا تُعرض تطبيقات الرسائل القصيرة أبدًا.</string>
     <string name="paisa_not_installed">%1$s (ليس على هذا الهاتف)</string>
     <string name="paisa_seen_none">لم يعرض أي تطبيق آخر إشعارًا بعد.</string>
+    <string name="paisa_access_title">الوصول إلى الإشعارات</string>
+    <string name="paisa_battery_title">البطارية</string>
+    <string name="paisa_privacy_title">الخصوصية</string>
+    <string name="paisa_restricted_title">حظر أندرويد هذا لأن التطبيق غير مثبّت من متجر Play</string>
+    <string name="paisa_restricted_step1">اضغط «Open App info» أدناه.</string>
+    <string name="paisa_restricted_step2">اضغط ⋮ في أعلى اليمين، ثم اختر Allow restricted settings.</string>
+    <string name="paisa_restricted_step3">عد إلى هنا وفعّل الوصول.</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">الصوت</string>
     <string name="paisa_voice_urdu">صوت أردو</string>
     <string name="paisa_voice_app">لغة التطبيق</string>

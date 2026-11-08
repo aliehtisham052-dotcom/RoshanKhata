@@ -765,6 +765,14 @@
     <string name="paisa_apps_help">صرف وہ والٹ اور بینک ایپس ٹک کریں جن میں گاہک آپ کو پیسے بھیجتے ہیں۔ دوسری ایپس نوٹیفکیشن دکھانے کے بعد یہاں آ جاتی ہیں۔ ایس ایم ایس ایپس کبھی نہیں دکھائی جاتیں۔</string>
     <string name="paisa_not_installed">%1$s (اس فون پر نہیں)</string>
     <string name="paisa_seen_none">ابھی کسی اور ایپ نے نوٹیفکیشن نہیں دکھایا۔</string>
+    <string name="paisa_access_title">نوٹیفکیشن تک رسائی</string>
+    <string name="paisa_battery_title">بیٹری</string>
+    <string name="paisa_privacy_title">پرائیویسی</string>
+    <string name="paisa_restricted_title">اینڈرائیڈ نے اسے روک دیا ہے کیونکہ یہ ایپ پلے اسٹور سے انسٹال نہیں ہوئی</string>
+    <string name="paisa_restricted_step1">نیچے Open App info دبائیں۔</string>
+    <string name="paisa_restricted_step2">اوپر دائیں ⋮ دبائیں، پھر Allow restricted settings چنیں۔</string>
+    <string name="paisa_restricted_step3">یہاں واپس آئیں اور رسائی آن کریں۔</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">آواز</string>
     <string name="paisa_voice_urdu">اردو آواز</string>
     <string name="paisa_voice_app">ایپ کی زبان</string>

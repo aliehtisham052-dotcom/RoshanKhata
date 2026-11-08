@@ -794,6 +794,14 @@
     <string name="paisa_apps_help">শুধু সেই ওয়ালেট ও ব্যাংক অ্যাপগুলো টিক দিন যেখানে গ্রাহকরা আপনাকে টাকা পাঠান। অন্য অ্যাপ নোটিফিকেশন দেখানোর পরে এখানে আসে। SMS অ্যাপ কখনো দেখানো হয় না।</string>
     <string name="paisa_not_installed">%1$s (এই ফোনে নেই)</string>
     <string name="paisa_seen_none">এখনও অন্য কোনো অ্যাপ নোটিফিকেশন দেখায়নি।</string>
+    <string name="paisa_access_title">নোটিফিকেশন অ্যাক্সেস</string>
+    <string name="paisa_battery_title">ব্যাটারি</string>
+    <string name="paisa_privacy_title">প্রাইভেসি</string>
+    <string name="paisa_restricted_title">Android এটি আটকে দিয়েছে কারণ অ্যাপটি Play Store থেকে ইনস্টল করা নয়</string>
+    <string name="paisa_restricted_step1">নিচে Open App info চাপুন।</string>
+    <string name="paisa_restricted_step2">উপরে ডানে ⋮ চাপুন, তারপর Allow restricted settings বেছে নিন।</string>
+    <string name="paisa_restricted_step3">এখানে ফিরে এসে অ্যাক্সেস চালু করুন।</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">আওয়াজ</string>
     <string name="paisa_voice_urdu">উর্দু আওয়াজ</string>
     <string name="paisa_voice_app">অ্যাপের ভাষা</string>

@@ -765,6 +765,14 @@
     <string name="paisa_apps_help">Sirf woh wallet aur bank apps tick karein jin mein gahak aap ko paise bhejte hain. Doosri apps notification dikhane ke baad yahan aa jati hain. SMS apps kabhi nahi dikhayi jatin.</string>
     <string name="paisa_not_installed">%1$s (is phone par nahi)</string>
     <string name="paisa_seen_none">Abhi kisi aur app ne notification nahi dikhaya.</string>
+    <string name="paisa_access_title">Notification access</string>
+    <string name="paisa_battery_title">Battery</string>
+    <string name="paisa_privacy_title">Privacy</string>
+    <string name="paisa_restricted_title">Android ne ise rok diya hai kyunke yeh app Play Store se install nahi hui</string>
+    <string name="paisa_restricted_step1">Neeche Open App info dabayein.</string>
+    <string name="paisa_restricted_step2">Oopar daayein ⋮ dabayein, phir Allow restricted settings chunein.</string>
+    <string name="paisa_restricted_step3">Yahan wapas aayein aur access on karein.</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">Awaaz</string>
     <string name="paisa_voice_urdu">Urdu awaaz</string>
     <string name="paisa_voice_app">App ki zaban</string>

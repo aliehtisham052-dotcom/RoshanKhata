@@ -22,8 +22,12 @@ class PaymentVoiceActivity : BaseActivity() {
 
     private var speaker: PaymentSpeaker? = null
 
+    /** Set when the owner went to the notification-access screen: coming back still without access is a failed attempt. */
+    private var askedAccess = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        askedAccess = savedInstanceState?.getBoolean(STATE_ASKED) == true
         setContentView(R.layout.activity_payment_voice)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
         setSupportActionBar(findViewById<Toolbar>(R.id.payToolbar))
@@ -41,7 +45,17 @@ class PaymentVoiceActivity : BaseActivity() {
             if (on) askNotifications() else renderApps()
         }
 
+        findViewById<MaterialButton>(R.id.btnPayAppInfo).setOnClickListener {
+            runCatching {
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .setData(android.net.Uri.fromParts("package", packageName, null))
+                )
+            }
+        }
+
         findViewById<MaterialButton>(R.id.btnPayAccess).setOnClickListener {
+            askedAccess = true
             runCatching { startActivity(PaymentVoice.accessIntent(this)) }.onFailure {
                 runCatching { startActivity(Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
             }
@@ -78,15 +92,18 @@ class PaymentVoiceActivity : BaseActivity() {
             setText(if (access) R.string.paisa_access_given else R.string.paisa_access_not_given)
             setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, if (access) R.color.green_got_text else R.color.red_gave_text))
         }
-        // Android 13+ may call a sideloaded app's access a "restricted setting": the way past it, said once here.
         // L101 (8 Nov 2026 review): Android Go phones on Android 10 or older may not offer notification access at all;
         // the screen said nothing of why the button opened nothing.
         val goPhone = !access && Build.VERSION.SDK_INT <= 29 &&
             (getSystemService(ACTIVITY_SERVICE) as? android.app.ActivityManager)?.isLowRamDevice == true
         findViewById<TextView>(R.id.tvPayRestricted).apply {
-            if (goPhone) setText(R.string.paisa_access_go) else setText(R.string.paisa_access_restricted)
-            visibility = if (goPhone || (!access && Build.VERSION.SDK_INT >= 33)) View.VISIBLE else View.GONE
+            setText(R.string.paisa_access_go)
+            visibility = if (goPhone) View.VISIBLE else View.GONE
         }
+        // Owner point 29 (8 Nov 2026): Android 13+ greys out the access of an app not installed from the Play Store
+        // ("restricted setting"). The steps show on API 33+ after a failed attempt, or when the installer is not Play.
+        findViewById<View>(R.id.payRestrictedBlock).visibility =
+            if (!access && Build.VERSION.SDK_INT >= 33 && (askedAccess || !installedFromPlay())) View.VISIBLE else View.GONE
         // Nothing can be said without the access: the switch waits for it, and says so (6 Nov 2026).
         val row = findViewById<View>(R.id.payRowOn)
         row.findViewById<Switch>(R.id.switchFeature).isEnabled = access
@@ -95,6 +112,22 @@ class PaymentVoiceActivity : BaseActivity() {
             .setText(if (access) R.string.paisa_switch_desc else R.string.paisa_switch_needs_access)
         renderApps()
         checkUrdu()
+    }
+
+    /** API 30+: Play Store is the installer. Older Android cannot tell, so it counts as Play (the block needs API 33 anyway). */
+    private fun installedFromPlay(): Boolean {
+        if (Build.VERSION.SDK_INT < 30) return true
+        return runCatching { packageManager.getInstallSourceInfo(packageName).installingPackageName }
+            .getOrNull() == "com.android.vending"
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_ASKED, askedAccess)
+    }
+
+    private companion object {
+        const val STATE_ASKED = "asked_access"
     }
 
     /** One app in the list: its name, its package, whether it is on this phone, and a warning when there is one. */

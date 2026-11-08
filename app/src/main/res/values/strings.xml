@@ -795,6 +795,14 @@
     <string name="paisa_apps_help">Tick only the wallet and bank apps where customers pay you. Other apps appear here after they show a notification. SMS apps are never listed.</string>
     <string name="paisa_not_installed">%1$s (not on this phone)</string>
     <string name="paisa_seen_none">No other app has shown a notification yet.</string>
+    <string name="paisa_access_title">Notification access</string>
+    <string name="paisa_battery_title">Battery</string>
+    <string name="paisa_privacy_title">Privacy</string>
+    <string name="paisa_restricted_title">Android blocked this for an app not installed from Play Store</string>
+    <string name="paisa_restricted_step1">Tap Open App info below.</string>
+    <string name="paisa_restricted_step2">Tap ⋮ at the top right, then Allow restricted settings.</string>
+    <string name="paisa_restricted_step3">Come back here and turn the access on.</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">Voice</string>
     <string name="paisa_voice_urdu">Urdu voice</string>
     <string name="paisa_voice_app">The app\'s language</string>

@@ -786,6 +786,14 @@
     <string name="paisa_apps_help">فقط کیف‌پول‌ها و اپ‌های بانکی را تیک بزنید که مشتری‌ها در آن‌ها به شما پول می‌دهند. اپ‌های دیگر پس از نشان دادن اعلان اینجا می‌آیند. اپ‌های پیامک هرگز نشان داده نمی‌شوند.</string>
     <string name="paisa_not_installed">%1$s (روی این گوشی نیست)</string>
     <string name="paisa_seen_none">هنوز اپ دیگری اعلان نشان نداده است.</string>
+    <string name="paisa_access_title">دسترسی به اعلان‌ها</string>
+    <string name="paisa_battery_title">باتری</string>
+    <string name="paisa_privacy_title">حریم خصوصی</string>
+    <string name="paisa_restricted_title">اندروید این را مسدود کرده است زیرا برنامه از فروشگاه Play نصب نشده</string>
+    <string name="paisa_restricted_step1">پایین روی Open App info بزنید.</string>
+    <string name="paisa_restricted_step2">⋮ بالا سمت راست را بزنید، سپس Allow restricted settings را انتخاب کنید.</string>
+    <string name="paisa_restricted_step3">به اینجا برگردید و دسترسی را روشن کنید.</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">صدا</string>
     <string name="paisa_voice_urdu">صدای اردو</string>
     <string name="paisa_voice_app">زبان برنامه</string>

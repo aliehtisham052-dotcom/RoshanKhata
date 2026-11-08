@@ -786,6 +786,14 @@
     <string name="paisa_apps_help">رڳو اهي والٽ ۽ بئنڪ ايپس ٽڪ ڪريو جن ۾ گراهڪ توهان کي پئسا موڪلين ٿا. ٻيون ايپس نوٽيفڪيشن ڏيکارڻ کان پوءِ هتي اچي وينديون. ايس ايم ايس ايپس ڪڏهن به نه ڏيکاريون وينديون.</string>
     <string name="paisa_not_installed">%1$s (هن فون تي ناهي)</string>
     <string name="paisa_seen_none">اڃا ڪنهن ٻي ايپ نوٽيفڪيشن نه ڏيکاريو آهي.</string>
+    <string name="paisa_access_title">نوٽيفڪيشن تائين رسائي</string>
+    <string name="paisa_battery_title">بيٽري</string>
+    <string name="paisa_privacy_title">پرائيويسي</string>
+    <string name="paisa_restricted_title">اينڊرائيڊ ان کي روڪي ڇڏيو آهي ڇو ته هي ايپ پلے اسٽور مان انسٽال ٿيل ناهي</string>
+    <string name="paisa_restricted_step1">هيٺ Open App info دٻايو.</string>
+    <string name="paisa_restricted_step2">مٿي ساڄي ⋮ دٻايو، پوءِ Allow restricted settings چونڊيو.</string>
+    <string name="paisa_restricted_step3">هتي موٽي اچو ۽ رسائي آن ڪريو.</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">آواز</string>
     <string name="paisa_voice_urdu">اردو آواز</string>
     <string name="paisa_voice_app">ايپ جي ٻولي</string>

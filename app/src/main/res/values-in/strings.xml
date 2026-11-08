@@ -775,6 +775,14 @@
     <string name="paisa_apps_help">Centang hanya aplikasi dompet dan bank tempat pelanggan membayar Anda. Aplikasi lain muncul di sini setelah menampilkan notifikasi. Aplikasi SMS tidak pernah ditampilkan.</string>
     <string name="paisa_not_installed">%1$s (tidak ada di ponsel ini)</string>
     <string name="paisa_seen_none">Belum ada aplikasi lain yang menampilkan notifikasi.</string>
+    <string name="paisa_access_title">Akses notifikasi</string>
+    <string name="paisa_battery_title">Baterai</string>
+    <string name="paisa_privacy_title">Privasi</string>
+    <string name="paisa_restricted_title">Android memblokir ini karena aplikasi tidak dipasang dari Play Store</string>
+    <string name="paisa_restricted_step1">Ketuk Open App info di bawah.</string>
+    <string name="paisa_restricted_step2">Ketuk ⋮ di kanan atas, lalu Allow restricted settings.</string>
+    <string name="paisa_restricted_step3">Kembali ke sini dan aktifkan aksesnya.</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">Suara</string>
     <string name="paisa_voice_urdu">Suara bahasa Urdu</string>
     <string name="paisa_voice_app">Bahasa aplikasi</string>

@@ -794,6 +794,14 @@
     <string name="paisa_apps_help">सिर्फ़ वे वॉलेट और बैंक ऐप्स टिक करें जिनमें ग्राहक आपको पैसे भेजते हैं। दूसरे ऐप्स नोटिफ़िकेशन दिखाने के बाद यहाँ आ जाते हैं। SMS ऐप्स कभी नहीं दिखाए जाते।</string>
     <string name="paisa_not_installed">%1$s (इस फ़ोन पर नहीं)</string>
     <string name="paisa_seen_none">अभी किसी और ऐप ने नोटिफ़िकेशन नहीं दिखाया।</string>
+    <string name="paisa_access_title">नोटिफ़िकेशन एक्सेस</string>
+    <string name="paisa_battery_title">बैटरी</string>
+    <string name="paisa_privacy_title">प्राइवेसी</string>
+    <string name="paisa_restricted_title">Android ने इसे रोका है क्योंकि यह ऐप Play Store से इंस्टॉल नहीं हुआ</string>
+    <string name="paisa_restricted_step1">नीचे Open App info दबाएँ।</string>
+    <string name="paisa_restricted_step2">ऊपर दाएँ ⋮ दबाएँ, फिर Allow restricted settings चुनें।</string>
+    <string name="paisa_restricted_step3">यहाँ वापस आएँ और एक्सेस चालू करें।</string>
+    <string name="paisa_open_app_info">Open App info</string>
     <string name="paisa_voice_title">आवाज़</string>
     <string name="paisa_voice_urdu">उर्दू आवाज़</string>
     <string name="paisa_voice_app">ऐप की भाषा</string>
