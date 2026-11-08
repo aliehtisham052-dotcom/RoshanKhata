@@ -358,7 +358,7 @@ class CounterReviewTest {
         val sale = sellTo(null, dap, 2.0)
         val sold = dao.saleItems(sale).single()
         val r = dao.postReturn(
-            SaleReturn(saleId = sale, partyId = null, timestamp = now, total = 0.0, refundMethod = "cash", reason = "x"),
+            SaleReturn(saleId = sale, partyId = null, timestamp = now, total = 0.0, refundMethod = PaymentMethod.CASH, refundAmount = 1000.0, reason = "x"),
             listOf(SaleReturnItem(returnId = 0, saleItemId = sold.id, productId = dap, itemName = "DAP", quantity = 1.0, unit = "bottle", rate = 1000.0))
         )
         assertEquals(null, dao.returnVoidRefusal(r))
