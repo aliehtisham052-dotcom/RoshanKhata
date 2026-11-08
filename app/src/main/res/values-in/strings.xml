@@ -4038,4 +4038,10 @@
     <string name="pos_tax_total">Pajak</string>
     <string name="paisa_access_go">Di sebagian ponsel RAM kecil (Android Go) dengan Android 10 atau lebih lama, Android tidak mengizinkan akses notifikasi sama sekali. Jika tombol tidak membuka apa pun, fitur ini tidak bisa berjalan di ponsel ini.</string>
     <string name="paisa_disclosure">Android memberi aplikasi ini pemberitahuan dari semua aplikasi di ponsel. Aplikasi ini hanya membaca pemberitahuan aplikasi dompet dan bank yang Anda centang di bawah; dari aplikasi lain hanya nama yang terlihat. Tidak ada yang keluar dari ponsel.</string>
+    <string name="stmt_add_title">Tambahkan ke laporan Anda</string>
+    <string name="stmt_add_help">Ini dicetak di laporan yang diterima pelanggan Anda. Isi yang Anda punya, sisanya biarkan kosong.</string>
+    <string name="stmt_add_pay_section">Cara pelanggan membayar Anda</string>
+    <string name="stmt_add_open_profile">Profil lengkap</string>
+    <string name="stmt_add_nothing">Isi setidaknya satu data, atau ketuk Batal.</string>
+    <string name="stmt_add_check_then_save">Periksa kolom yang ditandai di atas, atau ketuk Simpan lagi untuk tetap memakai isiannya.</string>
 </resources>

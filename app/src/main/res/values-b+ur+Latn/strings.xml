@@ -4055,4 +4055,10 @@
     <string name="pos_tax_total">Tax</string>
     <string name="paisa_access_go">Kam memory wale (Android Go) kuch phones par, jin mein Android 10 ya us se purana ho, Android notification access deta hi nahi. Agar button kuch na khole to yeh feature is phone par nahi chal sakta.</string>
     <string name="paisa_disclosure">Android is app ko phone ki har app ke notices dikhata hai. Ye app sirf un wallet aur bank apps ke notices parhti hai jin par aap neeche nishan lagayen; baqi har app ka sirf naam dekhti hai. Kuch bhi phone se bahar nahi jata.</string>
+    <string name="stmt_add_title">Apne statement mein shamil karein</string>
+    <string name="stmt_add_help">Yeh aapke customer ko jaane wale statement par chhapta hai. Jo maloom ho woh likhein, baqi chhor dein.</string>
+    <string name="stmt_add_pay_section">Customer aapko kaise payment karein</string>
+    <string name="stmt_add_open_profile">Poora profile</string>
+    <string name="stmt_add_nothing">Kam az kam ek tafseel likhein, ya Cancel dabayein.</string>
+    <string name="stmt_add_check_then_save">Upar nishan zad box check karein, ya jaisa likha hai waisa rakhne ke liye dobara Save dabayein.</string>
 </resources>

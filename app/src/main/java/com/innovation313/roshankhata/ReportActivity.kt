@@ -303,7 +303,8 @@ class ReportActivity : BaseActivity() {
                     this@ReportActivity, file,
                     isCustomer = partyIsCustomer,
                     closingBalance = closingBalance,
-                    titleRes = R.string.pdf_ready_title
+                    titleRes = R.string.pdf_ready_title,
+                    remake = { shareReport() }
                 )
             }
         }

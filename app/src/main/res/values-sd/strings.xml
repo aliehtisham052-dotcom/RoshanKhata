@@ -4083,4 +4083,10 @@
     <string name="pos_tax_total">ٽيڪس</string>
     <string name="paisa_access_go">گهٽ ميموري واري (Android Go) ڪجهه فونن تي، جن ۾ Android 10 يا ان کان پراڻو هجي، Android نوٽيفڪيشن تائين رسائي ڏيندو ئي ناهي. جيڪڏهن بٽڻ ڪجهه نه کولي ته هي فيچر هن فون تي ڪم نٿو ڪري سگهي.</string>
     <string name="paisa_disclosure">Android هن ايپ کي فون جي هر ايپ جا نوٽيس ڏيکاريندو آهي. هيءَ ايپ رڳو انهن والٽ ۽ بئنڪ ايپس جا نوٽيس پڙهندي آهي جن تي توهان هيٺ نشان لڳايو؛ باقي هر ايپ جو رڳو نالو ڏسندي آهي. ڪجهه به فون کان ٻاهر نٿو وڃي.</string>
+    <string name="stmt_add_title">پنهنجي بيان ۾ شامل ڪريو</string>
+    <string name="stmt_add_help">هي توهان جي گراهڪ کي ويندڙ بيان تي ڇپجي ٿو. جيڪو خبر آهي سو لکو، باقي ڇڏي ڏيو.</string>
+    <string name="stmt_add_pay_section">گراهڪ توهان کي ادائگي ڪيئن ڪن</string>
+    <string name="stmt_add_open_profile">پورو پروفائل</string>
+    <string name="stmt_add_nothing">گهٽ ۾ گهٽ هڪ تفصيل لکو، يا رد ڪريو دٻايو.</string>
+    <string name="stmt_add_check_then_save">مٿي نشان لڳل خانو چيڪ ڪريو، يا جيئن لکيو آهي تيئن رکڻ لاءِ ٻيهر محفوظ ڪريو دٻايو.</string>
 </resources>

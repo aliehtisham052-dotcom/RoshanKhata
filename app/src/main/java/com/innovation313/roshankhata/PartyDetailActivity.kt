@@ -744,7 +744,8 @@ class PartyDetailActivity : BaseActivity() {
         currentBalance = balance
         refreshSeasonRecord()
         refreshRadar()
-        tvPartyBalance.text = Format.customerBalance(balance)
+        // No sign: the side's words below say who owes (8 Nov 2026: "- Rs 800" over "You will get" read as a contradiction).
+        tvPartyBalance.text = Format.customerBalanceBare(balance)
         // The paper balance card (7 Oct): the figure, the chip's fill and its
         // glyph all follow the direction — the Khata list's "I have to get"
         // and "I have to give" cards; settled is a mint chip with a tick.
@@ -2854,7 +2855,8 @@ class PartyDetailActivity : BaseActivity() {
                     this@PartyDetailActivity,
                     file,
                     isCustomer = partyIsCustomerAccount,
-                    closingBalance = currentBalance
+                    closingBalance = currentBalance,
+                    remake = { exportStatement() }
                 )
             }
         }

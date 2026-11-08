@@ -4268,4 +4268,10 @@
     <string name="pos_tax_total">Tax</string>
     <string name="paisa_access_go">On some low-memory (Android Go) phones with Android 10 or older, Android does not allow notification access at all. If the button opens nothing, this feature cannot work on this phone.</string>
     <string name="paisa_disclosure">Android gives this app the notices of every app on the phone. This app reads only the wallet and bank apps you tick below; from every other app it sees nothing but the name. Nothing leaves the phone.</string>
+    <string name="stmt_add_title">Add to your statement</string>
+    <string name="stmt_add_help">These print on the statement your customer receives. Fill what you have and leave the rest.</string>
+    <string name="stmt_add_pay_section">How customers pay you</string>
+    <string name="stmt_add_open_profile">Full profile</string>
+    <string name="stmt_add_nothing">Type at least one detail, or tap Cancel.</string>
+    <string name="stmt_add_check_then_save">Check the box marked above, or tap Save again to keep it as typed.</string>
 </resources>

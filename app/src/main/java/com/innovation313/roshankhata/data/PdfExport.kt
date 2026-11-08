@@ -74,7 +74,12 @@ object PdfExport {
      * matters only on a customer's statement that owes, as [buildStatement] prints it. Null when
      * nothing is missing, and on a helper's read-only phone, which cannot change the profile.
      */
-    class Gaps(val note: String, val payMissing: Boolean)
+    class Gaps(
+        val note: String,
+        val payMissing: Boolean,
+        val phoneMissing: Boolean = false,
+        val addressMissing: Boolean = false
+    )
 
     fun gapsOf(context: Context, isCustomer: Boolean, closingBalance: Double): Gaps? {
         if (ViewerMode.isOn(context)) return null
@@ -91,7 +96,9 @@ object PdfExport {
         return Gaps(
             context.getString(R.string.pdf_stmt_gap_title) + "\n" +
                 missing.joinToString("\n") { "• " + context.getString(it) },
-            payMissing = R.string.pdf_stmt_gap_pay in missing
+            payMissing = R.string.pdf_stmt_gap_pay in missing,
+            phoneMissing = R.string.pdf_stmt_gap_phone in missing,
+            addressMissing = R.string.pdf_stmt_gap_address in missing
         )
     }
 

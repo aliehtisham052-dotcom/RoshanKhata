@@ -173,6 +173,19 @@ object Format {
         }
     }
 
+    /**
+     * A customer balance as a plain amount, no sign (8 Nov 2026, the owner's phone: the customer page read
+     * "- Rs 800" over "You will get", a minus beside the words that say the customer owes). The side's words
+     * ([balanceSideWord]) and the colour say which way it runs, as the computer's customer page, the receipt and
+     * the statement already do; a sign beside them can only contradict them. Settled is the plain zero amount.
+     */
+    fun customerBalanceBare(value: Double): String =
+        when {
+            Money.isNegative(value) -> money(-value)
+            Money.isPositive(value) -> money(value)
+            else -> money(0.0)
+        }
+
     // customerBalanceColour(value): a colour resource, app ui/FormatColours.kt.
 
     fun dateTime(millis: Long): String = dateTimeFmt.format(Date(millis))

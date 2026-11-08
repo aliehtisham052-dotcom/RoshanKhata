@@ -4055,4 +4055,10 @@
     <string name="pos_tax_total">ٹیکس</string>
     <string name="paisa_access_go">کم میموری والے (اینڈرائیڈ گو) بعض فونز پر، جن میں اینڈرائیڈ 10 یا اس سے پرانا ہو، اینڈرائیڈ نوٹیفکیشن تک رسائی دیتا ہی نہیں۔ اگر بٹن کچھ نہ کھولے تو یہ فیچر اس فون پر نہیں چل سکتا۔</string>
     <string name="paisa_disclosure">اینڈرائیڈ اس ایپ کو فون کی ہر ایپ کے نوٹس دکھاتا ہے۔ یہ ایپ صرف انہی والٹ اور بینک ایپس کے نوٹس پڑھتی ہے جن پر آپ نیچے نشان لگائیں؛ باقی ہر ایپ کا صرف نام دیکھتی ہے۔ کچھ بھی فون سے باہر نہیں جاتا۔</string>
+    <string name="stmt_add_title">اپنے سٹیٹمنٹ میں شامل کریں</string>
+    <string name="stmt_add_help">یہ آپ کے کسٹمر کو جانے والے سٹیٹمنٹ پر چھپتا ہے۔ جو معلوم ہو وہ لکھیں، باقی چھوڑ دیں۔</string>
+    <string name="stmt_add_pay_section">گاہک آپ کو ادائیگی کیسے کریں</string>
+    <string name="stmt_add_open_profile">پورا پروفائل</string>
+    <string name="stmt_add_nothing">کم از کم ایک تفصیل لکھیں، یا منسوخ دبائیں۔</string>
+    <string name="stmt_add_check_then_save">اوپر نشان زد خانہ چیک کریں، یا جیسا لکھا ہے ویسا رکھنے کے لیے دوبارہ محفوظ کریں دبائیں۔</string>
 </resources>

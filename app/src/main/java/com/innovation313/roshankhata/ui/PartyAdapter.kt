@@ -126,10 +126,10 @@ class PartyAdapter(
             holder.tvLastActivity.visibility = View.GONE
         }
 
-        // Sign, amount, and colour all come from one place so every screen
-        // agrees: money to collect is red and negative, money owed out is green
-        // and positive.
-        holder.tvBalance.text = Format.customerBalance(item.balance)
+        // Amount and colour come from one place so every screen agrees: money to collect is red, money owed out
+        // is green. The figure carries no sign (8 Nov 2026): the side's words under it say who owes, and a minus
+        // beside "You will get" read as a contradiction.
+        holder.tvBalance.text = Format.customerBalanceBare(item.balance)
         holder.tvBalance.setTextColor(
             ContextCompat.getColor(ctx, Format.customerBalanceColour(item.balance))
         )

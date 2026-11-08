@@ -95,16 +95,27 @@ object PdfShare {
         file: File,
         isCustomer: Boolean,
         closingBalance: Double,
-        titleRes: Int = R.string.statement_ready_title
+        titleRes: Int = R.string.statement_ready_title,
+        /**
+         * Makes the statement again, called after the owner saved what it lacked (8 Nov 2026: the owner had to find
+         * the statement and make it again by hand); the new one shows its own ready dialog, without those gaps.
+         */
+        remake: (() -> Unit)? = null
     ) {
         val gaps = com.innovation313.roshankhata.data.PdfExport.gapsOf(context, isCustomer, closingBalance)
+        val activity = context as? android.app.Activity
         present(context, file, titleRes, gaps?.note, R.string.pdf_stmt_gap_fix) {
-            val focus = if (gaps?.payMissing == true) com.innovation313.roshankhata.BusinessSettingsActivity.FOCUS_PAYMENT
-            else com.innovation313.roshankhata.BusinessSettingsActivity.FOCUS_PHONE
-            context.startActivity(
-                Intent(context, com.innovation313.roshankhata.BusinessSettingsActivity::class.java)
-                    .putExtra(com.innovation313.roshankhata.BusinessSettingsActivity.EXTRA_FOCUS, focus)
-            )
+            if (gaps != null && activity != null && remake != null) {
+                // A small form with only the missing boxes, then the statement again.
+                StatementDetails.show(activity, gaps, remake)
+            } else {
+                val focus = if (gaps?.payMissing == true) com.innovation313.roshankhata.BusinessSettingsActivity.FOCUS_PAYMENT
+                else com.innovation313.roshankhata.BusinessSettingsActivity.FOCUS_PHONE
+                context.startActivity(
+                    Intent(context, com.innovation313.roshankhata.BusinessSettingsActivity::class.java)
+                        .putExtra(com.innovation313.roshankhata.BusinessSettingsActivity.EXTRA_FOCUS, focus)
+                )
+            }
         }
     }
 

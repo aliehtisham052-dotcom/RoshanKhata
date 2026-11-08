@@ -4103,4 +4103,10 @@
     <string name="pos_tax_total">कर</string>
     <string name="paisa_access_go">कम मेमोरी वाले (Android Go) कुछ फ़ोनों पर, जिनमें Android 10 या उससे पुराना हो, Android नोटिफ़िकेशन एक्सेस देता ही नहीं। अगर बटन कुछ न खोले तो यह सुविधा इस फ़ोन पर नहीं चल सकती।</string>
     <string name="paisa_disclosure">Android इस ऐप को फ़ोन की हर ऐप के नोटिस दिखाता है। यह ऐप सिर्फ़ उन वॉलेट और बैंक ऐप के नोटिस पढ़ती है जिन पर आप नीचे निशान लगाएँ; बाकी हर ऐप का सिर्फ़ नाम देखती है। कुछ भी फ़ोन से बाहर नहीं जाता।</string>
+    <string name="stmt_add_title">अपने स्टेटमेंट में जोड़ें</string>
+    <string name="stmt_add_help">यह आपके ग्राहक को जाने वाले स्टेटमेंट पर छपता है। जो पता हो वह लिखें, बाकी छोड़ दें।</string>
+    <string name="stmt_add_pay_section">ग्राहक आपको भुगतान कैसे करें</string>
+    <string name="stmt_add_open_profile">पूरी प्रोफ़ाइल</string>
+    <string name="stmt_add_nothing">कम से कम एक जानकारी लिखें, या रद्द करें दबाएँ।</string>
+    <string name="stmt_add_check_then_save">ऊपर चिह्नित बॉक्स जाँचें, या जैसा लिखा है वैसा रखने के लिए फिर से सहेजें दबाएँ।</string>
 </resources>

@@ -4083,4 +4083,10 @@
     <string name="pos_tax_total">مالیات</string>
     <string name="paisa_access_go">در برخی گوشی‌های کم‌حافظه (Android Go) با Android 10 یا قدیمی‌تر، اندروید اصلاً اجازهٔ دسترسی به اعلان‌ها را نمی‌دهد. اگر دکمه چیزی باز نکرد، این قابلیت روی این گوشی کار نمی‌کند.</string>
     <string name="paisa_disclosure">اندروید اعلان‌های همهٔ برنامه‌های گوشی را به این برنامه می‌دهد. این برنامه فقط اعلان‌های برنامه‌های کیف پول و بانکی را می‌خواند که در پایین تیک بزنید؛ از بقیهٔ برنامه‌ها فقط نام را می‌بیند. هیچ چیز از گوشی بیرون نمی‌رود.</string>
+    <string name="stmt_add_title">افزودن به صورت‌حساب</string>
+    <string name="stmt_add_help">این موارد روی صورت‌حسابی که مشتری می‌گیرد چاپ می‌شود. آنچه دارید بنویسید و بقیه را خالی بگذارید.</string>
+    <string name="stmt_add_pay_section">مشتریان چگونه به شما پرداخت کنند</string>
+    <string name="stmt_add_open_profile">پروفایل کامل</string>
+    <string name="stmt_add_nothing">دست‌کم یک مورد بنویسید یا لغو را بزنید.</string>
+    <string name="stmt_add_check_then_save">کادر علامت‌خورده بالا را بررسی کنید یا برای نگه‌داشتن همان‌طور که نوشته‌اید دوباره ذخیره را بزنید.</string>
 </resources>

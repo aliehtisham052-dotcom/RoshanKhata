@@ -4103,4 +4103,10 @@
     <string name="pos_tax_total">কর</string>
     <string name="paisa_access_go">কম মেমোরির (Android Go) কিছু ফোনে, যেখানে Android 10 বা তার চেয়ে পুরোনো, Android নোটিফিকেশন অ্যাক্সেস দেয়ই না। বোতামে কিছু না খুললে এই সুবিধা এই ফোনে চলবে না।</string>
     <string name="paisa_disclosure">Android এই অ্যাপকে ফোনের প্রতিটি অ্যাপের নোটিশ দেখতে দেয়। এই অ্যাপ শুধু সেই ওয়ালেট ও ব্যাংক অ্যাপের নোটিশ পড়ে যেগুলো আপনি নিচে টিক দেন; বাকি প্রতিটি অ্যাপের শুধু নাম দেখে। কিছুই ফোনের বাইরে যায় না।</string>
+    <string name="stmt_add_title">আপনার স্টেটমেন্টে যোগ করুন</string>
+    <string name="stmt_add_help">এগুলো আপনার গ্রাহকের কাছে যাওয়া স্টেটমেন্টে ছাপা হয়। যা জানা আছে লিখুন, বাকি ফাঁকা রাখুন।</string>
+    <string name="stmt_add_pay_section">গ্রাহক আপনাকে কীভাবে পরিশোধ করবেন</string>
+    <string name="stmt_add_open_profile">সম্পূর্ণ প্রোফাইল</string>
+    <string name="stmt_add_nothing">অন্তত একটি তথ্য লিখুন, অথবা বাতিল চাপুন।</string>
+    <string name="stmt_add_check_then_save">উপরে চিহ্নিত ঘরটি দেখুন, অথবা যেমন লিখেছেন তেমন রাখতে আবার সংরক্ষণ চাপুন।</string>
 </resources>

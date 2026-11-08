@@ -203,8 +203,9 @@ class BusinessSettingsActivity : BaseActivity() {
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        keepStatusBarClear()
 
-        etBusinessName = findViewById(R.id.etBusinessName)
+        etBusinessName =findViewById(R.id.etBusinessName)
         etBusinessNameUrdu = findViewById(R.id.etBusinessNameUrdu)
         etBusinessAddress = findViewById(R.id.etBusinessAddress)
         etBusinessPhone = findViewById(R.id.etBusinessPhone)
@@ -458,6 +459,40 @@ class BusinessSettingsActivity : BaseActivity() {
             }
         }
 
+    }
+
+    /**
+     * The header here is the first thing INSIDE the scroll, so ScreenInsets' padding for the status bar
+     * scrolled away with it: opened at a box lower down (Add details on a statement, 8 Nov 2026, the owner's
+     * photo), the page ran under the clock and the notification icons. The bar's height is now a band of the
+     * header's own gradient above the scroll, and the header keeps its plain padding, so at the top of the page
+     * nothing looks different and scrolled content never reaches the status bar.
+     */
+    private fun keepStatusBarClear() {
+        val content = findViewById<android.view.ViewGroup>(android.R.id.content)?.getChildAt(0) as? android.widget.LinearLayout ?: return
+        val header = findViewById<View>(R.id.header) ?: return
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(header, null)
+        header.setPaddingRelative(
+            header.paddingStart, (22 * resources.displayMetrics.density).toInt(),
+            header.paddingEnd, header.paddingBottom
+        )
+        val band = View(this).apply {
+            background = androidx.core.content.ContextCompat.getDrawable(this@BusinessSettingsActivity, R.drawable.bg_header_gradient)
+        }
+        content.addView(band, 0, android.widget.LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, 0))
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(band) { v, insets ->
+            val bars = insets.getInsets(
+                androidx.core.view.WindowInsetsCompat.Type.systemBars() or
+                    androidx.core.view.WindowInsetsCompat.Type.displayCutout()
+            )
+            val lp = v.layoutParams
+            if (lp.height != bars.top) {
+                lp.height = bars.top
+                v.layoutParams = lp
+            }
+            insets
+        }
+        androidx.core.view.ViewCompat.requestApplyInsets(content)
     }
 
     private fun afterChange(block: () -> Unit) = object : android.text.TextWatcher {

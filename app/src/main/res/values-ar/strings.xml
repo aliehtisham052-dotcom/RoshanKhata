@@ -4315,4 +4315,10 @@
     <string name="pos_tax_total">الضريبة</string>
     <string name="paisa_access_go">في بعض هواتف الذاكرة المنخفضة (Android Go) التي يعمل عليها Android 10 أو أقدم، لا يسمح النظام بالوصول إلى الإشعارات إطلاقًا. إذا لم يفتح الزر شيئًا فلا يمكن لهذه الميزة أن تعمل على هذا الهاتف.</string>
     <string name="paisa_disclosure">يمنح أندرويد هذا التطبيق إشعارات كل تطبيق في الهاتف. لا يقرأ هذا التطبيق إلا إشعارات تطبيقات المحافظ والبنوك التي تحددها أدناه، أما سائر التطبيقات فلا يرى منها سوى الاسم. لا شيء يغادر الهاتف.</string>
+    <string name="stmt_add_title">أضف إلى كشف الحساب</string>
+    <string name="stmt_add_help">تظهر هذه البيانات في كشف الحساب الذي يصل إلى عميلك. املأ ما لديك واترك الباقي.</string>
+    <string name="stmt_add_pay_section">كيف يدفع لك العملاء</string>
+    <string name="stmt_add_open_profile">الملف الكامل</string>
+    <string name="stmt_add_nothing">اكتب تفصيلاً واحداً على الأقل، أو اضغط إلغاء.</string>
+    <string name="stmt_add_check_then_save">راجع الحقل المشار إليه أعلاه، أو اضغط حفظ مرة أخرى للإبقاء عليه كما كُتب.</string>
 </resources>
