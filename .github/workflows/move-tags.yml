@@ -1,0 +1,34 @@
+# One-time (8 Nov 2026): the history was rewritten to take real customers' names and
+# numbers out of it; the release tags still pointed at the old commits. The owner runs
+# this once from the Actions tab; each tag moves only if it still points where it did.
+# Releases and their files stay. This file is deleted right after the run.
+name: Move tags
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  move:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Move each tag to its rewritten commit
+        run: |
+          set -e
+          while read -r tag old new; do
+            [ -z "$tag" ] && continue
+            git cat-file -e "$new^{commit}"
+            git push --force-with-lease="refs/tags/$tag:$old" origin "$new:refs/tags/$tag"
+            echo "::notice::$tag moved to $new"
+          done <<'LIST'
+          desktop-test ff3aa6ba464c18ca131dfc1aa93dc704202c908f e7def6dd02dfd01d4afcf78a7b3a7395199ca8d0
+          kmp-test 92f2b4705cdd02fa3b0371d93a0d1d8aa852affd 9d61a0abd69a13000a47dfa089977ccc092ff0bc
+          poster-proof 7f2bb948d7c380aef167686657fd251be9dd9f1e 0925a0d81b83a36173540a59c91509f033d2c6b3
+          release-aab 12f89919b9d1ff7e0a5a6b24bd777cc0e609e4cb b069477ef41abe144803e365369194dc016496f5
+          release-test 3f6b84957622d5cfd462dd7897fcf0bccf50972f 5c81777acb1e35149ef85cfacc432670ad47199e
+          screen-proof 932b031c260d6d43793b108d1baeed08b067c552 d508f3b3b3436f494cfbacbbbe90c446f0002756
+          signature-proof 584821d3471931775f93c9582bf32e47d6d737c0 5b2cb7c77f4044c7b695d8212598a8143be4c3bf
+          store-screenshots 8fc2832e5fd8de92098addbf8b87c22abd2de0ad 5ec49c3eb99f6516535622359c20ff3a9ca9f35a
+          LIST
