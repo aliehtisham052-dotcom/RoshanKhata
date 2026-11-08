@@ -70,7 +70,7 @@ class SeasonBookTest {
         assertEquals(7000.0, s.given, 0.0)
         assertEquals(4000.0, s.outstanding, 0.0)
         assertEquals(2, s.clearedCustomers)
-        assertEquals(20, s.medianDaysAfterHarvest)
+        assertEquals(15, s.medianDaysAfterHarvest) // 10 and 20 days: the middle two averaged (8 Nov 2026, 8E)
     }
 
     /**
