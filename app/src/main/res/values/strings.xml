@@ -4252,6 +4252,6 @@
     <string name="clink_limit_today">The limit for new khata links today is reached. Try again tomorrow.</string>
     <string name="mera_khata_older">The server sent an older copy of this page. The newest copy this phone has seen is shown.</string>
     <string name="share_app">Share Roshan Khata</string>
-    <string name="share_app_text">Roshan Khata keeps my shop's khata on my phone, free, no account. Try it: %1$s</string>
+    <string name="share_app_text">Roshan Khata keeps the khata of my shop on my phone, free, no account. Try it: %1$s</string>
     <string name="home_add_first_customer">Your book is empty — tap here to add your first customer</string>
 </resources>
