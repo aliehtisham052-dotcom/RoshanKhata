@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The whole-ledger report (24 Oct 2026 redesign, the owner's "local/generic"
+     catch): a green band with the title and one-tap period chips, a summary
+     card lifted over its foot (window, entry and customer counts, the
+     gave/got share bar and the two totals), the entries grouped by day, and
+     one primary action at the foot — Share — with Preview and Download as
+     icon buttons beside it. There is deliberately no all-customers "net":
+     one man's sale and another's payment folded together belong to nobody's
+     account (removed from screen and PDF before; see LedgerReportActivity). -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,7 +20,8 @@
         android:layout_height="wrap_content"
         android:background="@color/section_khata"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="64dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,327 +30,320 @@
             android:id="@+id/tvLedgerReportTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:text="@string/ledger_report_title"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- The window controls, as one quiet card — the owner put ours next
-             to the competitor's and called ours rough, and he was right:
-             three loud outlined buttons against a clean grouped card. Same
-             controls, reorganized: dates side by side over a hairline, All
-             beneath, grey icons, sentence case. The card is the design;
-             the buttons inside stay flat. -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- One tap per window. Custom asks the first day, then the last. -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp">
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/lrChips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/chipLrToday"
+                    style="@style/LedgerReportChip"
+                    android:text="@string/range_today" />
+
+                <TextView
+                    android:id="@+id/chipLrWeek"
+                    style="@style/LedgerReportChip"
+                    android:text="@string/range_this_week" />
+
+                <TextView
+                    android:id="@+id/chipLrMonth"
+                    style="@style/LedgerReportChip"
+                    android:text="@string/range_this_month" />
+
+                <TextView
+                    android:id="@+id/chipLrAll"
+                    style="@style/LedgerReportChip"
+                    android:text="@string/range_all" />
+
+                <TextView
+                    android:id="@+id/chipLrCustom"
+                    style="@style/LedgerReportChip"
+                    android:layout_marginEnd="0dp"
+                    android:drawablePadding="6dp"
+                    android:text="@string/range_custom"
+                    app:drawableStartCompat="@drawable/ic_lr_calendar" />
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- The card rises 48dp into the band's foot: ConstraintLayout ignores a
+         negative margin, so it hangs from this marker instead. -->
+    <Space
+        android:id="@+id/lrOverlap"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="48dp"
+        app:layout_constraintBottom_toBottomOf="@id/header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/lrSummary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/lrOverlap">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvLrCounts"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnLrStartDate"
-                        android:maxLines="1"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="0dp"
-                        android:layout_height="52dp"
-                        android:layout_weight="1"
-                        android:gravity="start|center_vertical"
-                        android:paddingStart="16dp"
-                        android:text="@string/report_start_date"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text_muted"
-                        android:textSize="14sp"
-                        app:icon="@drawable/ic_calendar"
-                        app:iconPadding="10dp"
-                        app:iconTint="@color/text_muted" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginVertical="10dp"
-                        android:background="@color/page_line" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnLrEndDate"
-                        android:maxLines="1"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="0dp"
-                        android:layout_height="52dp"
-                        android:layout_weight="1"
-                        android:gravity="start|center_vertical"
-                        android:paddingStart="16dp"
-                        android:text="@string/report_end_date"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text_muted"
-                        android:textSize="14sp"
-                        app:icon="@drawable/ic_calendar"
-                        app:iconPadding="10dp"
-                        app:iconTint="@color/text_muted" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/page_line" />
-
-                <!-- The status strip lives INSIDE the card as its own pill:
-                     8dp of white card frames it on every side, so its brand
-                     green can never dissolve into the page's own green
-                     around the card — the owner's third catch on this one
-                     control, and the right one: a status colour must differ
-                     from the page as well as from its neighbours. -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLrRangeAll"
-                    android:maxLines="1"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="start|center_vertical"
-                    android:paddingStart="12dp"
-                    android:text="@string/range_all"
-                    android:textAllCaps="false"
+                    android:layout_weight="1"
                     android:textColor="@color/ink"
                     android:textSize="14sp"
-                    app:cornerRadius="10dp"
-                    app:icon="@drawable/ic_pdf_doc"
-                    app:iconPadding="10dp"
-                    app:iconTint="@color/text_muted" />
+                    android:textStyle="bold" />
+
+                <!-- The window itself, tappable: the same as Custom. -->
+                <TextView
+                    android:id="@+id/tvLrRange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_lr_range_pill"
+                    android:drawablePadding="6dp"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:minHeight="40dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp"
+                    app:drawableStartCompat="@drawable/ic_lr_calendar"
+                    app:drawableTint="@color/text_muted" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
 
-    <!-- Totals for the chosen window — always in sight above the list, the
-         way the owner reads the competitor's report: totals first, rows under
-         them. -->
-    <LinearLayout
-        android:id="@+id/lrTotalsBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/section_khata"
-        android:orientation="horizontal"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:paddingBottom="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header">
+            <!-- Gave against got, as a share of the window's money. -->
+            <LinearLayout
+                android:id="@+id/lrShareBar"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_lr_bar_track"
+                android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+                <View
+                    android:id="@+id/lrShareGave"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/lr_bar_gave" />
 
-            <TextView
-                android:layout_width="wrap_content"
+                <View
+                    android:id="@+id/lrShareGot"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/lr_bar_got" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/i_gave"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="11sp" />
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvLrTotalGave"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/red_gave_on_dark"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_lr_total_gave"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/i_gave"
+                        android:textColor="@color/red_gave_text"
+                        android:textSize="12sp"
+                        app:drawableStartCompat="@drawable/ic_lr_arrow_gave"
+                        app:drawableTint="@color/red_gave_text" />
+
+                    <TextView
+                        android:id="@+id/tvLrTotalGave"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:textColor="@color/red_gave_text"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_lr_total_got"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/i_got"
+                        android:textColor="@color/green_got_text"
+                        android:textSize="12sp"
+                        app:drawableStartCompat="@drawable/ic_lr_arrow_got"
+                        app:drawableTint="@color/green_got_text" />
+
+                    <TextView
+                        android:id="@+id/tvLrTotalGot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:textColor="@color/green_got_text"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/i_got"
-                android:textColor="@color/gold_on_dark"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tvLrTotalGot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/green_got_on_dark"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!--
-          Two totals, not three. A "Net change" column used to follow, gave
-          minus got across EVERY customer in the window: one man's sale and
-          another man's payment folded into a single figure that belongs to
-          nobody's account. Worse, it disagreed with its own PDF — this screen
-          printed got − gave and the PDF gave − got, so the same report showed
-          the same number with opposite signs. Removed from both, as the Khata
-          header's net balance was. A single party's own statement keeps its
-          net change; for one account it is exactly the useful number.
-        -->
-    </LinearLayout>
-
-    <!-- Column header row, pinned above the scrolling list. The two money
-         columns are fixed-width so the header labels and every row's amounts
-         sit on the same vertical lines. -->
-    <LinearLayout
-        android:id="@+id/lrColumnHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/page_line"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lrTotalsBar">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/ledger_report_col_name"
-            android:textColor="@color/text_muted"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:text="@string/i_gave"
-            android:textColor="@color/red_gave_text"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:text="@string/i_got"
-            android:textColor="@color/green_got_text"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLedgerReport"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="88dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lrColumnHeader" />
+        app:layout_constraintTop_toBottomOf="@id/lrSummary" />
 
     <TextView
         android:id="@+id/tvLrEmpty"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="32dp"
         android:gravity="center"
         android:text="@string/ledger_report_empty"
         android:textColor="@color/text_muted"
         android:textSize="14sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lrColumnHeader" />
+        app:layout_constraintTop_toBottomOf="@id/lrSummary" />
 
-    <!-- Download opens the PDF preview-first; Share goes straight to the
-         share sheet, because the owner is already looking at exactly what
-         the PDF will hold. -->
+    <!-- One primary action. Preview and Download are icon buttons with
+         their names spoken (contentDescription) and shown on long press. -->
     <LinearLayout
+        android:id="@+id/lrActions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_lr_action_bar"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="12dp"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLrPreview"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="1"
-            android:text="@string/pdf_preview"
-            app:backgroundTint="@color/section_cashbook"
-            app:icon="@drawable/ic_eye_open"
-            android:layout_marginEnd="6dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:contentDescription="@string/pdf_preview"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:minHeight="56dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:textSize="12sp"
-            app:iconGravity="top"
-            app:iconPadding="2dp"
-            app:iconSize="18dp" />
+            android:padding="0dp"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_eye_open"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="22dp"
+            app:iconTint="@color/ink"
+            app:strokeColor="@color/text_muted" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLrDownload"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="1"
-            android:text="@string/ledger_report_download"
-            app:backgroundTint="@color/button_dark"
-            app:icon="@drawable/ic_download"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/ledger_report_download"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:minHeight="56dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:textSize="12sp"
-            app:iconGravity="top"
-            app:iconPadding="2dp"
-            app:iconSize="18dp" />
+            android:padding="0dp"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_download"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="22dp"
+            app:iconTint="@color/ink"
+            app:strokeColor="@color/text_muted" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLrShare"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:maxLines="1"
-            android:text="@string/share"
-            app:backgroundTint="@color/section_cashbook"
-            app:icon="@drawable/ic_share"
-            android:layout_marginStart="6dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:minHeight="56dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:textSize="12sp"
-            app:iconGravity="top"
-            app:iconPadding="2dp"
-            app:iconSize="18dp" />
+            android:maxLines="1"
+            android:text="@string/share"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/section_khata"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_share"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconSize="20dp"
+            app:iconTint="@color/white" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

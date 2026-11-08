@@ -168,7 +168,7 @@ object MoreSheet {
         // Each size shows itself: "Aa" in the tile at that size (10 Oct).
         val glyphSizes = floatArrayOf(12f, 15f, 18f, 21f)
         val choices = labels.mapIndexed { i, label ->
-            ChoiceSheet.Option(label, glyph = "Aa", glyphSp = glyphSizes[i.coerceAtMost(glyphSizes.size - 1)],
+            ChoiceSheet.Option(label, glyph = activity.getString(R.string.text_size_glyph), glyphSp = glyphSizes[i.coerceAtMost(glyphSizes.size - 1)],
                 iconTint = R.color.tile_invoice_fg, tile = R.color.tile_invoice_bg)
         }
         ChoiceSheet.show(activity, activity.getString(R.string.text_size), choices, current) { which ->
@@ -225,12 +225,29 @@ object MoreSheet {
             .setMessage(status + "\n\n" + activity.getString(R.string.app_lock_explain))
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on) { _, _ ->
-                AppLock.setEnabled(activity, !enabled)
-                Toast.makeText(
-                    activity,
-                    if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
-                    Toast.LENGTH_SHORT
-                ).show()
+                val flip = {
+                    AppLock.setEnabled(activity, !enabled)
+                    Toast.makeText(
+                        activity,
+                        if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                // Turning the lock OFF takes the phone's own fingerprint or screen lock first
+                // (21 Oct 2026): anyone holding the open app could switch it off in two taps.
+                val host = activity as? androidx.fragment.app.FragmentActivity
+                if (!enabled || host == null) { if (!enabled) flip(); return@setPositiveButton }
+                val prompt = androidx.biometric.BiometricPrompt(host, androidx.core.content.ContextCompat.getMainExecutor(host),
+                    object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) { flip() }
+                    })
+                prompt.authenticate(
+                    androidx.biometric.BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(activity.getString(R.string.app_lock_turn_off))
+                        .setSubtitle(activity.getString(R.string.lock_subtitle))
+                        .setAllowedAuthenticators(AppLock.AUTHENTICATORS)
+                        .build()
+                )
             }
             .show()
     }

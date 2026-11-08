@@ -1,0 +1,20 @@
+name: Firebase config check
+
+# A half-minute check of the GOOGLE_SERVICES_JSON secret (22 Oct 2026): the
+# same script the app builds run, without building anything. Never prints the
+# secret; says whether it names both packages.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check the secret
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          python3 scripts/google_services.py
+          test -f app/google-services.json
+          rm -f app/google-services.json

@@ -38,7 +38,13 @@ class CashAdapter(
         val e = items[position]
         val ctx = holder.itemView.context
 
-        holder.tvCategory.text = e.category
+        // The counter's own categories in the owner's language (21 Oct 2026: they showed as English
+        // "Sale" and "Return" in every language); the owner's typed categories as typed.
+        holder.tvCategory.text = when (e.category) {
+            com.innovation313.roshankhata.data.CashCategory.SALE -> ctx.getString(R.string.cash_category_sale)
+            com.innovation313.roshankhata.data.CashCategory.RETURN -> ctx.getString(R.string.cash_category_return)
+            else -> e.category
+        }
 
         holder.tvNote.text = e.note.orEmpty()
         holder.tvNote.visibility = if (e.note.isNullOrBlank()) View.GONE else View.VISIBLE

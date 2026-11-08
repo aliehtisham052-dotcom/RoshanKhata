@@ -92,7 +92,9 @@ object PdfRtl {
     fun isMirrored(c: Canvas): Boolean = mirrored.containsKey(c)
 
     /** [Canvas.drawText], readable on a mirrored page. Same arguments, same meaning of [x] and the paint's alignment. */
-    fun drawText(c: Canvas, text: String, x: Float, y: Float, paint: Paint) {
+    fun drawText(c: Canvas, raw: String, x: Float, y: Float, paint: Paint) {
+        // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
+        val text = com.innovation313.roshankhata.data.Digits.forPrint(raw)
         if (!isMirrored(c)) {
             c.drawText(text, x, y, paint)
             return

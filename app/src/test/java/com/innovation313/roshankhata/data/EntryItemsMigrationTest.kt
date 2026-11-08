@@ -90,6 +90,9 @@ class EntryItemsMigrationTest {
             raw.execSQL("PRAGMA foreign_keys = OFF")
             // Rename must not rewrite references elsewhere (newer SQLite would).
             raw.execSQL("PRAGMA legacy_alter_table = ON")
+            // v32 (the counter) first: its tables and columns were never in a
+            // v19 file, and the chain's 31→32 must find them absent.
+            SchemaRewind.undo32(raw)
             raw.execSQL("DROP TABLE entry_items")
 
             fun sqlOf(type: String, table: String): List<String> =

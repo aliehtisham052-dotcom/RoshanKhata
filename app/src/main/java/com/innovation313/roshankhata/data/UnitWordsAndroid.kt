@@ -31,17 +31,19 @@ fun UnitWords.choices(context: Context): List<String> {
  * always compared units without regard to letter case).
  */
 fun UnitWords.normalizeStored(db: SupportSQLiteDatabase) {
-    val pairs = TO_KEY.filter { (label, key) -> label != key }
-    if (pairs.isEmpty()) return
-    val quoted = { s: String -> "'" + s.replace("'", "''") + "'" }
-    val cases = pairs.entries.joinToString(" ") { (label, key) -> "WHEN ${quoted(label)} THEN ${quoted(key)}" }
-    val labels = pairs.keys.joinToString(", ") { quoted(it) }
-    for ((table, column) in STORED_IN) {
-        runCatching {
-            db.execSQL(
-                "UPDATE $table SET $column = CASE lower(trim($column)) $cases ELSE $column END " +
-                    "WHERE $column IS NOT NULL AND lower(trim($column)) IN ($labels)"
-            )
-        }
-    }
+    // The statements are shared with the computer (UnitWords.repairStored, 23 Oct 2026): one read first,
+    // then one transaction kept out of live sync's log.
+    repairStored(
+        needed = { sql -> db.query(sql).use { c -> c.moveToFirst() && c.getLong(0) != 0L } },
+        inTransaction = { body ->
+            db.beginTransaction()
+            try {
+                body()
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+        },
+        exec = { sql -> db.execSQL(sql) }
+    )
 }

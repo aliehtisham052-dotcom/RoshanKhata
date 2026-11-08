@@ -75,16 +75,26 @@ object Format {
         return pick(untagged) ?: pick(name) ?: "?"
     }
 
-    fun money(value: Double): String {
+    // [sign]: another shop's own sign, for a figure read from a shop that is not open (23 Oct 2026).
+    fun money(value: Double, sign: String = Currency.symbol): String {
         val rounded = abs(value)
         // The sign is the shop's own choice (Profile → Currency); see [Currency].
-        val sign = Currency.symbol
-        return if (rounded % 1.0 == 0.0) {
-            "$sign %,.0f".format(Digits.FIGURES, rounded)
-        } else {
-            "$sign %,.2f".format(Digits.FIGURES, rounded)
-        }
+        // A fraction is printed to the currency's own decimals (21 Oct 2026): 3 for KWD/BHD/OMR, none for IRR/Rp.
+        val figure = if (rounded % 1.0 == 0.0 || Currency.decimals(sign) == 0) "%,.0f".format(Digits.FIGURES, rounded)
+            else "%,.${Currency.decimals(sign)}f".format(Digits.FIGURES, rounded)
+        return "$sign " + groupedForReader(figure)
     }
+
+    /**
+     * Indonesian groups thousands with a dot and marks the decimal with a
+     * comma (21 Oct 2026, the nine-language review): "Rp 1,500" reads there
+     * as one and a half. Every other language keeps 1,500.00. The digits
+     * stay 0-9 either way; only the two marks trade places.
+     */
+    private fun groupedForReader(figure: String, locale: Locale = Locale.getDefault()): String =
+        if (locale.language == "in" || locale.language == "id") {
+            figure.map { when (it) { ',' -> '.'; '.' -> ','; else -> it } }.joinToString("")
+        } else figure
 
     /**
      * A figure that carries a minus when it IS one, and nothing when it is not.
@@ -186,7 +196,9 @@ object Format {
         if (item.isEmpty() && quantity == null) return null
 
         val qtyPart = quantity?.let { q ->
-            val n = if (q % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, q) else "%,.2f".format(Digits.FIGURES, q)
+            // Grouped as the reader groups, as [money] is (23 Oct: Indonesian "1,500 karung" beside
+            // "Rp 1.500" read as one and a half).
+            val n = groupedForReader(if (q % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, q) else "%,.2f".format(Digits.FIGURES, q))
             // The unit in the app's language; what is saved is its key.
             val u = UnitWords.label(unit)
             if (u.isEmpty()) n else "$n $u"
@@ -211,8 +223,11 @@ object Format {
      * it twice.
      */
     fun qty(quantity: Double, unit: String?): String {
-        val n = if (quantity % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, quantity)
-        else "%,.2f".format(Digits.FIGURES, quantity)
+        // Grouped as the reader groups, as [money] is (23 Oct, Indonesian).
+        val n = groupedForReader(
+            if (quantity % 1.0 == 0.0) "%,.0f".format(Digits.FIGURES, quantity)
+            else "%,.2f".format(Digits.FIGURES, quantity)
+        )
         val u = UnitWords.label(unit)
         return if (u.isEmpty()) n else "$n $u"
     }

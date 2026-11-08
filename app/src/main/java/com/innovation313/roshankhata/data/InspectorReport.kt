@@ -33,13 +33,17 @@ import java.util.Locale
  * registration number is far worse than one that admits a blank.
  *
  * THE ONE FIGURE THAT NEEDS A CAVEAT, AND IT IS PRINTED ON THE PAGE. What is
- * left of a batch is the bill line minus the sales TAGGED to that exact batch,
- * in the same unit — the identical rule the expiry screen uses, kept identical
- * on purpose, because two screens disagreeing about one batch is worse than
- * either being approximate. An untagged sale subtracts from nothing, so a
- * remaining figure can only ever be too HIGH. The owner signs his name under
- * this, so the document says that in plain words instead of leaving him to
- * discover it in front of an inspector.
+ * left of a batch is the one rule's (Fefo, Marhala 3, 25 Oct 2026 — the
+ * counter, the Expiry screen, the bell and the computer's register read it
+ * too, because two screens disagreeing about one batch is worse than either
+ * being approximate): the bill line less what was sold from it, came back or
+ * was written off, a pack counted in the product's own unit, and never more
+ * than the shelf — a sale not tagged to a batch is taken from the batch that
+ * expires first. Until then this register took off only tagged sales in the
+ * same unit: a lot written off, or a carton sold by the bottle, still showed
+ * whole. The owner signs his name under this, so the document says how the
+ * figure is made in plain words instead of leaving him to discover it in
+ * front of an inspector.
  *
  * LAYOUT (redesigned 30 Sep 2026, from the owner's approved mockup and a
  * study of how Tally, Zoho Inventory, Vyapar and batch-expiry ERPs lay out a
@@ -179,17 +183,14 @@ object InspectorReport {
      */
     suspend fun gather(context: Context, dao: KhataDao, windowDays: Int): ReportData {
         val products = dao.productsOnce()
-        val stock = Stock.combine(
-            products = products,
-            bought = dao.boughtPerProduct(),
-            sold = dao.soldPerProduct(),
-            returned = dao.returnedPerProduct()
-        ).sortedBy { it.name.lowercase() }
+        val stock = NameOrder.sortedBy(Stock.of(dao)) { it.name }
 
         // Sold-out batches are dropped: a register of stock should list what is
         // on the shelf. What was bought and sold over a period is a purchase
         // and sales register — a different document, and not this one.
-        val live = dao.allBatchesOnce().filter { it.remaining > 0 }
+        // What is left of each is the one rule's (Fefo.register, Marhala 3, 25 Oct 2026), read against the
+        // same shelf as the stock table above it: the counter, Expiry and this register say the same.
+        val live = Fefo.register(dao, stock.associate { it.productId to it.onHand })
 
         val cutoff = System.currentTimeMillis() + windowDays * DAY_MS
         val expired = live.filter { it.hasExpired }
@@ -241,12 +242,13 @@ object InspectorReport {
             .filter { !it.isUntouched }
             .groupBy { productsById[it.productId]?.company?.trim()?.takeIf { c -> c.isNotEmpty() } ?: noCompany }
             .toList()
-            .sortedWith(compareBy(
-                // The unlabelled group sits last, not jumbled into the alphabet.
-                { it.first == noCompany },
-                { it.first.lowercase() }
-            ))
-            .map { (company, list) -> company to list.sortedBy { it.name.lowercase() } }
+            .sortedWith { a, b ->
+                // The unlabelled group sits last, not jumbled into the alphabet; the
+                // rest in the reader's alphabet (lesson 30; 23 Oct review, R49).
+                compareValues(a.first == noCompany, b.first == noCompany).takeIf { it != 0 }
+                    ?: NameOrder.byName.compare(a.first, b.first)
+            }
+            .map { (company, list) -> company to NameOrder.sortedBy(list) { it.name } }
 
         val typeCounts = typeCounts(
             stock.filter { !it.isUntouched }.map { productsById[it.productId]?.productType },
@@ -840,11 +842,11 @@ object InspectorReport {
                 val isSoon = b.itemId in soonIds
                 val status: Cell = when {
                     isExpired -> Cell.Chip(
-                        b.daysLeft?.let { Digits.string(context.resources, R.string.pdf_insp_expired_ago, -it) }
+                        b.daysLeft?.let { Digits.quantity(context.resources, R.plurals.pdf_insp_expired_ago, -it, -it) }
                             ?: context.getString(R.string.pdf_insp_expired),
                         RED_FG, RED_BG
                     )
-                    isSoon -> Cell.Chip(Digits.string(context.resources, R.string.pdf_insp_days_left, b.daysLeft ?: 0), AMBER_FG, AMBER_BG)
+                    isSoon -> Cell.Chip((b.daysLeft ?: 0).let { Digits.quantity(context.resources, R.plurals.n_days_left, it, it) }, AMBER_FG, AMBER_BG)
                     exp == null -> Cell.Text(null, body)
                     else -> Cell.Chip(context.getString(R.string.pdf_insp_status_ok), OK_FG, OK_BG)
                 }

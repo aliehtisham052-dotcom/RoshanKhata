@@ -46,8 +46,20 @@ object Backup {
      * back exactly the same way. Only the label differs, because the label is
      * what was standing between the owner and a backup that actually travelled.
      */
-    fun suggestedFileName(): String =
-        "RoshanKhata_Backup_${stamp.format(Date())}.txt"
+    fun suggestedFileName(context: Context, businessId: Long = Businesses.active(context).id): String =
+        // The shop's number in the name (23 Oct 2026, the review): a Downloads folder holding two shops'
+        // copies says which is which. Business 1's name is as it always was.
+        "RoshanKhata_Backup${Businesses.suffixFor(businessId)}_${stamp.format(Date())}.txt"
+
+    /**
+     * The folder of the app's own saved backups, one per shop (23 Oct 2026, the review: one pool for
+     * every shop let shop B's five copies push out all of shop A's, and the restore list offered other
+     * shops' books). Business 1 keeps "backups", which also holds the copies made before this.
+     */
+    fun internalDirName(businessId: Long): String = "backups" + Businesses.suffixFor(businessId)
+
+    private fun internalDir(context: Context): File =
+        File(context.filesDir, internalDirName(Businesses.active(context).id))
 
     // ---------- Export ----------
 
@@ -66,14 +78,18 @@ object Backup {
      * The backup, written straight to [out] by the shared format
      * ([BackupCodec.exportTo]), with this shop's name and Profile.
      */
-    suspend fun exportTo(context: Context, dao: KhataDao, out: java.io.Writer) =
-        BackupCodec.exportTo(dao, BusinessProfile.businessName(context), businessProfileToJson(context), out)
+    suspend fun exportTo(context: Context, dao: KhataDao, out: java.io.Writer, secrets: Boolean = true) =
+        BackupCodec.exportTo(dao, BusinessProfile.businessName(context), businessProfileToJson(context), out, secrets)
 
-    /** The backup to a file, buffered, for the paths that hand a file on (Downloads, Drive, the helper's copy). */
-    suspend fun exportToFile(context: Context, dao: KhataDao, file: File): File {
+    /**
+     * The backup to a file, buffered, for the paths that hand a file on
+     * (Downloads, Drive, the helper's copy). [secrets] false leaves the PINs'
+     * hashes out (the helper's copy, BackupCodec.exportTo).
+     */
+    suspend fun exportToFile(context: Context, dao: KhataDao, file: File, secrets: Boolean = true): File {
         file.parentFile?.mkdirs()
         java.io.BufferedWriter(java.io.OutputStreamWriter(java.io.FileOutputStream(file), Charsets.UTF_8), 64 * 1024)
-            .use { exportTo(context, dao, it) }
+            .use { exportTo(context, dao, it, secrets) }
         return file
     }
 
@@ -95,7 +111,7 @@ object Backup {
      * @return a human-readable location to show the owner, or null on failure.
      */
     fun saveToDownloads(context: Context, json: String): String? {
-        val name = suggestedFileName()
+        val name = suggestedFileName(context)
 
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -150,14 +166,59 @@ object Backup {
      * the system does not clear it behind the owner's back.
      */
     /** The streamed backup's cache file (P6): the one copy every other path copies from. */
-    suspend fun exportToCache(context: Context, dao: KhataDao): File {
+    suspend fun exportToCache(context: Context, dao: KhataDao, secrets: Boolean = true): File {
         val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-        return exportToFile(context, dao, File(dir, suggestedFileName()))
+        val file = exportToFile(context, dao, File(dir, suggestedFileName(context)), secrets)
+        sweepCache(dir, file)
+        return file
+    }
+
+    /** How long a backup in the cache may wait for whoever it was made for (a share, an upload, a send). */
+    private const val CACHE_KEEP_MS = 60 * 60 * 1000L
+
+    /** This file's own names in the cache: "RoshanKhata_Backup…txt", and "left-" before it for a shop left. */
+    private val CACHED_BACKUP = Regex("^(left-)?RoshanKhata_Backup.*\\.txt$")
+
+    /**
+     * The cache's older backups go (23 Oct 2026, review R38): every export wrote a new whole book
+     * there — the PIN hashes in it — and nothing ever deleted one. Only this file's own names, and
+     * only those older than [CACHE_KEEP_MS]: a share handed to WhatsApp a minute ago is still read
+     * from its file; the folder's other files (a pulled book, a pairing's, the helper's zip) are
+     * their own writers' to clear. Never throws.
+     */
+    private fun sweepCache(dir: File, keep: File) {
+        runCatching {
+            val before = System.currentTimeMillis() - CACHE_KEEP_MS
+            dir.listFiles { f -> f.isFile && f != keep && CACHED_BACKUP.matches(f.name) && f.lastModified() < before }
+                ?.forEach { it.delete() }
+        }
+    }
+
+    /**
+     * A NAMED shop's backup to the cache, open or not (23 Oct 2026, the review, R21: the Drive backup
+     * of the shop being left). [dao] must be that shop's own book ([KhataDatabase.openOther]); its
+     * name, profile and file name are all read by [businessId] ([BusinessProfile.settingsOf]), never
+     * from whichever shop is open now, so one shop's book can never go out under another's details.
+     */
+    suspend fun exportToCacheFor(context: Context, dao: KhataDao, businessId: Long): File {
+        val dir = File(context.cacheDir, "backups").apply { mkdirs() }
+        // Its own name in the cache ("left-"): never the file a manual backup of the same shop writes that minute.
+        val file = File(dir, "left-" + suggestedFileName(context, businessId))
+        java.io.BufferedWriter(java.io.OutputStreamWriter(java.io.FileOutputStream(file), Charsets.UTF_8), 64 * 1024).use {
+            BackupCodec.exportTo(
+                dao,
+                BusinessProfile.nameOf(context, businessId),
+                BackupCodec.profileToJson(BusinessProfile.settingsOf(context, businessId)),
+                it
+            )
+        }
+        sweepCache(dir, file)
+        return file
     }
 
     /** [saveToDownloads], from a file — streamed, never held as one string. */
     fun saveToDownloads(context: Context, source: File): String? {
-        val name = suggestedFileName()
+        val name = suggestedFileName(context)
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
@@ -190,8 +251,8 @@ object Backup {
     /** [writeInternalCopy], from a file. */
     fun writeInternalCopy(context: Context, source: File): File? {
         return try {
-            val dir = File(context.filesDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName())
+            val dir = internalDir(context).apply { mkdirs() }
+            val file = File(dir, suggestedFileName(context))
             source.copyTo(file, overwrite = true)
             dir.listFiles()
                 ?.sortedByDescending { it.lastModified() }
@@ -205,8 +266,8 @@ object Backup {
 
     fun writeInternalCopy(context: Context, json: String): File? {
         return try {
-            val dir = File(context.filesDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName())
+            val dir = internalDir(context).apply { mkdirs() }
+            val file = File(dir, suggestedFileName(context))
             file.writeText(json)
 
             // Keep the last few, then stop. An unbounded pile of backups would
@@ -224,7 +285,7 @@ object Backup {
 
     /** The app's own saved backups, newest first. */
     fun internalBackups(context: Context): List<File> {
-        val dir = File(context.filesDir, "backups")
+        val dir = internalDir(context)
         if (!dir.exists()) return emptyList()
         return dir.listFiles()
             ?.filter { it.isFile }
@@ -236,8 +297,9 @@ object Backup {
     fun writeToCache(context: Context, json: String): File? {
         return try {
             val dir = File(context.cacheDir, "backups").apply { mkdirs() }
-            val file = File(dir, suggestedFileName())
+            val file = File(dir, suggestedFileName(context))
             file.writeText(json)
+            sweepCache(dir, file)
             file
         } catch (e: Exception) {
             null
@@ -283,16 +345,48 @@ object Backup {
      * old backup, or one taken before the owner set any details), the current
      * profile is LEFT ALONE rather than blanked — restoring "nothing" over a
      * shop's real name would be a silent loss, not a restore.
+     *
+     * [keepAccess]: false for a live pairing (the shop's book taken by this phone), which must be the
+     * other device's book exactly — its owner PIN, counter and owner-device keys too, as the computer's
+     * own pairing restore does. Every other restore keeps this phone's access keys a copy says nothing of.
      */
-    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup) {
+    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup, keepAccess: Boolean = true) {
+        // A book replaced by a copy is no longer the book the computer keeps (22 Oct 2026, the review):
+        // live sync pauses first, so the restore's own deletes and inserts are not sent there as changes
+        // (they would have removed the computer's newer work); once the restore went through it stops,
+        // and the owner joins again. A restore that fails changes nothing, live sync included.
+        val sql = KhataDatabase.get(context).syncSql()
+        val live = LiveSync.pause(sql)
         // One transaction, all-or-nothing. If any step fails, the whole thing
         // rolls back and the existing ledger is left untouched — rather than the
         // old behaviour, where a failure partway through wiped data and restored
         // nothing, losing the customer the owner was trying to bring back.
-        BackupCodec.restoreLedger(dao, data)
+        // The pictures kept by row id follow their rows to the copy's ids (ImageReattach).
+        val before = ImageReattach.before(dao)
+        try {
+            BackupCodec.restoreLedger(dao, data, keepAccess)
+        } catch (e: Exception) {
+            // Even when the restore was cancelled (23 Oct 2026, the review): a cancelled coroutine's
+            // resume threw at once and left the book paused, then turned off at its next opening.
+            if (live) kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) { LiveSync.resume(sql) }
+            throw e
+        }
+        if (live) {
+            // The relays are told this device is done with the conversation (best effort: its box there goes, and no
+            // wake-up rings a phone that will never answer — 23 Oct 2026, the second review), then it ends here.
+            runCatching { LiveCloud.leaveAll(sql) }
+            LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+            NumberMark.mark = null
+        }
+        before?.let { ImageReattach.after(context, dao, it) }
 
         data.businessProfile?.let { restoreBusinessProfile(context, it) }
     }
+
+    /** Whether this book syncs live with the computer now (a restore would stop it: said in its confirmation). */
+    suspend fun liveOn(context: Context): Boolean = runCatching {
+        LiveSync.identity(KhataDatabase.get(context).syncSql()) != null
+    }.getOrDefault(false)
 
     // ---------- Business Profile (SharedPreferences, not Room) ----------
 

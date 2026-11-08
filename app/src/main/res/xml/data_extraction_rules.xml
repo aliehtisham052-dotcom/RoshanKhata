@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nothing of the book leaves the phone through Android's own backup or phone-to-phone
+  transfer (21 Oct 2026, the critical review). allowBackup="false" says so for cloud backup,
+  but on Android 12 and later some makers still copy an app's files to a new phone unless
+  these rules exclude them, and that copy skips App Lock. The book moves only by the app's
+  own backup (file, Drive, Wi-Fi), which the owner chooses.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+    </device-transfer>
+</data-extraction-rules>

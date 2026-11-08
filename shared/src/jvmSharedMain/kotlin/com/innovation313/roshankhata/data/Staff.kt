@@ -14,7 +14,7 @@ import java.util.Calendar
  * with money that is not a sale. No CNIC picture is kept (rejected earlier);
  * a name, an optional phone and the monthly salary are all this needs.
  */
-@Entity(tableName = "staff")
+@Entity(tableName = "staff", indices = [Index("uid")])
 data class Staff(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
@@ -22,24 +22,63 @@ data class Staff(
     val monthlySalary: Double,
     /** False once the owner removes them from the list; their records stay. */
     val isActive: Boolean = true,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+
+    // ---- Logins (POS Phase 5, v34) ----
+
+    /**
+     * What this person may do at the counter, one of [Role]; null = on the
+     * payroll only, no login. Stored as a key, never a translated word.
+     */
+    val role: String? = null,
+
+    /** The PIN they sign in with, as a salted hash ([PinHash]) — never the PIN. Null = no PIN set. */
+    val pinHash: String? = null,
+    val pinSalt: String? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
+
+/**
+ * Who may do what (POS Phase 5). The owner is not a staff row: the book is
+ * theirs, and on the computer the App Lock PIN is theirs. A manager may do
+ * everything at the counter the owner can, short of the settings and the
+ * book itself; a cashier rings up and takes money, and asks for a manager
+ * when something must be undone or marked down.
+ */
+object Role {
+    const val MANAGER = "manager"
+    const val CASHIER = "cashier"
+    val ALL = listOf(MANAGER, CASHIER)
+}
+
+/** What version 34 adds (staff logins), as the SQL both migrations run — see [Schema32]. */
+object Schema34 {
+    val statements: List<String> = listOf(
+        "ALTER TABLE staff ADD COLUMN role TEXT",
+        "ALTER TABLE staff ADD COLUMN pinHash TEXT",
+        "ALTER TABLE staff ADD COLUMN pinSalt TEXT"
+    )
+    val newColumns = mapOf("staff" to listOf("role", "pinHash", "pinSalt"))
+}
 
 /**
  * One marked day. A day with no row is a day present — the owner marks only
  * the exceptions, which is how a shop actually keeps a register.
  */
-@Entity(tableName = "staff_attendance", indices = [Index(value = ["staffId", "day"], unique = true)])
+@Entity(tableName = "staff_attendance", indices = [Index(value = ["staffId", "day"], unique = true), Index("uid")])
 data class StaffAttendance(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val staffId: Long,
     /** Local midnight of the day, epoch ms. */
     val day: Long,
-    val status: Int
+    val status: Int,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /** Money handed over: an advance, or salary paid. Never interest — an advance is returned as it was given. */
-@Entity(tableName = "staff_payments", indices = [Index(value = ["staffId"])])
+@Entity(tableName = "staff_payments", indices = [Index(value = ["staffId"]), Index("uid")])
 data class StaffPayment(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val staffId: Long,
@@ -47,7 +86,16 @@ data class StaffPayment(
     val kind: Int,
     val timestamp: Long = System.currentTimeMillis(),
     val note: String? = null,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 )
 
 /** The month's sums for one person. Plain Kotlin, unit-tested (PayrollTest). */

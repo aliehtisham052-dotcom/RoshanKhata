@@ -26,3 +26,6 @@ secrets.xml
 apikey.properties
 *.jks
 keystore_base64.txt
+
+# Third-party binary packages are never committed (R154, 23 Oct 2026): pin them in a requirements file instead.
+*.whl

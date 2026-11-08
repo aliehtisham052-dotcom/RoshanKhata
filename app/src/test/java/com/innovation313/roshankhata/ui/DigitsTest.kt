@@ -84,6 +84,8 @@ class DigitsTest {
         assertEquals(12.5, Digits.parse(" ١٢٫٥ ")!!, 0.0)       // Arabic decimal separator
         assertEquals(27628.0, Digits.parse("٢٧٬٦٢٨")!!, 0.0)     // Arabic thousands separator
         assertEquals(500.0, Digits.parse("500")!!, 0.0)           // 0-9 untouched
+        assertEquals(500.0, Digits.parse("५००")!!, 0.0)           // Hindi keyboard (21 Oct)
+        assertEquals(1250.5, Digits.parse("১২৫০.৫")!!, 0.0)       // Bengali keyboard
         assertNull(Digits.parse(""))
         assertNull(Digits.parse(null))
         assertNull(Digits.parse("abc"))
@@ -100,5 +102,35 @@ class DigitsTest {
     fun `text without Arabic or Persian digits is returned as-is`() {
         val s = "500+300×2%"
         assertTrue(Digits.toLatin(s) === s)
+    }
+
+    @Test
+    fun `indonesian money groups with dots and marks the decimal with a comma - 21 Oct`() {
+        under("id") {
+            assertEquals("Rs 27.628", Format.money(27628.0))
+            assertEquals("Rs 1.250,50", Format.money(1250.5))
+        }
+        under("en") { assertEquals("Rs 1,250.50", Format.money(1250.5)) }
+    }
+
+    @Test
+    fun `a printed sheet may carry the language's own digits, codes stay 0-9 - 21 Oct`() {
+        val before = Digits.nativeOnPrint
+        try {
+            Digits.nativeOnPrint = false
+            assertEquals("Rs 27,628", Digits.forPrint("Rs 27,628", Locale.forLanguageTag("ar")))
+            Digits.nativeOnPrint = true
+            assertEquals("Rs ٢٧٬٦٢٨", Digits.forPrint("Rs 27,628", Locale.forLanguageTag("ar")))
+            assertEquals("Rs ١٢٫٥٠", Digits.forPrint("Rs 12.50", Locale.forLanguageTag("sd")))
+            assertEquals("۲۱ اکتبر ۲۰۲۶", Digits.forPrint("21 اکتبر 2026", Locale.forLanguageTag("fa")))
+            assertEquals("৳ ১,২৫০.৫০", Digits.forPrint("৳ 1,250.50", Locale.forLanguageTag("bn")))
+            // Codes, emails and websites keep 0-9.
+            assertEquals("INV-000012 shop1@example.com ٣", Digits.forPrint("INV-000012 shop1@example.com 3", Locale.forLanguageTag("ar")))
+            // Languages that print 0-9 are never changed.
+            assertEquals("Rs 27,628", Digits.forPrint("Rs 27,628", Locale.forLanguageTag("ur")))
+            assertEquals("Rs 27,628", Digits.forPrint("Rs 27,628", Locale.forLanguageTag("hi")))
+        } finally {
+            Digits.nativeOnPrint = before
+        }
     }
 }

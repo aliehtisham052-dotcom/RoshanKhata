@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.ui
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class NumberWordsTest {
@@ -170,5 +171,33 @@ class NumberWordsTest {
         assertEquals("خمسة عشر ألفًا روبية", NumberWords.inWordsArabic(15000.0, "روبية"))
         assertEquals("مائة ألف روبية", NumberWords.inWordsArabic(100000.0, "روبية"))
         assertEquals("مليونان وثلاثة آلاف روبية", NumberWords.inWordsArabic(2003000.0, "روبية"))
+    }
+
+    @Test
+    fun `urdu hindi and bengali keep their own words for any currency - 21 Oct`() {
+        val before = com.innovation313.roshankhata.data.Currency.symbol
+        try {
+            com.innovation313.roshankhata.data.Currency.symbol = "AED"
+            assertEquals("پانچ ہزار دو سو AED", NumberWords.amountInWords("ur", 5200.0))
+            assertEquals("पाँच हज़ार दो सौ AED", NumberWords.amountInWords("hi", 5200.0))
+            assertEquals("Paanch Hazar Do Sou AED", NumberWords.amountInWords("ur-Latn", 5200.0))
+            // English keeps the Western groups for a Gulf currency.
+            assertEquals("Five Thousand Two Hundred AED", NumberWords.amountInWords("en", 5200.0))
+            com.innovation313.roshankhata.data.Currency.symbol = "Rs"
+            assertEquals("پانچ ہزار دو سو روپے", NumberWords.amountInWords("ur", 5200.0))
+        } finally {
+            com.innovation313.roshankhata.data.Currency.symbol = before
+        }
+    }
+
+    @Test
+    fun `sindhi amount in words - 21 Oct`() {
+        assertEquals("پنج هزار ٻه سؤ روپيا", NumberWords.rupeesInWords("sd", 5200.0))
+        assertEquals("ٻه لک پنجاهه هزار روپيا", NumberWords.rupeesInWords("sd", 250000.0))
+        assertEquals("هڪ ڪروڙ روپيا", NumberWords.rupeesInWords("sd", 10000000.0))
+        assertEquals("نوانوي روپيا", NumberWords.rupeesInWords("sd", 99.0))
+        assertEquals("ٻڙي روپيا", NumberWords.rupeesInWords("sd", 0.0))
+        // Sindhi letters, never Urdu's look-alikes.
+        assertTrue(NumberWords.rupeesInWords("sd", 98765.0).none { it in "کیہےٹ" })
     }
 }

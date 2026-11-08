@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import com.innovation313.roshankhata.data.choices
 
 import com.innovation313.roshankhata.data.get
@@ -38,6 +42,7 @@ import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.EntryItem
 import com.innovation313.roshankhata.data.ProductName
 import com.innovation313.roshankhata.ui.SmartSuggest
+import com.innovation313.roshankhata.ui.attach
 import com.innovation313.roshankhata.ui.asSuggestions
 import com.innovation313.roshankhata.ui.withStarters
 import com.innovation313.roshankhata.ui.Calc
@@ -87,8 +92,9 @@ class EntryDetailActivity : BaseActivity() {
                 ?.trim()?.ifEmpty { null } ?: getString(R.string.app_name)
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
-        findViewById<ImageButton>(R.id.btnDelete).setOnClickListener { confirmDelete() }
-        findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { showEditDialog() }
+        // An entry a bill, plan, cheque or ticket wrote is changed there, not here (21 Oct 2026).
+        findViewById<ImageButton>(R.id.btnDelete).setOnClickListener { com.innovation313.roshankhata.ui.LinkedEntry.check(this, com.innovation313.roshankhata.data.KhataDatabase.get(this).khataDao(), entryId) { confirmDelete() } }
+        findViewById<MaterialButton>(R.id.btnEdit).setOnClickListener { com.innovation313.roshankhata.ui.LinkedEntry.check(this, com.innovation313.roshankhata.data.KhataDatabase.get(this).khataDao(), entryId) { showEditDialog() } }
         findViewById<MaterialButton>(R.id.btnShare).setOnClickListener { shareReceipt() }
         findViewById<MaterialButton>(R.id.btnPrint).setOnClickListener { printReceipt() }
         // The customer's signature (6 Oct). A helper's phone shows it but cannot take one.
@@ -289,7 +295,18 @@ class EntryDetailActivity : BaseActivity() {
             findViewById<TextView>(R.id.tvPaymentMethod).text = method
         }
 
-        findViewById<TextView>(R.id.tvBalance).text = Format.money(e.amount)
+        // The balance this entry left (25 Oct 2026, the audit): the row said "Balance after" and printed
+        // the entry's own amount, so a customer who paid 5,000 of 50,000 was sent "Balance after: Rs 5,000".
+        // In the statement's words, his side, since this card is what the customer is sent (ReceiptBalance).
+        val tvBalance = findViewById<TextView>(R.id.tvBalance)
+        tvBalance.text = "…"
+        lifecycleScope.launch {
+            val after = runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().balanceAfterEntry(e) }.getOrNull()
+            if (isFinishing || isDestroyed) return@launch
+            tvBalance.text = after?.let {
+                com.innovation313.roshankhata.data.ReceiptBalance.text(com.innovation313.roshankhata.data.AndroidWords(this@EntryDetailActivity), it)
+            } ?: "—"
+        }
     }
 
     /**
@@ -301,6 +318,7 @@ class EntryDetailActivity : BaseActivity() {
      * far riskier operation than fixing what this entry actually says.
      */
     private fun showEditDialog() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, KhataDatabase.get(this).khataDao()) { showEditDialog() }) return
         val e = entry ?: return
         // An entry made with the item list — several items, a rate, or a free
         // item — is edited on the full form it was made on; this small dialog
@@ -377,6 +395,35 @@ class EntryDetailActivity : BaseActivity() {
         }
 
         etAmount.setText(Format.plain(e.amount))
+
+        // The amount is written on the app's own calculator pad, the one the
+        // add-entry form has (21 Oct): a user found Edit brought up only the
+        // phone's number keyboard — no + − × ÷ %, no =. The pad shows while
+        // the amount is being written; the note and goods boxes get the
+        // phone's keyboard, and the room the pad took. A tap on the amount
+        // brings the pad back and puts the keyboard away.
+        etAmount.showSoftInputOnFocus = false
+        val pad = view.findViewById<View>(R.id.editKeypad)
+        val tvAmountResult = view.findViewById<TextView>(R.id.tvEditAmountResult)
+        com.innovation313.roshankhata.ui.CalcPad.bind(view, etAmount)
+        etAmount.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                com.innovation313.roshankhata.ui.CalcPad.showTotal(etAmount, tvAmountResult)
+            }
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
+        val keyboard = getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+            as android.view.inputmethod.InputMethodManager
+        fun showPad() {
+            pad.visibility = View.VISIBLE
+            keyboard.hideSoftInputFromWindow(etAmount.windowToken, 0)
+        }
+        view.viewTreeObserver.addOnGlobalFocusChangeListener { _, now ->
+            if (now === etAmount) showPad() else if (now is EditText) pad.visibility = View.GONE
+        }
+        etAmount.setOnClickListener { showPad() }
+
         etNote.setText(e.note.orEmpty())
         // Pre-fill without asking the adapter to match — see the same call in
         // BillsActivity. Harmless today because the products load after this,
@@ -443,7 +490,8 @@ class EntryDetailActivity : BaseActivity() {
                 if (etItemName.text.toString().trim() != typed) return@launch
 
                 matchedProductId = product?.id
-                batchOptions = product?.let { dao.batchOptionsForProduct(it.id) } ?: emptyList()
+                // What is left of each batch as the counter would say it (Fefo.options, Marhala 3).
+                batchOptions = product?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
 
                 if (batchOptions.isEmpty()) {
                     btnBatch.visibility = View.GONE
@@ -467,7 +515,7 @@ class EntryDetailActivity : BaseActivity() {
             // Nothing to prime: the goods fields are hidden (see above).
         } else if (e.isGiven && entryProductId != null) {
             lifecycleScope.launch {
-                val options = dao.batchOptionsForProduct(entryProductId)
+                val options = dao.productById(entryProductId)?.let { com.innovation313.roshankhata.data.Fefo.options(dao, it) } ?: emptyList()
                 batchOptions = options
                 if (options.isNotEmpty()) {
                     btnBatch.visibility = View.VISIBLE
@@ -560,6 +608,7 @@ class EntryDetailActivity : BaseActivity() {
                 val sig = sigRow.current
                 AppScope.launch {
                     dao.updateEntryWithItems(updated, newItems)
+                    dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount))
                     if (sigChanged) runCatching {
                         if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(applicationContext, updated.id, sig)
                         else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
@@ -609,6 +658,7 @@ class EntryDetailActivity : BaseActivity() {
     }
 
     private fun confirmDelete() {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, KhataDatabase.get(this).khataDao()) { confirmDelete() }) return
         AlertDialog.Builder(this)
             .setTitle(R.string.delete_entry_title)
             .setMessage(R.string.delete_entry_message)
@@ -626,6 +676,8 @@ class EntryDetailActivity : BaseActivity() {
                                 lifecycleScope.launch {
                                     dao.softDeleteEntry(entryId)
                                     dao.softDeleteEntry(pair.id)
+                                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", entryId)
+                                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", pair.id)
                                     entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
                                         com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId, pair.id)) }
                                     finish()
@@ -634,6 +686,7 @@ class EntryDetailActivity : BaseActivity() {
                             .setNegativeButton(R.string.delete_pair_one) { _, _ ->
                                 lifecycleScope.launch {
                                     dao.softDeleteEntry(entryId)
+                                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", entryId)
                                     entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
                                         com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId)) }
                                     finish()
@@ -643,6 +696,7 @@ class EntryDetailActivity : BaseActivity() {
                         return@launch
                     }
                     dao.softDeleteEntry(entryId)
+                    dao.audit(AuditActs.ENTRY_DELETED, "transactions", entryId)
                     entry?.let { com.innovation313.roshankhata.ui.UndoDelete.pending =
                         com.innovation313.roshankhata.ui.UndoDelete.Pending(it.partyId, listOf(entryId)) }
                     finish()
@@ -758,8 +812,9 @@ class EntryDetailActivity : BaseActivity() {
         lifecycleScope.launch {
             val ok = withContext(kotlinx.coroutines.Dispatchers.IO) {
                 try {
+                    // The roll's width from the counter's printer settings (58 or 80 mm).
                     com.innovation313.roshankhata.ui.ReceiptPrinter.send(
-                        device, com.innovation313.roshankhata.ui.ReceiptPrinter.bytes(picture))
+                        device, com.innovation313.roshankhata.ui.ReceiptPrinter.bytes(picture, com.innovation313.roshankhata.ui.TextReceipt.settings(this@EntryDetailActivity).width))
                     true
                 } catch (e: Exception) {
                     false

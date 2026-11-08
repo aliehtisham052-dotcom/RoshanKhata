@@ -49,7 +49,8 @@ class BackupCodecDesktopTest {
                 """"itemName": "DAP", "quantity": 1, "unit": "bag"""")
         val (result, data) = BackupCodec.parseText(v6)
         assertTrue("$result", result is BackupCodec.ImportResult.Ok)
-        assertEquals(listOf(EntryItem.fromLegacy(data!!.entries.single())).filterNotNull(), data.entryItems)
+        // Each line is its own row (schema 38: its own uid), so the rule is held to everything else.
+        assertEquals(listOf(EntryItem.fromLegacy(data!!.entries.single())).filterNotNull().map { it.copy(uid = null) }, data.entryItems.map { it.copy(uid = null) })
         assertEquals("DAP", data.entryItems.single().itemName)
     }
 

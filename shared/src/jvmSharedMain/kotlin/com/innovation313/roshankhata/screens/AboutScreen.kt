@@ -51,7 +51,10 @@ fun AboutScreen(
     supportEmail: String,
     onPrivacyPolicy: () -> Unit,
     onVersionTap: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Where the data lives in this platform's words (the computer's says this computer and its chosen folder, not
+     *  this phone and Drive — Marhala 4, the Windows audit); the phone's own when null. */
+    privacyBody: String? = null
 ) {
     val c = LocalRoshanColors.current
     Column(
@@ -92,7 +95,7 @@ fun AboutScreen(
             Column(Modifier.padding(18.dp)) {
                 Text(word(W.about_privacy_title), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 Text(
-                    word(W.about_privacy_body),
+                    privacyBody ?: word(W.about_privacy_body),
                     Modifier.padding(top = 8.dp),
                     color = c.inkSoft, fontSize = 14.sp, lineHeight = 14.sp * 1.55f
                 )

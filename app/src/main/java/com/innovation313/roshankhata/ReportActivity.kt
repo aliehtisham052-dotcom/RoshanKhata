@@ -98,8 +98,9 @@ class ReportActivity : BaseActivity() {
             when (ids.firstOrNull()) {
                 R.id.chipAll -> setRange(null, null)
                 R.id.chipToday -> setRange(startOfDay(System.currentTimeMillis()), null)
-                R.id.chipWeek -> setRange(startOfDay(System.currentTimeMillis() - 7 * DAY_MS), null)
-                R.id.chipMonth -> setRange(startOfDay(System.currentTimeMillis() - 30 * DAY_MS), null)
+                // The last 7 and 30 days counting today (21 Oct 2026: "7 days ago" from midnight was 8 days).
+                R.id.chipWeek -> setRange(startOfDay(System.currentTimeMillis() - 6 * DAY_MS), null)
+                R.id.chipMonth -> setRange(startOfDay(System.currentTimeMillis() - 29 * DAY_MS), null)
                 R.id.chipCustom -> pickCustomRange()
             }
         }
@@ -109,11 +110,14 @@ class ReportActivity : BaseActivity() {
         load()
     }
 
+    private var partyIsCustomer = true
+
     private fun load() {
         lifecycleScope.launch {
             dao.getParty(partyId)?.let { p ->
                 partyName = p.name
                 partyPhone = p.phone
+                partyIsCustomer = p.isCustomer
                 findViewById<TextView>(R.id.tvReportTitle).text =
                     getString(R.string.report_title, p.name)
             }
@@ -268,6 +272,7 @@ class ReportActivity : BaseActivity() {
                     // The whole account's balance, never the window's net —
                     // this PDF goes to the customer.
                     closingBalance = closingBalance,
+                    isCustomer = partyIsCustomer,
                     businessName = BusinessProfile.businessName(this@ReportActivity),
                     paymentQr = BusinessProfile.loadQr(this@ReportActivity),
                     // Only if the owner has turned it on. Off by default.

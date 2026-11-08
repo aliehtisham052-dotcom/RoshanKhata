@@ -1,0 +1,97 @@
+package com.innovation313.roshankhata.desktop
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import com.innovation313.roshankhata.screens.RoshanPalette
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+/**
+ * The computer's control colours measured, not eyeballed (1.8.3): a pill's or
+ * outlined button's edge at least 3:1 on every ground it sits on (WCAG 1.4.11;
+ * the old edge was 1.28:1), a chosen pill's fill 3:1 on its ground and its
+ * words 4.5:1 on the fill, by day and by night.
+ */
+class LookContrastTest {
+
+    private fun ratio(a: Color, b: Color): Double {
+        val x = a.luminance() + 0.05
+        val y = b.luminance() + 0.05
+        return maxOf(x, y).toDouble() / minOf(x, y)
+    }
+
+    private fun atLeast(min: Double, what: String, a: Color, b: Color) {
+        val r = ratio(a, b)
+        assertTrue("$what: %.2f:1, needs %.1f".format(r, min), r >= min)
+    }
+
+    @Test
+    fun `control edges stand out by day and by night`() {
+        val light = RoshanPalette.light
+        val dark = RoshanPalette.dark
+        for ((name, ground) in listOf("page" to light.pageBg, "card" to light.surface, "rail" to LookPalette.RAIL_LIGHT)) {
+            atLeast(3.0, "light edge on $name", LookPalette.EDGE_LIGHT, ground)
+            atLeast(3.0, "light chosen fill on $name", LookPalette.PICKED_LIGHT, ground)
+        }
+        for ((name, ground) in listOf("page" to dark.pageBg, "card" to dark.surface, "rail" to LookPalette.RAIL_DARK)) {
+            atLeast(3.0, "dark edge on $name", LookPalette.EDGE_DARK, ground)
+            atLeast(3.0, "dark chosen fill on $name", LookPalette.PICKED_DARK, ground)
+        }
+        atLeast(4.5, "words on the light chosen fill", Color.White, LookPalette.PICKED_LIGHT)
+        atLeast(4.5, "words on the dark chosen fill", LookPalette.ON_PICKED_DARK, LookPalette.PICKED_DARK)
+    }
+
+    private fun over(base: Color, wash: Color, alpha: Float) = Color(
+        red = base.red * (1 - alpha) + wash.red * alpha,
+        green = base.green * (1 - alpha) + wash.green * alpha,
+        blue = base.blue * (1 - alpha) + wash.blue * alpha
+    )
+
+    @Test
+    fun `the green card's words, its pills and the rail's group names read`() {
+        // Marhala 2 (25 Oct 2026): Home's deep green card, its two pills (10% white over it), its three
+        // figures (7% white), and the rail's group names, by day and by night.
+        val hero = Look.hero
+        val pill = over(hero, Color.White, 0.10f)
+        val tile = over(hero, Color.White, 0.07f)
+        atLeast(4.5, "white on the green card", Color.White, hero)
+        atLeast(4.5, "NET BALANCE in gold", Look.heroLabel, hero)
+        atLeast(4.5, "the softer words on a figure", over(tile, Color.White, 0.74f), tile)
+        atLeast(4.5, "I have to get on its pill", LookPalette.HERO_GET, pill)
+        atLeast(4.5, "I have to give on its pill", LookPalette.HERO_GIVE, pill)
+        atLeast(4.5, "group names on the light rail", LookPalette.GROUP_TEXT_LIGHT, LookPalette.RAIL_LIGHT)
+        atLeast(4.5, "group names on the dark rail", LookPalette.GROUP_TEXT_DARK, LookPalette.RAIL_DARK)
+    }
+
+    @Test
+    fun `the Khata page's tools and the parties' initials read on their tints`() {
+        // Marhala 4 (25 Oct 2026): each tool's glyph and each party's initials sit on a tint of their own colour.
+        listOf(
+            Triple("violet", LookPalette.VIOLET_LIGHT to LookPalette.VIOLET_TINT_LIGHT, LookPalette.VIOLET_DARK to LookPalette.VIOLET_TINT_DARK),
+            Triple("slate", LookPalette.SLATE_LIGHT to LookPalette.SLATE_TINT_LIGHT, LookPalette.SLATE_DARK to LookPalette.SLATE_TINT_DARK),
+            Triple("clay", LookPalette.CLAY_LIGHT to LookPalette.CLAY_TINT_LIGHT, LookPalette.CLAY_DARK to LookPalette.CLAY_TINT_DARK),
+            Triple("leaf", LookPalette.LEAF_LIGHT to LookPalette.LEAF_TINT_LIGHT, LookPalette.LEAF_DARK to LookPalette.LEAF_TINT_DARK),
+            Triple("rose", LookPalette.ROSE_LIGHT to LookPalette.ROSE_TINT_LIGHT, LookPalette.ROSE_DARK to LookPalette.ROSE_TINT_DARK),
+            Triple("olive", LookPalette.OLIVE_LIGHT to LookPalette.OLIVE_TINT_LIGHT, LookPalette.OLIVE_DARK to LookPalette.OLIVE_TINT_DARK)
+        ).forEach { (name, day, night) ->
+            atLeast(4.5, "$name by day", day.first, day.second)
+            atLeast(4.5, "$name by night", night.first, night.second)
+        }
+    }
+
+    @Test
+    fun `text keeps its contrast under the hover wash`() {
+        // The wash (Look.hover) laid over the card: ink must still read at 4.5:1 or better.
+        fun over(base: Color, wash: Color) = Color(
+            red = base.red * (1 - wash.alpha) + wash.red * wash.alpha,
+            green = base.green * (1 - wash.alpha) + wash.green * wash.alpha,
+            blue = base.blue * (1 - wash.alpha) + wash.blue * wash.alpha
+        )
+        val light = RoshanPalette.light
+        val dark = RoshanPalette.dark
+        atLeast(4.5, "light ink on hovered card", light.ink, over(light.surface, Color.Black.copy(alpha = 0.05f)))
+        atLeast(4.5, "light muted on hovered card", light.textMuted, over(light.surface, Color.Black.copy(alpha = 0.05f)))
+        atLeast(4.5, "dark ink on hovered card", dark.ink, over(dark.surface, Color.White.copy(alpha = 0.08f)))
+        atLeast(4.5, "dark muted on hovered card", dark.textMuted, over(dark.surface, Color.White.copy(alpha = 0.08f)))
+    }
+}

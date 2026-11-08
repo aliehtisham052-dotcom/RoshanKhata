@@ -51,18 +51,21 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val ctx = applicationContext
+        // The app's language, not the phone's: on Android 12 and lower the
+        // application context keeps the phone's (23 Oct review, R10).
+        val ctx = com.innovation313.roshankhata.ui.AppLanguage.context(applicationContext)
         Currency.refresh(ctx) // notifications print money; wear the shop's sign
         com.innovation313.roshankhata.data.ShopCalendar.refresh(ctx)
         // A helper's read-only phone holds a copy, not the book. Reminders
         // are the owner's to send, from the phone that keeps the book.
         if (com.innovation313.roshankhata.data.ViewerMode.isOn(ctx)) return Result.success()
-        if (!NotificationManagerCompat.from(ctx).areNotificationsEnabled()) {
-            // The owner said no (or hasn't said yes yet). Respect it silently.
-            return Result.success()
-        }
-        ensureChannel(ctx)
+        // Notifications off is the owner's "no" to being told things — not to the automatic backup
+        // (21 Oct 2026, the critical review: with notifications off, the Drive backup never ran).
+        val canNotify = NotificationManagerCompat.from(ctx).areNotificationsEnabled()
+        if (canNotify) ensureChannel(ctx)
 
+        // The shop, then its book: the backup and its bell notes are this shop's (23 Oct 2026, the review).
+        val businessId = com.innovation313.roshankhata.data.Businesses.active(ctx).id
         val dao = KhataDatabase.get(ctx).khataDao()
 
         // Automatic backup first: if it is enabled, connected, due, and the
@@ -72,11 +75,11 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // interrupting the owner, and a due-but-failed backup also asks the
         // system to retry with backoff.
         var autoBackupFailed = false
-        when (val auto = DriveBackup.autoBackupIfDue(ctx, dao)) {
+        when (val auto = DriveBackup.autoBackupIfDue(ctx, dao, businessId = businessId)) {
             is DriveBackup.AutoResult.Failed -> {
                 autoBackupFailed = true
-                AlertNotes.backupFailed(ctx)
-                notify(
+                AlertNotes.backupFailed(ctx, businessId)
+                if (canNotify) notify(
                     ctx, ID_BACKUP, AlertsActivity::class.java,
                     ctx.getString(R.string.notif_backup_failed_title),
                     ctx.getString(R.string.notif_backup_failed_body)
@@ -86,9 +89,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
                 // Not a failure to retry: another phone wrote this shop's
                 // backup last, and only the owner may replace it. Said once
                 // per occurrence; the backup screen explains and asks.
-                if (DriveBackup.firstNoticeOf(ctx, auto.conflict)) {
-                    AlertNotes.otherPhone(ctx)
-                    notify(
+                if (DriveBackup.firstNoticeOf(ctx, auto.conflict, businessId)) {
+                    AlertNotes.otherPhone(ctx, businessId)
+                    if (canNotify) notify(
                         ctx, ID_BACKUP, AlertsActivity::class.java,
                         ctx.getString(R.string.notif_backup_other_phone_title),
                         ctx.getString(R.string.notif_backup_other_phone_body)
@@ -101,6 +104,8 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             }
             else -> Unit // Skipped or BackedUp — stay silent.
         }
+        // The owner said no to notifications (or has not said yes yet): the rest are notifications.
+        if (!canNotify) return Result.success()
 
         val endOfToday = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59)

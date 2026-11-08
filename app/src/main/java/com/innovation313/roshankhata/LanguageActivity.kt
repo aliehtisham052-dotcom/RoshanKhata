@@ -193,6 +193,7 @@ class LanguageActivity : BaseActivity() {
             .edit().putBoolean(KEY_CHOSEN, true).apply()
 
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
+        com.innovation313.roshankhata.ui.AppLanguage.remember(this)
 
         if (!firstRun) {
             // Opened from More to change language. The app is already running

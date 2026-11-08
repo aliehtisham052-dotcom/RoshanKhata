@@ -40,14 +40,54 @@ class RoshanKhataApp : Application() {
     override fun onCreate() {
         super.onCreate()
         com.innovation313.roshankhata.data.ViewerMode.init(this)
+        // Printed sheets' digits, for PDFs a background job makes before any screen opens.
+        com.innovation313.roshankhata.data.PrintDigits.load(this)
+        // Who may do what on this phone: counter mode and the wrong-PIN count live on the device.
+        com.innovation313.roshankhata.ui.AccessUi.install(this)
         com.innovation313.roshankhata.data.Currency.refresh(this)
         com.innovation313.roshankhata.data.ShopCalendar.refresh(this)
         CrashLog.install(this)
+        // Live sync's passed-over failures go to their own small file, never shown as a crash (23 Oct 2026).
+        com.innovation313.roshankhata.data.SyncLog.install(this)
+        // Pictures a restore was renaming when the app was killed get their names back (23 Oct 2026, R39). Off the main thread.
+        val app = this
+        Thread { com.innovation313.roshankhata.data.ImageReattach.recover(app) }.start()
+        // A background save that fails (23 Oct 2026, the review): written down and said — "not saved" —
+        // instead of the whole app closing with the entry's dialog already gone as if it were saved.
+        com.innovation313.roshankhata.data.AppFailures.report = { e -> saveFailed(e) }
         // Before any screen is built, so the first frame is already in the
         // owner's chosen theme.
         runCatching { com.innovation313.roshankhata.data.ThemeMode.apply(this) }
         registerActivityLifecycleCallbacks(ScreenSecurityCallbacks())
         registerActivityLifecycleCallbacks(BackgroundWatcher(this))
+    }
+
+    /** What [com.innovation313.roshankhata.data.AppFailures] does on the phone: the record, the log line, the toast. */
+    private fun saveFailed(e: Throwable) {
+        CrashLog.record(this, e)
+        android.util.Log.e("RoshanKhata", "A background write failed", e)
+        // The commonest real cause on a small phone: no room left for SQLite to grow its file.
+        val full = generateSequence(e) { it.cause }.any {
+            it is android.database.sqlite.SQLiteFullException || it.message?.contains("SQLITE_FULL") == true
+        }
+        android.os.Handler(android.os.Looper.getMainLooper()).post {
+            runCatching {
+                android.widget.Toast.makeText(
+                    inAppLanguage(),
+                    if (full) R.string.save_failed_storage_full else R.string.save_failed_not_saved,
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    /** This app's context in the language the owner chose in the app (the Application's own may still be the phone's). */
+    private fun inAppLanguage(): android.content.Context {
+        val chosen = androidx.appcompat.app.AppCompatDelegate.getApplicationLocales()
+        if (chosen.isEmpty) return this
+        val conf = android.content.res.Configuration(resources.configuration)
+        conf.setLocales(android.os.LocaleList.forLanguageTags(chosen.toLanguageTags()))
+        return createConfigurationContext(conf)
     }
 
     /**
@@ -75,12 +115,19 @@ class RoshanKhataApp : Application() {
 
         override fun onActivityStarted(activity: Activity) {
             started++
+            // Live sync with the computer runs only while the app is on the screen (22 Oct 2026).
+            if (started == 1) runCatching {
+                // The live line's socket (23 Oct 2026): OkHttp's WebSocket, set once before the first round.
+                com.innovation313.roshankhata.data.LiveLines.maker = com.innovation313.roshankhata.data.OkLines
+                com.innovation313.roshankhata.data.LiveRunner.start(app)
+            }
         }
 
         override fun onActivityStopped(activity: Activity) {
             started--
             if (started <= 0) {
                 started = 0
+                runCatching { com.innovation313.roshankhata.data.LiveRunner.stop() }
                 runCatching { AutoBackup.onAppBackgrounded(app) }
             }
         }

@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.set
 import com.innovation313.roshankhata.ui.StepDots
 import com.innovation313.roshankhata.ui.TextFit
 
@@ -63,9 +64,9 @@ class ShopNameActivity : BaseActivity() {
             if (name.isEmpty()) return@setOnClickListener
             BusinessProfile.setBusinessName(this, name)
             etPhone.text.toString().trim().takeIf { it.isNotEmpty() }?.let { BusinessProfile.setBusinessPhone(this, it) }
-            proceed()
+            askCountry { proceed() }
         }
-        findViewById<MaterialButton>(R.id.btnShopNameLater).setOnClickListener { proceed() }
+        findViewById<MaterialButton>(R.id.btnShopNameLater).setOnClickListener { askCountry { proceed() } }
 
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = Unit
@@ -117,6 +118,63 @@ class ShopNameActivity : BaseActivity() {
     private fun styleName(et: EditText) {
         val style = if (et.text.isNullOrEmpty()) android.graphics.Typeface.NORMAL else android.graphics.Typeface.BOLD
         if (et.typeface?.style != style) et.setTypeface(android.graphics.Typeface.create(et.typeface, style))
+    }
+
+    /**
+     * The shop's country (21 Oct 2026), asked once on the way in, with the
+     * device's own region marked (a phone bought in Dhaka says Bangladesh),
+     * else what the language suggests. WhatsApp numbers, the tax name, the
+     * week and the calendar follow it; Business Profile changes it later.
+     * Dismissing the sheet keeps the marked guess, so nothing blocks the owner.
+     */
+    private fun askCountry(then: () -> Unit) {
+        if (BusinessProfile.hasCountry(this)) { then(); return }
+        val locale = resources.configuration.locales[0]
+        val all = com.innovation313.roshankhata.data.ShopCountry.choices(locale)
+        val guess = com.innovation313.roshankhata.data.ShopCountry.guess(
+            deviceRegion(), BusinessProfile.currency(this), com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
+        )
+        val choices = all.map { c ->
+            if (c == com.innovation313.roshankhata.data.ShopCountry.OTHER)
+                com.innovation313.roshankhata.ui.ChoiceSheet.Option(getString(R.string.country_other), icon = R.drawable.ic_hash,
+                    iconTint = R.color.tile_settings_fg, tile = R.color.tile_settings_bg)
+            else com.innovation313.roshankhata.ui.ChoiceSheet.Option(c.displayName(locale), glyph = c.code, glyphSp = 13f,
+                iconTint = R.color.backup_ink, tile = R.color.tile_bills_bg)
+        }
+        fun keep(c: com.innovation313.roshankhata.data.ShopCountry) {
+            BusinessProfile.setCountry(this, c)
+            if (BusinessProfile.currency(this) == com.innovation313.roshankhata.data.Currency.DEFAULT &&
+                c != com.innovation313.roshankhata.data.ShopCountry.OTHER && c.currencySign != com.innovation313.roshankhata.data.Currency.DEFAULT
+            ) com.innovation313.roshankhata.data.Currency.set(this, c.currencySign)
+            if (c.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN &&
+                BusinessProfile.calendar(this) == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN
+            ) com.innovation313.roshankhata.data.ShopCalendar.set(this, c.calendar)
+        }
+        com.innovation313.roshankhata.ui.ChoiceSheet.show(
+            this, getString(R.string.country_ask_title), choices, all.indexOf(guess),
+            message = getString(R.string.country_ask_body),
+            onCancel = { keep(guess); then() }
+        ) { which -> keep(all[which]); then() }
+    }
+
+    /**
+     * Where the phone is, never the app's language (23 Oct 2026, the review): the app's locale is the
+     * owner's language choice and carries no region ("ur", "ar"), so a UAE shop in Arabic read as Saudi
+     * Arabia and an English one anywhere as Pakistan. The SIM's country first (no permission needed),
+     * then the network's, then the phone's own system languages, then the app's; the first one that
+     * names a country the app knows.
+     */
+    private fun deviceRegion(): String? {
+        val known = com.innovation313.roshankhata.data.ShopCountry.entries.map { it.code }.filter { it.isNotBlank() }.toSet()
+        val tm = runCatching { getSystemService(TELEPHONY_SERVICE) as? android.telephony.TelephonyManager }.getOrNull()
+        val system = android.content.res.Resources.getSystem().configuration.locales
+        val candidates = buildList {
+            tm?.let { t -> runCatching { t.simCountryIso }.getOrNull()?.let { add(it) }; runCatching { t.networkCountryIso }.getOrNull()?.let { add(it) } }
+            for (i in 0 until system.size()) add(system[i].country)
+            add(resources.configuration.locales[0].country)
+            add(java.util.Locale.getDefault().country)
+        }
+        return candidates.map { it.trim().uppercase(java.util.Locale.ROOT) }.firstOrNull { it in known }
     }
 
     private fun proceed() {

@@ -38,6 +38,9 @@ interface ShopSettings {
     fun setCurrency(value: String?)
     fun calendar(): ShopCalendar.Kind
     fun setCalendar(kind: ShopCalendar.Kind)
+    /** The shop's country (21 Oct 2026); PAKISTAN for a book from before the setting. */
+    fun country(): ShopCountry
+    fun setCountry(country: ShopCountry)
 
     /** The trade's stored key (Trade.name on the phone), or null when never chosen. */
     fun tradeKey(): String?
@@ -67,6 +70,7 @@ interface ShopSettings {
         const val STRN = "strn_ntn"
         const val CURRENCY = "currency"
         const val CALENDAR = "calendar"
+        const val COUNTRY = "country"
         const val TRADE = "trade"
         const val TRADE_OTHER_NAME = "trade_other_name"
         const val TRADE_OTHER_ITEMS = "trade_other_items"

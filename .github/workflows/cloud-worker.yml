@@ -1,0 +1,114 @@
+name: Cloud relay
+
+# The live sync relay (cloud/worker). Every push that touches it is type-checked;
+# it is deployed ONLY when the owner runs this workflow by hand and the two
+# Cloudflare secrets exist. Without them the deploy step says so and stops.
+on:
+  push:
+    paths: ["cloud/worker/**", ".github/workflows/cloud-worker.yml", "scripts/test_relay.py"]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy the relay to Cloudflare"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: cloud/worker } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - name: Smoke test on a local Worker (no account, nothing leaves the runner)
+        run: |
+          npx wrangler dev --port 8787 --ip 127.0.0.1 > wr.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8787/v1/health && break; sleep 1; done
+          B=$(openssl rand -hex 16); T=$(openssl rand -hex 32); W=$(openssl rand -hex 32)
+          U=http://127.0.0.1:8787/v1/b/$B
+          call() { curl -s -X "$1" -H "authorization: RK $2" -H "x-device: $3" ${5:+--data-binary "$5"} "$U/$4"; }
+          call POST $T aaaaaaaaaaaaaaaa send x | grep -q say-hello-first
+          call POST $T aaaaaaaaaaaaaaaa hello | grep -q '"ok":true'
+          call POST $W bbbbbbbbbbbbbbbb hello | grep -q wrong-pass
+          call POST $T bbbbbbbbbbbbbbbb hello | grep -q '"ok":true'
+          call POST $T aaaaaaaaaaaaaaaa send sealed | grep -q '"seq":1'
+          call GET  $T bbbbbbbbbbbbbbbb "take?after=0" | grep -q c2VhbGVk
+          call GET  $T aaaaaaaaaaaaaaaa "take?after=0" | grep -q '"parcels":\[\]'
+          call POST $T bbbbbbbbbbbbbbbb ack '{"upTo":1}' | grep -q '"ok":true'
+          call GET  $T bbbbbbbbbbbbbbbb "take?after=0" | grep -q '"parcels":\[\]'
+          echo "relay smoke test passed"
+          # The whole conversation, as the PHP and Supabase relays are held to (relays.yml).
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8787
+          # The limits, lowered (23 Oct 2026): two more local Workers, each with its own state, ports and vars.
+          npx wrangler dev --port 8788 --inspector-port 9230 --ip 127.0.0.1 --persist-to .wrangler/caps \
+            --var DAY_LIMIT:4 --var BOOK_BYTES:3000 --var DAY_BYTES:7000 > wr-caps.log 2>&1 &
+          npx wrangler dev --port 8789 --inspector-port 9231 --ip 127.0.0.1 --persist-to .wrangler/idle \
+            --var DEVICE_IDLE_MS:1500 --var PRUNE_EVERY_MS:1000 > wr-idle.log 2>&1 &
+          # The account-wide cap through the !ledger (phase 2, 23 Oct 2026), lowered to 300,000 bytes.
+          npx wrangler dev --port 8790 --inspector-port 9232 --ip 127.0.0.1 --persist-to .wrangler/store \
+            --var ACCOUNT_BYTES:300000 > wr-store.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && curl -sf 127.0.0.1:8790/v1/health && break; sleep 1; done
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8788 --caps
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8789 --idle
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8790 --store
+
+  deploy:
+    needs: check
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: cloud/worker } }
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Secrets present?
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are not set; nothing deployed."
+            exit 1
+          fi
+      - run: npm ci
+      - name: Deploy (Cloudflare's own error is published if it fails; the token is never printed)
+        run: |
+          set +e
+          npx wrangler deploy > deploy.log 2>&1
+          code=$?
+          # The repository is public: only Wrangler's error lines go out, never whoami or an e-mail.
+          grep -vE "@[A-Za-z0-9.-]+\.[a-z]{2,}" deploy.log | grep -E "ERROR|✘|\[code|code:|error|Error|https://|Uploaded|Deployed|workers.dev" | head -40 | while IFS= read -r line; do
+            if [ $code -ne 0 ]; then echo "::error::$line"; else echo "::notice::$line"; fi
+          done
+          exit $code
+      - name: Firebase key as a Worker secret (only when the owner put FCM_SERVICE_ACCOUNT in GitHub's secrets)
+        env:
+          FCM_SA: ${{ secrets.FCM_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FCM_SA" ]; then echo "::notice::No FCM_SERVICE_ACCOUNT: wake-up pushes stay off."; exit 0; fi
+          # After the deploy above: a plain-text variable of the same name set by hand on the dashboard is gone by
+          # now (a deploy keeps only wrangler.toml's variables), so the name is free for the secret.
+          printf '%s' "$FCM_SA" | npx wrangler secret put FCM_SERVICE_ACCOUNT > secret.log 2>&1 && echo "::notice::FCM_SERVICE_ACCOUNT stored as a secret" || {
+            grep -E "ERROR|code" secret.log | head -5 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
+      - name: Keep-alive secret as a Worker secret (RK_KEEP_SECRET in GitHub's secrets; the Supabase relay holds the same)
+        env:
+          KEEP: ${{ secrets.RK_KEEP_SECRET }}
+        run: |
+          if [ -z "$KEEP" ]; then echo "::notice::No RK_KEEP_SECRET: the keep-alive call goes without a pass (the Supabase health is then open)."; exit 0; fi
+          printf '%s' "$KEEP" | npx wrangler secret put KEEP_SECRET > keep.log 2>&1 && echo "::notice::KEEP_SECRET stored as a secret" || {
+            grep -E "ERROR|code" keep.log | head -5 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
+      - name: Health check (the deployed relay answers on its public address)
+        run: |
+          url="https://roshan-khata-daakiya.innovation313.workers.dev/v1/health"
+          for i in $(seq 1 12); do
+            body=$(curl -s -m 10 "$url" || true)
+            if echo "$body" | grep -q '"ok":true'; then echo "::notice::relay health: $body"; exit 0; fi
+            sleep 15
+          done
+          echo "::error::relay did not answer at $url (last: $body)"; exit 1

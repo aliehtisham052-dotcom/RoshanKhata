@@ -1,5 +1,9 @@
 package com.innovation313.roshankhata
 
+import com.innovation313.roshankhata.data.audit
+import com.innovation313.roshankhata.data.auditAmount
+import com.innovation313.roshankhata.data.AuditAction as AuditActs
+
 import com.innovation313.roshankhata.data.get
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
@@ -24,7 +28,6 @@ import com.innovation313.roshankhata.data.CashEntry
 import com.innovation313.roshankhata.data.ReminderLog
 import com.innovation313.roshankhata.data.LineMath
 import com.innovation313.roshankhata.data.Money
-import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.DayClose
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -33,8 +36,12 @@ import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.customerBalanceColour
 import com.innovation313.roshankhata.ui.signedTotalColourOnDark
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * The cashbook: business money with no customer attached.
@@ -76,12 +83,17 @@ class CashbookActivity : BaseActivity() {
         val rv: RecyclerView = findViewById(R.id.rvCash)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+        // The newest page first, more as the owner scrolls (23 Oct 2026, the review: every row was read).
+        com.innovation313.roshankhata.ui.GrowingList.attach(rv, listLimit) { listShown }
 
         findViewById<ExtendedFloatingActionButton>(R.id.fabAddCash).setOnClickListener {
             showDirectionChoice()
         }
 
         findViewById<View>(R.id.btnCloseDay).setOnClickListener { showDayClose() }
+        // The day's figures (POS Phase 4): a long press on Close the day shows the Z report.
+        findViewById<View>(R.id.btnCloseDay).setOnLongClickListener { showDayReport(); true }
+        findViewById<View>(R.id.btnDayReport).setOnClickListener { showDayReport() }
         val tvLastClose = findViewById<TextView>(R.id.tvLastClose)
         lifecycleScope.launch {
             dao.observeLastDayClose().collectLatest { c ->
@@ -106,8 +118,8 @@ class CashbookActivity : BaseActivity() {
             val last = dao.lastDayClose()
             val now = System.currentTimeMillis()
             val from = last?.closedAt ?: 0L
-            val cbIn = dao.cashbookTotalBetween(true, from, now)
-            val cbOut = dao.cashbookTotalBetween(false, from, now)
+            val cbIn = dao.cashbookCashBetween(true, from, now)
+            val cbOut = dao.cashbookCashBetween(false, from, now)
             val kIn = dao.khataCashBetween(false, from, now)
             val kOut = dao.khataCashBetween(true, from, now)
             val cashIn = cbIn + kIn
@@ -120,20 +132,38 @@ class CashbookActivity : BaseActivity() {
             val etNote = view.findViewById<EditText>(R.id.etCloseNote)
             val tvBreak = view.findViewById<TextView>(R.id.tvBreakdown)
             val tvDiff = view.findViewById<TextView>(R.id.tvDifference)
+            com.innovation313.roshankhata.ui.TextFit.relax(view)
             last?.let { etOpening.setText(Format.plain(it.counted)) }
 
+            // Both figures on the app's calculator pad (21 Oct): it types
+            // into whichever of the two has the focus, so a drawer can be
+            // counted note by note — "50×12+100×7" — and the note box keeps
+            // the phone's keyboard. Read back with CalcPad.figure, which keeps
+            // a counted zero (an empty drawer is a real count).
+            com.innovation313.roshankhata.ui.CalcPad.bindAll(
+                root = view,
+                pad = view.findViewById(R.id.closeKeypad),
+                fields = listOf(etOpening, etCounted),
+                results = mapOf(
+                    etOpening to view.findViewById<TextView>(R.id.tvOpeningResult),
+                    etCounted to view.findViewById<TextView>(R.id.tvCountedResult)
+                )
+            )
+
             fun refresh() {
-                val opening = Digits.parse(etOpening.text.toString()) ?: 0.0
+                val opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                 val expected = DayCloseMath.expected(opening, cashIn, cashOut)
                 tvBreak.text = getString(
                     R.string.dayclose_breakdown,
                     Format.money(cbIn), Format.money(kIn), Format.money(cbOut), Format.money(kOut), Format.money(expected)
                 )
-                val counted = Digits.parse(etCounted.text.toString())
+                val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                 tvDiff.text = when {
                     counted == null -> ""
                     else -> {
                         val d = DayCloseMath.difference(counted, expected)
+                        // A difference needs its reason: the note box says so before Save is pressed (R155).
+                        etNote.hint = getString(if (kotlin.math.abs(d) >= 0.005) R.string.z_variance_reason else R.string.dayclose_note_hint)
                         when {
                             Money.isPositive(d) -> getString(R.string.dayclose_over, Format.money(d))
                             Money.isPositive(-d) -> getString(R.string.dayclose_short, Format.money(-d))
@@ -155,30 +185,82 @@ class CashbookActivity : BaseActivity() {
                 .setTitle(R.string.dayclose_title)
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    val counted = Digits.parse(etCounted.text.toString())
-                    if (counted == null) {
-                        Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
+                // Save is wired after show() (23 Oct 2026, review R155): a builder's button closes the
+                // dialog whatever its listener returns, so a refused save threw away both counted figures.
+                .setPositiveButton(R.string.save, null)
+                .show().also { dialog ->
+                    com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                    dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+                        val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
+                        if (counted == null) {
+                            Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
+                            etCounted.requestFocus()
+                            return@setOnClickListener
+                        }
+                        // A drawer that does not match the books needs its reason written down (POS Phase 4):
+                        // a figure with no story is one nobody can answer for next week.
+                        val openingNow = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
+                        val expectedNow = DayCloseMath.expected(openingNow, cashIn, cashOut)
+                        if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= 0.005 && etNote.text.toString().isBlank()) {
+                            Toast.makeText(this@CashbookActivity, R.string.z_variance_reason, Toast.LENGTH_LONG).show()
+                            // The box it wants sits below the whole pad: brought on screen and given the focus.
+                            etNote.requestFocus()
+                            (view as? android.widget.ScrollView)?.let { sv -> sv.post { sv.smoothScrollTo(0, etNote.top) } }
+                            return@setOnClickListener
+                        }
+                        val close = DayClose(
+                            // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
+                            day = DayCloseMath.businessDayOf(now),
+                            opening = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0,
+                            cashIn = LineMath.round(cashIn),
+                            cashOut = LineMath.round(cashOut),
+                            counted = counted,
+                            note = etNote.text.toString().trim().ifEmpty { null },
+                            closedAt = now
+                        )
+                        AppScope.launch { dao.saveDayClose(close) }
+                        dialog.dismiss()
                     }
-                    val close = DayClose(
-                        day = ReminderLog.dayOf(now),
-                        opening = Digits.parse(etOpening.text.toString()) ?: 0.0,
-                        cashIn = LineMath.round(cashIn),
-                        cashOut = LineMath.round(cashOut),
-                        counted = counted,
-                        note = etNote.text.toString().trim().ifEmpty { null },
-                        closedAt = now
-                    )
-                    AppScope.launch { dao.saveDayClose(close) }
                 }
-                .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
         }
     }
 
+    /** The Z report for today: every figure summed from the rows, shown and shareable. */
+    private fun showDayReport() {
+        // The day's profit, expected cash and the till's difference are the shop's figures (23 Oct 2026, the
+        // review): a cashier needs a manager's PIN, as for every other report.
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.REPORTS) { showDayReport() }) return
+        lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            val day = DayCloseMath.dayOf(now)
+            val from = DayCloseMath.startOf(day)
+            val report = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.ZReport.compute(dao, from, from + 24L * 60 * 60 * 1000) }
+            val words = com.innovation313.roshankhata.data.AndroidWords(this@CashbookActivity)
+            val lines: List<Pair<String, String>> = report.lines(words) { v: Double -> Format.money(v) }
+            val text = Format.dateOnly(now) + "\n" +
+                lines.joinToString("\n") { (k, v) -> "$k: $v" } +
+                (if (report.counted == null) "\n\n" + getString(R.string.z_no_close) else "")
+            MaterialAlertDialogBuilder(this@CashbookActivity)
+                .setTitle(R.string.z_title)
+                .setMessage(text)
+                .setPositiveButton(R.string.share) { _, _ ->
+                    startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
+                        .putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.z_title) + "\n" + text), getString(R.string.z_title)))
+                }
+                .setNeutralButton(R.string.print_receipt) { _, _ -> com.innovation313.roshankhata.ui.TextReceipt.print(this@CashbookActivity, lifecycleScope, getString(R.string.z_title) + "\n" + text) }
+                .setNegativeButton(R.string.close, null)
+                .show()
+        }
+    }
+
+    private val listLimit = kotlinx.coroutines.flow.MutableStateFlow(com.innovation313.roshankhata.data.ListWindow.PAGE)
+    private var listShown = 0
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun observe() {
         lifecycleScope.launch {
-            dao.observeCashEntries().collectLatest { list ->
+            listLimit.flatMapLatest { dao.observeCashPage(it) }.collectLatest { list ->
+                listShown = list.size
                 adapter.submit(list)
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             }
@@ -225,9 +307,19 @@ class CashbookActivity : BaseActivity() {
 
     private fun showAddDialog(isIncome: Boolean) {
         val view = layoutInflater.inflate(R.layout.dialog_add_cash, null)
+        com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etCashAmount)
         val etCategory: AutoCompleteTextView = view.findViewById(R.id.etCashCategory)
         val etNote: EditText = view.findViewById(R.id.etCashNote)
+
+        // The app's own calculator pad for the amount (21 Oct), as on the
+        // add-entry form; the category and note keep the phone's keyboard.
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = view,
+            pad = view.findViewById(R.id.cashKeypad),
+            fields = listOf(etAmount),
+            results = mapOf(etAmount to view.findViewById<TextView>(R.id.tvCashAmountResult))
+        )
 
         // The owner's own categories first, then our starting suggestions.
         // Their words for their business beat ours.
@@ -292,20 +384,36 @@ class CashbookActivity : BaseActivity() {
     }
 
     private fun confirmDelete(entry: CashEntry) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_cash_entry)
-            .setMessage(R.string.delete_cash_confirm)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.delete) { _, _ ->
-                lifecycleScope.launch {
-                    AppScope.launch { dao.softDeleteCashEntry(entry.id) }.join()
-                    Toast.makeText(
-                        this@CashbookActivity,
-                        R.string.moved_to_bin,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmDelete(entry) }) return
+        lifecycleScope.launch {
+            // A line a counter ticket or a return wrote is changed from there (22 Oct 2026, the review: deleting
+            // it here left the drawer expecting less while the ticket still read as paid).
+            val owner = withContext(Dispatchers.IO) { runCatching { dao.cashOwner(entry.id) }.getOrNull() }
+            if (isFinishing || isDestroyed) return@launch
+            if (owner != null) {
+                MaterialAlertDialogBuilder(this@CashbookActivity)
+                    .setTitle(R.string.entry_linked_title)
+                    .setMessage(if (owner == "return") R.string.entry_linked_return else R.string.entry_linked_sale)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
             }
-            .show()
+            MaterialAlertDialogBuilder(this@CashbookActivity)
+                .setTitle(R.string.delete_cash_entry)
+                .setMessage(R.string.delete_cash_confirm)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete) { _, _ ->
+                    lifecycleScope.launch {
+                        // Checked again inside the delete's own transaction, with its audit row.
+                        val done = AppScope.async { runCatching { dao.softDeleteOwnCashEntry(entry.id, auditAmount(entry.amount)) }.getOrDefault(false) }.await()
+                        Toast.makeText(
+                            this@CashbookActivity,
+                            if (done) R.string.moved_to_bin else R.string.entry_linked_sale,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                .show()
+        }
     }
 }

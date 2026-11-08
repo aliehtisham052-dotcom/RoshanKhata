@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata
 
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.data.record
+import com.innovation313.roshankhata.data.state
 
 import com.innovation313.roshankhata.data.quantity
 import com.innovation313.roshankhata.data.string
@@ -94,7 +96,7 @@ class FollowUpActivity : BaseActivity() {
         if (isFinishing || isDestroyed) return
         if (queueIndex >= queue.size) {
             if (queue.isNotEmpty()) {
-                Toast.makeText(this, Digits.string(resources, R.string.followup_queue_done, queueOpened), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, Digits.quantity(resources, R.plurals.followup_queue_done, queueOpened, queueOpened), Toast.LENGTH_LONG).show()
             }
             queue = emptyList()
             return
@@ -126,6 +128,9 @@ class FollowUpActivity : BaseActivity() {
         tvSummary = findViewById(R.id.tvFollowUpSummary)
         btnRemindAll = findViewById(R.id.btnRemindAll)
         btnRemindAll.setOnClickListener { startQueue() }
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnAging).setOnClickListener {
+            startActivity(android.content.Intent(this, AgingActivity::class.java))
+        }
         tvEmpty = findViewById(R.id.tvFollowUpEmpty)
 
         adapter = FollowUpAdapter(

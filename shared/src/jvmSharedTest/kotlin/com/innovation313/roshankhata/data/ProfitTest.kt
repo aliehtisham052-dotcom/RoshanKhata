@@ -177,4 +177,26 @@ class ProfitTest {
         )
         assertEquals(100, discounted.coveragePercent)
     }
+
+    @Test
+    fun `a walk-in ticket's lines are costed at their own cost, and goods back take their margin off`() {
+        fun walkIn(qty: Double, rate: Double, cost: Double?) = SoldLine(
+            saleId = 1, timestamp = 10 * day, customerName = null, createdBy = null, taxPercent = null, productId = 2L,
+            itemName = "DAP", category = null, quantity = qty, unit = "bag", rate = rate, discount = 0.0, costRate = cost,
+            saleSubtotal = qty * rate, saleDiscount = 0.0
+        )
+        val back = ReturnedLine(quantity = 1.0, soldQuantity = 3.0, rate = 5000.0, discount = 0.0, costRate = 4000.0,
+            taxAmount = null, taxIncluded = null, saleSubtotal = 15_000.0, saleDiscount = 0.0)
+        val r = Profit.compute(
+            sales = emptyList(), purchases = emptyList(), productNames = names, salesTotal = 16_000.0, expenses = 0.0,
+            walkIns = listOf(walkIn(3.0, 5000.0, 4000.0), walkIn(1.0, 1000.0, null)),
+            walkInReturns = listOf(back)
+        )
+        // 3 x 1,000 margin, one bag back: 2,000. The line with no cost is skipped and said.
+        assertEquals(2_000.0, r.grossProfit, 0.001)
+        assertEquals(1, r.countedLines)
+        assertEquals(1, r.skippedLines)
+        assertEquals(10_000.0, r.coveredRevenue, 0.001)
+        assertEquals("DAP", r.products.single().name)
+    }
 }

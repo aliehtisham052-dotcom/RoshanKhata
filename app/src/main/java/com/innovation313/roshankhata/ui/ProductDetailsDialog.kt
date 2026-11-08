@@ -125,6 +125,41 @@ object ProductDetailsDialog {
         val etCreditPrice = field(R.id.etCreditPrice).apply {
             setText(product.creditPrice?.let { Format.plain(it) } ?: "")
         }
+        // Prices are the owner's and a manager's to change (POS Phase 5); a cashier sees them.
+        val mayPrice = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)
+        etSalePrice.isEnabled = mayPrice; etCreditPrice.isEnabled = mayPrice
+        // The counter (POS Phase 2): barcode (typed, or read by the camera), cost, warning level.
+        val etBarcode = field(R.id.etBarcode).apply { setText(product.barcode ?: "") }
+        val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
+        val etLowStock = field(R.id.etLowStock).apply { setText(product.lowStockLevel?.let { Format.plain(it) } ?: "") }
+        // Packs and tax (schema 36). The pack price and the tax are prices: a cashier sees them, the owner sets them.
+        val etPackUnit = field(R.id.etPackUnit).apply { setText(product.packUnit ?: "") }
+        val etPackSize = field(R.id.etPackSize).apply { setText(product.packSize?.let { Format.plain(it) } ?: "") }
+        val etPackPrice = field(R.id.etPackPrice).apply { setText(product.packPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
+        val etTaxRate = field(R.id.etTaxRate).apply { setText(product.taxRate?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
+        // Variants (21 Oct 2026): the main product chosen by name from the book's own products —
+        // never this one, nor one of its own variants (a loop has no main product).
+        var mains: List<com.innovation313.roshankhata.data.Product> = emptyList()
+        val etVariantOf = view.findViewById<android.widget.AutoCompleteTextView>(R.id.etVariantOf)
+        val etVariant = field(R.id.etVariant).apply { setText(product.variant ?: "") }
+        AppScope.launch {
+            val all = dao.productsOnce()
+            val byId = all.associateBy { it.id }
+            val list = all.filter { it.id != product.id && !it.isDeleted && com.innovation313.roshankhata.data.ItemGroups.rootOf(it, byId).id != product.id }
+            activity.runOnUiThread {
+                mains = list
+                etVariantOf.setAdapter(android.widget.ArrayAdapter(activity, R.layout.item_dropdown_row, list.map { it.name }))
+                product.parentId?.let { pid -> list.firstOrNull { it.id == pid }?.let { etVariantOf.setText(it.name, false) } }
+            }
+        }
+        view.findViewById<View>(R.id.btnScanBarcode).setOnClickListener {
+            val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_ALL_FORMATS)
+                .enableAutoZoom().build()
+            com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(activity, options).startScan()
+                .addOnSuccessListener { b -> b.rawValue?.trim()?.takeIf { it.isNotEmpty() }?.let { etBarcode.setText(it) } }
+                .addOnFailureListener { Toast.makeText(activity, R.string.qr_scan_failed, Toast.LENGTH_LONG).show() }
+        }
 
         // Said when anything came from the bill, so a guessed box is never
         // mistaken for one the owner filled himself.
@@ -182,7 +217,18 @@ object ProductDetailsDialog {
                     // A cleared box means "I do not quote a rate for this",
                     // which is a null and not a zero. Zero is a price.
                     salePrice = Digits.parse(typed(etSalePrice)),
-                    creditPrice = Digits.parse(typed(etCreditPrice))
+                    creditPrice = Digits.parse(typed(etCreditPrice)),
+                    barcode = typed(etBarcode),
+                    costPrice = Digits.parse(typed(etCostPrice)),
+                    lowStockLevel = Digits.parse(typed(etLowStock)),
+                    // A pack needs both its name and how many are in it; half of one is no pack.
+                    packUnit = typed(etPackUnit)?.takeIf { (Digits.parse(typed(etPackSize)) ?: 0.0) > 0.0 },
+                    packSize = Digits.parse(typed(etPackSize))?.takeIf { it > 0.0 && typed(etPackUnit) != null },
+                    packPrice = Digits.parse(typed(etPackPrice))?.takeIf { typed(etPackUnit) != null },
+                    taxRate = typed(etTaxRate)?.let { com.innovation313.roshankhata.ui.Calc.evalPercent(it) }?.takeIf { it > 0.0 },
+                    // The main product by its exact name; a name that is no product here leaves it on its own.
+                    parentId = typed(etVariantOf)?.let { n -> mains.firstOrNull { it.name.equals(n, ignoreCase = true) }?.id },
+                    variant = typed(etVariant)?.takeIf { typed(etVariantOf) != null }
                 )
 
                 // AppScope for the write itself: leaving the screen right
@@ -210,7 +256,23 @@ object ProductDetailsDialog {
                         return@launch
                     }
 
+                    // A barcode names one product: the same code on two would ring the wrong one up.
+                    val codeClash = updated.barcode?.let { dao.productByBarcode(it) }
+                    if (codeClash != null && codeClash.id != product.id) {
+                        activity.runOnUiThread {
+                            if (!activity.isFinishing) {
+                                Toast.makeText(activity, activity.getString(R.string.product_barcode_taken, codeClash.name), Toast.LENGTH_LONG).show()
+                            }
+                            onDismissed()
+                        }
+                        return@launch
+                    }
                     dao.updateProduct(updated)
+                    if (updated.salePrice != product.salePrice || updated.creditPrice != product.creditPrice || updated.costPrice != product.costPrice) {
+                        dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "products", product.id,
+                            // Each figure sealed left-to-right, so the audit line's "old → new" keeps its order in an RTL language (21 Oct 2026).
+                            updated.name + ": " + com.innovation313.roshankhata.ui.Format.ltr(listOfNotNull(product.salePrice, product.creditPrice).joinToString("/") + " \u2192 " + listOfNotNull(updated.salePrice, updated.creditPrice).joinToString("/")))
+                    }
                     activity.runOnUiThread { if (!activity.isFinishing) onSaved() }
                 }
             }

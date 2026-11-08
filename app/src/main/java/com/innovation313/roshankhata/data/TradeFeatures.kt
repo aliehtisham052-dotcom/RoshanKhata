@@ -18,8 +18,12 @@ import android.content.Context
  */
 object TradeFeatures {
 
-    /** Crop seasons, the season row on a sale, the harvest promise. */
-    fun seasons(context: Context): Boolean = Trade.current(context) == Trade.AGRI
+    /**
+     * Crop seasons, the season row on a sale, the harvest promise. An agri
+     * shop's, where the country farms by Rabi and Kharif (Pakistan, India;
+     * 21 Oct 2026): an Indonesian toko tani has no "Rabi 2026-27".
+     */
+    fun seasons(context: Context): Boolean = Trade.current(context) == Trade.AGRI && ShopCountry.current.seasons
 
     /** "Write spray advice" on a sold line. */
     fun sprayAdvice(context: Context): Boolean = Trade.current(context) == Trade.AGRI

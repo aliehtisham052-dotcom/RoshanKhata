@@ -5,6 +5,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Firebase Cloud Messaging for live sync's wake-up (PushWake, 22 Oct 2026). The config file comes
+// from the owner's GitHub secret GOOGLE_SERVICES_JSON (scripts/google_services.py writes it in CI) and
+// is never committed: this repository is public. Without it the build is the same app without the
+// wake-up — FirebaseApp is never set up, and PushWake does nothing.
+if (file("google-services.json").isFile) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // Room writes the schema out here. With this in place a future migration can be
 // verified against the real schema at build time — a broken one fails the build
 // instead of failing on a shopkeeper's phone.
@@ -344,6 +352,13 @@ dependencies {
 
     // Room — offline-first local database
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    // Live sync's wake-up (PushWake): data messages only, no Analytics. BoM 35.0.2 (15 Oct 2026,
+    // Firebase's Android release notes): firebase-messaging 26.0.0, minSdk 24 like this app.
+    implementation(platform("com.google.firebase:firebase-bom:35.0.2"))
+    implementation("com.google.firebase:firebase-messaging")
+    // Live sync's live line to the relay (LiveLines, 23 Oct 2026): a WebSocket while the app is on screen.
+    // OkHttp 4.12.0 (stable since Oct 2023, minSdk 21) ships its own R8 rules.
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.room:room-runtime:2.7.1")
     implementation("androidx.room:room-ktx:2.7.1")
     // Room's code is generated in the shared module now, where the database

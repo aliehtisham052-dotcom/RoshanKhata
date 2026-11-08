@@ -45,6 +45,10 @@ object Currency {
         "CA$" to "CAD",
         "A$" to "AUD",
         "EGP" to "EGP",
+        "IRR" to "IRR",
+        "AFN" to "AFN",
+        "NPR" to "NPR",
+        "LKR" to "LKR",
         "Rp" to "IDR",
         "RM" to "MYR",
         "₦" to "NGN",
@@ -55,6 +59,17 @@ object Currency {
 
     @Volatile
     var symbol: String = DEFAULT
+
+    /**
+     * How many decimals a figure in [sign] is printed with when it has a
+     * fraction (21 Oct 2026): Kuwait, Bahrain and Oman count to a thousandth,
+     * Iran and Indonesia to none. A whole figure prints no decimals anywhere.
+     */
+    fun decimals(sign: String = symbol): Int = when (sign) {
+        "KWD", "BHD", "OMR" -> 3
+        "IRR", "Rp" -> 0
+        else -> 2
+    }
 
     // refresh(context) and set(context, value) live with the phone's
     // preferences (app data/ShopCalendarAndroid.kt).

@@ -29,15 +29,16 @@ object ReceiptPrinter {
 
     @SuppressLint("MissingPermission")
     fun paired(context: Context): List<BluetoothDevice> =
-        adapter(context)?.bondedDevices?.toList().orEmpty()
-            .sortedBy { (it.name ?: it.address).lowercase() }
+        // Without the Bluetooth permission Android throws here; no printers is the honest answer, not a crash.
+        runCatching { adapter(context)?.bondedDevices?.toList().orEmpty().sortedBy { (it.name ?: it.address).lowercase() } }
+            .getOrDefault(emptyList())
 
     @SuppressLint("MissingPermission")
     fun label(device: BluetoothDevice): String = device.name?.takeIf { it.isNotBlank() } ?: device.address
 
-    /** The picture scaled to the roll's width, as printer bytes. */
-    fun bytes(picture: Bitmap): ByteArray {
-        val w = EscPos.WIDTH_58MM
+    /** The picture scaled to the roll's width (58 mm unless the counter's settings say 80 mm), as printer bytes. */
+    fun bytes(picture: Bitmap, width: Int = EscPos.WIDTH_58MM): ByteArray {
+        val w = width
         val h = (picture.height.toLong() * w / picture.width).toInt().coerceAtLeast(1)
         val scaled = Bitmap.createScaledBitmap(picture, w, h, true)
         val px = IntArray(w * h)

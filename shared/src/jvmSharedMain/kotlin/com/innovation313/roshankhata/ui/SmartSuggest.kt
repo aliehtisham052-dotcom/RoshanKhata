@@ -1,16 +1,6 @@
 package com.innovation313.roshankhata.ui
 
 import com.innovation313.roshankhata.data.UnitWords
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
-import android.widget.BaseAdapter
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.TextView
-import com.innovation313.roshankhata.R
 
 /**
  * What a suggestion field offers, and how it decides what to offer.
@@ -101,7 +91,7 @@ object SmartSuggest {
     private const val MIN_FOLD_LEN = 3
 
     /** Most rows a dropdown will ever show. Beyond this it is a list to scroll, not a suggestion. */
-    private const val MAX_ROWS = 8
+    const val MAX_ROWS = 8
 
     /**
      * How well one candidate answers what was typed. Lower is better; null
@@ -224,91 +214,15 @@ object SmartSuggest {
     }
 
     /**
-     * Attach suggestions to a field.
-     *
-     * Safe to call again with a fresh list — a dialog that adds a product
-     * mid-entry can re-attach and the next keystroke sees it. Passing an
-     * empty list leaves the field an ordinary text box rather than showing an
-     * empty dropdown.
-     *
-     * [maxRows] is how many suggestions the list will show. Each row is two
-     * lines, so the default eight is close to half a screen: right in a small
-     * dialog, wrong on a form where the list opens over the fields still to be
-     * filled. A form like that asks for fewer.
+     * A shelf of suggestions folded once, for a box that ranks it on every
+     * keystroke: the phone's dropdown holds one (its adapter), and so does each
+     * product box on the computer (25 Oct 2026 — the ranking moved to :shared so
+     * both suggest by this one rule).
      */
-    fun attach(field: AutoCompleteTextView, items: List<Item>, maxRows: Int = MAX_ROWS) {
-        field.setAdapter(Adapter(field.context, items, maxRows))
-        // One character is enough. The owner is typing a name they already
-        // know; making them type three before the app admits it knows it too
-        // is the app being coy about something it could have said sooner.
-        field.threshold = 1
-        // A name picked, then returned to, should offer the list again rather
-        // than sit there as a dead end.
-        field.setOnClickListener { if (field.text.isNotEmpty()) field.showDropDown() }
-    }
-
-    /**
-     * The adapter behind an attached field.
-     *
-     * Its filter does the ranking above and publishes the result. It never
-     * uses reflection and holds nothing but strings, so R8 has nothing here
-     * it can quietly break.
-     */
-    private class Adapter(
-        context: Context,
-        all: List<Item>,
-        private val maxRows: Int
-    ) : BaseAdapter(), Filterable {
-
-        /** Folded once here, so no keystroke ever folds the shelf again. */
-        private val candidates: List<Candidate> = all.map { Candidate(it) }
-
-        private val inflater = LayoutInflater.from(context)
-        private var shown: List<Item> = emptyList()
-
-        override fun getCount(): Int = shown.size
-        override fun getItem(position: Int): Item = shown[position]
-        override fun getItemId(position: Int): Long = position.toLong()
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = convertView ?: inflater.inflate(R.layout.item_suggestion, parent, false)
-            val item = shown[position]
-            view.findViewById<TextView>(R.id.tvSuggestion).text = item.value
-            val sub = view.findViewById<TextView>(R.id.tvSuggestionSub)
-            val subtitle = item.subtitle
-            if (subtitle.isNullOrBlank()) {
-                sub.visibility = View.GONE
-            } else {
-                sub.visibility = View.VISIBLE
-                sub.text = subtitle
-            }
-            return view
-        }
-
-        override fun getFilter(): Filter = object : Filter() {
-
-            /**
-             * What the box shows once a row is tapped: the name alone. The
-             * subtitle is there to tell rows apart while choosing, and has no
-             * business being written into the ledger.
-             */
-            override fun convertResultToString(resultValue: Any?): CharSequence =
-                (resultValue as? Item)?.value ?: ""
-
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val matches = rankCandidates(candidates, constraint?.toString().orEmpty(), maxRows)
-                return FilterResults().apply {
-                    values = matches
-                    count = matches.size
-                }
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                shown = (results?.values as? List<Item>) ?: emptyList()
-                if (shown.isEmpty()) notifyDataSetInvalidated() else notifyDataSetChanged()
-            }
-        }
+    class Shelf(items: List<Item>) {
+        private val candidates: List<Candidate> = items.map { Candidate(it) }
+        val isEmpty: Boolean get() = candidates.isEmpty()
+        fun rank(typed: String, maxRows: Int = MAX_ROWS): List<Item> = rankCandidates(candidates, typed, maxRows)
     }
 }
 
@@ -337,22 +251,19 @@ fun List<com.innovation313.roshankhata.data.Product>.asSuggestions(): List<Smart
 
 /**
  * The shop's products as suggestions, and — while the shop has fewer than
- * [STARTER_UNTIL] of its own — the trade's starter goods after them
- * (9 Oct 2026). A new dairy's first entry form offers Milk, Yogurt, Ghee in
- * the owner's language rather than an empty list; a book that has grown its
- * own products no longer sees them. A starter that is already a product
- * (by the same name rule products use) is not offered twice. Choosing a
- * starter saves the typed name like any other, nothing special is written.
+ * [STARTER_UNTIL] of its own — the trade's [starters] after them, each marked
+ * with [label] ("Suggested for your shop"). The phone passes its TradeVocab
+ * words (`withStarters(context)`, app ui/SmartSuggestAndroid.kt), the computer
+ * its trade's (TradeKit). A starter that is already a product (by the same name
+ * rule products use) is not offered twice.
  */
-fun List<com.innovation313.roshankhata.data.Product>.withStarters(context: Context): List<SmartSuggest.Item> {
+fun List<com.innovation313.roshankhata.data.Product>.withStarters(starters: List<String>, label: String): List<SmartSuggest.Item> {
     val own = asSuggestions()
     if (size >= STARTER_UNTIL) return own
     val have = map { com.innovation313.roshankhata.data.ProductName.key(it.name) }.toHashSet()
-    val label = context.getString(com.innovation313.roshankhata.R.string.vocab_suggested)
-    val starters = com.innovation313.roshankhata.data.TradeVocab.starters(context)
+    return own + starters
         .filter { com.innovation313.roshankhata.data.ProductName.key(it) !in have }
         .map { SmartSuggest.Item(value = it, subtitle = label) }
-    return own + starters
 }
 
 /** Below this many products of its own, a book is still offered the trade's starters. */

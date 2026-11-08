@@ -54,22 +54,19 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/toggleCardLang"
+        <!-- The card's nine languages (21 Oct), one pill each, in a row that scrolls. -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            app:selectionRequired="true"
-            app:singleSelection="true">
+            android:scrollbars="none">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCardUrdu"
-                style="@style/SegmentButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCardEnglish"
-                style="@style/SegmentButton" />
-        </com.google.android.material.button.MaterialButtonToggleGroup>
+            <LinearLayout
+                android:id="@+id/cardLangRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
         <TextView
             android:layout_width="match_parent"

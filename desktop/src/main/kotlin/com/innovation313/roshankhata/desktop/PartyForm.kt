@@ -41,7 +41,7 @@ import com.innovation313.roshankhata.words.word
  * informs and never blocks, as on the phone.
  */
 @Composable
-fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) -> Unit, onCancel: () -> Unit, home: java.io.File? = null) {
+fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) -> Unit, onCancel: () -> Unit, home: java.io.File? = null, businessId: Long = 1L) {
     val c = LocalRoshanColors.current
     var name by remember { mutableStateOf(existing?.name.orEmpty()) }
     var phone by remember { mutableStateOf(existing?.phone.orEmpty()) }
@@ -58,19 +58,24 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     }
     val similar = DuplicateDetector.matchExisting(name.trim(), phone.trim().ifEmpty { null }, others)
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(word(if (existing == null) W.add_party else W.edit_party), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // Inside a dialog its head says it (one title, Marhala 2).
+        if (!inDialog()) Text(word(if (existing == null) W.add_party else W.edit_party), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
         TwoWay(word(W.customer), word(W.supplier), customer) { customer = it }
-        OutlinedTextField(name, { name = it }, label = { Text(word(W.name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(phone, { phone = it }, label = { Text(word(W.phone_optional)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FluentField(name, { name = it }, Modifier.weight(1f), label = word(W.name))
+            FluentField(phone, { phone = it }, Modifier.weight(1f), label = word(W.phone_optional), leadingIcon = "ic_phone", ltr = true)
+        }
         similar?.let { m ->
             Text(
                 m.phone?.let { word(W.add_party_duplicate_with_phone, m.name, Format.ltr(it)) } ?: word(W.add_party_duplicate_name_only, m.name),
                 color = c.owedToMe, fontSize = 13.sp
             )
         }
-        OutlinedTextField(father, { father = it }, label = { Text(word(W.father_name_optional)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(village, { village = it }, label = { Text(word(W.village_optional)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FluentField(father, { father = it }, Modifier.weight(1f), label = word(W.father_name_optional))
+            FluentField(village, { village = it }, Modifier.weight(1f), label = word(W.village_optional))
+        }
         if (existing != null && home != null) {
             // A face to know the customer by (the phone's party photo): kept on this computer only.
             val bmp = remember(photo, photoVersion) { Photos.bitmap(photo, 240) }
@@ -83,23 +88,21 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
                 }
                 TextButton({
                     Photos.pick(photoTitle)?.let { src ->
-                        val target = Photos.partyFile(home, existing.id)
+                        val target = Photos.partyFile(home, businessId, existing.id)
                         if (Photos.save(src, target, max = 600)) { photo = target.absolutePath; photoVersion++; photoFailed = false } else photoFailed = true
                     }
                 }) { Text(word(if (bmp == null) W.set_photo else W.change_photo), color = c.brandGreenText) }
-                if (photo != null) TextButton({ photo = null }) { Text(word(W.remove_photo), color = c.owedToMe) }
+                if (photo != null) FluentButton(word(W.remove_photo), { photo = null }, kind = ButtonKind.DANGER)
             }
             if (photoFailed) Text(word(W.photo_save_failed), color = c.owedToMe, fontSize = 12.sp)
             Text(word(W.photo_privacy_note), color = c.textMuted, fontSize = 11.sp)
         }
         if (existing != null) {
-            Text(word(W.credit_limit), color = c.ink, fontWeight = FontWeight.Bold)
-            OutlinedTextField(limit, { limit = it }, label = { Text(word(W.credit_limit_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Text(word(W.credit_limit_help), color = c.textMuted, fontSize = 12.sp)
+            FluentField(limit, { limit = it }, Modifier.fillMaxWidth(), label = word(W.credit_limit), placeholder = word(W.credit_limit_hint), help = word(W.credit_limit_help), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            TextButton(onCancel) { Text(word(W.cancel)) }
-            FillButton(word(W.save), c.brandGreen, enabled = name.isNotBlank()) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
+            FluentButton(word(W.cancel), onCancel)
+            FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = name.isNotBlank(), onClick = {
                 fun typed(v: String) = v.trim().ifEmpty { null }
                 val base = existing ?: Party(name = name.trim(), isCustomer = customer)
                 onSave(
@@ -111,7 +114,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
                         creditLimit = if (existing == null) null else Calc.evalAmount(limit)
                     )
                 )
-            }
+            })
         }
     }
 }

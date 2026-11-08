@@ -1,0 +1,16 @@
+{
+  "name": "roshan-khata-daakiya",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Roshan Khata live sync relay (Marhala 2): carries sealed parcels between a shop's own devices. It can open none of them.",
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20250927.0",
+    "typescript": "5.6.3",
+    "wrangler": "4.40.0"
+  }
+}

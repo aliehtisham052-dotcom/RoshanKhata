@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.ShopCountry
 
 /**
  * The occasions a shop posts on its WhatsApp Status, each with its own
@@ -38,7 +39,13 @@ enum class PosterOccasion(
     /** The owner's own words: both lines start empty. */
     CUSTOM("custom", 0, 0, 0xFF1B5E3A.toInt(), 0xFF134228.toInt(), false);
 
+    /** Whether this occasion is for the shop's country: 14 August is Pakistan's (21 Oct 2026). */
+    fun offeredIn(country: ShopCountry): Boolean = this != AZADI || country.pakistan
+
     companion object {
         fun byKey(key: String?): PosterOccasion = values().firstOrNull { it.key == key } ?: NEW_STOCK
+
+        /** The occasions a shop in [country] is offered, in order. */
+        fun offered(country: ShopCountry = ShopCountry.current): List<PosterOccasion> = values().filter { it.offeredIn(country) }
     }
 }

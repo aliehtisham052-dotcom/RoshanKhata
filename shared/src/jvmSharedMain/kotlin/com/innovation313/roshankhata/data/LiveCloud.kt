@@ -1,0 +1,730 @@
+package com.innovation313.roshankhata.data
+
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+
+/**
+ * Live sync's second road (Marhala 2, 22 Oct 2026): when the phone and the
+ * computer are not on one WiFi, each leaves its changes at the relay
+ * (cloud/worker, "daakiya") and picks up the other's.
+ *
+ * What goes there is the same message a WiFi round carries — this device's
+ * changes after the line every other device has read, and how far this
+ * device has read each of theirs — sealed with the book's key
+ * ([LiveWire.seal]) before it leaves the device. The relay can open nothing.
+ *
+ * Unlike a WiFi round there is no answer on the spot: a message is written in
+ * whenever the other device next picks it up ([absorb]). A message that went
+ * missing (the relay forgets after seven days) is simply sent again: when no
+ * one has acknowledged what was sent for [RESEND_MS], the next round sends
+ * from the line the others last acknowledged. Every write lands by uid, so a
+ * message read twice changes nothing the second time.
+ *
+ * Open since the relay was deployed (22 Oct 2026); [base] = null closes it again.
+ * A book uses it only when its owner turned it on ([BookSettings.LIVE_RELAY],
+ * one switch for both devices, off until then): the WiFi road never needs
+ * the internet, and the screens say plainly what the relay carries.
+ */
+object LiveCloud {
+
+    /**
+     * The relay's address; null keeps this road closed. Deployed 22 Oct 2026 by cloud-worker.yml on the
+     * owner's Cloudflare account (free plan, subdomain "innovation313" — never the owner's e-mail).
+     * Only this kmp-* test line opens it: decide before main whether Play users get it (free-plan limits).
+     */
+    @Volatile var base: String? = RELAY
+
+    const val RELAY = "https://roshan-khata-daakiya.innovation313.workers.dev"
+
+    /** The Supabase relay (supabase/functions/daakiya, project roshan-khata-live; deployed by relays.yml). */
+    const val SUPABASE = "https://tcztkeyliletxshhkhnz.supabase.co/functions/v1/daakiya"
+
+    /** The relay on the owner's own hosting (web/relay, uploaded by hand to public_html/r). */
+    const val HOSTING = "https://ehtisham.shop/r"
+
+    /**
+     * One relay and the name its cursors are kept under. Cloudflare's tag is "" so a book that already
+     * talked to it keeps its place (sync_meta "cloud_after:<book>" and the rest, as before 22 Oct 2026).
+     */
+    data class Road(val base: String, val tag: String)
+
+    /**
+     * The relays after Cloudflare's, in the order they are tried. The owner's hosting is the second (22 Oct
+     * 2026, the review: Supabase's free project pauses after seven quiet days and has a sixth of Cloudflare's
+     * budget — it stays built and deployed, out of the list until it is needed: add Road(SUPABASE, "sb")).
+     */
+    @Volatile var others: List<Road> = listOf(Road(HOSTING, "hs"))
+
+    /** Every relay in order; none while [base] is null (the whole relay road closed). */
+    fun roads(): List<Road> {
+        val first = base?.trimEnd('/') ?: return emptyList()
+        return listOf(Road(first, "")) + others.filter { it.base.trimEnd('/') != first }
+    }
+
+
+    const val RESEND_MS = 2 * 60_000L
+    /** A parcel nobody acknowledged is sent again after RESEND_MS, then twice as long each time, up to this. */
+    const val RESEND_MAX_MS = 60 * 60_000L
+
+    /** A relay that refused a hello for its own capacity (507 full, 429 new books, 409 devices) is not asked again before this. */
+    const val REFUSED_MS = 60 * 60_000L
+
+    /**
+     * A peer not heard from for this long (the relays keep a parcel seven days) no longer holds back what this device
+     * resends: it catches up through its own "need" when it comes back (23 Oct 2026, the review: one lost phone made
+     * every device resend its whole backlog every hour).
+     */
+    const val STALE_MS = 7 * 86_400_000L
+
+    /** A device says something to each relay it sends to at least this often, so its peers know it is still there. */
+    const val HEARTBEAT_MS = 24 * 3_600_000L
+
+    /** A relay's refusals of a parcel that still answer the others' page (the relay's limits, not this device's fault). */
+    val CAPACITY = setOf("day-limit", "day-bytes", "book-full", "full")
+
+    /** The relay takes a parcel of at most 1 MB (cloud/worker MAX_PARCEL); a message is kept under it. */
+    const val MAX_SEND = 900 * 1024
+
+    /** Relays that do not know the one-request "round" yet (answered 404): the three requests of before are used. */
+    private val legacy = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
+
+    /** The way out to the relay; a test passes its own. */
+    fun interface Http {
+        /** The status and body of one call. Throws when the relay cannot be reached. */
+        fun call(method: String, url: String, headers: Map<String, String>, body: ByteArray?): Pair<Int, ByteArray>
+    }
+
+    val plain = Http { method, url, headers, body ->
+        val c = URL(url).openConnection() as HttpURLConnection
+        try {
+            c.requestMethod = method
+            c.connectTimeout = 8000
+            c.readTimeout = 30_000
+            c.useCaches = false
+            headers.forEach { (k, v) -> c.setRequestProperty(k, v) }
+            if (body != null) {
+                c.doOutput = true
+                c.setFixedLengthStreamingMode(body.size)
+                c.outputStream.use { it.write(body) }
+            }
+            val code = c.responseCode
+            val stream = if (code in 200..299) c.inputStream else c.errorStream
+            val bytes = stream?.use { s ->
+                val out = ByteArrayOutputStream()
+                val buf = ByteArray(1 shl 14)
+                while (true) { val n = s.read(buf); if (n < 0) break; out.write(buf, 0, n); if (out.size() > 32 shl 20) throw java.io.IOException("too big") }
+                out.toByteArray()
+            } ?: ByteArray(0)
+            code to bytes
+        } finally {
+            c.disconnect()
+        }
+    }
+
+    /**
+     * The book's pass at a relay: only a holder of the book's key can make it.
+     * Each relay gets its own (22 Oct 2026, the review: one pass for all, and
+     * whoever ran one relay held the book's pass at the others) — the name of
+     * the relay's host is in it; Cloudflare's, the first, keeps the v1 pass
+     * its boxes were opened with.
+     */
+    fun token(keyHex: String, book: String, relay: String? = null): String {
+        val key = ByteArray(32) { i -> keyHex.substring(i * 2, i * 2 + 2).toInt(16).toByte() }
+        val mac = Mac.getInstance("HmacSHA256").apply { init(SecretKeySpec(key, "HmacSHA256")) }
+        val host = relay?.let { runCatching { URL(it).host.lowercase() }.getOrNull() }
+        val what = if (host == null || relay?.trimEnd('/') == RELAY) "rk-relay-v1:$book" else "rk-relay-v2:$host:$book"
+        return mac.doFinal(what.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
+    }
+
+    /** How a cloud round went. */
+    sealed interface Result {
+        /** [took] messages written in, [sent] whether one was left for the others. */
+        data class Done(val took: Int, val sent: Boolean, val more: Boolean) : Result
+        object Off : Result
+        object NotPaired : Result
+        /** Live sync is stopped for everyone ([LiveControl]); the relay is not asked. */
+        object Halted : Result
+        object Unreachable : Result
+        data class Refused(val why: String) : Result
+    }
+
+    // The relay's cursors, in sync_meta, per relay and book (a book changed is a conversation started again).
+    private fun k(name: String, book: String, tag: String = "") =
+        if (tag.isEmpty()) "cloud_${name}:$book" else "cloud_${tag}_${name}:$book"
+
+    private suspend fun getMeta(sql: SyncSql, key: String): String? = sql.read {
+        rows("SELECT v FROM sync_meta WHERE k = ?", listOf(key), "T").firstOrNull()?.get(0) as String?
+    }
+
+    private suspend fun setMeta(sql: SyncSql, key: String, value: String) = sql.write {
+        exec("INSERT OR REPLACE INTO sync_meta (k, v) VALUES (?, ?)", listOf(key, value))
+    }
+
+    /** The relay said it cannot ring this phone (its Firebase key is not set, R70): wake-ups with the app closed are off. */
+    suspend fun wakeOff(sql: SyncSql): Boolean {
+        val id = LiveSync.identity(sql) ?: return false
+        return getMeta(sql, k("wake_off", id.book)) == "1"
+    }
+
+    /** Whether this book's owner turned the relay on ([BookSettings.LIVE_RELAY]). */
+    suspend fun allowed(sql: SyncSql): Boolean = sql.read {
+        rows("SELECT value FROM book_settings WHERE `key` = ?", listOf(BookSettings.LIVE_RELAY), "T").firstOrNull()?.get(0) == "1"
+    }
+
+    /** The message this device leaves: its changes after [after] (at most [page] lines) and how far it has read every other device. */
+    suspend fun message(sql: SyncSql, after: Long, page: Int = LiveSync.PAGE): JSONObject? {
+        val id = LiveSync.identity(sql) ?: return null
+        val acks = JSONObject()
+        // Held back toward a device that must still learn of a joiner (LiveCrew), so it keeps what the joiner needs.
+        for (p in LiveSync.state(sql).peers) acks.put(p.device, LiveCrew.ackFor(sql, p.device, p.recv))
+        // What this device could not take from each other device (a gap): said back, so that device starts again there.
+        val need = JSONObject()
+        LiveSync.state(sql).peers.forEach { p ->
+            val n = getMeta(sql, k("need_" + p.device, id.book))?.toLongOrNull()
+            if (n != null) need.put(p.device, p.recv)
+        }
+        val joins = LiveCrew.joinsOut(sql)
+        val pair = LiveCrew.pairSaid(sql)
+        return JSONObject().apply {
+            put("dev", id.device); put("name", id.name)
+            put("acks", acks)
+            if (need.length() > 0) put("need", need)
+            // The book's devices that joined lately, for the others to add (LiveCrew); a joiner's pairing, for its sender.
+            joins?.let { put("joins", it) }
+            pair?.let { put("pair", it) }
+            // This device's letter in the book's numbers, as a WiFi round says it (LiveRound): devices that meet only
+            // here settle a letter they share (LiveSync.settleMark, 23 Oct 2026, the review report R05).
+            LiveSync.mark(sql)?.let { put("mark", it) }
+            put("parcel", LiveSync.export(sql, after, page).toJson())
+        }
+    }
+
+    /**
+     * Another device's message, written in. False when it is not for this
+     * book or comes from a device this book was never paired with.
+     */
+    /** Why the last parcel [absorb] refused was refused (the engine's word, e.g. "schema 39"), for the round's answer. */
+    @Volatile private var lastRefusal: String? = null
+
+    suspend fun absorb(sql: SyncSql, msg: JSONObject, now: Long = System.currentTimeMillis()): Boolean {
+        lastRefusal = null
+        val id = LiveSync.identity(sql) ?: return false
+        val dev = msg.optString("dev")
+        if (dev.isBlank() || dev == id.device) return false
+        // Devices of this book announced by the sender (LiveCrew), before anything else of it is taken.
+        msg.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
+        if (LiveSync.state(sql).peers.none { it.device == dev }) {
+            // A phone this device sent the book to, saying yes through the relay (it serves no WiFi round to say it).
+            if (!LiveCrew.confirmFromRelay(sql, dev, msg.optString("name").takeIf { it.isNotBlank() }, msg.optString("pair"))) return false
+        }
+        msg.optJSONObject("acks")?.let { a -> LiveCrew.heard(sql, dev, a.keys().asSequence().toList()) }
+        // A peer back after STALE_MS of silence (resends stopped waiting for it): what it lacks goes at the next round.
+        val back = LiveSync.state(sql).peers.firstOrNull { it.device == dev }?.seen?.let { now - it >= STALE_MS } == true
+        val theirAck = msg.optJSONObject("acks")?.optLong(id.device, -1L)?.takeIf { it >= 0 }
+        val parcel = LiveSync.Parcel.of(msg.getJSONObject("parcel"))
+        // Written, and the pointers moved, in one transaction with the WiFi rounds' (LiveSync.applyFrom).
+        // A gap: what came before is on its way again (the sender resends what is not acknowledged).
+        // The other device's "need" (it never got lines after it) moves this one's pointer back, as a WiFi
+        // round's answer does (LiveSync.lowerSent); without it a pointer behind stayed a gap for ever.
+        msg.optJSONObject("need")?.optLong(id.device, -1L)?.takeIf { it >= 0 }?.let {
+            LiveSync.lowerSent(sql, dev, it)
+            setMeta(sql, k("lowered", id.book), "1")
+        }
+        val applied = LiveSync.applyFrom(sql, parcel, theirAck, now, name = msg.optString("name").takeIf { it.isNotBlank() })
+        // The sender's letter, heard as over the WiFi: remembered, and this device moves off it if both hold it.
+        if (applied !is LiveSync.Applied.Refused) LiveSync.settleMark(sql, dev, msg.optString("mark").takeIf { it.isNotBlank() })
+        return when (val r = applied) {
+            is LiveSync.Applied.Refused -> { lastRefusal = r.why; false }
+            is LiveSync.Applied.Gap -> { setMeta(sql, k("need_" + dev, id.book), parcel.from.toString()); if (back) setMeta(sql, k("lowered", id.book), "1"); true }
+            else -> { setMeta(sql, k("need_" + dev, id.book), ""); if (back) setMeta(sql, k("lowered", id.book), "1"); true }
+        }
+    }
+
+    /** What a parcel carried by a push came to ([takeCarried]). */
+    enum class Carried {
+        /** Written in; nothing more to ask for. */
+        TOOK,
+        /** Opened, but something before it never came (or it could not be written yet): a round fetches the rest. */
+        ASK,
+        /** Not this book's, not sealed with its key, or from a device it does not know: left alone. */
+        NOT_MINE
+    }
+
+    /**
+     * A parcel the relay sent inside the push itself (23 Oct 2026: "rk-parcel" — the sealed body, its number at the
+     * relay and its sender), written in without asking the relay anything. The relay's cursor is not moved: the
+     * relay stays the record, and the next round reads the parcel again and finds it already written (every write
+     * lands by uid and each device's log line). [ASK] when a round should follow at once.
+     */
+    suspend fun takeCarried(sql: SyncSql, from: String, bodyB64: String, now: Long = System.currentTimeMillis()): Carried {
+        val id = LiveSync.identity(sql) ?: return Carried.NOT_MINE
+        // The relay switched off for this book, or live sync stopped everywhere: a parcel pushed in anyway is not
+        // written (23 Oct 2026, the review's R53: this was the one road into the book that asked neither). The kill
+        // switch's last word, not a network read: this runs on Firebase's callback thread.
+        if (!allowed(sql) || LiveControl.haltedCached()) return Carried.NOT_MINE
+        val sealedIn = runCatching { B64.decode(bodyB64) }.getOrNull() ?: return Carried.NOT_MINE
+        val plain = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY) ?: return Carried.NOT_MINE
+        val msg = runCatching { JSONObject(String(plain, Charsets.UTF_8)) }.getOrNull() ?: return Carried.NOT_MINE
+        val dev = msg.optString("dev")
+        // The relay's word on the sender must be the sealed message's own (as in a round).
+        if (from.isNotBlank() && from != dev.take(16).padEnd(16, '0')) return Carried.NOT_MINE
+        if (!absorb(sql, msg, now)) return if (lastRefusal != null) Carried.ASK else Carried.NOT_MINE
+        // A gap (something before it never came) is fetched by a round now, not at the next app opening.
+        val gap = !getMeta(sql, k("need_" + dev, id.book)).isNullOrBlank()
+        return if (gap) Carried.ASK else Carried.TOOK
+    }
+
+    /**
+     * One cloud round: say hello once, pick up the others' messages,
+     * acknowledge them, leave this device's own. Nothing at all unless the
+     * book's owner turned the relay on, and nothing while live sync is
+     * stopped for everyone ([halted]).
+     */
+    suspend fun round(
+        sql: SyncSql, http: Http = plain, relay: String? = base, now: Long = System.currentTimeMillis(),
+        tag: String = "", send: Boolean = true, useLines: Boolean = true,
+        // Last, so a caller's trailing { } is this (22 Oct 2026: put before tag and send, the tests' { false } became send).
+        halted: () -> Boolean = { LiveControl.halted() }
+    ): Result {
+        val root = relay?.trimEnd('/') ?: return Result.Off
+        val id = LiveSync.identity(sql) ?: return Result.Off
+        if (!allowed(sql)) return Result.Off
+        if (halted()) return Result.Halted
+        val peers = LiveSync.state(sql).peers
+        // No other device yet, but a book given to a phone waits for its word, which comes only through here (a
+        // phone serves no WiFi round): the relay is read for it (23 Oct 2026).
+        if (peers.isEmpty() && LiveRound.pending(sql)?.phone != true) return Result.NotPaired
+        val url = "$root/v1/b/${id.book}/"
+        val pass = token(id.key, id.book, root)
+        val headers = mapOf(
+            "authorization" to "RK $pass",
+            // The same pass again: some hostings drop Authorization before PHP sees it (web/relay).
+            "x-rk-pass" to pass,
+            // The relay's device id is 16 hex: this device's own sync id is already that shape.
+            "x-device" to id.device.take(16).padEnd(16, '0')
+        )
+        fun call(method: String, path: String, body: ByteArray? = null, type: String? = null): Pair<Int, JSONObject?> {
+            val h = if (type != null) headers + ("content-type" to type) else headers
+            val (code, bytes) = http.call(method, url + path, h, body)
+            return code to runCatching { JSONObject(String(bytes, Charsets.UTF_8)) }.getOrNull()
+        }
+        try {
+            suspend fun hello(): Result? {
+                // A relay that said it is full a little while ago is not asked again every round (23 Oct 2026, the
+                // review: each refused hello cost the relay a scan of its whole ledger).
+                val refused = getMeta(sql, k("refused_until", id.book, tag)).orEmpty()
+                val until = refused.substringBefore('|').toLongOrNull()
+                if (until != null && now < until) return Result.Refused(refused.substringAfter('|', "hello refused"))
+                val (code, o) = call("POST", "hello")
+                // 503: this relay halted or overloaded — its own trouble, as for any other call (roundAll passes over it).
+                if (code == 503) return Result.Halted
+                if (code != 200) {
+                    val why = o?.optString("why")?.takeIf { it.isNotBlank() } ?: "hello $code"
+                    if (code == 507 || code == 429 || code == 409) setMeta(sql, k("refused_until", id.book, tag), "${now + REFUSED_MS}|$why")
+                    return Result.Refused(why)
+                }
+                // A device new at the relay reads all that is there: a message read twice changes nothing,
+                // a message skipped would be a change lost.
+                setMeta(sql, k("after", id.book, tag), "0")
+                setMeta(sql, k("hello", id.book, tag), id.device)
+                // A device the relay meets anew has no wake-up address there: it is told again.
+                setMeta(sql, k("wake", id.book, tag), "")
+                return null
+            }
+            if (getMeta(sql, k("hello", id.book, tag)) != id.device) hello()?.let { return it }
+
+            // What this device has to say: its changes after what the others acknowledged (resent after a wait),
+            // or only the acknowledgements when they moved; nothing when there is nothing new.
+            val state = LiveSync.state(sql)
+            val last = LiveSync.lastSeq(sql)
+            // Resent from what the peers heard lately acknowledged: a peer silent past STALE_MS (lost, reset, a long
+            // holiday) holds nothing back; it says "need" when it comes back and is sent what it lacks. A peer never
+            // heard from yet (seen null) still counts. All of them silent: only new lines go, nothing is resent.
+            val acked = state.peers.filter { p -> p.seen.let { it == null || now - it < STALE_MS } }
+                .minOfOrNull { it.sent } ?: last
+            var posted = getMeta(sql, k("sent", id.book, tag))?.toLongOrNull() ?: acked
+            val postedAt = getMeta(sql, k("sent_at", id.book, tag))?.toLongOrNull() ?: 0L
+            // Not acknowledged in time: sent again, each time after twice the wait (2 min … 1 h), so a peer that is
+            // away a week does not cost the book its daily limit at the relay (22 Oct 2026, the review).
+            var resends = getMeta(sql, k("resends", id.book, tag))?.toIntOrNull() ?: 0
+            val resendWait = minOf(RESEND_MS shl minOf(resends, 10), RESEND_MAX_MS)
+            var resending = false
+            // How far this device had posted before a resend: a resend is one page from the acknowledged line, and the
+            // next rounds go on from here (23 Oct 2026, the review: a resend chained page after page of the backlog).
+            var highWater = 0L
+            // A peer said it never got what was sent (absorb lowered the pointer): sent again at once.
+            if (getMeta(sql, k("lowered", id.book)) == "1") { setMeta(sql, k("lowered", id.book), ""); resends = 0; posted = acked }
+            // A peer taking the resent backlog (its acknowledgement moved since the last resend, still short of where
+            // the backlog ended) gets the next page at once; one that takes nothing gets a page per growing wait.
+            val backlog = getMeta(sql, k("resend_from", id.book, tag)).orEmpty()
+            val backlogFrom = backlog.substringBefore('|').toLongOrNull()
+            val backlogTo = backlog.substringAfter('|', "").toLongOrNull()
+            val progressed = backlogFrom != null && backlogTo != null && acked > backlogFrom && acked < backlogTo
+            if (backlogTo != null && acked >= backlogTo) setMeta(sql, k("resend_from", id.book, tag), "")
+            if (posted > acked && (now - postedAt > resendWait || progressed)) {
+                if (progressed) resends = 0
+                highWater = posted; posted = acked; resending = true
+            }
+            if (posted < acked) { posted = acked; resends = 0; setMeta(sql, k("resends", id.book, tag), "0") }
+            val acksNow = state.peers.joinToString(",") { it.device + ":" + it.recv }
+            val acksTold = getMeta(sql, k("acks", id.book, tag))
+            // A gap found in the last round's take is said in this round's parcel (the parcel is composed before
+            // the take, so a "need" not yet told is a reason to send on its own).
+            val needNow = buildString {
+                for (p in state.peers) {
+                    if (isNotEmpty()) append(',')
+                    append(p.device).append(':').append(getMeta(sql, k("need_" + p.device, id.book)).orEmpty())
+                }
+            }
+            val needTold = getMeta(sql, k("need_told", id.book, tag))
+            // Quiet for a day: the acknowledgements go anyway, so the peers keep this device counted as present.
+            val heartbeat = now - postedAt > HEARTBEAT_MS
+            var sealed: ByteArray? = null
+            var parcelTo = 0L
+            var parcelMore = false
+            if (send && (last > posted || acksNow != acksTold || needNow != needTold || heartbeat)) {
+                // Kept under the relay's own limit: a page of long rows goes as several smaller ones
+                // (22 Oct 2026, the review: a page over 1 MB was refused and sent again, unchanged, for ever).
+                var page = LiveSync.PAGE
+                // A peer asks for lines this device already let go of (its book went back to a copy older than
+                // what both had acknowledged): it cannot be caught up, only joined again — said as the WiFi road
+                // says it (LiveRound.LOST), never thrown out of the round (23 Oct 2026).
+                fun lost(e: LiveSync.Lost) = Result.Refused(LiveRound.LOST)
+                var msg = try { message(sql, posted, page) } catch (e: LiveSync.Lost) { return lost(e) } ?: return Result.Off
+                var s = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8), LiveWire.Road.RELAY)
+                while (s.size > MAX_SEND && page > 1) {
+                    page /= 2
+                    msg = try { message(sql, posted, page) } catch (e: LiveSync.Lost) { return lost(e) } ?: return Result.Off
+                    s = LiveWire.seal(id.key, msg.toString().toByteArray(Charsets.UTF_8), LiveWire.Road.RELAY)
+                }
+                sealed = s
+                val parcel = msg.getJSONObject("parcel")
+                parcelTo = parcel.getLong("to")
+                // A resend is one page: the rest of the backlog waits for the next resend (or for the peer's "need").
+                parcelMore = parcel.optBoolean("more", false) && !resending
+            }
+
+            // The round itself: one request (ack + parcel + page) where the relay knows "round" (22 Oct 2026);
+            // the three requests of before where it does not yet (a hand-uploaded relay).
+            var after = getMeta(sql, k("after", id.book, tag))?.toLongOrNull() ?: 0L
+            val ackDue = getMeta(sql, k("ack_due", id.book, tag))?.toLongOrNull()
+            fun roundJson(a: Long): JSONObject = JSONObject().apply {
+                put("after", a)
+                put("upTo", ackDue ?: JSONObject.NULL)
+                put("parcel", sealed?.let { B64.encode(it) } ?: JSONObject.NULL)
+            }
+            fun roundBody(a: Long): ByteArray = roundJson(a).toString().toByteArray(Charsets.UTF_8)
+            // "round" where the relay has it; a relay that answers "no such path" (uploaded before it existed) is
+            // asked the old way, take first, from then on — also when the path is only found after a hello.
+            fun ask(a: Long): Pair<Int, JSONObject?> {
+                // Over the live line when there is one (23 Oct 2026): the same round as one message, a twentieth of a
+                // request; no line (none here, or it dropped) and the round goes over HTTP, unchanged.
+                if (legacy[root] != true && useLines) LiveLines.ask(root, id.book, headers, roundJson(a), now)?.let { return it }
+                if (legacy[root] != true) {
+                    val r = call("POST", "round", roundBody(a), "application/json")
+                    if (!(r.first == 404 && r.second?.optString("why") == "no-such-path")) return r
+                    legacy[root] = true
+                }
+                return call("GET", "take?after=$a")
+            }
+            var (code, o) = ask(after)
+            if (code == 403 && o?.optString("why") == "say-hello-first") {
+                // The relay no longer knows this device (its box emptied after a month unused, or made again):
+                // hello again instead of asking for ever (22 Oct 2026, the review).
+                hello()?.let { return it }
+                after = 0L
+                val again = ask(0L)
+                code = again.first
+                o = again.second
+            }
+            val oneCall = legacy[root] != true
+            if (code == 503) return Result.Halted
+            val got = o
+            // The relay's limit refused this device's parcel but still gave the others' page (and kept the ack,
+            // 23 Oct 2026): the page is taken, and the round ends refused so the parcel goes to the next relay. A relay
+            // from before answers such a refusal without a page, and is a plain refusal as before.
+            val full = if (code != 200 && got != null && oneCall && got.optString("why") in CAPACITY && got.optJSONArray("parcels") != null) got.optString("why") else null
+            if ((code != 200 && full == null) || got == null) return Result.Refused(got?.optString("why") ?: (if (oneCall) "round $code" else "take $code"))
+            var sent = false
+            if (oneCall) {
+                if (ackDue != null) setMeta(sql, k("ack_due", id.book, tag), "")
+                if (sealed != null && full == null) {
+                    if (got.isNull("seq")) return Result.Refused("round no seq")
+                    setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcelTo, highWater).toString())
+                    setMeta(sql, k("sent_at", id.book, tag), now.toString())
+                    setMeta(sql, k("acks", id.book, tag), acksNow)
+                    setMeta(sql, k("need_told", id.book, tag), needNow)
+                    if (resending) setMeta(sql, k("resends", id.book, tag), (resends + 1).toString())
+                    if (resending) setMeta(sql, k("resend_from", id.book, tag), "$acked|$highWater")
+                    sent = true
+                }
+            }
+
+            // The others' messages, in order, from where this device last read.
+            var took = 0
+            var refusedWhy: String? = null
+            // One parcel that does not read (not base64, no body) is passed over like one that will not open, and
+            // the cursor moves past it (23 Oct 2026, the review's R54: it threw at the same row every round for ever).
+            val list = got.optJSONArray("parcels") ?: org.json.JSONArray()
+            for (i in 0 until list.length()) {
+                val p = list.optJSONObject(i) ?: continue
+                val sealedIn = runCatching { B64.decode(p.optString("body")) }.getOrNull()
+                val plainBytes = sealedIn?.let { LiveWire.open(id.key, it, LiveWire.Road.RELAY) }
+                if (plainBytes != null) {
+                    val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()
+                    // The relay's word on who sent it must be the sealed message's own: a parcel the relay
+                    // filed under another device (a bug or a lie there) is not taken as that device's.
+                    val from = p.optString("from")
+                    val same = msg != null && (from.isBlank() || from == msg.optString("dev"))
+                    if (msg != null && same && absorb(sql, msg, now)) {
+                        took++
+                        // Which relay that device's parcels come by: this device sends there too (roundAll).
+                        setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
+                    } else if (msg != null && same) {
+                        // The book itself refused it (the other device runs a newer schema): said at the end of the
+                        // round instead of "Live" (23 Oct 2026, the second review). The cursor still moves — the
+                        // sender's pointer does not, so it comes again once this device is updated.
+                        lastRefusal?.let { refusedWhy = it }
+                    }
+                }
+                val seq = p.optLong("seq", -1L)
+                if (seq >= 0) {
+                    after = maxOf(after, seq)
+                    setMeta(sql, k("after", id.book, tag), after.toString())
+                }
+            }
+            // The whole page came: the relay says how far its book goes, and this device reads on from there instead of
+            // having its own parcels passed over again every round (23 Oct 2026). A relay from before says nothing.
+            if (!got.optBoolean("more", false) && got.has("through") && !got.isNull("through")) {
+                val through = got.optLong("through", after)
+                if (through > after) {
+                    after = through
+                    setMeta(sql, k("after", id.book, tag), after.toString())
+                }
+            }
+            var more = got.optBoolean("more", false) || parcelMore
+            if (list.length() > 0) {
+                if (oneCall) setMeta(sql, k("ack_due", id.book, tag), after.toString())
+                else call("POST", "ack", JSONObject().put("upTo", after).toString().toByteArray(), "application/json")
+            }
+            if (took == 0 && refusedWhy != null) return Result.Refused(refusedWhy!!)
+            if (full != null) return Result.Refused(full)
+            if (!oneCall && sealed != null) {
+                val (sc, so) = call("POST", "send", sealed, "application/octet-stream")
+                if (sc != 200) return Result.Refused(so?.optString("why") ?: "send $sc")
+                setMeta(sql, k("sent", id.book, tag), maxOf(posted, parcelTo, highWater).toString())
+                setMeta(sql, k("sent_at", id.book, tag), now.toString())
+                setMeta(sql, k("acks", id.book, tag), acksNow)
+                setMeta(sql, k("need_told", id.book, tag), needNow)
+                if (resending) setMeta(sql, k("resends", id.book, tag), (resends + 1).toString())
+                if (resending) setMeta(sql, k("resend_from", id.book, tag), "$acked|$highWater")
+                sent = true
+            }
+            return Result.Done(took, sent, more)
+        } catch (e: java.io.IOException) {
+            return Result.Unreachable
+        } catch (e: org.json.JSONException) {
+            // An answer the relay should never give (not JSON's shape, a field missing): said as the relay's
+            // trouble, and passed over to the next relay by roundAll — not an exception read as "unreachable".
+            // The book's own failures (SQLite, the key's lock) still go up as before.
+            LiveTrouble.note("relay answer", e)
+            return Result.Refused("bad answer")
+        } catch (e: IllegalArgumentException) {
+            // Base64 or a number that does not read (NumberFormatException is one of these).
+            LiveTrouble.note("relay answer", e)
+            return Result.Refused("bad answer")
+        }
+    }
+
+    /**
+     * One round over every relay (22 Oct 2026: Cloudflare, then Supabase, then the owner's hosting).
+     *
+     * The first relay that answers is this round's own: this device's changes go there and the others'
+     * come from there. A relay after it is also read when [readOthers] (the callers do it every few
+     * rounds), and sent to as well while some peer's parcels last came by it: another device that
+     * cannot reach the first relay leaves its parcels there and reads them there, so this device's
+     * changes must reach it there too. A parcel read twice, from two relays, changes nothing the second
+     * time (every write lands by uid and each device's log line).
+     *
+     * Off, NotPaired and Halted (the kill switch) are the book's state and end the round at once; a relay
+     * that answers 503 (its owner halted that one) is passed over like one that cannot be reached.
+     */
+    /** One relay round at a time for a book: a wake-up's round and the screen's never run together (23 Oct 2026). */
+    private val rounds = ConcurrentHashMap<String, Mutex>()
+
+    /**
+     * The relays after the first are read at least this often (23 Oct 2026, the review's R83): by time, not every
+     * eighth round — with a live line open a quiet round comes only every five minutes, and a device that can reach
+     * only the owner's hosting was found after up to forty.
+     */
+    const val OTHERS_MS = 2 * 60_000L
+
+    /** When the relays after the first were last read, per book (this run of the app only). */
+    private val othersAt = ConcurrentHashMap<String, Long>()
+
+    /** Whether this book's round should read the relays after the first too ([OTHERS_MS] since they last were). */
+    suspend fun othersDue(sql: SyncSql, now: Long = System.currentTimeMillis()): Boolean {
+        val book = LiveSync.identity(sql)?.book ?: return false
+        return now - (othersAt[book] ?: 0L) >= OTHERS_MS
+    }
+
+    /**
+     * Whether some device of this book last sent its parcels by a relay after the first (the owner's hosting):
+     * that relay has no live line, no nudge and no Firebase, so nothing wakes this device for that device's
+     * changes — its rounds then keep the HTTP clock (15 s to a minute), not the line's five minutes (R83).
+     */
+    suspend fun peerOnLinelessRoad(sql: SyncSql): Boolean {
+        val id = LiveSync.identity(sql) ?: return false
+        return LiveSync.state(sql).peers.any { !getMeta(sql, k("via_" + it.device, id.book)).isNullOrEmpty() }
+    }
+
+    /** A device removed from this book (the owner's Remove): which relay its parcels came by is forgotten too. */
+    suspend fun forgetDevice(sql: SyncSql, device: String) {
+        val id = LiveSync.identity(sql) ?: return
+        sql.write {
+            exec("DELETE FROM sync_meta WHERE k = ?", listOf(k("via_" + device, id.book)))
+            exec("DELETE FROM sync_meta WHERE k = ?", listOf(k("need_" + device, id.book)))
+        }
+    }
+
+    suspend fun roundAll(
+        sql: SyncSql, http: Http = plain, roads: List<Road> = roads(), now: Long = System.currentTimeMillis(),
+        halted: () -> Boolean = { LiveControl.halted() }, readOthers: Boolean = true
+    ): Result {
+        if (roads.isEmpty()) return Result.Off
+        if (halted()) return Result.Halted
+        val id = LiveSync.identity(sql)
+        val lock = rounds.getOrPut(id?.book ?: "") { Mutex() }
+        return lock.withLock { roundAllLocked(sql, http, roads, now, id, readOthers) }
+    }
+
+    private suspend fun roundAllLocked(
+        sql: SyncSql, http: Http, roads: List<Road>, now: Long, id: LiveSync.Identity?, readOthers: Boolean
+    ): Result {
+        var mine: Result.Done? = null
+        var failed: Result? = null
+        var took = 0
+        var more = false
+        for (road in roads) {
+            if (mine == null) {
+                when (val r = round(sql, http, road.base, now, road.tag, send = true, useLines = road.tag == "", halted = { false })) {
+                    is Result.Done -> mine = r
+                    Result.Off, Result.NotPaired -> return r
+                    // The book's state, not the relay's: another relay would say the same.
+                    is Result.Refused -> if (r.why == LiveRound.LOST || r.why.startsWith("schema")) return r else if (failed == null) failed = r
+                    // A relay answering 503 is that relay halted or overloaded, never everyone stopped (the kill switch
+                    // was read above): passed over like one not reached.
+                    Result.Halted -> if (failed == null) failed = Result.Unreachable
+                    else -> if (failed == null) failed = r
+                }
+                continue
+            }
+            // A relay some peer's parcels last came by is one that peer reads: this device's changes go there too
+            // (per peer, not by time — 22 Oct 2026, the review: a 24 h mark went stale while the peer was quiet).
+            val used = id != null && LiveSync.state(sql).peers.any { getMeta(sql, k("via_" + it.device, id.book)) == road.tag }
+            if (!readOthers && !used) continue
+            val r = round(sql, http, road.base, now, road.tag, send = used, useLines = road.tag == "", halted = { false })
+            if (r is Result.Done) { took += r.took; more = more || r.more }
+        }
+        // The later relays were read in this round: the next reading of them is OTHERS_MS from now (othersDue).
+        if (readOthers && id != null) othersAt[id.book] = now
+        val first = mine ?: return failed ?: Result.Unreachable
+        return first.copy(took = first.took + took, more = first.more || more)
+    }
+
+    /**
+     * Tells every relay this device is done with the book (live sync stopped,
+     * or the book left): its parcels there go, and with no device left the
+     * relay forgets the book. Best effort; a relay not reached forgets the
+     * device itself after a month unused.
+     */
+    suspend fun leaveAll(sql: SyncSql, http: Http = plain, roads: List<Road> = roads()) {
+        val id = LiveSync.identity(sql) ?: return
+        for (road in roads) {
+            if (getMeta(sql, k("hello", id.book, road.tag)) != id.device) continue
+            val pass = token(id.key, id.book, road.base.trimEnd('/'))
+            val headers = mapOf("authorization" to "RK $pass", "x-rk-pass" to pass, "x-device" to id.device.take(16).padEnd(16, '0'))
+            runCatching { http.call("POST", road.base.trimEnd('/') + "/v1/b/${id.book}/leave", headers, null) }
+            setMeta(sql, k("hello", id.book, road.tag), "")
+        }
+    }
+
+    /**
+     * Leaves this phone's wake-up address (a Firebase token, [address]) at the
+     * relay, so a parcel left for it rings the phone while the app is closed;
+     * a null [address] takes it away. Said once per address and book (kept in sync_meta),
+     * and only while the owner keeps the relay on. The token says nothing of
+     * the book: the relay only asks Google to deliver "rk-wake" to it.
+     * True when the relay knows it now (or there was nothing to say).
+     */
+    suspend fun tellWake(
+        sql: SyncSql, address: String?, http: Http = plain, relay: String? = base,
+        now: Long = System.currentTimeMillis(),
+        halted: () -> Boolean = { LiveControl.halted() }
+    ): Boolean {
+        val root = relay?.trimEnd('/') ?: return false
+        val id = LiveSync.identity(sql) ?: return false
+        // Taking the address away is always allowed (R53): once the owner switched the relay off, the relay is told
+        // to stop ringing this phone — it kept the token and went on pushing until Google said it was gone.
+        if (address != null && !allowed(sql)) return false
+        if (halted()) return false
+        val told = getMeta(sql, k("wake", id.book))
+        if ((told ?: "") == (address ?: "")) return true
+        // Nothing to take away from a relay this device never greeted (or left): no hello just to say so.
+        if (address == null && getMeta(sql, k("hello", id.book)) != id.device) return true
+        val url = "$root/v1/b/${id.book}/"
+        val pass = token(id.key, id.book, root)
+        val headers = mapOf("authorization" to "RK $pass", "x-rk-pass" to pass, "x-device" to id.device.take(16).padEnd(16, '0'))
+        // A hello the relay refused for its capacity is not tried again before REFUSED_MS (as in round's hello).
+        suspend fun helloRefused(code: Int, bytes: ByteArray) {
+            if (code != 507 && code != 429 && code != 409) return
+            val why = runCatching { JSONObject(String(bytes, Charsets.UTF_8)).optString("why") }.getOrNull()?.takeIf { it.isNotBlank() } ?: "hello $code"
+            setMeta(sql, k("refused_until", id.book), "${now + REFUSED_MS}|$why")
+        }
+        return try {
+            if (getMeta(sql, k("hello", id.book)) != id.device) {
+                if ((getMeta(sql, k("refused_until", id.book)).orEmpty().substringBefore('|').toLongOrNull() ?: 0L) > now) return false
+                val (code, hb) = http.call("POST", url + "hello", headers, null)
+                if (code != 200) { helloRefused(code, hb); return false }
+                setMeta(sql, k("after", id.book), "0")
+                setMeta(sql, k("hello", id.book), id.device)
+            }
+            val body = JSONObject().put("token", address ?: JSONObject.NULL).toString().toByteArray(Charsets.UTF_8)
+            var (code, bytes) = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
+            if (code == 403 && runCatching { JSONObject(String(bytes, Charsets.UTF_8)).optString("why") }.getOrNull() == "say-hello-first") {
+                // The relay forgot this device (a month on the shop's WiFi, never a relay round): hello, then once more —
+                // not a 403 every minute for ever (23 Oct 2026, the second review).
+                if ((getMeta(sql, k("refused_until", id.book)).orEmpty().substringBefore('|').toLongOrNull() ?: 0L) > now) return false
+                val (hc, hb) = http.call("POST", url + "hello", headers, null)
+                if (hc != 200) { helloRefused(hc, hb); return false }
+                setMeta(sql, k("after", id.book), "0")
+                setMeta(sql, k("hello", id.book), id.device)
+                val again = http.call("POST", url + "wake", headers + ("content-type" to "application/json"), body)
+                code = again.first
+                bytes = again.second
+            }
+            if (code != 200) return false
+            // A relay that keeps the address but cannot ring anyone (no Firebase key there, R70): not told — asked
+            // again after the runner's growing wait — and said on the phone's live card ([wakeOff]). A relay from
+            // before says nothing of it and is believed, as before.
+            val push = runCatching { JSONObject(String(bytes, Charsets.UTF_8)) }.getOrNull()
+                ?.takeIf { it.has("push") && !it.isNull("push") }?.optBoolean("push", true)
+            if (address != null && push == false) {
+                setMeta(sql, k("wake_off", id.book), "1")
+                return false
+            }
+            setMeta(sql, k("wake_off", id.book), "")
+            setMeta(sql, k("wake", id.book), address ?: "")
+            true
+        } catch (e: java.io.IOException) {
+            false
+        }
+    }
+}

@@ -50,7 +50,24 @@ class StaffActivity : BaseActivity() {
         findViewById<View>(R.id.btnPrevMonth).setOnClickListener { shiftMonth(-1) }
         findViewById<View>(R.id.btnNextMonth).setOnClickListener { shiftMonth(1) }
         findViewById<View>(R.id.btnAddStaff).setOnClickListener { editStaff(null) }
+        findViewById<View>(R.id.btnAudit).setOnClickListener { startActivity(android.content.Intent(this, AuditActivity::class.java)) }
+        findViewById<View>(R.id.btnOwnerPin).setOnClickListener { com.innovation313.roshankhata.ui.AccessUi.ownerPin(this) { refreshAccessButtons() } }
+        findViewById<View>(R.id.btnCounterMode).setOnClickListener {
+            com.innovation313.roshankhata.ui.AccessUi.counterMode(this, !com.innovation313.roshankhata.data.Access.counterMode) { refreshAccessButtons() }
+        }
+        refreshAccessButtons()
         load()
+    }
+
+    /** The owner's two buttons say what is set: the PIN (set or change) and counter mode (on or off). */
+    private fun refreshAccessButtons() {
+        lifecycleScope.launch {
+            val has = com.innovation313.roshankhata.data.Access.ownerPin(dao) != null
+            findViewById<android.widget.Button>(R.id.btnOwnerPin).setText(if (has) R.string.access_owner_pin_change else R.string.access_owner_pin_set)
+            findViewById<android.widget.Button>(R.id.btnCounterMode).setText(
+                if (com.innovation313.roshankhata.data.Access.counterMode) R.string.access_counter_on_label else R.string.access_counter_off_label
+            )
+        }
     }
 
     private fun shiftMonth(by: Int) {
@@ -151,15 +168,38 @@ class StaffActivity : BaseActivity() {
         views.forEach { addView(it) }
     }
 
+    /**
+     * A money box in a dialog built here gets the app's calculator pad
+     * (21 Oct), as the add-entry form has: its running total and the pad go
+     * in right under it, and the whole body scrolls — with the pad it is
+     * taller than a short phone's dialog. [padShown]: whether the pad starts
+     * out showing (the money box is the first box, so it has the focus).
+     */
+    private fun withPad(body: LinearLayout, money: EditText, padShown: Boolean): View {
+        com.innovation313.roshankhata.ui.CalcPad.moneyBox(money)
+        val at = body.indexOfChild(money)
+        val result = com.innovation313.roshankhata.ui.CalcPad.resultLine(this)
+        val pad = com.innovation313.roshankhata.ui.CalcPad.inflatePad(body)
+        pad.visibility = if (padShown) View.VISIBLE else View.GONE
+        body.addView(result, at + 1)
+        body.addView(pad, at + 2)
+        val scroll = android.widget.ScrollView(this)
+        scroll.addView(body)
+        com.innovation313.roshankhata.ui.CalcPad.bindAll(
+            root = scroll, pad = pad, fields = listOf(money), results = mapOf(money to result)
+        )
+        return scroll
+    }
+
     /** An advance or a salary payment, handed over now. */
     private fun handOver(person: Staff, kind: Int) {
         val amount = field(R.string.staff_amount, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
         val note = field(R.string.staff_note, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
         MaterialAlertDialogBuilder(this)
             .setTitle(person.name + " \u00b7 " + getString(if (kind == Payroll.ADVANCE) R.string.staff_advance else R.string.staff_pay))
-            .setView(box(amount, note))
+            .setView(withPad(box(amount, note), amount, padShown = true))
             .setPositiveButton(R.string.save) { _, _ ->
-                val v = amount.text.toString().replace(",", "").toDoubleOrNull()
+                val v = com.innovation313.roshankhata.ui.Calc.evalAmount(amount.text.toString())
                 if (v == null || v <= 0) {
                     Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
                 }
@@ -178,20 +218,54 @@ class StaffActivity : BaseActivity() {
         val phone = field(R.string.staff_phone, InputType.TYPE_CLASS_PHONE, person?.phone)
         val salary = field(R.string.staff_salary, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
             person?.monthlySalary?.let { Format.plain(it) })
+        // Counter login (POS Phase 5): a role and a PIN, set by the owner only.
+        val mayEditLogin = com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.STAFF)
+        val roles = listOf(null, com.innovation313.roshankhata.data.Role.MANAGER, com.innovation313.roshankhata.data.Role.CASHIER)
+        val roleLabels = listOf(getString(R.string.staff_role_none), getString(R.string.staff_role_manager), getString(R.string.staff_role_cashier))
+        val roleBox = android.widget.Spinner(this).apply {
+            adapter = android.widget.ArrayAdapter(this@StaffActivity, android.R.layout.simple_spinner_dropdown_item, roleLabels)
+            setSelection(roles.indexOf(person?.role).coerceAtLeast(0))
+        }
+        val roleLabel = android.widget.TextView(this).apply { setText(R.string.staff_role); textSize = 12f }
+        val pin = field(R.string.staff_pin, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+        val pinNote = android.widget.TextView(this).apply { setText(R.string.staff_pin_keep); textSize = 12f; visibility = if (person?.pinHash != null) View.VISIBLE else View.GONE }
+        val views = if (mayEditLogin) arrayOf<View>(name, phone, salary, roleLabel, roleBox, pin, pinNote) else arrayOf<View>(name, phone, salary)
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
-            .setView(box(name, phone, salary))
+            .setView(withPad(box(*views), salary, padShown = false))
             .setPositiveButton(R.string.save) { _, _ ->
                 val n = name.text.toString().trim()
-                val s = salary.text.toString().replace(",", "").toDoubleOrNull()
+                val s = com.innovation313.roshankhata.ui.Calc.evalAmount(salary.text.toString())
                 if (n.isEmpty() || s == null || s <= 0) {
                     Toast.makeText(this, R.string.staff_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
                 }
                 val p = phone.text.toString().trim().ifEmpty { null }
-                lifecycleScope.launch {
-                    if (person == null) dao.insertStaff(Staff(name = n, phone = p, monthlySalary = s))
-                    else dao.updateStaff(person.copy(name = n, phone = p, monthlySalary = s))
+                val role = if (mayEditLogin) roles[roleBox.selectedItemPosition] else person?.role
+                val typedPin = pin.text.toString()
+                val needsPin = mayEditLogin && role != null && (person?.pinHash == null || typedPin.isNotEmpty())
+                if (needsPin && !com.innovation313.roshankhata.data.PinHash.valid(typedPin)) {
+                    Toast.makeText(this, R.string.staff_pin_invalid, Toast.LENGTH_LONG).show(); return@setPositiveButton
                 }
+                val login: (Staff) -> Staff = { st ->
+                    if (!mayEditLogin) st
+                    else if (role == null) st.copy(role = null, pinHash = null, pinSalt = null)
+                    else if (typedPin.isNotEmpty()) { val salt = com.innovation313.roshankhata.data.PinHash.salt(); st.copy(role = role, pinSalt = salt, pinHash = com.innovation313.roshankhata.data.PinHash.hash(typedPin, salt)) }
+                    else st.copy(role = role)
+                }
+                val save = {
+                    lifecycleScope.launch {
+                        // Two staff of one name would share a shift and a drawer (23 Oct 2026, the review).
+                        if (dao.staffNameTaken(n, person?.id ?: 0L)) {
+                            Toast.makeText(this@StaffActivity, R.string.staff_name_taken, Toast.LENGTH_LONG).show()
+                            return@launch
+                        }
+                        if (person == null) dao.insertStaff(login(Staff(name = n, phone = p, monthlySalary = s)))
+                        else dao.updateStaff(login(person.copy(name = n, phone = p, monthlySalary = s)))
+                    }
+                    Unit
+                }
+                // A staff login without an owner PIN would let anyone sign in as the owner: set it first.
+                if (mayEditLogin && role != null) com.innovation313.roshankhata.ui.AccessUi.requireOwnerPin(this) { save() } else save()
             }
             .setNegativeButton(R.string.cancel, null)
             .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }

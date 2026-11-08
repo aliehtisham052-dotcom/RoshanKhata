@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
  * [KhataDao.saveInvoiceWithItems]) so two near-simultaneous invoices can
  * never collide on the same printed number.
  */
-@Entity(tableName = "invoices")
+@Entity(tableName = "invoices", indices = [Index("uid")])
 data class Invoice(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 
@@ -92,7 +92,16 @@ data class Invoice(
      * invoice carries one kind or the other, never both. Never more than the
      * item subtotal. Null on every invoice made before v31.
      */
-    val discountAmount: Double? = null
+    val discountAmount: Double? = null,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -114,7 +123,7 @@ data class Invoice(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("invoiceId")]
+    indices = [Index("invoiceId"), Index("uid")]
 )
 data class InvoiceItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -123,7 +132,9 @@ data class InvoiceItem(
     val quantity: Double,
     val unit: String? = null,
     val rate: Double,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -208,5 +219,5 @@ data class InvoiceSummary(
  * customer holding both kinds of paper.
  */
 object InvoiceNumber {
-    fun next(existingCount: Int): String = "INV-%06d".format(Digits.FIGURES, existingCount + 1)
+    fun next(existingCount: Int): String = "INV-%06d".format(Digits.FIGURES, existingCount + 1) + NumberMark.suffix()
 }

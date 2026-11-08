@@ -396,6 +396,36 @@
                         style="@style/ProfileChoiceButton" />
                 </LinearLayout>
 
+                <!-- Country (21 Oct 2026): the WhatsApp code, tax name, week and calendar follow it. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_country"
+                            android:textAppearance="?attr/textAppearanceSubtitle2" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bp_country_help"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCountry"
+                        style="@style/ProfileChoiceButton" />
+                </LinearLayout>
+
                 <!-- Currency sign (4 Oct 2026): a choice, so a button, not a text field -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -935,6 +965,49 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:contentDescription="@string/bp_pay_reminder"
+                        android:minHeight="48dp" />
+                </LinearLayout>
+
+                <!-- Own digits on printed sheets (21 Oct 2026): shown only for Arabic, Sindhi, Farsi and Bengali. -->
+                <LinearLayout
+                    android:id="@+id/rowNativeDigits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:labelFor="@+id/swNativeDigits"
+                            android:text="@string/print_native_digits"
+                            android:textColor="@color/ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/print_native_digits_help"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swNativeDigits"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="@string/print_native_digits"
                         android:minHeight="48dp" />
                 </LinearLayout>
                 </LinearLayout>

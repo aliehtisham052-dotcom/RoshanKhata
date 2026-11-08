@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
     tableName = "parties",
     // (isDeleted, name): the Khata list reads every live party in name
     // order; with this the walk is the index, not a scan and a sort (P2, 7 Oct).
-    indices = [Index(value = ["qrToken"], unique = true), Index(value = ["isDeleted", "name"])]
+    indices = [Index(value = ["qrToken"], unique = true), Index(value = ["isDeleted", "name"]), Index("uid")]
 )
 data class Party(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -73,7 +73,9 @@ data class Party(
      * him up as late; on and after it, he comes first. Cleared when his
      * balance is settled from his own screen. Null = no such promise.
      */
-    val harvestPromise: Long? = null
+    val harvestPromise: Long? = null,
+    /** This row's identity across devices and backups (schema 38, live sync). */
+    val uid: String? = Uid.next()
 )
 
 /**
@@ -127,7 +129,7 @@ object PaymentMethod {
     // the balance SUM per party, each read straight off the index (P2, 7 Oct).
     // The single partyId index stays: Room expects every declared index to
     // exist, and dropping it would be a migration of its own for no gain.
-    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"])]
+    indices = [Index("partyId"), Index("productId"), Index("billItemId"), Index(value = ["partyId", "isDeleted", "timestamp"]), Index("uid")]
 )
 data class LedgerEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -253,7 +255,25 @@ data class LedgerEntry(
      * himself (v24). Null = read from the date, which is right for nearly
      * every entry; the owner changes it only for the odd one out.
      */
-    val season: String? = null
+    val season: String? = null,
+
+    /**
+     * The counter sale this entry was posted by (POS Phase 1, v32): the
+     * "I gave" for the ticket, or an "I got" for one of its payments. Null
+     * on every entry written by hand. No foreign key — a voided sale bins
+     * its entries, it never erases them — and it is how a void finds exactly
+     * the rows it must reverse.
+     */
+    val saleId: Long? = null,
+
+    /**
+     * This row's identity across copies of the book (schema 36): a random id
+     * given once, kept by every backup and restore, the same on the phone and
+     * the computer for a row that came from one copy. What a restore compares
+     * to say what would be lost, and what a merge matches rows by. Null only
+     * for a moment on a row restored from an old file; restoreAll fills it.
+     */
+    val uid: String? = Uid.next()
 )
 
 /**

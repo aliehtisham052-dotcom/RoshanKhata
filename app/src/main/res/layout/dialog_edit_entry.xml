@@ -5,6 +5,12 @@
   fields in labelled groups, in outlined boxes — amount and date, note, goods
   — and the customer's signature, which can now be added, changed or removed
   here too. The ids are the ones EntryDetailActivity has always used.
+
+  The amount is written on the app's own calculator pad (21 Oct), the same
+  one the add-entry form has: a user found Edit gave only the phone's number
+  keyboard, with no + − × ÷ % and no =. The pad shows while the amount is
+  being written and steps aside for the phone's keyboard in the note and
+  goods boxes (EntryDetailActivity, CalcPad).
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -101,16 +107,37 @@
             android:layout_marginTop="6dp"
             android:hint="@string/amount">
 
+            <!-- The pad types into it; the phone's keyboard is kept away
+                 (showSoftInputOnFocus = false in code). The digits are the
+                 add-entry box's, so a sum typed on a hardware keyboard works
+                 too. -->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEditAmount"
                 style="@style/ProfileFieldInput"
+                android:digits="0123456789.+−×÷*/-%"
                 android:importantForAutofill="no"
-                android:inputType="numberDecimal"
+                android:inputType="phone"
+                android:maxLines="1"
                 android:textAlignment="viewStart"
                 android:textDirection="ltr"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- The running total of a sum, green, under what was typed. -->
+        <TextView
+            android:id="@+id/tvEditAmountResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <!--
           Correcting when it happened, not only what it was. An entry recorded on
@@ -133,6 +160,16 @@
             app:iconPadding="12dp"
             app:iconTint="@color/brand_green_text"
             app:strokeColor="@color/editor_field_stroke" />
+
+        <!-- The calculator pad, the add-entry form's own (view_calculator).
+             wrap_content: inside this scrolling dialog it takes its floor,
+             298dp, and its five rows share that. -->
+        <include
+            android:id="@+id/editKeypad"
+            layout="@layout/view_calculator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
 
         <!-- Note -->
         <TextView

@@ -66,6 +66,7 @@
     <string name="coach_desc_followup">যাদের কাছে পাওনা, সবচেয়ে পুরোনো আগে — প্রত্যেকের জন্য এক ট্যাপে WhatsApp রিমাইন্ডার।</string>
     <string name="coach_title_backup">ব্যাকআপ</string>
     <string name="coach_desc_backup">আপনার খাতা নিজের Google Drive-এ নিরাপদে রাখুন।</string>
+    <string name="coach_desc_backup_pc">প্রতিদিন আপনার খাতার একটি কপি এই কম্পিউটারে রাখা হয়। দৈনিক কপি-তে এর জন্য দ্বিতীয় জায়গা বেছে নিন: USB বা আপনার Google Drive ফোল্ডার।</string>
         <string name="coach_title_settings">ব্যবসার সেটিংস</string>
     <string name="coach_desc_settings">দোকানের নাম, যোগাযোগ ও পছন্দ — একবার দিন, সব জায়গায় কাজে লাগবে।</string>
         <string name="calculator">ক্যালকুলেটর</string>
@@ -92,6 +93,9 @@
     <string name="home_sec_daily">প্রতিদিন</string>
     <string name="home_sec_business">ব্যবসা</string>
     <string name="home_today">আজ</string>
+    <string name="home_cash_in_hand">হাতে নগদ</string>
+    <string name="home_quick_actions">দ্রুত কাজ</string>
+    <string name="home_col_time">সময়</string>
     <string name="tile_bills">বিল</string>
     <string name="tile_expiry">মেয়াদ</string>
     <string name="tile_card">কার্ড</string>
@@ -127,10 +131,9 @@
     <string name="add_party">পার্টি যোগ করুন</string>
     <string name="add_party_duplicate_with_phone">একই রকম গ্রাহক আগে থেকেই আছে: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">একই রকম গ্রাহক আগে থেকেই আছে: %1$s</string>
-    <string name="no_parties_yet">এখনও কোনো গ্রাহক নেই।
-
-প্রথম গ্রাহক যোগ করুন আর আপনার খাতা শুরু করুন।</string>
+    <string name="no_parties_yet">এখনও কোনো গ্রাহক নেই।\n\nপ্রথম গ্রাহক যোগ করুন আর আপনার খাতা শুরু করুন।</string>
     <string name="no_entries_yet">এখনো কোনো এন্ট্রি নেই।</string>
+    <string name="entries_no_match">আপনার খোঁজের সাথে কোনো এন্ট্রি মেলেনি।</string>
 
     <string name="i_gave">আমি দিয়েছি</string>
     <string name="i_got">আমি পেয়েছি</string>
@@ -164,7 +167,7 @@
 
     <!-- Recycle Bin -->
     <string name="recycle_bin">রিসাইকেল বিন</string>
-    <string name="bin_retention_note">মুছে ফেলা জিনিস ৩০ দিন রাখা হয়, তারপর স্থায়ীভাবে মুছে যায়।</string>
+    <string name="bin_retention_note">মুছে ফেলা জিনিস 30 দিন রাখা হয়, তারপর স্থায়ীভাবে মুছে যায়।</string>
     <string name="bin_empty">বিন খালি।</string>
     <string name="bin_party_note">পার্টি (এর এন্ট্রিগুলো এর সঙ্গেই রাখা আছে)</string>
     <string name="bin_party_owed_to_me">%1$s পাওনা</string>
@@ -189,13 +192,13 @@
     <!-- Delete actions -->
     <string name="delete">মুছুন</string>
     <string name="delete_party_title">পার্টি মুছবেন?</string>
-    <string name="delete_party_confirm">\"%1$s\" ও এর এন্ট্রিগুলো রিসাইকেল বিনে যাবে। ৩০ দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</string>
+    <string name="delete_party_confirm">\"%1$s\" ও এর এন্ট্রিগুলো রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</string>
     <string name="delete_entry_title">এন্ট্রি মুছবেন?</string>
-    <string name="delete_entry_confirm">এই এন্ট্রি রিসাইকেল বিনে যাবে। ৩০ দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</string>
+    <string name="delete_entry_confirm">এই এন্ট্রি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</string>
     <string name="select_entries_to_delete">মোছার জন্য এন্ট্রি বেছে নিন</string>
     <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এটি রিসাইকেল বিনে যাবে। ৩০ দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
-        <item quantity="other">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এগুলো রিসাইকেল বিনে যাবে। ৩০ দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+        <item quantity="one">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এটি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+        <item quantity="other">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এগুলো রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
     </plurals>
     <string name="moved_to_bin">রিসাইকেল বিনে সরানো হয়েছে</string>
     <string name="long_press_to_delete">পার্টি মুছতে তার ওপর চেপে ধরে রাখুন</string>
@@ -206,7 +209,7 @@
     <string name="zakat_disclaimer">এই টুল শুধু সহায়ক। যাকাতে ফিকহের আসল খুঁটিনাটি আছে — নিসাবের মাপকাঠি, সন্দেহজনক পাওনার হিসাব, চান্দ্র বছর, আর কোন দেনা বাদ দেওয়া যায়, এসব বিষয়ে আলেমদের মত ভিন্ন। রোশন খাতা মুফতি নয়। চূড়ান্ত হুকুম একজন যোগ্য আলেমের কাছ থেকে নিন।</string>
 
     <string name="nisab_section">নিসাব</string>
-    <string name="nisab_help">এখানে নিসাব রুপার মাপে (৬১২.৩৬ গ্রাম) ধরা হয়েছে, যা সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়। আজকের রুপার দাম প্রতি গ্রাম লিখুন।</string>
+    <string name="nisab_help">এখানে নিসাব রুপার মাপে (612.36 গ্রাম) ধরা হয়েছে, যা সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়।</string>
     <string name="silver_price_hint">রুপার দাম প্রতি গ্রাম</string>
     <string name="nisab_value">নিসাব = %1$s</string>
     <string name="nisab_enter_price">নিসাব বের করতে দাম লিখুন</string>
@@ -262,7 +265,7 @@
 
     <!-- Goods / quantity (agri-dealer ledger) -->
     <string name="goods_section">পণ্য (ঐচ্ছিক)</string>
-    <string name="goods_help">এই এন্ট্রির সঙ্গে মাল গেলে — ৫ বস্তা ইউরিয়া, ২ লিটার কীটনাশক — এখানে লিখুন। শুধু নগদ এন্ট্রি হলে ফাঁকা রাখুন।</string>
+    <string name="goods_help">এই এন্ট্রির সঙ্গে মাল গেলে — 5 বস্তা ইউরিয়া, 2 লিটার কীটনাশক — এখানে লিখুন। শুধু নগদ এন্ট্রি হলে ফাঁকা রাখুন।</string>
     <string name="item_name_hint">পণ্য (ইউরিয়া, ফিড…)</string>
     <string name="quantity_hint">পরিমাণ</string>
     <string name="unit_hint">একক (বস্তা, লিটার, কেজি…)</string>
@@ -296,6 +299,19 @@
 
     <!-- App Lock -->
     <string name="app_lock">অ্যাপ লক</string>
+    <string name="app_lock_pc_explain">এই কম্পিউটারে রোশন খাতার জন্য PIN। এটি কাউন্টারে অন্যদের চোখ থেকে খাতা আড়াল রাখে; ফাইলটি নিজে লক করে না, তাই উঠে যাওয়ার সময় Windows-ও লক করুন (Win + L)।</string>
+    <string name="pc_pdf_save">PDF সেভ করুন</string>
+    <string name="pc_pdf_open_folder">ফোল্ডার খুলুন</string>
+    <string name="pc_pdf_making">PDF তৈরি হচ্ছে…</string>
+    <string name="pc_pdf_failed">PDF সেভ করা গেল না: %1$s</string>
+    <string name="lock_pin_label">PIN</string>
+    <string name="lock_pin_new">4 থেকে 8 অঙ্কের একটি PIN বেছে নিন</string>
+    <string name="lock_pin_new_long">6 থেকে 8 অঙ্কের একটি PIN বেছে নিন</string>
+    <string name="lock_pin_again">একই PIN আবার লিখুন</string>
+    <string name="lock_pin_wrong">ভুল PIN। আবার চেষ্টা করুন।</string>
+    <string name="lock_pin_mismatch">দুটি PIN এক নয়।</string>
+    <string name="lock_pin_wait">অনেকবার চেষ্টা হয়েছে। %1$d সেকেন্ড অপেক্ষা করুন।</string>
+    <string name="lock_unlock">খুলুন</string>
     <string name="lock_title">রোশন খাতা খুলুন</string>
     <string name="lock_subtitle">আপনার খাতা ব্যক্তিগত। নিশ্চিত করুন এটি আপনিই।</string>
     <string name="app_lock_enabled">অ্যাপ লক চালু আছে। প্রতিবার অ্যাপ খুললে নিশ্চিত করতে বলা হবে।</string>
@@ -361,6 +377,8 @@
     <string name="cheque_cleared">ক্লিয়ার</string>
     <string name="cheque_bounced">বাউন্স</string>
     <string name="cheque_cancelled">বাতিল</string>
+    <string name="cheque_none_cleared">এখনো কোনো চেক ক্লিয়ার হয়নি</string>
+    <string name="cheque_none_bounced">কোনো চেক বাউন্স বা বাতিল হয়নি</string>
 
     <string name="due_today">আজ প্রদেয়</string>
     <plurals name="due_in_days">
@@ -421,6 +439,8 @@
     <string name="sort_amount_low">অঙ্ক (কম থেকে বেশি)</string>
 
     <string name="no_matching_parties">আপনার খোঁজে কোনো গ্রাহক বা সরবরাহকারী মেলেনি।</string>
+    <string name="khata_pick_party">এখানে হিসাব দেখতে তালিকা থেকে কাউকে বেছে নিন।</string>
+    <string name="khata_choose_several">কয়েকটি বেছে নিন (মুছতে)</string>
     <string name="no_matching_entries">আপনার খোঁজে কোনো এন্ট্রি মেলেনি।</string>
     <string name="showing_filtered">%2$d-এর মধ্যে %1$d দেখানো হচ্ছে</string>
     <string name="running_balance_note">চলতি ব্যালেন্স খাতার নিজস্ব ক্রম মেনে চলে, তাই যেভাবেই সাজান বা খুঁজুন, এটি ঠিক থাকে।</string>
@@ -508,7 +528,7 @@
     <string name="save_backup">ব্যাকআপ সেভ করুন</string>
 
     <string name="restore_warning_title">সবকিছু বদলে দেবেন?</string>
-    <string name="restore_warning_message">রিস্টোর করলে রোশন খাতায় এখন যা আছে সব এই ফাইলের তথ্য দিয়ে বদলে যাবে:\n\n%1$d গ্রাহক/সরবরাহকারী\n%2$d খাতার এন্ট্রি\n%3$d চেক\n%4$d ক্যাশবুক এন্ট্রি\n%5$d পেমেন্ট প্ল্যান\n%6$d সরবরাহকারীর বিল\n%7$d ইনভয়েস\n\nএই ফোনে এখন যা আছে তা চলে যাবে। এখানে এমন এন্ট্রি থাকলে যা ব্যাকআপে নেই, আগে এটির ব্যাকআপ নিন।\n\nএটি আর ফেরানো যাবে না।</string>
+    <string name="restore_warning_message">রিস্টোর করলে রোশন খাতায় এখন যা আছে সব এই ফাইলের তথ্য দিয়ে বদলে যাবে:\n\n%1$d গ্রাহক/সরবরাহকারী\n%2$d খাতার এন্ট্রি\n%3$d চেক\n%4$d ক্যাশবুক এন্ট্রি\n%5$d পেমেন্ট প্ল্যান\n%6$d সরবরাহকারীর বিল\n%7$d ইনভয়েস\n\nএই ফোনে এখন যা আছে তা চলে যাবে। এখানে এমন এন্ট্রি থাকলে যা ব্যাকআপে নেই, আগে এটির ব্যাকআপ নিন।\n\nএই খাতাটি আগে দৈনিক কপিতে রাখা হয়, তাই রিস্টোর সেখান থেকে ফেরানো যায়।</string>
     <string name="restore_replace">সবকিছু বদলে দিন</string>
     <string name="restore_done">রিস্টোর হয়েছে</string>
     <string name="restore_failed">রিস্টোর হয়নি: %1$s</string>
@@ -570,6 +590,7 @@
     <string name="business_delete">ব্যবসা মুছুন</string>
     <string name="business_delete_confirm_title">%1$s মুছবেন?</string>
     <string name="business_delete_confirm_body">%1$d গ্রাহক, ব্যালেন্স %2$s। এই ব্যবসার প্রতিটি এন্ট্রি, ছবি ও ইনভয়েস এই ফোন থেকে স্থায়ীভাবে মুছে যাবে। Drive ব্যাকআপ থাকলে তা অক্ষত থাকবে। এটি আর ফেরানো যাবে না।</string>
+    <string name="business_delete_confirm_body_pc">%1$d গ্রাহক, ব্যালেন্স %2$s। এই ব্যবসার প্রতিটি এন্ট্রি, ছবি ও ইনভয়েস, আর এর দৈনিক কপি, এই কম্পিউটার থেকে স্থায়ীভাবে মুছে যাবে। বেছে নেওয়া ফোল্ডারের (USB বা Google Drive) কপি থাকলে তা অক্ষত থাকবে। এটি আর ফেরানো যাবে না।</string>
     <string name="business_delete_type_hint">নিশ্চিত করতে “%1$s” লিখুন</string>
     <string name="business_delete_done">%1$s মুছে ফেলা হয়েছে</string>
     <string name="erase_all_button">সব ডেটা মুছুন</string>
@@ -590,14 +611,16 @@
         <item quantity="other">Drive-এ %1$dটি ব্যবসা</item>
     </plurals>
     <string name="drive_restore_all">সব রিস্টোর করুন</string>
-    <string name="drive_restore_all_warning">এই ব্যবসাগুলো Drive থেকে রিস্টোর হবে, আর এই ফোনে এগুলোর যা আছে তা বদলে যাবে: %1$s</string>
-    <string name="drive_restored_these">রিস্টোর হয়েছে: %1$s</string>
-    <string name="drive_restore_missed">রিস্টোর করা যায়নি: %1$s</string>
+    <string name="drive_restore_all_warning">এই ব্যবসাগুলো Drive থেকে রিস্টোর হবে, আর এই ফোনে এগুলোর যা আছে তা বদলে যাবে:\n\n%1$s</string>
+    <string name="drive_restored_these">রিস্টোর হয়েছে:\n%1$s</string>
+    <string name="drive_restore_missed">রিস্টোর করা যায়নি:\n%1$s</string>
     <string name="business_numbered">ব্যবসা %1$d</string>
     <string name="backup_for_business">ব্যাকআপ হচ্ছে: %1$s</string>
     <string name="snapshots_title">দৈনিক কপি</string>
     <string name="snapshots_subtitle">অ্যাপ এই ব্যবসার খাতার প্রতিদিন একটি কপি রাখে, গত সাত দিনের। কিছু ভুল হলে যেকোনো কপিতে ফিরে যেতে পারেন।</string>
     <string name="snapshots_empty">এখনো কোনো কপি নেই। পরের বার খাতা খুললে প্রথমটি তৈরি হবে।</string>
+    <string name="snapshots_here_pc">এই কম্পিউটারে</string>
+    <string name="auto_folder_copies">বেছে নেওয়া ফোল্ডারে</string>
     <string name="snapshot_size_kb">%1$d KB</string>
     <string name="snapshot_restore_title">এই দিনে ফিরে যাবেন?</string>
     <string name="snapshot_restore_action">রিস্টোর</string>
@@ -623,8 +646,8 @@
         <item quantity="other">%1$s: %2$dটি পেমেন্ট প্ল্যানের কিস্তি প্রদেয়।</item>
     </plurals>
     <plurals name="notif_expiry_body_named">
-        <item quantity="one">%1$s: %2$dটি পণ্যের মেয়াদ ৬০ দিনের মধ্যে শেষ।</item>
-        <item quantity="other">%1$s: %2$dটি পণ্যের মেয়াদ ৬০ দিনের মধ্যে শেষ।</item>
+        <item quantity="one">%1$s: %2$dটি পণ্যের মেয়াদ 60 দিনের মধ্যে শেষ।</item>
+        <item quantity="other">%1$s: %2$dটি পণ্যের মেয়াদ 60 দিনের মধ্যে শেষ।</item>
     </plurals>
     <string name="filter_title">ফিল্টার</string>
     <string name="filter_account_label">হিসাব</string>
@@ -664,7 +687,7 @@
     <string name="batch_number_hint">ব্যাচ নম্বর</string>
     <string name="batch_why">পাত্রের গায়ে লেখা ব্যাচ নম্বর লিখুন। কখনো নমুনা নিয়ে প্রশ্ন উঠলে বা পরিদর্শন বিভাগ জানতে চাইলে, এই রেকর্ডই দেখায় মাল ঠিক কোথা থেকে এসেছে। পরে এটি আর তৈরি করা যায় না।</string>
     <string name="expiry_date">মেয়াদের তারিখ</string>
-    <string name="expiry_why">মেয়াদ শেষের ৬০ দিন আগে রোশন খাতা সতর্ক করবে — যথেষ্ট আগে, যাতে বিক্রি করতে, ছাড় দিতে বা সরবরাহকারী নিতে রাজি থাকতে ফেরত দিতে পারেন।</string>
+    <string name="expiry_why">মেয়াদ শেষের 60 দিন আগে রোশন খাতা সতর্ক করবে — যথেষ্ট আগে, যাতে বিক্রি করতে, ছাড় দিতে বা সরবরাহকারী নিতে রাজি থাকতে ফেরত দিতে পারেন।</string>
     <string name="pick_expiry">মেয়াদের তারিখ বেছে নিন</string>
     <string name="pick_bill_date">বিলের তারিখ বেছে নিন</string>
     <string name="rate_hint">প্রতি এককের দর</string>
@@ -683,9 +706,9 @@
     <string name="bill_saved_credit">বিল সেভ হয়েছে এবং খাতায় উঠেছে</string>
     <string name="enter_supplier">অনুগ্রহ করে সরবরাহকারী বেছে নিন</string>
     <string name="enter_product">অনুগ্রহ করে পণ্যের নাম লিখুন</string>
-    <string name="bill_deleted">বিল মুছে ফেলা হয়েছে। খাতার এন্ট্রি থাকবে — মাল সত্যিই এসেছিল এবং তার দাম আপনাকে দিতেই হবে।</string>
+    <string name="bill_deleted">বিল মুছে ফেলা হয়েছে। এটি বাকির বিল হলে এর খাতার এন্ট্রিও রিসাইকেল বিনে চলে গেছে — ভুল হলে 30 দিনের মধ্যে সেখান থেকে ফিরিয়ে আনতে পারেন।</string>
     <string name="delete_bill">বিল মুছুন</string>
-    <string name="delete_bill_confirm">বিল ও এর ব্যাচ রেকর্ড সরে যাবে, কিন্তু খাতার এন্ট্রি থাকবে। মাল সত্যিই এসেছিল এবং টাকা সত্যিই দেনা — কাগজ মুছলে তা বদলায় না।</string>
+    <string name="delete_bill_confirm">বিল ও এর ব্যাচ রেকর্ড সরে যাবে। এটি বাকির বিল হলে এর খাতার এন্ট্রিও (এই সরবরাহকারীকে আপনার যা দেনা) রিসাইকেল বিনে যাবে, ফলে দেনা এই বিলের পরিমাণ কমে যাবে। এন্ট্রিটি 30 দিনের মধ্যে রিসাইকেল বিন থেকে ফিরিয়ে আনা যাবে।</string>
     <string name="bill_actions">বিল</string>
     <string name="view_items">পণ্য ও ব্যাচ দেখুন</string>
 
@@ -720,6 +743,7 @@
     <string name="view">দেখুন</string>
     <string name="invoice_share_pdf">PDF হিসেবে শেয়ার করুন</string>
     <string name="invoice_send_whatsapp">WhatsApp-এ পাঠান</string>
+    <string name="invoice_whatsapp_pc">PDF হিসেবে সেভ হয়েছে এবং এর ফোল্ডার খোলা হয়েছে: %1$s\n\nগ্রাহকের WhatsApp চ্যাট আপনার ব্রাউজারের মাধ্যমে খোলে। ফাইলটি টেনে চ্যাটে দিন, অথবা সেখানে + বোতাম দিয়ে সংযুক্ত করুন।</string>
     <string name="invoice_template_teal">টিল কর্পোরেট — পূর্ণ ব্যবসায়িক ইনভয়েস</string>
     <string name="number_words_language" translatable="false">bn</string>
     <string name="invoice_swipe_designs">আরও ডিজাইন দেখতে সোয়াইপ করুন — %2$d-এর মধ্যে %1$d</string>
@@ -734,9 +758,9 @@
     <string name="invoice_template_thermal">থার্মাল রসিদ — সরু, কাউন্টার বিক্রি</string>
     <string name="invoice_pdf_failed">PDF তৈরি করা যায়নি। কিছুই শেয়ার হয়নি।</string>
     <string name="invoice_preview_label">নমুনা — আপনি পূরণ করার সঙ্গে সঙ্গে বদলায়</string>
-    <string name="invoice_step_customer">ধাপ ১/৩ — এই বিল কার জন্য?</string>
-    <string name="invoice_step_items">ধাপ ২/৩ — কীসের বিল করছেন?</string>
-    <string name="invoice_step_design">ধাপ ৩/৩ — ডিজাইন বেছে নিন</string>
+    <string name="invoice_step_customer">ধাপ 1/3 — এই বিল কার জন্য?</string>
+    <string name="invoice_step_items">ধাপ 2/3 — কীসের বিল করছেন?</string>
+    <string name="invoice_step_design">ধাপ 3/3 — ডিজাইন বেছে নিন</string>
     <string name="invoice_next">পরের</string>
     <string name="invoice_back">পেছনে</string>
     <string name="invoice_items_label">পণ্য</string>
@@ -745,7 +769,7 @@
     <string name="invoice_charge_amount_hint">অঙ্ক</string>
     <string name="invoice_received_hint">পাওয়া অঙ্ক (ঐচ্ছিক)</string>
     <string name="invoice_terms">শর্তাবলি</string>
-    <string name="invoice_terms_hint">যেমন ১৪ দিনের মধ্যে পরিশোধযোগ্য।</string>
+    <string name="invoice_terms_hint">যেমন 14 দিনের মধ্যে পরিশোধযোগ্য।</string>
     <string name="invoice_strn_hint">যেমন 1234567-8 (ঐচ্ছিক)</string>
     <string name="adjust_crop_title">ক্রপ ঠিক করুন</string>
     <string name="adjust_crop_hint">কোণগুলো টেনে নিন, যাতে বাক্সে শুধু যা রাখতে চান তা-ই থাকে।</string>
@@ -771,7 +795,7 @@
     <!-- Expiry alerts -->
     <string name="expiring_stock">মেয়াদ শেষ হতে চলা স্টক</string>
     <string name="expiring_subtitle">বিক্রি করুন, ছাড় দিন বা ফেরত দিন — এখনো যখন সম্ভব</string>
-    <string name="no_expiring">আগামী ৬০ দিনে কিছুর মেয়াদ শেষ হচ্ছে না।\n\nশুধু যে স্টকের মেয়াদের তারিখ লেখা আছে সেটিই নজরে রাখা যায়। বিলে ওই ঘর ফাঁকা রাখলে রোশন খাতা সতর্ক করতে পারবে না।</string>
+    <string name="no_expiring">আগামী 60 দিনে কিছুর মেয়াদ শেষ হচ্ছে না।\n\nশুধু যে স্টকের মেয়াদের তারিখ লেখা আছে সেটিই নজরে রাখা যায়। বিলে ওই ঘর ফাঁকা রাখলে রোশন খাতা সতর্ক করতে পারবে না।</string>
     <string name="expiring_note">এখানে শুধু সেই স্টক দেখা যায় যার মেয়াদের তারিখ লেখা আছে। রোশন খাতা শুধু যা জানানো হয়েছে তা নিয়েই সতর্ক করতে পারে।</string>
     <plurals name="expired_days">
         <item quantity="one">%1$d দিন আগে মেয়াদ শেষ</item>
@@ -838,8 +862,8 @@
 
     <string name="hide_balance">ব্যালেন্স লুকান</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Innovation-313 দ্বারা চালিত</string>
+    <string name="lock_tagline">Innovation-313 দ্বারা চালিত</string>
     <string name="tap_to_start">এগিয়ে যেতে যেকোনো জায়গায় ট্যাপ করুন</string>
 
     <!-- Splash / branding -->
@@ -863,9 +887,9 @@
     <string name="drive_backup_now">এখনই Drive-এ ব্যাকআপ নিন</string>
     <string name="drive_backup_images">ছবি অন্তর্ভুক্ত করুন (ছবি, বিলের ছবি, QR)</string>
     <string name="drive_auto_backup">অটোমেটিক ব্যাকআপ</string>
-    <string name="drive_auto_backup_hint">খাতা বদলালেই নিজে থেকে ব্যাকআপ নেয় — Wi-Fi-তে সর্বোচ্চ প্রতি ৩০ মিনিটে, মোবাইল ডেটায় প্রতি ৬ ঘণ্টায়। তবুও যেকোনো সময় ব্যাকআপ নিতে পারেন।</string>
+    <string name="drive_auto_backup_hint">খাতা বদলালেই নিজে থেকে ব্যাকআপ নেয় — Wi-Fi-তে সর্বোচ্চ প্রতি 30 মিনিটে, মোবাইল ডেটায় প্রতি 6 ঘণ্টায়। তবুও যেকোনো সময় ব্যাকআপ নিতে পারেন।</string>
     <string name="auto_backup_offer_title">নিজে থেকে ব্যাকআপ নেবে?</string>
-    <string name="auto_backup_offer_body">আপনার অ্যাকাউন্ট যুক্ত হয়েছে। খাতা বদলালেই রোশন খাতা নিজে আপলোড করতে পারে, যাতে ফোন হারালে বা নষ্ট হলে রেকর্ড না হারায়। এই স্ক্রিন থেকে যেকোনো সময় বদলাতে পারেন।</string>
+    <string name="auto_backup_offer_body">আপনার অ্যাকাউন্ট যুক্ত হয়েছে। খাতা বদলালেই রোশন খাতা নিজে আপলোড করতে পারে, যাতে ফোন হারালে বা নষ্ট হলে রেকর্ড না হারায়।\n\nএই স্ক্রিন থেকে যেকোনো সময় বদলাতে পারেন।</string>
     <string name="auto_backup_offer_yes">চালু করুন</string>
     <string name="auto_backup_offer_no">এখন নয়</string>
     <string name="drive_restore">Drive থেকে রিস্টোর করুন</string>
@@ -895,10 +919,10 @@
     <string name="insights_no_products">এই মাসে কোনো পণ্য লেখা হয়নি। এটি দেখতে এন্ট্রি করার সময় পণ্যের নাম দিন।</string>
     <string name="insights_no_sales">এই মাসে এখনো কোনো বিক্রি লেখা হয়নি।</string>
     <string name="insights_privacy_note">সব হিসাব আপনার ফোনেই হয়। কিছুই ফোনের বাইরে যায় না।</string>
-    <string name="insights_monthly_title">মাসিক বিক্রি \u00b7 গত ১২ মাস</string>
+    <string name="insights_monthly_title">মাসিক বিক্রি \u00b7 গত 12 মাস</string>
     <string name="insights_monthly_pick">%1$s \u00b7 %2$s</string>
     <string name="insights_monthly_hint">যেকোনো বারে ট্যাপ করে সেই মাসের মোট দেখুন।</string>
-    <string name="insights_monthly_none">গত ১২ মাসে কোনো বিক্রি লেখা হয়নি।</string>
+    <string name="insights_monthly_none">গত 12 মাসে কোনো বিক্রি লেখা হয়নি।</string>
     <string name="insights_profit_title">লাভ \u00b7 এই মাসে</string>
     <string name="insights_profit_after_expenses">খরচের পরে: %1$s (খরচ %2$s)</string>
     <string name="insights_profit_last_month">গত মাস: %1$s</string>
@@ -951,9 +975,9 @@
     <string name="sr_down">আগের বিলের চেয়ে %1$s কম (%2$s)</string>
     <string name="sr_cheaper">সম্প্রতি %1$s-এর কাছে সস্তা: %2$s (%3$s)</string>
     <string name="sr_none">এখনো দরসহ সরবরাহকারীর বিল নেই। সরবরাহকারীর বিলের প্রতিটি লাইনে দর লিখুন, এখানে দেখা যাবে।</string>
-    <string name="sr_note">দর শুধু একই এককে তুলনা হয়, আর সস্তা দর শুধু গত ৬ মাসের হলে গোনা হয়।</string>
+    <string name="sr_note">দর শুধু একই এককে তুলনা হয়, আর সস্তা দর শুধু গত 6 মাসের হলে গোনা হয়।</string>
     <string name="sr_nothing_to_watch">কিছু দেখার দরকার নেই: কিছুই দামি হয়নি, আর অন্য কোনো সরবরাহকারী সম্প্রতি সস্তা ছিল না।</string>
-    <string name="home_slide_cf">আগামী ৩০ দিনে কী আসবে, কী যাবে</string>
+    <string name="home_slide_cf">আগামী 30 দিনে কী আসবে, কী যাবে</string>
     <string name="home_slide_rates">আপনার দর WhatsApp-এর জন্য ছবিতে</string>
     <string name="home_slide_cheaper">প্রতিটি সরবরাহকারীর দর মেলান</string>
     <string name="home_slide_poster">WhatsApp স্ট্যাটাসের জন্য ছবি</string>
@@ -965,7 +989,7 @@
     <string name="na_plan_due">আজকের কিস্তি</string>
     <string name="na_plan_late">কিস্তি দেরি হয়েছে</string>
     <string name="na_bill_due">সরবরাহকারীর বিল %1$s তারিখে</string>
-    <string name="na_expiring">৩০ দিনে মেয়াদ শেষ হওয়া মাল: %1$s ব্যাচ</string>
+    <string name="na_expiring">60 দিনে মেয়াদ শেষ হওয়া মাল: %1$s ব্যাচ</string>
     <string name="na_backup">শেষ ব্যাকআপ %1$s দিন আগে</string>
     <string name="na_tag_today">আজ</string>
     <string name="na_tag_late">দেরি</string>
@@ -1014,8 +1038,10 @@
     <string name="nisab_silver">রুপা</string>
     <string name="nisab_gold">সোনা</string>
     <string name="gold_price_hint">সোনার দাম প্রতি গ্রাম</string>
-    <string name="nisab_silver_note">রুপার নিসাব: ৬১২.৩৬ গ্রাম (৫২.৫ তোলা) রুপা। এটি নিচের সীমা, তাই বেশি মানুষের ওপর যাকাত আসে \u2014 সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়।</string>
-    <string name="nisab_gold_note">সোনার নিসাব: ৮৭.৪৮ গ্রাম (৭.৫ তোলা) সোনা। এটি ওপরের সীমা, তাই কম মানুষের ওপর যাকাত আসে। আপনার জন্য কোন মাপ প্রযোজ্য তা একজন আলেমের কাছ থেকে নিশ্চিত করুন।</string>
+    <string name="silver_price_hint_tola">রুপার দাম প্রতি তোলা</string>
+    <string name="gold_price_hint_tola">সোনার দাম প্রতি তোলা</string>
+    <string name="nisab_silver_note">রুপার নিসাব: 612.36 গ্রাম (52.5 তোলা) রুপা। এটি নিচের সীমা, তাই বেশি মানুষের ওপর যাকাত আসে \u2014 সাধারণত গরিবের হকের পক্ষে বেশি সতর্ক মত বলে ধরা হয়।</string>
+    <string name="nisab_gold_note">সোনার নিসাব: 87.48 গ্রাম (7.5 তোলা) সোনা। এটি ওপরের সীমা, তাই কম মানুষের ওপর যাকাত আসে। আপনার জন্য কোন মাপ প্রযোজ্য তা একজন আলেমের কাছ থেকে নিশ্চিত করুন।</string>
     <string name="per_tola">প্রতি তোলা</string>
     <string name="per_gram">প্রতি গ্রাম</string>
     <string name="price_help">আপনার স্থানীয় স্বর্ণবাজার, পত্রিকা বা জুয়েলারের আজকের দর ব্যবহার করুন।</string>
@@ -1088,6 +1114,7 @@
     <string name="sig_retake">স্বাক্ষর বদলান</string>
     <string name="sig_title">এখানে স্বাক্ষর করুন</string>
     <string name="sig_hint">গ্রাহক আঙুল দিয়ে স্বাক্ষর করবেন। এটি শুধু এই ফোন ও আপনার ব্যাকআপে থাকবে।</string>
+    <string name="sig_hint_pc">গ্রাহক মাউস দিয়ে বা টাচ স্ক্রিনে স্বাক্ষর করেন। শুধু এই কম্পিউটারেই থাকে: ব্যাকআপ ফাইলে ছবি যায় না।</string>
     <string name="sig_clear">মুছুন</string>
     <string name="sig_empty">আগে স্বাক্ষর করুন</string>
     <string name="sig_label">গ্রাহকের স্বাক্ষর</string>
@@ -1123,11 +1150,12 @@
     </plurals>
     <string name="notif_expiry_title">স্টকের মেয়াদ শিগগিরই শেষ</string>
     <plurals name="notif_expiry_body">
-        <item quantity="one">%1$dটি পণ্যের মেয়াদ ৬০ দিনের মধ্যে শেষ। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</item>
-        <item quantity="other">%1$dটি পণ্যের মেয়াদ ৬০ দিনের মধ্যে শেষ। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</item>
+        <item quantity="one">%1$dটি পণ্যের মেয়াদ 60 দিনের মধ্যে শেষ। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</item>
+        <item quantity="other">%1$dটি পণ্যের মেয়াদ 60 দিনের মধ্যে শেষ। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</item>
     </plurals>
     <string name="notif_backup_title">ব্যাকআপের তাগিদ</string>
     <string name="notif_backup_body">শেষ ব্যাকআপের পর এক সপ্তাহের বেশি হয়ে গেছে। আপনার রেকর্ড শুধু এই ফোনেই আছে।</string>
+    <string name="notif_backup_body_pc">শেষ ব্যাকআপের পর এক সপ্তাহের বেশি হয়ে গেছে। আপনার রেকর্ড শুধু এই কম্পিউটারেই আছে।</string>
     <string name="notif_backup_failed_title">অটোমেটিক ব্যাকআপ হয়নি</string>
     <string name="notif_backup_failed_body">রোশন খাতা Drive-এ ব্যাকআপ নিতে পারেনি। ইন্টারনেট দেখুন — এটি নিজে থেকে আবার চেষ্টা করবে।</string>
 
@@ -1138,6 +1166,7 @@
     <string name="biz_card_template">ডিজাইন</string>
     <string name="biz_card_share">কার্ড শেয়ার করুন</string>
     <string name="biz_card_note">কার্ড আপনার ফোনেই আঁকা হয় এবং ছবি হিসেবে শেয়ার হয়। কিছুই আপলোড হয় না।</string>
+    <string name="biz_card_note_pc">কার্ড এই কম্পিউটারেই আঁকা হয় এবং ছবি হিসেবে সংরক্ষণ বা প্রিন্ট করা হয়। কিছুই আপলোড হয় না।</string>
     <string name="biz_card_show_mark">কার্ডে “রোশন খাতা” দেখান</string>
     <string name="biz_card_show_logo">কার্ডে দোকানের লোগো</string>
     <string name="biz_card_logo_none">এখনো লোগো নেই। প্রোফাইলে যোগ করুন →</string>
@@ -1163,7 +1192,7 @@
     <string name="faq_q_hide">পাশে কেউ দাঁড়ালে ব্যালেন্স লুকাতে পারি?</string>
     <string name="faq_a_hide">হোম স্ক্রিনে ব্যালেন্সের পাশের চোখে ট্যাপ করুন। আবার ট্যাপ না করা পর্যন্ত এটি সব জায়গায় লুকানো থাকে।</string>
     <string name="faq_q_percent">অঙ্কের ঘরেই কি ছাড়ের হিসাব করা যায়?</string>
-    <string name="faq_a_percent">হ্যাঁ। হিসাবটি সরাসরি লিখুন — 1200-15%% দিলে 1020 হয়, আর 500*32%% দিলে 160। এটি প্রতিটি অঙ্কের ঘরে এবং ক্যালকুলেটরে কাজ করে।</string>
+    <string name="faq_a_percent" formatted="false">হ্যাঁ। হিসাবটি সরাসরি লিখুন — 1200-15% দিলে 1020 হয়, আর 500*32% দিলে 160। এটি প্রতিটি অঙ্কের ঘরে এবং ক্যালকুলেটরে কাজ করে।</string>
     <string name="faq_q_delete">আমি ভুলে একজন গ্রাহক মুছে ফেলেছি।</string>
     <string name="faq_a_delete">হোম স্ক্রিনে রিসাইকেল বিন। মোছা গ্রাহক ও এন্ট্রি সেখানে থাকে এবং ফিরিয়ে আনা যায়।</string>
     <string name="faq_q_language">পরে কি ভাষা বদলাতে পারব?</string>
@@ -1178,6 +1207,7 @@
     <string name="about_what">দোকানের কাউন্টারের খাতা। গ্রাহকের হিসাব, প্রতিদিনের নগদ, চেক, সরবরাহকারীর বিল ও কিস্তি — কাগজে যেভাবে রাখা হয় সেভাবেই, যে ভাষায় দোকান চলে সেই ভাষায়। একটি দোকান বা কয়েকটি, প্রতিটির নিজস্ব খাতা।</string>
     <string name="about_privacy_title">আপনার হিসাব আপনারই থাকে</string>
     <string name="about_privacy_body">সবকিছু এই ফোনেই রাখা হয়। আমরা আপনার গ্রাহক, তাদের নম্বর বা কারও দেনা কখনো দেখি না। ব্যাকআপ যায় আপনার নিজের Google Drive-এ — আমাদের কাছে নয়।</string>
+    <string name="about_privacy_body_pc">সবকিছু এই কম্পিউটারেই রাখা হয়। আমরা আপনার গ্রাহক, তাদের নম্বর বা কারও দেনা কখনো দেখি না। ব্যাকআপ থাকে এই কম্পিউটারে আর আপনার বেছে নেওয়া ফোল্ডারে, যেমন USB বা Google Drive-এর ফোল্ডার — আমাদের কাছে নয়।</string>
     <string name="about_privacy_policy">গোপনীয়তা নীতি</string>
     <string name="about_maker">Innovation-313-এর তৈরি</string>
     <string name="party_exists">%1$s আগে থেকেই আপনার খাতায় আছে — সেটি খোলা হচ্ছে।</string>
@@ -1227,8 +1257,8 @@
         <item quantity="other">%1$d জন গ্রাহক মুছবেন?</item>
     </plurals>
     <plurals name="delete_parties_confirm">
-        <item quantity="one">%1$d জন গ্রাহক ও তার সব এন্ট্রি রিসাইকেল বিনে যাবে। ৩০ দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
-        <item quantity="other">%1$d জন গ্রাহক ও তাদের সব এন্ট্রি রিসাইকেল বিনে যাবে। ৩০ দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+        <item quantity="one">%1$d জন গ্রাহক ও তার সব এন্ট্রি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+        <item quantity="other">%1$d জন গ্রাহক ও তাদের সব এন্ট্রি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
     </plurals>
     <plurals name="delete_parties_owing">
         <item quantity="one">তাদের মধ্যে %1$d জনের ব্যালেন্স এখনো আছে — %2$s পাওনা, %3$s দেনা। সরালে এটি আপনার মোট থেকে বাদ যায়; হিসাব পরিশোধ হয় না।</item>
@@ -1236,6 +1266,7 @@
     </plurals>
     <string name="customer_qr">গ্রাহক QR</string>
     <string name="customer_qr_hint">এই খাতা খুলতে রোশন খাতায় এটি স্ক্যান করুন। কোডে কোনো নাম, নম্বর বা ব্যালেন্স থাকে না।</string>
+    <string name="customer_qr_save_picture">QR ছবি হিসেবে সংরক্ষণ করুন</string>
     <string name="scan_customer_qr">গ্রাহক কার্ড স্ক্যান করুন</string>
     <string name="qr_not_ours">এই কোড রোশন খাতার গ্রাহক কার্ড নয়।</string>
     <string name="qr_no_customer">এখানে কোনো গ্রাহক এই কার্ডের সঙ্গে মেলে না।</string>
@@ -1243,6 +1274,10 @@
     <string name="report_crash_included">— কারিগরি ক্র্যাশ রেকর্ড (আপনার ফোনে নিজে থেকে সেভ হয়েছে, ত্রুটি খুঁজতে সাহায্যের জন্য যুক্ত):</string>
     <string name="products_stock">পণ্য ও স্টক</string>
     <string name="products_subtitle">দোকানে কী বিক্রি হয়, আর কতটা বাকি আছে</string>
+    <string name="no_products_pc">এখনো কোনো পণ্য নেই। সরবরাহকারীর বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়, অথবা CSV আমদানি দিয়ে আপনার তালিকা আনুন।</string>
+    <string name="no_matching_products">আপনার খোঁজের সাথে কোনো পণ্য মেলেনি।</string>
+    <string name="inventory_subtitle">তাকে কত মাল আছে, আর তার দাম কত</string>
+    <string name="po_subtitle">সরবরাহকারীদের কাছে কী চেয়েছেন, আর কী এসেছে</string>
     <string name="products_note">এই অঙ্কগুলো শুধু পণ্যের সঙ্গে যুক্ত এন্ট্রি গোনে। আগে লেখা এন্ট্রি যুক্ত করতে নিচের বোতাম ব্যবহার করুন।</string>
     <string name="no_products">এখনো কোনো পণ্য নেই। নিচে থেকে আগের এন্ট্রি যুক্ত করুন, অথবা বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়।</string>
     <string name="link_goods">আগের এন্ট্রি পণ্যের সঙ্গে যুক্ত করুন</string>
@@ -1283,7 +1318,7 @@
     <string name="promo_message">আসসালামু আলাইকুম %1$s। %2$s আমাদের দোকানে আবার পাওয়া যাচ্ছে। লাগলে জানাবেন।</string>
     <string name="no_promo_customers">ওই সময়ে কেউ এটি কেনেনি।</string>
     <string name="window_same_season">গত বছরের একই মৌসুম</string>
-    <string name="window_last_year">গত ১২ মাস</string>
+    <string name="window_last_year">গত 12 মাস</string>
     <string name="window_ever">এ পর্যন্ত</string>
     <string name="edit_bill">বিল সম্পাদনা</string>
     <string name="edit_bill_cash_locked">এটি এখানে বদলানো যায় না। বিল সম্পাদনা ভুল ঠিক করার জন্য, দেনা শোধের জন্য নয় — তার জন্য খাতায় পেমেন্ট লিখুন।</string>
@@ -1374,9 +1409,9 @@
     <string name="inspector_title">স্টক ও কমপ্লায়েন্স রেজিস্টার</string>
     <string name="inspector_subtitle">স্টক, ব্যাচ ও মেয়াদ এক PDF-এ</string>
     <string name="inspector_window_title">মেয়াদের সময়সীমা</string>
-    <string name="inspector_window_30">৩০ দিন</string>
-    <string name="inspector_window_60">৬০ দিন</string>
-    <string name="inspector_window_90">৯০ দিন</string>
+    <string name="inspector_window_30">30 দিন</string>
+    <string name="inspector_window_60">60 দিন</string>
+    <string name="inspector_window_90">90 দিন</string>
     <string name="inspector_count_batches">স্টকে থাকা ব্যাচ</string>
     <string name="inspector_count_expiring">মেয়াদ শেষ হচ্ছে</string>
     <string name="inspector_count_expired">মেয়াদ শেষ</string>
@@ -1558,7 +1593,7 @@
     <string name="pdf_biz_cheques">যে চেক এখনো ক্লিয়ার হয়নি</string>
     <string name="pdf_biz_cheques_note">ক্লিয়ার না হওয়া পর্যন্ত এগুলো টাকা নয়। ওপরের ব্যালেন্সে এগুলো নেই।</string>
     <string name="pdf_biz_cheque">চেক</string>
-    <string name="pdf_biz_due"> \u00B7 প্রদেয় </string>
+    <string name="pdf_biz_due">" \u00B7 প্রদেয় "</string>
     <string name="pdf_biz_plans">চলমান পেমেন্ট প্ল্যান</string>
     <string name="pdf_biz_paid_of">%2$s-এর মধ্যে %1$s</string>
     <string name="pdf_biz_expiring">শিগগিরই মেয়াদ শেষ হবে এমন স্টক</string>
@@ -1567,24 +1602,24 @@
         <item quantity="one">%1$d দিন</item>
         <item quantity="other">%1$d দিন</item>
     </plurals>
-    <string name="pdf_biz_batch">ব্যাচ %1$s \u00B7 </string>
+    <string name="pdf_biz_batch">"ব্যাচ %1$s \u00B7 "</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">বিক্রয় ও ক্রয় রেজিস্টার</string>
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">সময়: %1$s</string>
     <string name="pdf_reg_note_1">এটি দোকানের নিজস্ব রেকর্ড, যা তাকে জানানো হয়েছে, ওপরের সময়ের জন্য ছাপা।</string>
-    <string name="pdf_reg_note_2">বিক্রি হলো সেই বাকি/পণ্যের এন্ট্রি যাতে পণ্য গেছে \u2014 শুধু নগদ ও কর্জে হাসানা গোনা হয় না।</string>
+    <string name="pdf_reg_note_2">বিক্রি হলো সেই বাকি/পণ্যের এন্ট্রি যাতে পণ্য গেছে, অথবা কাউন্টার বিক্রির পণ্য \u2014 শুধু নগদ ও কর্জে হাসানা গোনা হয় না।</string>
     <string name="pdf_reg_sales_lines">এই সময়ে বিক্রির লাইন</string>
     <string name="pdf_reg_total_sales">মোট বিক্রি</string>
     <string name="pdf_reg_purchase_lines">এই সময়ে কেনার লাইন</string>
     <string name="pdf_reg_total_purchases">মোট কেনা (দরসহ লাইন)</string>
     <string name="pdf_reg_no_rate_lines">কেনার যে লাইনে দর লেখা নেই</string>
-    <string name="pdf_reg_section_sales">১. বিক্রয় রেজিস্টার</string>
-    <string name="pdf_reg_section_sales_cont">১. বিক্রয় রেজিস্টার (চলমান)</string>
+    <string name="pdf_reg_section_sales">1. বিক্রয় রেজিস্টার</string>
+    <string name="pdf_reg_section_sales_cont">1. বিক্রয় রেজিস্টার (চলমান)</string>
     <string name="pdf_reg_no_sales">এই সময়ে কোনো পণ্য বিক্রি হয়নি।</string>
-    <string name="pdf_reg_section_purchases">২. ক্রয় রেজিস্টার</string>
-    <string name="pdf_reg_section_purchases_cont">২. ক্রয় রেজিস্টার (চলমান)</string>
+    <string name="pdf_reg_section_purchases">2. ক্রয় রেজিস্টার</string>
+    <string name="pdf_reg_section_purchases_cont">2. ক্রয় রেজিস্টার (চলমান)</string>
     <string name="pdf_reg_no_purchases">এই সময়ে কোনো কেনা লেখা হয়নি।</string>
     <string name="pdf_reg_col_date">তারিখ</string>
     <string name="pdf_reg_col_customer">গ্রাহক / পণ্য / ব্যাচ</string>
@@ -1606,9 +1641,9 @@
     <string name="pdf_insp_footer_of">%1$s \u00B7 পৃষ্ঠা %2$d / %3$d</string>
     <string name="pdf_insp_footer">%1$s \u00B7 পৃষ্ঠা %2$d</string>
     <string name="pdf_insp_not_backup">এটি পড়া ও ছাপানোর রেজিস্টার \u2014 ব্যাকআপ নয়।</string>
-    <string name="pdf_insp_how_to_read">কীভাবে পড়বেন: পরিমাণগুলো \u201Cএর বেশি নয়\u201D ধরনের অঙ্ক।</string>
-    <string name="pdf_insp_how_1">যে বিক্রি কোনো ব্যাচের সঙ্গে যুক্ত নয় তা এখানে সেই ব্যাচ কমায় না, তাই</string>
-    <string name="pdf_insp_how_2">দেখানো স্টক তাকের চেয়ে বেশি হতে পারে। ড্যাশ মানে কখনো লেখা হয়নি।</string>
+    <string name="pdf_insp_how_to_read">কীভাবে পড়বেন: প্রতিটি ব্যাচে হিসাব অনুযায়ী যা বাকি আছে।</string>
+    <string name="pdf_insp_how_1">অর্থাৎ বিলে যা এসেছিল, তা থেকে যা বিক্রি হয়েছে, ফেরত এসেছে বা বাদ দেওয়া হয়েছে তা বাদ দিয়ে।</string>
+    <string name="pdf_insp_how_2">যে বিক্রি কোনো ব্যাচের সঙ্গে যুক্ত নয় তা সেই ব্যাচ থেকে কমে যার মেয়াদ সবার আগে শেষ হয়, তাই ব্যাচগুলোর যোগফল কখনো তাকের চেয়ে বেশি হয় না। ড্যাশ মানে কখনো লেখা হয়নি।</string>
     <string name="pdf_insp_sum_products">খাতায় থাকা পণ্য</string>
     <string name="pdf_insp_sum_batches">স্টকে থাকা ব্যাচ</string>
     <string name="pdf_insp_sum_expired">মেয়াদ শেষ, তবুও স্টকে</string>
@@ -1635,7 +1670,6 @@
     <string name="pdf_insp_no_batches">স্টকে কোনো ব্যাচ নেই। ব্যাচ ও মেয়াদ সরবরাহকারীর বিলে লেখা হয়।</string>
     <string name="pdf_insp_missing_note">নিচের প্রতিটি পণ্য স্টকে আছে এবং এর লেবেলের এক বা একাধিক ঘর কখনো পূরণ হয়নি।</string>
     <string name="pdf_insp_expired">মেয়াদ শেষ</string>
-    <string name="pdf_insp_expired_ago">মেয়াদ শেষ \u00B7 %1$d দিন আগে</string>
     <string name="pdf_insp_days_left">%1$d দিন বাকি</string>
     <string name="pdf_insp_units_differ">একক আলাদা</string>
     <string name="pdf_insp_company_tag">কোম্পানি</string>
@@ -1684,6 +1718,7 @@
     <string name="theme_light">লাইট</string>
     <string name="theme_dark">ডার্ক</string>
     <string name="theme_system">ফোনের মতো</string>
+    <string name="theme_system_pc">কম্পিউটারের মতো</string>
     <string name="bp_section_identity">পরিচয়</string>
     <string name="bp_section_paid">পেমেন্ট পাওয়া</string>
     <string name="bp_section_seals">সিল ও স্বাক্ষর</string>
@@ -1698,7 +1733,7 @@
     <string name="calendar_hijri">হিজরি (আনুমানিক)</string>
     <string name="calendar_jalali">সৌর হিজরি</string>
     <string name="currency_custom">অন্য (চিহ্ন লিখুন)…</string>
-    <string name="currency_custom_hint">চিহ্ন, সর্বোচ্চ ৫ অক্ষর</string>
+    <string name="currency_custom_hint">চিহ্ন, সর্বোচ্চ 5 অক্ষর</string>
     <string name="bp_trade">দোকানের ধরন</string>
     <string name="bp_trade_help">এই খাতা কোন ব্যবসার জন্য। যে সুবিধা শুধু একটি ব্যবসার দরকার, তা এই অনুযায়ী দেখাবে।</string>
     <string name="trade_agri">কৃষি (কীটনাশক, বীজ, ফিড)</string>
@@ -1735,6 +1770,7 @@
     <string name="bp_logo">দোকানের লোগো</string>
     <string name="bp_logo_help">ঐচ্ছিক — ইনভয়েস ও স্টক রেজিস্টারের ওপরে ছাপা হয়।</string>
     <string name="bp_remove_logo">লোগো সরান</string>
+    <string name="pic_delete_body_pc">এই ছবিটি শুধু এই কম্পিউটারেই আছে: ব্যাকআপ ফাইলে ছবি যায় না। মুছে ফেলার পর এটি আর ফিরিয়ে আনা যাবে না।</string>
     <string name="bp_logo_saved">লোগো সেভ হয়েছে</string>
     <string name="bp_logo_save_failed">লোগো সেভ করা যায়নি। অন্য ছবি দিয়ে চেষ্টা করুন।</string>
 
@@ -1811,7 +1847,6 @@
     <string name="followup_queue_open">WhatsApp খুলুন</string>
     <string name="followup_queue_skip">বাদ দিন</string>
     <string name="followup_queue_stop">থামান</string>
-    <string name="followup_queue_done">হয়ে গেছে — আজ %1$dটি রিমাইন্ডার খোলা হয়েছে</string>
     <string name="followup_queue_title">%2$d-এর মধ্যে %1$d</string>
     <string name="season_title">ফসলের হিসাব</string>
     <string name="season_subtitle">ফসলের মৌসুম অনুযায়ী বাকি, নতুন আগে</string>
@@ -1851,9 +1886,9 @@
     <string name="advice_write">স্প্রের পরামর্শ লিখুন</string>
     <string name="advice_pick_line">কোন পণ্য?</string>
     <string name="advice_title">পরামর্শ: %1$s</string>
-    <string name="advice_crop_hint">ফসল, যেমন তুলা, ৩ একর</string>
+    <string name="advice_crop_hint">ফসল, যেমন তুলা, 3 একর</string>
     <string name="advice_pest_hint">পোকা বা রোগ, যেমন বোলওয়ার্ম</string>
-    <string name="advice_dose_hint">মাত্রা, যেমন একরপ্রতি ২৫০ মিলি, সকালে</string>
+    <string name="advice_dose_hint">মাত্রা, যেমন একরপ্রতি 250 মিলি, সকালে</string>
     <plurals name="batch_buyers_untagged">
         <item quantity="one">এই পণ্যের %dটি বিক্রিতে ব্যাচ নেই, তাই তালিকায় নেই</item>
         <item quantity="other">এই পণ্যের %dটি বিক্রিতে ব্যাচ নেই, তাই তালিকায় নেই</item>
@@ -1901,7 +1936,7 @@
     <string name="scheme_reward_percent">% রিবেট</string>
     <string name="scheme_reward_amount">নির্দিষ্ট অঙ্ক</string>
     <string name="scheme_reward_units">ফ্রি একক</string>
-    <string name="scheme_slabs">স্ল্যাব: টার্গেট → পুরস্কার (৩টি পর্যন্ত)</string>
+    <string name="scheme_slabs">স্ল্যাব: টার্গেট → পুরস্কার (3টি পর্যন্ত)</string>
     <string name="scheme_target_hint">টার্গেট</string>
     <string name="scheme_reward_hint">পুরস্কার</string>
     <string name="scheme_note_hint">নোট (ঐচ্ছিক)</string>
@@ -2378,6 +2413,16 @@
     <!-- Shop button and shop sheet (11 Oct). -->
     <string name="shop_sub_profile">প্রোফাইল</string>
     <string name="shop_sub_switch">প্রোফাইল · দোকান বদলান</string>
+    <string name="rail_sales_stock">বিক্রি ও স্টক</string>
+    <string name="rail_reports">রিপোর্ট</string>
+    <string name="header_backed_up">ব্যাকআপ হয়েছে</string>
+    <string name="home_shop_today">আজ আপনার দোকান</string>
+    <string name="home_recent">সাম্প্রতিক লেনদেন</string>
+    <string name="home_todays_entries">আজকের এন্ট্রি</string>
+    <string name="home_gave_got_count">%1$d দিয়েছি · %2$d পেয়েছি</string>
+    <string name="home_promised_today">আজকের প্রতিশ্রুতি</string>
+    <string name="rail_products_prices">পণ্য ও দাম</string>
+    <string name="rail_stock_expiry">স্টক ও মেয়াদ</string>
     <string name="shop_add_name">আপনার দোকানের নাম লিখুন</string>
     <string name="shop_add_name_sub">ইনভয়েস ও স্টেটমেন্টে ছাপা হবে</string>
     <string name="shop_edit_profile">প্রোফাইল সম্পাদনা</string>
@@ -2823,7 +2868,7 @@
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
     <string name="biz_card_language">কার্ডের ভাষা</string>
-    <string name="biz_card_language_note">উর্দু কার্ড পুরোটাই উর্দুতে এবং ডান থেকে বাঁয়ে পড়া হয়। প্রতিটি ভাষার নিজস্ব নাম, মালিক ও ঠিকানা থাকে; নম্বর, ইমেল ও ওয়েবসাইট দুটোতেই এক।</string>
+    <string name="biz_card_language_note">প্রতিটি ভাষার নিজস্ব কার্ড হয়। উর্দু, সিন্ধি, আরবি ও ফারসি কার্ড ডান থেকে বাঁয়ে পড়া হয়। প্রতিটি ভাষার নাম, মালিক ও ঠিকানা আলাদা থাকে; নম্বর, ইমেল ও ওয়েবসাইট সব কার্ডে একই।</string>
     <string name="poster_step_design">ডিজাইন</string>
     <string name="poster_step_words">লেখা</string>
     <string name="poster_step_send">পাঠান</string>
@@ -2869,7 +2914,7 @@
     <string name="calc_khata_positive">খাতায় শুধু শূন্যের বেশি টাকা যোগ করা যায়।</string>
     <string name="stat_bills">বিল</string>
     <string name="stat_you_owe">আপনার দেনা</string>
-    <string name="stat_expiring">৬০ দিনে মেয়াদ শেষ</string>
+    <string name="stat_expiring">60 দিনে মেয়াদ শেষ</string>
     <string name="bills_add_first">প্রথম বিল যোগ করুন</string>
     <string name="sr_open_short">দাম তুলনা</string>
     <string name="products_search_hint">পণ্য খুঁজুন</string>
@@ -2931,6 +2976,7 @@
     <string name="biz_card_ex_web">যেমন ওয়েবসাইট বা ফেসবুক পেজ</string>
     <string name="biz_card_ex_qr">যেমন আসসালামু আলাইকুম, আপনার কার্ড দেখেছি</string>
     <string name="biz_card_send_picture">কার্ড ছবি হিসেবে পাঠান</string>
+    <string name="biz_card_save_picture">কার্ডটি ছবি হিসেবে সংরক্ষণ করুন</string>
     <string name="drive_signed_in_ok">✓ %1$s দিয়ে সাইন ইন হয়েছে। এখন আপনার খাতা আপনার Google Drive-এ ব্যাকআপ হতে পারে।</string>
     <string name="entry_due_none">পরিশোধের তারিখ: তারিখ যোগ করুন</string>
     <string name="entry_due_set">পরিশোধের তারিখ: %1$s</string>
@@ -2953,4 +2999,687 @@
     <string name="import_csv_go">তাদের নিয়ে আসুন</string>
     <string name="import_csv_done">গ্রাহক যোগ হলো: %1$d</string>
     <string name="import_csv_empty">এই ফাইল থেকে কোনো গ্রাহক পড়া যায়নি। এতে অন্তত নামের একটি কলাম থাকতে হবে।</string>
+
+    <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
+    <string name="wifi_send_title">কম্পিউটারে পাঠান (ওয়াই-ফাই)</string>
+    <string name="wifi_send_explain">কম্পিউটারে রোশন খাতা খুলে “ফোন থেকে” চাপুন, তারপর সেখানে দেখানো কোডটি স্ক্যান করুন। দুটোই একই ওয়াই-ফাইতে থাকতে হবে। কিছুই ইন্টারনেটে যায় না।</string>
+    <string name="wifi_send_button">কম্পিউটারের কোড স্ক্যান করুন</string>
+    <string name="wifi_send_not_computer">এটি রোশন খাতা কম্পিউটারের কোড নয়।</string>
+    <string name="wifi_send_sending">কম্পিউটারে পাঠানো হচ্ছে…</string>
+    <string name="wifi_send_done">পাঠানো হয়েছে। কম্পিউটারে দেখে সেখানেই নিশ্চিত করুন, তাহলে খাতা চলে আসবে।</string>
+    <string name="wifi_send_refused">কম্পিউটার এটি নেয়নি। “ফোন থেকে” জানালাটি বন্ধ করে আবার খুলুন এবং নতুন কোড স্ক্যান করুন।</string>
+    <string name="wifi_send_unreachable">কম্পিউটারে পৌঁছানো গেল না। দেখুন দুটোই একই ওয়াই-ফাইতে আছে, কম্পিউটারে “ফোন থেকে” জানালাটি খোলা আছে, এবং উইন্ডোজ রোশন খাতাকে নেটওয়ার্কের অনুমতি দিয়েছে।</string>
+    <string name="wifi_pc_button">ফোন থেকে</string>
+    <string name="wifi_pc_title">আপনার ফোন থেকে, ওয়াই-ফাইয়ে</string>
+    <string name="wifi_pc_steps">ফোনে: ব্যাকআপ → কম্পিউটারের কোড স্ক্যান করুন, এবং এই কোডের দিকে ধরুন। দুটোই একই ওয়াই-ফাইতে থাকতে হবে। কিছুই ইন্টারনেটে যায় না, আর আপনার হ্যাঁ ছাড়া এখানে কিছুই বদলায় না।</string>
+    <string name="wifi_pc_waiting">ফোনের অপেক্ষায়…</string>
+    <string name="wifi_pc_no_network">এই কম্পিউটার কোনো নেটওয়ার্কে নেই। দোকানের ওয়াই-ফাইতে যুক্ত করে এই জানালাটি আবার খুলুন।</string>
+    <string name="wifi_pc_firewall">উইন্ডোজ জিজ্ঞেস করলে রোশন খাতাকে প্রাইভেট নেটওয়ার্কে অনুমতি দিন।</string>
+    <string name="wifi_pc_failed">শোনা শুরু করা গেল না। এই জানালাটি বন্ধ করে আবার চেষ্টা করুন।</string>
+    <string name="poster_save_picture">পোস্টারটি ছবি হিসেবে সংরক্ষণ করুন</string>
+    <string name="poster_desktop_flat">কম্পিউটারে ছবিগুলো সমতল (ফ্ল্যাট) আঁকা হয়; ফোন এগুলো 3ডিতে দেখায়।</string>
+
+    <!-- Windows 1.9.0 (20 Oct): the computer's book onto the phone, a repaired book, updates, reports. -->
+    <string name="wifi_take_button">কম্পিউটারের খাতা নিন</string>
+    <string name="wifi_take_asking">কম্পিউটারের কাছে খাতা চাওয়া হচ্ছে…</string>
+    <string name="wifi_take_refused">কম্পিউটার তার খাতা দেয়নি। এর “ফোন থেকে” জানালাটি খোলা থাকতে হবে; এখন যে কোডটি দেখাচ্ছে সেটিই স্ক্যান করুন।</string>
+    <string name="book_recovered_title">আপনার খাতা মেরামত করা হয়েছে</string>
+    <string name="book_recovered_from">খাতার ফাইলটি নষ্ট হয়ে গিয়েছিল এবং পড়া যায়নি। %1$s-এ তৈরি কপি থেকে এটি আবার গড়া হয়েছে। সেই কপির পরে লেখা কিছু এতে নেই।</string>
+    <string name="book_recovered_none">খাতার ফাইলটি নষ্ট হয়ে গিয়েছিল এবং পড়া যায়নি, আর এই কম্পিউটারে কোনো সংরক্ষিত কপিও পাওয়া যায়নি। খাতা খালি শুরু হচ্ছে: আপনার ফোন বা কোনো ফাইল থেকে ব্যাকআপ ফিরিয়ে আনুন।</string>
+    <string name="book_corrupt_kept">নষ্ট ফাইলটি মোছা হয়নি, রেখে দেওয়া হয়েছে:\n%1$s</string>
+    <string name="update_available">নতুন সংস্করণ প্রস্তুত: %1$s</string>
+    <string name="update_open">ডাউনলোড পাতা খুলুন</string>
+    <string name="auto_backup_note">অ্যাপ খোলা থাকলে আজকের কপি প্রতি ঘণ্টায় আবার লেখা হয়, এখানে এবং বাইরের ফোল্ডারে।</string>
+    <string name="receipt_save_picture">রসিদটি ছবি হিসেবে সংরক্ষণ করুন</string>
+    <string name="report_open_mail">আমার ইমেইল খুলুন</string>
+    <string name="report_copy">রিপোর্ট কপি করুন</string>
+    <string name="report_copied">কপি হয়েছে। এটি হোয়াটসঅ্যাপে বা innovation313.support@gmail.com ঠিকানায় ইমেইলে পেস্ট করুন।</string>
+    <string name="report_no_mail_pc">এই কম্পিউটারে কোনো ইমেইল প্রোগ্রাম নেই। “রিপোর্ট কপি করুন” চেপে হোয়াটসঅ্যাপে বা যেকোনো ইমেইলে innovation313.support@gmail.com ঠিকানায় পাঠান।</string>
+    <string name="report_pc_privacy">আপনার গ্রাহকদের নাম, নম্বর ও বাকি কখনোই পাঠানো হয় না। রিপোর্টের সঙ্গে শুধু অ্যাপের সংস্করণ ও উইন্ডোজের সংস্করণ যায় — নিচে পুরোটা দেখানো আছে, এই কম্পিউটার থেকে কিছু যাওয়ার আগে।</string>
+
+    <!-- The counter (POS Phase 1, 21 Oct 2026) -->
+    <string name="pos_title">কাউন্টার বিক্রি</string>
+    <string name="pos_subtitle">আইটেম স্ক্যান বা খুঁজুন, যোগ করুন, পেমেন্ট নিন</string>
+    <string name="pos_search_hint">আইটেমের নাম বা বারকোড</string>
+    <string name="pos_scan">স্ক্যান</string>
+    <string name="pos_walk_in">সাধারণ ক্রেতা</string>
+    <string name="pos_choose_customer">ক্রেতা বাছুন</string>
+    <string name="pos_lines_empty">এখনো কোনো আইটেম নেই — উপরে স্ক্যান বা খুঁজুন</string>
+    <string name="pos_col_item">আইটেম</string>
+    <string name="pos_col_qty">পরিমাণ</string>
+    <string name="pos_col_rate">দর</string>
+    <string name="pos_col_total">মোট</string>
+    <string name="pos_line_discount">লাইন ছাড়</string>
+    <string name="pos_subtotal">উপমোট</string>
+    <string name="pos_discount">ছাড়</string>
+    <string name="pos_tax">কর %</string>
+    <string name="pos_round_off">রাউন্ড অফ</string>
+    <string name="pos_grand_total">মোট</string>
+    <string name="pos_paid">এখন পরিশোধ</string>
+    <string name="pos_to_account">খাতায়</string>
+    <string name="pos_change">ফেরত</string>
+    <string name="pos_add_payment">পেমেন্ট যোগ করুন</string>
+    <string name="pos_pay_full_cash">সব নগদ</string>
+    <string name="pos_reference_hint">রেফারেন্স (লেনদেন নং, চেক নং)</string>
+    <string name="pos_hold">আটকে রাখুন</string>
+    <string name="pos_held_tickets">আটকে রাখা বিল (%1$d)</string>
+    <string name="pos_resume">চালিয়ে যান</string>
+    <string name="pos_drop_held">আটকে রাখা বিল বাদ দিন</string>
+    <string name="pos_drop_held_confirm">এই আটকে রাখা বিলটি বাদ দেবেন? এতে লেখা জিনিস আর ফেরত পাওয়া যাবে না।</string>
+    <string name="pos_still_due">এখনো আদায় করতে হবে</string>
+    <string name="pos_post">বিক্রি সম্পন্ন করুন</string>
+    <string name="pos_post_and_print">সম্পন্ন ও প্রিন্ট</string>
+    <string name="pos_clear">বিল মুছুন</string>
+    <string name="pos_posted">বিক্রি %1$s সংরক্ষিত</string>
+    <string name="pos_void">বিক্রি বাতিল</string>
+    <string name="pos_void_reason">বাতিলের কারণ</string>
+    <string name="pos_void_confirm">%1$s বাতিল করবেন? এর খাতা ও ক্যাশবুকের সারি বিনে যাবে।</string>
+    <string name="pos_voided">বাতিল</string>
+    <string name="pos_status_done">সম্পন্ন</string>
+    <string name="pos_status_void">বাতিল</string>
+    <string name="pos_status_held">আটকে রাখা</string>
+    <string name="pos_today_count">আজ %1$d বিক্রি</string>
+    <string name="pos_today_total">আজ %1$s</string>
+    <string name="pos_recent">সাম্প্রতিক বিক্রি</string>
+    <string name="pos_all_tickets">সব বিক্রি (গত 60 দিন)</string>
+    <string name="pos_ticket_search">বিল নম্বর বা ক্রেতার নাম</string>
+    <string name="pos_tickets_none">গত 60 দিনে এমন কোনো বিক্রি পাওয়া যায়নি।</string>
+    <string name="pos_err_no_lines">অন্তত একটি আইটেম যোগ করুন</string>
+    <string name="pos_err_quantity">পরিমাণ শূন্যের বেশি হতে হবে</string>
+    <string name="pos_err_rate">দর ঋণাত্মক হতে পারে না</string>
+    <string name="pos_err_discount">ছাড় লাইনের চেয়ে বেশি</string>
+    <string name="pos_err_payment">পেমেন্ট শূন্যের বেশি হতে হবে</string>
+    <string name="pos_err_overpaid">মোটের চেয়ে বেশি পরিশোধ</string>
+    <string name="pos_err_walk_in_unpaid">সাধারণ ক্রেতা পুরো পরিশোধ করেন — বা বাকির জন্য ক্রেতা বাছুন</string>
+    <string name="pos_err_empty_name">আইটেমের নাম দরকার</string>
+    <string name="pos_stock_low">মাত্র %1$s বাকি</string>
+    <string name="pos_stock_negative">স্টক শূন্যের নিচে যাবে</string>
+    <string name="pos_product_new">নতুন আইটেম “%1$s” (পণ্যে নেই)</string>
+    <string name="pos_barcode_unknown">এই বারকোডের কোনো পণ্য নেই</string>
+    <string name="pos_receipt">রসিদ</string>
+    <string name="pos_customer_pays_later">বাকি %1$s-এর খাতায়</string>
+    <string name="cash_category_sale">বিক্রি</string>
+    <string name="pos_sales_title">বিক্রি</string>
+    <string name="pos_keys_help">F2 আইটেম · F4 পরিমাণ · F6 ছাড় · F8 ক্রেতা · F9 পেমেন্ট · F12 সম্পন্ন</string>
+
+    <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
+    <string name="product_barcode_hint">বারকোড (ঐচ্ছিক)</string>
+    <string name="product_cost_hint">ক্রয়মূল্য (ঐচ্ছিক)</string>
+    <string name="product_low_stock_hint">এই স্টকে সতর্ক করুন (ঐচ্ছিক)</string>
+    <string name="product_barcode_taken">এই বারকোড ইতিমধ্যে %1$s-এ আছে</string>
+    <string name="na_low_stock">%1$s আইটেমের স্টক কম</string>
+    <string name="products_export">CSV রপ্তানি</string>
+    <string name="products_import">CSV আমদানি</string>
+    <string name="products_labels">লেবেল প্রিন্ট</string>
+    <string name="products_import_plan">%1$d নতুন পণ্য, %2$d হালনাগাদ</string>
+    <string name="products_import_clash">%1$d সারির বারকোড অন্য পণ্যে আছে — সেই কোডগুলো বাদ যাবে</string>
+    <string name="products_import_none">এই ফাইলে কোনো পণ্য নেই</string>
+    <string name="products_imported">%1$d পণ্য যোগ, %2$d হালনাগাদ</string>
+    <string name="products_labels_assign">%1$d পণ্যের বারকোড নেই — দোকানের নিজস্ব (EAN-13) দিয়ে প্রিন্ট করবেন?</string>
+    <string name="products_labels_none">লেবেল প্রিন্টের জন্য কোনো পণ্য নেই</string>
+    <string name="label_sheet_title">বারকোড লেবেল</string>
+
+    <!-- Returns (POS Phase 3, 21 Oct 2026) -->
+    <string name="pos_return">ফেরত</string>
+    <string name="pos_return_title">মাল ফেরত</string>
+    <string name="pos_return_reason">ফেরতের কারণ</string>
+    <string name="pos_return_refund">টাকা ফেরত</string>
+    <string name="pos_refund_account">খাতায় রাখুন</string>
+    <string name="pos_return_qty_help">বিক্রি %1$s · এ পর্যন্ত ফেরত %2$s</string>
+    <string name="pos_return_posted">ফেরত %1$s সংরক্ষিত</string>
+    <string name="pos_returns">ফেরতসমূহ</string>
+    <string name="pos_err_over_sold">বিক্রির চেয়ে বেশি ফেরত আসছে</string>
+    <string name="pos_err_walk_in_cash">সাধারণ ক্রেতাকে পুরো টাকা নগদে ফেরত দেওয়া হয়</string>
+    <string name="pos_err_reason">কারণ দরকার</string>
+    <string name="pos_err_refund">ফেরত টাকা মালের দামের চেয়ে বেশি</string>
+    <string name="pos_return_no_receipt">রসিদ নেই</string>
+    <string name="pos_exchange">বদল: আবার বিক্রি</string>
+    <string name="pos_return_of">%1$s-এর ফেরত</string>
+    <string name="cash_category_return">ফেরত</string>
+    <string name="pos_recent_sales">সাম্প্রতিক বিক্রি</string>
+    <string name="pos_void_return">ফেরত বাতিল</string>
+
+    <!-- The day report (POS Phase 4, 21 Oct 2026) -->
+    <string name="z_title">দিনের রিপোর্ট (Z)</string>
+    <string name="z_sales_count">বিক্রি</string>
+    <string name="z_sales_total">মোট বিক্রি</string>
+    <string name="z_voids">বাতিল (%1$s)</string>
+    <string name="z_returns">ফেরত (%1$s)</string>
+    <string name="z_cash_in">নগদ এসেছে (খাতা + ক্যাশবুক)</string>
+    <string name="z_cash_out">নগদ গেছে (খাতা + ক্যাশবুক)</string>
+    <string name="z_expected">ক্যাশে থাকার কথা</string>
+    <string name="z_variance">পার্থক্য</string>
+    <string name="z_profit">লাভ (বিক্রি − খরচ)</string>
+    <string name="dc_opening">শুরুর নগদ</string>
+    <string name="dc_counted">গণনা</string>
+    <string name="z_no_close">দিন বন্ধ হয়নি — পার্থক্য দেখতে ক্যাশ গুনুন</string>
+    <string name="z_variance_reason">পার্থক্যের কারণ লিখুন</string>
+    <string name="z_yesterday_open">গতকালের ক্যাশ গোনা হয়নি</string>
+
+    <!-- Staff logins, roles and the audit log (POS Phase 5, 21 Oct 2026) -->
+    <string name="staff_role">কাউন্টার লগইন</string>
+    <string name="staff_role_none">লগইন নেই</string>
+    <string name="staff_role_manager">ম্যানেজার</string>
+    <string name="staff_role_cashier">ক্যাশিয়ার</string>
+    <string name="staff_pin">পিন (4–8 সংখ্যা)</string>
+    <string name="staff_pin_keep">পিন রাখতে খালি রাখুন</string>
+    <string name="staff_pin_invalid">পিন 4 থেকে 8 সংখ্যার</string>
+    <string name="access_owner">মালিক</string>
+    <string name="access_who">কাউন্টারে কে?</string>
+    <string name="access_sign_in">সাইন ইন</string>
+    <string name="access_sign_out">সাইন আউট</string>
+    <string name="access_wrong_pin">ভুল পিন</string>
+    <string name="access_override_title">ম্যানেজারের পিন দরকার</string>
+    <string name="access_override_help">ক্যাশিয়ার একা এটা করতে পারে না। ম্যানেজার বা মালিক পিন দিয়ে অনুমতি দিন।</string>
+    <string name="access_denied">ক্যাশিয়ারের অনুমতি নেই</string>
+    <string name="access_discount_cap">ক্যাশিয়ার ম্যানেজার ছাড়া সর্বোচ্চ %1$s ছাড় দিতে পারে</string>
+    <string name="audit_title">কে কী করেছে</string>
+    <string name="audit_subtitle">প্রতিটি বিক্রি, বাতিল, ফেরত, দাম বদল, সাইন ইন ও পুনরুদ্ধার — নতুন আগে</string>
+    <string name="audit_empty">লগে এখনো কিছু নেই</string>
+    <string name="audit_sale_posted">বিক্রি</string>
+    <string name="audit_sale_voided">বিক্রি বাতিল</string>
+    <string name="audit_sale_held">বিল আটকে রাখা</string>
+    <string name="audit_return_posted">ফেরত</string>
+    <string name="audit_return_voided">ফেরত বাতিল</string>
+    <string name="audit_discount_override">ছাড়ের অনুমতি</string>
+    <string name="audit_manager_override">ম্যানেজার অনুমতি দিয়েছেন</string>
+    <string name="audit_price_changed">দাম বদলেছে</string>
+    <string name="audit_sign_in">সাইন ইন</string>
+    <string name="audit_restore">খাতা পুনরুদ্ধার</string>
+    <string name="audit_export">রপ্তানি</string>
+    <string name="audit_by">%1$s</string>
+
+    <!-- Stock counts, valuation and purchase orders (POS Phase 6, 21 Oct 2026) -->
+    <string name="stock_count_title">স্টক গণনা</string>
+    <string name="stock_count_help">তাকে যা আছে লিখুন; শুধু পার্থক্য লেখা হবে, পাশে খাতার সংখ্যা</string>
+    <string name="stock_counted_hint">গোনা</string>
+    <string name="stock_adjust">স্টক সংশোধন</string>
+    <string name="adjust_qty_hint">পরিমাণ (+ ভেতরে, − বাইরে)</string>
+    <string name="adjust_reason">কারণ</string>
+    <string name="adjust_reason_count">গণনা</string>
+    <string name="adjust_reason_damage">নষ্ট</string>
+    <string name="adjust_reason_expired">মেয়াদোত্তীর্ণ / ফেলা</string>
+    <string name="adjust_reason_theft">চুরি / হারানো</string>
+    <string name="adjust_reason_other">অন্য</string>
+    <string name="stock_valuation">স্টকের মূল্য</string>
+    <string name="stock_valuation_known">%2$s-এর মধ্যে %1$s পণ্যের খরচ জানা</string>
+    <string name="stock_low_title">কম স্টক</string>
+    <string name="stock_adjustments">সংশোধন</string>
+    <string name="po_title">ক্রয় অর্ডার</string>
+    <string name="po_new">নতুন অর্ডার</string>
+    <string name="po_supplier">সরবরাহকারী</string>
+    <string name="po_send">WhatsApp-এ পাঠান</string>
+    <string name="po_mark_sent">পাঠানো চিহ্নিত</string>
+    <string name="po_copied_no_number">এই সরবরাহকারীর হোয়াটসঅ্যাপ নম্বর নেই। অর্ডার কপি হয়েছে: যেখানে পাঠাবেন সেখানে পেস্ট করুন, তারপর পাঠানো চিহ্নিত চাপুন।</string>
+    <string name="po_receive">মাল এসেছে</string>
+    <string name="po_close">অর্ডার বন্ধ</string>
+    <string name="po_status_draft">খসড়া</string>
+    <string name="po_status_sent">পাঠানো</string>
+    <string name="po_status_received">গৃহীত</string>
+    <string name="po_status_closed">বন্ধ</string>
+    <string name="po_none">এখনো কোনো অর্ডার নেই</string>
+    <string name="po_lines_empty">অর্ডারের আইটেম যোগ করুন</string>
+    <string name="po_message_head">অর্ডার %1$s — %2$s</string>
+    <string name="po_from_low">কম স্টকের অর্ডার</string>
+    <string name="po_book">খাতা</string>
+    <string name="inventory_title">বর্তমান স্টক</string>
+
+    <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
+    <string name="sales_report_title">বিক্রয় রিপোর্ট</string>
+    <string name="srep_by_day">দিন অনুযায়ী</string>
+    <string name="srep_by_item">আইটেম অনুযায়ী</string>
+    <string name="srep_by_category">বিভাগ অনুযায়ী</string>
+    <string name="srep_by_customer">ক্রেতা অনুযায়ী</string>
+    <string name="srep_by_cashier">ক্যাশিয়ার অনুযায়ী</string>
+    <string name="srep_by_hour">ঘণ্টা অনুযায়ী</string>
+    <string name="srep_tax">কর</string>
+    <string name="srep_profit">লাভ-ক্ষতি</string>
+    <string name="srep_dead">বিক্রি হচ্ছে না</string>
+    <string name="srep_dead_help">তাকে আছে, %1$s দিন বিক্রি হয়নি</string>
+    <string name="srep_col_count">বিক্রি</string>
+    <string name="srep_col_revenue">আয়</string>
+    <string name="srep_col_profit">লাভ</string>
+    <string name="srep_revenue">আয়</string>
+    <string name="srep_returns">ফেরত</string>
+    <string name="srep_cost">বিক্রিত পণ্যের খরচ</string>
+    <string name="srep_cost_known">আয়ের %1$s-এর খরচ জানা</string>
+    <string name="srep_gross">মোট লাভ</string>
+    <string name="srep_expenses">ব্যয় (ক্যাশবুক)</string>
+    <string name="srep_net">নিট লাভ</string>
+    <string name="srep_net_unknown">নিট লাভ দেখাতে প্রতিটি বিক্রিত পণ্যের কেনা দাম দরকার। তা পণ্য-তে লিখুন।</string>
+    <string name="srep_tax_rate">হার</string>
+    <string name="srep_tax_base">করযোগ্য</string>
+    <string name="srep_tax_amount">কর</string>
+    <string name="srep_period_today">আজ</string>
+    <string name="srep_period_week">এই সপ্তাহ</string>
+    <string name="srep_period_month">এই মাস</string>
+    <string name="srep_none">এই সময়ে কোনো বিক্রি নেই</string>
+    <string name="srep_no_category">বিভাগ নেই</string>
+    <string name="srep_no_goods">আইটেম নেই</string>
+    <string name="pos_credit_limit">ক্রেডিট সীমা %1$s — এই বিক্রিতে খাতা %2$s হবে</string>
+
+    <!-- The owner's PIN, counter mode, screen gates and the audit seal (21 Oct 2026, the critical review) -->
+    <string name="access_close_app">অ্যাপ বন্ধ করুন</string>
+    <string name="access_forgot_pin">PIN ভুলে গেছেন?</string>
+    <string name="access_recovery_code">রিকভারি কোড</string>
+    <string name="access_recovery_ask">মালিকের PIN সেট করার সময় যে রিকভারি কোড দেখানো হয়েছিল তা লিখুন। তারপর নতুন PIN বেছে নিন।</string>
+    <string name="access_recovery_wrong">এই রিকভারি কোড সঠিক নয়।</string>
+    <string name="access_owner_pin">মালিকের PIN</string>
+    <string name="access_owner_pin_help">মালিকের নিজের PIN, 6 থেকে 8 অঙ্ক। এটি দিয়ে মালিক কাউন্টারে সাইন ইন করেন, ক্যাশিয়ার একা যা করতে পারেন না তার অনুমতি দেন, এবং কাউন্টার মোড বন্ধ করেন। শুধু এর হ্যাশ রাখা হয়, PIN কখনো নয়।</string>
+    <string name="access_owner_pin_invalid">মালিকের PIN 6 থেকে 8 অঙ্কের</string>
+    <string name="access_owner_pin_short">আপনার মালিকের PIN ছোট। এটি 6 থেকে 8 অঙ্কের করুন: ছোট PIN ব্যাকআপ ফাইল থেকে কয়েক মিনিটে অনুমান করা যায়।</string>
+    <string name="access_recovery_title">আপনার রিকভারি কোড</string>
+    <string name="access_recovery_help">এই কোডটি লিখে কাউন্টার থেকে দূরে রাখুন। মালিকের PIN কখনো ভুলে গেলে এই কোড নতুন PIN সেট করে। এটি শুধু এখনই দেখানো হচ্ছে; নতুন PIN নতুন কোড দেয়।</string>
+    <string name="access_recovery_written">আমি লিখে রেখেছি</string>
+    <string name="access_owner_pin_current">মালিকের বর্তমান PIN</string>
+    <string name="access_owner_pin_needed">আগে মালিকের PIN সেট করুন। এটি ছাড়া যে কেউ মালিক হিসেবে সাইন ইন করতে পারে।</string>
+    <string name="access_owner_pin_set">মালিকের PIN সেট করুন</string>
+    <string name="access_owner_pin_change">মালিকের PIN বদলান</string>
+    <string name="access_counter_mode">কাউন্টার মোড</string>
+    <string name="access_counter_mode_help">যে ফোন বা কম্পিউটার কর্মীরা ব্যবহার করেন তার জন্য: এটি লক অবস্থায় খোলে, সবাই নিজের PIN দিয়ে সাইন ইন করেন, আর শুধু মালিকের PIN এটি বন্ধ করে। মালিকের নিজের ফোনে এটি বন্ধ রাখুন।</string>
+    <string name="access_counter_off_help">এই ডিভাইসে কাউন্টার মোড বন্ধ করবেন? এটি আবার মালিকের ডিভাইসের মতো সাইন ইন ছাড়াই খুলবে।</string>
+    <string name="access_counter_turn_on">চালু করুন</string>
+    <string name="access_counter_turn_off">বন্ধ করুন</string>
+    <string name="access_counter_now_on">কাউন্টার মোড চালু। এই ডিভাইস এখন লক অবস্থায় খুলবে।</string>
+    <string name="access_counter_now_off">কাউন্টার মোড বন্ধ।</string>
+    <string name="access_counter_on_label">কাউন্টার মোড: চালু</string>
+    <string name="access_counter_off_label">কাউন্টার মোড: বন্ধ</string>
+    <string name="access_need_backup">ব্যাকআপ ও রিস্টোর</string>
+    <string name="access_need_settings">দোকানের সেটিংস</string>
+    <string name="access_need_staff">কর্মী ও তাঁদের লগইন</string>
+    <string name="access_need_reports">দোকানের রিপোর্ট ও হিসাব</string>
+    <string name="access_need_edit">আগে লেখা কিছু বদলানো বা মোছা</string>
+    <string name="access_counter_locked">এই কাউন্টার লক করা। চালিয়ে যেতে সাইন ইন করুন।</string>
+    <string name="access_owner_needed_title">মালিকের PIN লাগবে</string>
+    <string name="access_owner_needed_help">শুধু মালিক এর অনুমতি দিতে পারেন। মালিক নিজের PIN লিখুন।</string>
+    <string name="access_page_locked">এই পাতার জন্য ম্যানেজার বা মালিক লাগবে</string>
+    <string name="access_page_owner_only">এই পাতার জন্য মালিক লাগবে</string>
+    <string name="access_signed_in_as">সাইন ইন: %1$s</string>
+    <plurals name="audit_seal_ok_rows">
+        <item quantity="one">%1$dটি সারি যাচাই করা হয়েছে: অ্যাপের বাইরে এটি বদলানো বা সরানো হয়নি</item>
+        <item quantity="other">%1$dটি সারি যাচাই করা হয়েছে: অ্যাপের বাইরে কোনো সারি বদলানো বা সরানো হয়নি</item>
+    </plurals>
+    <string name="audit_seal_broken">সারি %1$d অ্যাপের বাইরে বদলানো বা সরানো হয়েছে</string>
+    <string name="audit_stock_count">স্টক গোনা হয়েছে</string>
+    <string name="audit_stock_adjusted">স্টক ঠিক করা হয়েছে</string>
+    <string name="audit_order_received">অর্ডার পাওয়া গেছে</string>
+    <string name="audit_owner_pin_set">মালিকের PIN সেট হয়েছে</string>
+    <string name="audit_owner_pin_adopted">মালিকের PIN এই কাউন্টার থেকে নেওয়া হয়েছে</string>
+    <string name="audit_counter_on">কাউন্টার মোড চালু</string>
+    <string name="audit_counter_off">কাউন্টার মোড বন্ধ</string>
+    <string name="audit_pin_wait">অনেক বেশি ভুল PIN</string>
+    <string name="audit_sign_out">সাইন আউট</string>
+
+    <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
+    <string name="restore_loss_title">এতে এখানে করা কাজ মুছে যাবে</string>
+    <string name="restore_loss_intro">এগুলো এই খাতায় আছে, কপিতে নেই। রিস্টোরের পর এগুলো মুছে যাবে:</string>
+    <string name="restore_loss_entries">এন্ট্রি: %1$d</string>
+    <string name="restore_loss_changed">কপির পর এখানে বদলানো বা মোছা এন্ট্রি: %1$d</string>
+    <string name="restore_loss_sales">কাউন্টার বিক্রি: %1$d</string>
+    <string name="restore_loss_returns">ফেরত: %1$d</string>
+    <string name="restore_loss_cash">ক্যাশবুকের সারি: %1$d</string>
+    <string name="restore_loss_cheques">চেক: %1$d</string>
+    <string name="restore_loss_bills">সাপ্লায়ার বিল: %1$d</string>
+    <string name="restore_loss_invoices">ইনভয়েস: %1$d</string>
+    <string name="restore_loss_parties">ক্রেতা ও সাপ্লায়ার: %1$d</string>
+    <string name="restore_loss_other">কপির পর এখানে করা স্টক গণনা, দিন বন্ধ, শিফট, পয়েন্ট, অর্ডার ও বাতিল: %1$d</string>
+    <string name="restore_loss_newest">এখানে সবচেয়ে নতুন: %1$s · কপিতে সবচেয়ে নতুন: %2$s</string>
+    <string name="restore_loss_kept">কিছু বদলানোর আগে এই খাতাটি দৈনিক কপিতে রাখা হয়, তাই রিস্টোর ফেরানো যায়।</string>
+    <string name="restore_loss_agree">আমি বুঝেছি যে এগুলো মুছে যাবে</string>
+    <string name="restore_loss_counting">এই খাতায় কী আছে যা কপিতে নেই, দেখা হচ্ছে…</string>
+    <string name="snapshot_before_restore">রিস্টোরের আগে রাখা · %1$s</string>
+    <string name="snapshot_before_merge">নতুন যোগ করার আগে রাখা · %1$s</string>
+
+    <!-- First expiry first out, packs, average cost and the line's own tax (21 Oct 2026) -->
+    <string name="pos_tax_included">দামের ভেতরে থাকা কর</string>
+    <string name="pos_sell_by">%1$s হিসেবে বিক্রি</string>
+    <string name="pos_expired_stock">%1$s-এর শুধু মেয়াদোত্তীর্ণ স্টক বাকি (ভালো: %2$s)। পুরোনো ব্যাচটি মেয়াদ পাতায় বাদ দিন, বা কম বিক্রি করুন।</string>
+    <string name="counter_settings">কাউন্টার সেটিংস</string>
+    <string name="pos_next_pay">পরবর্তী: পেমেন্ট</string>
+    <string name="pos_how_1">1 · পণ্যের নাম লিখুন বা বারকোড স্ক্যান করুন</string>
+    <string name="pos_how_2">2 · পরিমাণ ও দর দেখে নিন</string>
+    <string name="pos_how_3">3 · সাধারণ ক্রেতা পুরো টাকা দেন; বাছাই করা ক্রেতার বাকি তাঁর খাতায় যায়</string>
+    <string name="counter_advanced">বড় দোকানের সরঞ্জাম</string>
+    <string name="counter_advanced_help">শিফট, দিনের রিপোর্ট (Z), পয়েন্ট, দাঁড়িপাল্লা, ক্রেতার স্ক্রিন ও ট্যাক্স। বন্ধ থাকলে কাউন্টার সহজ থাকে; আগে সংরক্ষিত কিছুই বদলায় না।</string>
+    <string name="counter_prices_include_tax">দামে কর আগে থেকেই ধরা</string>
+    <string name="counter_prices_include_tax_help">চালু: পণ্যের কর তার দামের ভেতরে, আর রসিদ বলে কত। বন্ধ: কাউন্টারে ওপরে যোগ হয়। প্রতিটি পণ্যের কর % পণ্যেই লেখা হয়।</string>
+    <string name="expiry_write_off">বাদ দিন</string>
+    <string name="expiry_write_off_confirm">%2$s-এর %1$s মেয়াদোত্তীর্ণ হিসেবে বাদ দেবেন? স্টক ততটা কমবে, আর লগে থাকবে কে করেছে।</string>
+    <string name="expiry_written_off">বাদ দেওয়া হয়েছে</string>
+    <string name="expiry_nothing_left">এই ব্যাচের কিছুই বাকি নেই</string>
+    <string name="expiry_left">বাকি: %1$s</string>
+    <string name="trace_came">এসেছে: %1$s</string>
+    <string name="product_pack_help">যে প্যাকে (কার্টন, বস্তা…) পণ্যটি কেনা বা বিক্রিও হয়, আর এক প্যাকে তার নিজের এককের কয়টি থাকে। স্টক তার নিজের এককে গোনা হয়।</string>
+    <string name="product_pack_unit">প্যাকের নাম</string>
+    <string name="product_pack_size">এক প্যাকে কয়টি</string>
+    <string name="product_pack_price">প্যাকের দাম</string>
+    <string name="product_tax_rate">কর %</string>
+
+    <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
+    <string name="pos_make_invoice">A4 ইনভয়েস</string>
+
+    <!-- Shifts at the counter and the receipt printer's own settings (21 Oct 2026) -->
+    <string name="shift_title">শিফট</string>
+    <string name="shift_open">শিফট শুরু করুন</string>
+    <string name="shift_close">শিফট বন্ধ করুন</string>
+    <string name="shift_float_help">প্রথম বিক্রির আগে ড্রয়ারের নগদ গুনে নিন। শিফটটি এই ব্যক্তির নিজের নগদ বিক্রি ও নগদ ফেরতের সাথে মেলানো হয়।</string>
+    <string name="shift_opened_at">শুরু %1$s</string>
+    <string name="shift_none">কোনো শিফট খোলা নেই</string>
+    <string name="shift_already_open">এই ব্যক্তির একটি শিফট আগে থেকেই খোলা</string>
+    <string name="shift_open_now">এখন খোলা</string>
+    <string name="shift_recent">সাম্প্রতিক শিফট</string>
+    <string name="shift_hours">%1$s ঘণ্টা</string>
+    <string name="shift_week_hours">ঘণ্টা, গত 7 দিন</string>
+    <string name="shift_closed">শিফট বন্ধ হয়েছে</string>
+    <string name="shift_of">শিফট: %1$s</string>
+    <string name="shift_cash_sales">বিক্রিতে নেওয়া নগদ</string>
+    <string name="shift_cash_refunds">ফেরতে দেওয়া নগদ</string>
+    <string name="audit_shift_opened">শিফট শুরু হয়েছে</string>
+    <string name="audit_shift_closed">শিফট বন্ধ হয়েছে</string>
+    <string name="printer_section">এই ডিভাইসের রসিদ প্রিন্টার</string>
+    <string name="printer_width_80">80 মিমি রোল</string>
+    <string name="printer_logo">ওপরে দোকানের লোগো</string>
+    <string name="printer_drawer">নগদ বিক্রিতে ক্যাশ ড্রয়ার খুলুন</string>
+    <string name="printer_drawer_help">রসিদ প্রিন্টারে লাগানো ক্যাশ ড্রয়ারের জন্য। যে প্রিন্টারে ড্রয়ার নেই সেটি এটি উপেক্ষা করে।</string>
+
+    <!-- The sales report's own dates and chart; dues by age (21 Oct 2026) -->
+    <string name="srep_period_custom">তারিখ বেছে নিন</string>
+    <string name="srep_chart">সময়ের সাথে বিক্রি</string>
+    <string name="srep_chart_top">সর্বোচ্চ: %1$s</string>
+    <string name="aging_title">বকেয়া, সময় অনুযায়ী</string>
+    <string name="aging_help">যা এখনও বাকি, কত আগে দেওয়া হয়েছিল সেই হিসেবে। পেমেন্ট আগে পুরোনো হিসাব মেটায়; 90 দিনের বেশি পুরোনো টাকার জন্য অবশ্যই ফোন করুন।</string>
+    <string name="aging_0_30">0–30 দিন</string>
+    <string name="aging_31_60">31–60 দিন</string>
+    <string name="aging_61_90">61–90 দিন</string>
+    <string name="aging_90">90 দিনের বেশি</string>
+    <string name="aging_none">কিছুই বাকি নেই</string>
+    <string name="aging_oldest">সবচেয়ে পুরোনো: %1$s</string>
+    <string name="aging_total">মোট</string>
+
+    <!-- Loyalty, scale labels, the item grid and variants, the customer screen, stock between shops (21 Oct 2026) -->
+    <string name="loyalty_section">লয়্যালটি পয়েন্ট</string>
+    <string name="loyalty_per_100">প্রতি 100 কেনায় পয়েন্ট</string>
+    <string name="loyalty_value">এক পয়েন্টের মূল্য</string>
+    <string name="loyalty_help">অ্যাকাউন্টধারী গ্রাহক প্রতিটি বিলে পয়েন্ট পান এবং পরে ছাড় হিসেবে খরচ করেন। কোনো ঘর খালি রাখলে লয়্যালটি বন্ধ থাকবে।</string>
+    <string name="loyalty_points">পয়েন্ট: %1$s (মূল্য %2$s)</string>
+    <string name="loyalty_use">পয়েন্ট ব্যবহার করুন</string>
+    <string name="loyalty_used">ব্যবহৃত পয়েন্ট: %1$s (−%2$s)</string>
+    <string name="loyalty_earned">অর্জিত পয়েন্ট: %1$s · এখন %2$s</string>
+    <string name="scale_section">দাঁড়িপাল্লার লেবেল</string>
+    <string name="scale_prefix">লেবেলের শুরু (20–29)</string>
+    <string name="scale_price">লেবেলে দাম আছে (ওজন নয়)</string>
+    <string name="scale_help">দাঁড়িপাল্লার লেবেল 13 অঙ্কের: শুরু, পণ্যের 5 অঙ্কের স্কেল কোড, গ্রামে ওজন (বা দাম) আর একটি যাচাই অঙ্ক। স্কেল কোডটি পণ্যের বারকোডের ঘরে লিখুন।</string>
+    <string name="pos_items">পণ্য</string>
+    <string name="pos_ticket">বিল</string>
+    <string name="pos_all">সব</string>
+    <string name="pos_choose_variant">%1$s: কোনটি?</string>
+    <string name="product_variant_of">যে পণ্যের ধরন (মূল পণ্য)</string>
+    <string name="product_variant">ধরন (সাইজ, রং, স্বাদ)</string>
+    <string name="product_variant_help">ধরনগুলো আলাদা পণ্য — নিজের দাম, বারকোড ও স্টক — কাউন্টারের পণ্যের গ্রিডে মূল পণ্যের নিচে একসাথে দেখায়।</string>
+    <string name="cd_title">গ্রাহকের স্ক্রিন</string>
+    <string name="cd_help">গ্রাহকের জন্য দ্বিতীয় উইন্ডো: পণ্য, মোট আর দোকানের পেমেন্ট QR। এটি দ্বিতীয় মনিটরে টেনে নিন।</string>
+    <string name="cd_scan">পেমেন্টের জন্য স্ক্যান করুন</string>
+    <string name="cd_qr_note">QR-এ টাকার অঙ্ক নেই: পেমেন্টের আগে নিজের ফোনে অঙ্কটি দেখে নিন।</string>
+    <string name="cd_welcome">স্বাগতম</string>
+    <string name="cd_change">ফেরত: %1$s</string>
+    <string name="transfer_title">অন্য দোকানে স্টক পাঠান</string>
+    <string name="transfer_to">কোন দোকানে</string>
+    <string name="transfer_help">মাল এই দোকানের স্টক থেকে বেরিয়ে অন্য দোকানের স্টকে যায়, বারকোড মিলিয়ে, নইলে নাম দিয়ে (যে পণ্য সেখানে নেই তা যোগ করা হয়)। দুই খাতাতেই একই নম্বরের একটি করে সারি থাকে।</string>
+    <string name="transfer_done">%1$s পাঠানো হয়েছে %2$s-এ</string>
+    <string name="adjust_reason_transfer">স্থানান্তর</string>
+    <string name="audit_transfer_out">অন্য দোকানে স্টক পাঠানো হয়েছে</string>
+    <string name="audit_transfer_in">অন্য দোকান থেকে স্টক এসেছে</string>
+    <string name="transfer_none">আর কোনো দোকান নেই। ব্যবসায় একটি যোগ করুন।</string>
+
+    <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
+    <string name="merge_button">শুধু নতুনটুকু যোগ করুন</string>
+    <string name="merge_title">শুধু নতুনটুকু যোগ করুন</string>
+    <string name="merge_help">এই খাতার সবকিছু থাকে, আর কপির যা এখানে নেই তা যোগ হয় — এন্ট্রি, ক্যাশবুক, বিল, ফেরত, সরবরাহকারীর বিল, চেক, ইনভয়েস — প্রতিটির নিজের ID মিলিয়ে, টাকার অঙ্ক দিয়ে কখনো নয়। এখানে কিছু বদলায় না বা মোছে না।</string>
+    <string name="merge_preview">যোগ হবে: %1$s খাতা এন্ট্রি, %2$s ক্যাশবুক সারি, %3$s কাউন্টার বিল, %4$s অন্যান্য রেকর্ড; %5$s নতুন গ্রাহক, %6$s নতুন পণ্য।</string>
+    <string name="merge_changed">%1$s সারি কপিতেও বদলানো বা মোছা হয়েছে: এই খাতা নিজেরটা রাখে।</string>
+    <string name="merge_other_shop">কপির নাম %1$s — দেখে নিন এটি এই দোকানেরই খাতা কি না।</string>
+    <string name="merge_done">কপি থেকে %1$s সারি যোগ হয়েছে (%2$s-এর নম্বর বদলেছে)।</string>
+    <string name="merge_nothing">কপিতে এমন কিছু নেই যা এই খাতায় নেই।</string>
+    <string name="merge_too_old">এই কপিটি পুরোনো সংস্করণের, এতে সারির ID নেই: এটি শুধু খাতার জায়গা নিতে পারে।</string>
+    <string name="merge_unrelated">এই কপির সাথে এই খাতার কিছুই মেলে না — এটি অন্য খাতা। এটি শুধু এর জায়গা নিতে পারে।</string>
+    <string name="merge_not_carried">যোগ হয় না: কিস্তির পরিকল্পনা, মৌসুম, স্কিম, হাজিরা আর দিনের হিসাব বন্ধ।</string>
+    <string name="audit_book_merged">কপি যোগ করা হয়েছে</string>
+
+    <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
+    <string name="book_opening">খাতা খোলা হচ্ছে…</string>
+    <string name="book_cannot_open">খাতা খোলা যায়নি, এবং এতে কিছুই বদলানো হয়নি। অন্য যে প্রোগ্রাম এটি ব্যবহার করছে তা বন্ধ করুন (বা কম্পিউটার আবার চালু করুন), তারপর রোশন খাতা আবার খুলুন।</string>
+    <string name="book_set_aside_note">একটি নষ্ট খাতা এখানে আলাদা রাখা হয়েছে, মুছে ফেলা হয়নি: %1$s</string>
+    <string name="restore_keep_failed">এই খাতাটি আগে সংরক্ষণ করা যায়নি, তাই কিছুই বদলানো হয়নি। ডিস্কে জায়গা আছে কিনা দেখুন, তারপর আবার চেষ্টা করুন।</string>
+    <string name="restore_loss_unknown">কী হারাবে তা গোনা যায়নি। এই কপিটিই চান বলে নিশ্চিত হলে তবেই বদলান।</string>
+    <string name="clock_behind_title">কম্পিউটারের তারিখ ভুল মনে হচ্ছে</string>
+    <string name="clock_behind_body">সবচেয়ে নতুন দৈনিক কপিটি %1$s তারিখের, কিন্তু এই কম্পিউটার বলছে আজ %2$s। Windows-এ সঠিক তারিখ ও সময় দিন। ততক্ষণ কোনো পুরোনো কপি মুছবে না।</string>
+    <string name="pos_void_has_returns">এই বিক্রির মাল আগেই ফেরত হয়েছে। ফেরত থাকা বিক্রি বাতিল করা যায় না; বাকি মালের ফেরত করুন।</string>
+    <string name="pos_void_day_closed">এই বিক্রির দিন বন্ধ হয়ে গেছে। বাতিল না করে ফেরত করুন।</string>
+    <string name="pos_err_rate_missing">একটি লাইনে দর লেখা নেই।</string>
+    <string name="pos_err_tax">কর পড়া যায়নি।</string>
+    <string name="pos_err_payment_unread">একটি পেমেন্টের টাকা পড়া যায়নি।</string>
+    <string name="pos_err_discount_unread">একটি ছাড় পড়া যায়নি।</string>
+    <string name="pos_price_needs_pin">দর তালিকার বাইরে দরে বিক্রি</string>
+
+    <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
+    <string name="audit_entry_edited">এন্ট্রি বদলানো হয়েছে</string>
+    <string name="audit_entry_deleted">এন্ট্রি মোছা হয়েছে</string>
+    <string name="audit_cash_added">ক্যাশবুকে এন্ট্রি</string>
+    <string name="audit_cash_edited">ক্যাশবুকের এন্ট্রি বদলানো হয়েছে</string>
+    <string name="audit_cash_deleted">ক্যাশবুকের এন্ট্রি মোছা হয়েছে</string>
+    <string name="audit_party_deleted">গ্রাহক মোছা হয়েছে</string>
+    <string name="audit_day_closed">দিন বন্ধ করা হয়েছে</string>
+    <string name="audit_import">আমদানি</string>
+    <string name="audit_bill_deleted">বিল মোছা হয়েছে</string>
+    <string name="audit_bill_edited">বিল বদলানো হয়েছে</string>
+
+    <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
+    <string name="plan_next_change">পরের কিস্তির তারিখ বদলান</string>
+    <string name="plan_next_ask">%1$s-এর পরের কিস্তির তারিখ</string>
+    <string name="plan_next_clear">তারিখ সরান</string>
+    <string name="plan_next_saved">পরের কিস্তি: %1$s</string>
+
+    <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
+    <string name="scale_price_decimals">লেবেলের দামে দশমিকের পরের অঙ্ক</string>
+    <string name="scale_price_example">01250 লেখা লেবেল %1$s পড়া হবে</string>
+
+    <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
+    <string name="entry_linked_title">যেখানে তৈরি হয়েছিল সেখানেই বদলান</string>
+    <string name="entry_linked_bill">এই এন্ট্রি সরবরাহকারীর বিল লিখেছে। বিল বদলান বা মুছুন, খাতা নিজেই সাথে বদলাবে।</string>
+    <string name="entry_linked_plan">এই এন্ট্রি কিস্তি প্ল্যানের পেমেন্ট লিখেছে। কিস্তি প্ল্যান থেকে বদলান।</string>
+    <string name="entry_linked_cheque">এই এন্ট্রি ক্লিয়ার হওয়া চেক লিখেছে। চেকের পাতা থেকে বদলান।</string>
+    <string name="entry_linked_sale">এই এন্ট্রি কাউন্টারের বিক্রি লিখেছে। বিক্রি বাতিল করুন বা ফেরত নিন।</string>
+    <string name="entry_linked_return">এই এন্ট্রি একটি ফেরত লিখেছে। তার বদলে ফেরত বাতিল করুন।</string>
+    <string name="pos_return_void_day_closed">এই ফেরতের দিন বন্ধ হয়ে গেছে, তাই এটি বাতিল করা যায় না। তার বদলে পণ্যগুলো নতুন বিক্রিতে লিখুন।</string>
+    <string name="entries_linked_kept">যেমন ছিল তেমনই রইল, কারণ কোনো বিল, পরিকল্পনা, চেক, কাউন্টার বিক্রি বা ফেরত এগুলো লিখেছে (সেখান থেকে বদলান): %1$d</string>
+    <string name="party_has_tickets">মোছা হয়নি: %1$s এর নামে কাউন্টার বিক্রি বা ফেরত লেখা আছে। আগে সেগুলো বাতিল করুন, বা গ্রাহককে রেখে দিন।</string>
+    <string name="bin_emptied_kept">বিন খালি করা হয়েছে। এই গ্রাহকদের রাখা হলো, কারণ তাদের এখনও সরবরাহকারীর বিল, চেক, পেমেন্ট প্ল্যান বা কাউন্টার বিক্রি আছে: %1$d</string>
+    <string name="bin_party_kept">বিনেই রাখা হলো: এই গ্রাহকের এখনও সরবরাহকারীর বিল, চেক, পেমেন্ট প্ল্যান বা কাউন্টার বিক্রি আছে। সেগুলোর জন্য গ্রাহককে ফিরিয়ে আনুন।</string>
+
+    <!-- A supplier's statement in the supplier's own words (21 Oct 2026) -->
+    <string name="pdf_stmt_paid_to_you">আপনাকে দেওয়া হয়েছে</string>
+    <string name="pdf_stmt_you_supplied">আপনি মাল দিয়েছেন</string>
+
+    <!-- Product spreadsheet column names (21 Oct 2026, nine-language review) -->
+    <string name="csv_col_name">নাম</string>
+    <string name="csv_col_category">বিভাগ</string>
+    <string name="csv_col_company">কোম্পানি</string>
+    <string name="csv_col_unit">একক</string>
+    <string name="csv_col_sale">বিক্রয় মূল্য</string>
+    <string name="csv_col_credit">বাকি মূল্য</string>
+    <string name="csv_col_cost">কেনা দাম</string>
+    <string name="csv_col_barcode">বারকোড</string>
+    <string name="csv_col_low">সর্বনিম্ন স্টক</string>
+    <string name="csv_col_type">ধরন</string>
+
+    <!-- Sample letters in each script for the sort and text-size tiles (21 Oct 2026) -->
+    <string name="sort_glyph_az">অ–হ</string>
+    <string name="sort_glyph_za">হ–অ</string>
+    <string name="text_size_glyph">অক</string>
+
+    <!-- A failed save in the user's own words, with the technical reason for support (21 Oct 2026) -->
+    <string name="action_failed_detail">সংরক্ষণ হয়নি। কিছুই বদলায়নি। (%1$s)</string>
+
+    <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
+    <string name="print_native_digits">ছাপায় বাংলা অঙ্ক</string>
+    <string name="print_native_digits_help">চালান, বিবরণী ও রিপোর্ট 123-এর বদলে ১২৩ দিয়ে ছাপা হবে। স্ক্রিন ও আপনি যা লেখেন তা 0-9 থাকবে।</string>
+
+    <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
+    <string name="bp_country">দেশ</string>
+    <string name="bp_country_help">হোয়াটসঅ্যাপের কান্ট্রি কোড, কর নম্বরের নাম, সপ্তাহের প্রথম দিন ও ক্যালেন্ডার এটি দিয়ে ঠিক হয়। অঙ্ক কখনো বদলায় না।</string>
+    <string name="country_other">অন্যান্য</string>
+    <string name="country_ask_title">আপনার দোকান কোন দেশে?</string>
+    <string name="country_ask_body">অ্যাপ এটি হোয়াটসঅ্যাপ নম্বর, কর নম্বরের নাম ও সপ্তাহের জন্য ব্যবহার করে। পরে ব্যবসার প্রোফাইল থেকে বদলাতে পারবেন।</string>
+    <string name="poster_national_day">জাতীয় দিবস</string>
+
+    <!-- The wallet field's hint names the shop's country's services (21 Oct 2026) -->
+    <string name="wallet_hint_country">মোবাইল ওয়ালেট নম্বর (%1$s)</string>
+
+    <!-- Counts as plurals (21 Oct 2026): these were single strings, so English said 1 days and Arabic lost its one/two/few forms -->
+    <plurals name="n_days_left">
+        <item quantity="one">%d দিন বাকি</item>
+        <item quantity="other">%d দিন বাকি</item>
+    </plurals>
+    <plurals name="n_selected">
+        <item quantity="one">%dটি নির্বাচিত</item>
+        <item quantity="other">%dটি নির্বাচিত</item>
+    </plurals>
+    <plurals name="n_expiring">
+        <item quantity="one">%dটি মেয়াদ শেষের পথে</item>
+        <item quantity="other">%dটি মেয়াদ শেষের পথে</item>
+    </plurals>
+    <plurals name="n_sales_today">
+        <item quantity="one">আজ %dটি বিক্রি</item>
+        <item quantity="other">আজ %dটি বিক্রি</item>
+    </plurals>
+    <plurals name="n_designs">
+        <item quantity="one">%dটি ডিজাইন</item>
+        <item quantity="other">%dটি ডিজাইন</item>
+    </plurals>
+    <plurals name="n_wait_seconds">
+        <item quantity="one">অনেক বেশি চেষ্টা। %d সেকেন্ড অপেক্ষা করুন।</item>
+        <item quantity="other">অনেক বেশি চেষ্টা। %d সেকেন্ড অপেক্ষা করুন।</item>
+    </plurals>
+    <!-- Live sync over WiFi (Marhala 1, 22 Oct 2026). -->
+    <string name="live_title">কম্পিউটারের সাথে লাইভ সিঙ্ক</string>
+    <string name="live_explain">ফোন আর কম্পিউটার একই খাতা রাখে, যা প্রতি কয়েক সেকেন্ডে হালনাগাদ হয় যখন দুটোই দোকানের ওয়াই-ফাইতে থাকে এবং রোশন খাতা খোলা থাকে। “ইন্টারনেট দিয়েও” চালু না থাকলে কিছুই ইন্টারনেটে যায় না।</string>
+    <string name="live_join">কম্পিউটারের সাথে যুক্ত করুন</string>
+    <string name="live_stop">লাইভ সিঙ্ক বন্ধ করুন</string>
+    <string name="live_stop_confirm">এই ডিভাইসে লাইভ সিঙ্ক বন্ধ করবেন? খাতা ঠিক যেমন আছে তেমনই থাকবে।</string>
+    <string name="live_status_off">লাইভ সিঙ্ক বন্ধ।</string>
+    <string name="live_status_not_paired">লাইভ সিঙ্ক চালু। এখনও কোনো কম্পিউটার যুক্ত হয়নি।</string>
+    <string name="live_status_waiting">খাতা কম্পিউটারে পৌঁছেছে। যুক্ত করা শেষ করতে সেখানে হ্যাঁ চাপুন।</string>
+    <string name="live_status_live">%1$s এর সাথে লাইভ। শেষ হালনাগাদ: %2$s</string>
+    <string name="live_status_unreachable">কম্পিউটার সাড়া দিচ্ছে না। দুটো কি একই ওয়াই-ফাইতে আছে, আর সেখানে কি রোশন খাতা খোলা?</string>
+    <string name="live_status_relay_down">দোকানের ওয়াই-ফাই থেকে দূরে আছেন, আর ইন্টারনেটের রিলে উত্তর দেয়নি (%1$s)। ফোন চেষ্টা চালিয়ে যাবে; দোকানে ওয়াই-ফাই এটি ছাড়াই চলে।</string>
+    <string name="live_pc_relay_ok">ইন্টারনেটের রিলে: চলছে (শেষ রাউন্ড %1$s)।</string>
+    <string name="live_pc_relay_down">ইন্টারনেটের রিলে: উত্তর দিচ্ছে না (%1$s)। দোকানে ওয়াই-ফাই এটি ছাড়াই চলে।</string>
+    <string name="live_pair_other_phone">এই খাতা ইতিমধ্যে ফোন “%1$s”-এর সাথে চলছে। সব বদলালে সেই ফোন থেমে যাবে। এক খাতা = এক ফোন ও এক কম্পিউটার: দুটো ফোনই রাখতে চাইলে এই ফোনটিকে নতুন ব্যবসা হিসেবে যোগ করুন।</string>
+    <string name="na_sync_conflict">%1$sটি এন্ট্রি দুটো ডিভাইসে একই সাথে বদলানো হয়েছে</string>
+    <string name="na_sync_conflict_sub">রাখা অঙ্কটি হয়তো আপনার চাওয়াটি নয়। লাইভ সিঙ্ক → কী বদলেছে দেখুন।</string>
+    <string name="live_status_update_both">অন্য ডিভাইসে অ্যাপের নতুন সংস্করণ চলছে (%1$s)। এই ডিভাইসটি আপডেট করুন; ততক্ষণ তার পরিবর্তনগুলো অপেক্ষায় থাকবে।</string>
+    <string name="live_status_key_busy">এই ডিভাইসের কী-স্টোর উত্তর দেয়নি (%1$s)। কিছু বদলায়নি; একটু পরে আবার চেষ্টা হবে।</string>
+    <string name="na_sync_off">লাইভ সিঙ্ক থেমে গেছে</string>
+    <string name="na_sync_off_sub">এই খাতাটি বদলে দেওয়া হয়েছে বা পুরোনো কপিতে ফিরে গেছে। অন্য ডিভাইসের সাথে আবার যুক্ত করুন।</string>
+    <string name="live_status_halted">লাইভ সিঙ্ক আপাতত থামানো। আপনার খাতা নিরাপদ এবং সবসময়ের মতো চলে।</string>
+    <string name="live_status_failed">লাইভ সিঙ্ক থেমে গেছে: %1$s</string>
+    <string name="live_mismatch">দুটো খাতা মিলছে না। নতুন কপির জন্য আবার যুক্ত করুন।</string>
+    <string name="live_sent">পাঠানো হয়েছে। কম্পিউটারে হ্যাঁ চাপুন, যাতে তার খাতা এই ফোনের খাতা দিয়ে বদলে যায়।</string>
+    <string name="live_receive">দোকানের খাতা এই ফোনে নিন</string>
+    <string name="live_receive_steps">যে ফোনে দোকানের খাতা আছে, সেখানে ব্যাকআপ → লাইভ সিঙ্ক → যুক্ত করুন খুলে এই কোডটি স্ক্যান করুন। দুটি ফোন একই ওয়াই-ফাইতে থাকতে হবে। এই উইন্ডো 15 মিনিট অপেক্ষা করে।</string>
+    <string name="live_receive_offer">“%1$s” এই ফোনকে দোকানের খাতা দিতে চায়।\n\nকোড: %2$s — ওই ফোনেও একই চারটি অঙ্ক দেখাতে হবে।\n\nএই ফোনের নিজের খাতা দোকানের খাতা দিয়ে বদলে যাবে। এরপর ফোনগুলো ইন্টারনেট রিলের মাধ্যমে একসাথে একটি খাতা রাখবে।</string>
+    <string name="live_receive_done">হয়ে গেছে। এই ফোন এখন দোকানের খাতা তার অন্য ডিভাইসগুলোর সাথে রাখে।</string>
+    <string name="live_receive_no_wifi">এই ফোন কোনো ওয়াই-ফাইতে নেই। দোকানের ওয়াই-ফাইতে যুক্ত হয়ে আবার চেষ্টা করুন।</string>
+    <string name="live_sent_phone">পাঠানো হয়েছে। অন্য ফোনে হ্যাঁ চাপুন যাতে সে এই খাতা নেয়। তারপর দুটি ফোন ইন্টারনেট রিলের মাধ্যমে মিলবে।</string>
+    <string name="live_not_live_code">এটি লাইভ সিঙ্কের কোড নয়। কম্পিউটারে লাইভ সিঙ্ক খুলে সেখানে দেখানো কোডটি স্ক্যান করুন।</string>
+    <string name="live_pc_steps">ফোনে ব্যাকআপ → কম্পিউটারের সাথে লাইভ সিঙ্ক → কম্পিউটারের সাথে যুক্ত করুন খুলে এই কোডটি স্ক্যান করুন। আপনার হ্যাঁ-র পর ফোনের খাতা এখানে নতুন ব্যবসা হিসেবে খুলবে (এই কম্পিউটারের নিজের খাতা যেমন আছে তেমনই থাকবে), আর তারপর দুটো একই থাকবে।</string>
+    <string name="live_pc_none">এখনও কোনো ফোন যুক্ত হয়নি।</string>
+    <string name="live_conflicts">দুটোতে একসাথে বদল (একটি রাখা হয়েছে, অন্যটি সংরক্ষিত): %1$d</string>
+    <string name="live_pair_warning">এটি ফোনের খাতা। এই কম্পিউটারের নিজের খাতা ঠিক যেমন আছে তেমন রাখতে নতুন ব্যবসা হিসেবে যুক্ত করুন: ফোনের খাতা এর পাশে আলাদা খুলবে এবং এখান থেকে কিছুই মুছবে না। এই কম্পিউটারের খাতা দরকার না হলে তবেই “সবকিছু বদলে দিন” চাপুন।</string>
+    <string name="live_pair_code">জোড়ার কোড: %1$s। কম্পিউটার তার হ্যাঁ-এর পাশে একই কোড দেখায়; দুটো এক হলে তবেই সেখানে হ্যাঁ বলুন।</string>
+    <string name="live_pair_code_check">ফোন এই কোড দেখাচ্ছে: %1$s। ফোনেও ঠিক এই কোড থাকলে তবেই হ্যাঁ বলুন।</string>
+    <string name="live_join_new_business">নতুন ব্যবসা হিসেবে যুক্ত করুন</string>
+    <string name="live_devices">যুক্ত ডিভাইস</string>
+    <string name="live_remove">সরান</string>
+    <string name="live_remove_confirm">%1$s সরাবেন? এটি এই কম্পিউটারের সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে।</string>
+    <string name="live_needs_owner">কোনো ডিভাইসকে লাইভ সিঙ্কে যুক্ত করতে মালিকের PIN লাগবে।</string>
+    <string name="live_badge">লাইভ · %1$s</string>
+    <string name="live_conflicts_show">কী বদলেছে দেখুন</string>
+    <string name="live_conflict_now">এখন: %1$s</string>
+    <string name="live_conflict_saved">আলাদা রাখা: %1$s</string>
+    <string name="live_conflict_clear">দেখেছি, সরান</string>
+    <string name="live_join_failed">ফোন যুক্ত করা শেষ হয়নি: %1$s। ফোনে ব্যাকআপ → কম্পিউটারের সাথে লাইভ সিঙ্ক → কম্পিউটারের সাথে যুক্ত করুন খুলে কোডটি আবার স্ক্যান করুন।</string>
+    <string name="restore_stops_live">এই খাতা অন্য ডিভাইসের সাথে লাইভ সিঙ্ক হয়। এটি বদলালে লাইভ সিঙ্ক থেমে যাবে; পরে দুটোকে আবার যুক্ত করুন।</string>
+    <string name="live_held">অন্য ডিভাইসের বদল যেগুলো নিজের জিনিসের অপেক্ষায় (কোনো গ্রাহক বা আইটেম যা এখনো এখানে নেই): %1$d</string>
+    <string name="live_status_rejoin">লাইভ সিঙ্ক থেমেছে কারণ এই খাতা রিস্টোর দিয়ে বদলানো হয়েছে বা কোনো পুরোনো কপিতে ফিরে গেছে। আবার সিঙ্ক করতে কম্পিউটারের সাথে আবার যুক্ত করুন।</string>
+    <string name="live_status_not_accepted">কম্পিউটার সময়মতো হ্যাঁ বলেনি। যুক্ত করতে এর লাইভ সিঙ্ক কোড আবার স্ক্যান করুন।</string>
+    <string name="live_status_not_here">কম্পিউটার সাড়া দিয়েছে, কিন্তু এখন এই খাতা এতে রাখা নেই। কম্পিউটারে এই খাতার ব্যবসা খুলুন।</string>
+    <string name="live_status_relay">%1$s এর সাথে ইন্টারনেট দিয়ে লাইভ। শেষ হালনাগাদ: %2$s</string>
+    <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation-313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ 7 দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
+    <string name="live_relay">ইন্টারনেট দিয়েও</string>
+    <string name="wifi_take_too_big">কম্পিউটারের খাতাটি এই ফোনের মেমরি বা খালি জায়গার তুলনায় খুব বড়। অন্য অ্যাপ বন্ধ করে আবার চেষ্টা করুন, অথবা ব্যাকআপ ফাইল দিয়ে খাতাটি সরান।</string>
+    <string name="live_devices_open">ডিভাইস ও একসাথে বদল</string>
+    <string name="live_devices_none">এখনও এই খাতায় অন্য কোনো ডিভাইস যুক্ত হয়নি।</string>
+    <string name="live_device_seen">শেষ দেখা: %1$s</string>
+    <string name="live_device_never">এখনও কোনো যোগাযোগ হয়নি</string>
+    <string name="live_remove_confirm_phone">%1$s এই খাতা থেকে সরাবেন? এই ফোন এর সাথে সিঙ্ক বন্ধ করবে। এর নিজের খাতা যেমন আছে তেমনই থাকবে; আবার সিঙ্ক করতে এটিকে আবার যুক্ত করুন।</string>
+    <string name="live_conflicts_none">কোনো কিছুই দুটি ডিভাইসে একসাথে বদলায়নি।</string>
+    <string name="live_why_other_computer">অন্য একটি কম্পিউটার উত্তর দিয়েছে, যেটির সাথে এই ফোন যুক্ত সেটি নয়। কম্পিউটারটি আবার যুক্ত করুন</string>
+    <string name="live_why_other_book">অন্য ডিভাইসে আলাদা খাতা আছে। এটিকে আবার যুক্ত করুন</string>
+    <string name="live_why_unknown_device">এমন ডিভাইস থেকে বদল এসেছে যাকে এই খাতা চেনে না। এটিকে আবার যুক্ত করুন</string>
+    <string name="live_why_unreachable">কোনো উত্তর নেই</string>
+    <string name="live_why_error">এই ফোনে একটি সমস্যা হয়েছে। একটু পরে আবার চেষ্টা হবে</string>
+    <string name="live_why_day_limit">রিলেতে আজকের সীমা পূর্ণ হয়েছে</string>
+    <string name="live_why_relay_full">রিলে এখন পূর্ণ</string>
+    <string name="drive_plan_replace">%1$s: এই ফোনে %2$s-এর খাতার জায়গা নেবে।</string>
+    <string name="drive_plan_new">%1$s: নতুন দোকান হিসেবে আসবে। এই ফোনের %2$s আলাদা দোকান, সেটি যেমন আছে তেমনই থাকবে।</string>
+    <string name="drive_plan_fresh">%1$s: এই ফোনে একটি দোকান হিসেবে ফিরে আসবে।</string>
+    <string name="drive_plan_live">%1$s অন্য ডিভাইসের সাথে লাইভ সিঙ্ক হয়। এটি বদলালে লাইভ সিঙ্ক থেমে যাবে; পরে দুটোকে আবার যুক্ত করুন।</string>
+    <string name="drive_plan_unreadable">%1$s: ড্রাইভ থেকে পড়া যায়নি। এটি যেমন আছে তেমনই রাখা হচ্ছে।</string>
+    <string name="live_pair_other_business">এই ফোনের খাতা এই কম্পিউটারে “%1$s” ব্যবসায় আগে থেকেই লাইভ চলছে। সেই ব্যবসাটি খুলুন: এখানে দ্বিতীয় কপি ধীরে ধীরে সেটি থেকে আলাদা হয়ে যাবে।</string>
+    <string name="fc_look_in">এখানে দেখুন:</string>
+    <string name="fc_folder_name">ফোল্ডার:</string>
+    <string name="fc_files_of_type">ফাইলের ধরন:</string>
+    <string name="pos_void_shift_closed">যে শিফটে এই বিক্রি হয়েছিল তা গুনে বন্ধ হয়ে গেছে। বাতিল না করে ফেরত করুন।</string>
+    <string name="pos_customer_binned">এই গ্রাহক রিসাইকেল বিনে আছেন। আগে গ্রাহককে ফিরিয়ে আনুন। কিছুই লেখা হয়নি।</string>
+    <string name="pos_held_gone">এই রাখা টিকিটটি আগেই বিক্রি হয়েছে বা সরানো হয়েছে, হয়তো অন্য ডিভাইসে। কিছুই লেখা হয়নি।</string>
+    <string name="pos_ticket_not_posted">এই বিক্রিটি আর নথিভুক্ত নেই (বাতিল বা সরানো হয়েছে)। কিছুই লেখা হয়নি।</string>
+    <string name="pos_post_failed">বিক্রি সংরক্ষণ হয়নি। কিছুই লেখা হয়নি; টিকিট এখনও কাউন্টারে আছে।</string>
+    <string name="pos_hold_failed">টিকিট রাখা যায়নি। এটি এখনও কাউন্টারে আছে।</string>
+    <string name="pos_void_failed">বিক্রি বাতিল করা যায়নি। কিছুই বদলায়নি।</string>
+    <string name="pos_return_failed">ফেরত সংরক্ষণ হয়নি। কিছুই লেখা হয়নি।</string>
+    <string name="book_merge_failed">কিছুই যোগ হয়নি। এই খাতা আগের মতোই আছে।</string>
+    <string name="products_export_failed">পণ্যের ফাইল তৈরি করা যায়নি।</string>
+    <string name="save_failed_storage_full">সংরক্ষণ হয়নি: ফোনের স্টোরেজ ভরে গেছে। কিছু জায়গা খালি করে আবার লিখুন।</string>
+    <string name="save_failed_not_saved">সংরক্ষণ হয়নি: কিছু একটা ভুল হয়েছে। দয়া করে দেখে আবার লিখুন।</string>
+    <plurals name="stock_count_saved">
+        <item quantity="one">%1$d সংশোধন লেখা হলো</item>
+        <item quantity="other">%1$d সংশোধন লেখা হলো</item>
+    </plurals>
+    <plurals name="followup_queue_done">
+        <item quantity="one">হয়ে গেছে — আজ %1$dটি রিমাইন্ডার খোলা হয়েছে</item>
+        <item quantity="other">হয়ে গেছে — আজ %1$dটি রিমাইন্ডার খোলা হয়েছে</item>
+    </plurals>
+    <plurals name="pdf_insp_expired_ago">
+        <item quantity="one">মেয়াদ শেষ \u00B7 %1$d দিন আগে</item>
+        <item quantity="other">মেয়াদ শেষ \u00B7 %1$d দিন আগে</item>
+    </plurals>
+    <string name="voice_language_missing_phone">আপনার ফোনে ওই ভাষা নেই। ফোনের নিজের ভাষায় শোনা হচ্ছে।</string>
+    <string name="live_give">এই খাতা কোনো ফোনকে দিন</string>
+    <string name="live_give_steps">নতুন ফোনে ব্যাকআপ → দোকানের খাতা এই ফোনে নিন → কম্পিউটারের কোড স্ক্যান করুন খুলে এই কোডটি স্ক্যান করুন। দুটোই একই ওয়াই-ফাইতে থাকতে হবে। এই কোড শুধু একটি ফোনের জন্য। খাতার ইন্টারনেট রিলে চালু করা হয়, যাতে ফোনটি খাতার অন্য ডিভাইসগুলোর সাথেও মিলতে পারে।</string>
+    <string name="live_give_sending">খাতা “%1$s”-কে দেওয়া হচ্ছে…</string>
+    <string name="live_give_sent">খাতা “%1$s”-এর কাছে পৌঁছেছে।\n\nকোড: %2$s — ফোনেও একই চারটি অঙ্ক দেখাবে। সেখানে মালিক হ্যাঁ বললে, 15 মিনিটের মধ্যে, ফোনটি এই খাতায় যুক্ত হবে।</string>
+    <string name="live_give_failed">খাতা ফোনে পৌঁছায়নি। নতুন কোড বানিয়ে আবার স্ক্যান করুন।</string>
+    <string name="live_give_new_code">নতুন কোড</string>
+    <string name="live_give_code_wrong_place">এই কোড কম্পিউটারের খাতা কোনো ফোনকে দেয়। এটি নিতে ব্যাকআপ → দোকানের খাতা এই ফোনে নিন → কম্পিউটারের কোড স্ক্যান করুন খুলুন।</string>
+    <string name="live_receive_scan_pc">কম্পিউটারের কোড স্ক্যান করুন</string>
+    <string name="live_receive_not_give">এটি কম্পিউটারের খাতা দেওয়ার কোড নয়। কম্পিউটারে আরও → লাইভ সিঙ্ক → এই খাতা কোনো ফোনকে দিন খুলে সেখানে দেখানো কোডটি স্ক্যান করুন।</string>
+    <string name="live_receive_offer_pc">“%1$s” (কম্পিউটার) এই ফোনকে দোকানের খাতা দিতে চায়।\n\nকোড: %2$s — কম্পিউটারেও একই চারটি অঙ্ক দেখাতে হবে।\n\nএই ফোনের নিজের খাতা দোকানের খাতা দিয়ে বদলে যাবে। এরপর এই ফোন আর কম্পিউটার দোকানের ওয়াই-ফাই ও ইন্টারনেট রিলের মাধ্যমে একসাথে একটি খাতা রাখবে।</string>
+    <string name="live_receive_pc_refused">কম্পিউটার তার খাতা দেয়নি। এর কোড একবারই কাজ করে, আর শুধু তখনই যখন এর লাইভ সিঙ্ক জানালাটি খোলা থাকে: সেখানে নতুন কোড বানিয়ে সেটি স্ক্যান করুন।</string>
+    <string name="live_receive_pc_unreachable">কম্পিউটারে পৌঁছানো গেল না। দেখুন দুটোই একই ওয়াই-ফাইতে আছে, কম্পিউটারে লাইভ সিঙ্ক জানালাটি খোলা আছে, এবং উইন্ডোজ রোশন খাতাকে নেটওয়ার্কের অনুমতি দিয়েছে।</string>
+    <string name="report_sync_notes_included">— লাইভ সিঙ্ক নোট (ক্র্যাশ নয়: যেসব সমস্যার পর লাইভ সিঙ্ক আবার চেষ্টা করেছে; কোনো নাম, টাকার অঙ্ক বা চাবি নেই):</string>
+    <string name="live_phone_relay_ask">দুটি ফোন শুধু ইন্টারনেট রিলের মাধ্যমে মেলে। এই খাতা অন্য ফোনে পাঠালে এর জন্য “ইন্টারনেট দিয়েও” চালু হবে। অন্য ফোন খাতা না নিলে এই সুইচ আগের মতো হয়ে যাবে।</string>
+    <string name="live_pair_left_business">ফোনের জোড় এসেছিল যখন ব্যবসা “%1$s” খোলা ছিল, আর এখন অন্য ব্যবসা খোলা: তাই সেটি ছেড়ে দেওয়া হয়েছে, যাতে এটি এই খাতার জায়গা না নেয়। জোড়ার জন্য “%1$s” খুলুন এবং ফোনে কোডটি আবার স্ক্যান করুন।</string>
+    <string name="live_wake_off">অ্যাপ বন্ধ থাকলে রিলে এই ফোনকে জাগাতে পারে না: অন্য ডিভাইসের পরিবর্তন অ্যাপ খুললে আসবে।</string>
+    <string name="staff_name_taken">এই নামে কর্মী আগে থেকেই তালিকায় আছেন। আলাদা করে চেনার জন্য কিছু যোগ করুন, যেমন বাবার নাম।</string>
 </resources>

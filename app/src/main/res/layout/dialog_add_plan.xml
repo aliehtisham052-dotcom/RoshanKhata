@@ -49,8 +49,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/plan_total_hint"
+            android:digits="0123456789.+−×÷*/-%"
             android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:inputType="phone" />
+
+        <TextView
+            android:id="@+id/tvPlanTotalResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/etPlanInstallment"
@@ -60,8 +74,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/plan_installment_hint"
+            android:digits="0123456789.+−×÷*/-%"
             android:importantForAutofill="no"
-            android:inputType="numberDecimal" />
+            android:inputType="phone" />
+
+        <TextView
+            android:id="@+id/tvPlanInstallmentResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textDirection="ltr"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!-- One pad for both amounts (21 Oct): it types into whichever of
+             the two has the focus and steps aside for the party and note
+             boxes (CalcPad.bindAll). -->
+        <include
+            android:id="@+id/planKeypad"
+            layout="@layout/view_calculator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPlanDueDate"

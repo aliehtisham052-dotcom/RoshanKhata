@@ -1,136 +1,92 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
-import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.Words
 import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-import java.awt.print.PageFormat
-import java.awt.print.Printable
+import java.util.Date
 
 /**
- * The whole-ledger report on paper (KMP Phase 7e): every entry across every
- * customer in the chosen period, oldest first, with what was given and what
- * was received, and the two totals at the end. Printed through Windows' own
- * dialog — a printer, or a PDF with "Microsoft Print to PDF". Columns mirror
- * for a right-to-left language, as [StatementPrint] does.
+ * The Khata Report on paper (KMP Phase 7e; Marhala 4, part 7 — the phone's data/LedgerReport.kt, page for
+ * page): the shop on the green band with the report's name and period and when it was made; that the paper
+ * is a report and not a backup; the two totals, never netted, and how many entries; then every entry across
+ * every party, oldest first, the money in its own column (I gave, I got) and the note on a quiet line under
+ * the name. Saved as a PDF or printed from the preview ([StatementPrint.show]).
  */
 class ReportPrint(
     private val words: Words,
-    private val rtl: Boolean,
+    rtl: Boolean,
     private val shopName: String,
     private val period: String,
-    entries: List<EntryWithParty>
-) : Printable {
+    entries: List<EntryWithParty>,
+    made: Long = System.currentTimeMillis()
+) : PhoneSheet(rtl) {
 
     private val rows = entries.sortedWith(compareBy({ it.timestamp }, { it.id }))
-    private val totalGave = rows.filter { it.isGiven }.sumOf { it.amount }
-    private val totalGot = rows.filter { !it.isGiven }.sumOf { it.amount }
+    private val madeAt = DateWords.formatter("dd MMM yyyy, HH:mm").format(Date(made))
 
-    private val pageW = 595.0
-    private val margin = 36.0
-    private val rowsPerPage = 30
-
-    private val navy = Color(0x1B, 0x2A, 0x4A)
-    private val red = Color(0xA3, 0x2D, 0x2D)
-    private val green = Color(0x0A, 0x5A, 0x44)
-    private val muted = Color(0x6B, 0x6B, 0x66)
-    private val line = Color(0xE4, 0xE2, 0xDC)
-
-    fun pageCount(): Int = maxOf(1, (rows.size + rowsPerPage - 1) / rowsPerPage)
-
-    /** Text at [x] from the start side; [end]: [x] is where the text ends. */
-    private fun Graphics2D.text(s: String, x: Double, y: Double, end: Boolean = false) {
-        val w = fontMetrics.stringWidth(s)
-        val left = when {
-            !rtl && !end -> x
-            !rtl && end -> x - w
-            rtl && !end -> pageW - x - w
-            else -> pageW - x
-        }
-        drawString(s, left.toFloat(), y.toFloat())
+    override fun Pen.head(): Double {
+        box(0.0, 0.0, PAGE_W, 74.0, BAND)
+        text(fit(shopName, font(22f, true), PAGE_W - 2 * MARGIN), MARGIN, 30.0, font(22f, true), Color.WHITE)
+        text(fit(words.text(W.pdf_rep_ledger_title) + " · " + period, font(11f), PAGE_W - 2 * MARGIN), MARGIN, 48.0, font(11f), GOLD)
+        text(words.text(W.pdf_rep_generated, madeAt), MARGIN, 64.0, font(11f), GOLD)
+        return 100.0
     }
 
-    /** Cuts [s] to fit [width] points in the current font, with an ellipsis. */
-    private fun Graphics2D.fit(s: String, width: Double): String {
-        if (fontMetrics.stringWidth(s) <= width) return s
-        var t = s
-        while (t.isNotEmpty() && fontMetrics.stringWidth("$t…") > width) t = t.dropLast(1)
-        return "$t…"
-    }
+    override fun footer(page: Int): String = words.text(W.pdf_rep_footer_page, words.text(W.app_name), page)
 
-    override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
-        if (pageIndex >= pageCount()) return Printable.NO_SUCH_PAGE
-        val g = graphics as Graphics2D
-        g.translate(format.imageableX, format.imageableY)
-        val scale = format.imageableWidth / pageW
-        g.scale(scale, scale)
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+    override fun Pen.write() {
+        note(listOf(words.text(W.pdf_rep_not_backup), words.text(W.pdf_rep_not_backup_restore, words.text(W.app_name))), boldFirst = true)
 
-        // The band: the shop, the report's name and its period.
-        g.color = navy
-        g.fillRect(0, 0, pageW.toInt(), 70)
-        g.color = Color.WHITE
-        g.font = Font(Font.DIALOG, Font.BOLD, 18)
-        g.text(shopName, margin, 30.0)
-        g.font = Font(Font.DIALOG, Font.PLAIN, 11)
-        g.text(words.text(W.ledger_report_title) + "  ·  " + period, margin, 52.0)
+        // Two totals, never netted: one customer's sale less another's payment is nobody's balance.
+        section(words.text(W.pdf_rep_summary))
+        line(words.text(W.pdf_rep_total_gave), Format.money(rows.filter { it.isGiven }.sumOf { it.amount }), font(11f, true), RED)
+        line(words.text(W.pdf_rep_total_got), Format.money(rows.filter { !it.isGiven }.sumOf { it.amount }), font(11f, true), GREEN)
+        line(words.text(W.pdf_rep_entry_count), rows.size.toString())
+        divider()
 
-        var y = 92.0
-        g.color = muted
-        g.font = Font(Font.DIALOG, Font.PLAIN, 9)
-        g.text(words.plural(WP.pdf_stmt_entries, rows.size, rows.size), margin, y)
-        if (pageCount() > 1) g.text(words.text(W.pdf_stmt_page, pageIndex + 1, pageCount()), pageW - margin, y, end = true)
-        y += 18
-
-        // Columns from the start side: date, name (and note), gave, got.
-        val xDate = margin
-        val xName = margin + 92
-        val xGaveEnd = pageW - margin - 90
-        val xGotEnd = pageW - margin
-        g.color = Color.BLACK
-        g.font = Font(Font.DIALOG, Font.BOLD, 10)
-        g.text(words.text(W.date_label), xDate, y)
-        g.text(words.text(W.name), xName, y)
-        g.text(words.text(W.i_gave), xGaveEnd, y, end = true)
-        g.text(words.text(W.i_got), xGotEnd, y, end = true)
-        y += 6
-        g.color = line
-        g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
-        y += 15
-
-        val from = pageIndex * rowsPerPage
-        for (e in rows.subList(minOf(from, rows.size), minOf(rows.size, from + rowsPerPage))) {
-            g.font = Font(Font.DIALOG, Font.PLAIN, 9)
-            g.color = Color.BLACK
-            g.text(Format.dateOnly(e.timestamp), xDate, y)
-            val who = e.partyName + (e.note?.takeIf { it.isNotBlank() }?.let { "  ·  $it" } ?: "")
-            g.text(g.fit(who, xGaveEnd - 80 - xName), xName, y)
-            g.color = if (e.isGiven) red else green
-            g.font = Font(Font.DIALOG, Font.BOLD, 9)
-            g.text(Format.money(e.amount), if (e.isGiven) xGaveEnd else xGotEnd, y, end = true)
-            y += 7
-            g.color = line
-            g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
-            y += 15
+        text(words.text(W.pdf_rep_entries), MARGIN, y, font(14f, true), BAND)
+        y += 18.0
+        if (rows.isEmpty()) {
+            text(words.text(W.no_entries_in_range), MARGIN, y, font(10f), GREY)
+            y += 16.0
+            return
         }
-
-        // The totals, on the last page.
-        if (pageIndex == pageCount() - 1) {
-            y += 6
-            g.color = navy
-            g.fillRect(margin.toInt(), y.toInt(), (pageW - 2 * margin).toInt(), 40)
-            g.color = Color.WHITE
-            g.font = Font(Font.DIALOG, Font.BOLD, 11)
-            g.text(words.text(W.i_gave) + ": " + Format.money(totalGave), margin + 14, y + 25)
-            g.text(words.text(W.i_got) + ": " + Format.money(totalGot), pageW - margin - 14, y + 25, end = true)
+        // The money columns end at their right edges, the way a statement reads.
+        val xDate = MARGIN + 4.0
+        val xParty = MARGIN + 88.0
+        val xGave = PAGE_W - MARGIN - 92.0
+        val xGot = PAGE_W - MARGIN - 4.0
+        val partyRoom = xGave - 96.0 - xParty
+        val head = listOf(
+            Triple(words.text(W.pdf_rep_col_date), xDate, false), Triple(words.text(W.pdf_rep_col_party), xParty, false),
+            Triple(words.text(W.pdf_rep_col_gave), xGave, true), Triple(words.text(W.pdf_rep_col_got), xGot, true)
+        )
+        tableHead(head)
+        val dayFmt = DateWords.formatter("dd MMM, HH:mm")
+        rows.forEachIndexed { i, e ->
+            val note = e.note?.trim()?.takeIf { it.isNotEmpty() }
+            val h = if (note != null) 30.0 else 20.0
+            if (turnFor(h)) {
+                text(words.text(W.pdf_rep_entries_continued), MARGIN, y, font(14f, true), BAND)
+                y += 18.0
+                tableHead(head)
+            }
+            if (i % 2 == 1) box(MARGIN, y, PAGE_W - MARGIN, y + h, ZEBRA)
+            val base = y + 14.0
+            // A date is never cut: one too wide for its column (a long month name) is drawn smaller.
+            val date = dayFmt.format(Date(e.timestamp))
+            val room = xParty - xDate - 6.0
+            val dateFont = width(date, font(10f)).let { w -> if (w <= room) font(10f) else font((10.0 * room / w).toFloat()) }
+            text(date, xDate, base, dateFont, GREY)
+            text(fit(e.partyName, font(11f), partyRoom), xParty, base, font(11f), Color.BLACK)
+            val money = Format.money(e.amount)
+            if (e.isGiven) text(money, xGave, base, font(11f, true), RED, end = true)
+            else text(money, xGot, base, font(11f, true), GREEN, end = true)
+            if (note != null) text(fit(note, font(10f), xGave - xParty - 8.0), xParty, base + 12.0, font(10f), GREY)
+            y += h
         }
-        return Printable.PAGE_EXISTS
     }
 }
