@@ -127,7 +127,9 @@ object PosterDesigns {
             PosterKit.inkLine(c, note, np, W / 2, panel.bottom - 58f)
         }
         PosterKit.signOff(page, str(page, R.string.poster_from), 1689f)
-        PosterKit.mark(page)
+        // The address and email ticks reach this design too (M18).
+        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
+        PosterKit.mark(page, cy = 1898f)
         return out(head, msg, PosterMotion.Spec(stars = FITR_STARS, glint = head.second))
     }
 
@@ -171,7 +173,9 @@ object PosterDesigns {
         }
         PosterKit.signOff(page, str(page, R.string.poster_from), 1700f, fromColour = 0xFFB9C8F0.toInt(),
             inner = 0xFF2A4B9A.toInt(), innerDark = 0xFF0A1430.toInt())
-        PosterKit.mark(page)
+        // The address and email ticks reach this design too (M18).
+        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
+        PosterKit.mark(page, cy = 1898f)
         return out(head, msg, PosterMotion.Spec(stars = RAMAZAN_STARS, glint = head.second))
     }
 
@@ -604,7 +608,9 @@ object PosterDesigns {
         })
         // Clear of the mosque's ground line above and the phone line and mark below.
         PosterKit.signOff(page, str(page, R.string.poster_from), 1690f, sealSize = 120f)
-        PosterKit.mark(page)
+        // The address and email ticks reach this design too (M18).
+        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
+        PosterKit.mark(page, cy = 1898f)
         return out(head, msg, PosterMotion.Spec(glint = head.second, embers = RectF(80f, 680f, 1000f, 1600f)))
     }
 
@@ -677,7 +683,9 @@ object PosterDesigns {
         val msg = PosterKit.message(page, page.message, 1420f, PosterKit.GOLD, if (page.urdu) 58f else 50f, lines = 1, width = 900)
         PosterKit.signOff(page, str(page, R.string.poster_from), 1680f, fromColour = 0xFFB8F0CF.toInt(),
             inner = 0xFF0E6A38.toInt(), innerDark = 0xFF053019.toInt())
-        PosterKit.mark(page)
+        // The address and email ticks reach this design too (M18).
+        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
+        PosterKit.mark(page, cy = 1898f)
         return PosterKit.Out(tp.textSize, tl.lineCount, msg?.paint?.textSize ?: 0f, msg?.lineCount ?: 0,
             PosterMotion.Spec(flag = PosterMotion.Flag(AZADI_FLAG), fireworks = PosterMotion.Fireworks(AZADI_FIREWORKS)))
     }

@@ -179,7 +179,12 @@ object NumberWords {
      * how anyone in a Gulf shop reads a figure, and the Urdu/Sindhi tables
      * only know rupees.
      */
-    fun amountInWords(lang: String, amount: Double): String {
+    fun amountInWords(lang: String, rawAmount: Double): String {
+        // Rounded to the currency's own decimals first: 229.99999999999997 is Rs 230, not "Two Hundred Twenty Nine"
+        // with the fraction dropped (8 Nov 2026 review, M72).
+        val amount = if (rawAmount.isFinite())
+            java.math.BigDecimal(rawAmount).setScale(Currency.decimals(), java.math.RoundingMode.HALF_UP).toDouble()
+        else rawAmount
         val sign = Currency.symbol
         // Indonesian reads every currency the same way, in its own words:
         // "rupiah" for Rp, "taka" for the taka sign, and the currency's code

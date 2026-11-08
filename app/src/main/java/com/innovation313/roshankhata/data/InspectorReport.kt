@@ -636,6 +636,8 @@ object InspectorReport {
                     }
                     is Cell.Chip -> {
                         val cp = Paint(chipText).apply { color = cell.fg }
+                        // A chip such as "EXPIRED - 120 days ago" shrinks to its column before it is clipped (L28).
+                        while (cp.measureText(cell.text) > inner - 12f && cp.textSize > chipText.textSize * 0.7f) cp.textSize -= 0.4f
                         val t = clip(cell.text, cp, inner - 12f)
                         val w = cp.measureText(t) + 12f
                         val x = xFor(w)
@@ -787,9 +789,9 @@ object InspectorReport {
                 val onHand = s.onHand
                 val onHandCell = when {
                     onHand == null -> Cell.Text(context.getString(R.string.pdf_insp_units_differ), muted)
-                    onHand < 0 -> Cell.Text(Format.qty(onHand, s.unit), negative)
-                    onHand == 0.0 -> Cell.Text(Format.qty(onHand, s.unit), muted)
-                    else -> Cell.Text(Format.qty(onHand, s.unit), strong)
+                    onHand < 0 -> Cell.Text(Format.qty(onHand, s.unit), negative, whole = true)
+                    onHand == 0.0 -> Cell.Text(Format.qty(onHand, s.unit), muted, whole = true)
+                    else -> Cell.Text(Format.qty(onHand, s.unit), strong, whole = true)
                 }
                 val p = d.productsById[s.productId]
                 tableRow(cols, lefts, rowH, listOfNotNull(
@@ -798,9 +800,9 @@ object InspectorReport {
                     Cell.Text(p?.company, body),
                     Cell.Text(p?.technicalName, body).takeIf { label },
                     Cell.Text(p?.formulation, body).takeIf { label },
-                    Cell.Text(p?.registrationNumber, body).takeIf { label },
-                    Cell.Text(Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit ?: s.soldUnit), body),
-                    Cell.Text(Format.qty(s.soldQty, s.soldUnit ?: s.boughtUnit), body),
+                    Cell.Text(p?.registrationNumber, body, whole = true).takeIf { label },
+                    Cell.Text(Format.qty(s.boughtQty + s.returnedQty, s.boughtUnit ?: s.soldUnit), body, whole = true),
+                    Cell.Text(Format.qty(s.soldQty, s.soldUnit ?: s.boughtUnit), body, whole = true),
                     onHandCell
                 ), shaded = index % 2 == 1)
             }
@@ -834,15 +836,15 @@ object InspectorReport {
             val ordered = d.expired + d.expiringSoon +
                 d.batches.filter { it.itemId !in expiredIds && it.itemId !in soonIds }
 
-            // 140 + 76 + 150 + 60 + 76 + 76 + 110 + 74 = 762
+            // 140 + 76 + 138 + 60 + 76 + 76 + 122 + 74 = 762
             val cols = listOf(
                 Col(context.getString(R.string.pdf_insp_col_product), 140f),
                 Col(context.getString(R.string.pdf_insp_col_batch), 76f),
-                Col(context.getString(R.string.pdf_insp_col_supplier), 150f),
+                Col(context.getString(R.string.pdf_insp_col_supplier), 138f),
                 Col(context.getString(R.string.pdf_insp_col_bill), 60f),
                 Col(context.getString(R.string.pdf_insp_col_bill_date), 76f),
                 Col(context.getString(R.string.pdf_insp_col_expiry), 76f),
-                Col(context.getString(R.string.pdf_insp_col_status), 110f),
+                Col(context.getString(R.string.pdf_insp_col_status), 122f),
                 Col(context.getString(R.string.pdf_insp_col_left), 74f, Paint.Align.RIGHT)
             )
             var lefts = tableHead(cols)
@@ -864,13 +866,13 @@ object InspectorReport {
                 }
                 tableRow(cols, lefts, rowH, listOf(
                     Cell.Text(b.productName, bodyBold),
-                    Cell.Text(b.batchNumber, body),
+                    Cell.Text(b.batchNumber, body, whole = true),
                     Cell.Text(b.partyName, body),
-                    Cell.Text(b.billNumber, body),
+                    Cell.Text(b.billNumber, body, whole = true),
                     Cell.Text(dayFmt.format(Date(b.billDate)), body, whole = true),
                     Cell.Text(exp?.let { dayFmt.format(Date(it)) }, if (isExpired || isSoon) bodyBold else body, whole = true),
                     status,
-                    Cell.Text(Format.qty(b.remaining, b.unit), bodyBold)
+                    Cell.Text(Format.qty(b.remaining, b.unit), bodyBold, whole = true)
                 ), shaded = index % 2 == 1)
             }
         }
@@ -916,8 +918,8 @@ object InspectorReport {
                     val onHand = s.onHand
                     val qty = when {
                         onHand == null -> Cell.Text(context.getString(R.string.pdf_insp_units_differ), muted)
-                        onHand < 0 -> Cell.Text(Format.qty(onHand, s.unit), negative)
-                        onHand == 0.0 -> Cell.Text(Format.qty(onHand, s.unit), muted)
+                        onHand < 0 -> Cell.Text(Format.qty(onHand, s.unit), negative, whole = true)
+                        onHand == 0.0 -> Cell.Text(Format.qty(onHand, s.unit), muted, whole = true)
                         else -> Cell.Text(Format.qty(onHand, s.unit), bodyBold)
                     }
                     tableRow(cols, lefts, rowH, listOfNotNull(
@@ -953,7 +955,7 @@ object InspectorReport {
             val missingChip = Cell.Chip(context.getString(R.string.pdf_insp_chip_missing), AMBER_FG, AMBER_BG)
             fun mark(has: Boolean): Cell = if (has) Cell.Tick else missingChip
 
-            d.labelChecks.take(40).forEachIndexed { index, c ->
+            d.labelChecks.forEachIndexed { index, c ->
                 if (y + rowH > contentBottom) lefts = breakTable(s4, n4, cols)
                 tableRow(cols, lefts, rowH, listOf(
                     Cell.Text(c.name, bodyBold),
@@ -963,13 +965,6 @@ object InspectorReport {
                     mark(c.registration),
                     Cell.Text(Digits.string(context.resources, R.string.pdf_insp_missing_of, c.missing, 4), bodyBold)
                 ), shaded = index % 2 == 1)
-            }
-            if (d.labelChecks.size > 40) {
-                PdfRtl.drawText(canvas,
-                    Digits.string(context.resources, R.string.pdf_insp_and_more, d.labelChecks.size - 40),
-                    MARGIN + cellPad, y + 13f, muted
-                )
-                y += 16f
             }
         }
 

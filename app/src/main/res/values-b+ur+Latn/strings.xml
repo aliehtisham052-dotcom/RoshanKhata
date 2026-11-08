@@ -417,7 +417,7 @@
     <string name="cheque_received">Un se mila</string>
     <string name="cheque_issued">Un ko diya</string>
     <string name="pick_due_date">Cheque par likhi tareekh chunein</string>
-    <string name="due_date_set">Tareekh: %1$s</string>
+    <string name="due_date_set">Adaigi ki tareekh: %1$s</string>
     <string name="cheque_number_hint">Cheque number (ikhtiyari)</string>
     <string name="bank_name_hint">Bank (ikhtiyari)</string>
 

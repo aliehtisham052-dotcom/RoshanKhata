@@ -411,7 +411,7 @@ class CounterSaleActivity : BaseActivity() {
                     val (sale, balance, points) = receipt
                     refreshAfterSale(sale.sale.partyId, balance)
                     val words = AndroidWords(this@CounterSaleActivity)
-                    val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
+                    val shop = com.innovation313.roshankhata.data.BusinessProfile.receiptHeader(this@CounterSaleActivity)
                     val text = SaleReceiptText.build(words, shop, sale, balance, points)
                     // The sale-saved sheet (3 Nov 2026, the owner's mockup): the tick, the number, and the change
                     // to hand back on its own gold chip — it was a few words at the end of a dialog's title.
@@ -581,7 +581,7 @@ class CounterSaleActivity : BaseActivity() {
             } ?: return@launch
             if (isFinishing || isDestroyed) return@launch
             val (sale, balance, points) = built
-            val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
+            val shop = com.innovation313.roshankhata.data.BusinessProfile.receiptHeader(this@CounterSaleActivity)
             val text = SaleReceiptText.build(AndroidWords(this@CounterSaleActivity), shop, sale, balance, points)
             MaterialAlertDialogBuilder(this@CounterSaleActivity)
                 .setTitle(sale.sale.saleNumber)

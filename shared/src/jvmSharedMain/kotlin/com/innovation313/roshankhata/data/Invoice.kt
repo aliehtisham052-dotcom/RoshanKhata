@@ -216,7 +216,8 @@ object InvoiceMath {
         val discountAmount = if (discountAmount != null) {
             discountAmount.coerceIn(0.0, subtotal.coerceAtLeast(0.0))
         } else {
-            discountPercent?.takeIf { it != 0.0 }?.let { subtotal * it / 100.0 } ?: 0.0
+            // A percentage past 100 or below 0 cannot make a negative total (M131 / L131).
+            discountPercent?.takeIf { it != 0.0 }?.let { (subtotal * it / 100.0).coerceIn(0.0, subtotal.coerceAtLeast(0.0)) } ?: 0.0
         }
         val afterDiscount = subtotal - discountAmount
         val taxAmount = taxPercent?.takeIf { it != 0.0 }?.let { afterDiscount * it / 100.0 } ?: 0.0

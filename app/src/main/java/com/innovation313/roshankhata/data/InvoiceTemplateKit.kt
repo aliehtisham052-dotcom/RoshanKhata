@@ -279,7 +279,7 @@ object InvoiceTemplateKit {
             })
         }
 
-        val shopName = BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata"
+        val shopName = BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: ""
         val address = BusinessProfile.businessAddress(context)
         // Only for a shop registered for sales tax — blank prints nothing,
         // deliberately, since FBR's own guidance is that an invoice with no
@@ -289,14 +289,15 @@ object InvoiceTemplateKit {
         // slot of its own in a header whose lines are already placed.
         val contact = listOfNotNull(
             strn?.let { "${BusinessProfile.taxLabel(context)}: $it" },
-            BusinessProfile.businessPhone(context)
+            BusinessProfile.businessPhone(context)?.let { Format.ltr(it) }
         ).joinToString("  \u00B7  ").ifEmpty { null }
 
         if (palette.centeredHeader) {
             val mid = pageW / 2f
-            PdfRtl.drawText(c, shopName, mid, 36f, paint(fonts, 18f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
-            address?.let { PdfRtl.drawText(c, it, mid, 51f, paint(fonts, 9f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
-            contact?.let { PdfRtl.drawText(c, it, mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER)) }
+            val full = right - left
+            drawFit(c, shopName, mid, 36f, paint(fonts, 18f, palette.onPrimary, bold = true, align = Paint.Align.CENTER), full)
+            address?.let { drawFit(c, it, mid, 51f, paint(fonts, 9f, palette.onPrimaryMuted, align = Paint.Align.CENTER), full) }
+            contact?.let { drawFit(c, it, mid, 63f, paint(fonts, 8f, palette.onPrimaryMuted, align = Paint.Align.CENTER), full) }
             PdfRtl.drawText(c, heading, mid, 84f, paint(fonts, 16f, palette.onPrimary, bold = true, align = Paint.Align.CENTER))
         } else {
             val tile = RectF(left, 26f, left + 40f, 66f)
@@ -329,15 +330,18 @@ object InvoiceTemplateKit {
                 )
             }
 
-            PdfRtl.drawText(c, shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true))
+            // The shop's name leaves room for the heading on the far side ("Proforma Invoice" met a long name, L123).
+            val headW = paint(fonts, 22f, palette.onPrimary, bold = true).measureText(heading).coerceAtMost((right - left) * 0.45f)
+            val nameRoom = right - left - 52f - headW - 14f
+            drawFit(c, shopName, left + 52f, 44f, paint(fonts, 16f, palette.onPrimary, bold = true), nameRoom)
             address?.let {
-                PdfRtl.drawText(c, it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted))
+                drawFit(c, it, left + 52f, 58f, paint(fonts, 9f, palette.onPrimaryMuted), nameRoom)
             }
             contact?.let {
-                PdfRtl.drawText(c, it, left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted))
+                drawFit(c, it, left + 52f, 70f, paint(fonts, 8f, palette.onPrimaryMuted), nameRoom)
             }
 
-            PdfRtl.drawText(c, heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT))
+            drawFit(c, heading, right, 44f, paint(fonts, 22f, palette.onPrimary, bold = true, align = Paint.Align.RIGHT), (right - left) * 0.45f)
             // No default subtitle any more: "RASID" under "INVOICE" said the
             // same word twice in two languages.
             if (subtitle.isNotBlank()) {
@@ -450,7 +454,7 @@ object InvoiceTemplateKit {
             if (index % 2 == 1) canvas.drawRect(left, y, right, y + rowH, solid(palette.zebra))
             val baseline = y + 16f
             PdfRtl.drawText(canvas, (index + 1).toString(), xNo, baseline, body)
-            PdfRtl.drawText(canvas, item.itemName, xItem, baseline, body)
+            drawFit(canvas, item.itemName, xItem, baseline, body, (if (extraColumn != null) xExtra - 64f else xQty - 56f) - xItem)
             extraColumn?.let { PdfRtl.drawText(canvas, it.valueOf(item), xExtra, baseline, bodyR) }
             PdfRtl.drawText(canvas, Format.qty(item.quantity, item.unit), xQty, baseline, bodyR)
             if (showPrices) {
@@ -486,7 +490,9 @@ object InvoiceTemplateKit {
     ): Float {
         if (!DocKind.showsPrices(invoice.kind)) return blockTop
         val labels = Labels(context)
-        val bankRows = listOfNotNull(
+        // A credit note returns money: it carries no "how to pay" box and no payment QR (L120).
+        val askingMoney = invoice.kind != DocKind.CREDIT_NOTE
+        val bankRows = if (!askingMoney) emptyList() else listOfNotNull(
             BusinessProfile.bankName(context)?.let { labels.bank to it },
             BusinessProfile.bankAccountTitle(context)?.let { labels.accountTitle to it },
             BusinessProfile.bankIban(context)?.let { "IBAN" to it },
@@ -511,8 +517,9 @@ object InvoiceTemplateKit {
         if (totals.taxAmount > 0) {
             totalRow("${labels.tax} (${Format.plain(invoice.taxPercent ?: 0.0)}%)", Format.money(totals.taxAmount))
         }
-        if (totals.additionalCharge > 0) {
-            totalRow(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, Format.money(totals.additionalCharge))
+        if (totals.additionalCharge != 0.0) {
+            // A round-off down is a minus line, never a missing one (M71).
+            totalRow(invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, Format.signedIfNegative(totals.additionalCharge))
         }
 
         ty += 5f
@@ -532,27 +539,39 @@ object InvoiceTemplateKit {
         }
 
         var by = blockTop
-        val qr = BusinessProfile.loadQr(context)
+        val qr = if (askingMoney) BusinessProfile.loadQr(context) else null
         val boxRight = totalsX - 16f
         if (bankRows.isNotEmpty() || qr != null) {
             val qrSize = 56f
             val textRight = if (qr != null) boxRight - qrSize - 14f else boxRight - 12f
-            val textBoxH = 26f + bankRows.size * 14f
+            // A long value (an account title) goes on a second line instead of over its label (L125).
+            val valueP = paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT)
+            val labelP = paint(fonts, 10.5f, palette.muted)
+            val valueLines = bankRows.map { (label, value) ->
+                val room = textRight - (left + 12f) - labelP.measureText(label) - 8f
+                if (valueP.measureText(value) <= room) listOf(value)
+                else wrapLines(value, valueP, textRight - (left + 12f), 2)
+            }
+            val textBoxH = 26f + valueLines.sumOf { 14 * it.size.coerceAtLeast(1) }
             val qrBoxH = if (qr != null) qrSize + 34f else 0f
             val boxH = maxOf(textBoxH, qrBoxH)
 
             c.drawRoundRect(RectF(left, blockTop, boxRight, blockTop + boxH), 8f, 8f, solid(palette.boxFill))
             PdfRtl.drawText(c, labels.paymentInfo, left + 12f, blockTop + 16f, paint(fonts, 9f, palette.primary, bold = true))
             var ry = blockTop + 32f
-            bankRows.forEach { (label, value) ->
-                PdfRtl.drawText(c, label, left + 12f, ry, paint(fonts, 10.5f, palette.muted))
-                PdfRtl.drawText(c, value, textRight, ry, paint(fonts, 10.5f, palette.ink, bold = true, mono = true, align = Paint.Align.RIGHT))
+            bankRows.forEachIndexed { i, (label, _) ->
+                PdfRtl.drawText(c, label, left + 12f, ry, labelP)
+                val vl = valueLines[i]
+                vl.forEachIndexed { k, line ->
+                    PdfRtl.drawText(c, line, textRight, ry, valueP)
+                    if (k < vl.size - 1) ry += 14f
+                }
                 ry += 14f
             }
             qr?.let {
                 val qrLeft = boxRight - qrSize - 10f
                 val qrTop = blockTop + 22f
-                PdfRtl.drawBitmap(c, it, null, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize), null)
+                drawBitmapFit(c, it, RectF(qrLeft, qrTop, qrLeft + qrSize, qrTop + qrSize))
                 PdfRtl.drawText(c, labels.scanToPay, qrLeft + qrSize / 2f, qrTop + qrSize + 10f, paint(fonts, 6.5f, palette.muted, align = Paint.Align.CENTER))
             }
             by = blockTop + boxH
@@ -565,8 +584,14 @@ object InvoiceTemplateKit {
     fun drawAmountInWords(c: Canvas, context: Context, palette: Palette, fonts: Fonts, left: Float, right: Float, y: Float, grandTotal: Double): Float {
         c.drawRoundRect(RectF(left, y, right, y + 34f), 7f, 7f, solid(palette.boxFill))
         PdfRtl.drawText(c, Labels(context).amountInWords, left + 12f, y + 13f, paint(fonts, 8.5f, palette.primary, bold = true))
-        PdfRtl.drawText(c, NumberWords.amountInWords(context, grandTotal), left + 12f, y + 27f, paint(fonts, 10.5f, palette.ink, italic = true))
-        return y + 50f
+        val words = paint(fonts, 10.5f, palette.ink, italic = true)
+        val lines = wrapLines(NumberWords.amountInWords(context, grandTotal), words, right - left - 24f, 3)
+        val extra = (lines.size - 1).coerceAtLeast(0) * 12f
+        if (extra > 0f) {
+            c.drawRoundRect(RectF(left, y + 34f, right, y + 34f + extra), 0f, 0f, solid(palette.boxFill))
+        }
+        lines.forEachIndexed { i, line -> PdfRtl.drawText(c, line, left + 12f, y + 27f + i * 12f, words) }
+        return y + 50f + extra
     }
 
     /**
@@ -609,17 +634,70 @@ object InvoiceTemplateKit {
         c.drawLine(sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f, Paint().apply { color = palette.ink; strokeWidth = 0.7f })
         PdfRtl.drawText(c, Labels(context).signatory, sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))
 
+        var termsEnd = 0f
         val footerLines = listOfNotNull(invoice.note?.takeIf { it.isNotBlank() }, BusinessProfile.termsAndConditions(context))
         if (footerLines.isNotEmpty()) {
             PdfRtl.drawText(c, Labels(context).terms, left, y + 12f, paint(fonts, 8.5f, palette.primary, bold = true))
             var fy = y + 27f
+            // Wrapped to the room left of the signature box, three lines each (M76).
+            val termsP = paint(fonts, 9f, palette.muted)
             footerLines.forEach {
-                PdfRtl.drawText(c, it, left, fy, paint(fonts, 9f, palette.muted))
-                fy += 12f
+                wrapLines(it, termsP, right - sigW - 16f - left, 3).forEach { line ->
+                    PdfRtl.drawText(c, line, left, fy, termsP)
+                    fy += 12f
+                }
             }
+            termsEnd = fy
         }
 
-        return y + sigH + 16f
+        return maxOf(y + sigH, termsEnd) + 16f
+    }
+
+    /**
+     * Word-wraps [text] into at most [maxLines] lines no wider than [maxW]; a word wider than the line is cut by
+     * letters, and what does not fit the last line ends in an ellipsis. One helper for the documents' repeated
+     * "one unwrapped line runs off the page" fault (8 Nov 2026 review, M76/M77/L124/L125).
+     */
+    fun wrapLines(text: String, p: Paint, maxW: Float, maxLines: Int): List<String> {
+        val clean = text.replace('\n', ' ').trim()
+        if (clean.isEmpty() || maxW <= 0f) return emptyList()
+        if (p.measureText(clean) <= maxW) return listOf(clean)
+        val lines = mutableListOf<String>()
+        var line = ""
+        fun clip(t: String): String {
+            if (p.measureText(t) <= maxW) return t
+            var e = t
+            while (e.length > 1 && p.measureText(e + "\u2026") > maxW) e = e.dropLast(1)
+            return e.trimEnd() + "\u2026"
+        }
+        for (word in clean.split(' ').filter { it.isNotEmpty() }) {
+            val candidate = if (line.isEmpty()) word else "$line $word"
+            if (p.measureText(candidate) <= maxW) { line = candidate; continue }
+            if (line.isNotEmpty()) { lines += line; line = "" }
+            var w = word
+            while (p.measureText(w) > maxW && w.length > 1 && lines.size < maxLines - 1) {
+                var e = w.length
+                while (e > 1 && p.measureText(w.take(e)) > maxW) e--
+                lines += w.take(e); w = w.drop(e)
+            }
+            line = w
+        }
+        if (line.isNotEmpty()) lines += line
+        if (lines.size > maxLines) {
+            val head = lines.take(maxLines - 1)
+            return head + clip(lines.drop(maxLines - 1).joinToString(" "))
+        }
+        return lines.map { clip(it) }
+    }
+
+    /** Draws one line that must stay within [maxW]: shrinks the paint down to 65% of its size, then clips with an ellipsis. */
+    fun drawFit(c: Canvas, text: String, x: Float, y: Float, p: Paint, maxW: Float) {
+        if (text.isEmpty() || maxW <= 0f) return
+        val base = p.textSize
+        while (p.measureText(text) > maxW && p.textSize > base * 0.65f) p.textSize -= 0.5f
+        val shown = wrapLines(text, p, maxW, 1).firstOrNull() ?: return
+        PdfRtl.drawText(c, shown, x, y, p)
+        p.textSize = base
     }
 
     private fun numberOnlyMoney(value: Double): String = Format.money(value).removePrefix(Currency.symbol).trim()

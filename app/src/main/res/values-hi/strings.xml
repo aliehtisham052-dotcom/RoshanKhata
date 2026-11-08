@@ -435,7 +435,7 @@
     <string name="cheque_received">उनसे मिला</string>
     <string name="cheque_issued">उन्हें दिया</string>
     <string name="pick_due_date">चेक पर लिखी तारीख़ चुनें</string>
-    <string name="due_date_set">तारीख़: %1$s</string>
+    <string name="due_date_set">देय तारीख़: %1$s</string>
     <string name="cheque_number_hint">चेक नंबर (ज़रूरी नहीं)</string>
     <string name="bank_name_hint">बैंक (ज़रूरी नहीं)</string>
 
@@ -3161,7 +3161,7 @@
     <string name="pos_grand_total">कुल</string>
     <string name="pos_paid">अभी चुकाया</string>
     <string name="pos_to_account">खाते में</string>
-    <string name="pos_change">वापसी</string>
+    <string name="pos_change">बाक़ी लौटाएँ</string>
     <string name="pos_add_payment">भुगतान जोड़ें</string>
     <string name="pos_pay_full_cash">सब नकद</string>
     <string name="pos_reference_hint">संदर्भ (ट्रांज़ैक्शन नं., चेक नं.)</string>

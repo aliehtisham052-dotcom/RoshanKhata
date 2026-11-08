@@ -323,9 +323,9 @@ object PdfExport {
 
             // The shop's name, and under it how to reach the shop: its address and phone.
             val nameRoom = PAGE_W - 2 * MARGIN - 150f
-            val shopName = businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name)
+            val shopName = businessName?.takeIf { it.isNotBlank() } ?: ""
             PdfRtl.drawText(c, fitted(shopName, title, nameRoom), MARGIN, 34f, title)
-            val reach = listOfNotNull(shopAddress, shopPhone).joinToString("  \u00b7  ")
+            val reach = listOfNotNull(shopAddress, shopPhone?.let { Format.ltr(it) }).joinToString("  \u00b7  ")
             if (reach.isNotEmpty()) {
                 val reachPaint = Paint(subtitle).apply { textSize = 9f; color = GOLD_SOFT }
                 PdfRtl.drawText(c, fitted(reach, reachPaint, nameRoom), MARGIN, 52f, reachPaint)
@@ -397,7 +397,7 @@ object PdfExport {
                     PdfRtl.drawText(c, value, left + 8f, yy + 31f, vp)
                 }
 
-                summaryBox(0, context.getString(R.string.pdf_stmt_opening), Format.money(openingBalance), Color.BLACK)
+                summaryBox(0, context.getString(R.string.pdf_stmt_opening), Format.signedIfNegative(openingBalance), Color.BLACK)
                 summaryBox(1, totalOwedLabel, Format.money(totalGave), RED)
                 summaryBox(2, totalPaidLabel, Format.money(totalGot), GREEN)
                 summaryBox(3, closingWord(), Format.money(kotlin.math.abs(closingBalance)), NAVY, strong = true)
@@ -433,7 +433,7 @@ object PdfExport {
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
             }
             PdfRtl.drawText(c, label, xDate, y, italic)
-            PdfRtl.drawText(c, Format.money(openingBalance), xBal, y, italic)
+            PdfRtl.drawText(c, Format.signedIfNegative(openingBalance), xBal, y, italic)
             y += 8f
             c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
             y += 16f
@@ -474,7 +474,7 @@ object PdfExport {
 
             // The running balance is the column a reader actually follows
             // down the page, so it gets the weight — bold, like the summary.
-            PdfRtl.drawText(c, Format.money(row.runningBalance), xBal, y, header)
+            PdfRtl.drawText(c, Format.signedIfNegative(row.runningBalance), xBal, y, header)
 
             // Second line: reference number, note, any goods that moved, and
             // the payment's own reference with its way (schema 39): the id the
@@ -488,7 +488,12 @@ object PdfExport {
                 if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
             }.joinToString("  ·  ")
 
-            PdfRtl.drawText(c, detail, xDate, y, muted)
+            // Wrapped, not cut: three items and a long note take up to three lines (L124).
+            val detailLines = InvoiceTemplateKit.wrapLines(detail, muted, PAGE_W - MARGIN - xDate, 3)
+            detailLines.forEachIndexed { i, line ->
+                if (i > 0) y += 10f
+                PdfRtl.drawText(c, line, xDate, y, muted)
+            }
 
             y += 8f
             c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
@@ -598,7 +603,7 @@ object PdfExport {
         // If something does not match, who to call — the shop's own number.
         shopPhone?.let {
             val q = Paint(muted).apply { textSize = 8f }
-            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_query, it), q, PAGE_W - 2 * MARGIN), MARGIN, y, q)
+            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_query, Format.ltr(it)), q, PAGE_W - 2 * MARGIN), MARGIN, y, q)
             y += 20f
         } ?: run { y += 4f }
 
@@ -621,13 +626,8 @@ object PdfExport {
             y += 8f
 
             val qrSize = 120
-            val dst = Rect(
-                MARGIN.toInt(),
-                y.toInt(),
-                MARGIN.toInt() + qrSize,
-                y.toInt() + qrSize
-            )
-            PdfRtl.drawBitmap(c, paymentQr, null, dst, null)
+            // Fitted, not stretched: a 600 x 800 crop stays the shape it was (L129).
+            InvoiceTemplateKit.drawBitmapFit(c, paymentQr, RectF(MARGIN, y, MARGIN + qrSize, y + qrSize))
 
             // Say the amount in words next to the code: a personal
             // EasyPaisa/JazzCash QR carries no amount, so the customer types

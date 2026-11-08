@@ -366,6 +366,13 @@ object CardTemplates {
         return baseline
     }
 
+    /** The width [pill] will take, so a title beside it can leave that room (M15). */
+    private fun pillW(text: String, size: Float = 24f, max: Float = 520f): Float {
+        if (text.isEmpty()) return 0f
+        val p = paint(size, WHITE, bold = true)
+        return p.measureText(ellipsise(text, p, max - size * 1.4f)) + size * 1.4f
+    }
+
     /** A rounded label with text, e.g. the tagline. Returns its width. */
     private fun pill(
         c: Canvas,
@@ -718,7 +725,7 @@ object CardTemplates {
         c.drawCircle(cx, cy, 152f, outer)
         c.drawCircle(cx, cy, 132f, stroke(GOLD, 5f))
         sprout(c, cx, cy - 58f, 62f, GOLD_PALE)
-        title(c, d.name, cx, cy - 6f, 220f, 36f, WHITE, Paint.Align.CENTER, lines = 2, lineGap = 1.1f)
+        title(c, d.name, cx, cy - 6f, 220f, 36f, WHITE, Paint.Align.CENTER, lines = 3, lineGap = 1.05f)
         val all = rows(d)
         val left = mutableListOf<Pair<Ico, String>>()
         val right = mutableListOf<Pair<Ico, String>>()
@@ -833,7 +840,7 @@ object CardTemplates {
             yy += 70f
         }
         c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), linear(0f, 0f, w * 0.7f, 0f, alpha(Color.parseColor("#1F3A2B"), 245), alpha(Color.parseColor("#1F3A2B"), 120)))
-        val b = title(c, d.name, 70f, 64f, 820f, 64f, GOLD_PALE)
+        val b = title(c, d.name, 70f, 64f, minOf(820f, w - 70f - pillW(d.tagline) - 30f - 70f), 64f, GOLD_PALE)
         caps(c, d.type, 72f, b + 28f, 820f, Color.parseColor("#C0DD97"))
         info(c, d, 72f, infoTopFor(d, h - 60f), 760f, WHITE, GOLD, ownerColour = GOLD_PALE, bottom = h - 40f)
         c.save()
@@ -852,7 +859,7 @@ object CardTemplates {
         c.drawRect(RectF(panel.left + 16f, panel.top + 16f, panel.right + 16f, panel.bottom + 16f), fill(INK))
         c.drawRect(panel, fill(WHITE))
         c.drawRect(panel, stroke(INK, 7f).apply { strokeCap = Paint.Cap.SQUARE; strokeJoin = Paint.Join.MITER })
-        val b = title(c, d.name.uppercase(), panel.left + 40f, panel.top + 34f, panel.width() - 80f, 76f, INK, lineGap = 0.98f)
+        val b = title(c, d.name.uppercase(), panel.left + 40f, panel.top + 34f, panel.width() - 80f - pillW(d.tagline, 20f, 360f) - 16f, 76f, INK, lineGap = 0.98f)
         if (d.type.isNotEmpty()) {
             val p = paint(20f, Color.parseColor("#FAC775"), bold = true, spacing = 0.14f)
             val txt = ellipsise(d.type.uppercase(), p, panel.width() - 120f)
@@ -1147,7 +1154,7 @@ object CardTemplates {
         val panel = RectF(64f, 60f, w - 64f, h - 60f)
         c.drawRect(RectF(panel.left + 10f, panel.top + 14f, panel.right + 10f, panel.bottom + 14f), fill(alpha(Color.BLACK, 70)))
         c.drawRect(panel, fill(Color.parseColor("#FFF9EC")))
-        val b = title(c, d.name, panel.left + 44f, panel.top + 40f, panel.width() - 88f, 60f, Color.parseColor("#412402"), serif = true)
+        val b = title(c, d.name, panel.left + 44f, panel.top + 40f, panel.width() - 88f - pillW(d.tagline, 20f, 360f) - 16f, 60f, Color.parseColor("#412402"), serif = true)
         caps(c, d.type, panel.left + 46f, b + 26f, panel.width() - 88f, brown)
         info(c, d, panel.left + 46f, infoTopFor(d, panel.bottom - 36f), panel.width() - 260f, INK, brown, bottom = panel.bottom - 20f)
         val cx = panel.right - 110f
@@ -1253,7 +1260,7 @@ object CardTemplates {
         val wedge = path { moveTo(w * 0.55f, h.toFloat()); lineTo(w.toFloat(), h * 0.38f - lift); lineTo(w.toFloat(), h.toFloat()); close() }
         c.drawPath(wedge, fill(Color.parseColor("#2F7FC4")))
         c.drawLine(w * 0.55f - 16f, h.toFloat(), w.toFloat() - 16f, h * 0.38f - lift, stroke(GOLD, 6f))
-        val b = title(c, d.name, 70f, 64f, 900f, 62f, WHITE)
+        val b = title(c, d.name, 70f, 64f, minOf(900f, w - 60f - pillW(d.tagline) - 30f - 70f), 62f, WHITE)
         caps(c, d.type, 72f, b + 26f, 900f, GOLD)
         info(c, d, 72f, infoTopFor(d, h - 56f), w * 0.55f - 40f, WHITE, GOLD, ownerColour = GOLD_PALE, bottom = h - 34f)
         pill(c, d.tagline, w - 60f, 50f, alpha(GOLD, 220), Color.parseColor("#1B2A4A"), alignRight = true)
@@ -1309,7 +1316,7 @@ object CardTemplates {
         }, fill(AMBER))
         text(c, label, 70f, 160f + s * 0.35f, np)
         caps(c, d.type, 72f, 262f, 600f, Color.parseColor("#854F0B"))
-        info(c, d, w - 70f, infoTopFor(d, h - 90f), 400f, WHITE, AMBER, ownerColour = AMBER, align = Paint.Align.RIGHT, bottom = h - 80f)
+        info(c, d, w - 70f, infoTopFor(d, h - 90f), 520f, WHITE, AMBER, ownerColour = AMBER, align = Paint.Align.RIGHT, bottom = h - 80f)
         pill(c, d.tagline, 70f, 300f, navy, WHITE, size = 22f, max = 420f)
         watermark(c, d, 70f, h - 90f, onDark = false, align = Paint.Align.LEFT)
     }

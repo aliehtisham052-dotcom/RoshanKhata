@@ -51,12 +51,12 @@ class PlanAdapter(
 
         holder.tvPaid.text = ctx.getString(
             R.string.plan_paid,
-            Format.money(p.paidSoFar),
-            Format.money(p.totalAmount)
+            Format.ltr(Format.money(p.paidSoFar)),
+            Format.ltr(Format.money(p.totalAmount))
         )
         holder.tvRemaining.text = ctx.getString(
             R.string.plan_remaining,
-            Format.money(p.remaining)
+            Format.ltr(Format.money(p.remaining))
         )
 
         if (p.isClosed) {

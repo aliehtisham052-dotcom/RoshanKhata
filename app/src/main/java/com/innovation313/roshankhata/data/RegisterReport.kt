@@ -160,16 +160,16 @@ object RegisterReport {
         }
 
         // ---- What this document is, and is not ----
-        canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + 46f, warnFill)
-        PdfRtl.drawText(canvas,
-            context.getString(R.string.pdf_reg_note_1),
-            MARGIN + 8f, y + 17f, warnText
-        )
-        PdfRtl.drawText(canvas,
-            context.getString(R.string.pdf_reg_note_2),
-            MARGIN + 8f, y + 31f, warnText
-        )
-        y += 62f
+        // Both notes wrapped to the page, the box grown to fit (M16): Indonesian ran past the edge on one line.
+        val noteLines = listOf(R.string.pdf_reg_note_1, R.string.pdf_reg_note_2).flatMap {
+            InvoiceTemplateKit.wrapLines(context.getString(it), warnText, PAGE_W - 2 * MARGIN - 16f, 3)
+        }
+        val noteH = 12f + noteLines.size * 14f
+        canvas.drawRect(MARGIN, y, PAGE_W - MARGIN, y + noteH, warnFill)
+        noteLines.forEachIndexed { i, line ->
+            PdfRtl.drawText(canvas, line, MARGIN + 8f, y + 17f + i * 14f, warnText)
+        }
+        y += noteH + 16f
 
         // ---- Summary ----
         PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_summary), MARGIN, y, section)

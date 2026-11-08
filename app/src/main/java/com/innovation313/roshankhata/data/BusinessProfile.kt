@@ -288,6 +288,14 @@ object BusinessProfile {
      * always printed; a shop in any other currency reads its own language's
      * "Tax No." (Indonesian: NPWP) rather than a Pakistani acronym.
      */
+    /** The shop's name, then its address, phone and tax number when filled: what a receipt heads itself with (L126). */
+    fun receiptHeader(context: Context): String = listOfNotNull(
+        businessName(context)?.takeIf { it.isNotBlank() } ?: context.getString(com.innovation313.roshankhata.R.string.app_name),
+        businessAddress(context)?.takeIf { it.isNotBlank() },
+        businessPhone(context)?.takeIf { it.isNotBlank() },
+        strn(context)?.takeIf { it.isNotBlank() }?.let { "${taxLabel(context)}: $it" }
+    ).joinToString("\n")
+
     fun taxLabel(context: Context): String = taxName(country(context), context.getString(com.innovation313.roshankhata.R.string.tax_number_label))
 
     /**

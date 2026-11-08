@@ -417,7 +417,7 @@
     <string name="cheque_received">ان سے ملا</string>
     <string name="cheque_issued">ان کو دیا</string>
     <string name="pick_due_date">چیک پر لکھی تاریخ چنیں</string>
-    <string name="due_date_set">تاریخ: %1$s</string>
+    <string name="due_date_set">ادائیگی کی تاریخ: %1$s</string>
     <string name="cheque_number_hint">چیک نمبر (اختیاری)</string>
     <string name="bank_name_hint">بینک (اختیاری)</string>
 

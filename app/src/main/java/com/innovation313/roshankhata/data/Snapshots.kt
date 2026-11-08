@@ -456,7 +456,7 @@ object Snapshots {
         val prefix = if (business.id == 1L) "khata-" else "khata-b${business.id}-"
 
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val today = android.text.format.DateFormat.format("yyyyMMdd", java.util.Date()).toString()
+        val today = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.ENGLISH).format(java.util.Date())
         if (prefs.getString(dayKey, null) == today) return
 
         try {

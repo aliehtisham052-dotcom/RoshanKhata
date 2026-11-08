@@ -2114,6 +2114,31 @@ on a device, a real wallet notice, a real TSA or the deployed relays.
   L44 (an offline signing key for live.json); L49 (loopback is allowed because the tests use it); L51, L52, L53, L57,
   L59 (low confidence and a lock-out risk, lesson 66), L60, L61, L62; L54 (figures in the 21:00 notice are the feature).
 
+### 8 Nov 2026 review fixes, marhala 6A: printed documents (M15-M19, M55-M58, M71-M79, L24-L31, L120-L131; CI only)
+
+- **One wrap/fit helper** in `InvoiceTemplateKit` (copied to Windows): `wrapLines(text, paint, maxW, maxLines)` and
+  `drawFit(...)` (shrinks to 65%, then ellipsis). Used by the A4 header (shop name leaves room for the heading, L123),
+  the items table, bank rows (a long value goes on a second line, L125), terms and amount in words (wrapped, M76), the
+  statement's detail line (up to 3 lines, L124), the register's two notes (M16) and the thermal roll (name, address,
+  item names, terms; its page height is estimated with the same helper, L121/L122). Phone numbers in sentences are
+  `Format.ltr` (M74); a payment QR is fitted, never stretched (L129); a credit note carries no bank box or QR (L120).
+- **Money lines:** a round-off down is a minus line on the A4 invoice, the editor's sum and the roll (M71); a percent
+  discount is held to 0..subtotal (L131); `NumberWords.amountInWords` rounds to the currency's decimals first (M72);
+  the statement's opening and running balance carry their minus (M73, phone and Windows); a challan roll prints no
+  discount, tax or charge (M78). A shop with no name prints no seller name, not "Roshan Khata" (M75).
+- **Windows supplier statement** says "Paid to you / You supplied" like the phone (`StatementPrint(isCustomer)`, M79).
+- **Cards/posters:** the tagline pill leaves its room to the title (`pillW`, M15); Seal takes three lines (M19); Swiss'
+  contact column is 520 px (L26); address/email now draw on Fitr, Ramazan, Jumma and Azadi posters (M18; Eid ul-Adha has
+  no free line); the card takes the profile's phone/address when it holds none (L127).
+- **Register/inspector:** batch, bill, Reg# and quantities shrink to their cell, the status chip shrinks, the label
+  checklist lists every product (L27-L29, L31; `pdf_insp_and_more` is now unused).
+- **Words:** no "Mr." in Arabic/Bengali/Farsi reminders (M55); Hindi/Bengali `pos_change` no longer reads "Return" (M56);
+  `due_date_set` says due in Urdu, Roman Urdu, Hindi, Bengali (L130); the owner PIN dialogs say 6 to 8 (L25); daily-copy
+  names use ASCII digits (M58); plan lines isolate money (M57, PlanAdapter); two-line buttons on Duplicates and Sale
+  saved (L24); the shared receipt text heads itself with address, phone and tax number (L126).
+- **Not done, for the owner:** L30 (card text 5-7 pt needs a visual redesign of all 24 cards), L128 (a Print-ready PDF
+  button is a new feature), M17 (already shrinks to fit, floor 24 pt).
+
 ### The shared module (KMP)
 
 ```

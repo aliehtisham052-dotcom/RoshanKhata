@@ -45,7 +45,9 @@ class StatementPrint(
      * total is not what the customer owes (the phone's ReportActivity rule);
      * null: the running balance of the entries printed.
      */
-    private val accountBalance: Double? = null
+    private val accountBalance: Double? = null,
+    /** A supplier's statement says what the shop paid and what was supplied, not "You Owe" (M79, the phone's 2 Nov wording). */
+    private val isCustomer: Boolean = true
 ) : Printable {
 
     private class Row(val e: EntryWithItems, val running: Double)
@@ -196,8 +198,8 @@ class StatementPrint(
                 g.font = Font(PrintFonts.family, Font.BOLD, 14)
                 g.text(value, start + 10, y + 34)
             }
-            box(0, words.text(W.pdf_stmt_you_owe), Format.money(totalGave), Color(0xFD, 0xEC, 0xEA), red)
-            box(1, words.text(W.pdf_stmt_you_paid), Format.money(totalGot), Color(0xEA, 0xF7, 0xEF), green)
+            box(0, words.text(if (isCustomer) W.pdf_stmt_total_taken else W.pdf_stmt_paid_to_you), Format.money(totalGave), Color(0xFD, 0xEC, 0xEA), red)
+            box(1, words.text(if (isCustomer) W.pdf_stmt_total_paid else W.pdf_stmt_you_supplied), Format.money(totalGot), Color(0xEA, 0xF7, 0xEF), green)
             y += 60.0
         } else {
             g.color = muted
@@ -214,8 +216,8 @@ class StatementPrint(
         g.color = Color.BLACK
         g.font = Font(PrintFonts.family, Font.BOLD, 10)
         g.text(words.text(W.pdf_label_date), xDate, y)
-        g.text(words.text(W.pdf_stmt_you_owe), xGave, y)
-        g.text(words.text(W.pdf_stmt_you_paid), xGot, y)
+        g.text(words.text(if (isCustomer) W.pdf_stmt_taken else W.pdf_stmt_paid_to_you), xGave, y)
+        g.text(words.text(if (isCustomer) W.pdf_stmt_paid else W.pdf_stmt_you_supplied), xGot, y)
         g.text(words.text(W.pdf_stmt_balance), xBal, y, end = true)
         y += 6
         g.color = line
@@ -229,7 +231,7 @@ class StatementPrint(
             g.text(words.text(W.pdf_stmt_opening_before, Format.dateOnly(periodFrom)), xDate, y)
             g.color = Color.BLACK
             g.font = Font(PrintFonts.family, Font.BOLD, 10)
-            g.text(Format.money(opening), xBal, y, end = true)
+            g.text(Format.signedIfNegative(opening), xBal, y, end = true)
             y += 8
             g.color = line
             g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
@@ -245,7 +247,7 @@ class StatementPrint(
             g.text(Format.money(e.amount), if (e.isGiven) xGave else xGot, y)
             g.color = Color.BLACK
             g.font = Font(PrintFonts.family, Font.BOLD, 10)
-            g.text(Format.money(row.running), xBal, y, end = true)
+            g.text(Format.signedIfNegative(row.running), xBal, y, end = true)
             y += 12
             val detail = buildList {
                 add(e.entryNumber)

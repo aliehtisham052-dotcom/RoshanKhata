@@ -313,18 +313,18 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">পাঠানোর আগে পড়ে নিন। এখানে যেকোনো কিছু বদলাতে পারেন — রোশন খাতা এটি WhatsApp বা আপনার SMS অ্যাপে দেবে, আর পাঠানোর বোতাম আপনি নিজে চাপবেন।</string>
-    <string name="reminder_they_owe">*পেমেন্ট রিমাইন্ডার*\n\nজনাব *%1$s*,\n\nবকেয়া: *%2$s*\n\nঅনুগ্রহ করে যত দ্রুত সম্ভব পরিশোধ করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_they_owe">*পেমেন্ট রিমাইন্ডার*\n\n*%1$s*,\n\nবকেয়া: *%2$s*\n\nঅনুগ্রহ করে যত দ্রুত সম্ভব পরিশোধ করুন।\n\nধন্যবাদ।</string>
     <!-- Used instead of the above when the party has an open payment plan with an
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
-    <string name="reminder_they_owe_by_date">*পেমেন্ট রিমাইন্ডার*\n\nজনাব *%1$s*,\n\nবকেয়া: *%2$s*\nনির্ধারিত তারিখ: *%3$s*\n\nঅনুগ্রহ করে নির্ধারিত তারিখের মধ্যে পরিশোধ করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_they_owe_by_date">*পেমেন্ট রিমাইন্ডার*\n\n*%1$s*,\n\nবকেয়া: *%2$s*\nনির্ধারিত তারিখ: *%3$s*\n\nঅনুগ্রহ করে নির্ধারিত তারিখের মধ্যে পরিশোধ করুন।\n\nধন্যবাদ।</string>
     <string name="reminder_step_gentle">নরম</string>
     <string name="reminder_step_plain">স্পষ্ট</string>
     <string name="reminder_step_serious">গুরুতর</string>
     <string name="reminder_step2">*দ্বিতীয় স্মরণ*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\nপ্রথম স্মরণ: %3$s\n\nএটি আমাদের দ্বিতীয় স্মরণ। অনুগ্রহ করে এই সপ্তাহে টাকা পরিশোধ করুন।\n\nধন্যবাদ।</string>
     <string name="reminder_step3">*পরিশোধ বাকি*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\n\nকয়েকবার মনে করানোর পরও টাকা বাকি আছে। অনুগ্রহ করে পরিশোধ করুন, অথবা পরিশোধের তারিখ জানান যাতে হিসাব মিটে যায়।\n\nআপনার সহযোগিতার জন্য ধন্যবাদ।</string>
     <string name="reminder_ref">রেফারেন্স: %1$s</string>
-    <string name="reminder_i_owe">*পেমেন্ট নোট*\n\nজনাব *%1$s*,\n\nআপনার কাছে আমাদের দেনা: *%2$s*\n\nআমরা শিগগিরই পরিশোধ করব। আপনার হিসাব আমাদের সঙ্গে না মিললে অনুগ্রহ করে জানান।\n\nধন্যবাদ।</string>
+    <string name="reminder_i_owe">*পেমেন্ট নোট*\n\n*%1$s*,\n\nআপনার কাছে আমাদের দেনা: *%2$s*\n\nআমরা শিগগিরই পরিশোধ করব। আপনার হিসাব আমাদের সঙ্গে না মিললে অনুগ্রহ করে জানান।\n\nধন্যবাদ।</string>
     <string name="send_reminder">রিমাইন্ডার পাঠান</string>
     <string name="open_whatsapp">WhatsApp খুলুন</string>
     <string name="open_sms">SMS খুলুন</string>
@@ -435,7 +435,7 @@
     <string name="cheque_received">তাদের কাছ থেকে পাওয়া</string>
     <string name="cheque_issued">তাদের দেওয়া</string>
     <string name="pick_due_date">চেকে লেখা তারিখ বেছে নিন</string>
-    <string name="due_date_set">তারিখ: %1$s</string>
+    <string name="due_date_set">পরিশোধের তারিখ: %1$s</string>
     <string name="cheque_number_hint">চেক নম্বর (ঐচ্ছিক)</string>
     <string name="bank_name_hint">ব্যাংক (ঐচ্ছিক)</string>
 
@@ -1907,8 +1907,8 @@
     <string name="pay_heading">*কীভাবে পরিশোধ করবেন*</string>
     <string name="pay_wallet_label">মোবাইল ওয়ালেট</string>
     <string name="pay_bank_label">ব্যাংক</string>
-    <string name="entry_share_gave">জনাব *%1$s*, %2$s তারিখে আপনার হিসাবে *%3$s* লেখা হয়েছে (বাকি)।</string>
-    <string name="entry_share_got">জনাব *%1$s*, %2$s তারিখে *%3$s* পাওয়া গেছে। ধন্যবাদ।</string>
+    <string name="entry_share_gave">*%1$s*, %2$s তারিখে আপনার হিসাবে *%3$s* লেখা হয়েছে (বাকি)।</string>
+    <string name="entry_share_got">*%1$s*, %2$s তারিখে *%3$s* পাওয়া গেছে। ধন্যবাদ।</string>
     <string name="entry_share_balance">এখন মোট বকেয়া: *%1$s*</string>
     <string name="entry_share_advance">এখন আপনার অগ্রিম: *%1$s*</string>
     <string name="entry_share_settled">আপনার হিসাব এখন পরিশোধ।</string>
@@ -3161,7 +3161,7 @@
     <string name="pos_grand_total">মোট</string>
     <string name="pos_paid">এখন পরিশোধ</string>
     <string name="pos_to_account">খাতায়</string>
-    <string name="pos_change">ফেরত</string>
+    <string name="pos_change">ফেরত দেওয়ার টাকা</string>
     <string name="pos_add_payment">পেমেন্ট যোগ করুন</string>
     <string name="pos_pay_full_cash">সব নগদ</string>
     <string name="pos_reference_hint">রেফারেন্স (লেনদেন নং, চেক নং)</string>

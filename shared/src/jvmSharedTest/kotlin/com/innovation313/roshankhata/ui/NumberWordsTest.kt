@@ -200,4 +200,17 @@ class NumberWordsTest {
         // Sindhi letters, never Urdu's look-alikes.
         assertTrue(NumberWords.rupeesInWords("sd", 98765.0).none { it in "کیہےٹ" })
     }
+
+    @Test
+    fun `a float residue is rounded before the words, not cut`() {
+        // 229.99999999999997 is Rs 230 (8 Nov 2026 review, M72).
+        assertEquals(NumberWords.amountInWords("en", 230.0), NumberWords.amountInWords("en", 229.99999999999997))
+    }
+
+    @Test
+    fun `a percent discount past 100 cannot make a negative total`() {
+        val item = com.innovation313.roshankhata.data.InvoiceItem(invoiceId = 0, itemName = "x", quantity = 1.0, unit = "pcs", rate = 100.0)
+        val t = com.innovation313.roshankhata.data.InvoiceMath.totals(listOf(item), 500.0, null)
+        assertEquals(0.0, t.grandTotal, 0.0001)
+    }
 }

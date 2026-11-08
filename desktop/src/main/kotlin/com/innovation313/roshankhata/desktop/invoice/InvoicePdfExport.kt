@@ -975,19 +975,25 @@ object InvoicePdfExport {
         // and the alternative (a fixed too-short page) would silently cut the
         // receipt off mid-item.
         var estimatedH = 210f
-        estimatedH += items.size * 26f
+        // Wrapped the way the drawing below wraps (one helper, so estimate and drawing agree — L121/L122).
+        val roll = pageW - 2 * pad
+        val mBold = Paint(Paint.ANTI_ALIAS_FLAG).apply { typeface = InvoiceFonts.ibmPlexMonoBold(context); textSize = 9f }
+        val mSub = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 8f }
+        val mTerms = Paint(Paint.ANTI_ALIAS_FLAG).apply { typeface = InvoiceFonts.ibmPlexMono(context); textSize = 8f }
+        val mWords = Paint(Paint.ANTI_ALIAS_FLAG).apply { typeface = InvoiceFonts.ibmPlexMono(context); textSize = 9f }
+        estimatedH += items.sumOf { InvoiceTemplateKit.wrapLines(it.itemName, mBold, roll, 2).size.coerceAtLeast(1) * 11 + 15 }
+        estimatedH += BusinessProfile.businessAddress(context)?.let { (InvoiceTemplateKit.wrapLines(it, mSub, roll, 3).size - 1).coerceAtLeast(0) * 10f } ?: 0f
+        if (prices) estimatedH += InvoiceTemplateKit.wrapLines(NumberWords.amountInWords(context, totals.grandTotal), mWords, roll, 12).size * 12f - 45f + 45f
+        if (BusinessProfile.loadStamp(context) != null) estimatedH += 50f
         if (kind != DocKind.INVOICE) estimatedH += 14f
         if (BusinessProfile.strn(context) != null) estimatedH += 11f
         if (invoice.dueDate != null) estimatedH += 13f
-        if (totals.discountAmount > 0) estimatedH += 12f
-        if (totals.taxAmount > 0) estimatedH += 12f
-        if (totals.additionalCharge > 0) estimatedH += 12f
+        if (prices && totals.discountAmount > 0) estimatedH += 12f
+        if (prices && totals.taxAmount > 0) estimatedH += 12f
+        if (prices && totals.additionalCharge != 0.0) estimatedH += 12f
         if (invoice.receivedAmount != null) estimatedH += 24f
         if (BusinessProfile.loadSignature(context) != null) estimatedH += 36f
-        // Amount-in-words wraps across roughly two lines for a typical
-        // total; a generous fixed budget here is safer than measuring the
-        // exact wrap in advance, given the page height has to be decided
-        // before any drawing happens.
+        // Amount-in-words is measured above (the fixed 45 pt is its heading, rule and gap).
         estimatedH += 45f
         val bankCount = listOfNotNull(
             BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context),
@@ -998,7 +1004,10 @@ object InvoicePdfExport {
             if (BusinessProfile.hasQr(context)) estimatedH += 70f
         }
         val footerLineCount = listOfNotNull(invoice.note, BusinessProfile.termsAndConditions(context)).size
-        if (footerLineCount > 0) estimatedH += 32f + footerLineCount * 24f
+        if (footerLineCount > 0) {
+            estimatedH += 32f + listOfNotNull(invoice.note?.takeIf { it.isNotBlank() }, BusinessProfile.termsAndConditions(context))
+                .sumOf { InvoiceTemplateKit.wrapLines(it, mTerms, roll, 12).size * 11 + 3 }
+        }
         // The download banner at the very end: 10 above it, its own height, 6 below.
         estimatedH += 16f + PdfBranding.COMPACT_BANNER_HEIGHT
         val pageH = estimatedH.toInt().coerceAtLeast(400)
@@ -1035,14 +1044,16 @@ object InvoicePdfExport {
         // The receipt's words in the app's language (see InvoiceTemplateKit.Labels).
         val labels = InvoiceTemplateKit.Labels(context)
 
-        PdfRtl.drawText(c, BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "Roshan Khata", cx, y, shopName)
+        InvoiceTemplateKit.drawFit(c, BusinessProfile.businessName(context)?.takeIf { it.isNotBlank() } ?: "", cx, y, shopName, pageW - 2 * pad)
         if (kind != DocKind.INVOICE) {
             y += 14f
             PdfRtl.drawText(c, labels.heading(kind), cx, y, Paint(shopName).apply { textSize = 10f })
         }
         BusinessProfile.businessAddress(context)?.let {
-            y += 12f
-            PdfRtl.drawText(c, it, cx, y, shopSub)
+            InvoiceTemplateKit.wrapLines(it, shopSub, pageW - 2 * pad, 3).forEachIndexed { i, line ->
+                y += if (i == 0) 12f else 10f
+                PdfRtl.drawText(c, line, cx, y, shopSub)
+            }
         }
         BusinessProfile.strn(context)?.let {
             y += 11f
@@ -1050,7 +1061,7 @@ object InvoicePdfExport {
         }
         BusinessProfile.businessPhone(context)?.let {
             y += 11f
-            PdfRtl.drawText(c, it, cx, y, shopSub)
+            PdfRtl.drawText(c, Format.ltr(it), cx, y, shopSub)
         }
 
         y += 16f
@@ -1076,7 +1087,10 @@ object InvoicePdfExport {
         y += 16f
 
         items.forEach { item ->
-            PdfRtl.drawText(c, item.itemName, pad, y, monoBold)
+            InvoiceTemplateKit.wrapLines(item.itemName, monoBold, pageW - 2 * pad, 2).forEachIndexed { i, line ->
+                if (i > 0) y += 11f
+                PdfRtl.drawText(c, line, pad, y, monoBold)
+            }
             y += 11f
             if (prices) {
                 PdfRtl.drawText(c,
@@ -1100,19 +1114,19 @@ object InvoicePdfExport {
             PdfRtl.drawText(c, numberOnly(totals.subtotal), pageW - pad, y, monoR)
             y += 13f
         }
-        if (totals.discountAmount > 0) {
+        if (prices && totals.discountAmount > 0) {
             PdfRtl.drawText(c, labels.discount, pad, y, mono)
             PdfRtl.drawText(c, "-" + numberOnly(totals.discountAmount), pageW - pad, y, monoR)
             y += 13f
         }
-        if (totals.taxAmount > 0) {
+        if (prices && totals.taxAmount > 0) {
             PdfRtl.drawText(c, labels.tax, pad, y, mono)
             PdfRtl.drawText(c, numberOnly(totals.taxAmount), pageW - pad, y, monoR)
             y += 13f
         }
-        if (totals.additionalCharge > 0) {
+        if (prices && totals.additionalCharge != 0.0) {
             PdfRtl.drawText(c, invoice.additionalChargeLabel?.takeIf { it.isNotBlank() } ?: labels.extraCharges, pad, y, mono)
-            PdfRtl.drawText(c, numberOnly(totals.additionalCharge), pageW - pad, y, monoR)
+            PdfRtl.drawText(c, (if (totals.additionalCharge < 0) "\u2212 " else "") + numberOnly(kotlin.math.abs(totals.additionalCharge)), pageW - pad, y, monoR)
             y += 13f
         }
         if (prices) {
@@ -1222,20 +1236,8 @@ object InvoicePdfExport {
             typeface = InvoiceFonts.ibmPlexMono(context); textSize = size; color = 0xFF333333.toInt()
         }
         var y = startY
-        val words = text.split(" ")
-        var line = StringBuilder()
-        for (word in words) {
-            val candidate = if (line.isEmpty()) word else "$line $word"
-            if (paint.measureText(candidate) > maxWidth && line.isNotEmpty()) {
-                PdfRtl.drawText(c, line.toString(), x, y, paint)
-                y += size + 3f
-                line = StringBuilder(word)
-            } else {
-                line = StringBuilder(candidate)
-            }
-        }
-        if (line.isNotEmpty()) {
-            PdfRtl.drawText(c, line.toString(), x, y, paint)
+        InvoiceTemplateKit.wrapLines(text, paint, maxWidth, 12).forEach { line ->
+            PdfRtl.drawText(c, line, x, y, paint)
             y += size + 3f
         }
         return y

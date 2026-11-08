@@ -369,7 +369,7 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
             }
             1 -> {
                 Text(word(W.access_owner_pin_help), color = c.inkSoft, fontSize = 13.sp)
-                PinBox(first, { first = it; problem = null }, word(W.lock_pin_new), null) {}
+                PinBox(first, { first = it; problem = null }, word(W.lock_pin_new_long), null) {}
                 PinBox(second, { second = it; problem = null }, word(W.lock_pin_again), problem, ::save)
             }
             else -> {

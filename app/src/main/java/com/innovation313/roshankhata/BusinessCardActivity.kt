@@ -97,7 +97,8 @@ class BusinessCardActivity : BaseActivity() {
         val prefs = getSharedPreferences(PREFS + Businesses.suffix(this), MODE_PRIVATE)
         cardLang = CardLanguage.of(prefs.getString(KEY_LANG, null)) ?: defaultLanguage()
         loading = true
-        etPhone.setText(prefs.getString(KEY_PHONE, ""))
+        // A card that has no number of its own takes the profile's (L127: a changed profile phone left the card blank).
+        etPhone.setText(prefs.getString(KEY_PHONE, "")?.takeIf { it.isNotBlank() } ?: BusinessProfile.businessPhone(this).orEmpty())
         etWhatsapp.setText(prefs.getString(KEY_WHATSAPP, ""))
         // WhatsApp on the call number (13 Oct): on when it was saved so, or
         // when the two boxes already held the same number.
@@ -245,7 +246,7 @@ class BusinessCardActivity : BaseActivity() {
         etBizName.setText(storedName())
         etType.setText(prefs.getString(k(KEY_TYPE), ""))
         etOwner.setText(prefs.getString(k(KEY_OWNER), ""))
-        etAddress.setText(prefs.getString(k(KEY_ADDRESS), ""))
+        etAddress.setText(prefs.getString(k(KEY_ADDRESS), "")?.takeIf { it.isNotBlank() } ?: BusinessProfile.businessAddress(this).orEmpty())
         etTagline.setText(prefs.getString(k(KEY_TAGLINE), ""))
         // Pre-filled until the owner changes it; an emptied box stays empty.
         etQrMessage.setText(prefs.getString(k(KEY_QR_MESSAGE), cardContext().getString(R.string.biz_card_qr_message_default)))

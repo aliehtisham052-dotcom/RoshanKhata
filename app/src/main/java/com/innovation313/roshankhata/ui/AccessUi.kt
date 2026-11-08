@@ -372,7 +372,7 @@ object AccessUi {
 
     /** A new owner PIN, typed twice; the recovery code that comes with it is shown once. */
     private fun newOwnerPin(activity: Activity, dao: KhataDao, cancelled: () -> Unit = {}, done: () -> Unit) {
-        val first = pinBox(activity, R.string.lock_pin_new)
+        val first = pinBox(activity, R.string.lock_pin_new_long)
         val second = pinBox(activity, R.string.lock_pin_again)
         val help = TextView(activity).apply { setText(R.string.access_owner_pin_help); textSize = 13f }
         MaterialAlertDialogBuilder(activity).setTitle(R.string.access_owner_pin)

@@ -768,7 +768,8 @@ private fun Book(
                 val opening = if (from == null) 0.0 else all.filter { it.entry.timestamp < from }.sumOf(sign)
                 StatementPrint.show(
                     StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows,
-                        opening = opening, periodFrom = from, accountBalance = if (from == null) null else all.sumOf(sign)),
+                        opening = opening, periodFrom = from, accountBalance = if (from == null) null else all.sumOf(sign),
+                        isCustomer = party.isCustomer),
                     words.text(W.pdf_stmt_title, party.name)
                 )
             }
@@ -1205,7 +1206,7 @@ private fun Book(
                                         val sheets = withContext(Dispatchers.IO) {
                                             owing.map { p ->
                                                 StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), p.name, p.phone,
-                                                    dao.latestEntriesWithItems(p.id, Int.MAX_VALUE))
+                                                    dao.latestEntriesWithItems(p.id, Int.MAX_VALUE), isCustomer = p.isCustomer)
                                             }
                                         }
                                         if (sheets.isNotEmpty()) {
