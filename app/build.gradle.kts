@@ -71,7 +71,7 @@ android {
         // aab.yml builds with exactly this number. 1 (0.1.0) is the build
         // that went live in Aug 2026; 2 is the first update after it.
         // versionName is what the owner reads in About/Help.
-        versionCode = 3
+        versionCode = 4
         versionName = "1.2.0"
         // The launcher name. The app's own translated name everywhere,
         // except the side-by-side dev build, which says what it is (below).
