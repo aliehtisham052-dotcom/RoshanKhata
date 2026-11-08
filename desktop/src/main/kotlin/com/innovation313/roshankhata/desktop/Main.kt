@@ -2072,19 +2072,22 @@ private fun Book(
     if (phoneSync) {
         // The phone may also take this computer's book (Backup → Take the computer's book): the
         // same text a backup file holds, made fresh when asked.
-        val giveBook: () -> ByteArray? = {
+        // L57 (8 Nov 2026): written onto this computer's own disk and streamed to the phone, never whole in memory.
+        val giveBookFile: () -> File? = {
             runCatching {
-                // Straight into bytes (8 Nov 2026 review, L152): the text, its String and its byte copy were three whole copies.
-                val bytes = java.io.ByteArrayOutputStream()
-                val out = java.io.OutputStreamWriter(bytes, Charsets.UTF_8)
-                // secrets = false (8 Nov 2026, M30): the first device to scan this QR gets the book, so it gets no PIN hashes,
-                // server passes or Waris keys; the phone keeps its own.
-                kotlinx.coroutines.runBlocking { BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out, secrets = false) }
-                out.flush()
-                bytes.toByteArray()
+                val dir = File(home, "to-phone").apply { mkdirs() }
+                val f = File.createTempFile("rk-pull-", ".part", dir)
+                try {
+                    // secrets = false (8 Nov 2026, M30): the first device to scan this QR gets the book, so it gets no PIN hashes,
+                    // server passes or Waris keys; the phone keeps its own.
+                    f.bufferedWriter(Charsets.UTF_8).use { out ->
+                        kotlinx.coroutines.runBlocking { BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out, secrets = false) }
+                    }
+                    f
+                } catch (e: Throwable) { f.delete(); throw e }
             }.getOrNull()
         }
-        PhoneSyncDialog(words, home, onClose = { phoneSync = false }, give = giveBook) { file ->
+        PhoneSyncDialog(words, home, onClose = { phoneSync = false }, giveFile = giveBookFile) { file ->
             phoneSync = false
             // The same confirmation as a backup file chosen by hand: nothing is replaced before the owner's yes.
             scope.launch {

@@ -468,6 +468,28 @@ class WarisTest {
         return owner to out
     }
 
+    @Test
+    fun `a second turn off while the first is unfinished keeps both vaults to remove`() = runBlocking {
+        // L9: the second off used to erase the first one's record, leaving its vault on the relay for ever.
+        val a = FakeRelay(); val b = FakeRelay()
+        val relays = Waris.Relays(Both(a, b), roads) { false }
+        val store = MemStore()
+        val owner = Waris.Owner(store, relays)
+        assertTrue(owner.enable() is Waris.Result.Done)
+        val first = owner.state()!!.vault
+        b.down = true
+        owner.turnOff()
+        assertNotNull(b.vaults[first])
+        assertTrue(owner.enable() is Waris.Result.Done)
+        val second = owner.state()!!.vault
+        owner.turnOff()
+        assertNotNull(b.vaults[first]); assertNotNull(b.vaults[second])
+        b.down = false
+        owner.retry(null)
+        assertNull(b.vaults[first]); assertNull(b.vaults[second])
+        assertFalse(owner.offPending())
+    }
+
     /** What someone holding the owner's pass (a stolen backup) can put on a relay: an heir of his own, allowed. */
     private fun outsider(relays: Waris.Relays, road: LiveCloud.Road, st: Waris.OwnerState, hid: String = WarisCrypto.newHid()): String {
         val pass = WarisCrypto.heirPass(WarisCrypto.newSecret(), st.vault, hid)

@@ -146,7 +146,7 @@ object PhoneSync {
  * open is the owner's consent: the secret is on this screen alone).
  */
 @Composable
-fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> ByteArray?)? = null, onBook: (File) -> Unit) {
+fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> ByteArray?)? = null, giveFile: (() -> File?)? = null, onBook: (File) -> Unit) {
     val c = LocalRoshanColors.current
     val secret = remember { WifiSync.newSecret() }
     val hosts = remember { PhoneSync.lanAddresses() }
@@ -171,7 +171,7 @@ fun PhoneSyncDialog(words: Words, home: File, onClose: () -> Unit, give: (() -> 
         val arrived = withContext(Dispatchers.IO) {
             // A part left by a window closed mid-send, or a power cut, goes first.
             runCatching { spool.listFiles { f -> f.name.startsWith("rk-phone-") && f.name.endsWith(".part") }?.forEach { it.delete() } }
-            runCatching { WifiSync.receive(s, secret, { stopped }, spool, give) }.getOrNull()
+            runCatching { WifiSync.receive(s, secret, { stopped }, spool, give, giveFile) }.getOrNull()
         }
         if (arrived != null && stopped) runCatching { arrived.delete() }
         if (arrived != null && !stopped) {

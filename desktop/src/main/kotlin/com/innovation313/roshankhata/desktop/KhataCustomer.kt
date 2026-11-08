@@ -516,5 +516,8 @@ internal fun WayButton(text: String, key: String?, icon: String, fill: Color, mo
     }
 }
 
-private val LEDGER_FIGURE = 80.dp
-private val LEDGER_BALANCE = 84.dp
+/** L33 (8 Nov 2026): the figure columns grow with the text size (sp text in fixed dp columns was cut at 130%+). */
+private val LEDGER_FIGURE: androidx.compose.ui.unit.Dp
+    @Composable get() = 80.dp * androidx.compose.ui.platform.LocalDensity.current.fontScale.coerceAtLeast(1f)
+private val LEDGER_BALANCE: androidx.compose.ui.unit.Dp
+    @Composable get() = 84.dp * androidx.compose.ui.platform.LocalDensity.current.fontScale.coerceAtLeast(1f)

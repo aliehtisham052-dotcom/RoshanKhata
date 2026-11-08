@@ -466,7 +466,8 @@ fun AuditPane(dao: KhataDao) {
     val rows by remember { dao.observeAudit(500) }.collectAsState(emptyList())
     val staff by remember { dao.observeStaff() }.collectAsState(emptyList())
     var seal by remember { mutableStateOf<AuditChain.Result?>(null) }
-    LaunchedEffect(rows.size) { seal = withContext(Dispatchers.IO) { AuditChain.verify(dao.auditInOrder()) } }
+    // L35: re-checked when the newest row changes (the window holds 500, so its size never moves once full), not per count.
+    LaunchedEffect(rows.firstOrNull()?.id) { seal = withContext(Dispatchers.IO) { AuditChain.verifyAll { after, n -> dao.auditSliceAfter(after, n) } } }
     FluentPage(word(W.audit_title), word(W.audit_subtitle), scroll = false) {
         seal?.let { s ->
             Text(

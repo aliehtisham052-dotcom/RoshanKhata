@@ -61,4 +61,35 @@ object AuditChain {
         }
         return Result(sealed, before, null)
     }
+
+    /**
+     * The same check as [verify], reading the log [slice] rows at a time (L23, 8 Nov 2026: a book with tens of
+     * thousands of rows no longer sits whole in memory when Who did what opens). [next] gives the rows after an id.
+     */
+    suspend fun verifyAll(slice: Int = 1000, next: suspend (afterId: Long, limit: Int) -> List<AuditLog>): Result {
+        var previous: String? = null
+        var sealed = 0
+        var before = 0
+        var started = false
+        var after = 0L
+        while (true) {
+            val rows = next(after, slice)
+            if (rows.isEmpty()) break
+            for (r in rows) {
+                val h = r.hash
+                if (h == null) {
+                    if (started) return Result(sealed, before, r.id)
+                    before++
+                    previous = null
+                    continue
+                }
+                started = true
+                if (h != hashOf(previous, r)) return Result(sealed, before, r.id)
+                sealed++
+                previous = h
+            }
+            after = rows.last().id
+        }
+        return Result(sealed, before, null)
+    }
 }

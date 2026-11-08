@@ -154,6 +154,9 @@ object WifiSync {
         return Pairing(hosts.take(6), port, secret, name.take(80))
     }
 
+    /** 127.* in a scanned code is refused (8 Nov 2026, L49: a made-up code could aim the whole book at this device's own ports); only tests set this. */
+    @Volatile var allowLoopback: Boolean = false
+
     private fun looksLikeIpv4(s: String): Boolean {
         val n = s.split('.')
         return n.size == 4 && n.all { p -> p.isNotEmpty() && p.length <= 3 && p.all(Char::isDigit) && p.toInt() in 0..255 } &&
@@ -162,13 +165,14 @@ object WifiSync {
 
     /**
      * Only an address on the shop's own network may come from a code: 10.*, 172.16-31.*,
-     * 192.168.*, link-local 169.254.*, and 127.* (this machine; the tests). Both makers of a
+     * 192.168.*, link-local 169.254.*, and 127.* only when [allowLoopback] (tests). Both makers of a
      * code advertise site-local addresses only, so a code naming a public host was not made by
      * this app — a poster or a forwarded picture would otherwise send the whole book (PIN
      * hashes too) to a server on the internet, sealed with the secret that same code carries.
      */
     private fun onThisNetwork(o: List<Int>): Boolean = when (o[0]) {
-        10, 127 -> true
+        10 -> true
+        127 -> allowLoopback
         172 -> o[1] in 16..31
         192 -> o[1] == 168
         169 -> o[1] == 254
@@ -333,7 +337,9 @@ object WifiSync {
         secret: String,
         stop: () -> Boolean = { false },
         spool: java.io.File? = null,
-        give: (() -> ByteArray?)? = null
+        give: (() -> ByteArray?)? = null,
+        /** L57 (8 Nov 2026): the book to give as a file on this computer's disk, streamed and then deleted — never held whole in memory. Tried before [give]. */
+        giveFile: (() -> java.io.File?)? = null
     ): java.io.File? {
         server.soTimeout = 1000
         // The book is given once per code shown (21 Oct 2026): a phone that saw the code could
@@ -355,9 +361,17 @@ object WifiSync {
                     magic.contentEquals(MAGIC_GET) -> {
                         val asked = runCatching { readAsk(input, secret) }.getOrDefault(false)
                         if (!asked) { refuse(it, out, BAD); return@use }
-                        val book = if (given) null else give?.invoke()
+                        val bookFile = if (given) null else giveFile?.invoke()
+                        val book = if (given || bookFile != null) null else give?.invoke()
                         runCatching {
-                            if (book == null) out.writeInt(0)
+                            if (bookFile != null) {
+                                it.soTimeout = 60_000
+                                out.writeInt(CHUNKED)
+                                val head = java.nio.ByteBuffer.allocate(8).putLong(bookFile.length()).array()
+                                bookFile.inputStream().buffered(1 shl 16).use { body -> SealedChunks.write(out, chunkKey(secret), MAGIC_GET, head, body) }
+                                out.flush()
+                                given = true
+                            } else if (book == null) out.writeInt(0)
                             else {
                                 it.soTimeout = 60_000
                                 // A record at a time (SealedChunks), its length first: the phone never holds it whole.
@@ -368,6 +382,7 @@ object WifiSync {
                             out.flush()
                             if (book != null) given = true
                         }
+                        bookFile?.delete()
                     }
                     // "RKS1" (a phone of before 23 Oct 2026, one frame gathered whole) and anything else: refused unread.
                     else -> refuse(it, out, BAD)

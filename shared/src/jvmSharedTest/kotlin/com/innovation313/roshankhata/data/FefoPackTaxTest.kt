@@ -75,6 +75,17 @@ class FefoPackTaxTest {
     }
 
     @Test
+    fun aPackSplitAcrossBatchesKeepsEachBatchsBottlesExact() {
+        // L19: one carton of 12 sold from batches holding 5 and 7 bottles. At three decimals the first part was
+        // 0.417 carton = 5.004 bottles; now it is 5 to the millionth.
+        val line = SaleItem(saleId = 0, itemName = "Oil", quantity = 1.0, rate = 1_200.0)
+        val parts = Fefo.split(line, listOf(Fefo.Take(1, 5.0 / 12.0), Fefo.Take(2, 7.0 / 12.0)), null)
+        if (parts.size == 2) assertEquals(5.0, parts[0].quantity * 12.0, 0.00001)
+        assertEquals(1.0, parts.sumOf { it.quantity }, 0.0000001)
+        assertEquals(line.lineTotal, LineMath.round(parts.sumOf { it.lineTotal }), 0.0)
+    }
+
+    @Test
     fun aPackIsTurnedIntoTheProductsOwnUnitAndAStrayUnitIsNot() {
         assertEquals(36.0 to "piece", Units.toBase(soap, 3.0, "Carton"))
         assertEquals(5.0 to "piece", Units.toBase(soap, 5.0, "piece"))

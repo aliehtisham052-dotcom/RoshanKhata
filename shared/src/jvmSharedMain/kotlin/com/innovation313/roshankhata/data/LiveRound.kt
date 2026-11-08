@@ -116,6 +116,18 @@ object LiveRound {
         put(P_RELAY_WAS_OFF, if (relayWasOff) "1" else null)
     }
 
+    /**
+     * L2 (8 Nov 2026): the log after [seq] is kept from the moment the copy's line is read, before the copy is
+     * exported, not only once [setPending] runs at the end — a prune in between (every other device had read the
+     * new lines) took what the joining copy would need. [setPending] later writes the same line.
+     */
+    suspend fun holdFrom(sql: SyncSql, seq: Long) = sql.write { put(P_FROM, seq.toString()) }
+
+    /** The early hold of [holdFrom] is let go when no pairing came to wait (a give that failed before [setPending]). */
+    suspend fun releaseEarlyHold(sql: SyncSql) = sql.write {
+        if (readKeys(PENDING)[P_PAIR] == null && readKeys(PENDING)[P_SINCE] == null) put(P_FROM, null)
+    }
+
     suspend fun pending(sql: SyncSql): Target? = sql.read {
         val m = readKeys(PENDING)
         val hosts = m[P_HOSTS]?.split(',')?.filter { it.isNotBlank() }.orEmpty()

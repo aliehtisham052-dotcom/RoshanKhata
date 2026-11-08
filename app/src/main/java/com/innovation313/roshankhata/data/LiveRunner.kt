@@ -68,6 +68,12 @@ object LiveRunner {
     private const val INSTALL = "install"
     private const val ROUND_MS = 4_000L
     private const val FINGERPRINT_EVERY_MS = 30 * 60_000L
+    private const val FINGERPRINT_UNPLUGGED_MS = 24 * 60 * 60_000L
+
+    private fun charging(context: android.content.Context): Boolean = runCatching {
+        val i = context.registerReceiver(null, android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED))
+        (i?.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED, 0) ?: 0) != 0
+    }.getOrDefault(true)
     /** Through the relay a round is slower and counted against a daily limit: every 15 s, longer while quiet. */
     private const val CLOUD_MS = 15_000L
     /** A pairing the computer's owner has not said yes to within this time is given up. */
@@ -274,7 +280,10 @@ object LiveRunner {
         tellWake(app, sql, now, pending)
         val wifiPending = pending?.takeIf { !it.phone }
         val key = LiveSync.identity(sql)?.key ?: return ROUND_MS
-        val check = wifiPending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS
+        // L7 (8 Nov 2026): the whole-book fingerprint reads every table, so it waits for the charger; a phone that
+        // is never charged is still checked once a day.
+        val check = wifiPending == null && now - lastFingerprint > FINGERPRINT_EVERY_MS &&
+            (charging(app) || now - lastFingerprint > FINGERPRINT_UNPLUGGED_MS)
         val request = try {
             LiveRound.request(sql, fingerprint = check) ?: return ROUND_MS
         } catch (e: LiveSync.Lost) {

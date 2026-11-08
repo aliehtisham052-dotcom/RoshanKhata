@@ -26,6 +26,21 @@ class LockActivity : BaseActivity() {
         prompt()
     }
 
+    /**
+     * L59 (8 Nov 2026): some phones answer NO_DEVICE_CREDENTIAL although a screen lock is set. Such a phone is not
+     * let in: the system's own confirm-credential screen is asked instead; only its OK opens the book, anything
+     * else closes the app. A phone with no screen lock at all is still told and let in, so nobody is shut out.
+     */
+    private val credentialResult = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { r -> if (r.resultCode == RESULT_OK) succeeded() else finishAffinity() }
+
+    private fun succeeded() {
+        settled = true
+        AppLock.Away.unlocked(android.os.SystemClock.elapsedRealtime())
+        if (intent.getBooleanExtra(EXTRA_RELOCK, false)) finish() else openLedger()
+    }
+
     /** The prompt answered — a success or an error: nothing is asked again ([onRestart]). */
     private var settled = false
 
@@ -69,7 +84,13 @@ class LockActivity : BaseActivity() {
                         // a screen lock is no reason to open the book: only a phone with no screen lock at all is let in.
                         val secure = (getSystemService(android.content.Context.KEYGUARD_SERVICE) as? android.app.KeyguardManager)
                             ?.isDeviceSecure ?: true
-                        if (secure && code != BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) { finishAffinity(); return }
+                        if (secure && code == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) {
+                            val km = getSystemService(android.content.Context.KEYGUARD_SERVICE) as? android.app.KeyguardManager
+                            @Suppress("DEPRECATION")
+                            val ask = km?.createConfirmDeviceCredentialIntent(getString(R.string.lock_title), getString(R.string.lock_subtitle))
+                            if (ask != null) { credentialResult.launch(ask); return } else { finishAffinity(); return }
+                        }
+                        if (secure) { finishAffinity(); return }
                         android.widget.Toast.makeText(
                             this@LockActivity,
                             if (code == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL || code == BiometricPrompt.ERROR_NO_BIOMETRICS)

@@ -727,26 +727,42 @@ object Waris {
             for (road in relays.roads) {
                 if (landed(relays.call(road, "DELETE", st.vault, "", st.pass))) ok++ else left.add(road.tag)
             }
-            for (k in SECRET_KEYS) if (k != K_LINKS && k != K_REMOVED) store.put(k, null)
+            // L9 (8 Nov 2026): K_OFF is a list, and clearing the keys no longer clears it — a second off while
+            // an earlier one was unfinished used to erase the earlier vault's record for ever.
+            for (k in SECRET_KEYS) if (k != K_LINKS && k != K_REMOVED && k != K_OFF) store.put(k, null)
             remember(listOf(st.vault))
             if (left.isNotEmpty()) {
-                store.put(K_OFF, JSONObject().put("vault", st.vault).put("secret", B64.encode(st.ownerSecret))
-                    .put("left", JSONArray(left.toList())).toString())
+                val all = offRecords()
+                all.put(JSONObject().put("vault", st.vault).put("secret", B64.encode(st.ownerSecret)).put("left", JSONArray(left.toList())))
+                store.put(K_OFF, all.toString())
             }
             return Result.Done(ok, relays.roads.size)
         }
 
+        /** The unfinished turn-offs: one record per vault. An older build kept a single object; it reads as a list of one. */
+        private fun offRecords(): JSONArray {
+            val raw = store.get(K_OFF) ?: return JSONArray()
+            runCatching { return JSONArray(raw) }
+            return runCatching { JSONArray().put(JSONObject(raw)) }.getOrDefault(JSONArray())
+        }
+
         private suspend fun retryOff() {
-            val o = store.get(K_OFF)?.let { runCatching { JSONObject(it) }.getOrNull() } ?: return
-            val vault = o.optString("vault")
-            val secret = B64.decodeOrNull(o.optString("secret")) ?: run { store.put(K_OFF, null); return }
-            // Never held back by live sync's kill switch (W1): a vault left on a relay is a way in.
-            val left = stringSet(o.optJSONArray("left")?.toString())
-            val pass = WarisCrypto.ownerPass(secret, vault)
-            for (road in relays.roads.filter { it.tag in left }) {
-                if (landed(relays.call(road, "DELETE", vault, "", pass))) left.remove(road.tag)
+            val records = offRecords()
+            if (records.length() == 0) return
+            val keep = JSONArray()
+            for (i in 0 until records.length()) {
+                val o = records.optJSONObject(i) ?: continue
+                val vault = o.optString("vault")
+                val secret = B64.decodeOrNull(o.optString("secret")) ?: continue
+                // Never held back by live sync's kill switch (W1): a vault left on a relay is a way in.
+                val left = stringSet(o.optJSONArray("left")?.toString())
+                val pass = WarisCrypto.ownerPass(secret, vault)
+                for (road in relays.roads.filter { it.tag in left }) {
+                    if (landed(relays.call(road, "DELETE", vault, "", pass))) left.remove(road.tag)
+                }
+                if (left.isNotEmpty()) keep.put(o.put("left", JSONArray(left.toList())))
             }
-            store.put(K_OFF, if (left.isEmpty()) null else o.put("left", JSONArray(left.toList())).toString())
+            store.put(K_OFF, if (keep.length() == 0) null else keep.toString())
         }
 
         /** Whether a vault waits to be removed from some relay (the screen says the off is not finished). */

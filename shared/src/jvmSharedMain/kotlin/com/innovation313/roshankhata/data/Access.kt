@@ -405,8 +405,20 @@ object Access {
      * review: a wait set while the clock read years ahead lasted until then,
      * and blocked the recovery code too).
      */
-    fun waitMillis(now: Long = System.currentTimeMillis(), account: String = ANY): Long =
-        (maxOf(waitUntil(account), waitUntil(ANY)) - now).coerceIn(0L, LONGEST_WAIT_MS)
+    fun waitMillis(now: Long = System.currentTimeMillis(), account: String = ANY): Long {
+        val wall = (maxOf(waitUntil(account), waitUntil(ANY)) - now).coerceIn(0L, LONGEST_WAIT_MS)
+        // L51 (8 Nov 2026): a wait is also kept on the monotonic clock while the app runs, so winding
+        // the system clock forward cannot end it. Only when the caller asked with the real clock.
+        if (Math.abs(now - System.currentTimeMillis()) > 5_000L) return wall
+        return maxOf(wall, monoLeft(account), monoLeft(ANY))
+    }
+
+    private val monoUntil = java.util.concurrent.ConcurrentHashMap<String, Long>()
+    internal fun monoLeftForTest(): Long = monoLeft(ANY)
+    private fun monoLeft(account: String): Long {
+        val until = monoUntil[account] ?: return 0L
+        return ((until - System.nanoTime()) / 1_000_000L).coerceIn(0L, LONGEST_WAIT_MS)
+    }
 
     /** The same, in whole seconds rounded up, for the screen. */
     fun waitSeconds(now: Long = System.currentTimeMillis(), account: String = ANY): Int = ((waitMillis(now, account) + 999) / 1000).toInt()
@@ -421,7 +433,7 @@ object Access {
     fun pinTried(right: Boolean, now: Long = System.currentTimeMillis(), account: String = ANY): Boolean {
         if (right) {
             // Only this account's count is cleared: another's right PIN says nothing about this one.
-            memMisses.remove(account); memWaitUntil.remove(account)
+            memMisses.remove(account); memWaitUntil.remove(account); monoUntil.remove(account)
             store?.put(key(KEY_MISSES, account), null); store?.put(key(KEY_WAIT_UNTIL, account), null)
             return false
         }
@@ -432,6 +444,7 @@ object Access {
         val doublings = (n / MISSES_PER_WAIT - 1).coerceAtMost(10)
         val wait = (FIRST_WAIT_MS shl doublings).coerceAtMost(LONGEST_WAIT_MS)
         memWaitUntil[account] = now + wait
+        monoUntil[account] = System.nanoTime() + wait * 1_000_000L
         store?.put(key(KEY_WAIT_UNTIL, account), (now + wait).toString())
         return true
     }
@@ -452,7 +465,7 @@ object Access {
     fun resetForTest() {
         store = null
         machineId = null
-        memMisses.clear(); memWaitUntil.clear()
+        memMisses.clear(); memWaitUntil.clear(); monoUntil.clear()
         counterMode = false
         current = null; ownerIn = false
         ownerPinShort = false

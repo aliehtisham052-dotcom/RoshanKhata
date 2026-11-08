@@ -53,6 +53,7 @@ object LiveGive {
             // The book is taken after this line: whatever changes after it goes in the first rounds, and a row that
             // lands twice lands as one.
             val seq = LiveSync.lastSeq(sql)
+            LiveRound.holdFrom(sql, seq)
             spool.mkdirs()
             val f = File.createTempFile("rk-give-", ".part", spool)
             file = f
@@ -73,6 +74,7 @@ object LiveGive {
         } catch (e: Throwable) {
             file?.delete()
             runCatching { undo(sql, wasOn, pair) }
+            runCatching { LiveRound.releaseEarlyHold(sql) }
             // The pairing never came to wait (setPending is the last step), so its record cannot undo the relay.
             if (relayTurnedOn) runCatching { dao.setSetting(BookSettings.LIVE_RELAY, null) }
             throw e

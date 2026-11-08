@@ -250,8 +250,8 @@ object Fefo {
         val whole = listOf(line.copy(billItemId = takes.firstOrNull()?.billItemId ?: line.billItemId, taxAmount = tax))
         if (takes.size <= 1) return whole
         val qty = line.quantity
-        val parts = takes.dropLast(1).map { Math.round(it.qty * 1000.0) / 1000.0 }
-        val lastQty = Math.round((qty - parts.sum()) * 1000.0) / 1000.0
+        val parts = takes.dropLast(1).map { Math.round(it.qty * 1_000_000.0) / 1_000_000.0 }
+        val lastQty = Math.round((qty - parts.sum()) * 1_000_000.0) / 1_000_000.0
         val qtys = parts + lastQty
         if (qtys.any { it <= 0.0 }) return whole
         val total = line.lineTotal

@@ -688,6 +688,7 @@ class BackupActivity : BaseActivity() {
             // The book is taken after this line: whatever changes after it is sent again
             // in the first rounds, and a row that lands twice lands as one.
             val seq = LiveSync.lastSeq(sql)
+            LiveRound.holdFrom(sql, seq)
             val file = Backup.exportToCache(context, KhataDatabase.get(context).khataDao())
             try {
             if (file.length() > LiveWire.MAX_BYTES) LiveWire.Sent.Refused
@@ -717,6 +718,7 @@ class BackupActivity : BaseActivity() {
         }
         // Nothing reached the other device: the holds made for the copy go; and if this phone did not sync before, as it was.
         if (sent !is LiveWire.Sent.Taken) runCatching { com.innovation313.roshankhata.data.LiveCrew.dropCopyHold(sql) }
+        if (sent !is LiveWire.Sent.Taken) runCatching { LiveRound.releaseEarlyHold(sql) }
         if (sent !is LiveWire.Sent.Taken && !wasOn) runCatching { LiveSync.disable(sql) }
         if (sent !is LiveWire.Sent.Taken && relayWasOff) runCatching {
             KhataDatabase.get(context).khataDao().setSetting(com.innovation313.roshankhata.data.BookSettings.LIVE_RELAY, null)

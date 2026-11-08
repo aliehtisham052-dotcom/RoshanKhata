@@ -31,4 +31,13 @@ class LockScreenRulesTest {
         assertFalse("turning on must not skip the prompt", body.contains("if (!enabled) flip()"))
         assertTrue(body.contains("R.string.app_lock_turn_on"))
     }
+
+    @Test
+    fun `a secure phone that answers no device credential is asked again, not let in`() {
+        val src = file("src/main/java/com/innovation313/roshankhata/LockActivity.kt").readText()
+        val branch = src.substringAfter("val secure =").substringBefore("android.widget.Toast")
+        assertTrue(branch, branch.contains("createConfirmDeviceCredentialIntent"))
+        assertTrue(branch, branch.contains("secure && code == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL"))
+        assertTrue(branch, branch.contains("finishAffinity()"))
+    }
 }

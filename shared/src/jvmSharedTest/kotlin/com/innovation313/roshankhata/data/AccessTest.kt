@@ -152,4 +152,16 @@ class AccessTest {
         val pin = Access.OwnerPin(PinHash.hash("2468", salt), salt)
         assertTrue(pin.matches("2468")); assertFalse(pin.matches("2469"))
     }
+
+    @Test
+    fun aWaitSurvivesTheSystemClockBeingWoundForward() {
+        // L51: five misses, then the clock is set 15 minutes ahead; the real-clock caller still waits.
+        Access.resetForTest()
+        val real = System.currentTimeMillis()
+        repeat(5) { Access.tryPin("0000", real) { it == "1234" } }
+        assertTrue(Access.waitMillis(real + 1_000L) > 0L)
+        // The caller who asks with a wound-forward real clock is told by the monotonic clock.
+        assertTrue(Access.monoLeftForTest() > 0L)
+        Access.resetForTest()
+    }
 }

@@ -786,7 +786,7 @@ fun InvoicesPane(
                                     onShow = { look = it },
                                     onApply = { t ->
                                         scope.launch {
-                                            withContext(Dispatchers.IO) { dao.updateInvoice(saved.copy(templateId = t)) }
+                                            withContext(Dispatchers.IO) { dao.setInvoiceTemplate(saved.id, t) }
                                             full = saved.copy(templateId = t)
                                         }
                                     },

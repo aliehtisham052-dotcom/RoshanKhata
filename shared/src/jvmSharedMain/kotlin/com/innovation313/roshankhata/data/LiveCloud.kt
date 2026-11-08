@@ -223,12 +223,13 @@ object LiveCloud {
         val id = LiveSync.identity(sql) ?: return false
         val dev = msg.optString("dev")
         if (dev.isBlank() || dev == id.device) return false
-        // Devices of this book announced by the sender (LiveCrew), before anything else of it is taken.
-        msg.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
         if (LiveSync.state(sql).peers.none { it.device == dev }) {
             // A phone this device sent the book to, saying yes through the relay (it serves no WiFi round to say it).
             if (!LiveCrew.confirmFromRelay(sql, dev, msg.optString("name").takeIf { it.isNotBlank() }, msg.optString("pair"))) return false
         }
+        // L4 (8 Nov 2026): the sender's announced devices (LiveCrew) are taken only from a device that is a member
+        // of this book, so a removed device's message cannot add ghost peers.
+        msg.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
         msg.optJSONObject("acks")?.let { a -> LiveCrew.heard(sql, dev, a.keys().asSequence().toList()) }
         // A peer back after STALE_MS of silence (resends stopped waiting for it): what it lacks goes at the next round.
         val back = LiveSync.state(sql).peers.firstOrNull { it.device == dev }?.seen?.let { now - it >= STALE_MS } == true
@@ -494,11 +495,16 @@ object LiveCloud {
                     // filed under another device (a bug or a lie there) is not taken as that device's.
                     val from = p.optString("from")
                     val same = msg != null && (from.isBlank() || from == msg.optString("dev"))
-                    if (msg != null && same && absorb(sql, msg, now, wroteRows)) {
+                    // L5 (8 Nov 2026): a sealed body that opens but is not a parcel (a missing or malformed part) is
+                    // passed over and written down, so it cannot stop the relay's cursor for ever.
+                    val taken = if (msg != null && same) {
+                        try { absorb(sql, msg, now, wroteRows) } catch (e: org.json.JSONException) { LiveTrouble.note("a relay parcel that is not a parcel", e); null }
+                    } else false
+                    if (taken == true) {
                         took++
                         // Which relay that device's parcels come by: this device sends there too (roundAll).
                         setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
-                    } else if (msg != null && same) {
+                    } else if (msg != null && same && taken == false) {
                         // The book itself refused it (the other device runs a newer schema): said at the end of the
                         // round instead of "Live" (23 Oct 2026, the second review). The cursor still moves — the
                         // sender's pointer does not, so it comes again once this device is updated.

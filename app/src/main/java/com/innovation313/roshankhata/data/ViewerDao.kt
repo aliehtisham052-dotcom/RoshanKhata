@@ -98,6 +98,7 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun cancelDocument(id: Long, by: String?): Unit = refused()
     override suspend fun setDocStatus(id: Long, to: String, from: String): Int = refused()
     override suspend fun updateInvoice(invoice: Invoice): Unit = refused()
+    override suspend fun setInvoiceTemplate(id: Long, templateId: Int): Int = refused()
     override suspend fun updateInvoiceWithItems(invoice: Invoice, items: List<InvoiceItem>): Unit = refused()
     override suspend fun softDeleteInvoiceItems(invoiceId: Long): Unit = refused()
     override suspend fun softDeleteInvoice(id: Long, now: Long): Int = refused()

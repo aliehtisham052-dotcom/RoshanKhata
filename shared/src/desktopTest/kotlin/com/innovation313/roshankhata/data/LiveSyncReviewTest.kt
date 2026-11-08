@@ -253,6 +253,23 @@ class LiveSyncReviewTest {
     }
 
     @Test
+    fun `the log after a copy's line is held from the moment the line is read`() = runBlocking {
+        // L2: a prune between reading the copy's line and the pairing record must not take the lines after it.
+        val d = phone.khataDao()
+        repeat(2) { d.insertParty(Party(name = "P$it")) }
+        val copyLine = LiveSync.lastSeq(phoneSql)
+        LiveRound.holdFrom(phoneSql, copyLine)
+        repeat(2) { d.insertParty(Party(name = "Q$it")) }
+        LiveSync.putPeer(phoneSql, pcId.device, sent = LiveSync.lastSeq(phoneSql))
+        LiveSync.prune(phoneSql)
+        assertEquals("the lines after the copy are still there", 2, LiveSync.export(phoneSql, copyLine).changes.size)
+        // A give that failed before it came to wait lets the hold go.
+        LiveRound.releaseEarlyHold(phoneSql)
+        LiveSync.prune(phoneSql)
+        try { LiveSync.export(phoneSql, copyLine); fail("let go") } catch (e: LiveSync.Lost) { }
+    }
+
+    @Test
     fun `two devices on one letter move one of them, never to A`() = runBlocking {
         phoneSql.write { exec("UPDATE sync_meta SET v = 'K' WHERE k = 'mark'") }
         pcSql.write { exec("UPDATE sync_meta SET v = 'K' WHERE k = 'mark'") }

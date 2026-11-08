@@ -33,8 +33,13 @@ class WifiSyncTest {
         // A code naming a host on the internet is refused: only the shop's own network.
         assertNull(WifiSync.parsePairing("rksync:1?h=8.8.8.8&p=50123&k=$secret"))
         assertNull(WifiSync.parsePairing("rksync:1?h=172.32.0.1,192.169.1.1,169.253.1.1&p=50123&k=$secret"))
-        assertEquals(listOf("10.1.2.3", "172.16.0.9", "169.254.3.4", "127.0.0.1"),
-            WifiSync.parsePairing("rksync:1?h=8.8.8.8,10.1.2.3,172.16.0.9,169.254.3.4,127.0.0.1&p=50123&k=$secret")!!.hosts)
+        val codeWithLoopback = "rksync:1?h=8.8.8.8,10.1.2.3,172.16.0.9,169.254.3.4,127.0.0.1&p=50123&k=$secret"
+        assertEquals(listOf("10.1.2.3", "172.16.0.9", "169.254.3.4"), WifiSync.parsePairing(codeWithLoopback)!!.hosts)
+        assertNull(WifiSync.parsePairing("rksync:1?h=127.0.0.1&p=50123&k=$secret"))
+        WifiSync.allowLoopback = true
+        try {
+            assertEquals(listOf("10.1.2.3", "172.16.0.9", "169.254.3.4", "127.0.0.1"), WifiSync.parsePairing(codeWithLoopback)!!.hosts)
+        } finally { WifiSync.allowLoopback = false }
     }
 
     @Test
@@ -163,6 +168,28 @@ class WifiSyncTest {
             stop = true
             t.join(10_000)
             server.close()
+        }
+    }
+
+    @Test
+    fun `the computer can give its book as a file, streamed and then deleted`() {
+        // L57: the pull's answer no longer needs the whole book in memory.
+        val server = ServerSocket(0, 4, InetAddress.getLoopbackAddress())
+        val pcBook = ByteArray(150_000) { (it % 89).toByte() }
+        val source = java.io.File.createTempFile("rk-give", ".part").also { it.writeBytes(pcBook) }
+        var stop = false
+        val t = thread { WifiSync.receive(server, secret, { stop }, giveFile = { source }) }
+        val p = WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, secret)
+        val into = java.io.File.createTempFile("rk-pull", ".txt")
+        try {
+            val got = WifiSync.pull(p, into)
+            assertTrue("$got", got is WifiSync.Pulled.Got)
+            assertArrayEquals(pcBook, (got as WifiSync.Pulled.Got).file.readBytes())
+            val until = System.currentTimeMillis() + 5_000
+            while (source.exists() && System.currentTimeMillis() < until) Thread.sleep(20)
+            assertTrue("the streamed file is gone", !source.exists())
+        } finally {
+            into.delete(); source.delete(); stop = true; t.join(10_000); server.close()
         }
     }
 

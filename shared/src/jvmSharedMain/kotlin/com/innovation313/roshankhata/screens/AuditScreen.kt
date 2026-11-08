@@ -47,7 +47,8 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
     val rows by remember { dao.observeAudit(500) }.collectAsState(emptyList())
     val staff by remember { dao.observeStaff() }.collectAsState(emptyList())
     var seal by remember { mutableStateOf<AuditChain.Result?>(null) }
-    LaunchedEffect(rows.size) { seal = withContext(Dispatchers.IO) { AuditChain.verify(dao.auditInOrder()) } }
+    // L35: re-checked when the newest row changes (the window holds 500, so its size never moves once full), not per count.
+    LaunchedEffect(rows.firstOrNull()?.id) { seal = withContext(Dispatchers.IO) { AuditChain.verifyAll { after, n -> dao.auditSliceAfter(after, n) } } }
     if (rows.isEmpty()) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(word(W.audit_empty), color = c.textMuted) }
         return

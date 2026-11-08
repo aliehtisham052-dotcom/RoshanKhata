@@ -1467,6 +1467,10 @@ interface KhataDao {
     @Update
     suspend fun updateInvoice(invoice: Invoice)
 
+    /** Only the design changes (L39, 8 Nov 2026): the row is not written back from a stale copy, so a status another device moved stays. */
+    @Query("UPDATE invoices SET templateId = :templateId WHERE id = :id AND isDeleted = 0 AND status NOT IN ('CONVERTED', 'CANCELLED')")
+    suspend fun setInvoiceTemplate(id: Long, templateId: Int): Int
+
     /**
      * Editing a saved invoice replaces its whole item list rather than
      * trying to match old rows to new ones — far simpler and safer than a
@@ -4895,6 +4899,10 @@ interface KhataDao {
     /** Every row of the log in the order it was written, for [AuditChain.verify]. */
     @Query("SELECT * FROM audit_log ORDER BY id")
     suspend fun auditInOrder(): List<AuditLog>
+
+    /** The log a slice at a time, in the order written, for [AuditChain.verifyAll] (L23: not the whole log in memory). */
+    @Query("SELECT * FROM audit_log WHERE id > :afterId ORDER BY id LIMIT :limit")
+    suspend fun auditSliceAfter(afterId: Long, limit: Int): List<AuditLog>
 
     // ---------- The book's seal (schema 44, Kitab ki Muhar — BookSeals) ----------
     //

@@ -520,10 +520,15 @@ object LiveWire {
                 }
                 magic.contentEquals(LIVE) -> {
                     val n = input.readInt()
+                    // L6 (8 Nov 2026): the length is judged before the book's key is unsealed or read, so a
+                    // junk packet costs a number compare, not a database read.
+                    if (n <= 0 || n > MAX_ROUND_BYTES) { out.writeInt(0); out.flush(); return@use }
                     val key = bookKey()
-                    if (key == null || n <= 0 || n > MAX_ROUND_BYTES) { out.writeInt(0); out.flush(); return@use }
+                    if (key == null) { out.writeInt(0); out.flush(); return@use }
                     it.soTimeout = 60_000
-                    val sealed = readUpTo(input, n)
+                    // L53: one deadline for the whole body, so four connections dripping a byte a second
+                    // cannot hold the live port for ever.
+                    val sealed = readUpTo(input, n, System.currentTimeMillis() + ROUND_BODY_MS)
                     val request = open(key, sealed, Road.REQUEST)?.let { b -> runCatching { JSONObject(String(b, Charsets.UTF_8)) }.getOrNull() }
                     // A round the book could not answer (a database error) is written down, not only dropped (23 Oct 2026).
                     val reply = request?.let { r ->
@@ -671,11 +676,14 @@ object LiveWire {
     }
 
     /** [n] bytes read as they arrive, never reserved up front (a stranger could announce the largest size). */
-    private fun readUpTo(input: DataInputStream, n: Int): ByteArray {
+    internal const val ROUND_BODY_MS = 90_000L
+
+    private fun readUpTo(input: DataInputStream, n: Int, deadline: Long = Long.MAX_VALUE): ByteArray {
         val out = ByteArrayOutputStream(minOf(n, 1 shl 16))
         val chunk = ByteArray(1 shl 16)
         var left = n
         while (left > 0) {
+            if (System.currentTimeMillis() > deadline) throw java.net.SocketTimeoutException("round body too slow")
             val got = input.read(chunk, 0, minOf(chunk.size, left))
             if (got < 0) throw EOFException()
             out.write(chunk, 0, got)

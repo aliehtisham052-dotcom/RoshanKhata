@@ -47,4 +47,15 @@ class AuditChainTest {
         assertEquals(5L, AuditChain.verify(gap).brokenAt)
         assertNull(AuditChain.verify(emptyList()).brokenAt)
     }
+
+    @Test
+    fun readingInSlicesGivesTheSameAnswerAsReadingAllAtOnce() {
+        fun slices(list: List<AuditLog>): suspend (Long, Int) -> List<AuditLog> = { after, n -> list.filter { it.id > after }.take(n) }
+        val whole = kotlinx.coroutines.runBlocking { AuditChain.verifyAll(slice = 2, next = slices(rows)) }
+        assertEquals(AuditChain.verify(rows), whole)
+        val edited = rows.toMutableList().also { it[1] = it[1].copy(detail = "changed") }
+        assertEquals(AuditChain.verify(edited), kotlinx.coroutines.runBlocking { AuditChain.verifyAll(slice = 1, next = slices(edited)) })
+        val removed = rows.filter { it.id != 2L }
+        assertEquals(3L, kotlinx.coroutines.runBlocking { AuditChain.verifyAll(slice = 2, next = slices(removed)) }.brokenAt)
+    }
 }
