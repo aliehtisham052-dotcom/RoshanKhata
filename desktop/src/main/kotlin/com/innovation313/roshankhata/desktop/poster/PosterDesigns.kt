@@ -233,23 +233,27 @@ object PosterDesigns {
         val fp = PosterKit.textPaint(page.context, from, 31f, 0xD9FBEBD0.toInt(), false, page.locale, page.urdu)
         if (!page.urdu && !PosterKit.hasArabic(from)) fp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.ITALIC)
         fp.textAlign = Paint.Align.CENTER
-        PosterKit.inkLine(c, from, fp, W / 2, 1688f)
+        // The sign-off has no spare line, so with an address or email ticked it closes up a little to make one (M18, 8 Nov 2026).
+        val contact = !page.address.isNullOrBlank() || !page.email.isNullOrBlank()
+        PosterKit.inkLine(c, from, fp, W / 2, if (contact) 1678f else 1688f)
         val np = PosterKit.textPaint(page.context, page.shopName, if (page.urdu) 60f else 58f, GOLD, true, page.locale, page.urdu)
         np.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(np, page.shopName, 860f)
-        PosterKit.inkLine(c, page.shopName, np, W / 2, 1752f)
+        PosterKit.inkLine(c, page.shopName, np, W / 2, if (contact) 1736f else 1752f)
         if (!page.phone.isNullOrBlank()) {
             val pp = com.innovation313.roshankhata.desktop.gfx.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
                 textSize = 36f; color = 0xB3FBEBD0.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
             }
-            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, 1818f)
+            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, if (contact) 1794f else 1818f)
         }
+        if (contact) PosterKit.address(page, 1842f, colour = 0xB3FBEBD0.toInt())
         // A gold rule with diamonds along the foot.
-        c.drawLine(60f, 1858f, W - 60f, 1858f, Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x80E7C268.toInt() })
+        val footY = if (contact) 1880f else 1858f
+        c.drawLine(60f, footY, W - 60f, footY, Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x80E7C268.toInt() })
         var dx = 120f
-        while (dx < W - 60f) { diamond(c, dx, 1858f, 7f, gold); dx += 140f }
-        PosterKit.mark(page, 0x59FBEBD0, cy = 1892f)
+        while (dx < W - 60f) { diamond(c, dx, footY, 7f, gold); dx += 140f }
+        PosterKit.mark(page, 0x59FBEBD0, cy = if (contact) 1906f else 1892f)
         return out(head, msg, PosterMotion.Spec(glint = head.second,
             stars = listOf(PosterMotion.Star(190f, 300f, 3.3f), PosterMotion.Star(890f, 330f, 3.0f), PosterMotion.Star(250f, 820f, 2.7f),
                 PosterMotion.Star(840f, 760f, 3.0f))))

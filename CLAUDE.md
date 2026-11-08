@@ -2756,3 +2756,29 @@ number on the Help screen.
 
 - **M10/M11:** `AgingMove` and `SeasonBook.Line` carry `id`/`pairedEntryId`; Dues by age and the season queue net a paid-now sale's two lines (`PaymentRadar.netPairs`) first, so today's cash neither makes an old debt look young nor pays an old season's credit. **M13:** `SaleInsights.lastMonthSoFar` (last month up to the same moment) is what the percentage and its figure compare. **M14:** shift hours are exact, rounded to 2 places only for display and the weekly sum (not by the currency's decimals).
 - **M20/M21 (Windows):** a tick on a customer the search hides is dropped; the credit-limit warning treats a paid-now sale as leaving the balance as it was. **M60:** the poster's WhatsApp share tries each package (no `resolveActivity`, which Android 11+ answers empty). **M61:** the notification reason shows at most once a week. **M38:** Home's empty-book card (`home_add_first_customer`, nine languages). **M2/M33:** `live_relay_help` says a small sealed change may ride in Firebase's message; the Drive section is titled "Cloud backup" (auto is a switch below it). **M22:** `ACCESS_LOCAL_NETWORK` declared; the runtime ask comes with the targetSdk 37 bump.
+
+### 8 Nov 2026 review fixes, marhala 8B: what earlier phases skipped as "design" (M18, M40, M57, M69, M71, M87, M88, M90; CI only)
+
+- **M40:** money PAID to a supplier (an "I gave" with no goods) now asks "How was it paid?" and starts as Cash on both platforms, so
+  `khataCashBetween(given = true)` finally sees cash leaving the drawer; goods sent back to a supplier carry none; a customer's sale
+  still carries none (its paid-now "I got" half does). Old supplier payments stay unmarked (no migration: their meaning is unknown).
+- **M69 (phone):** Recent sales is a searchable list of all 60 days (`SaleSearch`, shared with Windows' `ticketsMatching`) and has a
+  Credit note button: the 60 days' returns, searchable, each openable as a credit note or voided (`askVoidReturn`, VOID gate, the
+  DAO's `returnVoidRefusal`).
+- **M71:** the invoice options sheet reads the extra charge with its sign (`CalcPad.signedFigure`): a ticket's round-off down is a
+  negative charge and Apply made it positive. **M57:** every money argument of a phone sentence is `Format.moneyLtr` (51 places) and
+  names/bill numbers in the supplier lines are `isolate`/`ltr`.
+- **M87/M88/M90 (phone): one pattern for forms that must outlive their screen.** Small forms: `ui/FormDraft` (the Cashbook form's
+  pattern, shared) — a screen `open`s a draft with the form's text boxes, `closed` from the dismiss listener (a rotation is not a
+  close), `save`s in onSaveInstanceState and reopens the form from `saved()` in onCreate: Close the day, Cheque (new; direction and
+  due day ride in `arg`), Plan (new, and a payment), Staff (person, advance/pay; the PIN is never kept), Edit entry. The invoice editor
+  saves its whole draft as one JSON text (`draftJson`/`restoreDraft`) and puts it over a new or an edited invoice. Long forms —
+  stock count, return, purchase order — keep their text in `PrefsDraftKeep` (`DraftKeep`, shared interface; the computer passes none):
+  CountDraft/ReturnDraft/OrderDraft have `snapshot()`/`restore()`; a screen opened fresh clears the keep (`clearOnFreshStart`), a
+  rebuilt one reopens the form (count and return with who allowed it). An order being edited (not new) is not kept. Test: OrderDraftKeepTest.
+- **M18:** the Eid ul-Adha poster draws the address/email line (the sign-off closes up 10-24 px to make room only when one is ticked);
+  the desktop copy is regenerated.
+- **Left, with the reason:** M84 half-typed Windows dialogs are discarded when App Lock re-locks after 15 idle minutes — keeping them
+  needs the book composed behind the lock (against "nothing composed until the PIN") or every dialog's state hoisted; the counter's
+  ticket survives (the valuable one). M27 the customer page's counter `q` follows the device clock: a fix needs the counter in the
+  synced book or a server read before every send (hosting load); neither is built.
