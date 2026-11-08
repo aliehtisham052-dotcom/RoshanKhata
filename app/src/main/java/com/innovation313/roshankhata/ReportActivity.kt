@@ -242,9 +242,9 @@ class ReportActivity : BaseActivity() {
         // Spell out the difference between the window and the account, so the
         // owner never mistakes one for the other.
         tvClosingNote.text = if (rangeStart == null) {
-            getString(R.string.closing_note_all, Format.money(closingBalance))
+            getString(R.string.closing_note_all, Format.moneyLtr(closingBalance))
         } else {
-            getString(R.string.closing_note_range, Format.money(closingBalance))
+            getString(R.string.closing_note_range, Format.moneyLtr(closingBalance))
         }
     }
 

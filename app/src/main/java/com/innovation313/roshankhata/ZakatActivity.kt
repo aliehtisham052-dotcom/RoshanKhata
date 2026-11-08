@@ -160,13 +160,13 @@ class ZakatActivity : BaseActivity() {
                 inputs = Zakat.fromParties(rows)
 
                 tvCertain.text =
-                    getString(R.string.certain_receivables, Format.money(inputs.certainReceivables))
+                    getString(R.string.certain_receivables, Format.moneyLtr(inputs.certainReceivables))
                 tvQarzeHasna.text =
-                    getString(R.string.qarze_hasna_given, Format.money(inputs.qarzeHasnaGiven))
+                    getString(R.string.qarze_hasna_given, Format.moneyLtr(inputs.qarzeHasnaGiven))
                 tvDoubtful.text =
-                    getString(R.string.doubtful_receivables, Format.money(inputs.doubtfulReceivables))
+                    getString(R.string.doubtful_receivables, Format.moneyLtr(inputs.doubtfulReceivables))
                 tvPayables.text =
-                    getString(R.string.you_owe_others, Format.money(inputs.payables))
+                    getString(R.string.you_owe_others, Format.moneyLtr(inputs.payables))
 
                 recalculate()
             }

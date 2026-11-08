@@ -132,7 +132,7 @@ class FollowUpActivity : BaseActivity() {
         val p = queue[queueIndex]
         MaterialAlertDialogBuilder(this)
             .setTitle(Digits.string(resources, R.string.followup_queue_title, queueIndex + 1, queue.size))
-            .setMessage(getString(R.string.followup_queue_next, p.name, Format.money(p.balance)))
+            .setMessage(getString(R.string.followup_queue_next, Format.isolate(p.name), Format.moneyLtr(p.balance)))
             .setPositiveButton(R.string.followup_queue_open) { _, _ ->
                 queueIndex++
                 queueOpened++

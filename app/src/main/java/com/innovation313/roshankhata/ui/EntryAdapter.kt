@@ -153,7 +153,7 @@ class EntryAdapter(
         holder.tvAmount.setTextColor(ContextCompat.getColor(ctx, colour))
 
         holder.tvRunningBalance.text =
-            ctx.getString(R.string.running_balance_short, Format.money(row.runningBalance))
+            ctx.getString(R.string.running_balance_short, Format.moneyLtr(row.runningBalance))
 
         val isNew = e.id == newEntryId && !selectionMode
         holder.tvNewTag.visibility = if (isNew) View.VISIBLE else View.GONE

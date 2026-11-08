@@ -60,7 +60,7 @@ object BatchReturnDialog {
                 return LineMath.lineTotal(q, r)
             }
             fun refresh() {
-                tvTotal.text = total()?.let { activity.getString(R.string.return_total, Format.money(it)) }.orEmpty()
+                tvTotal.text = total()?.let { activity.getString(R.string.return_total, Format.moneyLtr(it)) }.orEmpty()
             }
             val watcher = object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}

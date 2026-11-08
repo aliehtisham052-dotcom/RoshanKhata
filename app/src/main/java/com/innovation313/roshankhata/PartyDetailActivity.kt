@@ -929,7 +929,7 @@ class PartyDetailActivity : BaseActivity() {
         if (editing == null && !isGiven && Money.isPositive(currentBalance)) {
             quickAmounts.visibility = View.VISIBLE
             view.findViewById<TextView>(R.id.tvQuickAmountLabel).text =
-                getString(R.string.quick_amount_label, Format.money(currentBalance))
+                getString(R.string.quick_amount_label, Format.moneyLtr(currentBalance))
 
             fun share(fraction: Double) {
                 // Rounded to the rupee: a shopkeeper counts notes, not paisa,
@@ -1117,6 +1117,8 @@ class PartyDetailActivity : BaseActivity() {
         // the price they went out at, and put back on the shelf. On a
         // supplier's account goods arrive through a bill, not here.
         fun isReturn(): Boolean = !isGiven && partyIsCustomer
+        /** Money paid TO a supplier (M40, 8 Nov 2026): the one "I gave" that carries a way of paying — cash from the drawer. */
+        fun paysSupplier(): Boolean = isGiven && !partyIsCustomer
 
         /** A list of items is offered on a customer's account, both ways. */
         fun goodsListAllowed(): Boolean = partyIsCustomer
@@ -1173,7 +1175,7 @@ class PartyDetailActivity : BaseActivity() {
             val all = lines + listOfNotNull(editorDraft())
             // Goods coming back were not "paid" by cash, bank or cheque:
             // "How was it paid?" makes no sense on a return and is hidden.
-            if (isReturn()) paymentSection.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
+            if (isReturn() || paysSupplier()) paymentSection.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
             if (all.isEmpty()) {
                 // Every item removed: a figure the items wrote goes with them.
                 if (amountByItems && etAmount.text.isNotEmpty()) writeAmount("")
@@ -1215,7 +1217,7 @@ class PartyDetailActivity : BaseActivity() {
             if (amount != null && EntryLines.compare(total, amount) is EntryLines.AmountCheck.Equal) return
             // The owner's own figure differs: offer the items' total back.
             btnTotalFill.visibility = View.VISIBLE
-            btnTotalFill.text = getString(R.string.lines_total_fill, Format.money(total))
+            btnTotalFill.text = getString(R.string.lines_total_fill, Format.moneyLtr(total))
             btnTotalFill.setOnClickListener {
                 amountOwn = false
                 writeAmount(Calc.trim(total))
@@ -1224,10 +1226,10 @@ class PartyDetailActivity : BaseActivity() {
             when (val check = EntryLines.compare(total, amount)) {
                 is EntryLines.AmountCheck.Equal -> Unit
                 is EntryLines.AmountCheck.Less -> note(
-                    getString(R.string.lines_amount_less, Format.money(total), Format.money(amount), Format.money(check.by))
+                    getString(R.string.lines_amount_less, Format.moneyLtr(total), Format.moneyLtr(amount), Format.moneyLtr(check.by))
                 )
                 is EntryLines.AmountCheck.More -> note(
-                    getString(R.string.lines_amount_more, Format.money(total), Format.money(amount), Format.money(check.by))
+                    getString(R.string.lines_amount_more, Format.moneyLtr(total), Format.moneyLtr(amount), Format.moneyLtr(check.by))
                 )
             }
         }
@@ -1304,7 +1306,7 @@ class PartyDetailActivity : BaseActivity() {
                 (if (chosenRateType() == RateType.CASH) lastCash else lastCredit)?.takeIf(sameUnit)
             } else null
             tvLastRate.visibility = if (last != null) View.VISIBLE else View.GONE
-            if (last != null) tvLastRate.text = getString(R.string.last_rate_hint, Format.money(last.rate))
+            if (last != null) tvLastRate.text = getString(R.string.last_rate_hint, Format.moneyLtr(last.rate))
 
             // A typed rate that differs from the product's price for this chip
             // may be made the product's price too — offered, off by default.
@@ -1852,11 +1854,25 @@ class PartyDetailActivity : BaseActivity() {
             else -> null
         }
         fun showRefBox() {
-            etPaymentRef.visibility = if (!isGiven && PaymentRef.applies(chosenPaymentMethod())) View.VISIBLE else View.GONE
+            etPaymentRef.visibility = if ((!isGiven || paysSupplier()) && PaymentRef.applies(chosenPaymentMethod())) View.VISIBLE else View.GONE
         }
         // After the first check above (lesson 4): the listener only follows the chip, it decides nothing.
         cgPaymentMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
         showRefBox()
+
+        // M40 (8 Nov 2026 review): cash paid to a supplier never reduced the drawer, because an "I gave" carried no way
+        // of paying. Money paid to a supplier now asks "How was it paid?" and starts as Cash (goods sent back carry none).
+        if (isGiven) {
+            val prevKnown = onCustomerKnown
+            val settleGiven: () -> Unit = {
+                if (!partyIsCustomer) {
+                    paymentSection.visibility = View.VISIBLE
+                    if (editing == null && restore == null) cgPaymentMethod.check(R.id.chipCash)
+                    showRefBox()
+                }
+            }
+            if (customerKnown) settleGiven() else onCustomerKnown = { prevKnown(); settleGiven() }
+        }
 
         // ---- A payment a wallet or bank app announced (PaymentVoice): put in, never saved ----
         if (editing == null && restore == null) {
@@ -2095,6 +2111,8 @@ class PartyDetailActivity : BaseActivity() {
                 kept = editing?.entry?.rateType
             )
 
+            val methodApplies = if (isGiven) !partyIsCustomer && items.isEmpty()
+                else partyIsCustomer && !(isReturn() && items.isNotEmpty())
             val entry = LedgerEntry(
                 partyId = partyId,
                 amount = amount,
@@ -2110,11 +2128,9 @@ class PartyDetailActivity : BaseActivity() {
                 // A goods return was not "paid" by any method (the section is
                 // hidden for it), so nothing is recorded there either.
                 createdBy = com.innovation313.roshankhata.data.Access.userName,
-                paymentMethod = if (isGiven || !partyIsCustomer || (isReturn() && items.isNotEmpty())) null
-                    else chosenPaymentMethod(),
+                paymentMethod = if (methodApplies) chosenPaymentMethod() else null,
                 // The reference rides with its method and only with one that has one (PaymentRef).
-                paymentRef = if (isGiven || !partyIsCustomer || (isReturn() && items.isNotEmpty())) null
-                    else PaymentRef.clean(chosenPaymentMethod(), etPaymentRef.text.toString()),
+                paymentRef = if (methodApplies) PaymentRef.clean(chosenPaymentMethod(), etPaymentRef.text.toString()) else null,
                 rateType = rateType
             )
 
@@ -2505,7 +2521,7 @@ class PartyDetailActivity : BaseActivity() {
             if (isFinishing || isDestroyed) return@launch
             MaterialAlertDialogBuilder(this@PartyDetailActivity)
                 .setTitle(R.string.edit_pair_title)
-                .setMessage(getString(R.string.edit_pair_message, pair.entryNumber, Format.money(before.amount), Format.money(now)))
+                .setMessage(getString(R.string.edit_pair_message, pair.entryNumber, Format.moneyLtr(before.amount), Format.moneyLtr(now)))
                 .setPositiveButton(R.string.edit_pair_both) { _, _ ->
                     AppScope.launch { dao.setPairAmount(pair.id, before.id, now) }
                 }
@@ -2618,9 +2634,9 @@ class PartyDetailActivity : BaseActivity() {
     private fun copyBalance() {
         val line = when {
             // The half-paisa line (3 Nov 2026 audit, M05): a settled account copied as "Ali owes Rs 0.00".
-            Money.isPositive(currentBalance) -> getString(R.string.copy_balance_owed, partyName, Format.money(currentBalance))
-            Money.isNegative(currentBalance) -> getString(R.string.copy_balance_i_owe, partyName, Format.money(-currentBalance))
-            else -> getString(R.string.copy_balance_settled, partyName, Format.money(0.0))
+            Money.isPositive(currentBalance) -> getString(R.string.copy_balance_owed, partyName, Format.moneyLtr(currentBalance))
+            Money.isNegative(currentBalance) -> getString(R.string.copy_balance_i_owe, partyName, Format.moneyLtr(-currentBalance))
+            else -> getString(R.string.copy_balance_settled, partyName, Format.moneyLtr(0.0))
         }
         val clip = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         // Marked sensitive (21 Oct 2026): Android 13+ then hides the customer's balance from the
@@ -3485,7 +3501,7 @@ class PartyDetailActivity : BaseActivity() {
     private fun offerUndoCash(saleId: Long, gotId: Long, amount: Double) {
         com.innovation313.roshankhata.ui.SavedCard.show(
             this,
-            title = getString(R.string.cash_paid_recorded, Format.money(amount)),
+            title = getString(R.string.cash_paid_recorded, Format.moneyLtr(amount)),
             anchor = bottomBarContainer,
             list = findViewById(R.id.rvEntries),
             keepInSight = { if (::adapter.isInitialized) adapter.positionOf(saleId) else -1 },
@@ -3551,7 +3567,7 @@ class PartyDetailActivity : BaseActivity() {
             .setPositiveButton(R.string.proceed_anyway) { _, _ ->
                 com.innovation313.roshankhata.ui.AccessUi.allowed(
                     this, dao, com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER,
-                    getString(R.string.pos_credit_limit, Format.money(limit), Format.money(projected))
+                    getString(R.string.pos_credit_limit, Format.moneyLtr(limit), Format.moneyLtr(projected))
                 ) { _ -> saveEntry(entry, items, paidNow) }
             }
             .show()
@@ -3711,7 +3727,7 @@ class PartyDetailActivity : BaseActivity() {
         val tvOwed: TextView = view.findViewById(R.id.tvCurrentOwed)
 
         tvOwed.text = if (Money.isPositive(currentBalance)) {
-            getString(R.string.credit_limit_current, Format.money(currentBalance))
+            getString(R.string.credit_limit_current, Format.moneyLtr(currentBalance))
         } else {
             getString(R.string.settled)
         }

@@ -94,7 +94,7 @@ class SeasonsActivity : BaseActivity() {
             if (animate) post { setProgressCompat(back, true) } else setProgressCompat(back, false)
         }
         v.findViewById<TextView>(R.id.tvSeasonOut).text =
-            getString(R.string.season_back_out, Format.money(s.cleared), Format.money(s.outstanding))
+            getString(R.string.season_back_out, Format.moneyLtr(s.cleared), Format.moneyLtr(s.outstanding))
         val d = s.medianDaysAfterHarvest
         v.findViewById<TextView>(R.id.tvSeasonPace).text = when {
             d == null -> Digits.string(resources, R.string.season_pace_none, s.clearedCustomers, s.customers)

@@ -399,9 +399,9 @@ class BillsActivity : BaseActivity() {
             if (amount != null && amount > 0 && supplier.isNotEmpty()) {
                 tvEffect.visibility = View.VISIBLE
                 tvEffect.text = when (how) {
-                    null -> getString(R.string.bill_credit_note, Format.money(amount), supplier)
-                    PaymentMethod.CASH -> getString(R.string.bill_cash_note, Format.money(amount))
-                    else -> getString(R.string.bill_other_note, Format.money(amount), supplier, PaymentMethod.labelOf(this, how) ?: how)
+                    null -> getString(R.string.bill_credit_note, Format.moneyLtr(amount), supplier)
+                    PaymentMethod.CASH -> getString(R.string.bill_cash_note, Format.moneyLtr(amount))
+                    else -> getString(R.string.bill_other_note, Format.moneyLtr(amount), supplier, PaymentMethod.labelOf(this, how) ?: how)
                 }
             } else {
                 tvEffect.visibility = View.GONE
@@ -1103,7 +1103,7 @@ class BillsActivity : BaseActivity() {
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { confirmBillToCredit(bill) }) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.bill_to_credit)
-            .setMessage(getString(R.string.bill_to_credit_msg, Format.money(bill.totalAmount), bill.partyName))
+            .setMessage(getString(R.string.bill_to_credit_msg, Format.moneyLtr(bill.totalAmount), Format.isolate(bill.partyName)))
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.bill_paid_credit) { _, _ ->
                 val note = bill.billNumber?.let { getString(R.string.bill_entry_note, it) } ?: bill.note

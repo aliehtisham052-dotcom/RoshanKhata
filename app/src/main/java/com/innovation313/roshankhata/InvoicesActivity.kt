@@ -355,7 +355,7 @@ class InvoicesActivity : BaseActivity() {
         return buildString {
             append(head)
             if (com.innovation313.roshankhata.data.DocKind.showsPrices(full.kind)) {
-                append("\n").append(getString(R.string.invoice_caption_total, Format.money(full.totals(items).grandTotal)))
+                append("\n").append(getString(R.string.invoice_caption_total, Format.moneyLtr(full.totals(items).grandTotal)))
             }
             full.dueDate?.let { append("\n").append(getString(R.string.due_date_set, Format.dateOnly(it))) }
             append("\n\n").append(getString(R.string.pdf_label_thank_you))
@@ -474,17 +474,17 @@ class InvoicesActivity : BaseActivity() {
                     append("\n")
                 }
                 append("\n")
-                append(getString(R.string.invoice_subtotal, Format.money(totals.subtotal)))
+                append(getString(R.string.invoice_subtotal, Format.moneyLtr(totals.subtotal)))
                 if (totals.discountAmount > 0) {
                     append("\n")
                     append(
-                        if (full.discountAmount != null) getString(R.string.invoice_discount_amount_line, Format.money(totals.discountAmount))
-                        else getString(R.string.invoice_discount_line, Format.plain(full.discountPercent ?: 0.0), Format.money(totals.discountAmount))
+                        if (full.discountAmount != null) getString(R.string.invoice_discount_amount_line, Format.moneyLtr(totals.discountAmount))
+                        else getString(R.string.invoice_discount_line, Format.plain(full.discountPercent ?: 0.0), Format.moneyLtr(totals.discountAmount))
                     )
                 }
                 if (totals.taxAmount > 0) {
                     append("\n")
-                    append(getString(R.string.invoice_tax_line, Format.plain(full.taxPercent ?: 0.0), Format.money(totals.taxAmount)))
+                    append(getString(R.string.invoice_tax_line, Format.plain(full.taxPercent ?: 0.0), Format.moneyLtr(totals.taxAmount)))
                 }
                 if (totals.additionalCharge > 0) {
                     append("\n")
@@ -493,10 +493,10 @@ class InvoicesActivity : BaseActivity() {
                     append(Format.money(totals.additionalCharge))
                 }
                 append("\n")
-                append(getString(R.string.invoice_total, Format.money(totals.grandTotal)))
+                append(getString(R.string.invoice_total, Format.moneyLtr(totals.grandTotal)))
                 if (full.receivedAmount != null) {
                     append("\n")
-                    append(getString(R.string.invoice_received_line, Format.money(totals.received)))
+                    append(getString(R.string.invoice_received_line, Format.moneyLtr(totals.received)))
                     append("\n")
                     append(getString(R.string.invoice_balance_due_line, Format.signedIfNegative(totals.balanceDue)))
                 }

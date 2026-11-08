@@ -141,8 +141,9 @@ fun EntryEditor(
     var qarz by remember { mutableStateOf(existing?.isQarzeHasna ?: false) }
     var doubtful by remember { mutableStateOf(existing?.recovery == Recovery.DOUBTFUL) }
     // A new customer's "I got" starts as Cash, as on the phone (21 Oct 2026); a supplier's has no method (goods on
-    // credit were not paid by any way: 8 Nov 2026 review, C2); an edited entry keeps its own.
-    var method by remember { mutableStateOf(if (existing == null) (if (isCustomer) PaymentMethod.CASH else null) else existing.paymentMethod) }
+    // credit were not paid by any way: 8 Nov 2026 review, C2); money PAID to a supplier starts as Cash too (M40), the one way
+    // the drawer learns it left; an edited entry keeps its own.
+    var method by remember { mutableStateOf(if (existing == null) (if (isCustomer != isGiven) PaymentMethod.CASH else null) else existing.paymentMethod) }
     var paymentRef by remember { mutableStateOf(existing?.paymentRef.orEmpty()) }
     var picking by remember { mutableStateOf(false) }
     var pickingTime by remember { mutableStateOf(false) }
@@ -323,8 +324,8 @@ fun EntryEditor(
                 isQarzeHasna = isGiven && qarz && items.isEmpty(),
                 recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN,
                 // Goods coming back are not money in any way (the phone's rule): no method.
-                paymentMethod = if (isGiven) base.paymentMethod else if (items.isNotEmpty() || !isCustomer) null else method,
-                paymentRef = if (isGiven) base.paymentRef else if (items.isNotEmpty() || !isCustomer) null else PaymentRef.clean(method, paymentRef),
+                paymentMethod = if (isGiven && isCustomer) base.paymentMethod else if (items.isNotEmpty() || isCustomer == isGiven) null else method,
+                paymentRef = if (isGiven && isCustomer) base.paymentRef else if (items.isNotEmpty() || isCustomer == isGiven) null else PaymentRef.clean(method, paymentRef),
                 rateType = kept,
                 billPhotoPath = photoPath
             ),
@@ -518,7 +519,7 @@ fun EntryEditor(
                 }
             }
 
-            if (!isGiven && isCustomer && !(isReturn && all.isNotEmpty())) {
+            if (isCustomer != isGiven && !((isReturn || isGiven) && all.isNotEmpty())) {
                 // How it was paid: null unless chosen, as on the phone. The day's cash count
                 // (Cashbook, Close the day) counts only khata money marked Cash. Goods coming back were not paid.
                 Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)

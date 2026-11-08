@@ -947,10 +947,8 @@ private fun AllTicketsDialog(
 }
 
 /** The tickets whose number or customer holds [query] (any case, any digits); all of them for a blank one. */
-internal fun ticketsMatching(rows: List<SaleSummary>, query: String): List<SaleSummary> {
-    val q = com.innovation313.roshankhata.data.Digits.toLatin(query.trim()).lowercase()
-    if (q.isEmpty()) return rows
-    return rows.filter { s -> s.saleNumber.lowercase().contains(q) || (s.customerName?.lowercase()?.contains(q) == true) }
+internal fun ticketsMatching(rows: List<SaleSummary>, query: String): List<SaleSummary> =
+    com.innovation313.roshankhata.data.SaleSearch.matching(rows, query)
 }
 
 /** How far back the counter's ticket list reaches, as the phone's (CounterSaleActivity.showRecent). */

@@ -289,7 +289,7 @@ class BillScanFlow(
             // Kotlin cannot smart-cast another module's property.
             val paidAmount = payment.amount
             if (paidAmount != null) {
-                line(activity.getString(R.string.payment_scan_amount, Format.money(paidAmount)), bold = true)
+                line(activity.getString(R.string.payment_scan_amount, Format.moneyLtr(paidAmount)), bold = true)
             } else {
                 line(activity.getString(R.string.payment_scan_no_amount), R.color.gold_accent, bold = true)
             }
@@ -370,7 +370,7 @@ class BillScanFlow(
             if (showSupplier) bill.supplierName?.let { line(activity.getString(R.string.bill_scan_supplier, it), bold = true) }
             bill.billNumber?.let { line(activity.getString(R.string.bill_scan_number, it)) }
             bill.billDate?.let { line(activity.getString(R.string.bill_scan_date, Format.dateOnly(it))) }
-            bill.total?.let { line(activity.getString(R.string.bill_scan_total, Format.money(it)), bold = true) }
+            bill.total?.let { line(activity.getString(R.string.bill_scan_total, Format.moneyLtr(it)), bold = true) }
 
             val boxes = bill.items.map { item ->
                 CheckBox(activity).apply {
@@ -394,7 +394,7 @@ class BillScanFlow(
                 if (kotlin.math.abs(sum - billTotal) < 1.0) {
                     line(activity.getString(R.string.bill_scan_sum_matches), R.color.green_got_text, bold = true)
                 } else {
-                    line(activity.getString(R.string.bill_scan_sum_differs, Format.money(sum), Format.money(billTotal)), R.color.gold_accent, bold = true)
+                    line(activity.getString(R.string.bill_scan_sum_differs, Format.moneyLtr(sum), Format.moneyLtr(billTotal)), R.color.gold_accent, bold = true)
                 }
             }
             if (bill.items.isEmpty()) line(activity.getString(R.string.bill_scan_no_items), R.color.text_muted)

@@ -26,7 +26,7 @@ object SeasonText {
             val n = name(context, r.season)
             val at = r.clearedAt
             when {
-                at == null -> context.getString(R.string.season_rec_due, n, Format.money(r.outstanding))
+                at == null -> context.getString(R.string.season_rec_due, n, Format.moneyLtr(r.outstanding))
                 else -> {
                     val d = SeasonBook.daysBetween(SeasonBook.harvestEnd(r.season), at)
                     if (d > 0) Digits.quantity(context.resources, R.plurals.season_rec_after, d, n, d)

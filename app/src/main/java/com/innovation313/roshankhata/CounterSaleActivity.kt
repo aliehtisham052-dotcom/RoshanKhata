@@ -229,7 +229,7 @@ class CounterSaleActivity : BaseActivity() {
             var decimals = com.innovation313.roshankhata.data.ScaleCode.decimalsOf(book[com.innovation313.roshankhata.data.BookSettings.SCALE_PRICE_DECIMALS])
             val decimalsLabel = android.widget.TextView(this@CounterSaleActivity).apply { setText(R.string.scale_price_decimals); textSize = 14f }
             val example = android.widget.TextView(this@CounterSaleActivity).apply { textSize = 13f }
-            fun showExample() { example.text = getString(R.string.scale_price_example, com.innovation313.roshankhata.ui.Format.money(com.innovation313.roshankhata.data.ScaleCode.example(decimals))) }
+            fun showExample() { example.text = getString(R.string.scale_price_example, com.innovation313.roshankhata.ui.Format.moneyLtr(com.innovation313.roshankhata.data.ScaleCode.example(decimals))) }
             val decimalsGroup = android.widget.RadioGroup(this@CounterSaleActivity).apply {
                 orientation = android.widget.RadioGroup.HORIZONTAL
                 (0..3).forEach { d ->
@@ -347,7 +347,7 @@ class CounterSaleActivity : BaseActivity() {
         // A cashier's discount past the cap waits for a manager's PIN (POS Phase 5).
         val discounts = draft.allDiscounts
         if (discountBy == null && access.discountNeedsOverride(discounts, draft.grossTotal)) {
-            message = getString(R.string.access_discount_cap, com.innovation313.roshankhata.ui.Format.money(draft.grossTotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
+            message = getString(R.string.access_discount_cap, com.innovation313.roshankhata.ui.Format.moneyLtr(draft.grossTotal * com.innovation313.roshankhata.data.Access.CASHIER_DISCOUNT_CAP))
             com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.DISCOUNT_ANY, getString(R.string.pos_discount)) { by -> complete(priceBy, by ?: com.innovation313.roshankhata.data.Access.OWNER, creditBy) }
             return
         }
@@ -355,12 +355,12 @@ class CounterSaleActivity : BaseActivity() {
         val party = parties.firstOrNull { it.id == draft.partyId }
         val over = draft.creditOver(party?.balance, party?.creditLimit)
         if (over != null && creditBy == null && !access.can(com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER)) {
-            val what = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
+            val what = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.moneyLtr(over.first), com.innovation313.roshankhata.ui.Format.moneyLtr(over.second))
             message = what
             com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER, what) { by -> complete(priceBy, discountBy, by ?: com.innovation313.roshankhata.data.Access.OWNER) }
             return
         }
-        if (over != null && creditBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.money(over.first), com.innovation313.roshankhata.ui.Format.money(over.second))
+        if (over != null && creditBy == null) message = getString(R.string.pos_credit_limit, com.innovation313.roshankhata.ui.Format.moneyLtr(over.first), com.innovation313.roshankhata.ui.Format.moneyLtr(over.second))
         val change = draft.change
         val priceDetail = if (repriced.isNotEmpty()) draft.repricedDetail() else null
         // A manager's discount and every price that is not the product's own are written down with the sale,
@@ -523,21 +523,37 @@ class CounterSaleActivity : BaseActivity() {
         }
     }
 
-    /** The last twenty tickets; one tapped offers a return (goods back) or a void. */
+    /** The last 60 days' tickets, searchable by number or customer (M69); one tapped offers a return (goods back) or a void. */
     private fun showRecent() {
         lifecycleScope.launch {
             val now = System.currentTimeMillis()
-            val rows = withContext(Dispatchers.IO) { dao.salesBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000).take(100) }
+            val rows = withContext(Dispatchers.IO) { dao.salesBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000) }
             if (rows.isEmpty()) { toast(R.string.pos_lines_empty); return@launch }
-            val labels = rows.map { s ->
-                s.saleNumber + " · " + (s.customerName ?: getString(R.string.pos_walk_in)) + " · " + com.innovation313.roshankhata.ui.Format.money(s.grandTotal) +
-                    (if (s.status == com.innovation313.roshankhata.data.SaleStatus.VOID) " · " + getString(R.string.pos_status_void) else "")
-            }.toTypedArray()
-            MaterialAlertDialogBuilder(this@CounterSaleActivity)
-                .setTitle(R.string.pos_recent_sales)
-                .setItems(labels) { _, i ->
-                    val s = rows[i]
-                    if (s.status != com.innovation313.roshankhata.data.SaleStatus.DONE) return@setItems
+            val box = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this@CounterSaleActivity)).apply { hint = getString(R.string.pos_ticket_search) }
+            val adapter = android.widget.ArrayAdapter<String>(this@CounterSaleActivity, android.R.layout.simple_list_item_1, ArrayList())
+            val list = android.widget.ListView(this@CounterSaleActivity).apply { this.adapter = adapter }
+            var shown = rows
+            fun refresh() {
+                shown = com.innovation313.roshankhata.data.SaleSearch.matching(rows, box.text.toString())
+                adapter.clear()
+                adapter.addAll(shown.map { s ->
+                    s.saleNumber + " · " + (s.customerName ?: getString(R.string.pos_walk_in)) + " · " + com.innovation313.roshankhata.ui.Format.money(s.grandTotal) +
+                        (if (s.status == com.innovation313.roshankhata.data.SaleStatus.VOID) " · " + getString(R.string.pos_status_void) else "")
+                })
+            }
+            box.addTextChangedListener(object : android.text.TextWatcher {
+                override fun afterTextChanged(e: android.text.Editable?) = refresh()
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            })
+            refresh()
+            val column = com.innovation313.roshankhata.ui.FormBox.column(this@CounterSaleActivity, box)
+            column.addView(list, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (resources.displayMetrics.heightPixels * 0.5).toInt()))
+            var dlg: androidx.appcompat.app.AlertDialog? = null
+            list.setOnItemClickListener { _, _, i, _ ->
+                    val s = shown[i]
+                    dlg?.dismiss()
+                    if (s.status != com.innovation313.roshankhata.data.SaleStatus.DONE) return@setOnItemClickListener
                     lifecycleScope.launch {
                         // The ticket's posted returns: each can be printed as a credit note (29 Oct 2026).
                         val back = withContext(Dispatchers.IO) { runCatching { dao.returnsOfSale(s.id) }.getOrDefault(emptyList()) }
@@ -564,10 +580,86 @@ class CounterSaleActivity : BaseActivity() {
                             .setNegativeButton(R.string.cancel, null)
                             .show()
                     }
-                }
+            }
+            dlg = MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                .setTitle(R.string.pos_recent_sales)
+                .setView(column)
+                .setNeutralButton(R.string.doc_kind_credit_note) { _, _ -> showReturns() }
                 .setNegativeButton(R.string.close, null)
                 .show()
         }
+    }
+
+    /** The last 60 days' returns, searchable: a credit note to print, or the return voided (M69, 8 Nov 2026). */
+    private fun showReturns() {
+        lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            val all = withContext(Dispatchers.IO) { runCatching { dao.returnsBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000) }.getOrDefault(emptyList()) }
+            if (all.isEmpty()) { toast(R.string.pos_lines_empty); return@launch }
+            val box = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this@CounterSaleActivity)).apply { hint = getString(R.string.pos_ticket_search) }
+            val adapter = android.widget.ArrayAdapter<String>(this@CounterSaleActivity, android.R.layout.simple_list_item_1, ArrayList())
+            val list = android.widget.ListView(this@CounterSaleActivity).apply { this.adapter = adapter }
+            var shown = all
+            fun refresh() {
+                shown = com.innovation313.roshankhata.data.SaleSearch.matchingReturns(all, box.text.toString())
+                adapter.clear()
+                adapter.addAll(shown.map { r ->
+                    r.returnNumber + " · " + (r.customerName ?: getString(R.string.pos_walk_in)) + " · " + com.innovation313.roshankhata.ui.Format.money(r.total) +
+                        (if (r.status != "done") " · " + getString(R.string.pos_status_void) else "")
+                })
+            }
+            box.addTextChangedListener(object : android.text.TextWatcher {
+                override fun afterTextChanged(e: android.text.Editable?) = refresh()
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            })
+            refresh()
+            val column = com.innovation313.roshankhata.ui.FormBox.column(this@CounterSaleActivity, box)
+            column.addView(list, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (resources.displayMetrics.heightPixels * 0.5).toInt()))
+            var dlg: androidx.appcompat.app.AlertDialog? = null
+            list.setOnItemClickListener { _, _, i, _ ->
+                val r = shown[i]
+                dlg?.dismiss()
+                val actions = if (r.status == "done") arrayOf(getString(R.string.doc_kind_credit_note), getString(R.string.pos_void_return)) else arrayOf(getString(R.string.doc_kind_credit_note))
+                MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                    .setTitle(r.returnNumber)
+                    .setItems(actions) { _, which ->
+                        if (which == 0) openCreditNote(r.id)
+                        else com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void_return) + " " + r.returnNumber) { by -> askVoidReturn(r.id, r.returnNumber, by) }
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            }
+            dlg = MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                .setTitle(R.string.doc_kind_credit_note)
+                .setView(column)
+                .setNegativeButton(R.string.close, null)
+                .show()
+        }
+    }
+
+    private fun askVoidReturn(returnId: Long, number: String, allowedBy: String?) {
+        val input = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this)).apply { hint = getString(R.string.pos_void_reason) }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pos_void_return)
+            .setMessage(number)
+            .setView(com.innovation313.roshankhata.ui.FormBox.column(this, input))
+            .setPositiveButton(R.string.pos_void_return) { _, _ ->
+                val reason = input.text.toString().trim()
+                if (reason.isEmpty()) { toast(R.string.pos_err_reason); return@setPositiveButton }
+                lifecycleScope.launch {
+                    val refusal = withContext(Dispatchers.IO) { runCatching { dao.returnVoidRefusal(returnId) }.getOrNull() }
+                    val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidReturn(returnId, reason, allowedBy = allowedBy) }.getOrDefault(false) }
+                    if (ok) { com.innovation313.roshankhata.data.Snapshots.afterSale(this@CounterSaleActivity); reload() }
+                    message = when {
+                        ok -> getString(R.string.pos_voided) + " " + number
+                        refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.DAY_CLOSED -> getString(R.string.pos_return_void_day_closed)
+                        else -> getString(R.string.pos_void_failed)
+                    }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     /** A posted ticket's receipt, printed or shared again from Recent sales. */
@@ -608,7 +700,7 @@ class CounterSaleActivity : BaseActivity() {
             if (!draft.isEmpty) { message = getString(R.string.pos_void_till_busy); return@launch }
             draft.startExchange(ret)
             message = if (ret.refundMethod == com.innovation313.roshankhata.data.PaymentMethod.CASH && ret.refundAmount > 0.0)
-                getString(R.string.pos_exchange_started_cash, ret.returnNumber, com.innovation313.roshankhata.ui.Format.money(ret.refundAmount))
+                getString(R.string.pos_exchange_started_cash, ret.returnNumber, com.innovation313.roshankhata.ui.Format.moneyLtr(ret.refundAmount))
             else getString(R.string.pos_exchange_started, ret.returnNumber)
         }
     }

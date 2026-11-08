@@ -285,7 +285,7 @@ class KhataActivity : BaseActivity() {
         if (carryAmount > 0.0) {
             carryBar = com.google.android.material.snackbar.Snackbar.make(
                 findViewById(android.R.id.content),
-                getString(R.string.calc_pick_party, Format.money(carryAmount)),
+                getString(R.string.calc_pick_party, Format.moneyLtr(carryAmount)),
                 com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE
             ).setAction(R.string.cancel) { finish() }
                 .setAnchorView(R.id.fabAddParty)
@@ -1745,7 +1745,7 @@ class KhataActivity : BaseActivity() {
         val cards = choices.map { p ->
             ChoiceSheet.person(Format.isolate(p.name), p.phone?.takeIf { it.isNotBlank() }?.let { Format.ltr(it) })
         }
-        ChoiceSheet.show(this, getString(R.string.voice_which_party, Format.money(amount)), cards) { which ->
+        ChoiceSheet.show(this, getString(R.string.voice_which_party, Format.moneyLtr(amount)), cards) { which ->
             val chosen = choices[which]
             startActivity(
                 Intent(this, PartyDetailActivity::class.java)

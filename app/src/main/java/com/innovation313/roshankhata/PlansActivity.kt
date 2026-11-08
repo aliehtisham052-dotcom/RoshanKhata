@@ -136,7 +136,7 @@ class PlansActivity : BaseActivity() {
                 it.name.equals(etParty.text.toString().trim(), ignoreCase = true)
             }
             if (party != null && Money.isPositive(party.balance)) {
-                tvOwes.text = getString(R.string.plan_owes_now, Format.money(party.balance))
+                tvOwes.text = getString(R.string.plan_owes_now, Format.moneyLtr(party.balance))
                 if (etTotal.text.isNullOrBlank()) {
                     etTotal.setText(Format.plain(party.balance))
                 }

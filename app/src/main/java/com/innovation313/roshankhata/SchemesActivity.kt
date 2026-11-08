@@ -115,14 +115,14 @@ class SchemesActivity : BaseActivity() {
         v.findViewById<TextView>(R.id.tvSchemeEarned).text = when {
             achieved == null -> getString(R.string.scheme_nothing_yet)
             s.rewardKind == SchemeMath.UNITS -> getString(R.string.scheme_earned, rewardText(s, achieved))
-            else -> getString(R.string.scheme_earned, p.earned?.let { Format.money(it) } ?: rewardText(s, achieved))
+            else -> getString(R.string.scheme_earned, p.earned?.let { Format.moneyLtr(it) } ?: rewardText(s, achieved))
         }
         val status = SchemeMath.status(s, p, now)
         v.findViewById<TextView>(R.id.tvSchemeStatus).apply {
             text = when (status) {
                 SchemeMath.Status.RUNNING -> getString(R.string.scheme_status_running)
                 SchemeMath.Status.CLAIM_DUE -> getString(R.string.scheme_status_claim_due)
-                SchemeMath.Status.CLAIMED -> getString(R.string.scheme_status_claimed, Format.money(s.claimedAmount ?: 0.0))
+                SchemeMath.Status.CLAIMED -> getString(R.string.scheme_status_claimed, Format.moneyLtr(s.claimedAmount ?: 0.0))
                 SchemeMath.Status.MISSED -> getString(R.string.scheme_status_missed)
             }
             setTextColor(ContextCompat.getColor(this@SchemesActivity,

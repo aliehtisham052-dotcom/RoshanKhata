@@ -140,7 +140,7 @@ class InsightsActivity : BaseActivity() {
 
         fun select(index: Int) {
             val m = months[index]
-            pick.text = getString(R.string.insights_monthly_pick, m.fullLabel, Format.money(m.total))
+            pick.text = getString(R.string.insights_monthly_pick, m.fullLabel, Format.moneyLtr(m.total))
             bars.forEachIndexed { i, bar ->
                 bar.setBackgroundResource(
                     if (i == index) R.drawable.bg_month_bar_selected else R.drawable.bg_month_bar

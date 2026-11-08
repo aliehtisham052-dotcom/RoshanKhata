@@ -679,7 +679,7 @@ class InvoiceEditorActivity : BaseActivity() {
         val d = draft()
         val totals = d.totals(items)
         tvItemsCount.text = Digits.string(resources, R.string.invoice_editor_item_count, items.size)
-        tvItemsTotal.text = getString(R.string.invoice_editor_total, Format.money(totals.grandTotal))
+        tvItemsTotal.text = getString(R.string.invoice_editor_total, Format.moneyLtr(totals.grandTotal))
         // A challan carries no total: the count alone.
         tvItemsTotal.visibility = if (prices) View.VISIBLE else View.GONE
     }
@@ -796,7 +796,7 @@ class InvoiceEditorActivity : BaseActivity() {
             val base = draft()
             val disc = if (useDiscount) discountValue() else null
             val label = if (useCharge) etChargeLabel.text.toString().trim().ifEmpty { null } else base.additionalChargeLabel
-            val charge = if (useCharge) com.innovation313.roshankhata.ui.CalcPad.figure(etChargeAmount.text) else base.additionalChargeAmount
+            val charge = if (useCharge) com.innovation313.roshankhata.ui.CalcPad.signedFigure(etChargeAmount.text) else base.additionalChargeAmount
             val hasCharge = label != null && charge != null
             return base.copy(
                 discountPercent = if (!useDiscount) base.discountPercent else if (inMoney()) null else disc,
@@ -866,7 +866,7 @@ class InvoiceEditorActivity : BaseActivity() {
             if (useTax) taxPercent = Digits.parse(etTax.text)
             if (useCharge) {
                 chargeLabel = etChargeLabel.text.toString().trim().ifEmpty { null }
-                chargeAmount = com.innovation313.roshankhata.ui.CalcPad.figure(etChargeAmount.text)
+                chargeAmount = com.innovation313.roshankhata.ui.CalcPad.signedFigure(etChargeAmount.text)
             }
             if (useReceived) receivedAmount = com.innovation313.roshankhata.ui.CalcPad.figure(etReceived.text)
             if (useNote) note = etNote.text.toString().trim().ifEmpty { null }

@@ -112,6 +112,12 @@ object CalcPad {
     fun figure(text: CharSequence?): Double? =
         text?.toString()?.let { Calc.evalPad(it) }?.let { kotlin.math.abs(it) }
 
+    /**
+     * The same, keeping the sign (M71, 8 Nov 2026): an invoice made from a ticket carries the ticket's round-off as its
+     * extra charge, and a round-off DOWN is negative; [figure] made it a positive charge when Apply was pressed.
+     */
+    fun signedFigure(text: CharSequence?): Double? = text?.toString()?.let { Calc.evalPad(it) }
+
     /** What a box that takes the pad accepts, typed or added from code. */
     const val DIGITS = "0123456789.+−×÷*/-%"
 

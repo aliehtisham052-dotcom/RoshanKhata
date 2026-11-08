@@ -241,9 +241,9 @@ class CashbookActivity : BaseActivity() {
                     }
                     val (words, colour, wash) = when (glyph) {
                         com.innovation313.roshankhata.ui.ResultMark.Glyph.PLUS ->
-                            Triple(getString(R.string.dayclose_over, Format.money(d)), R.color.gold_ink, R.color.wash_gold)
+                            Triple(getString(R.string.dayclose_over, Format.moneyLtr(d)), R.color.gold_ink, R.color.wash_gold)
                         com.innovation313.roshankhata.ui.ResultMark.Glyph.MINUS ->
-                            Triple(getString(R.string.dayclose_short, Format.money(-d)), R.color.red_gave_text, R.color.wash_gave)
+                            Triple(getString(R.string.dayclose_short, Format.moneyLtr(-d)), R.color.red_gave_text, R.color.wash_gave)
                         else -> Triple(getString(R.string.dayclose_match), R.color.green_got_text, R.color.wash_got)
                     }
                     val ink = androidx.core.content.ContextCompat.getColor(this@CashbookActivity, colour)

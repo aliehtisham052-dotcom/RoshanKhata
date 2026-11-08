@@ -80,9 +80,9 @@ class ExpiringAdapter(
 
         // Who to return it to is half the point of the warning.
         holder.tvSupplier.text = if (e.billNumber.isNullOrBlank()) {
-            ctx.getString(R.string.from_supplier, e.partyName)
+            ctx.getString(R.string.from_supplier, Format.isolate(e.partyName))
         } else {
-            ctx.getString(R.string.from_supplier_bill, e.partyName, e.billNumber)
+            ctx.getString(R.string.from_supplier_bill, Format.isolate(e.partyName), Format.ltr(e.billNumber.orEmpty()))
         }
     }
 }
