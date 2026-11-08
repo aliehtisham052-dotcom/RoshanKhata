@@ -4133,4 +4133,8 @@
     <string name="dayclose_correct_saved">গণনা সংশোধিত হয়েছে। পুরোনো অঙ্ক \"কে কী করেছে\"-তে থাকবে।</string>
     <string name="audit_day_counted">গোনা হয়েছে %1$s</string>
     <string name="audit_day_counted_was">গোনা হয়েছে %1$s (আগে %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এটি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+        <item quantity="other">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এগুলো রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+    </plurals>
 </resources>

@@ -4298,4 +4298,8 @@
     <string name="dayclose_correct_saved">Count corrected. The old figure stays in Who did what.</string>
     <string name="audit_day_counted">Counted %1$s</string>
     <string name="audit_day_counted_was">Counted %1$s (was %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">Delete %1$d selected entry? It will move to the Recycle Bin. You can restore it within 30 days.</item>
+        <item quantity="other">Delete %1$d selected entries? They will move to the Recycle Bin. You can restore them within 30 days.</item>
+    </plurals>
 </resources>

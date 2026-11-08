@@ -4068,4 +4068,7 @@
     <string name="dayclose_correct_saved">Hitungan dikoreksi. Angka lama tetap ada di Siapa melakukan apa.</string>
     <string name="audit_day_counted">Dihitung %1$s</string>
     <string name="audit_day_counted_was">Dihitung %1$s (sebelumnya %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="other">Hapus %1$d catatan terpilih? Catatan akan dipindahkan ke Tempat Sampah. Anda dapat memulihkannya dalam 30 hari.</item>
+    </plurals>
 </resources>

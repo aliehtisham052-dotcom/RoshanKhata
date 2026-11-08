@@ -4345,4 +4345,12 @@
     <string name="dayclose_correct_saved">تم تصحيح العدّ. يبقى الرقم القديم في سجل «من فعل ماذا».</string>
     <string name="audit_day_counted">المعدود %1$s</string>
     <string name="audit_day_counted_was">المعدود %1$s (كان %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="zero">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="one">حذف قيد واحد محدد؟ سينتقل إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</item>
+        <item quantity="two">حذف قيدين محددين؟ سينتقلان إلى سلة المحذوفات. يمكنك استعادتهما خلال 30 يومًا.</item>
+        <item quantity="few">حذف %1$d قيود محددة؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="many">حذف %1$d قيدًا محددًا؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="other">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+    </plurals>
 </resources>

@@ -4113,4 +4113,8 @@
     <string name="dayclose_correct_saved">شمارش اصلاح شد. رقم قبلی در «چه کسی چه کرد» می‌ماند.</string>
     <string name="audit_day_counted">شمرده‌شده %1$s</string>
     <string name="audit_day_counted_was">شمرده‌شده %1$s (قبلاً %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شود. می‌توانید تا 30 روز آن را بازگردانید.</item>
+        <item quantity="other">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا 30 روز آن‌ها را بازگردانید.</item>
+    </plurals>
 </resources>

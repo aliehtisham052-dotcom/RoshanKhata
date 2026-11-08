@@ -4085,4 +4085,8 @@
     <string name="dayclose_correct_saved">گنتی درست ہو گئی۔ پرانا اعداد \"کس نے کیا کیا\" میں محفوظ ہے۔</string>
     <string name="audit_day_counted">گنا گیا %1$s</string>
     <string name="audit_day_counted_was">گنا گیا %1$s (پہلے %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d چنی گئی انٹری حذف کریں؟ یہ ری سائیکل بن میں چلی جائے گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+        <item quantity="other">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+    </plurals>
 </resources>

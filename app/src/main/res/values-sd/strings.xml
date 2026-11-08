@@ -4113,4 +4113,8 @@
     <string name="dayclose_correct_saved">ڳڻپ درست ٿي وئي. پراڻو انگ \"ڪنهن ڇا ڪيو\" ۾ محفوظ آهي.</string>
     <string name="audit_day_counted">ڳڻيو ويو %1$s</string>
     <string name="audit_day_counted_was">ڳڻيو ويو %1$s (اڳ %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d چونڊيل داخلا ختم ڪجي؟ اها ري سائيڪل بن ۾ هلي ويندي. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
+        <item quantity="other">%1$d چونڊيل داخلائون ختم ڪجن؟ اهي ري سائيڪل بن ۾ هليون وينديون. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
+    </plurals>
 </resources>

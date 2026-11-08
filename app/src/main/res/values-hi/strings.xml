@@ -4133,4 +4133,8 @@
     <string name="dayclose_correct_saved">गिनती सही हो गई। पुराना आँकड़ा \"किसने क्या किया\" में रहेगा।</string>
     <string name="audit_day_counted">गिना गया %1$s</string>
     <string name="audit_day_counted_was">गिना गया %1$s (पहले %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">चुनी हुई %1$d एंट्री मिटाएँ? यह रीसायकल बिन में जाएगी। 30 दिन के भीतर वापस ला सकते हैं।</item>
+        <item quantity="other">चुनी हुई %1$d एंट्रियाँ मिटाएँ? ये रीसायकल बिन में जाएँगी। 30 दिन के भीतर वापस ला सकते हैं।</item>
+    </plurals>
 </resources>

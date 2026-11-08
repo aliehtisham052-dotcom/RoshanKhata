@@ -4085,4 +4085,8 @@
     <string name="dayclose_correct_saved">Ginti durust ho gayi. Purana figure \"Kis ne kya kiya\" mein mehfooz hai.</string>
     <string name="audit_day_counted">Gini gayi %1$s</string>
     <string name="audit_day_counted_was">Gini gayi %1$s (pehle %2$s)</string>
+    <plurals name="delete_selected_entries_confirm">
+        <item quantity="one">%1$d chuni gayi entry delete karein? Ye Recycle Bin mein chali jayegi. Aap 30 din ke andar wapas la sakte hain.</item>
+        <item quantity="other">%1$d chuni gayi entries delete karein? Ye Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
+    </plurals>
 </resources>
