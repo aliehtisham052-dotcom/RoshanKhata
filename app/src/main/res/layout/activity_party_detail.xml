@@ -721,8 +721,7 @@
                 app:cornerRadius="10dp"
                 android:textAllCaps="false"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:maxWidth="130dp" />
+                android:ellipsize="end" />
         </LinearLayout>
 
     </FrameLayout>

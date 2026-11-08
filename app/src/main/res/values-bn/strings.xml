@@ -4,6 +4,7 @@
     <string name="welcome_body">রোশন খাতা আপনার হিসাব এই ফোনেই রাখে। নিজের Google অ্যাকাউন্ট যুক্ত করুন, যাতে খাতার ব্যাকআপ আপনার Drive-এ থাকে — আপনার ডেটা, আপনার অ্যাকাউন্টে।</string>
     <string name="welcome_connect">Google দিয়ে এগিয়ে যান</string>
     <string name="welcome_skip">পরে</string>
+    <string name="home_backup_to_drive">Google Drive-এ ব্যাকআপ নিন</string>
 
     <!-- Onboarding: first-run coach marks on the Home screen — a bubble with
          an arrow points at each real control in turn, Skip / Next / Got it.
@@ -94,7 +95,7 @@
     <string name="waris_not_open_yet">খাতাটি এখনো খোলেনি।</string>
     <string name="waris_save_card">ওয়ারিশ কার্ড সংরক্ষণ করুন</string>
     <string name="waris_card_heading">ওয়ারিশ কার্ড · %1$s</string>
-    <string name="waris_card_steps">এই কার্ডটি নগদ টাকা বা চেকবইয়ের মতো যত্নে রাখুন: যার কাছে এটি বা এর ছবি থাকবে, সে আপনার নামে খাতা চাইতে পারবে, আর মালিক সময়মতো না না করলে তা খুলেও ফেলতে পারবে। এই ফোন হারালে নতুন ফোন থেকে স্ক্যান করুন: %1$s → %2$s → মালিকের কোড স্ক্যান করুন।</string>
+    <string name="waris_card_steps">এই কার্ডটি নগদ টাকা বা চেকবইয়ের মতো যত্নে রাখুন: যার কাছে এটি বা এর ছবি থাকবে, সে আপনার নামে খাতা চাইতে পারবে, আর মালিক সময়মতো নিষেধ না করলে তা খুলেও ফেলতে পারবে। এই ফোন হারালে নতুন ফোন থেকে স্ক্যান করুন: %1$s → %2$s → মালিকের কোড স্ক্যান করুন।</string>
     <string name="waris_card_read">আপনি আবার %1$s-এর সাথে যুক্ত হয়েছেন।</string>
     <string name="waris_forget">এই খাতা ভুলে যান</string>
     <string name="waris_forget_body">এই ফোন থেকে আপনি আর %1$s-এর খাতার অনুরোধ করতে পারবেন না। প্রয়োজন হতে পারলে আপনার ওয়ারিশ কার্ড রেখে দিন।</string>
@@ -165,7 +166,7 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">ক্যালকুলেটর</string>
     <string name="coach_desc_calc">খাতার পাশেই দ্রুত হিসাব — মার্জিন, যোগফল, ভাগ।</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
     <string name="net_balance">নিট ব্যালেন্স</string>
     <string name="home_sec_daily">প্রতিদিন</string>
@@ -204,6 +205,7 @@
     <string name="add_party_duplicate_name_only">একই রকম গ্রাহক আগে থেকেই আছে: %1$s</string>
     <string name="no_parties_yet">এখনও কোনো গ্রাহক নেই।\n\nপ্রথম গ্রাহক যোগ করুন আর আপনার খাতা শুরু করুন।</string>
     <string name="no_entries_yet">এখনো কোনো এন্ট্রি নেই।</string>
+    <string name="party_entries_hint">এখনো কোনো এন্ট্রি নেই।\nপ্রথম এন্ট্রি লিখতে \u201Cআমি দিয়েছি\u201D বা \u201Cআমি পেয়েছি\u201D চাপুন।</string>
     <string name="entries_no_match">আপনার খোঁজের সাথে কোনো এন্ট্রি মেলেনি।</string>
 
     <string name="i_gave">আমি দিয়েছি</string>
@@ -211,7 +213,7 @@
 
     <string name="you_will_get">আপনি পাবেন</string>
     <string name="you_will_give">আপনি দেবেন</string>
-    <string name="settled">পরিশোধ</string>
+    <string name="settled">পরিশোধিত</string>
     <string name="settled_count">%1$d পরিশোধ</string>
     <string name="all_settled">সব পরিশোধ</string>
     <string name="summary_backup_never">কখনো ব্যাকআপ হয়নি</string>
@@ -394,7 +396,7 @@
     <string name="screen_privacy_turn_off">স্ক্রিনশট চালু রাখুন</string>
     <string name="screen_privacy_explain">এটি চালু করলে রোশন খাতার সব জায়গায় স্ক্রিনশট ও স্ক্রিন রেকর্ডিং বন্ধ হয়ে যায়।\n\nএর মূল্য হলো আপনার নিজের স্ক্রিনশটও বন্ধ হয়। গ্রাহকের খাতার ছবি তুলে পাঠাতে চাইলে এটি চালু থাকা অবস্থায় তা হবে না। শেয়ার ও স্টেটমেন্ট বোতাম তবুও কাজ করে, আর স্ক্রিনশটের চেয়ে পরিষ্কার কপি পাঠায়।\n\nরোজকার কাজে এটি বন্ধ রাখুন। ফোন প্রায়ই অন্যের হাতে থাকলে চালু করুন।</string>
     <string name="screen_privacy_recents_hidden">আপনার Android আগে থেকেই রোশন খাতাকে সাম্প্রতিক অ্যাপের তালিকায় দেখায় না, তাই সেখানে কেউ আপনার খাতা দেখতে পায় না।</string>
-    <string name="screen_privacy_recents_visible">এই Android ১৩-এর চেয়ে পুরোনো, তাই সাম্প্রতিক অ্যাপের তালিকায় আপনার শেষ স্ক্রিন দেখা যেতে পারে। শুধু এই সুইচ সেটি লুকাতে পারে।</string>
+    <string name="screen_privacy_recents_visible">এই Android 13-এর চেয়ে পুরোনো, তাই সাম্প্রতিক অ্যাপের তালিকায় আপনার শেষ স্ক্রিন দেখা যেতে পারে। শুধু এই সুইচ সেটি লুকাতে পারে।</string>
     <string name="app_lock_no_screen_lock">এই ফোনে স্ক্রিন লক দেওয়া নেই। আগে ফোনের সেটিংসে ফিঙ্গারপ্রিন্ট, PIN বা প্যাটার্ন দিন, তারপর অ্যাপ লক আপনার খাতা সুরক্ষিত রাখতে পারবে।</string>
     <string name="app_lock_unavailable">এই ফোনে অ্যাপ লক পাওয়া যায় না।</string>
     <string name="ok">ঠিক আছে</string>
@@ -769,7 +771,7 @@
     <string name="paisa_access_given">নোটিফিকেশন অ্যাক্সেস: দেওয়া হয়েছে</string>
     <string name="paisa_access_not_given">নোটিফিকেশন অ্যাক্সেস: দেওয়া হয়নি</string>
     <string name="paisa_access_button">নোটিফিকেশন অ্যাক্সেস দিন</string>
-    <string name="paisa_access_restricted">Android যদি “Restricted setting” বলে: রোশন খাতা-র App info খুলুন, ⋮ চাপুন, Allow restricted settings বেছে নিন, তারপর আবার চেষ্টা করুন।</string>
+    <string name="paisa_access_restricted">Android যদি “Restricted setting” বলে: রোশন খাতার App info খুলুন, ⋮ চাপুন, Allow restricted settings বেছে নিন, তারপর আবার চেষ্টা করুন।</string>
     <string name="paisa_apps_title">কোন অ্যাপগুলো শোনা হবে</string>
     <string name="paisa_apps_help">শুধু সেই ওয়ালেট ও ব্যাংক অ্যাপগুলো টিক দিন যেখানে গ্রাহকরা আপনাকে টাকা পাঠান। অন্য অ্যাপ নোটিফিকেশন দেখানোর পরে এখানে আসে। SMS অ্যাপ কখনো দেখানো হয় না।</string>
     <string name="paisa_not_installed">%1$s (এই ফোনে নেই)</string>
@@ -783,7 +785,7 @@
     <string name="paisa_tts_settings">কথা বলার সেটিংস খুলুন</string>
     <string name="paisa_test">পরীক্ষা করুন</string>
     <string name="paisa_test_name">আহমেদ</string>
-    <string name="paisa_battery_help">কিছু ফোন পেছনে চলা অ্যাপ বন্ধ করে দেয়। টাকা আসার কথা না শোনা গেলে রোশন খাতা-কে ব্যাটারির বাধা ছাড়া চলতে দিন।</string>
+    <string name="paisa_battery_help">কিছু ফোন পেছনে চলা অ্যাপ বন্ধ করে দেয়। টাকা আসার কথা না শোনা গেলে রোশন খাতাকে ব্যাটারির বাধা ছাড়া চলতে দিন।</string>
     <string name="paisa_battery_button">ব্যাটারি সেটিংস</string>
     <string name="paisa_privacy">রোশন খাতা শুধু আপনার টিক দেওয়া অ্যাপগুলো পড়ে, শুধু এই ফোনে; কিছুই কোথাও পাঠানো হয় না; SMS কখনো পড়া হয় না।</string>
     <string name="paisa_said">%1$s থেকে %2$s এসেছে</string>
@@ -956,8 +958,8 @@
 
     <string name="hide_balance">ব্যালেন্স লুকান</string>
 
-    <string name="powered_by">Innovation-313 দ্বারা চালিত</string>
-    <string name="lock_tagline">Innovation-313 দ্বারা চালিত</string>
+    <string name="powered_by">Innovation 313 দ্বারা চালিত</string>
+    <string name="lock_tagline">Innovation 313 দ্বারা চালিত</string>
 
     <!-- Splash / branding -->
 
@@ -1168,7 +1170,7 @@
     </plurals>
     <string name="copy_balance_owed">%1$s: %2$s বকেয়া (আপনি পাবেন)</string>
     <string name="copy_balance_i_owe">%1$s: %2$s (আপনি দেবেন)</string>
-    <string name="copy_balance_settled">%1$s: পরিশোধ (%2$s)</string>
+    <string name="copy_balance_settled">%1$s: হিসাব মিটেছে (%2$s)</string>
     <string name="copied">কপি হয়েছে</string>
     <string name="receipt_title">রসিদ</string>
     <string name="payment_receipt">পেমেন্ট রসিদ</string>
@@ -1305,7 +1307,7 @@
     <string name="about_privacy_body">সবকিছু এই ফোনেই রাখা হয়। আমরা আপনার গ্রাহক, তাদের নম্বর বা কারও দেনা কখনো দেখি না। ব্যাকআপ যায় আপনার নিজের Google Drive-এ — আমাদের কাছে নয়।</string>
     <string name="about_privacy_body_pc">সবকিছু এই কম্পিউটারেই রাখা হয়। আমরা আপনার গ্রাহক, তাদের নম্বর বা কারও দেনা কখনো দেখি না। ব্যাকআপ থাকে এই কম্পিউটারে আর আপনার বেছে নেওয়া ফোল্ডারে, যেমন USB বা Google Drive-এর ফোল্ডার — আমাদের কাছে নয়।</string>
     <string name="about_privacy_policy">গোপনীয়তা নীতি</string>
-    <string name="about_maker">Innovation-313-এর তৈরি</string>
+    <string name="about_maker">Innovation 313-এর তৈরি</string>
     <string name="party_exists_title">এটি হয়তো আগে থেকেই আপনার খাতায় আছে</string>
     <string name="party_exists_message">এ রকম একটি হিসাব আগে থেকেই খোলা আছে:\n\n%1$s\n\nএকই ব্যক্তি হলে যেটি আছে সেটিই খুলুন। অন্য কেউ হলে — বা ইচ্ছা করে রাখা দ্বিতীয় হিসাব হলে — এগিয়ে গিয়ে যোগ করুন।</string>
     <string name="open_existing">আগেরটি খুলুন</string>
@@ -1911,7 +1913,7 @@
     <string name="entry_share_got">*%1$s*, %2$s তারিখে *%3$s* পাওয়া গেছে। ধন্যবাদ।</string>
     <string name="entry_share_balance">এখন মোট বকেয়া: *%1$s*</string>
     <string name="entry_share_advance">এখন আপনার অগ্রিম: *%1$s*</string>
-    <string name="entry_share_settled">আপনার হিসাব এখন পরিশোধ।</string>
+    <string name="entry_share_settled">আপনার হিসাব এখন মিটে গেছে।</string>
     <string name="entry_share_offer">এটি %1$s-কে WhatsApp-এ পাঠাবেন?</string>
     <string name="entry_share_send">পাঠান</string>
     <string name="party_no_entry_share">এই গ্রাহককে এন্ট্রি WhatsApp করার প্রস্তাব দেবেন না</string>
@@ -2501,7 +2503,7 @@
     <string name="onboard_step">ধাপ %1$s / %2$s</string>
     <string name="help_replay_tour">হোমের পরিচিতি আবার দেখান</string>
     <string name="coach_title_business">ব্যবসা</string>
-    <string name="coach_desc_business">প্রোডাক্ট ও স্টক, ইনভয়েস, দরের তালিকা ও কেনার দর, ইনসাইট, ক্যাশ ফ্লো আর দেরিতে দেওয়াদের ফলো-আপ — দোকানের ব্যবসার দিক।</string>
+    <string name="coach_desc_business">কাউন্টার বিক্রি, প্রোডাক্ট ও স্টক, ইনভয়েস, দরের তালিকা ও কেনার দর, বিক্রয় রিপোর্ট, ইনসাইট, ক্যাশ ফ্লো আর দেরিতে দেওয়াদের ফলো-আপ — দোকানের ব্যবসার দিক।</string>
     <string name="coach_title_tools">টুলস</string>
     <string name="coach_desc_tools">ক্যালকুলেটর, যাকাত, আপনার বিজনেস কার্ড, হোয়াটসঅ্যাপ স্ট্যাটাসের পোস্টার, Google Drive-এ ব্যাকআপ, আর ভুলে মুছে ফেলা জিনিসের জন্য বিন।</string>
     <string name="tile_backup">ব্যাকআপ</string>
@@ -3056,6 +3058,7 @@
     <string name="invoice_filter_ink">কম কালি</string>
     <string name="business_current">এখন খোলা</string>
     <string name="business_switch_open">খুলুন</string>
+    <string name="business_switch_open_named">%1$s খুলুন</string>
     <string name="business_name_needed">আগে ব্যবসার নাম লিখুন।</string>
     <string name="business_not_added">ব্যবসা যোগ হয়নি। যোগ করতে এটি কী বিক্রি করে তা বেছে নিন।</string>
     <string name="biz_card_sec_own">এই কার্ডে</string>
@@ -3313,6 +3316,7 @@
     <string name="stock_low_title">কম স্টক</string>
     <string name="stock_adjustments">সংশোধন</string>
     <string name="po_title">ক্রয় অর্ডার</string>
+    <string name="po_saved">অর্ডার %1$s সেভ হয়েছে</string>
     <string name="po_new">নতুন অর্ডার</string>
     <string name="po_supplier">সরবরাহকারী</string>
     <string name="po_send">WhatsApp-এ পাঠান</string>
@@ -3428,9 +3432,9 @@
     <string name="restore_loss_returns">ফেরত: %1$d</string>
     <string name="restore_loss_cash">ক্যাশবুকের সারি: %1$d</string>
     <string name="restore_loss_cheques">চেক: %1$d</string>
-    <string name="restore_loss_bills">সাপ্লায়ার বিল: %1$d</string>
+    <string name="restore_loss_bills">সরবরাহকারী বিল: %1$d</string>
     <string name="restore_loss_invoices">ইনভয়েস: %1$d</string>
-    <string name="restore_loss_parties">ক্রেতা ও সাপ্লায়ার: %1$d</string>
+    <string name="restore_loss_parties">ক্রেতা ও সরবরাহকারী: %1$d</string>
     <string name="restore_loss_other">কপির পর এখানে করা স্টক গণনা, দিন বন্ধ, শিফট, পয়েন্ট, অর্ডার ও বাতিল: %1$d</string>
     <string name="restore_loss_newest">এখানে সবচেয়ে নতুন: %1$s · কপিতে সবচেয়ে নতুন: %2$s</string>
     <string name="restore_loss_kept">কিছু বদলানোর আগে এই খাতাটি দৈনিক কপিতে রাখা হয়, তাই রিস্টোর ফেরানো যায়।</string>
@@ -3725,7 +3729,7 @@
     <string name="live_status_not_accepted">কম্পিউটার সময়মতো হ্যাঁ বলেনি। যুক্ত করতে এর লাইভ সিঙ্ক কোড আবার স্ক্যান করুন।</string>
     <string name="live_status_not_here">কম্পিউটার সাড়া দিয়েছে, কিন্তু এখন এই খাতা এতে রাখা নেই। কম্পিউটারে এই খাতার ব্যবসা খুলুন।</string>
     <string name="live_status_relay">%1$s এর সাথে ইন্টারনেট দিয়ে লাইভ। শেষ হালনাগাদ: %2$s</string>
-    <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation-313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ 7 দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
+    <string name="live_relay_help">ফোন দোকানের ওয়াই-ফাই থেকে দূরে থাকলে এর বদলগুলো Innovation 313-এর রিলে দিয়ে যায়, এই খাতার নিজের চাবিতে বন্ধ: রিলে সেগুলো পড়তে পারে না, আর সর্বোচ্চ 7 দিন রাখে। দুটো ডিভাইসের জন্য একটাই সুইচ। অ্যাপ বন্ধ থাকলে Google-এর Firebase ফোনকে শুধু জানায় যে কিছু অপেক্ষায় আছে; খাতার কিছুই তার কাছে যায় না।</string>
     <string name="live_relay">ইন্টারনেট দিয়েও</string>
     <string name="wifi_take_too_big">কম্পিউটারের খাতাটি এই ফোনের মেমরি বা খালি জায়গার তুলনায় খুব বড়। অন্য অ্যাপ বন্ধ করে আবার চেষ্টা করুন, অথবা ব্যাকআপ ফাইল দিয়ে খাতাটি সরান।</string>
     <string name="live_devices_open">ডিভাইস ও একসাথে বদল</string>
@@ -3873,7 +3877,7 @@
     <string name="auto_expiry_name">মেয়াদ শেষের আগে ব্যবস্থা</string>
     <string name="auto_expiry_title">মেয়াদ শেষের আগে ব্যবস্থা নিন</string>
     <string name="auto_expiry_body">%1$s, ব্যাচ %2$s: %3$s বাকি, মেয়াদ শেষ %4$s। বিক্রি করুন, ছাড় দিন বা ফেরত দিন।</string>
-    <string name="auto_expiry_expired_body">%1$s, ব্যাচ %2$s: %3$s বাকি, মেয়াদ শেষ হয়েছে %4$s। বিক্রি করবেন না: বাতিল হিসেবে লিখুন বা সাপ্লায়ারকে ফেরত দিন।</string>
+    <string name="auto_expiry_expired_body">%1$s, ব্যাচ %2$s: %3$s বাকি, মেয়াদ শেষ হয়েছে %4$s। বিক্রি করবেন না: বাতিল হিসেবে লিখুন বা সরবরাহকারীকে ফেরত দিন।</string>
     <string name="auto_expiry_expired_title">মেয়াদোত্তীর্ণ মাল তাকে</string>
     <string name="auto_at_time">%1$sটায়</string>
     <string name="auto_pick_hour">সময় বেছে নিন</string>

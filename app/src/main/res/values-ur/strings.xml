@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">روشن کھاتہ</string>
     <string name="welcome_title">آپ کا کھاتا، محفوظ</string>
-    <string name="welcome_body">روشن کھاتہ آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتا آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
+    <string name="welcome_body">روشن کھاتہ آپ کا ریکارڈ اسی فون پر رکھتا ہے۔ اپنا گوگل اکاؤنٹ منسلک کریں تاکہ آپ کا کھاتہ آپ کی ڈرائیو پر محفوظ ہو سکے — آپ کا ڈیٹا، آپ کے اکاؤنٹ میں۔</string>
     <string name="welcome_connect">Google کے ساتھ جاری رکھیں</string>
-    <string name="welcome_skip">شاید بعد میں</string>
+    <string name="welcome_skip">بعد میں</string>
+    <string name="home_backup_to_drive">گوگل ڈرائیو پر بیک اپ کریں</string>
 
     <string name="coach_skip">نظر انداز کریں</string>
     <string name="coach_next">اگلا</string>
@@ -15,7 +16,7 @@
     <string name="coach_desc_nav_cashbook">اپنا روزانہ نقد آمد و خرچ درج کریں۔</string>
     <string name="coach_title_nav_cheques">چیک</string>
     <string name="coach_desc_nav_cheques">وہ چیک جو آپ نے دیے یا وصول کیے، مقررہ تاریخوں کے ساتھ ان کا حساب رکھیں۔</string>
-    <string name="coach_title_nav_plans">پلانز</string>
+    <string name="coach_title_nav_plans">قسطیں</string>
     <string name="coach_desc_nav_plans">ان گاہکوں کے لیے قسطوں کے پلان جو حصوں میں ادائیگی کرتے ہیں۔</string>
         <string name="coach_title_bills">سپلائر بلز</string>
     <string name="coach_desc_bills">سپلائر سے جو خریدا اور جو ابھی دینا باقی ہے، وہ درج کریں۔</string>
@@ -161,9 +162,9 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">کیلکولیٹر</string>
     <string name="coach_desc_calc">کھاتے کے ساتھ فوری حساب — منافع، کل میزان اور تقسیم۔</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
-    <string name="net_balance">کل بیلنس</string>
+    <string name="net_balance">خالص بیلنس</string>
     <string name="home_sec_daily">ہر روز</string>
     <string name="home_sec_business">کاروبار</string>
     <string name="home_today">آج</string>
@@ -196,10 +197,11 @@
     <string name="ledger_report_from">%1$s سے</string>
     <string name="ledger_report_till">%1$s تک</string>
     <string name="add_party">پارٹی شامل کریں</string>
-    <string name="add_party_duplicate_with_phone">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s — %2$s</string>
-    <string name="add_party_duplicate_name_only">ملتا جلتا کسٹمر پہلے سے موجود ہے: %1$s</string>
+    <string name="add_party_duplicate_with_phone">ملتا جلتا گاہک پہلے سے موجود ہے: %1$s — %2$s</string>
+    <string name="add_party_duplicate_name_only">ملتا جلتا گاہک پہلے سے موجود ہے: %1$s</string>
     <string name="no_parties_yet">ابھی کوئی گاہک نہیں۔\n\nپہلا گاہک شامل کریں اور اپنا کھاتہ شروع کریں۔</string>
     <string name="no_entries_yet">ابھی کوئی اندراج نہیں۔</string>
+    <string name="party_entries_hint">ابھی کوئی اندراج نہیں۔\nپہلا اندراج لکھنے کے لیے \u201Cمیں نے دیا\u201D یا \u201Cمیں نے لیا\u201D دبائیں۔</string>
     <string name="entries_no_match">آپ کی تلاش سے کوئی اندراج نہیں ملا۔</string>
 
     <string name="i_gave">میں نے دیا</string>
@@ -560,7 +562,7 @@
     <string name="save_backup">بیک اپ محفوظ کریں</string>
 
     <string name="restore_warning_title">سب کچھ بدل دیں؟</string>
-    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n%7$d رسیدیں\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ کھاتا پہلے روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور وہاں سے واپس ہو سکتا ہے۔</string>
+    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n%7$d رسیدیں\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ کھاتہ پہلے روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور وہاں سے واپس ہو سکتا ہے۔</string>
     <string name="restore_replace">سب کچھ بدل دیں</string>
     <string name="restore_done">بحال ہو گیا</string>
     <string name="restore_failed">بحالی ناکام: %1$s</string>
@@ -605,7 +607,7 @@
     <string name="nav_home">ہوم</string>
     <string name="nav_cashbook">کیش بک</string>
     <string name="nav_cheques">چیک</string>
-    <string name="nav_plans">منصوبے</string>
+    <string name="nav_plans">قسطیں</string>
 
     <string name="more_title">مزید</string>
     <string name="businesses_title">آپ کے کاروبار</string>
@@ -770,7 +772,7 @@
     <string name="paisa_add">کھاتے میں ڈالیں</string>
     <string name="paisa_entry_note">%1$s پر وصول</string>
     <string name="paisa_entry_note_ref">%1$s پر وصول، حوالہ %2$s</string>
-    <string name="no_invoices">ابھی کوئی انوائس نہیں۔\n\nکسٹمر کے لیے پرنٹ ایبل بل بنائیں — نقد سیل یا قیمت کا تخمینہ — بغیر اس کے آپ کے کھاتے یا کسی کے بیلنس کو چھوئے۔</string>
+    <string name="no_invoices">ابھی کوئی انوائس نہیں۔\n\nگاہک کے لیے پرنٹ ایبل بل بنائیں — نقد سیل یا قیمت کا تخمینہ — بغیر اس کے آپ کے کھاتے یا کسی کے بیلنس کو چھوئے۔</string>
     <string name="receipt_credit_slip">ادھار کی پرچی</string>
     <string name="receipt_line_gave">%1$s نے %2$s کو دیا</string>
     <string name="receipt_line_got">%1$s سے وصول ہوا</string>
@@ -922,8 +924,8 @@
 
     <string name="hide_balance">بیلنس چھپائیں</string>
 
-    <string name="powered_by">Innovation-313 کی پیشکش</string>
-    <string name="lock_tagline">Innovation-313 کی پیشکش</string>
+    <string name="powered_by">Innovation 313 کی پیشکش</string>
+    <string name="lock_tagline">Innovation 313 کی پیشکش</string>
 
 
 
@@ -1242,7 +1244,7 @@
     <string name="faq_q_business">میری دو دکانیں ہیں۔ کیا دونوں ایپ میں رکھ سکتا ہوں؟</string>
     <string name="faq_a_business">جی ہاں۔ ہوم اسکرین پر اوپر اپنی دکان کے نام پر دبائیں، پھر نیا کاروبار شامل کریں۔ ہر دکان کا بالکل الگ کھاتہ رہتا ہے — الگ گاہک، اندراجات اور تصاویر — اور ہر ایک کا بیک اپ بھی الگ۔ نام پر دبا کر دکان بدلیں۔ مزید اختیارات کے لیے دیر تک دبائیں — نام بدلیں یا حذف کریں۔</string>
     <string name="faq_q_snapshot">آج کچھ خراب ہو گیا۔ کیا کل والی حالت پر واپس جا سکتا ہوں؟</string>
-    <string name="faq_a_snapshot">جی ہاں۔ ایپ ہر دکان کے کھاتے کی کاپی روزانہ رکھتی ہے، پچھلے سات دن کی۔ بیک اپ اینڈ ریسٹور ← روزانہ کاپیاں کھولیں اور دن چنیں۔ آج کا کھاتہ پہلے محفوظ کر لیا جاتا ہے، اس لیے یہ بھی واپس ہو سکتا ہے۔</string>
+    <string name="faq_a_snapshot">جی ہاں۔ ایپ ہر دکان کے کھاتے کی کاپی روزانہ رکھتی ہے، پچھلے سات دن کی۔ بیک اپ اور بحالی ← روزانہ کاپیاں کھولیں اور دن چنیں۔ آج کا کھاتہ پہلے محفوظ کر لیا جاتا ہے، اس لیے یہ بھی واپس ہو سکتا ہے۔</string>
     <string name="faq_q_lock">کھاتہ دوسروں سے کیسے چھپاؤں؟</string>
     <string name="faq_a_lock">مزید ← ایپ لاک۔ یہ وہی فنگر پرنٹ یا پن استعمال کرتا ہے جو آپ کے فون پر پہلے سے ہے، الگ پاس ورڈ یاد رکھنے کی ضرورت نہیں۔ اس کے لیے فون پر اسکرین لاک لگا ہونا ضروری ہے۔</string>
     <string name="faq_q_hide">کوئی پاس کھڑا ہو تو بیلنس چھپا سکتا ہوں؟</string>
@@ -1265,7 +1267,7 @@
     <string name="about_privacy_body">سب کچھ اسی فون پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ بھی آپ ہی کی گوگل ڈرائیو پر جاتا ہے — ہمارے پاس نہیں۔</string>
     <string name="about_privacy_body_pc">سب کچھ اسی کمپیوٹر پر محفوظ ہے۔ ہم آپ کے گاہک، ان کے نمبر، یا کسی کا واجب کبھی نہیں دیکھتے۔ بیک اپ اسی کمپیوٹر پر اور آپ کے چنے ہوئے فولڈر میں رہتے ہیں، جیسے یو ایس بی یا گوگل ڈرائیو کا فولڈر — ہمارے پاس نہیں۔</string>
     <string name="about_privacy_policy">پرائیویسی پالیسی</string>
-    <string name="about_maker">Innovation-313 کی تیار کردہ</string>
+    <string name="about_maker">Innovation 313 کی تیار کردہ</string>
     <string name="party_exists_title">یہ شاید پہلے سے آپ کے کھاتے میں ہے</string>
     <string name="party_exists_message">اس جیسا ایک کھاتہ پہلے سے کھلا ہے:\n\n%1$s\n\nاگر یہ وہی شخص ہے تو جو پہلے سے ہے وہی کھولیں۔ اگر کوئی اور ہے — یا دوسرا کھاتہ جو آپ جان بوجھ کر رکھتے ہیں — تو شامل کر لیں۔</string>
     <string name="open_existing">موجودہ کھاتہ کھولیں</string>
@@ -1763,7 +1765,7 @@
     <string name="currency_custom">کوئی اور (خود لکھیں)…</string>
     <string name="currency_custom_hint">نشان، زیادہ سے زیادہ 5 حروف</string>
     <string name="bp_trade">دکان کا شعبہ</string>
-    <string name="bp_trade_help">یہ کھاتا کس شعبے کا ہے۔ جو فیچر صرف ایک شعبے کے لیے ہیں، وہ اسی کے مطابق چلیں گے۔</string>
+    <string name="bp_trade_help">یہ کھاتہ کس شعبے کا ہے۔ جو فیچر صرف ایک شعبے کے لیے ہیں، وہ اسی کے مطابق چلیں گے۔</string>
     <string name="trade_agri">زراعت (زرعی ادویات، بیج، فیڈ)</string>
     <string name="trade_medical">میڈیکل اسٹور</string>
     <string name="trade_mobile">موبائل کی دکان</string>
@@ -2453,7 +2455,7 @@
     <string name="onboard_step">مرحلہ %1$s از %2$s</string>
     <string name="help_replay_tour">ہوم کا تعارف دوبارہ دکھائیں</string>
     <string name="coach_title_business">کاروبار</string>
-    <string name="coach_desc_business">پروڈکٹس اور اسٹاک، انوائس، ریٹ لسٹ اور خرید کے ریٹ، انسائٹس، کیش فلو اور تاخیر والوں کا فالو اپ — دکان کا کاروباری حصہ۔</string>
+    <string name="coach_desc_business">کاؤنٹر سیل، پروڈکٹس اور اسٹاک، انوائس، ریٹ لسٹ اور خرید کے ریٹ، سیلز رپورٹ، انسائٹس، کیش فلو اور تاخیر والوں کا فالو اپ — دکان کا کاروباری حصہ۔</string>
     <string name="coach_title_tools">ٹولز</string>
     <string name="coach_desc_tools">کیلکولیٹر، زکوٰۃ، آپ کا بزنس کارڈ، واٹس ایپ اسٹیٹس کے لیے پوسٹر، گوگل ڈرائیو پر بیک اپ، اور غلطی سے ڈیلیٹ ہونے والی چیزوں کے لیے بن۔</string>
     <string name="tile_backup">بیک اپ</string>
@@ -3008,6 +3010,7 @@
     <string name="invoice_filter_ink">کم سیاہی</string>
     <string name="business_current">ابھی کھلا ہے</string>
     <string name="business_switch_open">کھولیں</string>
+    <string name="business_switch_open_named">%1$s کھولیں</string>
     <string name="business_name_needed">پہلے کاروبار کا نام لکھیں۔</string>
     <string name="business_not_added">کاروبار شامل نہیں ہوا۔ شامل کرنے کے لیے چنیں کہ یہ کیا بیچتا ہے۔</string>
     <string name="biz_card_sec_own">اس کارڈ پر</string>
@@ -3265,6 +3268,7 @@
     <string name="stock_low_title">کم اسٹاک</string>
     <string name="stock_adjustments">درستگیاں</string>
     <string name="po_title">خرید آرڈر</string>
+    <string name="po_saved">آرڈر %1$s محفوظ ہو گیا</string>
     <string name="po_new">نیا آرڈر</string>
     <string name="po_supplier">سپلائر</string>
     <string name="po_send">واٹس ایپ پر بھیجیں</string>
@@ -3282,7 +3286,7 @@
     <string name="po_pick_supplier">آرڈر محفوظ کرنے کے لیے سپلائر چنیں</string>
     <string name="po_message_head">آرڈر %1$s — %2$s</string>
     <string name="po_from_low">کم اسٹاک کا آرڈر</string>
-    <string name="po_book">کتاب</string>
+    <string name="po_book">ریکارڈ میں</string>
     <string name="inventory_title">موجودہ اسٹاک</string>
 
     <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
@@ -3385,7 +3389,7 @@
     <string name="restore_loss_parties">گاہک اور سپلائر: %1$d</string>
     <string name="restore_loss_other">کاپی کے بعد یہاں کی گئی اسٹاک گنتی، دن بندی، شفٹیں، پوائنٹس، آرڈر اور منسوخیاں: %1$d</string>
     <string name="restore_loss_newest">یہاں سب سے نیا: %1$s · کاپی میں سب سے نیا: %2$s</string>
-    <string name="restore_loss_kept">کچھ بدلنے سے پہلے یہ کھاتا روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور واپس ہو سکتا ہے۔</string>
+    <string name="restore_loss_kept">کچھ بدلنے سے پہلے یہ کھاتہ روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور واپس ہو سکتا ہے۔</string>
     <string name="restore_loss_agree">میں سمجھتا ہوں کہ یہ ختم ہو جائیں گے</string>
     <string name="restore_loss_counting">دیکھا جا رہا ہے کہ اس کھاتے میں کیا ہے جو کاپی میں نہیں…</string>
     <string name="snapshot_before_restore">ریسٹور سے پہلے محفوظ · %1$s</string>
@@ -3677,7 +3681,7 @@
     <string name="live_status_not_accepted">کمپیوٹر نے وقت پر ہاں نہیں کی۔ جوڑنے کے لیے اس کا لائیو سنک کوڈ دوبارہ اسکین کریں۔</string>
     <string name="live_status_not_here">کمپیوٹر نے جواب دیا، مگر اس وقت یہ کھاتہ اس پر نہیں رکھا ہوا۔ کمپیوٹر پر اس کھاتے کا کاروبار کھولیں۔</string>
     <string name="live_status_relay">%1$s کے ساتھ انٹرنیٹ سے لائیو۔ آخری اپڈیٹ: %2$s</string>
-    <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation-313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
+    <string name="live_relay_help">جب فون دکان کے وائی فائی سے دور ہو تو اس کی تبدیلیاں Innovation 313 کے ریلے سے گزرتی ہیں، اس کھاتے کی اپنی چابی سے بند: ریلے انہیں پڑھ نہیں سکتا، اور زیادہ سے زیادہ 7 دن رکھتا ہے۔ دونوں آلات کے لیے ایک ہی سوئچ۔ ایپ بند ہو تو Google کا Firebase فون کو صرف یہ بتاتا ہے کہ کچھ انتظار میں ہے؛ کھاتے کی کوئی چیز اس کے پاس نہیں جاتی۔</string>
     <string name="live_relay">انٹرنیٹ سے بھی</string>
     <string name="wifi_take_too_big">کمپیوٹر کی کتاب اس فون کی میموری یا خالی جگہ کے لیے بہت بڑی ہے۔ دوسری ایپس بند کر کے دوبارہ کوشش کریں، یا کتاب بیک اپ فائل سے منتقل کریں۔</string>
     <string name="live_devices_open">آلات اور ایک ساتھ تبدیلیاں</string>
@@ -3990,14 +3994,14 @@
     </plurals>
 
     <!-- The customer's khata link and Mera Khata (7 Nov 2026). -->
-    <string name="clink_menu">کسٹمر کو کھاتہ لنک</string>
-    <string name="clink_title">کسٹمر کا کھاتہ لنک</string>
-    <string name="clink_body">اس کسٹمر کو ایک لنک جائے گا جس پر وہ اپنا نام (جیسا آپ کی کتاب میں لکھا ہے)، اپنا کل بیلنس اور آخری اندراج کی تاریخ دیکھ سکے گا — آپ کی کتاب کی کوئی اور چیز نہیں۔ لنک آپ جب چاہیں بند کر سکتے ہیں۔</string>
-    <string name="clink_body_sent">اس کسٹمر کو لنک پہلے بھیجا جا چکا ہے۔ دوبارہ بھیجیں یا بند کریں: بند ہونے کے بعد پرانا لنک نہیں کھلے گا۔</string>
+    <string name="clink_menu">گاہک کو کھاتہ لنک</string>
+    <string name="clink_title">گاہک کا کھاتہ لنک</string>
+    <string name="clink_body">اس گاہک کو ایک لنک جائے گا جس پر وہ اپنا نام (جیسا آپ کی کتاب میں لکھا ہے)، اپنا کل بیلنس اور آخری اندراج کی تاریخ دیکھ سکے گا — آپ کی کتاب کی کوئی اور چیز نہیں۔ لنک آپ جب چاہیں بند کر سکتے ہیں۔</string>
+    <string name="clink_body_sent">اس گاہک کو لنک پہلے بھیجا جا چکا ہے۔ دوبارہ بھیجیں یا بند کریں: بند ہونے کے بعد پرانا لنک نہیں کھلے گا۔</string>
     <string name="clink_send">لنک بھیجیں</string>
     <string name="clink_send_again">دوبارہ بھیجیں</string>
     <string name="clink_stop">لنک بند کریں</string>
-    <string name="clink_stop_body">اس کسٹمر کا لنک بند ہو جائے گا اور وہ اپنا کھاتہ نہیں دیکھ سکے گا۔ بعد میں نیا لنک بھیج سکتے ہیں۔</string>
+    <string name="clink_stop_body">اس گاہک کا لنک بند ہو جائے گا اور وہ اپنا کھاتہ نہیں دیکھ سکے گا۔ بعد میں نیا لنک بھیج سکتے ہیں۔</string>
     <string name="clink_stopped">لنک بند کر دیا۔ انٹرنیٹ ملتے ہی سرور سے بھی ہٹ جائے گا۔</string>
     <string name="clink_sending">لنک تیار ہو رہا ہے…</string>
     <string name="clink_message">%1$s، %2$s میں آپ کا کھاتہ یہاں دیکھیں:\n%3$s</string>

@@ -4,6 +4,7 @@
     <string name="welcome_body">روشن خاتا سوابق شما را روی همین گوشی نگه می‌دارد. حساب گوگل خود را متصل کنید تا دفترتان در درایو شما پشتیبان‌گیری شود — داده‌ی شما، در حساب شما.</string>
     <string name="welcome_connect">ادامه با Google</string>
     <string name="welcome_skip">شاید بعداً</string>
+    <string name="home_backup_to_drive">پشتیبان‌گیری در گوگل درایو</string>
 
     <string name="coach_skip">رد کردن</string>
     <string name="coach_next">بعدی</string>
@@ -161,7 +162,7 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">ماشین‌حساب</string>
     <string name="coach_desc_calc">محاسبات سریع در کنار دفترتان — سود، جمع کل و تقسیم.</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
     <string name="net_balance">مانده خالص</string>
     <string name="home_sec_daily">هر روز</string>
@@ -169,7 +170,7 @@
     <string name="home_today">امروز</string>
     <string name="home_quick_actions">کارهای سریع</string>
     <string name="home_col_time">زمان</string>
-    <string name="tile_bills">صورت‌حساب</string>
+    <string name="tile_bills">فاکتورها</string>
     <string name="tile_expiry">انقضا</string>
     <string name="tile_card">کارت</string>
     <string name="tile_bin">سطل</string>
@@ -200,6 +201,7 @@
     <string name="add_party_duplicate_name_only">مشتری مشابه از قبل موجود است: %1$s</string>
     <string name="no_parties_yet">هنوز مشتری‌ای نیست.\n\nاولین مشتری را اضافه کنید و دفتر خود را شروع کنید.</string>
     <string name="no_entries_yet">هنوز ثبتی وجود ندارد.</string>
+    <string name="party_entries_hint">هنوز ثبتی وجود ندارد.\nبرای نوشتن اولین ثبت، \u201Cدادم\u201D یا \u201Cگرفتم\u201D را بزنید.</string>
     <string name="entries_no_match">ثبتی با جستجوی شما پیدا نشد.</string>
 
     <string name="i_gave">دادم</string>
@@ -295,7 +297,7 @@
     <string name="include_doubtful_help">بسیاری از علما بر این‌اند که زکاتِ طلبِ مشکوک تنها پس از وصول واجب می‌شود. فقط اگر می‌خواهید محتاط‌تر باشید این را علامت بزنید.</string>
 
     <string name="zakatable_wealth">دارایی مشمول زکات</string>
-    <string name="zakat_due_label">زکات (2.5٪)</string>
+    <string name="zakat_due_label">زکات (2.5%)</string>
     <string name="zakat_footer_note">زکات همچنین نیازمند گذشت یک سال کامل قمری (حَول) بر دارایی است. روشن خاتا آن را برای شما پیگیری نمی‌کند — خودتان در نظر بگیرید و حکم را از عالم بپرسید.</string>
 
     <!-- Qarz-e-Hasna -->
@@ -385,9 +387,9 @@
     <string name="screen_privacy_off">خاموش — عکس صفحه عادی کار می‌کند</string>
     <string name="screen_privacy_turn_on">مسدود کردن عکس صفحه</string>
     <string name="screen_privacy_turn_off">اجازهٔ گرفتن عکس صفحه</string>
-    <string name="screen_privacy_explain">روشن کردن این گزینه، گرفتن عکس صفحه و ضبط صفحه را در همه‌جای روشن کھاتہ مسدود می‌کند.\n\nهزینه‌اش این است که عکس خودتان را هم مسدود می‌کند. اگر از حساب مشتری عکس می‌گیرید تا بفرستید، تا وقتی این روشن است انجام نمی‌شود. دکمه‌های اشتراک‌گذاری و صورتحساب همچنان کار می‌کنند و نسخه‌ای تمیزتر از عکس صفحه می‌فرستند.\n\nبرای کار روزمره خاموش نگهش دارید. روشنش کنید اگر گوشی اغلب در دست دیگران است.</string>
+    <string name="screen_privacy_explain">روشن کردن این گزینه، گرفتن عکس صفحه و ضبط صفحه را در همه‌جای روشن خاتا مسدود می‌کند.\n\nهزینه‌اش این است که عکس خودتان را هم مسدود می‌کند. اگر از حساب مشتری عکس می‌گیرید تا بفرستید، تا وقتی این روشن است انجام نمی‌شود. دکمه‌های اشتراک‌گذاری و صورتحساب همچنان کار می‌کنند و نسخه‌ای تمیزتر از عکس صفحه می‌فرستند.\n\nبرای کار روزمره خاموش نگهش دارید. روشنش کنید اگر گوشی اغلب در دست دیگران است.</string>
     <string name="screen_privacy_recents_hidden">اندروید شما از پیش برنامه را از جابه‌جاگر برنامه‌های اخیر بیرون نگه می‌دارد، پس کسی دفتر شما را آنجا نمی‌بیند.</string>
-    <string name="screen_privacy_recents_visible">نسخهٔ این اندروید قدیمی‌تر از ۱۳ است، بنابراین جابه‌جاگر برنامه‌های اخیر هنوز می‌تواند آخرین صفحهٔ شما را نشان دهد. تنها همین کلید آن را پنهان می‌کند.</string>
+    <string name="screen_privacy_recents_visible">نسخهٔ این اندروید قدیمی‌تر از 13 است، بنابراین جابه‌جاگر برنامه‌های اخیر هنوز می‌تواند آخرین صفحهٔ شما را نشان دهد. تنها همین کلید آن را پنهان می‌کند.</string>
     <string name="app_lock_no_screen_lock">این گوشی قفل صفحه ندارد. ابتدا در تنظیمات گوشی اثر انگشت، پین یا الگو تنظیم کنید، سپس قفل برنامه می‌تواند از دفتر شما محافظت کند.</string>
     <string name="app_lock_unavailable">قفل برنامه روی این گوشی در دسترس نیست.</string>
     <string name="ok">باشه</string>
@@ -948,8 +950,8 @@
 
     <string name="hide_balance">پنهان کردن مانده</string>
 
-    <string name="powered_by">قدرت گرفته از Innovation-313</string>
-    <string name="lock_tagline">قدرت گرفته از Innovation-313</string>
+    <string name="powered_by">قدرت گرفته از Innovation 313</string>
+    <string name="lock_tagline">قدرت گرفته از Innovation 313</string>
 
     <!-- Splash / branding -->
 
@@ -967,7 +969,7 @@
     <string name="drive_auto_backup">پشتیبان‌گیری خودکار</string>
     <string name="drive_auto_backup_hint">هرگاه دفتر تغییر کند خودش پشتیبان می‌گیرد — روی وای‌فای حداکثر هر 30 دقیقه و روی داده همراه هر 6 ساعت. هر زمان هم می‌توانید خودتان پشتیبان بگیرید.</string>
     <string name="auto_backup_offer_title">پشتیبان‌گیری خودکار؟</string>
-    <string name="auto_backup_offer_body">حساب شما وصل شد. Roshan Khata می‌تواند هر بار که دفترتان تغییر کند آن را خودکار بارگذاری کند، تا با گم یا خراب شدن گوشی سوابق شما از بین نرود.\n\nهر زمان بخواهید می‌توانید این را از همین صفحه تغییر دهید.</string>
+    <string name="auto_backup_offer_body">حساب شما وصل شد. روشن خاتا می‌تواند هر بار که دفترتان تغییر کند آن را خودکار بارگذاری کند، تا با گم یا خراب شدن گوشی سوابق شما از بین نرود.\n\nهر زمان بخواهید می‌توانید این را از همین صفحه تغییر دهید.</string>
     <string name="auto_backup_offer_yes">روشن کن</string>
     <string name="auto_backup_offer_no">الان نه</string>
     <string name="drive_restore">بازگردانی از Drive</string>
@@ -1270,7 +1272,7 @@
     <string name="faq_q_business">دو مغازه دارم. می‌توانم هر دو را در برنامه نگه دارم؟</string>
     <string name="faq_a_business">بله. در بالای صفحه اصلی روی نام مغازه بزنید، سپس افزودن کسب‌وکار. هر مغازه دفتر کاملاً جداگانه‌ای دارد — مشتریان، ثبت‌ها و عکس‌های جدا — و پشتیبان هر کدام هم جداست. برای جابه‌جایی روی نام بزنید. برای گزینه‌های بیشتر نگه دارید — تغییر نام یا حذف.</string>
     <string name="faq_q_snapshot">امروز مشکلی پیش آمد. می‌توانم به دیروز برگردم؟</string>
-    <string name="faq_a_snapshot">بله. برنامه هر روز از دفتر هر مغازه یک نسخه نگه می‌دارد، برای هفت روز گذشته. پشتیبان‌گیری و بازیابی ← نسخه‌های روزانه را باز کنید و روز را انتخاب کنید. دفتر امروز ابتدا نگه داشته می‌شود، پس این هم برگشت‌پذیر است.</string>
+    <string name="faq_a_snapshot">بله. برنامه هر روز از دفتر هر مغازه یک نسخه نگه می‌دارد، برای هفت روز گذشته. پشتیبان‌گیری و بازگردانی ← نسخه‌های روزانه را باز کنید و روز را انتخاب کنید. دفتر امروز ابتدا نگه داشته می‌شود، پس این هم برگشت‌پذیر است.</string>
     <string name="faq_q_lock">چطور نگذارم دیگران دفترم را ببینند؟</string>
     <string name="faq_a_lock">بیشتر ← قفل برنامه. از همان اثر انگشت یا رمزی که روی گوشی‌تان هست استفاده می‌کند، پس رمز تازه‌ای برای به خاطر سپردن وجود ندارد. گوشی باید قفل صفحه داشته باشد.</string>
     <string name="faq_q_hide">اگر کسی کنارم ایستاده، می‌توانم موجودی را پنهان کنم؟</string>
@@ -1293,7 +1295,7 @@
     <string name="about_privacy_body">همه چیز روی همین گوشی ذخیره می‌شود. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم. پشتیبان هم به درایو خودتان می‌رود — نه به ما.</string>
     <string name="about_privacy_body_pc">همه چیز روی همین رایانه ذخیره می‌شود. ما هرگز مشتریان شما، شماره‌هایشان، یا بدهی کسی را نمی‌بینیم. پشتیبان‌ها روی همین رایانه و در پوشه‌ای که انتخاب می‌کنید، مثل فلش یا پوشهٔ گوگل درایو، می‌مانند — نه نزد ما.</string>
     <string name="about_privacy_policy">سیاست حریم خصوصی</string>
-    <string name="about_maker">ساخته‌شده توسط Innovation-313</string>
+    <string name="about_maker">ساخته‌شده توسط Innovation 313</string>
     <string name="party_exists_title">شاید این از قبل در دفتر شما باشد</string>
     <string name="party_exists_message">حسابی شبیه این از قبل باز است:\n\n%1$s\n\nاگر همان شخص است، همان را باز کنید. اگر کس دیگری است — یا حساب دومی که عمداً نگه می‌دارید — اضافه کنید.</string>
     <string name="open_existing">باز کردن حساب موجود</string>
@@ -1887,8 +1889,8 @@
     <string name="pay_heading">*روش پرداخت*</string>
     <string name="pay_wallet_label">کیف پول موبایل</string>
     <string name="pay_bank_label">بانک</string>
-    <string name="entry_share_gave">%1$s گرامی، در %2$s مبلغ *%3$s* به حساب شما (نسیه) ثبت شد.</string>
-    <string name="entry_share_got">%1$s گرامی، در %2$s مبلغ *%3$s* دریافت شد. سپاس.</string>
+    <string name="entry_share_gave">*%1$s* گرامی، در %2$s مبلغ *%3$s* به حساب شما (نسیه) ثبت شد.</string>
+    <string name="entry_share_got">*%1$s* گرامی، در %2$s مبلغ *%3$s* دریافت شد. سپاس.</string>
     <string name="entry_share_balance">مانده اکنون: *%1$s*</string>
     <string name="entry_share_advance">پیش‌پرداخت شما اکنون: *%1$s*</string>
     <string name="entry_share_settled">حساب شما اکنون تسویه است.</string>
@@ -2481,7 +2483,7 @@
     <string name="onboard_step">مرحله %1$s از %2$s</string>
     <string name="help_replay_tour">نمایش دوباره معرفی صفحه اصلی</string>
     <string name="coach_title_business">کسب‌وکار</string>
-    <string name="coach_desc_business">محصولات و موجودی، فاکتورها، فهرست قیمت و نرخ‌های خرید، تحلیل‌ها، جریان نقدی و پیگیری بدهکاران دیرکرده — بخش تجاری مغازه.</string>
+    <string name="coach_desc_business">فروش پیشخوان، محصولات و موجودی، فاکتورها، فهرست قیمت و نرخ‌های خرید، گزارش فروش، تحلیل‌ها، جریان نقدی و پیگیری بدهکاران دیرکرده — بخش تجاری مغازه.</string>
     <string name="coach_title_tools">ابزارها</string>
     <string name="coach_desc_tools">ماشین‌حساب، زکات، کارت ویزیت شما، پوستر برای استوری واتساپ، پشتیبان‌گیری در Google Drive، و سطل بازیابی برای هر چیزی که اشتباهی حذف شد.</string>
     <string name="tile_backup">پشتیبان‌گیری</string>
@@ -3036,6 +3038,7 @@
     <string name="invoice_filter_ink">کم‌جوهر</string>
     <string name="business_current">اکنون باز</string>
     <string name="business_switch_open">باز کردن</string>
+    <string name="business_switch_open_named">باز کردن %1$s</string>
     <string name="business_name_needed">ابتدا نام کسب‌وکار را بنویسید.</string>
     <string name="business_not_added">کسب‌وکار اضافه نشد. برای افزودن، انتخاب کنید چه می‌فروشد.</string>
     <string name="biz_card_sec_own">روی این کارت</string>
@@ -3096,7 +3099,7 @@
     <string name="wifi_send_unreachable">به رایانه نرسید. بررسی کنید هر دو روی یک وای‌فای باشند، پنجرهٔ «از گوشی» باز باشد و ویندوز به روشن خاتا اجازهٔ شبکه داده باشد.</string>
     <string name="wifi_pc_button">از گوشی</string>
     <string name="wifi_pc_title">از گوشی شما، با وای‌فای</string>
-    <string name="wifi_pc_steps">در گوشی: پشتیبان ← اسکن کد رایانه، و آن را روی این کد بگیرید. هر دو باید روی یک وای‌فای باشند. چیزی به اینترنت نمی‌رود و تا شما تأیید نکنید چیزی اینجا جایگزین نمی‌شود.</string>
+    <string name="wifi_pc_steps">در گوشی: پشتیبان‌گیری ← اسکن کد رایانه، و آن را روی این کد بگیرید. هر دو باید روی یک وای‌فای باشند. چیزی به اینترنت نمی‌رود و تا شما تأیید نکنید چیزی اینجا جایگزین نمی‌شود.</string>
     <string name="wifi_pc_waiting">در انتظار گوشی…</string>
     <string name="wifi_pc_no_network">این رایانه به شبکه وصل نیست. آن را به وای‌فای مغازه وصل کنید و این پنجره را دوباره باز کنید.</string>
     <string name="wifi_pc_firewall">اگر ویندوز پرسید، به روشن خاتا در شبکه‌های خصوصی اجازه دهید.</string>
@@ -3293,6 +3296,7 @@
     <string name="stock_low_title">موجودی کم</string>
     <string name="stock_adjustments">اصلاح‌ها</string>
     <string name="po_title">سفارش‌های خرید</string>
+    <string name="po_saved">سفارش %1$s ذخیره شد</string>
     <string name="po_new">سفارش جدید</string>
     <string name="po_supplier">تأمین‌کننده</string>
     <string name="po_send">ارسال در واتساپ</string>
@@ -3445,7 +3449,7 @@
     <string name="product_pack_unit">نام بسته</string>
     <string name="product_pack_size">چند تا در یک بسته</string>
     <string name="product_pack_price">قیمت بسته</string>
-    <string name="product_tax_rate">مالیات ٪</string>
+    <string name="product_tax_rate">مالیات %</string>
 
     <!-- A counter ticket as an A4 invoice (21 Oct 2026) -->
     <string name="pos_make_invoice">فاکتور A4</string>
@@ -3563,8 +3567,8 @@
     <string name="audit_party_merged">مشتری‌ها ادغام شدند</string>
     <string name="audit_day_closed">روز بسته شد</string>
     <string name="audit_import">ورودی</string>
-    <string name="audit_bill_deleted">صورت‌حساب حذف شد</string>
-    <string name="audit_bill_edited">صورت‌حساب تغییر کرد</string>
+    <string name="audit_bill_deleted">فاکتور حذف شد</string>
+    <string name="audit_bill_edited">فاکتور تغییر کرد</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
     <string name="plan_next_change">تغییر روز پرداخت بعدی</string>
@@ -3705,7 +3709,7 @@
     <string name="live_status_not_accepted">رایانه به‌موقع «بله» نگفت. برای اتصال، کد همگام‌سازی زنده‌اش را دوباره اسکن کنید.</string>
     <string name="live_status_not_here">رایانه پاسخ داد، اما الان این دفتر را نگه نمی‌دارد. کسب‌وکار این دفتر را روی رایانه باز کنید.</string>
     <string name="live_status_relay">زنده با %1$s از راه اینترنت. آخرین به‌روزرسانی: %2$s</string>
-    <string name="live_relay_help">وقتی گوشی از وای‌فای مغازه دور است، تغییراتش از رله‌ی Innovation-313 می‌گذرد، قفل‌شده با کلید خود این دفتر: رله نمی‌تواند آن‌ها را بخواند و حداکثر 7 روز نگهشان می‌دارد. یک کلید برای هر دو دستگاه. وقتی برنامه بسته است، Firebase از Google فقط به گوشی خبر می‌دهد که چیزی منتظر است؛ چیزی از دفتر را با خود نمی‌برد.</string>
+    <string name="live_relay_help">وقتی گوشی از وای‌فای مغازه دور است، تغییراتش از رله‌ی Innovation 313 می‌گذرد، قفل‌شده با کلید خود این دفتر: رله نمی‌تواند آن‌ها را بخواند و حداکثر 7 روز نگهشان می‌دارد. یک کلید برای هر دو دستگاه. وقتی برنامه بسته است، Firebase از Google فقط به گوشی خبر می‌دهد که چیزی منتظر است؛ چیزی از دفتر را با خود نمی‌برد.</string>
     <string name="live_relay">از راه اینترنت هم</string>
     <string name="wifi_take_too_big">دفتر رایانه برای حافظه یا فضای خالی این گوشی خیلی بزرگ است. برنامه‌های دیگر را ببندید و دوباره امتحان کنید، یا دفتر را با فایل پشتیبان منتقل کنید.</string>
     <string name="live_devices_open">دستگاه‌ها و تغییرات هم‌زمان</string>
@@ -3777,8 +3781,8 @@
     <string name="staff_name_taken">کسی با این نام در فهرست کارکنان هست. چیزی برای تمایز اضافه کنید، مثل نام پدر.</string>
 
     <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
-    <string name="doc_kind_quotation">پیش‌فاکتور</string>
-    <string name="doc_kind_proforma">پیش‌فاکتور رسمی</string>
+    <string name="doc_kind_quotation">پیشنهاد قیمت</string>
+    <string name="doc_kind_proforma">پیش‌فاکتور</string>
     <string name="doc_kind_sales_order">سفارش فروش</string>
     <string name="doc_kind_challan">حواله تحویل</string>
     <string name="doc_kind_credit_note">اعلامیه بستانکار</string>

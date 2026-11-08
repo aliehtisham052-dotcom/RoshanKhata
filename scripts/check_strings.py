@@ -111,7 +111,7 @@ WRONG_LETTERS = {
 # a help line that shows the digits it offers, and the privacy screen's
 # strings, which are the owner's to change (review finding R69, out of scope).
 SCRIPT_EXEMPT = {"business_name_urdu_hint", "print_native_digits_help"}
-SCRIPT_EXEMPT_PREFIX = ("screen_privacy_",)
+SCRIPT_EXEMPT_PREFIX = ()
 
 # The app's own name in each right-to-left language, as app_name spells it;
 # Sindhi's oblique (روشن کاتي ۾) is right where the grammar asks for it.
@@ -124,6 +124,9 @@ ROMAN_GLOSSARY = {
     "dukan": "dukaan", "mojood": "maujood", "mojooda": "maujooda", "indraj": "indiraaj",
     "wapis": "wapas", "aik": "ek", "dabayen": "dabayein", "grahak": "gahak",
     "dihani": "dehani", "intebah": "intibah",
+    "udhar": "udhaar", "wasooli": "wusooli", "naqad": "naqd", "nakad": "naqd", "qisten": "qistein",
+    "qistain": "qistein", "zubaan": "zaban", "zabaan": "zaban", "zuban": "zaban", "nahin": "nahi",
+    "muhtaram": "mohtaram", "andraaj": "indiraaj", "karen": "karein",
 }
 
 

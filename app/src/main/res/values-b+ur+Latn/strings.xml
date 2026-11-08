@@ -4,6 +4,7 @@
     <string name="welcome_body">Roshan Khata aap ka record isi phone par rakhta hai. Apna Google account munsalik karein taake aap ka khata aap ki Drive par mehfooz ho sake — aap ka data, aap ke account mein.</string>
     <string name="welcome_connect">Google ke saath jaari rakhein</string>
     <string name="welcome_skip">Shayad baad mein</string>
+    <string name="home_backup_to_drive">Google Drive par backup karein</string>
 
     <string name="coach_skip">Skip Karein</string>
     <string name="coach_next">Agla</string>
@@ -12,7 +13,7 @@
     <string name="coach_title_nav_khata">Khata</string>
     <string name="coach_desc_nav_khata">Aap ke customers ke khaate — kaun aap ka madion hai aur aap kis ke madion hain.</string>
     <string name="coach_title_nav_cashbook">Cash Book</string>
-    <string name="coach_desc_nav_cashbook">Apna rozana nakad aamad-o-kharch darj karein.</string>
+    <string name="coach_desc_nav_cashbook">Apna rozana naqd aamad-o-kharch darj karein.</string>
     <string name="coach_title_nav_cheques">Cheques</string>
     <string name="coach_desc_nav_cheques">Wo cheques jo aap ne diye ya wasool kiye, due dates ke sath unka hisaab rakhein.</string>
     <string name="coach_title_nav_plans">Plans</string>
@@ -161,9 +162,9 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">Calculator</string>
     <string name="coach_desc_calc">Khaate ke sath foran hisaab — munafa, kul meezan aur taqseem.</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
-    <string name="net_balance">Kul balance</string>
+    <string name="net_balance">Khalis balance</string>
     <string name="home_sec_daily">Har roz</string>
     <string name="home_sec_business">Karobar</string>
     <string name="home_today">Aaj</string>
@@ -195,11 +196,12 @@
     <string name="report_end_date">End date</string>
     <string name="ledger_report_from">%1$s se</string>
     <string name="ledger_report_till">%1$s tak</string>
-    <string name="add_party">Party Shamil Karein</string>
+    <string name="add_party">Party shamil karein</string>
     <string name="add_party_duplicate_with_phone">Milta-julta customer pehle se maujood hai: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">Milta-julta customer pehle se maujood hai: %1$s</string>
     <string name="no_parties_yet">Abhi koi gahak nahi.\n\nPehla gahak shamil karein aur apna khata shuru karein.</string>
     <string name="no_entries_yet">Abhi koi entry nahi.</string>
+    <string name="party_entries_hint">Abhi koi entry nahi.\nPehli entry likhne ke liye \u201CMain Ne Diya\u201D ya \u201CMain Ne Liya\u201D dabayein.</string>
     <string name="entries_no_match">Aap ki talaash se koi entry nahi mili.</string>
 
     <string name="i_gave">Main Ne Diya</string>
@@ -284,7 +286,7 @@
     <string name="cash_stock_hint">Naqdi + maal ki qeemat</string>
 
     <string name="from_your_ledger">Aap ke khate se</string>
-    <string name="certain_receivables">Wasooli jin ki umeed hai: %1$s</string>
+    <string name="certain_receivables">Wusooli jin ki umeed hai: %1$s</string>
     <string name="qarze_hasna_given">Qarz-e-Hasna diya hua: %1$s</string>
     <string name="doubtful_receivables">Mashkook wasooliyan: %1$s (shamil nahi)</string>
     <string name="you_owe_others">Jo aap ne doosron ko dena hai: %1$s (minha)</string>
@@ -297,9 +299,9 @@
 
     <string name="qarze_hasna">Qarz-e-Hasna (bila sood qarz)</string>
     <string name="qarze_hasna_help">Tijarat se alag nishan zad. Is par kabhi sood ya takheeri fees nahi lagti.</string>
-    <string name="recovery_certain">Wasooli ki umeed hai</string>
+    <string name="recovery_certain">Wusooli ki umeed hai</string>
     <string name="recovery_doubtful">Mashkook</string>
-    <string name="recovery_label">Wasooli ka imkan</string>
+    <string name="recovery_label">Wusooli ka imkan</string>
 
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
@@ -322,7 +324,7 @@
     <string name="nothing_outstanding">Kuch baqi nahi — hisaab barabar hai.</string>
 
     <string name="goods_section">Maal (ikhtiyari)</string>
-    <string name="goods_help">Agar is entry ke saath maal bhi gaya — 5 bori urea, 2 litre zehar — to yahan likhein. Sada naqad entry ke liye khali chhor dein.</string>
+    <string name="goods_help">Agar is entry ke saath maal bhi gaya — 5 bori urea, 2 litre zehar — to yahan likhein. Sada naqd entry ke liye khali chhor dein.</string>
     <string name="item_name_hint">Shai ka naam</string>
     <string name="quantity_hint">Miqdaar</string>
     <string name="unit_hint">Ikai (bori, litre, kg…)</string>
@@ -344,7 +346,7 @@
     <string name="contacts_permission_title">Aap ke contacts tak rasai?</string>
     <string name="contacts_permission_rationale">Roshan Khata aap ki contact list sirf yahan dikhane ke liye parhega, taake aap chun sakein kise shamil karna hai. Kuch bhi upload nahi hota, aur sirf wahi contacts mehfooz hote hain jo aap khud chunein — sirf un ka naam aur number.\n\nAgar aap na chahein to har party haath se bhi shamil kar sakte hain.</string>
     <string name="contacts_permission_denied">Ijazat nahi mili, is liye contacts nahi dikhaye ja sakte. Aap home screen se partiyan haath se shamil kar sakte hain.</string>
-    <string name="add_manually">Haath Se Shamil Karein</string>
+    <string name="add_manually">Haath se shamil karein</string>
 
     <string name="statement_pdf">Statement</string>
     <string name="generating_statement">Statement tayyar ho rahi hai\u2026</string>
@@ -410,7 +412,7 @@
     <string name="profile_saved">Mehfooz ho gaya</string>
 
     <string name="cheques">Cheque</string>
-    <string name="add_cheque">Cheque Shamil Karein</string>
+    <string name="add_cheque">Cheque shamil karein</string>
     <string name="no_cheques">Abhi koi cheque nahi.\n\nBaad ki tareekh ke cheque yahan khate se alag rakhe jate hain — cheque us waqt tak raqam nahi jab tak cash na ho jaye.</string>
     <string name="cheque_not_money_yet">Cheque cash hone tak raqam nahi, is liye ye abhi balance ko nahi chhuyega. Jab aap isey clear nishan zad karenge, tab adaigi khate mein darj hogi.</string>
     <string name="cheque_party_hint">Gahak ya supplier ka naam</string>
@@ -497,7 +499,7 @@
     <string name="photo_saved">Tasveer mehfooz ho gayi</string>
     <string name="photo_removed">Tasveer hata di gayi</string>
     <string name="photo_save_failed">Ye tasveer mehfooz nahi ho saki. Doosri chunein.</string>
-    <string name="photo_privacy_note">Tasveer isi phone par rehti hai. Hamen kabhi nahi bheji jati; sirf aap ka apna Drive backup, agar aap chalu karen, ise le jata hai. Aur jaan boojh kar statement par nahi lagai jati — statement aage bheji jati hai, aur aap ke gahak ne apni tasveer ke safar ki ijazat nahi di.</string>
+    <string name="photo_privacy_note">Tasveer isi phone par rehti hai. Hamen kabhi nahi bheji jati; sirf aap ka apna Drive backup, agar aap chalu karein, ise le jata hai. Aur jaan boojh kar statement par nahi lagai jati — statement aage bheji jati hai, aur aap ke gahak ne apni tasveer ke safar ki ijazat nahi di.</string>
     <string name="edit_party">Tafseel badlein</string>
     <string name="delete_party">Delete Karein</string>
 
@@ -537,15 +539,15 @@
 
     <string name="cashbook">Cashbook</string>
     <string name="cashbook_subtitle">Karobari raqam ki aamad o kharch</string>
-    <string name="cashbook_separate_note">Cashbook aap ke gahak khate se alag hai. Kiraya, tankhwahein, naqad farokht — wo raqam jis ka koi gahak nahi. Is se kisi ke zimme kuch nahi badalta.</string>
-    <string name="add_cash_entry">Entry Shamil Karein</string>
+    <string name="cashbook_separate_note">Cashbook aap ke gahak khate se alag hai. Kiraya, tankhwahein, naqd farokht — wo raqam jis ka koi gahak nahi. Is se kisi ke zimme kuch nahi badalta.</string>
+    <string name="add_cash_entry">Entry shamil karein</string>
     <string name="cash_in">Raqam aayi</string>
     <string name="cash_out">Raqam gayi</string>
     <string name="cash_net">Khalis</string>
     <string name="cash_income">Aamdani</string>
     <string name="cash_expense">Kharch</string>
     <string name="cash_category_hint">Qism (kiraya, mazdoori…)</string>
-    <string name="no_cash_entries">Cashbook mein abhi koi entry nahi.\n\nYe us raqam ke liye hai jo kisi gahak se judi nahi — kiraya, bijli, tankhwahein, tel, naqad farokht.</string>
+    <string name="no_cash_entries">Cashbook mein abhi koi entry nahi.\n\nYe us raqam ke liye hai jo kisi gahak se judi nahi — kiraya, bijli, tankhwahein, tel, naqd farokht.</string>
     <string name="enter_category">Meherbani kar ke madd likhein</string>
     <string name="delete_cash_entry">Ye entry delete karein?</string>
     <string name="delete_cash_confirm">Ye Recycle Bin mein chali jayegi.</string>
@@ -561,7 +563,7 @@
 
     <string name="restore_warning_title">Sab kuch badal dein?</string>
     <string name="restore_warning_message">Bahali Roshan Khata mein maujood har cheez ko is file ke mawad se badal degi:\n\n%1$d gahak/supplier\n%2$d khata entries\n%3$d cheque\n%4$d cashbook entries\n%5$d adaigi mansoobay\n%6$d supplier bill\n%7$d invoice\n\nJo kuch is phone par ab hai wo chala jayega. Agar yahan aisi entries hain jo backup mein nahi, to pehle IS ka backup lein.\n\nYeh khata pehle rozana copies mein mehfooz ho jata hai, is liye restore wahan se wapas ho sakta hai.</string>
-    <string name="restore_replace">Sab Kuch Badal Dein</string>
+    <string name="restore_replace">Sab kuch badal dein</string>
     <string name="restore_done">Bahal ho gaya</string>
     <string name="restore_failed">Bahali nakaam: %1$s</string>
     <string name="reading_backup">File parhi ja rahi hai\u2026</string>
@@ -571,7 +573,7 @@
     <string name="payment_plans">Adaigi Mansoobay</string>
     <string name="plans_subtitle">Qiston mein adaigi</string>
     <string name="plan_not_a_debt_note">Mansooba ek bandobast hai, naya qarz nahi. Jo un ke zimme hai wo pehle hi khate mein hai. Yahan adaigi darj karne se wo khate mein ek baar jati hai — kabhi do baar shumar nahi hoti.</string>
-    <string name="add_plan">Mansooba Shamil Karein</string>
+    <string name="add_plan">Mansooba shamil karein</string>
     <string name="no_plans">Abhi koi adaigi mansooba nahi.\n\nYe us waqt kaam aate hain jab gahak raqam qiston mein ada karega — fasal ke baad, ya chand mahinon mein.</string>
     <string name="plan_dialog_help">Jo is party ke zimme pehle se hai usey ada karne ka bandobast banayen. Is se un ke balance mein izafa nahi hota — sirf ye darj hota hai ke unhon ne kitna aur kab dena mana hai.</string>
     <string name="plan_total_hint">Kul ada karni raqam</string>
@@ -687,7 +689,7 @@
     <string name="supplier_bills">Supplier Bills</string>
     <string name="bills_subtitle">Jo maal aap ne khareeda</string>
     <string name="bill_ledger_note">Supplier ka wajib aap ke khate mein rehta hai, baqi sab ki tarah. Bill oopar kaghazi record jorta hai: bill number, batch number, expiry tareekhein.</string>
-    <string name="add_bill">Bill Shamil Karein</string>
+    <string name="add_bill">Bill shamil karein</string>
     <string name="no_bills">Abhi koi supplier bill nahi.\n\nJo khareedein usey darj karein — batch number aur expiry ke saath. Is se pata rehta hai ke har shai kahan se aayi, aur koi maal shelf par be-khabri mein kharab nahi hota.</string>
 
     <string name="bill_number_hint">Bill number</string>
@@ -695,7 +697,7 @@
     <string name="bill_supplier_hint">Supplier ka naam</string>
     <string name="bill_date">Bill ki tareekh</string>
     <string name="bill_due_date">Adaigi ki tareekh (ikhtiyari)</string>
-    <string name="bill_paid_cash">Delivery par naqad ada kiya</string>
+    <string name="bill_paid_cash">Delivery par naqd ada kiya</string>
     <string name="bill_paid_cash_help">Ye sirf us waqt lagayen jab fori ada kiya ho. Warna raqam aap ke khate mein un ke hisaab par jayegi, jo aap ka wajib hai.</string>
     <string name="bill_credit_note">Ye aap ke khate mein ek entry ke taur par %2$s ke wajib mein %1$s jor dega.</string>
 
@@ -724,9 +726,9 @@
     <string name="bill_saved_credit">Bill mehfooz ho kar khate mein darj ho gaya</string>
     <string name="enter_supplier">Meherbani kar ke supplier chunein</string>
     <string name="enter_product">Meherbani kar ke product ka naam likhein</string>
-    <string name="bill_deleted">Bill delete ho gaya. Agar ye udhar ka bill tha to is ki khate wali entry bhi Recycle Bin mein chali gayi — ghalti ho to 30 din ke andar wahan se wapas la sakte hain.</string>
+    <string name="bill_deleted">Bill delete ho gaya. Agar ye udhaar ka bill tha to is ki khate wali entry bhi Recycle Bin mein chali gayi — ghalti ho to 30 din ke andar wahan se wapas la sakte hain.</string>
     <string name="delete_bill">Bill delete karein</string>
-    <string name="delete_bill_confirm">Bill aur is ke batch record hat jayenge. Agar ye udhar ka bill hai to is ki khate wali entry (jo raqam aap ne is supplier ko deni hai) bhi Recycle Bin mein chali jayegi, aur wajib raqam itni kam ho jayegi. Ye entry 30 din ke andar Recycle Bin se wapas la sakte hain.</string>
+    <string name="delete_bill_confirm">Bill aur is ke batch record hat jayenge. Agar ye udhaar ka bill hai to is ki khate wali entry (jo raqam aap ne is supplier ko deni hai) bhi Recycle Bin mein chali jayegi, aur wajib raqam itni kam ho jayegi. Ye entry 30 din ke andar Recycle Bin se wapas la sakte hain.</string>
     <string name="bill_actions">Bill</string>
 
     <!-- Invoices -->
@@ -747,7 +749,7 @@
     <string name="paisa_seen_none">Abhi kisi aur app ne notification nahi dikhaya.</string>
     <string name="paisa_voice_title">Awaaz</string>
     <string name="paisa_voice_urdu">Urdu awaaz</string>
-    <string name="paisa_voice_app">App ki zabaan</string>
+    <string name="paisa_voice_app">App ki zaban</string>
     <string name="paisa_voice_chime">Sirf ek chhoti si ghanti</string>
     <string name="paisa_urdu_yes">Is phone mein Urdu awaaz maujood hai.</string>
     <string name="paisa_urdu_no">Is phone mein abhi Urdu awaaz nahi, is liye sirf ghanti bajegi. Urdu phone ki bolne wali settings mein shamil ki ja sakti hai.</string>
@@ -922,8 +924,8 @@
 
     <string name="hide_balance">Balance chhupayen</string>
 
-    <string name="powered_by">Innovation-313 ki pesh-kash</string>
-    <string name="lock_tagline">Innovation-313 ki pesh-kash</string>
+    <string name="powered_by">Innovation 313 ki pesh-kash</string>
+    <string name="lock_tagline">Innovation 313 ki pesh-kash</string>
 
 
 
@@ -1192,7 +1194,7 @@
 
     <!-- Daily reminder notifications -->
     <string name="notif_channel_name">Yaad-dehaniyan</string>
-    <string name="notif_channel_desc">Cheque, qistain, expire hota maal aur backup ki yaad-dehani</string>
+    <string name="notif_channel_desc">Cheque, qistein, expire hota maal aur backup ki yaad-dehani</string>
     <string name="notif_permission_why">Roshan Khata aap ko batata hai jab cheque ka din aaye, qist aaye, maal expire hone wala ho ya backup nakaam ho. Yeh sunne ke liye notifications ki ijazat dein.</string>
     <string name="notif_cheques_title">Cheque bank mein lagane ke liye tayyar</string>
     <plurals name="notif_cheques_body">
@@ -1242,7 +1244,7 @@
     <string name="faq_q_business">Meri do dukaanein hain. Kya dono app mein rakh sakta hoon?</string>
     <string name="faq_a_business">Ji haan. Home screen par upar apni dukaan ke naam par tap karein, phir Naya business shamil karein. Har dukaan ka bilkul alag khata rehta hai — alag customers, entries aur photos — aur har ek ka backup bhi alag. Naam par tap karke dukaan badlein. Zyada options ke liye der tak dabayein — naam badlein ya delete karein.</string>
     <string name="faq_q_snapshot">Aaj kuch kharab ho gaya. Kya kal wali halat par wapas ja sakta hoon?</string>
-    <string name="faq_a_snapshot">Ji haan. App har dukaan ke khate ki copy rozana rakhti hai, pichhle saat din ki. Backup &amp; Restore → Rozana copies kholein aur din chunein. Aaj ka khata pehle mehfooz kar liya jata hai, is liye ye bhi wapas ho sakta hai.</string>
+    <string name="faq_a_snapshot">Ji haan. App har dukaan ke khate ki copy rozana rakhti hai, pichhle saat din ki. Backup aur Bahali → Rozana copies kholein aur din chunein. Aaj ka khata pehle mehfooz kar liya jata hai, is liye ye bhi wapas ho sakta hai.</string>
     <string name="faq_q_lock">Khata doosron se kaise chupaun?</string>
     <string name="faq_a_lock">More → App Lock. Ye wahi fingerprint ya PIN istemal karta hai jo aap ke phone par pehle se hai, alag password yaad rakhne ki zaroorat nahi. Iske liye phone par screen lock laga hona zaroori hai.</string>
     <string name="faq_q_hide">Koi paas khara ho to balance chupa sakta hoon?</string>
@@ -1251,7 +1253,7 @@
     <string name="faq_a_percent" formatted="false">Ji haan. Seedha likh dein — 1200-15% ka jawab 1020 aur 500*32% ka 160. Ye har raqam wale khane aur Calculator mein kaam karta hai.</string>
     <string name="faq_q_delete">Ghalti se gahak delete ho gaya.</string>
     <string name="faq_a_delete">Home screen par Recycle Bin. Delete kiye gaye gahak aur indiraaj wahin rehte hain aur wapas laye ja sakte hain.</string>
-    <string name="faq_q_language">Zubaan baad mein badal sakta hoon?</string>
+    <string name="faq_q_language">Zaban baad mein badal sakta hoon?</string>
     <string name="faq_a_language">Mazeed → Zaban, jab chahein. Khaate par koi asar nahi parega.</string>
     <string name="faq_q_data">Mera data kahan rehta hai? Kya koi aur dekh sakta hai?</string>
     <string name="faq_a_data">Aap ke phone par, aur kahin nahi — siwaye iske ke aap backup karein, aur wo bhi aap hi ki Google Drive par jata hai, hamare paas nahi. Hum aap ke gahak, unke number, ya kisi ka hisaab kabhi nahi dekhte.</string>
@@ -1260,12 +1262,12 @@
     <string name="pick_time">Waqt chunein</string>
     <string name="about_us">Taaruf</string>
     <string name="about_version">Version %1$s</string>
-    <string name="about_what">Dukaan ke counter ka khata. Gahakon ke hisaab, rozana nakad, cheques, supplier bills aur qisten — jaise kaghaz par rakhe jate hain waise, aur usi zubaan mein jis mein dukaan chalti hai. Ek dukaan ho ya kai, har ek ka apna khata.</string>
+    <string name="about_what">Dukaan ke counter ka khata. Gahakon ke hisaab, rozana naqd, cheques, supplier bills aur qistein — jaise kaghaz par rakhe jate hain waise, aur usi zaban mein jis mein dukaan chalti hai. Ek dukaan ho ya kai, har ek ka apna khata.</string>
     <string name="about_privacy_title">Aap ka hisaab aap hi ka rehta hai</string>
     <string name="about_privacy_body">Sab kuch isi phone par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup bhi aap hi ki Google Drive par jata hai — hamare paas nahi.</string>
     <string name="about_privacy_body_pc">Sab kuch isi computer par mehfooz hai. Hum aap ke gahak, unke number, ya kisi ka wajib kabhi nahi dekhte. Backup isi computer par aur aap ke chune hue folder mein rehte hain, jaise USB ya Google Drive ka folder — hamare paas nahi.</string>
     <string name="about_privacy_policy">Privacy Policy</string>
-    <string name="about_maker">Innovation-313 ki tayyar karda</string>
+    <string name="about_maker">Innovation 313 ki tayyar karda</string>
     <string name="party_exists_title">Ye shayad pehle se aap ke khaate mein hai</string>
     <string name="party_exists_message">Is jaisa ek khata pehle se khula hai:\n\n%1$s\n\nAgar ye wahi shakhs hai to jo pehle se hai wahi kholein. Agar koi aur hai — ya doosra khata jo aap jaan boojh kar rakhte hain — to shamil kar lein.</string>
     <string name="open_existing">Maujooda khata kholein</string>
@@ -1355,7 +1357,7 @@
     <string name="duplicate_pick_primary_message">Baaqi sab is par move ho jayenge — un ka poora khata, bills, cheques aur payment mansoobay bhi is ke saath chale jayenge. Koi raqam na jama hoti hai na nikalti.</string>
     <string name="duplicate_next">Aagay</string>
     <string name="duplicate_merge_confirm_title">%1$s mein merge karein?</string>
-    <string name="duplicate_merge_confirm_message">Doosray record ki har entry, bill, cheque aur payment mansooba is par move ho jayega. Balance khud theek ho jata hai — koi raqam na jama hoti hai na nikalti, koi paisa idhar udhar nahi hota.\n\nJo record merge ho gaya wo Recycle Bin mein khali chala jata hai: us ka khata pehle hi move ho chuka hota hai, isliye baad mein wapas laane se sirf naam wapas aata hai, balance ki doosri copy nahi.</string>
+    <string name="duplicate_merge_confirm_message">Doosray record ki har entry, bill, cheque aur payment mansooba is par move ho jayega. Balance khud theek ho jata hai — koi raqam na jama hoti hai na nikalti, koi paisa idhar udhaar nahi hota.\n\nJo record merge ho gaya wo Recycle Bin mein khali chala jata hai: us ka khata pehle hi move ho chuka hota hai, isliye baad mein wapas laane se sirf naam wapas aata hai, balance ki doosri copy nahi.</string>
     <string name="duplicate_merge_go">Merge Karein</string>
     <string name="duplicate_merge_done">%1$s mein merge ho gaya.</string>
     <string name="duplicate_merge_failed">Merge nahi ho saka. Aap ka khata jaisa tha waisa hi hai.</string>
@@ -1395,7 +1397,7 @@
     <string name="bill_new_supplier_msg">%1$s abhi aap ke khate mein nahi. Inhein supplier bana kar ye bill save karein?</string>
     <string name="bill_new_supplier_yes">Supplier bana kar save karein</string>
     <string name="change_party_type">Customer ya supplier</string>
-    <string name="change_party_type_help">Ye sirf ye durust karta hai ke party kis qism ki hai. Khata, balance aur har bill jaise hain waise hi rahenge — koi raqam idhar udhar nahi hoti. Haan, ye tay karta hai ke product promotion list mein kaun aayega, kyunki us mein sirf customers aate hain.</string>
+    <string name="change_party_type_help">Ye sirf ye durust karta hai ke party kis qism ki hai. Khata, balance aur har bill jaise hain waise hi rahenge — koi raqam idhar udhaar nahi hoti. Haan, ye tay karta hai ke product promotion list mein kaun aayega, kyunki us mein sirf customers aate hain.</string>
     <string name="now_a_customer">Customer ke taur par mehfooz</string>
     <string name="now_a_supplier">Supplier ke taur par mehfooz</string>
 
@@ -1427,7 +1429,7 @@
     <string name="rate_list_unpriced">Jin products ki qeemat nahi, woh list mein nahi: %1$s. Unhein dekhne aur qeemat daalne ke liye yahan tap karein.</string>
     <string name="rate_list_unpriced_title">Baghair qeemat ke products</string>
     <string name="rate_list_summary">Products: %1$s \u00b7 Tasveerein: %2$s</string>
-    <string name="rate_list_none">Abhi kisi product ki qeemat nahi. Products aur stock kholein, product par tap karein, Tafseelat mein tarmeem chunein aur naqd ya udhar qeemat likhein.</string>
+    <string name="rate_list_none">Abhi kisi product ki qeemat nahi. Products aur stock kholein, product par tap karein, Tafseelat mein tarmeem chunein aur naqd ya udhaar qeemat likhein.</string>
     <string name="rate_list_purchase_note">Khareed ki qeemat is list par kabhi nahi aati.</string>
     <string name="poster_title">Poster aur Status</string>
     <string name="poster_subtitle">WhatsApp Status ke liye tasveer, aap ki dukaan ke naam ke saath</string>
@@ -1501,12 +1503,12 @@
     </plurals>
 
     <string name="sale_price_hint">Naqd qeemat</string>
-    <string name="credit_price_hint">Udhar qeemat</string>
+    <string name="credit_price_hint">Udhaar qeemat</string>
     <string name="product_price_help">Ikhtiyari, fi unit. Sirf raqam tajweez karne ke liye — khud se wasool nahi hoti.</string>
     <string name="rate_type_label">Kaunsa rate?</string>
-    <string name="rate_type_credit">Udhar rate</string>
+    <string name="rate_type_credit">Udhaar rate</string>
     <string name="rate_type_cash">Naqd rate</string>
-    <string name="rate_not_set_credit">Is product ka udhar rate set nahi.</string>
+    <string name="rate_not_set_credit">Is product ka udhaar rate set nahi.</string>
     <string name="rate_not_set_cash">Is product ka naqd rate set nahi.</string>
     <string name="rate_unit_mismatch">Ye rate %1$s ka hai, is liye %2$s par nahi lagaya.</string>
     <string name="entry_rate_hint">Rate</string>
@@ -1620,9 +1622,9 @@
     <string name="pdf_rep_summary">Khulasa</string>
     <string name="pdf_rep_total_gave">Main ne diya (kul)</string>
     <string name="pdf_rep_total_got">Main ne liya (kul)</string>
-    <string name="pdf_rep_entry_count">Is muddat ke andraaj</string>
-    <string name="pdf_rep_entries">Andraaj</string>
-    <string name="pdf_rep_entries_continued">Andraaj (jari)</string>
+    <string name="pdf_rep_entry_count">Is muddat ke indiraaj</string>
+    <string name="pdf_rep_entries">Indiraaj</string>
+    <string name="pdf_rep_entries_continued">Indiraaj (jari)</string>
     <string name="pdf_rep_col_date">TAREEKH</string>
     <string name="pdf_rep_col_party">PARTY</string>
     <string name="pdf_rep_col_gave">MAIN NE DIYA</string>
@@ -1859,8 +1861,8 @@
     <string name="pay_heading">*Adaigi ka tareeqa*</string>
     <string name="pay_wallet_label">Mobile wallet</string>
     <string name="pay_bank_label">Bank</string>
-    <string name="entry_share_gave">Muhtaram *%1$s*, %2$s ko aap ke khate mein *%3$s* udhaar likha gaya.</string>
-    <string name="entry_share_got">Muhtaram *%1$s*, %2$s ko *%3$s* wusool hue. Shukriya.</string>
+    <string name="entry_share_gave">Mohtaram *%1$s*, %2$s ko aap ke khate mein *%3$s* udhaar likha gaya.</string>
+    <string name="entry_share_got">Mohtaram *%1$s*, %2$s ko *%3$s* wusool hue. Shukriya.</string>
     <string name="entry_share_balance">Ab kul baqaya: *%1$s*</string>
     <string name="entry_share_advance">Ab aap ka advance: *%1$s*</string>
     <string name="entry_share_settled">Aap ka hisaab ab barabar hai.</string>
@@ -2453,7 +2455,7 @@
     <string name="onboard_step">Marhala %1$s / %2$s</string>
     <string name="help_replay_tour">Home ka taaruf dobara dikhayein</string>
     <string name="coach_title_business">Karobar</string>
-    <string name="coach_desc_business">Products aur stock, invoice, rate list aur khareed ke rate, insights, cash flow aur dair karne walon ka follow-up — dukaan ka karobari hissa.</string>
+    <string name="coach_desc_business">Counter sale, products aur stock, invoice, rate list aur khareed ke rate, sales report, insights, cash flow aur dair karne walon ka follow-up — dukaan ka karobari hissa.</string>
     <string name="coach_title_tools">Tools</string>
     <string name="coach_desc_tools">Calculator, Zakat, aap ka business card, WhatsApp status ke liye poster, Google Drive par backup, aur ghalti se delete hone wali cheezon ke liye bin.</string>
     <string name="tile_backup">Backup</string>
@@ -2461,7 +2463,7 @@
     <!-- Chooser sheet (10 Oct): the line under each sort and theme choice. -->
     <string name="sort_name_az_hint">Huroof-e-tahajji ki tarteeb se</string>
     <string name="sort_name_za_hint">Huroof-e-tahajji ki ulti tarteeb se</string>
-    <string name="sort_owes_most_hint">Sab se zyada wasooli wale upar</string>
+    <string name="sort_owes_most_hint">Sab se zyada wusooli wale upar</string>
     <string name="sort_i_owe_most_hint">Jinhein sab se zyada dena hai woh upar</string>
     <string name="sort_recent_activity_hint">Taaza lain dain wale upar</string>
     <string name="sort_newest_hint">Taaza entry pehle</string>
@@ -2870,7 +2872,7 @@
     <string name="poster_night_label">Raat</string>
     <string name="poster_after_taraweeh_until">Taraweeh ke baad se %1$s tak</string>
     <string name="poster_choose_design">Design chunein</string>
-    <string name="poster_language">Poster ki zabaan</string>
+    <string name="poster_language">Poster ki zaban</string>
     <string name="poster_lang_more">Mazeed</string>
     <string name="poster_items_label">Kya aaya hai? (ziada se ziada 4)</string>
     <string name="poster_add_item">Shamil karein</string>
@@ -2926,8 +2928,8 @@
     </plurals>
 
     <!-- Poster screen in three steps, and the card's language (12 Oct). -->
-    <string name="biz_card_language">Card ki zabaan</string>
-    <string name="biz_card_language_note">Har zuban ka apna card banta hai. Urdu, Sindhi, Arabi aur Farsi card daayen se baayen hote hain. Har zuban ka naam, maalik aur pata alag rehta hai; number, email aur website har card par ek hi hain.</string>
+    <string name="biz_card_language">Card ki zaban</string>
+    <string name="biz_card_language_note">Har zaban ka apna card banta hai. Urdu, Sindhi, Arabi aur Farsi card daayen se baayen hote hain. Har zaban ka naam, maalik aur pata alag rehta hai; number, email aur website har card par ek hi hain.</string>
     <string name="poster_step_design">Design</string>
     <string name="poster_step_words">Likhai</string>
     <string name="poster_step_send">Bhejein</string>
@@ -3008,10 +3010,11 @@
     <string name="invoice_filter_ink">Kam syahi</string>
     <string name="business_current">Abhi khula hai</string>
     <string name="business_switch_open">Kholein</string>
+    <string name="business_switch_open_named">%1$s kholein</string>
     <string name="business_name_needed">Pehle karobar ka naam likhein.</string>
     <string name="business_not_added">Karobar add nahi hua. Add karne ke liye chunein ke ye kya bechta hai.</string>
     <string name="biz_card_sec_own">Is card par</string>
-    <string name="biz_card_sec_own_sub">Har zabaan ke card ke liye alag likhein.</string>
+    <string name="biz_card_sec_own_sub">Har zaban ke card ke liye alag likhein.</string>
     <string name="biz_card_sec_shared">Dono cards par ek jaisa</string>
     <string name="biz_card_l_name">Dukaan ka naam</string>
     <string name="biz_card_l_type">Aap kya bechte hain</string>
@@ -3115,7 +3118,7 @@
     <string name="pos_to_account">Khate mein</string>
     <string name="pos_change">Baqaya wapsi</string>
     <string name="pos_add_payment">Payment shamil karein</string>
-    <string name="pos_pay_full_cash">Sab naqad</string>
+    <string name="pos_pay_full_cash">Sab naqd</string>
     <string name="pos_reference_hint">Hawala (transaction no., cheque no.)</string>
     <string name="pos_leave_msg">Jo ticket ban raha hai woh zaya ho jayega.</string>
     <string name="pos_hold">Rokein</string>
@@ -3190,7 +3193,7 @@
     <string name="pos_exchange_started_cash">%1$s ka badla: naya maal likhein. %2$s ki raqam wapsi galle mein hi rehti hai aur is bill ki pehli adaigi hai; sirf farq wusool karein.</string>
     <string name="pos_returns">Wapsiyan</string>
     <string name="pos_err_over_sold">Jitna bika us se zyada wapas aa raha hai</string>
-    <string name="pos_err_walk_in_cash">Aam gahak ko poori raqam naqad/bank wapas hoti hai</string>
+    <string name="pos_err_walk_in_cash">Aam gahak ko poori raqam naqd/bank wapas hoti hai</string>
     <string name="pos_err_reason">Wajah zaroori hai</string>
     <string name="pos_err_refund">Wapsi ki raqam samaan ki qeemat se zyada hai</string>
     <string name="pos_return_of">%1$s ki wapsi</string>
@@ -3204,12 +3207,12 @@
     <string name="z_sales_total">Kul sales</string>
     <string name="z_voids">Mansookh (%1$s)</string>
     <string name="z_returns">Wapsiyan (%1$s)</string>
-    <string name="z_cash_in">Naqad aamad (khata + cashbook)</string>
-    <string name="z_cash_out">Naqad ikhraj (khata + cashbook)</string>
+    <string name="z_cash_in">Naqd aamad (khata + cashbook)</string>
+    <string name="z_cash_out">Naqd ikhraj (khata + cashbook)</string>
     <string name="z_expected">Galle mein hona chahiye</string>
     <string name="z_variance">Farq</string>
     <string name="z_profit">Munafa (sale − lagat)</string>
-    <string name="dc_opening">Ibtidai naqad</string>
+    <string name="dc_opening">Ibtidai naqd</string>
     <string name="dc_counted">Gina gaya</string>
     <string name="z_no_close">Din band nahi hua — farq dekhne ke liye galla ginein</string>
     <string name="z_variance_reason">Farq ki wajah likhein</string>
@@ -3265,6 +3268,7 @@
     <string name="stock_low_title">Kam stock</string>
     <string name="stock_adjustments">Durustgiyan</string>
     <string name="po_title">Khareed order</string>
+    <string name="po_saved">Order %1$s mehfooz ho gaya</string>
     <string name="po_new">Naya order</string>
     <string name="po_supplier">Supplier</string>
     <string name="po_send">WhatsApp par bhejein</string>
@@ -3282,7 +3286,7 @@
     <string name="po_pick_supplier">Order save karne ke liye supplier chunein</string>
     <string name="po_message_head">Order %1$s — %2$s</string>
     <string name="po_from_low">Kam stock ka order</string>
-    <string name="po_book">Kitab</string>
+    <string name="po_book">Record mein</string>
     <string name="inventory_title">Maujooda stock</string>
 
     <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
@@ -3374,8 +3378,8 @@
     <!-- Restore safety: what a restore would take away, said in figures (21 Oct 2026) -->
     <string name="restore_loss_title">Is se yahan kiya gaya kaam khatam ho jayega</string>
     <string name="restore_loss_intro">Yeh is khate mein hain aur copy mein nahi. Restore ke baad yeh khatam ho jayenge:</string>
-    <string name="restore_loss_entries">Indrajaat: %1$d</string>
-    <string name="restore_loss_changed">Copy ke baad yahan badle ya mitaye gaye indrajaat: %1$d</string>
+    <string name="restore_loss_entries">Indiraajaat: %1$d</string>
+    <string name="restore_loss_changed">Copy ke baad yahan badle ya mitaye gaye indiraajaat: %1$d</string>
     <string name="restore_loss_sales">Counter sales: %1$d</string>
     <string name="restore_loss_returns">Wapsiyan: %1$d</string>
     <string name="restore_loss_cash">Cashbook ki qataarein: %1$d</string>
@@ -3510,18 +3514,18 @@
 
     <!-- Critical review fixes, batch 1 (21 Oct 2026): book safety, restore, counter checks -->
     <string name="book_opening">Khata khul raha hai…</string>
-    <string name="book_cannot_open">Khata nahin khul saka, aur us mein kuch nahin badla gaya. Jo doosra program isay istemal kar raha ho usay band karen (ya computer dobara chalayen), phir Roshan Khata dobara kholen.</string>
-    <string name="book_set_aside_note">Kharab khata yahan alag rakha gaya hai, mitaya nahin gaya: %1$s</string>
-    <string name="restore_keep_failed">Yeh khata pehle mehfooz nahin ho saka, is liye kuch nahin badla gaya. Dekhen ke disk mein jagah hai, phir dobara koshish karen.</string>
-    <string name="restore_loss_unknown">Kya zaaya hoga yeh gina nahin ja saka. Tabhi badlen jab aap ko yaqeen ho ke yahi copy chahiye.</string>
+    <string name="book_cannot_open">Khata nahi khul saka, aur us mein kuch nahi badla gaya. Jo doosra program isay istemal kar raha ho usay band karein (ya computer dobara chalayen), phir Roshan Khata dobara kholen.</string>
+    <string name="book_set_aside_note">Kharab khata yahan alag rakha gaya hai, mitaya nahi gaya: %1$s</string>
+    <string name="restore_keep_failed">Yeh khata pehle mehfooz nahi ho saka, is liye kuch nahi badla gaya. Dekhen ke disk mein jagah hai, phir dobara koshish karein.</string>
+    <string name="restore_loss_unknown">Kya zaaya hoga yeh gina nahi ja saka. Tabhi badlen jab aap ko yaqeen ho ke yahi copy chahiye.</string>
     <string name="clock_behind_title">Computer ki tareekh ghalat lagti hai</string>
-    <string name="clock_behind_body">Sab se nayi rozana copy %1$s ki hai, magar yeh computer aaj ki tareekh %2$s bata raha hai. Windows mein sahi tareekh aur waqt lagayen. Tab tak koi purani copy nahin mitayi jayegi.</string>
-    <string name="pos_void_has_returns">Is bikri ka maal pehle hi wapas ho chuka hai. Wapsi wali bikri mansookh nahin ho sakti; baqi maal ki wapsi karen.</string>
-    <string name="pos_void_day_closed">Is bikri ka din band ho chuka hai. Mansookh karne ke bajaye wapsi karen.</string>
-    <string name="pos_err_rate_missing">Ek line ka rate nahin likha.</string>
-    <string name="pos_err_tax">Tax parha nahin ja saka.</string>
-    <string name="pos_err_payment_unread">Ek adaigi ki raqam parhi nahin ja saki.</string>
-    <string name="pos_err_discount_unread">Ek riayat parhi nahin ja saki.</string>
+    <string name="clock_behind_body">Sab se nayi rozana copy %1$s ki hai, magar yeh computer aaj ki tareekh %2$s bata raha hai. Windows mein sahi tareekh aur waqt lagayen. Tab tak koi purani copy nahi mitayi jayegi.</string>
+    <string name="pos_void_has_returns">Is bikri ka maal pehle hi wapas ho chuka hai. Wapsi wali bikri mansookh nahi ho sakti; baqi maal ki wapsi karein.</string>
+    <string name="pos_void_day_closed">Is bikri ka din band ho chuka hai. Mansookh karne ke bajaye wapsi karein.</string>
+    <string name="pos_err_rate_missing">Ek line ka rate nahi likha.</string>
+    <string name="pos_err_tax">Tax parha nahi ja saka.</string>
+    <string name="pos_err_payment_unread">Ek adaigi ki raqam parhi nahi ja saki.</string>
+    <string name="pos_err_discount_unread">Ek riayat parhi nahi ja saki.</string>
     <string name="pos_price_needs_pin">Rate list se hat kar rate par bechna</string>
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
@@ -3553,11 +3557,11 @@
     <string name="entry_linked_bill">Yeh indiraaj supplier bill ne likha hai. Bill badlen ya mitayen, khata khud saath badal jayega.</string>
     <string name="entry_linked_plan">Yeh indiraaj qist plan ki adaigi ne likha hai. Durust karne ke liye pehle qist plan delete karein (us ki adaigiyan khate mein rahengi), phir yeh indiraaj badlen.</string>
     <string name="entry_linked_cheque">Yeh indiraaj clear hone wale cheque ne likha hai. Isay cheque wale safhe se badlen.</string>
-    <string name="entry_linked_sale">Yeh indiraaj counter ki sale ne likha hai. Sale mansookh karen ya wapsi karen.</string>
-    <string name="entry_linked_return">Yeh indiraaj wapsi ne likha hai. Is ke bajaye wapsi mansookh karen.</string>
+    <string name="entry_linked_sale">Yeh indiraaj counter ki sale ne likha hai. Sale mansookh karein ya wapsi karein.</string>
+    <string name="entry_linked_return">Yeh indiraaj wapsi ne likha hai. Is ke bajaye wapsi mansookh karein.</string>
     <string name="pos_return_void_day_closed">Is wapsi ka din band ho chuka hai, is liye yeh mansookh nahi ho sakti. Is ki jagah samaan nayi bikri mein likhein.</string>
     <string name="entries_linked_kept">Yeh waise hi rahe kyunke inhein kisi bill, plan, cheque, counter bikri ya wapsi ne likha hai (wahin se badlein): %1$d</string>
-    <string name="party_has_tickets">Delete nahi hua: %1$s ke naam counter bikri ya wapsi likhi hai. Pehle unhein mansookh karen, ya customer ko rehne dein.</string>
+    <string name="party_has_tickets">Delete nahi hua: %1$s ke naam counter bikri ya wapsi likhi hai. Pehle unhein mansookh karein, ya customer ko rehne dein.</string>
     <string name="bin_emptied_kept">Bin khali kar diya gaya. Yeh customer rakhe gaye kyunke in ke abhi supplier bill, cheque, adaigi mansoobay ya counter sale maujood hain: %1$d</string>
     <string name="bin_party_kept">Bin mein hi rakha gaya: is customer ke abhi supplier bill, cheque, adaigi mansoobay ya counter sale maujood hain. In ke liye customer ko wapas layen.</string>
 
@@ -3571,7 +3575,7 @@
     <string name="csv_col_company">Company</string>
     <string name="csv_col_unit">Unit</string>
     <string name="csv_col_sale">Bechne ki qeemat</string>
-    <string name="csv_col_credit">Udhar qeemat</string>
+    <string name="csv_col_credit">Udhaar qeemat</string>
     <string name="csv_col_cost">Laagat</string>
     <string name="csv_col_barcode">Barcode</string>
     <string name="csv_col_low">Kam stock had</string>
@@ -3587,7 +3591,7 @@
 
     <!-- Own digits on printed sheets, offered for Arabic, Sindhi, Farsi and Bengali (21 Oct 2026) -->
     <string name="print_native_digits">Chhape kaghaz par maqami hindse</string>
-    <string name="print_native_digits_help">Invoice, statement aur report is zuban ke apne hindson mein chhapenge. Screen aur jo aap likhen woh 0-9 hi rahega.</string>
+    <string name="print_native_digits_help">Invoice, statement aur report is zaban ke apne hindson mein chhapenge. Screen aur jo aap likhen woh 0-9 hi rahega.</string>
 
     <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
     <string name="bp_country">Mulk</string>
@@ -3677,7 +3681,7 @@
     <string name="live_status_not_accepted">Computer ne waqt par haan nahi ki. Jorne ke liye us ka live sync code dobara scan karein.</string>
     <string name="live_status_not_here">Computer ne jawab diya, magar is waqt yeh khata us par nahi rakha hua. Computer par is khate ka business kholein.</string>
     <string name="live_status_relay">%1$s ke saath internet se live. Aakhri update: %2$s</string>
-    <string name="live_relay_help">Jab phone dukaan ke WiFi se door ho to us ki tabdeeliyan Innovation-313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
+    <string name="live_relay_help">Jab phone dukaan ke WiFi se door ho to us ki tabdeeliyan Innovation 313 ke relay se guzarti hain, is khate ki apni chaabi se band: relay unhein parh nahi sakta, aur zyada se zyada 7 din rakhta hai. Dono devices ke liye ek hi switch. App band ho to Google ka Firebase phone ko sirf ye batata hai ke kuch intezar mein hai; khate ki koi cheez us ke paas nahi jaati.</string>
     <string name="live_relay">Internet se bhi</string>
     <string name="wifi_take_too_big">Computer ki kitaab is phone ki memory ya khaali jagah ke liye bohat bari hai. Doosri apps band kar ke dobara koshish karein, ya kitaab backup file se muntaqil karein.</string>
     <string name="live_devices_open">Devices aur ek saath tabdeeliyan</string>
@@ -3702,7 +3706,7 @@
     <string name="fc_look_in">Yahan dekhein:</string>
     <string name="fc_folder_name">Folder:</string>
     <string name="fc_files_of_type">File ki qism:</string>
-    <string name="pos_void_shift_closed">Jis shift mein yeh bikri hui thi woh gin kar band ho chuki hai. Mansookh karne ke bajaye wapsi karen.</string>
+    <string name="pos_void_shift_closed">Jis shift mein yeh bikri hui thi woh gin kar band ho chuki hai. Mansookh karne ke bajaye wapsi karein.</string>
     <string name="pos_customer_binned">Yeh gahak recycle bin mein hai. Pehle gahak ko wapas layen. Kuch nahi likha gaya.</string>
     <string name="pos_held_gone">Yeh roka hua ticket pehle hi bik chuka hai ya hataya ja chuka hai, shayad kisi aur device par. Kuch nahi likha gaya.</string>
     <string name="pos_ticket_not_posted">Yeh bikri ab darj shuda nahi rahi (mansookh ya hata di gayi). Kuch nahi likha gaya.</string>
@@ -3712,8 +3716,8 @@
     <string name="pos_return_failed">Wapsi save nahi hui. Kuch nahi likha gaya.</string>
     <string name="book_merge_failed">Kuch shamil nahi hua. Yeh khata jun ka tun hai.</string>
     <string name="products_export_failed">Samaan ki file nahi ban saki.</string>
-    <string name="save_failed_storage_full">Save nahi hua: phone ki memory bhar chuki hai. Kuch jagah khali karen, phir dobara darj karen.</string>
-    <string name="save_failed_not_saved">Save nahi hua: koi kharabi hui. Barah-e-karam dekh kar dobara darj karen.</string>
+    <string name="save_failed_storage_full">Save nahi hua: phone ki memory bhar chuki hai. Kuch jagah khali karein, phir dobara darj karein.</string>
+    <string name="save_failed_not_saved">Save nahi hua: koi kharabi hui. Barah-e-karam dekh kar dobara darj karein.</string>
     <plurals name="stock_count_saved">
         <item quantity="one">%1$d durustgi likhi gayi</item>
         <item quantity="other">%1$d durustgiyan likhi gayin</item>
@@ -3745,7 +3749,7 @@
     <string name="report_sync_notes_included">— Live sync notes (crash nahi: woh masle jin ke baad live sync ne dobara koshish ki; koi naam, raqam ya key nahi):</string>
     <string name="live_phone_relay_ask">Do phone sirf internet relay ke zariye milte hain. Yeh khata doosre phone ko bhejne se iske liye “Internet se bhi” on ho jayega. Agar doosra phone khata na le to yeh switch pehle jaisa ho jayega.</string>
     <string name="live_pair_left_business">Phone ka jor us waqt aaya jab karobar “%1$s” khula tha, aur ab doosra karobar khula hai: isay chhor diya gaya taake yeh is khate ki jagah na le. Jorne ke liye “%1$s” kholein aur phone par code dobara scan karein.</string>
-    <string name="live_wake_off">App band ho to relay is phone ko jaga nahin sakta: doosre device ki tabdeeliyan app khulne par aayengi.</string>
+    <string name="live_wake_off">App band ho to relay is phone ko jaga nahi sakta: doosre device ki tabdeeliyan app khulne par aayengi.</string>
     <string name="staff_name_taken">Is naam ka staff pehle se list mein hai. Farq ke liye kuch saath likhein, jaise walid ka naam.</string>
 
     <!-- The documents (29 Oct 2026, schema 40): a quotation, a proforma, a sales order and a challan are the invoice at an earlier step. -->
@@ -3891,7 +3895,7 @@
     <string name="intro_expiry_s3">Wapas karein ya khatam likhein</string>
     <!-- Khata list: a party never written to (1 Nov 2026) -->
     <string name="party_no_entries">Koi entry nahi</string>
-    <string name="cash_paid_now_help">Sale aur mili hui naqd raqam ek saath save hoti hain, is liye wasooli ke liye kuch baqi nahi rehta.</string>
+    <string name="cash_paid_now_help">Sale aur mili hui naqd raqam ek saath save hoti hain, is liye wusooli ke liye kuch baqi nahi rehta.</string>
     <!-- Customer statement redesign (2 Nov 2026) -->
     <string name="pdf_stmt_doc_title">KHATA STATEMENT</string>
     <string name="pdf_stmt_made_on">Banaya gaya: %1$s</string>

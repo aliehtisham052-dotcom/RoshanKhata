@@ -209,7 +209,7 @@
     foot.textContent = "";
     foot.appendChild(el("span", null, w.foot));
     foot.appendChild(el("br"));
-    foot.appendChild(el("span", "brand", w.brand + " · Innovation-313"));
+    foot.appendChild(el("span", "brand", w.brand + " · Innovation 313"));
   }
   /** A message before the page could be opened: in the reader's language, and in English beside it. */
   function say(key) {
@@ -217,7 +217,11 @@
     setLang(l);
     page.textContent = "";
     page.appendChild(el("p", "msg", words(l)[key]));
-    if (l !== "en") page.appendChild(el("p", "msg en", W.en[key]));
+    if (l !== "en") {
+      var e = el("p", "msg en", W.en[key]);
+      e.lang = "en"; e.dir = "ltr";
+      page.appendChild(e);
+    }
   }
   function unb64url(s) {
     s = s.replace(/-/g, "+").replace(/_/g, "/");

@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">روشن کاتو</string>
-    <string name="welcome_title">توهان جو کھاتو، محفوظ</string>
+    <string name="welcome_title">توهان جو کاتو، محفوظ</string>
     <string name="welcome_body">روشن کاتو توهان جو رڪارڊ هن ئي فون تي رکي ٿو. پنهنجو گوگل اڪائونٽ ڳنڍيو ته جيئن توهان جو کاتو توهان جي ڊرائيو تي محفوظ ٿي سگهي — توهان جو ڊيٽا، توهان جي اڪائونٽ ۾.</string>
     <string name="welcome_connect">Google سان جاري رکو</string>
     <string name="welcome_skip">شايد پوءِ</string>
+    <string name="home_backup_to_drive">گوگل ڊرائيو تي بيڪ اپ ڪريو</string>
 
     <string name="coach_skip">ڇڏي ڏيو</string>
     <string name="coach_next">اڳتي</string>
@@ -161,7 +162,7 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">ڪئلڪوليٽر</string>
     <string name="coach_desc_calc">کاتي سان گڏ تڪڙا حساب — منافعو، ڪل ميزان ۽ ورهاست.</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
     <string name="net_balance">خالص بيلنس</string>
     <string name="home_sec_daily">هر روز</string>
@@ -196,10 +197,11 @@
     <string name="ledger_report_from">%1$s کان</string>
     <string name="ledger_report_till">%1$s تائين</string>
     <string name="add_party">ڌر شامل ڪريو</string>
-    <string name="add_party_duplicate_with_phone">ملندڙ ڪسٽمر اڳ ۾ ئي موجود آهي: %1$s — %2$s</string>
-    <string name="add_party_duplicate_name_only">ملندڙ ڪسٽمر اڳ ۾ ئي موجود آهي: %1$s</string>
+    <string name="add_party_duplicate_with_phone">ملندڙ گراهڪ اڳ ۾ ئي موجود آهي: %1$s — %2$s</string>
+    <string name="add_party_duplicate_name_only">ملندڙ گراهڪ اڳ ۾ ئي موجود آهي: %1$s</string>
     <string name="no_parties_yet">اڃا ڪو گراهڪ ناهي.\n\nپهريون گراهڪ شامل ڪريو ۽ پنهنجو کاتو شروع ڪريو.</string>
     <string name="no_entries_yet">اڃا ڪا داخلا ناهي.</string>
+    <string name="party_entries_hint">اڃا ڪا داخلا ناهي.\nپهريون داخلو لکڻ لاءِ \u201Cمون ڏنا\u201D يا \u201Cمون ورتا\u201D دٻايو.</string>
     <string name="entries_no_match">توهان جي ڳولا سان ڪا داخلا نه ملي.</string>
 
     <string name="i_gave">مون ڏنا</string>
@@ -295,7 +297,7 @@
     <string name="include_doubtful_help">گهڻن عالمن جو چوڻ آهي ته مشڪوڪ قرض تي زڪوات تڏهن واجب ٿئي ٿي جڏهن اهو واقعي وصول ٿئي. صرف وڌيڪ احتياط چاهيو ته هي نشان لڳايو.</string>
 
     <string name="zakatable_wealth">زڪوات جوڳو مال</string>
-    <string name="zakat_due_label">زڪوات (2.5٪)</string>
+    <string name="zakat_due_label">زڪوات (2.5%)</string>
     <string name="zakat_footer_note">زڪوات لاءِ مال تي پورو قمري سال (حول) گذرڻ به ضروري آهي. روشن کاتو اهو توهان لاءِ نٿو ڳڻي — پاڻ خيال رکو، ۽ حڪم ڪنهن عالم کان پڪو ڪريو.</string>
 
     <!-- Qarz-e-Hasna -->
@@ -314,8 +316,8 @@
     <string name="reminder_step_gentle">نرم</string>
     <string name="reminder_step_plain">صاف</string>
     <string name="reminder_step_serious">سنجيده</string>
-    <string name="reminder_step2">*ٻي ياد ڏياريندڙ*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nپهرين ياد ڏياريندڙ: %3$s\n\nهي اسان جي ٻي ياد ڏياريندڙ آهي. مهرباني ڪري هن هفتي رقم ادا ڪريو.\n\nمهرباني.</string>
-    <string name="reminder_step3">*ادائگي باقي آهي*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nڪيترائي ڀيرا ياد ڏيارڻ کان پوءِ به رقم باقي آهي. مهرباني ڪري ادا ڪريو، يا ادائگي جي تاريخ ٻڌايو ته جيئن حساب صاف ٿئي.\n\nتوهان جي تعاون جي مهرباني.</string>
+    <string name="reminder_step2">*ٻي ياد ڏياري*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\nپهرين ياد ڏياري: %3$s\n\nهي اسان جي ٻي ياد ڏياري آهي. مهرباني ڪري هن هفتي رقم ادا ڪريو.\n\nمهرباني.</string>
+    <string name="reminder_step3">*ادائيگي باقي آهي*\n\nمحترم *%1$s*،\n\nواجب الادا: *%2$s*\n\nڪيترائي ڀيرا ياد ڏيارڻ کان پوءِ به رقم باقي آهي. مهرباني ڪري ادا ڪريو، يا ادائيگي جي تاريخ ٻڌايو ته جيئن حساب صاف ٿئي.\n\nتوهان جي تعاون جي مهرباني.</string>
     <string name="reminder_ref">حوالو: %1$s</string>
     <string name="reminder_i_owe">*کاتي جي اطلاع*\n\nمحترم *%1$s*،\n\nاسان تي توهان جو: *%2$s*\n\nانشاءالله جلد ادا ڪنداسين. جيڪڏهن توهان جو حساب اسان کان مختلف هجي ته ٻڌايو.\n\nمهرباني.</string>
     <string name="send_reminder">ياد ڏياريو</string>
@@ -385,8 +387,8 @@
     <string name="screen_privacy_off">آف — اسڪرين شاٽ عام طريقي سان هلي ٿو</string>
     <string name="screen_privacy_turn_on">اسڪرين شاٽ بند ڪريو</string>
     <string name="screen_privacy_turn_off">اسڪرين شاٽ جي اجازت ڏيو</string>
-    <string name="screen_privacy_explain">هي آن ڪرڻ سان روشن کھاتہ ۾ هر هنڌ اسڪرين شاٽ ۽ اسڪرين رڪارڊنگ بند ٿي وڃي ٿي.\n\nقيمت اها آهي ته توهان جو پنهنجو اسڪرين شاٽ به بند ٿي وڃي ٿو. جيڪڏهن توهان گراهڪ جو کاتو تصوير وٺي اڳتي موڪليندا آهيو، اهو آن رهڻ تائين نه ٿي سگهندو. شيئر ۽ اسٽيٽمينٽ جا بٽڻ پوءِ به ڪم ڪن ٿا، ۽ اسڪرين شاٽ کان صاف نقل موڪلين ٿا.\n\nروزمرهه ڪم لاءِ ان کي آف رکو. آن تڏهن ڪريو جڏهن فون اڪثر ٻين جي هٿن ۾ رهندو هجي.</string>
-    <string name="screen_privacy_recents_hidden">توهان جو اينڊرائيڊ اڳ ۾ ئي روشن کھاتہ کي ريسنٽ ايپس سوئچر کان لڪائي ٿو، ان ڪري اتي ڪوبه توهان جو کاتو نٿو ڏسي سگهي.</string>
+    <string name="screen_privacy_explain">هي آن ڪرڻ سان روشن کاتو ۾ هر هنڌ اسڪرين شاٽ ۽ اسڪرين رڪارڊنگ بند ٿي وڃي ٿي.\n\nقيمت اها آهي ته توهان جو پنهنجو اسڪرين شاٽ به بند ٿي وڃي ٿو. جيڪڏهن توهان گراهڪ جو کاتو تصوير وٺي اڳتي موڪليندا آهيو، اهو آن رهڻ تائين نه ٿي سگهندو. شيئر ۽ اسٽيٽمينٽ جا بٽڻ پوءِ به ڪم ڪن ٿا، ۽ اسڪرين شاٽ کان صاف نقل موڪلين ٿا.\n\nروزمرهه ڪم لاءِ ان کي آف رکو. آن تڏهن ڪريو جڏهن فون اڪثر ٻين جي هٿن ۾ رهندو هجي.</string>
+    <string name="screen_privacy_recents_hidden">توهان جو اينڊرائيڊ اڳ ۾ ئي روشن کاتو کي ريسنٽ ايپس سوئچر کان لڪائي ٿو، ان ڪري اتي ڪوبه توهان جو کاتو نٿو ڏسي سگهي.</string>
     <string name="screen_privacy_recents_visible">هن اينڊرائيڊ جو ورزن 13 کان پراڻو آهي، ان ڪري ريسنٽ ايپس سوئچر اڃا به توهان جي آخري اسڪرين ڏيکاري سگهي ٿو. رڳو هي سوئچ ان کي لڪائي سگهي ٿو.</string>
     <string name="app_lock_no_screen_lock">هن فون تي اسڪرين لاڪ رکيل ناهي. پهرين فون جي سيٽنگن ۾ آڱر جو نشان، پن يا نمونو رکو، پوءِ ايپ لاڪ توهان جي کاتي جي حفاظت ڪري سگهندو.</string>
     <string name="app_lock_unavailable">هن فون تي ايپ لاڪ موجود ناهي.</string>
@@ -515,19 +517,19 @@
     <string name="delete_party">هٽايو</string>
 
     <!-- Credit limit -->
-    <string name="credit_limit">اوڌر جي حد</string>
-    <string name="set_credit_limit">اوڌر جي حد رکو</string>
-    <string name="credit_limit_help">وڌ ۾ وڌ ايترو اوڌر جيترو توهان هن گراهڪ کي ڏيڻ چاهيو ٿا. حد کان مٿي ويندڙ اندراج کان اڳ روشن کاتو خبردار ڪندو. حد نه هجي ته خالي ڇڏيو.</string>
+    <string name="credit_limit">اڌار جي حد</string>
+    <string name="set_credit_limit">اڌار جي حد رکو</string>
+    <string name="credit_limit_help">وڌ ۾ وڌ ايترو اڌار جيترو توهان هن گراهڪ کي ڏيڻ چاهيو ٿا. حد کان مٿي ويندڙ اندراج کان اڳ روشن کاتو خبردار ڪندو. حد نه هجي ته خالي ڇڏيو.</string>
     <string name="credit_limit_hint">حد</string>
     <string name="credit_limit_advisory">هي خبرداري آهي، رڪاوٽ ناهي. ڪاروبار توهان جو آهي — توهان هميشه اڳتي وڌي سگهو ٿا.</string>
     <string name="credit_limit_current">هن وقت توهان جو %1$s باقي اٿس</string>
-    <string name="credit_limit_removed">اوڌر جي حد هٽي وئي</string>
-    <string name="credit_limit_saved">اوڌر جي حد محفوظ ٿي</string>
+    <string name="credit_limit_removed">اڌار جي حد هٽي وئي</string>
+    <string name="credit_limit_saved">اڌار جي حد محفوظ ٿي</string>
 
     <string name="over_limit_badge">حد کان مٿي</string>
     <string name="near_limit_badge">حد جي ويجهو</string>
 
-    <string name="limit_warning_title">هي سندن اوڌر جي حد ٽپي ويندي</string>
+    <string name="limit_warning_title">هي سندن اڌار جي حد ٽپي ويندي</string>
     <string name="limit_warning_message">%1$s تي هن وقت توهان جو %2$s باقي آهي.\n\n%3$s جي هيءَ داخلا کيس %4$s تي پهچائيندي، جيڪا توهان جي رکيل %5$s حد کان مٿي آهي.\n\nپوءِ به اڳتي وڌي سگهو ٿا — هي رڳو خبرداري آهي.</string>
     <string name="proceed_anyway">اڳتي وڌو</string>
 
@@ -691,7 +693,7 @@
         <item quantity="other">%1$s: %2$d شيون 60 ڏينهن ۾ ختم ٿي رهيون آهن.</item>
     </plurals>
     <string name="filter_title">فلٽر</string>
-    <string name="filter_account_label">کھاتو</string>
+    <string name="filter_account_label">کاتو</string>
     <string name="filter_type_label">قسم</string>
     <string name="filter_apply">فلٽر لاڳو ڪريو</string>
     <string name="filter_clear">صاف ڪريو</string>
@@ -948,8 +950,8 @@
 
     <string name="hide_balance">بيلنس لڪايو</string>
 
-    <string name="powered_by">Innovation-313 جي پيشڪش</string>
-    <string name="lock_tagline">Innovation-313 جي پيشڪش</string>
+    <string name="powered_by">Innovation 313 جي پيشڪش</string>
+    <string name="lock_tagline">Innovation 313 جي پيشڪش</string>
 
     <!-- Splash / branding -->
 
@@ -967,7 +969,7 @@
     <string name="drive_auto_backup">پاڻمرادو بيڪ اپ</string>
     <string name="drive_auto_backup_hint">جڏهن به کاتي ۾ تبديلي ٿئي، پاڻمرادو بيڪ اپ ٿي ويندو آهي — واءِ فاءِ تي وڌ ۾ وڌ هر 30 منٽن ۾، موبائيل ڊيٽا تي هر 6 ڪلاڪن ۾. توهان ڪڏهن به پاڻ به بيڪ اپ وٺي سگهو ٿا.</string>
     <string name="auto_backup_offer_title">پاڻمرادو بيڪ اپ ڪجي؟</string>
-    <string name="auto_backup_offer_body">توهانجو اڪائونٽ ڳنڍجي ويو. Roshan Khata توهانجو کاتو پاڻ اپلوڊ ڪري سگهي ٿو جڏهن به ان ۾ ڦيرڦار ٿئي، ته جيئن فون گم يا خراب ٿيڻ تي توهانجو رڪارڊ ساڻ نه وڃي.\n\nهي توهان ڪڏهن به هن ئي اسڪرين تان بدلائي سگهو ٿا.</string>
+    <string name="auto_backup_offer_body">توهانجو اڪائونٽ ڳنڍجي ويو. روشن کاتو توهانجو کاتو پاڻ اپلوڊ ڪري سگهي ٿو جڏهن به ان ۾ ڦيرڦار ٿئي، ته جيئن فون گم يا خراب ٿيڻ تي توهانجو رڪارڊ ساڻ نه وڃي.\n\nهي توهان ڪڏهن به هن ئي اسڪرين تان بدلائي سگهو ٿا.</string>
     <string name="auto_backup_offer_yes">چالو ڪريو</string>
     <string name="auto_backup_offer_no">هينئر نه</string>
     <string name="drive_restore">Drive مان بحال ڪريو</string>
@@ -1041,7 +1043,7 @@
     <string name="cf_kind_plan">قسط</string>
     <string name="cf_kind_cheque_in">وٺڻ وارو چيڪ</string>
     <string name="cf_kind_harvest">فصل کان پوءِ</string>
-    <string name="cf_kind_promised">واعدي جي ادائگي</string>
+    <string name="cf_kind_promised">واعدي جي ادائيگي</string>
     <string name="cf_kind_bill">سپلائر جو بل</string>
     <string name="cf_kind_cheque_out">ڏيڻ وارو چيڪ</string>
     <string name="cf_empty">اڃا ڪا تاريخ ناهي. تاريخون قسطن جي پلان، چيڪن ۽ ڊيو ڊيٽ وارن سپلائر بلن مان اچن ٿيون.</string>
@@ -1121,16 +1123,16 @@
     <string name="nisab_silver">چاندي</string>
     <string name="nisab_gold">سون</string>
     <string name="gold_price_hint">سون جي في گرام قيمت</string>
-    <string name="silver_price_hint_tola">چانديءَ جي في تولہ قيمت</string>
-    <string name="gold_price_hint_tola">سون جي في تولہ قيمت</string>
+    <string name="silver_price_hint_tola">چانديءَ جي في توله قيمت</string>
+    <string name="gold_price_hint_tola">سون جي في توله قيمت</string>
     <string name="nisab_silver_note">چانديءَ جو نصاب: 612.36 گرام (52.5 تولا) چاندي. هي هيٺين حد آهي، تنهنڪري وڌيڪ ماڻهن تي زڪوات واجب ٿئي ٿي \u2014 اهو موقف جيڪو عام طور غريبن جي حق ۾ وڌيڪ محتاط سمجهيو وڃي ٿو.</string>
     <string name="nisab_gold_note">سون جو نصاب: 87.48 گرام (7.5 تولا) سون. هي مٿين حد آهي، تنهنڪري گهٽ ماڻهن تي زڪوات واجب ٿئي ٿي. ڪهڙو معيار توهان تي لاڳو آهي، اهو ڪنهن عالم کان پڪو ڪريو.</string>
-    <string name="per_tola">في تولہ</string>
+    <string name="per_tola">في توله</string>
     <string name="per_gram">في گرام</string>
     <string name="price_help">اڄ جو اگهه پنهنجي مقامي صرافه بازار، اخبار يا زيورن واري کان وٺو.</string>
-    <string name="price_looks_off">هي هن ايڪي جي حساب سان عجيب لڳي ٿو. ڏسو ته اگهه في تولہ آهي يا في گرام.</string>
+    <string name="price_looks_off">هي هن ايڪي جي حساب سان عجيب لڳي ٿو. ڏسو ته اگهه في توله آهي يا في گرام.</string>
     <string name="nisab_working">%2$s جو %1$s x %3$s = %4$s</string>
-    <string name="unit_tola">تولہ</string>
+    <string name="unit_tola">توله</string>
     <string name="unit_gram">گرام</string>
     <string name="metal_silver">چاندي</string>
     <string name="metal_gold">سون</string>
@@ -1270,7 +1272,7 @@
     <string name="faq_q_business">منهنجون ٻه دڪانون آهن. ڇا ٻئي ايپ ۾ رکي سگهان ٿو؟</string>
     <string name="faq_a_business">جي ها. هوم اسڪرين تي مٿي پنهنجي دڪان جي نالي تي دٻايو، پوءِ نئون ڪاروبار شامل ڪريو. هر دڪان جو بلڪل الڳ کاتو رهي ٿو — الڳ گراهڪ، داخلائون ۽ تصويرون — ۽ هر هڪ جو بيڪ اپ به الڳ. نالي تي دٻائي دڪان بدلايو. وڌيڪ اختيارن لاءِ دير تائين دٻايو — نالو بدلايو يا ختم ڪريو.</string>
     <string name="faq_q_snapshot">اڄ ڪجهه خراب ٿي ويو. ڇا ڪالهه واري حالت تي واپس وڃي سگهان ٿو؟</string>
-    <string name="faq_a_snapshot">جي ها. ايپ هر دڪان جي کاتي جي ڪاپي روزانو رکي ٿي، گذريل ست ڏينهن جي. بيڪ اپ ۽ ريسٽور ← روزاني ڪاپيون کوليو ۽ ڏينهن چونڊيو. اڄ جو کاتو پهريان محفوظ ڪيو وڃي ٿو، ان ڪري هي به واپس ٿي سگهي ٿو.</string>
+    <string name="faq_a_snapshot">جي ها. ايپ هر دڪان جي کاتي جي ڪاپي روزانو رکي ٿي، گذريل ست ڏينهن جي. بيڪ اپ ۽ بحالي ← روزاني ڪاپيون کوليو ۽ ڏينهن چونڊيو. اڄ جو کاتو پهريان محفوظ ڪيو وڃي ٿو، ان ڪري هي به واپس ٿي سگهي ٿو.</string>
     <string name="faq_q_lock">کاتو ٻين کان ڪيئن لڪايان؟</string>
     <string name="faq_a_lock">وڌيڪ ← ايپ لاڪ. اهو اُهو ئي فنگر پرنٽ يا پن استعمال ڪري ٿو جيڪو توهان جي فون تي اڳ ۾ آهي، الڳ پاسورڊ ياد رکڻ جي ضرورت ناهي. ان لاءِ فون تي اسڪرين لاڪ لڳل هجڻ ضروري آهي.</string>
     <string name="faq_q_hide">ڪو ڀرسان بيٺو هجي ته بيلنس لڪائي سگهان ٿو؟</string>
@@ -1293,7 +1295,7 @@
     <string name="about_privacy_body">سڀ ڪجهه هن فون تي محفوظ آهي. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو قرض ڪڏهن به نه ٿا ڏسون. بيڪ اپ به توهان جي پنهنجي گوگل ڊرائيو تي وڃي ٿو — اسان وٽ نه.</string>
     <string name="about_privacy_body_pc">سڀ ڪجهه هن ڪمپيوٽر تي محفوظ آهي. اسان توهان جا گراهڪ، سندن نمبر، يا ڪنهن جو قرض ڪڏهن به نه ٿا ڏسون. بيڪ اپ هن ڪمپيوٽر تي ۽ توهان جي چونڊيل فولڊر ۾ رهن ٿا، جيئن يو ايس بي يا گوگل ڊرائيو جو فولڊر — اسان وٽ نه.</string>
     <string name="about_privacy_policy">رازداري پاليسي</string>
-    <string name="about_maker">Innovation-313 پاران ٺاهيل</string>
+    <string name="about_maker">Innovation 313 پاران ٺاهيل</string>
     <string name="party_exists_title">ٿي سگهي ٿو اهو اڳ ۾ ئي توهان جي کاتي ۾ هجي</string>
     <string name="party_exists_message">هن جهڙو هڪ کاتو اڳ ۾ ئي کليل آهي:\n\n%1$s\n\nجيڪڏهن اهو ساڳيو ماڻهو آهي ته جيڪو اڳ ۾ آهي اهو کوليو. جيڪڏهن ٻيو ڪو آهي — يا ٻيو کاتو جيڪو توهان ڄاڻي واڻي رکو ٿا — ته شامل ڪري ڇڏيو.</string>
     <string name="open_existing">موجود کاتو کوليو</string>
@@ -1518,8 +1520,8 @@
     <string name="register_period_title">عرصو</string>
     <string name="register_download">PDF ڊائون لوڊ ڪريو</string>
     <string name="register_share">PDF شيئر ڪريو</string>
-    <string name="register_generating">رجسٽر ٺھي رھيو آھي…</string>
-    <string name="register_failed">رجسٽر ٺھي نه سگھيو.</string>
+    <string name="register_generating">رجسٽر ٺهي رهيو آهي…</string>
+    <string name="register_failed">رجسٽر ٺهي نه سگهيو.</string>
     <string name="register_empty">هن عرصي ۾ ڪا وڪري يا خريداري ناهي. ٻيو عرصو چونڊيو.</string>
     <string name="register_summary_sales">وڪرو: %1$d · %2$s</string>
     <string name="register_summary_purchases">خريداري: %1$d · %2$s</string>
@@ -1620,7 +1622,7 @@
     <string name="pdf_label_thank_you">مهرباني!</string>
     <string name="pdf_label_visit_again">ٻيهر اچجو</string>
 
-    <string name="pdf_stmt_title">کھاتي جي اسٽيٽمينٽ — %1$s</string>
+    <string name="pdf_stmt_title">کاتي جي اسٽيٽمينٽ — %1$s</string>
     <string name="pdf_stmt_period">عرصو: %1$s — %2$s</string>
     <string name="pdf_stmt_no_entries">ڪا داخلا ناهي</string>
     <string name="pdf_stmt_page">صفحو %1$d / %2$d</string>
@@ -1662,7 +1664,7 @@
     <string name="pdf_reg_ntn">NTN/STRN: %1$s</string>
     <string name="pdf_reg_period">عرصو: %1$s</string>
     <string name="pdf_reg_note_1">هي دڪان جو پنهنجو رڪارڊ آهي جيڪو کيس ٻڌايو ويو، مٿي ڏنل عرصي لاءِ.</string>
-    <string name="pdf_reg_note_2">سيل اها اوڌر/مال واري داخلا آهي جنهن ۾ مال ويو، يا ڪائونٽر وڪري جو مال \u2014 رڳو نقد ۽ قرض حسنه شمار نه ٿيندا.</string>
+    <string name="pdf_reg_note_2">سيل اها اڌار/مال واري داخلا آهي جنهن ۾ مال ويو، يا ڪائونٽر وڪري جو مال \u2014 رڳو نقد ۽ قرض حسنه شمار نه ٿيندا.</string>
     <string name="pdf_reg_sales_lines">هن عرصي جون سيل لائينون</string>
     <string name="pdf_reg_total_sales">ڪل سيل</string>
     <string name="pdf_reg_purchase_lines">هن عرصي جون خريد لائينون</string>
@@ -1776,7 +1778,7 @@
     <string name="theme_system">فون مطابق</string>
     <string name="theme_system_pc">ڪمپيوٽر مطابق</string>
     <string name="bp_section_identity">سڃاڻپ</string>
-    <string name="bp_section_paid">ادائگي وصول ڪرڻ</string>
+    <string name="bp_section_paid">ادائيگي وصول ڪرڻ</string>
     <string name="bp_section_seals">مهر ۽ صحيح</string>
     <string name="bp_section_docs">انوائس ۽ اسٽيٽمينٽ</string>
     <string name="bp_strn">ٽيڪس نمبر (STRN / GST / VAT)</string>
@@ -1804,8 +1806,8 @@
     <string name="trade_salon">سيلون</string>
     <string name="trade_solar">سولر ۽ بجلي</string>
     <string name="trade_general">عام دڪان</string>
-    <string name="bp_paid_help">انوائس جي ادائگي واري خاني ۾ اچي ٿو. خالي لائين نه ڇپبي.</string>
-    <string name="bp_qr">ادائگي QR</string>
+    <string name="bp_paid_help">انوائس جي ادائيگي واري خاني ۾ اچي ٿو. خالي لائين نه ڇپبي.</string>
+    <string name="bp_qr">ادائيگي QR</string>
     <string name="bp_qr_help">توهان جو پيمينٽ QR، اسٽيٽمينٽ لاءِ.</string>
     <string name="bp_add">شامل ڪريو</string>
     <string name="bp_change">مٽايو</string>
@@ -1857,7 +1859,7 @@
     <string name="bill_date_set">بل جي تاريخ: %1$s</string>
     <string name="bill_scan_supplier">سپلائر: %1$s</string>
     <!-- Scan payment slip (1 Oct): money received, read into an "I got" entry. -->
-    <string name="payment_scan">ادائگي جي رسيد اسڪين ڪريو</string>
+    <string name="payment_scan">ادائيگي جي رسيد اسڪين ڪريو</string>
     <string name="payment_scan_reading">رسيد پڙهي پئي وڃي…</string>
     <string name="payment_scan_nothing">هن تصوير مان رقم، ريفرنس يا تاريخ نه پڙهي سگهي. صاف اسڪرين شاٽ وٺو، يا رسيد کي سٺي روشني ۾ سڌو رکو، ۽ ٻيهر ڪوشش ڪريو. انگريزي ۾ ڇپيل لکت سڀ کان بهتر پڙهي وڃي ٿي.</string>
     <string name="payment_scan_found_title">رسيد تي هي مليو</string>
@@ -1884,7 +1886,7 @@
     <string name="label_step_title">ليبل جو تفصيل (%2$d مان %1$d)</string>
     <string name="label_step_skip">ڇڏيو</string>
     <string name="label_step_save_next">محفوظ ڪري اڳيون</string>
-    <string name="pay_heading">*ادائگي جو طريقو*</string>
+    <string name="pay_heading">*ادائيگي جو طريقو*</string>
     <string name="pay_wallet_label">موبائل والٽ</string>
     <string name="pay_bank_label">بئنڪ</string>
     <string name="entry_share_gave">محترم *%1$s*، %2$s تي توهان جي کاتي ۾ *%3$s* اڌار لکيو ويو.</string>
@@ -1897,8 +1899,8 @@
     <string name="party_no_entry_share">هن گراهڪ کي انٽري واٽس ايپ تي موڪلڻ جو نه پڇو</string>
     <string name="bp_ask_share">هر انٽري واٽس ايپ تي موڪلڻ جو پڇو</string>
     <string name="bp_ask_share_help">انٽري محفوظ ڪرڻ کان پوءِ هڪ ننڍي پٽي گراهڪ کي موڪلڻ جو پڇندي. موڪليو توهان واٽس ايپ ۾ دٻائيندا.</string>
-    <string name="bp_pay_reminder">ياد ڏياريءَ ۾ ادائگي جي تفصيل</string>
-    <string name="bp_pay_reminder_help">هر ادائگي جي ياد ڏياريءَ هيٺ توهان جو موبائل والٽ ۽ بئنڪ اڪائونٽ (انوائس سيٽنگز مان) لڳندو.</string>
+    <string name="bp_pay_reminder">ياد ڏياريءَ ۾ ادائيگي جي تفصيل</string>
+    <string name="bp_pay_reminder_help">هر ادائيگي جي ياد ڏياريءَ هيٺ توهان جو موبائل والٽ ۽ بئنڪ اڪائونٽ (انوائس سيٽنگز مان) لڳندو.</string>
     <string name="followup_send_all">سڀني کي واري واري ياد ڏياريو</string>
     <string name="followup_queue_next">ايندڙ: %1$s (%2$s)</string>
     <string name="followup_queue_open">واٽس ايپ کوليو</string>
@@ -1958,7 +1960,7 @@
     <string name="dayclose_counted">هاڻي ڳڻيل ڪيش</string>
     <string name="dayclose_note_hint">نوٽ، مثال چانهه، مزدوري</string>
     <string name="dayclose_help">رڳو اهي کاتي جون انٽريون ڳڻيون وڃن ٿيون جن تي ڪيش لکيل هجي؛ طريقي کان سواءِ انٽرين جو اندازو نه ٿو لڳايو وڃي.</string>
-    <string name="dayclose_breakdown">+ ڪيش بُڪ آمد %1$s\n+ کاتي مان ڪيش وصول %2$s\n− ڪيش بُڪ خرچ %3$s\n− کاتي مان ڪيش ادا %4$s\n− نقد بل ۽ عملي کي ادائگي %6$s\n= گلي ۾ هجڻ گهرجي %5$s</string>
+    <string name="dayclose_breakdown">+ ڪيش بُڪ آمد %1$s\n+ کاتي مان ڪيش وصول %2$s\n− ڪيش بُڪ خرچ %3$s\n− کاتي مان ڪيش ادا %4$s\n− نقد بل ۽ عملي کي ادائيگي %6$s\n= گلي ۾ هجڻ گهرجي %5$s</string>
     <string name="dayclose_over">حساب کان %1$s وڌيڪ</string>
     <string name="dayclose_short">%1$s گهٽ</string>
     <string name="dayclose_match">گلو حساب سان ملي ويو</string>
@@ -2481,7 +2483,7 @@
     <string name="onboard_step">مرحلو %1$s مان %2$s</string>
     <string name="help_replay_tour">هوم جو تعارف ٻيهر ڏيکاريو</string>
     <string name="coach_title_business">ڪاروبار</string>
-    <string name="coach_desc_business">پراڊڪٽس ۽ اسٽاڪ، انوائس، ريٽ لسٽ ۽ خريد جا ريٽ، انسائٽس، ڪيش فلو ۽ دير ڪندڙن جو فالو اپ — دڪان جو ڪاروباري حصو.</string>
+    <string name="coach_desc_business">ڪائونٽر وڪرو، پراڊڪٽس ۽ اسٽاڪ، انوائس، ريٽ لسٽ ۽ خريد جا ريٽ، وڪري جي رپورٽ، انسائٽس، ڪيش فلو ۽ دير ڪندڙن جو فالو اپ — دڪان جو ڪاروباري حصو.</string>
     <string name="coach_title_tools">ٽولز</string>
     <string name="coach_desc_tools">ڪيلڪيوليٽر، زڪوٰات، توهان جو بزنس ڪارڊ، واٽس ايپ اسٽيٽس لاءِ پوسٽر، گوگل ڊرائيو تي بيڪ اپ، ۽ غلطيءَ سان ڊليٽ ٿيل شين لاءِ بن.</string>
     <string name="tile_backup">بيڪ اپ</string>
@@ -3036,6 +3038,7 @@
     <string name="invoice_filter_ink">گهٽ مس</string>
     <string name="business_current">هاڻي کليل</string>
     <string name="business_switch_open">کوليو</string>
+    <string name="business_switch_open_named">%1$s کوليو</string>
     <string name="business_name_needed">پهرين ڪاروبار جو نالو لکو.</string>
     <string name="business_not_added">ڪاروبار شامل نه ٿيو. شامل ڪرڻ لاءِ چونڊيو ته اهو ڇا ٿو وڪڻي.</string>
     <string name="biz_card_sec_own">هن ڪارڊ تي</string>
@@ -3064,8 +3067,8 @@
     <string name="biz_card_send_picture">ڪارڊ تصوير طور موڪليو</string>
     <string name="biz_card_save_picture">ڪارڊ تصوير طور محفوظ ڪريو</string>
     <string name="drive_signed_in_ok">✓ %1$s سان سائن اِن ٿي ويو. هاڻي توهان جو کاتو توهان جي گوگل ڊرائيو ۾ بيڪ اپ ٿي سگهي ٿو.</string>
-    <string name="entry_due_none">ادائگي جي تاريخ: شامل ڪريو</string>
-    <string name="entry_due_set">ادائگي جي تاريخ: %1$s</string>
+    <string name="entry_due_none">ادائيگي جي تاريخ: شامل ڪريو</string>
+    <string name="entry_due_set">ادائيگي جي تاريخ: %1$s</string>
     <string name="entry_due_in_days">%1$s ڏينهن ۾ · %2$s</string>
     <!-- Windows: backup folder, import from another app -->
     <string name="auto_folder_title">ڪنهن فولڊر ۾ به ڪاپي رکو</string>
@@ -3142,7 +3145,7 @@
     <string name="pos_paid">هاڻي ادا</string>
     <string name="pos_to_account">کاتي ۾</string>
     <string name="pos_change">باقي واپسي</string>
-    <string name="pos_add_payment">ادائگي شامل ڪريو</string>
+    <string name="pos_add_payment">ادائيگي شامل ڪريو</string>
     <string name="pos_pay_full_cash">سڀ نقد</string>
     <string name="pos_reference_hint">حوالو (ٽرانزيڪشن نمبر، چيڪ نمبر)</string>
     <string name="pos_leave_msg">جيڪو ٽڪيٽ ٺهي رهيو آهي سو ضايع ٿي ويندو.</string>
@@ -3173,9 +3176,9 @@
     <string name="pos_err_quantity">مقدار ٻڙي کان وڌيڪ هجڻ گهرجي</string>
     <string name="pos_err_rate">اگهه منفي نٿو ٿي سگهي</string>
     <string name="pos_err_discount">رعايت لائين کان وڌيڪ آهي</string>
-    <string name="pos_err_payment">ادائگي ٻڙي کان وڌيڪ هجڻ گهرجي</string>
+    <string name="pos_err_payment">ادائيگي ٻڙي کان وڌيڪ هجڻ گهرجي</string>
     <string name="pos_err_overpaid">ڪل کان وڌيڪ ادا ڪيو ويو</string>
-    <string name="pos_err_walk_in_unpaid">عام گراهڪ پوري ادائگي ڪري ٿو — يا باقي لاءِ گراهڪ چونڊيو</string>
+    <string name="pos_err_walk_in_unpaid">عام گراهڪ پوري ادائيگي ڪري ٿو — يا باقي لاءِ گراهڪ چونڊيو</string>
     <string name="pos_err_empty_name">شيءِ جو نالو ضروري آهي</string>
     <string name="pos_stock_low">رڳو %1$s باقي</string>
     <string name="pos_stock_negative">اسٽاڪ ٻڙي کان هيٺ هليو ويندو</string>
@@ -3184,7 +3187,7 @@
     <string name="pos_receipt">رسيد</string>
     <string name="pos_customer_pays_later">باقي %1$s جي کاتي ۾</string>
     <string name="cash_category_sale">وڪرو</string>
-    <string name="pos_keys_help">F2 شيءِ · F4 مقدار · F6 رعايت · F8 گراهڪ · F9 ادائگي · F12 مڪمل</string>
+    <string name="pos_keys_help">F2 شيءِ · F4 مقدار · F6 رعايت · F8 گراهڪ · F9 ادائيگي · F12 مڪمل</string>
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">بارڪوڊ (اختياري)</string>
@@ -3215,7 +3218,7 @@
     <string name="pos_return_posted">واپسي %1$s محفوظ ٿي</string>
     <string name="pos_exchange_start">بدلي جو مال لکو</string>
     <string name="pos_exchange_started">%1$s جي بدلي: ساڳئي گراهڪ لاءِ نئون مال لکو.</string>
-    <string name="pos_exchange_started_cash">%1$s جي بدلي: نئون مال لکو. %2$s جي رقم واپسي گلي ۾ ئي رهي ٿي ۽ هن بل جي پهرين ادائگي آهي؛ رڳو فرق وصول ڪريو.</string>
+    <string name="pos_exchange_started_cash">%1$s جي بدلي: نئون مال لکو. %2$s جي رقم واپسي گلي ۾ ئي رهي ٿي ۽ هن بل جي پهرين ادائيگي آهي؛ رڳو فرق وصول ڪريو.</string>
     <string name="pos_returns">واپسيون</string>
     <string name="pos_err_over_sold">جيترو وڪيو ان کان وڌيڪ واپس اچي رهيو آهي</string>
     <string name="pos_err_walk_in_cash">عام گراهڪ کي پوري رقم نقد/بئنڪ واپس ٿئي ٿي</string>
@@ -3293,6 +3296,7 @@
     <string name="stock_low_title">گهٽ اسٽاڪ</string>
     <string name="stock_adjustments">درستيون</string>
     <string name="po_title">خريد آرڊر</string>
+    <string name="po_saved">آرڊر %1$s محفوظ ٿي ويو</string>
     <string name="po_new">نئون آرڊر</string>
     <string name="po_supplier">سپلائر</string>
     <string name="po_send">واٽس ايپ تي موڪليو</string>
@@ -3310,7 +3314,7 @@
     <string name="po_pick_supplier">آرڊر محفوظ ڪرڻ لاءِ سپلائر چونڊيو</string>
     <string name="po_message_head">آرڊر %1$s — %2$s</string>
     <string name="po_from_low">گهٽ اسٽاڪ جو آرڊر</string>
-    <string name="po_book">ڪتاب</string>
+    <string name="po_book">رڪارڊ ۾</string>
     <string name="inventory_title">موجود اسٽاڪ</string>
 
     <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
@@ -3479,7 +3483,7 @@
     <string name="srep_chart">وقت سان وڪرو</string>
     <string name="srep_chart_top">سڀ کان وڌيڪ: %1$s</string>
     <string name="aging_title">باقي رقم، مدت جي حساب سان</string>
-    <string name="aging_help">جيڪو اڃا باقي آهي، ان حساب سان ته ڪيترو عرصو اڳ ڏنو ويو. ادائگي پهريان پراڻو حساب صاف ڪري ٿي؛ 90 ڏينهن کان پراڻي رقم تي فون ضرور ڪريو.</string>
+    <string name="aging_help">جيڪو اڃا باقي آهي، ان حساب سان ته ڪيترو عرصو اڳ ڏنو ويو. ادائيگي پهريان پراڻو حساب صاف ڪري ٿي؛ 90 ڏينهن کان پراڻي رقم تي فون ضرور ڪريو.</string>
     <string name="aging_0_30">0–30 ڏينهن</string>
     <string name="aging_31_60">31–60 ڏينهن</string>
     <string name="aging_61_90">61–90 ڏينهن</string>
@@ -3509,8 +3513,8 @@
     <string name="product_variant">قسم (سائيز، رنگ، ذائقو)</string>
     <string name="product_variant_help">قسمون پنهنجيون الڳ پراڊڪٽس آهن — پنهنجي قيمت، بارڪوڊ ۽ اسٽاڪ — جيڪي ڪائونٽر جي شين واري جاري ۾ مکيه پراڊڪٽ هيٺ گڏ ڏسجن ٿيون.</string>
     <string name="cd_title">گراهڪ جي اسڪرين</string>
-    <string name="cd_scan">ادائگي لاءِ اسڪين ڪريو</string>
-    <string name="cd_qr_note">QR ۾ رقم شامل ناهي: ادائگي کان اڳ پنهنجي فون تي رقم ڏسي وٺو.</string>
+    <string name="cd_scan">ادائيگي لاءِ اسڪين ڪريو</string>
+    <string name="cd_qr_note">QR ۾ رقم شامل ناهي: ادائيگي کان اڳ پنهنجي فون تي رقم ڏسي وٺو.</string>
     <string name="cd_welcome">ڀلي ڪري آيا</string>
     <string name="cd_change">واپسي: %1$s</string>
     <string name="transfer_title">اسٽاڪ ٻئي دڪان ڏانهن موڪليو</string>
@@ -3548,7 +3552,7 @@
     <string name="pos_void_day_closed">هن وڪري جو ڏينهن بند ٿي چڪو آهي. منسوخ ڪرڻ بدران واپسي ڪريو.</string>
     <string name="pos_err_rate_missing">هڪ لائين جو ريٽ ناهي لکيل.</string>
     <string name="pos_err_tax">ٽيڪس پڙهي نه سگهيو.</string>
-    <string name="pos_err_payment_unread">هڪ ادائگي جي رقم پڙهي نه سگهي.</string>
+    <string name="pos_err_payment_unread">هڪ ادائيگي جي رقم پڙهي نه سگهي.</string>
     <string name="pos_err_discount_unread">هڪ رعايت پڙهي نه سگهي.</string>
     <string name="pos_price_needs_pin">ريٽ لسٽ کان هٽي ريٽ تي وڪڻڻ</string>
 
@@ -3567,10 +3571,10 @@
     <string name="audit_bill_edited">بل بدلايو ويو</string>
 
     <!-- A plan's next payment day, editable and asked after each payment (21 Oct 2026) -->
-    <string name="plan_next_change">ايندڙ ادائگي جي تاريخ بدلايو</string>
-    <string name="plan_next_ask">%1$s جي ايندڙ ادائگي جي تاريخ</string>
+    <string name="plan_next_change">ايندڙ ادائيگي جي تاريخ بدلايو</string>
+    <string name="plan_next_ask">%1$s جي ايندڙ ادائيگي جي تاريخ</string>
     <string name="plan_next_clear">تاريخ هٽايو</string>
-    <string name="plan_next_saved">ايندڙ ادائگي: %1$s</string>
+    <string name="plan_next_saved">ايندڙ ادائيگي: %1$s</string>
 
     <!-- Scale price labels in any currency's digits (21 Oct 2026) -->
     <string name="scale_price_decimals">ليبل جي قيمت ۾ ڏهائي کان پوءِ انگ</string>
@@ -3579,7 +3583,7 @@
     <!-- An entry another record wrote is changed from that record (21 Oct 2026) -->
     <string name="entry_linked_title">جتي ٺهيو هو اتي ئي بدلايو</string>
     <string name="entry_linked_bill">هي داخلا سپلائر بل لکي آهي. بل بدلايو يا ميٽيو، کاتو پاڻ ساڻ بدلجي ويندو.</string>
-    <string name="entry_linked_plan">هي داخلا قسط پلان جي ادائگي لکي آهي. درست ڪرڻ لاءِ پهريان قسط پلان هٽايو (ان جون ادائگيون کاتي ۾ رهنديون)، پوءِ هي داخلا بدلايو.</string>
+    <string name="entry_linked_plan">هي داخلا قسط پلان جي ادائيگي لکي آهي. درست ڪرڻ لاءِ پهريان قسط پلان هٽايو (ان جون ادائيگيون کاتي ۾ رهنديون)، پوءِ هي داخلا بدلايو.</string>
     <string name="entry_linked_cheque">هي داخلا ڪليئر ٿيل چيڪ لکي آهي. ان کي چيڪ واري صفحي مان بدلايو.</string>
     <string name="entry_linked_sale">هي داخلا ڪائونٽر جي وڪري لکي آهي. وڪرو منسوخ ڪريو يا واپسي ڪريو.</string>
     <string name="entry_linked_return">هي داخلا واپسي لکي آهي. ان بدران واپسي منسوخ ڪريو.</string>
@@ -3661,9 +3665,9 @@
     <string name="live_status_waiting">کاتو ڪمپيوٽر تائين پهچي ويو. ڳنڍڻ پورو ڪرڻ لاءِ اتي ها دٻايو.</string>
     <string name="live_status_live">%1$s سان لائيو. آخري تازگي: %2$s</string>
     <string name="live_status_unreachable">ڪمپيوٽر جواب نٿو ڏئي. ڇا ٻئي هڪ ئي وائي فائي تي آهن، ۽ ڇا ان تي روشن کاتو کليل آهي؟</string>
-    <string name="live_status_relay_down">دڪان جي وائي فائي کان پري آهيو، ۽ انٽرنيٽ واري ريلي جواب نه ڏنو (%1$s)۔ فون ڪوشش ڪندو رهندو؛ دڪان تي وائي فائي ان کان سواءِ هلي ٿي.</string>
-    <string name="live_pc_relay_ok">انٽرنيٽ واري ريلي: هلي رهي آهي (آخري دور %1$s)۔</string>
-    <string name="live_pc_relay_down">انٽرنيٽ واري ريلي: جواب نٿي ڏئي (%1$s)۔ دڪان تي وائي فائي ان کان سواءِ هلي ٿي.</string>
+    <string name="live_status_relay_down">دڪان جي وائي فائي کان پري آهيو، ۽ انٽرنيٽ واري ريلي جواب نه ڏنو (%1$s). فون ڪوشش ڪندو رهندو؛ دڪان تي وائي فائي ان کان سواءِ هلي ٿي.</string>
+    <string name="live_pc_relay_ok">انٽرنيٽ واري ريلي: هلي رهي آهي (آخري دور %1$s).</string>
+    <string name="live_pc_relay_down">انٽرنيٽ واري ريلي: جواب نٿي ڏئي (%1$s). دڪان تي وائي فائي ان کان سواءِ هلي ٿي.</string>
     <string name="live_pair_other_phone">هي کاتو اڳ ۾ ئي فون «%1$s» سان هلي رهيو آهي. سڀ بدلائڻ سان اهو فون بيهي ويندو. هڪ کاتو = هڪ فون ۽ هڪ ڪمپيوٽر: ٻئي فون رکڻا هجن ته هن فون کي نئين ڪاروبار طور ڳنڍيو.</string>
     <string name="na_sync_conflict">%1$s داخلائون ٻنهي ڊوائيسن تي هڪ ئي وقت بدليون ويون</string>
     <string name="na_sync_conflict_sub">رکيل رقم شايد اها نه هجي جيڪا توهان چاهيو ٿي. لائيو سنڪ ← ڇا بدليو ڏسو.</string>
@@ -3705,7 +3709,7 @@
     <string name="live_status_not_accepted">ڪمپيوٽر وقت تي ها نه ڪئي. ڳنڍڻ لاءِ ان جو لائيو سنڪ ڪوڊ ٻيهر اسڪين ڪريو.</string>
     <string name="live_status_not_here">ڪمپيوٽر جواب ڏنو، پر هن وقت هي کاتو ان تي ناهي. ڪمپيوٽر تي هن کاتي جو ڪاروبار کوليو.</string>
     <string name="live_status_relay">%1$s سان انٽرنيٽ ذريعي لائيو. آخري تازگي: %2$s</string>
-    <string name="live_relay_help">جڏهن فون دڪان جي وائي فائي کان پري هجي ته ان جون تبديليون Innovation-313 جي ريلي ذريعي وڃن ٿيون، هن کاتي جي پنهنجي چاٻي سان بند: ريلي انهن کي پڙهي نٿي سگهي، ۽ وڌ ۾ وڌ 7 ڏينهن رکي ٿي. ٻنهي ڊوائيسن لاءِ هڪ ئي سوئچ. جڏهن ايپ بند هجي ته Google جو Firebase فون کي رڳو ايترو ٻڌائي ٿو ته ڪجهه انتظار ۾ آهي؛ کاتي جي ڪا به شيءِ ان وٽ نٿي وڃي.</string>
+    <string name="live_relay_help">جڏهن فون دڪان جي وائي فائي کان پري هجي ته ان جون تبديليون Innovation 313 جي ريلي ذريعي وڃن ٿيون، هن کاتي جي پنهنجي چاٻي سان بند: ريلي انهن کي پڙهي نٿي سگهي، ۽ وڌ ۾ وڌ 7 ڏينهن رکي ٿي. ٻنهي ڊوائيسن لاءِ هڪ ئي سوئچ. جڏهن ايپ بند هجي ته Google جو Firebase فون کي رڳو ايترو ٻڌائي ٿو ته ڪجهه انتظار ۾ آهي؛ کاتي جي ڪا به شيءِ ان وٽ نٿي وڃي.</string>
     <string name="live_relay">انٽرنيٽ ذريعي به</string>
     <string name="wifi_take_too_big">ڪمپيوٽر جو کاتو هن فون جي ميموري يا خالي جاءِ لاءِ تمام وڏو آهي. ٻيون ايپس بند ڪري ٻيهر ڪوشش ڪريو، يا کاتو بيڪ اپ فائل ذريعي منتقل ڪريو.</string>
     <string name="live_devices_open">ڊوائيس ۽ گڏ تبديليون</string>
@@ -4008,7 +4012,7 @@
     <string name="paisa_notice_gone">رقم جو هي نوٽيفڪيشن هاڻي کولي نٿو سگهجي.</string>
     <string name="invoice_caption_total">ڪل: %1$s</string>
     <string name="doc_desc_quotation">وڪري کان اڳ ڏنل اگهه. اڃا ڪا رقم واجب ناهي.</string>
-    <string name="doc_desc_proforma">اڳواٽ بل، مال وڃڻ کان اڳ ادائگي لاءِ.</string>
+    <string name="doc_desc_proforma">اڳواٽ بل، مال وڃڻ کان اڳ ادائيگي لاءِ.</string>
     <string name="doc_desc_sales_order">گراهڪ جو پڪو ڪيل آرڊر، پوءِ ڏيڻ لاءِ.</string>
     <string name="doc_desc_challan">مال سان ويندڙ پرچي. اگهه ناهن.</string>
     <string name="doc_desc_paste">گراهڪ جي واٽس ايپ مان ڪاپي ڪيل آرڊر، سيلز آرڊر بڻجي ٿو.</string>

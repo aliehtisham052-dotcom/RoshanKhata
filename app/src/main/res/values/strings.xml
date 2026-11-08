@@ -4,6 +4,7 @@
     <string name="welcome_body">Roshan Khata keeps your records on this phone. Connect your own Google account so your books can be backed up to your Drive — your data, in your account.</string>
     <string name="welcome_connect">Continue with Google</string>
     <string name="welcome_skip">Maybe later</string>
+    <string name="home_backup_to_drive">Back up to Google Drive</string>
 
     <!-- Onboarding: first-run coach marks on the Home screen — a bubble with
          an arrow points at each real control in turn, Skip / Next / Got it.
@@ -165,7 +166,7 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">Calculator</string>
     <string name="coach_desc_calc">Quick sums beside your ledger — margins, totals, splits.</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
     <string name="net_balance">Net balance</string>
     <string name="home_sec_daily">Every day</string>
@@ -199,11 +200,12 @@
     <string name="report_end_date">End date</string>
     <string name="ledger_report_from">From %1$s</string>
     <string name="ledger_report_till">Till %1$s</string>
-    <string name="add_party">Add Party</string>
+    <string name="add_party">Add customer</string>
     <string name="add_party_duplicate_with_phone">A similar customer already exists: %1$s — %2$s</string>
     <string name="add_party_duplicate_name_only">A similar customer already exists: %1$s</string>
     <string name="no_parties_yet">No customers yet.\n\nAdd your first customer and start your khata.</string>
     <string name="no_entries_yet">No entries yet.</string>
+    <string name="party_entries_hint">No entries yet.\nTap \u201CI Gave\u201D or \u201CI Got\u201D to write the first one.</string>
     <string name="entries_no_match">No entry matches your search.</string>
 
     <string name="i_gave">I Gave</string>
@@ -358,7 +360,7 @@
     <string name="contacts_permission_title">Access your contacts?</string>
     <string name="contacts_permission_rationale">Roshan Khata will read your contact list only to show it here, so you can pick who to add. Nothing is uploaded, and only the contacts you actually choose are saved — just their name and number.\n\nIf you would rather not, you can still add every party by hand.</string>
     <string name="contacts_permission_denied">Permission was not granted, so contacts cannot be shown. You can still add parties by hand from the home screen.</string>
-    <string name="add_manually">Add Manually</string>
+    <string name="add_manually">Add manually</string>
 
     <!-- PDF statement -->
     <string name="statement_pdf">Statement</string>
@@ -428,7 +430,7 @@
 
     <!-- Cheques -->
     <string name="cheques">Cheques</string>
-    <string name="add_cheque">Add Cheque</string>
+    <string name="add_cheque">Add cheque</string>
     <string name="no_cheques">No cheques yet.\n\nPost-dated cheques are tracked here separately from the ledger — a cheque is not money until it clears.</string>
     <string name="cheque_not_money_yet">A cheque is not money until it clears, so it will not touch the balance yet. When you mark it cleared, the payment is posted to the ledger then.</string>
     <string name="cheque_party_hint">Customer or supplier name</string>
@@ -561,7 +563,7 @@
     <string name="cashbook">Cashbook</string>
     <string name="cashbook_subtitle">Business money in and out</string>
     <string name="cashbook_separate_note">The Cashbook is separate from your customer ledger. Rent, wages, a walk-in cash sale — money with no customer attached. It does not change what anyone owes you.</string>
-    <string name="add_cash_entry">Add Entry</string>
+    <string name="add_cash_entry">Add entry</string>
     <string name="cash_in">Cash in</string>
     <string name="cash_out">Cash out</string>
     <string name="cash_net">Net</string>
@@ -596,7 +598,7 @@
     <string name="payment_plans">Payment Plans</string>
     <string name="plans_subtitle">Paying off in instalments</string>
     <string name="plan_not_a_debt_note">A plan is an arrangement, not a new debt. What they owe is already in the ledger. Recording a payment here posts it to the ledger once — it is never counted twice.</string>
-    <string name="add_plan">Add Plan</string>
+    <string name="add_plan">Add plan</string>
     <string name="no_plans">No payment plans yet.\n\nUse these when a customer will clear an amount in instalments — after the harvest, or across a few months.</string>
     <string name="plan_dialog_help">Set up an arrangement for clearing what this party already owes. This does not add to their balance — it only records what they have agreed to pay, and when.</string>
     <string name="plan_total_hint">Total to be paid off</string>
@@ -717,7 +719,7 @@
     <string name="supplier_bills">Supplier Bills</string>
     <string name="bills_subtitle">Stock you bought in</string>
     <string name="bill_ledger_note">What you owe a supplier lives in your ledger, same as everything else. A bill adds the paperwork on top: bill number, batch numbers, expiry dates.</string>
-    <string name="add_bill">Add Bill</string>
+    <string name="add_bill">Add bill</string>
     <string name="no_bills">No supplier bills yet.\n\nRecord what you buy in — with batch numbers and expiry dates. Then you know where every item came from, and nothing goes bad on the shelf unseen.</string>
 
     <string name="bill_number_hint">Bill number</string>
@@ -957,8 +959,8 @@
 
     <string name="hide_balance">Hide balance</string>
 
-    <string name="powered_by">Powered by Innovation-313</string>
-    <string name="lock_tagline">Powered by Innovation-313</string>
+    <string name="powered_by">Powered by Innovation 313</string>
+    <string name="lock_tagline">Powered by Innovation 313</string>
 
     <!-- Splash / branding -->
 
@@ -1308,7 +1310,7 @@
     <string name="about_privacy_body">Everything is stored on this phone. We never see your customers, their numbers, or what anyone owes. A backup goes to your own Google Drive — not to us.</string>
     <string name="about_privacy_body_pc">Everything is stored on this computer. We never see your customers, their numbers, or what anyone owes. Backups stay on this computer and in the folder you choose, such as a USB stick or a Google Drive folder — never with us.</string>
     <string name="about_privacy_policy">Privacy policy</string>
-    <string name="about_maker">Built by Innovation-313</string>
+    <string name="about_maker">Built by Innovation 313</string>
     <string name="party_exists_title">This may already be in your khata</string>
     <string name="party_exists_message">An account like this one is already open:\n\n%1$s\n\nIf it is the same person, open what you already have. If it is someone else — or a second account you keep on purpose — go ahead and add it.</string>
     <string name="open_existing">Open existing</string>
@@ -2586,7 +2588,7 @@
     <string name="onboard_step">Step %1$s of %2$s</string>
     <string name="help_replay_tour">Show the Home tour again</string>
     <string name="coach_title_business">Business</string>
-    <string name="coach_desc_business">Products and stock, invoices, your price list and purchase rates, insights, cash flow and follow-up on late payers — the business side of the shop.</string>
+    <string name="coach_desc_business">Counter sale, products and stock, invoices, your price list and purchase rates, sales report, insights, cash flow and follow-up on late payers — the business side of the shop.</string>
     <string name="coach_title_tools">Tools</string>
     <string name="coach_desc_tools">A calculator, Zakat, your business card, a poster for WhatsApp status, backup to your Google Drive, and the bin for anything deleted by mistake.</string>
     <string name="tile_backup">Backup</string>
@@ -3220,6 +3222,7 @@
     <string name="invoice_filter_ink">Least ink</string>
     <string name="business_current">Open now</string>
     <string name="business_switch_open">Open</string>
+    <string name="business_switch_open_named">Open %1$s</string>
     <string name="business_name_needed">Write the business\'s name first.</string>
     <string name="business_not_added">Business not added. Pick what it sells to add it.</string>
     <string name="biz_card_sec_own">On this card</string>
@@ -3477,6 +3480,7 @@
     <string name="stock_low_title">Low stock</string>
     <string name="stock_adjustments">Corrections</string>
     <string name="po_title">Purchase orders</string>
+    <string name="po_saved">Order %1$s saved</string>
     <string name="po_new">New order</string>
     <string name="po_supplier">Supplier</string>
     <string name="po_send">Send on WhatsApp</string>
@@ -3494,7 +3498,7 @@
     <string name="po_pick_supplier">Choose the supplier to save the order</string>
     <string name="po_message_head">Order %1$s — %2$s</string>
     <string name="po_from_low">Order the low stock</string>
-    <string name="po_book">Book</string>
+    <string name="po_book">On record</string>
     <string name="inventory_title">Stock on hand</string>
 
     <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
@@ -3889,7 +3893,7 @@
     <string name="live_status_not_accepted">The computer did not say yes in time. To join, scan its live sync code again.</string>
     <string name="live_status_not_here">The computer answered, but it is not keeping this book right now. Open this book’s business on the computer.</string>
     <string name="live_status_relay">Live with %1$s through the internet. Last update: %2$s</string>
-    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation-313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
+    <string name="live_relay_help">When the phone is away from the shop’s WiFi, its changes go through Innovation 313’s relay, locked with this book’s own key: the relay cannot read them, and keeps them at most 7 days. One switch for both devices. When the app is closed, Google’s Firebase only tells the phone that something is waiting; it carries nothing of the book.</string>
     <string name="live_relay">Also through the internet</string>
     <string name="wifi_take_too_big">The computer’s book is too big for this phone’s memory or free space. Close other apps and try again, or move the book with a backup file.</string>
     <string name="live_devices_open">Devices and conflicts</string>

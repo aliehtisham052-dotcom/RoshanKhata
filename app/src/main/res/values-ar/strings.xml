@@ -4,6 +4,7 @@
     <string name="welcome_body">يحتفظ روشن كهاتا بسجلاتك على هذا الهاتف. اربط حساب Google الخاص بك ليتم نسخ دفاترك احتياطيًا إلى درايفك — بياناتك، في حسابك.</string>
     <string name="welcome_connect">المتابعة باستخدام Google</string>
     <string name="welcome_skip">ربما لاحقًا</string>
+    <string name="home_backup_to_drive">نسخ احتياطي إلى Google Drive</string>
 
     <string name="coach_skip">تخطي</string>
     <string name="coach_next">التالي</string>
@@ -189,7 +190,7 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">آلة حاسبة</string>
     <string name="coach_desc_calc">حسابات سريعة إلى جانب دفترك — الأرباح والمجاميع والتقسيم.</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
     <string name="net_balance">الرصيد الصافي</string>
     <string name="home_sec_daily">كل يوم</string>
@@ -228,6 +229,7 @@
     <string name="add_party_duplicate_name_only">يوجد عميل مشابه بالفعل: %1$s</string>
     <string name="no_parties_yet">لا عملاء بعد.\n\nأضف أول عميل وابدأ دفترك.</string>
     <string name="no_entries_yet">لا قيود بعد.</string>
+    <string name="party_entries_hint">لا قيود بعد.\nاضغط \u201Cأعطيت\u201D أو \u201Cاستلمت\u201D لكتابة أول قيد.</string>
     <string name="entries_no_match">لا يوجد قيد يطابق بحثك.</string>
 
     <string name="i_gave">أعطيت</string>
@@ -420,7 +422,7 @@
     <string name="screen_privacy_off">مُعطّل — لقطات الشاشة تعمل كالمعتاد</string>
     <string name="screen_privacy_turn_on">حظر لقطات الشاشة</string>
     <string name="screen_privacy_turn_off">السماح بلقطات الشاشة</string>
-    <string name="screen_privacy_explain">تفعيل هذا يمنع لقطات الشاشة وتسجيل الشاشة في كل أنحاء روشن كھاتہ.\n\nوالثمن أنه يمنع لقطاتك أنت أيضاً. فإن كنت تصوّر كشف حساب عميل لترسله، فلن يعمل ذلك ما دام مُفعّلاً. أما زرّا المشاركة وكشف الحساب فيعملان، ويرسلان نسخة أوضح من لقطة الشاشة.\n\nاتركه مُعطّلاً للعمل اليومي، وفعّله إن كان الهاتف كثيراً ما يكون في أيدٍ أخرى.</string>
+    <string name="screen_privacy_explain">تفعيل هذا يمنع لقطات الشاشة وتسجيل الشاشة في كل أنحاء روشن كهاتا.\n\nوالثمن أنه يمنع لقطاتك أنت أيضاً. فإن كنت تصوّر كشف حساب عميل لترسله، فلن يعمل ذلك ما دام مُفعّلاً. أما زرّا المشاركة وكشف الحساب فيعملان، ويرسلان نسخة أوضح من لقطة الشاشة.\n\nاتركه مُعطّلاً للعمل اليومي، وفعّله إن كان الهاتف كثيراً ما يكون في أيدٍ أخرى.</string>
     <string name="screen_privacy_recents_hidden">نظام أندرويد لديك يُبقي التطبيق خارج مبدّل التطبيقات الأخيرة أصلاً، فلا يرى أحد دفترك هناك.</string>
     <string name="screen_privacy_recents_visible">إصدار أندرويد هذا أقدم من 13، لذا قد يظل مبدّل التطبيقات الأخيرة يعرض آخر شاشة لديك. لا يخفيها إلا هذا المفتاح.</string>
     <string name="app_lock_no_screen_lock">لا قفل شاشة على هذا الهاتف. عيّن بصمة أو رقمًا سريًا أو نمطًا في إعدادات هاتفك أولًا، ثم يحمي قفل التطبيق دفترك.</string>
@@ -466,7 +468,7 @@
     <string name="bank_name_hint">البنك (اختياري)</string>
 
     <string name="cheque_pending">قيد الانتظار</string>
-    <string name="cheque_cleared">مصروف</string>
+    <string name="cheque_cleared">تم صرفه</string>
     <string name="cheque_bounced">مرتجع</string>
     <string name="cheque_cancelled">ملغى</string>
     <string name="cheque_none_cleared">لا توجد شيكات مصروفة بعد</string>
@@ -559,7 +561,7 @@
 
     <string name="credit_limit">حد الائتمان</string>
     <string name="set_credit_limit">تعيين حد الائتمان</string>
-    <string name="credit_limit_help">أقصى ما تسمح لهذا العميل بأن يدين لك به. سينبهك روشن كهاتا قبل أن يتجاوزه قيد. اتركه فارغاً لبلا حد.</string>
+    <string name="credit_limit_help">أقصى ما تسمح لهذا العميل بأن يدين لك به. سينبهك روشن كهاتا قبل أن يتجاوزه قيد. اتركه فارغًا إن لم ترد حدًّا.</string>
     <string name="credit_limit_hint">الحد</string>
     <string name="credit_limit_advisory">هذا تحذير لا منع. النشاط نشاطك — يمكنك المتابعة دائمًا.</string>
     <string name="credit_limit_current">عليه لك حاليًا %1$s</string>
@@ -775,7 +777,7 @@
     <string name="add_item">إضافة صنف</string>
     <string name="product_name_hint">اسم المنتج</string>
     <string name="batch_number_hint">رقم الدُفعة</string>
-    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن سُئل يومًا عن صنف — من زبون أو شركة أو مفتش — فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
+    <string name="batch_why">اكتب رقم الدُفعة من العبوة. إن سُئل يومًا عن صنف — من عميل أو شركة أو مفتش — فهذا السجل يثبت من أين أتت البضاعة. لا يمكن إعادة بنائه لاحقًا.</string>
     <string name="expiry_date">تاريخ الانتهاء</string>
     <string name="expiry_why">سيحذرك روشن كهاتا قبل الانتهاء بـ60 يومًا — وقت يكفي لبيعها أو تخفيضها أو إرجاعها والمورّد ما زال يقبلها.</string>
     <string name="pick_expiry">اختر تاريخ الانتهاء</string>
@@ -810,7 +812,7 @@
     <string name="invoices_subtitle">فاتورة قابلة للطباعة — منفصلة عن دفتر حسابك</string>
     <!-- Paisa aaya ki awaaz: a payment a wallet app announced, said aloud and offered to a khata (5 Nov 2026). -->
     <string name="paisa_title">صوت وصول المال</string>
-    <string name="paisa_help">عندما يصل مال في محفظة أو تطبيق بنك حددته أدناه، يقوله هذا الهاتف بصوت عالٍ ويعرض إضافته إلى دفتر الزبون. لا يُضاف شيء حتى تضغط حفظ.</string>
+    <string name="paisa_help">عندما يصل مال في محفظة أو تطبيق بنك حددته أدناه، يقوله هذا الهاتف بصوت عالٍ ويعرض إضافته إلى دفتر العميل. لا يُضاف شيء حتى تضغط حفظ.</string>
     <string name="paisa_switch">قل المبالغ الواردة بصوت عالٍ</string>
     <string name="paisa_switch_desc">على هذا الهاتف فقط</string>
     <string name="paisa_access_given">الوصول إلى الإشعارات: ممنوح</string>
@@ -818,7 +820,7 @@
     <string name="paisa_access_button">امنح الوصول إلى الإشعارات</string>
     <string name="paisa_access_restricted">إذا قال أندرويد «Restricted setting»: افتح App info لتطبيق روشن كهاتا، اضغط ⋮، اختر Allow restricted settings، ثم حاول مرة أخرى.</string>
     <string name="paisa_apps_title">التطبيقات التي يُستمع إليها</string>
-    <string name="paisa_apps_help">حدد فقط تطبيقات المحافظ والبنوك التي يدفع لك فيها الزبائن. تظهر التطبيقات الأخرى هنا بعد أن تعرض إشعارًا. لا تُعرض تطبيقات الرسائل القصيرة أبدًا.</string>
+    <string name="paisa_apps_help">حدد فقط تطبيقات المحافظ والبنوك التي يدفع لك فيها العملاء. تظهر التطبيقات الأخرى هنا بعد أن تعرض إشعارًا. لا تُعرض تطبيقات الرسائل القصيرة أبدًا.</string>
     <string name="paisa_not_installed">%1$s (ليس على هذا الهاتف)</string>
     <string name="paisa_seen_none">لم يعرض أي تطبيق آخر إشعارًا بعد.</string>
     <string name="paisa_voice_title">الصوت</string>
@@ -841,7 +843,7 @@
     <string name="paisa_notif_title">%2$s من %1$s (%3$s)</string>
     <string name="paisa_notif_title_noname">وصلت %1$s (%2$s)</string>
     <string name="paisa_notif_match">يطابق %1$s في دفترك. راجعه ثم احفظ.</string>
-    <string name="paisa_notif_pick">اضغط لاختيار الزبون، راجعه ثم احفظ.</string>
+    <string name="paisa_notif_pick">اضغط لاختيار العميل، راجعه ثم احفظ.</string>
     <string name="paisa_notif_public">وصل مبلغ</string>
     <string name="paisa_add">أضف إلى الدفتر</string>
     <string name="paisa_entry_note">وارد عبر %1$s</string>
@@ -1010,8 +1012,8 @@
 
     <string name="hide_balance">إخفاء الرصيد</string>
 
-    <string name="powered_by">بدعم من Innovation-313</string>
-    <string name="lock_tagline">بدعم من Innovation-313</string>
+    <string name="powered_by">بدعم من Innovation 313</string>
+    <string name="lock_tagline">بدعم من Innovation 313</string>
 
 
 
@@ -1027,7 +1029,7 @@
     <string name="drive_auto_backup">نسخ احتياطي تلقائي</string>
     <string name="drive_auto_backup_hint">يحفظ نسخة تلقائيًا كلما تغيّر الدفتر — بحد أقصى كل 30 دقيقة على الواي فاي وكل 6 ساعات على بيانات الهاتف. ويمكنك أخذ نسخة يدويًا في أي وقت.</string>
     <string name="auto_backup_offer_title">نسخ احتياطي تلقائي؟</string>
-    <string name="auto_backup_offer_body">تم ربط حسابك. يستطيع Roshan Khata رفع دفترك تلقائيًا كلما تغيّر، حتى لا تضيع سجلاتك مع هاتف مفقود أو تالف.\n\nيمكنك تغيير ذلك في أي وقت من هذه الشاشة.</string>
+    <string name="auto_backup_offer_body">تم ربط حسابك. يستطيع روشن كهاتا رفع دفترك تلقائيًا كلما تغيّر، حتى لا تضيع سجلاتك مع هاتف مفقود أو تالف.\n\nيمكنك تغيير ذلك في أي وقت من هذه الشاشة.</string>
     <string name="auto_backup_offer_yes">تشغيل</string>
     <string name="auto_backup_offer_no">ليس الآن</string>
     <string name="drive_restore">استعادة من Drive</string>
@@ -1049,10 +1051,10 @@
     <string name="insights_top_products">أكثر المنتجات مبيعًا</string>
     <string name="insights_top_customers">أكبر العملاء</string>
     <string name="lapsed_title">لم يعودوا يأتون</string>
-    <string name="lapsed_help">زبائن منتظمون لم يشتروا منذ ضعف مدتهم المعتادة، و30 يومًا على الأقل. الأكثر شراءً أولًا. افتح الزبون لتتصل به أو ترسل رسالة واتساب.</string>
+    <string name="lapsed_help">عملاء منتظمون لم يشتروا منذ ضعف مدتهم المعتادة، و30 يومًا على الأقل. الأكثر شراءً أولًا. افتح العميل لتتصل به أو ترسل رسالة واتساب.</string>
     <string name="lapsed_last">آخر شراء %1$s، قبل %2$s</string>
     <string name="lapsed_usual">كان يشتري كل %1$s · %2$s إجمالًا</string>
-    <string name="lapsed_none">لم يتوقف أي زبون منتظم عن المجيء.</string>
+    <string name="lapsed_none">لم يتوقف أي عميل منتظم عن المجيء.</string>
     <string name="insights_up">\u25b2 %1$d%% أكثر من الشهر الماضي (%2$s)</string>
     <string name="insights_down">\u25bc %1$d%% أقل من الشهر الماضي (%2$s)</string>
     <string name="insights_no_compare">أول شهر مبيعات \u2014 لا شيء للمقارنة بعد.</string>
@@ -1377,7 +1379,7 @@
     <string name="about_privacy_body">كل شيء محفوظ على هذا الهاتف. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. والنسخة الاحتياطية تذهب إلى درايف الخاص بك — لا إلينا.</string>
     <string name="about_privacy_body_pc">كل شيء محفوظ على هذا الحاسوب. نحن لا نرى عملاءك ولا أرقامهم ولا ما على أحد من دين. وتبقى النسخ الاحتياطية على هذا الحاسوب وفي المجلد الذي تختاره، مثل ذاكرة فلاش أو مجلد غوغل درايف — وليس لدينا.</string>
     <string name="about_privacy_policy">سياسة الخصوصية</string>
-    <string name="about_maker">من إنتاج Innovation-313</string>
+    <string name="about_maker">من إنتاج Innovation 313</string>
     <string name="party_exists_title">قد يكون هذا في دفترك بالفعل</string>
     <string name="party_exists_message">هناك حساب مشابه مفتوح بالفعل:\n\n%1$s\n\nإن كان الشخص نفسه فافتح ما لديك. وإن كان شخصًا آخر — أو حسابًا ثانيًا تحتفظ به عن قصد — فأضفه.</string>
     <string name="open_existing">افتح الحساب الحالي</string>
@@ -2019,8 +2021,8 @@
     <string name="pay_heading">*طريقة الدفع*</string>
     <string name="pay_wallet_label">محفظة إلكترونية</string>
     <string name="pay_bank_label">البنك</string>
-    <string name="entry_share_gave">عزيزي *%1$s*، في %2$s سُجّل في حسابك *%3$s* (آجل).</string>
-    <string name="entry_share_got">عزيزي *%1$s*، في %2$s تم استلام *%3$s*. شكرًا لك.</string>
+    <string name="entry_share_gave">مرحبًا *%1$s*، في %2$s سُجّل في حسابك *%3$s* (آجل).</string>
+    <string name="entry_share_got">مرحبًا *%1$s*، في %2$s تم استلام *%3$s*. شكرًا لك.</string>
     <string name="entry_share_balance">المستحق الآن: *%1$s*</string>
     <string name="entry_share_advance">رصيدك المقدم الآن: *%1$s*</string>
     <string name="entry_share_settled">حسابك الآن مسوّى.</string>
@@ -2057,26 +2059,26 @@
     <string name="season_pick">لأي موسم هذا الآجل؟</string>
     <plurals name="season_given">
         <item quantity="zero">%1$d عميل · أُعطي %2$s</item>
-        <item quantity="one">%1$d عميل · أُعطي %2$s</item>
-        <item quantity="two">%1$d عميل · أُعطي %2$s</item>
-        <item quantity="few">%1$d عميل · أُعطي %2$s</item>
-        <item quantity="many">%1$d عميل · أُعطي %2$s</item>
+        <item quantity="one">عميل واحد · أُعطي %2$s</item>
+        <item quantity="two">عميلان · أُعطي %2$s</item>
+        <item quantity="few">%1$d عملاء · أُعطي %2$s</item>
+        <item quantity="many">%1$d عميلًا · أُعطي %2$s</item>
         <item quantity="other">%1$d عميل · أُعطي %2$s</item>
     </plurals>
     <plurals name="season_pace_after">
         <item quantity="zero">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
-        <item quantity="one">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
-        <item quantity="two">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
-        <item quantity="few">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
-        <item quantity="many">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
+        <item quantity="one">سدّد %1$d من %2$d · عادة بعد الحصاد بيوم واحد</item>
+        <item quantity="two">سدّد %1$d من %2$d · عادة بعد الحصاد بيومين</item>
+        <item quantity="few">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d أيام</item>
+        <item quantity="many">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يومًا</item>
         <item quantity="other">سدّد %1$d من %2$d · عادة بعد الحصاد بـ %3$d يوم</item>
     </plurals>
     <plurals name="season_rec_after">
         <item quantity="zero">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
-        <item quantity="one">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
-        <item quantity="two">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
-        <item quantity="few">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
-        <item quantity="many">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
+        <item quantity="one">%1$s: سُدّد بعد الحصاد بيوم واحد</item>
+        <item quantity="two">%1$s: سُدّد بعد الحصاد بيومين</item>
+        <item quantity="few">%1$s: سُدّد بعد الحصاد بـ %2$d أيام</item>
+        <item quantity="many">%1$s: سُدّد بعد الحصاد بـ %2$d يومًا</item>
         <item quantity="other">%1$s: سُدّد بعد الحصاد بـ %2$d يوم</item>
     </plurals>
     <string name="batch_buyers_title">من اشترى %1$s · دفعة %2$s</string>
@@ -2092,9 +2094,9 @@
     <string name="advice_dose_hint">الجرعة، مثل 250 مل للفدان، صباحًا</string>
     <plurals name="batch_buyers_untagged">
         <item quantity="zero">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
-        <item quantity="one">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
-        <item quantity="two">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
-        <item quantity="few">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="one">عملية بيع واحدة لهذا الصنف بلا دفعة وغير مدرجة</item>
+        <item quantity="two">عمليتا بيع لهذا الصنف بلا دفعة وغير مدرجتين</item>
+        <item quantity="few">%d عمليات بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
         <item quantity="many">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
         <item quantity="other">%d عملية بيع لهذا الصنف بلا دفعة وغير مدرجة</item>
     </plurals>
@@ -2204,20 +2206,20 @@
     <string name="scheme_need_slab">أدخل هدفًا واحدًا على الأقل ومكافأته</string>
     <string name="scheme_bad_dates">تاريخ النهاية قبل البداية</string>
     <plurals name="schemes_claims_due">
-        <item quantity="zero">%d مطالبات مستحقة</item>
-        <item quantity="one">%d مطالبات مستحقة</item>
-        <item quantity="two">%d مطالبات مستحقة</item>
-        <item quantity="few">%d مطالبات مستحقة</item>
-        <item quantity="many">%d مطالبات مستحقة</item>
-        <item quantity="other">%d مطالبات مستحقة</item>
+        <item quantity="zero">%d مطالبة مستحقة — اضغط على الحمراء</item>
+        <item quantity="one">مطالبة واحدة مستحقة — اضغط عليها</item>
+        <item quantity="two">مطالبتان مستحقتان — اضغط على الحمراوين</item>
+        <item quantity="few">%d مطالبات مستحقة — اضغط على الحمراء</item>
+        <item quantity="many">%d مطالبة مستحقة — اضغط على الحمراء</item>
+        <item quantity="other">%d مطالبة مستحقة — اضغط على الحمراء</item>
     </plurals>
     <plurals name="scheme_unpriced">
-        <item quantity="zero">%d بنود فاتورة بلا سعر وغير محسوبة</item>
-        <item quantity="one">%d بنود فاتورة بلا سعر وغير محسوبة</item>
-        <item quantity="two">%d بنود فاتورة بلا سعر وغير محسوبة</item>
+        <item quantity="zero">%d بند فاتورة بلا سعر وغير محسوب</item>
+        <item quantity="one">بند فاتورة واحد بلا سعر وغير محسوب</item>
+        <item quantity="two">بندا فاتورة بلا سعر وغير محسوبين</item>
         <item quantity="few">%d بنود فاتورة بلا سعر وغير محسوبة</item>
-        <item quantity="many">%d بنود فاتورة بلا سعر وغير محسوبة</item>
-        <item quantity="other">%d بنود فاتورة بلا سعر وغير محسوبة</item>
+        <item quantity="many">%d بندًا في الفواتير بلا سعر وغير محسوبة</item>
+        <item quantity="other">%d بند فاتورة بلا سعر وغير محسوب</item>
     </plurals>
     <string name="harvest_promise_menu">يدفع بعد الحصاد</string>
     <string name="harvest_promise_title">متى سيدفع %1$s؟</string>
@@ -2641,7 +2643,7 @@
     <string name="onboard_step">الخطوة %1$s من %2$s</string>
     <string name="help_replay_tour">اعرض جولة الشاشة الرئيسية مرة أخرى</string>
     <string name="coach_title_business">الأعمال</string>
-    <string name="coach_desc_business">المنتجات والمخزون، الفواتير، قائمة الأسعار وأسعار الشراء، التحليلات، التدفق النقدي ومتابعة المتأخرين — الجانب التجاري للمحل.</string>
+    <string name="coach_desc_business">البيع على الكاونتر، المنتجات والمخزون، الفواتير، قائمة الأسعار وأسعار الشراء، تقرير المبيعات، التحليلات، التدفق النقدي ومتابعة المتأخرين — الجانب التجاري للمحل.</string>
     <string name="coach_title_tools">الأدوات</string>
     <string name="coach_desc_tools">آلة حاسبة، الزكاة، بطاقة عملك، ملصق لحالة واتساب، نسخ احتياطي إلى Google Drive، وسلة المحذوفات لأي شيء حُذف بالخطأ.</string>
     <string name="tile_backup">النسخ الاحتياطي</string>
@@ -3208,6 +3210,7 @@
     <string name="invoice_filter_ink">أقل حبر</string>
     <string name="business_current">مفتوح الآن</string>
     <string name="business_switch_open">افتح</string>
+    <string name="business_switch_open_named">افتح %1$s</string>
     <string name="business_name_needed">اكتب اسم النشاط أولاً.</string>
     <string name="business_not_added">لم تتم إضافة النشاط. اختر ما يبيعه لإضافته.</string>
     <string name="biz_card_sec_own">على هذه البطاقة</string>
@@ -3300,7 +3303,7 @@
     <string name="pos_search_hint">اسم الصنف أو الباركود</string>
     <string name="pos_scan">مسح</string>
     <string name="pos_walk_in">زبون عابر</string>
-    <string name="pos_choose_customer">اختر الزبون</string>
+    <string name="pos_choose_customer">اختر العميل</string>
     <string name="pos_lines_empty">لا أصناف بعد — امسح أو ابحث في الأعلى</string>
     <string name="pos_col_item">الصنف</string>
     <string name="pos_col_qty">الكمية</string>
@@ -3339,7 +3342,7 @@
     <string name="pos_status_void">ملغى</string>
     <string name="pos_recent">آخر المبيعات</string>
     <string name="pos_all_tickets">كل المبيعات (آخر 60 يومًا)</string>
-    <string name="pos_ticket_search">رقم الفاتورة أو اسم الزبون</string>
+    <string name="pos_ticket_search">رقم الفاتورة أو اسم العميل</string>
     <string name="pos_tickets_none">لا توجد عملية بيع مطابقة في آخر 60 يومًا.</string>
     <string name="pos_err_no_lines">أضف صنفًا واحدًا على الأقل</string>
     <string name="pos_err_quantity">يجب أن تكون الكمية أكبر من صفر</string>
@@ -3347,7 +3350,7 @@
     <string name="pos_err_discount">الخصم أكبر من السطر</string>
     <string name="pos_err_payment">يجب أن تكون الدفعة أكبر من صفر</string>
     <string name="pos_err_overpaid">المدفوع أكبر من الإجمالي</string>
-    <string name="pos_err_walk_in_unpaid">الزبون العابر يدفع كاملًا — أو اختر زبونًا للباقي</string>
+    <string name="pos_err_walk_in_unpaid">الزبون العابر يدفع كاملًا — أو اختر عميلًا للباقي</string>
     <string name="pos_err_empty_name">الصنف يحتاج إلى اسم</string>
     <string name="pos_stock_low">لم يبقَ سوى %1$s</string>
     <string name="pos_stock_negative">سينزل المخزون تحت الصفر</string>
@@ -3356,7 +3359,7 @@
     <string name="pos_receipt">إيصال</string>
     <string name="pos_customer_pays_later">الباقي على حساب %1$s</string>
     <string name="cash_category_sale">بيع</string>
-    <string name="pos_keys_help">F2 صنف · F4 كمية · F6 خصم · F8 زبون · F9 دفع · F12 إتمام</string>
+    <string name="pos_keys_help">F2 صنف · F4 كمية · F6 خصم · F8 عميل · F9 دفع · F12 إتمام</string>
 
     <!-- Products: barcode, cost, low stock, CSV, labels (POS Phase 2, 21 Oct 2026) -->
     <string name="product_barcode_hint">الباركود (اختياري)</string>
@@ -3386,7 +3389,7 @@
     <string name="pos_return_qty_help">بيع %1$s · أُرجع حتى الآن %2$s</string>
     <string name="pos_return_posted">تم حفظ الإرجاع %1$s</string>
     <string name="pos_exchange_start">تسجيل الاستبدال</string>
-    <string name="pos_exchange_started">استبدال %1$s: سجّل الأصناف الجديدة للزبون نفسه.</string>
+    <string name="pos_exchange_started">استبدال %1$s: سجّل الأصناف الجديدة للعميل نفسه.</string>
     <string name="pos_exchange_started_cash">استبدال %1$s: سجّل الأصناف الجديدة. يبقى المبلغ المسترد %2$s في الدرج كأول دفعة لهذه الفاتورة؛ اقبض الفرق فقط.</string>
     <string name="pos_returns">المرتجعات</string>
     <string name="pos_err_over_sold">المرتجع أكثر مما بيع</string>
@@ -3465,6 +3468,7 @@
     <string name="stock_low_title">مخزون منخفض</string>
     <string name="stock_adjustments">التصحيحات</string>
     <string name="po_title">أوامر الشراء</string>
+    <string name="po_saved">تم حفظ الطلب %1$s</string>
     <string name="po_new">أمر جديد</string>
     <string name="po_supplier">المورّد</string>
     <string name="po_send">إرسال عبر واتساب</string>
@@ -3490,7 +3494,7 @@
     <string name="srep_by_day">حسب اليوم</string>
     <string name="srep_by_item">حسب الصنف</string>
     <string name="srep_by_category">حسب الفئة</string>
-    <string name="srep_by_customer">حسب الزبون</string>
+    <string name="srep_by_customer">حسب العميل</string>
     <string name="srep_by_cashier">حسب الكاشير</string>
     <string name="srep_by_hour">حسب الساعة</string>
     <string name="srep_tax">الضريبة</string>
@@ -3606,9 +3610,9 @@
     <string name="pos_next_pay">التالي: الدفع</string>
     <string name="pos_how_1">1 · اكتب اسم الصنف أو امسح الباركود</string>
     <string name="pos_how_2">2 · راجع الكمية والسعر</string>
-    <string name="pos_how_3">3 · الزبون العابر يدفع المبلغ كاملًا؛ وللزبون المختار يُقيَّد الباقي في حسابه</string>
+    <string name="pos_how_3">3 · الزبون العابر يدفع المبلغ كاملًا؛ وللعميل المختار يُقيَّد الباقي في حسابه</string>
     <string name="counter_advanced">أدوات المتاجر الكبيرة</string>
-    <string name="counter_advanced_help">الورديات، تقرير اليوم (Z)، نقاط الولاء، الميزان، شاشة الزبون والضريبة. عند الإيقاف يبقى الكاشير بسيطًا؛ ولا يتغير شيء محفوظ.</string>
+    <string name="counter_advanced_help">الورديات، تقرير اليوم (Z)، نقاط الولاء، الميزان، شاشة العميل والضريبة. عند الإيقاف يبقى الكاشير بسيطًا؛ ولا يتغير شيء محفوظ.</string>
     <string name="counter_prices_include_tax">الأسعار تشمل الضريبة</string>
     <string name="counter_prices_include_tax_help">تشغيل: ضريبة المنتج داخل سعره، والإيصال يذكر قيمتها. إيقاف: تُضاف فوق السعر عند الكاشير. نسبة ضريبة كل منتج تُحدد في المنتج نفسه.</string>
     <string name="expiry_write_off">شطب</string>
@@ -3901,7 +3905,7 @@
     <string name="live_status_not_accepted">لم يوافق الحاسوب في الوقت المحدد. للربط، امسح رمز المزامنة المباشرة مرة أخرى.</string>
     <string name="live_status_not_here">أجاب الحاسوب، لكنه لا يحتفظ بهذا الدفتر الآن. افتح نشاط هذا الدفتر على الحاسوب.</string>
     <string name="live_status_relay">مباشر مع %1$s عبر الإنترنت. آخر تحديث: %2$s</string>
-    <string name="live_relay_help">حين يكون الهاتف بعيدًا عن واي فاي المتجر تمرّ تغييراته عبر مُرحِّل Innovation-313، مقفلةً بمفتاح هذا الدفتر نفسه: لا يستطيع المُرحِّل قراءتها، ولا يحتفظ بها أكثر من 7 أيام. مفتاح واحد للجهازين. حين يكون التطبيق مغلقًا، لا يفعل Firebase من Google سوى إخبار الهاتف بأن شيئًا ينتظر؛ ولا يحمل شيئًا من الدفتر.</string>
+    <string name="live_relay_help">حين يكون الهاتف بعيدًا عن واي فاي المتجر تمرّ تغييراته عبر مُرحِّل Innovation 313، مقفلةً بمفتاح هذا الدفتر نفسه: لا يستطيع المُرحِّل قراءتها، ولا يحتفظ بها أكثر من 7 أيام. مفتاح واحد للجهازين. حين يكون التطبيق مغلقًا، لا يفعل Firebase من Google سوى إخبار الهاتف بأن شيئًا ينتظر؛ ولا يحمل شيئًا من الدفتر.</string>
     <string name="live_relay">عبر الإنترنت أيضًا</string>
     <string name="wifi_take_too_big">دفتر الحاسوب أكبر من ذاكرة هذا الهاتف أو مساحته الفارغة. أغلق التطبيقات الأخرى وحاول مرة أخرى، أو انقل الدفتر بملف نسخة احتياطية.</string>
     <string name="live_devices_open">الأجهزة والتعارضات</string>
@@ -4034,7 +4038,7 @@
     <string name="muhar_proof_chain_broken">تنبيه: ختم قبل هذا لا يتطابق، أي أن سجلات الأختام قبله تغيّرت.</string>
     <string name="doc_pick_kind">أي مستند؟</string>
     <string name="order_paste">لصق طلب من واتساب</string>
-    <string name="order_paste_empty">انسخ رسالة طلب الزبون أولاً، ثم الصقها هنا.</string>
+    <string name="order_paste_empty">انسخ رسالة طلب العميل أولاً، ثم الصقها هنا.</string>
     <string name="order_paste_check">قُرئ من الرسالة: راجع كل صنف وكميته وسعره قبل الحفظ.</string>
     <string name="order_paste_none">لم يُقرأ أي صنف من الرسالة. انسخ سطور الطلب فقط وحاول مرة أخرى.</string>
     <string name="doc_accept">تعليم كمقبول</string>
@@ -4086,12 +4090,12 @@
         <item quantity="other">أصناف منخفضة: %1$d · %2$s. اضغط لتجهيز الطلب.</item>
     </plurals>
     <plurals name="auto_expiry_more">
-        <item quantity="zero">و%1$d دفعات أخرى</item>
-        <item quantity="one">و%1$d دفعات أخرى</item>
-        <item quantity="two">و%1$d دفعات أخرى</item>
+        <item quantity="zero">و%1$d دفعة أخرى</item>
+        <item quantity="one">ودفعة أخرى</item>
+        <item quantity="two">ودفعتان أخريان</item>
         <item quantity="few">و%1$d دفعات أخرى</item>
-        <item quantity="many">و%1$d دفعات أخرى</item>
-        <item quantity="other">و%1$d دفعات أخرى</item>
+        <item quantity="many">و%1$d دفعة أخرى</item>
+        <item quantity="other">و%1$d دفعة أخرى</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4231,7 +4235,7 @@
     <string name="paisa_switch_needs_access">امنح إذن الإشعارات أولًا (في الأعلى)</string>
     <string name="paisa_not_from_play">لم يُثبَّت من Play Store: حدّده فقط إذا كنت متأكدًا أنه التطبيق الحقيقي.</string>
     <string name="paisa_private_chime">عندما يكون الهاتف مقفلًا، أو يكون قفل التطبيق مفعّلًا، تُسمع نغمة قصيرة فقط: لا يُقال أي اسم أو مبلغ بصوت عالٍ.</string>
-    <string name="paisa_notif_match_locked">يطابق زبونًا في دفترك. افتحه لتراجعه ثم احفظ.</string>
+    <string name="paisa_notif_match_locked">يطابق عميلًا في دفترك. افتحه لتراجعه ثم احفظ.</string>
     <string name="paisa_already_added">هذه الدفعة (المرجع %1$s) مضافة من قبل: %2$s، %3$s.</string>
     <string name="paisa_notice_gone">لم يعد من الممكن فتح إشعار الدفعة هذا.</string>
     <string name="invoice_caption_total">الإجمالي: %1$s</string>

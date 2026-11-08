@@ -4,6 +4,7 @@
     <string name="welcome_body">रोशन खाता आपका रिकॉर्ड इसी फ़ोन में रखता है। अपना Google अकाउंट जोड़ें ताकि आपके खाते का बैकअप आपकी Drive में हो सके — आपका डेटा, आपके अकाउंट में।</string>
     <string name="welcome_connect">Google के साथ जारी रखें</string>
     <string name="welcome_skip">बाद में</string>
+    <string name="home_backup_to_drive">Google Drive पर बैकअप करें</string>
 
     <!-- Onboarding: first-run coach marks on the Home screen — a bubble with
          an arrow points at each real control in turn, Skip / Next / Got it.
@@ -54,7 +55,7 @@
     <string name="waris_copy_sent">कॉपी ताज़ा है।</string>
     <string name="waris_too_big">आपका खाता वारिस कॉपी के लिए बहुत बड़ा है (पैक करके भी 8 MB से ज़्यादा)। कृपया मदद के ज़रिए हमें बताएँ।</string>
     <string name="waris_remove_heir">वारिस हटाएँ</string>
-    <string name="waris_remove_heir_body">%1$s अब आपके खाते का अनुरोध नहीं कर सकेंगे। बाक़ी वारिसों के लिए नया ताला बनाया जाता है।</string>
+    <string name="waris_remove_heir_body">%1$s अब आपके खाते का अनुरोध नहीं कर सकेंगे। बाकी वारिसों के लिए नया ताला बनाया जाता है।</string>
     <string name="waris_turn_off">वारिस की चाबी बंद करें</string>
     <string name="waris_turn_off_body">बंद कॉपी और हर वारिस की चाबी रिले से हटा दी जाएगी। आपके वारिस फिर अनुरोध नहीं कर सकेंगे।</string>
     <string name="waris_state_waiting_scan">उनका कोड स्कैन होने का इंतज़ार</string>
@@ -165,9 +166,9 @@
     <string name="calc_dot">.</string>
     <string name="coach_title_calc">कैलकुलेटर</string>
     <string name="coach_desc_calc">खाते के साथ झटपट हिसाब — मार्जिन, जोड़, बँटवारा।</string>
-    <string name="app_tagline">Innovation-313</string>
+    <string name="app_tagline">Innovation 313</string>
 
-    <string name="net_balance">कुल बैलेंस</string>
+    <string name="net_balance">शुद्ध बैलेंस</string>
     <string name="home_sec_daily">हर रोज़</string>
     <string name="home_sec_business">व्यवसाय</string>
     <string name="home_today">आज</string>
@@ -204,6 +205,7 @@
     <string name="add_party_duplicate_name_only">मिलता-जुलता ग्राहक पहले से है: %1$s</string>
     <string name="no_parties_yet">अभी कोई ग्राहक नहीं।\n\nपहला ग्राहक जोड़ें और अपना खाता शुरू करें।</string>
     <string name="no_entries_yet">अभी कोई एंट्री नहीं।</string>
+    <string name="party_entries_hint">अभी कोई एंट्री नहीं।\nपहली एंट्री लिखने के लिए \u201Cमैंने दिए\u201D या \u201Cमुझे मिले\u201D दबाएँ।</string>
     <string name="entries_no_match">आपकी खोज से कोई एंट्री नहीं मिली।</string>
 
     <string name="i_gave">मैंने दिए</string>
@@ -321,8 +323,8 @@
     <string name="reminder_step_gentle">नरम</string>
     <string name="reminder_step_plain">साफ़</string>
     <string name="reminder_step_serious">गंभीर</string>
-    <string name="reminder_step2">*दूसरी याद दिलाई*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nपहली याद दिलाई: %3$s\n\nयह हमारी दूसरी याद दिलाई है। कृपया इस हफ़्ते रक़म चुका दें।\n\nशुक्रिया।</string>
-    <string name="reminder_step3">*भुगतान बाक़ी है*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\n\nकई बार याद दिलाने के बाद भी रक़म बाक़ी है। कृपया भुगतान करें, या भुगतान की तारीख़ बता दें ताकि हिसाब साफ़ हो सके।\n\nआपके सहयोग का शुक्रिया।</string>
+    <string name="reminder_step2">*दूसरा रिमाइंडर*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nपहला रिमाइंडर: %3$s\n\nयह हमारी दूसरा रिमाइंडर है। कृपया इस हफ़्ते रकम चुका दें।\n\nधन्यवाद।</string>
+    <string name="reminder_step3">*भुगतान बाकी है*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\n\nकई बार याद दिलाने के बाद भी रकम बाकी है। कृपया भुगतान करें, या भुगतान की तारीख़ बता दें ताकि हिसाब साफ़ हो सके।\n\nआपके सहयोग का शुक्रिया।</string>
     <string name="reminder_ref">संदर्भ: %1$s</string>
     <string name="reminder_i_owe">*भुगतान नोट*\n\nआदरणीय *%1$s*,\n\nहमें आपको देना है: *%2$s*\n\nहम जल्द चुका देंगे। अगर आपका हिसाब हमारे हिसाब से अलग हो तो कृपया बताएँ।\n\nधन्यवाद।</string>
     <string name="send_reminder">रिमाइंडर भेजें</string>
@@ -956,8 +958,8 @@
 
     <string name="hide_balance">बैलेंस छुपाएँ</string>
 
-    <string name="powered_by">Innovation-313 द्वारा संचालित</string>
-    <string name="lock_tagline">Innovation-313 द्वारा संचालित</string>
+    <string name="powered_by">Innovation 313 द्वारा संचालित</string>
+    <string name="lock_tagline">Innovation 313 द्वारा संचालित</string>
 
     <!-- Splash / branding -->
 
@@ -1018,7 +1020,7 @@
     <string name="insights_profit_title">मुनाफ़ा \u00b7 इस महीने</string>
     <string name="insights_profit_after_expenses">खर्चों के बाद: %1$s (खर्चे %2$s)</string>
     <string name="insights_profit_last_month">पिछला महीना: %1$s</string>
-    <string name="insights_profit_coverage">इस महीने की %1$d%% बिक्री से निकाला गया। बाक़ी में प्रोडक्ट का नाम या ख़रीद का दाम नहीं।</string>
+    <string name="insights_profit_coverage">इस महीने की %1$d%% बिक्री से निकाला गया। बाकी में प्रोडक्ट का नाम या ख़रीद का दाम नहीं।</string>
     <string name="insights_profit_none">अभी मुनाफ़ा नहीं निकल सका। हर बिक्री में प्रोडक्ट का नाम लिखें और सप्लायर के बिल में ख़रीद का दाम।</string>
     <string name="insights_profit_top">सबसे ज़्यादा मुनाफ़ा</string>
     <string name="insights_profit_top_none">इस महीने ऐसा कोई प्रोडक्ट नहीं बिका जिसका ख़रीद दाम पता हो।</string>
@@ -1057,7 +1059,7 @@
     <string name="cf_kind_bill">सप्लायर का बिल</string>
     <string name="cf_kind_cheque_out">देने वाला चेक</string>
     <string name="cf_empty">अभी कोई तारीख़ नहीं। तारीख़ें क़िस्तों के प्लान, चेक और ड्यू डेट वाले सप्लायर बिलों से आती हैं।</string>
-    <string name="cf_note">सिर्फ़ वही गिना जाता है जिसकी तारीख़ हो: क़िस्तों के प्लान, बाक़ी चेक और ड्यू डेट वाले सप्लायर बिल। वादा हाथ का पैसा नहीं, इसलिए टूटे वादे नहीं गिने जाते; लेट बिल अभी देने हैं।</string>
+    <string name="cf_note">सिर्फ़ वही गिना जाता है जिसकी तारीख़ हो: क़िस्तों के प्लान, बाकी चेक और ड्यू डेट वाले सप्लायर बिल। वादा हाथ का पैसा नहीं, इसलिए टूटे वादे नहीं गिने जाते; लेट बिल अभी देने हैं।</string>
     <string name="cf_undated">बिना ड्यू डेट के सप्लायर बिल, गिने नहीं गए: %1$s</string>
     <string name="sr_open">सस्ता कहाँ? ख़रीद के रेट</string>
     <string name="sr_title">ख़रीद के रेट</string>
@@ -1120,9 +1122,9 @@
     <string name="staff_leave">छुट्टी (तनख़्वाह के साथ)</string>
     <string name="staff_day_for">हाज़िरी — %1$s</string>
     <string name="staff_change_date">तारीख़ बदलें</string>
-    <string name="staff_amount">रक़म</string>
+    <string name="staff_amount">रकम</string>
     <string name="staff_note">नोट (वैकल्पिक)</string>
-    <string name="staff_invalid">नाम और शून्य से ज़्यादा रक़म लिखें।</string>
+    <string name="staff_invalid">नाम और शून्य से ज़्यादा रकम लिखें।</string>
     <string name="staff_name">नाम</string>
     <string name="staff_phone">फ़ोन (वैकल्पिक)</string>
     <string name="staff_salary">महीने की तनख़्वाह</string>
@@ -1305,7 +1307,7 @@
     <string name="about_privacy_body">सब कुछ इसी फ़ोन में रखा जाता है। हम आपके ग्राहक, उनके नंबर या किसी का बकाया कभी नहीं देखते। बैकअप आपकी अपनी Google Drive में जाता है — हमारे पास नहीं।</string>
     <string name="about_privacy_body_pc">सब कुछ इसी कंप्यूटर में रखा जाता है। हम आपके ग्राहक, उनके नंबर या किसी का बकाया कभी नहीं देखते। बैकअप इसी कंप्यूटर में और आपके चुने हुए फ़ोल्डर में रहते हैं, जैसे USB या Google Drive का फ़ोल्डर — हमारे पास नहीं।</string>
     <string name="about_privacy_policy">प्राइवेसी पॉलिसी</string>
-    <string name="about_maker">Innovation-313 द्वारा बनाया गया</string>
+    <string name="about_maker">Innovation 313 द्वारा बनाया गया</string>
     <string name="party_exists_title">यह शायद पहले से आपके खाते में है</string>
     <string name="party_exists_message">ऐसा ही एक खाता पहले से खुला है:\n\n%1$s\n\nअगर यह वही व्यक्ति है, तो जो पहले से है उसे खोलें। अगर कोई और है — या जान-बूझकर रखा दूसरा खाता — तो आगे बढ़कर जोड़ें।</string>
     <string name="open_existing">मौजूदा खोलें</string>
@@ -2501,7 +2503,7 @@
     <string name="onboard_step">चरण %1$s / %2$s</string>
     <string name="help_replay_tour">होम का परिचय फिर से दिखाएँ</string>
     <string name="coach_title_business">बिज़नेस</string>
-    <string name="coach_desc_business">प्रोडक्ट्स और स्टॉक, इनवॉइस, भाव सूची और ख़रीद के रेट, इनसाइट्स, कैश फ़्लो और देर करने वालों का फ़ॉलो-अप — दुकान का बिज़नेस वाला हिस्सा।</string>
+    <string name="coach_desc_business">काउंटर बिक्री, प्रोडक्ट्स और स्टॉक, इनवॉइस, भाव सूची और ख़रीद के रेट, बिक्री रिपोर्ट, इनसाइट्स, कैश फ़्लो और देर करने वालों का फ़ॉलो-अप — दुकान का बिज़नेस वाला हिस्सा।</string>
     <string name="coach_title_tools">टूल्स</string>
     <string name="coach_desc_tools">कैलकुलेटर, ज़कात, आपका बिज़नेस कार्ड, व्हाट्सऐप स्टेटस के लिए पोस्टर, Google Drive पर बैकअप, और ग़लती से डिलीट हुई चीज़ों के लिए बिन।</string>
     <string name="tile_backup">बैकअप</string>
@@ -3018,7 +3020,7 @@
     <string name="print_short">प्रिंट</string>
     <string name="calc_add_to_khata">खाते में डालें</string>
     <string name="calc_pick_party">%1$s: जिसके खाते में डालना है उस पर टैप करें</string>
-    <string name="calc_khata_positive">खाते में सिर्फ़ शून्य से ज़्यादा रक़म जा सकती है।</string>
+    <string name="calc_khata_positive">खाते में सिर्फ़ शून्य से ज़्यादा रकम जा सकती है।</string>
     <string name="stat_bills">बिल</string>
     <string name="stat_you_owe">आपको देना है</string>
     <string name="stat_expiring">60 दिन में एक्सपायर</string>
@@ -3045,7 +3047,7 @@
     <string name="invoice_sum_items">आइटम</string>
     <string name="invoice_sum_total">कुल</string>
     <string name="invoice_sum_received">मिले</string>
-    <string name="invoice_sum_balance">बाक़ी</string>
+    <string name="invoice_sum_balance">बाकी</string>
     <string name="invoice_more_apply">लागू करें</string>
     <string name="invoice_discount_amount_line">डिस्काउंट: −%1$s</string>
     <string name="invoice_designs_tap">नीचे देखने के लिए किसी पर टैप करें</string>
@@ -3056,6 +3058,7 @@
     <string name="invoice_filter_ink">कम स्याही</string>
     <string name="business_current">अभी खुला है</string>
     <string name="business_switch_open">खोलें</string>
+    <string name="business_switch_open_named">%1$s खोलें</string>
     <string name="business_name_needed">पहले कारोबार का नाम लिखें।</string>
     <string name="business_not_added">कारोबार नहीं जुड़ा। जोड़ने के लिए चुनें कि यह क्या बेचता है।</string>
     <string name="biz_card_sec_own">इस कार्ड पर</string>
@@ -3161,7 +3164,7 @@
     <string name="pos_grand_total">कुल</string>
     <string name="pos_paid">अभी चुकाया</string>
     <string name="pos_to_account">खाते में</string>
-    <string name="pos_change">बाक़ी लौटाएँ</string>
+    <string name="pos_change">बाकी लौटाएँ</string>
     <string name="pos_add_payment">भुगतान जोड़ें</string>
     <string name="pos_pay_full_cash">सब नकद</string>
     <string name="pos_reference_hint">संदर्भ (ट्रांज़ैक्शन नं., चेक नं.)</string>
@@ -3313,6 +3316,7 @@
     <string name="stock_low_title">कम स्टॉक</string>
     <string name="stock_adjustments">सुधार</string>
     <string name="po_title">खरीद ऑर्डर</string>
+    <string name="po_saved">ऑर्डर %1$s सेव हो गया</string>
     <string name="po_new">नया ऑर्डर</string>
     <string name="po_supplier">सप्लायर</string>
     <string name="po_send">WhatsApp पर भेजें</string>
@@ -3330,7 +3334,7 @@
     <string name="po_pick_supplier">ऑर्डर सेव करने के लिए सप्लायर चुनें</string>
     <string name="po_message_head">ऑर्डर %1$s — %2$s</string>
     <string name="po_from_low">कम स्टॉक का ऑर्डर</string>
-    <string name="po_book">बही</string>
+    <string name="po_book">रिकॉर्ड में</string>
     <string name="inventory_title">मौजूदा स्टॉक</string>
 
     <!-- The sales report (POS Phase 7, 21 Oct 2026) -->
@@ -3498,13 +3502,13 @@
     <string name="srep_period_custom">तारीख़ें चुनें</string>
     <string name="srep_chart">समय के साथ बिक्री</string>
     <string name="srep_chart_top">सबसे ज़्यादा: %1$s</string>
-    <string name="aging_title">बाक़ी रक़म, अवधि के हिसाब से</string>
-    <string name="aging_help">जो अभी बाक़ी है, इस हिसाब से कि कितने समय पहले दिया गया। भुगतान पहले पुराना हिसाब साफ़ करता है; 90 दिन से पुरानी रक़म पर फ़ोन ज़रूर करें।</string>
+    <string name="aging_title">बाकी रकम, अवधि के हिसाब से</string>
+    <string name="aging_help">जो अभी बाकी है, इस हिसाब से कि कितने समय पहले दिया गया। भुगतान पहले पुराना हिसाब साफ़ करता है; 90 दिन से पुरानी रकम पर फ़ोन ज़रूर करें।</string>
     <string name="aging_0_30">0–30 दिन</string>
     <string name="aging_31_60">31–60 दिन</string>
     <string name="aging_61_90">61–90 दिन</string>
     <string name="aging_90">90 दिन से ज़्यादा</string>
-    <string name="aging_none">कोई रक़म बाक़ी नहीं</string>
+    <string name="aging_none">कोई रकम बाकी नहीं</string>
     <string name="aging_oldest">सबसे पुरानी: %1$s</string>
     <string name="aging_total">कुल</string>
 
@@ -3530,7 +3534,7 @@
     <string name="product_variant_help">प्रकार अपने अलग प्रोडक्ट हैं — अपनी क़ीमत, बारकोड और स्टॉक — जो काउंटर की चीज़ों वाली जाली में मुख्य प्रोडक्ट के नीचे एक साथ दिखते हैं।</string>
     <string name="cd_title">ग्राहक की स्क्रीन</string>
     <string name="cd_scan">भुगतान के लिए स्कैन करें</string>
-    <string name="cd_qr_note">QR में रक़म शामिल नहीं: भुगतान से पहले अपने फ़ोन पर रक़म देख लें।</string>
+    <string name="cd_qr_note">QR में रकम शामिल नहीं: भुगतान से पहले अपने फ़ोन पर रकम देख लें।</string>
     <string name="cd_welcome">स्वागत है</string>
     <string name="cd_change">वापसी: %1$s</string>
     <string name="transfer_title">स्टॉक दूसरी दुकान को भेजें</string>
@@ -3545,7 +3549,7 @@
     <!-- A copy merged in: only what this book does not have (21 Oct 2026) -->
     <string name="merge_button">सिर्फ़ नया जोड़ें</string>
     <string name="merge_title">सिर्फ़ नया जोड़ें</string>
-    <string name="merge_help">इस खाते की हर चीज़ रहती है और कॉपी की वे चीज़ें जुड़ती हैं जो यहाँ नहीं — एंट्रियाँ, कैशबुक, बिल, वापसियाँ, सप्लायर बिल, चेक, इनवॉइस — उनकी अपनी ID से मिलाकर, रक़म से कभी नहीं। यहाँ कुछ बदला या हटाया नहीं जाता।</string>
+    <string name="merge_help">इस खाते की हर चीज़ रहती है और कॉपी की वे चीज़ें जुड़ती हैं जो यहाँ नहीं — एंट्रियाँ, कैशबुक, बिल, वापसियाँ, सप्लायर बिल, चेक, इनवॉइस — उनकी अपनी ID से मिलाकर, रकम से कभी नहीं। यहाँ कुछ बदला या हटाया नहीं जाता।</string>
     <string name="merge_preview">जुड़ेंगे: %1$s खाता एंट्रियाँ, %2$s कैशबुक, %3$s काउंटर बिल, %4$s अन्य रिकॉर्ड; %5$s नए ग्राहक, %6$s नए प्रोडक्ट।</string>
     <string name="merge_changed">%1$s पंक्तियाँ कॉपी में भी बदली या हटाई गईं: यह खाता अपनी रखता है।</string>
     <string name="merge_other_shop">कॉपी का नाम %1$s है — देख लें कि यह इसी दुकान का खाता है।</string>
@@ -3639,7 +3643,7 @@
 
     <!-- The shop's country (21 Oct 2026): WhatsApp code, tax name, week, calendar, wallets follow it -->
     <string name="bp_country">देश</string>
-    <string name="bp_country_help">WhatsApp का कंट्री कोड, टैक्स नंबर का नाम, हफ़्ते का पहला दिन और कैलेंडर इसी से तय होते हैं। रक़में कभी नहीं बदलतीं।</string>
+    <string name="bp_country_help">WhatsApp का कंट्री कोड, टैक्स नंबर का नाम, हफ़्ते का पहला दिन और कैलेंडर इसी से तय होते हैं। रकमें कभी नहीं बदलतीं।</string>
     <string name="country_other">अन्य</string>
     <string name="country_ask_title">आपकी दुकान किस देश में है?</string>
     <string name="country_ask_body">ऐप इसे WhatsApp नंबर, टैक्स नंबर के नाम और हफ़्ते के लिए इस्तेमाल करता है। बाद में बिज़नेस प्रोफ़ाइल से बदल सकते हैं।</string>
@@ -3686,7 +3690,7 @@
     <string name="live_pc_relay_down">इंटरनेट वाला रिले: जवाब नहीं दे रहा (%1$s)। दुकान पर वाई-फ़ाई इसके बिना चलता है।</string>
     <string name="live_pair_other_phone">यह खाता पहले से फ़ोन “%1$s” के साथ चल रहा है। सब बदलने से वह फ़ोन रुक जाएगा। एक खाता = एक फ़ोन और एक कंप्यूटर: दोनों फ़ोन रखने हों तो इस फ़ोन को नए कारोबार के रूप में जोड़ें।</string>
     <string name="na_sync_conflict">%1$s प्रविष्टियाँ दोनों डिवाइस पर एक साथ बदली गईं</string>
-    <string name="na_sync_conflict_sub">रखी गई रक़म शायद वह न हो जो आप चाहते थे। लाइव सिंक → क्या बदला देखें।</string>
+    <string name="na_sync_conflict_sub">रखी गई रकम शायद वह न हो जो आप चाहते थे। लाइव सिंक → क्या बदला देखें।</string>
     <string name="live_status_update_both">दूसरे डिवाइस पर ऐप का नया वर्शन है (%1$s)। इस डिवाइस को अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
     <string name="live_status_key_busy">इस डिवाइस के की-स्टोर ने जवाब नहीं दिया (%1$s)। कुछ नहीं बदला; थोड़ी देर में फिर कोशिश होगी।</string>
     <string name="na_sync_off">लाइव सिंक रुक गया</string>
@@ -3725,7 +3729,7 @@
     <string name="live_status_not_accepted">कंप्यूटर ने समय पर हाँ नहीं की। जोड़ने के लिए उसका लाइव सिंक कोड फिर से स्कैन करें।</string>
     <string name="live_status_not_here">कंप्यूटर ने जवाब दिया, पर इस समय यह खाता उस पर नहीं है। कंप्यूटर पर इस खाते का व्यवसाय खोलें।</string>
     <string name="live_status_relay">%1$s के साथ इंटरनेट से लाइव। आख़िरी अपडेट: %2$s</string>
-    <string name="live_relay_help">जब फ़ोन दुकान के वाई-फ़ाई से दूर हो, उसके बदलाव Innovation-313 के रिले से जाते हैं, इस खाते की अपनी चाबी से बंद: रिले उन्हें पढ़ नहीं सकता, और ज़्यादा से ज़्यादा 7 दिन रखता है। दोनों डिवाइस के लिए एक ही स्विच। ऐप बंद हो तो Google का Firebase फ़ोन को सिर्फ़ इतना बताता है कि कुछ इंतज़ार में है; खाते की कोई चीज़ उसके पास नहीं जाती।</string>
+    <string name="live_relay_help">जब फ़ोन दुकान के वाई-फ़ाई से दूर हो, उसके बदलाव Innovation 313 के रिले से जाते हैं, इस खाते की अपनी चाबी से बंद: रिले उन्हें पढ़ नहीं सकता, और ज़्यादा से ज़्यादा 7 दिन रखता है। दोनों डिवाइस के लिए एक ही स्विच। ऐप बंद हो तो Google का Firebase फ़ोन को सिर्फ़ इतना बताता है कि कुछ इंतज़ार में है; खाते की कोई चीज़ उसके पास नहीं जाती।</string>
     <string name="live_relay">इंटरनेट से भी</string>
     <string name="wifi_take_too_big">कंप्यूटर की किताब इस फ़ोन की मेमोरी या खाली जगह के लिए बहुत बड़ी है। दूसरे ऐप बंद करके फिर कोशिश करें, या किताब बैकअप फ़ाइल से ले जाएँ।</string>
     <string name="live_devices_open">डिवाइस और एक साथ बदलाव</string>
@@ -3776,7 +3780,7 @@
     </plurals>
     <string name="voice_language_missing_phone">आपके फ़ोन में वह भाषा नहीं है। फ़ोन की अपनी भाषा में सुना जा रहा है।</string>
     <string name="live_give">यह खाता किसी फ़ोन को दें</string>
-    <string name="live_give_steps">नए फ़ोन पर बैकअप → दुकान का खाता इस फ़ोन पर लें → कंप्यूटर का कोड स्कैन करें खोलें और यह कोड स्कैन करें। दोनों एक ही वाई-फ़ाई पर हों। यह कोड सिर्फ़ एक फ़ोन के लिए है। खाते का इंटरनेट रिले चालू कर दिया जाता है, ताकि फ़ोन खाते के बाक़ी डिवाइसों से भी मिलता रहे।</string>
+    <string name="live_give_steps">नए फ़ोन पर बैकअप → दुकान का खाता इस फ़ोन पर लें → कंप्यूटर का कोड स्कैन करें खोलें और यह कोड स्कैन करें। दोनों एक ही वाई-फ़ाई पर हों। यह कोड सिर्फ़ एक फ़ोन के लिए है। खाते का इंटरनेट रिले चालू कर दिया जाता है, ताकि फ़ोन खाते के बाकी डिवाइसों से भी मिलता रहे।</string>
     <string name="live_give_sending">खाता “%1$s” को दिया जा रहा है…</string>
     <string name="live_give_sent">खाता “%1$s” तक पहुँच गया।\n\nकोड: %2$s — फ़ोन पर भी यही चार अंक दिखेंगे। वहाँ मालिक की हाँ के बाद, 15 मिनट के अंदर, फ़ोन इस खाते में शामिल हो जाएगा।</string>
     <string name="live_give_failed">खाता फ़ोन तक नहीं पहुँचा। नया कोड बनाएँ और दोबारा स्कैन करें।</string>
@@ -3822,7 +3826,7 @@
     <string name="muhar_open">मुहरें देखें</string>
     <string name="muhar_turn_on_body">हर दिन सिर्फ़ नई एंट्रियों का फ़िंगरप्रिंट (32 बाइट, पढ़ने लायक कुछ नहीं) तीन मुफ़्त टाइम सेवाओं को जाता है: FreeTSA, Sectigo और DigiCert. मुहर आज से शुरू होगी: इससे पहले की एंट्रियाँ अलग-अलग साबित नहीं हो सकतीं।</string>
     <string name="muhar_turn_on">चालू करें</string>
-    <string name="muhar_help">मुहर दिखाती है कि कोई एंट्री अपनी मुहर वाले दिन आपकी किताब में थी, और उसके बाद बदली नहीं गई। यह हर एंट्री का नंबर, रक़म, दिया या लिया, तारीख़ और समय, नोट, ग्राहक, सामान की लाइनें (चीज़, मात्रा, इकाई, भाव, मुफ़्त चीज़ और बैच), भुगतान का तरीक़ा और उसका हवाला, क़र्ज़-ए-हसना का निशान और यह कि एंट्री रीसायकल बिन में है या नहीं, सबको शामिल करती है: इनमें से कुछ भी बदलें, या एंट्री रीसायकल बिन में डालें, तो वह अपनी मुहर से मेल नहीं खाती; बदलाव किसने क्या किया में दर्ज होता है। इस फ़ोन से सिर्फ़ फ़िंगरप्रिंट जाता है, कभी नाम या रक़म नहीं। मुहर उसी दिन से शुरू होती है जिस दिन आप इसे चालू करें। ऐप किसी टाइम सेवा का जवाब तभी रखता है जब वह उसी मुहर का हो और अपने साथ आए सर्टिफ़िकेट से हस्ताक्षरित हो; वह सर्टिफ़िकेट सच में उसी सेवा का है या नहीं, यह OpenSSL से जाँचा जाता है, जैसा शेयर की गई सबूत फ़ाइल बताती है। समय सेवाओं के हस्ताक्षरित जवाबों से लिया जाता है; मुहर की अपनी तारीख़ इस फ़ोन की घड़ी है। यह क़ानूनी एडवांस्ड इलेक्ट्रॉनिक हस्ताक्षर नहीं है: यह एक सबूत है, और उसका वज़न अदालत तय करती है।</string>
+    <string name="muhar_help">मुहर दिखाती है कि कोई एंट्री अपनी मुहर वाले दिन आपकी किताब में थी, और उसके बाद बदली नहीं गई। यह हर एंट्री का नंबर, रकम, दिया या लिया, तारीख़ और समय, नोट, ग्राहक, सामान की लाइनें (चीज़, मात्रा, इकाई, भाव, मुफ़्त चीज़ और बैच), भुगतान का तरीक़ा और उसका हवाला, क़र्ज़-ए-हसना का निशान और यह कि एंट्री रीसायकल बिन में है या नहीं, सबको शामिल करती है: इनमें से कुछ भी बदलें, या एंट्री रीसायकल बिन में डालें, तो वह अपनी मुहर से मेल नहीं खाती; बदलाव किसने क्या किया में दर्ज होता है। इस फ़ोन से सिर्फ़ फ़िंगरप्रिंट जाता है, कभी नाम या रकम नहीं। मुहर उसी दिन से शुरू होती है जिस दिन आप इसे चालू करें। ऐप किसी टाइम सेवा का जवाब तभी रखता है जब वह उसी मुहर का हो और अपने साथ आए सर्टिफ़िकेट से हस्ताक्षरित हो; वह सर्टिफ़िकेट सच में उसी सेवा का है या नहीं, यह OpenSSL से जाँचा जाता है, जैसा शेयर की गई सबूत फ़ाइल बताती है। समय सेवाओं के हस्ताक्षरित जवाबों से लिया जाता है; मुहर की अपनी तारीख़ इस फ़ोन की घड़ी है। यह क़ानूनी एडवांस्ड इलेक्ट्रॉनिक हस्ताक्षर नहीं है: यह एक सबूत है, और उसका वज़न अदालत तय करती है।</string>
     <string name="muhar_witness_legend">● जवाब मिला · … अभी पूछा जा रहा है · ✕ जवाब नहीं मिला (एक हफ़्ते बाद छोड़ दिया)</string>
     <string name="muhar_first_seal">पहली मुहर: मुहर यहीं से शुरू</string>
     <string name="muhar_proof">मुहर का सबूत</string>
@@ -4027,7 +4031,7 @@
     <string name="paisa_already_added">यह भुगतान (रेफ़रेंस %1$s) पहले ही जोड़ा जा चुका है: %2$s, %3$s।</string>
     <string name="paisa_notice_gone">भुगतान का यह नोटिफ़िकेशन अब खोला नहीं जा सकता।</string>
     <string name="invoice_caption_total">कुल: %1$s</string>
-    <string name="doc_desc_quotation">बिक्री से पहले दिए गए दाम। अभी कोई रक़म बाक़ी नहीं।</string>
+    <string name="doc_desc_quotation">बिक्री से पहले दिए गए दाम। अभी कोई रकम बाकी नहीं।</string>
     <string name="doc_desc_proforma">अग्रिम बिल, माल जाने से पहले भुगतान के लिए।</string>
     <string name="doc_desc_sales_order">ग्राहक का पक्का किया ऑर्डर, बाद में देने के लिए।</string>
     <string name="doc_desc_challan">माल के साथ जाने वाली पर्ची। दाम नहीं।</string>
