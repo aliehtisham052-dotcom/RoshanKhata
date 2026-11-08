@@ -101,8 +101,18 @@ object CustomerLinkSync {
         val dao = KhataDatabase.get(context).khataDao()
         return runCatching {
             CustomerLink.share(dao, Prefs(context), scope(context), look(context), partyUid, bookKey(context), claim)
-        }.getOrElse { CustomerLink.Shared.NotYet(CustomerLink.Result.Unreachable) }
+        }.getOrElse {
+            // No road to the server is "no internet"; anything else is a fault, said as one (with its name).
+            CustomerLink.Shared.NotYet(
+                if (it is java.io.IOException) CustomerLink.Result.Unreachable
+                else CustomerLink.Result.Refused("app " + it.javaClass.simpleName)
+            )
+        }
     }
+
+    /** Whether this customer's link has really gone out ([CustomerLink.wasSent]): a link made but never taken has not. */
+    suspend fun wasSent(context: Context, partyUid: String): Boolean =
+        CustomerLink.wasSent(KhataDatabase.get(context).khataDao(), Prefs(context), partyUid, bookKey(context))
 
     class Worker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
         override suspend fun doWork(): Result {

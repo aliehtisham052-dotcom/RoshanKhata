@@ -263,10 +263,13 @@
     <string name="delete_entry_title">اندراج حذف کریں؟</string>
     <string name="delete_entry_confirm">یہ اندراج ری سائیکل بن میں چلا جائے گا۔ 30 دن کے اندر واپس لا سکتے ہیں۔</string>
     <string name="select_entries_to_delete">حذف کرنے کے لیے اندراجات چنیں</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">%1$d چنی گئی انٹری حذف کریں؟ یہ ری سائیکل بن میں چلی جائے گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
-        <item quantity="other">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">%1$d چنی گئی انٹری ری سائیکل بن میں بھیجیں؟ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
+        <item quantity="other">%1$d چنی گئی اندراجات ری سائیکل بن میں بھیجیں؟ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
     </plurals>
+    <string name="move_selected_to_bin">%1$d کو بن میں بھیجیں</string>
+    <string name="move_to_bin">ری سائیکل بن میں بھیجیں</string>
+    <string name="move_to_bin_title">ری سائیکل بن میں بھیجیں؟</string>
     <string name="moved_to_bin">ری سائیکل بن میں منتقل ہو گیا</string>
 
     <string name="zakat_calculator">زکوٰۃ کیلکولیٹر</string>
@@ -4040,6 +4043,11 @@
     <string name="clink_stopped_now">لنک بند کر دیا۔ اب یہ نہیں کھلے گا۔</string>
     <string name="clink_stopped_waiting">لنک اس فون پر بند کر دیا۔ سرور نے ابھی اسے نہیں ہٹایا؛ اگلی بار بھیجتے وقت دوبارہ کوشش ہوگی۔</string>
     <string name="clink_busy">کھاتہ لنک کا سرور ابھی مصروف ہے۔ کچھ دیر بعد دوبارہ کوشش کریں۔</string>
+    <string name="clink_try_again">دوبارہ کوشش کریں</string>
+    <string name="clink_off">اس ورژن میں کھاتہ لنک دستیاب نہیں۔</string>
+    <string name="clink_wrong_pass">کھاتہ لنک کا سرور اس کتاب کو نہیں پہچانتا، کیونکہ اس کے لنک اس کی کسی اور کاپی سے بنے تھے۔ کچھ نہیں بھیجا گیا۔ سپورٹ کو لکھیں تاکہ درست کیا جا سکے۔</string>
+    <string name="clink_halted">کھاتہ لنک فی الحال روکے گئے ہیں۔ پہلے بھیجے گئے لنک چلتے رہیں گے۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="clink_failed_code">ابھی لنک نہیں بھیجا جا سکا (وجہ: %1$s)۔ کچھ نہیں بھیجا گیا۔ دوبارہ کوشش کریں؛ بار بار ہو تو سپورٹ کو یہی وجہ بتائیں۔</string>
     <string name="clink_full">کھاتہ لنک کا سرور ابھی بھرا ہوا ہے۔ پہلے بھیجے گئے لنک چلتے رہیں گے۔ کچھ دیر بعد دوبارہ کوشش کریں۔</string>
     <string name="clink_limit_today">آج نئے کھاتہ لنکس کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔</string>
     <string name="mera_khata_older">سرور نے اس صفحے کی پرانی کاپی بھیجی۔ اس فون پر دیکھی گئی سب سے نئی کاپی دکھائی جا رہی ہے۔</string>

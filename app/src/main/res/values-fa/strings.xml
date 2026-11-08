@@ -265,10 +265,13 @@
     <string name="delete_entry_title">ثبت حذف شود؟</string>
     <string name="delete_entry_confirm">این ثبت به سطل بازیافت می‌رود. تا 30 روز می‌توانید بازگردانید.</string>
     <string name="select_entries_to_delete">انتخاب ورودی‌ها برای حذف</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شود. می‌توانید تا 30 روز آن را بازگردانید.</item>
-        <item quantity="other">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا 30 روز آن‌ها را بازگردانید.</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">%1$d ورودی انتخاب‌شده به سطل بازیافت منتقل شود؟ می‌توانید تا 30 روز آن را بازگردانید.</item>
+        <item quantity="other">%1$d ورودی انتخاب‌شده به سطل بازیافت منتقل شوند؟ می‌توانید تا 30 روز آن‌ها را بازگردانید.</item>
     </plurals>
+    <string name="move_selected_to_bin">انتقال %1$d مورد به سطل</string>
+    <string name="move_to_bin">انتقال به سطل بازیافت</string>
+    <string name="move_to_bin_title">انتقال به سطل بازیافت؟</string>
     <string name="moved_to_bin">به سطل بازیافت منتقل شد</string>
 
     <!-- Zakat -->
@@ -4068,6 +4071,11 @@
     <string name="clink_stopped_now">پیوند متوقف شد. دیگر باز نمی‌شود.</string>
     <string name="clink_stopped_waiting">پیوند روی این گوشی متوقف شد. سرور هنوز آن را برنداشته است؛ با فرستادن بعدی دوباره امتحان می‌شود.</string>
     <string name="clink_busy">سرور پیوندهای حساب الان شلوغ است. کمی بعد دوباره امتحان کنید.</string>
+    <string name="clink_try_again">دوباره امتحان کنید</string>
+    <string name="clink_off">پیوندهای حساب در این نسخه در دسترس نیست.</string>
+    <string name="clink_wrong_pass">سرور پیوندهای حساب این دفتر را نمی‌شناسد، چون پیوندهای آن از نسخهٔ دیگری ساخته شده بود. چیزی فرستاده نشد. به پشتیبانی بنویسید تا اصلاح شود.</string>
+    <string name="clink_halted">پیوندهای حساب فعلاً متوقف است. پیوندهای قبلی کار می‌کنند. کمی بعد دوباره امتحان کنید.</string>
+    <string name="clink_failed_code">الان نمی‌توان پیوند را فرستاد (دلیل: %1$s). چیزی فرستاده نشد. دوباره امتحان کنید؛ اگر تکرار شد همین دلیل را به پشتیبانی بگویید.</string>
     <string name="clink_full">سرور پیوندهای حساب الان پر است. پیوندهایی که قبلاً فرستاده شده‌اند کار می‌کنند. کمی بعد دوباره امتحان کنید.</string>
     <string name="clink_limit_today">سقف پیوندهای حساب تازه برای امروز پر شده است. فردا دوباره امتحان کنید.</string>
     <string name="mera_khata_older">سرور نسخهٔ قدیمی‌تری از این صفحه فرستاد. تازه‌ترین نسخه‌ای که این گوشی دیده است نشان داده می‌شود.</string>

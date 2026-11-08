@@ -336,6 +336,29 @@ class CustomerLinkTest {
         assertTrue(CustomerLink.share(d, notes, "khata.db", look, uid, root = null) is CustomerLink.Shared.NotYet)
     }
 
+    @Test
+    fun `a failed first send leaves nothing marked as sent, and the second try is a first one`() = book { d, _ ->
+        val ali = d.insertParty(Party(name = "Ali"))
+        val uid = d.getParty(ali)!!.uid!!
+        val server = Server()
+        val notes = Notes()
+        server.whole = 429 to "busy"
+        assertTrue(CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root) is CustomerLink.Shared.NotYet)
+        assertNull(CustomerLink.linkOf(d, uid))
+        assertFalse(CustomerLink.wasSent(d, notes, uid))
+        // Nothing waits to go out behind the owner's back, either.
+        server.whole = null
+        assertEquals(CustomerLink.Result.Idle, d.flushWith(server, notes))
+        assertTrue(server.pages.isEmpty())
+        val ready = CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root)
+        assertTrue(ready is CustomerLink.Shared.Ready)
+        assertTrue(CustomerLink.wasSent(d, notes, uid))
+        // A link already sent stays through a later failure.
+        server.whole = 429 to "busy"
+        assertTrue(CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root) is CustomerLink.Shared.Ready)
+        assertTrue(CustomerLink.wasSent(d, notes, uid))
+    }
+
     /** A page sealed as before 7 Nov 2026: its seal names no link. */
     private fun sealedBefore(key: String, plain: String): String {
         val raw = java.util.Base64.getUrlDecoder().decode(key)
@@ -447,7 +470,10 @@ class CustomerLinkTest {
         assertEquals(CustomerLink.Shared.NotYet(CustomerLink.Result.Refused("busy")),
             CustomerLink.share(d, notes, "khata.db", look, uid, http = server, root = root))
         server.whole = null
-        val link = CustomerLink.linkOf(d, uid)!!
+        assertNull("a first try the server refused leaves no link behind", CustomerLink.linkOf(d, uid))
+        assertFalse(CustomerLink.wasSent(d, notes, uid))
+        val link = CustomerLink.create(d, uid, look)
+        assertFalse("a link made but never taken is not a link sent", CustomerLink.wasSent(d, notes, uid))
         for (why in listOf("later", "full", "disk")) {
             server.refuse = mapOf(link.id to why)
             assertEquals(CustomerLink.Shared.NotYet(CustomerLink.Result.Refused(why)),

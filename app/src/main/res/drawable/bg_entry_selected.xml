@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An entry chosen for deletion (8 Nov 2026): the soft green fill and a heavier green edge. Both colours are
+     night-aware (brand_green_soft / brand_green_text), the edge 2dp against the New tag's 1.5dp. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/brand_green_soft" />
+    <stroke android:width="2dp" android:color="@color/brand_green_text" />
+    <corners android:radius="16dp" />
+</shape>

@@ -97,7 +97,9 @@ class EntryAdapter(
         val modeChanged = selectionMode != active
         val changedIds = (selectedIds - selected) + (selected - selectedIds)
         selectionMode = active
-        selectedIds = selected
+        // A copy, never the caller's own set: kept by reference, it changed under us and the difference above was
+        // always empty, so a tick (or Select all) never repainted its row (8 Nov 2026, the owner's photo).
+        selectedIds = selected.toSet()
 
         if (modeChanged) {
             notifyItemRangeChanged(0, itemCount)
@@ -157,10 +159,19 @@ class EntryAdapter(
 
         val isNew = e.id == newEntryId && !selectionMode
         holder.tvNewTag.visibility = if (isNew) View.VISIBLE else View.GONE
-        holder.itemView.setBackgroundResource(if (isNew) R.drawable.bg_entry_new else R.drawable.bg_party_card)
+        val chosen = selectionMode && e.id in selectedIds
+        // A chosen row wears its own fill and a heavier green edge (night-aware colours), not just a tick.
+        holder.itemView.setBackgroundResource(
+            when {
+                chosen -> R.drawable.bg_entry_selected
+                isNew -> R.drawable.bg_entry_new
+                else -> R.drawable.bg_party_card
+            }
+        )
+        holder.itemView.isSelected = chosen
 
         holder.cbSelect.visibility = if (selectionMode) View.VISIBLE else View.GONE
-        holder.cbSelect.isChecked = e.id in selectedIds
+        holder.cbSelect.isChecked = chosen
 
         holder.itemView.setOnClickListener {
             if (selectionMode) onToggleSelect(e) else onClick(e)

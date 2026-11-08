@@ -263,10 +263,13 @@
     <string name="delete_entry_title">Entry delete karein?</string>
     <string name="delete_entry_confirm">Ye entry Recycle Bin mein chali jayegi. 30 din ke andar wapas la sakte hain.</string>
     <string name="select_entries_to_delete">Delete karne ke liye entries chunein</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">%1$d chuni gayi entry delete karein? Ye Recycle Bin mein chali jayegi. Aap 30 din ke andar wapas la sakte hain.</item>
-        <item quantity="other">%1$d chuni gayi entries delete karein? Ye Recycle Bin mein chali jayengi. Aap 30 din ke andar wapas la sakte hain.</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">%1$d chuni gayi entry Recycle Bin mein bhejein? Aap 30 din ke andar wapas la sakte hain.</item>
+        <item quantity="other">%1$d chuni gayi entries Recycle Bin mein bhejein? Aap 30 din ke andar wapas la sakte hain.</item>
     </plurals>
+    <string name="move_selected_to_bin">%1$d ko bin mein bhejein</string>
+    <string name="move_to_bin">Recycle Bin mein bhejein</string>
+    <string name="move_to_bin_title">Recycle Bin mein bhejein?</string>
     <string name="moved_to_bin">Recycle Bin mein muntaqil ho gaya</string>
 
     <string name="zakat_calculator">Zakat Calculator</string>
@@ -4040,6 +4043,11 @@
     <string name="clink_stopped_now">Link band kar diya. Ab ye nahi khulega.</string>
     <string name="clink_stopped_waiting">Link is phone par band kar diya. Server ne abhi ise nahi hataya; agli baar bhejte waqt dobara koshish hogi.</string>
     <string name="clink_busy">Khata link ka server abhi masroof hai. Kuch der baad dobara koshish karein.</string>
+    <string name="clink_try_again">Dobara koshish karein</string>
+    <string name="clink_off">Is version mein khata link maujood nahi.</string>
+    <string name="clink_wrong_pass">Khata link ka server is kitab ko nahi pehchanta, kyunke iske link kisi aur copy se bane the. Kuch nahi bheja gaya. Support ko likhein taake theek kiya ja sake.</string>
+    <string name="clink_halted">Khata link filhal roke gaye hain. Pehle bheje gaye link chalte rahenge. Baad mein dobara koshish karein.</string>
+    <string name="clink_failed_code">Abhi link nahi bheja ja saka (wajah: %1$s). Kuch nahi bheja gaya. Dobara koshish karein; baar baar ho to support ko yehi wajah batayein.</string>
     <string name="clink_full">Khata link ka server abhi bhara hua hai. Pehle bheje gaye link chalte rahenge. Kuch der baad dobara koshish karein.</string>
     <string name="clink_limit_today">Aaj naye khata links ki had poori ho gayi. Kal dobara koshish karein.</string>
     <string name="mera_khata_older">Server ne is safhe ki purani copy bheji. Is phone par dekhi gayi sab se nayi copy dikhayi ja rahi hai.</string>

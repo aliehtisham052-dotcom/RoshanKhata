@@ -643,6 +643,9 @@ object CustomerLink {
         http: Http = plain, root: String? = base, now: Long = System.currentTimeMillis()
     ): Shared = lock.withLock {
         if (root == null) return@withLock Shared.NotYet(Result.Off)
+        // Had the book a link for him before this call? A link made only now and not taken by the server is
+        // taken back below, so a failed first try leaves nothing that reads as "already sent" (8 Nov 2026).
+        val before = linkOf(dao, partyUid)
         lateinit var link: Link
         var r: Result = Result.Idle
         val refusals = HashMap<String, String>()
@@ -654,6 +657,22 @@ object CustomerLink {
         }
         val sent = place.get(sentKey(link.id)) != null && linkOf(dao, partyUid) == link
         if (sent) Shared.Ready(url(link, root)!!, link)
-        else Shared.NotYet(refusals[link.id]?.let { Result.Refused(it) } ?: r)
+        else {
+            if (before == null && place.get(sentKey(link.id)) == null && linkOf(dao, partyUid) == link) {
+                dao.setSetting(PREFIX + partyUid, null)
+                place.put(seqKey(link.id), null)
+            }
+            Shared.NotYet(refusals[link.id]?.let { Result.Refused(it) } ?: r)
+        }
+    }
+
+    /**
+     * Has this customer's link really gone out? The book names a link as soon as it is made, which proves nothing
+     * about the server: it counts as sent only when the server took its page on this device ([place]), or the
+     * book syncs (the link is then the same on every device and was made where a send went through).
+     */
+    suspend fun wasSent(dao: KhataDao, place: Place, partyUid: String, bookKey: String? = null): Boolean {
+        val link = linkOf(dao, partyUid) ?: return false
+        return bookKey != null || place.get(sentKey(link.id)) != null
     }
 }

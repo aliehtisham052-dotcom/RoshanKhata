@@ -299,14 +299,17 @@
     <string name="delete_entry_title">حذف القيد؟</string>
     <string name="delete_entry_confirm">سينتقل هذا القيد إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</string>
     <string name="select_entries_to_delete">اختيار قيود للحذف</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="zero">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
-        <item quantity="one">حذف قيد واحد محدد؟ سينتقل إلى سلة المحذوفات. يمكنك استعادته خلال 30 يومًا.</item>
-        <item quantity="two">حذف قيدين محددين؟ سينتقلان إلى سلة المحذوفات. يمكنك استعادتهما خلال 30 يومًا.</item>
-        <item quantity="few">حذف %1$d قيود محددة؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
-        <item quantity="many">حذف %1$d قيدًا محددًا؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
-        <item quantity="other">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="zero">نقل %1$d قيد محدد إلى سلة المحذوفات؟ يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="one">نقل قيد واحد محدد إلى سلة المحذوفات؟ يمكنك استعادته خلال 30 يومًا.</item>
+        <item quantity="two">نقل قيدين محددين إلى سلة المحذوفات؟ يمكنك استعادتهما خلال 30 يومًا.</item>
+        <item quantity="few">نقل %1$d قيود محددة إلى سلة المحذوفات؟ يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="many">نقل %1$d قيدًا محددًا إلى سلة المحذوفات؟ يمكنك استعادتها خلال 30 يومًا.</item>
+        <item quantity="other">نقل %1$d قيد محدد إلى سلة المحذوفات؟ يمكنك استعادتها خلال 30 يومًا.</item>
     </plurals>
+    <string name="move_selected_to_bin">نقل %1$d إلى السلة</string>
+    <string name="move_to_bin">نقل إلى سلة المحذوفات</string>
+    <string name="move_to_bin_title">النقل إلى سلة المحذوفات؟</string>
     <string name="moved_to_bin">نُقل إلى سلة المحذوفات</string>
 
     <string name="zakat_calculator">حاسبة الزكاة</string>
@@ -4300,6 +4303,11 @@
     <string name="clink_stopped_now">أُوقف الرابط. لم يعد يُفتح.</string>
     <string name="clink_stopped_waiting">أُوقف الرابط على هذا الهاتف. لم يُزله الخادم بعد؛ ستُعاد المحاولة مع الإرسال التالي.</string>
     <string name="clink_busy">خادم روابط الحساب مشغول الآن. حاول مرة أخرى لاحقًا.</string>
+    <string name="clink_try_again">حاول مرة أخرى</string>
+    <string name="clink_off">روابط الحساب غير متاحة في هذا الإصدار.</string>
+    <string name="clink_wrong_pass">خادم روابط الحساب لا يتعرف على هذا الدفتر لأن روابطه أُنشئت من نسخة أخرى منه. لم يُرسَل شيء. اكتب إلى الدعم لإصلاح ذلك.</string>
+    <string name="clink_halted">روابط الحساب متوقفة مؤقتًا. الروابط المرسلة سابقًا تواصل العمل. حاول مرة أخرى لاحقًا.</string>
+    <string name="clink_failed_code">تعذر إرسال الرابط الآن (السبب: %1$s). لم يُرسَل شيء. حاول مرة أخرى، وإن تكرر ذلك فأخبر الدعم بهذا السبب.</string>
     <string name="clink_full">خادم روابط الحساب ممتلئ الآن. الروابط المرسلة سابقًا تبقى تعمل. حاول مرة أخرى لاحقًا.</string>
     <string name="clink_limit_today">بلغت روابط الحساب الجديدة حدّ اليوم. حاول مرة أخرى غدًا.</string>
     <string name="mera_khata_older">أرسل الخادم نسخة أقدم من هذه الصفحة. تُعرض أحدث نسخة رآها هذا الهاتف.</string>

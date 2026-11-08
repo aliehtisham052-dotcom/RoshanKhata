@@ -269,10 +269,13 @@
     <string name="delete_entry_title">এন্ট্রি মুছবেন?</string>
     <string name="delete_entry_confirm">এই এন্ট্রি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</string>
     <string name="select_entries_to_delete">মোছার জন্য এন্ট্রি বেছে নিন</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এটি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
-        <item quantity="other">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এগুলো রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">বাছাই করা %1$dটি এন্ট্রি রিসাইকেল বিনে পাঠাবেন? 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
+        <item quantity="other">বাছাই করা %1$dটি এন্ট্রি রিসাইকেল বিনে পাঠাবেন? 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
     </plurals>
+    <string name="move_selected_to_bin">%1$dটি বিনে পাঠান</string>
+    <string name="move_to_bin">রিসাইকেল বিনে পাঠান</string>
+    <string name="move_to_bin_title">রিসাইকেল বিনে পাঠাবেন?</string>
     <string name="moved_to_bin">রিসাইকেল বিনে সরানো হয়েছে</string>
 
     <!-- Zakat -->
@@ -4088,6 +4091,11 @@
     <string name="clink_stopped_now">লিংক বন্ধ করা হয়েছে। এটি আর খুলবে না।</string>
     <string name="clink_stopped_waiting">এই ফোনে লিংক বন্ধ করা হয়েছে। সার্ভার এখনও এটি সরায়নি; পরের বার পাঠানোর সময় আবার চেষ্টা হবে।</string>
     <string name="clink_busy">খাতার লিংকের সার্ভার এখন ব্যস্ত। একটু পরে আবার চেষ্টা করুন।</string>
+    <string name="clink_try_again">আবার চেষ্টা করুন</string>
+    <string name="clink_off">এই সংস্করণে খাতার লিংক নেই।</string>
+    <string name="clink_wrong_pass">খাতার লিংকের সার্ভার এই খাতাটি চিনতে পারছে না, কারণ এর লিংক অন্য একটি কপি থেকে বানানো হয়েছিল। কিছু পাঠানো হয়নি। ঠিক করতে সাপোর্টকে লিখুন।</string>
+    <string name="clink_halted">খাতার লিংক এখন বন্ধ রাখা হয়েছে। আগে পাঠানো লিংক চলতে থাকবে। পরে আবার চেষ্টা করুন।</string>
+    <string name="clink_failed_code">এখন লিংক পাঠানো গেল না (কারণ: %1$s)। কিছু পাঠানো হয়নি। আবার চেষ্টা করুন; বারবার হলে সাপোর্টকে এই কারণটি জানান।</string>
     <string name="clink_full">খাতার লিংকের সার্ভার এখন পূর্ণ। আগে পাঠানো লিংকগুলো কাজ করতে থাকবে। একটু পরে আবার চেষ্টা করুন।</string>
     <string name="clink_limit_today">আজকের নতুন খাতার লিংকের সীমা পূর্ণ হয়েছে। কাল আবার চেষ্টা করুন।</string>
     <string name="mera_khata_older">সার্ভার এই পাতার একটি পুরোনো কপি পাঠিয়েছে। এই ফোনে দেখা সবচেয়ে নতুন কপিটি দেখানো হচ্ছে।</string>

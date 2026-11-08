@@ -25,14 +25,57 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:minHeight="48dp"
-            android:id="@+id/detailToolbar"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginStart="-14dp"
-            app:theme="@style/ToolbarHeaderLight"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+            android:layout_marginEnd="-14dp">
+
+            <androidx.appcompat.widget.Toolbar
+                android:minHeight="48dp"
+                android:id="@+id/detailToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:theme="@style/ToolbarHeaderLight"
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+
+            <!--
+              Choosing entries to delete (8 Nov 2026): the top becomes a selection bar over the toolbar, so the
+              screen says what mode it is in. Close leaves it; the count is the real count of chosen entries.
+            -->
+            <LinearLayout
+                android:id="@+id/selectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/header_light_top"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/btnCloseSelection"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/close"
+                    android:src="@drawable/ic_close"
+                    app:tint="@color/header_light_ink" />
+
+                <TextView
+                    android:id="@+id/tvSelectionCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/header_light_ink"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </FrameLayout>
 
         <!--
           Avatar beside a column of name, number and identity, the column
@@ -695,33 +738,32 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/select_all" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCancelSelection"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@color/brand_green_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cancel"
-                android:textAllCaps="false"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:maxWidth="130dp" />
+                android:minHeight="48dp"
+                android:text="@string/select_all"
+                android:textAlignment="viewStart" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeleteSelected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1.2"
                 android:enabled="false"
-                android:text="@string/delete"
-                android:textColor="@color/delete_selected_button_fg"
-                app:backgroundTint="@color/delete_selected_button_bg"
-                app:cornerRadius="10dp"
-                android:textAllCaps="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
                 android:maxLines="1"
-                android:ellipsize="end" />
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                android:textColor="@color/delete_selected_button_fg"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="14sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="0.5sp"
+                app:autoSizeTextType="uniform"
+                app:backgroundTint="@color/delete_selected_button_bg"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
     </FrameLayout>

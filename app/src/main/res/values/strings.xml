@@ -269,10 +269,13 @@
     <string name="delete_entry_title">Delete entry?</string>
     <string name="delete_entry_confirm">This entry will move to the Recycle Bin. You can restore it within 30 days.</string>
     <string name="select_entries_to_delete">Select entries to delete</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">Delete %1$d selected entry? It will move to the Recycle Bin. You can restore it within 30 days.</item>
-        <item quantity="other">Delete %1$d selected entries? They will move to the Recycle Bin. You can restore them within 30 days.</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">Move %1$d selected entry to the Recycle Bin? You can restore it within 30 days.</item>
+        <item quantity="other">Move %1$d selected entries to the Recycle Bin? You can restore them within 30 days.</item>
     </plurals>
+    <string name="move_selected_to_bin">Move %1$d to bin</string>
+    <string name="move_to_bin">Move to bin</string>
+    <string name="move_to_bin_title">Move to Recycle Bin?</string>
     <string name="moved_to_bin">Moved to Recycle Bin</string>
 
     <!-- Zakat -->
@@ -4253,6 +4256,11 @@
     <string name="clink_stopped_now">Link stopped. It no longer opens.</string>
     <string name="clink_stopped_waiting">Link stopped on this phone. The server has not taken it down yet; it is tried again with the next send.</string>
     <string name="clink_busy">The khata link server is busy right now. Try again later.</string>
+    <string name="clink_try_again">Try again</string>
+    <string name="clink_off">Khata links are not available in this build.</string>
+    <string name="clink_wrong_pass">The khata link server does not recognise this book, because its links were set up by another copy of it. Nothing was sent. Write to support so it can be put right.</string>
+    <string name="clink_halted">Khata links are paused for now. Links already sent keep working. Try again later.</string>
+    <string name="clink_failed_code">The link could not be sent right now (reason: %1$s). Nothing was sent. Try again; if it keeps happening, tell support this reason.</string>
     <string name="clink_full">The khata link server is full right now. Links already sent keep working. Try again later.</string>
     <string name="clink_limit_today">The limit for new khata links today is reached. Try again tomorrow.</string>
     <string name="mera_khata_older">The server sent an older copy of this page. The newest copy this phone has seen is shown.</string>

@@ -265,10 +265,13 @@
     <string name="delete_entry_title">داخلا هٽايو؟</string>
     <string name="delete_entry_confirm">هيءَ داخلا ردي جي ٽوڪري ۾ هلي ويندي. 30 ڏينهن اندر واپس آڻي سگهو ٿا.</string>
     <string name="select_entries_to_delete">ختم ڪرڻ لاءِ داخلائون چونڊيو</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">%1$d چونڊيل داخلا ختم ڪجي؟ اها ري سائيڪل بن ۾ هلي ويندي. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
-        <item quantity="other">%1$d چونڊيل داخلائون ختم ڪجن؟ اهي ري سائيڪل بن ۾ هليون وينديون. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">%1$d چونڊيل داخلا ري سائيڪل بن ۾ موڪليون؟ اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
+        <item quantity="other">%1$d چونڊيل داخلائون ري سائيڪل بن ۾ موڪليون؟ اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
     </plurals>
+    <string name="move_selected_to_bin">%1$d کي بن ۾ موڪليو</string>
+    <string name="move_to_bin">ري سائيڪل بن ۾ موڪليو</string>
+    <string name="move_to_bin_title">ري سائيڪل بن ۾ موڪليون؟</string>
     <string name="moved_to_bin">ردي جي ٽوڪري ۾ ويو</string>
 
     <!-- Zakat -->
@@ -4068,6 +4071,11 @@
     <string name="clink_stopped_now">لنڪ بند ڪئي وئي. هاڻي اها نه کلندي.</string>
     <string name="clink_stopped_waiting">لنڪ هن فون تي بند ڪئي وئي. سرور اڃا ان کي نه هٽايو آهي؛ ايندڙ ڀيري موڪلڻ وقت ٻيهر ڪوشش ٿيندي.</string>
     <string name="clink_busy">کاتي جي لنڪ جو سرور هن وقت مصروف آهي. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
+    <string name="clink_try_again">ٻيهر ڪوشش ڪريو</string>
+    <string name="clink_off">هن ورزن ۾ کاتي جا لنڪ موجود ناهن.</string>
+    <string name="clink_wrong_pass">کاتي جي لنڪ جو سرور هن ڪتاب کي نٿو سڃاڻي، ڇاڪاڻ ته ان جا لنڪ ڪنهن ٻي ڪاپي مان ٺهيا هئا. ڪجهه به نه موڪليو ويو. سپورٽ کي لکو ته درست ڪري سگهجي.</string>
+    <string name="clink_halted">کاتي جا لنڪ هينئر روڪيل آهن. اڳ موڪليل لنڪ هلندا رهندا. بعد ۾ ٻيهر ڪوشش ڪريو.</string>
+    <string name="clink_failed_code">هينئر لنڪ موڪلي نه سگهيو (سبب: %1$s). ڪجهه به نه موڪليو ويو. ٻيهر ڪوشش ڪريو؛ بار بار ٿئي ته سپورٽ کي اهو ئي سبب ٻڌايو.</string>
     <string name="clink_full">کاتي جي لنڪ جو سرور هن وقت ڀريل آهي. اڳ ۾ موڪليل لنڪون هلنديون رهنديون. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
     <string name="clink_limit_today">اڄ نين کاتي جي لنڪن جي حد پوري ٿي وئي. سڀاڻي ٻيهر ڪوشش ڪريو.</string>
     <string name="mera_khata_older">سرور هن صفحي جي پراڻي ڪاپي موڪلي. هن فون تي ڏٺل سڀ کان نئين ڪاپي ڏيکاري پئي وڃي.</string>

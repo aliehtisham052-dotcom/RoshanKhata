@@ -260,9 +260,12 @@
     <string name="delete_entry_title">Hapus catatan?</string>
     <string name="delete_entry_confirm">Catatan ini akan dipindahkan ke Tempat Sampah. Anda dapat memulihkannya dalam 30 hari.</string>
     <string name="select_entries_to_delete">Pilih catatan yang akan dihapus</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="other">Hapus %1$d catatan terpilih? Catatan akan dipindahkan ke Tempat Sampah. Anda dapat memulihkannya dalam 30 hari.</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="other">Pindahkan %1$d catatan terpilih ke Tempat Sampah? Anda dapat memulihkannya dalam 30 hari.</item>
     </plurals>
+    <string name="move_selected_to_bin">Pindahkan %1$d ke Tempat Sampah</string>
+    <string name="move_to_bin">Pindahkan ke Tempat Sampah</string>
+    <string name="move_to_bin_title">Pindahkan ke Tempat Sampah?</string>
     <string name="moved_to_bin">Dipindahkan ke Tempat Sampah</string>
 
     <!-- Zakat -->
@@ -4023,6 +4026,11 @@
     <string name="clink_stopped_now">Tautan dihentikan. Tautan tidak bisa dibuka lagi.</string>
     <string name="clink_stopped_waiting">Tautan dihentikan di ponsel ini. Server belum menghapusnya; akan dicoba lagi pada pengiriman berikutnya.</string>
     <string name="clink_busy">Server tautan buku sedang sibuk. Coba lagi nanti.</string>
+    <string name="clink_try_again">Coba lagi</string>
+    <string name="clink_off">Tautan buku tidak tersedia di versi ini.</string>
+    <string name="clink_wrong_pass">Server tautan buku tidak mengenali buku ini, karena tautannya dibuat dari salinan lain. Tidak ada yang terkirim. Tulis ke dukungan agar diperbaiki.</string>
+    <string name="clink_halted">Tautan buku dijeda untuk sementara. Tautan yang sudah dikirim tetap berfungsi. Coba lagi nanti.</string>
+    <string name="clink_failed_code">Tautan belum bisa dikirim sekarang (alasan: %1$s). Tidak ada yang terkirim. Coba lagi; jika terus terjadi, sampaikan alasan ini ke dukungan.</string>
     <string name="clink_full">Server tautan buku sedang penuh. Tautan yang sudah dikirim tetap berfungsi. Coba lagi nanti.</string>
     <string name="clink_limit_today">Batas tautan buku baru untuk hari ini sudah tercapai. Coba lagi besok.</string>
     <string name="mera_khata_older">Server mengirim salinan lama halaman ini. Salinan terbaru yang pernah dilihat ponsel ini yang ditampilkan.</string>

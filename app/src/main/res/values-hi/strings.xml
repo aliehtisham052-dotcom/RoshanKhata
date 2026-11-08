@@ -269,10 +269,13 @@
     <string name="delete_entry_title">एंट्री मिटाएँ?</string>
     <string name="delete_entry_confirm">यह एंट्री रीसायकल बिन में जाएगी। 30 दिन के भीतर वापस ला सकते हैं।</string>
     <string name="select_entries_to_delete">मिटाने के लिए एंट्रियाँ चुनें</string>
-    <plurals name="delete_selected_entries_confirm">
-        <item quantity="one">चुनी हुई %1$d एंट्री मिटाएँ? यह रीसायकल बिन में जाएगी। 30 दिन के भीतर वापस ला सकते हैं।</item>
-        <item quantity="other">चुनी हुई %1$d एंट्रियाँ मिटाएँ? ये रीसायकल बिन में जाएँगी। 30 दिन के भीतर वापस ला सकते हैं।</item>
+    <plurals name="move_selected_confirm">
+        <item quantity="one">चुनी हुई %1$d एंट्री रीसायकल बिन में भेजें? 30 दिन के भीतर वापस ला सकते हैं।</item>
+        <item quantity="other">चुनी हुई %1$d एंट्रियाँ रीसायकल बिन में भेजें? 30 दिन के भीतर वापस ला सकते हैं।</item>
     </plurals>
+    <string name="move_selected_to_bin">%1$d को बिन में भेजें</string>
+    <string name="move_to_bin">रीसायकल बिन में भेजें</string>
+    <string name="move_to_bin_title">रीसायकल बिन में भेजें?</string>
     <string name="moved_to_bin">रीसायकल बिन में भेज दिया</string>
 
     <!-- Zakat -->
@@ -4088,6 +4091,11 @@
     <string name="clink_stopped_now">लिंक बंद कर दिया। अब यह नहीं खुलेगा।</string>
     <string name="clink_stopped_waiting">लिंक इस फ़ोन पर बंद कर दिया। सर्वर ने अभी इसे नहीं हटाया; अगली बार भेजते समय फिर कोशिश होगी।</string>
     <string name="clink_busy">खाता लिंक का सर्वर अभी व्यस्त है। थोड़ी देर बाद फिर कोशिश करें।</string>
+    <string name="clink_try_again">फिर कोशिश करें</string>
+    <string name="clink_off">इस वर्शन में खाता लिंक उपलब्ध नहीं है।</string>
+    <string name="clink_wrong_pass">खाता लिंक का सर्वर इस बही को नहीं पहचानता, क्योंकि इसके लिंक किसी और कॉपी से बने थे। कुछ नहीं भेजा गया। सपोर्ट को लिखें ताकि ठीक किया जा सके।</string>
+    <string name="clink_halted">खाता लिंक अभी रोके गए हैं। पहले भेजे गए लिंक चलते रहेंगे। बाद में फिर कोशिश करें।</string>
+    <string name="clink_failed_code">अभी लिंक नहीं भेजा जा सका (वजह: %1$s)। कुछ नहीं भेजा गया। फिर कोशिश करें; बार-बार हो तो सपोर्ट को यही वजह बताएँ।</string>
     <string name="clink_full">खाता लिंक का सर्वर अभी भरा हुआ है। पहले भेजे गए लिंक चलते रहेंगे। थोड़ी देर बाद फिर कोशिश करें।</string>
     <string name="clink_limit_today">आज नए खाता लिंक की सीमा पूरी हो गई। कल फिर कोशिश करें।</string>
     <string name="mera_khata_older">सर्वर ने इस पेज की पुरानी कॉपी भेजी। इस फ़ोन पर देखी गई सबसे नई कॉपी दिखाई जा रही है।</string>

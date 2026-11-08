@@ -370,6 +370,10 @@ class PartyDetailActivity : BaseActivity() {
     private lateinit var selectionBar: View
     private lateinit var cbSelectAll: CheckBox
     private lateinit var btnDeleteSelected: MaterialButton
+    /** The top of the page while entries are being chosen (8 Nov 2026): a close button and "n selected". */
+    private lateinit var selectionHeader: View
+    private lateinit var tvSelectionCount: TextView
+    private lateinit var reminderBar: View
 
     private lateinit var etSearchEntries: EditText
     private lateinit var ivAvatar: ImageView
@@ -556,7 +560,10 @@ class PartyDetailActivity : BaseActivity() {
         selectionBar = findViewById(R.id.selectionBar)
         cbSelectAll = findViewById(R.id.cbSelectAll)
         btnDeleteSelected = findViewById(R.id.btnDeleteSelected)
-        findViewById<MaterialButton>(R.id.btnCancelSelection).setOnClickListener { exitSelectionMode() }
+        selectionHeader = findViewById(R.id.selectionHeader)
+        tvSelectionCount = findViewById(R.id.tvSelectionCount)
+        reminderBar = findViewById(R.id.reminderBar)
+        findViewById<View>(R.id.btnCloseSelection).setOnClickListener { exitSelectionMode() }
         btnDeleteSelected.setOnClickListener { confirmDeleteSelectedEntries() }
         cbSelectAll.setOnCheckedChangeListener { _, checked ->
             // Guarded rather than relying on the checkbox's own pressed
@@ -565,6 +572,7 @@ class PartyDetailActivity : BaseActivity() {
             // not be read back as a fresh tap that clears and re-adds
             // every id right after.
             if (updatingSelectionUi) return@setOnCheckedChangeListener
+            // Select all is "all that are shown"; unticking it clears the choice.
             selectedEntryIds.clear()
             if (checked) selectedEntryIds.addAll(currentRows.map { it.entry.id })
             refreshSelectionUi()
@@ -2560,6 +2568,9 @@ class PartyDetailActivity : BaseActivity() {
         selectedEntryIds.clear()
         buttonBar.visibility = View.GONE
         selectionBar.visibility = View.VISIBLE
+        // The top is the selection bar now: no call, WhatsApp, SMS or statement beside it (8 Nov 2026).
+        selectionHeader.visibility = View.VISIBLE
+        reminderBar.visibility = View.GONE
         adapter.setSelectionState(true, selectedEntryIds)
         refreshSelectionUi()
     }
@@ -2570,27 +2581,32 @@ class PartyDetailActivity : BaseActivity() {
         selectedEntryIds.clear()
         buttonBar.visibility = View.VISIBLE
         selectionBar.visibility = View.GONE
+        selectionHeader.visibility = View.GONE
+        reminderBar.visibility = View.VISIBLE
         adapter.setSelectionState(false, emptySet())
     }
 
     private fun toggleEntrySelection(entryId: Long) {
         if (!selectedEntryIds.remove(entryId)) selectedEntryIds.add(entryId)
-        adapter.setSelectionState(true, selectedEntryIds)
         refreshSelectionUi()
     }
 
     /** Keeps Select All and the Delete button's count in step with what is actually picked. */
     private fun refreshSelectionUi() {
+        // The rows repaint from this very set: the adapter was told of a tick only in toggleEntrySelection, so
+        // Select all ticked the set and left every row's box as it was (the owner's photo, 8 Nov 2026).
+        adapter.setSelectionState(true, selectedEntryIds)
+
         updatingSelectionUi = true
         cbSelectAll.isChecked = currentRows.isNotEmpty() && selectedEntryIds.size == currentRows.size
         updatingSelectionUi = false
 
-        btnDeleteSelected.isEnabled = selectedEntryIds.isNotEmpty()
-        btnDeleteSelected.text = if (selectedEntryIds.isEmpty()) {
-            getString(R.string.delete)
-        } else {
-            getString(R.string.delete) + " (${selectedEntryIds.size})"
-        }
+        val n = selectedEntryIds.size
+        tvSelectionCount.text = if (n == 0) getString(R.string.select_entries_to_delete)
+            else Digits.quantity(resources, R.plurals.n_selected, n, n)
+        btnDeleteSelected.isEnabled = n > 0
+        btnDeleteSelected.text = if (n == 0) getString(R.string.move_to_bin)
+            else Digits.string(resources, R.string.move_selected_to_bin, n)
     }
 
     /**
@@ -2606,12 +2622,12 @@ class PartyDetailActivity : BaseActivity() {
         if (ids.isEmpty()) return
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_entry_title)
-            .setMessage(Digits.quantity(resources, 
-                R.plurals.delete_selected_entries_confirm, ids.size, ids.size
+            .setTitle(R.string.move_to_bin_title)
+            .setMessage(Digits.quantity(resources,
+                R.plurals.move_selected_confirm, ids.size, ids.size
             ))
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.delete) { _, _ ->
+            .setPositiveButton(R.string.move_to_bin) { _, _ ->
                 lifecycleScope.launch {
                     // Entries a bill, plan, cheque, counter sale or return wrote are left, and said (22 Oct 2026, the review).
                     var left = 0
@@ -2905,6 +2921,9 @@ class PartyDetailActivity : BaseActivity() {
 
         currentRows = sorted
         adapter.submit(sorted)
+        // What is chosen is only what is shown (a narrowed list, or an entry gone meanwhile, drops out), so the
+        // count in "Move n to bin" is the number of rows the owner can see ticked.
+        if (selectionMode && selectedEntryIds.retainAll(sorted.map { it.entry.id }.toSet())) refreshSelectionUi()
 
         tvNoEntries.visibility = if (sorted.isEmpty()) View.VISIBLE else View.GONE
         tvNoEntries.setText(
@@ -3921,7 +3940,9 @@ class PartyDetailActivity : BaseActivity() {
         if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.EXPORT) { openKhataLink() }) return
         lifecycleScope.launch {
             val uid = dao.getParty(partyId)?.uid ?: return@launch
-            val has = com.innovation313.roshankhata.data.CustomerLink.linkOf(dao, uid) != null
+            // "Already sent" only when the server really took his page: a link the book names but no send ever
+            // reached the server for (a first try that failed) is a first send (8 Nov 2026, the owner's test).
+            val has = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.CustomerLinkSync.wasSent(applicationContext, uid) }
             if (isFinishing || isDestroyed) return@launch
             // The background send found another copy of the book writing its pages (7 Nov 2026): said here, with
             // the way to take over, before anything else is sent or stopped — the server takes neither from this copy.
@@ -3965,16 +3986,25 @@ class PartyDetailActivity : BaseActivity() {
         }
     }
 
-    /** Why a link could not be sent now, in the owner's words: no internet, the server busy or full, today's limit, or later. */
-    private fun linkTrouble(r: com.innovation313.roshankhata.data.CustomerLink.Result): Int = when (r) {
-        com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable -> R.string.clink_offline
+    /**
+     * Why a link could not be sent now, in the owner's words: no internet, the server busy, full or switched off,
+     * today's limit, this book's links belonging to another copy, or a refusal named by its code (8 Nov 2026: a
+     * refusal used to read "could not be made right now" whatever it was).
+     */
+    private fun linkTrouble(r: com.innovation313.roshankhata.data.CustomerLink.Result): String = when (r) {
+        com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable -> getString(R.string.clink_offline)
+        com.innovation313.roshankhata.data.CustomerLink.Result.Off -> getString(R.string.clink_off)
         is com.innovation313.roshankhata.data.CustomerLink.Result.Refused -> when (r.why) {
-            "busy" -> R.string.clink_busy
-            "later", "day-limit" -> R.string.clink_limit_today
-            "full", "disk", "closed" -> R.string.clink_full
-            else -> R.string.clink_not_now
+            "busy" -> getString(R.string.clink_busy)
+            "later", "day-limit" -> getString(R.string.clink_limit_today)
+            "full", "disk", "closed" -> getString(R.string.clink_full)
+            "wrong-pass" -> getString(R.string.clink_wrong_pass)
+            "halted" -> getString(R.string.clink_halted)
+            else -> getString(R.string.clink_failed_code, r.why)
         }
-        else -> R.string.clink_not_now
+        is com.innovation313.roshankhata.data.CustomerLink.Result.Done ->
+            getString(R.string.clink_failed_code, if (r.lost > 0) "taken" else "waiting")
+        else -> getString(R.string.clink_failed_code, "not sent")
     }
 
     /**
@@ -4007,12 +4037,17 @@ class PartyDetailActivity : BaseActivity() {
                 is com.innovation313.roshankhata.data.CustomerLink.Shared.Ready -> {
                     val shop = BusinessProfile.businessName(this@PartyDetailActivity) ?: getString(R.string.app_name)
                     val message = getString(R.string.clink_message, partyName, shop, r.url)
-                    if (!partyPhone.isNullOrBlank()) Reminder.sendViaWhatsApp(this@PartyDetailActivity, partyPhone, message)
-                    else runCatching {
-                        startActivity(Intent.createChooser(
-                            Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, message),
-                            getString(R.string.share)))
-                    }.onFailure { Toast.makeText(this@PartyDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show() }
+                    // His page is at the server now. WhatsApp, else any app that shares text: the owner always gets the link.
+                    val chooser = {
+                        runCatching {
+                            startActivity(Intent.createChooser(
+                                Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, message),
+                                getString(R.string.share)))
+                        }.onFailure { Toast.makeText(this@PartyDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show() }
+                        Unit
+                    }
+                    if (!partyPhone.isNullOrBlank()) Reminder.sendViaWhatsApp(this@PartyDetailActivity, partyPhone, message, failed = chooser)
+                    else chooser()
                 }
                 is com.innovation313.roshankhata.data.CustomerLink.Shared.NotYet -> when (r.why) {
                     com.innovation313.roshankhata.data.CustomerLink.Result.NotHere ->
@@ -4022,7 +4057,13 @@ class PartyDetailActivity : BaseActivity() {
                             .setPositiveButton(R.string.clink_take_over) { _, _ -> sendKhataLink(uid, claim = true) }
                             .setNegativeButton(android.R.string.cancel, null)
                             .show()
-                    else -> Toast.makeText(this@PartyDetailActivity, linkTrouble(r.why), Toast.LENGTH_LONG).show()
+                    // Said plainly, with Try again: nothing was marked as sent and nothing was written for the customer.
+                    else -> com.google.android.material.dialog.MaterialAlertDialogBuilder(this@PartyDetailActivity)
+                        .setTitle(R.string.clink_title)
+                        .setMessage(linkTrouble(r.why))
+                        .setPositiveButton(R.string.clink_try_again) { _, _ -> sendKhataLink(uid, claim) }
+                        .setNegativeButton(R.string.close, null)
+                        .show()
                 }
             }
         }
@@ -4078,6 +4119,8 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Choosing entries never stays on behind another screen or dialog (8 Nov 2026, the owner's photo).
+        if (selectionMode && item.itemId != R.id.action_select_entries && item.itemId != android.R.id.home) exitSelectionMode()
         return when (item.itemId) {
             R.id.action_customer_qr -> {
                 // The first time: what the card is for, then the card (1 Nov 2026).
