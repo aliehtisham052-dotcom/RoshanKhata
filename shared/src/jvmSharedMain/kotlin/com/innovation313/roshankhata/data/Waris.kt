@@ -740,7 +740,7 @@ object Waris {
         }
 
         /** The unfinished turn-offs: one record per vault. An older build kept a single object; it reads as a list of one. */
-        private fun offRecords(): JSONArray {
+        private suspend fun offRecords(): JSONArray {
             val raw = store.get(K_OFF) ?: return JSONArray()
             runCatching { return JSONArray(raw) }
             return runCatching { JSONArray().put(JSONObject(raw)) }.getOrDefault(JSONArray())

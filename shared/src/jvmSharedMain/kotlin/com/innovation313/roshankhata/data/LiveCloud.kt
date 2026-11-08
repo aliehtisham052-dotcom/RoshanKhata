@@ -500,7 +500,7 @@ object LiveCloud {
                     val taken = if (msg != null && same) {
                         try { absorb(sql, msg, now, wroteRows) } catch (e: org.json.JSONException) { LiveTrouble.note("a relay parcel that is not a parcel", e); null }
                     } else false
-                    if (taken == true) {
+                    if (taken == true && msg != null) {
                         took++
                         // Which relay that device's parcels come by: this device sends there too (roundAll).
                         setMeta(sql, k("via_" + msg.optString("dev"), id.book), tag)
