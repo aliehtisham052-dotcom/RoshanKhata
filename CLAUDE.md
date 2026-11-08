@@ -1962,10 +1962,15 @@ on a device, a real wallet notice, a real TSA or the deployed relays.
   in any commit (17 patterns of Gitleaks' kind and Yelp's detect-secrets 1.5.0 — 323 hits, every one a test vector,
   an alphabet or CI's local Postgres). Gitleaks itself could not be fetched here (GitHub releases and the Go proxy are
   closed to the session). Personal data: the 6 Nov Duplicate work had written five customers' numbers and a customer's
-  name from the owner's photo into DuplicateDetector's comments — made up now (2e9978e6); the commit that added them
-  (438a7c7b, on kmp-desktop-16 only) and, from Jul–Oct, older ones (the owner's shop number, one other number, another
-  shop's email, two numbers in commit messages) keep them in history. **Rewriting history is the owner's decision**
-  (not done). This clone commits as Claude <noreply>, never the owner's address.
+  name from the owner's photo into DuplicateDetector's comments. **History rewritten 8 Nov 2026 (the owner's yes):** a
+  second scan of all 1,276 commits found those five numbers only on kmp-desktop-16, but real customers' names from his
+  book (with his village and nicknames) in the search and voice tests since 25 Jul, on all 41 branches, main and the
+  release tags. `git filter-repo --replace-text` (blobs and messages; each real word swapped for an invented one of the
+  same length, the list kept outside the repository) left none anywhere; every branch was force-pushed
+  one at a time (all at once was refused 403) and the tags moved by a one-time workflow the owner ran (this session may
+  not push tags). Every commit id changed: an id quoted in this file from before 8 Nov names the old history. A backup
+  bundle of the old history was kept outside the repository. Old commits stay reachable by id on GitHub until GitHub
+  Support purges them (the owner's request). This clone commits as Claude <noreply>, never the owner's address.
 - **Four reviewers** on what was built after the 3 Nov audit (customer link, Waris, payment voice, seal): 2 critical,
   21 medium, 20 low; every point read in the code first; fixed by five fixers in worktrees, merged by cherry-pick.
 - **Relays** (5501b0da, all three alike, test_relay.py `--wlimits`): Waris vaults have their own bytes — hosting 256 MiB
@@ -2017,7 +2022,7 @@ on a device, a real wallet notice, a real TSA or the deployed relays.
   whole deadline, the three side by side, a lock per book; tokens written `WHERE id AND digest`; User-Agent
   "RoshanKhata"; both privacy policies say what the time services and GitHub see. The switch (`BOOK_SEAL`) is in
   ACCESS_KEYS — never synced — and audited (`seal_on`/`seal_off`, worded in Who did what).
-- **Left, with the reason:** rewriting history (the owner's); full TSA chain validation (needs the TSAs' CA
+- **Left, with the reason:** full TSA chain validation (needs the TSAs' CA
   certificates, fetched and checked by hand); a push from the relay to the owner on an heir's ask; a passphrase on the
   Waris card (decided against: an elderly heir would lose the book); `LiveControl.fetch`'s per-read timeouts and default
   User-Agent; deploys — the hosting relay's and web/khata's uploads are the owner's, the Worker and Supabase by their
@@ -2458,9 +2463,10 @@ Each of these cost a build or a bug.
     passes a field 867 px above it: measure that the panel sits on the keyboard and the box is in the middle.
 
 80. **Nothing read off the owner's photos goes into the repository.** Five customers' numbers and a customer's name from
-    his photo of the Duplicate screen were written into a comment of a public file (6 Nov 2026); the history keeps them.
-    Say what a photo shows in words ("two numbers one digit apart") with made-up figures (0300 1234567, 0300 0000001),
-    in code, comments, tests and commit messages alike.
+    his photo of the Duplicate screen were written into a comment of a public file (6 Nov 2026), and the search tests
+    had carried names from his real book since July; the whole history had to be rewritten (8 Nov). Say what a photo
+    shows in words ("two numbers one digit apart") with made-up figures (0300 1234567, 0300 0000001) and made-up names,
+    in code, comments, tests and commit messages alike — "shaped like the real book" means invented in that shape.
 
 81. **A limit anyone can spend is a limit everyone loses.** A server-wide count an anonymous caller can use up (new
     shops an hour, files, one byte budget shared with live sync) is a switch that turns the feature off for every shop
