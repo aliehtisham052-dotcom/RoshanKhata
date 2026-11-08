@@ -39,6 +39,7 @@ import java.io.File
 object Snapshots {
 
     private const val KEEP = 7
+    private const val KEEP_SHRUNK = 30
     private const val PREFS = "snapshots"
     private const val KEY_DAY = "last_day"
 
@@ -136,6 +137,22 @@ object Snapshots {
         } catch (e: Exception) {
             RestoreResult.Failed
         }
+    }
+
+    /**
+     * A damaged book was moved aside and [live] is not there (8 Nov 2026 review, C3, [BookRecovery]): the
+     * newest copy that folds whole and passes its check is put in its place. Null when no copy is usable.
+     */
+    fun rebuildMissingBook(context: Context, live: File): Snapshot? {
+        for (snap in list(context)) {
+            val tmp = File(live.parentFile, live.name + ".restoring")
+            if (!foldedCopy(snap.file, tmp)) continue
+            File(live.parentFile, live.name + "-wal").delete()
+            File(live.parentFile, live.name + "-shm").delete()
+            if (tmp.renameTo(live)) return snap
+            tmp.delete()
+        }
+        return null
     }
 
     /** The file swap itself, with the book closed ([restore]'s steps 2 to 4). */
@@ -414,9 +431,17 @@ object Snapshots {
             // does not end in ".tmp". Nothing else in this folder has ".tmp" in its name.
             dir.listFiles { f -> f.name.endsWith(".tmp") || f.name.endsWith(".tmp-wal") || f.name.endsWith(".tmp-shm") }
                 ?.forEach { it.delete() }
+            // Never rotate out the last good copies of a book that shrank to almost nothing (8 Nov 2026 review,
+            // C3): when today's entry count is under half of the most this shop ever had in a copy, the old
+            // copies stay (up to KEEP_SHRUNK of them) until the book is back above half.
+            val entries = db.query("SELECT COUNT(*) FROM transactions WHERE isDeleted = 0").use { if (it.moveToFirst()) it.getInt(0) else 0 }
+            val bestKey = "best_entries" + (if (business.id == 1L) "" else "_b${business.id}")
+            val best = prefs.getInt(bestKey, 0)
+            val shrunk = best >= 10 && entries * 2 < best
+            if (!shrunk) prefs.edit().putInt(bestKey, maxOf(best, entries)).apply()
             dir.listFiles { f -> own.matches(f.name) }
                 ?.sortedByDescending { it.name }
-                ?.drop(KEEP)
+                ?.drop(if (shrunk) KEEP_SHRUNK else KEEP)
                 ?.forEach { it.delete() }
 
             prefs.edit().putString(dayKey, today).apply()

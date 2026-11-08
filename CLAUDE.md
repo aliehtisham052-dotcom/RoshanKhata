@@ -2028,6 +2028,37 @@ on a device, a real wallet notice, a real TSA or the deployed relays.
   User-Agent; deploys — the hosting relay's and web/khata's uploads are the owner's, the Worker and Supabase by their
   workflows.
 
+### 8 Nov 2026 review fixes (kmp-desktop-16, the critical round C1-C3; CI only, nothing deployed)
+
+- **C1, a stranger filling the relays' shared byte budget.** All three relays alike (lesson 43): a book no second
+  device has joined may hold only 256 KiB (`YOUNG_BOOK_BYTES`), is swept 3 days after it was made
+  (`YOUNG_DAYS`), and — like every NEW book — is refused (the existing words "full" / "book-full", so no client
+  changes) once the store holds half its cap; books of two or more devices keep the 16 MiB and the other half of the
+  store. So junk books can no longer take the room active shops need (lesson 81: each tier its own budget, what is
+  new capped, what is never used swept). Cloudflare's ledger answers `young` beside `full` (header `x-rk-acct`:
+  full / young / room); the hosting's forced sweep runs at most once a minute (it opens every book now). Residual,
+  said plainly: a caller who says hello with two device ids counts as "joined", so a patient attacker is still held
+  only by the per-day new-book caps (CF 100, hosting 300, Supabase 300) and the 30-day idle sweep — the cost to
+  him is higher and the first half of the store is no longer his to spend. Honest effect: while junk holds half
+  the store a NEW shop cannot start relay sync (WiFi pairing still works). Waris vaults (R01-F2) are not changed
+  here. Test: scripts/test_relay.py `young()` in the plain run; the sweeps are not exercised by a test.
+- **C2, a supplier's "I got" counted as cash.** Both entry forms pre-ticked Cash for every new "I got", so goods taken
+  on credit from a supplier were drawer cash ("40,000 short"). A supplier's "I got" now has no method (the section is
+  hidden, the phone also nulls it at save, Windows likewise), and `khataCashBetween` counts money IN only for
+  customers (`partyId IN customers`), so old rows marked Cash by that default read right with no change to any row.
+  Not done: a supplier's genuine cash refund can no longer be marked Cash (it was never separable from the default);
+  R04-F2 (a khata "I gave" can never be cash) is another finding. Test: DrawerByTheBooksTest.
+- **C3, a corrupt book deleted by Android.** Room is built with `BookRecovery.SafeFactory`, whose callback keeps the
+  file as `khata.db.corrupt-<time>` (newest 3) instead of the framework's delete, lets go of the open instance, and
+  leaves a note; the next `KhataDatabase.get` rebuilds the book from the newest daily copy that folds whole
+  (`Snapshots.rebuildMissingBook`), or opens an empty one, and Home says so once (`book_recovered_*`, the Daily copies
+  door). Until the owner has read it the automatic Drive backup is held (`BookRecovery.holdsBackup`), and an automatic
+  backup is also refused when the entry count fell below half of the last upload's (`DriveBackup.shrunkTooFar`; the
+  owner's Back up now is never refused and resets it). The daily copies keep 30 instead of 7 while the book holds under
+  half its best count, so the last good copy is not rotated out. Screens already open keep their old handle until the
+  app restarts (the framework gives no safe moment to close it). Not tried on a device: BookCorruptionOnDeviceTest.
+  One new string, `book_recovered_none_phone`, in all nine languages.
+
 ### The shared module (KMP)
 
 ```

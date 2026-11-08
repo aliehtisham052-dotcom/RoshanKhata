@@ -128,6 +128,26 @@ class DrawerByTheBooksTest {
     }
 
     @Test
+    fun `a supplier's I got is goods on credit, not cash in the drawer`() = runBlocking {
+        val dir = Files.createTempDirectory("rk-drawer-supplier").toFile()
+        val db = DesktopDatabase.open(dir.resolve("khata.db"))
+        try {
+            val dao = db.khataDao()
+            val now = System.currentTimeMillis()
+            val customer = dao.insertParty(Party(name = "Aslam", isCustomer = true))
+            val supplier = dao.insertParty(Party(name = "Test Supplier", isCustomer = false))
+            // Rows as the old forms wrote them: Cash pre-ticked on a supplier's "I got" (40,000 of stock on credit).
+            dao.insertEntry(LedgerEntry(partyId = supplier, amount = 40_000.0, isGiven = false, entryNumber = "RK-1", timestamp = now - 2000, paymentMethod = PaymentMethod.CASH))
+            dao.insertEntry(LedgerEntry(partyId = customer, amount = 300.0, isGiven = false, entryNumber = "RK-2", timestamp = now - 1000, paymentMethod = PaymentMethod.CASH))
+            val from = now - 60_000
+            assertEquals("only the customer's cash", 300.0, dao.khataCashBetween(false, from, now), 0.0)
+        } finally {
+            db.close()
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `a movement after now is not in the figure`() = runBlocking {
         val dir = Files.createTempDirectory("rk-drawer-now").toFile()
         val db = DesktopDatabase.open(dir.resolve("khata.db"))

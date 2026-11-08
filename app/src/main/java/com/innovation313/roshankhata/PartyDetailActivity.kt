@@ -1753,7 +1753,20 @@ class PartyDetailActivity : BaseActivity() {
             // Money received is marked Cash unless the owner taps another way (21 Oct 2026, the owner:
             // "the professional way"): an unmarked "I got" was left out of the drawer's count, and
             // most money over a counter is cash. An entry being edited keeps what it had.
-            if (editing == null) cgPaymentMethod.check(R.id.chipCash)
+            // 8 Nov 2026 review (C2): only for a CUSTOMER. Goods taken on credit from a supplier were paid by no
+            // method, and a pre-ticked Cash made the drawer count them as money received; the section is hidden
+            // for a supplier and nothing is ticked, once the party is known.
+            if (editing == null) {
+                val prevKnown = onCustomerKnown
+                val settle: () -> Unit = {
+                    if (partyIsCustomer) cgPaymentMethod.check(R.id.chipCash)
+                    else {
+                        cgPaymentMethod.clearCheck()
+                        view.findViewById<View>(R.id.paymentMethodSection).visibility = View.GONE
+                    }
+                }
+                if (customerKnown) settle() else onCustomerKnown = { prevKnown(); settle() }
+            }
         }
 
         // "Scan payment slip" (1 Oct): a JazzCash/Easypaisa screenshot or a
@@ -2096,10 +2109,10 @@ class PartyDetailActivity : BaseActivity() {
                 // every "I Gave" entry, where the section never appeared.
                 // A goods return was not "paid" by any method (the section is
                 // hidden for it), so nothing is recorded there either.
-                paymentMethod = if (isGiven || (isReturn() && items.isNotEmpty())) null
+                paymentMethod = if (isGiven || !partyIsCustomer || (isReturn() && items.isNotEmpty())) null
                     else chosenPaymentMethod(),
                 // The reference rides with its method and only with one that has one (PaymentRef).
-                paymentRef = if (isGiven || (isReturn() && items.isNotEmpty())) null
+                paymentRef = if (isGiven || !partyIsCustomer || (isReturn() && items.isNotEmpty())) null
                     else PaymentRef.clean(chosenPaymentMethod(), etPaymentRef.text.toString()),
                 rateType = rateType
             )

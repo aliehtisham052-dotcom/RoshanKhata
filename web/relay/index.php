@@ -54,6 +54,12 @@ define('SEEN_EVERY_MS', 3600000);                      // a quiet call writes "s
 define('BOOK_BYTES', limit('BOOK_BYTES', 16 * 1048576));        // bytes one book's parcels may hold
 define('DAY_BYTES', limit('DAY_BYTES', 32 * 1048576));          // bytes one book may leave in a UTC day
 define('MAX_STORE_BYTES', limit('MAX_STORE_BYTES', 1073741824)); // all books' files together
+// A book no second device has joined (8 Nov 2026 review, C1: anyone may make books, and a stranger's books of
+// BOOK_BYTES each filled the store for every shop). Until a second device says hello a book may hold only
+// YOUNG_BOOK_BYTES, is swept YOUNG_DAYS after it was made, and is refused parcels - as a NEW book is refused -
+// once the store holds half of MAX_STORE_BYTES (the answers stay 'full' and 'book-full': every client knows them).
+define('YOUNG_BOOK_BYTES', limit('YOUNG_BOOK_BYTES', 262144));
+define('YOUNG_DAYS', limit('YOUNG_DAYS', 3));
 define('DEVICE_IDLE_MS', limit('DEVICE_IDLE_MS', 30 * 86400000)); // a device not seen this long goes
 define('SWEEP_EVERY', limit('SWEEP_EVERY', 6 * 3600));          // seconds between idle-book sweeps (the tests: 0)
 // Waris ki Chaabi (heir access, 4 Nov 2026): one SQLite per vault in $store/waris/, never touched by the books'
@@ -240,6 +246,8 @@ function put_parcel($db, $store, $device, $now, $body) {
     $free = @disk_free_space($store);
     if ($free !== false && $free < MIN_FREE) return [507, 'full'];
     if (store_bytes($store) + $len > MAX_STORE_BYTES) return [507, 'full'];
+    $young = (int)one($db, 'SELECT COUNT(*) FROM devices') < 2;
+    if ($young && store_bytes($store) + $len > intdiv(MAX_STORE_BYTES, 2)) return [507, 'full'];
     $key = 'count:' . gmdate('Y-m-d', intdiv($now, 1000));
     // "<parcels>/<bytes>" for the day (a value from before 23 Oct holds the parcels alone).
     $parts = explode('/', (string)(meta($db, $key) ?? '0'));
@@ -248,7 +256,7 @@ function put_parcel($db, $store, $device, $now, $body) {
     if ($count >= DAY_LIMIT) return [429, 'day-limit'];
     if ($dayBytes + $len > DAY_BYTES) return [429, 'day-bytes'];
     $stored = (int)one($db, 'SELECT COALESCE(SUM(length(body)), 0) FROM parcels');
-    if ($stored + $len > BOOK_BYTES) return [507, 'book-full'];
+    if ($stored + $len > ($young ? YOUNG_BOOK_BYTES : BOOK_BYTES)) return [507, 'book-full'];
     $db->prepare("DELETE FROM meta WHERE k LIKE 'count:%' AND k != ?")->execute([$key]);
     set_meta($db, $key, ($count + 1) . '/' . ($dayBytes + $len));
     $s = $db->prepare('INSERT INTO parcels (sender, at, body) VALUES (?, ?, ?)');
@@ -293,12 +301,27 @@ function take_page($db, $device, $now, $after) {
 function sweep_idle($store, $now, $force = false) {
     $mark = $store . '/.swept';
     $m = @filemtime($mark);
-    if (!$force && $m !== false && time() - $m < SWEEP_EVERY) return;
+    // A forced sweep (a new book met a full store) runs at most once a minute: it opens every book (C1).
+    if ($m !== false && time() - $m < ($force ? max(60, SWEEP_EVERY) : SWEEP_EVERY)) return;
     @touch($mark);
     foreach (glob($store . '/*.sqlite') ?: [] as $f) {
         $m = @filemtime($f);
         if ($m !== false && ($now / 1000) - $m > IDLE_DAYS * 86400) {
             @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm');
+            continue;
+        }
+        // A book no second device ever joined, YOUNG_DAYS after it was made, goes with what it holds (C1).
+        try {
+            $book = basename($f, '.sqlite');
+            $bdb = preg_match('/^[0-9a-f]{32}$/', $book) ? open_book($store, $book, false) : null;
+            if ($bdb !== null) {
+                $born = (int)(meta($bdb, 'created') ?? 0);
+                $few = (int)one($bdb, 'SELECT COUNT(*) FROM devices') < 2;
+                $bdb = null;
+                if ($few && $born > 0 && $now - $born > YOUNG_DAYS * 86400000) { @unlink($f); @unlink($f . '-wal'); @unlink($f . '-shm'); }
+            }
+        } catch (Throwable $e) {
+            error_log('rk-relay young sweep: ' . $e->getMessage());
         }
     }
     // Waris vaults are never a book's: a vault with no owner or heir call for WARIS_IDLE_DAYS goes (every call
@@ -713,11 +736,12 @@ try {
         // The book's first device sets the pass, and only by a hello (never by a stray parcel).
         if ($action !== 'hello') refuse(403, 'say-hello-first');
         $all = glob($store . '/*.sqlite') ?: [];
-        if (count($all) >= MAX_BOOKS || store_bytes($store) >= MAX_STORE_BYTES) {
+        // New books wait once the store holds half its bytes (C1): the other half stays for the shops already syncing.
+        if (count($all) >= MAX_BOOKS || store_bytes($store) >= intdiv(MAX_STORE_BYTES, 2)) {
             // Idle books are let go first; only a store still full refuses.
             sweep_idle($store, $now, true);
             $all = glob($store . '/*.sqlite') ?: [];
-            if (count($all) >= MAX_BOOKS || store_bytes($store) >= MAX_STORE_BYTES) refuse(507, 'full');
+            if (count($all) >= MAX_BOOKS || store_bytes($store) >= intdiv(MAX_STORE_BYTES, 2)) refuse(507, 'full');
         }
         $free = @disk_free_space($store);
         if ($free !== false && $free < MIN_FREE) refuse(507, 'full');

@@ -67,6 +67,8 @@ object DriveBackup {
     private const val KEY_BACKUP_IMAGES = "drive_backup_images"
     private const val KEY_AUTO_BACKUP = "drive_auto_backup"
     private const val KEY_LAST_SIG = "drive_last_backup_signature"
+    private const val KEY_LAST_COUNT = "drive_last_backup_entry_count"
+    private const val MIN_COUNT_GUARD = 10
 
     // ---------- Two phones, one backup file ----------
     //
@@ -226,6 +228,7 @@ object DriveBackup {
             .remove(KEY_BACKUP_IMAGES + suffix)
             .remove(KEY_AUTO_BACKUP + suffix)
             .remove(KEY_LAST_SIG + suffix)
+            .remove(KEY_LAST_COUNT + suffix)
             .remove(KEY_SEEN_AT + suffix)
             .remove(KEY_CONFLICT_TOLD + suffix)
             .apply()
@@ -301,6 +304,22 @@ object DriveBackup {
     private fun rememberSignature(context: Context, signature: String, businessId: Long) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .edit().putString(key(businessId, KEY_LAST_SIG), signature).apply()
+    }
+
+    /**
+     * 8 Nov 2026 review (C3): an automatic backup must never put a near-empty book over a good one right after
+     * the book was lost and rebuilt. Two guards: none while [BookRecovery.holdsBackup] (until the owner has read
+     * the notice), and none when the entry count fell below half of what the last upload held. The owner's own
+     * "Back up now" is never refused and resets the count ([rememberCount]).
+     */
+    private fun shrunkTooFar(context: Context, businessId: Long, count: Int): Boolean {
+        if (BookRecovery.holdsBackup(context)) return true
+        val before = prefs(context).getInt(key(businessId, KEY_LAST_COUNT), 0)
+        return before >= MIN_COUNT_GUARD && count * 2 < before
+    }
+
+    fun rememberCount(context: Context, businessId: Long, count: Int) {
+        prefs(context).edit().putInt(key(businessId, KEY_LAST_COUNT), count).apply()
     }
 
     private fun driveFor(context: Context, accountName: String): Drive {
@@ -488,6 +507,7 @@ object DriveBackup {
 
         val count = dao.totalEntryCount()
         if (count == 0) return@withContext AutoResult.Skipped
+        if (shrunkTooFar(context, businessId, count)) return@withContext AutoResult.Skipped
 
         // Due by time? Reuse the same last-backup timestamp the screen shows.
         val last = BackupReminder.lastBackupAtOf(context, businessId)
@@ -522,6 +542,7 @@ object DriveBackup {
         // next daily check can see nothing has changed.
         BackupReminder.recordBackupOf(context, businessId)
         rememberSignature(context, signature, businessId)
+        rememberCount(context, businessId, count)
         AutoResult.BackedUp
     }
 
@@ -557,9 +578,11 @@ object DriveBackup {
         if (last != 0L && now - last < minIntervalMs) return AutoResult.NotYet(last + minIntervalMs)
 
         val db = KhataDatabase.openOther(context, business) ?: return AutoResult.Skipped
+        var count = 0
         val file = try {
             val dao = db.khataDao()
-            if (dao.totalEntryCount() == 0) return AutoResult.Skipped
+            count = dao.totalEntryCount()
+            if (count == 0 || shrunkTooFar(context, businessId, count)) return AutoResult.Skipped
             Backup.exportToCacheFor(context, dao, businessId)
         } finally {
             db.close()
@@ -576,6 +599,7 @@ object DriveBackup {
             }
             BackupReminder.recordBackupOf(context, businessId)
             rememberSignature(context, signature, businessId)
+            rememberCount(context, businessId, count)
             return AutoResult.BackedUp
         } finally {
             file.delete()

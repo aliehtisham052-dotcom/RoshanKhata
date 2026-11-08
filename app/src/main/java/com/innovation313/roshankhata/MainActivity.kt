@@ -454,6 +454,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        tellIfBookWasRebuilt()
         // The bell's count, from the ledger on this phone (HomeAlerts).
         lifecycleScope.launch {
             val alerts = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
@@ -755,6 +756,34 @@ class MainActivity : BaseActivity() {
                 offerRecovery()
             }
         }
+    }
+
+    private var recoveryNoticeShown = false
+
+    /**
+     * A book SQLite called corrupt was kept aside and the phone opened one rebuilt from the newest whole daily
+     * copy, or an empty one (8 Nov 2026 review, C3, [com.innovation313.roshankhata.data.BookRecovery]): said once,
+     * with the Daily copies door. Automatic Drive backups wait until this has been read.
+     */
+    private fun tellIfBookWasRebuilt() {
+        if (recoveryNoticeShown) return
+        val notice = com.innovation313.roshankhata.data.BookRecovery.notice(this) ?: return
+        recoveryNoticeShown = true
+        val body = StringBuilder(
+            notice.copyAt?.let { getString(R.string.book_recovered_from, Format.dateOnly(it)) }
+                ?: getString(R.string.book_recovered_none_phone)
+        )
+        notice.kept?.let { body.append("\n\n").append(getString(R.string.book_corrupt_kept, it)) }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.book_recovered_title)
+            .setMessage(body.toString())
+            .setCancelable(false)
+            .setPositiveButton(R.string.daily_copies) { _, _ ->
+                com.innovation313.roshankhata.data.BookRecovery.acknowledge(this)
+                startActivity(Intent(this, SnapshotsActivity::class.java))
+            }
+            .setNegativeButton(R.string.close) { _, _ -> com.innovation313.roshankhata.data.BookRecovery.acknowledge(this) }
+            .show()
     }
 
     /**

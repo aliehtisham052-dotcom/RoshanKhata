@@ -43,6 +43,10 @@ export interface Env {
   FCM_PROJECT_ID?: string;
   /** Limits a test (or the owner) may lower through wrangler vars; each has its default below. */
   BOOK_BYTES?: string;
+  /** Bytes a book that no second device has joined may hold (default YOUNG_BOOK_BYTES below). */
+  YOUNG_BOOK_BYTES?: string;
+  /** Days a book that no second device has joined is kept (default YOUNG_DAYS below). */
+  YOUNG_DAYS?: string;
   DAY_BYTES?: string;
   DEVICE_IDLE_MS?: string;
   PRUNE_EVERY_MS?: string;
@@ -72,6 +76,16 @@ function limit(v: string | undefined, fallback: number): number {
  */
 const BOOK_BYTES = 16 * 1024 * 1024;
 const DAY_BYTES = 32 * 1024 * 1024;
+/**
+ * A book of one device (no second device ever said hello) is not yet a shop's (8 Nov 2026 review, C1: anyone may
+ * make books, and 100 fresh books a day of BOOK_BYTES each filled the account's ACCOUNT_BYTES in three days, after
+ * which every shop's parcels met 507). Until a second device joins, a book may hold only YOUNG_BOOK_BYTES, is swept
+ * after YOUNG_DAYS, and is refused parcels, as a new book is refused, once the account holds half its ACCOUNT_BYTES
+ * (the answers stay the existing "full" and "book-full", which every client already knows). Books of two or more
+ * devices keep BOOK_BYTES and the other half of the account.
+ */
+const YOUNG_BOOK_BYTES = 256 * 1024;
+const YOUNG_DAYS = 3;
 /** A device not seen this long is let go (its parcels too), so a lost phone stops pinning the book's parcels. */
 const DEVICE_IDLE_MS = 30 * 86_400_000;
 const PRUNE_EVERY_MS = 6 * 3600_000;
@@ -189,9 +203,9 @@ export default {
       if (ok.status !== 200) return ok;
       // The ledger's word on the account goes to the book with the hello, set here and only here (a device's own
       // header of that name is overwritten or dropped): a book learns at each hello whether there is room.
-      const said = (await ok.json().catch(() => null)) as { full?: unknown } | null;
+      const said = (await ok.json().catch(() => null)) as { full?: unknown; young?: unknown } | null;
       const headers = new Headers(request.headers);
-      if (typeof said?.full === "boolean") headers.set("x-rk-acct", said.full ? "full" : "room");
+      if (typeof said?.full === "boolean") headers.set("x-rk-acct", said.full ? "full" : said.young === true ? "young" : "room");
       else headers.delete("x-rk-acct");
       forward = new Request(request, { headers });
     }
@@ -412,6 +426,18 @@ export class Daakiya extends DurableObject<Env> {
     else this.sql.exec(`DELETE FROM meta WHERE k = 'acct_full'`);
   }
 
+  /** The ledger's word that the account passed half its bytes (young books and new books wait), kept as the full one is. */
+  private setAccountYoung(young: boolean): void {
+    if (young === (this.meta("acct_young") === "1")) return;
+    if (young) this.setMeta("acct_young", "1");
+    else this.sql.exec(`DELETE FROM meta WHERE k = 'acct_young'`);
+  }
+
+  /** True while no second device has joined this book (a young book, YOUNG_BOOK_BYTES): fewer than two devices. */
+  private isYoung(): boolean {
+    return this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM devices`).one().n < 2;
+  }
+
   /**
    * The book's size to the ledger, when it moved REPORT_STEP since it was last told (or at the alarm, [settle],
    * whenever it differs), and again every FULL_RECHECK_MS while the account is full — so a book learns that room
@@ -431,11 +457,12 @@ export class Daakiya extends DurableObject<Env> {
     const ledger = this.env.BOOKS.get(this.env.BOOKS.idFromName("!ledger"));
     const res = await ledger.fetch(new Request(`https://ledger/size/${book}?bytes=${size}`, { method: "POST" })).catch(() => null);
     if (!res || res.status !== 200) return;
-    const o = (await res.json().catch(() => null)) as { full?: unknown } | null;
+    const o = (await res.json().catch(() => null)) as { full?: unknown; young?: unknown } | null;
     // The book may have been emptied while the ledger answered: nothing is made again here.
     if (!this.haveTables(false)) return;
     if (size !== reported) this.setMeta("reported", String(size));
     if (typeof o?.full === "boolean") this.setAccountFull(o.full);
+    if (typeof o?.young === "boolean") this.setAccountYoung(o.young);
   }
 
   private meta(k: string): string | null {
@@ -544,7 +571,7 @@ export class Daakiya extends DurableObject<Env> {
         this.sql.exec(`UPDATE books SET bytes = ? WHERE book = ?`, bytes, book);
         this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, Math.max(0, total));
       }
-      return json({ ok: true, full: total >= cap });
+      return json({ ok: true, full: total >= cap, young: total >= Math.floor(cap / 2) });
     }
     const book = path;
     const row = this.sql.exec<{ bytes: number }>(`SELECT bytes FROM books WHERE book = ?`, book).toArray();
@@ -559,18 +586,20 @@ export class Daakiya extends DurableObject<Env> {
       return json({ ok: true });
     }
     // A book already here may always say hello (its devices empty what it holds); it is told whether there is room.
-    if (known) return json({ ok: true, full: this.ledgerBytes() >= cap });
+    if (known) { const held = this.ledgerBytes(); return json({ ok: true, full: held >= cap, young: held >= Math.floor(cap / 2) }); }
     const now = Date.now();
     const total = this.ledgerTotal();
     if (total >= limit(this.env.MAX_BOOKS, MAX_BOOKS)) return refuse(507, "full");
     const bytes = this.ledgerBytes();
     if (bytes + BOOK_FLOOR > cap) return refuse(507, "full");
+    // New books wait once half the account is held (C1): the other half stays for the shops already syncing.
+    if (bytes + BOOK_FLOOR > Math.floor(cap / 2)) return refuse(507, "full");
     const today = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM books WHERE at > ?`, now - 86_400_000).one().n;
     if (today >= limit(this.env.NEW_BOOKS_DAY, NEW_BOOKS_DAY)) return refuse(429, "new-books");
     this.sql.exec(`INSERT INTO books (book, at, bytes) VALUES (?, ?, 0)`, book, now);
     this.sql.exec(`UPDATE counts SET n = n + 1 WHERE k = 'books'`);
     this.sql.exec(`UPDATE counts SET n = ? WHERE k = 'bytes'`, bytes + BOOK_FLOOR);
-    return json({ ok: true, full: bytes + BOOK_FLOOR >= cap });
+    return json({ ok: true, full: bytes + BOOK_FLOOR >= cap, young: bytes + BOOK_FLOOR >= Math.floor(cap / 2) });
   }
 
   /**
@@ -657,8 +686,9 @@ export class Daakiya extends DurableObject<Env> {
 
   private hello(device: string, now: number, acct: string | null): Response {
     // The ledger's word on the account, which the Worker put on this hello (fetch above).
-    if (acct === "full") this.setAccountFull(true);
-    else if (acct === "room") this.setAccountFull(false);
+    if (acct === "full") { this.setAccountFull(true); this.setAccountYoung(true); }
+    else if (acct === "young") { this.setAccountFull(false); this.setAccountYoung(true); }
+    else if (acct === "room") { this.setAccountFull(false); this.setAccountYoung(false); }
     const devices = this.sql.exec<{ n: number }>(`SELECT COUNT(*) AS n FROM devices`).one().n;
     const isKnown = this.sql.exec(`SELECT 1 FROM devices WHERE device = ?`, device).toArray().length > 0;
     if (!isKnown && devices >= 8) return refuse(409, "too-many-devices");
@@ -688,6 +718,9 @@ export class Daakiya extends DurableObject<Env> {
     if (body.length > MAX_PARCEL) return { status: 413, why: "too-big" };
     // The account's storage is full (the ledger said so at this book's last report or hello): no new bytes.
     if (this.meta("acct_full") === "1") return { status: 507, why: "full" };
+    // A book no second device has joined (C1): refused as a new book is once the account holds half its bytes.
+    const young = this.isYoung();
+    if (young && this.meta("acct_young") === "1") return { status: 507, why: "full" };
     const day = utcDay(now);
     const countKey = "count:" + day;
     // "<parcels>/<bytes>" for the day (a value from before 23 Oct holds the parcels alone).
@@ -697,7 +730,7 @@ export class Daakiya extends DurableObject<Env> {
     if (count >= limit(this.env.DAY_LIMIT, 3000)) return { status: 429, why: "day-limit" };
     if (dayBytes + body.length > limit(this.env.DAY_BYTES, DAY_BYTES)) return { status: 429, why: "day-bytes" };
     const stored = Number(this.meta("bytes") ?? "0");
-    if (stored + body.length > limit(this.env.BOOK_BYTES, BOOK_BYTES)) return { status: 507, why: "book-full" };
+    if (stored + body.length > (young ? limit(this.env.YOUNG_BOOK_BYTES, YOUNG_BOOK_BYTES) : limit(this.env.BOOK_BYTES, BOOK_BYTES))) return { status: 507, why: "book-full" };
     this.sql.exec(`DELETE FROM meta WHERE k LIKE 'count:%' AND k != ?`, countKey);
     this.setMeta(countKey, `${count + 1}/${dayBytes + body.length}`);
     this.setMeta("bytes", String(stored + body.length));
@@ -938,6 +971,12 @@ export class Daakiya extends DurableObject<Env> {
     if (idle.length > 0) this.pruneTaken();
     const left = this.sql.exec<{ n: number; s: number | null }>(`SELECT COUNT(*) AS n, MAX(seen) AS s FROM devices`).one();
     if (left.n === 0 || now - (left.s ?? 0) > 30 * 86_400_000) {
+      await this.forget();
+      return;
+    }
+    // A book no second device ever joined, YOUNG_DAYS after it was made, is swept with what it holds (C1).
+    const born = Number(this.meta("created") ?? "0");
+    if (left.n < 2 && born > 0 && now - born > limit(this.env.YOUNG_DAYS, YOUNG_DAYS) * 86_400_000) {
       await this.forget();
       return;
     }

@@ -33,6 +33,8 @@ run them against a deployed relay, whose limits are the real ones):
              what all three promise: parcels go, then "full" (507) within 40 of
              30,000 bytes; a new book is refused "full"; a book already there still
              says hello and is read; once its devices left, a new book is taken.
+    (the plain run also checks that a book of one device holds only about 256 KiB until a second device
+     joins; the store-wide modes below add nothing for it: half the store is kept for books of two or more)
     --wlimits  the heirs' vaults with their limits lowered (7 Nov 2026): 6 new vaults a
              day, the vaults' own bytes 3,000,000, the books' store 2,000,000 and a DAY
              of 500 ms (PHP: RK_RELAY_NEW_VAULTS_DAY=6 RK_RELAY_WARIS_BYTES=3000000
@@ -264,6 +266,32 @@ def store():
     check("its devices leave", s == 200, (s, o))
     s, o = call("POST", other + "hello", other_token, a)
     check("once the full book went, a new book is taken again", s == 200, (s, o))
+
+
+def young():
+    """A book no second device has joined holds little (8 Nov 2026 review, C1); a second device lifts the limit."""
+    token = secrets.token_hex(32)
+    a, b = (secrets.token_hex(8) for _ in range(2))
+    p = "/v1/b/" + secrets.token_hex(16) + "/"
+    s, o = call("POST", p + "hello", token, a)
+    check("young: a first device makes a book", s == 200, (s, o))
+    went, refused = 0, None
+    for _ in range(12):
+        s, o = call("POST", p + "send", token, a, os.urandom(60000))
+        if s != 200:
+            refused = (s, o)
+            break
+        went += 1
+    check("young: a book of one device holds about 256 KiB, then book-full (507)",
+          3 <= went <= 5 and refused is not None and refused[0] == 507 and refused[1].get("why") == "book-full", (went, refused))
+    s, o = call("POST", p + "hello", token, b)
+    check("young: a second device joins", s == 200, (s, o))
+    s, o = call("POST", p + "send", token, a, os.urandom(60000))
+    check("young: and the book then has its full budget", s == 200 and isinstance(o.get("seq"), int), (s, o))
+    s, o = call("GET", p + "take?after=0", token, b)
+    check("young: the second device reads what the young book held", s == 200 and len(o.get("parcels", [])) == went + 1, (s, len(o.get("parcels", []))))
+    call("POST", p + "leave", token, a)
+    call("POST", p + "leave", token, b)
 
 
 def wcall(method, path, token=None, body=None, raw=False):
@@ -767,6 +795,9 @@ def main():
     check("its parcels go with it", s == 200 and o["parcels"] == [], (s, o))
     s, o = call("GET", p + "take?after=0", token, a)
     check("and it must say hello again", s == 403 and o.get("why") == "say-hello-first", (s, o))
+
+    # A book of one device holds little until a second joins (8 Nov 2026 review, C1).
+    young()
 
     # Waris ki Chaabi (4 Nov 2026): every relay holds the heirs' vaults the same way.
     waris()

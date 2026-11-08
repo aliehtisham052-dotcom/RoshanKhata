@@ -41,6 +41,14 @@ const BOOK_BYTES = Number(Deno.env.get("RK_BOOK_BYTES") ?? String(16 * 1024 * 10
 const DAY_BYTES = Number(Deno.env.get("RK_DAY_BYTES") ?? String(32 * 1024 * 1024));
 const DEVICE_IDLE_MS = Number(Deno.env.get("RK_DEVICE_IDLE_MS") ?? String(30 * 86_400_000));
 /**
+ * A book no second device has joined (8 Nov 2026 review, C1: anyone may make books, and a stranger's books of
+ * BOOK_BYTES each filled the store for every shop). Until a second device says hello it may hold only
+ * YOUNG_BOOK_BYTES, is swept YOUNG_DAYS after it was made, and is refused parcels - as a NEW book is refused -
+ * once the store holds half of STORE_BYTES (the answers stay "full" and "book-full": every client knows them).
+ */
+const YOUNG_BOOK_BYTES = Number(Deno.env.get("RK_YOUNG_BOOK_BYTES") ?? String(256 * 1024));
+const YOUNG_DAYS = Number(Deno.env.get("RK_YOUNG_DAYS") ?? "3");
+/**
  * Parcel bytes all books together may hold (23 Oct 2026, phase 2 of the review report): the free database is
  * 500 MB for everything in the project, and BOOK_BYTES alone let anyone opening books fill 300 x 16 MiB a day.
  * Each book's own figure is kept in its row (books.bytes, put right after every parcel in or out), so the store's
@@ -206,6 +214,9 @@ async function handle(request: Request): Promise<Response> {
     if (keep && request.headers.get("x-rk-keep") === keep) {
       const now = Date.now();
       await sql`DELETE FROM rk_relay.books WHERE seen < ${now - IDLE_DAYS * 86_400_000}`;
+      // A book no second device ever joined, YOUNG_DAYS after it was made, goes with what it holds (C1).
+      await sql`DELETE FROM rk_relay.books b WHERE b.created < ${now - YOUNG_DAYS * 86_400_000}
+                AND (SELECT COUNT(*) FROM rk_relay.devices d WHERE d.book = b.book) < 2`;
       // A device nobody saw for DEVICE_IDLE_MS goes with its parcels, in books still in use too.
       await sql`DELETE FROM rk_relay.parcels p USING rk_relay.devices d
                 WHERE p.book = d.book AND p.sender = d.device AND d.seen < ${now - DEVICE_IDLE_MS}`;
@@ -276,7 +287,8 @@ async function handle(request: Request): Promise<Response> {
       const counts = (await tx`SELECT COUNT(*) AS n, COUNT(*) FILTER (WHERE created > ${now - 86_400_000}) AS d,
                                       COALESCE(SUM(bytes), 0) AS bytes FROM rk_relay.books`)[0];
       if (Number(counts.n) >= MAX_BOOKS) throw new Answer(refuse(507, "full"));
-      if (Number(counts.bytes) + NEW_BOOK_ROOM > STORE_BYTES) throw new Answer(refuse(507, "full"));
+      // New books wait once the store holds half its bytes (C1): the other half stays for the shops already syncing.
+      if (Number(counts.bytes) + NEW_BOOK_ROOM > Math.floor(STORE_BYTES / 2)) throw new Answer(refuse(507, "full"));
       if (Number(counts.d) >= NEW_BOOKS_DAY) throw new Answer(refuse(429, "new-books"));
       await tx`INSERT INTO rk_relay.books (book, pass, created, seen) VALUES (${book}, ${pass}, ${now}, ${now})
                ON CONFLICT (book) DO NOTHING`;
@@ -382,12 +394,15 @@ async function put(tx: any, book: string, device: string, now: number, body: Uin
   // The books' alone: Waris vaults have their own bytes (WARIS_BYTES), so a vault never refuses a parcel (7 Nov 2026, R1).
   const others = Number((await tx`SELECT COALESCE(SUM(bytes), 0) AS n FROM rk_relay.books WHERE book != ${book}`)[0].n);
   if (others + stored + body.length > STORE_BYTES) return [507, "full"];
+  // A book no second device has joined (C1): refused as a new book is once the store holds half its bytes.
+  const young = Number((await tx`SELECT COUNT(*) AS n FROM rk_relay.devices WHERE book = ${book}`)[0].n) < 2;
+  if (young && others + stored + body.length > Math.floor(STORE_BYTES / 2)) return [507, "full"];
   const day = new Date(now).toISOString().slice(0, 10);
   const count = b.day === day ? Number(b.day_count) : 0;
   const dayBytes = b.day === day ? Number(b.day_bytes ?? 0) : 0;
   if (count >= DAY_LIMIT) return [429, "day-limit"];
   if (dayBytes + body.length > DAY_BYTES) return [429, "day-bytes"];
-  if (stored + body.length > BOOK_BYTES) return [507, "book-full"];
+  if (stored + body.length > (young ? YOUNG_BOOK_BYTES : BOOK_BYTES)) return [507, "book-full"];
   await tx`UPDATE rk_relay.books SET day = ${day}, day_count = ${count + 1}, day_bytes = ${dayBytes + body.length},
            bytes = ${stored + body.length} WHERE book = ${book}`;
   b.day = day; b.day_count = count + 1; b.day_bytes = String(dayBytes + body.length);

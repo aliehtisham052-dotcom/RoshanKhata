@@ -1660,6 +1660,9 @@ class BackupActivity : BaseActivity() {
                 return@launch
             }
 
+            // The owner's own backup resets what the automatic one compares against (8 Nov 2026, C3).
+            DriveBackup.rememberCount(this@BackupActivity, Businesses.active(this@BackupActivity).id, dao.totalEntryCount())
+
             // Images ride separately, and only when the owner asked for them.
             // The text backup is already safe on Drive at this point; an image
             // upload that fails does not undo it, so it is reported on its own

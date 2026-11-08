@@ -3293,6 +3293,7 @@
     <string name="book_recovered_title">Your book was repaired</string>
     <string name="book_recovered_from">The book’s file was damaged and could not be read. It was rebuilt from the copy made on %1$s. Anything written after that copy is not in it.</string>
     <string name="book_recovered_none">The book’s file was damaged and could not be read, and no saved copy could be found on this computer. The book starts empty: restore a backup from your phone or a file.</string>
+    <string name="book_recovered_none_phone">The book’s file was damaged and could not be read, and no saved copy could be found on this phone. The book starts empty: restore a backup from Drive or a file. The damaged file was kept.</string>
     <string name="book_corrupt_kept">The damaged file was kept, not deleted:\n%1$s</string>
     <string name="update_available">A newer version is ready: %1$s</string>
     <string name="update_open">Open the download page</string>

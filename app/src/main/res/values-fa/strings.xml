@@ -3109,6 +3109,7 @@
     <string name="book_recovered_title">دفتر شما تعمیر شد</string>
     <string name="book_recovered_from">فایل دفتر خراب بود و خوانده نشد. از نسخهٔ ساخته‌شده در %1$s دوباره ساخته شد. آنچه پس از آن نسخه نوشته شده در آن نیست.</string>
     <string name="book_recovered_none">فایل دفتر خراب بود و خوانده نشد، و هیچ نسخهٔ ذخیره‌شده‌ای روی این رایانه پیدا نشد. دفتر خالی شروع می‌شود: پشتیبان را از گوشی یا یک فایل بازگردانید.</string>
+    <string name="book_recovered_none_phone">فایل دفتر خراب بود و خوانده نشد، و هیچ نسخهٔ ذخیره‌شده‌ای روی این گوشی پیدا نشد. دفتر خالی شروع می‌شود: پشتیبان را از درایو یا یک فایل بازگردانید. فایل خراب نگه داشته شد.</string>
     <string name="book_corrupt_kept">فایل خراب حذف نشد و نگه داشته شد:\n%1$s</string>
     <string name="update_available">نسخهٔ جدیدتری آماده است: %1$s</string>
     <string name="update_open">صفحهٔ دانلود را باز کن</string>

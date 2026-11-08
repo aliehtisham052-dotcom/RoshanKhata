@@ -3081,6 +3081,7 @@
     <string name="book_recovered_title">Aap ki kitaab durust kar di gayi</string>
     <string name="book_recovered_from">Kitaab ki file kharab thi aur parhi nahi ja saki. Ise %1$s ki bani hui naqal se dobara banaya gaya hai. Us naqal ke baad likhi gayi cheezein is mein nahi hain.</string>
     <string name="book_recovered_none">Kitaab ki file kharab thi aur parhi nahi ja saki, aur is computer par koi mehfooz naqal bhi nahi mili. Kitaab khaali shuru ho rahi hai: apne phone ya kisi file se backup wapas layein.</string>
+    <string name="book_recovered_none_phone">Kitaab ki file kharab thi aur parhi nahi ja saki, aur is phone par koi mehfooz naqal bhi nahi mili. Kitaab khaali shuru ho rahi hai: Drive ya kisi file se backup wapas layein. Kharab file rakh li gayi hai.</string>
     <string name="book_corrupt_kept">Kharab file delete nahi ki gayi, rakh li gayi hai:\n%1$s</string>
     <string name="update_available">Naya version tayyar hai: %1$s</string>
     <string name="update_open">Download ka safha kholein</string>

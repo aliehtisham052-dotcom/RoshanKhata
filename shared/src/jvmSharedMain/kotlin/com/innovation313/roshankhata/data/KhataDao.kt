@@ -1916,8 +1916,14 @@ interface KhataDao {
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND (paymentMethod IS NULL OR paymentMethod = 'cash') AND timestamp > :from AND timestamp <= :to")
     suspend fun cashbookCashBetween(income: Boolean, from: Long, to: Long): Double
 
-    /** Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). */
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' AND timestamp > :from AND timestamp <= :to")
+    /**
+     * Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). A supplier's
+     * "I got" is goods taken on credit, never cash received (8 Nov 2026 review, C2: both forms used to pre-tick
+     * Cash for it): money IN counts only a customer's entries, so old rows marked Cash by that default read right
+     * with no change to the rows themselves.
+     */
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' " +
+        "AND (:given = 1 OR partyId IN (SELECT id FROM parties WHERE isCustomer = 1)) AND timestamp > :from AND timestamp <= :to")
     suspend fun khataCashBetween(given: Boolean, from: Long, to: Long): Double
 
     /**

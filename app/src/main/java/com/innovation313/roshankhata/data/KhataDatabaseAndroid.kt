@@ -40,11 +40,20 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
             // Close before opening: two live handles would let a
             // write race a switch.
             current?.close()
+            // A book SQLite called corrupt was kept aside (BookRecovery): rebuilt from the newest whole daily
+            // copy before Room opens the file, never opened empty without a word (8 Nov 2026 review, C3).
+            BookRecovery.recoverIfNeeded(context.applicationContext, file)
             Room.databaseBuilder(
                 context.applicationContext,
                 KhataDatabase::class.java,
                 file
             )
+            // Corruption keeps the file (BookRecovery), where the framework's callback deletes it.
+            .openHelperFactory(BookRecovery.SafeFactory(context.applicationContext, onMovedAside = {
+                // The open book is gone from its path: the next get() opens (and, if need be, rebuilds) a fresh one.
+                KhataDatabaseHolder.instance = null
+                KhataDatabaseHolder.instanceFile = null
+            }))
             // Real migrations, not a destructive rebuild.
             //
             // This database holds a shopkeeper's entire book of debts.
@@ -108,6 +117,7 @@ fun KhataDatabase.Companion.openOther(context: Context, business: Businesses.Bus
     if (business.file == Businesses.activeDbFile(app)) return null
     if (!app.getDatabasePath(business.file).exists()) return null
     return Room.databaseBuilder(app, KhataDatabase::class.java, business.file)
+        .openHelperFactory(BookRecovery.SafeFactory(app))
         .addMigrations(*ALL_MIGRATIONS)
         .build()
 }

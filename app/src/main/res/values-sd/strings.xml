@@ -3109,6 +3109,7 @@
     <string name="book_recovered_title">توهان جو کاتو درست ڪيو ويو</string>
     <string name="book_recovered_from">کاتي جي فائل خراب هئي ۽ پڙهي نه سگهي. ان کي %1$s جي ٺهيل نقل مان ٻيهر ٺاهيو ويو آهي. ان نقل کان پوءِ لکيل شيون ان ۾ ناهن.</string>
     <string name="book_recovered_none">کاتي جي فائل خراب هئي ۽ پڙهي نه سگهي، ۽ هن ڪمپيوٽر تي ڪا محفوظ نقل به نه ملي. کاتو خالي شروع ٿي رهيو آهي: پنهنجي فون يا ڪنهن فائل مان بيڪ اپ واپس آڻيو.</string>
+    <string name="book_recovered_none_phone">کاتي جي فائل خراب هئي ۽ پڙهي نه سگهي، ۽ هن فون تي ڪا محفوظ نقل به نه ملي. کاتو خالي شروع ٿي رهيو آهي: ڊرائيو يا ڪنهن فائل مان بيڪ اپ واپس آڻيو. خراب فائل رکي وئي آهي.</string>
     <string name="book_corrupt_kept">خراب فائل ڊاهي نه وئي، رکي وئي آهي:\n%1$s</string>
     <string name="update_available">نئون ورزن تيار آهي: %1$s</string>
     <string name="update_open">ڊائونلوڊ جو صفحو کوليو</string>
