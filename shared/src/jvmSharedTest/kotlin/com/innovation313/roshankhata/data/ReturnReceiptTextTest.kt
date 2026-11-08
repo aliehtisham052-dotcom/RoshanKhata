@@ -55,7 +55,7 @@ class ReturnReceiptTextTest {
         assertFalse(text.contains("pos_return_of"))
         assertFalse(text.contains("pos_return_reason"))
         assertTrue(text.contains("net_balance()"))
-        assertTrue(text.contains("pdf_stmt_you_will_pay()"))
+        assertTrue("named, as the entry receipt says it", text.contains("receipt_owes(") && !text.contains("pdf_stmt_you_will_pay"))
         assertFalse(ReturnReceiptText.cashOut(r))
         // A bank refund moves no cash either.
         assertFalse(ReturnReceiptText.cashOut(ret(PaymentMethod.BANK, 1_200.0)))

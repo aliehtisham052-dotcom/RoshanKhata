@@ -188,7 +188,10 @@ fun StaffPane(dao: KhataDao) {
                 close()
             }
         }
-        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title,
+        AppDialog(onCloseRequest = close, dirty = {
+            name != person?.name.orEmpty() || phone != person?.phone.orEmpty() || salary != person?.monthlySalary?.let { Calc.trim(it) }.orEmpty() ||
+                pin.isNotEmpty() || role != person?.role
+        }, title = title,
             state = androidx.compose.ui.window.rememberDialogState(width = fitW(520.dp), height = fitH(if (mayEditLogin) 620.dp else 420.dp))) {
             DialogFrame(title, onClose = close, footer = {
                 FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
@@ -224,7 +227,7 @@ fun StaffPane(dao: KhataDao) {
         var bad by remember(person, kind) { mutableStateOf(false) }
         val close = { handing = null }
         val title = word(if (kind == Payroll.ADVANCE) W.staff_advance else W.staff_pay)
-        AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title,
+        AppDialog(onCloseRequest = close, dirty = { amount.isNotEmpty() || note.isNotEmpty() }, title = title,
             state = androidx.compose.ui.window.rememberDialogState(width = fitW(460.dp), height = fitH(380.dp))) {
             DialogFrame(title, subtitle = person.name, onClose = close, footer = {
                 FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)

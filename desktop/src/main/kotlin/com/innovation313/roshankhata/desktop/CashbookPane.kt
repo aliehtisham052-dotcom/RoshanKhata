@@ -205,9 +205,10 @@ fun CashbookPane(
     }
 
     adding?.let { way ->
+        val cashTyped = remember { mutableStateOf(false) }
         AppDialog(
             onCloseRequest = { adding = null },
-            onPreviewKeyEvent = escCloses { adding = null },
+            dirty = { cashTyped.value },
             title = word(if (way) W.cash_income else W.cash_expense),
             state = rememberDialogState(width = fitW(480.dp), height = fitH(520.dp))
         ) {
@@ -215,6 +216,7 @@ fun CashbookPane(
                 CashForm(
                     dao = dao,
                     income = way,
+                    typed = cashTyped,
                     onSave = { entry, photo ->
                         scope.launch {
                             withContext(Dispatchers.IO) {
@@ -260,13 +262,14 @@ fun CashbookPane(
 
 /** Money in or out: an amount (sums allowed, as on the phone's pad), a category, a note. */
 @Composable
-private fun CashForm(dao: KhataDao, income: Boolean, onSave: (CashEntry, java.io.File?) -> Unit, onCancel: () -> Unit) {
+private fun CashForm(dao: KhataDao, income: Boolean, typed: androidx.compose.runtime.MutableState<Boolean>, onSave: (CashEntry, java.io.File?) -> Unit, onCancel: () -> Unit) {
     val c = LocalRoshanColors.current
     val words = com.innovation313.roshankhata.words.LocalWords.current
     var isIncome by remember { mutableStateOf(income) }
     var amountText by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
+    typed.value = amountText.isNotEmpty() || category.isNotEmpty() || note.isNotEmpty()
     // How the money moved (29 Oct 2026): Cash unless the owner says otherwise, as the khata's "I got" starts —
     // the day's count looks in the drawer only for cash (drawerByTheBooks); a bank or wallet payment carries
     // its reference (CashEntry.paymentRef).

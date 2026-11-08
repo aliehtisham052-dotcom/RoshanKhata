@@ -71,7 +71,7 @@ object DateTimeField {
                         },
                         cal.get(Calendar.HOUR_OF_DAY),
                         cal.get(Calendar.MINUTE),
-                        false
+                        com.innovation313.roshankhata.data.ShopCountry.current.clock24
                     ).show()
                 },
                 cal.get(Calendar.YEAR),

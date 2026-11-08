@@ -59,6 +59,12 @@ object TextReceipt {
             color = Color.BLACK; textSize = if (widthPx > EscPos.WIDTH_58MM) 26f else 22f; typeface = Typeface.MONOSPACE
         }
         val layout = StaticLayout.Builder.obtain(text, 0, text.length, paint, widthPx - 16)
+            // One direction for the whole slip (8 Nov 2026, L113): each line took its own first letter's, so an
+            // Urdu receipt had a Latin item name at the left and its Urdu total at the right, ragged both ways.
+            .setTextDirection(
+                if (android.text.TextUtils.getLayoutDirectionFromLocale(java.util.Locale.getDefault()) == android.view.View.LAYOUT_DIRECTION_RTL)
+                    android.text.TextDirectionHeuristics.RTL else android.text.TextDirectionHeuristics.LTR
+            )
             .setAlignment(Layout.Alignment.ALIGN_NORMAL).setLineSpacing(0f, 1.1f).build()
         val mark = logo?.let { printable(it, (widthPx * 0.6).toInt(), LOGO_HEIGHT) }
         val top = mark?.let { it.height + 12 } ?: 0
@@ -92,6 +98,24 @@ object TextReceipt {
      */
     fun print(activity: Activity, scope: LifecycleCoroutineScope, text: String, cash: Boolean = false, direct: Boolean = false) =
         printOrChoose(activity, scope, text, cash, direct)
+
+    /**
+     * Opens the cash drawer through the printer used last, with no receipt (8 Nov 2026, L112: the drawer
+     * opened only when the receipt was printed, so a cash sale saved without Print left it shut — Windows
+     * opens it either way). Silent: it asks for nothing, and says nothing when there is no printer, no
+     * Bluetooth permission or the drawer switch is off.
+     */
+    fun kickDrawer(activity: Activity, scope: LifecycleCoroutineScope) {
+        if (!settings(activity).drawer) return
+        if (android.os.Build.VERSION.SDK_INT >= 31 &&
+            activity.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) return
+        val adapter = ReceiptPrinter.adapter(activity) ?: return
+        if (!adapter.isEnabled) return
+        val address = prefs(activity).getString("address", null) ?: return
+        val device = ReceiptPrinter.paired(activity).firstOrNull { it.address == address } ?: return
+        scope.launch(Dispatchers.IO) { try { ReceiptPrinter.send(device, EscPos.DRAWER_KICK) } catch (e: Exception) { } }
+    }
 
     /** The paired printers to choose from, the choice kept for the next receipt; nothing is printed (the counter's settings). */
     fun choosePrinter(activity: Activity, scope: LifecycleCoroutineScope) = printOrChoose(activity, scope, null, false, false)

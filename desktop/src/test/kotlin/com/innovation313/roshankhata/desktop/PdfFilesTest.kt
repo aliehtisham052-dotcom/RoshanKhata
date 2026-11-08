@@ -93,4 +93,22 @@ class PdfFilesTest {
         assertTrue(second.name, second.name.endsWith("(2).pdf"))
         assertTrue(PdfFiles.next("", dir, day).name.startsWith("Roshan Khata_"))
     }
+
+    @Test
+    fun `a page that drew the DOWNLOAD pill carries a link over it`() {
+        val doc = com.innovation313.roshankhata.desktop.gfx.PdfDocument()
+        val page = doc.startPage(com.innovation313.roshankhata.desktop.gfx.PdfDocument.PageInfo(595, 842, 1))
+        page.canvas.links.add(com.innovation313.roshankhata.desktop.gfx.RectF(100f, 700f, 200f, 720f))
+        doc.finishPage(page)
+        val file = File(proof, "link-sample.pdf")
+        PdfFiles.write(Sheets.of(doc), file)
+        Loader.loadPDF(file).use { pdf ->
+            val links = pdf.getPage(0).annotations.filterIsInstance<org.apache.pdfbox.pdmodel.interaction.annotation.PDAnnotationLink>()
+            assertEquals(1, links.size)
+            val uri = (links[0].action as org.apache.pdfbox.pdmodel.interaction.action.PDActionURI).uri
+            assertTrue(uri, uri.startsWith("https://play.google.com/store/apps/details?id=com.innovation313.roshankhata"))
+            // PDF's origin is the bottom left: the pill 700..720 from the top of an 842 page sits at 122..142.
+            assertEquals(122f, links[0].rectangle.lowerLeftY, 0.5f)
+        }
+    }
 }

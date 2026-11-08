@@ -421,6 +421,9 @@ class CounterSaleActivity : BaseActivity() {
                     val words = AndroidWords(this@CounterSaleActivity)
                     val shop = com.innovation313.roshankhata.data.BusinessProfile.receiptHeader(this@CounterSaleActivity)
                     val text = SaleReceiptText.build(words, shop, sale, balance, points)
+                    // A sale paid at least partly in cash opens the drawer now, printed or not (8 Nov 2026, L112).
+                    val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
+                    if (cash) com.innovation313.roshankhata.ui.TextReceipt.kickDrawer(this@CounterSaleActivity, lifecycleScope)
                     // The sale-saved sheet (3 Nov 2026, the owner's mockup): the tick, the number, and the change
                     // to hand back on its own gold chip — it was a few words at the end of a dialog's title.
                     com.innovation313.roshankhata.ui.SaleSavedSheet.show(
@@ -430,9 +433,8 @@ class CounterSaleActivity : BaseActivity() {
                         receipt = text,
                         // The paired Bluetooth receipt printer (POS Phase 8), the ticket as a picture the roll's width.
                         onPrint = {
-                            // Paid at least partly in cash: the drawer opens as the ticket prints (when it is set to).
-                            val cash = sale.payments.any { it.method == com.innovation313.roshankhata.data.PaymentMethod.CASH && it.amount > 0.0 }
-                            com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = cash, direct = true)
+                            // The drawer already opened when the sale was saved: the print does not kick it again.
+                            com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = false, direct = true)
                         },
                         onShare = {
                             startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
@@ -476,8 +478,17 @@ class CounterSaleActivity : BaseActivity() {
             .show()
     }
 
-    private fun hold() {
+    private fun hold(sure: Boolean = false) {
         if (draft.posting || draft.lines.isEmpty()) return
+        if (!sure && draft.holdLoses) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.pos_hold)
+                .setMessage(R.string.pos_hold_loses)
+                .setPositiveButton(R.string.pos_hold_anyway) { _, _ -> hold(sure = true) }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+            return
+        }
         draft.posting = true
         // As complete(): written where a rebuilt screen cannot cancel it, the till cleared once it is held.
         val till = draft
@@ -662,6 +673,7 @@ class CounterSaleActivity : BaseActivity() {
                     message = when {
                         ok -> getString(R.string.pos_voided) + " " + number
                         refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.DAY_CLOSED -> getString(R.string.pos_return_void_day_closed)
+                        refusal == com.innovation313.roshankhata.data.SaleMath.VoidRefusal.SHIFT_CLOSED -> getString(R.string.pos_return_void_shift_closed)
                         else -> getString(R.string.pos_void_failed)
                     }
                 }

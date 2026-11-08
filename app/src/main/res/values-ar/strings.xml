@@ -1453,7 +1453,7 @@
     <string name="report_crash_included">— سجل العطل التقني (محفوظ تلقائيًا على هاتفك، مُرفق للمساعدة في إيجاد الخلل):</string>
     <string name="products_stock">المنتجات والمخزون</string>
     <string name="products_subtitle">ما تبيعه الدكان، وما تبقى منه</string>
-    <string name="no_products_pc">لا توجد منتجات بعد. يُنشأ المنتج أول مرة تكتب اسمه في فاتورة مورّد، أو أدخل قائمتك عبر استيراد CSV.</string>
+    <string name="no_products_pc">لا توجد منتجات بعد. اضغط «إضافة منتج»، أو أحضر قائمتك بالاستيراد من CSV، أو يُنشأ المنتج تلقائيًا أول مرة تكتب اسمه في فاتورة مورّد.</string>
     <string name="no_matching_products">لا توجد منتجات تطابق بحثك.</string>
     <string name="inventory_subtitle">ما على الرف، وكم يساوي</string>
     <string name="po_subtitle">ما طلبته من المورّدين، وما وصل</string>
@@ -3322,6 +3322,8 @@
     <string name="pos_reference_hint">مرجع (رقم العملية، رقم الشيك)</string>
     <string name="pos_leave_msg">ستضيع الفاتورة الجارية.</string>
     <string name="pos_hold">تعليق</string>
+    <string name="pos_hold_loses">التعليق يحفظ البضاعة والعميل فقط. لن تُحفظ الدفعات المكتوبة ولا يوم الوعد.</string>
+    <string name="pos_hold_anyway">علّق على أي حال</string>
     <string name="pos_held_tickets">فواتير معلّقة (%1$d)</string>
     <string name="pos_resume">متابعة</string>
     <string name="pos_drop_held">حذف الفاتورة المعلّقة</string>
@@ -3764,6 +3766,7 @@
     <string name="entry_linked_sale">كتب بيعٌ في نقطة البيع هذا القيد. ألغِ البيع أو سجّل مرتجعًا.</string>
     <string name="entry_linked_return">كتب مرتجعٌ هذا القيد. ألغِ المرتجع بدلًا من ذلك.</string>
     <string name="pos_return_void_day_closed">أُغلق يوم هذا المرتجع، فلا يمكن إلغاؤه. سجّل البضاعة في بيع جديد بدلًا من ذلك.</string>
+    <string name="pos_return_void_shift_closed">أُغلقت الوردية التي جرى فيها هذا المرتجع وتم جردها، فلا يمكن إلغاؤه.</string>
     <string name="entries_linked_kept">بقيت كما هي لأن فاتورة أو خطة أو شيكًا أو بيعًا أو مرتجعًا كتبها (غيّرها من هناك): %1$d</string>
     <string name="party_has_tickets">لم يُحذف: سُجّلت مبيعات نقطة البيع أو مرتجعات باسم %1$s. ألغِها أولًا، أو أبقِ العميل.</string>
     <string name="bin_emptied_kept">أُفرغت السلة. بقي هؤلاء العملاء لأن لهم فواتير مورّدين أو شيكات أو خطط سداد أو مبيعات على الكاونتر: %1$d</string>

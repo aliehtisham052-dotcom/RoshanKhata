@@ -55,6 +55,7 @@ class ShopCountryTest {
         try {
             ShopCountry.current = ShopCountry.INDONESIA
             assertEquals("d MMM yyyy, HH:mm", DateWords.clock("d MMM yyyy, h:mm a"))
+            assertEquals("dd MMM yyyy, HH:mm", DateWords.clock("dd MMM yyyy, hh:mm a"))
             ShopCountry.current = ShopCountry.PAKISTAN
             assertEquals("d MMM yyyy, h:mm a", DateWords.clock("d MMM yyyy, h:mm a"))
             assertTrue(PosterOccasionSeen.azadiFor(ShopCountry.PAKISTAN))

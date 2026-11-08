@@ -34,6 +34,12 @@ object PdfRtl {
 
     fun isMirrored(c: Canvas): Boolean = mirrored.containsKey(c)
 
+    /** Where [r] (in the code's own, left-to-right coordinates) really lands on the page: mirrored on a right-to-left one. */
+    fun onPage(c: Canvas, r: RectF): RectF {
+        val w = mirrored[c] ?: return r
+        return RectF(w - r.right, r.top, w - r.left, r.bottom)
+    }
+
     fun drawText(c: Canvas, raw: String, x: Float, y: Float, paint: Paint) {
         // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
         val text = com.innovation313.roshankhata.data.Digits.forPrint(raw)
@@ -87,9 +93,14 @@ object PdfRtl {
 /**
  * The phone's PdfBranding pieces an invoice carries: the Roshan Khata mark,
  * the one brand line, and the DOWNLOAD banner (full and compact). A printed
- * page has no link to tap, so nothing is registered for one.
+ * page has no link to tap; a saved PDF gets one over the pill (PdfFiles.write, from each page canvas's links).
  */
 object PdfBranding {
+    /** The app's Play listing, tagged with the channel it travelled on (the phone's PdfBranding.storeUrl). */
+    const val STORE_URL = "https://play.google.com/store/apps/details?id=com.innovation313.roshankhata&referrer=utm_source%3Dapp%26utm_medium%3Dpdf"
+
+    private fun record(canvas: Canvas, pill: RectF) { canvas.links.add(PdfRtl.onPage(canvas, pill)) }
+
     const val BANNER_HEIGHT = 44f
     const val COMPACT_BANNER_HEIGHT = 40f
     private const val BAND = 0xFFEAF3EE.toInt()
@@ -153,6 +164,7 @@ object PdfBranding {
         val pillH = 20f
         val pill = RectF(right - 10f - pillW, top + (BANNER_HEIGHT - pillH) / 2f, right - 10f, top + (BANNER_HEIGHT + pillH) / 2f)
         canvas.drawRoundRect(pill, 10f, 10f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
+        record(canvas, pill)
         val word = downloadWord(context)
         val label = paint(Color.WHITE, 8.5f, bold = true).apply { letterSpacing = if (latin(word)) 0.08f else 0f; textAlign = Paint.Align.CENTER }
         PdfRtl.drawText(canvas, word, pill.centerX(), pill.centerY() + 3f, label)
@@ -170,6 +182,7 @@ object PdfBranding {
         drawBrandLine(canvas, cx, top + 14f, 7.5f, 7f, BRAND_GREEN, SOFT, centered = true)
         val pill = RectF(cx - 42f, top + 20f, cx + 42f, top + 35f)
         canvas.drawRoundRect(pill, 7.5f, 7.5f, Paint().apply { color = BRAND_GREEN; isAntiAlias = true })
+        record(canvas, pill)
         val word = downloadWord(context)
         PdfRtl.drawText(canvas, word, cx, pill.centerY() + 2.6f, paint(Color.WHITE, 7f, bold = true).apply { letterSpacing = if (latin(word)) 0.08f else 0f; textAlign = Paint.Align.CENTER })
         return bottom

@@ -1369,7 +1369,7 @@
     <string name="report_crash_included">— কারিগরি ক্র্যাশ রেকর্ড (আপনার ফোনে নিজে থেকে সেভ হয়েছে, ত্রুটি খুঁজতে সাহায্যের জন্য যুক্ত):</string>
     <string name="products_stock">পণ্য ও স্টক</string>
     <string name="products_subtitle">দোকানে কী বিক্রি হয়, আর কতটা বাকি আছে</string>
-    <string name="no_products_pc">এখনো কোনো পণ্য নেই। সরবরাহকারীর বিলে প্রথমবার নাম লিখলেই পণ্য তৈরি হয়, অথবা CSV আমদানি দিয়ে আপনার তালিকা আনুন।</string>
+    <string name="no_products_pc">এখনো কোনো পণ্য নেই। “পণ্য যোগ করুন” চাপুন, CSV আমদানি দিয়ে নিজের তালিকা আনুন, অথবা সরবরাহকারীর বিলে প্রথমবার নাম লিখলে পণ্য নিজে থেকে তৈরি হয়।</string>
     <string name="no_matching_products">আপনার খোঁজের সাথে কোনো পণ্য মেলেনি।</string>
     <string name="inventory_subtitle">তাকে কত মাল আছে, আর তার দাম কত</string>
     <string name="po_subtitle">সরবরাহকারীদের কাছে কী চেয়েছেন, আর কী এসেছে</string>
@@ -3170,6 +3170,8 @@
     <string name="pos_reference_hint">রেফারেন্স (লেনদেন নং, চেক নং)</string>
     <string name="pos_leave_msg">যে টিকিটটি তৈরি হচ্ছে তা হারিয়ে যাবে।</string>
     <string name="pos_hold">আটকে রাখুন</string>
+    <string name="pos_hold_loses">হোল্ড করলে শুধু মালপত্র ও গ্রাহক রাখা হয়। লেখা পেমেন্ট ও প্রতিশ্রুত দিন রাখা হবে না।</string>
+    <string name="pos_hold_anyway">তবুও হোল্ড করুন</string>
     <string name="pos_held_tickets">আটকে রাখা বিল (%1$d)</string>
     <string name="pos_resume">চালিয়ে যান</string>
     <string name="pos_drop_held">আটকে রাখা বিল বাদ দিন</string>
@@ -3608,6 +3610,7 @@
     <string name="entry_linked_sale">এই এন্ট্রি কাউন্টারের বিক্রি লিখেছে। বিক্রি বাতিল করুন বা ফেরত নিন।</string>
     <string name="entry_linked_return">এই এন্ট্রি একটি ফেরত লিখেছে। তার বদলে ফেরত বাতিল করুন।</string>
     <string name="pos_return_void_day_closed">এই ফেরতের দিন বন্ধ হয়ে গেছে, তাই এটি বাতিল করা যায় না। তার বদলে পণ্যগুলো নতুন বিক্রিতে লিখুন।</string>
+    <string name="pos_return_void_shift_closed">যে শিফটে এই ফেরত হয়েছিল সেটি বন্ধ হয়ে গণনা হয়ে গেছে, তাই এটি বাতিল করা যায় না।</string>
     <string name="entries_linked_kept">যেমন ছিল তেমনই রইল, কারণ কোনো বিল, পরিকল্পনা, চেক, কাউন্টার বিক্রি বা ফেরত এগুলো লিখেছে (সেখান থেকে বদলান): %1$d</string>
     <string name="party_has_tickets">মোছা হয়নি: %1$s এর নামে কাউন্টার বিক্রি বা ফেরত লেখা আছে। আগে সেগুলো বাতিল করুন, বা গ্রাহককে রেখে দিন।</string>
     <string name="bin_emptied_kept">বিন খালি করা হয়েছে। এই গ্রাহকদের রাখা হলো, কারণ তাদের এখনও সরবরাহকারীর বিল, চেক, পেমেন্ট প্ল্যান বা কাউন্টার বিক্রি আছে: %1$d</string>

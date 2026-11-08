@@ -38,8 +38,11 @@ class CounterDraft {
         /** A weighed item off the scale's label: its own line, never added to by a scan. */
         val weighed: Boolean = false,
         /** The shelf's rate the label was read at ([ScaleCode.Line.shelf]); for a weighed line only. */
-        val labelShelf: Double? = null
+        labelShelf: Double? = null
     ) {
+        /** Moves with the ticket's list price when a customer is chosen (8 Nov 2026, L106). */
+        var labelShelf: Double? = labelShelf
+            internal set
         var name by mutableStateOf(name)
         var qty by mutableStateOf(qty)
         var unit by mutableStateOf(unit)
@@ -149,6 +152,9 @@ class CounterDraft {
     val pointsValue: Double get() = if (hasParty) loyalty?.value(pointsSpent) ?: 0.0 else 0.0
 
     val hasParty: Boolean get() = partyId != null
+    /** A hold keeps the goods and the customer only: payments typed and a promised day would be dropped (8 Nov 2026, L111). */
+    val holdLoses: Boolean get() = payments.any { it.amountValue > 0.0 } || due != null
+
     val isEmpty: Boolean get() = lines.isEmpty() && payments.isEmpty() && !hasParty
 
     /** The lines' own totals added up, before the ticket's discount: what "10%" off the ticket is a share of. */
@@ -244,7 +250,11 @@ class CounterDraft {
         // walk-in, the credit price on an account): a customer chosen after the scanning is the
         // usual order at a counter, and a line left at the walk-in price would read as repriced.
         for ((l, old) in before) {
-            if (old != null && kotlin.math.abs(l.rateValue - old) <= 0.005) listRate(l)?.let { l.rate = Calc.trim(it) }
+            if (old != null && kotlin.math.abs(l.rateValue - old) <= 0.005) listRate(l)?.let { new ->
+                l.rate = Calc.trim(new)
+                // A weighed line's label shelf follows its list price, or the re-price reads as a manual price change.
+                if (l.weighed && l.labelShelf != null) l.labelShelf = new
+            }
         }
     }
 

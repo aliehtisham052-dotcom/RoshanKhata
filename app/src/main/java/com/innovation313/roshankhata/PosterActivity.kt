@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
-import android.text.format.DateFormat
 import android.view.TextureView
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -1244,7 +1243,7 @@ class PosterActivity : BaseActivity() {
 
     private fun pickTime(minutes: Int, onPicked: (Int) -> Unit) {
         android.app.TimePickerDialog(this, { _, h, m -> onPicked(h * 60 + m) },
-            minutes / 60, minutes % 60, DateFormat.is24HourFormat(this)).show()
+            minutes / 60, minutes % 60, com.innovation313.roshankhata.data.ShopCountry.current.clock24).show()
     }
 
     // ------------------------------------------------------------------ photo

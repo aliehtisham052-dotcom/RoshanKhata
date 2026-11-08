@@ -53,7 +53,7 @@ object ReturnReceiptText {
             else words.text(W.pos_return_refund) + " · " + PaymentMethod.label(words, ret.refundMethod) + ": " + Format.money(ret.refundAmount)
         )
         if (ret.reason.isNotBlank()) out += Line(Kind.PLAIN, words.text(W.pos_return_reason) + ": " + ret.reason)
-        balanceAfter?.let { out += Line(Kind.PLAIN, words.text(W.net_balance) + ": " + ReceiptBalance.text(words, it)) }
+        balanceAfter?.let { out += Line(Kind.PLAIN, words.text(W.net_balance) + ": " + (ret.customerName?.let { n -> ReceiptBalance.named(words, it, shop, n) } ?: ReceiptBalance.text(words, it))) } // L85: named
         out += Line(Kind.BLANK, "")
         out += Line(Kind.FOOT, words.text(W.app_name))
         return out

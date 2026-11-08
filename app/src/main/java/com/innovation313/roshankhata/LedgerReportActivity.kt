@@ -158,10 +158,10 @@ class LedgerReportActivity : BaseActivity() {
         androidx.appcompat.widget.TooltipCompat.setTooltipText(btnDownload, getString(R.string.ledger_report_download))
         // PDF only, deliberately: this screen also exports CSV, and there is
         // no such thing as previewing a spreadsheet in a PDF viewer.
-        btnPreview.setOnClickListener { buildPdf { file -> PdfShare.open(this, file) } }
-        btnDownload.setOnClickListener { chooseDownload() }
+        btnPreview.setOnClickListener { needExport { buildPdf { file -> PdfShare.open(this, file) } } }
+        btnDownload.setOnClickListener { needExport { chooseDownload() } }
         btnShare.setOnClickListener {
-            buildPdf { file -> PdfShare.shareDirect(this, file) }
+            needExport { buildPdf { file -> PdfShare.shareDirect(this, file) } }
         }
 
         applyRange()
@@ -348,6 +348,22 @@ class LedgerReportActivity : BaseActivity() {
      * Reading stays available the honest way — the rows ARE on screen, and
      * the saved file opens from Downloads like any other.
      */
+    /**
+     * The report carries every party's entries out of the app, so it asks EXPORT as the computer's does and the
+     * audit log is told (8 Nov 2026, L82: the phone's Share, Preview and Download asked nothing).
+     */
+    private fun needExport(then: () -> Unit) {
+        val p = com.innovation313.roshankhata.data.Access.Permission.EXPORT
+        val go = {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) { runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = "ledger report") } }
+            }
+            then()
+        }
+        if (com.innovation313.roshankhata.data.Access.can(p)) go()
+        else com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, p, com.innovation313.roshankhata.ui.AccessUi.what(this, p)) { _ -> go() }
+    }
+
     private fun chooseDownload() {
         val options = listOf(
             ChoiceSheet.pdf("PDF"),

@@ -654,6 +654,9 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
 
     /** Every text drawn on this canvas, in order — for the proof tests, which cannot read a picture (29 Oct 2026). */
     val words = mutableListOf<String>()
+
+    /** Where a link goes on this page, in points from the top left, as it lands (mirrored for right-to-left): the DOWNLOAD pill (8 Nov 2026, L162). */
+    val links = mutableListOf<RectF>()
     private var depth = 1
     private var current = AffineTransform()
     private val saved = ArrayDeque<AffineTransform>()

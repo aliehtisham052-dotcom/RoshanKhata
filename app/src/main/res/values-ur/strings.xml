@@ -1329,7 +1329,7 @@
     <string name="report_crash_included">— تکنیکی کریش ریکارڈ (خودکار طور پر آپ کے فون پر محفوظ، خرابی ڈھونڈنے میں مدد کے لیے شامل):</string>
     <string name="products_stock">پروڈکٹس اور اسٹاک</string>
     <string name="products_subtitle">دکان کیا بیچتی ہے، اور کتنا بچا ہے</string>
-    <string name="no_products_pc">ابھی کوئی پروڈکٹ نہیں۔ سپلائر بل پر پہلی بار نام لکھنے سے پروڈکٹ خود بن جاتی ہے، یا CSV امپورٹ سے اپنی فہرست لے آئیں۔</string>
+    <string name="no_products_pc">ابھی کوئی پروڈکٹ نہیں۔ “پروڈکٹ شامل کریں” دبائیں، CSV امپورٹ سے اپنی فہرست لے آئیں، یا سپلائر بل پر پہلی بار نام لکھنے سے پروڈکٹ خود بن جاتی ہے۔</string>
     <string name="no_matching_products">تلاش سے کوئی پروڈکٹ نہیں ملی۔</string>
     <string name="inventory_subtitle">شیلف پر کتنا مال ہے، اور اس کی مالیت</string>
     <string name="po_subtitle">سپلائرز سے کیا منگوایا، اور کیا آ گیا</string>
@@ -3122,6 +3122,8 @@
     <string name="pos_reference_hint">حوالہ (ٹرانزیکشن نمبر، چیک نمبر)</string>
     <string name="pos_leave_msg">جو ٹکٹ بن رہا ہے وہ ضائع ہو جائے گا۔</string>
     <string name="pos_hold">روکیں</string>
+    <string name="pos_hold_loses">روکنے سے صرف سامان اور گاہک محفوظ رہتے ہیں۔ لکھی ہوئی ادائیگیاں اور وعدے کا دن محفوظ نہیں ہوں گے۔</string>
+    <string name="pos_hold_anyway">پھر بھی روکیں</string>
     <string name="pos_held_tickets">روکے ہوئے بل (%1$d)</string>
     <string name="pos_resume">جاری کریں</string>
     <string name="pos_drop_held">روکا ہوا بل ہٹائیں</string>
@@ -3560,6 +3562,7 @@
     <string name="entry_linked_sale">یہ اندراج کاؤنٹر کی سیل نے لکھا ہے۔ سیل منسوخ کریں یا واپسی کریں۔</string>
     <string name="entry_linked_return">یہ اندراج واپسی نے لکھا ہے۔ اس کے بجائے واپسی منسوخ کریں۔</string>
     <string name="pos_return_void_day_closed">اس واپسی کا دن بند ہو چکا ہے، اس لیے یہ منسوخ نہیں ہو سکتی۔ اس کی جگہ سامان نئی بِکری میں لکھیں۔</string>
+    <string name="pos_return_void_shift_closed">جس شفٹ میں یہ واپسی ہوئی وہ بند ہو کر گنی جا چکی ہے، اس لیے یہ منسوخ نہیں ہو سکتی۔</string>
     <string name="entries_linked_kept">یہ ویسے ہی رہے کیونکہ انہیں کسی بل، پلان، چیک، کاؤنٹر بِکری یا واپسی نے لکھا ہے (وہیں سے بدلیں): %1$d</string>
     <string name="party_has_tickets">حذف نہیں ہوا: %1$s کے نام کاؤنٹر بِکری یا واپسی لکھی ہے۔ پہلے انہیں منسوخ کریں، یا گاہک کو رہنے دیں۔</string>
     <string name="bin_emptied_kept">بن خالی کر دیا گیا۔ یہ گاہک رکھے گئے کیونکہ ان کے ابھی سپلائر بل، چیک، ادائیگی منصوبے یا کاؤنٹر سیل موجود ہیں: %1$d</string>

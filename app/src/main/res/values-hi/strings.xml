@@ -1369,7 +1369,7 @@
     <string name="report_crash_included">— तकनीकी क्रैश रिकॉर्ड (आपके फ़ोन में अपने आप सेव हुआ, गड़बड़ ढूँढने में मदद के लिए शामिल):</string>
     <string name="products_stock">प्रोडक्ट और स्टॉक</string>
     <string name="products_subtitle">दुकान में क्या बिकता है, और कितना बचा है</string>
-    <string name="no_products_pc">अभी कोई प्रोडक्ट नहीं। सप्लायर बिल पर पहली बार नाम लिखते ही प्रोडक्ट अपने आप बन जाता है, या CSV आयात से अपनी सूची ले आएँ।</string>
+    <string name="no_products_pc">अभी कोई प्रोडक्ट नहीं। “प्रोडक्ट जोड़ें” दबाएँ, CSV आयात से अपनी सूची ले आएँ, या सप्लायर बिल पर पहली बार नाम लिखते ही प्रोडक्ट अपने आप बन जाता है।</string>
     <string name="no_matching_products">खोज से कोई प्रोडक्ट नहीं मिला।</string>
     <string name="inventory_subtitle">शेल्फ़ पर कितना माल है, और उसकी कीमत</string>
     <string name="po_subtitle">सप्लायरों से क्या मँगवाया, और क्या आ गया</string>
@@ -3170,6 +3170,8 @@
     <string name="pos_reference_hint">संदर्भ (ट्रांज़ैक्शन नं., चेक नं.)</string>
     <string name="pos_leave_msg">जो टिकट बन रहा है वह खो जाएगा।</string>
     <string name="pos_hold">रोकें</string>
+    <string name="pos_hold_loses">होल्ड करने पर सिर्फ़ सामान और ग्राहक सुरक्षित रहते हैं। लिखी हुई अदायगियाँ और वादे का दिन सुरक्षित नहीं रहेंगे।</string>
+    <string name="pos_hold_anyway">फिर भी होल्ड करें</string>
     <string name="pos_held_tickets">रोके गए बिल (%1$d)</string>
     <string name="pos_resume">जारी करें</string>
     <string name="pos_drop_held">रोका बिल हटाएँ</string>
@@ -3608,6 +3610,7 @@
     <string name="entry_linked_sale">यह एंट्री काउंटर की बिक्री ने लिखी है। बिक्री रद्द करें या वापसी करें।</string>
     <string name="entry_linked_return">यह एंट्री वापसी ने लिखी है। इसकी जगह वापसी रद्द करें।</string>
     <string name="pos_return_void_day_closed">इस वापसी का दिन बंद हो चुका है, इसलिए यह रद्द नहीं हो सकती। इसकी जगह सामान नई बिक्री में लिखें।</string>
+    <string name="pos_return_void_shift_closed">जिस शिफ्ट में यह वापसी हुई वह बंद होकर गिनी जा चुकी है, इसलिए यह रद्द नहीं हो सकती।</string>
     <string name="entries_linked_kept">ये वैसे ही रहीं क्योंकि इन्हें किसी बिल, योजना, चेक, काउंटर बिक्री या वापसी ने लिखा है (वहीं से बदलें): %1$d</string>
     <string name="party_has_tickets">हटाया नहीं गया: %1$s के नाम काउंटर बिक्री या वापसी लिखी है। पहले उन्हें रद्द करें, या ग्राहक को रहने दें।</string>
     <string name="bin_emptied_kept">बिन खाली हो गया। ये ग्राहक रखे गए क्योंकि इनके अभी सप्लायर बिल, चेक, भुगतान प्लान या काउंटर बिक्री मौजूद हैं: %1$d</string>

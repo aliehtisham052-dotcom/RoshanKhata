@@ -152,7 +152,17 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             }
         }
     }
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name.ifBlank { word(W.product_add) }, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
+    // Typing is not thrown away by Esc or the cross (8 Nov 2026, L83): asked first when any box differs from how it opened.
+    val opened = remember {
+        listOf(product.name, product.company.orEmpty(), UnitWords.label(product.defaultUnit), product.salePrice?.let { Calc.trim(it) }.orEmpty(),
+            product.creditPrice?.let { Calc.trim(it) }.orEmpty(), product.productType.orEmpty(), product.technicalName.orEmpty(), product.formulation.orEmpty(),
+            product.registrationNumber.orEmpty(), product.barcode.orEmpty(), product.note.orEmpty(), product.costPrice?.let { Calc.trim(it) }.orEmpty(),
+            product.lowStockLevel?.let { Calc.trim(it) }.orEmpty(), product.packUnit.orEmpty(), product.packSize?.let { Calc.trim(it) }.orEmpty(),
+            product.packPrice?.let { Calc.trim(it) }.orEmpty(), product.taxRate?.let { Calc.trim(it) }.orEmpty(), product.variant.orEmpty())
+    }
+    AppDialog(onCloseRequest = onClose, dirty = {
+        listOf(name, company, unit, cash, credit, type, technical, formulation, registration, barcode, note, cost, lowStock, packUnit, packSize, packPrice, taxRate, variant) != opened
+    }, title = product.name.ifBlank { word(W.product_add) }, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
         // The app's own frame (Marhala 4): one title and ✕, the fields, Cancel and Save always in sight at its foot.
         DialogFrame(
             product.name.ifBlank { word(W.product_add) }, subtitle = word(if (product.id == 0L) W.product_add else W.edit), onClose = onClose,

@@ -75,8 +75,12 @@ import java.util.concurrent.Executors
 class Sheets private constructor(
     val count: Int,
     private val sizeOf: (Int) -> Pair<Float, Float>,
-    private val drawOn: (Int, Graphics2D) -> Unit
+    private val drawOn: (Int, Graphics2D) -> Unit,
+    private val linksOn: (Int) -> List<com.innovation313.roshankhata.desktop.gfx.RectF> = { emptyList() }
 ) {
+    /** The links to write over page [i] (the DOWNLOAD pill), in points from the top left. */
+    fun links(i: Int): List<com.innovation313.roshankhata.desktop.gfx.RectF> = linksOn(i)
+
     fun width(i: Int): Float = sizeOf(i).first
     fun height(i: Int): Float = sizeOf(i).second
 
@@ -125,8 +129,10 @@ class Sheets private constructor(
 
         fun of(doc: PdfDocument): Sheets = Sheets(
             doc.finished.size,
-            { i -> doc.finished[i].info.pageWidth.toFloat() to doc.finished[i].info.pageHeight.toFloat() }
-        ) { i, g -> doc.finished[i].canvas.replay(g) }
+            { i -> doc.finished[i].info.pageWidth.toFloat() to doc.finished[i].info.pageHeight.toFloat() },
+            { i, g -> doc.finished[i].canvas.replay(g) },
+            { i -> doc.finished[i].canvas.links.toList() }
+        )
     }
 }
 
@@ -173,8 +179,21 @@ object PdfFiles {
                 val h = sheets.height(i)
                 val page = PDPage(PDRectangle(w, h))
                 pdf.addPage(page)
-                val image = JPEGFactory.createFromImage(pdf, sheets.picture(i, scale), 0.92f)
+                // The DOWNLOAD pill's place was noted when the page was drawn: a link is written over it (8 Nov 2026, L162:
+                // the page is a picture, so the button was not tappable in the shop's WhatsApp PDF).
+                val pills = sheets.links(i)
+                val picture = sheets.picture(i, scale)
+                val image = JPEGFactory.createFromImage(pdf, picture, 0.92f)
                 PDPageContentStream(pdf, page).use { it.drawImage(image, 0f, 0f, w, h) }
+                val annots = mutableListOf<org.apache.pdfbox.pdmodel.interaction.annotation.PDAnnotation>()
+                for (r in pills) {
+                    val link = org.apache.pdfbox.pdmodel.interaction.annotation.PDAnnotationLink()
+                    link.rectangle = PDRectangle(r.left, h - r.bottom, r.width(), r.height())
+                    link.action = org.apache.pdfbox.pdmodel.interaction.action.PDActionURI().also { it.uri = com.innovation313.roshankhata.desktop.invoice.PdfBranding.STORE_URL }
+                    link.borderStyle = org.apache.pdfbox.pdmodel.interaction.annotation.PDBorderStyleDictionary().also { it.width = 0f }
+                    annots.add(link)
+                }
+                if (annots.isNotEmpty()) page.annotations = annots
             }
             pdf.save(part)
         }

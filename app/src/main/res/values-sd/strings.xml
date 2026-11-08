@@ -1357,7 +1357,7 @@
     <string name="report_crash_included">— ٽيڪنيڪل ڪريش رڪارڊ (پاڻمرادو توهان جي فون تي محفوظ، خرابي ڳولڻ ۾ مدد لاءِ شامل):</string>
     <string name="products_stock">پراڊڪٽس ۽ اسٽاڪ</string>
     <string name="products_subtitle">دڪان ڇا وڪڻي ٿي، ۽ ڪيترو بچيو آهي</string>
-    <string name="no_products_pc">اڃا ڪو پراڊڪٽ ناهي. سپلائر بل تي پهريون ڀيرو نالو لکڻ سان پراڊڪٽ پاڻ ٺهي ٿو، يا CSV امپورٽ سان پنهنجي فهرست آڻيو.</string>
+    <string name="no_products_pc">اڃا ڪا پراڊڪٽ ناهي. “پراڊڪٽ شامل ڪريو” دٻايو، CSV امپورٽ سان پنهنجي فهرست آڻيو، يا سپلائر بل تي پهريون ڀيرو نالو لکڻ سان پراڊڪٽ پاڻ ٺهي ٿي.</string>
     <string name="no_matching_products">ڳولا سان ڪو پراڊڪٽ نه مليو.</string>
     <string name="inventory_subtitle">شيلف تي ڪيترو مال آهي، ۽ ان جي قيمت</string>
     <string name="po_subtitle">سپلائرن کان ڇا گهرايو، ۽ ڇا اچي ويو</string>
@@ -3150,6 +3150,8 @@
     <string name="pos_reference_hint">حوالو (ٽرانزيڪشن نمبر، چيڪ نمبر)</string>
     <string name="pos_leave_msg">جيڪو ٽڪيٽ ٺهي رهيو آهي سو ضايع ٿي ويندو.</string>
     <string name="pos_hold">روڪيو</string>
+    <string name="pos_hold_loses">روڪڻ سان رڳو سامان ۽ گراهڪ محفوظ رهن ٿا. لکيل ادائگيون ۽ واعدي جو ڏينهن محفوظ نه ٿيندا.</string>
+    <string name="pos_hold_anyway">پوءِ به روڪيو</string>
     <string name="pos_held_tickets">روڪيل بل (%1$d)</string>
     <string name="pos_resume">جاري ڪريو</string>
     <string name="pos_drop_held">روڪيل بل هٽايو</string>
@@ -3588,6 +3590,7 @@
     <string name="entry_linked_sale">هي داخلا ڪائونٽر جي وڪري لکي آهي. وڪرو منسوخ ڪريو يا واپسي ڪريو.</string>
     <string name="entry_linked_return">هي داخلا واپسي لکي آهي. ان بدران واپسي منسوخ ڪريو.</string>
     <string name="pos_return_void_day_closed">هن واپسي جو ڏينهن بند ٿي چڪو آهي، تنهن ڪري اها منسوخ نٿي ٿي سگهي. ان جي جاءِ تي سامان نئين وڪري ۾ لکو.</string>
+    <string name="pos_return_void_shift_closed">جنهن شفٽ ۾ هيءَ واپسي ٿي اها بند ٿي ڳڻي وئي آهي، تنهن ڪري اها منسوخ نٿي ٿي سگهي.</string>
     <string name="entries_linked_kept">هي جيئن هئا تيئن رهيا ڇو ته انهن کي ڪنهن بل، پلان، چيڪ، ڪائونٽر وڪري يا واپسي لکيو آهي (اتان ئي بدلايو): %1$d</string>
     <string name="party_has_tickets">ختم نه ٿيو: %1$s جي نالي ڪائونٽر وڪري يا واپسي لکيل آهي. پهريان انهن کي منسوخ ڪريو، يا گراهڪ کي رهڻ ڏيو.</string>
     <string name="bin_emptied_kept">ٽوڪري خالي ٿي وئي. هي گراهڪ رکيا ويا ڇو ته انهن جا اڃا سپلائر بل، چيڪ، ادائيگي رٿائون يا ڪائونٽر وڪرو موجود آهن: %1$d</string>

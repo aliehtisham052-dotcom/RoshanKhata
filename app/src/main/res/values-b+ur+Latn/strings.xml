@@ -1329,7 +1329,7 @@
     <string name="report_crash_included">— Technical crash record (khud-ba-khud aap ke phone par mehfooz, kharabi dhoondhne mein madad ke liye shamil):</string>
     <string name="products_stock">Products aur stock</string>
     <string name="products_subtitle">Dukaan kya bechti hai, aur kitna bacha hai</string>
-    <string name="no_products_pc">Abhi koi product nahi. Supplier bill par pehli baar naam likhne se product khud ban jata hai, ya CSV import se apni fehrist le aayein.</string>
+    <string name="no_products_pc">Abhi koi product nahi. “Product shamil karein” dabayein, CSV import se apni fehrist le aayein, ya supplier bill par pehli bar naam likhne se product khud ban jata hai.</string>
     <string name="no_matching_products">Talash se koi product nahi mila.</string>
     <string name="inventory_subtitle">Shelf par kitna maal hai, aur us ki maliyat</string>
     <string name="po_subtitle">Suppliers se kya mangwaya, aur kya aa gaya</string>
@@ -3122,6 +3122,8 @@
     <string name="pos_reference_hint">Hawala (transaction no., cheque no.)</string>
     <string name="pos_leave_msg">Jo ticket ban raha hai woh zaya ho jayega.</string>
     <string name="pos_hold">Rokein</string>
+    <string name="pos_hold_loses">Hold karne se sirf samaan aur customer mehfooz rehte hain. Likhi hui adaigiyan aur wade ka din mehfooz nahi honge.</string>
+    <string name="pos_hold_anyway">Phir bhi hold karein</string>
     <string name="pos_held_tickets">Roke hue bill (%1$d)</string>
     <string name="pos_resume">Jari karein</string>
     <string name="pos_drop_held">Roka hua bill hatayein</string>
@@ -3560,6 +3562,7 @@
     <string name="entry_linked_sale">Yeh indiraaj counter ki sale ne likha hai. Sale mansookh karein ya wapsi karein.</string>
     <string name="entry_linked_return">Yeh indiraaj wapsi ne likha hai. Is ke bajaye wapsi mansookh karein.</string>
     <string name="pos_return_void_day_closed">Is wapsi ka din band ho chuka hai, is liye yeh mansookh nahi ho sakti. Is ki jagah samaan nayi bikri mein likhein.</string>
+    <string name="pos_return_void_shift_closed">Jis shift mein yeh wapsi hui woh band ho kar gini ja chuki hai, is liye yeh mansookh nahi ho sakti.</string>
     <string name="entries_linked_kept">Yeh waise hi rahe kyunke inhein kisi bill, plan, cheque, counter bikri ya wapsi ne likha hai (wahin se badlein): %1$d</string>
     <string name="party_has_tickets">Delete nahi hua: %1$s ke naam counter bikri ya wapsi likhi hai. Pehle unhein mansookh karein, ya customer ko rehne dein.</string>
     <string name="bin_emptied_kept">Bin khali kar diya gaya. Yeh customer rakhe gaye kyunke in ke abhi supplier bill, cheque, adaigi mansoobay ya counter sale maujood hain: %1$d</string>

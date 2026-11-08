@@ -4176,6 +4176,8 @@ interface KhataDao {
         val r = getReturn(id) ?: return SaleMath.VoidRefusal.NOT_DONE
         if (r.status != SaleStatus.DONE || r.isDeleted) return SaleMath.VoidRefusal.NOT_DONE
         if (dayClosesSince(r.timestamp) > 0) return SaleMath.VoidRefusal.DAY_CLOSED
+        // Its shift is counted and closed (8 Nov 2026, L109): as a sale's void, the cash handed back was in that drawer.
+        if (closedShiftsCovering(r.createdBy, r.timestamp) > 0) return SaleMath.VoidRefusal.SHIFT_CLOSED
         return null
     }
 

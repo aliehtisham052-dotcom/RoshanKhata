@@ -166,6 +166,18 @@ class PosReviewTest {
     }
 
     @Test
+    fun `a customer chosen after a weighed line is not a manual price change`() {
+        val tomato = product("Tomato", unit = "kg", price = 300.0, barcode = "00042").copy(id = 7, creditPrice = 330.0)
+        fun label(price: String) = "21" + "00042" + price + Barcodes.checkDigit("21" + "00042" + price)
+        val fair = ScaleCode.line(label("12500"), ScaleCode.Rule(price = true), listOf(tomato)) { 300.0 }!!
+        val draft = CounterDraft()
+        draft.addWeighed(fair)
+        assertTrue(draft.repriced.isEmpty())
+        draft.setParty(5L, "Aslam")
+        assertTrue(draft.repriced.isEmpty())
+    }
+
+    @Test
     fun `audit notes go with their sale, and stay out when the ticket is refused`() = runBlocking {
         val p = dao.productById(dao.insertProduct(product("Urea", price = 1000.0)))!!
         val draft = CounterDraft()

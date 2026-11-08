@@ -2076,6 +2076,9 @@ private fun Book(
         val giveBookFile: () -> File? = {
             runCatching {
                 val dir = File(home, "to-phone").apply { mkdirs() }
+                // L152 (8 Nov 2026): a copy a killed app left behind is a whole book on disk; none older than an hour stays.
+                dir.listFiles { x -> x.name.startsWith("rk-pull-") && x.name.endsWith(".part") && System.currentTimeMillis() - x.lastModified() > 3_600_000L }
+                    ?.forEach { runCatching { it.delete() } }
                 val f = File.createTempFile("rk-pull-", ".part", dir)
                 try {
                     // secrets = false (8 Nov 2026, M30): the first device to scan this QR gets the book, so it gets no PIN hashes,

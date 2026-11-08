@@ -161,6 +161,17 @@ jobs:
           cp "$msi" RoshanKhata-Windows-test.msi
           gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
             --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
+          # A build of an older commit never replaces a newer one (8 Nov 2026 review, L134): the release is shared by
+          # every branch, so a slow run of an old push could finish last and make the old MSI the "new" one. The
+          # release's version.json names the commit on it; when that commit is AHEAD of this one, this run stops here.
+          cur=$(gh release download desktop-test -p version.json -O - 2>/dev/null | grep -oE '"commit": *"[0-9a-f]{40}"' | grep -oE '[0-9a-f]{40}' || true)
+          if [ -n "$cur" ] && [ "$cur" != "${GITHUB_SHA}" ]; then
+            rel=$(gh api "repos/${GITHUB_REPOSITORY}/compare/${GITHUB_SHA}...${cur}" --jq .status 2>/dev/null || true)
+            if [ "$rel" = "ahead" ]; then
+              echo "::notice::desktop-test already holds a newer commit ($cur); this older build is not uploaded."
+              exit 0
+            fi
+          fi
           gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
           # What version this is, for the app's own update check (UpdateCheck reads it once a day).
           ver=$(grep -oE 'packageVersion = "[0-9.]+"' desktop/build.gradle.kts | grep -oE '[0-9.]+')

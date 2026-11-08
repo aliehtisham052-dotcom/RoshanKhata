@@ -1338,7 +1338,7 @@
     <string name="report_crash_included">— Catatan teknis kerusakan (tersimpan otomatis di ponsel Anda, disertakan untuk membantu menemukan kesalahannya):</string>
     <string name="products_stock">Produk &amp; stok</string>
     <string name="products_subtitle">Apa yang dijual toko, dan berapa sisanya</string>
-    <string name="no_products_pc">Belum ada produk. Produk dibuat saat pertama kali Anda menuliskan namanya di tagihan pemasok, atau masukkan daftar Anda dengan Impor CSV.</string>
+    <string name="no_products_pc">Belum ada produk. Tekan “Tambah produk”, bawa daftar Anda dengan impor CSV, atau produk dibuat saat pertama kali Anda menulis namanya di faktur pemasok.</string>
     <string name="no_matching_products">Tidak ada produk yang cocok dengan pencarian Anda.</string>
     <string name="inventory_subtitle">Apa yang ada di rak, dan berapa nilainya</string>
     <string name="po_subtitle">Apa yang Anda pesan dari pemasok, dan apa yang sudah datang</string>
@@ -3120,6 +3120,8 @@
     <string name="pos_reference_hint">Referensi (no. transaksi, no. cek)</string>
     <string name="pos_leave_msg">Tiket yang sedang dibuat akan hilang.</string>
     <string name="pos_hold">Tahan</string>
+    <string name="pos_hold_loses">Menahan hanya menyimpan barang dan pelanggan. Pembayaran yang diketik dan hari janji tidak disimpan.</string>
+    <string name="pos_hold_anyway">Tahan saja</string>
     <string name="pos_held_tickets">Nota ditahan (%1$d)</string>
     <string name="pos_resume">Lanjutkan</string>
     <string name="pos_drop_held">Hapus nota ditahan</string>
@@ -3557,6 +3559,7 @@
     <string name="entry_linked_sale">Penjualan kasir menulis catatan ini. Batalkan penjualan, atau buat retur.</string>
     <string name="entry_linked_return">Retur menulis catatan ini. Batalkan returnya saja.</string>
     <string name="pos_return_void_day_closed">Hari retur ini sudah ditutup, jadi tidak bisa dibatalkan. Catat barangnya sebagai penjualan baru saja.</string>
+    <string name="pos_return_void_shift_closed">Shift tempat retur ini dibuat sudah ditutup dan dihitung, jadi tidak bisa dibatalkan.</string>
     <string name="entries_linked_kept">Dibiarkan seperti semula karena tagihan, rencana, cek, penjualan kasir, atau retur yang menulisnya (ubah dari sana): %1$d</string>
     <string name="party_has_tickets">Tidak dihapus: penjualan kasir atau retur tercatat atas nama %1$s. Batalkan dulu, atau biarkan pelanggannya.</string>
     <string name="bin_emptied_kept">Tempat sampah dikosongkan. Pelanggan yang tetap disimpan karena masih punya tagihan pemasok, cek, rencana cicilan, atau penjualan kasir: %1$d</string>

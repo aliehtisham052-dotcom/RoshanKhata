@@ -347,9 +347,11 @@ fun CounterSalePane(
         }
     }
 
+    var askHold by remember { mutableStateOf(false) }
     /** Park the ticket; it is cleared only once it is safely held (21 Oct 2026: a failed hold lost it). */
-    fun hold() {
+    fun hold(sure: Boolean = false) {
         if (draft.lines.isEmpty() || draft.posting) return
+        if (!sure && draft.holdLoses) { askHold = true; return }
         draft.posting = true
         // Taken here, on the window's thread, before anything is written (23 Oct 2026, the review).
         val ticket = Counter.holdTicket(draft)
@@ -692,6 +694,10 @@ fun CounterSalePane(
             }
         }
     }
+    if (askHold) {
+        AskDialog(title = word(W.pos_hold), text = word(W.pos_hold_loses), confirm = word(W.pos_hold_anyway),
+            onConfirm = { askHold = false; hold(sure = true) }, onDismiss = { askHold = false })
+    }
     dropping?.let { h ->
         AppDialog(onCloseRequest = { dropping = null }, onPreviewKeyEvent = escCloses { dropping = null }, title = word(W.pos_drop_held), state = rememberDialogState(width = fitW(460.dp), height = fitH(260.dp))) {
             DialogFrame(word(W.pos_drop_held), subtitle = (h.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in)) + " · " + Format.money(h.grandTotal),
@@ -782,6 +788,7 @@ fun CounterSalePane(
                         told = when {
                             ok -> words.text(W.pos_voided) + " " + r.returnNumber
                             refusal == SaleMath.VoidRefusal.DAY_CLOSED -> words.text(W.pos_return_void_day_closed)
+                            refusal == SaleMath.VoidRefusal.SHIFT_CLOSED -> words.text(W.pos_return_void_shift_closed)
                             else -> words.text(W.pos_void_failed)
                         }
                     }
@@ -1048,7 +1055,7 @@ object SaleReceipt {
         }
         if (sale.creditAmount > 0.005) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)
         // The balance in the customer's words, its side said, as the phone's receipt says it (3 Nov 2026).
-        balance?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + com.innovation313.roshankhata.data.ReceiptBalance.text(words, it), 18f) }
+        balance?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + (sale.customerName?.let { n -> com.innovation313.roshankhata.data.ReceiptBalance.named(words, it, shop, n) } ?: com.innovation313.roshankhata.data.ReceiptBalance.text(words, it)), 18f) } // L85: named, as the phone's slip
         // Loyalty (21 Oct 2026): spent, earned, held now.
         points?.let { pt ->
             if (pt.used > 0.0) out += ThermalReceipt.Line(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue)), 18f)

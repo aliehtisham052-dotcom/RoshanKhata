@@ -1357,7 +1357,7 @@
     <string name="report_crash_included">— سابقهٔ فنی خرابی (به‌طور خودکار روی گوشی شما ذخیره شده، برای یافتن اشکال ضمیمه شد):</string>
     <string name="products_stock">محصولات و موجودی</string>
     <string name="products_subtitle">مغازه چه می‌فروشد و چه مانده است</string>
-    <string name="no_products_pc">هنوز محصولی نیست. محصول اولین بار که نامش را در فاکتور تأمین‌کننده بنویسید ساخته می‌شود، یا فهرست خود را با ورودی CSV بیاورید.</string>
+    <string name="no_products_pc">هنوز کالایی نیست. «افزودن کالا» را بزنید، فهرست خود را با درون‌ریزی CSV بیاورید، یا کالا نخستین بار که نامش را در فاکتور تأمین‌کننده بنویسید ساخته می‌شود.</string>
     <string name="no_matching_products">هیچ محصولی با جستجوی شما جور نیست.</string>
     <string name="inventory_subtitle">آنچه در قفسه است و ارزش آن</string>
     <string name="po_subtitle">آنچه از تأمین‌کنندگان سفارش داده‌اید و آنچه رسیده است</string>
@@ -3150,6 +3150,8 @@
     <string name="pos_reference_hint">مرجع (شماره تراکنش، شماره چک)</string>
     <string name="pos_leave_msg">فاکتور در حال ثبت از بین می‌رود.</string>
     <string name="pos_hold">نگه‌داشتن</string>
+    <string name="pos_hold_loses">نگه‌داشتن فقط کالا و مشتری را حفظ می‌کند. پرداخت‌های واردشده و روز قول حفظ نمی‌شوند.</string>
+    <string name="pos_hold_anyway">به‌هر حال نگه‌دار</string>
     <string name="pos_held_tickets">فاکتورهای معلق (%1$d)</string>
     <string name="pos_resume">ادامه</string>
     <string name="pos_drop_held">حذف فاکتور معلق</string>
@@ -3588,6 +3590,7 @@
     <string name="entry_linked_sale">این ثبت را یک فروش صندوق نوشته است. فروش را باطل کنید یا برگشت ثبت کنید.</string>
     <string name="entry_linked_return">این ثبت را یک برگشت نوشته است. به جای آن برگشت را باطل کنید.</string>
     <string name="pos_return_void_day_closed">روزِ این برگشت بسته شده است، پس باطل نمی‌شود. به جای آن، کالا را در یک فروش تازه ثبت کنید.</string>
+    <string name="pos_return_void_shift_closed">شیفتی که این برگشت در آن انجام شد بسته و شمرده شده است، پس باطل نمی‌شود.</string>
     <string name="entries_linked_kept">همان‌طور ماندند، چون یک صورت‌حساب، طرح، چک، فروش صندوق یا برگشت آن‌ها را نوشته است (از همان‌جا تغییرشان دهید): %1$d</string>
     <string name="party_has_tickets">حذف نشد: فروش صندوق یا برگشت به نام %1$s ثبت شده است. اول آن‌ها را باطل کنید، یا مشتری را نگه دارید.</string>
     <string name="bin_emptied_kept">سطل خالی شد. این مشتریان ماندند، چون هنوز فاکتور تأمین‌کننده، چک، برنامهٔ پرداخت یا فروش پیشخوان دارند: %1$d</string>

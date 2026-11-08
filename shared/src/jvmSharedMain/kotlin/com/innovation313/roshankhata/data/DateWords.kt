@@ -169,7 +169,8 @@ object DateWords {
      * "HH:mm" there, in one place, so no screen or sheet has to know.
      */
     fun clock(pattern: String): String =
-        if (ShopCountry.current.clock24 && pattern.contains("h:mm a")) pattern.replace("h:mm a", "HH:mm") else pattern
+        // "hh:mm a" too (8 Nov 2026, m80: the phone's date-and-time field kept the 12-hour clock in a 24-hour country).
+        if (ShopCountry.current.clock24) pattern.replace(Regex("hh?:mm a"), "HH:mm") else pattern
 
     /**
      * Arabic-script languages write their own comma, "،" (U+060C). Every

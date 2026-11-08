@@ -84,4 +84,13 @@ class AutomationsBookTest {
         assertTrue(d.moved)
         assertTrue("the drawer was never counted", !d.counted)
     }
+
+    @Test
+    fun `an uncounted drawer with nothing moved today is not a closing summary`() = runBlocking {
+        dao.insertCashEntry(CashEntry(amount = 500.0, isIncome = true, category = "Old", timestamp = now - 3 * day))
+        val d = Automations.dayEnd(dao, now)
+        assertTrue("cash from three days ago is not today's", !d.moved)
+        dao.insertCashEntry(CashEntry(amount = 200.0, isIncome = true, category = "Today", timestamp = now))
+        assertTrue(Automations.dayEnd(dao, now).moved)
+    }
 }

@@ -352,6 +352,22 @@ class CounterReviewTest {
     }
 
     @Test
+    fun `a return of a closed shift is not voided`() = runBlocking {
+        val dap = product("DAP")
+        val shift = dao.openShift(Shift(user = null, openingFloat = 0.0, openedAt = now - 3_600_000L))
+        val sale = sellTo(null, dap, 2.0)
+        val sold = dao.saleItems(sale).single()
+        val r = dao.postReturn(
+            SaleReturn(saleId = sale, partyId = null, timestamp = now, total = 0.0, refundMethod = "cash", reason = "x"),
+            listOf(SaleReturnItem(returnId = 0, saleItemId = sold.id, productId = dap, itemName = "DAP", quantity = 1.0, unit = "bottle", rate = 1000.0))
+        )
+        assertEquals(null, dao.returnVoidRefusal(r))
+        dao.closeShift(shift, 1000.0, null, now = now + 1000)
+        assertEquals(SaleMath.VoidRefusal.SHIFT_CLOSED, dao.returnVoidRefusal(r))
+        assertFalse(dao.voidReturn(r, "late"))
+    }
+
+    @Test
     fun `a sale of a closed shift is not voided, and a shift's drawer holds its own device's tickets`() = runBlocking {
         val soap = product("Soap")
         val shift = dao.openShift(Shift(user = null, openingFloat = 0.0, openedAt = now - 3_600_000L))
