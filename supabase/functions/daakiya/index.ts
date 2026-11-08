@@ -211,7 +211,8 @@ async function handle(request: Request): Promise<Response> {
     // The daily call (Cloudflare's cron): a real query, so the project is never "inactive", and idle books go.
     // The sweep runs only with the keep-alive pass (RK_KEEP_SECRET), so the open health is a plain answer.
     const keep = Deno.env.get("RK_KEEP_SECRET");
-    if (keep && request.headers.get("x-rk-keep") === keep) {
+    const sentKeep = request.headers.get("x-rk-keep");
+    if (keep && sentKeep !== null && sameHex(sentKeep, keep)) {
       const now = Date.now();
       await sql`DELETE FROM rk_relay.books WHERE seen < ${now - IDLE_DAYS * 86_400_000}`;
       // A book no second device ever joined, YOUNG_DAYS after it was made, goes with what it holds (C1).

@@ -14,16 +14,13 @@ No account, no server, no ads. Everything stays on the phone.
 ## Shape of the project
 
 - Three modules (Kotlin Multiplatform since 18 Oct 2026):
-  - `:app` — the Android app, 216 Kotlin files, ~53,600 lines (counted 30 Oct 2026, main only)
-  - `:shared` — everything that does not need Android, ~30,500 lines (`:desktop` ~31,800
-    more; tests not counted): sums, voice parsing, search, dates, the Room database, the
+  - `:app` — the Android app, 258 Kotlin files, ~64,700 lines (counted 8 Nov 2026, main only)
+  - `:shared` — everything that does not need Android, ~37,800 lines (`:desktop` ~33,800
+    more; tests not counted; counted 8 Nov 2026): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 2,781 strings and 60 plurals (+21 with the 7 Nov security round — 3,032 string lines and 65 plurals in
-  values/strings.xml; +21 with the setup's and the form guards' words, 5 Nov 2026; 2,781 with the competitor study's batch and schema 43's words, 4 Nov 2026; 2,755 + live_changes_waiting with the animations' words, 3 Nov 2026; 2,745 with the purchase order's supplier words, 3 Nov 2026; 2,743 with the 3 Nov audit's words — the cash sale's halves, merges, notices, the period-end balance; 2,731 with the Radar's promise, rhythm and tone lines, 2 Nov 2026; 2,725 + radar_days with the Payment Radar, 2 Nov 2026; 2,705 with Close the day's first count, 2 Nov 2026; 2,702 with the statement's missing parts, 2 Nov 2026; 2,695 with the statement redesign, 2 Nov 2026; 2,679 with cash_paid_now_help and 2,678 with party_no_entries, 1 Nov 2026; 2,677 with the first-open sheets and the saved card, 1 Nov 2026; 2,631 with the automations, 31 Oct 2026; 2,613 on 31 Oct 2026, unchanged by the night/text review; with the registers' plain words; 2,607 with `cf_kind_promised`; 2,606 on 30 Oct 2026 with `rate_list_unpriced_title`; 2,605 with `unit_short`, `wallet_number`; 2,603 with `product_add`; 2,601 with `pdf_label_doc_no`; 2,582 counted 29 Oct 2026, after the unused-code
-  sweep: 108 dead strings and plurals, `BusinessReport.kt` — a balance-snapshot PDF no
-  screen opened, with its `pdf_biz_*` strings — the shared `EntryForm.kt`, 19 unread DAO
-  queries and 3 unused writes went) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
+- About 3,044 string lines (3,038 translatable keys checked by `scripts/check_strings.py`) and 65 plurals in
+  values/strings.xml (counted 8 Nov 2026; earlier counts are in git) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
 - Room database, version 44 (44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
   backup format 19 (the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
@@ -2666,6 +2663,41 @@ number on the Help screen.
 - Erase and delete shop (M91, M92, `Businesses.endSharing`): before the books go, Waris is turned off on every relay and
   every customer link is stopped and its page taken off the server (`CustomerLink.stopAll` + flush), each shop, 20 s each.
   Best effort: a relay or the hosting not reached leaves its copy until its own sweep.
+
+### 8 Nov 2026 review fixes, marhala 6B: the minor findings m8-m66 (words in nine languages, small code; CI only)
+
+- **Words.** Net balance is "net" (khalis/शुद्ध) in Urdu, Roman Urdu and Hindi; Hindi's second reminder is a noun
+  ("दूसरा रिमाइंडर"), Sindhi's step 2 the same noun as step 1; Bengali "Settled" is "পরিশোধিত"/"মিটে গেছে"; Arabic cheque
+  "Cleared" is "تم صرفه"; Farsi Quotation is "پیشنهاد قیمت" and Proforma "پیش‌فاکتور", its Bills tile "فاکتورها"; the
+  credit-limit help reads right in Arabic; six Arabic plurals have their own one/two/few/many forms; Arabic customer
+  words say عميل except the walk-in's "زبون عابر", and the entry message opens "مرحبًا" (no "Mr."; Bengali and Farsi
+  first messages were already neutral — Farsi's now bold the name); Urdu says "کھاتہ" (4 stray "کھاتا"), "گاہک" (not
+  "کسٹمر"), "قسطیں" for Plans and "بعد میں" for Maybe later; Sindhi uses "اڌار", "ادائيگي", its own app name in the privacy
+  and Drive-offer texts, Sindhi letters (کاتو, ٺهي, توله) and a full stop "." not "۔"; Farsi/Sindhi percent is "%";
+  Hindi "रकम/बाकी" without the nukta; Bengali "রোশন খাতার/-কে" one form and "Android 13" in digits; the FAQ names the
+  Backup screen by its real title. Roman Urdu: one spelling each for udhaar, wusooli, naqd, qistein, zaban, nahi,
+  mohtaram, indiraaj, -ein — and `ROMAN_GLOSSARY` in check_strings.py warns on the old ones; its Add buttons are sentence
+  case like English. **The brand is "Innovation 313" everywhere** (strings, both privacy policies, the khata page, the
+  homepage, README); `SCRIPT_EXEMPT_PREFIX` for screen_privacy_ is gone, so those texts are now held to their script.
+- **New keys (nine languages):** `party_entries_hint` (an empty customer page says to tap I Gave / I Got),
+  `home_backup_to_drive` (Home's chip said "Continue with Google" in an app with no account), `po_saved`,
+  `business_switch_open_named` (the shop's name inside the sentence, not glued after the verb). `po_book` says "On record"
+  instead of "Book"; `coach_desc_business` names Counter sale and the sales report.
+- **Code.** The saved card reads the number the DAO gave the entry (the entry in hand had none); Windows' counter line is
+  "Tax %: 33"; the language list says "Bahasa Indonesia"; the "already open" box speaks the computer's language;
+  `DayCloseMath.startOf` finds a day's first moment through the calendar (Cairo, Beirut and Gaza change the clock at
+  midnight; java.time is not used — minSdk 24); a cleared cheque's "I got" carries the cheque number as its reference; a
+  first Close the day's audit row has its id; a helper's copy (and the Waris snapshot) carries no private party note and no
+  cost price; `LogText` scrubs file paths and names; the UDP "who has the book" call is answered only for local addresses;
+  the register's dates carry the year; the inspector's monogram skips a word that starts with a figure, its no-expiry card is
+  only for AGRI/MEDICAL, its no-total note moves to a new page when the page is full; a card's cut name has no space before
+  "…"; Selection bar's Delete is no longer capped at 130 dp; ReminderWorker.countDue lost two unused parameters; the khata
+  page's English line under an error is its own LTR block; api.php ids end at `\z`; the relay finds its store beside
+  public_html like the khata page; Supabase compares the keep-alive secret in constant time; compiled `.pyc` left git.
+- **Skipped / owner:** m20 (a removed staff member keeps his name by design — shifts and audit rows are filed by name, R84),
+  m44 (the phone's bell has no late-payers row while Windows' does, and Windows' late line is red where the phone's is gold:
+  which bell is right is the owner's call), m58 (the Kitab ki Muhar family keeps "کتاب" as the feature's name; only the stock
+  count's word changed), m29 is a comment only. Sindhi and Bengali wording marked in the result file for a native read.
 
 ### 8 Nov 2026 review fixes, marhala 5: privacy and Play (M39, M93, M94, M98, L156-L158, m96-m100; text only)
 

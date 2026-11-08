@@ -103,7 +103,12 @@ function store_dir() {
     if ($env !== false && $env !== '') return rtrim($env, '/');
     $root = isset($_SERVER['DOCUMENT_ROOT']) ? realpath($_SERVER['DOCUMENT_ROOT']) : false;
     if ($root) {
-        $outside = dirname($root) . '/rk-relay-data';
+        // A subdomain's own root is a folder inside public_html, whose parent is still served: the store goes
+        // beside public_html, as web/khata's does (8 Nov 2026 review m25). Under public_html itself nothing moves.
+        $web = $root;
+        $at = strpos($root, '/public_html');
+        if ($at !== false) $web = substr($root, 0, $at) . '/public_html';
+        $outside = dirname($web) . '/rk-relay-data';
         if (is_dir($outside) || @mkdir($outside, 0700, true)) return $outside;
     }
     $inside = __DIR__ . '/data';

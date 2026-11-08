@@ -134,7 +134,7 @@ function create_whole($path, $text) {
     return true;
 }
 
-function is_id($v) { return is_string($v) && preg_match('/^[0-9a-f]{32}$/', $v) === 1; }
+function is_id($v) { return is_string($v) && preg_match('/^[0-9a-f]{32}\z/', $v) === 1; }
 
 // ---------------------------------------------------------------- ids never free again (7 Nov 2026)
 
@@ -186,7 +186,7 @@ function mark_used($store, $id) {
 function server_secret($store) {
     $f = "$store/secret";
     $v = @file_get_contents($f);
-    if (is_string($v) && preg_match('/^[0-9a-f]{64}$/', $v)) return $v;
+    if (is_string($v) && preg_match('/^[0-9a-f]{64}\z/', $v)) return $v;
     $v = bin2hex(random_bytes(32));
     return write_whole($f, $v) ? $v : null;
 }
@@ -282,7 +282,7 @@ $claim  = ($in['claim'] ?? false) === true;
 $put    = $in['put'] ?? [];
 $drop   = $in['drop'] ?? [];
 if (!is_id($shop)) fail(400, 'shop');
-if (!is_string($token) || !preg_match('/^[0-9a-f]{64}$/', $token)) fail(401, 'token');
+if (!is_string($token) || !preg_match('/^[0-9a-f]{64}\z/', $token)) fail(401, 'token');
 if (!is_id($writer)) fail(400, 'writer-id');
 if (!is_array($put) || !is_array($drop) || count($put) + count($drop) > MAX_ITEMS) fail(413, 'too-many');
 
@@ -350,7 +350,7 @@ foreach ($put as $p) {
     if (!is_id($id)) { $refused[] = ['id' => '', 'why' => 'bad']; continue; }
     if (isset($seen[$id])) continue;
     $seen[$id] = true;
-    if (!is_string($blob) || $blob === '' || strlen($blob) > MAX_BLOB || !preg_match('/^[A-Za-z0-9_-]+$/', $blob)) { $refused[] = ['id' => $id, 'why' => 'bad']; continue; }
+    if (!is_string($blob) || $blob === '' || strlen($blob) > MAX_BLOB || !preg_match('/^[A-Za-z0-9_-]+\z/', $blob)) { $refused[] = ['id' => $id, 'why' => 'bad']; continue; }
     if (isset($s['gone'][$id])) { $refused[] = ['id' => $id, 'why' => 'gone']; continue; }
     if (isset($s['pages'][$id])) { $writes[$id] = $blob; continue; }
     if (file_exists("$pages/$id.txt") || is_used($store, $id)) { $refused[] = ['id' => $id, 'why' => 'taken']; continue; }
