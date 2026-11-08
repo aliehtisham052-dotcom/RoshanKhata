@@ -4282,4 +4282,20 @@
     <string name="stmt_add_open_profile">Full profile</string>
     <string name="stmt_add_nothing">Type at least one detail, or tap Cancel.</string>
     <string name="stmt_add_check_then_save">Check the box marked above, or tap Save again to keep it as typed.</string>
+    <string name="security_pin_line">Protects the counter and changes with a PIN only you know</string>
+    <string name="audit_khata_link_sent">Khata link sent</string>
+    <string name="audit_khata_link_stopped">Khata link stopped</string>
+    <string name="audit_cash_in_added">Money in added</string>
+    <string name="audit_cash_out_added">Money out added</string>
+    <string name="audit_cash_in_deleted">Money in deleted</string>
+    <string name="audit_cash_out_deleted">Money out deleted</string>
+    <string name="dayclose_count_title">Last count</string>
+    <string name="dayclose_count_body">%1$s\nCounted: %2$s\nBooks said: %3$s\nDifference: %4$s\nCounted by: %5$s</string>
+    <string name="dayclose_count_correct">Correct this count</string>
+    <string name="dayclose_correct_amount_hint">Correct cash counted</string>
+    <string name="dayclose_correct_reason_hint">Why is it being corrected?</string>
+    <string name="dayclose_correct_need_reason">Write why the count is being corrected.</string>
+    <string name="dayclose_correct_saved">Count corrected. The old figure stays in Who did what.</string>
+    <string name="audit_day_counted">Counted %1$s</string>
+    <string name="audit_day_counted_was">Counted %1$s (was %2$s)</string>
 </resources>

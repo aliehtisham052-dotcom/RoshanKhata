@@ -1881,6 +1881,14 @@ interface KhataDao {
     @Query("SELECT * FROM day_close WHERE day = :day LIMIT 1")
     suspend fun dayCloseFor(day: Long): DayClose?
 
+    /** Who wrote the newest audit row of a day close (null: the owner, or no row); read for the count's sheet (8 Nov 2026). */
+    @Query("SELECT user FROM audit_log WHERE action = 'day_closed' AND refTable = 'day_close' AND refId = :id ORDER BY id DESC LIMIT 1")
+    suspend fun dayCloseUser(id: Long): String?
+
+    /** Whether a cashbook row (binned or not) was money in; null when no such row. Who did what names the direction from it. */
+    @Query("SELECT isIncome FROM cashbook WHERE id = :id LIMIT 1")
+    suspend fun cashIsIncome(id: Long): Boolean?
+
     @Query("SELECT * FROM day_close ORDER BY day DESC LIMIT 1")
     fun observeLastDayClose(): Flow<DayClose?>
 

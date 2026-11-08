@@ -4329,4 +4329,20 @@
     <string name="stmt_add_open_profile">الملف الكامل</string>
     <string name="stmt_add_nothing">اكتب تفصيلاً واحداً على الأقل، أو اضغط إلغاء.</string>
     <string name="stmt_add_check_then_save">راجع الحقل المشار إليه أعلاه، أو اضغط حفظ مرة أخرى للإبقاء عليه كما كُتب.</string>
+    <string name="security_pin_line">يحمي الصندوق والتغييرات برقم PIN لا يعرفه غيرك</string>
+    <string name="audit_khata_link_sent">تم إرسال رابط الحساب</string>
+    <string name="audit_khata_link_stopped">تم إيقاف رابط الحساب</string>
+    <string name="audit_cash_in_added">تمت إضافة مال داخل</string>
+    <string name="audit_cash_out_added">تمت إضافة مال خارج</string>
+    <string name="audit_cash_in_deleted">تم حذف مال داخل</string>
+    <string name="audit_cash_out_deleted">تم حذف مال خارج</string>
+    <string name="dayclose_count_title">آخر عدّ</string>
+    <string name="dayclose_count_body">%1$s\nالمعدود: %2$s\nحسب الدفاتر: %3$s\nالفرق: %4$s\nأجرى العدّ: %5$s</string>
+    <string name="dayclose_count_correct">تصحيح هذا العدّ</string>
+    <string name="dayclose_correct_amount_hint">النقد المعدود الصحيح</string>
+    <string name="dayclose_correct_reason_hint">لماذا يتم التصحيح؟</string>
+    <string name="dayclose_correct_need_reason">اكتب سبب تصحيح العدّ.</string>
+    <string name="dayclose_correct_saved">تم تصحيح العدّ. يبقى الرقم القديم في سجل «من فعل ماذا».</string>
+    <string name="audit_day_counted">المعدود %1$s</string>
+    <string name="audit_day_counted_was">المعدود %1$s (كان %2$s)</string>
 </resources>

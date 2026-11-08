@@ -4117,4 +4117,20 @@
     <string name="stmt_add_open_profile">সম্পূর্ণ প্রোফাইল</string>
     <string name="stmt_add_nothing">অন্তত একটি তথ্য লিখুন, অথবা বাতিল চাপুন।</string>
     <string name="stmt_add_check_then_save">উপরে চিহ্নিত ঘরটি দেখুন, অথবা যেমন লিখেছেন তেমন রাখতে আবার সংরক্ষণ চাপুন।</string>
+    <string name="security_pin_line">কাউন্টার ও পরিবর্তনগুলো এমন PIN দিয়ে সুরক্ষিত রাখে যা শুধু আপনি জানেন</string>
+    <string name="audit_khata_link_sent">খাতার লিংক পাঠানো হয়েছে</string>
+    <string name="audit_khata_link_stopped">খাতার লিংক বন্ধ করা হয়েছে</string>
+    <string name="audit_cash_in_added">টাকা এসেছে যোগ হয়েছে</string>
+    <string name="audit_cash_out_added">টাকা গেছে যোগ হয়েছে</string>
+    <string name="audit_cash_in_deleted">টাকা এসেছে মোছা হয়েছে</string>
+    <string name="audit_cash_out_deleted">টাকা গেছে মোছা হয়েছে</string>
+    <string name="dayclose_count_title">শেষ গণনা</string>
+    <string name="dayclose_count_body">%1$s\nগোনা হয়েছে: %2$s\nহিসাব অনুযায়ী: %3$s\nপার্থক্য: %4$s\nগণনাকারী: %5$s</string>
+    <string name="dayclose_count_correct">এই গণনা সংশোধন করুন</string>
+    <string name="dayclose_correct_amount_hint">সঠিকভাবে গোনা নগদ</string>
+    <string name="dayclose_correct_reason_hint">কেন সংশোধন করা হচ্ছে?</string>
+    <string name="dayclose_correct_need_reason">গণনা সংশোধনের কারণ লিখুন।</string>
+    <string name="dayclose_correct_saved">গণনা সংশোধিত হয়েছে। পুরোনো অঙ্ক \"কে কী করেছে\"-তে থাকবে।</string>
+    <string name="audit_day_counted">গোনা হয়েছে %1$s</string>
+    <string name="audit_day_counted_was">গোনা হয়েছে %1$s (আগে %2$s)</string>
 </resources>

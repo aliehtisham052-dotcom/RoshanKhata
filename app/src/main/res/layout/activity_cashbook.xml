@@ -42,6 +42,8 @@
             android:layout_marginTop="8dp"
             android:minHeight="44dp"
             android:text="@string/staff_title"
+            android:textAllCaps="false"
+            android:letterSpacing="0"
             android:textColor="@color/white"
             app:icon="@drawable/ic_nav_khata"
             app:iconTint="@color/white"
@@ -129,7 +131,10 @@
             android:id="@+id/tvLastClose"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="4dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:minHeight="44dp"
             android:textColor="@color/white"
             android:textSize="12sp" />
 
@@ -149,6 +154,7 @@
                 android:minHeight="48dp"
                 android:text="@string/dayclose_button"
                 android:textAllCaps="false"
+                android:letterSpacing="0"
                 android:textColor="@color/white"
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/white" />
@@ -164,6 +170,7 @@
                 android:minHeight="48dp"
                 android:text="@string/z_title"
                 android:textAllCaps="false"
+                android:letterSpacing="0"
                 android:textColor="@color/white"
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/white" />

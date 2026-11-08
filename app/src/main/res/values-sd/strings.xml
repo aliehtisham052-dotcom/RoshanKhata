@@ -4097,4 +4097,20 @@
     <string name="stmt_add_open_profile">پورو پروفائل</string>
     <string name="stmt_add_nothing">گهٽ ۾ گهٽ هڪ تفصيل لکو، يا رد ڪريو دٻايو.</string>
     <string name="stmt_add_check_then_save">مٿي نشان لڳل خانو چيڪ ڪريو، يا جيئن لکيو آهي تيئن رکڻ لاءِ ٻيهر محفوظ ڪريو دٻايو.</string>
+    <string name="security_pin_line">ڪائونٽر ۽ تبديلين کي اهڙي پن سان محفوظ ڪري ٿو جيڪو رڳو توهان ڄاڻو ٿا</string>
+    <string name="audit_khata_link_sent">کاتي جي لنڪ موڪلي وئي</string>
+    <string name="audit_khata_link_stopped">کاتي جي لنڪ بند ڪئي وئي</string>
+    <string name="audit_cash_in_added">پئسا اندر داخل ٿيو</string>
+    <string name="audit_cash_out_added">پئسا ٻاهر داخل ٿيو</string>
+    <string name="audit_cash_in_deleted">پئسا اندر جي داخلا ميٽي وئي</string>
+    <string name="audit_cash_out_deleted">پئسا ٻاهر جي داخلا ميٽي وئي</string>
+    <string name="dayclose_count_title">پوئين ڳڻپ</string>
+    <string name="dayclose_count_body">%1$s\nڳڻيو ويو: %2$s\nکاتي موجب: %3$s\nفرق: %4$s\nڳڻيندڙ: %5$s</string>
+    <string name="dayclose_count_correct">هيءَ ڳڻپ درست ڪريو</string>
+    <string name="dayclose_correct_amount_hint">درست ڳڻيل ڪيش</string>
+    <string name="dayclose_correct_reason_hint">درست ڪرڻ جو سبب ڇا آهي؟</string>
+    <string name="dayclose_correct_need_reason">ڳڻپ درست ڪرڻ جو سبب لکو.</string>
+    <string name="dayclose_correct_saved">ڳڻپ درست ٿي وئي. پراڻو انگ \"ڪنهن ڇا ڪيو\" ۾ محفوظ آهي.</string>
+    <string name="audit_day_counted">ڳڻيو ويو %1$s</string>
+    <string name="audit_day_counted_was">ڳڻيو ويو %1$s (اڳ %2$s)</string>
 </resources>

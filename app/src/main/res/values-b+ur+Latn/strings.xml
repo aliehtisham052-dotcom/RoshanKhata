@@ -4069,4 +4069,20 @@
     <string name="stmt_add_open_profile">Poora profile</string>
     <string name="stmt_add_nothing">Kam az kam ek tafseel likhein, ya Cancel dabayein.</string>
     <string name="stmt_add_check_then_save">Upar nishan zad box check karein, ya jaisa likha hai waisa rakhne ke liye dobara Save dabayein.</string>
+    <string name="security_pin_line">Counter aur tabdeeliyon ko aisi PIN se mehfooz karta hai jo sirf aap jaante hain</string>
+    <string name="audit_khata_link_sent">Khata link bheja gaya</string>
+    <string name="audit_khata_link_stopped">Khata link band kiya gaya</string>
+    <string name="audit_cash_in_added">Aamdani darj hui</string>
+    <string name="audit_cash_out_added">Kharch darj hua</string>
+    <string name="audit_cash_in_deleted">Aamdani ka indiraaj mitaya</string>
+    <string name="audit_cash_out_deleted">Kharch ka indiraaj mitaya</string>
+    <string name="dayclose_count_title">Pichli ginti</string>
+    <string name="dayclose_count_body">%1$s\nGini gayi: %2$s\nHisaab ke mutabiq: %3$s\nFarq: %4$s\nGinne wala: %5$s</string>
+    <string name="dayclose_count_correct">Is ginti ko durust karein</string>
+    <string name="dayclose_correct_amount_hint">Durust gina hua cash</string>
+    <string name="dayclose_correct_reason_hint">Durusti ki wajah kya hai?</string>
+    <string name="dayclose_correct_need_reason">Ginti durust karne ki wajah likhein.</string>
+    <string name="dayclose_correct_saved">Ginti durust ho gayi. Purana figure \"Kis ne kya kiya\" mein mehfooz hai.</string>
+    <string name="audit_day_counted">Gini gayi %1$s</string>
+    <string name="audit_day_counted_was">Gini gayi %1$s (pehle %2$s)</string>
 </resources>

@@ -158,15 +158,94 @@ class CashbookActivity : BaseActivity() {
             findViewById<View>(R.id.btnCloseDay).post { if (!isFinishing && !isDestroyed) showDayClose() }
         }
         val tvLastClose = findViewById<TextView>(R.id.tvLastClose)
+        // The last count is shown as what was COUNTED (8 Nov 2026, the owner's test: it showed "+ Rs 4,554,670", the
+        // count's difference from the books, beside Who did what's "Day closed 4,555,225.00", the counted figure).
+        // A tap opens its sheet: when, the figures, by whom, and the way to correct it.
+        var shownClose: DayClose? = null
+        tvLastClose.setOnClickListener { shownClose?.let { showCountSheet(it) } }
         lifecycleScope.launch {
             dao.observeLastDayClose().collectLatest { c ->
+                shownClose = c
+                tvLastClose.isClickable = c != null
                 tvLastClose.text = if (c == null) getString(R.string.dayclose_never) else getString(
-                    R.string.dayclose_last, Format.dateOnly(c.closedAt), Format.signedTotal(c.difference)
+                    R.string.dayclose_last, Format.dateOnly(c.closedAt), Format.ltr(Format.signedIfNegative(c.counted))
                 )
             }
         }
 
         observe()
+    }
+
+    /**
+     * The last count in full (8 Nov 2026, the owner's test): a count is a record of what was physically counted, so it
+     * is never deleted with the cashbook rows; a wrong one is corrected here, and the correction is written in Who did
+     * what with the figure it replaced ([KhataDao.saveDayClose]).
+     */
+    private fun showCountSheet(c: DayClose) {
+        lifecycleScope.launch {
+            val by = dao.dayCloseUser(c.id)
+            if (isFinishing || isDestroyed) return@launch
+            val who = if (by == null || by == com.innovation313.roshankhata.data.Access.OWNER) getString(R.string.access_owner) else Format.name(by)
+            val body = getString(
+                R.string.dayclose_count_body, Format.dateTime(c.closedAt),
+                Format.ltr(Format.signedIfNegative(c.counted)), Format.ltr(Format.signedIfNegative(c.expected)),
+                Format.ltr(Format.signedTotal(c.difference)), who
+            ) + (c.note?.takeIf { it.isNotBlank() }?.let { "\n" + it } ?: "")
+            MaterialAlertDialogBuilder(this@CashbookActivity)
+                .setTitle(R.string.dayclose_count_title)
+                .setMessage(body)
+                .setPositiveButton(R.string.dayclose_count_correct) { _, _ -> correctCount(c) }
+                .setNegativeButton(R.string.close, null)
+                .show()
+        }
+    }
+
+    /** Correct a count: the right figure and why. The same working day's row is replaced, its old figure kept in the log. */
+    private fun correctCount(c: DayClose) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK) { correctCount(c) }) return
+        val etCount = com.innovation313.roshankhata.ui.FormBox.style(EditText(this)).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL or android.text.InputType.TYPE_NUMBER_FLAG_SIGNED
+            hint = getString(R.string.dayclose_correct_amount_hint)
+            setText(Format.plain(c.counted))
+        }
+        val etWhy = com.innovation313.roshankhata.ui.FormBox.style(EditText(this)).apply {
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            hint = getString(R.string.dayclose_correct_reason_hint)
+        }
+        val form = com.innovation313.roshankhata.ui.FormBox.column(this, etCount, etWhy)
+        com.innovation313.roshankhata.ui.TextFit.relax(form)
+        val opened = etCount.text.toString()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dayclose_count_correct)
+            .setView(form)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.save, null)
+            .show().also { dialog ->
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+                dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+                    val figure = com.innovation313.roshankhata.data.Digits.parse(etCount.text)
+                    if (figure == null) {
+                        Toast.makeText(this, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
+                        etCount.requestFocus()
+                        return@setOnClickListener
+                    }
+                    val why = etWhy.text.toString().trim()
+                    if (why.isEmpty()) {
+                        Toast.makeText(this, R.string.dayclose_correct_need_reason, Toast.LENGTH_LONG).show()
+                        etWhy.requestFocus()
+                        return@setOnClickListener
+                    }
+                    val note = listOfNotNull(why, c.note?.takeIf { it.isNotBlank() }).joinToString(" \u00b7 ")
+                    AppScope.launch { dao.saveDayClose(c.copy(counted = LineMath.round(figure), note = note)) }
+                    Toast.makeText(this, R.string.dayclose_correct_saved, Toast.LENGTH_LONG).show()
+                    dialog.dismiss()
+                }
+                com.innovation313.roshankhata.ui.FormGuard.guard(
+                    activity = this,
+                    dialog = dialog,
+                    typed = { etCount.text.toString() != opened || etWhy.text.isNotBlank() }
+                )
+            }
     }
 
     /**

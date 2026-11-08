@@ -110,52 +110,135 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
 
-            <!-- Who did what (POS Phase 5): the audit log, under the people who did it. -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAudit"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            <!-- Security (8 Nov 2026, the owner's phone test): the three tools had stood inside the empty state.
+                 Each is a row with one line on what it does; Who did what, then the owner's PIN, then counter mode. -->
+            <LinearLayout
+                android:id="@+id/securityCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="@string/audit_title"
-                android:textAllCaps="false"
-                android:textColor="@color/brand_green_text"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/brand_green_text" />
+                android:background="@drawable/bg_profile_card"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="4dp">
 
-            <!-- The owner's PIN and counter mode (21 Oct 2026): the owner's own controls. -->
-            <com.google.android.material.button.MaterialButton
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_group_security"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/ink"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/btnAudit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:minHeight="56dp"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvAuditTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/audit_title"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/audit_subtitle"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/hairline" />
+
+            <LinearLayout
                 android:id="@+id/btnOwnerPin"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/access_owner_pin_set"
-                android:textAllCaps="false"
-                android:textColor="@color/brand_green_text"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/brand_green_text" />
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:minHeight="56dp"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
 
-            <com.google.android.material.button.MaterialButton
+                <TextView
+                    android:id="@+id/tvOwnerPinTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/access_owner_pin_set"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/security_pin_line"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/hairline" />
+
+            <LinearLayout
                 android:id="@+id/btnCounterMode"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/access_counter_off_label"
-                android:textAllCaps="false"
-                android:textColor="@color/brand_green_text"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/brand_green_text" />
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:minHeight="56dp"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
 
-            <TextView
-                android:textAlignment="viewStart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/access_counter_mode_help"
-                android:textColor="@color/text_muted"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tvCounterModeTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/access_counter_off_label"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/access_counter_mode_help"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -165,7 +248,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:minHeight="52dp"
+        android:letterSpacing="0"
         android:text="@string/staff_add"
+        android:textAllCaps="false"
         android:textColor="@color/white"
         app:backgroundTint="@color/brand_green"
         app:cornerRadius="12dp"

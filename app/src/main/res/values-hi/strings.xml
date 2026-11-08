@@ -4117,4 +4117,20 @@
     <string name="stmt_add_open_profile">पूरी प्रोफ़ाइल</string>
     <string name="stmt_add_nothing">कम से कम एक जानकारी लिखें, या रद्द करें दबाएँ।</string>
     <string name="stmt_add_check_then_save">ऊपर चिह्नित बॉक्स जाँचें, या जैसा लिखा है वैसा रखने के लिए फिर से सहेजें दबाएँ।</string>
+    <string name="security_pin_line">काउंटर और बदलावों को ऐसे PIN से सुरक्षित रखता है जो सिर्फ़ आप जानते हैं</string>
+    <string name="audit_khata_link_sent">खाता लिंक भेजा गया</string>
+    <string name="audit_khata_link_stopped">खाता लिंक बंद किया गया</string>
+    <string name="audit_cash_in_added">पैसा आया दर्ज हुआ</string>
+    <string name="audit_cash_out_added">पैसा गया दर्ज हुआ</string>
+    <string name="audit_cash_in_deleted">पैसा आया की एंट्री मिटाई</string>
+    <string name="audit_cash_out_deleted">पैसा गया की एंट्री मिटाई</string>
+    <string name="dayclose_count_title">पिछली गिनती</string>
+    <string name="dayclose_count_body">%1$s\nगिना गया: %2$s\nहिसाब के मुताबिक़: %3$s\nफ़र्क़: %4$s\nगिनने वाला: %5$s</string>
+    <string name="dayclose_count_correct">इस गिनती को सही करें</string>
+    <string name="dayclose_correct_amount_hint">सही गिना हुआ नकद</string>
+    <string name="dayclose_correct_reason_hint">सही करने की वजह क्या है?</string>
+    <string name="dayclose_correct_need_reason">गिनती सही करने की वजह लिखें।</string>
+    <string name="dayclose_correct_saved">गिनती सही हो गई। पुराना आँकड़ा \"किसने क्या किया\" में रहेगा।</string>
+    <string name="audit_day_counted">गिना गया %1$s</string>
+    <string name="audit_day_counted_was">गिना गया %1$s (पहले %2$s)</string>
 </resources>

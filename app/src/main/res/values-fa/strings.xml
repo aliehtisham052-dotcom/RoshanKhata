@@ -4097,4 +4097,20 @@
     <string name="stmt_add_open_profile">پروفایل کامل</string>
     <string name="stmt_add_nothing">دست‌کم یک مورد بنویسید یا لغو را بزنید.</string>
     <string name="stmt_add_check_then_save">کادر علامت‌خورده بالا را بررسی کنید یا برای نگه‌داشتن همان‌طور که نوشته‌اید دوباره ذخیره را بزنید.</string>
+    <string name="security_pin_line">صندوق و تغییرات را با رمزی که فقط شما می‌دانید محافظت می‌کند</string>
+    <string name="audit_khata_link_sent">پیوند حساب فرستاده شد</string>
+    <string name="audit_khata_link_stopped">پیوند حساب متوقف شد</string>
+    <string name="audit_cash_in_added">پول ورودی افزوده شد</string>
+    <string name="audit_cash_out_added">پول خروجی افزوده شد</string>
+    <string name="audit_cash_in_deleted">پول ورودی حذف شد</string>
+    <string name="audit_cash_out_deleted">پول خروجی حذف شد</string>
+    <string name="dayclose_count_title">آخرین شمارش</string>
+    <string name="dayclose_count_body">%1$s\nشمرده‌شده: %2$s\nطبق دفتر: %3$s\nتفاوت: %4$s\nشمارنده: %5$s</string>
+    <string name="dayclose_count_correct">اصلاح این شمارش</string>
+    <string name="dayclose_correct_amount_hint">نقد درست شمرده‌شده</string>
+    <string name="dayclose_correct_reason_hint">چرا اصلاح می‌شود؟</string>
+    <string name="dayclose_correct_need_reason">دلیل اصلاح شمارش را بنویسید.</string>
+    <string name="dayclose_correct_saved">شمارش اصلاح شد. رقم قبلی در «چه کسی چه کرد» می‌ماند.</string>
+    <string name="audit_day_counted">شمرده‌شده %1$s</string>
+    <string name="audit_day_counted_was">شمرده‌شده %1$s (قبلاً %2$s)</string>
 </resources>

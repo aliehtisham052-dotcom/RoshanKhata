@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +50,8 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
     var seal by remember { mutableStateOf<AuditChain.Result?>(null) }
     // L35: re-checked when the newest row changes (the window holds 500, so its size never moves once full), not per count.
     LaunchedEffect(rows.firstOrNull()?.id) { seal = withContext(Dispatchers.IO) { AuditChain.verifyAll { after, n -> dao.auditSliceAfter(after, n) } } }
+    // Who a row concerns and which way a cash row went, looked up now (8 Nov 2026): the log keeps neither.
+    val names by produceState(AuditNames.None, rows) { value = withContext(Dispatchers.IO) { AuditNames.load(dao, rows) } }
     if (rows.isEmpty()) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(word(W.audit_empty), color = c.textMuted) }
         return
@@ -66,11 +69,11 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
         items(rows, key = { it.id }) { a ->
             Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(auditActionWord(a), Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text(auditActionWord(a, names), Modifier.weight(1f), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                     Text(Format.dateTime(a.timestamp), color = c.textMuted, fontSize = 12.sp)
                 }
                 Text(
-                    listOfNotNull(word(W.audit_by, a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner)), auditDetail(a, staff)).joinToString(" · "),
+                    listOfNotNull(word(W.audit_by, a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner)), auditDetail(a, staff, names)).joinToString(" · "),
                     color = c.inkSoft, fontSize = 13.sp
                 )
             }
@@ -86,9 +89,26 @@ fun AuditScreen(dao: KhataDao, modifier: Modifier = Modifier) {
  * app itself writes are turned into words, and anything else shows as saved.
  */
 @Composable
-fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staff>): String? {
+fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staff>, names: AuditNames = AuditNames.None): String? {
+    // A khata link's customer (new rows carry no detail; older ones "Send khata link · <name>").
+    if (isKhataLinkRow(a)) return names.party[a.refId] ?: a.detail?.substringAfter(" \u00b7 ", "")?.takeIf { it.isNotBlank() }
     val detail = a.detail?.takeIf { it.isNotBlank() } ?: return null
     return when (a.action) {
+        // "Entry added · <customer> · Rs 800": the amount was stored as "800.00", the customer is looked up (8 Nov 2026).
+        AuditAction.ENTRY_ADDED -> listOfNotNull(names.entryParty[a.refId], AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail).joinToString(" \u00b7 ")
+        AuditAction.CASH_ADDED, AuditAction.CASH_EDITED, AuditAction.CASH_DELETED ->
+            AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail
+        // "4,555,225.00 (4,554,000.00 / 555.00)": the figure COUNTED, and the count it replaced when the day was closed again.
+        AuditAction.DAY_CLOSED -> {
+            val m = Regex("^(-?[0-9,.]+)(?: \\((-?[0-9,.]+) / (-?[0-9,.]+)\\))?\$").find(detail.trim())
+            val now = m?.groupValues?.get(1)?.let { AuditNames.amount(it) }
+            val was = m?.groupValues?.get(2)?.takeIf { it.isNotEmpty() }?.let { AuditNames.amount(it) }
+            when {
+                now == null -> detail
+                was == null -> word(W.audit_day_counted, Format.moneyLtr(now))
+                else -> word(W.audit_day_counted_was, Format.moneyLtr(now), Format.moneyLtr(was))
+            }
+        }
         AuditAction.STOCK_ADJUSTED -> {
             // "<reason> <signed quantity>", written by KhataDao.adjustStock.
             val reason = detail.substringBefore(' ')
@@ -129,8 +149,13 @@ private fun adjustReasonName(reason: String): String = when (reason) {
     else -> W.adjust_reason_other
 }
 
+/** A khata link's audit row, new (its own actions) or old (an EXPORT on "parties" whose detail starts with the menu's words). */
+private fun isKhataLinkRow(a: AuditLog): Boolean =
+    a.action == AuditAction.KHATA_LINK_SENT || a.action == AuditAction.KHATA_LINK_STOPPED ||
+        (a.action == AuditAction.EXPORT && a.refTable == "parties")
+
 @Composable
-fun auditActionWord(a: AuditLog): String = when (a.action) {
+fun auditActionWord(a: AuditLog, names: AuditNames = AuditNames.None): String = when (a.action) {
     AuditAction.SALE_POSTED -> word(W.audit_sale_posted)
     AuditAction.SALE_VOIDED -> word(W.audit_sale_voided)
     AuditAction.SALE_HELD -> word(W.audit_sale_held)
@@ -141,7 +166,18 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.PRICE_CHANGED -> word(W.audit_price_changed)
     AuditAction.SIGN_IN -> word(W.audit_sign_in)
     AuditAction.RESTORE -> word(W.audit_restore)
-    AuditAction.EXPORT -> word(W.audit_export)
+    AuditAction.EXPORT -> {
+        // Older khata-link rows were written as an export of a customer's page; the menu's words in the detail tell which.
+        val d = a.detail.orEmpty()
+        when {
+            a.refTable != "parties" -> word(W.audit_export)
+            d.startsWith(word(W.clink_menu)) || d.startsWith("Send khata link") -> word(W.audit_khata_link_sent)
+            d.startsWith(word(W.clink_stop)) || d.startsWith("Stop link") -> word(W.audit_khata_link_stopped)
+            else -> word(W.audit_export)
+        }
+    }
+    AuditAction.KHATA_LINK_SENT -> word(W.audit_khata_link_sent)
+    AuditAction.KHATA_LINK_STOPPED -> word(W.audit_khata_link_stopped)
     AuditAction.STOCK_COUNT -> word(W.audit_stock_count)
     AuditAction.STOCK_ADJUSTED -> word(W.audit_stock_adjusted)
     AuditAction.ORDER_RECEIVED -> word(W.audit_order_received)
@@ -159,9 +195,18 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     AuditAction.ENTRY_EDITED -> word(W.audit_entry_edited)
     AuditAction.ENTRY_DELETED -> word(W.audit_entry_deleted)
     AuditAction.ENTRY_ADDED -> word(W.audit_entry_added)
-    AuditAction.CASH_ADDED -> word(W.audit_cash_added)
+    // Money in / Money out by the row's direction when it can still be read, else the neutral words.
+    AuditAction.CASH_ADDED -> when (names.cashIncome[a.refId]) {
+        true -> word(W.audit_cash_in_added)
+        false -> word(W.audit_cash_out_added)
+        null -> word(W.audit_cash_added)
+    }
     AuditAction.CASH_EDITED -> word(W.audit_cash_edited)
-    AuditAction.CASH_DELETED -> word(W.audit_cash_deleted)
+    AuditAction.CASH_DELETED -> when (names.cashIncome[a.refId]) {
+        true -> word(W.audit_cash_in_deleted)
+        false -> word(W.audit_cash_out_deleted)
+        null -> word(W.audit_cash_deleted)
+    }
     AuditAction.PARTY_DELETED -> word(W.audit_party_deleted)
     AuditAction.PARTY_MERGED -> word(W.audit_party_merged)
     AuditAction.PARTY_TYPE_CHANGED -> word(W.audit_party_type)
@@ -182,4 +227,42 @@ fun auditActionWord(a: AuditLog): String = when (a.action) {
     com.innovation313.roshankhata.data.BookSeals.AUDIT_ON -> word(W.audit_seal_on)
     com.innovation313.roshankhata.data.BookSeals.AUDIT_OFF -> word(W.audit_seal_off)
     else -> a.action
+}
+
+/**
+ * What an audit row's ids stand for, read when the log is shown and never stored (8 Nov 2026, the owner's test: "Entry
+ * added 800.00" named nobody and a cashbook row did not say in or out). [party]: a customer by id; [entryParty]: the
+ * customer of a khata entry; [cashIncome]: which way a cashbook row went. A row whose target is gone simply has none.
+ */
+class AuditNames(
+    val party: Map<Long?, String>,
+    val entryParty: Map<Long?, String>,
+    val cashIncome: Map<Long?, Boolean>
+) {
+    companion object {
+        val None = AuditNames(emptyMap(), emptyMap(), emptyMap())
+
+        /** "1,250.00" (what [com.innovation313.roshankhata.data.auditAmount] writes) as a number. */
+        fun amount(text: String): Double? = text.trim().replace(",", "").toDoubleOrNull()
+
+        suspend fun load(dao: KhataDao, rows: List<AuditLog>): AuditNames {
+            val party = HashMap<Long?, String>()
+            val entryParty = HashMap<Long?, String>()
+            val cash = HashMap<Long?, Boolean>()
+            for (a in rows) {
+                val id = a.refId ?: continue
+                runCatching {
+                    when {
+                        a.refTable == "parties" && (a.action == AuditAction.EXPORT || a.action == AuditAction.KHATA_LINK_SENT || a.action == AuditAction.KHATA_LINK_STOPPED) ->
+                            if (id !in party) dao.getPartyName(id)?.let { party[id] = it }
+                        a.refTable == "transactions" && a.action == AuditAction.ENTRY_ADDED ->
+                            if (id !in entryParty) dao.getEntry(id)?.let { e -> dao.getPartyName(e.partyId)?.let { entryParty[id] = it } }
+                        a.refTable == "cashbook" && (a.action == AuditAction.CASH_ADDED || a.action == AuditAction.CASH_DELETED) ->
+                            if (id !in cash) dao.cashIsIncome(id)?.let { cash[id] = it }
+                    }
+                }
+            }
+            return AuditNames(party, entryParty, cash)
+        }
+    }
 }

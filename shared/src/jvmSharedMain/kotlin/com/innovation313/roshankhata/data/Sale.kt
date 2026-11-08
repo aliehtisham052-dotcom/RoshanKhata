@@ -514,4 +514,11 @@ object AuditAction {
     const val DOC_DELETED = "doc_deleted"
     /** A promised day set for a party (PromiseLog): refId the party, detail the day's millis. */
     const val PROMISE_SET = "promise_set"
+    /**
+     * A customer's khata link put on the hosting, or taken back (8 Nov 2026, the owner's test: both read "Exported").
+     * refTable "parties", refId the customer; no detail (the name is looked up when the row is shown). Rows
+     * written before this are EXPORT rows on "parties" whose detail begins with the menu's words.
+     */
+    const val KHATA_LINK_SENT = "khata_link_sent"
+    const val KHATA_LINK_STOPPED = "khata_link_stopped"
 }

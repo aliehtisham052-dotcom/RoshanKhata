@@ -4069,4 +4069,20 @@
     <string name="stmt_add_open_profile">پورا پروفائل</string>
     <string name="stmt_add_nothing">کم از کم ایک تفصیل لکھیں، یا منسوخ دبائیں۔</string>
     <string name="stmt_add_check_then_save">اوپر نشان زد خانہ چیک کریں، یا جیسا لکھا ہے ویسا رکھنے کے لیے دوبارہ محفوظ کریں دبائیں۔</string>
+    <string name="security_pin_line">کاؤنٹر اور تبدیلیوں کو ایسے پن سے محفوظ کرتا ہے جو صرف آپ جانتے ہیں</string>
+    <string name="audit_khata_link_sent">کھاتہ لنک بھیجا گیا</string>
+    <string name="audit_khata_link_stopped">کھاتہ لنک بند کیا گیا</string>
+    <string name="audit_cash_in_added">آمدنی درج ہوئی</string>
+    <string name="audit_cash_out_added">خرچ درج ہوا</string>
+    <string name="audit_cash_in_deleted">آمدنی کا اندراج مٹایا</string>
+    <string name="audit_cash_out_deleted">خرچ کا اندراج مٹایا</string>
+    <string name="dayclose_count_title">پچھلی گنتی</string>
+    <string name="dayclose_count_body">%1$s\nگنا گیا: %2$s\nحساب کے مطابق: %3$s\nفرق: %4$s\nگننے والا: %5$s</string>
+    <string name="dayclose_count_correct">اس گنتی کو درست کریں</string>
+    <string name="dayclose_correct_amount_hint">درست گنا ہوا کیش</string>
+    <string name="dayclose_correct_reason_hint">درستی کی وجہ کیا ہے؟</string>
+    <string name="dayclose_correct_need_reason">گنتی درست کرنے کی وجہ لکھیں۔</string>
+    <string name="dayclose_correct_saved">گنتی درست ہو گئی۔ پرانا اعداد \"کس نے کیا کیا\" میں محفوظ ہے۔</string>
+    <string name="audit_day_counted">گنا گیا %1$s</string>
+    <string name="audit_day_counted_was">گنا گیا %1$s (پہلے %2$s)</string>
 </resources>

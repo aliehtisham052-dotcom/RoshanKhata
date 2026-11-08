@@ -4052,4 +4052,20 @@
     <string name="stmt_add_open_profile">Profil lengkap</string>
     <string name="stmt_add_nothing">Isi setidaknya satu data, atau ketuk Batal.</string>
     <string name="stmt_add_check_then_save">Periksa kolom yang ditandai di atas, atau ketuk Simpan lagi untuk tetap memakai isiannya.</string>
+    <string name="security_pin_line">Melindungi kasir dan perubahan dengan PIN yang hanya Anda ketahui</string>
+    <string name="audit_khata_link_sent">Tautan buku terkirim</string>
+    <string name="audit_khata_link_stopped">Tautan buku dihentikan</string>
+    <string name="audit_cash_in_added">Uang masuk ditambah</string>
+    <string name="audit_cash_out_added">Uang keluar ditambah</string>
+    <string name="audit_cash_in_deleted">Uang masuk dihapus</string>
+    <string name="audit_cash_out_deleted">Uang keluar dihapus</string>
+    <string name="dayclose_count_title">Hitungan terakhir</string>
+    <string name="dayclose_count_body">%1$s\nDihitung: %2$s\nMenurut buku: %3$s\nSelisih: %4$s\nDihitung oleh: %5$s</string>
+    <string name="dayclose_count_correct">Koreksi hitungan ini</string>
+    <string name="dayclose_correct_amount_hint">Uang tunai yang benar</string>
+    <string name="dayclose_correct_reason_hint">Mengapa dikoreksi?</string>
+    <string name="dayclose_correct_need_reason">Tulis alasan koreksi hitungan.</string>
+    <string name="dayclose_correct_saved">Hitungan dikoreksi. Angka lama tetap ada di Siapa melakukan apa.</string>
+    <string name="audit_day_counted">Dihitung %1$s</string>
+    <string name="audit_day_counted_was">Dihitung %1$s (sebelumnya %2$s)</string>
 </resources>

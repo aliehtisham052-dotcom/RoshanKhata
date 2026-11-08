@@ -4011,10 +4011,10 @@ class PartyDetailActivity : BaseActivity() {
      * Who did what (7 Nov 2026, the review's L7): a customer's page put on the hosting, or taken back, is an export
      * of the book, written with who did it, as the sales report's file is.
      */
-    private suspend fun auditLink(d: com.innovation313.roshankhata.data.KhataDao, party: Long, detail: String) {
+    private suspend fun auditLink(d: com.innovation313.roshankhata.data.KhataDao, party: Long, action: String) {
+        // Its own actions since 8 Nov 2026 (they read "Exported" before); no detail, Who did what looks the name up.
         runCatching {
-            d.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName,
-                "parties", party, detail)
+            d.log(action, com.innovation313.roshankhata.data.Access.userName, "parties", party)
         }
     }
 
@@ -4023,12 +4023,11 @@ class PartyDetailActivity : BaseActivity() {
         linkBusy = true
         Toast.makeText(this, R.string.clink_sending, Toast.LENGTH_SHORT).show()
         val app = applicationContext
-        val detail = getString(R.string.clink_menu) + " · " + partyName
         val id = partyId
         lifecycleScope.launch {
             val r = withContext(Dispatchers.IO) {
                 com.innovation313.roshankhata.data.CustomerLinkSync.share(app, uid, claim).also {
-                    if (it is com.innovation313.roshankhata.data.CustomerLink.Shared.Ready) auditLink(dao, id, detail)
+                    if (it is com.innovation313.roshankhata.data.CustomerLink.Shared.Ready) auditLink(dao, id, com.innovation313.roshankhata.data.AuditAction.KHATA_LINK_SENT)
                 }
             }
             linkBusy = false
@@ -4087,12 +4086,11 @@ class PartyDetailActivity : BaseActivity() {
         val app = applicationContext
         // L98 (8 Nov 2026 review): the toasts in the app's language on Android 7-12 as well.
         val say = com.innovation313.roshankhata.ui.AppLanguage.context(app)
-        val detail = getString(R.string.clink_stop) + " · " + partyName
         val id = partyId
         AppScope.launch {
             val d = com.innovation313.roshankhata.data.KhataDatabase.get(app).khataDao()
             val link = com.innovation313.roshankhata.data.CustomerLinkSync.remove(app, uid)
-            auditLink(d, id, detail)
+            auditLink(d, id, com.innovation313.roshankhata.data.AuditAction.KHATA_LINK_STOPPED)
             val r = com.innovation313.roshankhata.data.CustomerLinkSync.flushNow(app)
             // Down at the hosting when the book no longer waits to tell it.
             val down = link == null || d.settingValue(com.innovation313.roshankhata.data.CustomerLink.GONE + link.id) == null

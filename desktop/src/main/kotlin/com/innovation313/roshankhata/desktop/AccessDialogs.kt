@@ -468,6 +468,10 @@ fun AuditPane(dao: KhataDao) {
     var seal by remember { mutableStateOf<AuditChain.Result?>(null) }
     // L35: re-checked when the newest row changes (the window holds 500, so its size never moves once full), not per count.
     LaunchedEffect(rows.firstOrNull()?.id) { seal = withContext(Dispatchers.IO) { AuditChain.verifyAll { after, n -> dao.auditSliceAfter(after, n) } } }
+    // The customer and the direction a row stands for, read now (8 Nov 2026), as the phone's list does.
+    val names by androidx.compose.runtime.produceState(com.innovation313.roshankhata.screens.AuditNames.None, rows) {
+        value = withContext(Dispatchers.IO) { com.innovation313.roshankhata.screens.AuditNames.load(dao, rows) }
+    }
     FluentPage(word(W.audit_title), word(W.audit_subtitle), scroll = false) {
         seal?.let { s ->
             Text(
@@ -482,9 +486,9 @@ fun AuditPane(dao: KhataDao) {
                 items(rows, key = { it.id }) { a ->
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Column(Modifier.weight(1f)) {
-                            Text(auditWord(a), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(com.innovation313.roshankhata.screens.auditActionWord(a, names), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             val who = a.user?.let { if (it == Access.OWNER) word(W.access_owner) else Format.name(it) } ?: word(W.access_owner)
-                            Text(listOfNotNull(word(W.audit_by, who), com.innovation313.roshankhata.screens.auditDetail(a, staff)).joinToString(" \u00b7 "),
+                            Text(listOfNotNull(word(W.audit_by, who), com.innovation313.roshankhata.screens.auditDetail(a, staff, names)).joinToString(" \u00b7 "),
                                 color = c.inkSoft, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         }
                         Text(Format.dateTime(a.timestamp), color = c.textMuted, fontSize = 12.sp, maxLines = 1, softWrap = false)

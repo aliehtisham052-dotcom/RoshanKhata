@@ -79,8 +79,8 @@ class StaffActivity : BaseActivity() {
     private fun refreshAccessButtons() {
         lifecycleScope.launch {
             val has = com.innovation313.roshankhata.data.Access.ownerPin(dao) != null
-            findViewById<android.widget.Button>(R.id.btnOwnerPin).setText(if (has) R.string.access_owner_pin_change else R.string.access_owner_pin_set)
-            findViewById<android.widget.Button>(R.id.btnCounterMode).setText(
+            findViewById<TextView>(R.id.tvOwnerPinTitle).setText(if (has) R.string.access_owner_pin_change else R.string.access_owner_pin_set)
+            findViewById<TextView>(R.id.tvCounterModeTitle).setText(
                 if (com.innovation313.roshankhata.data.Access.counterMode) R.string.access_counter_on_label else R.string.access_counter_off_label
             )
         }
