@@ -4425,4 +4425,9 @@
     <string name="confirm_box_hint">اكتب هنا</string>
     <string name="erase_all_instruction">اكتب %1$s لمسح كل شيء</string>
     <string name="business_delete_instruction">اكتب %1$s لحذف هذا النشاط التجاري</string>
+    <string name="muhar_badge_sealed">مختوم · %1$s</string>
+    <string name="muhar_badge_tonight">سيُختم الليلة</string>
+    <string name="muhar_row_sealed">مختوم</string>
+    <string name="muhar_offer_text">ختم الدفتر: أثبت في أي يوم كُتبت قيودك. مجاني؛ لا يغادر الهاتف سوى بصمة.</string>
+    <string name="muhar_offer_dismiss">ليس الآن</string>
 </resources>

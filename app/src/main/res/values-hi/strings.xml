@@ -4200,4 +4200,9 @@
     <string name="confirm_box_hint">यहाँ लिखें</string>
     <string name="erase_all_instruction">सब कुछ मिटाने के लिए %1$s लिखें</string>
     <string name="business_delete_instruction">इस कारोबार को हटाने के लिए %1$s लिखें</string>
+    <string name="muhar_badge_sealed">मुहर लग चुकी · %1$s</string>
+    <string name="muhar_badge_tonight">आज रात मुहर लगेगी</string>
+    <string name="muhar_row_sealed">मुहर लग चुकी</string>
+    <string name="muhar_offer_text">किताब की मुहर: साबित करें कि आपकी एंट्रियाँ किस दिन लिखी गईं। मुफ़्त; फ़ोन से सिर्फ़ एक फ़िंगरप्रिंट जाता है।</string>
+    <string name="muhar_offer_dismiss">अभी नहीं</string>
 </resources>

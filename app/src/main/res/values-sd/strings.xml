@@ -4180,4 +4180,9 @@
     <string name="confirm_box_hint">هتي لکو</string>
     <string name="erase_all_instruction">سڀ ڪجهه ختم ڪرڻ لاءِ %1$s لکو</string>
     <string name="business_delete_instruction">هي ڪاروبار ڊيليٽ ڪرڻ لاءِ %1$s لکو</string>
+    <string name="muhar_badge_sealed">مهر لڳي چڪي · %1$s</string>
+    <string name="muhar_badge_tonight">اڄ رات مهر لڳندي</string>
+    <string name="muhar_row_sealed">مهر لڳي چڪي</string>
+    <string name="muhar_offer_text">ڪتاب جي مهر: ثابت ڪريو ته توهان جون داخلائون ڪهڙي ڏينهن لکيون ويون. مفت؛ فون مان صرف هڪ فنگر پرنٽ وڃي ٿو.</string>
+    <string name="muhar_offer_dismiss">هاڻي نه</string>
 </resources>

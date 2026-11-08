@@ -4132,4 +4132,9 @@
     <string name="confirm_box_hint">Ketik di sini</string>
     <string name="erase_all_instruction">Ketik %1$s untuk menghapus semuanya</string>
     <string name="business_delete_instruction">Ketik %1$s untuk menghapus bisnis ini</string>
+    <string name="muhar_badge_sealed">Disegel · %1$s</string>
+    <string name="muhar_badge_tonight">Akan disegel malam ini</string>
+    <string name="muhar_row_sealed">Disegel</string>
+    <string name="muhar_offer_text">Segel buku: buktikan pada hari apa catatan Anda ditulis. Gratis; hanya sidik digital yang keluar dari ponsel.</string>
+    <string name="muhar_offer_dismiss">Nanti saja</string>
 </resources>

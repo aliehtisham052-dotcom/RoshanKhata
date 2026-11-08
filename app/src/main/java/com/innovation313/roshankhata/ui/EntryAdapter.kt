@@ -82,6 +82,17 @@ class EntryAdapter(
         }
     }
 
+    /**
+     * Which entries a seal covers (Kitab ki Muhar, 8 Nov 2026): one figure pair read once per screen resume, decided per
+     * row in the binder. Like selection it is not part of [EntryRow]; a change repaints the rows' mark only.
+     */
+    var sealCover: com.innovation313.roshankhata.data.SealCover? = null
+        set(v) {
+            val same = field?.firstTo == v?.firstTo && field?.lastTo == v?.lastTo
+            field = v
+            if (!same && itemCount > 0) notifyItemRangeChanged(0, itemCount)
+        }
+
     fun positionOf(id: Long): Int = currentList.indexOfFirst { it.entry.id == id }
 
     /**
@@ -120,6 +131,7 @@ class EntryAdapter(
         val tvRunningBalance: TextView = view.findViewById(R.id.tvRunningBalance)
         val cbSelect: CheckBox = view.findViewById(R.id.cbSelect)
         val tvNewTag: TextView = view.findViewById(R.id.tvNewTag)
+        val ivSealed: View = view.findViewById(R.id.ivSealed)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -159,6 +171,7 @@ class EntryAdapter(
 
         val isNew = e.id == newEntryId && !selectionMode
         holder.tvNewTag.visibility = if (isNew) View.VISIBLE else View.GONE
+        holder.ivSealed.visibility = if (sealCover?.covers(e.id) == true) View.VISIBLE else View.GONE
         val chosen = selectionMode && e.id in selectedIds
         // A chosen row wears its own fill and a heavier green edge (night-aware colours), not just a tick.
         holder.itemView.setBackgroundResource(

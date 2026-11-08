@@ -100,6 +100,22 @@
                         android:textColor="@color/text_muted"
                         android:textSize="13sp" />
 
+                    <!-- Kitab ki Muhar (8 Nov 2026): "Sealed · 9 Nov 2026" / "Will be sealed tonight"; gone when the seal is off. -->
+                    <TextView
+                        android:id="@+id/tvSealBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:drawableStart="@drawable/ic_shield_check"
+                        android:drawablePadding="6dp"
+                        android:drawableTint="@color/brand_green_text"
+                        android:gravity="center_vertical"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"

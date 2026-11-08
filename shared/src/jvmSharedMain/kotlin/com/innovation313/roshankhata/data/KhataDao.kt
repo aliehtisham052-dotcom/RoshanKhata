@@ -5200,6 +5200,14 @@ interface KhataDao {
     @Query("SELECT id, sealedAt, fromId, toId, leafCount, auditHead, prevDigest, digest, tokens FROM book_seals ORDER BY id DESC LIMIT 1")
     suspend fun latestSealHead(): SealHead?
 
+    /** The first seal's toId: entries at or below it predate sealing (SealCover). Null for a book with no seal. */
+    @Query("SELECT toId FROM book_seals ORDER BY id LIMIT 1")
+    suspend fun firstSealTo(): Long?
+
+    /** The seal whose range (fromId, toId] holds entry [entryId], without its leaves (the receipt's badge). */
+    @Query("SELECT id, sealedAt, fromId, toId, leafCount, auditHead, prevDigest, digest, tokens FROM book_seals WHERE fromId < :entryId AND toId >= :entryId ORDER BY id DESC LIMIT 1")
+    suspend fun sealHeadCovering(entryId: Long): SealHead?
+
     /** Whether the book has any seal (the entry screen's Seal proof). */
     @Query("SELECT EXISTS(SELECT 1 FROM book_seals)")
     suspend fun hasSeals(): Boolean

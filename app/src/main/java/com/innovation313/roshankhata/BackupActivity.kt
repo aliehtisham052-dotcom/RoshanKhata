@@ -251,6 +251,12 @@ class BackupActivity : BaseActivity() {
         findViewById<MaterialButton>(R.id.btnSeals).setOnClickListener {
             startActivity(Intent(this, SealsActivity::class.java))
         }
+        // Home's Kitab ki Muhar card brings the owner straight to this card (not after a rotation).
+        if (intent.getBooleanExtra(EXTRA_SEAL, false)) {
+            val card = findViewById<View>(R.id.sealCard)
+            card.post { card.requestRectangleOnScreen(android.graphics.Rect(0, 0, card.width, card.height), false) }
+            intent.removeExtra(EXTRA_SEAL)
+        }
     }
 
     /** What leaves the phone, said before the first seal is made. */
@@ -264,6 +270,7 @@ class BackupActivity : BaseActivity() {
                 val app = applicationContext
                 lifecycleScope.launch {
                     val ok = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.BookSeals.turnOn(dao) }.isSuccess }
+                    if (ok) com.innovation313.roshankhata.ui.SealOffer.markDone(this@BackupActivity)
                     showSeal()
                     if (!ok) { Toast.makeText(this@BackupActivity, R.string.save_failed_not_saved, Toast.LENGTH_LONG).show(); return@launch }
                     // The first seal's witnesses at once, on AppScope (leaving the screen does not cut them short).
@@ -311,6 +318,8 @@ class BackupActivity : BaseActivity() {
     companion object {
         /** Open straight into "Continue with Google" when not connected yet. */
         const val EXTRA_CONNECT = "connect_google"
+        /** Home's seal card: scroll to the Kitab ki Muhar card. */
+        const val EXTRA_SEAL = "open_seal"
 
         /** The Backup screen, opening on the Google account picker if no account is connected. */
         fun connectIntent(context: android.content.Context): Intent =

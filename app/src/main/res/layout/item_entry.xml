@@ -5,6 +5,7 @@
   the list under the light header reads as the same app. Was a bare row.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
@@ -51,6 +52,17 @@
                 android:textAlignment="viewStart"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
+
+            <!-- Kitab ki Muhar: a seal covers this entry (8 Nov 2026). -->
+            <ImageView
+                android:id="@+id/ivSealed"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/muhar_row_sealed"
+                android:src="@drawable/ic_shield_check"
+                android:visibility="gone"
+                app:tint="@color/brand_green_text" />
 
             <TextView
                 android:id="@+id/tvNewTag"

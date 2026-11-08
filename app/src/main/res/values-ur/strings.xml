@@ -4152,4 +4152,9 @@
     <string name="confirm_box_hint">یہاں لکھیں</string>
     <string name="erase_all_instruction">سب کچھ مٹانے کے لیے %1$s لکھیں</string>
     <string name="business_delete_instruction">اس کاروبار کو حذف کرنے کے لیے %1$s لکھیں</string>
+    <string name="muhar_badge_sealed">مہر لگ چکی · %1$s</string>
+    <string name="muhar_badge_tonight">آج رات مہر لگے گی</string>
+    <string name="muhar_row_sealed">مہر لگ چکی</string>
+    <string name="muhar_offer_text">کتاب کی مہر: ثابت کریں کہ آپ کے اندراجات کس دن لکھے گئے۔ مفت؛ فون سے صرف ایک فنگر پرنٹ جاتا ہے۔</string>
+    <string name="muhar_offer_dismiss">ابھی نہیں</string>
 </resources>

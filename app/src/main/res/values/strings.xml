@@ -4365,4 +4365,9 @@
     <string name="confirm_box_hint">Type here</string>
     <string name="erase_all_instruction">Type %1$s to erase everything</string>
     <string name="business_delete_instruction">Type %1$s to delete this business</string>
+    <string name="muhar_badge_sealed">Sealed · %1$s</string>
+    <string name="muhar_badge_tonight">Will be sealed tonight</string>
+    <string name="muhar_row_sealed">Sealed</string>
+    <string name="muhar_offer_text">Book seal: prove on which day your entries were written. Free; only a fingerprint leaves the phone.</string>
+    <string name="muhar_offer_dismiss">Not now</string>
 </resources>

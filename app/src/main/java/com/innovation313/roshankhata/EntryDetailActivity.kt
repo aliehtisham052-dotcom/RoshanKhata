@@ -997,13 +997,37 @@ class EntryDetailActivity : BaseActivity() {
     /** "Seal proof" shows once the book has any seal (the owner turned the seal on at some point). */
     private fun renderSealProof() {
         val btn = findViewById<MaterialButton>(R.id.btnSealProof)
+        val badge = findViewById<android.widget.TextView>(R.id.tvSealBadge)
         lifecycleScope.launch {
-            val any = withContext(Dispatchers.IO) {
-                runCatching { KhataDatabase.get(this@EntryDetailActivity).khataDao().hasSeals() }.getOrDefault(false)
+            // The badge: the seal that covers this entry (its date), else "tonight" when the switch is on and the
+            // entry is newer than the newest seal, else nothing. Three cheap reads, none of them a seal's leaves.
+            class Seen(val any: Boolean, val sealedAt: Long?, val tonight: Boolean)
+            val seen = withContext(Dispatchers.IO) {
+                runCatching {
+                    val dao = KhataDatabase.get(this@EntryDetailActivity).khataDao()
+                    val any = dao.hasSeals()
+                    val cover = com.innovation313.roshankhata.data.SealCover.read(dao)
+                    val at = if (cover?.covers(entryId) == true) dao.sealHeadCovering(entryId)?.sealedAt else null
+                    val tonight = at == null && (cover == null || cover.waiting(entryId)) &&
+                        com.innovation313.roshankhata.data.BookSeals.isOn(dao)
+                    Seen(any, at, tonight)
+                }.getOrDefault(Seen(false, null, false))
             }
             if (isFinishing || isDestroyed) return@launch
-            btn.visibility = if (any) View.VISIBLE else View.GONE
+            btn.visibility = if (seen.any) View.VISIBLE else View.GONE
             btn.setOnClickListener { showSealProof() }
+            val sealedAt = seen.sealedAt
+            when {
+                sealedAt != null -> {
+                    badge.text = getString(R.string.muhar_badge_sealed, androidx.core.text.BidiFormatter.getInstance().unicodeWrap(Digits.toLatin(Format.dateOnly(sealedAt))))
+                    badge.visibility = View.VISIBLE
+                }
+                seen.tonight -> {
+                    badge.setText(R.string.muhar_badge_tonight)
+                    badge.visibility = View.VISIBLE
+                }
+                else -> badge.visibility = View.GONE
+            }
         }
     }
 

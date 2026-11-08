@@ -128,6 +128,19 @@ class MainActivity : BaseActivity() {
         }
         tvHomeFirst = findViewById(R.id.tvHomeFirst)
         tvHomeFirst.setOnClickListener { startActivity(android.content.Intent(this, KhataActivity::class.java)) }
+        findViewById<View>(R.id.btnHomeSealNo).setOnClickListener {
+            com.innovation313.roshankhata.ui.SealOffer.markDone(this)
+            findViewById<View>(R.id.cardHomeSeal).visibility = View.GONE
+        }
+        findViewById<View>(R.id.btnHomeSealOn).setOnClickListener {
+            // Answered: it is not offered again, whatever the owner does on the Backup screen.
+            com.innovation313.roshankhata.ui.SealOffer.markDone(this)
+            findViewById<View>(R.id.cardHomeSeal).visibility = View.GONE
+            startActivity(
+                android.content.Intent(this, BackupActivity::class.java)
+                    .putExtra(BackupActivity.EXTRA_SEAL, true)
+            )
+        }
         ivEye = findViewById(R.id.ivEye)
 
         findViewById<View>(R.id.balanceRow).apply {
@@ -455,6 +468,22 @@ class MainActivity : BaseActivity() {
         observeTotals()
     }
 
+    /** Kitab ki Muhar's one-time card (SealOffer): only while the open book's seal is off and it was never answered. */
+    private fun showSealOffer() {
+        lifecycleScope.launch {
+            val show = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                runCatching {
+                    com.innovation313.roshankhata.ui.SealOffer.shouldShow(
+                        this@MainActivity,
+                        com.innovation313.roshankhata.data.KhataDatabase.get(this@MainActivity).khataDao()
+                    )
+                }.getOrDefault(false)
+            }
+            if (isFinishing || isDestroyed) return@launch
+            findViewById<View>(R.id.cardHomeSeal).visibility = if (show) View.VISIBLE else View.GONE
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         tellIfBookWasRebuilt()
@@ -478,6 +507,7 @@ class MainActivity : BaseActivity() {
             paintToday(alerts)
             maybeOfferBackup()
         }
+        showSealOffer()
         paintHeaderLine()
         // Returning from another screen, the bar must point at Home again.
         showViewerNote()

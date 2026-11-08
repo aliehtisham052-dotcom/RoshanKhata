@@ -4152,4 +4152,9 @@
     <string name="confirm_box_hint">Yahan likhein</string>
     <string name="erase_all_instruction">Sab kuch mitane ke liye %1$s likhein</string>
     <string name="business_delete_instruction">Is karobar ko hazf karne ke liye %1$s likhein</string>
+    <string name="muhar_badge_sealed">Muhar lag chuki · %1$s</string>
+    <string name="muhar_badge_tonight">Aaj raat muhar lagegi</string>
+    <string name="muhar_row_sealed">Muhar lag chuki</string>
+    <string name="muhar_offer_text">Kitab ki Muhar: sabit karein ke aapki entries kis din likhi gayin. Muft; phone se sirf ek fingerprint jata hai.</string>
+    <string name="muhar_offer_dismiss">Abhi nahi</string>
 </resources>

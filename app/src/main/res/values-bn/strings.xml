@@ -4200,4 +4200,9 @@
     <string name="confirm_box_hint">এখানে লিখুন</string>
     <string name="erase_all_instruction">সব কিছু মুছতে %1$s লিখুন</string>
     <string name="business_delete_instruction">এই ব্যবসা মুছতে %1$s লিখুন</string>
+    <string name="muhar_badge_sealed">সিল করা হয়েছে · %1$s</string>
+    <string name="muhar_badge_tonight">আজ রাতে সিল হবে</string>
+    <string name="muhar_row_sealed">সিল করা হয়েছে</string>
+    <string name="muhar_offer_text">খাতার সিল: প্রমাণ করুন আপনার এন্ট্রিগুলো কোন দিন লেখা হয়েছিল। বিনামূল্যে; ফোন থেকে শুধু একটি ফিঙ্গারপ্রিন্ট যায়।</string>
+    <string name="muhar_offer_dismiss">এখন নয়</string>
 </resources>

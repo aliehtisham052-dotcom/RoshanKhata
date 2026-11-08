@@ -2501,6 +2501,13 @@ class PartyDetailActivity : BaseActivity() {
         // An entry binned on its own screen: offer the undo here, where we land.
         com.innovation313.roshankhata.ui.UndoDelete.take(partyId)?.let { offerUndo(it.entryIds) }
         askReminderPending()
+        // Kitab ki Muhar: which rows a seal covers, two cheap reads, no per-row query.
+        lifecycleScope.launch {
+            val cover = withContext(Dispatchers.IO) {
+                runCatching { com.innovation313.roshankhata.data.SealCover.read(dao) }.getOrNull()
+            }
+            if (!isFinishing && !isDestroyed && ::adapter.isInitialized) adapter.sealCover = cover
+        }
     }
 
     /** A reminder handed to WhatsApp or the SMS app and not yet confirmed: Android cannot say it was sent (8 Nov 2026). */

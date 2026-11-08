@@ -4180,4 +4180,9 @@
     <string name="confirm_box_hint">اینجا بنویسید</string>
     <string name="erase_all_instruction">برای پاک کردن همه چیز %1$s را بنویسید</string>
     <string name="business_delete_instruction">برای حذف این کسب‌وکار %1$s را بنویسید</string>
+    <string name="muhar_badge_sealed">مهر شده · %1$s</string>
+    <string name="muhar_badge_tonight">امشب مهر می‌شود</string>
+    <string name="muhar_row_sealed">مهر شده</string>
+    <string name="muhar_offer_text">مهر دفتر: ثابت کنید ثبت‌هایتان در چه روزی نوشته شده‌اند. رایگان؛ فقط یک اثر انگشت دیجیتال از گوشی خارج می‌شود.</string>
+    <string name="muhar_offer_dismiss">فعلاً نه</string>
 </resources>
