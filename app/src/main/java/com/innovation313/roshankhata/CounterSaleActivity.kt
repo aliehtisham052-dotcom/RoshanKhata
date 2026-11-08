@@ -59,9 +59,17 @@ class CounterSaleActivity : BaseActivity() {
     private var shiftItem: android.view.MenuItem? = null
     private var whoItem: android.view.MenuItem? = null
 
+    /** An open return form's typed lines (M88, 8 Nov 2026): the ticket, who allowed it, then ReturnDraft's snapshot. */
+    private val returnKeep by lazy { com.innovation313.roshankhata.ui.PrefsDraftKeep(this, "return_draft") }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_counter_sale)
+        returnKeep.clearOnFreshStart(savedInstanceState)
+        if (savedInstanceState != null) returnKeep.read()?.let { k ->
+            val id = k.getOrNull(0)?.toLongOrNull()
+            if (id != null) window.decorView.post { if (!isFinishing && !isDestroyed) startReturn(id, k.getOrNull(1)?.ifEmpty { null }, k.drop(2)) }
+        }
         // How this works, the first time it opens on this phone (1 Nov 2026).
         com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.COUNTER)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
@@ -813,19 +821,24 @@ class CounterSaleActivity : BaseActivity() {
     }
 
     /** Goods back against a ticket: the shared ReturnForm in a dialog, posted in one transaction. */
-    private fun startReturn(saleId: Long, allowedBy: String?) {
+    private fun startReturn(saleId: Long, allowedBy: String?, resume: List<String>? = null) {
         lifecycleScope.launch {
             val full = withContext(Dispatchers.IO) { dao.saleWithLines(saleId) } ?: return@launch
             val back = withContext(Dispatchers.IO) { dao.returnedOfSale(saleId) }.associate { it.saleItemId to it.qty }
             val creditedBefore = withContext(Dispatchers.IO) { dao.returnedTotalOfSale(saleId) }
             val draft = com.innovation313.roshankhata.screens.ReturnDraft(full, back, creditedBefore)
+            resume?.let { draft.restore(it) }
             val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
                 android.content.res.Configuration.UI_MODE_NIGHT_YES
             val words = AndroidWords(this@CounterSaleActivity)
             var problem by mutableStateOf<String?>(null)
             val view = ComposeView(this@CounterSaleActivity)
             val dialog = MaterialAlertDialogBuilder(this@CounterSaleActivity).setTitle(R.string.pos_return_title).setView(view).create()
+            dialog.setOnDismissListener { if (!isChangingConfigurations) returnKeep.write(null) }
             view.setContent {
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    androidx.compose.runtime.snapshotFlow { draft.snapshot() }.collect { returnKeep.write(listOf(saleId.toString(), allowedBy.orEmpty()) + it) }
+                }
                 RoshanTheme(dark = dark) {
                     ProvideWords(words) {
                         com.innovation313.roshankhata.screens.ReturnForm(draft, onCancel = { dialog.dismiss() }, message = problem, onPost = {

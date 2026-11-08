@@ -29,11 +29,13 @@ class OrdersActivity : BaseActivity() {
         val dao = KhataDatabase.get(this).khataDao()
         val shop = BusinessProfile.businessName(this)
         // The low-stock automation's tap: the draft at once, on a fresh screen only (a rotation keeps what was typed).
+        val orderKeep = com.innovation313.roshankhata.ui.PrefsDraftKeep(this, "order_draft")
+        orderKeep.clearOnFreshStart(savedInstanceState)
         val startLow = savedInstanceState == null && intent.getBooleanExtra(EXTRA_START_LOW, false)
         findViewById<ComposeView>(R.id.ordersCompose).setContent {
             RoshanTheme(dark = dark) {
                 ProvideWords(words) {
-                    OrdersScreen(dao, shop, itemHint = com.innovation313.roshankhata.data.TradeVocab.itemHint(this@OrdersActivity), startLow = startLow, onSend = { phone, text ->
+                    OrdersScreen(dao, shop, itemHint = com.innovation313.roshankhata.data.TradeVocab.itemHint(this@OrdersActivity), startLow = startLow, keep = orderKeep, onSend = { phone, text ->
                         val number = phone?.let { WhatsAppNumber.of(it) }
                         val sent = number?.let {
                             runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$it?text=" + Uri.encode(text)))) }.isSuccess

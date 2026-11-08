@@ -83,6 +83,7 @@ class InvoiceEditorActivity : BaseActivity() {
         /** A customer's order message pasted from WhatsApp (3 Nov 2026): the new document's lines are read from it. */
         const val EXTRA_PASTED_ORDER = "pasted_order"
         private const val STATE_SCAN_CAMERA_PATH = "scan_camera_path"
+        private const val STATE_DRAFT = "invoice_draft"
     }
 
     // ---------- Scan bill (1 Oct) ----------
@@ -137,6 +138,72 @@ class InvoiceEditorActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
+        // The draft itself (M87, 8 Nov 2026): a rotation, dark mode or a killed process restarted a new invoice blank
+        // and an edited one from its saved row. Everything typed and chosen goes in as one small JSON text.
+        runCatching { if (::itemRows.isInitialized) outState.putString(STATE_DRAFT, draftJson()) }
+    }
+
+    /** The screen as typed, text for text (so "12." or "1+2" in a box comes back as typed). */
+    private fun draftJson(): String {
+        val o = org.json.JSONObject()
+        o.put("customer", etCustomer.text.toString()).put("phone", etPhone.text.toString())
+            .put("number", etInvoiceNumber.text.toString()).put("date", invoiceDate).put("step", step)
+        dueDate?.let { o.put("due", it) }
+        discountPercent?.let { o.put("dp", it) }
+        discountAmount?.let { o.put("da", it) }
+        taxPercent?.let { o.put("tax", it) }
+        note?.let { o.put("note", it) }
+        chargeLabel?.let { o.put("cl", it) }
+        chargeAmount?.let { o.put("ca", it) }
+        receivedAmount?.let { o.put("rec", it) }
+        sourceEntryId?.let { o.put("src", it) }
+        if (::vpTemplates.isInitialized && templatePagerAdapter.itemCount > 0) o.put("tpl", templateIds.getOrNull(vpTemplates.currentItem) ?: 1)
+        else pendingTemplateId?.let { o.put("tpl", it) }
+        val arr = org.json.JSONArray()
+        rows.forEach { r ->
+            arr.put(org.json.JSONArray().put(r.name.text.toString()).put(r.qty.text.toString()).put(r.unit.text.toString()).put(r.rate.text.toString()))
+        }
+        return o.put("rows", arr).toString()
+    }
+
+    /** Puts a saved draft over whatever the screen loaded (a new blank row, or the saved invoice being edited). */
+    private fun restoreDraft(json: String) {
+        val o = runCatching { org.json.JSONObject(json) }.getOrNull() ?: return
+        etCustomer.setText(o.optString("customer"))
+        etPhone.setText(o.optString("phone"))
+        etInvoiceNumber.setText(o.optString("number"))
+        invoiceDate = o.optLong("date", invoiceDate)
+        btnDate.text = getString(R.string.invoice_date_set, Format.dateOnly(invoiceDate))
+        dueDate = if (o.has("due")) o.getLong("due") else null
+        dueDate?.let {
+            btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it))
+            btnDue.setTextColor(ContextCompat.getColor(this, R.color.ink))
+        }
+        discountPercent = if (o.has("dp")) o.getDouble("dp") else null
+        discountAmount = if (o.has("da")) o.getDouble("da") else null
+        taxPercent = if (o.has("tax")) o.getDouble("tax") else null
+        note = if (o.has("note")) o.getString("note") else null
+        chargeLabel = if (o.has("cl")) o.getString("cl") else null
+        chargeAmount = if (o.has("ca")) o.getDouble("ca") else null
+        receivedAmount = if (o.has("rec")) o.getDouble("rec") else null
+        if (o.has("src")) sourceEntryId = o.getLong("src")
+        if (o.has("tpl")) pendingTemplateId = o.getInt("tpl")
+        val saved = o.optJSONArray("rows")
+        if (saved != null && saved.length() > 0) {
+            itemRows.removeAllViews()
+            rows.clear()
+            for (i in 0 until saved.length()) {
+                val t = saved.getJSONArray(i)
+                addRow()
+                rows.last().let { r ->
+                    r.name.setText(t.optString(0), false); r.qty.setText(t.optString(1))
+                    r.unit.setText(t.optString(2)); r.rate.setText(t.optString(3))
+                }
+            }
+            renumberRows()
+        }
+        refreshTotals()
+        showStep(o.optInt("step", 1).coerceIn(1, 3))
     }
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
@@ -365,14 +432,19 @@ class InvoiceEditorActivity : BaseActivity() {
         val editId = intent.getLongExtra(EXTRA_INVOICE_ID, -1L).takeIf { it > 0 }
         if (editId != null) {
             supportActionBar?.setTitle(R.string.edit_invoice)
-            lifecycleScope.launch { loadForEditing(editId) }
+            lifecycleScope.launch { loadForEditing(editId); savedInstanceState?.getString(STATE_DRAFT)?.let { restoreDraft(it) } }
         } else {
             kind = intent.getStringExtra(EXTRA_KIND)?.takeIf { DocKind.isSaved(it) } ?: DocKind.INVOICE
             applyKind()
             val fromEntry = intent.getLongExtra(EXTRA_FROM_ENTRY_ID, -1L).takeIf { it > 0 }
             // Read again after a rotation too, the same way an edited invoice is.
             val pasted = intent.getStringExtra(EXTRA_PASTED_ORDER)?.takeIf { it.isNotBlank() }
-            if (fromEntry != null) {
+            val draft = savedInstanceState?.getString(STATE_DRAFT)
+            if (draft != null) {
+                // The draft as it was typed wins over the entry or the paste it started from (M87).
+                addRow()
+                restoreDraft(draft)
+            } else if (fromEntry != null) {
                 lifecycleScope.launch { loadFromEntry(fromEntry) }
             } else if (pasted != null) {
                 lifecycleScope.launch { loadFromPaste(pasted, announce = savedInstanceState == null) }

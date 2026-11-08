@@ -76,8 +76,18 @@ class EntryDetailActivity : BaseActivity() {
     /** This entry's goods lines, in order. Empty for a money-only entry. */
     private var items: List<EntryItem> = emptyList()
 
+    /** The Edit entry form while open (M90, 8 Nov 2026): its five text boxes survive a rotation, dark mode or a killed process. */
+    private val editDraft = com.innovation313.roshankhata.ui.FormDraft("edit_entry_form")
+    private var editReopen: com.innovation313.roshankhata.ui.FormDraft.Saved? = null
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        editDraft.save(outState)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        editReopen = editDraft.saved(savedInstanceState)
         setContentView(R.layout.activity_entry_detail)
 
         // Edge-to-edge, the mechanism proven on the Home screen.
@@ -213,6 +223,7 @@ class EntryDetailActivity : BaseActivity() {
             entry = e
             items = dao.itemsOfEntry(entryId)
             render(e)
+            editReopen?.let { r -> editReopen = null; if (!isFinishing && !isDestroyed) showEditDialog(r) }
         }
     }
 
@@ -357,8 +368,8 @@ class EntryDetailActivity : BaseActivity() {
      * that is not a typo an owner makes, and flipping it is a different and
      * far riskier operation than fixing what this entry actually says.
      */
-    private fun showEditDialog() {
-        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, KhataDatabase.get(this).khataDao()) { showEditDialog() }) return
+    private fun showEditDialog(restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, KhataDatabase.get(this).khataDao()) { showEditDialog(restore) }) return
         val e = entry ?: return
         // An entry made with the item list — several items, a rate, or a free
         // item — is edited on the full form it was made on; this small dialog
@@ -610,6 +621,8 @@ class EntryDetailActivity : BaseActivity() {
         // The boxes as the entry filled them, to tell a correction from a look.
         val boxes = listOf(etAmount, etNote, etItemName, etQuantity, etUnit)
         val opened = boxes.map { it.text.toString() }
+        com.innovation313.roshankhata.ui.FormDraft.fill(boxes, restore?.texts)
+        editDraft.open(0) { boxes }
 
         MaterialAlertDialogBuilder(this)
             .setView(view)
@@ -703,6 +716,7 @@ class EntryDetailActivity : BaseActivity() {
                 }
                 // Back, a tap beside it or Cancel threw a correction away in silence (5 Nov 2026, the supplier bill's
                 // flaw): a changed box, day, batch or signature asks first; an edit only looked at closes at once.
+                form.setOnDismissListener { editDraft.closed(this@EntryDetailActivity) }
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this@EntryDetailActivity,
                     dialog = form,

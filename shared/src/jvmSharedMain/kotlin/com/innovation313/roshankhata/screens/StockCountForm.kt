@@ -55,6 +55,20 @@ class CountDraft(stock: List<Stock.ProductStock>) {
     val lines = com.innovation313.roshankhata.data.NameOrder.sortedBy(stock) { it.name }.map { Line(it) }
     var note by mutableStateOf("")
     fun counts(): Map<Long, Double> = lines.mapNotNull { l -> l.value?.let { l.stock.productId to it } }.toMap()
+
+    /** What is typed, flat: the note, then "productId=counted" for each shelf counted so far (M88). */
+    fun snapshot(): List<String> = listOf(note) + lines.filter { it.counted.isNotBlank() }.map { it.stock.productId.toString() + "=" + it.counted }
+
+    /** Puts a snapshot back; products that are gone are skipped. Returns how many shelves came back. */
+    fun restore(saved: List<String>): Int {
+        note = saved.firstOrNull().orEmpty()
+        var n = 0
+        saved.drop(1).forEach { e ->
+            val i = e.indexOf('=')
+            if (i > 0) lines.firstOrNull { it.stock.productId.toString() == e.substring(0, i) }?.let { it.counted = e.substring(i + 1); n++ }
+        }
+        return n
+    }
 }
 
 @Composable

@@ -87,11 +87,16 @@ class CashbookActivity : BaseActivity() {
      * The money in/out form while it is open: which way and what is typed in it (8 Nov 2026 review, M90 — a rotation, dark
      * mode or a process killed behind the camera lost "Money out 4,500 Bijli"). Chips, the day and the picture are not kept.
      */
+    /** The day-close form's typed boxes (M90, 8 Nov 2026). */
+    private val closeDraft = com.innovation313.roshankhata.ui.FormDraft("close_form")
+    private var closeRestore: List<String>? = null
+
     private var cashFormIncome: Boolean? = null
     private var cashFormTexts: (() -> List<String>)? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        closeDraft.save(outState)
         cashFormIncome?.let { inc ->
             outState.putBoolean(STATE_FORM_INCOME, inc)
             cashFormTexts?.let { outState.putStringArrayList(STATE_FORM_TEXTS, ArrayList(it())) }
@@ -107,6 +112,10 @@ class CashbookActivity : BaseActivity() {
         pendingPhoto = savedInstanceState?.getString(STATE_PHOTO_PENDING)
         photoForRow = savedInstanceState?.getLong(STATE_PHOTO_ROW, -1L)?.takeIf { it > 0 }
         setContentView(R.layout.activity_cashbook)
+        closeDraft.saved(savedInstanceState)?.let { sv ->
+            closeRestore = sv.texts
+            window.decorView.post { if (!isFinishing && !isDestroyed) showDayClose() }
+        }
         if (savedInstanceState?.containsKey(STATE_FORM_INCOME) == true) {
             val inc = savedInstanceState.getBoolean(STATE_FORM_INCOME)
             val texts = savedInstanceState.getStringArrayList(STATE_FORM_TEXTS)
@@ -200,6 +209,10 @@ class CashbookActivity : BaseActivity() {
             if (last == null) view.findViewById<TextView>(R.id.tvOpeningLabel).setText(R.string.dayclose_opening_first)
             com.innovation313.roshankhata.ui.TextFit.relax(view)
             last?.let { etOpening.setText(Format.plain(it.counted)) }
+            // A form rebuilt after a rotation or a killed process gets back what was typed in it (M90).
+            closeRestore?.let { com.innovation313.roshankhata.ui.FormDraft.fill(listOf(etOpening, etCounted, etNote), it) }
+            closeRestore = null
+            closeDraft.open(0) { listOf(etOpening, etCounted, etNote) }
 
             // Both figures on the app's calculator pad (21 Oct): it types
             // into whichever of the two has the focus, so a drawer can be
@@ -333,6 +346,7 @@ class CashbookActivity : BaseActivity() {
                             etOpening.text.toString() != openedOpening || etCounted.text.isNotBlank() || etNote.text.isNotBlank()
                         }
                     )
+                    dialog.setOnDismissListener { closeDraft.closed(this@CashbookActivity) }
                 }
         }
     }

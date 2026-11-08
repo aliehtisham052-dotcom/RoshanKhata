@@ -81,6 +81,18 @@ class ReturnDraft(val sale: SaleWithLines, returnedSoFar: Map<Long, Double>, pri
     var refundMethod by mutableStateOf(if (sale.sale.partyId != null) SaleReturn.ACCOUNT else PaymentMethod.CASH)
     var refundText by mutableStateOf("")
 
+    /** What is typed, flat: the reason, the refund box, then "saleItemId=qty" per line with a quantity (M88). */
+    fun snapshot(): List<String> = listOf(reason, refundText) + lines.filter { it.qty.isNotBlank() }.map { it.item.id.toString() + "=" + it.qty }
+
+    fun restore(saved: List<String>) {
+        reason = saved.getOrNull(0).orEmpty()
+        refundText = saved.getOrNull(1).orEmpty()
+        saved.drop(2).forEach { e ->
+            val i = e.indexOf('=')
+            if (i > 0) lines.firstOrNull { it.item.id.toString() == e.substring(0, i) }?.let { it.qty = e.substring(i + 1) }
+        }
+    }
+
     val hasParty: Boolean get() = sale.sale.partyId != null
     /** The DAO's own figure: the last of the ticket back credits exactly what is left of it (3 Nov 2026 audit, M07). */
     val total: Double get() = ReturnMath.totalFor(toItems(), sale.sale, lines.associate { it.item.id to it.left }, returnedMoney)

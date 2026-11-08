@@ -79,8 +79,13 @@ class ChequesActivity : BaseActivity() {
         onNothing = { photoForCheque = null }
     )
 
+    /** A new cheque's form while it is open (M90, 8 Nov 2026): the boxes, the direction and the due day survive a rotation or a kill. */
+    private val chequeDraft = com.innovation313.roshankhata.ui.FormDraft("cheque_form")
+    private var chequeReopen: com.innovation313.roshankhata.ui.FormDraft.Saved? = null
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        chequeDraft.save(outState)
         photoFlow.saveState(outState, STATE_PHOTO_CAMERA)
         pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
         photoForCheque?.let { outState.putLong(STATE_PHOTO_CHEQUE, it) }
@@ -91,6 +96,7 @@ class ChequesActivity : BaseActivity() {
         photoFlow.restoreState(savedInstanceState, STATE_PHOTO_CAMERA)
         pendingPhoto = savedInstanceState?.getString(STATE_PHOTO_PENDING)
         photoForCheque = savedInstanceState?.getLong(STATE_PHOTO_CHEQUE, -1L)?.takeIf { it > 0 }
+        chequeReopen = chequeDraft.saved(savedInstanceState)
         setContentView(R.layout.activity_cheques)
         // How this works, the first time it opens on this phone (1 Nov 2026).
         com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
@@ -147,7 +153,11 @@ class ChequesActivity : BaseActivity() {
         }
 
         lifecycleScope.launch {
-            dao.observePartiesWithBalance().collectLatest { parties = it }
+            dao.observePartiesWithBalance().collectLatest {
+                parties = it
+                // The form that a rotation or a killed process closed comes back once the customers are known.
+                chequeReopen?.takeIf { parties.isNotEmpty() && !isFinishing && !isDestroyed }?.let { r -> chequeReopen = null; showChequeDialog(null, r) }
+            }
         }
     }
 
@@ -159,7 +169,7 @@ class ChequesActivity : BaseActivity() {
      * delete the cheque and write it again. The fields are identical either
      * way, so the same dialog does both — [existing] null means a new cheque.
      */
-    private fun showChequeDialog(existing: ChequeWithParty? = null) {
+    private fun showChequeDialog(existing: ChequeWithParty? = null, restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
         if (parties.isEmpty()) {
             Toast.makeText(this, R.string.select_party_first, Toast.LENGTH_LONG).show()
             return
@@ -217,7 +227,13 @@ class ChequesActivity : BaseActivity() {
             )
         )
 
-        var dueDate: Long? = existing?.dueDate
+        // arg = the due day * 2 (0: none) + 1 when "received" (M90): the two choices a text box does not hold.
+        var dueDate: Long? = existing?.dueDate ?: restore?.let { r -> (r.arg / 2).takeIf { it > 0 } }
+        if (existing == null && restore != null) {
+            com.innovation313.roshankhata.ui.FormDraft.fill(listOf(etParty, etAmount, etNumber, etBank, etNote), restore.texts)
+            if (restore.arg % 2L == 0L) rbIssued.isChecked = true else rbReceived.isChecked = true
+            dueDate?.let { btnDate.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
+        }
 
         if (existing != null) {
             // setText(_, false) — filtering the dropdown to the name already
@@ -258,9 +274,10 @@ class ChequesActivity : BaseActivity() {
 
         // The form as it opened — blank and "received" for a new cheque, the cheque's own values for an edit — to
         // tell what the owner changed from what he only looked at.
-        val opened = listOf(etParty, etAmount, etNumber, etBank, etNote).map { it.text.toString() }
-        val openedReceived = rbReceived.isChecked
-        val openedDue = dueDate
+        val opened = if (existing == null && restore != null) List(5) { "" } else listOf(etParty, etAmount, etNumber, etBank, etNote).map { it.text.toString() }
+        val openedReceived = if (existing == null && restore != null) true else rbReceived.isChecked
+        if (existing == null) chequeDraft.open(0, { (dueDate ?: 0L) * 2 + (if (rbReceived.isChecked) 1L else 0L) }) { listOf(etParty, etAmount, etNumber, etBank, etNote) }
+        val openedDue = if (existing == null && restore != null) null else dueDate
 
         MaterialAlertDialogBuilder(this)
             .setTitle(if (existing == null) R.string.add_cheque else R.string.edit_cheque)
@@ -268,6 +285,7 @@ class ChequesActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setOnDismissListener {
                 if (existing == null) {
+                    chequeDraft.closed(this)
                     photoButton = null
                     // A closed form's picture goes; one written went with its cheque.
                     if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }

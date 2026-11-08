@@ -46,8 +46,19 @@ class StaffActivity : BaseActivity() {
     private var monthAt = System.currentTimeMillis()
     private var job: Job? = null
 
+    /** The staff forms while open (M90, 8 Nov 2026): a payment (which 1, arg = person*8 + kind) or a person (2, arg = id, 0 new). The PIN is never kept. */
+    private val staffDraft = com.innovation313.roshankhata.ui.FormDraft("staff_form")
+    private var staffReopen: com.innovation313.roshankhata.ui.FormDraft.Saved? = null
+    private var lastStaff: List<Staff> = emptyList()
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        staffDraft.save(outState)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        staffReopen = staffDraft.saved(savedInstanceState)
         setContentView(R.layout.activity_staff)
         // How this works, the first time it opens on this phone (1 Nov 2026).
         com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.STAFF)
@@ -93,6 +104,15 @@ class StaffActivity : BaseActivity() {
 
     private fun render(staff: List<Staff>, marks: List<StaffAttendance>, pays: List<StaffPayment>, from: Long, to: Long, days: Int) {
         findViewById<View>(R.id.tvStaffEmpty).visibility = if (staff.isEmpty()) View.VISIBLE else View.GONE
+        lastStaff = staff
+        staffReopen?.let { r ->
+            staffReopen = null
+            if (!isFinishing && !isDestroyed) {
+                if (r.which == 1) staff.firstOrNull { it.id == r.arg / 8 }?.let { handOver(it, (r.arg % 8).toInt(), r) }
+                else if (r.arg == 0L) editStaff(null, r)
+                else staff.firstOrNull { it.id == r.arg }?.let { editStaff(it, r) }
+            }
+        }
         val list = findViewById<LinearLayout>(R.id.staffList)
         list.removeAllViews()
         for (person in staff) {
@@ -193,10 +213,12 @@ class StaffActivity : BaseActivity() {
     }
 
     /** An advance or a salary payment, handed over now. */
-    private fun handOver(person: Staff, kind: Int) {
+    private fun handOver(person: Staff, kind: Int, restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
         val amount = field(R.string.staff_amount, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
         val note = field(R.string.staff_note, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
         val form = withPad(box(amount, note), amount, padShown = true)
+        com.innovation313.roshankhata.ui.FormDraft.fill(listOf(amount, note), restore?.texts)
+        staffDraft.open(1, { person.id * 8 + kind }) { listOf(amount, note) }
         MaterialAlertDialogBuilder(this)
             .setTitle(person.name + " \u00b7 " + getString(if (kind == Payroll.ADVANCE) R.string.staff_advance else R.string.staff_pay))
             .setView(form)
@@ -231,6 +253,7 @@ class StaffActivity : BaseActivity() {
                 }
                 // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
                 // bill's flaw). The form opens blank: an amount or a note asks first.
+                dialog.setOnDismissListener { staffDraft.closed(this@StaffActivity) }
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this@StaffActivity,
                     dialog = dialog,
@@ -239,7 +262,7 @@ class StaffActivity : BaseActivity() {
             }
     }
 
-    private fun editStaff(person: Staff?) {
+    private fun editStaff(person: Staff?, restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
         val name = field(R.string.staff_name, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS, person?.name)
         val phone = field(R.string.staff_phone, InputType.TYPE_CLASS_PHONE, person?.phone)
         val salary = field(R.string.staff_salary, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
@@ -261,6 +284,8 @@ class StaffActivity : BaseActivity() {
         // owner changed from what he only looked at.
         val opened = listOf(name, phone, salary).map { it.text.toString() }
         val openedRole = roleBox.selectedItemPosition
+        com.innovation313.roshankhata.ui.FormDraft.fill(listOf(name, phone, salary), restore?.texts)
+        staffDraft.open(2, { person?.id ?: 0L }) { listOf(name, phone, salary) }
         MaterialAlertDialogBuilder(this)
             .setTitle(if (person == null) R.string.staff_add else R.string.staff_edit)
             .setView(form)
@@ -335,6 +360,7 @@ class StaffActivity : BaseActivity() {
                 }
                 // Back, a tap beside it or Cancel threw a typed person (or a correction) away in silence (5 Nov 2026,
                 // the supplier bill's flaw): a changed name, phone, salary or role, or a PIN typed, asks first.
+                dialog.setOnDismissListener { staffDraft.closed(this@StaffActivity) }
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this@StaffActivity,
                     dialog = dialog,

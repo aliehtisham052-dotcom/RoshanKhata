@@ -87,7 +87,9 @@ fun OrdersScreen(
     /** The shop trade's own example items for a typed line; null: a plain "Item name" (31 Oct 2026: it said Urea to every shop). */
     itemHint: String? = null,
     /** Opened from the low-stock automation's notification: start the low-stock draft at once (31 Oct 2026). */
-    startLow: Boolean = false
+    startLow: Boolean = false,
+    /** Keeps a new order's typed lines through a rebuilt screen (8 Nov 2026 review, M88); null: not kept. */
+    keep: DraftKeep? = null
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -97,6 +99,20 @@ fun OrdersScreen(
     var editing by remember { mutableStateOf<OrderDraft?>(null) }
     var receiving by remember { mutableStateOf<PurchaseOrderWithLines?>(null) }
     var told by remember { mutableStateOf<String?>(null) }
+    // A new order that a rotation, dark mode or a killed process interrupted comes back as it was typed (M88).
+    val kept = remember { keep?.read() }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        kept?.let { k ->
+            val d = OrderDraft(null, withContext(Dispatchers.IO) { dao.productsOnce() })
+            if (editing == null && d.restore(k)) editing = d
+        }
+    }
+    androidx.compose.runtime.LaunchedEffect(editing) {
+        val d = editing
+        if (keep == null) return@LaunchedEffect
+        if (d == null || d.existing != null) { if (kept == null || d == null) keep.write(null) }
+        else androidx.compose.runtime.snapshotFlow { d.snapshot() }.collect { keep.write(it) }
+    }
     androidx.compose.runtime.LaunchedEffect(orders) { suppliers = withContext(Dispatchers.IO) { dao.partiesWithBalanceOnce().filter { !it.isCustomer } } }
     val may = Access.can(Access.Permission.STOCK_ADJUST)
     // The actions show when the user may, or when a manager's PIN can be asked for.

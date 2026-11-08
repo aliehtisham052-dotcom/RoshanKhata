@@ -55,8 +55,19 @@ class PlansActivity : BaseActivity() {
 
     private var parties: List<PartyWithBalance> = emptyList()
 
+    /** The plan forms while open (M90, 8 Nov 2026): a new plan (which 0, arg = its next due day) and a payment (1, arg = the plan). */
+    private val planDraft = com.innovation313.roshankhata.ui.FormDraft("plan_form")
+    private var planReopen: com.innovation313.roshankhata.ui.FormDraft.Saved? = null
+    private var planList: List<PlanProgress> = emptyList()
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        planDraft.save(outState)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        planReopen = planDraft.saved(savedInstanceState)
         setContentView(R.layout.activity_plans)
         // How this works, the first time it opens on this phone (1 Nov 2026).
         com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.PLANS)
@@ -85,15 +96,25 @@ class PlansActivity : BaseActivity() {
         lifecycleScope.launch {
             dao.observePlans().collectLatest { list ->
                 adapter.submit(list)
+                planList = list
                 tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+                reopenPlanForm()
             }
         }
         lifecycleScope.launch {
-            dao.observePartiesWithBalance().collectLatest { parties = it }
+            dao.observePartiesWithBalance().collectLatest { parties = it; reopenPlanForm() }
         }
     }
 
-    private fun showAddPlanDialog() {
+    /** The form a rotation or a killed process closed comes back once what it needs is read. */
+    private fun reopenPlanForm() {
+        val r = planReopen ?: return
+        if (isFinishing || isDestroyed) return
+        if (r.which == 0 && parties.isNotEmpty()) { planReopen = null; showAddPlanDialog(r) }
+        else if (r.which == 1) planList.firstOrNull { it.id == r.arg }?.let { planReopen = null; showRecordPaymentDialog(it, r) }
+    }
+
+    private fun showAddPlanDialog(restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
         if (parties.isEmpty()) {
             Toast.makeText(this, R.string.select_party_first, Toast.LENGTH_LONG).show()
             return
@@ -145,7 +166,12 @@ class PlansActivity : BaseActivity() {
             }
         }
 
-        var nextDue: Long? = null
+        var nextDue: Long? = restore?.arg?.takeIf { it > 0 }
+        if (restore != null) {
+            com.innovation313.roshankhata.ui.FormDraft.fill(listOf(etParty, etTotal, etInstallment, etNote), restore.texts)
+            nextDue?.let { btnDue.text = getString(R.string.due_date_set, Format.dateOnly(it)) }
+        }
+        planDraft.open(0, { nextDue ?: 0L }) { listOf(etParty, etTotal, etInstallment, etNote) }
 
         btnDue.setOnClickListener {
             val cal = Calendar.getInstance()
@@ -209,6 +235,7 @@ class PlansActivity : BaseActivity() {
                 }
                 // Back, a tap beside it or Cancel threw a typed plan away in silence (5 Nov 2026, the supplier
                 // bill's flaw). The form opens blank: a customer, a figure, a day or a note asks first.
+                form.setOnDismissListener { planDraft.closed(this@PlansActivity) }
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this@PlansActivity,
                     dialog = form,
@@ -276,7 +303,7 @@ class PlansActivity : BaseActivity() {
         ).apply { setTitle(getString(R.string.plan_next_ask, partyName)) }.show()
     }
 
-    private fun showRecordPaymentDialog(plan: PlanProgress) {
+    private fun showRecordPaymentDialog(plan: PlanProgress, restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etAmount)
@@ -329,6 +356,8 @@ class PlansActivity : BaseActivity() {
         )
         // The amount as the form put it (the plan's instalment, or blank), to tell it from one the owner changed.
         val openedAmount = etAmount.text.toString()
+        com.innovation313.roshankhata.ui.FormDraft.fill(listOf(etAmount, etNote), restore?.texts)
+        planDraft.open(1, { plan.id }) { listOf(etAmount, etNote) }
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.record_payment_title)
@@ -377,6 +406,7 @@ class PlansActivity : BaseActivity() {
                 }
                 // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
                 // bill's flaw): a changed amount or a note asks first; the form as it opened closes at once.
+                form.setOnDismissListener { planDraft.closed(this@PlansActivity) }
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this@PlansActivity,
                     dialog = form,

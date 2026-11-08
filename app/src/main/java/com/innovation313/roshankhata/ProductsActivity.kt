@@ -104,10 +104,17 @@ class ProductsActivity : BaseActivity() {
         }
     }
 
+    /** An open stock count's typed figures (M88, 8 Nov 2026): [by] first, then CountDraft's snapshot. */
+    private val countKeep by lazy { com.innovation313.roshankhata.ui.PrefsDraftKeep(this, "count_draft") }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products)
         ScreenInsets.on(this)
+        countKeep.clearOnFreshStart(savedInstanceState)
+        if (savedInstanceState != null) countKeep.read()?.let { k ->
+            window.decorView.post { if (!isFinishing && !isDestroyed) countStock(k.firstOrNull()?.ifEmpty { null }, k.drop(1)) }
+        }
 
         tvEmpty = findViewById(R.id.emptyProducts)
         tvEmptyText = findViewById(R.id.tvNoProducts)
@@ -234,14 +241,20 @@ class ProductsActivity : BaseActivity() {
     }
 
     /** A stock count (POS Phase 6): the shared form in a dialog; only the differences are written. */
-    private fun countStock(allowedBy: String?) {
+    private fun countStock(allowedBy: String?, resume: List<String>? = null) {
         lifecycleScope.launch {
             val draft = com.innovation313.roshankhata.screens.CountDraft(withContext(Dispatchers.IO) { Stock.of(dao) })
+            resume?.let { draft.restore(it) }
             val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
             val words = com.innovation313.roshankhata.data.AndroidWords(this@ProductsActivity)
             val view = androidx.compose.ui.platform.ComposeView(this@ProductsActivity)
             val dialog = MaterialAlertDialogBuilder(this@ProductsActivity).setTitle(R.string.stock_count_title).setView(view).create()
+            // Kept as it is typed; a rotation is not the end of the count, Save, Cancel or a tap outside is.
+            dialog.setOnDismissListener { if (!isChangingConfigurations) countKeep.write(null) }
             view.setContent {
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    androidx.compose.runtime.snapshotFlow { draft.snapshot() }.collect { countKeep.write(listOf(allowedBy.orEmpty()) + it) }
+                }
                 com.innovation313.roshankhata.screens.RoshanTheme(dark = dark) {
                     com.innovation313.roshankhata.words.ProvideWords(words) {
                         com.innovation313.roshankhata.screens.StockCountForm(draft, onCancel = { dialog.dismiss() }, onSave = {

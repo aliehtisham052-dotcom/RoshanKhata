@@ -43,5 +43,19 @@ class OrderDraft(val existing: PurchaseOrderWithLines?, val products: List<Produ
         PurchaseOrderItem(orderId = 0, productId = it.productId, itemName = it.name.trim(), quantity = Calc.evalAmount(it.qty) ?: 0.0, unit = it.unit, rate = Calc.evalAmount(it.rate))
     }.filter { it.itemName.isNotEmpty() && it.quantity > 0.0 }
     val valid: Boolean get() = partyId != null && toItems().isNotEmpty()
+
+    /** The new order as typed, flat: supplier, note, then five fields a line (M88). An order being edited is not kept. */
+    fun snapshot(): List<String> = listOf(partyId?.toString().orEmpty(), note) +
+        lines.flatMap { listOf(it.productId?.toString().orEmpty(), it.name, it.qty, it.unit.orEmpty(), it.rate) }
+
+    fun restore(saved: List<String>): Boolean {
+        if (saved.size < 2) return false
+        partyId = saved[0].toLongOrNull()
+        note = saved[1]
+        saved.drop(2).chunked(5).filter { it.size == 5 }.forEach { l ->
+            lines += Line(l[0].toLongOrNull(), l[1], l[2], l[3].ifEmpty { null }, l[4])
+        }
+        return true
+    }
 }
 
