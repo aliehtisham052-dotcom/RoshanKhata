@@ -25,7 +25,7 @@ jobs:
   aab:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       # R102 (23 Oct 2026): Play refuses a versionCode it has seen, and the release-aab asset is
       # overwritten by every run, so a repeat run with the same number clobbered the last good
@@ -70,12 +70,12 @@ jobs:
           # 30 Oct 2026, the review: strings.yml checked the inspector copy, the release gate did not.
           python3 scripts/gen_desktop_inspector.py --check
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
         with:
           cache-disabled: true
           gradle-version: 8.14.3
@@ -163,7 +163,7 @@ jobs:
           echo "## Signed AAB ready" >> $GITHUB_STEP_SUMMARY
           echo "Download it from the Artifacts section of this run." >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: RoshanKhata-release-aab
           path: app/build/outputs/bundle/release/*.aab
@@ -188,7 +188,7 @@ jobs:
           cp "$AAB" out-aab/RoshanKhata-release.aab
 
       - name: Publish the bundle as a downloadable file
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
           tag_name: release-aab
           name: "Roshan Khata — signed AAB for Play upload"
@@ -222,7 +222,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: gradle assembleRelease --no-daemon --stacktrace
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: RoshanKhata-release-apk-minified
           path: app/build/outputs/apk/release/*.apk
@@ -231,7 +231,7 @@ jobs:
       # Without the mapping file every future crash report is a list of a(),
       # b(), c(). It is generated per build and cannot be recreated later, so
       # it is kept beside the bundle it belongs to.
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: RoshanKhata-r8-mapping
           path: app/build/outputs/mapping/release/
@@ -254,7 +254,7 @@ jobs:
           cp app/build/outputs/apk/release/*.apk out/RoshanKhata-release-test.apk
 
       - name: Publish minified build for device testing
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
           tag_name: release-test
           name: "Roshan Khata — Minified Release Build (device test)"
