@@ -2061,6 +2061,17 @@
     <string name="scheme_slabs">Slabs: target → reward (up to 3)</string>
     <string name="scheme_target_hint">Target</string>
     <string name="scheme_reward_hint">Reward</string>
+    <string name="scheme_help">A scheme is a company\'s offer: buy up to a target by a date and get a rebate or a fixed amount. Fill it in as the company gave it.</string>
+    <string name="scheme_label_supplier">Supplier</string>
+    <string name="scheme_label_from">From</string>
+    <string name="scheme_label_to">To</string>
+    <string name="scheme_slabs_title">Targets and rewards</string>
+    <string name="scheme_slabs_help">Up to 3 levels. A bigger target earns a bigger reward. Leave unused levels empty.</string>
+    <string name="scheme_hint_target_value">Target value</string>
+    <string name="scheme_hint_target_qty">Target quantity</string>
+    <string name="scheme_hint_reward_pct">Reward %</string>
+    <string name="scheme_hint_reward_amount">Reward amount</string>
+    <string name="scheme_hint_reward_units">Free units</string>
     <string name="scheme_note_hint">Note (optional)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">Bought so far: %1$s</string>

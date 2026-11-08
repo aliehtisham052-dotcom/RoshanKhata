@@ -2056,6 +2056,17 @@
     <string name="scheme_slabs">स्लैब: टारगेट → इनाम (3 तक)</string>
     <string name="scheme_target_hint">टारगेट</string>
     <string name="scheme_reward_hint">इनाम</string>
+    <string name="scheme_help">स्कीम कंपनी की पेशकश है: एक तारीख तक टारगेट जितनी खरीद पर छूट या तय रकम मिलती है। इसे वैसे ही भरें जैसे कंपनी ने दी है।</string>
+    <string name="scheme_label_supplier">सप्लायर</string>
+    <string name="scheme_label_from">से</string>
+    <string name="scheme_label_to">तक</string>
+    <string name="scheme_slabs_title">टारगेट और इनाम</string>
+    <string name="scheme_slabs_help">3 स्तर तक। बड़े टारगेट पर बड़ा इनाम मिलता है। जो स्तर न हो उसे खाली छोड़ दें।</string>
+    <string name="scheme_hint_target_value">टारगेट (रकम)</string>
+    <string name="scheme_hint_target_qty">टारगेट (मात्रा)</string>
+    <string name="scheme_hint_reward_pct">इनाम %</string>
+    <string name="scheme_hint_reward_amount">इनाम की रकम</string>
+    <string name="scheme_hint_reward_units">मुफ़्त मात्रा</string>
     <string name="scheme_note_hint">नोट (ज़रूरी नहीं)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">अब तक खरीदा: %1$s</string>

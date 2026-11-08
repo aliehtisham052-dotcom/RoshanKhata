@@ -644,6 +644,8 @@ class KhataActivity : BaseActivity() {
               com.innovation313.roshankhata.ui.FormGuard.guard(this, form, typed = {
                   listOf(etName, etPhone, etFatherName, etVillage).any { it.text.toString().isNotBlank() }
               })
+              // The cursor in the first empty box, keyboard up (8 Nov 2026, the owner's focus rule).
+              com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etName, etPhone, etFatherName, etVillage), true, form.window)
               com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
                 val name = etName.text.toString().trim()
                 if (name.isEmpty()) {

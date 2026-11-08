@@ -2188,6 +2188,17 @@
     <string name="scheme_slabs">الشرائح: الهدف ← المكافأة (حتى 3)</string>
     <string name="scheme_target_hint">الهدف</string>
     <string name="scheme_reward_hint">المكافأة</string>
+    <string name="scheme_help">العرض هو عرض من الشركة: اشترِ حتى الهدف قبل تاريخ معيّن لتحصل على خصم أو مبلغ ثابت. املأه كما أعطته الشركة.</string>
+    <string name="scheme_label_supplier">المورّد</string>
+    <string name="scheme_label_from">من</string>
+    <string name="scheme_label_to">إلى</string>
+    <string name="scheme_slabs_title">الأهداف والمكافآت</string>
+    <string name="scheme_slabs_help">حتى 3 مستويات. الهدف الأكبر يعطي مكافأة أكبر. اترك المستويات غير المستخدمة فارغة.</string>
+    <string name="scheme_hint_target_value">قيمة الهدف</string>
+    <string name="scheme_hint_target_qty">كمية الهدف</string>
+    <string name="scheme_hint_reward_pct">المكافأة %</string>
+    <string name="scheme_hint_reward_amount">مبلغ المكافأة</string>
+    <string name="scheme_hint_reward_units">وحدات مجانية</string>
     <string name="scheme_note_hint">ملاحظة (اختياري)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">المشتريات حتى الآن: %1$s</string>

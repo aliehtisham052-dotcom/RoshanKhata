@@ -275,6 +275,11 @@ class ProductsActivity : BaseActivity() {
                 }
             }
             dialog.show()
+            // Root cause of "the keyboard never opens" (8 Nov 2026): AlertController sets FLAG_ALT_FOCUSABLE_IM unless the
+            // view already holds a text box, and a ComposeView holds none until it has composed. Cleared here.
+            com.innovation313.roshankhata.ui.FormFocus.allowKeyboard(dialog)
+            // And no Autofill bubble over the search, counted and note boxes.
+            com.innovation313.roshankhata.ui.FormFocus.noAutofill(view)
         }
     }
 

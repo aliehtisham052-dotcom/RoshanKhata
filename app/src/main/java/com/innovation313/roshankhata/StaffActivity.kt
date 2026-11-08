@@ -301,6 +301,8 @@ class StaffActivity : BaseActivity() {
                 // a second tap, or a second answer from the owner PIN question, saves nothing twice. A flag, not a
                 // disabled button (lesson 10). Cleared when the name is refused or the write failed, for another try.
                 var saving = false
+                // Cursor in the first empty box (new person: the name, keyboard up; nothing empty: no keyboard).
+                com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(name, phone, salary), true, dialog.window)
                 dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
                     if (saving) return@setOnClickListener
                     val n = name.text.toString().trim()

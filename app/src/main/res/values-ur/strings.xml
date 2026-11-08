@@ -2008,6 +2008,17 @@
     <string name="scheme_slabs">سلیب: ٹارگٹ ← انعام (3 تک)</string>
     <string name="scheme_target_hint">ٹارگٹ</string>
     <string name="scheme_reward_hint">انعام</string>
+    <string name="scheme_help">اسکیم کمپنی کی پیشکش ہے: ایک تاریخ تک ٹارگٹ کے برابر خریداری پر رعایت یا مقررہ رقم ملتی ہے۔ اسے ویسے ہی بھریں جیسے کمپنی نے دی ہے۔</string>
+    <string name="scheme_label_supplier">سپلائر</string>
+    <string name="scheme_label_from">از</string>
+    <string name="scheme_label_to">تا</string>
+    <string name="scheme_slabs_title">ٹارگٹ اور انعام</string>
+    <string name="scheme_slabs_help">3 درجے تک۔ بڑے ٹارگٹ پر بڑا انعام ملتا ہے۔ جو درجہ نہ ہو اسے خالی چھوڑ دیں۔</string>
+    <string name="scheme_hint_target_value">ٹارگٹ (رقم)</string>
+    <string name="scheme_hint_target_qty">ٹارگٹ (مقدار)</string>
+    <string name="scheme_hint_reward_pct">انعام %</string>
+    <string name="scheme_hint_reward_amount">انعام کی رقم</string>
+    <string name="scheme_hint_reward_units">مفت مقدار</string>
     <string name="scheme_note_hint">نوٹ (اختیاری)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">اب تک خریداری: %1$s</string>

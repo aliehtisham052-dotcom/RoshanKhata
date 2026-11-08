@@ -342,6 +342,9 @@ object ProductDetailsDialog {
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
         KeyboardFollow.dialog(dialog)
+        // Cursor in the first empty box (a blank new product: the name, keyboard up); an edit with all four
+        // filled keeps the keyboard down (8 Nov 2026, the owner's focus rule).
+        FormFocus.focusFirstEmpty(listOf(etName, etCompany, etUnit, etType), true, dialog.window)
     }
 
     /** Where this form sits in a run of several; see [show]. */

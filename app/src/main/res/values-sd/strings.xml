@@ -2036,6 +2036,17 @@
     <string name="scheme_slabs">سليب: ٽارگيٽ ← انعام (3 تائين)</string>
     <string name="scheme_target_hint">ٽارگيٽ</string>
     <string name="scheme_reward_hint">انعام</string>
+    <string name="scheme_help">اسڪيم ڪمپني جي آڇ آهي: هڪ تاريخ تائين ٽارگيٽ جيترو خريداري تي رعايت يا مقرر رقم ملي ٿي. ان کي ائين ئي ڀريو جيئن ڪمپني ڏني آهي.</string>
+    <string name="scheme_label_supplier">سپلائر</string>
+    <string name="scheme_label_from">کان</string>
+    <string name="scheme_label_to">تائين</string>
+    <string name="scheme_slabs_title">ٽارگيٽ ۽ انعام</string>
+    <string name="scheme_slabs_help">3 درجن تائين. وڏي ٽارگيٽ تي وڏو انعام ملي ٿو. جيڪو درجو نه هجي سو خالي ڇڏيو.</string>
+    <string name="scheme_hint_target_value">ٽارگيٽ (رقم)</string>
+    <string name="scheme_hint_target_qty">ٽارگيٽ (مقدار)</string>
+    <string name="scheme_hint_reward_pct">انعام %</string>
+    <string name="scheme_hint_reward_amount">انعام جي رقم</string>
+    <string name="scheme_hint_reward_units">مفت مقدار</string>
     <string name="scheme_note_hint">نوٽ (اختياري)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">هينئر تائين خريداري: %1$s</string>

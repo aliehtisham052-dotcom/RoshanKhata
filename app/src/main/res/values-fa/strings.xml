@@ -2036,6 +2036,17 @@
     <string name="scheme_slabs">پله‌ها: هدف ← پاداش (تا 3)</string>
     <string name="scheme_target_hint">هدف</string>
     <string name="scheme_reward_hint">پاداش</string>
+    <string name="scheme_help">طرح تشویقی پیشنهاد شرکت است: تا یک تاریخ به اندازهٔ هدف خرید کنید و تخفیف یا مبلغ ثابت بگیرید. آن را همان‌طور که شرکت داده پر کنید.</string>
+    <string name="scheme_label_supplier">تأمین‌کننده</string>
+    <string name="scheme_label_from">از</string>
+    <string name="scheme_label_to">تا</string>
+    <string name="scheme_slabs_title">هدف و پاداش</string>
+    <string name="scheme_slabs_help">تا 3 پله. هدف بزرگ‌تر پاداش بزرگ‌تر دارد. پله‌های بی‌استفاده را خالی بگذارید.</string>
+    <string name="scheme_hint_target_value">مبلغ هدف</string>
+    <string name="scheme_hint_target_qty">مقدار هدف</string>
+    <string name="scheme_hint_reward_pct">پاداش %</string>
+    <string name="scheme_hint_reward_amount">مبلغ پاداش</string>
+    <string name="scheme_hint_reward_units">واحد رایگان</string>
     <string name="scheme_note_hint">یادداشت (اختیاری)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">خرید تا کنون: %1$s</string>

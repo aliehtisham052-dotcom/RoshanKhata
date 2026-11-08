@@ -648,6 +648,8 @@ class CashbookActivity : BaseActivity() {
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.cashKeypad))
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Cursor in the first empty box; the amount keeps the app's pad (8 Nov 2026, focus rule).
+                com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etAmount, etCategory, etNote), true, form.window)
                 com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
                     val amount = Calc.evalAmount(etAmount.text.toString())
                     if (amount == null) {

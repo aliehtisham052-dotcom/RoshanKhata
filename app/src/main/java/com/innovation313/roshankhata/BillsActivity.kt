@@ -458,7 +458,9 @@ class BillsActivity : BaseActivity() {
                     note = etNote.text.toString().trim().ifEmpty { null }
                 )
             }
-            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.billKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also { com.innovation313.roshankhata.ui.CalcPad.dock(it, view, view.findViewById(R.id.billKeypad)); com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it)
+                // Cursor in the first empty box, keyboard up; the total keeps the pad (8 Nov 2026, focus rule).
+                com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etSupplier, etNumber, etTotal, etNote), true, it.window) }
 
         // Back, a tap beside the form or Cancel threw a typed bill away in
         // silence (the owner's phone, 4 Nov 2026). An untouched form still
@@ -765,6 +767,7 @@ class BillsActivity : BaseActivity() {
             }
             .show().also { itemForm ->
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(itemForm)
+                com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etProduct, etBatch, etQty, etUnit, etRate), true, itemForm.window)
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this@BillsActivity,
                     dialog = itemForm,

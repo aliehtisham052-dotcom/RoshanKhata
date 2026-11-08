@@ -2011,6 +2011,17 @@
     <string name="scheme_slabs">Jenjang: target → hadiah (maks. 3)</string>
     <string name="scheme_target_hint">Target</string>
     <string name="scheme_reward_hint">Hadiah</string>
+    <string name="scheme_help">Skema adalah penawaran perusahaan: beli sampai target sebelum tanggal tertentu untuk mendapat potongan atau jumlah tetap. Isi seperti yang diberikan perusahaan.</string>
+    <string name="scheme_label_supplier">Pemasok</string>
+    <string name="scheme_label_from">Dari</string>
+    <string name="scheme_label_to">Sampai</string>
+    <string name="scheme_slabs_title">Target dan hadiah</string>
+    <string name="scheme_slabs_help">Maksimal 3 jenjang. Target lebih besar, hadiah lebih besar. Kosongkan jenjang yang tidak dipakai.</string>
+    <string name="scheme_hint_target_value">Target nilai</string>
+    <string name="scheme_hint_target_qty">Target jumlah</string>
+    <string name="scheme_hint_reward_pct">Hadiah %</string>
+    <string name="scheme_hint_reward_amount">Jumlah hadiah</string>
+    <string name="scheme_hint_reward_units">Unit gratis</string>
     <string name="scheme_note_hint">Keterangan (opsional)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">Dibeli sejauh ini: %1$s</string>

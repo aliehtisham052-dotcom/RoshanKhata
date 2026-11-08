@@ -297,6 +297,8 @@ class ChequesActivity : BaseActivity() {
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.chequeKeypad))
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                // Cursor in the first empty box (8 Nov 2026, focus rule); the amount keeps the pad.
+                com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etParty, etAmount, etNumber, etBank, etNote), true, form.window)
                 com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
                     val partyName = etParty.text.toString().trim()
                     val party = parties.firstOrNull { it.name.equals(partyName, ignoreCase = true) }

@@ -242,12 +242,12 @@ class SchemesActivity : BaseActivity() {
             var end = existing?.endDate ?: endOfDay(System.currentTimeMillis() + 90L * 24 * 60 * 60 * 1000)
 
             fun showSupplier() {
-                btnSupplier.text = getString(R.string.scheme_supplier,
-                    suppliers.firstOrNull { it.id == partyId }?.name ?: getString(R.string.scheme_any_supplier))
+                btnSupplier.text = suppliers.firstOrNull { it.id == partyId }?.name ?: getString(R.string.scheme_any_supplier)
             }
             fun showDates() {
-                btnStart.text = getString(R.string.scheme_from, Format.dateOnly(start))
-                btnEnd.text = getString(R.string.scheme_to, Format.dateOnly(end))
+                // The words "From" and "To" are labels above the boxes now; the box holds only the day, on one line.
+                btnStart.text = Format.dateOnly(start)
+                btnEnd.text = Format.dateOnly(end)
             }
             // A percentage needs a rupee base: only offered on a value scheme.
             fun syncMeasure() {
@@ -255,6 +255,17 @@ class SchemesActivity : BaseActivity() {
                 etUnit.visibility = if (byQty) View.VISIBLE else View.GONE
                 rbPercent.isEnabled = !byQty
                 if (byQty && rbPercent.isChecked) rgReward.check(R.id.rbAmount)
+                // The boxes say what they hold: the target by value or quantity, the reward as % / amount / free units.
+                val targetWord = getString(if (byQty) R.string.scheme_hint_target_qty else R.string.scheme_hint_target_value)
+                val rewardWord = getString(when (rgReward.checkedRadioButtonId) {
+                    R.id.rbAmount -> R.string.scheme_hint_reward_amount
+                    R.id.rbUnits -> R.string.scheme_hint_reward_units
+                    else -> R.string.scheme_hint_reward_pct
+                })
+                view.findViewById<TextView>(R.id.tvTargetCol).text = targetWord
+                view.findViewById<TextView>(R.id.tvRewardCol).text = rewardWord
+                targets.forEach { it.hint = targetWord }
+                rewards.forEach { it.hint = rewardWord }
             }
 
             existing?.let { s ->
@@ -276,6 +287,7 @@ class SchemesActivity : BaseActivity() {
             }
             showSupplier(); showDates(); syncMeasure()
             rgMeasure.setOnCheckedChangeListener { _, _ -> syncMeasure() }
+            rgReward.setOnCheckedChangeListener { _, _ -> syncMeasure() }
             btnSupplier.setOnClickListener {
                 val choices = listOf(ChoiceSheet.buyers(getString(R.string.scheme_any_supplier))) +
                     suppliers.map { ChoiceSheet.Option(it.name, icon = R.drawable.ic_truck,

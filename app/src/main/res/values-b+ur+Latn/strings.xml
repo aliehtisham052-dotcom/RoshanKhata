@@ -2008,6 +2008,17 @@
     <string name="scheme_slabs">Slab: target → inaam (3 tak)</string>
     <string name="scheme_target_hint">Target</string>
     <string name="scheme_reward_hint">Inaam</string>
+    <string name="scheme_help">Scheme company ki peshkash hai: ek tareekh tak target ke barabar khareedari par chhoot ya muqarrara raqam milti hai. Isay waisay hi bharein jaisay company ne di hai.</string>
+    <string name="scheme_label_supplier">Supplier</string>
+    <string name="scheme_label_from">Se</string>
+    <string name="scheme_label_to">Tak</string>
+    <string name="scheme_slabs_title">Target aur inaam</string>
+    <string name="scheme_slabs_help">3 darjay tak. Bare target par bara inaam milta hai. Jo darja na ho use khali chhor dein.</string>
+    <string name="scheme_hint_target_value">Target (raqam)</string>
+    <string name="scheme_hint_target_qty">Target (miqdar)</string>
+    <string name="scheme_hint_reward_pct">Inaam %</string>
+    <string name="scheme_hint_reward_amount">Inaam ki raqam</string>
+    <string name="scheme_hint_reward_units">Muft miqdar</string>
     <string name="scheme_note_hint">Note (ikhtiyari)</string>
     <string name="scheme_period">%1$s – %2$s</string>
     <string name="scheme_bought">Ab tak khareedari: %1$s</string>
