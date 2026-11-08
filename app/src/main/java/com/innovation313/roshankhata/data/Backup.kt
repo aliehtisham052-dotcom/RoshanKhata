@@ -162,6 +162,8 @@ object Backup {
                 dir.mkdirs()
                 val file = File(dir, name)
                 file.writeText(json)
+                // L102 (8 Nov 2026 review): Android 7-9 does not see a file from outside until it is scanned (USB, Files).
+                runCatching { android.media.MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), null, null) }
                 file.absolutePath
             }
         } catch (e: Exception) {
@@ -258,6 +260,8 @@ object Backup {
                 dir.mkdirs()
                 val file = File(dir, name)
                 source.copyTo(file, overwrite = true)
+                // L102 (8 Nov 2026 review): Android 7-9 does not see a file from outside until it is scanned (USB, Files).
+                runCatching { android.media.MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), null, null) }
                 file.absolutePath
             }
         } catch (e: Exception) {

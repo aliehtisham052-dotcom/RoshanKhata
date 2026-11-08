@@ -154,6 +154,11 @@ class RecycleBinActivity : BaseActivity() {
                     dao.restoreEntryWithPair(item.id)
                 }
             }
+            // L75 (8 Nov 2026 review): who brought it back is written down, as who put it in the bin is.
+            runCatching {
+                dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_RESTORED, com.innovation313.roshankhata.data.Access.userName,
+                    if (item is BinItem.DeletedParty) "parties" else "transactions", item.id)
+            }
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
                     Toast.makeText(
@@ -214,9 +219,13 @@ class RecycleBinActivity : BaseActivity() {
                     // said so (22 Oct 2026, the review: the screen said "deleted forever" either way).
                     val gone = BillPhoto.purgingOrphans(applicationContext, dao) {
                         when (item) {
-                            is BinItem.DeletedParty -> dao.purgeParty(item.id) > 0
+                            is BinItem.DeletedParty -> { dao.keepEntryNumberHigh(); dao.purgeParty(item.id) > 0 } // L67: its entries' RK numbers are not given out again
                             is BinItem.DeletedEntry -> { dao.purgeEntry(item.id); true }
                         }
+                    }
+                    runCatching {
+                        dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_PURGED, com.innovation313.roshankhata.data.Access.userName,
+                            if (item is BinItem.DeletedParty) "parties" else "transactions", item.id)
                     }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
@@ -258,6 +267,7 @@ class RecycleBinActivity : BaseActivity() {
                         dao.purgeAllParties()
                         dao.binnedPartyCount()
                     }
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_EMPTIED, com.innovation313.roshankhata.data.Access.userName) }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             if (kept == 0) {

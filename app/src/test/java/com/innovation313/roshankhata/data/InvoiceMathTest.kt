@@ -50,4 +50,14 @@ class InvoiceMathTest {
         assertEquals(10.0, t.discountAmount, 0.001)
         assertEquals(222.3, t.grandTotal, 0.001)
     }
+
+    @Test
+    fun everyStepIsAWholeCoinSoThePartsAddUp() {
+        // 8 Nov 2026 review, L68: 84.25 + 18% was 15.165 tax and 99.415 total; now 15.17 + 84.25 = 99.42, nothing left due.
+        val odd = InvoiceItem(invoiceId = 0, itemName = "Odd", quantity = 1.0, rate = 84.25)
+        val t = invoice().copy(taxPercent = 18.0, receivedAmount = 99.42).totals(listOf(odd))
+        assertEquals(15.17, t.taxAmount, 1e-9)
+        assertEquals(99.42, t.grandTotal, 1e-9)
+        assertEquals(0.0, t.balanceDue, 1e-9)
+    }
 }

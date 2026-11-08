@@ -29,8 +29,8 @@ object SaleInvoice {
         val discount = LineMath.round(full.items.sumOf { it.discount } + s.discountAmount)
         val extra = LineMath.round((if (ownTax) s.taxAmount else 0.0) + s.roundOff)
         val label = when {
-            ownTax && s.taxAmount > 0.0 && s.roundOff != 0.0 -> words.text(W.pos_tax) + " + " + words.text(W.pos_round_off)
-            ownTax && s.taxAmount > 0.0 -> words.text(W.pos_tax)
+            ownTax && s.taxAmount > 0.0 && s.roundOff != 0.0 -> words.text(W.pos_tax_total) + " + " + words.text(W.pos_round_off)
+            ownTax && s.taxAmount > 0.0 -> words.text(W.pos_tax_total)
             else -> words.text(W.pos_round_off)
         }
         val inside = full.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }

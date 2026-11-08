@@ -64,7 +64,9 @@ fun BillForm(
     onSave: (NewBill) -> Unit,
     onCancel: () -> Unit,
     /** The shop's products, offered in the line's name box (the phone's SmartSuggest); null offers none. */
-    products: ProductShelf? = null
+    products: ProductShelf? = null,
+    /** Told whether anything is typed, so the dialog around the form can ask before Esc throws it away (L83). */
+    typed: androidx.compose.runtime.MutableState<Boolean>? = null
 ) {
     val c = LocalRoshanColors.current
     var supplierId by remember { mutableStateOf<Long?>(null) }
@@ -82,6 +84,10 @@ fun BillForm(
     // stock, batch and expiry, in silence). The phone's rule: add it or clear it first.
     var lineBusy by remember { mutableStateOf(false) }
     val total = Calc.evalAmount(totalText)
+    androidx.compose.runtime.SideEffect {
+        typed?.value = supplierId != null || search.isNotBlank() || number.isNotBlank() || totalText.isNotBlank() ||
+            note.isNotBlank() || items.isNotEmpty()
+    }
     val needSupplier = word(W.enter_supplier)
     val needAmount = word(W.enter_valid_amount)
     val needLine = word(W.line_editor_busy)

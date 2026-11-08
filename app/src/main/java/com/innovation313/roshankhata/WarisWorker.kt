@@ -53,7 +53,8 @@ class WarisWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
      * service and shows this while it works.
      */
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val ctx = applicationContext
+        // L97 (8 Nov 2026 review): the notice in the app's language on Android 12 and older too.
+        val ctx = com.innovation313.roshankhata.ui.AppLanguage.context(applicationContext)
         WarisAndroid.ensureChannel(ctx)
         val n = NotificationCompat.Builder(ctx, WarisAndroid.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_notify)

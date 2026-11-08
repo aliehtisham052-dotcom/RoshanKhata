@@ -49,8 +49,8 @@ object CrashLog {
 
     private fun write(context: Context, thread: Thread, e: Throwable) {
         val dir = File(context.filesDir, DIR).apply { mkdirs() }
-        val stamp = android.text.format.DateFormat
-            .format("yyyyMMdd-HHmmss", java.util.Date()).toString()
+        // L95 (8 Nov 2026 review): ENGLISH digits, so the names sort the same on an Arabic or Farsi phone.
+        val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.ENGLISH).format(java.util.Date())
         File(dir, "crash-$stamp.txt").writeText(buildString {
             appendLine("Time: $stamp")
             appendLine("Thread: ${thread.name}")
@@ -62,7 +62,7 @@ object CrashLog {
             // carry what was typed — a phone number, an amount, a name in a path.
             appendLine(LogText.trace(e))
         })
-        dir.listFiles()?.sortedByDescending { it.name }?.drop(KEEP)?.forEach { it.delete() }
+        dir.listFiles()?.sortedByDescending { it.lastModified() }?.drop(KEEP)?.forEach { it.delete() }
     }
 
     /**
@@ -71,7 +71,7 @@ object CrashLog {
      */
     fun latestText(context: Context, maxChars: Int = 3500): String? {
         val dir = File(context.filesDir, DIR)
-        val newest = dir.listFiles()?.maxByOrNull { it.name } ?: return null
+        val newest = dir.listFiles()?.maxByOrNull { it.lastModified() } ?: return null
         if (System.currentTimeMillis() - newest.lastModified() > 7L * 24 * 60 * 60 * 1000) {
             return null
         }

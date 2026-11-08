@@ -265,7 +265,7 @@ fun CounterSaleScreen(
                     Column(Modifier.fillMaxWidth().heightIn(max = 300.dp).background(c.surface, RoundedCornerShape(12.dp)).verticalScroll(rememberScrollState())) {
                         shown.forEachIndexed { i, p ->
                             Row(Modifier.fillMaxWidth().clickable { draft.setParty(p.id, p.name); choosingParty = false }.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(Format.name(p.name), Modifier.weight(1f), color = c.ink, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(Format.name(p.name), Modifier.weight(1f), color = c.ink, textAlign = androidx.compose.ui.text.style.TextAlign.Start, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 // A settled account says nothing; one that owes says how much, in the khata's colour.
                                 if (com.innovation313.roshankhata.data.Money.isPositive(p.balance) || com.innovation313.roshankhata.data.Money.isNegative(p.balance))
                                     Text(Format.customerBalance(p.balance), color = if (p.balance > 0) c.owedToMe else c.iOwe, fontSize = 12.sp, maxLines = 1, softWrap = false)
@@ -292,7 +292,7 @@ fun CounterSaleScreen(
                     Figure(word(W.pos_subtotal), Format.money(draft.totals.subtotal))
                     if (draft.handDiscount > 0.0) Figure(word(W.pos_discount), "−" + Format.money(draft.handDiscount))
                     if (draft.pointsValue > 0.0) Figure(word(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue))
-                    if (draft.totals.tax > 0.0) Figure(word(W.pos_tax), Format.money(draft.totals.tax))
+                    if (draft.totals.tax > 0.0) Figure(word(W.pos_tax_total), Format.money(draft.totals.tax))
                     if (draft.totals.taxIncluded > 0.0) Figure(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                     // Settled to whole rupees, as on the computer (23 Oct 2026, the review): the paisa no drawer holds.
                     // A switch, with what the rounding moved beside it (30 Oct 2026: a chip reading "0" did not

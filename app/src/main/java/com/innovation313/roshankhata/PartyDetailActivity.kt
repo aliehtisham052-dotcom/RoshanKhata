@@ -2659,7 +2659,12 @@ class PartyDetailActivity : BaseActivity() {
         }
 
         if (partyPhone.isNullOrBlank()) {
-            Toast.makeText(this, R.string.no_phone_number, Toast.LENGTH_LONG).show()
+            // 8 Nov 2026 review (L65): a toast left the owner nowhere to type the number; now it offers the edit form.
+            MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.no_phone_number)
+                .setPositiveButton(R.string.edit_party) { _, _ -> showEditPartyDialog() }
+                .setNegativeButton(R.string.close, null)
+                .show()
             return
         }
 
@@ -3607,10 +3612,14 @@ class PartyDetailActivity : BaseActivity() {
                     val nowCustomer = rbCustomer.isChecked
                     if (nowCustomer == party.isCustomer) return@setPositiveButton
 
+                    // L79 (8 Nov 2026 review): changing the type is a change to the book — EDIT_BOOK, and written down, as on Windows.
+                    com.innovation313.roshankhata.ui.AccessUi.edit(this@PartyDetailActivity, dao) {
                     // AppScope: a deliberate correction the owner made, not a
                     // repeatable command — see AppScope's own comment.
                     AppScope.launch {
                         dao.updateParty(party.copy(isCustomer = nowCustomer))
+                        dao.log(com.innovation313.roshankhata.data.AuditAction.PARTY_TYPE_CHANGED, com.innovation313.roshankhata.data.Access.userName, "parties", party.id,
+                            if (nowCustomer) "customer" else "supplier")
                         withContext(Dispatchers.Main) {
                             partyIsCustomerAccount = nowCustomer
                             if (!isFinishing && !isDestroyed) {
@@ -3622,6 +3631,7 @@ class PartyDetailActivity : BaseActivity() {
                                 ).show()
                             }
                         }
+                    }
                     }
                 }
                 .show()
@@ -4017,6 +4027,8 @@ class PartyDetailActivity : BaseActivity() {
      */
     private fun stopKhataLink(uid: String) {
         val app = applicationContext
+        // L98 (8 Nov 2026 review): the toasts in the app's language on Android 7-12 as well.
+        val say = com.innovation313.roshankhata.ui.AppLanguage.context(app)
         val detail = getString(R.string.clink_stop) + " · " + partyName
         val id = partyId
         AppScope.launch {
@@ -4029,11 +4041,11 @@ class PartyDetailActivity : BaseActivity() {
             withContext(Dispatchers.Main) {
                 val here = !isFinishing && !isDestroyed
                 when {
-                    down -> Toast.makeText(app, R.string.clink_stopped_now, Toast.LENGTH_LONG).show()
+                    down -> Toast.makeText(say, R.string.clink_stopped_now, Toast.LENGTH_LONG).show()
                     r == com.innovation313.roshankhata.data.CustomerLink.Result.NotHere && here -> askTakeOver()
                     r == com.innovation313.roshankhata.data.CustomerLink.Result.Unreachable ->
-                        Toast.makeText(app, R.string.clink_stopped, Toast.LENGTH_LONG).show()
-                    else -> Toast.makeText(app, R.string.clink_stopped_waiting, Toast.LENGTH_LONG).show()
+                        Toast.makeText(say, R.string.clink_stopped, Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(say, R.string.clink_stopped_waiting, Toast.LENGTH_LONG).show()
                 }
             }
         }

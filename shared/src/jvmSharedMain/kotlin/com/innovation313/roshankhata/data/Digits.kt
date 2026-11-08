@@ -99,7 +99,10 @@ object Digits {
     }
 
     /** The reader's language writes the fraction after a comma and groups thousands with dots: Indonesian. */
-    fun decimalComma(locale: Locale = Locale.getDefault()): Boolean = locale.language == "in" || locale.language == "id"
+    fun decimalComma(locale: Locale = Locale.getDefault()): Boolean =
+        locale.language == "in" || locale.language == "id" ||
+            // 8 Nov 2026 review (L72): an Indonesian shop with the app in English typed "50.000" and got Rp 50.
+            (locale == Locale.getDefault() && ShopCountry.current == ShopCountry.INDONESIA)
 
     /**
      * The owner's choice to print a language's own digits (21 Oct 2026, the

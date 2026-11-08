@@ -2793,3 +2793,28 @@ number on the Help screen.
   L37 the invoice form's party hits are `remember`ed. L38 the plain invoice print runs to as many pages as it needs, totals on the last.
   L40 turning the relay off while offline leaves the FCM token deletion owed and tried again (`delete_owed`). L42 WarisWorker retries a
   failed daily run and passes a cancel on. L15 was already fixed (the rollback passes `allowedBy`).
+
+### 8 Nov 2026 review fixes, marhala 8D: low findings (L63-L103; CI only)
+
+Each point read in the code first. Money and data: `Calc.evalAmount` rounds to the shop's coin ("1000/3" is a whole coin, L69);
+`InvoiceMath.totals` rounds every step (L68); the sales register's SQL takes the coin's decimals as `:scale` (KWD/BHD, L74;
+`salesRegister`/`salesAdjustments`/`walkInSales*` gained `scale`); stock value counts no negative shelf (L73); `Aging` and
+`PaymentHabit` read `Money` instead of 0.005 (L87); `Digits.decimalComma` is also true for an Indonesian shop with the app in English
+(L72); `updateEntryWithItems` never un-bins a row a stale screen wrote back (L70); a customer's "delete forever" notes the RK number first
+(L67); `LiveSync.MONEY_TABLES` gained products, schemes, staff (L76); Insights' "Given" uses the sales rule (L80); the "yesterday's
+drawer not counted" bell row counts cash that moved, not only counter tickets (L81). Gates and audit: customer/supplier type change
+asks EDIT_BOOK and is written (`PARTY_TYPE_CHANGED`, L79); bin restore/purge/empty are written (L75); Windows cheque delete asks first
+and is written, the phone's is written (`CHEQUE_DELETED`, L89); Windows Khata Report PDF asks EXPORT (L82); a cashier's Follow-up shows
+no Radar (L88); a read-only phone cannot open the counter (L90). Forms: Add Party stays open on a missing name and asks before
+discarding (L63); `AppDialog(dirty = …)` asks before Esc/✕ throws typing away — used by Add bill and Edit bill (L83; the other
+Windows forms still close at once: pass `dirty` as each is touched); a customer without a number offers the edit form (L65); Windows has
+Add product (`ProductEditDialog` with id 0 → `addProduct`, L91). Words: "Tax" for an amount, "Tax %" only for the rate (`pos_tax_total`,
+L92); invoices in the Urdu/Sindhi restore warning (L93); Arabic/Farsi menu names carry the English too (L94); counter slip names the
+sides (L85, text slip only). Phone: no "never backed up" nag on the first day (L64); crash file names in English digits (L95);
+AutomationWorker sets the default locale to the app's for its run (L96); Waris notice and "link stopped" toasts use `AppLanguage.context`
+(L97, L98); shared Compose names `TextAlign.Start` (L99); HintFit lets a fixed-height box grow (L100); a note for Android Go phones on
+Android 10 or older (`paisa_access_go`, L101); backups saved to Downloads are media-scanned on Android 7-9 (L102); the invoice goes to
+WhatsApp Business when only it is installed (L103). New strings (nine languages): audit_cheque_deleted, cheque_delete_confirm,
+audit_party_type, audit_bin_restored/_purged/_emptied, pos_tax_total, paisa_access_go. Not done: L66 (Pashto, Punjabi: a language needs a
+checker), L71/L77 (two devices clearing or converting one document: a conflict rule), L78 (four reminder counts), L84 (the day report
+hidden with the big-shop tools off was an earlier audit's choice), L86 (phone totals whole book, Windows by tab).

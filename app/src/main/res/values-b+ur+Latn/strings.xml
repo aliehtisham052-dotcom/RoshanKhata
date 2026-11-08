@@ -4041,4 +4041,12 @@
     <string name="share_app">Roshan Khata share karein</string>
     <string name="share_app_text">Roshan Khata mein meri dukaan ka khata phone par rehta hai, muft, bina account. Azmayein: %1$s</string>
     <string name="home_add_first_customer">Aap ki book khali hai — pehla customer yahan se add karein</string>
+    <string name="audit_cheque_deleted">Cheque delete kiya gaya</string>
+    <string name="cheque_delete_confirm">Yeh cheque delete karein? Yeh list se hat jayega. Isse pehle se darj adaigi khate mein rahegi.</string>
+    <string name="audit_party_type">Customer/supplier ki qism badli gayi</string>
+    <string name="audit_bin_restored">Bin se bahal kiya gaya</string>
+    <string name="audit_bin_purged">Bin se hamesha ke liye delete kiya gaya</string>
+    <string name="audit_bin_emptied">Bin khali kiya gaya</string>
+    <string name="pos_tax_total">Tax</string>
+    <string name="paisa_access_go">Kam memory wale (Android Go) kuch phones par, jin mein Android 10 ya us se purana ho, Android notification access deta hi nahi. Agar button kuch na khole to yeh feature is phone par nahi chal sakta.</string>
 </resources>

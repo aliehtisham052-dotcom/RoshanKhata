@@ -4089,4 +4089,12 @@
     <string name="share_app">रोशन खाता शेयर करें</string>
     <string name="share_app_text">रोशन खाता मेरी दुकान का खाता फ़ोन में रखता है, मुफ़्त, बिना अकाउंट। आज़माएँ: %1$s</string>
     <string name="home_add_first_customer">आपकी बही खाली है — पहला ग्राहक जोड़ने के लिए यहाँ दबाएँ</string>
+    <string name="audit_cheque_deleted">चेक हटाया गया</string>
+    <string name="cheque_delete_confirm">यह चेक हटाएँ? यह सूची से हट जाएगा। इससे पहले दर्ज हुआ भुगतान खाते में रहेगा।</string>
+    <string name="audit_party_type">ग्राहक/सप्लायर का प्रकार बदला गया</string>
+    <string name="audit_bin_restored">बिन से वापस लाया गया</string>
+    <string name="audit_bin_purged">बिन से हमेशा के लिए मिटाया गया</string>
+    <string name="audit_bin_emptied">बिन खाली किया गया</string>
+    <string name="pos_tax_total">कर</string>
+    <string name="paisa_access_go">कम मेमोरी वाले (Android Go) कुछ फ़ोनों पर, जिनमें Android 10 या उससे पुराना हो, Android नोटिफ़िकेशन एक्सेस देता ही नहीं। अगर बटन कुछ न खोले तो यह सुविधा इस फ़ोन पर नहीं चल सकती।</string>
 </resources>

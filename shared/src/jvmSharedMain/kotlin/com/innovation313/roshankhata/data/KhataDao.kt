@@ -2029,7 +2029,7 @@ interface KhataDao {
                ei.quantity AS quantity, ei.unit AS unit,
                CASE WHEN (SELECT COUNT(*) FROM entry_items c WHERE c.entryId = t.id) = 1
                     THEN t.amount
-                    ELSE COALESCE(ROUND(ei.quantity * ei.rate, 2), 0)
+                    ELSE COALESCE(ROUND(ei.quantity * ei.rate, :scale), 0)
                END AS amount,
                pr.company AS company, pr.registrationNumber AS registrationNumber
         FROM entry_items ei
@@ -2043,7 +2043,7 @@ interface KhataDao {
         ORDER BY t.timestamp ASC, t.id ASC, ei.lineNo ASC, ei.id ASC
         """
     )
-    suspend fun salesRegister(from: Long, to: Long): List<SaleRegisterRow>
+    suspend fun salesRegister(from: Long, to: Long, scale: Int): List<SaleRegisterRow>
 
     /**
      * The purchase register for a period — every supplier-bill line, item by
@@ -2901,6 +2901,10 @@ interface KhataDao {
      */
     @Transaction
     suspend fun updateEntryWithItems(entry: LedgerEntry, items: List<EntryItem>) {
+        // 8 Nov 2026 review (L70): a screen opened before the entry was binned (here or by the other device) wrote
+        // the whole row back, isDeleted = false included, and brought the entry back. A binned row stays binned.
+        val stored = getEntry(entry.id)
+        if (stored != null && stored.isDeleted && !entry.isDeleted) return
         updateEntry(entry)
         deleteItemsOfEntry(entry.id)
         if (items.isNotEmpty()) {
@@ -2920,7 +2924,7 @@ interface KhataDao {
         """
         SELECT t.timestamp AS date, t.entryNumber AS refNumber, p.name AS partyName,
                NULL AS itemName, NULL AS batchNumber, NULL AS quantity, NULL AS unit,
-               ROUND(t.amount - SUM(COALESCE(ROUND(ei.quantity * ei.rate, 2), 0)), 2) AS amount,
+               ROUND(t.amount - SUM(COALESCE(ROUND(ei.quantity * ei.rate, :scale), 0)), :scale) AS amount,
                NULL AS company, NULL AS registrationNumber
         FROM entry_items ei
         JOIN transactions t ON t.id = ei.entryId
@@ -2929,11 +2933,11 @@ interface KhataDao {
           AND t.timestamp >= :from AND t.timestamp <= :to
         GROUP BY t.id
         HAVING COUNT(*) > 1
-           AND ABS(t.amount - SUM(COALESCE(ROUND(ei.quantity * ei.rate, 2), 0))) >= 0.005
+           AND ABS(t.amount - SUM(COALESCE(ROUND(ei.quantity * ei.rate, :scale), 0))) >= 0.005
         ORDER BY t.timestamp ASC, t.id ASC
         """
     )
-    suspend fun salesAdjustments(from: Long, to: Long): List<SaleRegisterRow>
+    suspend fun salesAdjustments(from: Long, to: Long, scale: Int): List<SaleRegisterRow>
 
     /**
      * A walk-in counter ticket's lines, for the sales register (22 Oct 2026,
@@ -2946,7 +2950,7 @@ interface KhataDao {
         SELECT s.timestamp AS date, s.saleNumber AS refNumber,
                COALESCE(NULLIF(TRIM(s.customerName), ''), :walkIn) AS partyName,
                COALESCE(pr.name, si.itemName) AS itemName, bi.batchNumber AS batchNumber,
-               si.quantity AS quantity, si.unit AS unit, ROUND(si.quantity * si.rate - si.discount, 2) AS amount,
+               si.quantity AS quantity, si.unit AS unit, ROUND(si.quantity * si.rate - si.discount, :scale) AS amount,
                pr.company AS company, pr.registrationNumber AS registrationNumber
         FROM sale_items si
         JOIN sales s ON s.id = si.saleId
@@ -2957,7 +2961,7 @@ interface KhataDao {
         ORDER BY s.timestamp ASC, s.id ASC, si.lineNo ASC
         """
     )
-    suspend fun walkInSalesRegister(from: Long, to: Long, walkIn: String): List<SaleRegisterRow>
+    suspend fun walkInSalesRegister(from: Long, to: Long, walkIn: String, scale: Int): List<SaleRegisterRow>
 
     /** A walk-in ticket whose money differs from its lines (its discount, tax, round-off): one row with the difference. */
     @Query(
@@ -2965,17 +2969,17 @@ interface KhataDao {
         SELECT s.timestamp AS date, s.saleNumber AS refNumber,
                COALESCE(NULLIF(TRIM(s.customerName), ''), :walkIn) AS partyName,
                NULL AS itemName, NULL AS batchNumber, NULL AS quantity, NULL AS unit,
-               ROUND(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, 2)), 2) AS amount,
+               ROUND(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, :scale)), :scale) AS amount,
                NULL AS company, NULL AS registrationNumber
         FROM sale_items si JOIN sales s ON s.id = si.saleId
         WHERE s.isDeleted = 0 AND s.status = 'done' AND s.ledgerEntryId IS NULL AND si.isDeleted = 0
           AND s.timestamp >= :from AND s.timestamp <= :to
         GROUP BY s.id
-        HAVING ABS(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, 2))) >= 0.005
+        HAVING ABS(s.grandTotal - SUM(ROUND(si.quantity * si.rate - si.discount, :scale))) >= 0.005
         ORDER BY s.timestamp ASC, s.id ASC
         """
     )
-    suspend fun walkInSalesAdjustments(from: Long, to: Long, walkIn: String): List<SaleRegisterRow>
+    suspend fun walkInSalesAdjustments(from: Long, to: Long, walkIn: String, scale: Int): List<SaleRegisterRow>
 
     /**
      * The sales register's rows: the khata's sales and the walk-in tickets,
@@ -2983,8 +2987,8 @@ interface KhataDao {
      * The one call the phone's register and the computer's both make.
      */
     suspend fun registerSales(from: Long, to: Long, adjustment: String, walkIn: String): List<SaleRegisterRow> =
-        (salesRegister(from, to) + salesAdjustments(from, to).map { it.copy(itemName = adjustment) } +
-            walkInSalesRegister(from, to, walkIn) + walkInSalesAdjustments(from, to, walkIn).map { it.copy(itemName = adjustment) })
+        (salesRegister(from, to, LineMath.scale()) + salesAdjustments(from, to, LineMath.scale()).map { it.copy(itemName = adjustment) } +
+            walkInSalesRegister(from, to, walkIn, LineMath.scale()) + walkInSalesAdjustments(from, to, walkIn, LineMath.scale()).map { it.copy(itemName = adjustment) })
             .sortedWith(compareBy({ it.date }, { it.refNumber }))
 
     /**

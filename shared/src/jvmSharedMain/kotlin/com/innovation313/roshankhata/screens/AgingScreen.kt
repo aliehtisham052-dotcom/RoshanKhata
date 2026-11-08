@@ -119,7 +119,7 @@ fun AgingScreen(dao: KhataDao, modifier: Modifier = Modifier, reload: Int = 0, o
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(Format.name(row.name), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(Format.name(row.name), color = c.ink, textAlign = androidx.compose.ui.text.style.TextAlign.Start, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             row.oldest?.let { Text(word(W.aging_oldest, Format.dateOnly(it)), color = c.textMuted, fontSize = 12.sp) }
                         }
                         Text(Format.money(row.balance), color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)

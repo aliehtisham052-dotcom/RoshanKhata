@@ -494,6 +494,11 @@ object AuditAction {
     const val PARTY_DELETED = "party_deleted"
     /** Customers merged into one (3 Nov 2026 audit, L14): money moved between accounts, with nothing written down. */
     const val PARTY_MERGED = "party_merged"
+    const val PARTY_TYPE_CHANGED = "party_type_changed"
+    const val CHEQUE_DELETED = "cheque_deleted"
+    const val BIN_RESTORED = "bin_restored"
+    const val BIN_PURGED = "bin_purged"
+    const val BIN_EMPTIED = "bin_emptied"
     const val DAY_CLOSED = "day_closed"
     /** Customers brought in from another app's file (22 Oct 2026, the review: it wrote nothing down). */
     const val IMPORT = "import"

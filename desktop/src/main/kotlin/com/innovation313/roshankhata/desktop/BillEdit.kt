@@ -70,7 +70,7 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
     var dueDate by remember(b.id) { mutableStateOf(b.dueDate) }
     var picking by remember { mutableStateOf<Int?>(null) }
     val amount = Calc.evalAmount(total)
-    AppDialog(onCloseRequest = onDone, onPreviewKeyEvent = escCloses(onDone), title = word(W.edit_bill), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
+    AppDialog(onCloseRequest = onDone, dirty = { number != b.billNumber.orEmpty() || total != Calc.trim(b.totalAmount) || note != b.note.orEmpty() || billDate != b.billDate || dueDate != b.dueDate }, title = word(W.edit_bill), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         Column(
             Modifier.fillMaxSize().background(c.surface).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)

@@ -244,7 +244,7 @@ private fun OrderEditor(draft: OrderDraft, suppliers: List<PartyWithBalance>, it
             else Text(word(W.filter_type_suppliers), color = c.textMuted, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             if (suppliers.isNotEmpty()) Column(Modifier.fillMaxWidth().heightIn(max = 220.dp).verticalScroll(rememberScrollState()).background(c.surface, RoundedCornerShape(12.dp))) {
                 suppliers.filter { NameSearch.matches(it.name, it.phone, partyQuery.trim().lowercase()) }.take(20).forEach { p ->
-                    Text(Format.name(p.name), Modifier.fillMaxWidth().clickable { draft.partyId = p.id }.padding(12.dp), color = c.ink, fontSize = 15.sp)
+                    Text(Format.name(p.name), Modifier.fillMaxWidth().clickable { draft.partyId = p.id }.padding(12.dp), color = c.ink, textAlign = androidx.compose.ui.text.style.TextAlign.Start, fontSize = 15.sp)
                     HorizontalDivider(color = c.pageBg)
                 }
             }

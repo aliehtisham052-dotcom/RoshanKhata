@@ -26,7 +26,7 @@ object SaleReceiptText {
         if (sale.discountAmount > 0.0 || sale.taxAmount > 0.0 || sale.roundOff != 0.0) {
             b.append(words.text(W.pos_subtotal)).append(": ").append(Format.money(sale.subtotal)).append('\n')
             if (sale.discountAmount > 0.0) b.append(words.text(W.pos_discount)).append(": −").append(Format.money(sale.discountAmount)).append('\n')
-            if (sale.taxAmount > 0.0) b.append(words.text(W.pos_tax)).append(": ").append(Format.money(sale.taxAmount)).append('\n')
+            if (sale.taxAmount > 0.0) b.append(words.text(W.pos_tax_total)).append(": ").append(Format.money(sale.taxAmount)).append('\n')
             // A round-off down keeps its minus (3 Nov 2026 audit, L05): "Rs 0.40" read as forty paisa added.
             if (sale.roundOff != 0.0) b.append(words.text(W.pos_round_off)).append(": ").append(Format.signedIfNegative(sale.roundOff)).append('\n')
         }
@@ -40,7 +40,7 @@ object SaleReceiptText {
         }
         if (sale.creditAmount > 0.005) b.append(words.text(W.pos_to_account)).append(": ").append(Format.money(sale.creditAmount)).append('\n')
         // The balance in the customer's words, its side said (3 Nov 2026 audit, L05): a bare figure lost which way it ran.
-        balanceAfter?.let { b.append(words.text(W.net_balance)).append(": ").append(ReceiptBalance.text(words, it)).append('\n') }
+        balanceAfter?.let { b.append(words.text(W.net_balance)).append(": ").append(sale.customerName?.let { n -> ReceiptBalance.named(words, it, shop, n) } ?: ReceiptBalance.text(words, it)).append('\n') } // L85: named, as the entry receipt says it
         // Loyalty (21 Oct 2026): what was spent, what was earned, what the customer holds now.
         points?.let { pt ->
             if (pt.used > 0.0) b.append(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue))).append('\n')

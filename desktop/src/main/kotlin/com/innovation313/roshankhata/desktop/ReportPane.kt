@@ -176,7 +176,10 @@ fun ReportPane(
     FluentPage(word(W.ledger_report_title), windowLabel, scroll = false, actions = {
         FluentButton(word(W.export_excel), { exportCsv() }, icon = "ic_download", enabled = ready)
         FluentButton(word(W.pdf_preview), {
-            StatementPrint.show(ReportPrint(words, rtl, shopName ?: words.text(W.app_name), rangeLabel, entries), words.text(W.ledger_report_title))
+            // L82 (8 Nov 2026 review): the PDF carries the same entries as the CSV, so it asks EXPORT too.
+            Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) {
+                StatementPrint.show(ReportPrint(words, rtl, shopName ?: words.text(W.app_name), rangeLabel, entries), words.text(W.ledger_report_title))
+            }
         }, kind = ButtonKind.ACCENT, icon = "ic_pdf_doc", enabled = ready)
     }) {
         PillRow {

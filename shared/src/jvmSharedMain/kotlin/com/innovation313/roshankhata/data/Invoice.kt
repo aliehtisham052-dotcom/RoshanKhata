@@ -212,21 +212,23 @@ object InvoiceMath {
         receivedAmount: Double? = null,
         discountAmount: Double? = null
     ): InvoiceTotals {
-        val subtotal = items.sumOf { it.lineTotal }
+        // L68 (8 Nov 2026 review): each step to the shop's smallest coin, so the parts add up to the total and a
+        // balance due never reads -0.01 (84.25 + 18% = 15.17 tax, 99.42 total).
+        val subtotal = LineMath.round(items.sumOf { it.lineTotal })
         val discountAmount = if (discountAmount != null) {
             discountAmount.coerceIn(0.0, subtotal.coerceAtLeast(0.0))
         } else {
             // A percentage past 100 or below 0 cannot make a negative total (M131 / L131).
-            discountPercent?.takeIf { it != 0.0 }?.let { (subtotal * it / 100.0).coerceIn(0.0, subtotal.coerceAtLeast(0.0)) } ?: 0.0
+            discountPercent?.takeIf { it != 0.0 }?.let { LineMath.round((subtotal * it / 100.0).coerceIn(0.0, subtotal.coerceAtLeast(0.0))) } ?: 0.0
         }
-        val afterDiscount = subtotal - discountAmount
-        val taxAmount = taxPercent?.takeIf { it != 0.0 }?.let { afterDiscount * it / 100.0 } ?: 0.0
+        val afterDiscount = LineMath.round(subtotal - discountAmount)
+        val taxAmount = taxPercent?.takeIf { it != 0.0 }?.let { LineMath.round(afterDiscount * it / 100.0) } ?: 0.0
         val charge = additionalChargeAmount ?: 0.0
-        val grandTotal = afterDiscount + taxAmount + charge
+        val grandTotal = LineMath.round(afterDiscount + taxAmount + charge)
         val received = receivedAmount ?: 0.0
         return InvoiceTotals(
             subtotal, discountAmount, taxAmount, charge, grandTotal,
-            received, grandTotal - received
+            received, LineMath.round(grandTotal - received)
         )
     }
 }

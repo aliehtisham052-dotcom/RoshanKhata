@@ -61,13 +61,13 @@ object Aging {
         var left = LineMath.round(outstanding)
         val out = ArrayList<Pair<Long, Double>>()
         for ((day, amount) in newestFirst) {
-            if (left <= 0.005) break
+            if (!Money.isPositive(left)) break
             val take = LineMath.round(minOf(amount, left))
             if (take <= 0.0) continue
             out += day to take
             left = LineMath.round(left - take)
         }
-        if (left > 0.005) out += (newestFirst.lastOrNull()?.first ?: 0L) to left
+        if (Money.isPositive(left)) out += (newestFirst.lastOrNull()?.first ?: 0L) to left
         return out
     }
 
@@ -85,8 +85,8 @@ object Aging {
         }
         val order = compareByDescending<Row> { it.over90 }.thenByDescending { it.balance }
         return Report(
-            receivable = parties.filter { it.balance > 0.005 }.map { row(it, true) }.sortedWith(order),
-            payable = parties.filter { it.balance < -0.005 }.map { row(it, false) }.sortedWith(order),
+            receivable = parties.filter { Money.isPositive(it.balance) }.map { row(it, true) }.sortedWith(order),
+            payable = parties.filter { Money.isNegative(it.balance) }.map { row(it, false) }.sortedWith(order),
             now = now
         )
     }

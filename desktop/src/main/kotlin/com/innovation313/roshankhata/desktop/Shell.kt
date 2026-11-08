@@ -422,14 +422,23 @@ fun AppDialog(
     onCloseRequest: () -> Unit,
     state: androidx.compose.ui.window.DialogState = androidx.compose.ui.window.rememberDialogState(),
     title: String = "",
-    onPreviewKeyEvent: (androidx.compose.ui.input.key.KeyEvent) -> Boolean = escCloses(onCloseRequest),
+    onPreviewKeyEvent: ((androidx.compose.ui.input.key.KeyEvent) -> Boolean)? = null,
     closable: Boolean = true,
+    // 8 Nov 2026 review (L83): a form with typing in it asks before Esc, the ✕ or Back throws it away.
+    dirty: () -> Boolean = { false },
     content: @Composable () -> Unit
 ) {
     val chrome = remember { DialogChrome() }
+    val asking = remember { androidx.compose.runtime.mutableStateOf(false) }
+    val closeRequest: () -> Unit = { if (dirty()) asking.value = true else onCloseRequest() }
+    val keys = onPreviewKeyEvent ?: escCloses(closeRequest)
+    if (asking.value) AskDialog(
+        title = word(W.form_discard_title), text = word(W.form_discard_msg), confirm = word(W.bp_leave_discard),
+        onConfirm = { asking.value = false; onCloseRequest() }, onDismiss = { asking.value = false }, danger = true
+    )
     androidx.compose.runtime.DisposableEffect(Unit) { OpenDialogs.opened(); onDispose { OpenDialogs.closed() } }
     androidx.compose.ui.window.Dialog(
-        onDismissRequest = onCloseRequest,
+        onDismissRequest = closeRequest,
         properties = androidx.compose.ui.window.DialogProperties(
             dismissOnBackPress = true,
             // A form's typing is never thrown away by a click beside it.
@@ -450,10 +459,10 @@ fun AppDialog(
                 Modifier.size(w, h)
                     .shadow(24.dp, Look.card, clip = false)
                     .clip(Look.card).background(Look.layer).border(1.dp, Look.strokeCard, Look.card)
-                    .onPreviewKeyEvent(onPreviewKeyEvent)
+                    .onPreviewKeyEvent(keys)
                     .focusRequester(focus).focusable()
             ) {
-                if (!chrome.ownHead) DialogHead(title, if (closable) onCloseRequest else null)
+                if (!chrome.ownHead) DialogHead(title, if (closable) closeRequest else null)
                 Box(Modifier.weight(1f).fillMaxWidth()) {
                     androidx.compose.runtime.CompositionLocalProvider(LocalDialogChrome provides chrome) { content() }
                 }

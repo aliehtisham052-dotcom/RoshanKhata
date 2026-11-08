@@ -55,7 +55,6 @@ object PaymentHabit {
     const val LATE_FACTOR = 1.5
     const val MIN_DAYS_OVER = 7
 
-    private const val EPS = 0.005
 
     /**
      * Every party's habit, for parties that owe and have enough history.
@@ -91,8 +90,8 @@ object PaymentHabit {
             balance += if (p.isGiven) p.amount else -p.amount
             if (!p.isGiven) paymentDays += DayMath.dayNumber(p.timestamp, tz)
             when {
-                balance <= EPS -> debtStart = null
-                before <= EPS -> debtStart = p.timestamp
+                !Money.isPositive(balance) -> debtStart = null
+                !Money.isPositive(before) -> debtStart = p.timestamp
             }
         }
 

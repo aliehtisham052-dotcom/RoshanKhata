@@ -127,10 +127,19 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
         scope.launch {
             val clash = withContext(Dispatchers.IO) { dao.productByKey(updated.nameKey) }
             val codeClash = withContext(Dispatchers.IO) { updated.barcode?.let { dao.productByBarcode(it) } }
-            if (clash != null && clash.id != product.id) {
+            if (clash != null && clash.id != product.id && !(product.id == 0L && clash.isDeleted)) {
                 problem = words.text(W.product_name_taken, clash.name)
             } else if (codeClash != null && codeClash.id != product.id) {
                 problem = words.text(W.product_barcode_taken, codeClash.name)
+            } else if (product.id == 0L) {
+                // A new product (L91, 8 Nov 2026 review): the phone's Add product, on the computer — the DAO checks the name
+                // and the code again and brings a deleted product of that name back with its id and uid.
+                val added = withContext(Dispatchers.IO) { dao.addProduct(updated) }
+                when (added) {
+                    is com.innovation313.roshankhata.data.ProductAdd.Added -> onClose()
+                    is com.innovation313.roshankhata.data.ProductAdd.NameTaken -> problem = words.text(W.product_name_taken, added.name)
+                    is com.innovation313.roshankhata.data.ProductAdd.BarcodeTaken -> problem = words.text(W.product_barcode_taken, added.name)
+                }
             } else {
                 withContext(Dispatchers.IO) {
                     dao.updateProduct(updated)
@@ -143,10 +152,10 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             }
         }
     }
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
+    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = product.name.ifBlank { word(W.product_add) }, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
         // The app's own frame (Marhala 4): one title and ✕, the fields, Cancel and Save always in sight at its foot.
         DialogFrame(
-            product.name, subtitle = word(W.edit), onClose = onClose,
+            product.name.ifBlank { word(W.product_add) }, subtitle = word(if (product.id == 0L) W.product_add else W.edit), onClose = onClose,
             footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
             footer = {
                 FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)

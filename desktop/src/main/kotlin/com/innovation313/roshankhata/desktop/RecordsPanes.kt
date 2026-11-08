@@ -150,10 +150,12 @@ fun BillsPane(
         )
     }
     if (adding) {
-        AppDialog(onCloseRequest = { adding = false },onPreviewKeyEvent = escCloses { adding = false }, title = word(W.add_bill), state = rememberDialogState(width = fitW(700.dp), height = fitH(820.dp))) {
+        val billTyped = remember { mutableStateOf(false) }
+        AppDialog(onCloseRequest = { adding = false }, dirty = { billTyped.value }, title = word(W.add_bill), state = rememberDialogState(width = fitW(700.dp), height = fitH(820.dp))) {
             Box(Modifier.fillMaxSize()) {
                 BillForm(
                     parties = parties,
+                    typed = billTyped,
                     products = rememberProductShelf(dao),
                     onSave = { b ->
                         adding = false
@@ -354,6 +356,9 @@ fun ProductsPane(dao: KhataDao, words: Words) {
                     }, kind = ButtonKind.STANDARD, icon = "ic_print", enabled = shown.isNotEmpty())
                     FluentButton(word(W.products_export), { exportCsv() }, kind = ButtonKind.STANDARD, enabled = products.isNotEmpty())
                     FluentButton(word(W.products_import), { importCsv() }, kind = ButtonKind.STANDARD)
+                    FluentButton(word(W.product_add), {
+                        Gates.edit { editing = com.innovation313.roshankhata.data.Product(name = query.trim(), nameKey = "", normalisedName = "") }
+                    }, kind = ButtonKind.ACCENT, icon = "ic_add_plain")
                 }
             }) {
             if (shown.isEmpty()) item(key = "none") { Text(word(W.no_matching_products), Modifier.padding(16.dp), color = c.textMuted, fontSize = 14.sp) }

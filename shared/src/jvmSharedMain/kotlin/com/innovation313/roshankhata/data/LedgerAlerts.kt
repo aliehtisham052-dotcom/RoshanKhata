@@ -95,7 +95,11 @@ object LedgerAlerts {
         // Yesterday's drawer (POS Phase 4): money moved yesterday and no count was made for it.
         val yesterday = DayCloseMath.dayOf(t0) - 1
         val last = dao.lastDayClose()
-        if ((last == null || last.day < yesterday) && dao.doneSaleCount(t0 - DAY, t0) > 0) {
+        // L81 (8 Nov 2026 review): a khata-only shop has no counter tickets; cash that moved counts as well.
+        val yesterdayMoved = dao.doneSaleCount(t0 - DAY, t0) > 0 ||
+            dao.cashbookCashBetween(true, t0 - DAY, t0) + dao.cashbookCashBetween(false, t0 - DAY, t0) +
+            dao.khataCashBetween(true, t0 - DAY, t0) + dao.khataCashBetween(false, t0 - DAY, t0) > 0.0
+        if ((last == null || last.day < yesterday) && yesterdayMoved) {
             out += Alert(Kind.DRAWER, words.text(W.z_yesterday_open), "")
         }
 

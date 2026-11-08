@@ -408,7 +408,7 @@ class ChequesActivity : BaseActivity() {
             }
         }
         val delete = ChoiceSheet.delete(getString(R.string.delete_cheque)) to {
-            com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id) }.join() } }
+            com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { lifecycleScope.launch { AppScope.launch { dao.softDeleteCheque(cheque.id); dao.log(com.innovation313.roshankhata.data.AuditAction.CHEQUE_DELETED, com.innovation313.roshankhata.data.Access.userName, "cheques", cheque.id) }.join() } }
         }
 
         if (cheque.status != ChequeStatus.PENDING) {

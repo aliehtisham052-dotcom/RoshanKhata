@@ -137,7 +137,7 @@ object OrderNumber {
  */
 data class Valuation(val rows: List<Row>) {
     data class Row(val productId: Long, val name: String, val onHand: Double?, val unit: String?, val cost: Double?, val lowStockLevel: Double?) {
-        val value: Double? get() = if (onHand != null && cost != null) LineMath.round(onHand * cost) else null
+        val value: Double? get() = if (onHand != null && cost != null) LineMath.round(maxOf(onHand, 0.0) * cost) else null // L73: oversold stock is not negative value
         val isLow: Boolean get() = onHand != null && lowStockLevel != null && onHand <= lowStockLevel
     }
     val total: Double get() = LineMath.round(rows.sumOf { it.value ?: 0.0 })

@@ -84,7 +84,16 @@ object BackupReminder {
     fun isReminderDue(context: Context, hasData: Boolean): Boolean {
         if (!hasData) return false
         val last = lastBackupAt(context)
-        if (last == 0L) return true
-        return System.currentTimeMillis() - last > WEEK_MS
+        val now = System.currentTimeMillis()
+        if (last == 0L) {
+            // 8 Nov 2026 review (L64): a book never backed up was "more than a week" on its first entry. Its week
+            // starts when the book is first seen with data (a marker beside the last-backup time).
+            val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            val marker = key(context) + "_first_data"
+            val first = prefs.getLong(marker, 0)
+            if (first == 0L) { prefs.edit().putLong(marker, now).apply(); return false }
+            return now - first > WEEK_MS
+        }
+        return now - last > WEEK_MS
     }
 }

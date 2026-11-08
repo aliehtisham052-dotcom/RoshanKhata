@@ -622,11 +622,19 @@ class KhataActivity : BaseActivity() {
             .setTitle(R.string.add_party)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
+            .setPositiveButton(R.string.save, null)
+            .show().also { form ->
+              com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+              // 8 Nov 2026 review (L63): a missing name kept the form open; Back/outside ask before discarding.
+              com.innovation313.roshankhata.ui.FormGuard.guard(this, form, typed = {
+                  listOf(etName, etPhone, etFatherName, etVillage).any { it.text.toString().isNotBlank() }
+              })
+              com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
                 val name = etName.text.toString().trim()
                 if (name.isEmpty()) {
                     Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
+                    etName.requestFocus()
+                    return@onSave false
                 }
                 val phone = etPhone.text.toString().trim().ifEmpty { null }
                 val fatherName = etFatherName.text.toString().trim().ifEmpty { null }
@@ -696,8 +704,9 @@ class KhataActivity : BaseActivity() {
                         }
                     }
                 }
+                true
+              }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
     }
 
     /**

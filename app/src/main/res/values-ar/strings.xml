@@ -818,7 +818,7 @@
     <string name="paisa_access_given">الوصول إلى الإشعارات: ممنوح</string>
     <string name="paisa_access_not_given">الوصول إلى الإشعارات: غير ممنوح</string>
     <string name="paisa_access_button">امنح الوصول إلى الإشعارات</string>
-    <string name="paisa_access_restricted">إذا قال أندرويد «Restricted setting»: افتح App info لتطبيق روشن كهاتا، اضغط ⋮، اختر Allow restricted settings، ثم حاول مرة أخرى.</string>
+    <string name="paisa_access_restricted">إذا قال أندرويد «إعداد مقيّد» (Restricted setting): افتح «معلومات التطبيق» (App info) لتطبيق روشن كهاتا، اضغط ⋮، اختر «السماح بالإعدادات المقيّدة» (Allow restricted settings)، ثم حاول مرة أخرى.</string>
     <string name="paisa_apps_title">التطبيقات التي يُستمع إليها</string>
     <string name="paisa_apps_help">حدد فقط تطبيقات المحافظ والبنوك التي يدفع لك فيها العملاء. تظهر التطبيقات الأخرى هنا بعد أن تعرض إشعارًا. لا تُعرض تطبيقات الرسائل القصيرة أبدًا.</string>
     <string name="paisa_not_installed">%1$s (ليس على هذا الهاتف)</string>
@@ -4301,4 +4301,12 @@
     <string name="share_app">شارك روشن كهاتا</string>
     <string name="share_app_text">روشن كهاتا يحفظ دفتر محلي في هاتفي، مجانًا وبلا حساب. جرّبه: %1$s</string>
     <string name="home_add_first_customer">دفترك فارغ — اضغط هنا لإضافة أول عميل</string>
+    <string name="audit_cheque_deleted">تم حذف الشيك</string>
+    <string name="cheque_delete_confirm">هل تحذف هذا الشيك؟ سيختفي من القائمة، وتبقى الدفعة التي سجّلها من قبل في الدفتر.</string>
+    <string name="audit_party_type">تغيير نوع العميل/المورّد</string>
+    <string name="audit_bin_restored">تمت الاستعادة من السلة</string>
+    <string name="audit_bin_purged">حُذف نهائيًا من السلة</string>
+    <string name="audit_bin_emptied">تم إفراغ السلة</string>
+    <string name="pos_tax_total">الضريبة</string>
+    <string name="paisa_access_go">في بعض هواتف الذاكرة المنخفضة (Android Go) التي يعمل عليها Android 10 أو أقدم، لا يسمح النظام بالوصول إلى الإشعارات إطلاقًا. إذا لم يفتح الزر شيئًا فلا يمكن لهذه الميزة أن تعمل على هذا الهاتف.</string>
 </resources>

@@ -579,7 +579,7 @@
     <string name="save_backup">بيڪ اپ محفوظ ڪريو</string>
 
     <string name="restore_warning_title">سڀ ڪجهه مٽايو؟</string>
-    <string name="restore_warning_message">بحالي روشن کاتي ۾ موجود سڀ ڪجهه هن فائل واري مواد سان مٽائي ڇڏيندي:\n\n%1$d گراهڪ/سپلائر\n%2$d کاتي جون داخلائون\n%3$d چيڪ\n%4$d روڪڙ ڪتاب داخلائون\n%5$d ادائيگي رٿائون\n%6$d سپلائر بل\n%7$d رسيدون\n\nجيڪو هن وقت فون تي آهي سو ختم ٿي ويندو. جيڪڏهن هتي اهڙيون داخلائون آهن جيڪي بيڪ اپ ۾ ناهن، ته پهرين هن جو بيڪ اپ وٺو.\n\nهي کاتو پهريان روزاني ڪاپين ۾ محفوظ ٿئي ٿو، ان ڪري ريسٽور اتان واپس ٿي سگهي ٿو.</string>
+    <string name="restore_warning_message">بحالي روشن کاتي ۾ موجود سڀ ڪجهه هن فائل واري مواد سان مٽائي ڇڏيندي:\n\n%1$d گراهڪ/سپلائر\n%2$d کاتي جون داخلائون\n%3$d چيڪ\n%4$d روڪڙ ڪتاب داخلائون\n%5$d ادائيگي رٿائون\n%6$d سپلائر بل\n%7$d انوائس\n\nجيڪو هن وقت فون تي آهي سو ختم ٿي ويندو. جيڪڏهن هتي اهڙيون داخلائون آهن جيڪي بيڪ اپ ۾ ناهن، ته پهرين هن جو بيڪ اپ وٺو.\n\nهي کاتو پهريان روزاني ڪاپين ۾ محفوظ ٿئي ٿو، ان ڪري ريسٽور اتان واپس ٿي سگهي ٿو.</string>
     <string name="restore_replace">سڀ ڪجهه مٽايو</string>
     <string name="restore_done">بحال ٿيو</string>
     <string name="restore_failed">بحالي ناڪام: %1$s</string>
@@ -4069,4 +4069,12 @@
     <string name="share_app">روشن کاتو شيئر ڪريو</string>
     <string name="share_app_text">روشن کاتو منهنجي دڪان جو کاتو فون تي رکي ٿو، مفت، بنا اڪائونٽ. آزمايو: %1$s</string>
     <string name="home_add_first_customer">توهان جو کاتو خالي آهي — پهريون گراهڪ هتان شامل ڪريو</string>
+    <string name="audit_cheque_deleted">چيڪ ڊليٽ ڪيو ويو</string>
+    <string name="cheque_delete_confirm">هي چيڪ ڊليٽ ڪريون؟ اهو فهرست مان هٽي ويندو. ان مان اڳ ۾ درج ٿيل ادائيگي کاتي ۾ رهندي.</string>
+    <string name="audit_party_type">گراهڪ/سپلائر جي قسم تبديل ٿي</string>
+    <string name="audit_bin_restored">ٽوڪري مان بحال ڪيو ويو</string>
+    <string name="audit_bin_purged">ٽوڪري مان هميشه لاءِ ختم ڪيو ويو</string>
+    <string name="audit_bin_emptied">ٽوڪري خالي ڪئي وئي</string>
+    <string name="pos_tax_total">ٽيڪس</string>
+    <string name="paisa_access_go">گهٽ ميموري واري (Android Go) ڪجهه فونن تي، جن ۾ Android 10 يا ان کان پراڻو هجي، Android نوٽيفڪيشن تائين رسائي ڏيندو ئي ناهي. جيڪڏهن بٽڻ ڪجهه نه کولي ته هي فيچر هن فون تي ڪم نٿو ڪري سگهي.</string>
 </resources>

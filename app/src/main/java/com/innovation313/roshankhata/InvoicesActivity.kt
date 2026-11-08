@@ -329,9 +329,11 @@ class InvoicesActivity : BaseActivity() {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            try {
-                startActivity(send)
-            } catch (_: android.content.ActivityNotFoundException) {
+            // L103 (8 Nov 2026 review): a phone with only WhatsApp Business was told WhatsApp was not installed.
+            val sent = try { startActivity(send); true } catch (_: android.content.ActivityNotFoundException) {
+                try { startActivity(Intent(send).setPackage("com.whatsapp.w4b")); true } catch (_: android.content.ActivityNotFoundException) { false }
+            }
+            if (!sent) {
                 Toast.makeText(
                     this@InvoicesActivity, R.string.whatsapp_not_installed, Toast.LENGTH_LONG
                 ).show()

@@ -4024,4 +4024,12 @@
     <string name="share_app">Bagikan Roshan Khata</string>
     <string name="share_app_text">Roshan Khata menyimpan buku kas toko saya di ponsel, gratis, tanpa akun. Coba: %1$s</string>
     <string name="home_add_first_customer">Buku Anda masih kosong — ketuk di sini untuk menambah pelanggan pertama</string>
+    <string name="audit_cheque_deleted">Cek dihapus</string>
+    <string name="cheque_delete_confirm">Hapus cek ini? Cek hilang dari daftar. Pembayaran yang sudah dicatat darinya tetap ada di buku.</string>
+    <string name="audit_party_type">Jenis pelanggan/pemasok diubah</string>
+    <string name="audit_bin_restored">Dipulihkan dari tempat sampah</string>
+    <string name="audit_bin_purged">Dihapus selamanya dari tempat sampah</string>
+    <string name="audit_bin_emptied">Tempat sampah dikosongkan</string>
+    <string name="pos_tax_total">Pajak</string>
+    <string name="paisa_access_go">Di sebagian ponsel RAM kecil (Android Go) dengan Android 10 atau lebih lama, Android tidak mengizinkan akses notifikasi sama sekali. Jika tombol tidak membuka apa pun, fitur ini tidak bisa berjalan di ponsel ini.</string>
 </resources>

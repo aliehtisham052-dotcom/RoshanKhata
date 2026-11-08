@@ -163,7 +163,9 @@ object ViewerMode {
         // Salaries are private: a helper may be on the list himself.
         "StaffActivity",
         // Payment voice offers to add a payment to the book, which a read-only phone cannot (5 Nov 2026).
-        "PaymentVoiceActivity"
+        "PaymentVoiceActivity",
+        // The counter only posts tickets, which a read-only phone cannot (L90, 8 Nov 2026 review).
+        "CounterSaleActivity"
     )
 
     fun ownerOnly(screen: Class<*>): Boolean = screen.simpleName in OWNER_ONLY

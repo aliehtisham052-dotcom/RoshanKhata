@@ -582,7 +582,7 @@ fun CounterSalePane(
                 // The ticket's discount in money (25 Oct 2026, the audit: "10%" typed showed no figure anywhere).
                 if (draft.handDiscount > 0.005) FigureRow(word(W.pos_discount), "−" + Format.money(draft.handDiscount), Look.accent)
                 if (draft.pointsValue > 0.0) FigureRow(words.text(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue), Look.accent)
-                if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax), Format.money(draft.totals.tax))
+                if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax_total), Format.money(draft.totals.tax))
                 if (draft.totals.taxIncluded > 0.0) FigureRow(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(word(W.pos_round_off), Modifier.weight(1f), color = c.inkSoft, fontSize = 12.sp)
@@ -1034,7 +1034,7 @@ object SaleReceipt {
         if (sale.discountAmount > 0.0 || sale.taxAmount > 0.0 || sale.roundOff != 0.0) {
             out += ThermalReceipt.Line(words.text(W.pos_subtotal) + ": " + Format.money(sale.subtotal), 18f)
             if (sale.discountAmount > 0.0) out += ThermalReceipt.Line(words.text(W.pos_discount) + ": −" + Format.money(sale.discountAmount), 18f)
-            if (sale.taxAmount > 0.0) out += ThermalReceipt.Line(words.text(W.pos_tax) + ": " + Format.money(sale.taxAmount), 18f)
+            if (sale.taxAmount > 0.0) out += ThermalReceipt.Line(words.text(W.pos_tax_total) + ": " + Format.money(sale.taxAmount), 18f)
             // A round-off down keeps its minus, as the phone's receipt does (3 Nov 2026: "Rs 0.40" read as forty paisa added).
             if (sale.roundOff != 0.0) out += ThermalReceipt.Line(words.text(W.pos_round_off) + ": " + Format.signedIfNegative(sale.roundOff), 18f)
         }

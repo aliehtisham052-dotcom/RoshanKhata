@@ -2135,7 +2135,7 @@ private fun Book(
                             "\n\n" + words.text(if (Money.isPositive(b)) W.bin_party_owed_to_me else W.bin_party_i_owe, Format.money(b))
                         }.orEmpty()
                         purging = Pair(ask + money, suspend {
-                            if (dao.purgeParty(p.id) > 0) null else words.text(W.bin_party_kept)
+                            if ((dao.keepEntryNumberHigh().let { dao.purgeParty(p.id) }) > 0) null else words.text(W.bin_party_kept)
                         })
                     }
                 },

@@ -562,7 +562,7 @@
     <string name="save_backup">بیک اپ محفوظ کریں</string>
 
     <string name="restore_warning_title">سب کچھ بدل دیں؟</string>
-    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n%7$d رسیدیں\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ کھاتہ پہلے روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور وہاں سے واپس ہو سکتا ہے۔</string>
+    <string name="restore_warning_message">بحالی روشن کھاتہ میں موجود ہر چیز کو اس فائل کے مواد سے بدل دے گی:\n\n%1$d گاہک/سپلائر\n%2$d کھاتہ اندراجات\n%3$d چیک\n%4$d کیش بک اندراجات\n%5$d ادائیگی منصوبے\n%6$d سپلائر بل\n%7$d انوائس\n\nجو کچھ اس فون پر اب ہے وہ چلا جائے گا۔ اگر یہاں ایسے اندراجات ہیں جو بیک اپ میں نہیں، تو پہلے اِس کا بیک اپ لیں۔\n\nیہ کھاتہ پہلے روزانہ کاپیوں میں محفوظ ہو جاتا ہے، اس لیے ریسٹور وہاں سے واپس ہو سکتا ہے۔</string>
     <string name="restore_replace">سب کچھ بدل دیں</string>
     <string name="restore_done">بحال ہو گیا</string>
     <string name="restore_failed">بحالی ناکام: %1$s</string>
@@ -4041,4 +4041,12 @@
     <string name="share_app">روشن کھاتہ شیئر کریں</string>
     <string name="share_app_text">روشن کھاتہ میں میری دکان کا کھاتہ فون پر رہتا ہے، مفت، بغیر اکاؤنٹ۔ آزمائیں: %1$s</string>
     <string name="home_add_first_customer">آپ کی کتاب خالی ہے — پہلا گاہک یہاں سے شامل کریں</string>
+    <string name="audit_cheque_deleted">چیک حذف کیا گیا</string>
+    <string name="cheque_delete_confirm">یہ چیک حذف کریں؟ یہ فہرست سے ہٹ جائے گا۔ اس سے پہلے سے درج ادائیگی کھاتے میں رہے گی۔</string>
+    <string name="audit_party_type">گاہک/سپلائر کی قسم بدلی گئی</string>
+    <string name="audit_bin_restored">بن سے بحال کیا گیا</string>
+    <string name="audit_bin_purged">بن سے ہمیشہ کے لیے حذف کیا گیا</string>
+    <string name="audit_bin_emptied">بن خالی کیا گیا</string>
+    <string name="pos_tax_total">ٹیکس</string>
+    <string name="paisa_access_go">کم میموری والے (اینڈرائیڈ گو) بعض فونز پر، جن میں اینڈرائیڈ 10 یا اس سے پرانا ہو، اینڈرائیڈ نوٹیفکیشن تک رسائی دیتا ہی نہیں۔ اگر بٹن کچھ نہ کھولے تو یہ فیچر اس فون پر نہیں چل سکتا۔</string>
 </resources>

@@ -52,6 +52,14 @@ object HintFit {
         box.post {
             box.setHorizontallyScrolling(false)
             box.maxLines = MAX_LINES
+            // L100 (8 Nov 2026 review): a box fixed at 48 dp (a search bar) cut a 2-4 line hint; it grows from that height.
+            box.layoutParams?.let { lp ->
+                if (lp.height > 0) {
+                    box.minHeight = maxOf(box.minHeight, lp.height)
+                    lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                    box.layoutParams = lp
+                }
+            }
         }
     }
 

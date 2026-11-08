@@ -763,7 +763,7 @@
     <string name="paisa_access_given">دسترسی به اعلان‌ها: داده شده</string>
     <string name="paisa_access_not_given">دسترسی به اعلان‌ها: داده نشده</string>
     <string name="paisa_access_button">دادن دسترسی به اعلان‌ها</string>
-    <string name="paisa_access_restricted">اگر اندروید گفت «Restricted setting»: App info روشن خاتا را باز کنید، ⋮ را بزنید، Allow restricted settings را انتخاب کنید و دوباره امتحان کنید.</string>
+    <string name="paisa_access_restricted">اگر اندروید گفت «تنظیم محدودشده» (Restricted setting): «اطلاعات برنامه» (App info) روشن خاتا را باز کنید، ⋮ را بزنید، «اجازه دادن به تنظیمات محدودشده» (Allow restricted settings) را انتخاب کنید و دوباره امتحان کنید.</string>
     <string name="paisa_apps_title">اپ‌هایی که شنیده شوند</string>
     <string name="paisa_apps_help">فقط کیف‌پول‌ها و اپ‌های بانکی را تیک بزنید که مشتری‌ها در آن‌ها به شما پول می‌دهند. اپ‌های دیگر پس از نشان دادن اعلان اینجا می‌آیند. اپ‌های پیامک هرگز نشان داده نمی‌شوند.</string>
     <string name="paisa_not_installed">%1$s (روی این گوشی نیست)</string>
@@ -4069,4 +4069,12 @@
     <string name="share_app">اشتراک روشن خاتا</string>
     <string name="share_app_text">روشن خاتا دفتر مغازه‌ام را روی گوشی نگه می‌دارد، رایگان و بدون حساب کاربری. امتحان کنید: %1$s</string>
     <string name="home_add_first_customer">دفتر شما خالی است — برای افزودن اولین مشتری اینجا را بزنید</string>
+    <string name="audit_cheque_deleted">چک حذف شد</string>
+    <string name="cheque_delete_confirm">این چک حذف شود؟ از فهرست برداشته می‌شود. پرداختی که پیش‌تر از آن ثبت شده در دفتر می‌ماند.</string>
+    <string name="audit_party_type">نوع مشتری/تأمین‌کننده تغییر کرد</string>
+    <string name="audit_bin_restored">از سطل بازگردانی شد</string>
+    <string name="audit_bin_purged">برای همیشه از سطل حذف شد</string>
+    <string name="audit_bin_emptied">سطل خالی شد</string>
+    <string name="pos_tax_total">مالیات</string>
+    <string name="paisa_access_go">در برخی گوشی‌های کم‌حافظه (Android Go) با Android 10 یا قدیمی‌تر، اندروید اصلاً اجازهٔ دسترسی به اعلان‌ها را نمی‌دهد. اگر دکمه چیزی باز نکرد، این قابلیت روی این گوشی کار نمی‌کند.</string>
 </resources>

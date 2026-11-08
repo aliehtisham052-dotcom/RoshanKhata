@@ -46,7 +46,11 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         ShopCalendar.refresh(ctx)
         ensureChannel(ctx)
         val dao = KhataDatabase.get(ctx).khataDao()
-        val notices = runCatching {
+        // L96 (8 Nov 2026 review): the words come from ctx, but DateWords reads the default locale — a phone in English
+        // with the app in Urdu said last month's name in English. The default follows the app's language for this run.
+        val previous = java.util.Locale.getDefault()
+        runCatching { java.util.Locale.setDefault(ctx.resources.configuration.locales[0]) }
+        val notices = try { runCatching {
             Automations.noticesDue(
                 dao, AndroidAutomationSettings(ctx), AndroidWords(ctx),
                 money = { Format.money(it) },
@@ -55,7 +59,7 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
                 remindedToday = ReminderLog.openedToday(ctx),
                 radar = com.innovation313.roshankhata.ui.RadarUi.on(ctx)
             )
-        }.getOrDefault(emptyList())
+        }.getOrDefault(emptyList()) } finally { java.util.Locale.setDefault(previous) }
         notices.forEach { post(ctx, it) }
         return Result.success()
     }

@@ -587,7 +587,9 @@ object LiveSync {
         "sale_payments", "sale_returns", "sale_return_items", "supplier_bills", "bill_items", "entry_items", "invoices", "invoice_items",
         "staff_payments", "stock_adjustments",
         // The drawer's counted cash (a day's close, a shift's), points spent as a discount, an order's rates (R128).
-        "day_close", "shifts", "loyalty", "purchase_orders", "purchase_order_items")
+        "day_close", "shifts", "loyalty", "purchase_orders", "purchase_order_items",
+        // L76 (8 Nov 2026 review): prices, scheme terms and staff pay rates are money too.
+        "products", "schemes", "staff")
 
     /** Conflicts the owner has not looked at yet in a table that carries money (both devices changed the same row). */
     suspend fun moneyConflicts(sql: SyncSql): Int = sql.read {

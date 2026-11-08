@@ -106,6 +106,7 @@ fun ChequesPane(
     var form by remember { mutableStateOf<ChequeForm?>(null) }
     var acting by remember { mutableStateOf<ChequeWithParty?>(null) }
     var clearing by remember { mutableStateOf<ChequeWithParty?>(null) }
+    var deleting by remember { mutableStateOf<ChequeWithParty?>(null) }
     var bouncing by remember { mutableStateOf<ChequeWithParty?>(null) }
 
     // The stamp (3 Nov 2026, the owner's mockup "Cheque — cleared / bounced stamp"): while it lands on the
@@ -217,12 +218,26 @@ fun ChequesPane(
                     // Its picture (schema 43), whatever its state.
                     if (!ch.photoPath.isNullOrBlank()) Action(word(W.view_photo), c.ink) { viewingPhoto = ch }
                     else Action(word(W.attach_photo), c.ink) { Gates.edit { pickFor(ch.id) } }
-                    Action(word(W.delete_cheque), c.owedToMe) {
-                        Gates.edit { scope.launch { withContext(Dispatchers.IO) { dao.softDeleteCheque(ch.id) } } }
-                    }
+                    // L89 (8 Nov 2026 review): asked first, and written in who did what.
+                    Action(word(W.delete_cheque), c.owedToMe) { Gates.edit { deleting = ch } }
                 }
             }
         }
+    }
+    deleting?.let { ch ->
+        AskDialog(
+            word(W.delete_cheque), word(W.cheque_delete_confirm), word(W.delete_cheque), subtitle = chequeLine(ch), danger = true,
+            onConfirm = {
+                deleting = null
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        dao.softDeleteCheque(ch.id)
+                        runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.CHEQUE_DELETED, com.innovation313.roshankhata.data.Access.userName, "cheques", ch.id) }
+                    }
+                }
+            },
+            onDismiss = { deleting = null }
+        )
     }
     clearing?.let { ch ->
         AskDialog(

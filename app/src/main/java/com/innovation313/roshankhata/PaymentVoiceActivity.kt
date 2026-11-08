@@ -79,8 +79,14 @@ class PaymentVoiceActivity : BaseActivity() {
             setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, if (access) R.color.green_got_text else R.color.red_gave_text))
         }
         // Android 13+ may call a sideloaded app's access a "restricted setting": the way past it, said once here.
-        findViewById<View>(R.id.tvPayRestricted).visibility =
-            if (!access && Build.VERSION.SDK_INT >= 33) View.VISIBLE else View.GONE
+        // L101 (8 Nov 2026 review): Android Go phones on Android 10 or older may not offer notification access at all;
+        // the screen said nothing of why the button opened nothing.
+        val goPhone = !access && Build.VERSION.SDK_INT <= 29 &&
+            (getSystemService(ACTIVITY_SERVICE) as? android.app.ActivityManager)?.isLowRamDevice == true
+        findViewById<TextView>(R.id.tvPayRestricted).apply {
+            if (goPhone) setText(R.string.paisa_access_go) else setText(R.string.paisa_access_restricted)
+            visibility = if (goPhone || (!access && Build.VERSION.SDK_INT >= 33)) View.VISIBLE else View.GONE
+        }
         // Nothing can be said without the access: the switch waits for it, and says so (6 Nov 2026).
         val row = findViewById<View>(R.id.payRowOn)
         row.findViewById<Switch>(R.id.switchFeature).isEnabled = access

@@ -113,7 +113,7 @@ data class ZReport(
         byMethod.forEach { (k, v) -> out += ("  " + m(k)) to money(v) }
         if (onAccount > 0.0) out += ("  " + words.text(W.pos_to_account)) to money(onAccount)
         if (discounts > 0.0) out += words.text(W.pos_discount) to money(discounts)
-        if (tax > 0.0) out += words.text(W.pos_tax) to money(tax)
+        if (tax > 0.0) out += words.text(W.pos_tax_total) to money(tax)
         if (voidCount > 0) out += words.text(W.z_voids, voidCount.toString()) to money(voidedTotal)
         if (returnCount > 0) {
             out += words.text(W.z_returns, returnCount.toString()) to money(returnsTotal)

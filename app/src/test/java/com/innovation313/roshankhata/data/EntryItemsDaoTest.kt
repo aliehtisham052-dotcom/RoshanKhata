@@ -150,7 +150,7 @@ class EntryItemsDaoTest {
         // A three-line entry prints each line's own quantity × rate.
         dao.insertEntryWithItems(visit(ahmad), threeLines)
 
-        val rows = dao.salesRegister(0, Long.MAX_VALUE)
+        val rows = dao.salesRegister(0, Long.MAX_VALUE, 2)
         assertEquals(4, rows.size)
         assertEquals(9000.0, rows[0].amount, 0.001)
         assertEquals(listOf(9600.0, 3750.0, 5850.0), rows.drop(1).map { it.amount })
@@ -276,11 +276,11 @@ class EntryItemsDaoTest {
         // Written at exactly the items' total: no difference row.
         dao.insertEntryWithItems(visit(ahmad, 19200.0).copy(timestamp = 2_000L), threeLines)
 
-        val adjustments = dao.salesAdjustments(0, Long.MAX_VALUE)
+        val adjustments = dao.salesAdjustments(0, Long.MAX_VALUE, 2)
         assertEquals(1, adjustments.size)
         assertEquals(-200.0, adjustments.single().amount, 0.001)
 
-        val register = dao.salesRegister(0, Long.MAX_VALUE) + adjustments
+        val register = dao.salesRegister(0, Long.MAX_VALUE, 2) + adjustments
         assertEquals(19000.0 + 19200.0, register.sumOf { it.amount }, 0.001)
         assertEquals(dao.salesTotalBetween(0, Long.MAX_VALUE), register.sumOf { it.amount }, 0.001)
     }
