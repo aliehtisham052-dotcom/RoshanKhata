@@ -3780,6 +3780,9 @@
     <string name="live_give_sending">खाता “%1$s” को दिया जा रहा है…</string>
     <string name="live_give_sent">खाता “%1$s” तक पहुँच गया।\n\nकोड: %2$s — फ़ोन पर भी यही चार अंक दिखेंगे। वहाँ मालिक की हाँ के बाद, 15 मिनट के अंदर, फ़ोन इस खाते में शामिल हो जाएगा।</string>
     <string name="live_give_failed">खाता फ़ोन तक नहीं पहुँचा। नया कोड बनाएँ और दोबारा स्कैन करें।</string>
+    <string name="live_give_ask">“%1$s” (%2$s) इस कंप्यूटर की बही माँग रहा है। केवल तभी अनुमति दें जब यह आपका अपना फ़ोन हो।</string>
+    <string name="live_give_allow">अनुमति दें</string>
+    <string name="live_give_refuse">मना करें</string>
     <string name="live_give_new_code">नया कोड</string>
     <string name="live_give_code_wrong_place">यह कोड कंप्यूटर का खाता किसी फ़ोन को देता है। इसे लेने के लिए बैकअप → दुकान का खाता इस फ़ोन पर लें → कंप्यूटर का कोड स्कैन करें खोलें।</string>
     <string name="live_receive_scan_pc">कंप्यूटर का कोड स्कैन करें</string>

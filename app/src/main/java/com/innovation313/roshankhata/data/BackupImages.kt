@@ -316,6 +316,23 @@ object BackupImages {
     suspend fun restore(context: Context, dao: KhataDao, zipBytes: ByteArray): Int =
         restore(context, dao, zipBytes.inputStream())
 
+    /** One unpacked picture's largest size, and all of a helper copy's pictures together (L56). */
+    const val MAX_ENTRY = 15L * 1024 * 1024
+    const val MAX_TOTAL = 400L * 1024 * 1024
+
+    /** Copies at most [room] bytes; the count copied, or null when [input] has more than that. */
+    fun copyCapped(input: InputStream, out: java.io.OutputStream, room: Long): Long? {
+        val buf = ByteArray(1 shl 16)
+        var n = 0L
+        while (true) {
+            val r = input.read(buf)
+            if (r < 0) return n
+            n += r
+            if (n > room) return null
+            out.write(buf, 0, r)
+        }
+    }
+
     /**
      * The same, straight from a stream — for a helper's copy, whose photos
      * are read out of the file the owner sent without ever being held in
@@ -323,6 +340,7 @@ object BackupImages {
      */
     suspend fun restore(context: Context, dao: KhataDao, input: InputStream): Int {
         var written = 0
+        var total = 0L
 
         ZipInputStream(input.buffered()).use { zin ->
             var entry: ZipEntry? = zin.nextEntry
@@ -338,7 +356,12 @@ object BackupImages {
                     val target = targetFor(context, name)
                     if (target != null) {
                         target.parentFile?.mkdirs()
-                        FileOutputStream(target).buffered().use { zin.copyTo(it) }
+                        // L56 (8 Nov 2026): a few KB of zip can inflate to gigabytes. One picture is never past
+                        // MAX_ENTRY bytes and the whole copy never past MAX_TOTAL; past either, what was written
+                        // of that file is removed and the unpacking stops (the pictures before it stay).
+                        val room = minOf(MAX_ENTRY, MAX_TOTAL - total)
+                        val ok = FileOutputStream(target).buffered().use { o -> copyCapped(zin, o, room)?.also { total += it } != null }
+                        if (!ok) { target.delete(); break }
                         written++
                     }
                 }

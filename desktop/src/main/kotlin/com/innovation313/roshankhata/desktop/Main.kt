@@ -2009,7 +2009,9 @@ private fun Book(
         val giveBook: () -> ByteArray? = {
             runCatching {
                 val out = java.io.StringWriter()
-                kotlinx.coroutines.runBlocking { BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out) }
+                // secrets = false (8 Nov 2026, M30): the first device to scan this QR gets the book, so it gets no PIN hashes,
+                // server passes or Waris keys; the phone keeps its own.
+                kotlinx.coroutines.runBlocking { BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out, secrets = false) }
                 out.toString().toByteArray(Charsets.UTF_8)
             }.getOrNull()
         }

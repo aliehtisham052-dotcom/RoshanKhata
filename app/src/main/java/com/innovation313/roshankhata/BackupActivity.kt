@@ -122,9 +122,15 @@ class BackupActivity : BaseActivity() {
             startActivity(Intent(this, SnapshotsActivity::class.java))
         }
 
-        findViewById<MaterialButton>(R.id.btnEraseAll).setOnClickListener { confirmEraseAll() }
+        findViewById<MaterialButton>(R.id.btnEraseAll).setOnClickListener {
+            // L50 (8 Nov 2026): erasing every book and daily copy asks the owner's PIN first (none set: straight on).
+            com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.erase_all_title)) { confirmEraseAll() }
+        }
 
-        findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener { scanComputer(take = false) }
+        findViewById<MaterialButton>(R.id.btnSendToComputer).setOnClickListener {
+            // L50: sending the whole book to another device asks the owner's PIN, as joining live sync does.
+            com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.wifi_send_title)) { scanComputer(take = false) }
+        }
         findViewById<MaterialButton>(R.id.btnTakeFromComputer).setOnClickListener { scanComputer(take = true) }
 
         // Live sync with the computer (22 Oct 2026): join once, then the same book on both.
@@ -953,9 +959,14 @@ class BackupActivity : BaseActivity() {
             // Parse and validate BEFORE anything is touched. Wiping first and
             // finding out afterwards that the file was rubbish would destroy
             // the owner's books to import nothing.
-            val (result, data) = withContext(Dispatchers.IO) {
-                Backup.parse(this@BackupActivity, uri)
+            // L55 (8 Nov 2026): a file too big for this phone's memory is said so, as the WiFi take does, not a crash.
+            val parsed = try {
+                withContext(Dispatchers.IO) { Backup.parse(this@BackupActivity, uri) }
+            } catch (e: OutOfMemoryError) {
+                Toast.makeText(this@BackupActivity, R.string.wifi_take_too_big, Toast.LENGTH_LONG).show()
+                return@launch
             }
+            val (result, data) = parsed
 
             handleParseResult(result, data)
         }

@@ -3780,6 +3780,9 @@
     <string name="live_give_sending">খাতা “%1$s”-কে দেওয়া হচ্ছে…</string>
     <string name="live_give_sent">খাতা “%1$s”-এর কাছে পৌঁছেছে।\n\nকোড: %2$s — ফোনেও একই চারটি অঙ্ক দেখাবে। সেখানে মালিক হ্যাঁ বললে, 15 মিনিটের মধ্যে, ফোনটি এই খাতায় যুক্ত হবে।</string>
     <string name="live_give_failed">খাতা ফোনে পৌঁছায়নি। নতুন কোড বানিয়ে আবার স্ক্যান করুন।</string>
+    <string name="live_give_ask">“%1$s” (%2$s) এই কম্পিউটারের খাতা চাইছে। শুধু তখনই অনুমতি দিন যখন এটি আপনার নিজের ফোন।</string>
+    <string name="live_give_allow">অনুমতি দিন</string>
+    <string name="live_give_refuse">প্রত্যাখ্যান</string>
     <string name="live_give_new_code">নতুন কোড</string>
     <string name="live_give_code_wrong_place">এই কোড কম্পিউটারের খাতা কোনো ফোনকে দেয়। এটি নিতে ব্যাকআপ → দোকানের খাতা এই ফোনে নিন → কম্পিউটারের কোড স্ক্যান করুন খুলুন।</string>
     <string name="live_receive_scan_pc">কম্পিউটারের কোড স্ক্যান করুন</string>

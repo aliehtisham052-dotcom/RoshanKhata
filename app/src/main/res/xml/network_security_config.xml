@@ -10,9 +10,23 @@
   one of their own - so the app never calls an answer verified, and the proof file
   says how to check each one with OpenSSL.
   Cleartext is allowed for those two hosts ONLY; everything else keeps Android's
-  default for this app's targetSdk: no cleartext, the system's certificates.
+  default for this app's targetSdk: no cleartext.
+
+  Trust (8 Nov 2026, review M59): Android 7.0 (API 24, the app's minSdk) has no
+  ISRG Root X1 (added in 7.1.1), so every Let's Encrypt host - the customer page
+  and the hosting relay - failed there with "no internet". The system's
+  certificates stay trusted, and ISRG Root X1 itself (res/raw/isrg_root_x1.pem,
+  SHA-256 96:BC:EC:06:26:49:76:F3:74:60:77:9A:CF:28:C5:A7:CF:E8:A3:C0:AA:E1:1A:8F:
+  FC:EE:05:C0:BD:DF:08:C6, valid to 4 Jun 2035) is added beside them. It is a
+  public root, not a pin: no host is tied to it.
 -->
 <network-security-config>
+    <base-config>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/isrg_root_x1" />
+        </trust-anchors>
+    </base-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">timestamp.sectigo.com</domain>
         <domain includeSubdomains="false">timestamp.digicert.com</domain>

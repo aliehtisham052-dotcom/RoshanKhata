@@ -2085,6 +2085,35 @@ on a device, a real wallet notice, a real TSA or the deployed relays.
   `isDeleted`); M70 (needs the held ticket's uid on the sale and a sync rule); L106, L108, L109, L111-L113, L116, L117,
   L119 (device-only drawing, a drawer query by user, or the owner's call).
 
+**Marhala 4, security and hosting (M25-M32 in part, M59, L45-L58; CI only, nothing deployed):**
+
+- **Actions pinned (M29, first half):** every `uses:` in `.github/workflows` is a full commit SHA with the tag in a
+  comment (resolved with `git ls-remote`, annotated tags by their `^{}` commit). A new action is pinned the same way.
+  Not done: publishing the release from a separate secret-free job.
+- **M59:** `network_security_config.xml` has a base-config: the system's roots plus ISRG Root X1
+  (`res/raw/isrg_root_x1.pem`, SHA-256 checked against Let's Encrypt's published 96:BC:EC:06...), because Android 7.0
+  (minSdk 24) lacks it and every Let's Encrypt host failed there. A public root, not a pin.
+- **M30 / M31 (Windows):** the "From phone" window's pull answer is the book **without secrets** (`secrets = false`: no PIN
+  hashes, server passes or Waris keys), since the first device to scan its QR gets it. The give code no longer sends at the
+  first scan: the window shows who asks (name, address) and sends only on **Allow** (`Giving.Asking`, 60 s, no answer =
+  no); a refusal keeps the code for the phone it was meant for. Strings live_give_ask/_allow/_refuse.
+- **M28 / L46 (hosting relay):** a book's SQLite is `auto_vacuum = INCREMENTAL` (an older file over 256 KiB is
+  vacuumed once on opening) and `prune_taken` frees pages (`incremental_vacuum(1000000)`: the bare pragma frees one
+  page through PDO), so acked parcels give their room back to the store's byte limit. New books pass the caps one at a
+  time behind a lock file (`.new-book.lock`). The Worker's Durable Object cannot be vacuumed here: not done.
+- **L50:** Erase all and Send to computer ask the owner's PIN first (`AccessUi.ownerFirst`; none set: straight on).
+- **L55 / L56 / L58:** a backup file too big for the phone's memory says `wifi_take_too_big` instead of crashing; a helper
+  copy's pictures are capped (15 MiB each, 400 MiB together, `BackupImages.copyCapped`); a CSV balance that is not finite
+  or over 1e12 is an unreadable cell (`CsvImport.MAX_BALANCE`). L47/L48: `scripts/check_khata_headers.sh` checks the
+  live host's headers after an upload (run by the owner).
+- **For the owner / left, with the reason:** M23 and M24 (Waris: a 2-of-3 split of the heir box and per-relay passes need a
+  protocol version on all three relays, and heirs' pass hashes cannot be re-derived per relay from what is kept); M25 (a
+  /24 count would hurt carrier users; Tor lists are data the owner chooses); M26 (a Cloudflare custom domain with a rate
+  rule is the owner's account work); M27 (the page counter must live in the synced book); M32 (the Waris owner secret and
+  customer-link keys stay in full backups by the owner's earlier decision; a passphrase backup is a product choice);
+  L44 (an offline signing key for live.json); L49 (loopback is allowed because the tests use it); L51, L52, L53, L57,
+  L59 (low confidence and a lock-out risk, lesson 66), L60, L61, L62; L54 (figures in the 21:00 notice are the feature).
+
 ### The shared module (KMP)
 
 ```

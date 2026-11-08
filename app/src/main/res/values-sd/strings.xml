@@ -3760,6 +3760,9 @@
     <string name="live_give_sending">کاتو “%1$s” کي ڏنو پيو وڃي…</string>
     <string name="live_give_sent">کاتو “%1$s” تائين پهچي ويو.\n\nڪوڊ: %2$s — فون تي به اهي ئي چار انگ نظر ايندا. اتي مالڪ جي ها کان پوءِ، 15 منٽن اندر، فون هن کاتي ۾ شامل ٿي ويندو.</string>
     <string name="live_give_failed">کاتو فون تائين نه پهتو. نئون ڪوڊ ٺاهيو ۽ ٻيهر اسڪين ڪريو.</string>
+    <string name="live_give_ask">“%1$s” (%2$s) هن ڪمپيوٽر جو کاتو گهري ٿو. رڳو تڏهن اجازت ڏيو جڏهن اهو توهان جو پنهنجو فون هجي.</string>
+    <string name="live_give_allow">اجازت ڏيو</string>
+    <string name="live_give_refuse">نه ڏيو</string>
     <string name="live_give_new_code">نئون ڪوڊ</string>
     <string name="live_give_code_wrong_place">هي ڪوڊ ڪمپيوٽر جو کاتو ڪنهن فون کي ڏئي ٿو. ان کي وٺڻ لاءِ بيڪ اپ ← دڪان جو کاتو هن فون تي وٺو ← ڪمپيوٽر جو ڪوڊ اسڪين ڪريو کوليو.</string>
     <string name="live_receive_scan_pc">ڪمپيوٽر جو ڪوڊ اسڪين ڪريو</string>

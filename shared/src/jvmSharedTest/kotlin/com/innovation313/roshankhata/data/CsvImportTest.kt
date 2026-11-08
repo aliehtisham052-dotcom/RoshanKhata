@@ -134,4 +134,11 @@ class CsvImportTest {
         assertEquals(-1250.0, CsvImport.amount("1,250 Cr", groupDots = false)!!, 0.0)
         assertEquals(500.0, CsvImport.amount("ر.س 500", groupDots = false)!!, 0.0)
     }
+
+    @Test
+    fun `a balance cell too big for any shop is unreadable, never infinity`() {
+        assertEquals(null, CsvImport.amount("1" + "0".repeat(400), groupDots = false))
+        assertEquals(null, CsvImport.amount("5000000000000", groupDots = false))
+        assertEquals(1000.0, CsvImport.amount("1000", groupDots = false)!!, 0.0)
+    }
 }

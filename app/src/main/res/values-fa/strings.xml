@@ -3760,6 +3760,9 @@
     <string name="live_give_sending">در حال دادن دفتر به «%1$s»…</string>
     <string name="live_give_sent">دفتر به «%1$s» رسید.\n\nکد: %2$s — گوشی همین چهار رقم را نشان می‌دهد. پس از تأیید صاحبش در آنجا، تا 15 دقیقه، به این دفتر می‌پیوندد.</string>
     <string name="live_give_failed">دفتر به گوشی نرسید. کد تازه‌ای بسازید و دوباره اسکن کنید.</string>
+    <string name="live_give_ask">«%1$s» (%2$s) دفتر این رایانه را می‌خواهد. فقط اگر گوشی خودتان است اجازه دهید.</string>
+    <string name="live_give_allow">اجازه</string>
+    <string name="live_give_refuse">رد</string>
     <string name="live_give_new_code">کد تازه</string>
     <string name="live_give_code_wrong_place">این کد دفتر رایانه را به یک گوشی می‌دهد. برای گرفتنش پشتیبان‌گیری ← گرفتن دفتر مغازه روی این گوشی ← اسکن کد رایانه را باز کنید.</string>
     <string name="live_receive_scan_pc">اسکن کد رایانه</string>

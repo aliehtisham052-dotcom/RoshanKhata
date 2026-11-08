@@ -101,6 +101,8 @@ object LiveDesk {
         object Idle : Giving
         /** The give code is on the screen. */
         data class Waiting(val secret: String) : Giving
+        /** A device asked with the code: nothing is made or sent until the owner answers (8 Nov 2026, M31). */
+        data class Asking(val name: String, val host: String) : Giving
         /** A phone asked with the code: the book is being made ready and sent. */
         data class Sending(val name: String) : Giving
         /** The phone has the book; it joins once its owner says yes there, the same [code] on both screens. */
@@ -118,8 +120,15 @@ object LiveDesk {
         return s
     }
 
+    /** The owner's answer to a device that asked with the give code (null while nobody asks). */
+    @Volatile private var giveAnswer: java.util.concurrent.CompletableFuture<Boolean>? = null
+
+    /** The owner's yes or no to the device now named in the window ([Giving.Asking]). */
+    fun answerGive(yes: Boolean) { giveAnswer?.complete(yes) }
+
     /** The give code leaves the screen (the window closed): no phone can ask with it any more. */
     fun closeGive() {
+        giveAnswer?.complete(false)
         giveSecret.set(null)
         exporter = null
         giving.value = Giving.Idle
@@ -136,6 +145,18 @@ object LiveDesk {
         val f = file
         val export = exporter
         if (d == null || h == null || f == null || export == null) { giving.value = Giving.Failed; return null }
+        // M31 (8 Nov 2026): the code on the screen was good for whoever scanned first, a staff phone included. The
+        // owner is shown who asks (name and address) and answers; no answer in a minute is a no, and a no keeps the
+        // code for the phone it was meant for.
+        val answered = java.util.concurrent.CompletableFuture<Boolean>()
+        giveAnswer = answered
+        giving.value = Giving.Asking(ask.name, ask.host)
+        val yes = try { answered.get(60, java.util.concurrent.TimeUnit.SECONDS) } catch (e: Exception) { false }
+        giveAnswer = null
+        if (!yes) {
+            if (giving.value is Giving.Asking) { giveSecret.set(ask.secret); giving.value = Giving.Waiting(ask.secret) }
+            return null
+        }
         giving.value = Giving.Sending(ask.name)
         val sql = d.syncSql()
         val prepared = try {
@@ -641,6 +662,16 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                 Text(word(W.live_give_steps), color = c.ink, fontSize = 14.sp)
                 giveQr?.let { Image(it, contentDescription = word(W.live_give), modifier = Modifier.size(260.dp)) }
                 when (g) {
+                    is LiveDesk.Giving.Asking -> {
+                        Text(
+                            word(W.live_give_ask, Format.isolate(g.name.ifBlank { "—" }), Format.isolate(g.host.ifBlank { "—" })),
+                            color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Medium
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FluentButton(word(W.live_give_allow), { LiveDesk.answerGive(true) }, kind = ButtonKind.ACCENT)
+                            FluentButton(word(W.live_give_refuse), { LiveDesk.answerGive(false) }, kind = ButtonKind.STANDARD)
+                        }
+                    }
                     is LiveDesk.Giving.Sending -> Text(
                         word(W.live_give_sending, Format.isolate(g.name.ifBlank { "—" })), color = c.ink, fontSize = 14.sp
                     )
@@ -655,7 +686,7 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                     if ((g is LiveDesk.Giving.Sent || g == LiveDesk.Giving.Failed) && export != null) {
                         FluentButton(word(W.live_give_new_code), { LiveDesk.openGive(export) }, kind = ButtonKind.STANDARD)
                     }
-                    if (g !is LiveDesk.Giving.Sending) FluentButton(word(W.back), { LiveDesk.closeGive() }, kind = ButtonKind.SUBTLE)
+                    if (g !is LiveDesk.Giving.Sending && g !is LiveDesk.Giving.Asking) FluentButton(word(W.back), { LiveDesk.closeGive() }, kind = ButtonKind.SUBTLE)
                 }
             }
             if (!opening && (port == null || hosts.isEmpty())) Text(word(W.wifi_pc_no_network), color = c.owedToMe, fontSize = 14.sp)

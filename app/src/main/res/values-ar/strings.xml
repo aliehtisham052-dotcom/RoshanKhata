@@ -3968,6 +3968,9 @@
     <string name="live_give_sending">جارٍ إعطاء الدفتر إلى «%1$s»…</string>
     <string name="live_give_sent">وصل الدفتر إلى «%1$s».\n\nالرمز: %2$s — يعرض الهاتف الأرقام الأربعة نفسها. ينضم إلى هذا الدفتر بعد أن يوافق صاحبه هناك، خلال 15 دقيقة.</string>
     <string name="live_give_failed">لم يصل الدفتر إلى الهاتف. أنشئ رمزًا جديدًا وامسحه مرة أخرى.</string>
+    <string name="live_give_ask">“%1$s” (%2$s) يطلب دفتر هذا الحاسوب. اسمح فقط إذا كان هاتفك أنت.</string>
+    <string name="live_give_allow">سماح</string>
+    <string name="live_give_refuse">رفض</string>
     <string name="live_give_new_code">رمز جديد</string>
     <string name="live_give_code_wrong_place">هذا الرمز يعطي دفتر الحاسوب لهاتف. لاستلامه افتح النسخ الاحتياطي ← استلام دفتر المتجر على هذا الهاتف ← امسح رمز الحاسوب.</string>
     <string name="live_receive_scan_pc">امسح رمز الحاسوب</string>

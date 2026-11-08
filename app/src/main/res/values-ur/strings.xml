@@ -3732,6 +3732,9 @@
     <string name="live_give_sending">کھاتہ “%1$s” کو دیا جا رہا ہے…</string>
     <string name="live_give_sent">کھاتہ “%1$s” کو پہنچ گیا۔\n\nکوڈ: %2$s — فون پر بھی یہی چار ہندسے نظر آئیں گے۔ وہاں مالک کی ہاں کے بعد، 15 منٹ کے اندر، فون اس کھاتے میں شامل ہو جائے گا۔</string>
     <string name="live_give_failed">کھاتہ فون تک نہیں پہنچا۔ نیا کوڈ بنائیں اور دوبارہ اسکین کریں۔</string>
+    <string name="live_give_ask">“%1$s” (%2$s) اس کمپیوٹر کا کھاتہ مانگ رہا ہے۔ صرف تب اجازت دیں جب یہ آپ کا اپنا فون ہو۔</string>
+    <string name="live_give_allow">اجازت دیں</string>
+    <string name="live_give_refuse">منع کریں</string>
     <string name="live_give_new_code">نیا کوڈ</string>
     <string name="live_give_code_wrong_place">یہ کوڈ کمپیوٹر کا کھاتہ کسی فون کو دیتا ہے۔ اسے لینے کے لیے بیک اپ ← دکان کا کھاتہ اس فون پر لیں ← کمپیوٹر کا کوڈ اسکین کریں کھولیں۔</string>
     <string name="live_receive_scan_pc">کمپیوٹر کا کوڈ اسکین کریں</string>

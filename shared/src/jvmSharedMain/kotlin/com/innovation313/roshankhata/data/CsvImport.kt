@@ -146,6 +146,9 @@ object CsvImport {
         s = decimalPoint(s, groupDots || rupiah)
         if (s.isEmpty() || s.none { it.isDigit() }) return null
         val v = s.toDoubleOrNull() ?: return null
+        // 8 Nov 2026 (L58): a cell of 400 digits overflows to Infinity, and a figure past any shop's money is a typo
+        // or an attack; either is an unreadable balance, counted as such, never an opening entry.
+        if (!v.isFinite() || v > MAX_BALANCE) return null
         return if (negative) -v else v
     }
 

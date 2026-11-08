@@ -3721,6 +3721,9 @@
     <string name="live_give_sending">Memberikan buku ke “%1$s”…</string>
     <string name="live_give_sent">Buku sudah sampai ke “%1$s”.\n\nKode: %2$s — ponsel menampilkan empat angka yang sama. Ponsel bergabung ke buku ini setelah pemiliknya setuju di sana, dalam 15 menit.</string>
     <string name="live_give_failed">Buku tidak sampai ke ponsel. Buat kode baru dan pindai lagi.</string>
+    <string name="live_give_ask">“%1$s” (%2$s) meminta buku komputer ini. Izinkan hanya jika itu ponsel Anda sendiri.</string>
+    <string name="live_give_allow">Izinkan</string>
+    <string name="live_give_refuse">Tolak</string>
     <string name="live_give_new_code">Kode baru</string>
     <string name="live_give_code_wrong_place">Kode ini memberikan buku komputer ke ponsel. Untuk menerimanya, buka Cadangan → Terima buku toko di ponsel ini → Pindai kode komputer.</string>
     <string name="live_receive_scan_pc">Pindai kode komputer</string>

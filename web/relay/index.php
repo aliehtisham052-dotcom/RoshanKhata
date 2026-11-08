@@ -126,6 +126,13 @@ function open_book($store, $book, $create) {
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_TIMEOUT => 10,
     ]);
+    // Freed pages go back to the disk (8 Nov 2026, R01-F8): a book that once held 10 MiB of resends stayed
+    // 10 MiB after every parcel was acked, and the store's byte limit counts file sizes. Set before the first
+    // table; a file made before this is vacuumed once, when it is big enough to matter.
+    $db->exec('PRAGMA auto_vacuum = INCREMENTAL');
+    if ((int)$db->query('PRAGMA auto_vacuum')->fetchColumn() === 0 && file_exists($file) && filesize($file) > 262144) {
+        try { $db->exec('VACUUM'); } catch (Exception $e) { /* busy: the next open tries again */ }
+    }
     $db->exec('PRAGMA journal_mode = WAL');
     $db->exec('PRAGMA synchronous = NORMAL');
     $db->exec('CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)');
@@ -157,6 +164,7 @@ function prune_taken($db) {
     if ((int)one($db, 'SELECT COUNT(*) FROM devices') === 0) return;
     $db->exec('DELETE FROM parcels WHERE NOT EXISTS (
         SELECT 1 FROM devices d WHERE d.device != parcels.sender AND d.acked < parcels.seq)');
+    $db->exec('PRAGMA incremental_vacuum(1000000)');
 }
 
 /**
@@ -735,6 +743,10 @@ try {
     if ($db === null) {
         // The book's first device sets the pass, and only by a hello (never by a stray parcel).
         if ($action !== 'hello') refuse(403, 'say-hello-first');
+        // One new book at a time through the checks below (8 Nov 2026, L46): fifty parallel hellos each ran the
+        // full sweep on a full store, and each saw the same room. The lock is released when the request ends.
+        $gate = @fopen($store . '/.new-book.lock', 'c');
+        if ($gate) @flock($gate, LOCK_EX);
         $all = glob($store . '/*.sqlite') ?: [];
         // New books wait once the store holds half its bytes (C1): the other half stays for the shops already syncing.
         if (count($all) >= MAX_BOOKS || store_bytes($store) >= intdiv(MAX_STORE_BYTES, 2)) {

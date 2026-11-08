@@ -3732,6 +3732,9 @@
     <string name="live_give_sending">Khata “%1$s” ko diya ja raha hai…</string>
     <string name="live_give_sent">Khata “%1$s” ko pohanch gaya.\n\nCode: %2$s — phone par bhi yahi chaar hindse nazar aayenge. Wahan malik ki haan ke baad, 15 minute ke andar, phone is khate mein shamil ho jaye ga.</string>
     <string name="live_give_failed">Khata phone tak nahi pohancha. Naya code banayein aur dobara scan karein.</string>
+    <string name="live_give_ask">“%1$s” (%2$s) is computer ki book maang raha hai. Sirf tab Allow karein jab yeh aap ka apna phone ho.</string>
+    <string name="live_give_allow">Allow karein</string>
+    <string name="live_give_refuse">Mana karein</string>
     <string name="live_give_new_code">Naya code</string>
     <string name="live_give_code_wrong_place">Yeh code computer ka khata kisi phone ko deta hai. Ise lene ke liye Backup → Dukaan ka khata is phone par lein → Computer ka code scan karein kholein.</string>
     <string name="live_receive_scan_pc">Computer ka code scan karein</string>
