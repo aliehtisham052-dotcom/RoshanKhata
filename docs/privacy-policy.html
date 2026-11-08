@@ -30,14 +30,17 @@
 
 <h1>Roshan Khata — Privacy Policy</h1>
 <p class="tagline">Har Hisaab Roshan · By Innovation-313</p>
-<p class="updated">Last updated: 5 November 2026 · <a href="privacy-policy-ur.html" hreflang="ur" lang="ur" dir="rtl">اردو میں پڑھیں</a></p>
+<p class="updated">Last updated: 8 November 2026 · <a href="privacy-policy-ur.html" hreflang="ur" lang="ur" dir="rtl">اردو میں پڑھیں</a></p>
 
 <div class="highlight">
   <strong>The short version:</strong> Roshan Khata keeps your business records on
   your own phone. We do not collect your ledger, and we never sell or share your data. The few
   optional features that pass something over the internet (live sync, an heir's
   copy) send it <strong>locked with a key only your devices hold</strong>, so the
-  servers that carry it cannot read it. Cloud backup, if you turn it on, goes to
+  servers that carry it cannot read it. The one exception is the optional
+  <strong>customer khata link</strong> (section 23): if you send a customer a
+  link, the customer's name and balance are kept on our web hosting so that the
+  customer can open the page. Cloud backup, if you turn it on, goes to
   <em>your own</em> Google Drive — not to us.
 </div>
 
@@ -315,8 +318,8 @@
 <p>
   If you name an heir, a copy of your book <strong>without your PINs and other
   secret keys</strong> is locked on your phone (AES-256-GCM, with a key sealed for
-  your heir's phone only, using its own key pair) and kept on the same three
-  relays live sync uses (Cloudflare, Supabase and our own hosting), and refreshed
+  your heir's phone only, using its own key pair) and kept on the same
+  relays live sync uses (Cloudflare and our own hosting), and refreshed
   about once a week. The relays hold only locked bytes and cannot read them; they
   hold no names. Your heir can only <em>ask</em> to open it: you are told at once on
   your devices and can refuse. Only if you do not refuse within the wait you chose
@@ -326,7 +329,54 @@
   holds their key: keep it as you would keep a key.
 </p>
 
-<h2>23. What we do NOT do</h2>
+<h2>23. Customer khata link and Mera Khata (optional, off until you send a link)</h2>
+<p>
+  From a customer's page you can choose <strong>Send khata link</strong>. The app first
+  tells you what will go. This feature is <strong>not</strong> locked so that we cannot
+  read it: to let your customer see their balance on a web page, the following is
+  kept on Innovation 313's web hosting (khata.ehtisham.shop): the customer's name, your
+  shop's name, the balance and which way it runs, and the day you last wrote in
+  the account. Anyone who has the link can open the page, so send it only to that
+  customer. You can stop a link from the same menu, which removes the page.
+  A page the shop stops using is removed after 180 days. The hosting
+  provider and our server see the internet address and time of each request, as every
+  web server does. Nothing is sent for a customer to whom you never send a link, and
+  no other part of your book (entries, goods, notes, phone numbers) is sent.
+</p>
+<p>
+  <strong>Mera Khata</strong> is the customer's side. If you receive such a link and
+  open it in the app, the app fetches that one page from the same address (at most once every ten
+  minutes, or when you press Refresh) and keeps the list of links on your own
+  phone, never in a book or backup. The web page itself keeps the last version it saw in
+  your browser's own storage.
+</p>
+
+<h2>24. What the app sends over the internet, and to whom</h2>
+<p>
+  The app has no account and no advertising or analytics SDK. Apart from Google Play
+  services features described above, the app contacts only:
+</p>
+<ul>
+  <li><strong>Your own Google Drive</strong> — backup, only if you turn it on (section 4).</li>
+  <li><strong>Relays</strong> (Cloudflare, and Innovation 313's own web hosting) — live
+      sync's sealed changes (section 17) and the heir's sealed copy (section 22), only
+      after you turn them on. They can see sizes, times and your internet address, not
+      the contents. Sealed changes wait there for at most 7 days; an heir's copy waits until
+      you turn Waris off.</li>
+  <li><strong>Firebase Cloud Messaging</strong> (Google) — only with live sync's internet
+      option, as described in section 17.</li>
+  <li><strong>Our web hosting</strong> — customer khata pages (section 23) and, for the
+      Windows app, a small version file.</li>
+  <li><strong>Time-stamping services</strong> (FreeTSA, Sectigo, DigiCert) — only the
+      fingerprint, only if you turn on Kitab ki Muhar (section 20).</li>
+  <li><strong>GitHub</strong> — at most every six hours the app reads a small public
+      file on Innovation 313's GitHub page. It is a stop switch for live sync, the
+      heir's copy and the seal requests, and the app reads it while one of
+      those features is in use. GitHub sees your phone's internet address and the time; no part of your book is sent.</li>
+  <li><strong>Google's scanner and text recognition</strong> — technical diagnostics only (section 15).</li>
+</ul>
+
+<h2>25. What we do NOT do</h2>
 <ul>
   <li>We do not sell your data.</li>
   <li>We do not share your data with advertisers or partners.</li>
@@ -335,11 +385,12 @@
   <li>We do not track your location.</li>
 </ul>
 
-<h2>24. Permissions the app uses</h2>
+<h2>26. Permissions the app uses</h2>
 <ul>
-  <li><strong>Internet</strong> (and checking the network's state) — only to
-      upload/download your backup to your own Google Drive, when you turn cloud
-      backup on.</li>
+  <li><strong>Internet</strong> (and checking the network's state) — only for
+      the features listed in section 24: your own Google Drive backup, live sync and the heir's copy,
+      customer khata links, the time-stamping services, and the stop-switch file. Nothing is
+      sent for a feature you have not turned on.</li>
   <li><strong>Contacts (read)</strong> — only when you tap Import, to bring the
       customers you pick into the app, as described above. Never uploaded. On
       newer Android versions the phone's own contact picker is used instead,
@@ -364,7 +415,7 @@
       the app itself never holds the right to your camera or microphone.</li>
 </ul>
 
-<h2>25. Your rights</h2>
+<h2>27. Your rights</h2>
 <ul>
   <li>You can delete any customer, entry, bill or invoice from within the app.
       Deleted items wait in the Recycle Bin for 30 days, so a mistake can be
@@ -374,24 +425,35 @@
       delete.</li>
   <li>You can disconnect Google Drive at any time.</li>
   <li>You can delete the backup file from your Drive or your phone yourself.</li>
-  <li>Because everything is stored on your own phone and nothing is held on any
-      server of ours, uninstalling the app removes all of it — including the
-      daily copies. Your Drive backup, if you made one, stays in your own Drive
-      until you delete it there.</li>
+  <li>Your book is stored on your own phone, so uninstalling the app removes it
+      — including the daily copies. What you chose to put elsewhere stays there
+      until you remove it: your Drive backup (delete it in your Drive), sealed live-sync
+      changes (gone within 7 days, or at once if you stop live sync), an heir's copy
+      (turn Waris off in the app before you uninstall, or it stays on the relays until
+      its 1,095-day idle clean-up), and customer khata pages (use Stop on the link
+      first, or they go after 180 days).</li>
+  <li>Depending on where you live (for example the UK or EU GDPR, or India's DPDP Act) you may
+      have the right to ask what is held about you, to correct or delete it, to withdraw
+      consent, and to complain to your data-protection authority. Innovation-313 is the
+      controller for the little it holds (the sealed relay data, customer khata pages and
+      server logs); our legal basis is your consent when you turn a feature on, and the contract of
+      running the feature you asked for. Your own book on your phone is under your control
+      as the shop owner, who is the controller of your customers' details; the app does not receive them.
+      For a request, write to the address in section 30.</li>
 </ul>
 
-<h2>26. Children</h2>
+<h2>28. Children</h2>
 <p>
   The app is intended for business owners and is not directed at children.
 </p>
 
-<h2>27. Changes to this policy</h2>
+<h2>29. Changes to this policy</h2>
 <p>
   If this policy changes, we will update this page and the "last updated" date
   above.
 </p>
 
-<h2>28. Contact</h2>
+<h2>30. Contact</h2>
 <p>
   For any question about your privacy or this policy, contact us at
   <a href="mailto:innovation313.support@gmail.com">innovation313.support@gmail.com</a>.

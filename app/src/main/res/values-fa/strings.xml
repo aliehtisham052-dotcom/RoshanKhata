@@ -510,7 +510,7 @@
     <string name="photo_saved">عکس ذخیره شد</string>
     <string name="photo_removed">عکس حذف شد</string>
     <string name="photo_save_failed">آن تصویر ذخیره نشد. لطفاً تصویر دیگری انتخاب کنید.</string>
-    <string name="photo_privacy_note">عکس روی همین گوشی می‌ماند. هرگز بارگذاری نمی‌شود و عمداً روی صورت‌حساب‌ها نمی‌آید — صورت‌حساب دست‌به‌دست می‌شود و مشتری شما رضایت نداده که چهره‌اش همراه آن برود.</string>
+    <string name="photo_privacy_note">عکس روی همین گوشی می‌ماند. هرگز برای ما فرستاده نمی‌شود؛ فقط پشتیبان Drive خودتان، اگر روشنش کنید، آن را می‌برد. و عمداً روی صورت‌حساب‌ها نمی‌آید — صورت‌حساب دست‌به‌دست می‌شود و مشتری شما رضایت نداده که چهره‌اش همراه آن برود.</string>
     <string name="edit_party">ویرایش مشخصات</string>
     <string name="delete_party">حذف</string>
 

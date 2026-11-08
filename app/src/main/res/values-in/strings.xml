@@ -503,7 +503,7 @@
     <string name="photo_saved">Foto disimpan</string>
     <string name="photo_removed">Foto dihapus</string>
     <string name="photo_save_failed">Gambar itu tidak dapat disimpan. Silakan pilih yang lain.</string>
-    <string name="photo_privacy_note">Foto tetap berada di ponsel ini. Foto tidak pernah diunggah, dan sengaja TIDAK disertakan di laporan — laporan bisa diteruskan ke orang lain, dan pelanggan Anda tidak pernah setuju wajahnya ikut tersebar.</string>
+    <string name="photo_privacy_note">Foto tetap berada di ponsel ini. Foto tidak pernah dikirim ke kami; hanya cadangan Drive Anda sendiri, jika Anda mengaktifkannya, yang membawanya. Foto juga sengaja TIDAK disertakan di laporan — laporan bisa diteruskan ke orang lain, dan pelanggan Anda tidak pernah setuju wajahnya ikut tersebar.</string>
     <string name="edit_party">Ubah detail</string>
     <string name="delete_party">Hapus</string>
 

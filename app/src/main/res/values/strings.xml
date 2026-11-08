@@ -517,7 +517,7 @@
     <string name="photo_saved">Photo saved</string>
     <string name="photo_removed">Photo removed</string>
     <string name="photo_save_failed">That image could not be saved. Please pick another.</string>
-    <string name="photo_privacy_note">The photo stays on this phone. It is never uploaded, and it is deliberately left OFF statements — a statement gets forwarded, and your customer did not agree to their face travelling with it.</string>
+    <string name="photo_privacy_note">The photo stays on this phone. It is never sent to us; only your own Drive backup, if you turn it on, carries it. It is deliberately left OFF statements — a statement gets forwarded, and your customer did not agree to their face travelling with it.</string>
     <string name="edit_party">Edit details</string>
     <string name="delete_party">Delete</string>
 

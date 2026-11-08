@@ -553,7 +553,7 @@
     <string name="photo_saved">حُفظت الصورة</string>
     <string name="photo_removed">أُزيلت الصورة</string>
     <string name="photo_save_failed">تعذر حفظ هذه الصورة. اختر أخرى.</string>
-    <string name="photo_privacy_note">تبقى الصورة على هذا الهاتف. لا تُرفع أبدًا، وتُترك عمدًا خارج الكشوف — فالكشف يُعاد توجيهه، وعميلك لم يوافق على سفر وجهه معه.</string>
+    <string name="photo_privacy_note">تبقى الصورة على هذا الهاتف. لا تُرسل إلينا أبدًا؛ لا ينقلها إلا نسخ Drive الاحتياطي الخاص بك إن شغّلته. وتُترك عمدًا خارج الكشوف — فالكشف يُعاد توجيهه، وعميلك لم يوافق على سفر وجهه معه.</string>
     <string name="edit_party">تعديل البيانات</string>
     <string name="delete_party">حذف</string>
 

@@ -38,7 +38,7 @@ FAKTUR DAN PRODUK
 
 BUKU ANDA, DI PONSEL ANDA
 • Tanpa akun, tanpa daftar, tanpa iklan — aplikasi berjalan penuh secara offline
-• Buku Anda tetap di ponsel Anda, dan kami tidak pernah mengumpulkannya. Data hanya keluar bila Anda memilih: cadangan ke Google Drive Anda sendiri, atau salinan yang Anda kirim ke perangkat Anda sendiri
+• Buku Anda tetap di ponsel Anda, dan kami tidak pernah mengumpulkannya. Data hanya keluar bila Anda memilih: cadangan ke Google Drive Anda sendiri, atau salinan yang Anda kirim ke perangkat Anda sendiri. Fitur opsional seperti sinkronisasi langsung dan salinan ahli waris mengirimnya terkunci, hanya bisa dibaca perangkat Anda. Jika Anda mengirim tautan buku ke pelanggan, nama dan saldo pelanggan itu disimpan di hosting web kami agar bisa dibuka
 • Cadangan ke Google Drive Anda sendiri, otomatis jika Anda mau
 • Kunci aplikasi dengan sidik jari atau PIN; sembunyikan saldo saat ada yang melihat
 • Punya beberapa toko? Setiap usaha punya bukunya sendiri

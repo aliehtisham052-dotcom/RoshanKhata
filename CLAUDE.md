@@ -2591,9 +2591,9 @@ production access 16 Sep 2026, the first public release sent for review
 19 Sep; the owner confirmed it public on 28 Oct 2026). A review on 28 Oct
 called it unpublished from an old line here — read this section and the
 owner's memory before saying anything about the store. Every upload needs a
-higher versionCode (aab.yml refuses one not above the last). Data safety: no
-data collected until live sync's wake-up reaches Play; then "Device or other
-IDs" for app functionality (see Live sync). The Windows MSI is on the
+higher versionCode (aab.yml refuses one not above the last). Data safety: NOT "no data
+collected" any more (8 Nov 2026): customer khata pages are readable by the host, and
+Firebase, ML Kit and the relays handle IDs; the answers are in the 8 Nov marhala 5 notes. The Windows MSI is on the
 desktop-test pre-release (not signed yet).
 
 Use dummy data for store screenshots. Real customer names and numbers must not
@@ -2641,3 +2641,20 @@ number on the Help screen.
 - Erase and delete shop (M91, M92, `Businesses.endSharing`): before the books go, Waris is turned off on every relay and
   every customer link is stopped and its page taken off the server (`CustomerLink.stopAll` + flush), each shop, 20 s each.
   Best effort: a relay or the hosting not reached leaves its copy until its own sweep.
+
+### 8 Nov 2026 review fixes, marhala 5: privacy and Play (M39, M93, M94, M98, L156-L158, m96-m100; text only)
+
+- **Both privacy policies** (`docs/privacy-policy.html`, `-ur.html`, dated 8 Nov 2026; **bump the date on every edit**, m100):
+  new section 23 (customer khata link and Mera Khata: name, shop, balance and side, last-written day kept readable on
+  khata.ehtisham.shop; anyone with the link opens it; Stop removes it; 180-day idle expiry; the hosting sees address and
+  time) and section 24 (every place the app contacts: Drive, the relays, FCM, the hosting, the time services, GitHub's
+  stop-switch file, Google's scanner); former 23-28 are now 25-30. Section 22 says Cloudflare and the hosting only
+  (Supabase is out of `LiveCloud.others`, m96). The permissions "Internet" line lists those uses, the uninstall bullet says
+  what outlives an uninstall (Drive backup, an heir's vault until Waris is turned off or 1,095 idle days, khata pages), and
+  a data-protection bullet names Innovation-313 as controller of the little it holds, the legal basis (consent, the feature
+  asked for) and the right to complain (GDPR/UK GDPR/DPDP, L158). **Any new feature that sends anything off the phone adds
+  itself to section 24, the listing's privacy line and the homepage in the same commit.**
+- The homepage and all seven store listings no longer say "we run no server" / "never collect" alone (M98); `photo_privacy_note`
+  in nine languages no longer says "never uploaded" (the Drive backup carries it, m97).
+- **Play Console answers, Contacts prompt and targetSdk 37 are the owner's / a later bump**: see phase5-result.md in the session
+  notes. Data safety is no longer "no data collected" (m99): see the answers there.

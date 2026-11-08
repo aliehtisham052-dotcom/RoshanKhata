@@ -8,8 +8,8 @@
   Left out on purpose until they are public and tried on real devices: the Windows app (not signed yet)
   and live sync. Google Play's metadata policy: no other app named or compared, no price or promotion
   words in the title.
-  Before this build goes live: Data safety must declare what ML Kit's scanners send and, once live sync's
-  wake-up ships, "Device or other IDs" (Firebase) — see CLAUDE.md.
+  Before this build goes live: Data safety must follow the 8 Nov 2026 answers (ML Kit, Firebase, customer khata
+  pages, relays) — see CLAUDE.md. Privacy line widened 8 Nov for the khata link and sealed copies.
 -->
 
 ## App name (max 30)
@@ -55,7 +55,7 @@ STAFF
 
 YOUR BOOKS, YOUR PHONE
 • No account, no sign-up, no ads — the app works fully offline
-• Your ledger stays on your phone and we never collect it. It leaves only when you choose: a backup to your own Google Drive, or a copy sent to your own device
+• Your ledger stays on your phone and we never collect it. It leaves only when you choose: a backup to your own Google Drive, or a copy sent to your own device. Optional features such as live sync and an heir's copy send it locked, readable only by your devices. If you send a customer a khata link, that customer's name and balance are kept on our web hosting for them to open
 • App lock with your fingerprint or PIN; hide the balance when someone is looking
 • Several shops? Each business keeps its own separate book
 
