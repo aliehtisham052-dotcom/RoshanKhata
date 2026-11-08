@@ -488,7 +488,10 @@ class CashbookActivity : BaseActivity() {
         }
         cashFormIncome = isIncome
         cashFormTexts = { listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() } }
-        fun showRefBox() { etRef.visibility = if (PaymentRef.applies(chosenMethod())) View.VISIBLE else View.GONE }
+        fun showRefBox() {
+            etRef.visibility = if (PaymentRef.applies(chosenMethod())) View.VISIBLE else View.GONE
+            view.findViewById<View>(R.id.tvCashRefLabel).visibility = etRef.visibility
+        }
         // After the first check (lesson 4): the listener only follows the chip.
         cgMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
         showRefBox()

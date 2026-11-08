@@ -101,13 +101,21 @@
     </HorizontalScrollView>
 
     <!-- The payment's own id (schema 39): shown only beside a way that has one (PaymentRef). -->
+    <TextView
+        android:id="@+id/tvCashRefLabel"
+        style="@style/FormFieldLabel"
+        android:layout_marginTop="8dp"
+        android:labelFor="@+id/etCashRef"
+        android:text="@string/pos_reference_hint"
+        android:textAlignment="viewStart"
+        android:visibility="gone" />
+
     <EditText
         style="@style/EditorField"
         android:id="@+id/etCashRef"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="@string/pos_reference_hint"
+        android:layout_marginTop="4dp"
         android:importantForAutofill="no"
         android:inputType="textVisiblePassword|textNoSuggestions"
         android:maxLines="1"

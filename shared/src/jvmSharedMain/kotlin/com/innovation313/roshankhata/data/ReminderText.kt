@@ -31,25 +31,32 @@ object ReminderText {
         now: Long = System.currentTimeMillis(),
         /**
          * The sale being chased — the customer's newest live "I gave" entry number ([facts]) — said on
-         * its own line under a reminder that asks for money (29 Oct 2026, the payment-request record),
-         * so his payment can quote it and the shop can match the two. Null adds nothing.
+         * its own line right under the amount it is for (29 Oct 2026, the payment-request record; moved
+         * from after the closing on 8 Nov 2026), so his payment can quote it and the shop can match the
+         * two. Null adds nothing.
          */
         reference: String? = null
     ): String {
         val amount = Format.ltr(Format.money(balance))
-        val who = Format.isolate(partyName)
         val owed = Money.isPositive(balance)
-        val text = when {
-            owed && step >= ReminderLadder.SERIOUS -> words.text(W.reminder_step3, who, amount)
+        // A party saved under just a phone number (digits, +, spaces) is greeted without it: "Dear +923…," reads
+        // like a system message. Any name with a letter in it is used as it is.
+        val greeting =
+            if (partyName.none { it.isLetter() }) words.text(W.reminder_greeting_neutral)
+            else words.text(W.reminder_greeting, Format.isolate(partyName))
+        // The sale being chased goes right under the amount it is for, before the closing (8 Nov 2026), so each
+        // text takes it as its last argument: "" or a new line, "Reference: RK-000013".
+        val ref = reference?.trim()?.takeIf { it.isNotEmpty() && owed }
+            ?.let { "\n" + words.text(W.reminder_ref, Format.ltr(it)) }.orEmpty()
+        return when {
+            owed && step >= ReminderLadder.SERIOUS -> words.text(W.reminder_step3, greeting, amount, ref)
             owed && step == ReminderLadder.PLAIN ->
-                words.text(W.reminder_step2, who, amount, Format.dateOnly(firstSentAt ?: now))
+                words.text(W.reminder_step2, greeting, amount, Format.dateOnly(firstSentAt ?: now), ref)
             owed ->
-                if (promisedDate != null) words.text(W.reminder_they_owe_by_date, who, amount, Format.dateOnly(promisedDate))
-                else words.text(W.reminder_they_owe, who, amount)
-            else -> words.text(W.reminder_i_owe, who, amount)
+                if (promisedDate != null) words.text(W.reminder_they_owe_by_date, greeting, amount, Format.dateOnly(promisedDate), ref)
+                else words.text(W.reminder_they_owe, greeting, amount, ref)
+            else -> words.text(W.reminder_i_owe, greeting, amount)
         }
-        val ref = reference?.trim()?.takeIf { it.isNotEmpty() && owed } ?: return text
-        return text + "\n" + words.text(W.reminder_ref, Format.ltr(ref))
     }
 
     /**

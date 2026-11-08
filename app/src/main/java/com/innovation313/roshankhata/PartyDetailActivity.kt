@@ -1855,6 +1855,7 @@ class PartyDetailActivity : BaseActivity() {
         }
         fun showRefBox() {
             etPaymentRef.visibility = if ((!isGiven || paysSupplier()) && PaymentRef.applies(chosenPaymentMethod())) View.VISIBLE else View.GONE
+            view.findViewById<View>(R.id.tvPaymentRefLabel).visibility = etPaymentRef.visibility
         }
         // After the first check above (lesson 4): the listener only follows the chip, it decides nothing.
         cgPaymentMethod.setOnCheckedStateChangeListener { _, _ -> showRefBox() }
@@ -2447,6 +2448,14 @@ class PartyDetailActivity : BaseActivity() {
                 // from the note field, the first tap only moves focus.
                 etAmount.setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus && stepTwo.visibility == View.VISIBLE) closeDetails()
+                    else if (hasFocus) keypad.visibility = View.VISIBLE
+                }
+                // The payment's reference (a transaction id, a cheque number) is text: the phone's keyboard, with the
+                // calculator pad out of the way while it is in use (8 Nov 2026: the pad stayed up beside the keyboard
+                // and its keys write into the amount). The pad returns with the amount box.
+                etPaymentRef.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) keypad.visibility = View.GONE
+                    else if (stepTwo.visibility != View.VISIBLE) keypad.visibility = View.VISIBLE
                 }
                 etAmount.setOnClickListener {
                     if (stepTwo.visibility == View.VISIBLE) closeDetails()
@@ -2760,7 +2769,13 @@ class PartyDetailActivity : BaseActivity() {
                     Reminder.sendViaSms(this, partyPhone, message)
                 }
             }
-            .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
+            .show().also {
+                com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it)
+                // The box is the dialog's only focusable view, so Android gave it the focus at once and drew the
+                // cursor's round handle in the middle of the message with nobody having touched it (8 Nov 2026,
+                // the owner's photo). The form itself holds the focus until a tap; the cursor is already at the end.
+                com.innovation313.roshankhata.ui.QuietFocus.park(view)
+            }
     }
 
     /**

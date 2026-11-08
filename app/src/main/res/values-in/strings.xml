@@ -305,18 +305,20 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">Baca dulu sebelum mengirim. Anda dapat mengubah apa pun di sini — Roshan Khata akan menyerahkannya ke WhatsApp atau aplikasi SMS Anda, dan Anda sendiri yang menekan kirim.</string>
-    <string name="reminder_they_owe">*Pengingat Pembayaran*\n\nYth. *%1$s*,\n\nSisa tagihan: *%2$s*\n\nMohon pembayarannya dapat segera dilakukan.\n\nTerima kasih.</string>
+    <string name="reminder_they_owe">%1$s\n\nPengingat ramah mengenai tagihan yang masih tertunda di akun Anda.\n\nSisa tagihan: *%2$s*%3$s\n\nMohon lakukan pembayaran bila sudah memungkinkan. Jika Anda sudah membayar, abaikan pesan ini.\n\nTerima kasih.</string>
     <!-- Used instead of the above when the party has an open payment plan with an
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
-    <string name="reminder_they_owe_by_date">*Pengingat Pembayaran*\n\nYth. *%1$s*,\n\nSisa tagihan: *%2$s*\nTanggal yang disepakati: *%3$s*\n\nMohon dilunasi sebelum tanggal yang disepakati.\n\nTerima kasih.</string>
+    <string name="reminder_they_owe_by_date">%1$s\n\nPengingat ramah mengenai tagihan yang masih tertunda di akun Anda.\n\nSisa tagihan: *%2$s*%4$s\nTanggal yang disepakati: *%3$s*\n\nMohon dilunasi sebelum tanggal yang disepakati. Jika Anda sudah membayar, abaikan pesan ini.\n\nTerima kasih.</string>
     <string name="reminder_step_gentle">Halus</string>
     <string name="reminder_step_plain">Jelas</string>
     <string name="reminder_step_serious">Serius</string>
-    <string name="reminder_step2">*Pengingat Kedua*\n\nYth. *%1$s*,\n\nTagihan: *%2$s*\nPengingat pertama: %3$s\n\nIni pengingat kedua kami. Mohon lunasi tagihan minggu ini.\n\nTerima kasih.</string>
-    <string name="reminder_step3">*Pembayaran Tertunda*\n\nYth. *%1$s*,\n\nTagihan: *%2$s*\n\nKami sudah beberapa kali mengingatkan dan tagihan masih belum dibayar. Mohon dibayar, atau beri tahu tanggal pembayarannya agar hisab bisa diselesaikan.\n\nTerima kasih atas pengertiannya.</string>
+    <string name="reminder_step2">%1$s\n\nPesan ini mengenai tagihan yang masih tertunda di akun Anda, menindaklanjuti pengingat kami tanggal %3$s.\n\nSisa tagihan: *%2$s*%4$s\n\nMohon lunasi minggu ini, atau beri tahu kami kapan Anda dapat membayar. Jika Anda sudah membayar, abaikan pesan ini.\n\nTerima kasih.</string>
+    <string name="reminder_step3">%1$s\n\nAkun Anda masih memiliki tagihan yang belum dibayar.\n\nSisa tagihan: *%2$s*%3$s\n\nMohon segera lakukan pembayaran, atau beri tahu kami tanggal Anda akan membayar agar akun dapat diselesaikan. Jika Anda sudah membayar, mohon beri tahu kami.\n\nTerima kasih atas pengertian Anda.</string>
     <string name="reminder_ref">Referensi: %1$s</string>
-    <string name="reminder_i_owe">*Catatan Pembayaran*\n\nYth. *%1$s*,\n\nUtang kami kepada Anda: *%2$s*\n\nKami akan segera melunasinya. Jika catatan Anda berbeda dengan catatan kami, mohon beri tahu kami.\n\nTerima kasih.</string>
+    <string name="reminder_greeting">Yth. *%1$s*,</string>
+    <string name="reminder_greeting_neutral">Yth. Pelanggan,</string>
+    <string name="reminder_i_owe">%1$s\n\nMenurut catatan kami, kami berutang kepada Anda sebesar *%2$s*.\n\nKami akan segera melunasinya. Jika catatan Anda berbeda dengan catatan kami, mohon beri tahu kami.\n\nTerima kasih.</string>
     <string name="send_reminder">Kirim Pengingat</string>
     <string name="open_whatsapp">Buka WhatsApp</string>
     <string name="open_sms">Buka SMS</string>

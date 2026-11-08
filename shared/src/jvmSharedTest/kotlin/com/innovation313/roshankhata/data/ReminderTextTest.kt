@@ -35,19 +35,34 @@ class ReminderTextTest {
     }
 
     @Test
-    fun `the sale being chased is one line under a reminder that asks for money, never under a courtesy note`() {
-        val asked = ReminderText.body(words, "Aslam", 5_000.0, reference = "RK-000013")
-        val lines = asked.split("\n")
-        assertTrue(lines.first().startsWith("reminder_they_owe("))
-        assertTrue(lines.last().startsWith("reminder_ref("))
-        assertTrue(lines.last().contains("RK-000013"))
-        // The same line at every step.
-        assertTrue(ReminderText.body(words, "Aslam", 5_000.0, step = ReminderLadder.SERIOUS, reference = "RK-000013").endsWith(lines.last()))
-        // Nothing to quote, or blank: the body as before.
+    fun `the sale being chased sits with the amount, before the closing, and never on a courtesy note`() {
+        // The reference is the last argument of each text that asks for money, so the string puts it under the amount.
+        val gentle = ReminderText.body(words, "Aslam", 5_000.0, reference = "RK-000013")
+        assertTrue(gentle, gentle.startsWith("reminder_they_owe(") && gentle.contains("reminder_ref("))
+        assertTrue(gentle, gentle.contains("RK-000013"))
+        val serious = ReminderText.body(words, "Aslam", 5_000.0, step = ReminderLadder.SERIOUS, reference = "RK-000013")
+        assertTrue(serious, serious.startsWith("reminder_step3(") && serious.contains("RK-000013"))
+        val plain = ReminderText.body(words, "Aslam", 5_000.0, step = ReminderLadder.PLAIN, reference = "RK-000013")
+        assertTrue(plain, plain.contains("RK-000013"))
+        // Nothing to quote, or blank: the last argument is empty.
+        assertTrue(ReminderText.body(words, "Aslam", 5_000.0).endsWith(",)"))
         assertEquals(ReminderText.body(words, "Aslam", 5_000.0), ReminderText.body(words, "Aslam", 5_000.0, reference = null))
         assertEquals(ReminderText.body(words, "Aslam", 5_000.0), ReminderText.body(words, "Aslam", 5_000.0, reference = "  "))
         // Money the shop owes: no sale is being chased.
         assertEquals(ReminderText.body(words, "Seeds Co.", -1_200.0), ReminderText.body(words, "Seeds Co.", -1_200.0, reference = "RK-000013"))
+    }
+
+    @Test
+    fun `a party saved under only a phone number is greeted without it`() {
+        for (number in listOf("+923001234567", "0300 1234567", "  ", "")) {
+            val text = ReminderText.body(words, number, 5_000.0)
+            assertTrue(number + " -> " + text, text.startsWith("reminder_they_owe(reminder_greeting_neutral(),"))
+            assertTrue(!text.contains(number.trim()) || number.isBlank())
+        }
+        assertTrue(ReminderText.body(words, "Aslam", 5_000.0).startsWith("reminder_they_owe(reminder_greeting("))
+        // A name with a digit in it is still a name.
+        assertTrue(ReminderText.body(words, "Shop 2", 5_000.0).startsWith("reminder_they_owe(reminder_greeting("))
+        assertTrue(ReminderText.body(words, "+923001234567", -100.0, step = ReminderLadder.SERIOUS).startsWith("reminder_i_owe(reminder_greeting_neutral(),"))
     }
 
     @Test

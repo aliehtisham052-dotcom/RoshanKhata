@@ -501,13 +501,21 @@
               has one — cash has none (PaymentRef.applies). Left-to-right: an id
               is digits and Latin letters whatever the app's language.
             -->
+            <TextView
+                android:id="@+id/tvPaymentRefLabel"
+                style="@style/FormFieldLabel"
+                android:layout_marginTop="8dp"
+                android:labelFor="@+id/etPaymentRef"
+                android:text="@string/pos_reference_hint"
+                android:textAlignment="viewStart"
+                android:visibility="gone" />
+
             <EditText
                 style="@style/EditorField"
                 android:id="@+id/etPaymentRef"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="@string/pos_reference_hint"
+                android:layout_marginTop="4dp"
                 android:importantForAutofill="no"
                 android:inputType="textVisiblePassword|textNoSuggestions"
                 android:maxLines="1"

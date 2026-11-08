@@ -315,18 +315,20 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">भेजने से पहले पढ़ लें। यहाँ कुछ भी बदल सकते हैं — रोशन खाता इसे WhatsApp या आपके SMS ऐप को देगा, और भेजना आप खुद दबाएँगे।</string>
-    <string name="reminder_they_owe">*भुगतान रिमाइंडर*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\n\nकृपया जल्द से जल्द भुगतान कर दें।\n\nधन्यवाद।</string>
+    <string name="reminder_they_owe">%1$s\n\nआपके खाते की बकाया रकम के बारे में एक दोस्ताना रिमाइंडर।\n\nबकाया रकम: *%2$s*%3$s\n\nजब सुविधा हो, कृपया भुगतान कर दें। अगर आप भुगतान कर चुके हैं, तो इस संदेश को अनदेखा करें।\n\nधन्यवाद।</string>
     <!-- Used instead of the above when the party has an open payment plan with an
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
-    <string name="reminder_they_owe_by_date">*भुगतान रिमाइंडर*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nतय तारीख़: *%3$s*\n\nकृपया तय तारीख़ तक चुका दें।\n\nधन्यवाद।</string>
+    <string name="reminder_they_owe_by_date">%1$s\n\nआपके खाते की बकाया रकम के बारे में एक दोस्ताना रिमाइंडर।\n\nबकाया रकम: *%2$s*%4$s\nतय तारीख़: *%3$s*\n\nकृपया तय तारीख़ तक चुका दें। अगर आप भुगतान कर चुके हैं, तो इस संदेश को अनदेखा करें।\n\nधन्यवाद।</string>
     <string name="reminder_step_gentle">नरम</string>
     <string name="reminder_step_plain">साफ़</string>
     <string name="reminder_step_serious">गंभीर</string>
-    <string name="reminder_step2">*दूसरा रिमाइंडर*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\nपहला रिमाइंडर: %3$s\n\nयह हमारी दूसरा रिमाइंडर है। कृपया इस हफ़्ते रकम चुका दें।\n\nधन्यवाद।</string>
-    <string name="reminder_step3">*भुगतान बाकी है*\n\nआदरणीय *%1$s*,\n\nबकाया: *%2$s*\n\nकई बार याद दिलाने के बाद भी रकम बाकी है। कृपया भुगतान करें, या भुगतान की तारीख़ बता दें ताकि हिसाब साफ़ हो सके।\n\nआपके सहयोग का शुक्रिया।</string>
+    <string name="reminder_step2">%1$s\n\nयह संदेश आपके खाते की बकाया रकम के बारे में है, और %3$s को भेजे हमारे रिमाइंडर के क्रम में है।\n\nबकाया रकम: *%2$s*%4$s\n\nकृपया इस हफ़्ते भुगतान कर दें, या बताएँ कि आप कब तक कर सकेंगे। अगर आप भुगतान कर चुके हैं, तो इस संदेश को अनदेखा करें।\n\nधन्यवाद।</string>
+    <string name="reminder_step3">%1$s\n\nआपके खाते की रकम अभी तक बाकी है।\n\nबकाया रकम: *%2$s*%3$s\n\nकृपया अभी भुगतान करें, या बताएँ कि आप किस तारीख़ तक भुगतान करेंगे ताकि हिसाब साफ़ हो सके। अगर आप भुगतान कर चुके हैं, तो कृपया हमें बताएँ।\n\nआपके सहयोग के लिए धन्यवाद।</string>
     <string name="reminder_ref">संदर्भ: %1$s</string>
-    <string name="reminder_i_owe">*भुगतान नोट*\n\nआदरणीय *%1$s*,\n\nहमें आपको देना है: *%2$s*\n\nहम जल्द चुका देंगे। अगर आपका हिसाब हमारे हिसाब से अलग हो तो कृपया बताएँ।\n\nधन्यवाद।</string>
+    <string name="reminder_greeting">आदरणीय *%1$s*,</string>
+    <string name="reminder_greeting_neutral">आदरणीय ग्राहक,</string>
+    <string name="reminder_i_owe">%1$s\n\nहमारे हिसाब के अनुसार हमें आपको *%2$s* देना है।\n\nहम जल्द चुका देंगे। अगर आपका हिसाब हमारे हिसाब से अलग हो तो कृपया बताएँ।\n\nधन्यवाद।</string>
     <string name="send_reminder">रिमाइंडर भेजें</string>
     <string name="open_whatsapp">WhatsApp खोलें</string>
     <string name="open_sms">SMS खोलें</string>

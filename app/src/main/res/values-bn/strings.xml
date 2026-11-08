@@ -315,18 +315,20 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">পাঠানোর আগে পড়ে নিন। এখানে যেকোনো কিছু বদলাতে পারেন — রোশন খাতা এটি WhatsApp বা আপনার SMS অ্যাপে দেবে, আর পাঠানোর বোতাম আপনি নিজে চাপবেন।</string>
-    <string name="reminder_they_owe">*পেমেন্ট রিমাইন্ডার*\n\n*%1$s*,\n\nবকেয়া: *%2$s*\n\nঅনুগ্রহ করে যত দ্রুত সম্ভব পরিশোধ করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_they_owe">%1$s\n\nআপনার হিসাবের বকেয়া টাকা নিয়ে একটি বন্ধুত্বপূর্ণ রিমাইন্ডার।\n\nবকেয়া: *%2$s*%3$s\n\nসুবিধামতো সময়ে অনুগ্রহ করে পরিশোধ করুন। আপনি আগেই পরিশোধ করে থাকলে এই বার্তা উপেক্ষা করুন।\n\nধন্যবাদ।</string>
     <!-- Used instead of the above when the party has an open payment plan with an
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
-    <string name="reminder_they_owe_by_date">*পেমেন্ট রিমাইন্ডার*\n\n*%1$s*,\n\nবকেয়া: *%2$s*\nনির্ধারিত তারিখ: *%3$s*\n\nঅনুগ্রহ করে নির্ধারিত তারিখের মধ্যে পরিশোধ করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_they_owe_by_date">%1$s\n\nআপনার হিসাবের বকেয়া টাকা নিয়ে একটি বন্ধুত্বপূর্ণ রিমাইন্ডার।\n\nবকেয়া: *%2$s*%4$s\nনির্ধারিত তারিখ: *%3$s*\n\nঅনুগ্রহ করে নির্ধারিত তারিখের মধ্যে পরিশোধ করুন। আপনি আগেই পরিশোধ করে থাকলে এই বার্তা উপেক্ষা করুন।\n\nধন্যবাদ।</string>
     <string name="reminder_step_gentle">নরম</string>
     <string name="reminder_step_plain">স্পষ্ট</string>
     <string name="reminder_step_serious">গুরুতর</string>
-    <string name="reminder_step2">*দ্বিতীয় স্মরণ*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\nপ্রথম স্মরণ: %3$s\n\nএটি আমাদের দ্বিতীয় স্মরণ। অনুগ্রহ করে এই সপ্তাহে টাকা পরিশোধ করুন।\n\nধন্যবাদ।</string>
-    <string name="reminder_step3">*পরিশোধ বাকি*\n\nপ্রিয় *%1$s*,\n\nবাকি: *%2$s*\n\nকয়েকবার মনে করানোর পরও টাকা বাকি আছে। অনুগ্রহ করে পরিশোধ করুন, অথবা পরিশোধের তারিখ জানান যাতে হিসাব মিটে যায়।\n\nআপনার সহযোগিতার জন্য ধন্যবাদ।</string>
+    <string name="reminder_step2">%1$s\n\nএই বার্তাটি আপনার হিসাবের বকেয়া নিয়ে, এবং %3$s তারিখের আমাদের রিমাইন্ডারের ধারাবাহিকতায়।\n\nবকেয়া: *%2$s*%4$s\n\nঅনুগ্রহ করে এই সপ্তাহে পরিশোধ করুন, অথবা কবে পরিশোধ করতে পারবেন তা জানান। আপনি আগেই পরিশোধ করে থাকলে এই বার্তা উপেক্ষা করুন।\n\nধন্যবাদ।</string>
+    <string name="reminder_step3">%1$s\n\nআপনার হিসাবের টাকা এখনো পরিশোধ হয়নি।\n\nবকেয়া: *%2$s*%3$s\n\nঅনুগ্রহ করে এখনই পরিশোধ করুন, অথবা কোন তারিখের মধ্যে পরিশোধ করবেন তা জানান, যাতে হিসাব মিটিয়ে নেওয়া যায়। আপনি আগেই পরিশোধ করে থাকলে অনুগ্রহ করে আমাদের জানান।\n\nআপনার সহযোগিতার জন্য ধন্যবাদ।</string>
     <string name="reminder_ref">রেফারেন্স: %1$s</string>
-    <string name="reminder_i_owe">*পেমেন্ট নোট*\n\n*%1$s*,\n\nআপনার কাছে আমাদের দেনা: *%2$s*\n\nআমরা শিগগিরই পরিশোধ করব। আপনার হিসাব আমাদের সঙ্গে না মিললে অনুগ্রহ করে জানান।\n\nধন্যবাদ।</string>
+    <string name="reminder_greeting">প্রিয় *%1$s*,</string>
+    <string name="reminder_greeting_neutral">প্রিয় গ্রাহক,</string>
+    <string name="reminder_i_owe">%1$s\n\nআমাদের হিসাব অনুযায়ী আপনার কাছে আমাদের দেনা *%2$s*।\n\nআমরা শিগগিরই পরিশোধ করব। আপনার হিসাব আমাদের সঙ্গে না মিললে অনুগ্রহ করে জানান।\n\nধন্যবাদ।</string>
     <string name="send_reminder">রিমাইন্ডার পাঠান</string>
     <string name="open_whatsapp">WhatsApp খুলুন</string>
     <string name="open_sms">SMS খুলুন</string>
