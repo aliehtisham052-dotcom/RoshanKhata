@@ -114,14 +114,14 @@ class InvoiceDesignsTest {
                     val quotation = invoice(design).copy(invoiceNumber = "Q-000003", kind = com.innovation313.roshankhata.data.DocKind.QUOTATION, receivedAmount = null)
                     val q = InvoiceDesigns.pages(ctx, quotation, items)!!
                     val qWords = q.finished.flatMap { it.canvas.words }
-                    assertTrue("design $design ($tag): the quotation's heading is missing", quotationWord in qWords)
-                    assertTrue("design $design ($tag): a quotation must not say INVOICE", invoiceWord !in qWords)
+                    assertTrue("design $design ($tag): the quotation's heading is missing", qWords.any { it.equals(quotationWord, ignoreCase = true) })
+                    assertTrue("design $design ($tag): a quotation must not say INVOICE", qWords.none { it.equals(invoiceWord, ignoreCase = true) })
                     assertTrue("design $design ($tag): a quotation prints its rates", qWords.any { rate.containsMatchIn(it) })
 
                     val challan = invoice(design).copy(invoiceNumber = "DC-000003", kind = com.innovation313.roshankhata.data.DocKind.CHALLAN, receivedAmount = null)
                     val d = InvoiceDesigns.pages(ctx, challan, items)!!
                     val dWords = d.finished.flatMap { it.canvas.words }
-                    assertTrue("design $design ($tag): the challan's heading is missing", challanWord in dWords)
+                    assertTrue("design $design ($tag): the challan's heading is missing", dWords.any { it.equals(challanWord, ignoreCase = true) })
                     assertTrue("design $design ($tag): a challan printed a rate", dWords.none { rate.containsMatchIn(it) })
                     assertTrue("design $design ($tag): a challan printed a line total", dWords.none { lineTotal.containsMatchIn(it) })
                     assertTrue("design $design ($tag): a challan printed the total word", ctx.getString(com.innovation313.roshankhata.words.W.pdf_label_total) !in dWords)
