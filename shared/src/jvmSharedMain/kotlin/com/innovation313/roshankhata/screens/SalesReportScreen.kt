@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.KhataDao
+import com.innovation313.roshankhata.data.PartyWhen
 import com.innovation313.roshankhata.data.SalesReport
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
@@ -66,7 +67,8 @@ fun periodWindow(p: ReportPeriod, now: Long = System.currentTimeMillis(), custom
     }
     val start = when (p) {
         ReportPeriod.TODAY, ReportPeriod.CUSTOM -> DayCloseMath.startOf(day)
-        ReportPeriod.WEEK -> DayCloseMath.startOf(day - 6)
+        // The week of the shop's country, as every other report counts it (8 Nov review M53: this was the last 7 days).
+        ReportPeriod.WEEK -> PartyWhen.THIS_WEEK.window(now)?.first ?: DayCloseMath.startOf(day - 6)
         ReportPeriod.MONTH -> java.util.Calendar.getInstance().apply {
             timeInMillis = now; set(java.util.Calendar.DAY_OF_MONTH, 1)
             set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)

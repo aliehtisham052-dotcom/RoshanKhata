@@ -210,7 +210,15 @@ class SalesReport(
                 if (costKnown) LineMath.round(ls.sumOf { it.cost!! }) else null)
         }.sortedByDescending { it.revenue }
 
-    val byItem: List<Row> get() = group { it.itemName }
+    /**
+     * Per item AND unit (8 Nov review M54: 2 cartons + 10 bottles of Cola read "Qty 12"). An item sold in one unit
+     * keeps its plain name; one sold in several is listed once per unit, the unit after the name.
+     */
+    val byItem: List<Row>
+        get() {
+            val unitsOf = lines.groupBy { it.itemName }.mapValues { (_, ls) -> ls.map { it.unit.orEmpty() }.distinct().size }
+            return group { l -> if ((unitsOf[l.itemName] ?: 1) > 1 && !l.unit.isNullOrBlank()) l.itemName + " · " + UnitWords.label(l.unit) else l.itemName }
+        }
     val byCategory: List<Row> get() = group { it.category ?: "" }
     val byCustomer: List<Row> get() = group { it.customerName ?: "" }
     val byCashier: List<Row> get() = group { it.createdBy ?: "" }

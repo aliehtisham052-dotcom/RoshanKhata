@@ -302,17 +302,24 @@ fun CounterSalePane(
         )
         val ticket = draft.snapshot(notes = notes)
         draft.posting = true
+        // The write lives on the app's own scope and clears the till the moment it is written (8 Nov review L110: F12 then
+        // F1 at once left the page's scope, the ticket was written but never cleared, and F12 on return posted it again).
+        val work = com.innovation313.roshankhata.data.AppScope.async(Dispatchers.IO) {
+            try {
+                runCatching {
+                    val id = Counter.post(dao, ticket)
+                    val sale = dao.saleWithLines(id)!!
+                    // The customer's balance alone (23 Oct 2026, the review: the whole book's balances were summed for it).
+                    Triple(sale, sale.sale.partyId?.let { pid -> dao.liveBalance(pid) },
+                        com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
+                }.also { r -> if (r.isSuccess) withContext(Dispatchers.Main) { draft.clearAfter(ticket) } }
+            } finally {
+                withContext(kotlinx.coroutines.NonCancellable + Dispatchers.Main) { draft.posting = false }
+            }
+        }
         scope.launch {
             try {
-                val result = withContext(Dispatchers.IO) {
-                    runCatching {
-                        val id = Counter.post(dao, ticket)
-                        val sale = dao.saleWithLines(id)!!
-                        // The customer's balance alone (23 Oct 2026, the review: the whole book's balances were summed for it).
-                        Triple(sale, sale.sale.partyId?.let { pid -> dao.liveBalance(pid) },
-                            com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, sale.sale))
-                    }
-                }
+                val result = work.await()
                 result.onSuccess { (sale, balance, points) ->
                     // The change to hand back, said with the sale (21 Oct 2026) — on its own gold chip beside a
                     // tick that draws itself since 3 Nov 2026 (SavedSaleNote).
@@ -322,7 +329,6 @@ fun CounterSalePane(
                     val cash = sale.payments.any { it.method == PaymentMethod.CASH && it.amount > 0.0 }
                     if (print) onReceipt(ThermalReceipt.Job(SaleReceipt.lines(words, shopName ?: words.text(W.app_name), sale, currency, balance, points), cash, direct = true))
                     else if (cash) onDrawer()
-                    draft.clearAfter(ticket)
                     tick++
                     onChanged()
                 }.onFailure { e ->
@@ -664,6 +670,14 @@ fun CounterSalePane(
                         FluentButton(word(W.pos_resume), {
                             scope.launch {
                                 val full = withContext(Dispatchers.IO) { dao.saleWithLines(h.id) } ?: return@launch
+                                // A ticket being rung up is parked first, never wiped (8 Nov review M65).
+                                if (draft.lines.isNotEmpty() && draft.heldId != h.id) {
+                                    if (draft.posting) return@launch
+                                    val parked = Counter.holdTicket(draft)
+                                    val parkedOk = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, parked) } }
+                                    parkedOk.exceptionOrNull()?.let { e -> told = counterFail(e); return@launch }
+                                    draft.clearAfter(parked)
+                                }
                                 draft.load(full, onHandOf = { onHand[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
                                 saved = null
                                 showHeld = false
@@ -791,11 +805,12 @@ fun CounterSalePane(
                 val ok = refusal == null && withContext(Dispatchers.IO) { runCatching { dao.voidSale(s.id, reason, allowedBy = voidingBy) }.getOrDefault(false) }
                 voiding = null; tick++; onChanged()
                 if (ok && correct && draft.isEmpty) {
-                    val again = withContext(Dispatchers.IO) { runCatching { dao.saleWithLines(s.id) to com.innovation313.roshankhata.data.Counter.onHand(dao) }.getOrNull() }
-                    val full = again?.first
+                    val again = withContext(Dispatchers.IO) { runCatching { dao.saleWithLines(s.id)?.let { it to dao.pointsSpentOn(s.id, it.sale.saleNumber) } to com.innovation313.roshankhata.data.Counter.onHand(dao) }.getOrNull() }
+                    val full = again?.first?.first
+                    val spentPoints = again?.first?.second ?: 0.0
                     val stock = again?.second
                     if (full != null && stock != null) {
-                        draft.reRing(full, onHandOf = { stock[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
+                        draft.reRing(full, onHandOf = { stock[it] }, productOf = { id -> products.firstOrNull { it.id == id } }, pointsSpent = spentPoints)
                         saved = null
                         told = words.text(W.pos_void_corrected, s.saleNumber)
                         return@launch

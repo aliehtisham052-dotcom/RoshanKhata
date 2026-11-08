@@ -141,7 +141,12 @@ class CounterDraft {
     var loyalty by mutableStateOf<LoyaltyRule?>(null)
     var pointsBalance by mutableStateOf(0.0)
     var pointsUsed by mutableStateOf(0.0)
-    val pointsValue: Double get() = if (hasParty) loyalty?.value(pointsUsed) ?: 0.0 else 0.0
+    /**
+     * The points this ticket really spends: those ticked, never more than the ticket now allows (8 Nov review L104:
+     * 300 points ticked, an item taken off, and the sale was refused as "not saved"). Followed live as lines change.
+     */
+    val pointsSpent: Double get() = if (!hasParty || pointsUsed <= 0.0) 0.0 else minOf(pointsUsed, pointsMax)
+    val pointsValue: Double get() = if (hasParty) loyalty?.value(pointsSpent) ?: 0.0 else 0.0
 
     val hasParty: Boolean get() = partyId != null
     val isEmpty: Boolean get() = lines.isEmpty() && payments.isEmpty() && !hasParty
@@ -359,7 +364,7 @@ class CounterDraft {
     fun snapshot(createdBy: String? = Access.userName, now: Long = System.currentTimeMillis(), notes: List<AuditLog> = emptyList()): Counter.Ticket =
         Counter.Ticket(
             sale = toSale(createdBy, now), items = toItems(), payments = toPayments(), roundToWhole = roundToWhole,
-            pointsUsed = if (hasParty) pointsUsed else 0.0, heldId = heldId, lines = lines.toList(), notes = notes, now = now,
+            pointsUsed = pointsSpent, heldId = heldId, lines = lines.toList(), notes = notes, now = now,
             due = due?.takeIf { hasParty && remaining > 0.005 }
         )
 
@@ -371,7 +376,7 @@ class CounterDraft {
     }
 
     /** A held ticket back on the counter. */
-    fun load(held: SaleWithLines, onHandOf: (Long) -> Double? = { null }, productOf: (Long) -> Product? = { null }) {
+    fun load(held: SaleWithLines, onHandOf: (Long) -> Double? = { null }, productOf: (Long) -> Product? = { null }, keepBatch: Boolean = true) {
         clear()
         heldId = held.sale.id
         partyId = held.sale.partyId
@@ -382,7 +387,7 @@ class CounterDraft {
         for (i in held.items) {
             lines += Line(
                 i.productId, i.itemName, Calc.trim(i.quantity), i.unit, Calc.trim(i.rate),
-                if (i.discount > 0.0) Calc.trim(i.discount) else "", i.billItemId,
+                if (i.discount > 0.0) Calc.trim(i.discount) else "", if (keepBatch) i.billItemId else null,
                 onHand = i.productId?.let(onHandOf), product = i.productId?.let(productOf),
                 taxRate = i.taxRate, taxIncluded = i.taxIncluded == true
             )
@@ -396,9 +401,21 @@ class CounterDraft {
      * voided one is not dropped, it stays in the book as voided with its reason) and no payments — what was paid
      * went back with the void, and the money is taken again on the corrected ticket.
      */
-    fun reRing(voided: SaleWithLines, onHandOf: (Long) -> Double? = { null }, productOf: (Long) -> Product? = { null }) {
-        load(voided, onHandOf, productOf)
+    fun reRing(
+        voided: SaleWithLines, onHandOf: (Long) -> Double? = { null }, productOf: (Long) -> Product? = { null },
+        pointsSpent: Double = 0.0
+    ) {
+        // No batch kept (8 Nov review L107): the voided lines pointed at the batches they came from, so 3 changed to 5
+        // took 5 from a batch with 3 and left it at -2. The soonest-expiring batch is chosen again when it is posted.
+        load(voided, onHandOf, productOf, keepBatch = false)
         heldId = null
+        // The ticket's discount held the loyalty points' money; the void gave the points back, so only the hand
+        // discount returns (else the points were spent twice over, 8 Nov review M62).
+        val rule = loyalty
+        if (pointsSpent > 0.0 && rule != null) {
+            val hand = LineMath.round(voided.sale.discountAmount - rule.value(pointsSpent))
+            discount = if (hand > 0.0) Calc.trim(hand) else ""
+        }
     }
 
     /**
@@ -554,6 +571,7 @@ object Counter {
         // cannot state (mixed units, no shelf read) is never refused on a figure nobody has.
         val refuseShort = BookSettings.isOn(dao.settingValue(BookSettings.BLOCK_NEGATIVE_STOCK))
         val taken = HashMap<Long, Double>()
+        val untagged = HashMap<Long, Double>()
         for (item in ticket.items) {
             val p = item.productId?.let { products[it] }
             items += item.copy(costRate = p?.let { costOf(dao, it, item.unit) })
@@ -577,11 +595,16 @@ object Counter {
                 takes += null
                 continue
             }
-            when (val a = Fefo.allocate(lots, item.quantity, factor, today)) {
+            val untaggedNow = untagged.getOrPut(p.id) {
+                val have = shelf?.get(p.id)
+                if (have == null) 0.0 else (have - lots.sumOf { it.left.coerceAtLeast(0.0) }).coerceAtLeast(0.0)
+            }
+            when (val a = Fefo.allocate(lots, item.quantity, factor, today, untaggedNow)) {
                 is Fefo.Allocation.ExpiredOnly -> throw ExpiredStock(item.itemName, a.fresh)
                 is Fefo.Allocation.Ok -> {
                     takes += a.takes
                     for (t in a.takes) {
+                        if (t.billItemId == null && !factor.isNaN()) untagged[p.id] = ((untagged[p.id] ?: 0.0) - t.qty * factor).coerceAtLeast(0.0)
                         val at = lots.indexOfFirst { it.billItemId == t.billItemId }
                         if (t.billItemId != null && at >= 0) lots[at] = lots[at].copy(left = lots[at].left - t.qty * factor)
                     }

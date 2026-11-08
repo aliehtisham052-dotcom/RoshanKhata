@@ -198,6 +198,12 @@ class ZakatTest {
 
     // ------------------------------------------------------- the wrong unit
 
+    @Test
+    fun `a dirham price is never judged by the rupee bands`() {
+        assertFalse(Zakat.priceLooksOff(400.0, gold = true, perTola = false, sign = "AED"))
+        assertTrue(Zakat.priceLooksOff(66.0, gold = false, perTola = false, sign = "Rs"))
+    }
+
     /** The mistake that actually happened, on the owner's own phone. */
     @Test
     fun `66 for silver is flagged whichever unit is chosen`() {

@@ -3315,6 +3315,7 @@
     <string name="pos_add_payment">إضافة دفعة</string>
     <string name="pos_pay_full_cash">الكل نقدًا</string>
     <string name="pos_reference_hint">مرجع (رقم العملية، رقم الشيك)</string>
+    <string name="pos_leave_msg">ستضيع الفاتورة الجارية.</string>
     <string name="pos_hold">تعليق</string>
     <string name="pos_held_tickets">فواتير معلّقة (%1$d)</string>
     <string name="pos_resume">متابعة</string>
@@ -3727,6 +3728,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">تم تغيير قيد</string>
+    <string name="audit_entry_added">تمت إضافة قيد</string>
     <string name="audit_entry_deleted">تم حذف قيد</string>
     <string name="audit_cash_added">قيد في دفتر النقد</string>
     <string name="audit_cash_edited">تم تغيير قيد في دفتر النقد</string>

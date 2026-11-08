@@ -65,8 +65,11 @@ class CounterSaleActivity : BaseActivity() {
         // How this works, the first time it opens on this phone (1 Nov 2026).
         com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.COUNTER)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = leaveCounter()
+        })
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
-            setNavigationOnClickListener { finish() }
+            setNavigationOnClickListener { leaveCounter() }
             // Recent tickets: a return against one, or its void (POS Phase 3).
             menu.add(R.string.pos_recent_sales).setOnMenuItemClickListener { showRecent(); true }
             // The counter's own settings (schema 36): prices with tax. The owner's to change.
@@ -451,6 +454,20 @@ class CounterSaleActivity : BaseActivity() {
     }
 
     /** Park the ticket; cleared only once it is safely held (21 Oct 2026: a failed hold lost it). */
+    /**
+     * Back, on a ticket being rung up, asks first (8 Nov review M66: eight lines vanished on one Back, even from the
+     * payment step). An empty counter leaves at once.
+     */
+    private fun leaveCounter() {
+        if (draft.isEmpty || draft.posting) { finish(); return }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.form_discard_title)
+            .setMessage(R.string.pos_leave_msg)
+            .setNegativeButton(R.string.bp_leave_keep, null)
+            .setPositiveButton(R.string.bp_leave_discard) { _, _ -> finish() }
+            .show()
+    }
+
     private fun hold() {
         if (draft.posting || draft.lines.isEmpty()) return
         draft.posting = true
@@ -490,6 +507,14 @@ class CounterSaleActivity : BaseActivity() {
                 .setItems(labels) { _, i ->
                     lifecycleScope.launch {
                         val full = withContext(Dispatchers.IO) { dao.saleWithLines(held[i].id) } ?: return@launch
+                        // A ticket being rung up is parked first, never wiped (8 Nov review M65).
+                        if (draft.lines.isNotEmpty() && draft.heldId != held[i].id) {
+                            if (draft.posting) return@launch
+                            val parked = Counter.holdTicket(draft)
+                            val ok = withContext(Dispatchers.IO) { runCatching { Counter.hold(dao, parked) }.isSuccess }
+                            if (!ok) { message = getString(R.string.pos_hold_failed); return@launch }
+                            draft.clearAfter(parked)
+                        }
                         draft.load(full, onHandOf = { onHand[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
                     }
                 }
@@ -502,7 +527,7 @@ class CounterSaleActivity : BaseActivity() {
     private fun showRecent() {
         lifecycleScope.launch {
             val now = System.currentTimeMillis()
-            val rows = withContext(Dispatchers.IO) { dao.salesBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000).take(20) }
+            val rows = withContext(Dispatchers.IO) { dao.salesBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000).take(100) }
             if (rows.isEmpty()) { toast(R.string.pos_lines_empty); return@launch }
             val labels = rows.map { s ->
                 s.saleNumber + " · " + (s.customerName ?: getString(R.string.pos_walk_in)) + " · " + com.innovation313.roshankhata.ui.Format.money(s.grandTotal) +
@@ -517,7 +542,7 @@ class CounterSaleActivity : BaseActivity() {
                         // The ticket's posted returns: each can be printed as a credit note (29 Oct 2026).
                         val back = withContext(Dispatchers.IO) { runCatching { dao.returnsOfSale(s.id) }.getOrDefault(emptyList()) }
                         // Void and correct (3 Nov 2026): the void, then the ticket's goods back on the counter to fix.
-                        val actions = arrayListOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void), getString(R.string.pos_void_correct)) +
+                        val actions = arrayListOf(getString(R.string.pos_make_invoice), getString(R.string.pos_return), getString(R.string.pos_void), getString(R.string.pos_void_correct), getString(R.string.pos_receipt)) +
                             back.map { getString(R.string.doc_kind_credit_note) + " · " + it.returnNumber }
                         MaterialAlertDialogBuilder(this@CounterSaleActivity)
                             .setTitle(s.saleNumber)
@@ -531,12 +556,41 @@ class CounterSaleActivity : BaseActivity() {
                                     // Only onto an empty counter: the ticket being rung up is never cleared to make room.
                                     3 -> if (!draft.isEmpty) { message = getString(R.string.pos_void_till_busy); toast(R.string.pos_void_till_busy) }
                                         else com.innovation313.roshankhata.ui.AccessUi.allowed(this@CounterSaleActivity, dao, com.innovation313.roshankhata.data.Access.Permission.VOID, getString(R.string.pos_void) + " " + s.saleNumber) { by -> askVoid(s.id, s.saleNumber, by, correct = true) }
-                                    else -> back.getOrNull(which - 4)?.let { openCreditNote(it.id) }
+                                    // The receipt again (8 Nov review M68): out of paper once left no way back to it.
+                                    4 -> reprintReceipt(s.id)
+                                    else -> back.getOrNull(which - 5)?.let { openCreditNote(it.id) }
                                 }
                             }
                             .setNegativeButton(R.string.cancel, null)
                             .show()
                     }
+                }
+                .setNegativeButton(R.string.close, null)
+                .show()
+        }
+    }
+
+    /** A posted ticket's receipt, printed or shared again from Recent sales. */
+    private fun reprintReceipt(saleId: Long) {
+        lifecycleScope.launch {
+            val built = withContext(Dispatchers.IO) {
+                runCatching {
+                    val full = dao.saleWithLines(saleId) ?: return@runCatching null
+                    Triple(full, full.sale.partyId?.let { dao.liveBalance(it) }, com.innovation313.roshankhata.data.Loyalty.onReceipt(dao, full.sale))
+                }.getOrNull()
+            } ?: return@launch
+            if (isFinishing || isDestroyed) return@launch
+            val (sale, balance, points) = built
+            val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this@CounterSaleActivity) ?: getString(R.string.app_name)
+            val text = SaleReceiptText.build(AndroidWords(this@CounterSaleActivity), shop, sale, balance, points)
+            MaterialAlertDialogBuilder(this@CounterSaleActivity)
+                .setTitle(sale.sale.saleNumber)
+                .setMessage(text)
+                .setPositiveButton(R.string.print_short) { _, _ ->
+                    com.innovation313.roshankhata.ui.TextReceipt.print(this@CounterSaleActivity, lifecycleScope, text, cash = false, direct = true)
+                }
+                .setNeutralButton(R.string.share) { _, _ ->
+                    startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), getString(R.string.pos_receipt)))
                 }
                 .setNegativeButton(R.string.close, null)
                 .show()
@@ -640,12 +694,13 @@ class CounterSaleActivity : BaseActivity() {
                     voided?.exceptionOrNull()?.let { android.util.Log.w("RoshanKhata", "sale not voided", it) }
                     if (ok && correct && draft.isEmpty) {
                         val again = withContext(Dispatchers.IO) {
-                            runCatching { dao.saleWithLines(saleId) to Counter.onHand(dao) }.getOrNull()
+                            runCatching { dao.saleWithLines(saleId)?.let { it to dao.pointsSpentOn(saleId, it.sale.saleNumber) } to Counter.onHand(dao) }.getOrNull()
                         }
-                        val full = again?.first
+                        val full = again?.first?.first
+                        val spentPoints = again?.first?.second ?: 0.0
                         val stock = again?.second
                         if (full != null && stock != null) {
-                            draft.reRing(full, onHandOf = { stock[it] }, productOf = { id -> products.firstOrNull { it.id == id } })
+                            draft.reRing(full, onHandOf = { stock[it] }, productOf = { id -> products.firstOrNull { it.id == id } }, pointsSpent = spentPoints)
                             message = getString(R.string.pos_void_corrected, number)
                             reload()
                             return@launch

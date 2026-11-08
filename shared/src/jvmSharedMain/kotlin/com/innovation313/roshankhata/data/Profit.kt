@@ -58,7 +58,10 @@ object Profit {
          * that discount, and profit counted the goods at full price.
          */
         val entryAmount: Double? = null,
-        val entryLinesTotal: Double? = null
+        val entryLinesTotal: Double? = null,
+        /** The cost the owner wrote on the product, and the unit it is per (8 Nov review M49: the sales report used it, Insights did not). */
+        val costPrice: Double? = null,
+        val productUnit: String? = null
     ) {
         /** What the entry actually charged for each rupee of its goods: never more than 1 (freight on top is not profit). */
         val charged: Double get() {
@@ -138,6 +141,8 @@ object Profit {
         purchasesById: Map<Long, PurchaseLine>,
         purchasesByProduct: Map<Long, List<PurchaseLine>>
     ): Double? {
+        // 0. The cost the owner wrote on the product, as the sales report's rule (Cost.perUnit) puts it first.
+        line.costPrice?.let { if (unitsAgree(line.productUnit, line.unit)) return it }
         // 1. The batch the owner chose, when its unit does not contradict the line.
         line.billItemId?.let { purchasesById[it] }?.let { batch ->
             if (unitsAgree(batch.unit, line.unit)) return batch.rate

@@ -3115,6 +3115,7 @@
     <string name="pos_add_payment">Payment shamil karein</string>
     <string name="pos_pay_full_cash">Sab naqad</string>
     <string name="pos_reference_hint">Hawala (transaction no., cheque no.)</string>
+    <string name="pos_leave_msg">Jo ticket ban raha hai woh zaya ho jayega.</string>
     <string name="pos_hold">Rokein</string>
     <string name="pos_held_tickets">Roke hue bill (%1$d)</string>
     <string name="pos_resume">Jari karein</string>
@@ -3523,6 +3524,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">Indiraaj badla gaya</string>
+    <string name="audit_entry_added">Indiraaj likha gaya</string>
     <string name="audit_entry_deleted">Indiraaj mitaya gaya</string>
     <string name="audit_cash_added">Cashbook mein indiraaj</string>
     <string name="audit_cash_edited">Cashbook ka indiraaj badla</string>

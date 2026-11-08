@@ -2109,6 +2109,7 @@ class PartyDetailActivity : BaseActivity() {
                 // every "I Gave" entry, where the section never appeared.
                 // A goods return was not "paid" by any method (the section is
                 // hidden for it), so nothing is recorded there either.
+                createdBy = com.innovation313.roshankhata.data.Access.userName,
                 paymentMethod = if (isGiven || !partyIsCustomer || (isReturn() && items.isNotEmpty())) null
                     else chosenPaymentMethod(),
                 // The reference rides with its method and only with one that has one (PaymentRef).
@@ -2730,7 +2731,10 @@ class PartyDetailActivity : BaseActivity() {
                     ladder.record(this, partyId, currentBalance, sent = chosenStep)
                 }
                 if (viaWhatsApp) {
-                    Reminder.sendViaWhatsApp(this, partyPhone, message)
+                    // Counted as reminded once WhatsApp really opened, as Follow-up counts it (8 Nov review M52).
+                    Reminder.sendViaWhatsApp(this, partyPhone, message, opened = {
+                        com.innovation313.roshankhata.data.ReminderLog.record(this, partyId)
+                    })
                 } else {
                     Reminder.sendViaSms(this, partyPhone, message)
                 }
@@ -3251,6 +3255,7 @@ class PartyDetailActivity : BaseActivity() {
             val (id, gotId) = if (paidNow && entry.isGiven && entry.rateType == RateType.CASH)
                 dao.insertEntryWithItemsPaidNow(entry, items)
             else dao.insertEntryWithItems(entry, items) to null
+            dao.audit(AuditActs.ENTRY_ADDED, "transactions", id, auditAmount(entry.amount))
             if (signature != null) withContext(Dispatchers.IO) {
                 runCatching { com.innovation313.roshankhata.data.EntrySignature.save(appContext, id, signature) }
             }
@@ -3475,7 +3480,15 @@ class PartyDetailActivity : BaseActivity() {
             anchor = bottomBarContainer,
             list = findViewById(R.id.rvEntries),
             keepInSight = { if (::adapter.isInitialized) adapter.positionOf(saleId) else -1 },
-            onUndo = { AppScope.launch { dao.undoCashForSale(saleId, gotId) } }
+            // Taking a payment back asks the PIN deleting would, and is written in Who did what (8 Nov review M43).
+            onUndo = {
+                if (com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { offerUndoCash(saleId, gotId, amount) }) {
+                    AppScope.launch {
+                        dao.undoCashForSale(saleId, gotId)
+                        dao.audit(AuditActs.ENTRY_DELETED, "transactions", gotId, auditAmount(amount))
+                    }
+                }
+            }
         )
     }
 
@@ -3525,7 +3538,13 @@ class PartyDetailActivity : BaseActivity() {
                 )
             )
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.proceed_anyway) { _, _ -> saveEntry(entry, items, paidNow) }
+            // A cashier needs a manager's PIN here as at the counter (8 Nov review M50); the owner and managers go on.
+            .setPositiveButton(R.string.proceed_anyway) { _, _ ->
+                com.innovation313.roshankhata.ui.AccessUi.allowed(
+                    this, dao, com.innovation313.roshankhata.data.Access.Permission.CREDIT_OVER,
+                    getString(R.string.pos_credit_limit, Format.money(limit), Format.money(projected))
+                ) { _ -> saveEntry(entry, items, paidNow) }
+            }
             .show()
     }
 

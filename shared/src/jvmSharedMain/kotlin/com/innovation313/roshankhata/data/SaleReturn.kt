@@ -138,8 +138,21 @@ object ReturnMath {
      * round-off spread over the lines by their worth. A return gives back this, not the shelf price.
      */
     fun paidRate(sale: Sale, item: SaleItem): Double {
-        val share = sale.subtotal.takeIf { it > 0.0 }?.let { sale.grandTotal / it } ?: 1.0
-        return if (item.quantity > 0.0) item.lineTotal * share / item.quantity else item.rate * share
+        val sub = sale.subtotal
+        if (sub <= 0.0) return item.rate
+        // Each line carries its OWN tax (8 Nov review M63): a ticket with 17% on A and nothing on B gave B back a
+        // share of A's tax when the whole grand total was spread by worth. Discount and round-off still spread by worth.
+        val discShare = (sub - sale.discountAmount.coerceIn(0.0, sub)) / sub
+        val base = item.lineTotal * discShare
+        val r = item.taxRate?.takeIf { it > 0.0 }
+        val added = when {
+            r != null && item.taxIncluded == true -> 0.0
+            r != null -> base * r / 100.0
+            sale.taxPercent != null && sale.taxPercent > 0.0 -> base * sale.taxPercent / 100.0
+            else -> 0.0
+        }
+        val paid = base + added + sale.roundOff * (item.lineTotal / sub)
+        return if (item.quantity > 0.0) paid / item.quantity else item.rate
     }
 
     /**

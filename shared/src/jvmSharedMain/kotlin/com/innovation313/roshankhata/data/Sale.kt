@@ -312,10 +312,10 @@ object SaleMath {
      * The most one line may carry (23 Oct 2026, the review): a barcode scanned
      * into a focused quantity box typed a 13-digit quantity that passed every
      * check onto a customer's account. No shop sells a million of anything on
-     * one line, nor at a hundred million a unit; past these it is a slip.
+     * one line, nor at a thousand million a unit (a rial is a thousandth of a dollar: 150,000,000 is an ordinary rate); past these it is a slip.
      */
     const val MAX_QTY = 1_000_000.0
-    const val MAX_RATE = 100_000_000.0
+    const val MAX_RATE = 1_000_000_000.0
 
     /** Why a ticket cannot be posted; the screen words each one. */
     enum class Problem {
@@ -486,6 +486,8 @@ object AuditAction {
     // until then an edit or a delete left no trace of who did it.
     const val ENTRY_EDITED = "entry_edited"
     const val ENTRY_DELETED = "entry_deleted"
+    /** A hand-written khata entry (8 Nov review M44): until then only edits and deletes were written down. */
+    const val ENTRY_ADDED = "entry_added"
     const val CASH_ADDED = "cash_added"
     const val CASH_EDITED = "cash_edited"
     const val CASH_DELETED = "cash_deleted"

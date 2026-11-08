@@ -3115,6 +3115,7 @@
     <string name="pos_add_payment">ادائیگی شامل کریں</string>
     <string name="pos_pay_full_cash">سب نقد</string>
     <string name="pos_reference_hint">حوالہ (ٹرانزیکشن نمبر، چیک نمبر)</string>
+    <string name="pos_leave_msg">جو ٹکٹ بن رہا ہے وہ ضائع ہو جائے گا۔</string>
     <string name="pos_hold">روکیں</string>
     <string name="pos_held_tickets">روکے ہوئے بل (%1$d)</string>
     <string name="pos_resume">جاری کریں</string>
@@ -3523,6 +3524,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">اندراج بدلا گیا</string>
+    <string name="audit_entry_added">اندراج لکھا گیا</string>
     <string name="audit_entry_deleted">اندراج مٹایا گیا</string>
     <string name="audit_cash_added">کیش بک میں اندراج</string>
     <string name="audit_cash_edited">کیش بک کا اندراج بدلا</string>

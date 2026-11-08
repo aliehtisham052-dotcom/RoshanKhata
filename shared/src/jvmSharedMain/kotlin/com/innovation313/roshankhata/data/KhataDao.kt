@@ -2729,7 +2729,9 @@ interface KhataDao {
     @Query("SELECT ei.productId AS productId, ei.itemName AS itemName, ei.quantity AS quantity, " +
            "ei.unit AS unit, ei.rate AS rate, ei.isBonus AS isBonus, ei.billItemId AS billItemId, " +
            "t.timestamp AS timestamp, t.isGiven AS isGiven, t.amount AS entryAmount, " +
-           "(SELECT SUM(x.quantity * x.rate) FROM entry_items x WHERE x.entryId = t.id AND x.rate IS NOT NULL AND x.quantity IS NOT NULL) AS entryLinesTotal " +
+           "(SELECT SUM(x.quantity * x.rate) FROM entry_items x WHERE x.entryId = t.id AND x.rate IS NOT NULL AND x.quantity IS NOT NULL) AS entryLinesTotal, " +
+           "(SELECT pr.costPrice FROM products pr WHERE pr.id = ei.productId) AS costPrice, " +
+           "(SELECT pr.defaultUnit FROM products pr WHERE pr.id = ei.productId) AS productUnit " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
            "WHERE t.isDeleted = 0 AND p.isCustomer = 1 " +
@@ -3668,7 +3670,9 @@ interface KhataDao {
             val ledgerId = insertEntryWithItems(
                 LedgerEntry(
                     partyId = partyId, amount = totals.grandTotal, isGiven = true,
-                    note = sale.note?.takeIf { it.isNotBlank() }, entryNumber = "",
+                    // The ticket's number leads the note, as a return's does, so the statement and the receipt agree
+                    // (8 Nov review L115: S-000123 on the receipt, RK-000456 on the statement).
+                    note = listOfNotNull(number, sale.note?.takeIf { it.isNotBlank() }).joinToString(" · "), entryNumber = "",
                     timestamp = sale.timestamp, createdBy = sale.createdBy, saleId = saleId
                 ),
                 written.map { l ->
@@ -3683,6 +3687,9 @@ interface KhataDao {
                     LedgerEntry(
                         partyId = partyId, amount = LineMath.round(p.amount), isGiven = false,
                         note = p.reference?.takeIf { it.isNotBlank() }, entryNumber = "",
+                        // The reference is also the payment's own field, so the payment voice's duplicate check
+                        // and the statement find it (8 Nov review M42).
+                        paymentRef = p.reference?.trim()?.takeIf { it.isNotEmpty() },
                         timestamp = sale.timestamp + 1 + i, paymentMethod = p.method,
                         pairedEntryId = ledgerId, createdBy = sale.createdBy, saleId = saleId
                     )
@@ -3697,6 +3704,7 @@ interface KhataDao {
                     CashEntry(
                         amount = LineMath.round(p.amount), isIncome = true, category = CashCategory.SALE,
                         note = p.reference?.takeIf { it.isNotBlank() } ?: number,
+                        paymentRef = p.reference?.trim()?.takeIf { it.isNotEmpty() },
                         timestamp = sale.timestamp + i, paymentMethod = p.method, saleId = saleId
                     )
                 )
@@ -4535,6 +4543,10 @@ interface KhataDao {
     /** The points a ticket wrote (spent and earned), for its receipt. */
     @Query("SELECT * FROM loyalty WHERE saleId = :saleId AND isDeleted = 0 ORDER BY id")
     suspend fun loyaltyOfSale(saleId: Long): List<LoyaltyEntry>
+
+    /** The points a ticket spent, even after a void binned the rows (what "Void and correct" must not count twice). */
+    @Query("SELECT COALESCE(-SUM(points), 0) FROM loyalty WHERE saleId = :saleId AND note = :saleNumber AND points < 0")
+    suspend fun pointsSpentOn(saleId: Long, saleNumber: String): Double
 
     @Query("SELECT * FROM loyalty ORDER BY id")
     suspend fun allLoyaltyForBackup(): List<LoyaltyEntry>

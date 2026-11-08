@@ -214,7 +214,7 @@ object Fefo {
      * Splits [qty] (in a unit worth [factor] of the product's own) over [lots].
      * See the class note for the rule.
      */
-    fun allocate(lots: List<Lot>, qty: Double, factor: Double, today: Long): Allocation {
+    fun allocate(lots: List<Lot>, qty: Double, factor: Double, today: Long, untagged: Double = 0.0): Allocation {
         if (lots.isEmpty()) return Allocation.Ok(listOf(Take(null, qty)))
         val need = qty * factor
         var rest = need
@@ -230,7 +230,9 @@ object Fefo {
         }
         if (rest > EPS) {
             val expiredLeft = lots.filter { it.expired(today) && it.left > EPS }.sumOf { it.left }
-            if (expiredLeft > EPS) return Allocation.ExpiredOnly(freshLeft / factor)
+            // Stock no batch accounts for (an opening count, an adjustment) is fresh: it covers what the lots do not
+            // (8 Nov review M64: +50 counted and one expired batch refused every sale).
+            if (expiredLeft > EPS && rest > untagged.coerceAtLeast(0.0) + EPS) return Allocation.ExpiredOnly((freshLeft + untagged.coerceAtLeast(0.0)) / factor)
             takes += Take(null, rest / factor)
         }
         return Allocation.Ok(takes)

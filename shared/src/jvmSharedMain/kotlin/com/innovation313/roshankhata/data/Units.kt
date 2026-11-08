@@ -38,6 +38,12 @@ object Units {
      * the pack where the owner set one, else [unitRate] × the pack size; the
      * unit's own rate otherwise.
      */
-    fun rateFor(p: Product?, unit: String?, unitRate: Double): Double =
-        if (isPack(p, unit)) p!!.packPrice ?: LineMath.round(unitRate * p.packSize!!) else unitRate
+    fun rateFor(p: Product?, unit: String?, unitRate: Double): Double {
+        if (!isPack(p, unit)) return unitRate
+        val pack = p!!.packPrice ?: return LineMath.round(unitRate * p.packSize!!)
+        // The pack price is the cash one; a customer on credit pays the same share more as on the unit
+        // (8 Nov review L105: cash 100 / credit 110 per unit sold the pack at the cash price on credit).
+        val cash = p.salePrice
+        return if (cash != null && cash > 0.0 && Math.abs(unitRate - cash) > 0.0001) LineMath.round(pack * unitRate / cash) else pack
+    }
 }

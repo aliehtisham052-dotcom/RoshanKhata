@@ -3143,6 +3143,7 @@
     <string name="pos_add_payment">افزودن پرداخت</string>
     <string name="pos_pay_full_cash">همه نقد</string>
     <string name="pos_reference_hint">مرجع (شماره تراکنش، شماره چک)</string>
+    <string name="pos_leave_msg">فاکتور در حال ثبت از بین می‌رود.</string>
     <string name="pos_hold">نگه‌داشتن</string>
     <string name="pos_held_tickets">فاکتورهای معلق (%1$d)</string>
     <string name="pos_resume">ادامه</string>
@@ -3551,6 +3552,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">ثبت تغییر کرد</string>
+    <string name="audit_entry_added">ثبت اضافه شد</string>
     <string name="audit_entry_deleted">ثبت حذف شد</string>
     <string name="audit_cash_added">ردیف دفتر نقدی افزوده شد</string>
     <string name="audit_cash_edited">ردیف دفتر نقدی تغییر کرد</string>

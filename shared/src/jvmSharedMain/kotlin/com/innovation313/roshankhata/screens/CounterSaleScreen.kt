@@ -119,12 +119,13 @@ fun CounterSaleScreen(
 
     fun ring(p: Product) { draft.add(p, onHand[p.id]); query = "" }
 
+    var unknownCode by remember { mutableStateOf(false) }
     Column(modifier.fillMaxSize().background(c.pageBg)) {
         if (!paying) {
             // ---- Step 1: the ticket ----
             Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = query, onValueChange = { query = it }, modifier = Modifier.weight(1f).testTag("posSearch"),
+                    value = query, onValueChange = { query = it; unknownCode = false }, modifier = Modifier.weight(1f).testTag("posSearch"),
                     placeholder = { Text(word(W.pos_search_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
@@ -136,6 +137,8 @@ fun CounterSaleScreen(
                             exact != null -> ring(exact)
                             weighed != null -> { draft.addWeighed(weighed, onHand[weighed.product.id]); query = "" }
                             matches.isNotEmpty() -> ring(matches[0])
+                            // A code no product carries is said, not rung up as a free line (8 Nov review L114).
+                            q.length >= 6 && q.all { it.isDigit() } -> { unknownCode = true }
                             q.isNotEmpty() -> { draft.addFree(q); query = "" }
                         }
                     })
@@ -146,6 +149,7 @@ fun CounterSaleScreen(
                     }
                 }
             }
+            if (unknownCode) Text(word(W.pos_barcode_unknown), color = c.owedToMe, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
             if (matches.isNotEmpty()) {
                 Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).background(c.surface, RoundedCornerShape(12.dp))) {
                     matches.forEachIndexed { i, p ->
@@ -341,12 +345,16 @@ fun CounterSaleScreen(
                 when {
                     rest > 0.005 && draft.hasParty -> Figure(word(W.pos_to_account), Format.money(rest), c.owedToMe)
                     rest > 0.005 -> Text(word(W.pos_err_walk_in_unpaid), color = c.owedToMe, fontSize = 13.sp)
-                    rest < -0.005 -> Figure(word(W.pos_change), Format.money(-rest), c.iOwe)
+                    // Change is handed back only out of cash; a wallet or bank payment over the ticket is refused,
+                    // and says so below instead (8 Nov review L118: "Change Rs 150" beside a greyed button).
+                    rest < -0.005 && draft.problem != SaleMath.Problem.OVERPAID -> Figure(word(W.pos_change), Format.money(-rest), c.iOwe)
                 }
                 message?.let { Text(it, color = c.inkSoft, fontSize = 13.sp) }
                 Spacer(Modifier.height(8.dp))
             }
             val problem = draft.problem
+            // Why Complete is grey, in words (8 Nov review M67: an unpriced item left it grey with no reason).
+            problem?.let { Text(word(problemWord(it)), color = c.owedToMe, fontSize = 13.sp, modifier = Modifier.fillMaxWidth().background(c.surface).padding(start = 16.dp, end = 16.dp, top = 8.dp).testTag("posProblem")) }
             Row(Modifier.fillMaxWidth().background(c.surface).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 // Shared by weight, the main button twice the other (30 Oct 2026, the phone audit: in Roman Urdu or
                 // Indonesian, or English at 150%, "Complete sale" wrapped oddly beside a free-sized Cancel).

@@ -3143,6 +3143,7 @@
     <string name="pos_add_payment">ادائگي شامل ڪريو</string>
     <string name="pos_pay_full_cash">سڀ نقد</string>
     <string name="pos_reference_hint">حوالو (ٽرانزيڪشن نمبر، چيڪ نمبر)</string>
+    <string name="pos_leave_msg">جيڪو ٽڪيٽ ٺهي رهيو آهي سو ضايع ٿي ويندو.</string>
     <string name="pos_hold">روڪيو</string>
     <string name="pos_held_tickets">روڪيل بل (%1$d)</string>
     <string name="pos_resume">جاري ڪريو</string>
@@ -3551,6 +3552,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">داخلا بدلائي وئي</string>
+    <string name="audit_entry_added">داخلا شامل ڪئي وئي</string>
     <string name="audit_entry_deleted">داخلا ميٽي وئي</string>
     <string name="audit_cash_added">ڪيش بڪ ۾ داخلا</string>
     <string name="audit_cash_edited">ڪيش بڪ جي داخلا بدلائي</string>

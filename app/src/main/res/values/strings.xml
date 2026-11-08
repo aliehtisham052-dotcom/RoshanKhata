@@ -3327,6 +3327,7 @@
     <string name="pos_add_payment">Add payment</string>
     <string name="pos_pay_full_cash">All cash</string>
     <string name="pos_reference_hint">Reference (transaction no., cheque no.)</string>
+    <string name="pos_leave_msg">The ticket being rung up will be lost.</string>
     <string name="pos_hold">Hold</string>
     <string name="pos_held_tickets">Held tickets (%1$d)</string>
     <string name="pos_resume">Resume</string>
@@ -3735,6 +3736,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">Entry changed</string>
+    <string name="audit_entry_added">Entry added</string>
     <string name="audit_entry_deleted">Entry deleted</string>
     <string name="audit_cash_added">Cashbook row added</string>
     <string name="audit_cash_edited">Cashbook row changed</string>

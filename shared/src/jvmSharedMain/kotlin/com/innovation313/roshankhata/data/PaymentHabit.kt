@@ -69,8 +69,9 @@ object PaymentHabit {
         val out = HashMap<Long, Habit>()
         for ((partyId, lines) in points.groupBy { it.partyId }) {
             // A paid-now sale's or a ticket's own payment is not a payment of the debt (3 Nov 2026 audit, M26):
-            // netted first, as the Payment Radar reads them, so the two never disagree on who is late.
-            of(PaymentRadar.netPairs(lines), now, tz)?.let { out[partyId] = it }
+            // netted first, loans (Qarz-e-Hasna) left out, exactly as the Payment Radar reads them, so the two never disagree
+            // on who is late (8 Nov review M51).
+            of(PaymentRadar.settled(lines), now, tz)?.let { out[partyId] = it }
         }
         return out
     }

@@ -3163,6 +3163,7 @@
     <string name="pos_add_payment">भुगतान जोड़ें</string>
     <string name="pos_pay_full_cash">सब नकद</string>
     <string name="pos_reference_hint">संदर्भ (ट्रांज़ैक्शन नं., चेक नं.)</string>
+    <string name="pos_leave_msg">जो टिकट बन रहा है वह खो जाएगा।</string>
     <string name="pos_hold">रोकें</string>
     <string name="pos_held_tickets">रोके गए बिल (%1$d)</string>
     <string name="pos_resume">जारी करें</string>
@@ -3571,6 +3572,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">एंट्री बदली गई</string>
+    <string name="audit_entry_added">एंट्री जोड़ी गई</string>
     <string name="audit_entry_deleted">एंट्री मिटाई गई</string>
     <string name="audit_cash_added">कैशबुक में एंट्री</string>
     <string name="audit_cash_edited">कैशबुक की एंट्री बदली</string>

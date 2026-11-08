@@ -41,6 +41,16 @@ class FefoPackTaxTest {
     }
 
     @Test
+    fun stockNoBatchAccountsForSellsEvenBesideAnExpiredBatch() {
+        val lots = listOf(Fefo.Lot(1, "OLD", today - day, 10.0))
+        val ok = Fefo.allocate(lots, 5.0, 1.0, today, untagged = 50.0) as Fefo.Allocation.Ok
+        assertEquals(listOf(Fefo.Take(null, 5.0)), ok.takes)
+        // More than the untagged part is still refused, saying what is fresh.
+        val no = Fefo.allocate(lots, 60.0, 1.0, today, untagged = 50.0)
+        assertTrue(no is Fefo.Allocation.ExpiredOnly)
+    }
+
+    @Test
     fun noBatchesOrUsedUpBatchesSellUntaggedAndPacksCountInTheirOwnUnit() {
         assertEquals(listOf(Fefo.Take(null, 3.0)), (Fefo.allocate(emptyList(), 3.0, 1.0, today) as Fefo.Allocation.Ok).takes)
         val lots = listOf(Fefo.Lot(1, "A", today + day, 18.0))

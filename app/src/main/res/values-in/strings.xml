@@ -3113,6 +3113,7 @@
     <string name="pos_add_payment">Tambah pembayaran</string>
     <string name="pos_pay_full_cash">Semua tunai</string>
     <string name="pos_reference_hint">Referensi (no. transaksi, no. cek)</string>
+    <string name="pos_leave_msg">Tiket yang sedang dibuat akan hilang.</string>
     <string name="pos_hold">Tahan</string>
     <string name="pos_held_tickets">Nota ditahan (%1$d)</string>
     <string name="pos_resume">Lanjutkan</string>
@@ -3520,6 +3521,7 @@
 
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">Catatan diubah</string>
+    <string name="audit_entry_added">Catatan ditambahkan</string>
     <string name="audit_entry_deleted">Catatan dihapus</string>
     <string name="audit_cash_added">Baris buku kas ditambah</string>
     <string name="audit_cash_edited">Baris buku kas diubah</string>

@@ -378,6 +378,18 @@ object BookMerge {
             val partyId = partyMap[c.partyId] ?: continue
             dao.insertCheque(c.copy(id = 0, partyId = partyId, ledgerEntryId = c.ledgerEntryId?.let { entryMap[it] }))
         }
+        // A cheque both books have, still pending here, that the copy settled (8 Nov review M41): its clearing payment came
+        // in as a new entry above, so the cheque must say it is cleared and point at that entry — else clearing it
+        // here posts the same money twice. Only forward, only from pending; a bounce or cancel has no entry to wait for.
+        for (c in there.cheques) {
+            if (c.isDeleted || c.status == ChequeStatus.PENDING) continue
+            val hereId = c.uid?.let { h.cheques[it] } ?: continue
+            val mine = dao.getCheque(hereId) ?: continue
+            if (mine.isDeleted || mine.status != ChequeStatus.PENDING || mine.ledgerEntryId != null) continue
+            val entry = c.ledgerEntryId?.let { entryMap[it] }
+            if (c.status == ChequeStatus.CLEARED && entry == null) continue
+            dao.updateCheque(mine.copy(status = c.status, settledAt = c.settledAt, ledgerEntryId = entry))
+        }
 
         // ---- Invoices, then the tickets they were made from ----
         val invoiceMap = HashMap<Long, Long>()

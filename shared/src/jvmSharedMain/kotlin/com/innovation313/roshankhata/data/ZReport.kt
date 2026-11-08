@@ -44,7 +44,9 @@ data class ZReport(
      */
     val closeExpected: Double? = null,
     /** Cash bills and staff pay that day (3 Nov 2026 audit, M03): cash out with no cashbook or khata row. */
-    val otherCashOut: Double = 0.0
+    val otherCashOut: Double = 0.0,
+    /** What the counter's own tickets came to (the profit is worked on these; [salesTotal] also holds the khata's sales). */
+    val counterSales: Double = salesTotal
 ) {
     /** Cash in the drawer by the books: the close's own figure, else opening + every cash in − every cash out. */
     val expectedCash: Double? get() = closeExpected ?: opening?.let { LineMath.round(it + khataCashIn + cashbookIn - khataCashOut - cashbookOut - otherCashOut) }
@@ -74,7 +76,10 @@ data class ZReport(
             val doneReturns = returns.filter { it.status == SaleStatus.DONE }
             val refunds = LinkedHashMap<String, Double>()
             for (r in doneReturns) if (r.refundAmount > 0.0) refunds[r.refundMethod] = (refunds[r.refundMethod] ?: 0.0) + r.refundAmount
-            val salesTotal = LineMath.round(done.sumOf { it.grandTotal })
+            val counterSales = LineMath.round(done.sumOf { it.grandTotal })
+            // "Sales" is one figure everywhere (8 Nov review M48): the khata's sales and the counter's, as the 21:00
+            // notice and Sale Insights count them. The day report said only the counter's tickets.
+            val salesTotal = LineMath.round(dao.salesTotalBetween(from, to))
             // The day's returns come off the profit as the sales report takes them (22 Oct 2026, the review).
             val returned = dao.returnedLinesBetween(from, to)
             val returnedMargin = returned.sumOf { it.revenue - (it.cost ?: 0.0) }
@@ -91,9 +96,10 @@ data class ZReport(
                 khataCashIn = dao.khataCashBetween(false, from - 1, to - 1), khataCashOut = dao.khataCashBetween(true, from - 1, to - 1),
                 cashbookIn = dao.cashbookCashBetween(true, from - 1, to - 1), cashbookOut = dao.cashbookCashBetween(false, from - 1, to - 1),
                 opening = close?.opening, counted = close?.counted,
-                profit = if (costKnown && returned.all { it.cost != null } && done.isNotEmpty()) LineMath.round(salesTotal - tax - cost - returnedMargin) else null,
+                profit = if (costKnown && returned.all { it.cost != null } && done.isNotEmpty()) LineMath.round(counterSales - tax - cost - returnedMargin) else null,
                 closeExpected = close?.expected?.let { LineMath.round(it) },
-                otherCashOut = dao.billsAndStaffCashBetween(from - 1, to - 1)
+                otherCashOut = dao.billsAndStaffCashBetween(from - 1, to - 1),
+                counterSales = counterSales
             )
         }
     }

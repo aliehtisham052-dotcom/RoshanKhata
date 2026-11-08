@@ -71,8 +71,11 @@ object Zakat {
      * questioned. It warns and nothing more — an owner who knows his own
      * market is not going to be argued with by a calculator.
      */
-    fun priceLooksOff(price: Double, gold: Boolean, perTola: Boolean): Boolean {
+    fun priceLooksOff(price: Double, gold: Boolean, perTola: Boolean, sign: String = Currency.symbol): Boolean {
         if (price <= 0.0) return false
+        // The bands are in rupee-like money. In dirham, dollar or rial they say nothing (8 Nov review M46: AED 400 a
+        // gram is a normal price and was warned about), so the warning stays quiet there.
+        if (sign !in setOf("Rs", "₹", "৳")) return false
 
         val perGram = if (perTola) price / GRAMS_PER_TOLA else price
         return if (gold) perGram < 4_000.0 || perGram > 300_000.0

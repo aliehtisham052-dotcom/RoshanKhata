@@ -2059,6 +2059,32 @@ on a device, a real wallet notice, a real TSA or the deployed relays.
   app restarts (the framework gives no safe moment to close it). Not tried on a device: BookCorruptionOnDeviceTest.
   One new string, `book_recovered_none_phone`, in all nine languages.
 
+**Marhala 2, money and counter (M41-M54, M62-M68, M69 in part, L104-L107, L110, L114-L115, L118; CI only):**
+- Money: a cheque both books have, still pending here and settled in the merged copy, takes its status and its
+  clearing entry (`BookMerge`, M41); a counter payment's reference is also the payment's `paymentRef`, so the payment
+  voice's duplicate check finds it (M42); the ticket's number leads its khata entry's note (L115); Undo of a paid-now
+  cash receipt asks `AccessUi.may` and is written in Who did what (M43); a hand-written entry carries `createdBy` and an
+  `ENTRY_ADDED` row on both platforms (`audit_entry_added`, nine languages, M44); the Zakat price warning speaks only in
+  rupee-like money (M46); `SaleMath.MAX_RATE` is 1,000,000,000 (M47); the day report's "Sales total" is
+  `salesTotalBetween`, the figure the 21:00 notice and Insights use (`ZReport.counterSales` keeps the counter's own for
+  profit, M48); Insights' cost rule starts with the product's own cost price like the sales report (M49, staff pay was
+  already in both); a khata "I gave" past the credit limit asks a manager's PIN like the counter (M50); Follow-up's
+  rhythm leaves loans out as the Radar does (`PaymentRadar.settled`, M51); a reminder sent from the customer page is
+  logged once WhatsApp opened (M52); the sales report's week is `PartyWhen.THIS_WEEK` (M53); By item is per item and unit
+  where an item sold in several (M54).
+- Counter: "Void and correct" subtracts the points' money from the carried discount (`reRing(pointsSpent)`,
+  `pointsSpentOn`, M62) and drops the old batches (L107); a return gives back each line's own tax (`paidRate`, M63);
+  untagged stock covers a sale beside an expired batch (`Fefo.allocate(untagged)`, M64); resuming a held ticket parks the
+  current one first (both platforms, M65); Back on a ticket being rung up asks (phone, M66); Complete says why it is grey
+  and no change is shown for a wallet overpay (M67, L118); Recent sales lists 100 and reprints a receipt (M68, M69 in
+  part: no search, no returns list); points follow the ticket (`pointsSpent`, L104); a pack on credit keeps the credit
+  share (`Units.rateFor`, L105); the Windows post lives on `AppScope` (L110); an unknown 6+ digit code is said, not rung
+  up (L114). Tests: Review8NovMoneyCounterTest, FefoPackTaxTest, ZakatTest.
+- Not done, with the reason: M40 (a chip for the way an "I gave" was paid is a form redesign on both platforms); M45
+  (whether a binned customer's goods stay out of the shelf is the owner's rule, and every stock query reads
+  `isDeleted`); M70 (needs the held ticket's uid on the sale and a sync rule); L106, L108, L109, L111-L113, L116, L117,
+  L119 (device-only drawing, a drawer query by user, or the owner's call).
+
 ### The shared module (KMP)
 
 ```
