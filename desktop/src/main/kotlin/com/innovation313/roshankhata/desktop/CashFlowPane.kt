@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.draw.alpha
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,11 +81,12 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
         )
         ListCard(Modifier.fillMaxWidth()) {
             o.weeks.forEach { w ->
-                Line(
+                val spanDays = ((w.to - w.from) / (24L * 60 * 60 * 1000)).toInt()
+                WeekRow(
                     word(W.cf_week, DateWords.format("d MMM", w.from), DateWords.format("d MMM", w.to - 1)),
-                    word(W.cf_in) + " " + Format.money(w.coming),
-                    word(W.cf_out) + " " + Format.money(w.going),
-                    if (w == o.gapWeek) c.owedToMe else c.ink
+                    // The last week is short when the period is not a whole number of weeks (30 days: 2 days left over).
+                    if (spanDays in 1..6) word(W.cf_partial, word(W.cf_days, spanDays.toString())) else null,
+                    w.coming, w.going, short = w == o.gapWeek
                 )
             }
         }
@@ -112,6 +115,42 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
             word(W.cf_note) + if (o.undatedBills > 0) "\n" + word(W.cf_undated, o.undatedBills.toString()) else "",
             color = c.textMuted, fontSize = 12.sp
         )
+    }
+}
+
+/**
+ * One week as the phone draws it (8 Nov 2026, the owner's test: "Coming in" small grey beside a bold black "Going
+ * out"): coming in green and going out red at the same weight, then the week's net; a week with nothing in it
+ * fades back, and the week the shop runs short is red.
+ */
+@Composable
+private fun WeekRow(title: String, partial: String?, coming: Double, going: Double, short: Boolean) {
+    val c = LocalRoshanColors.current
+    val net = coming - going
+    val empty = coming <= 0.004 && going <= 0.004
+    Row(
+        Modifier.fillMaxWidth().alpha(if (empty) 0.45f else 1f).padding(horizontal = 16.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, color = if (short) c.owedToMe else c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            partial?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        }
+        WeekFigure(word(W.cf_in), (if (coming > 0.004) "+" else "") + Format.money(coming), Look.accent)
+        WeekFigure(word(W.cf_out), (if (going > 0.004) "\u2212" else "") + Format.money(going), c.owedToMe)
+        WeekFigure(
+            word(W.cf_net), (if (net > 0.004) "+" else if (net < -0.004) "\u2212" else "") + Format.money(kotlin.math.abs(net)),
+            if (net > 0.004) Look.accent else if (net < -0.004) c.owedToMe else c.inkSoft
+        )
+    }
+    Rule()
+}
+
+@Composable
+private fun WeekFigure(label: String, value: String, colour: Color) {
+    Column(Modifier.width(120.dp), horizontalAlignment = Alignment.End) {
+        Text(label, color = LocalRoshanColors.current.textMuted, fontSize = 11.sp, maxLines = 1)
+        Text(value, color = colour, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
     }
 }
 

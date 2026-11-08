@@ -189,14 +189,17 @@ fun KhataInfoRow(
 @Composable
 fun KhataSelectBar(count: Int, onAll: () -> Unit, onDelete: () -> Unit, onCancel: () -> Unit, modifier: Modifier = Modifier) {
     val c = LocalRoshanColors.current
+    // The phone's selection bar (8 Nov 2026, the owner's test): a close mark and "n selected" at the start, Select all,
+    // and the red button naming what goes ("Move 3 to bin"), all in sentence case; the whole bar wears the chosen edge.
     Row(
-        modifier.fillMaxWidth().clip(Look.card).background(Look.chosen).padding(start = 12.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
+        modifier.fillMaxWidth().clip(Look.card).background(Look.chosen).border(1.5.dp, Look.accent, Look.card)
+            .padding(start = 6.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(word(W.selected_count, count), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+        IconAction("ic_close", word(W.cancel), onCancel)
+        Text(word(W.selected_count, count), Modifier.weight(1f), color = c.ink, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         FluentButton(word(W.select_all), onAll, kind = ButtonKind.SUBTLE)
-        FluentButton(word(W.delete), onDelete, kind = ButtonKind.DANGER, enabled = count > 0)
-        FluentButton(word(W.cancel), onCancel, kind = ButtonKind.SUBTLE)
+        FluentButton(word(W.move_selected_to_bin, count), onDelete, kind = ButtonKind.DANGER, enabled = count > 0)
     }
 }
 

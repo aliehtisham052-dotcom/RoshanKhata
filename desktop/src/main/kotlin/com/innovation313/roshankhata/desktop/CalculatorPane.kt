@@ -124,11 +124,11 @@ fun CalculatorPane(onKhata: ((Double) -> Unit)? = null) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
                         FluentButton(word(W.copy_details), {
                             result?.let { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(Calc.trim(it)), null) }
-                        }, kind = ButtonKind.STANDARD, enabled = result != null)
+                        }, kind = ButtonKind.STANDARD, icon = "ic_copy", enabled = result != null)
                         if (onKhata != null) FluentButton(word(W.calc_add_to_khata), {
                             val v = result
                             if (v != null) { if (v > 0.0) onKhata(v) else refused = true }
-                        }, kind = ButtonKind.ACCENT, enabled = result != null)
+                        }, kind = ButtonKind.ACCENT, icon = "ic_khata_add", enabled = result != null)
                     }
                 }
             }

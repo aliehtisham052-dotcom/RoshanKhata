@@ -52,6 +52,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     // The owner's private note (schema 43), on an existing party, as the phone's Edit details has it.
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var photo by remember { mutableStateOf(existing?.photoPath) }
+    val focus = rememberFocusFirstEmpty(name.isNotBlank(), phone.isNotBlank())
     var photoVersion by remember { mutableStateOf(0) }
     var photoFailed by remember { mutableStateOf(false) }
     val photoTitle = word(W.set_photo)
@@ -65,8 +66,8 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
         if (!inDialog()) Text(word(if (existing == null) W.add_party else W.edit_party), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
         TwoWay(word(W.customer), word(W.supplier), customer) { customer = it }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FluentField(name, { name = it }, Modifier.weight(1f), label = word(W.name))
-            FluentField(phone, { phone = it }, Modifier.weight(1f), label = word(W.phone_optional), leadingIcon = "ic_phone", ltr = true)
+            FluentField(name, { name = it }, Modifier.weight(1f), label = word(W.name), focusRequester = focus[0])
+            FluentField(phone, { phone = it }, Modifier.weight(1f), label = word(W.phone_optional), leadingIcon = "ic_phone", ltr = true, focusRequester = focus[1])
         }
         similar?.let { m ->
             Text(

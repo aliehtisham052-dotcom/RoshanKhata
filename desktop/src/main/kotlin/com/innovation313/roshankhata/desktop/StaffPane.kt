@@ -198,9 +198,10 @@ fun StaffPane(dao: KhataDao) {
                 FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
             }) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    FluentField(name, { name = it; nameTaken = false }, Modifier.fillMaxWidth(), label = word(W.staff_name))
+                    val focus = rememberFocusFirstEmpty(name.isNotBlank(), phone.isNotBlank())
+                    FluentField(name, { name = it; nameTaken = false }, Modifier.fillMaxWidth(), label = word(W.staff_name), focusRequester = focus[0])
                     if (nameTaken) Text(word(W.staff_name_taken), color = c.owedToMe, fontSize = 13.sp)
-                    FluentField(phone, { phone = it }, Modifier.fillMaxWidth(), label = word(W.staff_phone), ltr = true)
+                    FluentField(phone, { phone = it }, Modifier.fillMaxWidth(), label = word(W.staff_phone), ltr = true, focusRequester = focus[1])
                     Outlined(salary, { salary = it }, label = { Text(word(W.staff_salary)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
                     if (mayEditLogin) {

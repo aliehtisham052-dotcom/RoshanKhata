@@ -759,6 +759,11 @@ private fun Book(
             val anchor = if (newest > 0L) minOf(now, newest + 24L * 60 * 60 * 1000) else now
             val cutoff = anchor - 30L * 24 * 60 * 60 * 1000
             runCatching { dao.purgeOldEntries(cutoff); dao.purgeOldParties(cutoff) }
+            // The newer bin kinds age out 30 days after the bin first listed them (the phone's binKindsDue).
+            val since = appPrefs.prop("bin_kinds_since_b$activeBusiness")?.toLongOrNull()
+            if (since != null && now - since >= 30L * 24 * 60 * 60 * 1000) {
+                runCatching { Photos.purgingOrphans(dao, home, { picturesOfOtherBooks(businesses, activeBusiness) }) { dao.purgeBinKinds(cutoff, false); null } }
+            }
         }
     }
     // The computer's clock behind the copies it made itself (21 Oct 2026): a dead CMOS battery puts
@@ -1410,7 +1415,7 @@ private fun Book(
                         // a plan, a cheque, a counter ticket or a return wrote stay, and are said.
                         deletingEntries?.let { ids ->
                             AskDialog(
-                                word(W.delete_entry_title), plural(WP.delete_selected_entries_confirm, ids.size, ids.size), word(W.delete),
+                                word(W.move_to_bin_title), plural(WP.delete_selected_entries_confirm, ids.size, ids.size), word(W.move_selected_to_bin, ids.size),
                                 danger = true,
                                 onDismiss = { deletingEntries = null },
                                 onConfirm = {
@@ -1979,7 +1984,7 @@ private fun Book(
                 PartyTotals.of(owing.map { it.balance }).let { Format.money(it.get) },
                 PartyTotals.of(owing.map { it.balance }).let { Format.money(it.give) }
             ),
-            word(W.delete), danger = true, height = if (owing.isEmpty()) 280 else 340,
+            word(W.move_selected_to_bin, gone.size), danger = true, height = if (owing.isEmpty()) 280 else 340,
             onDismiss = { deletingMany = false },
             onConfirm = {
                         deletingMany = false
@@ -2114,6 +2119,26 @@ private fun Book(
         ) {
             val binParties by remember(reload) { dao.observeDeletedParties() }.collectAsState(emptyList())
             val binEntries by remember(reload) { dao.observeDeletedEntries() }.collectAsState(emptyList())
+            // The five newer kinds (cashbook, cheques, bills, documents, schemes) are on a second tab (8 Nov 2026, point 20).
+            var binTab by remember { mutableStateOf(0) }
+            // Their 30 days start the first time the bin lists them (the phone's binKindsDue), so nothing never seen is swept.
+            LaunchedEffect(Unit) {
+                withContext(Dispatchers.IO) {
+                    val key = "bin_kinds_since_b$activeBusiness"
+                    if (appPrefs.prop(key) == null) appPrefs.setProp(key, System.currentTimeMillis().toString())
+                }
+            }
+            Column(Modifier.fillMaxSize()) {
+            PillRow(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                FluentPill(word(W.nav_khata), binTab == 0) { binTab = 0 }
+                FluentPill(listOf(W.cashbook, W.cheques, W.supplier_bills, W.documents_title, W.schemes_title).joinToString(" \u00b7 ") { words.text(it) }, binTab == 1) { binTab = 1 }
+            }
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (binTab == 1) OtherBinKinds(
+                dao, reload, onChanged = { reload++ },
+                askPurge = { text, go -> purging = Pair(text, go) },
+                onTell = { t, m -> told = t to m }
+            ) else
             RecycleBinScreen(
                 parties = binParties,
                 entries = binEntries,
@@ -2152,16 +2177,20 @@ private fun Book(
                 onEmpty = {
                     purging = Pair(words.text(W.empty_bin_confirm), suspend {
                         // Entries binned on their own first; a binned customer's go with him (the cascade).
+                        dao.purgeBinKinds(0L, true)
                         dao.purgeAllEntries(); dao.purgeAllParties()
                         dao.binnedPartyCount().takeIf { it > 0 }?.let { words.text(W.bin_emptied_kept, it) }
                     })
                 }
             )
+            }
+            }
             // What the other businesses' books point at, so a purge here never takes one of their pictures (the bills
             // folder is every business's); null when one of them cannot be read — then no picture is removed.
             purging?.let { (text, go) ->
                 AskDialog(
                     word(W.delete_forever), text, word(W.delete_forever), danger = true, height = 300,
+                    requireWord = word(W.erase_all_keyword),
                     onDismiss = { purging = null },
                     onConfirm = {
                         purging = null

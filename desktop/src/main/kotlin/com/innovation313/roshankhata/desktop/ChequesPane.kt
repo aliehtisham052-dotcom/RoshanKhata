@@ -469,6 +469,7 @@ private fun ChequeEditor(
     var amountText by remember { mutableStateOf(existing?.amount?.let { Calc.trim(it) } ?: "") }
     var number by remember { mutableStateOf(existing?.chequeNumber.orEmpty()) }
     var bank by remember { mutableStateOf(existing?.bankName.orEmpty()) }
+    val focus = rememberFocusFirstEmpty(amountText.isNotBlank(), bank.isNotBlank(), number.isNotBlank())
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var due by remember { mutableStateOf(existing?.dueDate) }
     var photo by remember { mutableStateOf<java.io.File?>(null) }
@@ -514,12 +515,12 @@ private fun ChequeEditor(
         // Who: picked from the book, so the cheque lands on a real party.
         PartyPicker(parties, partyId, { partyId = it; problem = null }, word(W.customer), word(W.cheque_party_hint), Modifier.fillMaxWidth())
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
-            FluentField(amountText, { amountText = it; problem = null }, Modifier.weight(1f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            FluentField(amountText, { amountText = it; problem = null }, Modifier.weight(1f), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY, focusRequester = focus[0])
             DateBox(word(W.pick_due_date), due?.let { Format.dateOnly(it) }, word(W.pick_due_date), { picking = true }, Modifier.weight(1f), tall = true)
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FluentField(bank, { bank = it }, Modifier.weight(1f), label = word(W.bank_name_hint))
-            FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.cheque_number_hint))
+            FluentField(bank, { bank = it }, Modifier.weight(1f), label = word(W.bank_name_hint), focusRequester = focus[1])
+            FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.cheque_number_hint), focusRequester = focus[2])
         }
         FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.note_optional), singleLine = false)
         // A new cheque's picture (schema 43); one already written changes it from its own actions.

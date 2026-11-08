@@ -125,6 +125,8 @@ fun CashbookPane(
     }
 
     val last by remember { dao.observeLastDayClose() }.collectAsState(null)
+    var viewingCount by remember { mutableStateOf(false) }
+    last?.let { l -> if (viewingCount) LastCountDialog(dao, l) { viewingCount = false } }
     // What should be in the drawer, by Close the day's rule — Home's "Cash in hand" and the day close's own
     // figure (25 Oct 2026, the audit: the cashbook's net, in every method, was a third "cash" that agreed with
     // neither). Read again when the cashbook or the last count changes.
@@ -134,11 +136,14 @@ fun CashbookPane(
     }
     FluentPage(
         word(W.cashbook),
-        last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedTotal(it.difference)) } ?: word(W.cashbook_subtitle),
+        // The COUNTED figure, as the phone says it (8 Nov 2026, the owner's test: it showed the difference, with a "+").
+        last?.let { word(W.dayclose_last, Format.dateOnly(it.closedAt), Format.signedIfNegative(it.counted)) } ?: word(W.cashbook_subtitle),
         scroll = false,
         actions = {
             // The day's profit and the till's difference are the shop's figures (23 Oct 2026, the review).
             if (advanced) FluentButton(word(W.z_title), { Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reporting = true } }, kind = ButtonKind.STANDARD, icon = "ic_print")
+            // A count is a record: it is never binned with the cashbook rows; a wrong one is corrected from here.
+            if (last != null) FluentButton(word(W.dayclose_count_title), { viewingCount = true }, kind = ButtonKind.STANDARD)
             FluentButton(word(W.dayclose_button), { closing = true }, icon = "ic_check_plain")
         }
     ) {
@@ -277,6 +282,7 @@ private fun CashForm(dao: KhataDao, income: Boolean, typed: androidx.compose.run
     var paymentRef by remember { mutableStateOf("") }
     // The receipt's picture (schema 43): the file chosen, copied in when the row is written.
     var photo by remember { mutableStateOf<java.io.File?>(null) }
+    val focus = rememberFocusFirstEmpty(amountText.isNotBlank(), category.isNotBlank())
     var used by remember { mutableStateOf<List<String>>(emptyList()) }
     var problem by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) { used = withContext(Dispatchers.IO) { dao.cashCategories() } }
@@ -310,8 +316,8 @@ private fun CashForm(dao: KhataDao, income: Boolean, typed: androidx.compose.run
         }
     ) {
         TwoWay(word(W.cash_income), word(W.cash_expense), isIncome) { isIncome = it }
-        FluentField(amountText, { amountText = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
-        FluentField(category, { category = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.cash_category_hint))
+        FluentField(amountText, { amountText = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.amount), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = amount?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY, focusRequester = focus[0])
+        FluentField(category, { category = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.cash_category_hint), focusRequester = focus[1])
         // The owner's own earlier categories, one click each, so they need not retype them.
         if (used.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -441,6 +447,88 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
 }
 
 /**
+ * The last count in full (8 Nov 2026, the owner's test; the phone's showCountSheet): when, the figure counted, what
+ * the books said, the difference, who counted and the note, and the way to correct it. A count is a record of what
+ * was physically counted, so it is never deleted; a wrong one is corrected ([CorrectCountDialog]).
+ */
+@Composable
+fun LastCountDialog(dao: KhataDao, close: com.innovation313.roshankhata.data.DayClose, onClose: () -> Unit) {
+    val c = LocalRoshanColors.current
+    var countedBy by remember(close.id) { mutableStateOf<String?>(null) }
+    var correcting by remember { mutableStateOf(false) }
+    LaunchedEffect(close.id) { countedBy = withContext(Dispatchers.IO) { runCatching { dao.dayCloseUser(close.id) }.getOrNull() } }
+    if (correcting) {
+        CorrectCountDialog(dao, close) { correcting = false; onClose() }
+        return
+    }
+    val by = countedBy
+    val who = if (by == null || by == com.innovation313.roshankhata.data.Access.OWNER) word(W.access_owner) else Format.name(by)
+    AppDialog(onCloseRequest = onClose, title = word(W.dayclose_count_title), state = rememberDialogState(width = fitW(480.dp), height = fitH(340.dp))) {
+        DialogFrame(word(W.dayclose_count_title), onClose = onClose, footer = {
+            FluentButton(word(W.close), onClose, kind = ButtonKind.STANDARD)
+            FluentButton(word(W.dayclose_count_correct), { Gates.edit { correcting = true } }, kind = ButtonKind.ACCENT)
+        }) {
+            Text(
+                word(
+                    W.dayclose_count_body, Format.dateTime(close.closedAt), Format.ltr(Format.signedIfNegative(close.counted)),
+                    Format.ltr(Format.signedIfNegative(close.expected)), Format.ltr(Format.signedTotal(close.difference)), who
+                ),
+                color = c.ink, fontSize = 14.sp
+            )
+            close.note?.takeIf { it.isNotBlank() }?.let { Text(it, color = c.inkSoft, fontSize = 13.sp) }
+        }
+    }
+}
+
+/**
+ * Correct a count: the right figure and why (the phone's correctCount). The same working day's row is replaced by
+ * [KhataDao.saveDayClose], which writes the old figure in Who did what.
+ */
+@Composable
+fun CorrectCountDialog(dao: KhataDao, close: com.innovation313.roshankhata.data.DayClose, onClose: () -> Unit) {
+    val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
+    val words = com.innovation313.roshankhata.words.LocalWords.current
+    var figure by remember { mutableStateOf(Calc.trim(close.counted)) }
+    var why by remember { mutableStateOf("") }
+    var problem by remember { mutableStateOf<String?>(null) }
+    var saving by remember { mutableStateOf(false) }
+    val needCount = word(W.dayclose_need_count)
+    val needReason = word(W.dayclose_correct_need_reason)
+    val typed = figure != Calc.trim(close.counted) || why.isNotBlank()
+    AppDialog(
+        onCloseRequest = { if (!saving) onClose() }, title = word(W.dayclose_count_correct), dirty = { typed },
+        state = rememberDialogState(width = fitW(480.dp), height = fitH(380.dp))
+    ) {
+        DialogFrame(
+            word(W.dayclose_count_correct), onClose = { if (!saving) onClose() },
+            footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
+            footer = {
+                FluentButton(word(W.cancel), { if (!saving) onClose() }, kind = ButtonKind.STANDARD, enabled = !saving)
+                FluentButton(word(W.save), {
+                    val n = Calc.evalPad(figure) ?: run { problem = needCount; return@FluentButton }
+                    if (why.isBlank()) { problem = needReason; return@FluentButton }
+                    val note = listOfNotNull(why.trim(), close.note?.takeIf { it.isNotBlank() }).joinToString(" \u00b7 ")
+                    saving = true
+                    scope.launch {
+                        val saved = withContext(Dispatchers.IO) {
+                            runCatching { dao.saveDayClose(close.copy(counted = com.innovation313.roshankhata.data.LineMath.round(n), note = note)) }
+                        }
+                        saving = false
+                        saved.onSuccess { onClose() }.onFailure { problem = failText(words, it) }
+                    }
+                }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = !saving)
+            }
+        ) {
+            FluentField(figure, { figure = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_correct_amount_hint), big = true,
+                calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            FluentField(why, { why = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.dayclose_correct_reason_hint))
+            Text(word(W.dayclose_correct_saved), color = c.textMuted, fontSize = 12.sp)
+        }
+    }
+}
+
+/**
  * The day's figures (POS Phase 4, the Z report): a day picked with ‹ ›,
  * every line summed from the rows (ZReport), printed as an A4 sheet through
  * the app's preview or as a thermal receipt.
@@ -464,6 +552,13 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
         (com.innovation313.roshankhata.data.DateWords.formatter("h:mm a").format(java.util.Date(r.at)) + "  " +
             com.innovation313.roshankhata.data.DayBook.whoText(words, r) + "  ·  " + com.innovation313.roshankhata.data.DayBook.kindText(words, r)) to Format.money(r.amount)
     }
+    // The report in its three blocks, the drawer's figure naming the count it is at (8 Nov 2026, the owner's chat photo:
+    // "Sales: 0" over "Sales total", cash of the whole day beside a drawer as of the count). The sheet and the
+    // receipt print the blocks too, each under its heading.
+    val clock = { t: Long -> com.innovation313.roshankhata.data.DateWords.formatter("h:mm a").format(java.util.Date(t)) }
+    fun blocks(r: com.innovation313.roshankhata.data.ZReport) = r.sections(words, { Format.money(it) }, clock)
+    fun flat(r: com.innovation313.roshankhata.data.ZReport): List<Pair<String, String>> =
+        blocks(r).flatMapIndexed { i, sec -> (if (i == 0) emptyList() else listOf("" to "")) + listOf(sec.title to "") + sec.rows }
     val title = word(W.z_title)
     val dateLine = Format.dateOnly(com.innovation313.roshankhata.data.DayCloseMath.startOf(day) + 12L * 60 * 60 * 1000)
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(700.dp))) {
@@ -478,26 +573,29 @@ fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit
             if (onReceipt != null && r != null) {
                 FluentButton(word(W.print_receipt), {
                     onReceipt(listOf(ThermalReceipt.Line(title, 24f, bold = true, centre = true), ThermalReceipt.Line(dateLine, 18f, centre = true), ThermalReceipt.Line("")) +
-                        r.lines(words) { Format.money(it) }.map { (k, v) -> ThermalReceipt.Line("$k: $v", 18f) })
+                        flat(r).map { (k, v) -> if (v.isEmpty()) ThermalReceipt.Line(k, 18f, bold = k.isNotEmpty()) else ThermalReceipt.Line("$k: $v", 18f) })
                 }, kind = ButtonKind.STANDARD)
             }
             FluentButton(word(W.pdf_preview), {
                 val r2 = report ?: return@FluentButton
                 // The day's entries print under its figures, as the page shows them.
                 val list = rows.orEmpty()
-                StatementPrint.show(LinesPrint(title, dateLine, r2.lines(words) { Format.money(it) } +
+                StatementPrint.show(LinesPrint(title, dateLine, flat(r2) +
                     listOf(("" to ""), (words.plural(WP.bin_party_entries, list.size, list.size) to "")) + entryLines(list)), title)
             }, kind = ButtonKind.ACCENT, icon = "ic_print", enabled = report != null)
         }) {
             val r = report
             if (r == null) Text("…", color = c.textMuted)
             else {
-                r.lines(words) { Format.money(it) }.forEach { (k, v) ->
-                    Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(k, Modifier.weight(1f), color = if (k.startsWith("  ")) c.inkSoft else c.ink, fontSize = 14.sp)
-                        Text(v, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                blocks(r).forEachIndexed { i, sec ->
+                    Text(sec.title, Modifier.padding(top = if (i == 0) 0.dp else 14.dp, bottom = 2.dp), color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    sec.rows.forEach { (k, v) ->
+                        Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(k, Modifier.weight(1f), color = if (k.startsWith("  ")) c.inkSoft else c.ink, fontSize = 14.sp)
+                            Text(v, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                        }
+                        Rule()
                     }
-                    Rule()
                 }
                 if (r.counted == null) Text(word(W.z_no_close), Modifier.padding(top = 8.dp), color = c.textMuted, fontSize = 12.sp)
             }

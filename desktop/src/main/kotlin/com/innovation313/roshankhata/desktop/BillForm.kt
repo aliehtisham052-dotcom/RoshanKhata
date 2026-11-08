@@ -73,6 +73,7 @@ fun BillForm(
     var search by remember { mutableStateOf("") }
     var number by remember { mutableStateOf("") }
     var totalText by remember { mutableStateOf("") }
+    val focus = rememberFocusFirstEmpty(search.isNotBlank(), totalText.isNotBlank())
     var billDate by remember { mutableStateOf(System.currentTimeMillis()) }
     var dueDate by remember { mutableStateOf<Long?>(null) }
     var paidCash by remember { mutableStateOf(false) }
@@ -134,7 +135,7 @@ fun BillForm(
             if (chosen.isCustomer) Text(word(W.bill_to_customer_warn, chosen.name), color = c.owedToMe, fontSize = 12.sp)
         } else {
             // Typed, not only picked: a supplier not yet in the book is made on save (NewBill.newSupplierName).
-            FluentField(search, { search = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.supplier), placeholder = word(W.bill_supplier_hint), leadingIcon = "ic_search")
+            FluentField(search, { search = it; problem = null }, Modifier.fillMaxWidth(), label = word(W.supplier), placeholder = word(W.bill_supplier_hint), leadingIcon = "ic_search", focusRequester = focus[0])
             val q = search.trim().lowercase()
             // Suppliers first: a bill is almost always from one.
             val shown = parties.filter { NameSearch.matches(it.name, it.phone, q) }.sortedBy { it.isCustomer }.take(50)
@@ -165,7 +166,7 @@ fun BillForm(
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
-            FluentField(totalText, { totalText = it; problem = null }, Modifier.weight(1.3f), label = word(W.bill_total_hint), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = total?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
+            FluentField(totalText, { totalText = it; problem = null }, Modifier.weight(1.3f), label = word(W.bill_total_hint), prefix = com.innovation313.roshankhata.data.Currency.symbol, big = true, help = total?.let { Format.money(it) } ?: " ", calc = com.innovation313.roshankhata.screens.CalcKind.MONEY, focusRequester = focus[1])
             FluentField(number, { number = it }, Modifier.weight(1f), label = word(W.bill_number_hint))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

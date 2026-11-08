@@ -139,6 +139,8 @@ val syncTileIcons by tasks.registering(Sync::class) {
             "drawable/ic_delete.xml",
             // Schema 43 (4 Nov 2026): a cashbook row's and a cheque's picture, and a party's private note.
             "drawable/ic_camera.xml", "drawable/ic_note_small.xml",
+            // 8 Nov 2026 (the owner's test): the Calculator's Copy and Add to a khata wear their own glyphs.
+            "drawable/ic_copy.xml", "drawable/ic_khata_add.xml",
             // The shop-type picker's twenty-five trade icons (TradeKit).
             "drawable/ic_trade_*.xml"
         )

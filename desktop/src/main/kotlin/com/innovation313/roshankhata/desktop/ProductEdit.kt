@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -172,9 +173,10 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
                 FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
             }
         ) {
-            Field(word(W.product_name), name) { name = it; problem = null }
-            Field(word(W.company_optional), company) { company = it }
-            Field(word(W.unit_optional), unit) { unit = it }
+            val focus = rememberFocusFirstEmpty(name.isNotBlank(), company.isNotBlank(), unit.isNotBlank())
+            Field(word(W.product_name), name, focus[0]) { name = it; problem = null }
+            Field(word(W.company_optional), company, focus[1]) { company = it }
+            Field(word(W.unit_optional), unit, focus[2]) { unit = it }
             val trade = LocalTrade.current
             SuggestionRow(trade.units(), unit) { unit = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -238,5 +240,6 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
 }
 
 @Composable
-private fun Field(label: String, value: String, set: (String) -> Unit) =
-    Outlined(value, set, label = { Text(label) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+private fun Field(label: String, value: String, focus: androidx.compose.ui.focus.FocusRequester? = null, set: (String) -> Unit) =
+    Outlined(value, set, label = { Text(label) }, singleLine = true,
+        modifier = Modifier.fillMaxWidth().then(if (focus != null) Modifier.focusRequester(focus) else Modifier))

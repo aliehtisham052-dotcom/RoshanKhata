@@ -436,7 +436,9 @@ private fun LedgerRow(w: EntryWithItems, balanceAfter: Double, picking: Boolean,
     ).joinToString(" · ")
     val none = c.textMuted.copy(alpha = 0.55f)
     Row(
-        Modifier.fillMaxWidth().background(eased(if (ticked) Look.chosen else Color.Transparent)).press(onClick = onClick)
+        Modifier.fillMaxWidth().background(eased(if (ticked) Look.chosen else Color.Transparent))
+            .then(if (ticked) Modifier.border(1.5.dp, Look.accent) else Modifier)
+            .press(onClick = onClick)
             .padding(start = if (picking) 6.dp else 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

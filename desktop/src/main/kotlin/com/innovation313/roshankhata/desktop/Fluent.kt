@@ -32,6 +32,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -233,7 +234,9 @@ fun FluentField(
      * 2026): digits alone take the paragraph's direction, so in an RTL window
      * "0300 1234567" read "1234567 0300" while it was typed.
      */
-    ltr: Boolean = false
+    ltr: Boolean = false,
+    /** Takes the cursor when the form opens (point 22): see [FocusFirstEmpty]. */
+    focusRequester: androidx.compose.ui.focus.FocusRequester? = null
 ) {
     val c = LocalRoshanColors.current
     val source = remember { MutableInteractionSource() }
@@ -258,7 +261,7 @@ fun FluentField(
                     BasicTextField(
                         value = value,
                         onValueChange = onValueChange,
-                        modifier = Modifier.fillMaxWidth().then(enterRunsDone(singleLine, keyboardActions)).then(
+                        modifier = Modifier.fillMaxWidth().then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier).then(enterRunsDone(singleLine, keyboardActions)).then(
                             if (calc != null) Modifier.calcKeys({ value }, calc, onValueChange) else Modifier
                         ),
                         textStyle = TextStyle(
@@ -723,14 +726,26 @@ fun AskDialog(
     onDismiss: () -> Unit,
     subtitle: String? = null,
     danger: Boolean = false,
-    height: Int = 280
+    height: Int = 280,
+    /**
+     * A word the owner must type exactly (case-sensitive; trimmed of edge spaces only) before the button works
+     * (8 Nov 2026, the owner's phone test, point 24): deleting for good is never one stray click.
+     */
+    requireWord: String? = null
 ) {
-    AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(height.dp))) {
+    var typed by remember { mutableStateOf("") }
+    val matches = requireWord == null || typed.trim() == requireWord.trim()
+    AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH((height + if (requireWord != null) 90 else 0).dp))) {
         DialogFrame(title, subtitle = subtitle, onClose = onDismiss, footer = {
             FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD)
-            FluentButton(confirm, onConfirm, kind = if (danger) ButtonKind.DANGER else ButtonKind.ACCENT)
+            FluentButton(confirm, { if (matches) onConfirm() }, kind = if (danger) ButtonKind.DANGER else ButtonKind.ACCENT, enabled = matches)
         }) {
-            Text(text, color = LocalRoshanColors.current.ink, fontSize = 14.sp)
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(text, color = LocalRoshanColors.current.ink, fontSize = 14.sp)
+                if (requireWord != null) {
+                    FluentField(typed, { typed = it }, Modifier.fillMaxWidth(), label = word(W.business_delete_type_hint, requireWord))
+                }
+            }
         }
     }
 }
@@ -743,4 +758,21 @@ fun TellDialog(title: String, text: String, onClose: () -> Unit, height: Int = 2
             Text(text, color = LocalRoshanColors.current.ink, fontSize = 14.sp)
         }
     }
+}
+
+/**
+ * Point 22 (8 Nov 2026): a form opens with the cursor in the first box that is still empty, not on the title or
+ * nowhere. [firstEmpty] is the index of that box among [count]; the form gives each box its requester
+ * (`requesters[i]`) and this asks the right one once the form is on screen.
+ */
+@Composable
+fun rememberFocusFirstEmpty(vararg filled: Boolean): List<androidx.compose.ui.focus.FocusRequester> {
+    val requesters = remember(filled.size) { List(filled.size) { androidx.compose.ui.focus.FocusRequester() } }
+    val initial = remember { filled.toList() }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        val i = initial.indexOfFirst { !it }.let { if (it < 0) 0 else it }
+        kotlinx.coroutines.delay(60)
+        runCatching { requesters[i].requestFocus() }
+    }
+    return requesters
 }

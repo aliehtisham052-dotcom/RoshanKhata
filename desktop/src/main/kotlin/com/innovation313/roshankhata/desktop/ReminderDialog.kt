@@ -114,7 +114,23 @@ fun ReminderDialog(
     )
     var text by remember(partyId) { mutableStateOf(fill(step)) }
     var trouble by remember { mutableStateOf<String?>(null) }
+    var asking by remember { mutableStateOf(false) }
     val number = phone?.let { WhatsAppNumber.of(it) }
+    if (asking) {
+        // "Did the message go?": Sent counts the reminder, Not sent (or closing the question) records nothing.
+        AppDialog(onCloseRequest = onClose, title = word(W.reminder_sent_title), state = rememberDialogState(width = fitW(480.dp), height = fitH(280.dp))) {
+            DialogFrame(word(W.reminder_sent_title), onClose = onClose, footer = {
+                FluentButton(word(W.reminder_sent_no), onClose, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.reminder_sent_yes), {
+                    if (owes) store.record(partyId, balance, sent = step)
+                    onClose()
+                }, kind = ButtonKind.ACCENT)
+            }) {
+                Text(word(W.reminder_sent_body, com.innovation313.roshankhata.ui.Format.isolate(name)), color = c.ink, fontSize = 14.sp)
+            }
+        }
+        return
+    }
     AppDialog(onCloseRequest = onClose, title = word(W.send_reminder), state = rememberDialogState(width = fitW(560.dp), height = fitH(600.dp))) {
         DialogFrame(
             title = word(W.send_reminder),
@@ -128,10 +144,10 @@ fun ReminderDialog(
                         java.awt.Desktop.getDesktop().browse(java.net.URI("https://wa.me/$number?text=" +
                             java.net.URLEncoder.encode(text, "UTF-8").replace("+", "%20")))
                     }
-                    opened.onSuccess {
-                        if (owes) store.record(partyId, balance, sent = step)
-                        onClose()
-                    }.onFailure { trouble = failText(words, it) }
+                    // Opening the browser/WhatsApp counts nothing (8 Nov 2026, the owner's phone test: a number not on
+                    // WhatsApp opened "Invite", nothing was sent, and the reminder was counted all the same). The
+                    // owner is asked once; only "Sent" records the ladder's step and "Reminded today".
+                    opened.onSuccess { asking = true }.onFailure { trouble = failText(words, it) }
                 }, kind = ButtonKind.ACCENT, icon = "ic_action_whatsapp")
             }
         ) {

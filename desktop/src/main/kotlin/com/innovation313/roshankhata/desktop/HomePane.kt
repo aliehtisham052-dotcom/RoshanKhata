@@ -266,7 +266,7 @@ private fun HeroCard(
                     when {
                         f == null -> ""
                         last == null -> word(W.dayclose_never)
-                        else -> word(W.dayclose_last, Format.dateOnly(last.closedAt), if (hidden) TOTALS_MASK else Format.signedTotal(last.difference))
+                        else -> word(W.dayclose_last, Format.dateOnly(last.closedAt), if (hidden) TOTALS_MASK else Format.signedIfNegative(last.counted))
                     },
                     tm
                 ) { onOpen(Section.CASHBOOK) }

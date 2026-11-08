@@ -271,6 +271,8 @@ private fun SchemeForm(title: String, existing: Scheme?, suppliers: List<Party>,
         FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
         FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT)
     }) {
+        // What a scheme is, in one line (8 Nov 2026, the owner's test: "I cannot understand this form").
+        Text(word(W.scheme_help), color = c.textMuted, fontSize = 12.sp)
         FluentField(name, { name = it; problem = null }, Modifier.fillMaxWidth(), label = word(if (LocalTrade.current.seasons) W.scheme_name_hint else W.scheme_name_hint_general))
         // Any supplier, or one of the book's: chosen from a list, not laid out whole in the form.
         ChoiceBox(word(W.supplier), suppliers.firstOrNull { it.id == partyId }?.let { Format.name(it.name) }, word(W.scheme_any_supplier),
@@ -299,13 +301,21 @@ private fun SchemeForm(title: String, existing: Scheme?, suppliers: List<Party>,
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SchemeHead(word(W.scheme_slabs))
+            SchemeHead(word(W.scheme_slabs_title))
+            Text(word(W.scheme_slabs_help), color = c.textMuted, fontSize = 12.sp)
+            // The boxes say what they hold: the target by value or quantity, the reward as % / amount / free units.
+            val targetWord = word(if (byQty) W.scheme_hint_target_qty else W.scheme_hint_target_value)
+            val rewardWord = word(when (kind) {
+                SchemeMath.AMOUNT -> W.scheme_hint_reward_amount
+                SchemeMath.UNITS -> W.scheme_hint_reward_units
+                else -> W.scheme_hint_reward_pct
+            })
             (0..2).forEach { i ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FluentField(targets.value[i], { v -> targets.value = targets.value.toMutableList().also { it[i] = v }; problem = null }, Modifier.weight(1f),
-                        label = word(W.scheme_target_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                        label = targetWord, calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                     FluentField(rewards.value[i], { v -> rewards.value = rewards.value.toMutableList().also { it[i] = v }; problem = null }, Modifier.weight(1f),
-                        label = word(W.scheme_reward_hint), calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
+                        label = rewardWord, calc = com.innovation313.roshankhata.screens.CalcKind.QUANTITY)
                 }
             }
         }
