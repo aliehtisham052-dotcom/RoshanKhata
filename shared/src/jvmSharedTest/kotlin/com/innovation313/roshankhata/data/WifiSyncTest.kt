@@ -149,7 +149,7 @@ class WifiSyncTest {
         val pcBook = ByteArray(200_000) { (it % 97).toByte() }
         var giving = false
         var stop = false
-        val t = thread { WifiSync.receive(server, secret, { stop }) { if (giving) pcBook else null } }
+        val t = thread { WifiSync.receive(server, secret, { stop }, give = { if (giving) pcBook else null }) }
         val p = WifiSync.Pairing(listOf("127.0.0.1"), server.localPort, secret)
         // The book is written to this file as it arrives (23 Oct 2026), never held whole.
         val into = java.io.File.createTempFile("rk-pull", ".txt")

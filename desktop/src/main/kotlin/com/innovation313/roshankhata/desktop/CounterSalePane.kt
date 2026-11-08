@@ -956,7 +956,6 @@ private fun AllTicketsDialog(
 /** The tickets whose number or customer holds [query] (any case, any digits); all of them for a blank one. */
 internal fun ticketsMatching(rows: List<SaleSummary>, query: String): List<SaleSummary> =
     com.innovation313.roshankhata.data.SaleSearch.matching(rows, query)
-}
 
 /** How far back the counter's ticket list reaches, as the phone's (CounterSaleActivity.showRecent). */
 internal const val SALE_DAYS = 60L

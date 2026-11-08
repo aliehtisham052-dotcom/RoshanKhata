@@ -124,7 +124,7 @@ class Sheets private constructor(
                 }
                 c
             }
-            Sheets(n, { format.width.toFloat() to format.height.toFloat() }) { i, g -> p.print(g, format, i) }
+            Sheets(n, { format.width.toFloat() to format.height.toFloat() }, drawOn = { i, g -> p.print(g, format, i) })
         }
 
         fun of(doc: PdfDocument): Sheets = Sheets(
