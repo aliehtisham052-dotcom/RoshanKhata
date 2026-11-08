@@ -103,9 +103,9 @@ class PdfFilesTest {
         val file = File(proof, "link-sample.pdf")
         PdfFiles.write(Sheets.of(doc), file)
         Loader.loadPDF(file).use { pdf ->
-            val links = pdf.getPage(0).annotations.filterIsInstance<org.apache.pdfbox.pdmodel.interaction.annotation.PDAnnotationLink>()
+            val links = pdf.getPage(0).annotations.filterIsInstance<org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink>()
             assertEquals(1, links.size)
-            val uri = (links[0].action as org.apache.pdfbox.pdmodel.interaction.action.PDActionURI).uri
+            val uri = (links[0].action as org.apache.pdfbox.pdmodel.interactive.action.PDActionURI).uri
             assertTrue(uri, uri.startsWith("https://play.google.com/store/apps/details?id=com.innovation313.roshankhata"))
             // PDF's origin is the bottom left: the pill 700..720 from the top of an 842 page sits at 122..142.
             assertEquals(122f, links[0].rectangle.lowerLeftY, 0.5f)
