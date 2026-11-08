@@ -394,7 +394,8 @@ class InsightsActivity : BaseActivity() {
         customers.forEach { c ->
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 14, 0, 14)
+                val pad = (14 * resources.displayMetrics.density).toInt() // dp, not raw pixels (m68)
+                setPadding(0, pad, 0, pad)
             }
             val name = TextView(this).apply {
                 text = c.name

@@ -354,6 +354,9 @@ object SaleMath {
      * again inside the transaction — the screen's check is a courtesy, the
      * DAO's is the guarantee.
      */
+    /** Half the shop's smallest coin: 0.005 for Rs, 0.0005 for KWD (m74); it was 0.005 for every currency. */
+    private val tolerance: Double get() = 0.5 / Math.pow(10.0, Currency.decimals().toDouble())
+
     fun check(
         lines: List<SaleItem>,
         payments: List<SalePayment>,
@@ -366,15 +369,15 @@ object SaleMath {
             if (l.itemName.isBlank()) return Problem.EMPTY_NAME
             if (!l.quantity.isFinite() || l.quantity <= 0.0 || l.quantity > MAX_QTY) return Problem.BAD_QUANTITY
             if (!l.rate.isFinite() || l.rate < 0.0 || l.rate > MAX_RATE) return Problem.BAD_RATE
-            if (l.discount < 0.0 || l.discount > l.quantity * l.rate + 0.005) return Problem.BAD_DISCOUNT
+            if (l.discount < 0.0 || l.discount > l.quantity * l.rate + tolerance) return Problem.BAD_DISCOUNT
         }
         for (p in payments) {
             if (p.amount <= 0.0 || p.amount.isNaN()) return Problem.BAD_PAYMENT
             if (p.method !in PaymentMethod.ALL) return Problem.BAD_METHOD
         }
         val paid = LineMath.round(payments.sumOf { it.amount })
-        if (paid > grandTotal + 0.005) return Problem.OVERPAID
-        if (!hasParty && paid < grandTotal - 0.005) return Problem.WALK_IN_UNPAID
+        if (paid > grandTotal + tolerance) return Problem.OVERPAID
+        if (!hasParty && paid < grandTotal - tolerance) return Problem.WALK_IN_UNPAID
         return null
     }
 

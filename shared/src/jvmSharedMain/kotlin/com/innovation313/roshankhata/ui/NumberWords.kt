@@ -38,14 +38,11 @@ import com.innovation313.roshankhata.data.Currency
  * with its own groups (hezar, milyun, milyard) and "و" between every part.
  * See [inWordsPersian].
  *
- * HONEST LIMIT, and the reason [rupeesInWords] falls back rather than
- * guessing: Sindhi and Arabic are not implemented. Sindhi's 1-99 names are
- * irregular the same way Urdu's are and I could not write them with enough
- * confidence; Arabic number-word grammar carries gender agreement and dual
- * forms that are easy to get subtly wrong. A wrong number spelled out on a
- * financial document is worse than a correct one in a second language, so
- * those two print the English words. Adding either properly needs a native
- * reader to check the table, not a translation of this one.
+ * Sindhi (0-99, from the Sindhi Language Authority's grammar, 21 Oct 2026) and Arabic
+ * ([inWordsArabic]) are implemented too; the Sindhi names 82, 86 and 96 rest on the
+ * grammar alone and wait for a Sindhi speaker's reading. Any other language falls back
+ * to the English words rather than guess: a wrong number spelled out on a financial
+ * document is worse than a correct one in a second language.
  */
 object NumberWords {
 

@@ -33,6 +33,9 @@ class SalesReportActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sales_report)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        // A range picker the system brought back after a rotation has lost what it should tell (its callback was the
+        // old screen's); it is closed rather than left to do nothing (8 Nov 2026 review, L147). Tap Custom again.
+        (supportFragmentManager.findFragmentByTag("report_range") as? androidx.fragment.app.DialogFragment)?.dismissAllowingStateLoss()
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
             setNavigationOnClickListener { finish() }
             menu.add(R.string.share).setOnMenuItemClickListener { share(); true }

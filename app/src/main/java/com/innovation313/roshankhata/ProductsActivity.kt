@@ -258,10 +258,17 @@ class ProductsActivity : BaseActivity() {
                 com.innovation313.roshankhata.screens.RoshanTheme(dark = dark) {
                     com.innovation313.roshankhata.words.ProvideWords(words) {
                         com.innovation313.roshankhata.screens.StockCountForm(draft, onCancel = { dialog.dismiss() }, onSave = {
-                            lifecycleScope.launch {
-                                val n = withContext(Dispatchers.IO) { runCatching { dao.recordCount(draft.counts(), draft.note.trim().ifBlank { null }, allowedBy = allowedBy) }.getOrDefault(0) }
-                                Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.quantity(resources, R.plurals.stock_count_saved, n, n), Toast.LENGTH_LONG).show()
-                                dialog.dismiss(); refresh()
+                            // AppScope, and a failed count says so and keeps the form (8 Nov 2026 review, L148/L149: it said "0 saved").
+                            val counts = draft.counts()
+                            val countNote = draft.note.trim().ifBlank { null }
+                            com.innovation313.roshankhata.data.AppScope.launch {
+                                val r = withContext(Dispatchers.IO) { runCatching { dao.recordCount(counts, countNote, allowedBy = allowedBy) } }
+                                withContext(Dispatchers.Main) {
+                                    r.fold({ n ->
+                                        Toast.makeText(applicationContext, com.innovation313.roshankhata.data.Digits.quantity(resources, R.plurals.stock_count_saved, n, n), Toast.LENGTH_LONG).show()
+                                        dialog.dismiss(); if (!isFinishing && !isDestroyed) refresh()
+                                    }, { Toast.makeText(applicationContext, R.string.save_failed_not_saved, Toast.LENGTH_LONG).show() })
+                                }
                             }
                         })
                     }
@@ -294,9 +301,16 @@ class ProductsActivity : BaseActivity() {
                             // for damaged goods came out as +5 and the shelf went UP.
                             val q = com.innovation313.roshankhata.ui.Calc.evalPad(qty.text.toString()) ?: 0.0
                             if (q == 0.0) { Toast.makeText(this@ProductsActivity, R.string.pos_err_quantity, Toast.LENGTH_LONG).show(); return@setPositiveButton }
-                            lifecycleScope.launch {
-                                withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasons[reason.selectedItemPosition], note.text.toString().trim().ifBlank { null }, allowedBy = allowedBy) } }
-                                refresh()
+                            // On AppScope, so a rotation right after Save cannot cancel the write, and a refusal is said, not
+                            // swallowed (8 Nov 2026 review, L148/L149).
+                            val reasonPicked = reasons[reason.selectedItemPosition]
+                            val noteText = note.text.toString().trim().ifBlank { null }
+                            com.innovation313.roshankhata.data.AppScope.launch {
+                                val r = withContext(Dispatchers.IO) { runCatching { dao.adjustStock(p.id, q, reasonPicked, noteText, allowedBy = allowedBy) } }
+                                withContext(Dispatchers.Main) {
+                                    if (r.isFailure) Toast.makeText(applicationContext, R.string.save_failed_not_saved, Toast.LENGTH_LONG).show()
+                                    if (!isFinishing && !isDestroyed) refresh()
+                                }
                             }
                         }
                         .setNegativeButton(R.string.cancel, null)

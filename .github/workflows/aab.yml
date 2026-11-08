@@ -160,6 +160,8 @@ jobs:
             exit 1
           fi
           echo "signed AAB: $AAB"
+          # The bundle holds the x86_64 Filament libraries the dev APK does not: 16 KB pages are checked here too (L159).
+          python3 scripts/check_16kb.py "$AAB"
           echo "## Signed AAB ready" >> $GITHUB_STEP_SUMMARY
           echo "Download it from the Artifacts section of this run." >> $GITHUB_STEP_SUMMARY
 

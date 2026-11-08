@@ -195,8 +195,8 @@ object RateListImage {
         val showUnit = unitTexts.any { it.isNotEmpty() }
         // Each figure wrapped left-to-right, so "₹ 4,200" cannot come out as
         // "4,200 ₹" on a right-to-left page (see Format.ltr).
-        val cashTexts = rows.map { r -> r.cash?.let { Format.ltr(Format.money(it)) } ?: "\u2014" }
-        val creditTexts = rows.map { r -> r.credit?.let { Format.ltr(Format.money(it)) } ?: "\u2014" }
+        val cashTexts = rows.map { r -> r.cash?.let { Format.ltr(Digits.forPrint(Format.money(it), locale)) } ?: "\u2014" }
+        val creditTexts = rows.map { r -> r.credit?.let { Format.ltr(Digits.forPrint(Format.money(it), locale)) } ?: "\u2014" }
 
         val hProduct = context.getString(R.string.rate_list_col_product)
         val hUnit = context.getString(R.string.rate_list_col_unit)
@@ -245,8 +245,8 @@ object RateListImage {
         // already written: a %d would let an Arabic or Bengali locale switch
         // the page count to its own numerals while the prices above stay Latin.
         val pageWord = { n: Int, of: Int ->
-            context.getString(R.string.rate_list_page,
-                String.format(Digits.FIGURES, "%d", n), String.format(Digits.FIGURES, "%d", of))
+            Digits.forPrint(context.getString(R.string.rate_list_page,
+                String.format(Digits.FIGURES, "%d", n), String.format(Digits.FIGURES, "%d", of)), locale)
         }
 
         return Plan(

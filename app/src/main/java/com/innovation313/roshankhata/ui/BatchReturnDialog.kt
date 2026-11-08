@@ -75,36 +75,40 @@ object BatchReturnDialog {
                 .setTitle(R.string.return_title)
                 .setView(view)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    val q = Digits.parse(etQty.text.toString())
-                    val r = Digits.parse(etRate.text.toString())
-                    val amount = total()
-                    when {
-                        q == null || q <= 0.0 || q > remaining + 1e-9 ->
-                            Toast.makeText(activity, R.string.return_bad_qty, Toast.LENGTH_SHORT).show()
-                        r == null || r <= 0.0 || amount == null || amount <= 0.0 ->
-                            Toast.makeText(activity, R.string.return_bad_rate, Toast.LENGTH_SHORT).show()
-                        else -> AppScope.launch {
-                            val line = EntryItem.ofGoods(
-                                item.productName, q, item.unit, item.productId, item.id, r
-                            )
-                            dao.insertEntryWithItems(
-                                LedgerEntry(
-                                    partyId = bill.partyId,
-                                    amount = amount,
-                                    isGiven = true,
-                                    note = activity.getString(R.string.return_note, item.productName, item.batchNumber ?: "—"),
-                                    entryNumber = ""
-                                ),
-                                listOfNotNull(line)
-                            )
-                            activity.runOnUiThread {
-                                Toast.makeText(activity, R.string.return_saved, Toast.LENGTH_LONG).show()
-                            }
+                .setPositiveButton(R.string.save, null)
+                .show().also { dlg ->
+                    KeyboardFollow.dialog(dlg)
+                    // A refused value keeps the form open with what was typed (8 Nov 2026 review, m93).
+                    dlg.getButton(android.content.DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                        val q = Digits.parse(etQty.text.toString())
+                        val r = Digits.parse(etRate.text.toString())
+                        val amount = total()
+                        when {
+                            q == null || q <= 0.0 || q > remaining + 1e-9 ->
+                                Toast.makeText(activity, R.string.return_bad_qty, Toast.LENGTH_SHORT).show()
+                            r == null || r <= 0.0 || amount == null || amount <= 0.0 ->
+                                Toast.makeText(activity, R.string.return_bad_rate, Toast.LENGTH_SHORT).show()
+                            else -> { dlg.dismiss(); AppScope.launch {
+                                val line = EntryItem.ofGoods(
+                                    item.productName, q, item.unit, item.productId, item.id, r
+                                )
+                                dao.insertEntryWithItems(
+                                    LedgerEntry(
+                                        partyId = bill.partyId,
+                                        amount = amount,
+                                        isGiven = true,
+                                        note = activity.getString(R.string.return_note, item.productName, item.batchNumber ?: "—"),
+                                        entryNumber = ""
+                                    ),
+                                    listOfNotNull(line)
+                                )
+                                activity.runOnUiThread {
+                                    Toast.makeText(activity, R.string.return_saved, Toast.LENGTH_LONG).show()
+                                }
+                            } }
                         }
                     }
                 }
-                .show().also { KeyboardFollow.dialog(it) }
         }
     }
 

@@ -45,6 +45,7 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         Currency.refresh(ctx)
         ShopCalendar.refresh(ctx)
         ensureChannel(ctx)
+        dropStaleDailyNotices(ctx)
         val dao = KhataDatabase.get(ctx).khataDao()
         // L96 (8 Nov 2026 review): the words come from ctx, but DateWords reads the default locale — a phone in English
         // with the app in Urdu said last month's name in English. The default follows the app's language for this run.
@@ -73,6 +74,21 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
             set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0)
         }
         return maxOf(60L * 60 * 1000, c.timeInMillis - now)
+    }
+
+    /**
+     * Android 7.x has no setTimeoutAfter (API 26): a day's notice posted before the working day began (04:00) is taken
+     * down here, on the hourly run (8 Nov 2026 review, m70). Newer Androids time them out themselves.
+     */
+    private fun dropStaleDailyNotices(ctx: Context) {
+        if (android.os.Build.VERSION.SDK_INT >= 26) return
+        runCatching {
+            val now = System.currentTimeMillis()
+            val dayStart = now - (60L * 60 * 1000 * 24 - untilDayEnds(now))
+            val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            val dailyIds = Automations.Kind.values().filter { !it.monthly }.map { ID_BASE + it.ordinal }
+            nm.activeNotifications.filter { it.id in dailyIds && it.postTime < dayStart }.forEach { nm.cancel(it.id) }
+        }
     }
 
     private fun post(ctx: Context, n: Automations.Notice) {

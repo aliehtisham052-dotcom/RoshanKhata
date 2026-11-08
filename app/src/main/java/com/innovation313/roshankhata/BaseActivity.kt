@@ -69,6 +69,7 @@ abstract class BaseActivity : AppCompatActivity() {
             android.content.pm.PackageManager.PERMISSION_GRANTED
         ) { action(); return }
         afterDownloadsAsk = action
+        pendingDownloads = action
         androidx.core.app.ActivityCompat.requestPermissions(
             this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQ_DOWNLOADS
         )
@@ -76,13 +77,20 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private var afterDownloadsAsk: (() -> Unit)? = null
 
+    // The permission sheet can outlive this screen (a rotation or a theme change rebuilds it): the answer then
+    // arrives at the new instance, which runs the waiting save instead of dropping it (8 Nov 2026 review, m94).
+    private var pendingDownloads: (() -> Unit)?
+        get() = waitingDownloads
+        set(value) { waitingDownloads = value }
+
     @Deprecated("ActivityCompat's request answers here")
     @Suppress("DEPRECATION")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQ_DOWNLOADS) {
-            val then = afterDownloadsAsk
+            val then = afterDownloadsAsk ?: waitingDownloads
             afterDownloadsAsk = null
+            waitingDownloads = null
             then?.invoke()
         }
     }
@@ -186,6 +194,8 @@ abstract class BaseActivity : AppCompatActivity() {
     private companion object {
         /** The request code of the Downloads permission (Android 7-9). */
         const val REQ_DOWNLOADS = 7313
+        /** The save waiting for the Downloads permission, kept past a rebuilt screen (m94). */
+        @Volatile var waitingDownloads: (() -> Unit)? = null
         /** Screens shown before the book opens: the splash's router, App Lock, and the first-run questions. */
         // MeraKhataActivity shows only the shops' pages this phone's owner was sent as a customer, never the book;
         // it asks App Lock itself when the owner has it on (7 Nov 2026).

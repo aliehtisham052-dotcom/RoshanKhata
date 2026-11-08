@@ -403,6 +403,8 @@ object Snapshots {
     }
 
     private var afterSaleJob: kotlinx.coroutines.Job? = null
+    @Volatile private var lastAfterSaleCopy = 0L
+    private const val AFTER_SALE_GAP_MS = 30 * 60_000L
 
     /**
      * After a sale, a return or a void (21 Oct 2026): today's copy written
@@ -419,8 +421,11 @@ object Snapshots {
         synchronized(this) {
             afterSaleJob?.cancel()
             afterSaleJob = AppScope.launch {
-                kotlinx.coroutines.delay(60_000)
-                if (Businesses.active(app).id == businessId) refreshToday(app)
+                // At most one rewrite in 30 minutes (8 Nov 2026 review, L143): a 200 MB book was folded, checked and
+                // copied under the write lock after every busy minute. A sale inside the window waits for it.
+                val wait = (lastAfterSaleCopy + AFTER_SALE_GAP_MS - System.currentTimeMillis()).coerceAtLeast(60_000L)
+                kotlinx.coroutines.delay(wait)
+                if (Businesses.active(app).id == businessId) { refreshToday(app); lastAfterSaleCopy = System.currentTimeMillis() }
             }
         }
     }

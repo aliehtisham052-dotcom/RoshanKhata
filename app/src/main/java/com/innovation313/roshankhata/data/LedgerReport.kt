@@ -115,7 +115,31 @@ object LedgerReport {
             return 100f
         }
 
+        // The 'App · Page n' line closes every page, not only the last (8 Nov 2026 review, m80).
+        fun pageFoot() {
+            val fy = PAGE_H - 34f
+            var footerX = MARGIN
+            brandLogo?.let { mark ->
+                val size = 18f
+                PdfRtl.drawBitmap(canvas,
+                    mark,
+                    android.graphics.Rect(0, 0, mark.width, mark.height),
+                    android.graphics.RectF(footerX, fy - 13f, footerX + size, fy + 5f),
+                    android.graphics.Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+                )
+                footerX += size + 6f
+            }
+            PdfRtl.drawText(canvas,
+                Digits.string(context.resources, R.string.pdf_rep_footer_page,
+                    context.getString(R.string.app_name),
+                    pageNo
+                ),
+                footerX, fy, muted
+            )
+        }
+
         fun newPage() {
+            pageFoot()
             doc.finishPage(page)
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
@@ -261,25 +285,7 @@ object LedgerReport {
         // has to end above it, or the banner starts a page of its own.
         if (y > PAGE_H - 104f) newPage()
         PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
-        y = PAGE_H - 34f
-        var footerX = MARGIN
-        brandLogo?.let { mark ->
-            val size = 18f
-            PdfRtl.drawBitmap(canvas,
-                mark,
-                android.graphics.Rect(0, 0, mark.width, mark.height),
-                android.graphics.RectF(footerX, y - 13f, footerX + size, y + 5f),
-                android.graphics.Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-            )
-            footerX += size + 6f
-        }
-        PdfRtl.drawText(canvas,
-            Digits.string(context.resources, R.string.pdf_rep_footer_page,
-                context.getString(R.string.app_name),
-                pageNo
-            ),
-            footerX, y, muted
-        )
+        pageFoot()
 
         doc.finishPage(page)
 

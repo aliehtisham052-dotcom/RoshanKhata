@@ -21,7 +21,7 @@
   public root, not a pin: no host is tied to it.
 -->
 <network-security-config>
-    <base-config>
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
             <certificates src="@raw/isrg_root_x1" />

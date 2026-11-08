@@ -4077,4 +4077,5 @@
     <string name="audit_bin_emptied">ٽوڪري خالي ڪئي وئي</string>
     <string name="pos_tax_total">ٽيڪس</string>
     <string name="paisa_access_go">گهٽ ميموري واري (Android Go) ڪجهه فونن تي، جن ۾ Android 10 يا ان کان پراڻو هجي، Android نوٽيفڪيشن تائين رسائي ڏيندو ئي ناهي. جيڪڏهن بٽڻ ڪجهه نه کولي ته هي فيچر هن فون تي ڪم نٿو ڪري سگهي.</string>
+    <string name="paisa_disclosure">Android هن ايپ کي فون جي هر ايپ جا نوٽيس ڏيکاريندو آهي. هيءَ ايپ رڳو انهن والٽ ۽ بئنڪ ايپس جا نوٽيس پڙهندي آهي جن تي توهان هيٺ نشان لڳايو؛ باقي هر ايپ جو رڳو نالو ڏسندي آهي. ڪجهه به فون کان ٻاهر نٿو وڃي.</string>
 </resources>

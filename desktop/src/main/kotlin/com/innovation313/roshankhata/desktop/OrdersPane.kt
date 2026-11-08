@@ -155,18 +155,15 @@ private fun OrderActions(
 ) {
     val scope = rememberCoroutineScope()
     fun markSent() { scope.launch { withContext(Dispatchers.IO) { dao.setOrderStatus(o.id, OrderStatus.SENT) }; onChanged() } }
-    fun text(): String? {
-        var out: String? = null
-        kotlinx.coroutines.runBlocking { out = withContext(Dispatchers.IO) { dao.orderWithLines(o.id)?.let { orderText(words, shopName, it, o.partyName) } } }
-        return out
-    }
+    // Read off the window's thread (8 Nov 2026 review, m91: a runBlocking froze the window on a busy book).
+    suspend fun text(): String? = withContext(Dispatchers.IO) { dao.orderWithLines(o.id)?.let { orderText(words, shopName, it, o.partyName) } }
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         if (o.status == OrderStatus.DRAFT || o.status == OrderStatus.SENT) {
             val number = suppliers.firstOrNull { it.id == o.partyId }?.phone?.let { WhatsAppNumber.of(it) }
             // Marked sent only once WhatsApp opened with it (25 Oct 2026, the audit: with no number the order was
             // copied and still marked sent). No number: copied, said, and left for Mark sent.
-            FluentButton(word(W.po_send), {
-                val t = text() ?: return@FluentButton
+            FluentButton(word(W.po_send), { scope.launch {
+                val t = text() ?: return@launch
                 if (number != null) {
                     runCatching { java.awt.Desktop.getDesktop().browse(URI("https://wa.me/$number?text=" + URLEncoder.encode(t, "UTF-8").replace("+", "%20"))) }
                         .onSuccess { markSent() }.onFailure { onTell(failText(words, it)) }
@@ -174,7 +171,7 @@ private fun OrderActions(
                     runCatching { java.awt.Toolkit.getDefaultToolkit().systemClipboard.setContents(java.awt.datatransfer.StringSelection(t), null) }
                         .onSuccess { onTell(words.text(W.po_copied_no_number)) }.onFailure { onTell(failText(words, it)) }
                 }
-            }, kind = ButtonKind.SUBTLE, icon = "ic_share")
+            } }, kind = ButtonKind.SUBTLE, icon = "ic_share")
             if (o.status == OrderStatus.DRAFT) FluentButton(word(W.po_mark_sent), { markSent() }, kind = ButtonKind.SUBTLE)
             IconAction("ic_print", word(W.pdf_preview), {
                 scope.launch {

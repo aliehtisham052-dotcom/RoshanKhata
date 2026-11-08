@@ -104,7 +104,7 @@ object PushWake {
         if (LiveRunner.running) return
         val app = context.applicationContext
         val ask = try {
-            runBlocking {
+            within<Boolean>(11_000L, false) {
                 withTimeoutOrNull(10_000L) {
                     val db = KhataDatabase.get(app)
                     val sql = db.syncSql()
@@ -135,7 +135,7 @@ object PushWake {
         if (LiveRunner.running) return
         val app = context.applicationContext
         try {
-            runBlocking {
+            within<Unit>(9_000L, Unit) {
                 // 8 s: with a carried parcel's 10 s before it, still inside the ~20 s Firebase gives a message (R56).
                 withTimeoutOrNull(8_000L) {
                     val db = KhataDatabase.get(app)
@@ -157,6 +157,23 @@ object PushWake {
             // Out of time: the rest comes at the next wake-up or when the app opens.
         } catch (e: Exception) {
             // A wake-up never crashes the phone's app; the next round tries again.
+        }
+    }
+
+    /**
+     * [block] with a limit that holds (8 Nov 2026 review, L150): withTimeoutOrNull cannot stop a blocking HTTP call, so
+     * the limits of 8 and 10 s were not true. The work runs on a thread of its own and the caller (Firebase's, which
+     * has about 20 s) stops waiting at [ms]; the thread is interrupted and its work ends with its call.
+     */
+    private fun <T> within(ms: Long, onTimeout: T, block: suspend kotlinx.coroutines.CoroutineScope.() -> T): T {
+        val pool = java.util.concurrent.Executors.newSingleThreadExecutor()
+        val job = pool.submit<T> { runBlocking { block() } }
+        return try {
+            job.get(ms, java.util.concurrent.TimeUnit.MILLISECONDS)
+        } catch (e: java.util.concurrent.TimeoutException) {
+            job.cancel(true); onTimeout
+        } finally {
+            pool.shutdown()
         }
     }
 }

@@ -8,7 +8,8 @@ loan) tracking, weight/quantity-based agri-ledger, and an offline-first design �
 built to serve everyone from a small kirana shop to a wholesale distributor.
 
 ## Status
-🚧 Early scaffolding — Stage A (MVP) feature build in progress. Not yet published.
+Published on Google Play: https://play.google.com/store/apps/details?id=com.innovation313.roshankhata
+The Windows version (MSI) is a test build, not signed yet.
 
 ## Copyright
 © 2026 Ehtisham Ali / Innovation 313. All rights reserved.

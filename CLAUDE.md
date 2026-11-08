@@ -74,7 +74,7 @@ No account, no server, no ads. Everything stays on the phone.
   (`Tour.kt`, the phone's coach words) shows once after trade and name. A shop picture
   (logo, signature, stamp, QR) is cropped before it is kept (`ImageCrop.kt`,
   the phone's Adjust crop: corners resize, inside moves; signature, stamp and
-  QR start at their ink). Esc closes every dialog window (`escCloses`). Laptop fit (1.8.2, the owner's photos of 1366x768 at 125%, about 1093 dp): no label may wrap letter by letter — pill and chip rows scroll sideways (`horizontalScroll`, `maxLines = 1, softWrap = false`), the header below 1180 dp keeps only icons with hover tips, Home and the rail are tighter; the Home banner turns every 3 s (the phone's TURN_MS) with a cross-fade; an invoice's ten designs are stepped through with ‹ › (`DesignStepper`, Apply keeps one via `updateInvoice`). ScreenProofTest also draws the laptop size. Motion and contrast (1.8.3, `Motion.kt`): every click target uses `Modifier.press` (hand pointer, a hover wash `Look.hover`, ripple) instead of bare `clickable`; chosen colours ease over 160 ms (`eased`), pages cross-fade over 200 ms, Home rises once; nothing bounces. Control edges are `Look.edge` (3:1 on page, card and rail — `Look.line` is only for dividers and card edges) and chosen pills `Look.pickedFill`/`onPicked` (light green by night); `LookContrastTest` measures them. Proof pictures render a second in so animations have ended. PDFs on the computer (1.8.4, `PdfPreview.kt`): every PDF / Statement / Print button (`StatementPrint.show`) opens the sheet in the app's own preview first (pages, zoom), with Save PDF, Print (Windows' dialog, `printDialog`) and Open folder; `Sheets` reads a Printable or an invoice design's own page sizes; `PdfFiles` writes Documents\Roshan Khata\<title>_<date>.pdf with Apache PDFBox 3.0.4, each page a 2.5 px/pt JPEG (looks exactly as printed, Urdu safe; words not selectable), then opens it in Windows' viewer. PdfFilesTest's PDFs go to desktop-test. The MSI adds java.logging for PDFBox's commons-logging — not exercised by the Gradle tests (full JDK), so check a saved PDF on the laptop. MSI size (1.8.1): ICU4J is
+  QR start at their ink). Esc closes every dialog window (`escCloses`). Laptop fit (1.8.2, the owner's photos of 1366x768 at 125%, about 1093 dp): no label may wrap letter by letter — pill and chip rows scroll sideways (`horizontalScroll`, `maxLines = 1, softWrap = false`), the header below 1180 dp keeps only icons with hover tips, Home and the rail are tighter; the Home banner turns every 3 s (the phone's TURN_MS) with a cross-fade; an invoice's ten designs are stepped through with ‹ › (`DesignStepper`, Apply keeps one via `updateInvoice`). ScreenProofTest also draws the laptop size. Motion and contrast (1.8.3, `Motion.kt`): every click target uses `Modifier.press` (hand pointer, a hover wash `Look.hover`, ripple) instead of bare `clickable`; chosen colours ease over 160 ms (`eased`), pages cross-fade over 200 ms, Home rises once; nothing bounces. Control edges are `Look.edge` (3:1 on page, card and rail — `Look.line` is only for dividers and card edges) and chosen pills `Look.pickedFill`/`onPicked` (light green by night); `LookContrastTest` measures them. Proof pictures render a second in so animations have ended. PDFs on the computer (1.8.4, `PdfPreview.kt`): every PDF / Statement / Print button (`StatementPrint.show`) opens the sheet in the app's own preview first (pages, zoom), with Save PDF, Print (Windows' dialog, `printDialog`) and Open folder; `Sheets` reads a Printable or an invoice design's own page sizes; `PdfFiles` writes Documents\Roshan Khata\<title>_<date>.pdf with Apache PDFBox 3.0.4, each page a 3.5 px/pt JPEG (about 250 dpi) (looks exactly as printed, Urdu safe; words not selectable), then opens it in Windows' viewer. PdfFilesTest's PDFs go to desktop-test. The MSI adds java.logging for PDFBox's commons-logging — not exercised by the Gradle tests (full JDK), so check a saved PDF on the laptop. MSI size (1.8.1): ICU4J is
   gone from the MSI (14.7 MB, used only for plural rules — the computer's own
   `pluralCategory` covers the nine languages; PluralRulesDesktopTest holds it
   to ICU4J for 0..10,000, ICU4J is test-only); on the Windows runner a Gradle
@@ -404,9 +404,8 @@ of it was tried on two real devices yet — CI only.
   (relays.yml for PHP and Supabase, cloud-worker.yml for the Worker). The
   token goes as `Authorization: RK` and `X-RK-Pass` (hostings drop the first).
   `LiveCloud.roundAll`: the first relay that answers takes this device's
-  changes and gives the others'; later relays are read every 8th round
-  (`OTHERS_EVERY`) and also sent to while a parcel came from them within 24 h
-  (`USED_MS`) — a phone that cannot reach Cloudflare still meets a computer
+  changes and gives the others'; later relays are read by time
+  (`OTHERS_MS`, 2 min) and also sent to while a parcel came from them within 24 h — a phone that cannot reach Cloudflare still meets a computer
   that can. Cursors per relay in sync_meta (`cloud_<tag>_after:<book>`;
   Cloudflare's tag is "" so old books keep their place). A relay answering
   503 is passed over; the kill switch still stops all. Supabase pauses a free
@@ -2818,3 +2817,33 @@ WhatsApp Business when only it is installed (L103). New strings (nine languages)
 audit_party_type, audit_bin_restored/_purged/_emptied, pos_tax_total, paisa_access_go. Not done: L66 (Pashto, Punjabi: a language needs a
 checker), L71/L77 (two devices clearing or converting one document: a conflict rule), L78 (four reminder counts), L84 (the day report
 hidden with the big-shop tools off was an earlier audit's choice), L86 (phone totals whole book, Windows by tab).
+
+### 8 Nov 2026 review fixes, marhala 8E: low and minor findings no phase covered (L142-L155, L159, m1-m7, m67-m83, m91-m95, m101-m103; CI only)
+
+- **Phone:** a rotation or theme change no longer counts as leaving the app (`isChangingConfigurations` in the lifecycle
+  watcher: it stopped live sync and queued a backup on every turn); Khata's order, side, tab and day filter survive a
+  rotation; Follow-up reads only while on screen (`repeatOnLifecycle`); Sales report's restored range picker is closed
+  (its callback was the old screen's); the stock adjust and count run on `AppScope` and say a failure (a failed count
+  read "0 saved"); the batch return form stays open over a refused value; a save waiting for the Downloads permission
+  survives a rebuilt screen; Android 7.x takes down yesterday's automation notices (no `setTimeoutAfter` before API 26);
+  an automation whose computation failed is not marked said; the empty Recent sales says `pos_tickets_none`; the
+  after-sale daily copy is written at most once in 30 minutes; the Drive content signature is streamed; PushWake's 8 and
+  10 second limits hold (`within`: its own thread, the caller stops waiting); cleartext is refused by default on Android
+  7-8 (base-config); an SMS-capable app is never read or listed (`neverRead` asks the phone, a `<queries>` entry);
+  notification access has its disclosure (`paisa_disclosure`, nine languages); the rate note no longer says "instead".
+- **Printed:** a receipt's discount line no longer includes the points spent (they have their own line) and a line sold
+  from two batches prints once; credit and debit notes use the newest document's design (`newestDocumentTemplate`) and
+  a walk-in credit note names "Walk-in customer"; the footer strip's page is filled on dark designs; non-invoice
+  headings are upper case like INVOICE; percent labels use the reader's decimal mark (`Format.percent`); the Khata
+  Report PDF has its page line on every page; the rate-list picture prints native digits when chosen; PDF DOWNLOAD links
+  reach pages under nested /Pages nodes (a 12-page statement).
+- **Money rules:** the Radar's "nothing left" and the counter's checks use half the shop's smallest coin
+  (KWD 0.0005), not 0.5/0.005; the Seasons median of an even count is the mean of the middle two; the report's expenses
+  skip only counter refunds ("Return" by hand counts); a shift's refused close says it in the owner's words.
+- **Windows:** purchase-order Send reads off the window thread; the phone-pull book is written straight to bytes.
+- **Release:** `check_16kb.py` reads an .aab and aab.yml runs it (x86_64 Filament); README says it is published; the
+  notes (DriveBackup header, OTHERS_MS, NumberWords, 3.5 px/pt) say what the code does.
+- **Left:** m1 (LiveSync.apply/snapshot are used by tests; removing them means rewriting those tests), L146 (auto-hold
+  an open ticket on stop: writes held sales on its own, the owner's choice), L153 (known, the streamed restore), m101
+  (the feature graphic is a picture the owner re-renders), L152's full temp-file stream (WifiSync takes bytes), m80's
+  24-hour time, m68's second raw-pixel view (not found).

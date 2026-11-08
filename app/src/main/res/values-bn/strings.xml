@@ -4097,4 +4097,5 @@
     <string name="audit_bin_emptied">বিন খালি করা হয়েছে</string>
     <string name="pos_tax_total">কর</string>
     <string name="paisa_access_go">কম মেমোরির (Android Go) কিছু ফোনে, যেখানে Android 10 বা তার চেয়ে পুরোনো, Android নোটিফিকেশন অ্যাক্সেস দেয়ই না। বোতামে কিছু না খুললে এই সুবিধা এই ফোনে চলবে না।</string>
+    <string name="paisa_disclosure">Android এই অ্যাপকে ফোনের প্রতিটি অ্যাপের নোটিশ দেখতে দেয়। এই অ্যাপ শুধু সেই ওয়ালেট ও ব্যাংক অ্যাপের নোটিশ পড়ে যেগুলো আপনি নিচে টিক দেন; বাকি প্রতিটি অ্যাপের শুধু নাম দেখে। কিছুই ফোনের বাইরে যায় না।</string>
 </resources>

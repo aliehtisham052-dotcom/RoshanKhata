@@ -140,7 +140,10 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                             val id = closing.id
                             scope.launch {
                                 val r = withContext(Dispatchers.IO) { runCatching { dao.closeShift(id, n, reason) } }
-                                told = r.fold({ s -> words.text(W.shift_closed) + " · " + words.text(W.z_variance) + ": " + signed(s.difference ?: 0.0) }, { it.message })
+                                told = r.fold({ s -> words.text(W.shift_closed) + " · " + words.text(W.z_variance) + ": " + signed(s.difference ?: 0.0) }, { e ->
+                                    // The DAO's English messages are for logs; the owner reads his own words (8 Nov 2026, m4).
+                                    words.text(if (e.message?.contains("reason") == true) W.z_variance_reason else W.save_failed_not_saved)
+                                })
                                 chosen = null; busy = false; onChanged()
                             }
                         }

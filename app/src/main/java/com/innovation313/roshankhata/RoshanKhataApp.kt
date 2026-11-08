@@ -101,8 +101,8 @@ class RoshanKhataApp : Application() {
      *
      * Counting started activities rather than using ProcessLifecycleOwner keeps
      * a dependency out for a behaviour this small. A rotation stops one
-     * activity and starts the next, so the count dips and rises without ever
-     * reaching zero — which is right: rotating is not leaving.
+     * activity and starts the next, so the count can touch zero for a moment;
+     * onActivityStopped ignores that through isChangingConfigurations, because rotating is not leaving.
      *
      * It only ENQUEUES work. Nothing is uploaded on this thread, nothing
      * blocks the app closing, and every condition worth checking is checked
@@ -127,6 +127,9 @@ class RoshanKhataApp : Application() {
             started--
             if (started <= 0) {
                 started = 0
+                // A rotation or theme change stops the old activity before the new one starts, so the count
+                // does reach zero for a moment; that is not leaving the app (8 Nov 2026, L142/m95).
+                if (activity.isChangingConfigurations) return
                 runCatching { com.innovation313.roshankhata.data.LiveRunner.stop() }
                 runCatching { AutoBackup.onAppBackgrounded(app) }
                 // The customers' khata pages that changed go to the hosting in a while (7 Nov 2026; nothing when

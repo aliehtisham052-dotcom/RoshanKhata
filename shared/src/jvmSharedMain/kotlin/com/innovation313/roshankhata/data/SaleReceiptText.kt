@@ -16,16 +16,27 @@ object SaleReceiptText {
         b.append(shop).append('\n')
         b.append(Format.dateTime(sale.timestamp)).append("  ").append(sale.saleNumber).append('\n')
         b.append(sale.customerName?.let { Format.name(it) } ?: words.text(W.pos_walk_in)).append("\n\n")
-        for (i in s.items) {
+        // One line sold from two batches is written as two rows (FEFO); the customer reads it once (m73).
+        val lines = ArrayList<SaleItem>()
+        for (it in s.items) {
+            val last = lines.lastOrNull()
+            if (last != null && last.productId == it.productId && last.itemName == it.itemName && last.unit == it.unit && last.rate == it.rate)
+                lines[lines.size - 1] = last.copy(quantity = last.quantity + it.quantity, discount = last.discount + it.discount)
+            else lines.add(it)
+        }
+        for (i in lines) {
             b.append(i.itemName).append('\n')
             b.append("  ").append(Calc.trim(i.quantity)).append(com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }).append(" × ").append(Format.money(i.rate))
             if (i.discount > 0.0) b.append("  −").append(Format.money(i.discount))
             b.append("  =  ").append(Format.money(i.lineTotal)).append('\n')
         }
         b.append('\n')
-        if (sale.discountAmount > 0.0 || sale.taxAmount > 0.0 || sale.roundOff != 0.0) {
+        // The discount line is the discount alone: points spent are a discount in the ticket's sum, and the loyalty
+        // line below says them, so the receipt no longer counts them twice (8 Nov 2026 review, m72).
+        val shownDiscount = (sale.discountAmount - (points?.usedValue ?: 0.0)).coerceAtLeast(0.0)
+        if (shownDiscount > 0.005 || sale.discountAmount > 0.0 || sale.taxAmount > 0.0 || sale.roundOff != 0.0) {
             b.append(words.text(W.pos_subtotal)).append(": ").append(Format.money(sale.subtotal)).append('\n')
-            if (sale.discountAmount > 0.0) b.append(words.text(W.pos_discount)).append(": −").append(Format.money(sale.discountAmount)).append('\n')
+            if (shownDiscount > 0.005) b.append(words.text(W.pos_discount)).append(": −").append(Format.money(shownDiscount)).append('\n')
             if (sale.taxAmount > 0.0) b.append(words.text(W.pos_tax_total)).append(": ").append(Format.money(sale.taxAmount)).append('\n')
             // A round-off down keeps its minus (3 Nov 2026 audit, L05): "Rs 0.40" read as forty paisa added.
             if (sale.roundOff != 0.0) b.append(words.text(W.pos_round_off)).append(": ").append(Format.signedIfNegative(sale.roundOff)).append('\n')

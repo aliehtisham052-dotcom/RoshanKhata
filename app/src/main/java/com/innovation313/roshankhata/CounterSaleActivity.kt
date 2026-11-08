@@ -536,7 +536,7 @@ class CounterSaleActivity : BaseActivity() {
         lifecycleScope.launch {
             val now = System.currentTimeMillis()
             val rows = withContext(Dispatchers.IO) { dao.salesBetween(now - 60L * 24 * 60 * 60 * 1000, now + 60_000) }
-            if (rows.isEmpty()) { toast(R.string.pos_lines_empty); return@launch }
+            if (rows.isEmpty()) { toast(R.string.pos_tickets_none); return@launch }
             val box = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this@CounterSaleActivity)).apply { hint = getString(R.string.pos_ticket_search) }
             val adapter = android.widget.ArrayAdapter<String>(this@CounterSaleActivity, android.R.layout.simple_list_item_1, ArrayList())
             val list = android.widget.ListView(this@CounterSaleActivity).apply { this.adapter = adapter }
@@ -752,8 +752,9 @@ class CounterSaleActivity : BaseActivity() {
                 val ret = dao.getReturn(returnId)?.takeIf { !it.isDeleted } ?: return@withContext null
                 val items = dao.returnItems(returnId)
                 val party = ret.partyId?.let { dao.getParty(it) }
-                val (doc, lines) = com.innovation313.roshankhata.data.NoteDocument.creditNote(ret, items, party)
-                runCatching { com.innovation313.roshankhata.data.InvoicePdfExport.build(this@CounterSaleActivity, doc, lines) }.getOrNull()
+                val (doc, lines) = com.innovation313.roshankhata.data.NoteDocument.creditNote(ret, items, party, getString(R.string.pos_walk_in))
+                val design = dao.newestDocumentTemplate() ?: 1
+                runCatching { com.innovation313.roshankhata.data.InvoicePdfExport.build(this@CounterSaleActivity, doc.copy(templateId = design), lines) }.getOrNull()
             }
             if (file == null) { toast(R.string.invoice_pdf_failed); return@launch }
             com.innovation313.roshankhata.ui.PdfShare.open(this@CounterSaleActivity, file)

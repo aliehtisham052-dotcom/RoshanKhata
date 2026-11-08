@@ -62,7 +62,7 @@ object PaymentRadar {
         fun likelyNow(now: Long): Boolean {
             val from = nextFrom ?: return false
             val to = nextTo ?: return false
-            return balance > 0.5 && now >= from && now < to + DAY
+            return balance > PENNY && now >= from && now < to + DAY
         }
     }
 
@@ -84,7 +84,8 @@ object PaymentRadar {
 
     private const val DAY = 24L * 60 * 60 * 1000
     private const val HOUR = 60L * 60 * 1000
-    private const val PENNY = 0.5
+    /** Half of the smallest coin of the shop's currency (KWD 0.0005, Rs 0.005, a currency with no decimals 0.5). */
+    private val PENNY: Double get() = 0.5 * Math.pow(10.0, -Currency.decimals().toDouble())
 
     /** One customer's repaid lots (days each took, oldest first), what is still open, and his payments. */
     internal class Book(val repaidDays: List<Int>, val openSince: Long?, val payments: List<Long>, val balance: Double)

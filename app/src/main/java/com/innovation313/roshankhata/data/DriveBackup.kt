@@ -29,13 +29,11 @@ import java.io.File
  * by another app, and it still costs them nothing worth counting: a backup is a
  * few kilobytes against fifteen free gigabytes.
  *
- * ONE FILE, replaced in place. Every backup overwrites the same file rather than
- * piling up dated copies, so the owner never has to wonder which is newest —
- * there is only ever the latest. But the replace is done SAFELY: the new
- * content is uploaded to a fresh file first, and only once that upload has
- * fully succeeded is the old file deleted. If the connection drops mid-upload,
- * the previous good backup is still there, untouched. A half-written backup is
- * worse than none, because the owner would trust it.
+ * ONE FILE, updated in place. Every backup rewrites the CONTENT of the same Drive
+ * file (same file id) rather than piling up dated copies, so the owner never has
+ * to wonder which is newest. Drive swaps the bytes on its side, so there is no
+ * window with the file empty or missing; if the connection drops mid-upload the
+ * previous good backup is still there. Only the first backup creates the file.
  */
 object DriveBackup {
 
@@ -297,8 +295,20 @@ object DriveBackup {
      * hashes the same.
      */
     private fun contentSignature(file: java.io.File): String {
-        val text = file.readText(Charsets.UTF_8).replace(Regex("\"exportedAt\"\\s*:\\s*\\d+"), "")
-        val digest = java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8))
+        // Streamed (8 Nov 2026 review, L144): a 197 MB backup was read whole into memory for every automatic run.
+        // The export time sits in the head of the file, so only the first 8 KB is read as text (byte for byte,
+        // ISO-8859-1) to take it out; the rest goes through the digest as it is.
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        file.inputStream().buffered().use { input ->
+            val head = ByteArray(8192)
+            var n = 0
+            while (n < head.size) { val r = input.read(head, n, head.size - n); if (r < 0) break; n += r }
+            val cleaned = String(head, 0, n, Charsets.ISO_8859_1).replace(Regex("\"exportedAt\"\\s*:\\s*\\d+"), "")
+            md.update(cleaned.toByteArray(Charsets.ISO_8859_1))
+            val buf = ByteArray(65536)
+            while (true) { val r = input.read(buf); if (r < 0) break; md.update(buf, 0, r) }
+        }
+        val digest = md.digest()
         return "sha256:" + digest.joinToString("") { "%02x".format(it) }
     }
 

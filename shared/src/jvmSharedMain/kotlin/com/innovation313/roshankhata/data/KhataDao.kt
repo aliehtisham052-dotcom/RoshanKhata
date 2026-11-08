@@ -1453,6 +1453,10 @@ interface KhataDao {
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoice(id: Long): Invoice?
 
+    /** The design the shop used on its newest document, for credit and debit notes that have no row of their own (m79). */
+    @Query("SELECT templateId FROM invoices WHERE isDeleted = 0 ORDER BY id DESC LIMIT 1")
+    suspend fun newestDocumentTemplate(): Int?
+
     /**
      * The live invoice already made from this khata sale, if any (v22). A cancelled one is not it (30 Oct 2026,
      * the review: it was returned, opened "locked", and a corrected invoice could never be made from the sale).
@@ -4489,7 +4493,7 @@ interface KhataDao {
     suspend fun walkInReturnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
 
     /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND category != 'Return' AND timestamp > :from AND timestamp <= :to")
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND NOT (category = 'Return' AND saleId IS NOT NULL) AND timestamp > :from AND timestamp <= :to")
     suspend fun cashbookExpensesBetween(from: Long, to: Long): Double
 
     /** Products that left the shop since [since], over the counter or on the khata. */

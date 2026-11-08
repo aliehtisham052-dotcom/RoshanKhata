@@ -227,6 +227,9 @@ object Format {
         }
     }
 
+    /** A percent as printed: the reader's decimal mark ("11,5" in Indonesian), no grouping (8 Nov 2026 review, m78). */
+    fun percent(value: Double): String = groupedForReader(plain(value))
+
     /** Bare number for an input field — no currency symbol, no thousands separator. */
     fun plain(value: Double): String =
         if (value % 1.0 == 0.0) value.toLong().toString()

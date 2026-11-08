@@ -161,12 +161,12 @@ object InvoiceTemplateKit {
          * in the app's language. The invoice keeps its own word.
          */
         fun heading(kind: String): String = when (kind) {
-            DocKind.QUOTATION -> context.getString(R.string.doc_kind_quotation)
-            DocKind.PROFORMA -> context.getString(R.string.doc_kind_proforma)
-            DocKind.SALES_ORDER -> context.getString(R.string.doc_kind_sales_order)
-            DocKind.CHALLAN -> context.getString(R.string.doc_kind_challan)
-            DocKind.CREDIT_NOTE -> context.getString(R.string.doc_kind_credit_note)
-            DocKind.DEBIT_NOTE -> context.getString(R.string.doc_kind_debit_note)
+            DocKind.QUOTATION -> context.getString(R.string.doc_kind_quotation).uppercase()
+            DocKind.PROFORMA -> context.getString(R.string.doc_kind_proforma).uppercase()
+            DocKind.SALES_ORDER -> context.getString(R.string.doc_kind_sales_order).uppercase()
+            DocKind.CHALLAN -> context.getString(R.string.doc_kind_challan).uppercase()
+            DocKind.CREDIT_NOTE -> context.getString(R.string.doc_kind_credit_note).uppercase()
+            DocKind.DEBIT_NOTE -> context.getString(R.string.doc_kind_debit_note).uppercase()
             else -> invoice
         }
 
@@ -525,7 +525,7 @@ object InvoiceTemplateKit {
             totalRow(invoice.discountLabel(labels.discount), "-" + Format.money(totals.discountAmount))
         }
         if (totals.taxAmount > 0) {
-            totalRow("${labels.tax} (${Format.plain(invoice.taxPercent ?: 0.0)}%)", Format.money(totals.taxAmount))
+            totalRow("${labels.tax} (${Format.percent(invoice.taxPercent ?: 0.0)}%)", Format.money(totals.taxAmount))
         }
         if (totals.additionalCharge != 0.0) {
             // A round-off down is a minus line, never a missing one (M71).

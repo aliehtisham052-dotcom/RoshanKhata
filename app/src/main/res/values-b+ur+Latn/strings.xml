@@ -4049,4 +4049,5 @@
     <string name="audit_bin_emptied">Bin khali kiya gaya</string>
     <string name="pos_tax_total">Tax</string>
     <string name="paisa_access_go">Kam memory wale (Android Go) kuch phones par, jin mein Android 10 ya us se purana ho, Android notification access deta hi nahi. Agar button kuch na khole to yeh feature is phone par nahi chal sakta.</string>
+    <string name="paisa_disclosure">Android is app ko phone ki har app ke notices dikhata hai. Ye app sirf un wallet aur bank apps ke notices parhti hai jin par aap neeche nishan lagayen; baqi har app ka sirf naam dekhti hai. Kuch bhi phone se bahar nahi jata.</string>
 </resources>

@@ -90,15 +90,15 @@ object NoteSheets {
         val ret = dao.getReturn(returnId)?.takeIf { !it.isDeleted } ?: return null
         val items = dao.returnItems(returnId)
         val party = ret.partyId?.let { dao.getParty(it) }
-        val (inv, lines) = NoteDocument.creditNote(ret, items, party)
-        return sheet(inv.copy(templateId = TEMPLATE), lines, designs, plain) to inv.invoiceNumber
+        val (inv, lines) = NoteDocument.creditNote(ret, items, party, designs.words.text(W.pos_walk_in))
+        return sheet(inv.copy(templateId = dao.newestDocumentTemplate() ?: TEMPLATE), lines, designs, plain) to inv.invoiceNumber
     }
 
     /** Goods sent back to a supplier (the "I gave" [entry] with its [lines]) as a debit note. */
     suspend fun debitNote(dao: KhataDao, entry: LedgerEntry, lines: List<EntryItem>, designs: Context, plain: (Invoice, List<InvoiceItem>) -> Printable): Pair<Printable, String> {
         val party = dao.getParty(entry.partyId)
         val (inv, rows) = NoteDocument.debitNote(entry, lines, party)
-        return sheet(inv.copy(templateId = TEMPLATE), rows, designs, plain) to inv.invoiceNumber
+        return sheet(inv.copy(templateId = dao.newestDocumentTemplate() ?: TEMPLATE), rows, designs, plain) to inv.invoiceNumber
     }
 
     private fun sheet(inv: Invoice, lines: List<InvoiceItem>, designs: Context, plain: (Invoice, List<InvoiceItem>) -> Printable): Printable =

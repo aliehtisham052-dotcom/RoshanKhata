@@ -56,6 +56,11 @@
       does nothing at all, silently.
     -->
     <queries>
+        <!-- Every app that can send an SMS (PaymentVoice.neverRead): none of them is ever read or listed (8 Nov 2026 review, L154). -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>

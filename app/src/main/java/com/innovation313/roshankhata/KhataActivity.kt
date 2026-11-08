@@ -213,9 +213,24 @@ class KhataActivity : BaseActivity() {
 
     private val dao by lazy { KhataDatabase.get(this).khataDao() }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("k_sort", sortMode.name)
+        outState.putString("k_side", sideFilter.name)
+        outState.putString("k_type", typeFilter.name)
+        outState.putLong("k_from", dateRange.from); outState.putLong("k_to", dateRange.to); outState.putInt("k_label", dateRange.labelRes)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         com.innovation313.roshankhata.ui.RowToScreen.send(this)
         super.onCreate(savedInstanceState)
+        // The list's tab, side, order and day filter survive a rotation (8 Nov 2026 review, m92); the search already did.
+        savedInstanceState?.let { b ->
+            runCatching { b.getString("k_sort")?.let { sortMode = SortMode.valueOf(it) } }
+            runCatching { b.getString("k_side")?.let { sideFilter = SideFilter.valueOf(it) } }
+            runCatching { b.getString("k_type")?.let { typeFilter = TypeFilter.valueOf(it) } }
+            if (b.containsKey("k_from")) dateRange = DateRangeFilter.Range(b.getLong("k_from"), b.getLong("k_to"), b.getInt("k_label"))
+        }
 
         setContentView(R.layout.activity_khata)
         // The light header (P2, 7 Oct): a light status bar by day, dark by night.

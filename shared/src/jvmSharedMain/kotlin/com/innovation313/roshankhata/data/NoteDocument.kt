@@ -24,13 +24,13 @@ object NoteDocument {
      * (cash, or left on his account) is the return's own record and the
      * khata's, so the note's "received" stays empty.
      */
-    fun creditNote(ret: SaleReturn, items: List<SaleReturnItem>, party: Party? = null): Pair<Invoice, List<InvoiceItem>> {
+    fun creditNote(ret: SaleReturn, items: List<SaleReturnItem>, party: Party? = null, walkIn: String? = null): Pair<Invoice, List<InvoiceItem>> {
         val invoice = Invoice(
             id = ret.id,
             kind = DocKind.CREDIT_NOTE,
             status = if (ret.status == SaleStatus.VOID) DocStatus.CANCELLED else DocStatus.OPEN,
             invoiceNumber = ret.returnNumber,
-            customerName = ret.customerName?.takeIf { it.isNotBlank() } ?: party?.name.orEmpty(),
+            customerName = ret.customerName?.takeIf { it.isNotBlank() } ?: party?.name?.takeIf { it.isNotBlank() } ?: walkIn.orEmpty(),
             customerPhone = party?.phone,
             invoiceDate = ret.timestamp,
             createdAt = ret.timestamp,

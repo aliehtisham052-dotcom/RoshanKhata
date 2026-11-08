@@ -9,6 +9,7 @@ found all eight libraries aligned; nothing stopped a new library, or a new versi
 32-bit libraries are reported, not failed: 16 KB devices run 64-bit code.
 
     python3 scripts/check_16kb.py out/RoshanKhata-latest.apk
+    python3 scripts/check_16kb.py app/build/outputs/bundle/release/app-release.aab
 """
 import struct
 import sys
@@ -57,6 +58,11 @@ def main(apk_path: str) -> int:
     with zipfile.ZipFile(apk_path) as z:
         for info in z.infolist():
             name = info.filename
+            # An app bundle (.aab, what Play receives, 8 Nov 2026 review L159) keeps its libraries under "<module>/lib/";
+            # Play lays them out in the APKs it makes, so only the segments' alignment is checked there.
+            bundle = apk_path.endswith(".aab")
+            if bundle and "/lib/" in name:
+                name = name[name.index("/lib/") + 1:]
             if not (name.startswith("lib/") and name.endswith(".so")):
                 continue
             abi = name.split("/")[1]
@@ -66,7 +72,7 @@ def main(apk_path: str) -> int:
             low = [a for a in aligns if a < PAGE]
             if low:
                 problems.append(f"LOAD segment aligned to {min(low)} bytes")
-            if info.compress_type == zipfile.ZIP_STORED:
+            if not bundle and info.compress_type == zipfile.ZIP_STORED:
                 off = data_offset(apk_path, info)
                 if off % PAGE:
                     problems.append(f"stored at offset {off}, not on a 16 KB boundary")

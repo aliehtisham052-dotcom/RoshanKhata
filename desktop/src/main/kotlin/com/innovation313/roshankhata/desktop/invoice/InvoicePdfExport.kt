@@ -189,7 +189,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -296,7 +296,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -389,7 +389,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -489,7 +489,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -584,7 +584,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -675,7 +675,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -764,7 +764,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -860,7 +860,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -947,7 +947,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
         page = finalState.first
         c = finalState.second
 
@@ -1256,7 +1256,8 @@ object InvoicePdfExport {
         doc: PdfDocument,
         pageIn: PdfDocument.Page,
         canvasIn: Canvas,
-        yIn: Float
+        yIn: Float,
+        palette: InvoiceTemplateKit.Palette? = null
     ): Pair<PdfDocument.Page, Canvas> {
         var page = pageIn
         var c = canvasIn
@@ -1274,6 +1275,8 @@ object InvoicePdfExport {
                 PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, doc.pages.size + 1).create()
             )
             c = page.canvas
+            // A dark design's strip page is filled like its others (8 Nov 2026 review, m76: it was left white).
+            palette?.let { InvoiceTemplateKit.fillPage(c, it, PAGE_W_A4, PAGE_H_A4) }
         }
 
         // The app's invitation: logo, a line, and a DOWNLOAD button that

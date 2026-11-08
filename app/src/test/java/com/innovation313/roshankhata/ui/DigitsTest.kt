@@ -24,7 +24,7 @@ import java.util.Locale
 class DigitsTest {
 
     private lateinit var saved: Locale
-    private val nonLatin = listOf("sd", "fa", "ar")
+    private val nonLatin = listOf("sd", "fa", "ar", "bn")
 
     @Before fun remember() { saved = Locale.getDefault() }
     @After fun restore() { Locale.setDefault(saved) }

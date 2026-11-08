@@ -220,7 +220,7 @@ object SeasonBook {
                 given = LineMath.round(list.sumOf { it.given }),
                 cleared = LineMath.round(list.sumOf { it.cleared }),
                 clearedCustomers = days.size,
-                medianDaysAfterHarvest = if (days.isEmpty()) null else days[days.size / 2]
+                medianDaysAfterHarvest = if (days.isEmpty()) null else if (days.size % 2 == 1) days[days.size / 2] else (days[days.size / 2 - 1] + days[days.size / 2]) / 2
             )
         }.newestFirst()
 

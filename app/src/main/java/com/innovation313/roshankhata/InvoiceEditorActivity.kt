@@ -891,7 +891,7 @@ class InvoiceEditorActivity : BaseActivity() {
             text(R.id.tvSumDiscountLabel, inv.discountLabel(getString(R.string.invoice_discount_label)))
             text(R.id.tvSumDiscount, "− " + Format.money(t.discountAmount))
             row(R.id.rowSumTax, t.taxAmount > 0)
-            text(R.id.tvSumTaxLabel, getString(R.string.invoice_tax_label) + " (" + Format.plain(inv.taxPercent ?: 0.0) + "%)")
+            text(R.id.tvSumTaxLabel, getString(R.string.invoice_tax_label) + " (" + Format.percent(inv.taxPercent ?: 0.0) + "%)")
             text(R.id.tvSumTax, "+ " + Format.money(t.taxAmount))
             row(R.id.rowSumCharge, t.additionalCharge != 0.0)
             text(R.id.tvSumChargeLabel, inv.additionalChargeLabel.orEmpty())

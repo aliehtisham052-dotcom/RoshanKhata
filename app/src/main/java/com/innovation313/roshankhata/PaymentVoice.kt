@@ -143,6 +143,14 @@ object PaymentVoice {
         if (pkg == ctx.packageName || pkg in SMS_APPS || pkg in DIALER_APPS) return true
         val sms = runCatching { android.provider.Telephony.Sms.getDefaultSmsPackage(ctx) }.getOrNull()
         if (sms != null && sms == pkg) return true
+        // Any other app that can send an SMS is a messaging app, whatever its package is called (L154): the fixed list
+        // above names four; this asks the phone for all.
+        val smsCapable = runCatching {
+            ctx.packageManager.queryIntentActivities(
+                android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:")), 0
+            ).any { it.activityInfo?.packageName == pkg }
+        }.getOrDefault(false)
+        if (smsCapable) return true
         val dialer = runCatching {
             (ctx.getSystemService(Context.TELECOM_SERVICE) as? android.telecom.TelecomManager)?.defaultDialerPackage
         }.getOrNull()

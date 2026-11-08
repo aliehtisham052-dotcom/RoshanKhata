@@ -86,9 +86,22 @@ object PdfLinks {
 
         val pagesNumber = Regex("""/Pages\s+(\d+)\s+\d+\s+R""")
             .find(body(rootNumber) ?: return null)?.groupValues?.get(1)?.toIntOrNull() ?: return null
-        val pagesBody = body(pagesNumber) ?: return null
-        val kids = Regex("""/Kids\s*\[([^\]]*)]""").find(pagesBody)?.groupValues?.get(1) ?: return null
-        val pageNumbers = Regex("""(\d+)\s+\d+\s+R""").findAll(kids).map { it.groupValues[1].toInt() }.toList()
+        // A document of more than a handful of pages has /Kids that are themselves /Pages nodes (the writer groups
+        // them eight to a node): the pages are the leaves, in order (8 Nov 2026 review, m75: a 12-page statement lost
+        // its DOWNLOAD link).
+        val kidsPattern = Regex("""/Kids\s*\[([^\]]*)]""")
+        val refPattern = Regex("""(\d+)\s+\d+\s+R""")
+        val nodeTag = Regex("""/Type\s*/Pages(?![A-Za-z])""")
+        fun leaves(number: Int, depth: Int): List<Int>? {
+            if (depth > 6) return null
+            val node = body(number) ?: return null
+            val kidsText = kidsPattern.find(node)?.groupValues?.get(1)
+            if (kidsText == null || !nodeTag.containsMatchIn(node)) return listOf(number)
+            val out = ArrayList<Int>()
+            for (m in refPattern.findAll(kidsText)) out += leaves(m.groupValues[1].toInt(), depth + 1) ?: return null
+            return out
+        }
+        val pageNumbers = leaves(pagesNumber, 0) ?: return null
         if (pageNumbers.isEmpty()) return null
 
         val pageTag = Regex("""/Type\s*/Page(?![A-Za-z])""")

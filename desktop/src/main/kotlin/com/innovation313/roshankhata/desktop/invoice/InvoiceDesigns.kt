@@ -17,7 +17,7 @@ fun NumberWords.amountInWords(context: Context, amount: Double): String =
 
 /** The phone's InvoiceLabels: "Discount (5%)" for a percent, plain "Discount" for an amount. */
 fun Invoice.discountLabel(word: String): String =
-    if (discountAmount != null) word else "$word (${Format.plain(discountPercent ?: 0.0)}%)"
+    if (discountAmount != null) word else "$word (${Format.percent(discountPercent ?: 0.0)}%)"
 
 /**
  * The ten invoice designs on the computer (Phase 10): the phone's own drawing

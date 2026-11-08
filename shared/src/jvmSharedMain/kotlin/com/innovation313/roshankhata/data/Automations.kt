@@ -241,9 +241,11 @@ object Automations {
         val out = mutableListOf<Notice>()
         for (kind in Kind.values()) {
             if (!due(kind, settings, now, tz)) continue
-            val notice = runCatching { noticeOf(kind, dao, words, money, date, monthName, remindedToday, now, tz, radar) }.getOrNull()
+            val tried = runCatching { noticeOf(kind, dao, words, money, date, monthName, remindedToday, now, tz, radar) }
+            // A computation that failed (a busy book) is not "said today": the next run tries again (8 Nov 2026 review, L151).
+            if (tried.isFailure) continue
             settings.setSaid(kind, stamp(kind, now, tz))
-            if (notice != null) out += notice
+            tried.getOrNull()?.let { out += it }
         }
         return out
     }

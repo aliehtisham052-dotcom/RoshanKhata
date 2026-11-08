@@ -185,7 +185,8 @@ class FollowUpActivity : BaseActivity() {
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun observeDebtors() {
-        lifecycleScope.launch {
+        // Only while on screen (8 Nov 2026 review, L145): behind another screen it re-ran its reads on every write.
+        lifecycleScope.launch { androidx.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
             // The Payment Radar (2 Nov 2026): this shop's normal, read once here, and the switch on this phone.
             // L88 (8 Nov 2026 review): the Radar is for REPORTS (owner, manager); a cashier's list shows no "usually pays now".
             val radarOn = com.innovation313.roshankhata.ui.RadarUi.on(this@FollowUpActivity) && com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.REPORTS)
@@ -249,10 +250,10 @@ class FollowUpActivity : BaseActivity() {
                     tvSummary.text = if (state.today > 0) {
                         summary + "\n" + Digits.quantity(resources, R.plurals.followup_today, state.today, state.today)
                     } else summary
-                    tvSummary.visibility = if (debtors.isEmpty()) View.GONE else View.VISIBLE
+                    tvSummary.visibility = if (debtors.isEmpty()) View.
                     tvEmpty.visibility = if (debtors.isEmpty()) View.VISIBLE else View.GONE
                 }
-        }
+        } }
     }
 
     /**

@@ -8,4 +8,4 @@ package com.innovation313.roshankhata.data
  * "Discount" for an amount in money, whose figure is printed beside it.
  */
 fun Invoice.discountLabel(word: String): String =
-    if (discountAmount != null) word else "$word (${com.innovation313.roshankhata.ui.Format.plain(discountPercent ?: 0.0)}%)"
+    if (discountAmount != null) word else "$word (${com.innovation313.roshankhata.ui.Format.percent(discountPercent ?: 0.0)}%)"

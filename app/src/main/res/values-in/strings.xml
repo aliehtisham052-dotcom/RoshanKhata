@@ -4032,4 +4032,5 @@
     <string name="audit_bin_emptied">Tempat sampah dikosongkan</string>
     <string name="pos_tax_total">Pajak</string>
     <string name="paisa_access_go">Di sebagian ponsel RAM kecil (Android Go) dengan Android 10 atau lebih lama, Android tidak mengizinkan akses notifikasi sama sekali. Jika tombol tidak membuka apa pun, fitur ini tidak bisa berjalan di ponsel ini.</string>
+    <string name="paisa_disclosure">Android memberi aplikasi ini pemberitahuan dari semua aplikasi di ponsel. Aplikasi ini hanya membaca pemberitahuan aplikasi dompet dan bank yang Anda centang di bawah; dari aplikasi lain hanya nama yang terlihat. Tidak ada yang keluar dari ponsel.</string>
 </resources>
