@@ -190,16 +190,18 @@ object RadarUi {
     fun settings(activity: Activity) {
         if (activity.isFinishing || activity.isDestroyed) return
         val isOn = on(activity)
-        // Where it stands first, then what it does, said once (6 Nov 2026, the owner's photo: the help and
-        // radar_private said "the customer never sees it" twice). Turning it off reads in the gave red.
-        val dialog = MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.radar_title)
-            .setMessage(activity.getString(if (isOn) R.string.radar_state_on else R.string.radar_state_off) +
-                "\n\n" + activity.getString(R.string.radar_switch_help))
-            .setPositiveButton(if (isOn) R.string.radar_turn_off else R.string.radar_turn_on) { _, _ -> set(activity, !isOn) }
-            .setNegativeButton(R.string.close, null)
-            .show()
-        if (isOn) dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
-            ?.setTextColor(androidx.core.content.ContextCompat.getColor(activity, R.color.red_gave_text))
+        // A sheet like Automations' and Theme's (8 Nov 2026): the state as a pill, what it does in a line, the
+        // privacy note behind Learn more, one button naming the result; turning it off reads in the gave red.
+        SettingSheet.show(
+            activity,
+            icon = R.drawable.ic_menu_radar,
+            tile = R.color.tile_followup_bg,
+            title = activity.getString(R.string.radar_title),
+            on = isOn,
+            summary = activity.getString(R.string.radar_switch_help),
+            more = activity.getString(R.string.radar_private),
+            actionLabel = activity.getString(if (isOn) R.string.radar_turn_off else R.string.radar_turn_on),
+            danger = isOn
+        ) { set(activity, !isOn) }
     }
 }

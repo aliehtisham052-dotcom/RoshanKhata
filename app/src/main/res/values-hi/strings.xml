@@ -408,6 +408,10 @@
     <string name="screen_privacy_off">बंद — स्क्रीनशॉट सामान्य रूप से चलते हैं</string>
     <string name="screen_privacy_turn_on">स्क्रीनशॉट रोकें</string>
     <string name="screen_privacy_turn_off">स्क्रीनशॉट चलने दें</string>
+    <string name="setting_state_on">चालू</string>
+    <string name="setting_state_off">बंद</string>
+    <string name="setting_learn_more">और जानें</string>
+    <string name="setting_learn_less">कम दिखाएँ</string>
     <string name="screen_privacy_explain">इसे चालू करने पर रोशन खाता में हर जगह स्क्रीनशॉट और स्क्रीन रिकॉर्डिंग बंद हो जाती है।\n\nइसकी कीमत यह है कि आपके अपने स्क्रीनशॉट भी बंद हो जाते हैं। अगर आप ग्राहक के खाते की फ़ोटो लेकर आगे भेजते हैं, तो यह चालू रहने तक वह नहीं होगा। शेयर और स्टेटमेंट बटन फिर भी चलते हैं, और स्क्रीनशॉट से साफ़ कॉपी भेजते हैं।\n\nरोज़ के काम में इसे बंद रखें। फ़ोन अक्सर दूसरों के हाथ में रहता हो तो चालू करें।</string>
     <string name="screen_privacy_recents_hidden">आपका Android पहले से रोशन खाता को हाल के ऐप्स की सूची में नहीं दिखाता, इसलिए वहाँ कोई आपका खाता नहीं देख सकता।</string>
     <string name="screen_privacy_recents_visible">यह Android 13 से पुराना है, इसलिए हाल के ऐप्स की सूची में आपकी आख़िरी स्क्रीन दिख सकती है। सिर्फ़ यही स्विच उसे छुपा सकता है।</string>

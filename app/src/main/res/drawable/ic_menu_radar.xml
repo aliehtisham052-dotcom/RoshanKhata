@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- More-menu icon for Payment Radar (8 Nov 2026): three arcs round a dot, one ink (fi_teal_b: dark by day, light by night). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#00000000" android:strokeColor="@color/fi_teal_b" android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M6,12A6,6 0 0 1 12,18 M6,7A11,11 0 0 1 17,18 M6,2A16,16 0 0 1 22,18" />
+    <path android:fillColor="@color/fi_teal_b" android:pathData="M6,15.8a2.2,2.2 0 1 0 0,4.4a2.2,2.2 0 1 0 0,-4.4z" />
+</vector>

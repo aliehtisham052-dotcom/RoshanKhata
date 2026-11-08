@@ -408,6 +408,10 @@
     <string name="screen_privacy_off">বন্ধ — স্ক্রিনশট স্বাভাবিকভাবে চলে</string>
     <string name="screen_privacy_turn_on">স্ক্রিনশট বন্ধ করুন</string>
     <string name="screen_privacy_turn_off">স্ক্রিনশট চালু রাখুন</string>
+    <string name="setting_state_on">চালু</string>
+    <string name="setting_state_off">বন্ধ</string>
+    <string name="setting_learn_more">আরও জানুন</string>
+    <string name="setting_learn_less">কম দেখান</string>
     <string name="screen_privacy_explain">এটি চালু করলে রোশন খাতার সব জায়গায় স্ক্রিনশট ও স্ক্রিন রেকর্ডিং বন্ধ হয়ে যায়।\n\nএর মূল্য হলো আপনার নিজের স্ক্রিনশটও বন্ধ হয়। গ্রাহকের খাতার ছবি তুলে পাঠাতে চাইলে এটি চালু থাকা অবস্থায় তা হবে না। শেয়ার ও স্টেটমেন্ট বোতাম তবুও কাজ করে, আর স্ক্রিনশটের চেয়ে পরিষ্কার কপি পাঠায়।\n\nরোজকার কাজে এটি বন্ধ রাখুন। ফোন প্রায়ই অন্যের হাতে থাকলে চালু করুন।</string>
     <string name="screen_privacy_recents_hidden">আপনার Android আগে থেকেই রোশন খাতাকে সাম্প্রতিক অ্যাপের তালিকায় দেখায় না, তাই সেখানে কেউ আপনার খাতা দেখতে পায় না।</string>
     <string name="screen_privacy_recents_visible">এই Android 13-এর চেয়ে পুরোনো, তাই সাম্প্রতিক অ্যাপের তালিকায় আপনার শেষ স্ক্রিন দেখা যেতে পারে। শুধু এই সুইচ সেটি লুকাতে পারে।</string>

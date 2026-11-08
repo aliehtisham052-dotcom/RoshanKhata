@@ -23,12 +23,12 @@ import com.innovation313.roshankhata.data.ThemeMode
 object MoreSheet {
 
     /** One door of the More list: its icon (a Home-tile duotone), the disc's tint, its name, the group it sits in on the sheet, and what it opens. */
-    class Entry(val icon: Int, val tint: Int, val label: Int, val group: Int, val open: () -> Unit)
+    class Entry(val icon: Int, val tint: Int, val label: Int, val group: Int, val chevron: Boolean = true, val open: () -> Unit)
 
     /** The settings and doors, in order; Home's gear and the Khata screen's ⋮ list the same (7 Oct). */
     fun entries(activity: Activity): List<Entry> {
         val viewer = com.innovation313.roshankhata.data.ViewerMode.isOn(activity)
-        fun e(icon: Int, tint: Int, label: Int, group: Int, open: () -> Unit) = Entry(icon, tint, label, group, open)
+        fun e(icon: Int, tint: Int, label: Int, group: Int, chevron: Boolean = true, open: () -> Unit) = Entry(icon, tint, label, group, chevron, open)
         val security = R.string.settings_group_security
         val data = R.string.settings_group_data
         val display = R.string.settings_group_display
@@ -56,9 +56,9 @@ object MoreSheet {
             // The helper's phone: the owner sends a copy from here, and a helper's
             // phone becomes read-only (or stops being) from here too.
             // The shop's daily work said at its own time (31 Oct 2026); a read-only phone says none of it.
-            if (viewer) null else e(R.drawable.ic_bell, R.color.tile_followup_bg, R.string.auto_title, data) { AutomationsDialog.show(activity) },
+            if (viewer) null else e(R.drawable.ic_menu_bell, R.color.tile_followup_bg, R.string.auto_title, data) { AutomationsDialog.show(activity) },
             // Payment Radar's one switch (2 Nov 2026); a read-only phone never shows the Radar at all.
-            if (viewer) null else e(R.drawable.ic_tile_followup, R.color.tile_followup_bg, R.string.radar_title, data) { RadarUi.settings(activity) },
+            if (viewer) null else e(R.drawable.ic_menu_radar, R.color.tile_followup_bg, R.string.radar_title, data) { RadarUi.settings(activity) },
             // Payment voice (5 Nov 2026): a payment a wallet app announced, said aloud and offered to a khata.
             // Not on a read-only phone, which could not add it.
             if (viewer) null else e(R.drawable.ic_menu_paisa, R.color.tile_cashbook_bg, R.string.paisa_title, data) {
@@ -79,7 +79,7 @@ object MoreSheet {
             // Reporting a problem lives inside Help, one door for "something is wrong".
             e(R.drawable.ic_menu_help, R.color.tile_insights_bg, R.string.help_support, help) { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
             // Telling another shopkeeper (8 Nov 2026 review, L168): the system share sheet with one line and the tagged Play link.
-            e(R.drawable.ic_menu_share, R.color.tile_khata_bg, R.string.share_app, help) { shareApp(activity) },
+            e(R.drawable.ic_menu_share, R.color.tile_khata_bg, R.string.share_app, help, chevron = false) { shareApp(activity) },
             e(R.drawable.ic_menu_about, R.color.tile_cheques_bg, R.string.about_us, help) { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
         )
     }
@@ -152,7 +152,7 @@ object MoreSheet {
                 row.findViewById<android.widget.FrameLayout>(R.id.moreIconDisc).backgroundTintList =
                     android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(activity, e.tint))
                 row.findViewById<android.widget.TextView>(R.id.tvMoreLabel).setText(e.label)
-                row.findViewById<android.view.View>(R.id.ivMoreChevron).visibility = android.view.View.VISIBLE
+                row.findViewById<android.view.View>(R.id.ivMoreChevron).visibility = if (e.chevron) android.view.View.VISIBLE else android.view.View.GONE
                 row.minimumHeight = (52 * dp).toInt()
                 row.setOnClickListener { sheet.dismiss(); e.open() }
                 card.addView(row)
@@ -247,25 +247,33 @@ object MoreSheet {
             return
         }
         val enabled = AppLock.isEnabled(activity)
-        val status = activity.getString(if (enabled) R.string.app_lock_enabled else R.string.app_lock_disabled)
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.app_lock)
-            .setMessage(status + "\n\n" + activity.getString(R.string.app_lock_explain))
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on) { _, _ ->
-                val flip = {
-                    AppLock.setEnabled(activity, !enabled)
-                    Toast.makeText(
-                        activity,
-                        if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                // Both ways take the phone's own fingerprint or screen lock first. OFF (21 Oct 2026): anyone
-                // holding the open app could switch it off in two taps. ON (3 Nov 2026 audit, C3): the lock is
-                // proven to answer on THIS phone before it guards the book — a lock that could not be answered
-                // shut the owner out of his own ledger at the next opening.
-                val host = activity as? androidx.fragment.app.FragmentActivity ?: return@setPositiveButton
+        // A sheet like Automations' and Theme's (8 Nov 2026): the state as a pill, the status line, the long
+        // explanation behind Learn more, one button naming the result (red when it takes the lock away).
+        SettingSheet.show(
+            activity,
+            icon = R.drawable.ic_menu_lock,
+            tile = R.color.tile_bills_bg,
+            title = activity.getString(R.string.app_lock),
+            on = enabled,
+            summary = activity.getString(if (enabled) R.string.app_lock_enabled else R.string.app_lock_disabled),
+            more = activity.getString(R.string.app_lock_explain),
+            actionLabel = activity.getString(if (enabled) R.string.app_lock_turn_off else R.string.app_lock_turn_on),
+            danger = enabled
+        ) {
+            val flip = {
+                AppLock.setEnabled(activity, !enabled)
+                Toast.makeText(
+                    activity,
+                    if (!enabled) R.string.app_lock_enabled else R.string.app_lock_disabled,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            // Both ways take the phone's own fingerprint or screen lock first. OFF (21 Oct 2026): anyone
+            // holding the open app could switch it off in two taps. ON (3 Nov 2026 audit, C3): the lock is
+            // proven to answer on THIS phone before it guards the book — a lock that could not be answered
+            // shut the owner out of his own ledger at the next opening.
+            val host = activity as? androidx.fragment.app.FragmentActivity
+            if (host != null) {
                 val prompt = androidx.biometric.BiometricPrompt(host, androidx.core.content.ContextCompat.getMainExecutor(host),
                     object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
                         override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) { flip() }
@@ -278,6 +286,6 @@ object MoreSheet {
                         .build()
                 )
             }
-            .show()
+        }
     }
 }

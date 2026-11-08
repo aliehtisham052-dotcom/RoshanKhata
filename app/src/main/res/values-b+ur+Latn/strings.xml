@@ -392,7 +392,11 @@
     <string name="screen_privacy_off">Off — screenshot aam tareeqe se chalta hai</string>
     <string name="screen_privacy_turn_on">Screenshot band karein</string>
     <string name="screen_privacy_turn_off">Screenshot ki ijazat dein</string>
-    <string name="screen_privacy_explain">Ye on karne se Roshan Khata mein har jagah screenshot aur screen recording band ho jati hai.\n\nQeemat ye hai ke AAP ka apna screenshot bhi band ho jata hai. Agar aap gahak ka khata tasveer le kar aage bhejte hain, wo on rehne tak nahi ho sakega. Share aur Statement ke button phir bhi kaam karte hain, aur screenshot se saaf naqal bhejte hain.\n\nRozmarra kaam ke liye ise off rakhein. On tab karein jab phone aksar doosron ke haath mein rehta ho.</string>
+    <string name="setting_state_on">On</string>
+    <string name="setting_state_off">Off</string>
+    <string name="setting_learn_more">Mazeed jaanein</string>
+    <string name="setting_learn_less">Kam dikhayein</string>
+    <string name="screen_privacy_explain">Ye on karne se Roshan Khata mein har jagah screenshot aur screen recording band ho jati hai.\n\nQeemat ye hai ke aap ka apna screenshot bhi band ho jata hai. Agar aap gahak ka khata tasveer le kar aage bhejte hain, wo on rehne tak nahi ho sakega. Share aur Statement ke button phir bhi kaam karte hain, aur screenshot se saaf naqal bhejte hain.\n\nRozmarra kaam ke liye ise off rakhein. On tab karein jab phone aksar doosron ke haath mein rehta ho.</string>
     <string name="screen_privacy_recents_hidden">Aap ka Android pehle hi Roshan Khata ko recent-apps switcher se chhupa deta hai, is liye wahan koi aap ka khata nahi dekh sakta.</string>
     <string name="screen_privacy_recents_visible">Is Android ka version 13 se purana hai, is liye recent-apps switcher abhi bhi aap ki aakhri screen dikha sakta hai. Sirf yehi switch usay chhupa sakta hai.</string>
     <string name="app_lock_no_screen_lock">Is phone par koi screen lock nahi. Pehle phone ki settings mein fingerprint, PIN ya pattern lagayen, phir App Lock aap ke khate ki hifazat kar sakega.</string>

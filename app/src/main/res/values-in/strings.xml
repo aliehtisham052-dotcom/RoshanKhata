@@ -397,7 +397,11 @@
     <string name="screen_privacy_off">Nonaktif — tangkapan layar berfungsi normal</string>
     <string name="screen_privacy_turn_on">Blokir tangkapan layar</string>
     <string name="screen_privacy_turn_off">Izinkan tangkapan layar</string>
-    <string name="screen_privacy_explain">Mengaktifkan ini akan memblokir tangkapan layar dan perekaman layar di seluruh Roshan Khata.\n\nKonsekuensinya, tangkapan layar ANDA sendiri juga diblokir. Jika Anda biasa memotret buku pelanggan untuk dikirim, hal itu tidak akan berfungsi selama fitur ini aktif. Tombol Bagikan dan Laporan tetap berfungsi, dan mengirim salinan yang lebih rapi daripada tangkapan layar.\n\nBiarkan nonaktif untuk pemakaian sehari-hari. Aktifkan jika ponsel sering dipegang orang lain.</string>
+    <string name="setting_state_on">Aktif</string>
+    <string name="setting_state_off">Nonaktif</string>
+    <string name="setting_learn_more">Pelajari lebih lanjut</string>
+    <string name="setting_learn_less">Tampilkan lebih sedikit</string>
+    <string name="screen_privacy_explain">Mengaktifkan ini akan memblokir tangkapan layar dan perekaman layar di seluruh Roshan Khata.\n\nKonsekuensinya, tangkapan layar Anda sendiri juga diblokir. Jika Anda biasa memotret buku pelanggan untuk dikirim, hal itu tidak akan berfungsi selama fitur ini aktif. Tombol Bagikan dan Laporan tetap berfungsi, dan mengirim salinan yang lebih rapi daripada tangkapan layar.\n\nBiarkan nonaktif untuk pemakaian sehari-hari. Aktifkan jika ponsel sering dipegang orang lain.</string>
     <string name="screen_privacy_recents_hidden">Android Anda sudah menyembunyikan Roshan Khata dari daftar aplikasi terbaru, jadi tidak ada yang melihat buku Anda di sana.</string>
     <string name="screen_privacy_recents_visible">Versi Android ini lebih lama dari 13, jadi daftar aplikasi terbaru masih dapat menampilkan layar terakhir Anda. Hanya tombol ini yang dapat menyembunyikannya.</string>
     <string name="app_lock_no_screen_lock">Ponsel ini belum memiliki kunci layar. Atur sidik jari, PIN, atau pola di pengaturan ponsel terlebih dahulu, barulah Kunci Aplikasi dapat melindungi buku Anda.</string>

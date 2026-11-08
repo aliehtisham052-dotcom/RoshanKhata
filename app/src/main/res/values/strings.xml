@@ -408,7 +408,11 @@
     <string name="screen_privacy_off">Off — screenshots work normally</string>
     <string name="screen_privacy_turn_on">Block screenshots</string>
     <string name="screen_privacy_turn_off">Allow screenshots</string>
-    <string name="screen_privacy_explain">Turning this on blocks screenshots and screen recording everywhere in Roshan Khata.\n\nThe cost is that it blocks YOURS too. If you photograph a customer\u2019s ledger to send it on, that will stop working while this is on. The Share and Statement buttons still work, and send a cleaner copy than a screenshot does.\n\nLeave it off for everyday use. Turn it on if the phone is often in other hands.</string>
+    <string name="setting_state_on">On</string>
+    <string name="setting_state_off">Off</string>
+    <string name="setting_learn_more">Learn more</string>
+    <string name="setting_learn_less">Show less</string>
+    <string name="screen_privacy_explain">Turning this on blocks screenshots and screen recording everywhere in Roshan Khata.\n\nThe cost is that it blocks your own too. If you photograph a customer\u2019s ledger to send it on, that will stop working while this is on. The Share and Statement buttons still work, and send a cleaner copy than a screenshot does.\n\nLeave it off for everyday use. Turn it on if the phone is often in other hands.</string>
     <string name="screen_privacy_recents_hidden">Your Android already keeps Roshan Khata out of the recent-apps switcher, so nobody sees your ledger there.</string>
     <string name="screen_privacy_recents_visible">This Android version is older than 13, so the recent-apps switcher can still show your last screen. Only this switch can hide it.</string>
     <string name="app_lock_no_screen_lock">This phone has no screen lock set. Set a fingerprint, PIN, or pattern in your phone\'s settings first, then App Lock can protect your ledger.</string>

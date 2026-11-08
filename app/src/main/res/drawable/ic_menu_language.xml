@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- More-menu icon (7 Oct): two tones of one hue, like the Home tiles; day and night colours in colors.xml. -->
+<!-- More-menu icon (8 Nov 2026): a clear globe, outline and meridians in one ink (fi_green_b: dark by day, light by night). The old two-tone disc was light green on a light green tile and read as a leaf. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="@color/fi_green_a" android:pathData="M12,2a10,10 0 1 1 0,20a10,10 0 0 1 0,-20z" />
-    <path android:fillColor="@color/fi_green_b" android:pathData="M12,2c2.5,2.5 3.8,6 3.8,10S14.5,19.5 12,22c-2.5,-2.5 -3.8,-6 -3.8,-10S9.5,4.5 12,2z M2.5,9h19v1.5h-19z M2.5,13.5h19V15h-19z M12,2v20h-1.5V2z" />
+    <path android:fillColor="#00000000" android:strokeColor="@color/fi_green_b" android:strokeWidth="1.8"
+        android:pathData="M12,3a9,9 0 1 0 0,18a9,9 0 1 0 0,-18z" />
+    <path android:fillColor="#00000000" android:strokeColor="@color/fi_green_b" android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M3,12h18M12,3c3,3 3,15 0,18M12,3c-3,3 -3,15 0,18" />
 </vector>

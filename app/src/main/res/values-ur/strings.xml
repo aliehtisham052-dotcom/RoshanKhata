@@ -392,6 +392,10 @@
     <string name="screen_privacy_off">آف — اسکرین شاٹ عام طریقے سے چلتا ہے</string>
     <string name="screen_privacy_turn_on">اسکرین شاٹ بند کریں</string>
     <string name="screen_privacy_turn_off">اسکرین شاٹ کی اجازت دیں</string>
+    <string name="setting_state_on">آن</string>
+    <string name="setting_state_off">آف</string>
+    <string name="setting_learn_more">مزید جانیں</string>
+    <string name="setting_learn_less">کم دکھائیں</string>
     <string name="screen_privacy_explain">یہ آن کرنے سے روشن کھاتہ میں ہر جگہ اسکرین شاٹ اور اسکرین ریکارڈنگ بند ہو جاتی ہے۔\n\nقیمت یہ ہے کہ آپ کا اپنا اسکرین شاٹ بھی بند ہو جاتا ہے۔ اگر آپ گاہک کا کھاتہ تصویر لے کر آگے بھیجتے ہیں، وہ آن رہنے تک نہیں ہو سکے گا۔ شیئر اور اسٹیٹمنٹ کے بٹن پھر بھی کام کرتے ہیں، اور اسکرین شاٹ سے صاف نقل بھیجتے ہیں۔\n\nروزمرہ کام کے لیے اسے آف رکھیں۔ آن تب کریں جب فون اکثر دوسروں کے ہاتھ میں رہتا ہو۔</string>
     <string name="screen_privacy_recents_hidden">آپ کا اینڈرائیڈ پہلے ہی روشن کھاتہ کو ریسنٹ ایپس سوئچر سے چھپا دیتا ہے، اس لیے وہاں کوئی آپ کا کھاتہ نہیں دیکھ سکتا۔</string>
     <string name="screen_privacy_recents_visible">اس اینڈرائیڈ کا ورژن 13 سے پرانا ہے، اس لیے ریسنٹ ایپس سوئچر ابھی بھی آپ کی آخری اسکرین دکھا سکتا ہے۔ صرف یہی سوئچ اسے چھپا سکتا ہے۔</string>

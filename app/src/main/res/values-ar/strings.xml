@@ -436,6 +436,10 @@
     <string name="screen_privacy_off">مُعطّل — لقطات الشاشة تعمل كالمعتاد</string>
     <string name="screen_privacy_turn_on">حظر لقطات الشاشة</string>
     <string name="screen_privacy_turn_off">السماح بلقطات الشاشة</string>
+    <string name="setting_state_on">مفعّل</string>
+    <string name="setting_state_off">متوقف</string>
+    <string name="setting_learn_more">اعرف المزيد</string>
+    <string name="setting_learn_less">إظهار أقل</string>
     <string name="screen_privacy_explain">تفعيل هذا يمنع لقطات الشاشة وتسجيل الشاشة في كل أنحاء روشن كهاتا.\n\nوالثمن أنه يمنع لقطاتك أنت أيضاً. فإن كنت تصوّر كشف حساب عميل لترسله، فلن يعمل ذلك ما دام مُفعّلاً. أما زرّا المشاركة وكشف الحساب فيعملان، ويرسلان نسخة أوضح من لقطة الشاشة.\n\nاتركه مُعطّلاً للعمل اليومي، وفعّله إن كان الهاتف كثيراً ما يكون في أيدٍ أخرى.</string>
     <string name="screen_privacy_recents_hidden">نظام أندرويد لديك يُبقي التطبيق خارج مبدّل التطبيقات الأخيرة أصلاً، فلا يرى أحد دفترك هناك.</string>
     <string name="screen_privacy_recents_visible">إصدار أندرويد هذا أقدم من 13، لذا قد يظل مبدّل التطبيقات الأخيرة يعرض آخر شاشة لديك. لا يخفيها إلا هذا المفتاح.</string>

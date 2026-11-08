@@ -401,6 +401,10 @@
     <string name="screen_privacy_off">خاموش — عکس صفحه عادی کار می‌کند</string>
     <string name="screen_privacy_turn_on">مسدود کردن عکس صفحه</string>
     <string name="screen_privacy_turn_off">اجازهٔ گرفتن عکس صفحه</string>
+    <string name="setting_state_on">فعال</string>
+    <string name="setting_state_off">غیرفعال</string>
+    <string name="setting_learn_more">بیشتر بدانید</string>
+    <string name="setting_learn_less">نمایش کمتر</string>
     <string name="screen_privacy_explain">روشن کردن این گزینه، گرفتن عکس صفحه و ضبط صفحه را در همه‌جای روشن خاتا مسدود می‌کند.\n\nهزینه‌اش این است که عکس خودتان را هم مسدود می‌کند. اگر از حساب مشتری عکس می‌گیرید تا بفرستید، تا وقتی این روشن است انجام نمی‌شود. دکمه‌های اشتراک‌گذاری و صورتحساب همچنان کار می‌کنند و نسخه‌ای تمیزتر از عکس صفحه می‌فرستند.\n\nبرای کار روزمره خاموش نگهش دارید. روشنش کنید اگر گوشی اغلب در دست دیگران است.</string>
     <string name="screen_privacy_recents_hidden">اندروید شما از پیش برنامه را از جابه‌جاگر برنامه‌های اخیر بیرون نگه می‌دارد، پس کسی دفتر شما را آنجا نمی‌بیند.</string>
     <string name="screen_privacy_recents_visible">نسخهٔ این اندروید قدیمی‌تر از 13 است، بنابراین جابه‌جاگر برنامه‌های اخیر هنوز می‌تواند آخرین صفحهٔ شما را نشان دهد. تنها همین کلید آن را پنهان می‌کند.</string>

@@ -401,6 +401,10 @@
     <string name="screen_privacy_off">آف — اسڪرين شاٽ عام طريقي سان هلي ٿو</string>
     <string name="screen_privacy_turn_on">اسڪرين شاٽ بند ڪريو</string>
     <string name="screen_privacy_turn_off">اسڪرين شاٽ جي اجازت ڏيو</string>
+    <string name="setting_state_on">آن</string>
+    <string name="setting_state_off">آف</string>
+    <string name="setting_learn_more">وڌيڪ ڄاڻو</string>
+    <string name="setting_learn_less">گهٽ ڏيکاريو</string>
     <string name="screen_privacy_explain">هي آن ڪرڻ سان روشن کاتو ۾ هر هنڌ اسڪرين شاٽ ۽ اسڪرين رڪارڊنگ بند ٿي وڃي ٿي.\n\nقيمت اها آهي ته توهان جو پنهنجو اسڪرين شاٽ به بند ٿي وڃي ٿو. جيڪڏهن توهان گراهڪ جو کاتو تصوير وٺي اڳتي موڪليندا آهيو، اهو آن رهڻ تائين نه ٿي سگهندو. شيئر ۽ اسٽيٽمينٽ جا بٽڻ پوءِ به ڪم ڪن ٿا، ۽ اسڪرين شاٽ کان صاف نقل موڪلين ٿا.\n\nروزمرهه ڪم لاءِ ان کي آف رکو. آن تڏهن ڪريو جڏهن فون اڪثر ٻين جي هٿن ۾ رهندو هجي.</string>
     <string name="screen_privacy_recents_hidden">توهان جو اينڊرائيڊ اڳ ۾ ئي روشن کاتو کي ريسنٽ ايپس سوئچر کان لڪائي ٿو، ان ڪري اتي ڪوبه توهان جو کاتو نٿو ڏسي سگهي.</string>
     <string name="screen_privacy_recents_visible">هن اينڊرائيڊ جو ورزن 13 کان پراڻو آهي، ان ڪري ريسنٽ ايپس سوئچر اڃا به توهان جي آخري اسڪرين ڏيکاري سگهي ٿو. رڳو هي سوئچ ان کي لڪائي سگهي ٿو.</string>
