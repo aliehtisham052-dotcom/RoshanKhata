@@ -13,6 +13,12 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.BillPhoto
+import com.innovation313.roshankhata.data.Businesses
+import com.innovation313.roshankhata.data.Cheque
+import com.innovation313.roshankhata.data.Invoice
+import com.innovation313.roshankhata.data.Scheme
+import com.innovation313.roshankhata.data.SupplierBill
+import com.innovation313.roshankhata.data.totals
 import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.Money
 import com.innovation313.roshankhata.data.string
@@ -67,22 +73,54 @@ class RecycleBinActivity : BaseActivity() {
 
     private fun purgeExpired() {
         AppScope.launch {
-            val cutoff = System.currentTimeMillis() - (RETENTION_DAYS * DAY_MS)
+            val now = System.currentTimeMillis()
+            val cutoff = now - (RETENTION_DAYS * DAY_MS)
+            // The cashbook lines, cheques, bills and documents the bin lists since 8 Nov 2026 were binned for months
+            // before it showed them: their 30 days start the first time the bin is opened with this version, so
+            // nothing the owner never saw is swept (binKindsDue).
+            val kindsDue = binKindsDue(now)
             // Photos of what is purged go too (BillPhoto.purgingOrphans).
             BillPhoto.purgingOrphans(applicationContext, dao) {
+                if (kindsDue) dao.purgeBinKinds(cutoff, false)
                 dao.purgeOldEntries(cutoff)
                 dao.purgeOldParties(cutoff)
             }
         }
     }
 
+    /**
+     * True once 30 days have passed since this shop's bin first listed the five newer kinds (written the first time
+     * it is opened). Per shop; a device-only note, not part of the book.
+     */
+    private fun binKindsDue(now: Long): Boolean {
+        val prefs = getSharedPreferences("bin_kinds" + Businesses.suffix(this), MODE_PRIVATE)
+        val since = prefs.getLong("since", 0L)
+        if (since == 0L) {
+            prefs.edit().putLong("since", now).apply()
+            return false
+        }
+        return now - since >= RETENTION_DAYS * DAY_MS
+    }
+
+    /** The newer kinds, read together so one list is built from all seven (combine takes five flows at a time). */
+    private class Newer(val cheques: List<Cheque>, val bills: List<SupplierBill>, val docs: List<Invoice>, val schemes: List<Scheme>)
+
     private fun observeBin() {
         lifecycleScope.launch {
-            combine(
+            val older = combine(
                 dao.observeDeletedParties(),
-                dao.observeDeletedEntries()
-            ) { parties, entries -> parties to entries }
-                .collectLatest { (parties, entries) ->
+                dao.observeDeletedEntries(),
+                dao.observeDeletedCash()
+            ) { parties, entries, cash -> Triple(parties, entries, cash) }
+            val newer = combine(
+                dao.observeDeletedCheques(),
+                dao.observeDeletedBills(),
+                dao.observeDeletedInvoices(),
+                dao.observeDeletedSchemes()
+            ) { cheques, bills, docs, schemes -> Newer(cheques, bills, docs, schemes) }
+            combine(older, newer) { a, b -> a to b }
+                .collectLatest { (first, more) ->
+                    val (parties, entries, cash) = first
 
                     val partyItems = parties.map { p ->
                         BinItem.DeletedParty(
@@ -106,7 +144,24 @@ class RecycleBinActivity : BaseActivity() {
                         )
                     }
 
-                    val all = (partyItems + entryItems).sortedByDescending { it.deletedAt }
+                    val cashItems = cash.map { c ->
+                        BinItem.DeletedCash(c.id, c.isIncome, c.amount, c.category, c.note, c.deletedAt ?: 0L)
+                    }
+                    val chequeItems = more.cheques.map { c ->
+                        BinItem.DeletedCheque(
+                            c.id, dao.getPartyName(c.partyId).orEmpty(), c.amount, c.isReceived, c.chequeNumber, c.deletedAt ?: 0L
+                        )
+                    }
+                    val billItems = more.bills.map { b ->
+                        BinItem.DeletedBill(b.id, dao.getPartyName(b.partyId).orEmpty(), b.billNumber, b.totalAmount, b.deletedAt ?: 0L)
+                    }
+                    val docItems = more.docs.map { d ->
+                        BinItem.DeletedDoc(d.id, d.kind, d.invoiceNumber, d.customerName, d.totals(dao.invoiceItems(d.id)).grandTotal, d.deletedAt ?: 0L)
+                    }
+                    val schemeItems = more.schemes.map { sc -> BinItem.DeletedScheme(sc.id, sc.name, sc.company, 0L) }
+
+                    val all = (partyItems + entryItems + cashItems + chequeItems + billItems + docItems + schemeItems)
+                        .sortedByDescending { it.deletedAt }
                     adapter.submit(all)
                     tvEmpty.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
                 }
@@ -122,6 +177,11 @@ class RecycleBinActivity : BaseActivity() {
                 is BinItem.DeletedParty -> getString(R.string.restore_party_confirm, item.name)
                 is BinItem.DeletedEntry -> getString(R.string.restore_entry_confirm) +
                     (pair?.let { "\n\n" + getString(R.string.restore_pair_too, it.entryNumber) } ?: "")
+                is BinItem.DeletedCash -> getString(R.string.bin_restore_cash_confirm)
+                is BinItem.DeletedCheque -> getString(R.string.bin_restore_cheque_confirm)
+                is BinItem.DeletedBill -> getString(R.string.bin_restore_bill_confirm)
+                is BinItem.DeletedDoc -> getString(R.string.bin_restore_doc_confirm)
+                is BinItem.DeletedScheme -> getString(R.string.bin_restore_scheme_confirm)
             }
 
             MaterialAlertDialogBuilder(this@RecycleBinActivity)
@@ -141,6 +201,8 @@ class RecycleBinActivity : BaseActivity() {
      */
     private fun restore(item: BinItem) {
         AppScope.launch {
+            // A kind the bin cannot bring back safely says why (blocked) instead of "Restored".
+            var blocked: Int? = null
             when (item) {
                 is BinItem.DeletedParty -> {
                     // Bring the party back together with the entries that
@@ -153,22 +215,46 @@ class RecycleBinActivity : BaseActivity() {
                     // other half comes back with it (3 Nov 2026 audit, M13).
                     dao.restoreEntryWithPair(item.id)
                 }
+                // Each of the newer kinds undoes exactly what its own delete did (KhataDao: the bin section).
+                is BinItem.DeletedCash -> if (dao.restoreCashRow(item.id) != 1) blocked = R.string.bin_restore_gone
+                is BinItem.DeletedCheque -> if (!dao.restoreCheque(item.id)) blocked = R.string.bin_restore_cheque_blocked
+                is BinItem.DeletedBill -> if (!dao.restoreSupplierBill(item.id)) blocked = R.string.bin_restore_bill_blocked
+                is BinItem.DeletedDoc -> if (!dao.restoreDocument(item.id)) blocked = R.string.bin_restore_gone
+                is BinItem.DeletedScheme -> if (dao.restoreScheme(item.id) != 1) blocked = R.string.bin_restore_gone
             }
-            // L75 (8 Nov 2026 review): who brought it back is written down, as who put it in the bin is.
-            runCatching {
-                dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_RESTORED, com.innovation313.roshankhata.data.Access.userName,
-                    if (item is BinItem.DeletedParty) "parties" else "transactions", item.id)
+            val reason: Int? = blocked
+            if (reason == null) {
+                // L75 (8 Nov 2026 review): who brought it back is written down, as who put it in the bin is.
+                runCatching {
+                    dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_RESTORED, com.innovation313.roshankhata.data.Access.userName,
+                        tableOf(item), item.id)
+                }
             }
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
-                    Toast.makeText(
-                        this@RecycleBinActivity,
-                        R.string.restored,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    if (reason == null) {
+                        Toast.makeText(this@RecycleBinActivity, R.string.restored, Toast.LENGTH_SHORT).show()
+                    } else {
+                        MaterialAlertDialogBuilder(this@RecycleBinActivity)
+                            .setTitle(R.string.restore)
+                            .setMessage(reason)
+                            .setPositiveButton(R.string.ok, null)
+                            .show()
+                    }
                 }
             }
         }
+    }
+
+    /** The table a bin row came from, as the audit log names it. */
+    private fun tableOf(item: BinItem): String = when (item) {
+        is BinItem.DeletedParty -> "parties"
+        is BinItem.DeletedEntry -> "transactions"
+        is BinItem.DeletedCash -> "cashbook"
+        is BinItem.DeletedCheque -> "cheques"
+        is BinItem.DeletedBill -> "supplier_bills"
+        is BinItem.DeletedDoc -> "invoices"
+        is BinItem.DeletedScheme -> "schemes"
     }
 
     /**
@@ -185,6 +271,13 @@ class RecycleBinActivity : BaseActivity() {
         val what = when (item) {
             is BinItem.DeletedParty -> item.name
             is BinItem.DeletedEntry -> "${item.entryNumber} · ${item.partyName}"
+            is BinItem.DeletedCash -> listOf(item.category, Format.money(item.amount)).filter { it.isNotBlank() }.joinToString(" · ")
+            is BinItem.DeletedCheque -> listOfNotNull(item.chequeNumber?.takeIf { it.isNotBlank() }, item.partyName.takeIf { it.isNotBlank() }, Format.money(item.amount))
+                .joinToString(" · ")
+            is BinItem.DeletedBill -> listOfNotNull(item.billNumber?.takeIf { it.isNotBlank() }, item.partyName.takeIf { it.isNotBlank() }, Format.money(item.amount))
+                .joinToString(" · ")
+            is BinItem.DeletedDoc -> "${item.number} · ${item.customerName}"
+            is BinItem.DeletedScheme -> item.name
         }
         val message = when (item) {
             is BinItem.DeletedParty -> buildString {
@@ -203,7 +296,8 @@ class RecycleBinActivity : BaseActivity() {
                     )
                 }
             }
-            is BinItem.DeletedEntry -> getString(R.string.delete_entry_forever_confirm, what)
+            is BinItem.DeletedEntry, is BinItem.DeletedCash, is BinItem.DeletedCheque, is BinItem.DeletedBill,
+            is BinItem.DeletedDoc, is BinItem.DeletedScheme -> getString(R.string.delete_entry_forever_confirm, what)
         }
 
         MaterialAlertDialogBuilder(this)
@@ -221,11 +315,16 @@ class RecycleBinActivity : BaseActivity() {
                         when (item) {
                             is BinItem.DeletedParty -> { dao.keepEntryNumberHigh(); dao.purgeParty(item.id) > 0 } // L67: its entries' RK numbers are not given out again
                             is BinItem.DeletedEntry -> { dao.purgeEntry(item.id); true }
+                            is BinItem.DeletedCash -> { dao.purgeCashRow(item.id); true }
+                            is BinItem.DeletedCheque -> { dao.purgeChequeRow(item.id); true }
+                            is BinItem.DeletedBill -> { dao.purgeSupplierBill(item.id); true }
+                            is BinItem.DeletedDoc -> { dao.purgeDocument(item.id); true }
+                            is BinItem.DeletedScheme -> { dao.purgeScheme(item.id); true }
                         }
                     }
                     runCatching {
                         dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_PURGED, com.innovation313.roshankhata.data.Access.userName,
-                            if (item is BinItem.DeletedParty) "parties" else "transactions", item.id)
+                            tableOf(item), item.id)
                     }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
@@ -263,6 +362,8 @@ class RecycleBinActivity : BaseActivity() {
                 // comes back whole (22 Oct 2026, the review).
                 AppScope.launch {
                     val kept = BillPhoto.purgingOrphans(applicationContext, dao) {
+                        // The cashbook lines, cheques, bills, documents and schemes first: a bill takes the entries it owned.
+                        dao.purgeBinKinds(0L, true)
                         dao.purgeAllEntries()
                         dao.purgeAllParties()
                         dao.binnedPartyCount()

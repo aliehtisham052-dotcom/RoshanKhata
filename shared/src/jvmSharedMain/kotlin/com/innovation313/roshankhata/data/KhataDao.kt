@@ -269,7 +269,7 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
-        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND b.ledgerEntryId = transactions.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND (b.ledgerEntryId = transactions.id OR b.ledgerEntryId = transactions.pairedEntryId))
         """
     )
     suspend fun restoreEntry(id: Long)
@@ -318,7 +318,7 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = t.id)
         AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = t.id)
         AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = t.id OR r.refundEntryId = t.id))
-        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND b.ledgerEntryId = t.id)
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND (b.ledgerEntryId = t.id OR b.ledgerEntryId = t.pairedEntryId))
         ORDER BY t.deletedAt DESC
         """
     )
@@ -366,6 +366,7 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND (b.ledgerEntryId = transactions.id OR b.ledgerEntryId = transactions.pairedEntryId))
         """
     )
     suspend fun purgeOldEntryRows(cutoff: Long)
@@ -420,6 +421,7 @@ interface KhataDao {
         AND NOT EXISTS (SELECT 1 FROM sales s WHERE s.status = 'void' AND s.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s2 ON s2.id = sp.saleId WHERE s2.status = 'void' AND sp.ledgerEntryId = transactions.id)
         AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.status = 'void' AND (r.ledgerEntryId = transactions.id OR r.refundEntryId = transactions.id))
+        AND NOT EXISTS (SELECT 1 FROM supplier_bills b WHERE b.isDeleted = 1 AND (b.ledgerEntryId = transactions.id OR b.ledgerEntryId = transactions.pairedEntryId))
         """
     )
     suspend fun purgeAllEntryRows()
@@ -486,6 +488,222 @@ interface KhataDao {
         keepEntryNumberHigh()
         purgeEntryRow(id)
         clearDanglingPairs()
+    }
+
+    // ---------- Recycle Bin: cashbook, cheques, supplier bills, documents, schemes (8 Nov 2026) ----------
+    //
+    // These five were binned (isDeleted) by their own screens and then nowhere to be seen: no way back, and nothing
+    // that ever sent them off. The bin lists them now, each restored by undoing exactly what its delete did.
+
+    /**
+     * Cashbook lines the owner deleted. A line a voided ticket or return took back is not offered (restoring it would
+     * count the money a second time while its ticket reads void), nor one a ticket wrote.
+     */
+    @Query(
+        """
+        SELECT c.* FROM cashbook c WHERE c.isDeleted = 1 AND c.saleId IS NULL
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.cashEntryId = c.id AND s.status = 'void')
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundCashId = c.id AND r.status = 'void')
+        ORDER BY c.deletedAt DESC
+        """
+    )
+    fun observeDeletedCash(): Flow<List<CashEntry>>
+
+    /** One cashbook line back from the bin, by the same rules as the listing; rows changed. */
+    @Query(
+        """
+        UPDATE cashbook SET isDeleted = 0, deletedAt = NULL WHERE id = :id AND isDeleted = 1 AND saleId IS NULL
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.cashEntryId = cashbook.id AND s.status = 'void')
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundCashId = cashbook.id AND r.status = 'void')
+        """
+    )
+    suspend fun restoreCashRow(id: Long): Int
+
+    /** One binned cashbook line deleted for good (its picture goes with it, by the bin's photo rule). */
+    @Query("DELETE FROM cashbook WHERE id = :id AND isDeleted = 1 AND saleId IS NULL")
+    suspend fun purgeCashRow(id: Long): Int
+
+    /** Cheques of customers and suppliers still in the book (a binned party's come back with him, never shown apart). */
+    @Query(
+        """
+        SELECT c.* FROM cheques c JOIN parties p ON p.id = c.partyId
+        WHERE c.isDeleted = 1 AND p.isDeleted = 0 ORDER BY c.deletedAt DESC
+        """
+    )
+    fun observeDeletedCheques(): Flow<List<Cheque>>
+
+    /**
+     * A cheque back from the bin with the status it had. A cheque that was cleared posted its payment to the khata:
+     * it returns only while that payment still stands, else the cheque would read cleared with no money behind it.
+     * False (nothing changed) when it is gone, not binned, or in that state.
+     */
+    @Transaction
+    suspend fun restoreCheque(id: Long): Boolean {
+        val cheque = getCheque(id)?.takeIf { it.isDeleted } ?: return false
+        if (cheque.status == ChequeStatus.CLEARED) {
+            val payment = cheque.ledgerEntryId?.let { getEntry(it) }
+            if (payment == null || payment.isDeleted) return false
+        }
+        updateCheque(cheque.copy(isDeleted = false, deletedAt = null))
+        return true
+    }
+
+    @Query("DELETE FROM cheques WHERE id = :id AND isDeleted = 1")
+    suspend fun purgeChequeRow(id: Long): Int
+
+    /** Supplier bills of suppliers still in the book, newest binned first. */
+    @Query(
+        """
+        SELECT b.* FROM supplier_bills b JOIN parties p ON p.id = b.partyId
+        WHERE b.isDeleted = 1 AND p.isDeleted = 0 ORDER BY b.deletedAt DESC
+        """
+    )
+    fun observeDeletedBills(): Flow<List<SupplierBill>>
+
+    @Query("UPDATE supplier_bills SET isDeleted = 0, deletedAt = NULL WHERE id = :id AND isDeleted = 1")
+    suspend fun restoreBillRow(id: Long): Int
+
+    /**
+     * A supplier bill back from the bin, undoing [deleteSupplierBill]: the bill, then its own "I owe them" entry and
+     * the payment binned with it (a bank or wallet bill), so the supplier's balance and the stock it brought in
+     * return together. A credit bill whose entry is gone for good is not restored (a bill without its debt would
+     * silently lower what the shop owes). False when nothing changed.
+     */
+    @Transaction
+    suspend fun restoreSupplierBill(id: Long): Boolean {
+        val bill = getBill(id)?.takeIf { it.isDeleted } ?: return false
+        val entryId = bill.ledgerEntryId
+        if (entryId != null && getEntry(entryId) == null) return false
+        if (restoreBillRow(id) != 1) return false
+        if (entryId != null) {
+            val entry = getEntry(entryId)
+            val pair = entry?.pairedEntryId?.let { getEntry(it) }?.takeIf { it.isDeleted && it.pairedEntryId == entryId }
+            // The bill is live again, so restoreEntry's "its bill is binned" guard no longer holds it back.
+            restoreEntry(entryId)
+            if (pair != null && getEntry(entryId)?.isDeleted == false) restoreEntry(pair.id)
+        }
+        return true
+    }
+
+    /**
+     * A binned bill deleted for good, with the debt entry and payment [deleteSupplierBill] binned beside it (still
+     * binned: a live one is never touched). Its goods lines go with it (cascade). The RK- number is not given out again.
+     */
+    @Transaction
+    suspend fun purgeSupplierBill(id: Long) {
+        val bill = getBill(id)?.takeIf { it.isDeleted } ?: return
+        val entryId = bill.ledgerEntryId
+        val entry = entryId?.let { getEntry(it) }
+        val pairId = entry?.pairedEntryId?.takeIf { pid -> getEntry(pid)?.pairedEntryId == entryId }
+        keepEntryNumberHigh()
+        purgeBillRow(id)
+        if (entryId != null) purgeEntryRow(entryId)
+        if (pairId != null) purgeEntryRow(pairId)
+        clearDanglingPairs()
+    }
+
+    @Query("DELETE FROM supplier_bills WHERE id = :id AND isDeleted = 1")
+    suspend fun purgeBillRow(id: Long): Int
+
+    /** Binned bills ([cutoff] on or before their binning day, or every one) whose supplier is still in the book. */
+    @Query(
+        """
+        SELECT b.id FROM supplier_bills b JOIN parties p ON p.id = b.partyId
+        WHERE b.isDeleted = 1 AND p.isDeleted = 0 AND (:everything = 1 OR b.deletedAt < :cutoff)
+        """
+    )
+    suspend fun binnedBillIds(cutoff: Long, everything: Boolean): List<Long>
+
+    /** Documents (quotations, orders, challans, invoices) the owner deleted. */
+    @Query("SELECT * FROM invoices WHERE isDeleted = 1 ORDER BY deletedAt DESC")
+    fun observeDeletedInvoices(): Flow<List<Invoice>>
+
+    @Query("UPDATE invoices SET isDeleted = 0, deletedAt = NULL WHERE id = :id AND isDeleted = 1")
+    suspend fun restoreInvoiceRow(id: Long): Int
+
+    /**
+     * A document back from the bin with the status it had (a delete is allowed only from OPEN or ACCEPTED and changes
+     * none). If it was made from another document, that one goes back to CONVERTED, as it was before
+     * [deleteDocument] reopened it, unless it has moved on meanwhile (anything but OPEN is left as it is).
+     */
+    @Transaction
+    suspend fun restoreDocument(id: Long): Boolean {
+        val doc = getInvoice(id)?.takeIf { it.isDeleted } ?: return false
+        if (restoreInvoiceRow(id) != 1) return false
+        doc.sourceDocId?.let { src ->
+            val source = getInvoice(src)
+            if (source != null && !source.isDeleted && source.status == DocStatus.OPEN) setDocStatus(src, DocStatus.CONVERTED, DocStatus.OPEN)
+        }
+        return true
+    }
+
+    @Query("DELETE FROM invoices WHERE id = :id AND isDeleted = 1")
+    suspend fun purgeInvoiceRow(id: Long): Int
+
+    /** Documents made from [id] and tickets that point at it stop pointing at a document that is gone. */
+    @Query("UPDATE invoices SET sourceDocId = NULL WHERE sourceDocId = :id")
+    suspend fun clearDocSource(id: Long)
+
+    @Query("UPDATE sales SET invoiceId = NULL WHERE invoiceId = :id")
+    suspend fun clearSaleInvoice(id: Long)
+
+    /** A binned document deleted for good (its lines cascade); false when it is not binned. */
+    @Transaction
+    suspend fun purgeDocument(id: Long): Boolean {
+        getInvoice(id)?.takeIf { it.isDeleted } ?: return false
+        clearDocSource(id)
+        clearSaleInvoice(id)
+        return purgeInvoiceRow(id) == 1
+    }
+
+    @Query("SELECT id FROM invoices WHERE isDeleted = 1 AND (:everything = 1 OR deletedAt < :cutoff)")
+    suspend fun binnedDocIds(cutoff: Long, everything: Boolean): List<Long>
+
+    /** Schemes the owner deleted. A scheme keeps no deletion day (no column), so these are listed undated and never age out. */
+    @Query("SELECT * FROM schemes WHERE isDeleted = 1 ORDER BY id DESC")
+    fun observeDeletedSchemes(): Flow<List<Scheme>>
+
+    @Query("UPDATE schemes SET isDeleted = 0 WHERE id = :id AND isDeleted = 1")
+    suspend fun restoreScheme(id: Long): Int
+
+    @Query("DELETE FROM schemes WHERE id = :id AND isDeleted = 1")
+    suspend fun purgeScheme(id: Long): Int
+
+    // The sweeps below run on the bin's screen only: the 30-day one (cutoff) and Empty bin (everything).
+
+    @Query(
+        """
+        DELETE FROM cashbook WHERE isDeleted = 1 AND saleId IS NULL AND (:everything = 1 OR deletedAt < :cutoff)
+        AND NOT EXISTS (SELECT 1 FROM sale_payments sp JOIN sales s ON s.id = sp.saleId WHERE sp.cashEntryId = cashbook.id AND s.status = 'void')
+        AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundCashId = cashbook.id AND r.status = 'void')
+        """
+    )
+    suspend fun purgeBinnedCash(cutoff: Long, everything: Boolean)
+
+    @Query(
+        """
+        DELETE FROM cheques WHERE isDeleted = 1 AND partyId IN (SELECT id FROM parties WHERE isDeleted = 0)
+        AND (:everything = 1 OR deletedAt < :cutoff)
+        """
+    )
+    suspend fun purgeBinnedCheques(cutoff: Long, everything: Boolean)
+
+    @Query("DELETE FROM schemes WHERE isDeleted = 1")
+    suspend fun purgeBinnedSchemes()
+
+    /**
+     * Cashbook lines, cheques, bills and documents binned before [cutoff] go for good; with [everything] (Empty bin),
+     * every one of them and the schemes too. Run before the entries' and customers' sweeps: a bill takes the entries
+     * it owned with it. Callers wrap this in `BillPhoto.purgingOrphans` so a bill's, cash line's or cheque's picture goes
+     * with its last row.
+     */
+    @Transaction
+    suspend fun purgeBinKinds(cutoff: Long, everything: Boolean) {
+        purgeBinnedCash(cutoff, everything)
+        purgeBinnedCheques(cutoff, everything)
+        for (id in binnedBillIds(cutoff, everything)) purgeSupplierBill(id)
+        for (id in binnedDocIds(cutoff, everything)) purgeDocument(id)
+        if (everything) purgeBinnedSchemes()
     }
 
     // ---------- Totals ----------

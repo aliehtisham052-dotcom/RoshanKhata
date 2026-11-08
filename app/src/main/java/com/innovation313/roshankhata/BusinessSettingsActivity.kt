@@ -436,6 +436,9 @@ class BusinessSettingsActivity : BaseActivity() {
         // the profile into view rather than leaving the owner at the top of
         // a long screen to find it again.
         intent.getStringExtra(EXTRA_FOCUS)?.let { focus ->
+            // From a row of the shop sheet (8 Nov 2026, the owner's phone test): the chosen part itself lands just
+            // below the status band, flashes, and the cursor goes to its first empty box.
+            if (intent.getBooleanExtra(EXTRA_LAND, false) && landOnPart(focus)) return@let
             val targetId = when (focus) {
                 FOCUS_NAME -> R.id.etBusinessName
                 FOCUS_PHONE -> R.id.etBusinessPhone
@@ -459,6 +462,88 @@ class BusinessSettingsActivity : BaseActivity() {
             }
         }
 
+    }
+
+    /**
+     * The shop sheet's rows land on a part of the profile. A part is a whole card (Name and logo: Identity; Stamp and
+     * signature; Payment QR and bank) or, for Shop type and Currency and calendar, that choice's own row inside the
+     * Identity card, a card of its own being far longer than the screen. The part is opened, scrolled so its top sits
+     * a margin below the status band (the band is above the scroll, so what lands at the top of the scroll is
+     * what the owner sees first), flashed once, and the cursor goes to the first empty text box in it with the keyboard
+     * after the scroll; none empty: no cursor and no keyboard (he reads first). Returns false for an unknown part.
+     */
+    private fun landOnPart(focus: String): Boolean {
+        val scroll = findViewById<android.widget.ScrollView>(R.id.scroll) ?: return false
+        val part: View
+        val body: View
+        val hasBoxes: Boolean
+        when (focus) {
+            FOCUS_NAME -> { part = findViewById(R.id.cardIdentity); body = findViewById(R.id.bodyIdentity); hasBoxes = true }
+            FOCUS_STAMP -> { part = findViewById(R.id.cardSeals); body = findViewById(R.id.bodySeals); hasBoxes = true }
+            FOCUS_PAYMENT -> { part = findViewById(R.id.cardPaid); body = findViewById(R.id.bodyPaid); hasBoxes = true }
+            FOCUS_TRADE -> { part = findViewById<View>(R.id.btnTrade).parent as View; body = findViewById(R.id.bodyIdentity); hasBoxes = false }
+            FOCUS_MONEY -> { part = findViewById<View>(R.id.btnCurrency).parent as View; body = findViewById(R.id.bodyIdentity); hasBoxes = false }
+            else -> return false
+        }
+        sections.reveal(body)
+        // The folded section's body is shown now; its own header sits inside the card, so the card is what lands.
+        fun land(retry: Boolean) {
+            if (isFinishing || isDestroyed) return
+            if (part.height == 0 && retry) { scroll.postDelayed({ land(false) }, 60); return }
+            var y = 0
+            var v: View? = part
+            while (v != null && v !== scroll) {
+                y += v.top
+                v = v.parent as? View
+            }
+            val margin = (12 * resources.displayMetrics.density).toInt()
+            scroll.smoothScrollTo(0, (y - margin).coerceAtLeast(0))
+            flashPart(part)
+            if (hasBoxes) focusFirstEmpty(part)
+        }
+        scroll.post { land(true) }
+        return true
+    }
+
+    /** A soft green wash over [part] that rises and fades once (not with the phone's animations off). */
+    private fun flashPart(part: View) {
+        if (!com.innovation313.roshankhata.ui.Motion.enabled(this)) return
+        val wash = android.graphics.drawable.GradientDrawable().apply {
+            cornerRadius = 14 * resources.displayMetrics.density
+            setColor(androidx.core.content.ContextCompat.getColor(this@BusinessSettingsActivity, R.color.brand_green_text))
+            alpha = 0
+        }
+        part.foreground = wash
+        android.animation.ValueAnimator.ofInt(0, 70, 0).apply {
+            duration = 1000
+            addUpdateListener { wash.alpha = it.animatedValue as Int }
+            addListener(object : android.animation.AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: android.animation.Animator) { part.foreground = null }
+            })
+            start()
+        }
+    }
+
+    /**
+     * The cursor in the first text box of [part] that holds nothing; the keyboard follows once the scroll has
+     * settled. Nothing empty: nothing happens, so the owner can read the card first.
+     */
+    private fun focusFirstEmpty(part: View) {
+        val boxes = ArrayList<EditText>()
+        fun walk(v: View) {
+            if (v is EditText) {
+                if (v.isShown && v.isEnabled && v.isFocusableInTouchMode) boxes.add(v)
+            } else if (v is android.view.ViewGroup) {
+                for (i in 0 until v.childCount) walk(v.getChildAt(i))
+            }
+        }
+        walk(part)
+        val first = boxes.firstOrNull { it.text.isNullOrBlank() } ?: return
+        first.requestFocus()
+        first.postDelayed({
+            if (isFinishing || isDestroyed || !first.hasFocus()) return@postDelayed
+            (getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)?.showSoftInput(first, 0)
+        }, 450)
     }
 
     /**
@@ -882,5 +967,12 @@ class BusinessSettingsActivity : BaseActivity() {
         const val FOCUS_STAMP = "stamp"
         const val FOCUS_PAYMENT = "payment"
         const val FOCUS_TRADE = "trade"
+        /** The currency and calendar choices (the shop sheet's "Currency and calendar" row). */
+        const val FOCUS_MONEY = "money"
+        /**
+         * With EXTRA_FOCUS, from the shop sheet: land on the chosen part with a margin, flash it and put the cursor in its
+         * first empty box. Without it (a missing box sent for: Add details, the poster) the older scroll to that box stays.
+         */
+        const val EXTRA_LAND = "land_on_part"
     }
 }

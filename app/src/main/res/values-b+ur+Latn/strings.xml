@@ -244,17 +244,26 @@
         <item quantity="one">%d entry</item>
         <item quantity="other">%d entries</item>
     </plurals>
-    <string name="restore">Wapas Layen</string>
+    <string name="restore">Wapas layen</string>
     <string name="restored">Wapas aa gaya</string>
     <string name="deleted_on">Delete hua: %1$s</string>
     <string name="restore_party_confirm">\"%1$s\" ko wapas layen? Is ke khata entries bhi wapas aa jayengi.</string>
     <string name="restore_entry_confirm">Ye entry wapas layen? Ye party ke khate mein dobara aayegi aur balance par asar dalegi.</string>
-    <string name="empty_bin">Bin Khali Karein</string>
+    <string name="empty_bin">Bin khali karein</string>
     <string name="empty_bin_confirm">Bin ki har cheez hamesha ke liye delete ho jayegi. Ye wapas nahi ho sakta.</string>
+    <string name="bin_kind_scheme">Company scheme</string>
+    <string name="bin_restore_gone">Ye wapas nahi aa saka: ye pehle hi wapas aa chuka hai ya hat chuka hai.</string>
+    <string name="bin_restore_cash_confirm">Ye cashbook entry wapas layen? Ye dobara cashbook aur drawer mein gini jayegi.</string>
+    <string name="bin_restore_cheque_confirm">Ye cheque wapas layen? Ye apni pehli haalat ke saath wapas aayega.</string>
+    <string name="bin_restore_cheque_blocked">Ye cheque clear ho chuka tha aur is ki payment ab khate mein nahi, is liye wapas nahi aa sakta. Pehle woh payment wapas layen.</string>
+    <string name="bin_restore_bill_confirm">Ye supplier bill wapas layen? Ye supplier ke khate mein apni entry ke saath wapas aayega aur is ka maal dobara stock mein gina jayega.</string>
+    <string name="bin_restore_bill_blocked">Is bill ki supplier ke khate wali entry hamesha ke liye khatam ho chuki hai, is liye bill wapas nahi aa sakta.</string>
+    <string name="bin_restore_doc_confirm">Ye document wapas layen? Ye apni pehli haalat ke saath wapas aayega.</string>
+    <string name="bin_restore_scheme_confirm">Ye company scheme wapas layen?</string>
     <string name="delete_party_forever_confirm">%1$s ko hamesha ke liye delete karein? Un ke saath rakhi har entry bhi khatam ho jayegi. Ye wapas nahi ho sakta.</string>
     <string name="delete_entry_forever_confirm">%1$s ko hamesha ke liye delete karein? Ye wapas nahi ho sakta.</string>
     <string name="deleted_forever_done">Mustaqil taur par delete ho gaya.</string>
-    <string name="delete_forever">Hamesha Ke Liye Delete</string>
+    <string name="delete_forever">Hamesha ke liye delete</string>
     <string name="bin_emptied">Bin khali kar diya gaya</string>
 
     <string name="delete">Delete Karein</string>
@@ -1858,7 +1867,12 @@
     <string name="bill_photo_missing">Is bill ki tasveer is phone par maujood nahi</string>
     <string name="pdf_insp_by_type">Qism ke lehaz se: %1$s</string>
     <string name="pdf_insp_type_not_set">Qism darj nahi</string>
-    <string name="followup_reminded_today">Aaj khola ✓</string>
+    <string name="followup_reminded_today">Aaj yaad-dehani ho gayi ✓</string>
+    <string name="reminder_sent_title">Kya paigham chala gaya?</string>
+    <string name="reminder_sent_body">Yeh app nahi dekh sakti ke aap ne send dabaya ya nahi. %1$s ko paigham chala gaya ho to hi Bhej diya dabayein; tab yeh yaad-dehani gini jayegi.</string>
+    <string name="reminder_sent_yes">Bhej diya</string>
+    <string name="reminder_sent_no_sms">Nahi bheja — SMS se bhejein</string>
+    <string name="reminder_sent_no">Nahi bheja</string>
     <string name="entry_open_invoice">Invoice kholein</string>
     <string name="label_step_title">Label ki tafseel (%2$d mein se %1$d)</string>
     <string name="label_step_skip">Chhorein</string>

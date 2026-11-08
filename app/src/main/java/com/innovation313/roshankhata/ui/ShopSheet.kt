@@ -116,7 +116,7 @@ object ShopSheet {
             sheet.dismiss()
             activity.startActivity(
                 Intent(activity, BusinessSettingsActivity::class.java)
-                    .apply { if (focus != null) putExtra(BusinessSettingsActivity.EXTRA_FOCUS, focus) }
+                    .apply { if (focus != null) putExtra(BusinessSettingsActivity.EXTRA_FOCUS, focus).putExtra(BusinessSettingsActivity.EXTRA_LAND, true) }
             )
         }
 
@@ -157,7 +157,7 @@ object ShopSheet {
                     activity.getString(R.string.shop_row_trade), Trade.current(activity).label(activity)) { openProfile(BusinessSettingsActivity.FOCUS_TRADE) },
                 Row(R.drawable.ic_hash, R.color.tile_bills_bg, R.color.backup_ink,
                     activity.getString(R.string.shop_row_money),
-                    "${com.innovation313.roshankhata.data.Currency.label(bp.currency(activity))}  ·  $calendar") { openProfile(BusinessSettingsActivity.FOCUS_TRADE) }
+                    "${com.innovation313.roshankhata.data.Currency.label(bp.currency(activity))}  ·  $calendar") { openProfile(BusinessSettingsActivity.FOCUS_MONEY) }
             )
             addRows(activity, inflater, profileRows, rows)
 

@@ -254,12 +254,21 @@
     <string name="deleted_on">Deleted on %1$s</string>
     <string name="restore_party_confirm">Restore \"%1$s\"? Its ledger entries will come back too.</string>
     <string name="restore_entry_confirm">Restore this entry? It will reappear in the party\'s ledger and affect the balance.</string>
-    <string name="empty_bin">Empty Bin</string>
+    <string name="empty_bin">Empty bin</string>
     <string name="empty_bin_confirm">Everything in the bin will be permanently deleted. This cannot be undone.</string>
+    <string name="bin_kind_scheme">Company scheme</string>
+    <string name="bin_restore_gone">It could not be restored: it was already restored or removed.</string>
+    <string name="bin_restore_cash_confirm">Restore this cashbook entry? It will count in the cashbook and the drawer again.</string>
+    <string name="bin_restore_cheque_confirm">Restore this cheque? It comes back with the status it had.</string>
+    <string name="bin_restore_cheque_blocked">This cheque was cleared and the payment it posted is not in the khata any more, so it cannot be restored. Restore that payment first.</string>
+    <string name="bin_restore_bill_confirm">Restore this supplier bill? It comes back with its entry in the supplier\'s khata, and its goods count in stock again.</string>
+    <string name="bin_restore_bill_blocked">This bill\'s entry in the supplier\'s khata is gone for good, so the bill cannot be restored.</string>
+    <string name="bin_restore_doc_confirm">Restore this document? It comes back with the status it had.</string>
+    <string name="bin_restore_scheme_confirm">Restore this company scheme?</string>
     <string name="delete_party_forever_confirm">Delete %1$s forever? This also removes every entry kept with them. It cannot be undone.</string>
     <string name="delete_entry_forever_confirm">Delete %1$s forever? It cannot be undone.</string>
     <string name="deleted_forever_done">Deleted permanently.</string>
-    <string name="delete_forever">Delete Forever</string>
+    <string name="delete_forever">Delete forever</string>
     <string name="bin_emptied">Bin emptied</string>
 
     <!-- Delete actions -->
@@ -1911,7 +1920,12 @@
     <string name="bill_photo_missing">This bill’s photo is not on this phone</string>
     <string name="pdf_insp_by_type">By type: %1$s</string>
     <string name="pdf_insp_type_not_set">Type not set</string>
-    <string name="followup_reminded_today">Opened today ✓</string>
+    <string name="followup_reminded_today">Reminded today ✓</string>
+    <string name="reminder_sent_title">Did the message go?</string>
+    <string name="reminder_sent_body">This app cannot see whether you pressed send. Tap Sent only if the message to %1$s went; then it counts as a reminder.</string>
+    <string name="reminder_sent_yes">Sent</string>
+    <string name="reminder_sent_no_sms">Not sent — send by SMS</string>
+    <string name="reminder_sent_no">Not sent</string>
     <string name="entry_open_invoice">Open invoice</string>
     <string name="label_step_title">Label details (%1$d of %2$d)</string>
     <string name="label_step_skip">Skip</string>

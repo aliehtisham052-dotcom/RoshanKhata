@@ -31,6 +31,8 @@ import com.innovation313.roshankhata.data.PaymentHabit
 import com.innovation313.roshankhata.ui.FollowUpAdapter
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.Reminder
+import com.innovation313.roshankhata.ui.ReminderConfirm
+import com.innovation313.roshankhata.ui.SendPill
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -67,26 +69,83 @@ class FollowUpActivity : BaseActivity() {
     /** Reminders opened today (ReminderLog); re-read on return from WhatsApp. */
     private val reminded = kotlinx.coroutines.flow.MutableStateFlow<Set<Long>>(emptySet())
 
-    /** A reminder opened WhatsApp from here; on the way back the list is ranked again (3 Nov 2026). */
-    private var backFromReminder = false
+    /**
+     * A reminder handed to WhatsApp (or the SMS app) and not yet confirmed (8 Nov 2026, the owner's phone test):
+     * Android cannot say whether it was sent, so it counts only when the owner answers "Sent" on the way back.
+     */
+    private var pending: ReminderConfirm.Pending? = null
+    private var asking: androidx.appcompat.app.AlertDialog? = null
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        ReminderConfirm.save(outState, pending)
+    }
 
     override fun onResume() {
         super.onResume()
-        if (backFromReminder) {
-            // Back from WhatsApp: the reminded row glides to the foot a moment after the screen shows,
-            // not while the plane was still flying (3 Nov 2026).
-            backFromReminder = false
-            window.decorView.postDelayed({
-                if (!isFinishing && !isDestroyed) markReminded()
-            }, 260)
-        } else {
-            markReminded()
-        }
+        markReminded()
+        // Back from WhatsApp or the SMS app: the question comes first, the next person of "remind all" after it.
+        if (pending != null) askPending() else resumeQueue()
+    }
+
+    override fun onDestroy() {
+        // The question goes with the screen; the pending reminder is already in the saved state.
+        asking?.dismiss()
+        asking = null
+        super.onDestroy()
+    }
+
+    private fun resumeQueue() {
         // Back from WhatsApp in the middle of "remind all": offer the next one.
         if (queueWaiting) {
             queueWaiting = false
             showQueueStep()
         }
+    }
+
+    private fun askPending() {
+        val p = pending ?: return
+        if (asking?.isShowing == true || isFinishing || isDestroyed) return
+        asking = ReminderConfirm.ask(
+            this, p,
+            onSent = { pending = null; asking = null; confirmSent(p); resumeQueue() },
+            onNotSent = {
+                pending = null; asking = null
+                pillOf(p.partyId)?.let { SendPill.back(it) }
+                if (p.viaSms) resumeQueue() else sendBySms(p)
+            },
+            onClosed = { pending = null; asking = null; pillOf(p.partyId)?.let { SendPill.back(it) }; resumeQueue() }
+        )
+    }
+
+    /** "Not sent": the same words by SMS (no bold marks); that is asked about on the way back in the same way. */
+    private fun sendBySms(p: ReminderConfirm.Pending) {
+        val plain = Reminder.plainText(p.message)
+        Reminder.sendViaSms(this, p.phone, plain, opened = {
+            pending = p.copy(message = plain, viaSms = true)
+        })
+    }
+
+    /** "Sent": only now the reminder counts - the ladder, the day's mark, the pill's check, the row's move to the foot. */
+    private fun confirmSent(p: ReminderConfirm.Pending) {
+        ReminderLog.record(this, p.partyId)
+        com.innovation313.roshankhata.data.ReminderLadder.record(this, p.partyId, p.balance, sent = p.step.takeIf { it > 0 })
+        adapter.openedHere += p.partyId
+        pillOf(p.partyId)?.let { SendPill.openedNow(it) }
+        // The row glides to the foot a moment after the check, not while the pill is still changing (3 Nov 2026).
+        window.decorView.postDelayed({
+            if (!isFinishing && !isDestroyed) markReminded()
+        }, 260)
+    }
+
+    /** The Message pill of a customer's row, if that row is on screen. */
+    private fun pillOf(partyId: Long): com.google.android.material.button.MaterialButton? {
+        val rv = findViewById<RecyclerView>(R.id.rvFollowUp) ?: return null
+        for (i in 0 until rv.childCount) {
+            val vh = rv.getChildViewHolder(rv.getChildAt(i)) as? FollowUpAdapter.VH ?: continue
+            if (vh.tvSend.getTag(R.id.motion_pill_party) == partyId) return vh.tvSend
+        }
+        return null
     }
 
     /**
@@ -180,6 +239,7 @@ class FollowUpActivity : BaseActivity() {
             (itemAnimator as? androidx.recyclerview.widget.DefaultItemAnimator)?.moveDuration = 320
         }
 
+        pending = ReminderConfirm.restore(savedInstanceState)
         queueAsked = savedInstanceState == null && intent.getBooleanExtra(EXTRA_START_QUEUE, false)
         observeDebtors()
     }
@@ -284,19 +344,14 @@ class FollowUpActivity : BaseActivity() {
                 firstSentAt = state?.firstAt,
                 reference = facts.reference
             )
-            // Counted as reminded only once WhatsApp has really opened (3 Nov 2026): with no WhatsApp on the
-            // phone it was marked "opened today" all the same. The list is ranked again on the way back
-            // (onResume), so the row no longer jumps to the foot under the flying plane.
+            // Opening WhatsApp counts nothing (8 Nov 2026): a number not on WhatsApp opens "Invite" and sends
+            // nothing. The reminder waits as pending; the owner is asked on the way back (onResume).
             Reminder.sendViaWhatsApp(
                 this@FollowUpActivity, party.phone, message, from = own(),
                 opened = {
-                    ReminderLog.record(this@FollowUpActivity, party.id)
-                    com.innovation313.roshankhata.data.ReminderLadder.record(this@FollowUpActivity, party.id, party.balance)
-                    adapter.openedHere += party.id
-                    backFromReminder = true
-                    own()?.let { com.innovation313.roshankhata.ui.SendPill.openedNow(it) }
+                    pending = ReminderConfirm.Pending(party.id, party.name, party.balance, party.phone, message, 0, false)
                 },
-                failed = { own()?.let { com.innovation313.roshankhata.ui.SendPill.back(it) } }
+                failed = { own()?.let { SendPill.back(it) } }
             )
         }
     }

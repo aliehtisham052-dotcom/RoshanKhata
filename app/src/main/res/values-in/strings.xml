@@ -247,10 +247,19 @@
     <string name="restore_entry_confirm">Pulihkan catatan ini? Catatan akan muncul lagi di buku kontak tersebut dan memengaruhi saldo.</string>
     <string name="empty_bin">Kosongkan</string>
     <string name="empty_bin_confirm">Semua isi tempat sampah akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="bin_kind_scheme">Program perusahaan</string>
+    <string name="bin_restore_gone">Tidak dapat dipulihkan: sudah dipulihkan atau sudah dihapus.</string>
+    <string name="bin_restore_cash_confirm">Pulihkan catatan buku kas ini? Akan dihitung lagi di buku kas dan laci.</string>
+    <string name="bin_restore_cheque_confirm">Pulihkan cek ini? Cek kembali dengan status sebelumnya.</string>
+    <string name="bin_restore_cheque_blocked">Cek ini sudah cair dan pembayaran yang dicatatnya tidak ada lagi di buku, jadi tidak bisa dipulihkan. Pulihkan pembayaran itu dulu.</string>
+    <string name="bin_restore_bill_confirm">Pulihkan tagihan pemasok ini? Tagihan kembali bersama catatannya di buku pemasok, dan barangnya dihitung lagi di stok.</string>
+    <string name="bin_restore_bill_blocked">Catatan tagihan ini di buku pemasok sudah terhapus selamanya, jadi tagihan tidak bisa dipulihkan.</string>
+    <string name="bin_restore_doc_confirm">Pulihkan dokumen ini? Dokumen kembali dengan status sebelumnya.</string>
+    <string name="bin_restore_scheme_confirm">Pulihkan program perusahaan ini?</string>
     <string name="delete_party_forever_confirm">Hapus %1$s selamanya? Semua catatan yang tersimpan bersamanya juga ikut terhapus. Tindakan ini tidak dapat dibatalkan.</string>
     <string name="delete_entry_forever_confirm">Hapus %1$s selamanya? Tindakan ini tidak dapat dibatalkan.</string>
     <string name="deleted_forever_done">Dihapus permanen.</string>
-    <string name="delete_forever">Hapus Selamanya</string>
+    <string name="delete_forever">Hapus selamanya</string>
     <string name="bin_emptied">Tempat sampah dikosongkan</string>
 
     <!-- Delete actions -->
@@ -1866,7 +1875,12 @@
     <string name="bill_photo_missing">Foto nota ini tidak ada di ponsel ini</string>
     <string name="pdf_insp_by_type">Per jenis: %1$s</string>
     <string name="pdf_insp_type_not_set">Jenis belum diatur</string>
-    <string name="followup_reminded_today">Dibuka hari ini ✓</string>
+    <string name="followup_reminded_today">Diingatkan hari ini ✓</string>
+    <string name="reminder_sent_title">Apakah pesan terkirim?</string>
+    <string name="reminder_sent_body">Aplikasi ini tidak bisa melihat apakah Anda menekan kirim. Ketuk Terkirim hanya jika pesan ke %1$s terkirim; baru dihitung sebagai pengingat.</string>
+    <string name="reminder_sent_yes">Terkirim</string>
+    <string name="reminder_sent_no_sms">Tidak terkirim — kirim lewat SMS</string>
+    <string name="reminder_sent_no">Tidak terkirim</string>
     <string name="entry_open_invoice">Buka faktur</string>
     <string name="label_step_title">Detail label (%1$d dari %2$d)</string>
     <string name="label_step_skip">Lewati</string>

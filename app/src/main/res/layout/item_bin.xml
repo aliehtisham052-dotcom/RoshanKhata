@@ -16,6 +16,18 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <!-- What kind of thing it was (cashbook, cheque, bill, document, scheme); shown for those five kinds. -->
+        <TextView
+            android:id="@+id/tvBinKind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:textAlignment="viewStart"
+            android:textColor="@color/brand_green_text"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/tvBinTitle"
             android:layout_width="wrap_content"
@@ -56,6 +68,7 @@
             android:layout_height="wrap_content"
             android:minWidth="0dp"
             android:minHeight="40dp"
+            android:letterSpacing="0"
             android:text="@string/restore"
             android:textColor="@color/brand_green_text"
             android:textSize="13sp"
@@ -73,6 +86,7 @@
             android:layout_marginTop="2dp"
             android:minWidth="0dp"
             android:minHeight="36dp"
+            android:letterSpacing="0"
             android:text="@string/delete_forever"
             android:textColor="@color/red_gave_text"
             android:textSize="12sp"

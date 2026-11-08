@@ -483,6 +483,7 @@ class PartyDetailActivity : BaseActivity() {
         savedInstanceState?.getString(STATE_PENDING_BILL)?.let { pendingBillPhoto = it; billPhotoKept = true }
         // The form that was open, if one was (R41): reopened as it stood once the customer is read.
         val savedForm = savedInstanceState?.getBundle(STATE_ENTRY_FORM)
+        reminderPending = com.innovation313.roshankhata.ui.ReminderConfirm.restore(savedInstanceState)
         setContentView(R.layout.activity_party_detail)
         onBackPressedDispatcher.addCallback(this, selectionBack)
 
@@ -2499,6 +2500,34 @@ class PartyDetailActivity : BaseActivity() {
         super.onResume()
         // An entry binned on its own screen: offer the undo here, where we land.
         com.innovation313.roshankhata.ui.UndoDelete.take(partyId)?.let { offerUndo(it.entryIds) }
+        askReminderPending()
+    }
+
+    /** A reminder handed to WhatsApp or the SMS app and not yet confirmed: Android cannot say it was sent (8 Nov 2026). */
+    private var reminderPending: com.innovation313.roshankhata.ui.ReminderConfirm.Pending? = null
+    private var reminderAsking: androidx.appcompat.app.AlertDialog? = null
+
+    /** On the way back the owner is asked once; only "Sent" counts the reminder (ladder step, day's mark). */
+    private fun askReminderPending() {
+        val p = reminderPending ?: return
+        if (reminderAsking?.isShowing == true || isFinishing || isDestroyed) return
+        reminderAsking = com.innovation313.roshankhata.ui.ReminderConfirm.ask(
+            this, p,
+            onSent = {
+                reminderPending = null; reminderAsking = null
+                com.innovation313.roshankhata.data.ReminderLog.record(this, p.partyId)
+                if (p.step > 0) com.innovation313.roshankhata.data.ReminderLadder.record(this, p.partyId, p.balance, sent = p.step)
+            },
+            onNotSent = {
+                reminderPending = null; reminderAsking = null
+                // WhatsApp's "Not sent": the same words by SMS, asked about on the way back in the same way.
+                if (!p.viaSms) {
+                    val plain = Reminder.plainText(p.message)
+                    Reminder.sendViaSms(this, p.phone, plain, opened = { reminderPending = p.copy(message = plain, viaSms = true) })
+                }
+            },
+            onClosed = { reminderPending = null; reminderAsking = null }
+        )
     }
 
     /** Deleting an entry is reversible — it moves to the Recycle Bin. */
@@ -2774,16 +2803,17 @@ class PartyDetailActivity : BaseActivity() {
                 if (viaWhatsApp) R.string.open_whatsapp else R.string.open_sms
             ) { _, _ ->
                 val message = etMessage.text.toString()
-                if (com.innovation313.roshankhata.data.Money.isPositive(currentBalance)) {
-                    ladder.record(this, partyId, currentBalance, sent = chosenStep)
-                }
+                // Handing the words to WhatsApp or the SMS app counts nothing (8 Nov 2026, the owner's phone test):
+                // Android cannot say it was sent. The reminder waits as pending and the owner is asked on the way
+                // back (onResume); only "Sent" records the ladder's step and the day's mark.
+                val step = if (com.innovation313.roshankhata.data.Money.isPositive(currentBalance)) chosenStep else 0
+                val waiting = com.innovation313.roshankhata.ui.ReminderConfirm.Pending(
+                    partyId, partyName, currentBalance, partyPhone, message, step, !viaWhatsApp
+                )
                 if (viaWhatsApp) {
-                    // Counted as reminded once WhatsApp really opened, as Follow-up counts it (8 Nov review M52).
-                    Reminder.sendViaWhatsApp(this, partyPhone, message, opened = {
-                        com.innovation313.roshankhata.data.ReminderLog.record(this, partyId)
-                    })
+                    Reminder.sendViaWhatsApp(this, partyPhone, message, opened = { reminderPending = waiting })
                 } else {
-                    Reminder.sendViaSms(this, partyPhone, message)
+                    Reminder.sendViaSms(this, partyPhone, message, opened = { reminderPending = waiting })
                 }
             }
             .show().also {
@@ -3832,6 +3862,7 @@ class PartyDetailActivity : BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        com.innovation313.roshankhata.ui.ReminderConfirm.save(outState, reminderPending)
         cameraPath?.let { outState.putString(STATE_CAMERA_PATH, it) }
         scanFlow.saveState(outState, STATE_SCAN_CAMERA_PATH)
         cameraTarget?.let { outState.putString(STATE_CAMERA_TARGET, it.name) }
@@ -3843,6 +3874,8 @@ class PartyDetailActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
+        reminderAsking?.dismiss()
+        reminderAsking = null
         // The open form goes with the screen (23 Oct 2026, the review): a dialog left on a destroyed
         // screen leaks its window. Its photo stays (onSaveInstanceState) when the screen is only rebuilt;
         // when the owner leaves, a photo no entry took is nothing but bytes.

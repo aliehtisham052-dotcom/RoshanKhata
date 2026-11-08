@@ -64,7 +64,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:minHeight="48dp"
+            android:letterSpacing="0"
             android:text="@string/aging_title"
+            android:textAllCaps="false"
             android:textColor="@color/white"
             app:cornerRadius="12dp"
             app:strokeColor="@color/white" />

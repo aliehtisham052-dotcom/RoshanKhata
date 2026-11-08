@@ -114,6 +114,9 @@ object Reminder {
     private fun toPlainText(message: String): String =
         message.replace("*", "")
 
+    /** A WhatsApp message as an SMS shows it: no bold asterisks (the same text, sent by SMS after "Not sent"). */
+    fun plainText(message: String): String = toPlainText(message)
+
     /**
      * Opens WhatsApp with the message ready. The user presses send. The plane lifts out of [from] when the
      * caller gives the button that was tapped (Follow-up's Message pill). [opened] runs only once WhatsApp (or
@@ -180,8 +183,8 @@ object Reminder {
         if (activity == null) then() else Motion.paperPlane(activity, from, then)
     }
 
-    /** Opens the SMS app with the message ready. The user presses send. */
-    fun sendViaSms(context: Context, phone: String?, message: String) {
+    /** Opens the SMS app with the message ready. The user presses send. [opened] runs once the SMS app has opened. */
+    fun sendViaSms(context: Context, phone: String?, message: String, opened: (() -> Unit)? = null) {
         if (phone.isNullOrBlank()) {
             Toast.makeText(context, R.string.no_phone_number, Toast.LENGTH_SHORT).show()
             return
@@ -194,6 +197,7 @@ object Reminder {
         fly(context, null) {
             try {
                 context.startActivity(intent)
+                opened?.invoke()
             } catch (e: ActivityNotFoundException) {
                 Toast.makeText(context, R.string.no_sms_app, Toast.LENGTH_LONG).show()
             }
