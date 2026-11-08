@@ -37,7 +37,14 @@ class WarisWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
             val owed = runCatching { WarisAndroid.retryRefusals(applicationContext) }.getOrDefault(true)
             return if (owed) Result.retry() else Result.success()
         }
-        runCatching { WarisAndroid.daily(applicationContext) }
+        // A failure is told to WorkManager (it retries with back-off); a cancel is passed on (8 Nov 2026 review L42).
+        try {
+            WarisAndroid.daily(applicationContext)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return if (runAttemptCount < 3) Result.retry() else Result.failure()
+        }
         return Result.success()
     }
 

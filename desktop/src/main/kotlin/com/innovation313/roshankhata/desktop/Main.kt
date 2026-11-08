@@ -1305,7 +1305,7 @@ private fun Book(
                                     val file = File(dialog.directory, name)
                                     scope.launch {
                                         val rows = withContext(Dispatchers.IO) {
-                                            runCatching { com.innovation313.roshankhata.data.CsvImport.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList())
+                                            runCatching { com.innovation313.roshankhata.data.CsvImport.parse(com.innovation313.roshankhata.data.CsvImport.decode(file.readBytes())) }.getOrDefault(emptyList())
                                         }
                                         if (rows.isEmpty()) {
                                             told = words.text(W.import_csv) to words.text(W.import_csv_empty)
@@ -1335,7 +1335,7 @@ private fun Book(
                                         items(shown, key = { it.id }) { p ->
                                             val ticked = p.id in chosenIds
                                             PartyCard(
-                                                p, Photos.bitmap(p.photoPath, 96), open = p.id == selected, selecting = selecting, ticked = ticked,
+                                                p, Photos.rememberBitmap(p.photoPath, 96), open = p.id == selected, selecting = selecting, ticked = ticked,
                                                 onClick = {
                                                     if (selecting) chosenIds = if (ticked) chosenIds - p.id else chosenIds + p.id
                                                     else selected = p.id

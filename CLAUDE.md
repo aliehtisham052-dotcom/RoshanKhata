@@ -2782,3 +2782,14 @@ number on the Help screen.
   needs the book composed behind the lock (against "nothing composed until the PIN") or every dialog's state hoisted; the counter's
   ticket survives (the valuable one). M27 the customer page's counter `q` follows the device clock: a fix needs the counter in the
   synced book or a server read before every send (hosting load); neither is built.
+
+### 8 Nov 2026 review fixes, marhala 8C: low findings (L1, L15, L18, L20-L22, L32, L34, L36-L38, L40, L42; CI only)
+
+- L1 a failed kill-switch read is retried after 10 minutes, not 6 hours. L18 `CsvImport.decode` reads a file's bytes as UTF-16 (mark), UTF-8 or
+  Windows-1252 (Excel's "CSV (Comma delimited)"); the customer and product imports use it. L20 a khata sale's invoice rate keeps 6 decimals
+  (3 x 333.333333 = 1,000). L21 a sale line's cost keeps 6 decimals (no-decimal currencies were off up to 6%). L22 dead stock no longer counts
+  goods given to a supplier (customer parties only). L32 the phone's register prints its footer on every page. L34 Windows' receipt: signature,
+  advice and season ask EDIT_BOOK and write "entry_edited" in who did what. L36 faces decode off the window's thread (`Photos.rememberBitmap`).
+  L37 the invoice form's party hits are `remember`ed. L38 the plain invoice print runs to as many pages as it needs, totals on the last.
+  L40 turning the relay off while offline leaves the FCM token deletion owed and tried again (`delete_owed`). L42 WarisWorker retries a
+  failed daily run and passes a cancel on. L15 was already fixed (the rollback passes `allowedBy`).

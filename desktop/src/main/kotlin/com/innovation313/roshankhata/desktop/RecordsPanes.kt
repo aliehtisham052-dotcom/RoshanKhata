@@ -303,7 +303,7 @@ fun ProductsPane(dao: KhataDao, words: Words) {
         val name = dialog.file ?: return@pick
         val file = java.io.File(dialog.directory, name)
         scope.launch {
-            val rows = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ProductCsv.parse(file.readText(Charsets.UTF_8)) }.getOrDefault(emptyList()) }
+            val rows = withContext(Dispatchers.IO) { runCatching { com.innovation313.roshankhata.data.ProductCsv.parse(com.innovation313.roshankhata.data.CsvImport.decode(file.readBytes())) }.getOrDefault(emptyList()) }
             if (rows.isEmpty()) told = words.text(W.products_import_none)
             else importPlan = com.innovation313.roshankhata.data.ProductCsv.plan(rows, products)
         }

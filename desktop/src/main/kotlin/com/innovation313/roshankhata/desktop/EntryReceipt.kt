@@ -191,13 +191,13 @@ fun EntryReceiptCard(
                     val shown = own ?: byDate
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text(word(W.season_entry, if (own == null) word(W.season_from_date, seasonName(shown)) else seasonName(shown)), Modifier.weight(1f), color = c.ink, fontSize = 14.sp)
-                        FluentButton(word(W.season_change), { choosingSeason = true }, kind = ButtonKind.SUBTLE)
+                        FluentButton(word(W.season_change), { Gates.edit { choosingSeason = true } }, kind = ButtonKind.SUBTLE)
                     }
                 }
                 // The dealer's spray advice on a sale's items (an agri shop's): one item at once, or which one first.
                 val goodsLines = items.filter { !it.itemName.isNullOrBlank() }
                 if (e.isGiven && !e.isDeleted && trade.sprayAdvice && goodsLines.isNotEmpty()) {
-                    FluentButton(word(W.advice_write), { if (goodsLines.size == 1) advising = goodsLines[0] else choosingLine = true }, kind = ButtonKind.STANDARD, icon = "ic_edit")
+                    FluentButton(word(W.advice_write), { Gates.edit { if (goodsLines.size == 1) advising = goodsLines[0] else choosingLine = true } }, kind = ButtonKind.STANDARD, icon = "ic_edit")
                 }
                 // The bill this entry came from: its picture (kept on this computer, never on a statement).
                 val bill = e.billPhotoPath?.takeIf { it.isNotBlank() }
@@ -220,7 +220,7 @@ fun EntryReceiptCard(
                         Text(word(W.sig_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                         Text(signedAt?.let { word(W.sig_signed_at, Format.dateTime(it)) } ?: word(W.sig_none), color = c.textMuted, fontSize = 12.sp)
                     }
-                    if (!e.isDeleted) FluentButton(word(if (sig != null) W.sig_retake else W.sig_take), { signing = true }, kind = ButtonKind.SUBTLE)
+                    if (!e.isDeleted) FluentButton(word(if (sig != null) W.sig_retake else W.sig_take), { Gates.edit { signing = true } }, kind = ButtonKind.SUBTLE)
                 }
             }
         }
@@ -236,7 +236,10 @@ fun EntryReceiptCard(
         onDone = { picture ->
             signing = false
             scope.launch {
-                withContext(Dispatchers.IO) { runCatching { EntrySignatures.save(home, businessId, e.id, picture) } }
+                withContext(Dispatchers.IO) {
+                    runCatching { EntrySignatures.save(home, businessId, e.id, picture) }
+                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.ENTRY_EDITED, com.innovation313.roshankhata.data.Access.userName, "transactions", e.id, "signature") }
+                }
                 version++
             }
         },
@@ -250,7 +253,7 @@ fun EntryReceiptCard(
         AdviceDialog(item, onDismiss = { advising = null }) { crop, pest, dose ->
             advising = null
             scope.launch {
-                withContext(Dispatchers.IO) { dao.setLineAdvice(item.id, crop, pest, dose) }
+                withContext(Dispatchers.IO) { dao.setLineAdvice(item.id, crop, pest, dose); runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.ENTRY_EDITED, com.innovation313.roshankhata.data.Access.userName, "transactions", e?.id, "advice") } }
                 version++
                 onChanged()
             }
@@ -265,7 +268,7 @@ fun EntryReceiptCard(
             choosingSeason = false
             val pick = options[i]
             scope.launch {
-                withContext(Dispatchers.IO) { dao.setEntrySeason(e.id, if (pick == byDate) null else pick.key) }
+                withContext(Dispatchers.IO) { dao.setEntrySeason(e.id, if (pick == byDate) null else pick.key); runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.ENTRY_EDITED, com.innovation313.roshankhata.data.Access.userName, "transactions", e.id, "season") } }
                 version++
                 onChanged()
             }

@@ -21,6 +21,7 @@ object LiveControl {
 
     const val URL_TEXT = "https://github.com/aliehtisham052-dotcom/RoshanKhata/releases/download/live-control/live.json"
     private const val EVERY_MS = 6 * 60 * 60_000L
+    private const val RETRY_MS = 10 * 60_000L
 
     @Volatile private var checkedAt = 0L
     @Volatile private var stopped = false
@@ -29,8 +30,11 @@ object LiveControl {
     /** Both words read at once, every six hours at most; a missed read keeps the last ones. */
     private fun refresh(now: Long) {
         if (now - checkedAt > EVERY_MS) {
+            // A missed read counts as a read for ten minutes only, not six hours (8 Nov 2026 review L1).
+            val got = fetch()
+            if (got == null) { checkedAt = now - EVERY_MS + RETRY_MS; return }
             checkedAt = now
-            fetch()?.let { (live, seal) -> stopped = live; sealStopped = seal }
+            got.let { (live, seal) -> stopped = live; sealStopped = seal }
         }
     }
 

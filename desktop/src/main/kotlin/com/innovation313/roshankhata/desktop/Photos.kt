@@ -167,6 +167,16 @@ object Photos {
         return tmp.renameTo(target)
     }
 
+    /**
+     * [bitmap] read off the window's thread (8 Nov 2026 review L36: a list of 2,000 faces decoded each on the
+     * drawing thread); null until it is ready, at once when it is already cached.
+     */
+    @androidx.compose.runtime.Composable
+    fun rememberBitmap(path: String?, max: Int = 0): ImageBitmap? =
+        androidx.compose.runtime.produceState<ImageBitmap?>(null, path, max) {
+            value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { bitmap(path, max) }
+        }.value
+
     /** The picture at [path] for the screen, or null when it is not on this computer. */
     fun bitmap(path: String?, max: Int = 0): ImageBitmap? {
         val p = path?.takeIf { it.isNotBlank() } ?: return null

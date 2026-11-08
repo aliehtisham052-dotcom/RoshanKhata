@@ -4496,7 +4496,8 @@ interface KhataDao {
             WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND i.productId IS NOT NULL AND s.timestamp >= :since
             UNION
             SELECT ei.productId AS productId FROM entry_items ei JOIN transactions t ON t.id = ei.entryId
-            WHERE t.isDeleted = 0 AND t.isGiven = 1 AND ei.productId IS NOT NULL AND t.timestamp >= :since
+            JOIN parties pt ON pt.id = t.partyId
+            WHERE t.isDeleted = 0 AND t.isGiven = 1 AND pt.isCustomer = 1 AND ei.productId IS NOT NULL AND t.timestamp >= :since
         )
         """
     )

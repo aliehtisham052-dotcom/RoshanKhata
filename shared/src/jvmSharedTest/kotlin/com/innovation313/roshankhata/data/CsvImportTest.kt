@@ -141,4 +141,12 @@ class CsvImportTest {
         assertEquals(null, CsvImport.amount("5000000000000", groupDots = false))
         assertEquals(1000.0, CsvImport.amount("1000", groupDots = false)!!, 0.0)
     }
+
+    @Test
+    fun `a file is read as UTF-16, UTF-8 or Windows-1252 by its bytes`() {
+        val text = "Name,Balance\nCaf\u00e9,500\n"
+        assertEquals(text, CsvImport.decode(text.toByteArray(Charsets.UTF_8)))
+        assertEquals(text, CsvImport.decode(byteArrayOf(0xFF.toByte(), 0xFE.toByte()) + text.toByteArray(Charsets.UTF_16LE)))
+        assertEquals(text, CsvImport.decode(text.toByteArray(java.nio.charset.Charset.forName("windows-1252"))))
+    }
 }

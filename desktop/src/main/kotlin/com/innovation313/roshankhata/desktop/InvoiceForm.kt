@@ -184,7 +184,7 @@ fun InvoiceForm(
         }
         val q = customer.trim().lowercase()
         if (q.isNotEmpty()) {
-            val hits = parties.filter { NameSearch.matches(it.name, it.phone, q) && it.name != customer }.take(30)
+            val hits = remember(parties, q, customer) { parties.filter { NameSearch.matches(it.name, it.phone, q) && it.name != customer }.take(30) }
             if (hits.isNotEmpty()) {
                 LazyColumn(Modifier.fillMaxWidth().heightIn(max = 130.dp).background(Look.subtle, Look.ctl)) {
                     items(hits, key = { it.id }) { p ->
@@ -419,7 +419,10 @@ class InvoicePrint(
     }
 
     override fun print(graphics: Graphics, format: PageFormat, pageIndex: Int): Int {
-        if (pageIndex > 0) return Printable.NO_SUCH_PAGE
+        // 28 lines to a page, the totals on the last one (8 Nov 2026 review L38: the rest used to be left off).
+        val chunks = items.chunked(28).ifEmpty { listOf(emptyList()) }
+        if (pageIndex >= chunks.size) return Printable.NO_SUCH_PAGE
+        if (pageIndex > 0) return printLater(graphics, format, chunks, pageIndex)
         val g = graphics as Graphics2D
         g.translate(format.imageableX, format.imageableY)
         g.scale(format.imageableWidth / pageW, format.imageableWidth / pageW)
@@ -456,7 +459,7 @@ class InvoicePrint(
         g.color = Color(0xE4, 0xE2, 0xDC)
         g.drawLine(margin.toInt(), y.toInt(), (pageW - margin).toInt(), y.toInt())
         y += 16
-        for (it in items.take(28)) {
+        for (it in chunks[0]) {
             g.color = Color.BLACK
             g.font = Font(PrintFonts.family, Font.PLAIN, 10)
             g.text(it.itemName, margin, y)
@@ -466,6 +469,15 @@ class InvoicePrint(
             g.text(Format.money(it.lineTotal), xAmt, y, end = true)
             y += 18
         }
+        if (chunks.size > 1) return Printable.PAGE_EXISTS
+        drawTotals(g, y)
+        return Printable.PAGE_EXISTS
+    }
+
+    private fun drawTotals(g: Graphics2D, yStart: Double) {
+        var y = yStart
+        val xRate = pageW - margin - 95
+        val xAmt = pageW - margin
         val t = invoice.totals(items)
         y += 10
         fun sum(label: String, value: String, bold: Boolean = false) {
@@ -485,6 +497,32 @@ class InvoicePrint(
             sum(words.text(W.invoice_sum_balance), Format.signedIfNegative(t.balanceDue), bold = true)
         }
         invoice.note?.let { g.color = Color.DARK_GRAY; g.font = Font(PrintFonts.family, Font.PLAIN, 10); g.text(it, margin, y + 20) }
+    }
+
+    private fun printLater(graphics: Graphics, format: PageFormat, chunks: List<List<InvoiceItem>>, pageIndex: Int): Int {
+        val g = graphics as Graphics2D
+        g.translate(format.imageableX, format.imageableY)
+        g.scale(format.imageableWidth / pageW, format.imageableWidth / pageW)
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        val xQty = pageW - margin - 190
+        val xRate = pageW - margin - 95
+        val xAmt = pageW - margin
+        var y = 50.0
+        g.color = Color.BLACK
+        g.font = Font(PrintFonts.family, Font.PLAIN, 9)
+        g.text(invoice.invoiceNumber, margin, 30.0)
+        for (it in chunks[pageIndex]) {
+            g.color = Color.BLACK
+            g.font = Font(PrintFonts.family, Font.PLAIN, 10)
+            g.text(it.itemName, margin, y)
+            g.text(Format.qty(it.quantity, it.unit), xQty, y, end = true)
+            g.text(Format.money(it.rate), xRate, y, end = true)
+            g.font = Font(PrintFonts.family, Font.BOLD, 10)
+            g.text(Format.money(it.lineTotal), xAmt, y, end = true)
+            y += 18
+        }
+        if (pageIndex == chunks.lastIndex) drawTotals(g, y)
         return Printable.PAGE_EXISTS
     }
 }

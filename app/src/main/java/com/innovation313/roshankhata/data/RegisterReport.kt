@@ -143,6 +143,10 @@ object RegisterReport {
         }
 
         fun newPage() {
+            // Every page carries its footer, not only the last (8 Nov 2026 review L32).
+            PdfRtl.drawText(canvas,
+                Digits.string(context.resources, R.string.pdf_reg_footer, appName, dateFmt.format(Date()), pageNo),
+                MARGIN, PAGE_H - 34f, muted)
             doc.finishPage(page)
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())

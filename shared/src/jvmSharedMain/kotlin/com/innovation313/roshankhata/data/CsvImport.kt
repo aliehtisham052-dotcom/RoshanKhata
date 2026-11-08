@@ -37,6 +37,20 @@ object CsvImport {
         "बैलेंस", "बकाया", "शेष", "राशि", "ব্যালেন্স", "বাকি"
     )
 
+    /**
+     * A file's text from its bytes: UTF-16 by its mark (Excel's "Unicode Text"), UTF-8 when the bytes are valid UTF-8
+     * (with or without the mark), else Windows-1252, what Excel's "CSV (Comma delimited)" writes (8 Nov 2026 review L18).
+     */
+    fun decode(bytes: ByteArray): String {
+        if (bytes.size >= 2 && bytes[0] == 0xFF.toByte() && bytes[1] == 0xFE.toByte()) return String(bytes, 2, bytes.size - 2, Charsets.UTF_16LE)
+        if (bytes.size >= 2 && bytes[0] == 0xFE.toByte() && bytes[1] == 0xFF.toByte()) return String(bytes, 2, bytes.size - 2, Charsets.UTF_16BE)
+        val strict = Charsets.UTF_8.newDecoder()
+            .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+            .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT)
+        return try { strict.decode(java.nio.ByteBuffer.wrap(bytes)).toString() }
+        catch (e: java.nio.charset.CharacterCodingException) { String(bytes, java.nio.charset.Charset.forName("windows-1252")) }
+    }
+
     fun parse(text: String): List<Row> {
         val table = cells(text.removePrefix("﻿")).filter { r -> r.any { it.isNotBlank() } }
         if (table.isEmpty()) return emptyList()

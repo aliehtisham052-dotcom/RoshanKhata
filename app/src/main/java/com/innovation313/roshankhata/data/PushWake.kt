@@ -67,12 +67,17 @@ object PushWake {
 
     /** The relay turned off on this phone: Firebase forgets this phone's token, and it is not asked again. */
     fun off(context: Context) {
-        prefs(context).edit().remove(TOKEN).apply()
+        // Offline, deleteToken fails: the deletion stays owed and is tried again from [tell] (8 Nov 2026 review L40).
+        prefs(context).edit().remove(TOKEN).putBoolean("delete_owed", true).apply()
+        deleteOwed(context)
+    }
+
+    private fun deleteOwed(context: Context) {
         if (!available(context)) return
         runCatching {
             val fm = FirebaseMessaging.getInstance()
             fm.isAutoInitEnabled = false
-            fm.deleteToken()
+            fm.deleteToken().addOnSuccessListener { prefs(context).edit().remove("delete_owed").apply() }
         }
     }
 
@@ -83,6 +88,7 @@ object PushWake {
     /** True when the relay knows the phone's address now, or there is nothing to tell. */
     suspend fun tell(context: Context, sql: SyncSql): Boolean {
         if (!available(context)) return true
+        if (prefs(context).getBoolean("delete_owed", false) && !LiveCloud.allowed(sql)) deleteOwed(context)
         // The relay switched off (on this phone or the other device): the relay forgets this phone's address (R53).
         if (!LiveCloud.allowed(sql)) return LiveCloud.tellWake(sql, null)
         val address = address(context) ?: return true

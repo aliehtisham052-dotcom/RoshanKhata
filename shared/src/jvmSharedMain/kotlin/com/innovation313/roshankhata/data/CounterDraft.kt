@@ -503,7 +503,7 @@ object Counter {
      * cost, else its last purchase rate ([Cost]) — times the pack size for a pack.
      */
     suspend fun costOf(dao: KhataDao, product: Product?, unit: String? = product?.defaultUnit): Double? =
-        Cost.perUnit(dao, product)?.let { LineMath.round(it * Units.factor(product, unit)) }
+        Cost.perUnit(dao, product)?.let { Math.round(it * Units.factor(product, unit) * 1e6) / 1e6 }
 
     /** A line the shelf cannot sell: only expired stock is left of [item] ([fresh] may still go, in its unit). */
     class ExpiredStock(val item: String, val fresh: Double) : IllegalArgumentException("sale refused: expired stock of $item")

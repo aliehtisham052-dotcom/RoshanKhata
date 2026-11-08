@@ -35,7 +35,7 @@ object StockTransfer {
             from.transferStock(number, live.map { it.product.id to it.quantity }, toShop, out = true, user = user, now = now, allowedBy = allowedBy)
         } catch (e: Exception) {
             // The other book took the goods in; this one could not send them: take them back out there.
-            runCatching { to.transferStock("$number ✕", inbound, fromShop, out = true, user = user, allowedBy = allowedBy) }
+            runCatching { to.transferStock("$number ✕", inbound, fromShop, out = true, user = user, now = now, allowedBy = allowedBy) }
             throw e
         }
         return number
