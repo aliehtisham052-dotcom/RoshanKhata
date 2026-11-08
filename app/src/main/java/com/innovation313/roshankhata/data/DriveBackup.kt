@@ -48,12 +48,10 @@ object DriveBackup {
      */
     val SCOPE = DriveScopes.DRIVE_APPDATA
 
-    private const val BACKUP_NAME = "RoshanKhata_Backup.txt"
-    // The images archive, kept as its own file beside the text backup so the
+    // The images archive (imagesName) is its own file beside the text backup so the
     // routine text backup stays small and an owner who never turns images on
     // never uploads one. Same single-file, replace-in-place discipline as the
     // text backup — one archive, always the latest, no dated pile-up.
-    private const val IMAGES_NAME = "RoshanKhata_Images.zip"
     private const val APP_DATA_FOLDER = "appDataFolder"
 
     // The owner's choice of whether a Drive backup also carries images. OFF by
@@ -183,11 +181,19 @@ object DriveBackup {
      * under the other shop's file and marked the other as backed up). Every
      * upload resolves its shop once and passes that id through.
      */
+    /**
+     * The TEST build (package ".dev") writes its own files, "Dev_RoshanKhata_…", beside the shop's: both apps
+     * share one Google account's app folder, and a test book confirmed past the two-phone question replaced the
+     * shop's real backup (8 Nov 2026, the owner's photo). The Play app never reads a Dev_ file
+     * (businessIdFromBackupName refuses it), and the test build reads only its own.
+     */
+    private val NAME_PREFIX = if (com.innovation313.roshankhata.BuildConfig.APPLICATION_ID.endsWith(".dev")) "Dev_" else ""
+
     private fun backupName(businessId: Long) =
-        "RoshanKhata_Backup${Businesses.suffixFor(businessId)}.txt"
+        "${NAME_PREFIX}RoshanKhata_Backup${Businesses.suffixFor(businessId)}.txt"
 
     private fun imagesName(businessId: Long) =
-        "RoshanKhata_Images${Businesses.suffixFor(businessId)}.zip"
+        "${NAME_PREFIX}RoshanKhata_Images${Businesses.suffixFor(businessId)}.zip"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -832,9 +838,10 @@ object DriveBackup {
      * was more than one shop. "RoshanKhata_Backup_b7.txt" is business 7.
      * Anything else is not ours to interpret.
      */
-    internal fun businessIdFromBackupName(name: String): Long? = when {
-        name == "RoshanKhata_Backup.txt" -> 1L
-        else -> Regex("^RoshanKhata_Backup_b(\\d+)\\.txt$").find(name)
+    internal fun businessIdFromBackupName(name: String, prefix: String = NAME_PREFIX): Long? = when {
+        name == "${prefix}RoshanKhata_Backup.txt" -> 1L
+        !name.startsWith(prefix) -> null
+        else -> Regex("^RoshanKhata_Backup_b(\\d+)\\.txt$").find(name.removePrefix(prefix))
             ?.groupValues?.get(1)?.toLongOrNull()
     }
 
@@ -903,7 +910,7 @@ object DriveBackup {
     ): Result<Pair<String, Long>?> = withContext(Dispatchers.IO) {
         try {
             val drive = driveFor(context, accountName)
-            val name = "RoshanKhata_Backup${Businesses.suffixFor(businessId)}.txt"
+            val name = backupName(businessId)
             val file = drive.files().list()
                 .setSpaces(APP_DATA_FOLDER)
                 .setQ("name = '$name'")
@@ -932,7 +939,7 @@ object DriveBackup {
     ): Result<ByteArray?> = withContext(Dispatchers.IO) {
         try {
             val drive = driveFor(context, accountName)
-            val name = "RoshanKhata_Images${Businesses.suffixFor(businessId)}.zip"
+            val name = imagesName(businessId)
             val file = drive.files().list()
                 .setSpaces(APP_DATA_FOLDER)
                 .setQ("name = '$name'")
