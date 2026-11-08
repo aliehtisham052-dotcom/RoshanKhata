@@ -2870,7 +2870,7 @@ class PartyDetailActivity : BaseActivity() {
 
         tvNoEntries.visibility = if (sorted.isEmpty()) View.VISIBLE else View.GONE
         tvNoEntries.setText(
-            if (allRows.isEmpty()) R.string.no_entries_yet
+            if (allRows.isEmpty()) R.string.party_entries_hint
             else R.string.no_matching_entries
         )
     }
@@ -3423,17 +3423,25 @@ class PartyDetailActivity : BaseActivity() {
                 Reminder.sendViaWhatsApp(this, partyPhone, message)
             }
         } else null
-        com.innovation313.roshankhata.ui.SavedCard.show(
-            this,
-            title = getString(R.string.saved),
-            line = savedLine(entry.isGiven, entry.amount, entry.entryNumber),
-            anchor = bottomBarContainer,
-            onUndo = { undoNewEntry(id, entry.amount, promiseBefore) },
-            onShare = share,
-            // The row it announces stays in sight above it.
-            list = findViewById(R.id.rvEntries),
-            keepInSight = { if (::adapter.isInitialized) adapter.positionOf(id) else -1 }
-        )
+        // The entry in hand was built before the DAO numbered it (entryNumber = ""): read the number it got, so the
+        // line says "I Gave · Rs 600 · RK-000006" as promised (8 Nov review m38).
+        lifecycleScope.launch {
+            val number = withContext(Dispatchers.IO) {
+                runCatching { dao.getEntry(id)?.entryNumber }.getOrNull()
+            } ?: entry.entryNumber
+            if (isFinishing || isDestroyed) return@launch
+            com.innovation313.roshankhata.ui.SavedCard.show(
+                this@PartyDetailActivity,
+                title = getString(R.string.saved),
+                line = savedLine(entry.isGiven, entry.amount, number),
+                anchor = bottomBarContainer,
+                onUndo = { undoNewEntry(id, entry.amount, promiseBefore) },
+                onShare = share,
+                // The row it announces stays in sight above it.
+                list = findViewById(R.id.rvEntries),
+                keepInSight = { if (::adapter.isInitialized) adapter.positionOf(id) else -1 }
+            )
+        }
     }
 
     /** "I Gave · Rs 600 · RK-000006": order-free, each part kept whole in either direction. */

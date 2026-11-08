@@ -45,13 +45,27 @@ object SingleInstance {
         return Held(channel, lock)
     }
 
-    /** Said before the window would open; in English and Urdu, as the words are not read yet. */
+    /** The box before any book or window exists: English, then the computer's language when it is one of the nine. */
+    private val alreadyOpenLocal = mapOf(
+        "ur" to "روشن کھاتہ پہلے سے کھلا ہے (یا بند ہو رہا ہے)۔ ٹاسک بار پر اس کی ونڈو دیکھیں۔",
+        "ar" to "روشن كهاتا مفتوح بالفعل (أو يُغلق الآن). ابحث عن نافذته في شريط المهام.",
+        "fa" to "روشن خاتا از قبل باز است (یا در حال بسته شدن است). پنجره‌اش را در نوار وظیفه ببینید.",
+        "sd" to "روشن کاتو اڳ ۾ ئي کليل آهي (يا بند ٿي رهيو آهي). ٽاسڪ بار تي ان جي ونڊو ڏسو.",
+        "hi" to "रोशन खाता पहले से खुला है (या बंद हो रहा है)। टास्कबार पर इसकी विंडो देखें।",
+        "bn" to "রোশন খাতা আগে থেকেই খোলা আছে (বা বন্ধ হচ্ছে)। টাস্কবারে এর উইন্ডো দেখুন।",
+        "in" to "Roshan Khata sudah terbuka (atau sedang menutup). Cari jendelanya di bilah tugas.",
+        "id" to "Roshan Khata sudah terbuka (atau sedang menutup). Cari jendelanya di bilah tugas."
+    )
+
     fun tellAlreadyOpen() {
         runCatching {
+            val english = "Roshan Khata is already open (or still closing). Look for its window on the taskbar."
+            val lang = java.util.Locale.getDefault().language
+            // Urdu keeps its line even when the computer's language is something else: the shop's own language.
+            val local = alreadyOpenLocal[lang] ?: alreadyOpenLocal.getValue("ur")
             JOptionPane.showMessageDialog(
                 null,
-                "Roshan Khata is already open (or still closing). Look for its window on the taskbar.\n\n" +
-                    "روشن کھاتہ پہلے سے کھلا ہے (یا بند ہو رہا ہے)۔ ٹاسک بار پر اس کی ونڈو دیکھیں۔",
+                "$english\n\n$local",
                 "Roshan Khata",
                 JOptionPane.INFORMATION_MESSAGE
             )

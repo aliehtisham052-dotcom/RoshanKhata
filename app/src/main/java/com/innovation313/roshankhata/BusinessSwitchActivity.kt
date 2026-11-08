@@ -309,7 +309,7 @@ class BusinessSwitchActivity : BaseActivity() {
             val isOpen = b.id == activeId
             holder.open.visibility = if (isOpen) View.VISIBLE else View.GONE
             holder.switch.visibility = if (isOpen) View.GONE else View.VISIBLE
-            holder.switch.contentDescription = ctx.getString(R.string.business_switch_open) + " " + display
+            holder.switch.contentDescription = ctx.getString(R.string.business_switch_open_named, display)
             holder.switch.setOnClickListener { switchAndRestart(b.id) }
             holder.itemView.setOnClickListener {
                 // The open shop: no switch is needed, so go straight to its

@@ -484,7 +484,7 @@ fun CounterSalePane(
                                         Text(line.name, color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                         val under = listOfNotNull(
                                             com.innovation313.roshankhata.data.UnitWords.label(line.unit).takeIf { it.isNotEmpty() }, line.shortBy?.let { words.text(W.pos_stock_low, Calc.trim(line.onHand ?: 0.0)) },
-                                            line.taxRate?.takeIf { it > 0.0 }?.let { word(W.pos_tax) + " " + Calc.trim(it) + "%" }
+                                            line.taxRate?.takeIf { it > 0.0 }?.let { word(W.pos_tax) + ": " + Calc.trim(it) }
                                         )
                                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                             if (under.isNotEmpty()) Text(under.joinToString(" · "), color = if (line.shortBy != null) c.owedToMe else c.textMuted, fontSize = 12.sp, maxLines = 1)

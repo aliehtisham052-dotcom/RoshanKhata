@@ -250,7 +250,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             other = back?.takeIf { openFailed && it != active && businesses.list().any { b -> b.id == it } }?.let { id ->
                 val name = FileShopSettings(businesses.settingsFile(id)).businessName()
                     ?: businesses.list().firstOrNull { it.id == id }?.name ?: words.text(W.app_name)
-                (words.text(W.business_switch_open) + " " + name) to { previous = null; active = id }
+                words.text(W.business_switch_open_named, name) to { previous = null; active = id }
             }
         )
         return

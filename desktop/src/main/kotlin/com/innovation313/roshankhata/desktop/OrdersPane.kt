@@ -103,7 +103,7 @@ fun OrdersPane(
     editing?.let { draft ->
         OrderDialog(dao, draft, suppliers, onClose = { editing = null }) { id ->
             editing = null; onChanged()
-            told = words.text(W.po_title) + " " + id
+            told = words.text(W.po_saved, id.toString())
         }
     }
     receiving?.let { o -> ReceiveDialog(dao, o, words, onClose = { receiving = null }) { told = it; receiving = null; onChanged() } }

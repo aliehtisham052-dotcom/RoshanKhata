@@ -82,4 +82,18 @@ class DayMathTest {
             TimeZone.setDefault(tzWas)
         }
     }
+
+    @Test
+    fun `a day that starts at a clock change still starts at its first moment`() {
+        // Cairo moved its clocks at midnight on Friday 24 April 2026: that day began at 01:00 summer time.
+        for (zone in listOf("Africa/Cairo", "Asia/Beirut", "America/New_York", "Asia/Karachi")) {
+            val tz = TimeZone.getTimeZone(zone)
+            val day = DayCloseMath.dayOf(Calendar.getInstance(tz).apply { clear(); set(2026, Calendar.APRIL, 24, 12, 0) }.timeInMillis, tz)
+            for (d in day - 3..day + 3) {
+                val start = DayCloseMath.startOf(d, tz)
+                assertEquals("$zone $d: starts in its own day", d, DayCloseMath.dayOf(start, tz))
+                assertEquals("$zone $d: nothing earlier is in it", d - 1, DayCloseMath.dayOf(start - 1, tz))
+            }
+        }
+    }
 }

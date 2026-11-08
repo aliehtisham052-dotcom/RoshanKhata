@@ -129,7 +129,7 @@ object BackupCodec {
             }
             out.write(if (first) "]" else "\n  ]")
         }
-        table("parties", dao::partiesPageForBackup, { it.id }, ::partyToJson)
+        table("parties", dao::partiesPageForBackup, { it.id }, { partyToJson(it, secrets) })
         table("entries", dao::entriesPageForBackup, { it.id }, ::entryToJson)
         table("entryItems", dao::entryItemsPageForBackup, { it.id }, ::entryItemToJson)
         // The counter's tables and the cashbook grow with every ticket: a page at a time too (22 Oct 2026, the review).
@@ -242,7 +242,7 @@ object BackupCodec {
             dao.allBillItemsForBackup().forEach { put(billItemToJson(it)) }
         })
         root.put("products", JSONArray().apply {
-            dao.allProductsForBackup().forEach { put(productToJson(it)) }
+            dao.allProductsForBackup().forEach { put(productToJson(it, secrets)) }
         })
         root.put("invoices", JSONArray().apply {
             dao.allInvoicesForBackup().forEach { put(invoiceToJson(it)) }
@@ -847,7 +847,8 @@ object BackupCodec {
 
     // ---------- Mapping ----------
 
-    private fun partyToJson(p: Party) = JSONObject().apply {
+    // [secrets] false (a helper's copy): the owner's private note stays out (8 Nov review m42).
+    private fun partyToJson(p: Party, secrets: Boolean = true) = JSONObject().apply {
         put("uid", p.uid ?: JSONObject.NULL)
         put("id", p.id)
         put("name", p.name)
@@ -866,7 +867,7 @@ object BackupCodec {
         // and a live pairing gives the computer the very same book. Older files had none: a new one is made.
         put("qrToken", p.qrToken ?: JSONObject.NULL)
         // Format 18 (schema 43): the owner's private note on this person.
-        put("note", p.note ?: JSONObject.NULL)
+        put("note", p.note?.takeIf { secrets } ?: JSONObject.NULL)
     }
 
     private fun jsonToParty(o: JSONObject) = Party(
@@ -1200,7 +1201,8 @@ object BackupCodec {
 
     // JSONObject.optString returns "" for null, which would turn an absent
     // phone number into an empty string rather than leaving it absent.
-    private fun productToJson(p: Product) = JSONObject().apply {
+    // [secrets] false: the owner's cost price stays out of a helper's copy (8 Nov review m42).
+    private fun productToJson(p: Product, secrets: Boolean = true) = JSONObject().apply {
         put("uid", p.uid ?: JSONObject.NULL)
         put("id", p.id)
         put("name", p.name)
@@ -1217,7 +1219,7 @@ object BackupCodec {
         put("creditPrice", p.creditPrice ?: JSONObject.NULL)
         put("note", p.note ?: JSONObject.NULL)
         put("barcode", p.barcode ?: JSONObject.NULL)
-        put("costPrice", p.costPrice ?: JSONObject.NULL)
+        put("costPrice", p.costPrice?.takeIf { secrets } ?: JSONObject.NULL)
         put("lowStockLevel", p.lowStockLevel ?: JSONObject.NULL)
         put("packUnit", p.packUnit ?: JSONObject.NULL)
         put("packSize", p.packSize ?: JSONObject.NULL)

@@ -275,7 +275,7 @@ fun CustomerPane(
         LedgerHead()
         if (shown.isEmpty()) {
             Text(
-                word(if (entries.isEmpty()) W.no_entries_yet else W.entries_no_match),
+                word(if (entries.isEmpty()) W.party_entries_hint else W.entries_no_match),
                 Modifier.fillMaxWidth().weight(1f).padding(32.dp),
                 color = c.textMuted, fontSize = 14.sp, textAlign = TextAlign.Center
             )

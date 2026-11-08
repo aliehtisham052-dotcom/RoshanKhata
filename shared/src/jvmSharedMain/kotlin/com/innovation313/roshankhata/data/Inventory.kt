@@ -130,7 +130,8 @@ object OrderNumber {
 
 /**
  * What the shelf is worth (POS Phase 6): on hand × what a unit cost the
- * shop — the product's cost price, else its last purchase rate. A product
+ * shop — the product's cost price, else the weighted average of its purchase
+ * rates ([Cost]: 100 at 10 and 100 at 12 cost 11), else its last rate. A product
  * whose cost nobody told the app is listed with no value, never a guessed
  * one; [known] says how much of the shelf the total covers.
  */

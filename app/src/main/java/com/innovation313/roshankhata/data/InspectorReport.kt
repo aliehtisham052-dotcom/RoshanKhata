@@ -480,6 +480,8 @@ object InspectorReport {
         val initials = d.businessName?.trim()
             ?.split(Regex("\\s+"))
             ?.filter { it.isNotEmpty() }
+            // A word that starts with a figure ("786 Traders") gives no letter: the monogram is letters only.
+            ?.let { ws -> ws.filter { Character.isLetter(it.codePointAt(0)) }.ifEmpty { ws } }
             ?.take(2)
             ?.joinToString("") { String(Character.toChars(it.codePointAt(0))).uppercase(Locale.getDefault()) }
             ?.takeIf { it.isNotEmpty() }
@@ -718,7 +720,7 @@ object InspectorReport {
             card(context.getString(R.string.pdf_insp_sum_expired), d.expired.size, redTone),
             card(Digits.string(context.resources, R.string.pdf_insp_sum_expiring, d.windowDays), d.expiringSoon.size, amberTone),
             // No expiry is a warning only where goods must carry one (an inspector's shop); a tailor's cloth has none (31 Oct 2026).
-            card(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount, amberTone.takeIf { d.style.compliance }),
+            card(context.getString(R.string.pdf_insp_sum_no_expiry), d.noExpiryCount, amberTone).takeIf { d.style.compliance },
             card(context.getString(R.string.pdf_insp_sum_incomplete), d.incompleteProducts.size, amberTone).takeIf { d.style.compliance }
         )
         // The medicine's generic name where a drug inspector reads the sheet; the pesticide's technical name else.
@@ -811,6 +813,8 @@ object InspectorReport {
             // and a sum of kilos and litres would be a number that means nothing.
             val units = traded.mapNotNull { it.unit?.trim()?.lowercase()?.takeIf { u -> u.isNotEmpty() } }.toSet()
             if (units.size > 1) {
+                // The note is a line under the table: on a full page it goes to the next (8 Nov review m15).
+                if (y + 16f > contentBottom) newPage()
                 PdfRtl.drawText(canvas, context.getString(R.string.pdf_insp_no_total), MARGIN, y + 13f, note)
                 y += 16f
             }

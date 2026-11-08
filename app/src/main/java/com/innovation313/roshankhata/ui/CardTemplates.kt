@@ -304,7 +304,7 @@ object CardTemplates {
         // Words left over after the last line: say so, rather than drop them silently.
         val used = kept.joinToString(" ").length
         if (used < text.trim().length && kept.isNotEmpty()) {
-            kept[kept.size - 1] = ellipsise(kept.last() + " …", p, max)
+            kept[kept.size - 1] = ellipsise(kept.last().trimEnd() + "…", p, max)
         }
         return kept.map { ellipsise(it, p, max) }.ifEmpty { listOf(ellipsise(text, p, max)) }
     }

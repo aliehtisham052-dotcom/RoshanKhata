@@ -40,6 +40,7 @@ class DesktopChequeCashTest {
         assertEquals(ChequeStatus.CLEARED, stored.status)
         assertEquals(entryId, stored.ledgerEntryId)
         assertEquals("RK-000002", dao.getEntry(entryId)!!.entryNumber)
+        assertEquals("the cheque's number is the payment's reference", "123", dao.getEntry(entryId)!!.paymentRef)
 
         assertNull("a second click posts nothing", dao.clearCheque(cheque, "Cheque #123"))
         assertEquals(2000.0, dao.partiesWithBalanceOnce().single().balance, 0.001)

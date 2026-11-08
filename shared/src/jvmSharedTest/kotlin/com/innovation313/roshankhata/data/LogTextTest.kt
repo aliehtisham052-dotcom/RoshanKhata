@@ -23,4 +23,11 @@ class LogTextTest {
         assertEquals("phone #", LogText.clean("phone 03001234567"))
         assertEquals("key …", LogText.clean("key a1B2c3D4e5F6g7H8i9"))
     }
+
+    @Test
+    fun `a file path or name with a customer in it goes`() {
+        assertEquals("cannot write <file> now", LogText.clean("cannot write /home/u/Documents/Roshan Khata/Statement_Test Traders.pdf now"))
+        assertEquals("cannot write <file> now", LogText.clean("cannot write C:\\Users\\u\\Documents\\Statement_Test Traders.pdf now"))
+        assertEquals("HTTP 503 from port 47313", LogText.clean("HTTP 503 from port 47313"))
+    }
 }

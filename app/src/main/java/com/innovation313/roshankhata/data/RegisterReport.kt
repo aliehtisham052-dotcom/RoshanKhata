@@ -48,7 +48,7 @@ object RegisterReport {
 
     private val dateFmt get() = DateWords.formatter("dd MMM yyyy, HH:mm")
     private val dayFmt get() = DateWords.formatter("dd MMM yyyy")
-    private val rowDayFmt get() = DateWords.formatter("dd MMM")
+    private val rowDayFmt get() = DateWords.formatter("dd MMM yy")
     private val fileFmt = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH)
 
     data class ReportData(

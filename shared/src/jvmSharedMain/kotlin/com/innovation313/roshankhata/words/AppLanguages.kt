@@ -17,6 +17,6 @@ object AppLanguages {
         Language("ar", "العربية"),
         Language("hi", "हिन्दी"),
         Language("bn", "বাংলা"),
-        Language("id", "Indonesia")
+        Language("id", "Bahasa Indonesia")
     )
 }

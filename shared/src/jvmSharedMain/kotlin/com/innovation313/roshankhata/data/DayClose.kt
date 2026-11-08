@@ -54,8 +54,12 @@ object DayCloseMath {
 
     /** The first millisecond of a local day number. */
     fun startOf(day: Long, tz: java.util.TimeZone = java.util.TimeZone.getDefault()): Long {
-        val utc = day * 24L * 60 * 60 * 1000
-        return utc - tz.getOffset(utc)
+        // The calendar's own midnight, not "UTC midnight minus the offset at UTC midnight": Cairo, Beirut and Gaza
+        // change their clocks AT midnight, where that sum is an hour out (8 Nov review m39). A moment inside the day
+        // (its noon) is found first and the calendar then gives that day's first moment, a midnight that does not
+        // exist being the first moment that day does. (java.time needs Android 26; the app starts at 24.)
+        val noon = day * 24L * 60 * 60 * 1000 + 12L * 60 * 60 * 1000
+        return DayMath.startOfDay(noon - tz.getOffset(noon), tz)
     }
 
     fun expected(opening: Double, cashIn: Double, cashOut: Double): Double =

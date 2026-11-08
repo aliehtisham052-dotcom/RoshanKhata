@@ -79,7 +79,7 @@ class RegisterPrint(
         if (missingRate > 0) line(words.text(W.pdf_reg_no_rate_lines), missingRate.toString(), font(11f), GREY)
         divider()
 
-        val rowDay = DateWords.formatter("dd MMM")
+        val rowDay = DateWords.formatter("dd MMM yy")
         val xDate = MARGIN + 4.0
         val xName = MARGIN + 66.0
         val xAmount = PAGE_W - MARGIN - 4.0

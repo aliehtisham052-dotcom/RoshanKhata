@@ -651,12 +651,23 @@ object LiveWire {
             val p = java.net.DatagramPacket(buf, buf.size)
             try { socket.receive(p) } catch (e: SocketTimeoutException) { continue } catch (e: IOException) { return }
             if (p.length != SEEK.size + NONCE_SEEK || !buf.copyOfRange(0, SEEK.size).contentEquals(SEEK)) continue
+            // Only a caller on a local network gets an answer: an address from the internet learns nothing about this
+            // computer (8 Nov review m30).
+            if (!isLocalCaller(p.address)) continue
             val key = bookKey() ?: continue
             val nonce = buf.copyOfRange(SEEK.size, SEEK.size + NONCE_SEEK)
             val port = servedPort()
             val reply = HERE + byteArrayOf((port shr 8).toByte(), port.toByte()) + hereTag(key, nonce, port)
             runCatching { socket.send(java.net.DatagramPacket(reply, reply.size, p.socketAddress)) }
         }
+    }
+
+    /** A private, link-local or loopback address (IPv6 unique-local fc00::/7 too). */
+    internal fun isLocalCaller(a: java.net.InetAddress?): Boolean {
+        if (a == null) return false
+        if (a.isSiteLocalAddress || a.isLinkLocalAddress || a.isLoopbackAddress) return true
+        val raw = a.address
+        return raw.size == 16 && (raw[0].toInt() and 0xFE) == 0xFC
     }
 
     /** [n] bytes read as they arrive, never reserved up front (a stranger could announce the largest size). */

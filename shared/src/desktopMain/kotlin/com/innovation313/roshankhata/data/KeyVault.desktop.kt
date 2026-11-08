@@ -17,7 +17,11 @@ import com.sun.jna.WString
 actual object KeyVault {
     private val windows = System.getProperty("os.name").orEmpty().lowercase().startsWith("windows")
 
-    /** Ties the sealed key to this app: another program of the same user cannot open it by DPAPI alone. */
+    /**
+     * A fixed label for this app's blobs, NOT a secret: it is in the public source, so a program running as the same
+     * Windows user can open the key by passing the same label. DPAPI keeps the key from other users and from a copied
+     * file; it does not keep it from this user's own programs (8 Nov review m29).
+     */
     private val ENTROPY = "roshan-khata-sync-key-v1".toByteArray(Charsets.US_ASCII)
     private const val CRYPTPROTECT_UI_FORBIDDEN = 0x1
 

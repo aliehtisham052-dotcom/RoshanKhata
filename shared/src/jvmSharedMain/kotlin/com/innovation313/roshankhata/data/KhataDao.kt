@@ -780,7 +780,9 @@ interface KhataDao {
                 entryNumber = "",
                 timestamp = now,
                 // Marked as a cheque, so it is never counted as cash in the drawer (21 Oct 2026).
-                paymentMethod = PaymentMethod.CHEQUE
+                paymentMethod = PaymentMethod.CHEQUE,
+                // The cheque's own number is the payment's reference, as the entry form writes one (8 Nov review m40).
+                paymentRef = PaymentRef.clean(PaymentMethod.CHEQUE, cheque.chequeNumber)
             )
         )
         updateCheque(cheque.copy(status = ChequeStatus.CLEARED, settledAt = now, ledgerEntryId = entryId))
@@ -1901,7 +1903,8 @@ interface KhataDao {
         }
         saveDayCloseRow(if (here != null) close.copy(id = here.id, uid = here.uid) else close)
         val said = auditAmount(close.counted) + (here?.let { " (" + auditAmount(it.counted) + " / " + auditAmount(it.difference) + ")" } ?: "")
-        log(AuditAction.DAY_CLOSED, user, "day_close", here?.id, said)
+        // A first close of the day has no row id until it is written: read it back, so the audit row points at it (8 Nov review m41).
+        log(AuditAction.DAY_CLOSED, user, "day_close", here?.id ?: dayCloseFor(close.day)?.id, said)
     }
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = :income AND timestamp > :from AND timestamp <= :to")

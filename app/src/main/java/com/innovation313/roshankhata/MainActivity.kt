@@ -601,14 +601,14 @@ class MainActivity : BaseActivity() {
             }
         }
         findViewById<TextView>(R.id.tvHomeBackupAge)?.apply {
-            text = if (offerSignIn) getString(R.string.welcome_connect) else line.text
+            text = if (offerSignIn) getString(R.string.home_backup_to_drive) else line.text
             // On the light header the words are the deep gold whether stale
             // or fresh; stale is bold, fresh is not. The sign-in is bold.
             setTypeface(null, if (offerSignIn || line.stale) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
         }
         // Read aloud with the account, which there is no room to print.
         findViewById<View>(R.id.homeBackupTap)?.contentDescription =
-            if (offerSignIn) getString(R.string.welcome_connect)
+            if (offerSignIn) getString(R.string.home_backup_to_drive)
             else listOfNotNull(line.text, drive.accountName(this)).joinToString(", ")
         // The shop button (11 Oct): the shop's logo and name, and under it
         // what a tap opens - "Profile", or "Profile · Switch shop" when there

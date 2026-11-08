@@ -22,6 +22,9 @@ object LogText {
         if (message.isNullOrBlank()) return null
         return message
             .replace(Regex("[\\r\\n\\t]+"), " ")
+            // A file path or name ("…/Statement_Ali Traders.pdf") can carry a customer's name (8 Nov review m28).
+            .replace(Regex("[A-Za-z]:\\\\(?:[^\\\\/:*?\"<>|]+\\\\)*[^\\\\/:*?\"<>|]*?\\.[A-Za-z0-9]{2,5}\\b"), "<file>")
+            .replace(Regex("(?<![\\w.])/(?:[^/:*?\"<>|]+/)+[^/:*?\"<>|]*?\\.[A-Za-z0-9]{2,5}\\b"), "<file>")
             .replace(Regex("\"[^\"]*\""), "\"…\"")
             .replace(Regex("'[^']*'"), "'…'")
             .replace(Regex("(?=[A-Za-z0-9+/=_-]*\\d)(?=[A-Za-z0-9+/=_-]*[A-Za-z])[A-Za-z0-9+/=_-]{16,}"), "…")

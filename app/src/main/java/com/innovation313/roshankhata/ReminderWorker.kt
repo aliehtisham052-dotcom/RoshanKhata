@@ -114,15 +114,9 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // The owner said no to notifications (or has not said yes yet): the rest are notifications.
         if (!canNotify) return Result.success()
 
-        val endOfToday = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59)
-            set(Calendar.SECOND, 59); set(Calendar.MILLISECOND, 999)
-        }.timeInMillis
-        val expiryWindow = System.currentTimeMillis() + 60L * 24 * 60 * 60 * 1000
-
         // The shop that is open: its own screens can show every one of these,
         // so each notification lands on the list it is about.
-        val here = countDue(dao, endOfToday, expiryWindow)
+        val here = countDue(dao)
         // A count gone to nothing takes its notice with it (3 Nov 2026 audit, M21): yesterday's "2 cheques" stood.
         cancelIfNone(ctx, ID_CHEQUES, here.cheques)
         cancelIfNone(ctx, ID_PLANS, here.plans)
@@ -170,7 +164,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             var other: KhataDatabase? = null
             try {
                 other = KhataDatabase.openOther(ctx, biz)
-                if (other != null) due = countDue(other.khataDao(), endOfToday, expiryWindow)
+                if (other != null) due = countDue(other.khataDao())
             } catch (_: Exception) {
                 due = null
             } finally {
@@ -262,10 +256,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
      * Pulled out of doWork so the closed shops are judged by exactly the rule
      * the open one is, rather than a second copy that drifts from it.
      */
-    private suspend fun countDue(dao: KhataDao, endOfToday: Long, expiryWindow: Long): Due {
+    private suspend fun countDue(dao: KhataDao): Due {
         // The bell's own rules (LedgerAlerts.dueCounts, 3 Nov 2026 audit, M14): the notice counted every dated bill
         // line as expiring — sold out, written off, years past — and plans with nothing left, so the bell it
-        // opened showed none of it. [endOfToday] and [expiryWindow] are the bell's own (today, 60 days).
+        // opened showed none of it.
         val due = com.innovation313.roshankhata.data.LedgerAlerts.dueCounts(dao)
         return Due(due.cheques, due.plans, due.expiring)
     }

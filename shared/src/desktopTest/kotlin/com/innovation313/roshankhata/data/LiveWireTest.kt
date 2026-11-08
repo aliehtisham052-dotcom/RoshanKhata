@@ -305,4 +305,12 @@ class LiveWireTest {
             dir.deleteRecursively()
         }
     }
+
+    @Test
+    fun `only a caller on a local network is answered`() {
+        for (ok in listOf("192.168.1.20", "10.0.0.5", "172.16.4.4", "169.254.1.1", "127.0.0.1", "fd12:3456:789a::1"))
+            assertTrue(ok, LiveWire.isLocalCaller(InetAddress.getByName(ok)))
+        for (no in listOf("8.8.8.8", "203.0.113.9", "2001:4860:4860::8888"))
+            assertTrue(no, !LiveWire.isLocalCaller(InetAddress.getByName(no)))
+    }
 }

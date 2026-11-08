@@ -136,7 +136,7 @@ fun OrdersScreen(
             scope.launch {
                 val order = PurchaseOrder(id = draft.existing?.order?.id ?: 0, partyId = draft.partyId!!, note = draft.note.trim().ifBlank { null }, createdBy = Access.userName)
                 val id = withContext(Dispatchers.IO) { runCatching { dao.saveOrder(order, draft.toItems()) }.getOrNull() }
-                told = id?.let { withContext(Dispatchers.IO) { dao.getOrder(it)?.orderNumber } }
+                told = id?.let { withContext(Dispatchers.IO) { dao.getOrder(it)?.orderNumber } }?.let { words.text(W.po_saved, it) }
                 editing = null
             }
         }
