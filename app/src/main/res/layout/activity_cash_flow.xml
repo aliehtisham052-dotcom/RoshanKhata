@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/section_insights"
@@ -32,6 +33,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -40,7 +42,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:paddingBottom="40dp">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipCfDays"

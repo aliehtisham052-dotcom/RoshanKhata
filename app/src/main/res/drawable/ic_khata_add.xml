@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A khata book with a plus cut out of it: "add to a khata". One colour, drawn white; every caller tints it (the two-tone ic_tile_khata painted in one colour is a plain square, lesson 56). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@android:color/white"
+        android:fillType="evenOdd"
+        android:pathData="M6,2h12a2,2 0 0 1 2,2v16a2,2 0 0 1 -2,2H6a2,2 0 0 1 -2,-2V4a2,2 0 0 1 2,-2z M11,8h2v3h3v2h-3v3h-2v-3H8v-2h3z M6.5,4h1v16h-1z"/>
+</vector>

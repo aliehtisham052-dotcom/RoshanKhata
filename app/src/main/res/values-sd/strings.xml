@@ -4117,4 +4117,13 @@
         <item quantity="one">%1$d چونڊيل داخلا ختم ڪجي؟ اها ري سائيڪل بن ۾ هلي ويندي. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
         <item quantity="other">%1$d چونڊيل داخلائون ختم ڪجن؟ اهي ري سائيڪل بن ۾ هليون وينديون. اوهان 30 ڏينهن اندر واپس آڻي سگهو ٿا.</item>
     </plurals>
+    <string name="z_counter_tickets">ڪائونٽر جا پرچا</string>
+    <string name="z_sales_all">ڪل وڪرو (ڪائونٽر + کاتو)</string>
+    <string name="z_sec_money">پئسن جو اچڻ وڃڻ</string>
+    <string name="z_sec_drawer">گلو</string>
+    <string name="z_cash_in_day">نقد آمد، پورو ڏينهن (کاتو + ڪيش بڪ)</string>
+    <string name="z_cash_out_day">نقد خرچ، پورو ڏينهن (کاتو + ڪيش بڪ)</string>
+    <string name="z_expected_at">%1$s جي ڳڻپ تي گلي ۾ هجڻ گهرجي</string>
+    <string name="cf_net">خالص</string>
+    <string name="cf_partial">آخري هفتو ننڍو · %1$s</string>
 </resources>

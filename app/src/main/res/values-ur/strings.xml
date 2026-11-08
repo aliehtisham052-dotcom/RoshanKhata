@@ -4089,4 +4089,13 @@
         <item quantity="one">%1$d چنی گئی انٹری حذف کریں؟ یہ ری سائیکل بن میں چلی جائے گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
         <item quantity="other">%1$d چنی گئی اندراجات حذف کریں؟ یہ ری سائیکل بن میں چلی جائیں گی۔ آپ 30 دن کے اندر واپس لا سکتے ہیں۔</item>
     </plurals>
+    <string name="z_counter_tickets">کاؤنٹر کی پرچیاں</string>
+    <string name="z_sales_all">کل سیلز (کاؤنٹر + کھاتہ)</string>
+    <string name="z_sec_money">رقم کی آمد و رفت</string>
+    <string name="z_sec_drawer">گلہ</string>
+    <string name="z_cash_in_day">نقد آمد، پورا دن (کھاتہ + کیش بک)</string>
+    <string name="z_cash_out_day">نقد اخراجات، پورا دن (کھاتہ + کیش بک)</string>
+    <string name="z_expected_at">%1$s کی گنتی پر گلے میں ہونا چاہیے</string>
+    <string name="cf_net">خالص</string>
+    <string name="cf_partial">آخری ہفتہ چھوٹا · %1$s</string>
 </resources>

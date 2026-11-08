@@ -4071,4 +4071,13 @@
     <plurals name="delete_selected_entries_confirm">
         <item quantity="other">Hapus %1$d catatan terpilih? Catatan akan dipindahkan ke Tempat Sampah. Anda dapat memulihkannya dalam 30 hari.</item>
     </plurals>
+    <string name="z_counter_tickets">Struk kasir</string>
+    <string name="z_sales_all">Semua penjualan (kasir + buku)</string>
+    <string name="z_sec_money">Uang masuk &amp; keluar</string>
+    <string name="z_sec_drawer">Laci</string>
+    <string name="z_cash_in_day">Kas masuk, sehari penuh (buku + kas)</string>
+    <string name="z_cash_out_day">Kas keluar, sehari penuh (buku + kas)</string>
+    <string name="z_expected_at">Seharusnya di laci saat hitung %1$s</string>
+    <string name="cf_net">Bersih</string>
+    <string name="cf_partial">Minggu terakhir pendek · %1$s</string>
 </resources>

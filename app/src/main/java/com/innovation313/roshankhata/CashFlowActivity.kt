@@ -118,9 +118,32 @@ class CashFlowActivity : BaseActivity() {
         val weeks = findViewById<LinearLayout>(R.id.cfWeeks)
         weeks.removeAllViews()
         o.weeks.forEach { w ->
-            val label = getString(R.string.cf_week, DateWords.format("d MMM", w.from), DateWords.format("d MMM", w.to - 1))
-            row(weeks, label, getString(R.string.cf_in) + " " + Format.moneyLtr(w.coming), getString(R.string.cf_out) + " " + Format.moneyLtr(w.going),
-                if (w == o.gapWeek) R.color.bal_owed_to_me else null)
+            val v = layoutInflater.inflate(R.layout.item_cashflow_week, weeks, false)
+            com.innovation313.roshankhata.ui.TextFit.relax(v)
+            val dayMs = 24L * 60 * 60 * 1000
+            val spanDays = ((w.to - w.from) / dayMs).toInt()
+            v.findViewById<TextView>(R.id.tvWeekTitle).apply {
+                text = getString(R.string.cf_week, DateWords.format("d MMM", w.from), DateWords.format("d MMM", w.to - 1))
+                if (w == o.gapWeek) setTextColor(ContextCompat.getColor(this@CashFlowActivity, R.color.bal_owed_to_me))
+            }
+            // The last week is short when the period is not a whole number of weeks (30 days: 2 days left over).
+            v.findViewById<TextView>(R.id.tvWeekSub).apply {
+                if (spanDays in 1..6) {
+                    text = getString(R.string.cf_partial, getString(R.string.cf_days, spanDays.toString()))
+                    visibility = View.VISIBLE
+                }
+            }
+            v.findViewById<TextView>(R.id.tvWeekIn).text = (if (w.coming > 0.004) "+" else "") + Format.moneyLtr(w.coming)
+            v.findViewById<TextView>(R.id.tvWeekOut).text = (if (w.going > 0.004) "\u2212" else "") + Format.moneyLtr(w.going)
+            val net = w.coming - w.going
+            v.findViewById<TextView>(R.id.tvWeekNet).apply {
+                text = (if (net > 0.004) "+" else if (net < -0.004) "\u2212" else "") + Format.moneyLtr(kotlin.math.abs(net))
+                setTextColor(ContextCompat.getColor(this@CashFlowActivity,
+                    if (net > 0.004) R.color.bal_i_owe else if (net < -0.004) R.color.bal_owed_to_me else R.color.ink_soft))
+            }
+            // A week with nothing in it fades back, so the weeks that matter stand out.
+            if (w.coming <= 0.004 && w.going <= 0.004) v.alpha = 0.45f
+            weeks.addView(v)
         }
 
         val list = findViewById<LinearLayout>(R.id.cfItems)

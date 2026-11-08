@@ -75,6 +75,38 @@ object DayBook {
         return out.sortedBy { it.at }
     }
 
+    /**
+     * The day as a message (8 Nov 2026, the owner's WhatsApp photo): the shop and the date as a heading, the report in
+     * its three blocks, one figure a line, then each entry short — "10:01 PM · who · what · amount". [bold] marks the
+     * headings with WhatsApp's asterisks; the receipt printer gets them plain.
+     */
+    fun shareText(
+        words: Words, shop: String, date: String, report: ZReport?, rows: List<Row>,
+        money: (Double) -> String, time: (Long) -> String, entriesHeading: String, bold: Boolean
+    ): String {
+        fun b(t: String) = if (bold) "*$t*" else t
+        val out = StringBuilder()
+        if (shop.isNotBlank()) out.append(b(shop)).append('\n')
+        out.append(b(words.text(W.z_title) + " \u00b7 " + date))
+        report?.let { r ->
+            r.sections(words, money, time).forEach { sec ->
+                out.append("\n\n").append(b(sec.title))
+                sec.rows.forEach { (k, v) ->
+                    out.append('\n')
+                    if (k.startsWith("  ")) out.append("  \u2022 ").append(k.trim()) else out.append(k)
+                    out.append(": ").append(v)
+                }
+            }
+            if (r.counted == null) out.append("\n\n").append(words.text(W.z_no_close))
+        }
+        out.append("\n\n").append(b(entriesHeading))
+        rows.forEach { r ->
+            out.append('\n').append(listOfNotNull(time(r.at), whoText(words, r).takeIf { it.isNotBlank() }, kindText(words, r), money(r.amount))
+                .joinToString(" \u00b7 "))
+        }
+        return out.toString()
+    }
+
     /** The row's kind in the owner's words, its way of paying beside it: "I Got · Cash". */
     fun kindText(words: Words, r: Row): String {
         val kind = when (r.kind) {

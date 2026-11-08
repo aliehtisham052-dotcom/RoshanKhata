@@ -46,8 +46,13 @@ data class ZReport(
     /** Cash bills and staff pay that day (3 Nov 2026 audit, M03): cash out with no cashbook or khata row. */
     val otherCashOut: Double = 0.0,
     /** What the counter's own tickets came to (the profit is worked on these; [salesTotal] also holds the khata's sales). */
-    val counterSales: Double = salesTotal
+    val counterSales: Double = salesTotal,
+    /** When the day's close (the last count) was made; null when the day was not closed (8 Nov 2026: the report says which count its drawer figure is at). */
+    val closedAt: Long? = null
 ) {
+    /** A titled block of the report: the share and the screens read the report by these. */
+    data class Section(val title: String, val rows: List<Pair<String, String>>)
+
     /** Cash in the drawer by the books: the close's own figure, else opening + every cash in − every cash out. */
     val expectedCash: Double? get() = closeExpected ?: opening?.let { LineMath.round(it + khataCashIn + cashbookIn - khataCashOut - cashbookOut - otherCashOut) }
     val variance: Double? get() = if (counted != null && expectedCash != null) LineMath.round(counted - expectedCash!!) else null
@@ -99,36 +104,59 @@ data class ZReport(
                 profit = if (costKnown && returned.all { it.cost != null } && done.isNotEmpty()) LineMath.round(counterSales - tax - cost - returnedMargin) else null,
                 closeExpected = close?.expected?.let { LineMath.round(it) },
                 otherCashOut = dao.billsAndStaffCashBetween(from - 1, to - 1),
-                counterSales = counterSales
+                counterSales = counterSales,
+                closedAt = close?.closedAt
             )
         }
     }
 
-    /** The report as lines of text — the receipt printer, a share, a dialog. */
-    fun lines(words: Words, money: (Double) -> String): List<Pair<String, String>> {
+    /**
+     * The report as lines of text — the receipt printer, a share, a dialog. Each label says what its figure is
+     * (8 Nov 2026, the owner's chat photo): the counter's tickets are not "Sales", the cash in is the whole day's
+     * while the drawer is as of the count. [sections] takes a clock that writes the time of the count; without it the
+     * drawer's label does not name one.
+     */
+    fun lines(words: Words, money: (Double) -> String): List<Pair<String, String>> =
+        sections(words, money, null).flatMap { it.rows }
+
+    /** The same lines in three blocks: Sales, Money in & out, Drawer (the drawer's block is absent for a day never closed). */
+    fun sections(words: Words, money: (Double) -> String, clock: ((Long) -> String)? = null): List<Section> {
         fun m(key: String) = if (key == SaleReturn.ACCOUNT) words.text(W.pos_refund_account) else PaymentMethod.label(words, key)
-        val out = ArrayList<Pair<String, String>>()
-        out += words.text(W.z_sales_count) to saleCount.toString()
-        out += words.text(W.z_sales_total) to money(salesTotal)
-        byMethod.forEach { (k, v) -> out += ("  " + m(k)) to money(v) }
-        if (onAccount > 0.0) out += ("  " + words.text(W.pos_to_account)) to money(onAccount)
-        if (discounts > 0.0) out += words.text(W.pos_discount) to money(discounts)
-        if (tax > 0.0) out += words.text(W.pos_tax_total) to money(tax)
-        if (voidCount > 0) out += words.text(W.z_voids, voidCount.toString()) to money(voidedTotal)
+        val sales = ArrayList<Pair<String, String>>()
+        sales += words.text(W.z_counter_tickets) to saleCount.toString()
+        byMethod.forEach { (k, v) -> sales += ("  " + m(k)) to money(v) }
+        if (onAccount > 0.0) sales += ("  " + words.text(W.pos_to_account)) to money(onAccount)
+        if (discounts > 0.0) sales += words.text(W.pos_discount) to money(discounts)
+        if (tax > 0.0) sales += words.text(W.pos_tax_total) to money(tax)
+        if (voidCount > 0) sales += words.text(W.z_voids, voidCount.toString()) to money(voidedTotal)
         if (returnCount > 0) {
-            out += words.text(W.z_returns, returnCount.toString()) to money(returnsTotal)
-            refundsByMethod.forEach { (k, v) -> out += ("  " + m(k)) to money(v) }
+            sales += words.text(W.z_returns, returnCount.toString()) to money(returnsTotal)
+            refundsByMethod.forEach { (k, v) -> sales += ("  " + m(k)) to money(v) }
         }
-        out += words.text(W.z_cash_in) to money(khataCashIn + cashbookIn)
-        out += words.text(W.z_cash_out) to money(khataCashOut + cashbookOut + otherCashOut)
-        opening?.let { out += words.text(W.dc_opening) to money(it) }
-        // A drawer the books put below zero carries its minus (4 Nov 2026), as the variance does.
-        expectedCash?.let { out += words.text(W.z_expected) to (if (it < -0.005) "\u2212 " else "") + money(it) }
-        counted?.let { out += words.text(W.dc_counted) to money(it) }
-        // Short or over, said with its sign (the money format drops it).
-        variance?.let { out += words.text(W.z_variance) to (if (it < -0.005) "\u2212 " else if (it > 0.005) "+ " else "") + money(it) }
+        sales += words.text(W.z_sales_all) to money(salesTotal)
         // A loss carries its minus (25 Oct 2026, the audit: a day's loss printed as a positive profit).
-        profit?.let { out += words.text(W.z_profit) to (if (it < -0.005) "− " else "") + money(it) }
-        return out
+        profit?.let { sales += words.text(W.z_profit) to (if (it < -0.005) "− " else "") + money(it) }
+
+        val cash = listOf(
+            words.text(W.z_cash_in_day) to money(khataCashIn + cashbookIn),
+            words.text(W.z_cash_out_day) to money(khataCashOut + cashbookOut + otherCashOut)
+        )
+
+        val drawer = ArrayList<Pair<String, String>>()
+        opening?.let { drawer += words.text(W.dc_opening) to money(it) }
+        // A drawer the books put below zero carries its minus (4 Nov 2026), as the variance does.
+        expectedCash?.let {
+            val label = if (closedAt != null && clock != null) words.text(W.z_expected_at, clock(closedAt)) else words.text(W.z_expected)
+            drawer += label to (if (it < -0.005) "\u2212 " else "") + money(it)
+        }
+        counted?.let { drawer += words.text(W.dc_counted) to money(it) }
+        // Short or over, said with its sign (the money format drops it).
+        variance?.let { drawer += words.text(W.z_variance) to (if (it < -0.005) "\u2212 " else if (it > 0.005) "+ " else "") + money(it) }
+
+        return listOfNotNull(
+            Section(words.text(W.z_sales_count), sales),
+            Section(words.text(W.z_sec_money), cash),
+            if (drawer.isEmpty()) null else Section(words.text(W.z_sec_drawer), drawer)
+        )
     }
 }

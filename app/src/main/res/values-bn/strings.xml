@@ -4137,4 +4137,13 @@
         <item quantity="one">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এটি রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
         <item quantity="other">বাছাই করা %1$dটি এন্ট্রি মুছবেন? এগুলো রিসাইকেল বিনে যাবে। 30 দিনের মধ্যে ফিরিয়ে আনতে পারবেন।</item>
     </plurals>
+    <string name="z_counter_tickets">কাউন্টারের টিকিট</string>
+    <string name="z_sales_all">মোট বিক্রি (কাউন্টার + খাতা)</string>
+    <string name="z_sec_money">টাকার আসা-যাওয়া</string>
+    <string name="z_sec_drawer">ক্যাশ ড্রয়ার</string>
+    <string name="z_cash_in_day">নগদ এসেছে, পুরো দিন (খাতা + ক্যাশবুক)</string>
+    <string name="z_cash_out_day">নগদ গেছে, পুরো দিন (খাতা + ক্যাশবুক)</string>
+    <string name="z_expected_at">%1$s-এর গণনায় ক্যাশে থাকার কথা</string>
+    <string name="cf_net">নেট</string>
+    <string name="cf_partial">শেষ সপ্তাহ ছোট · %1$s</string>
 </resources>

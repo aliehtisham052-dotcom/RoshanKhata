@@ -4302,4 +4302,13 @@
         <item quantity="one">Delete %1$d selected entry? It will move to the Recycle Bin. You can restore it within 30 days.</item>
         <item quantity="other">Delete %1$d selected entries? They will move to the Recycle Bin. You can restore them within 30 days.</item>
     </plurals>
+    <string name="z_counter_tickets">Counter tickets</string>
+    <string name="z_sales_all">All sales (counter + khata)</string>
+    <string name="z_sec_money">Money in &amp; out</string>
+    <string name="z_sec_drawer">Drawer</string>
+    <string name="z_cash_in_day">Cash in, whole day (khata + cashbook)</string>
+    <string name="z_cash_out_day">Cash out, whole day (khata + cashbook)</string>
+    <string name="z_expected_at">Should be in drawer at the %1$s count</string>
+    <string name="cf_net">Net</string>
+    <string name="cf_partial">Short last week · %1$s</string>
 </resources>

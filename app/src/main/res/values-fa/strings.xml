@@ -4117,4 +4117,13 @@
         <item quantity="one">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شود. می‌توانید تا 30 روز آن را بازگردانید.</item>
         <item quantity="other">%1$d ورودی انتخاب‌شده حذف شود؟ به سطل بازیافت منتقل می‌شوند. می‌توانید تا 30 روز آن‌ها را بازگردانید.</item>
     </plurals>
+    <string name="z_counter_tickets">فیش‌های صندوق</string>
+    <string name="z_sales_all">جمع فروش (صندوق + دفتر)</string>
+    <string name="z_sec_money">ورود و خروج پول</string>
+    <string name="z_sec_drawer">صندوق</string>
+    <string name="z_cash_in_day">نقد ورودی، کل روز (دفتر + صندوق)</string>
+    <string name="z_cash_out_day">نقد خروجی، کل روز (دفتر + صندوق)</string>
+    <string name="z_expected_at">باید هنگام شمارش %1$s در صندوق باشد</string>
+    <string name="cf_net">خالص</string>
+    <string name="cf_partial">هفته آخر کوتاه · %1$s</string>
 </resources>

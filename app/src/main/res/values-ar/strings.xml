@@ -4353,4 +4353,13 @@
         <item quantity="many">حذف %1$d قيدًا محددًا؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
         <item quantity="other">حذف %1$d قيد محدد؟ ستنتقل إلى سلة المحذوفات. يمكنك استعادتها خلال 30 يومًا.</item>
     </plurals>
+    <string name="z_counter_tickets">تذاكر الكاشير</string>
+    <string name="z_sales_all">إجمالي المبيعات (الكاشير + الدفتر)</string>
+    <string name="z_sec_money">الأموال الداخلة والخارجة</string>
+    <string name="z_sec_drawer">الدرج</string>
+    <string name="z_cash_in_day">نقد داخل طوال اليوم (الدفتر + الصندوق)</string>
+    <string name="z_cash_out_day">نقد خارج طوال اليوم (الدفتر + الصندوق)</string>
+    <string name="z_expected_at">المفترض في الدرج عند جرد %1$s</string>
+    <string name="cf_net">الصافي</string>
+    <string name="cf_partial">الأسبوع الأخير قصير · %1$s</string>
 </resources>

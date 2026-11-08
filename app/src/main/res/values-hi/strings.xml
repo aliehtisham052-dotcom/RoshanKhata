@@ -4137,4 +4137,13 @@
         <item quantity="one">चुनी हुई %1$d एंट्री मिटाएँ? यह रीसायकल बिन में जाएगी। 30 दिन के भीतर वापस ला सकते हैं।</item>
         <item quantity="other">चुनी हुई %1$d एंट्रियाँ मिटाएँ? ये रीसायकल बिन में जाएँगी। 30 दिन के भीतर वापस ला सकते हैं।</item>
     </plurals>
+    <string name="z_counter_tickets">काउंटर की पर्चियाँ</string>
+    <string name="z_sales_all">कुल बिक्री (काउंटर + खाता)</string>
+    <string name="z_sec_money">पैसे का आना-जाना</string>
+    <string name="z_sec_drawer">गल्ला</string>
+    <string name="z_cash_in_day">नकद आया, पूरा दिन (खाता + कैशबुक)</string>
+    <string name="z_cash_out_day">नकद गया, पूरा दिन (खाता + कैशबुक)</string>
+    <string name="z_expected_at">%1$s की गिनती पर गल्ले में होना चाहिए</string>
+    <string name="cf_net">शुद्ध</string>
+    <string name="cf_partial">आखिरी हफ्ता छोटा · %1$s</string>
 </resources>

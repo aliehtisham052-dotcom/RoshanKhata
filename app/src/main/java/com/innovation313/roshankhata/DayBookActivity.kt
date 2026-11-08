@@ -65,33 +65,29 @@ class DayBookActivity : BaseActivity() {
         outState.putLong(STATE_DAY, dayShown)
     }
 
-    /** The day as text: its date, the day report's lines, then each entry — time, who, what, amount. */
-    private fun text(): String? {
+    /** The day as text: the shop and date, the report's three blocks, then each entry short. [bold] is for WhatsApp, not the printer. */
+    private fun text(bold: Boolean): String? {
         val (z, rows) = shown ?: return null
         val words = AndroidWords(this)
         val date = Format.dateOnly(DayCloseMath.startOf(dayShown) + 12L * 60 * 60 * 1000)
-        val b = StringBuilder(getString(R.string.z_title)).append('\n').append(date).append('\n')
-        z?.let { r ->
-            b.append('\n')
-            r.lines(words) { Format.money(it) }.forEach { (k, v) -> b.append(k).append(": ").append(v).append('\n') }
-            if (r.counted == null) b.append('\n').append(getString(R.string.z_no_close)).append('\n')
-        }
-        b.append('\n').append(Digits.quantity(resources, R.plurals.bin_party_entries, rows.size, rows.size)).append('\n')
-        rows.forEach { r ->
-            b.append(DateWords.formatter("h:mm a").format(java.util.Date(r.at))).append("  ")
-                .append(DayBook.whoText(words, r)).append("  ·  ").append(DayBook.kindText(words, r))
-                .append(": ").append(Format.money(r.amount)).append('\n')
-        }
-        return b.toString().trimEnd()
+        val shop = com.innovation313.roshankhata.data.BusinessProfile.businessName(this)?.trim().orEmpty()
+        val clock = DateWords.formatter("h:mm a")
+        return DayBook.shareText(
+            words, shop, date, z, rows,
+            money = { Format.money(it) },
+            time = { clock.format(java.util.Date(it)) },
+            entriesHeading = Digits.quantity(resources, R.plurals.bin_party_entries, rows.size, rows.size),
+            bold = bold
+        )
     }
 
     private fun share() {
-        val t = text() ?: return
+        val t = text(bold = true) ?: return
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, t), getString(R.string.z_title)))
     }
 
     private fun print() {
-        val t = text() ?: return
+        val t = text(bold = false) ?: return
         com.innovation313.roshankhata.ui.TextReceipt.print(this, lifecycleScope, t)
     }
 
