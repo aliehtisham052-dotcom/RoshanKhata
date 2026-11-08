@@ -185,12 +185,12 @@ object PdfFiles {
                 val picture = sheets.picture(i, scale)
                 val image = JPEGFactory.createFromImage(pdf, picture, 0.92f)
                 PDPageContentStream(pdf, page).use { it.drawImage(image, 0f, 0f, w, h) }
-                val annots = mutableListOf<org.apache.pdfbox.pdmodel.interaction.annotation.PDAnnotation>()
+                val annots = mutableListOf<org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation>()
                 for (r in pills) {
-                    val link = org.apache.pdfbox.pdmodel.interaction.annotation.PDAnnotationLink()
+                    val link = org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink()
                     link.rectangle = PDRectangle(r.left, h - r.bottom, r.width(), r.height())
-                    link.action = org.apache.pdfbox.pdmodel.interaction.action.PDActionURI().also { it.uri = com.innovation313.roshankhata.desktop.invoice.PdfBranding.STORE_URL }
-                    link.borderStyle = org.apache.pdfbox.pdmodel.interaction.annotation.PDBorderStyleDictionary().also { it.width = 0f }
+                    link.action = org.apache.pdfbox.pdmodel.interactive.action.PDActionURI().also { it.uri = com.innovation313.roshankhata.desktop.invoice.PdfBranding.STORE_URL }
+                    link.borderStyle = org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary().also { it.width = 0f }
                     annots.add(link)
                 }
                 if (annots.isNotEmpty()) page.annotations = annots

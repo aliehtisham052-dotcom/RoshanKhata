@@ -15,10 +15,11 @@ import com.innovation313.roshankhata.data.Money
 
 /** One row in the Recycle Bin — either a whole party or a single entry. */
 sealed class BinItem {
+    abstract val id: Long
     abstract val deletedAt: Long
 
     data class DeletedParty(
-        val id: Long,
+        override val id: Long,
         val name: String,
         val phone: String?,
         /** What the ledger came to, entries and all. Shown before restore or destroy. */
@@ -28,7 +29,7 @@ sealed class BinItem {
     ) : BinItem()
 
     data class DeletedEntry(
-        val id: Long,
+        override val id: Long,
         val partyName: String,
         val amount: Double,
         val isGiven: Boolean,

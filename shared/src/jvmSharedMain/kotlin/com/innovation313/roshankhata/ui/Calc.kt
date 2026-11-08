@@ -47,7 +47,7 @@ object Calc {
      * zero is still not an amount to save.
      */
     fun evalAmount(input: String): Double? =
-        evalPad(input)?.let { kotlin.math.abs(it) }?.let { com.innovation313.roshankhata.data.LineMath.round(it) }?.takeIf { it > 0.0 } // L69: '1000/3' is a whole coin
+        evalPad(input)?.let { kotlin.math.abs(it) }?.takeIf { it > 0.0 } // L69 undone 8 Nov: quantities (0.125 kg) go through here too; money is rounded when written
 
 
     /**

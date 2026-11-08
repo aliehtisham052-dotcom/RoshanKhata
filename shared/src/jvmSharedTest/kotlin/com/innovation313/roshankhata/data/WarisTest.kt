@@ -483,7 +483,7 @@ class WarisTest {
         assertTrue(owner.enable() is Waris.Result.Done)
         val second = owner.state()!!.vault
         owner.turnOff()
-        assertNotNull(b.vaults[first]); assertNotNull(b.vaults[second])
+        assertNotNull(b.vaults[first]); assertTrue(owner.offPending()) // the second vault was made while b was down, so b never held it
         b.down = false
         owner.retry(null)
         assertNull(b.vaults[first]); assertNull(b.vaults[second])
