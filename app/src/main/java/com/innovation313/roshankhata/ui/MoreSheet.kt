@@ -78,8 +78,18 @@ object MoreSheet {
             e(R.drawable.ic_menu_theme, R.color.tile_card_bg, R.string.theme, display) { theme(activity) },
             // Reporting a problem lives inside Help, one door for "something is wrong".
             e(R.drawable.ic_menu_help, R.color.tile_insights_bg, R.string.help_support, help) { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
+            // Telling another shopkeeper (8 Nov 2026 review, L168): the system share sheet with one line and the tagged Play link.
+            e(R.drawable.ic_menu_share, R.color.tile_khata_bg, R.string.share_app, help) { shareApp(activity) },
             e(R.drawable.ic_menu_about, R.color.tile_cheques_bg, R.string.about_us, help) { activity.startActivity(Intent(activity, AboutActivity::class.java)) }
         )
+    }
+
+    private fun shareApp(activity: Activity) {
+        val link = com.innovation313.roshankhata.data.PdfBranding.storeUrl(activity)
+            .replace(com.innovation313.roshankhata.data.PdfBranding.REFERRER_PDF, "&referrer=utm_source%3Dapp%26utm_medium%3Dshare")
+        val send = Intent(Intent.ACTION_SEND).setType("text/plain")
+            .putExtra(Intent.EXTRA_TEXT, activity.getString(R.string.share_app_text, link))
+        runCatching { activity.startActivity(Intent.createChooser(send, activity.getString(R.string.share_app))) }
     }
 
     /**

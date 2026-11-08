@@ -61,7 +61,8 @@ class HelpActivity : BaseActivity() {
             com.innovation313.roshankhata.ui.FeatureIntro.pick(this)
         }
         findViewById<MaterialButton>(R.id.btnRateApp).setOnClickListener {
-            com.innovation313.roshankhata.ui.AppRating.launch(this)
+            // Play's guidelines: the in-app review card is never tied to a button; a button opens the listing (M96).
+            com.innovation313.roshankhata.ui.AppRating.openStoreListing(this)
         }
     }
 

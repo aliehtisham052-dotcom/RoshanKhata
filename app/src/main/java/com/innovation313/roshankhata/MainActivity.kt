@@ -455,6 +455,8 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         tellIfBookWasRebuilt()
+        // Play's own rating card, after real use and at most once in 120 days (M96); no question of ours before it.
+        com.innovation313.roshankhata.ui.AppRating.maybeAsk(this)
         // The bell's count, from the ledger on this phone (HomeAlerts).
         lifecycleScope.launch {
             val alerts = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {

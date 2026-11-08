@@ -10,8 +10,9 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  IgnorableNamespaces="uap rescap desktop6">
 
   <Identity Name="@IDENTITY_NAME@" Publisher="@PUBLISHER@" Version="@VERSION@" ProcessorArchitecture="x64" />
 
@@ -20,6 +21,11 @@
     <PublisherDisplayName>@PUBLISHER_DISPLAY@</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
     <Description>Roshan Khata - the shopkeeper's udhar khata. Everything stays on this computer.</Description>
+    <!-- 8 Nov 2026 review, M83: a packaged app's writes under AppData go by default to a hidden per-package copy that
+         uninstall deletes: the owner's book vanished with a reinstall. Writes go to the real folders instead
+         (needs the unvirtualizedResources capability below). -->
+    <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
+    <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
   </Properties>
 
   <Dependencies>
@@ -47,5 +53,6 @@
   <Capabilities>
     <!-- A desktop (Win32) app runs with full trust: it reads the backup file the owner picks. -->
     <rescap:Capability Name="runFullTrust" />
+    <rescap:Capability Name="unvirtualizedResources" />
   </Capabilities>
 </Package>

@@ -2715,3 +2715,39 @@ number on the Help screen.
   in nine languages no longer says "never uploaded" (the Drive backup carries it, m97).
 - **Play Console answers, Contacts prompt and targetSdk 37 are the owner's / a later bump**: see phase5-result.md in the session
   notes. Data safety is no longer "no data collected" (m99): see the answers there.
+
+### 8 Nov 2026 review fixes, marhala 7: Windows and growth (M80-M84, M95-M97, L132-L139, L160-L168, m84-m90; CI only)
+
+- **Windows (M80-M84, L132-L139):** a Windows account named in Urdu, Hindi or Bengali made the temp folder non-ASCII and
+  SQLite's native library could not load: `asciiTempFolder()` moves `java.io.tmpdir` to `ProgramData\RoshanKhata-tmp`
+  (else Public, else the drive root) before anything loads (M80). The window's scope is supervised with a handler: a failed
+  write (disk full, antivirus) is written to errors.log and told as "not saved" (`save_failed_not_saved`) instead of
+  ending the app (M81; the typed form is gone by then, the words say to enter it again). The firewall hint says private
+  AND public networks, nine languages (M82). The MSIX manifest turns `desktop6:FileSystemWriteVirtualization` and
+  registry virtualisation off with `unvirtualizedResources`, so a Store build writes the real AppData and a reinstall
+  keeps the book (M83; **check with a real Store package before upload**). The counter's open ticket is kept by the
+  window above Book (`counterDraft`), so App Lock coming back no longer drops it; half-typed dialogs still go (M84). The
+  first input after a long quiet locks first (a sleeping laptop, L132). `PRAGMA synchronous = FULL` (L133). Automations'
+  "said today" marks are per business (L135; business 1 keeps its old key). PDFs go to OneDrive\Documents when that
+  exists (L136). The bell and chips are worked out again when the day changes (L137). Customer Excel keeps a phone's
+  first 0 as `="0300…"` (L138, `BookExport.phoneCell`). A lock that throws IOException (a network share) runs without the
+  guard instead of saying "already open" (L139). m84 `setReceipt` synchronized; m85 `rk-copy-*.tmp` older than an hour
+  swept; m86 the desktop.yml comment corrected (a queued run IS cancelled); m87 stale header comment; m88 a clock set
+  back makes the update check due; m89 the mail body is capped at 900 letters and the whole report goes to the clipboard;
+  m90 the title bar follows the dark theme (`DwmTitleBar`, JNA named in :desktop's dependencies).
+- **Khata-link install path (M95):** the web page's Play link carries `referrer=khata=1`; `InstallSource.checkOnce` (Google's
+  free Install Referrer library, 2.2) asks Play once on a first start and GateActivity opens My Khata, whose empty text
+  says to open the shop's link, instead of the setup. A flag only: the page's key is NOT put in Play's address (Google
+  could read the page). The setup button clears it. Needs web/khata/view.js uploaded.
+- **Rating (M96):** `AppRating.maybeAsk` on Home, only after 5 entries on 3 days and 3 days since the first, once in 120 days,
+  Play's own card with no question of ours first and no store listing opened when it does not show; the Help button now
+  opens the listing (Google forbids tying the card to a button). `AppRatingRuleTest`.
+- **Listings (M97, L163-L165):** ar, fa, hi-IN, bn-BD and id rewritten from en-US (counter, documents, Radar, staff, 25 trades), each
+  description opening with the shop's name in its own script; a Zakat / Qarz-e-Hasna bullet in every listing; en-US title
+  "Udhar". **Paste with the upload that carries the counter, as the notes in each file say.**
+- **Growth (L160, L166-L168):** PDF store links carry `utm_medium=pdf`, the landing page `utm_source=landing`, More has Share
+  Roshan Khata (`utm_medium=share`); og tags on the landing page and the khata page (no image: the khata page is private
+  and an image needs an absolute address); JSON-LD on the landing page.
+- **Not done:** L134 (shared desktop-test release: needs a workflow redesign), L140 (signing), L141 (roadmap), L161 (new
+  screenshots), L162 (a DOWNLOAD link in Windows PDFs, which are page pictures), L169 (a WhatsApp number cannot be written into
+  this public repository), L170 (the owner's decision on posters).

@@ -1,7 +1,7 @@
 // Roshan Khata for Windows (KMP Phase 6, 18 Oct 2026).
 //
 // A desktop window around the shared module: the same database (Room,
-// schema 31, in one SQLite file), the same backup format, the same words in
+// the phone's schema, in one SQLite file), the same backup format, the same words in
 // the same nine languages, the same Compose screens as the phone. Packaged as
 // an MSI by GitHub's Windows runner (desktop.yml); the MSI becomes an MSIX for
 // the Microsoft Store with Microsoft's free MSIX Packaging Tool.
@@ -28,6 +28,8 @@ dependencies {
     // PDFs on the computer (1.8.4): every sheet kept as a file, its pages as pictures
     // (PdfFiles). Apache 2.0, pure Java; brings fontbox, pdfbox-io and commons-logging.
     implementation("org.apache.pdfbox:pdfbox:3.0.4")
+    // The title bar follows the dark theme (DwmTitleBar): the same JNA the shared module already carries, named here too.
+    implementation("net.java.dev.jna:jna:5.17.0")
     testImplementation("junit:junit:4.13.2")
 }
 

@@ -143,7 +143,11 @@ object PdfFiles {
     /** Documents\Roshan Khata, made if missing; the home folder when Documents is not there. */
     fun folder(): File {
         val home = File(System.getProperty("user.home"))
-        val docs = File(home, "Documents").takeIf { it.isDirectory } ?: home
+        // With OneDrive's folder backup on, Windows' real Documents is OneDrive\Documents and user.home\Documents is a stale
+        // empty folder (8 Nov 2026 review, L136).
+        val oneDrive = listOf("OneDrive", "OneDriveConsumer", "OneDriveCommercial").mapNotNull { System.getenv(it) }
+            .map { File(it, "Documents") }.firstOrNull { it.isDirectory }
+        val docs = oneDrive ?: File(home, "Documents").takeIf { it.isDirectory } ?: home
         return File(docs, "Roshan Khata").apply { mkdirs() }
     }
 

@@ -131,6 +131,9 @@ object DesktopDatabase {
                 override fun onOpen(connection: androidx.sqlite.SQLiteConnection) {
                     runCatching { connection.execSQL("PRAGMA cache_size = -16000") }
                     runCatching { connection.execSQL("PRAGMA temp_store = MEMORY") }
+                    // FULL (8 Nov 2026 review, L133): in WAL mode NORMAL can lose the last commits when the power goes (load-shedding);
+                    // a shop's sales are worth the extra sync. Per connection, nothing in the file changes.
+                    runCatching { connection.execSQL("PRAGMA synchronous = FULL") }
                     // Units saved as a label ("بوری", "bori") become their key ("bag"), as the phone
                     // does on every open (23 Oct 2026, R02): otherwise stock reads "?" and a product splits.
                     // One read first, then one savepoint kept out of live sync's log (UnitWords.repairStored).

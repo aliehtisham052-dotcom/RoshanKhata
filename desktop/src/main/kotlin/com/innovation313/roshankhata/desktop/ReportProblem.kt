@@ -137,8 +137,13 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
             FluentButton(word(W.report_open_mail), {
                 if (text.isBlank()) told = empty
                 else {
-                    val uri = "mailto:innovation313.support@gmail.com?subject=" + enc(subject()) + "&body=" + enc(body())
-                    told = if (runCatching { java.awt.Desktop.getDesktop().mail(URI(uri)) }.isSuccess) null else noMail
+                    // A long report overran what a mailto link can carry and "no mail program" was said (m89): the mail gets the
+                    // first part, the whole report goes to the clipboard to paste, and the owner is told so.
+                    val full = body()
+                    val cut = full.length > MAIL_BODY_MAX
+                    val uri = "mailto:innovation313.support@gmail.com?subject=" + enc(subject()) + "&body=" + enc(if (cut) full.take(MAIL_BODY_MAX) + "…" else full)
+                    if (cut) runCatching { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(subject() + "\n\n" + full), null) }
+                    told = if (runCatching { java.awt.Desktop.getDesktop().mail(URI(uri)) }.isSuccess) (if (cut) words.text(W.report_copied) else null) else noMail
                 }
             }, kind = ButtonKind.ACCENT)
         }) {
@@ -162,6 +167,9 @@ fun ReportProblemDialog(words: Words, home: File, onClose: () -> Unit) {
         }
     }
 }
+
+/** The most of the report a mailto link carries (escaped, 900 letters stay well under the 2,000 or so a Windows mail link survives). */
+private const val MAIL_BODY_MAX = 900
 
 /** RFC 3986 escaping for a mailto part: spaces as %20, newlines as %0A (URLEncoder's + would arrive as plus signs). */
 private fun enc(s: String): String = java.net.URLEncoder.encode(s, "UTF-8").replace("+", "%20").replace("%0D%0A", "%0A")

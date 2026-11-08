@@ -40,3 +40,15 @@ class BookExportTest {
         assertEquals(listOf(500.0, -1200.0), back.map { it.balance })
     }
 }
+
+class PhoneCellTest {
+    @org.junit.Test fun aPhoneKeepsItsFirstZeroInExcel() {
+        org.junit.Assert.assertEquals("=\"03001234567\"", BookExport.phoneCell("03001234567"))
+        org.junit.Assert.assertEquals("=\"+923001234567\"", BookExport.phoneCell("+923001234567"))
+    }
+
+    @org.junit.Test fun anythingElseIsLeftAlone() {
+        org.junit.Assert.assertEquals("", BookExport.phoneCell(""))
+        org.junit.Assert.assertEquals("0300 1234567", BookExport.phoneCell("0300 1234567"))
+    }
+}

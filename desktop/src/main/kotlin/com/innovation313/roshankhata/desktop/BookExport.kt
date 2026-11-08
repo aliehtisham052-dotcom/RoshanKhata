@@ -18,6 +18,10 @@ import java.awt.print.Printable
  * starting on its own page — one trip to the printer, or one PDF.
  */
 object BookExport {
+    /** A phone number keeps its first 0 in Excel: written as ="0300…", the text form CsvCell lets through (8 Nov 2026 review, L138). */
+    fun phoneCell(phone: String): String =
+        if (Regex("^\\+?[0-9]{6,}$").matches(phone)) "=\"$phone\"" else phone
+
     fun customersCsv(
         parties: List<PartyWithBalance>,
         headers: List<String>,
@@ -28,7 +32,7 @@ object BookExport {
         fun row(cells: List<String>) = com.innovation313.roshankhata.data.CsvCell.appendRow(sb, cells)
         row(headers)
         com.innovation313.roshankhata.data.NameOrder.sortedBy(parties) { it.name }.forEach { p ->
-            row(listOf(p.name, p.phone.orEmpty(), LedgerCsv.plain(p.balance)) + listOfNotNull(typeOf?.invoke(p)))
+            row(listOf(p.name, phoneCell(p.phone.orEmpty()), LedgerCsv.plain(p.balance)) + listOfNotNull(typeOf?.invoke(p)))
         }
         return sb.toString()
     }

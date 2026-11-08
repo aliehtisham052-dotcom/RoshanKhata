@@ -117,6 +117,9 @@ fun main(args: Array<String>) {
     // default, and then every connection still in TIME_WAIT (four minutes) keeps port 47313 from being opened.
     System.setProperty("sun.net.useExclusiveBind", "false")
     val home = DesktopDatabase.home()
+    // SQLite's library is unpacked into the temp folder; a Windows account named in Urdu, Hindi or Bengali made that path
+    // non-ASCII and the native loader failed (8 Nov 2026 review, M80): then the temp folder is the app's own ASCII one.
+    asciiTempFolder()
     // Any crash is written down before anything else runs (Report a problem shows it).
     CrashLog.install(home)
     // Live sync's line to the relay is the JDK's own WebSocket (23 Oct 2026).
@@ -136,10 +139,28 @@ fun main(args: Array<String>) {
  * (21 Oct 2026, the critical review). Copies older than a day are cleared on
  * the way in; the one in use is locked by Windows and simply stays.
  */
+private fun asciiTempFolder() {
+    runCatching {
+        val tmp = System.getProperty("java.io.tmpdir") ?: return
+        if (tmp.all { it.code in 32..126 }) return
+        // The first of these that is plain ASCII and can be written (ProgramData and Public exist on every Windows).
+        val candidates = listOfNotNull(System.getenv("ProgramData"), System.getenv("PUBLIC"), System.getenv("SystemDrive")?.let { "$it\\" })
+        for (base in candidates) {
+            if (!base.all { it.code in 32..126 }) continue
+            val dir = java.io.File(base, "RoshanKhata-tmp")
+            if ((dir.isDirectory || dir.mkdirs()) && dir.canWrite()) { System.setProperty("java.io.tmpdir", dir.path); return }
+        }
+    }
+}
+
 private fun clearOldNativeCopies() {
     runCatching {
         val tmp = java.io.File(System.getProperty("java.io.tmpdir") ?: return)
         val dayAgo = System.currentTimeMillis() - 24L * 60 * 60 * 1000
+        // A crash mid-copy leaves a whole book (PIN hashes and all) as rk-copy-*.tmp: gone after an hour (m85).
+        val hourAgo = System.currentTimeMillis() - 60L * 60 * 1000
+        tmp.listFiles { f -> f.isFile && f.name.startsWith("rk-copy-") && f.name.endsWith(".tmp") && f.lastModified() < hourAgo }
+            ?.forEach { runCatching { it.delete() } }
         tmp.listFiles { f -> f.isFile && f.name.startsWith("sqliteJni", ignoreCase = true) && f.name.endsWith(".dll", ignoreCase = true) && f.lastModified() < dayAgo }
             ?.forEach { runCatching { it.delete() } }
     }
@@ -288,6 +309,8 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     var invoiceFields by remember(active) { mutableStateOf(appPrefs.invoiceFields(active)) }
     // App Lock: with a PIN set, nothing of the book is composed until it is typed (LockScreen).
     // A counter computer opens on its own sign-in (CounterGate), a PIN already: App Lock is not asked as well.
+    // The counter's open ticket survives App Lock and a counter sign-out (8 Nov 2026 review, M84); a shop switch starts a new one.
+    val counterDraft = remember(active) { com.innovation313.roshankhata.data.CounterDraft() }
     var unlocked by remember { mutableStateOf(!appPrefs.hasPin() || com.innovation313.roshankhata.data.Access.counterMode) }
     // And it comes back by itself after a while with nothing typed or clicked in any of the app's
     // windows (21 Oct 2026: it was asked once at the start, then the book stayed open all day).
@@ -296,7 +319,9 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     DisposableEffect(Unit) {
         val listener = java.awt.event.AWTEventListener {
             val at = System.currentTimeMillis()
-            lastInput.set(at)
+            // The first touch after a long quiet (a laptop that slept) locks first: the 30 s check below may not have run (L132).
+            val before = lastInput.getAndSet(at)
+            if (at - before > APP_LOCK_IDLE_MS && appPrefs.hasPin() && !com.innovation313.roshankhata.data.Access.counterMode) unlocked = false
             // A manager's or the owner's session on a counter ends after five idle minutes (22 Oct 2026, the review).
             com.innovation313.roshankhata.data.Access.touch(at)
         }
@@ -383,6 +408,9 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
         state = rememberWindowState(placement = WindowPlacement.Maximized, width = 1100.dp, height = 740.dp)
     ) {
         val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+        LaunchedEffect(theme, systemDark) {
+            DwmTitleBar.apply(window, when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true })
+        }
         DeskTheme(dark = when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true }) {
             ProvideWords(words) {
                 // The owner's text size on top of Windows' own scale, as the phone multiplies its own.
@@ -417,6 +445,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                         // Another shop's book: whoever was signed in here is not signed in there (22 Oct 2026, the review:
                         // shop A's manager stayed a manager in shop B, and B's sales carried A's staff name).
                         onSwitch = { id -> if (id != active) { Reminders.forgetClick(); switchingTo = id } },
+                        counterDraft = counterDraft,
                         dailyDir = dailyDir,
                         images = images,
                         home = home,
@@ -545,6 +574,8 @@ private fun Book(
     businesses: Businesses,
     activeBusiness: Long,
     onSwitch: (Long) -> Unit,
+    /** Kept by the window above, so App Lock coming back (which leaves the book) does not drop the open ticket (M84). */
+    counterDraft: com.innovation313.roshankhata.data.CounterDraft,
     dailyDir: File,
     images: com.innovation313.roshankhata.desktop.invoice.ProfileImages,
     home: File,
@@ -555,7 +586,24 @@ private fun Book(
     appPrefs: AppPrefs
 ) {
     val c = LocalRoshanColors.current
-    val scope = rememberCoroutineScope()
+    // A write that fails (disk full, an antivirus holding the file) used to end the whole app with the typed entry
+    // gone and nothing said (8 Nov 2026 review, M81): now it is written to errors.log and the owner is told "not saved".
+    var saveFailed by remember { mutableStateOf(false) }
+    // Supervised, so one failed write does not cancel the scope for every later click.
+    val baseScope = rememberCoroutineScope()
+    val scope = remember(baseScope) {
+        kotlinx.coroutines.CoroutineScope(
+            baseScope.coroutineContext.minusKey(kotlinx.coroutines.Job) +
+                kotlinx.coroutines.SupervisorJob(baseScope.coroutineContext[kotlinx.coroutines.Job]) +
+                kotlinx.coroutines.CoroutineExceptionHandler { _, e ->
+                    if (e !is kotlinx.coroutines.CancellationException) {
+                        runCatching { CrashLog.write(home, "Save", e) }
+                        saveFailed = true
+                    }
+                }
+        )
+    }
+    if (saveFailed) TellDialog(words.text(W.app_name), words.text(W.save_failed_not_saved), { saveFailed = false }, height = 280)
     var parties by remember { mutableStateOf<List<PartyWithBalance>>(emptyList()) }
     var reload by remember { mutableIntStateOf(0) }
     var query by remember { mutableStateOf("") }
@@ -679,7 +727,6 @@ private fun Book(
     var backingUp by remember { mutableStateOf<Int?>(null) }
     var backupDone by remember { mutableStateOf(0) }
     // The counter's open ticket lives as long as this business's window, not the page (25 Oct 2026, the audit).
-    val counterDraft = remember { com.innovation313.roshankhata.data.CounterDraft() }
     // Home's You gave, You got and Statement: the customer is chosen in a small window first.
     var picking by remember { mutableStateOf<HomePick?>(null) }
     var pickedFor by remember { mutableStateOf<Long?>(null) }
@@ -787,7 +834,18 @@ private fun Book(
     fun backupNowLater() = backupHook()
 
     LaunchedEffect(reload) { parties = withContext(Dispatchers.IO) { load() } }
-    LaunchedEffect(reload, section) {
+    // A computer left on overnight: the bell and Home's chips (cheques due, expiring) are worked out again when the day
+    // changes, not only when a page is opened (8 Nov 2026 review, L137).
+    var dayTick by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        var seen = java.time.LocalDate.now()
+        while (true) {
+            kotlinx.coroutines.delay(60_000)
+            val today = java.time.LocalDate.now()
+            if (today != seen) { seen = today; dayTick++ }
+        }
+    }
+    LaunchedEffect(reload, section, dayTick) {
         alerts = withContext(Dispatchers.IO) {
             runCatching {
                 val conflicts = runCatching { LiveSync.moneyConflicts(db.syncSql()) }.getOrDefault(0)
@@ -816,7 +874,7 @@ private fun Book(
     // The automations (31 Oct 2026, Automations): every five minutes, whatever is due by this computer's hours is
     // said from the tray; a click brings the window forward on its page (the low-stock draft started, last month's
     // report). Only while the book is open and unlocked (Book is drawn only then); the open business's book.
-    val autoSettings = remember { DesktopAutomationSettings(appPrefs) }
+    val autoSettings = remember(activeBusiness) { DesktopAutomationSettings(appPrefs, activeBusiness) }
     var showAutomations by remember { mutableStateOf(false) }
     var showRadar by remember { mutableStateOf(false) }
     var orderLowAsked by remember { mutableStateOf(false) }

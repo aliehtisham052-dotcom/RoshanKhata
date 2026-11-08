@@ -18,8 +18,10 @@ permissions:
 # One run at a time puts files on the shared desktop-test release: four pushes
 # in a minute (20 Oct) ran side by side and two uploaded poster-ur-closed.png
 # at once, and GitHub refused the second (HTTP 422, "already exists") after
-# every test had passed. Later runs wait their turn; none is cancelled, so
-# every commit is still built and tested.
+# every test had passed. Later runs wait their turn (see the correction below), so
+# every commit is still built and tested. (Corrected 8 Nov 2026: GitHub keeps one run waiting per group, so with four
+# pushes in a minute the middle queued runs ARE cancelled — only the running one and the newest finish. A skipped
+# commit's MSI is never uploaded; the newest commit always is.)
 concurrency:
   group: desktop-test-release
   cancel-in-progress: false

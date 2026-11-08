@@ -3102,7 +3102,7 @@
     <string name="wifi_pc_steps">فون تي: بيڪ اپ ← ڪمپيوٽر جو ڪوڊ اسڪين ڪريو، ۽ هن ڪوڊ تي رکو. ٻئي هڪ ئي وائي فائي تي هجن. ڪجهه به انٽرنيٽ تي نٿو وڃي، ۽ توهان جي ها کان سواءِ هتي ڪجهه نٿو بدلجي.</string>
     <string name="wifi_pc_waiting">فون جو انتظار آهي…</string>
     <string name="wifi_pc_no_network">هي ڪمپيوٽر ڪنهن نيٽ ورڪ تي ناهي. ان کي دڪان جي وائي فائي سان ڳنڍيو ۽ هي دري ٻيهر کوليو.</string>
-    <string name="wifi_pc_firewall">جيڪڏهن ونڊوز پڇي ته روشن کاتي کي پرائيويٽ نيٽ ورڪ جي اجازت ڏيو.</string>
+    <string name="wifi_pc_firewall">جيڪڏهن ونڊوز پڇي ته روشن کاتي کي پرائيويٽ ۽ پبلڪ ٻنهي نيٽ ورڪن تي اجازت ڏيو.</string>
     <string name="wifi_pc_failed">ٻڌڻ شروع نه ٿي سگهيو. هي دري بند ڪري ٻيهر ڪوشش ڪريو.</string>
     <string name="poster_save_picture">پوسٽر تصوير طور محفوظ ڪريو</string>
     <string name="poster_desktop_flat">ڪمپيوٽر تي تصويرون سادي (فليٽ) ٺهن ٿيون؛ فون تي اهي ٿري ڊي ۾ ڏسجن ٿيون.</string>
@@ -4066,4 +4066,6 @@
     <string name="clink_full">کاتي جي لنڪ جو سرور هن وقت ڀريل آهي. اڳ ۾ موڪليل لنڪون هلنديون رهنديون. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
     <string name="clink_limit_today">اڄ نين کاتي جي لنڪن جي حد پوري ٿي وئي. سڀاڻي ٻيهر ڪوشش ڪريو.</string>
     <string name="mera_khata_older">سرور هن صفحي جي پراڻي ڪاپي موڪلي. هن فون تي ڏٺل سڀ کان نئين ڪاپي ڏيکاري پئي وڃي.</string>
+    <string name="share_app">روشن کاتو شيئر ڪريو</string>
+    <string name="share_app_text">روشن کاتو منهنجي دڪان جو کاتو فون تي رکي ٿو، مفت، بنا اڪائونٽ. آزمايو: %1$s</string>
 </resources>

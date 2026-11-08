@@ -30,11 +30,13 @@ import java.util.Calendar
  * notifications while the app is open, each opening its page on a click. Their switches, hours and marks are
  * this computer's (app.properties), as the phone keeps its own: two devices of one shop each say their own.
  */
-class DesktopAutomationSettings(private val prefs: AppPrefs) : Automations.Settings {
+class DesktopAutomationSettings(private val prefs: AppPrefs, private val business: Long = 1L) : Automations.Settings {
     override fun isOn(kind: Automations.Kind) = prefs.prop("auto_on_${kind.key}")?.toBooleanStrictOrNull() ?: true
     override fun hour(kind: Automations.Kind) = prefs.prop("auto_hour_${kind.key}")?.toIntOrNull()?.coerceIn(0, 23) ?: kind.defaultHour
-    override fun lastSaid(kind: Automations.Kind) = prefs.prop("auto_said_${kind.key}")?.toLongOrNull()
-    override fun setSaid(kind: Automations.Kind, stamp: Long) = prefs.setProp("auto_said_${kind.key}", stamp.toString())
+    override fun lastSaid(kind: Automations.Kind) = prefs.prop(saidKey(kind))?.toLongOrNull()
+    override fun setSaid(kind: Automations.Kind, stamp: Long) = prefs.setProp(saidKey(kind), stamp.toString())
+    /** "Said today" is per shop (8 Nov 2026 review, L135): shop B's notice is not silenced by shop A's. Business 1 keeps the old key. */
+    private fun saidKey(kind: Automations.Kind) = if (business == 1L) "auto_said_${kind.key}" else "auto_said_${kind.key}_b$business"
     fun setOn(kind: Automations.Kind, on: Boolean) = prefs.setProp("auto_on_${kind.key}", on.toString())
     fun setHour(kind: Automations.Kind, hour: Int) = prefs.setProp("auto_hour_${kind.key}", hour.coerceIn(0, 23).toString())
 }

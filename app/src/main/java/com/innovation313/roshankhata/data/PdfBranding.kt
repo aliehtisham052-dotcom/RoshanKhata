@@ -191,7 +191,13 @@ object PdfBranding {
     /** The app's Play listing. One place, so every document points at the same address. */
     @Suppress("UNUSED_PARAMETER")
     fun storeUrl(context: Context): String =
-        "https://play.google.com/store/apps/details?id=$STORE_PACKAGE"
+        "https://play.google.com/store/apps/details?id=$STORE_PACKAGE" + REFERRER_PDF
+
+    /**
+     * The same address tagged with the channel it was printed on (8 Nov 2026 review, L160): Play's Console then shows
+     * how many installs a shared statement brought. A tag only, nothing about the shop, the customer or the document.
+     */
+    const val REFERRER_PDF = "&referrer=utm_source%3Dapp%26utm_medium%3Dpdf"
 
     // Links wait here, keyed by the document they belong to, until the file is
     // written: a link can only be added to a PDF that exists. Weak, so a

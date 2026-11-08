@@ -78,4 +78,51 @@ object AppRating {
             }
         }
     }
+
+    // ---- The natural moment (8 Nov 2026 review, M96) ----------------------------------------------------------------
+    // Asked at most once in 120 days, only after the owner has really used the app (5 entries on 3 different days, 3 days
+    // since the first), and only on Home after finishing work, never over a form or a Saved card. There is NO question
+    // first ("are you enjoying the app?"), no reward, no wording of ours: Play's own card or nothing. When Play's card
+    // does not appear nothing happens at all (no store listing is opened behind the owner's back; the Help button does that).
+    private const val PREFS = "app_rating"
+    private const val MIN_ENTRIES = 5
+    private const val MIN_DAYS = 3
+    private const val MIN_AGE_DAYS = 3
+    private const val GAP_DAYS = 120
+    private const val DAY_MS = 24L * 60 * 60 * 1000
+
+    /** What the rule decides on; pure so a test holds it. */
+    data class Use(val entries: Int, val days: Int, val firstSeen: Long, val lastAsked: Long)
+
+    fun due(u: Use, now: Long): Boolean =
+        u.entries >= MIN_ENTRIES && u.days >= MIN_DAYS && u.firstSeen > 0 && now - u.firstSeen >= MIN_AGE_DAYS * DAY_MS &&
+            (u.lastAsked == 0L || now - u.lastAsked >= GAP_DAYS * DAY_MS)
+
+    private fun prefs(c: android.content.Context) = c.applicationContext.getSharedPreferences(PREFS, android.content.Context.MODE_PRIVATE)
+
+    /** One entry saved on a customer's screen: counted, with the day. */
+    fun noteEntrySaved(c: android.content.Context, now: Long = System.currentTimeMillis()) {
+        runCatching {
+            val p = prefs(c)
+            val day = (now / DAY_MS).toString()
+            val days = p.getStringSet("days", emptySet()).orEmpty().toMutableSet().apply { add(day) }
+            val keep = if (days.size > 30) days.sortedBy { it.toLong() }.takeLast(30).toSet() else days
+            p.edit().putInt("entries", p.getInt("entries", 0) + 1).putStringSet("days", keep)
+                .apply { if (!p.contains("first")) putLong("first", now) }.apply()
+        }
+    }
+
+    /** On Home, after work: Play's card when the rule says so. Nothing is shown to the owner but Play's own card. */
+    fun maybeAsk(activity: Activity, now: Long = System.currentTimeMillis()) {
+        runCatching {
+            val p = prefs(activity)
+            val use = Use(p.getInt("entries", 0), p.getStringSet("days", emptySet()).orEmpty().size, p.getLong("first", 0L), p.getLong("asked", 0L))
+            if (!due(use, now)) return
+            p.edit().putLong("asked", now).apply()
+            val manager = ReviewManagerFactory.create(activity)
+            manager.requestReviewFlow().addOnCompleteListener { request ->
+                if (request.isSuccessful && !activity.isFinishing && !activity.isDestroyed) manager.launchReviewFlow(activity, request.result)
+            }
+        }
+    }
 }

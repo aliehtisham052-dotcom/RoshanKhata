@@ -138,6 +138,7 @@ class AppPrefs(private val file: File) {
         drawer = props.getProperty(KEY_RECEIPT_DRAWER) == "true"
     )
 
+    @Synchronized
     fun setReceipt(r: ThermalReceipt.Settings) {
         props.setProperty(KEY_RECEIPT_WIDE, r.wide.toString())
         props.setProperty(KEY_RECEIPT_LOGO, r.logo.toString())

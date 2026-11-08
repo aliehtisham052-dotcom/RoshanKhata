@@ -158,7 +158,9 @@
    * test build (.dev) is opened by the shop's https link itself (assetlinks.json names it), not by this button.
    */
   var PACKAGE = "com.innovation313.roshankhata";
-  var PLAY = "https://play.google.com/store/apps/details?id=" + PACKAGE;
+  // referrer=khata=1 (8 Nov 2026, M95): Play hands it to the app on first start, which then opens My Khata instead of the shop
+  // setup. A flag only: the page's key never goes into Play's address.
+  var PLAY = "https://play.google.com/store/apps/details?id=" + PACKAGE + "&referrer=" + encodeURIComponent("khata=1");
   function offerApp(w, id, key) {
     if (!app || !/Android/i.test(navigator.userAgent || "")) return;
     app.textContent = "";

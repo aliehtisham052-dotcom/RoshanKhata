@@ -3286,7 +3286,7 @@
     <string name="wifi_pc_steps">On the phone: Backup → Scan the computer’s code, and point it at this code. Both must be on the same WiFi. Nothing goes to the internet, and nothing here is replaced until you say yes.</string>
     <string name="wifi_pc_waiting">Waiting for the phone…</string>
     <string name="wifi_pc_no_network">This computer is not on a network. Connect it to the shop’s WiFi and open this window again.</string>
-    <string name="wifi_pc_firewall">If Windows asks, allow Roshan Khata on private networks.</string>
+    <string name="wifi_pc_firewall">If Windows asks, allow Roshan Khata on both private and public networks.</string>
     <string name="wifi_pc_failed">Could not start listening. Close this window and try again.</string>
     <string name="poster_save_picture">Save the poster as a picture</string>
     <string name="poster_desktop_flat">On the computer the pictures are drawn flat; the phone shows them in 3D.</string>
@@ -4251,4 +4251,6 @@
     <string name="clink_full">The khata link server is full right now. Links already sent keep working. Try again later.</string>
     <string name="clink_limit_today">The limit for new khata links today is reached. Try again tomorrow.</string>
     <string name="mera_khata_older">The server sent an older copy of this page. The newest copy this phone has seen is shown.</string>
+    <string name="share_app">Share Roshan Khata</string>
+    <string name="share_app_text">Roshan Khata keeps my shop's khata on my phone, free, no account. Try it: %1$s</string>
 </resources>

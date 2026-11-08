@@ -3274,7 +3274,7 @@
     <string name="wifi_pc_steps">على الهاتف: النسخ الاحتياطي ← امسح رمز الحاسوب، ووجّهه إلى هذا الرمز. يجب أن يكونا على شبكة الواي فاي نفسها. لا يذهب شيء إلى الإنترنت، ولا يُستبدل شيء هنا قبل موافقتك.</string>
     <string name="wifi_pc_waiting">بانتظار الهاتف…</string>
     <string name="wifi_pc_no_network">هذا الحاسوب غير متصل بشبكة. صِله بشبكة واي فاي المتجر وافتح هذه النافذة من جديد.</string>
-    <string name="wifi_pc_firewall">إن سألك ويندوز، فاسمح لروشن كهاتا على الشبكات الخاصة.</string>
+    <string name="wifi_pc_firewall">إن سألك ويندوز، فاسمح لروشن كهاتا على الشبكات الخاصة والعامة معًا.</string>
     <string name="wifi_pc_failed">تعذّر بدء الاستماع. أغلق هذه النافذة وحاول مرة أخرى.</string>
     <string name="poster_save_picture">احفظ الملصق كصورة</string>
     <string name="poster_desktop_flat">على الحاسوب تُرسم الصور مسطّحة؛ والهاتف يعرضها ثلاثية الأبعاد.</string>
@@ -4298,4 +4298,6 @@
     <string name="clink_full">خادم روابط الحساب ممتلئ الآن. الروابط المرسلة سابقًا تبقى تعمل. حاول مرة أخرى لاحقًا.</string>
     <string name="clink_limit_today">بلغت روابط الحساب الجديدة حدّ اليوم. حاول مرة أخرى غدًا.</string>
     <string name="mera_khata_older">أرسل الخادم نسخة أقدم من هذه الصفحة. تُعرض أحدث نسخة رآها هذا الهاتف.</string>
+    <string name="share_app">شارك روشن خاتا</string>
+    <string name="share_app_text">روشن خاتا يحفظ دفتر محلي في هاتفي، مجانًا وبلا حساب. جرّبه: %1$s</string>
 </resources>

@@ -13,7 +13,7 @@
 -->
 
 ## App name (max 30)
-Roshan Khata – Udhaar Ledger
+Roshan Khata – Udhar Ledger
 
 ## Short description (max 80)
 Shop khata, counter sale, stock and bills. Offline, in your language.
@@ -48,6 +48,7 @@ CASHBOOK, CHEQUES AND PLANS
 • Cash in and cash out, by category, and what should be in the drawer
 • Post-dated cheques with due-date reminders
 • Instalment plans, with the next due date in view
+• Zakat calculator from your cash, stock and what customers owe; Qarz-e-Hasna (interest-free loans) kept apart from sales
 
 STAFF
 • Owner, manager and cashier, each with their own PIN

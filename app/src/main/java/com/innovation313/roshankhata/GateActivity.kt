@@ -28,7 +28,8 @@ class GateActivity : BaseActivity() {
         val splash = installSplashScreen()
         splash.setKeepOnScreenCondition { true }
         super.onCreate(savedInstanceState)
-        route()
+        // The very first start asks Play once where the install came from (a shop's khata page, M95); the splash holds.
+        com.innovation313.roshankhata.data.InstallSource.checkOnce(this) { route() }
     }
 
     private fun route() {
@@ -37,6 +38,7 @@ class GateActivity : BaseActivity() {
         // First run: the setup's first unfinished step, now that the mark has been shown (5 Nov
         // 2026: a setup left at the shop type or the details used to open Home next time, its
         // name and country never asked). Once the setup is done it never appears here again.
+        if (runCatching { intent.getBooleanExtra(EXTRA_SETUP, false) }.getOrDefault(false)) com.innovation313.roshankhata.data.InstallSource.clear(this)
         val setupStep = when (com.innovation313.roshankhata.data.SetupProgress.next(this)) {
             com.innovation313.roshankhata.data.SetupProgress.Step.LANGUAGE -> LanguageActivity::class.java
             com.innovation313.roshankhata.data.SetupProgress.Step.SHOP_TYPE -> ShopTypeActivity::class.java
@@ -45,7 +47,7 @@ class GateActivity : BaseActivity() {
         }
         // A phone that only ever opened shops' khata links (a customer, 7 Nov 2026) opens on them, not on a setup
         // it never asked for; Mera Khata's own button starts the setup (EXTRA_SETUP).
-        if (setupStep != null && runCatching { !intent.getBooleanExtra(EXTRA_SETUP, false) }.getOrDefault(true) && MeraKhataActivity.has(this)) {
+        if (setupStep != null && runCatching { !intent.getBooleanExtra(EXTRA_SETUP, false) }.getOrDefault(true) && (MeraKhataActivity.has(this) || com.innovation313.roshankhata.data.InstallSource.fromKhataPage(this))) {
             startActivity(Intent(this, MeraKhataActivity::class.java))
             finish()
             return

@@ -60,7 +60,9 @@ object UpdateCheck {
     fun newer(prefs: AppPrefs): String? {
         val current = installed() ?: return null
         val now = System.currentTimeMillis()
-        val latest = if (now - prefs.updateCheckedAt() < DAY_MS) prefs.updateLatest()
+        // A clock set back makes the gap negative: that counts as due, not as "asked just now" for ever (m88).
+        val sinceAsked = now - prefs.updateCheckedAt()
+        val latest = if (sinceAsked in 0 until DAY_MS) prefs.updateLatest()
             else fetchLatest()?.also { prefs.setUpdateLatest(it, now) }
         return latest?.takeIf { isNewer(it, current) }
     }

@@ -37,7 +37,11 @@ object SingleInstance {
         val channel = runCatching {
             FileChannel.open(File(home, "app.lock").toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE)
         }.getOrNull() ?: return Held(null, null)
-        val lock = runCatching { channel.tryLock() }.getOrNull()
+        // null from tryLock means another copy holds it; an IOException (a network share that cannot lock) means nobody can say,
+        // and the owner must not be told "already open" then (8 Nov 2026 review, L139): the app runs without the guard.
+        val lock = try { channel.tryLock() }
+            catch (_: java.nio.channels.OverlappingFileLockException) { null }
+            catch (_: java.io.IOException) { runCatching { channel.close() }; return Held(null, null) }
         if (lock == null) {
             runCatching { channel.close() }
             return null

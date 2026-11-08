@@ -3430,6 +3430,7 @@ class PartyDetailActivity : BaseActivity() {
                 runCatching { dao.getEntry(id)?.entryNumber }.getOrNull()
             } ?: entry.entryNumber
             if (isFinishing || isDestroyed) return@launch
+            com.innovation313.roshankhata.ui.AppRating.noteEntrySaved(this@PartyDetailActivity)
             com.innovation313.roshankhata.ui.SavedCard.show(
                 this@PartyDetailActivity,
                 title = getString(R.string.saved),

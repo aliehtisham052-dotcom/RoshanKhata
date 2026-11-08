@@ -3072,7 +3072,7 @@
     <string name="wifi_pc_steps">Di ponsel: Cadangan → Pindai kode komputer, lalu arahkan ke kode ini. Keduanya harus di WiFi yang sama. Tidak ada yang dikirim ke internet, dan tidak ada yang diganti di sini sebelum Anda setuju.</string>
     <string name="wifi_pc_waiting">Menunggu ponsel…</string>
     <string name="wifi_pc_no_network">Komputer ini tidak terhubung ke jaringan. Hubungkan ke WiFi toko lalu buka jendela ini lagi.</string>
-    <string name="wifi_pc_firewall">Jika Windows bertanya, izinkan Roshan Khata di jaringan pribadi.</string>
+    <string name="wifi_pc_firewall">Jika Windows bertanya, izinkan Roshan Khata di jaringan pribadi maupun publik.</string>
     <string name="wifi_pc_failed">Tidak bisa mulai mendengarkan. Tutup jendela ini dan coba lagi.</string>
     <string name="poster_save_picture">Simpan poster sebagai gambar</string>
     <string name="poster_desktop_flat">Di komputer gambar digambar datar; ponsel menampilkannya dalam 3D.</string>
@@ -4021,4 +4021,6 @@
     <string name="clink_full">Server tautan buku sedang penuh. Tautan yang sudah dikirim tetap berfungsi. Coba lagi nanti.</string>
     <string name="clink_limit_today">Batas tautan buku baru untuk hari ini sudah tercapai. Coba lagi besok.</string>
     <string name="mera_khata_older">Server mengirim salinan lama halaman ini. Salinan terbaru yang pernah dilihat ponsel ini yang ditampilkan.</string>
+    <string name="share_app">Bagikan Roshan Khata</string>
+    <string name="share_app_text">Roshan Khata menyimpan buku kas toko saya di ponsel, gratis, tanpa akun. Coba: %1$s</string>
 </resources>

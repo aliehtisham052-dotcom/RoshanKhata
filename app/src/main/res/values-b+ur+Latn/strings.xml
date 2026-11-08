@@ -3074,7 +3074,7 @@
     <string name="wifi_pc_steps">Phone par: Backup → Computer ka code scan karein, aur is code par rakhein. Dono ek hi WiFi par hon. Kuch bhi internet par nahi jata, aur aap ki haan ke baghair yahan kuch nahi badalta.</string>
     <string name="wifi_pc_waiting">Phone ka intezar hai…</string>
     <string name="wifi_pc_no_network">Ye computer kisi network par nahi hai. Ise dukaan ke WiFi se joRein aur ye khirki dobara kholein.</string>
-    <string name="wifi_pc_firewall">Agar Windows poochhe to Roshan Khata ko private network ki ijazat dein.</string>
+    <string name="wifi_pc_firewall">Agar Windows poochhe to Roshan Khata ko private aur public dono network par ijazat dein.</string>
     <string name="wifi_pc_failed">Sunna shuru nahi ho saka. Ye khirki band kar ke dobara koshish karein.</string>
     <string name="poster_save_picture">Poster tasveer ke taur par mehfooz karein</string>
     <string name="poster_desktop_flat">Computer par tasveerein saada (flat) banti hain; phone par ye 3D mein dikhti hain.</string>
@@ -4038,4 +4038,6 @@
     <string name="clink_full">Khata link ka server abhi bhara hua hai. Pehle bheje gaye link chalte rahenge. Kuch der baad dobara koshish karein.</string>
     <string name="clink_limit_today">Aaj naye khata links ki had poori ho gayi. Kal dobara koshish karein.</string>
     <string name="mera_khata_older">Server ne is safhe ki purani copy bheji. Is phone par dekhi gayi sab se nayi copy dikhayi ja rahi hai.</string>
+    <string name="share_app">Roshan Khata share karein</string>
+    <string name="share_app_text">Roshan Khata mein meri dukaan ka khata phone par rehta hai, muft, bina account. Azmayein: %1$s</string>
 </resources>

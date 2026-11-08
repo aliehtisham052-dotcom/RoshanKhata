@@ -313,6 +313,9 @@ dependencies {
     // Play forbids both pre-filling review text and routing people to the
     // store by sentiment, and reviews collected that way get stripped.
     implementation("com.google.android.play:review-ktx:2.0.2")
+    // Google's free Install Referrer library (8 Nov 2026, M95): a customer who installed from a shop's khata page lands on
+    // My Khata, not on the shop setup. Only a flag travels in the Play link, never the khata key.
+    implementation("com.android.installreferrer:installreferrer:2.2")
 
     // Google Sign-In + Drive, for cloud backup to the user's OWN Drive.
     // The backup file lives in the app's private "appDataFolder" on their
