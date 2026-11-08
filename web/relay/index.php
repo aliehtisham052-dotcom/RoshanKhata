@@ -741,7 +741,9 @@ try {
             // Idle books are let go first; only a store still full refuses.
             sweep_idle($store, $now, true);
             $all = glob($store . '/*.sqlite') ?: [];
-            if (count($all) >= MAX_BOOKS || store_bytes($store) >= intdiv(MAX_STORE_BYTES, 2)) refuse(507, 'full');
+            // Counted afresh from the files: the kept figure is ten minutes old, and a forced sweep now runs
+            // at most once a minute, so it no longer refreshes it (C1).
+            if (count($all) >= MAX_BOOKS || store_bytes($store, true) >= intdiv(MAX_STORE_BYTES, 2)) refuse(507, 'full');
         }
         $free = @disk_free_space($store);
         if ($free !== false && $free < MIN_FREE) refuse(507, 'full');
