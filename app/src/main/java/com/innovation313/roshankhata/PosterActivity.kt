@@ -1571,18 +1571,21 @@ class PosterActivity : BaseActivity() {
                 putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            // WhatsApp, or WhatsApp Business; its share screen offers "My status" first.
-            val whatsapp = if (toWhatsApp) WHATSAPP.firstOrNull { pkg ->
-                send.setPackage(pkg)
-                val found = send.resolveActivity(packageManager) != null
-                send.setPackage(null)
-                found
-            } else null
-            if (toWhatsApp && whatsapp == null) {
+            // WhatsApp, or WhatsApp Business; its share screen offers "My status" first. Asked by trying, not by
+            // resolveActivity: on Android 11+ that sees only packages named in <queries> and answered "not installed"
+            // with WhatsApp on the phone (8 Nov 2026 review, M60).
+            if (toWhatsApp) {
+                for (pkg in WHATSAPP) {
+                    try {
+                        startActivity(Intent(send).setPackage(pkg))
+                        return
+                    } catch (_: android.content.ActivityNotFoundException) {
+                        // not this one
+                    }
+                }
                 Toast.makeText(this, R.string.poster_whatsapp_missing, Toast.LENGTH_LONG).show()
             }
-            if (whatsapp != null) startActivity(send.setPackage(whatsapp))
-            else startActivity(Intent.createChooser(send, getString(R.string.share)))
+            startActivity(Intent.createChooser(send, getString(R.string.share)))
         } catch (e: Exception) {
             Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
         }

@@ -43,6 +43,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var tvNetBalance: TextView
     private lateinit var tvHomeLate: TextView
+    private lateinit var tvHomeFirst: TextView
     private var lateJob: kotlinx.coroutines.Job? = null
     private lateinit var ivEye: ImageView
 
@@ -125,6 +126,8 @@ class MainActivity : BaseActivity() {
         tvHomeLate.setOnClickListener {
             startActivity(android.content.Intent(this, FollowUpActivity::class.java))
         }
+        tvHomeFirst = findViewById(R.id.tvHomeFirst)
+        tvHomeFirst.setOnClickListener { startActivity(android.content.Intent(this, KhataActivity::class.java)) }
         ivEye = findViewById(R.id.ivEye)
 
         findViewById<View>(R.id.balanceRow).apply {
@@ -742,6 +745,7 @@ class MainActivity : BaseActivity() {
                 dao.observePartiesWithBalance().collectLatest { parties ->
                     // One rule for every screen's two totals (PartyTotals, 30 Oct 2026).
                     val sides = com.innovation313.roshankhata.data.PartyTotals.of(parties.map { it.balance })
+                    tvHomeFirst.visibility = if (parties.isEmpty() && !com.innovation313.roshankhata.data.ViewerMode.isOn(this@MainActivity)) View.VISIBLE else View.GONE
                     totalGet = sides.get
                     totalGive = sides.give
                     netBalance = sides.net

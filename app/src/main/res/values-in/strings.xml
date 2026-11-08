@@ -945,7 +945,7 @@
     <string name="restore_done_with_bin">Data Anda sudah kembali.\n\n%1$d pelanggan dalam cadangan ini sudah dihapus sebelum cadangan dibuat, jadi mereka dipulihkan ke Tempat Sampah \u2014 bukan ke daftar utama. Buka Lainnya \u2192 Tempat Sampah untuk menemukannya, di sana Anda dapat memulihkan siapa pun sepenuhnya.</string>
 
     <!-- Google Drive backup -->
-    <string name="drive_section">Cadangan cloud otomatis</string>
+    <string name="drive_section">Cadangan cloud</string>
     <string name="file_section">Cadangan ke berkas</string>
     <string name="drive_not_connected">Hubungkan akun Google Anda dan buku Anda dicadangkan ke Google Drive MILIK ANDA SENDIRI \u2014 secara otomatis. Ganti ponsel, masuk lagi, dan semuanya kembali. Data Anda tetap di Drive Anda; tidak pernah sampai ke kami.</string>
     <string name="drive_connected">Terhubung sebagai %1$s. Cadangan cloud terakhir: %2$s</string>
@@ -3673,7 +3673,7 @@
     <string name="live_status_not_accepted">Komputer tidak menyetujui tepat waktu. Untuk menghubungkan, pindai lagi kode sinkron langsungnya.</string>
     <string name="live_status_not_here">Komputer menjawab, tetapi saat ini tidak memegang buku ini. Buka usaha buku ini di komputer.</string>
     <string name="live_status_relay">Langsung dengan %1$s lewat internet. Pembaruan terakhir: %2$s</string>
-    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google hanya memberi tahu ponsel bahwa ada yang menunggu; tidak ada isi buku yang dibawanya.</string>
+    <string name="live_relay_help">Saat ponsel jauh dari WiFi toko, perubahannya lewat relai Innovation 313, terkunci dengan kunci buku ini sendiri: relai tidak bisa membacanya, dan menyimpannya paling lama 7 hari. Satu sakelar untuk kedua perangkat. Saat aplikasi tertutup, Firebase dari Google memberi tahu ponsel bahwa ada yang menunggu, dan perubahan kecil bisa ikut dalam pesan itu, tetap terkunci dengan kunci buku: Google tidak bisa membacanya.</string>
     <string name="live_relay">Juga lewat internet</string>
     <string name="wifi_take_too_big">Buku komputer terlalu besar untuk memori atau ruang kosong ponsel ini. Tutup aplikasi lain lalu coba lagi, atau pindahkan buku dengan file cadangan.</string>
     <string name="live_devices_open">Perangkat dan perubahan bersamaan</string>
@@ -4023,4 +4023,5 @@
     <string name="mera_khata_older">Server mengirim salinan lama halaman ini. Salinan terbaru yang pernah dilihat ponsel ini yang ditampilkan.</string>
     <string name="share_app">Bagikan Roshan Khata</string>
     <string name="share_app_text">Roshan Khata menyimpan buku kas toko saya di ponsel, gratis, tanpa akun. Coba: %1$s</string>
+    <string name="home_add_first_customer">Buku Anda masih kosong — ketuk di sini untuk menambah pelanggan pertama</string>
 </resources>

@@ -28,8 +28,8 @@ data class Shift(
 ) {
     val isOpen: Boolean get() = closedAt == null
     val difference: Double? get() = if (counted != null && expected != null) LineMath.round(counted - expected) else null
-    /** Hours on the clock, to two places; null while open. */
-    val hours: Double? get() = closedAt?.let { LineMath.round((it - openedAt) / 3_600_000.0) }
+    /** Hours on the clock, exact; null while open. Hours are not money: never rounded to the currency's decimals (8 Nov 2026 review, M14). */
+    val hours: Double? get() = closedAt?.let { (it - openedAt) / 3_600_000.0 }
 }
 
 /**
@@ -59,7 +59,7 @@ object ShiftMath {
 
     /** Hours on the clock per person (null = the owner) over [shifts], closed ones only, to two places. */
     fun hours(shifts: List<Shift>): Map<String?, Double> =
-        shifts.filter { !it.isOpen }.groupBy { it.user }.mapValues { (_, ss) -> LineMath.round(ss.sumOf { it.hours ?: 0.0 }) }
+        shifts.filter { !it.isOpen }.groupBy { it.user }.mapValues { (_, ss) -> Math.round(ss.sumOf { it.hours ?: 0.0 } * 100.0) / 100.0 }
 
     /** Why a close is refused: a short or over drawer needs its reason, as the day's close does. */
     fun needsReason(expected: Double, counted: Double, note: String?): Boolean =

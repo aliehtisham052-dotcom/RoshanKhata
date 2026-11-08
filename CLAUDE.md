@@ -2751,3 +2751,8 @@ number on the Help screen.
 - **Not done:** L134 (shared desktop-test release: needs a workflow redesign), L140 (signing), L141 (roadmap), L161 (new
   screenshots), L162 (a DOWNLOAD link in Windows PDFs, which are page pictures), L169 (a WhatsApp number cannot be written into
   this public repository), L170 (the owner's decision on posters).
+
+### 8 Nov 2026 review fixes, marhala 8A: the mediums no other phase covered (M2, M10, M11, M13, M14, M20-M22, M33, M38, M60, M61; CI only)
+
+- **M10/M11:** `AgingMove` and `SeasonBook.Line` carry `id`/`pairedEntryId`; Dues by age and the season queue net a paid-now sale's two lines (`PaymentRadar.netPairs`) first, so today's cash neither makes an old debt look young nor pays an old season's credit. **M13:** `SaleInsights.lastMonthSoFar` (last month up to the same moment) is what the percentage and its figure compare. **M14:** shift hours are exact, rounded to 2 places only for display and the weekly sum (not by the currency's decimals).
+- **M20/M21 (Windows):** a tick on a customer the search hides is dropped; the credit-limit warning treats a paid-now sale as leaving the balance as it was. **M60:** the poster's WhatsApp share tries each package (no `resolveActivity`, which Android 11+ answers empty). **M61:** the notification reason shows at most once a week. **M38:** Home's empty-book card (`home_add_first_customer`, nine languages). **M2/M33:** `live_relay_help` says a small sealed change may ride in Firebase's message; the Drive section is titled "Cloud backup" (auto is a switch below it). **M22:** `ACCESS_LOCAL_NETWORK` declared; the runtime ask comes with the targetSdk 37 bump.

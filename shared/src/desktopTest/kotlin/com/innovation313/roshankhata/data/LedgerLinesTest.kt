@@ -123,8 +123,8 @@ class LedgerLinesTest {
         book()
         val parties = dao.partiesWithBalanceOnce()
         val old = db.syncSql().read {
-            rows("SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC", types = "IRII")
-                .map { AgingMove(it[0] as Long, it[1] as Double, (it[2] as Long) == 1L, it[3] as Long) }
+            rows("SELECT partyId, amount, isGiven, timestamp, id, pairedEntryId FROM transactions WHERE isDeleted = 0 ORDER BY timestamp DESC, id DESC", types = "IRIIII")
+                .map { AgingMove(it[0] as Long, it[1] as Double, (it[2] as Long) == 1L, it[3] as Long, it[4] as Long, it[5] as Long?) }
         }
         val now = System.currentTimeMillis()
         val before = Aging.compute(parties, old, now)

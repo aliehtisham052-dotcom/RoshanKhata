@@ -4,6 +4,12 @@
     <!-- Cloud backup to the user's own Google Drive -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!--
+      Android 17 (targetSdk 37) asks before an app reaches devices on the home network: the phone-to-computer WiFi
+      roads (backup send, live sync, "take a shop's book") all do. Declared now so the bump finds it ready; an older
+      system ignores the name. The runtime question must be added WITH the bump (8 Nov 2026 review, M22).
+    -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+    <!--
       Receipt printer (5 Oct): talk to a printer the owner already paired in the
       phone's Bluetooth settings. No scanning, so no location and no SCAN
       permission. Bluetooth is not required to install the app.

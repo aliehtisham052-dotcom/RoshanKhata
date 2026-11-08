@@ -88,4 +88,16 @@ class AgingAndChartTest {
         assertEquals(10.0, months.sumOf { it.revenue }, 0.0)
         assertNull(months.firstOrNull { it.revenue < 0 })
     }
+
+    @Test
+    fun aSaleIsPaidOnTheSpotDoesNotMakeAnOldDebtLookYoung() {
+        // M10: 10,000 owed for 120 days, then today a 2,000 sale paid at once (two lines that point at each other).
+        val moves = listOf(
+            AgingMove(1, 10_000.0, true, now - 120 * day, id = 1),
+            AgingMove(1, 2_000.0, true, now, id = 2, pairedEntryId = 3),
+            AgingMove(1, 2_000.0, false, now, id = 3, pairedEntryId = 2)
+        )
+        val row = Aging.compute(listOf(party(1, 10_000.0)), moves, now).receivable.single()
+        assertEquals(listOf(0.0, 0.0, 0.0, 10_000.0), row.buckets)
+    }
 }

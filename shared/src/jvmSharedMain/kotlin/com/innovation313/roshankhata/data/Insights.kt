@@ -29,6 +29,8 @@ data class MonthSale(
 data class SaleInsights(
     val thisMonthTotal: Double,
     val lastMonthTotal: Double,
+    /** Last month up to the same moment of the month as now (8 Nov 2026 review, M13): the fair figure to compare with. */
+    val lastMonthSoFar: Double = lastMonthTotal,
     val salesCount: Int,
     val topProducts: List<ProductStat>,
     val topCustomers: List<CustomerStat>,
@@ -44,8 +46,8 @@ data class SaleInsights(
      * base would be noise, not insight.
      */
     val changePercent: Int?
-        get() = if (lastMonthTotal <= 0.0) null
-        else (((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100).toInt()
+        get() = if (lastMonthSoFar <= 0.0) null
+        else (((thisMonthTotal - lastMonthSoFar) / lastMonthSoFar) * 100).toInt()
 }
 
 object Insights {
@@ -122,6 +124,8 @@ object Insights {
         return SaleInsights(
             thisMonthTotal = dao.salesTotalBetween(thisStart, thisEnd),
             lastMonthTotal = dao.salesTotalBetween(lastStart, thisStart),
+            // Ten days into this month against all thirty of the last read "67% less" every month (M13).
+            lastMonthSoFar = dao.salesTotalBetween(lastStart, minOf(lastStart + (now - thisStart), thisStart)),
             salesCount = dao.salesCountBetween(thisStart, thisEnd),
             topProducts = dao.topProductsBetween(thisStart, thisEnd, 5),
             topCustomers = dao.topCustomersBetween(thisStart, thisEnd, 3),

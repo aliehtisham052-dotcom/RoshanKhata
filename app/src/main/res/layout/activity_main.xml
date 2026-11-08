@@ -376,6 +376,29 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
+            <!-- An empty book says what to do first (8 Nov 2026 review, M38); gone once there is a customer. -->
+            <TextView
+                android:textAlignment="viewStart"
+                android:id="@+id/tvHomeFirst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_home_late"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingStart="14dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="14dp"
+                android:paddingBottom="10dp"
+                android:text="@string/home_add_first_customer"
+                android:textColor="@color/note_text"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <!-- The feature slider (6 Oct): four cards that turn on their own; HomeSlides. -->
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/homeSlides"

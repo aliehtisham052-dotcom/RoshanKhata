@@ -120,7 +120,7 @@ interface KhataDao {
      */
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
-            "t.isGiven AS isGiven, t.season AS seasonKey FROM transactions t " +
+            "t.isGiven AS isGiven, t.season AS seasonKey, t.id AS id, t.pairedEntryId AS pairedEntryId FROM transactions t " +
             "JOIN parties p ON p.id = t.partyId " +
             "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.timestamp >= :since"
     )
@@ -138,7 +138,7 @@ interface KhataDao {
 
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
-            "t.isGiven AS isGiven, t.season AS seasonKey FROM transactions t " +
+            "t.isGiven AS isGiven, t.season AS seasonKey, t.id AS id, t.pairedEntryId AS pairedEntryId FROM transactions t " +
             "WHERE t.isDeleted = 0 AND t.partyId = :partyId"
     )
     suspend fun seasonLinesOf(partyId: Long): List<SeasonBook.Line>
@@ -4820,7 +4820,7 @@ interface KhataDao {
      * ([LedgerLines.agingMoves]; until 3 Nov 2026 every entry of the book in one answer, 7.3 s on CI's emulator).
      */
     @Query(
-        "SELECT partyId, amount, isGiven, timestamp FROM transactions WHERE isDeleted = 0 AND partyId IN (:partyIds) " +
+        "SELECT partyId, amount, isGiven, timestamp, id, pairedEntryId FROM transactions WHERE isDeleted = 0 AND partyId IN (:partyIds) " +
             "ORDER BY partyId DESC, timestamp DESC, id DESC"
     )
     suspend fun agingMovesOf(partyIds: List<Long>): List<AgingMove>

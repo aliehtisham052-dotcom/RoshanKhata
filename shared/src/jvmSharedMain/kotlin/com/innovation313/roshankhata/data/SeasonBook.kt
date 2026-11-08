@@ -103,7 +103,10 @@ object SeasonBook {
         val amount: Double,
         val isGiven: Boolean,
         /** The owner's own season for this entry, or null = by date. */
-        val seasonKey: String? = null
+        val seasonKey: String? = null,
+        /** The entry and the other half of its cash sale (8 Nov 2026 review, M11): netted before the queue is run. */
+        val id: Long = 0,
+        val pairedEntryId: Long? = null
     )
 
     /** One customer in one season. Amounts in rupees, rounded to the paisa. */
@@ -135,7 +138,13 @@ object SeasonBook {
         val out = mutableListOf<PartySeason>()
         for ((partyId, own) in lines.groupBy { it.partyId }) {
             // Same moment: the credit is on the books before the payment.
-            val sorted = own.sortedWith(compareBy({ it.timestamp }, { if (it.isGiven) 0 else 1 }))
+            // A paid-now sale is two lines that cancel; run through the queue it would pay the OLDEST season's
+            // credit with today's cash and leave the new season unpaid (M11).
+            val byId = own.filter { it.id != 0L }.associateBy { it.id }
+            val netted = own.filter { it.id == 0L } + PaymentRadar.netPairs(
+                byId.values.map { LedgerPoint(it.partyId, it.timestamp, it.amount, it.isGiven, it.id, it.pairedEntryId) }
+            ).map { n -> byId.getValue(n.id).copy(amount = n.amount) }
+            val sorted = netted.sortedWith(compareBy({ it.timestamp }, { if (it.isGiven) 0 else 1 }))
             class Chunk(val season: Season, var left: Long)
             val open = ArrayDeque<Chunk>()
             val given = LinkedHashMap<Season, Long>()

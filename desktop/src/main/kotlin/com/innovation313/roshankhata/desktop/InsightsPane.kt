@@ -139,8 +139,8 @@ private fun MonthSaleCard(d: SaleInsights, modifier: Modifier) {
         Text(
             when {
                 pct == null -> word(W.insights_no_compare)
-                pct >= 0 -> word(W.insights_up, pct, Format.money(d.lastMonthTotal))
-                else -> word(W.insights_down, -pct, Format.money(d.lastMonthTotal))
+                pct >= 0 -> word(W.insights_up, pct, Format.money(d.lastMonthSoFar))
+                else -> word(W.insights_down, -pct, Format.money(d.lastMonthSoFar))
             },
             color = when { pct == null -> c.textMuted; pct >= 0 -> Look.accent; else -> c.owedToMe }, fontSize = 13.sp
         )

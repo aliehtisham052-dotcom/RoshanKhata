@@ -520,7 +520,12 @@ class KhataActivity : BaseActivity() {
                 this, android.Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
             // Said no once: the reason first, in the owner's words, then Android's own question (M24).
+            // The reason is told at most once a week: after a "no" it came back at every Khata opening (M61).
+            val whyPrefs = getSharedPreferences("notif_permission_ui", MODE_PRIVATE)
+            val whyDue = System.currentTimeMillis() - whyPrefs.getLong("why_at", 0L) > 7L * 24 * 60 * 60 * 1000
             if (!granted && ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
+                if (!whyDue) return
+                whyPrefs.edit().putLong("why_at", System.currentTimeMillis()).apply()
                 MaterialAlertDialogBuilder(this)
                     .setMessage(R.string.notif_permission_why)
                     .setPositiveButton(R.string.ok) { _, _ ->

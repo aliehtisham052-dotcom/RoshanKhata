@@ -91,11 +91,11 @@ class InsightsActivity : BaseActivity() {
             }
             pct >= 0 -> {
                 // Sealed left-to-right (3 Nov 2026 audit, L34): in Urdu the figure split with its bracket mirrored.
-                trend.text = Digits.string(resources, R.string.insights_up, pct, Format.moneyLtr(data.lastMonthTotal))
+                trend.text = Digits.string(resources, R.string.insights_up, pct, Format.moneyLtr(data.lastMonthSoFar))
                 trend.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe))
             }
             else -> {
-                trend.text = Digits.string(resources, R.string.insights_down, -pct, Format.moneyLtr(data.lastMonthTotal))
+                trend.text = Digits.string(resources, R.string.insights_down, -pct, Format.moneyLtr(data.lastMonthSoFar))
                 trend.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me))
             }
         }

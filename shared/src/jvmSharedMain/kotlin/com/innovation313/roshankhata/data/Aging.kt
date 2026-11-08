@@ -1,7 +1,11 @@
 package com.innovation313.roshankhata.data
 
 /** One khata entry as the aging needs it: whose, how much, which way, when. */
-data class AgingMove(val partyId: Long, val amount: Double, val isGiven: Boolean, val timestamp: Long)
+data class AgingMove(
+    val partyId: Long, val amount: Double, val isGiven: Boolean, val timestamp: Long,
+    /** The entry and the other half of its cash sale (8 Nov 2026 review, M10): netted before the balance is laid over. */
+    val id: Long = 0, val pairedEntryId: Long? = null
+)
 
 /**
  * Dues by age (21 Oct 2026, the critical review): what each party still owes
@@ -70,7 +74,10 @@ object Aging {
     fun compute(parties: List<PartyWithBalance>, moves: List<AgingMove>, now: Long = System.currentTimeMillis()): Report {
         val byParty = moves.groupBy { it.partyId }
         fun row(p: PartyWithBalance, owedToMe: Boolean): Row {
-            val made = byParty[p.id].orEmpty().filter { it.isGiven == owedToMe }.sortedByDescending { it.timestamp }
+            // A paid-now sale is an "I gave" and an "I got" that cancel: net them first, or today's sale would sit
+            // over the balance and make an old debt look young (M10).
+            val netted = PaymentRadar.netPairs(byParty[p.id].orEmpty().map { LedgerPoint(it.partyId, it.timestamp, it.amount, it.isGiven, it.id, it.pairedEntryId) })
+            val made = netted.filter { it.isGiven == owedToMe }.sortedByDescending { it.timestamp }
             val pieces = pieces(made.map { it.timestamp to it.amount }, kotlin.math.abs(p.balance))
             val sums = DoubleArray(BUCKETS)
             pieces.forEach { (day, amount) -> sums[bucketOf(day, now)] += amount }

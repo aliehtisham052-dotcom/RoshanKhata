@@ -1245,6 +1245,11 @@ private fun Book(
                                 val shown = remember(parties, query, partySide, partyType, partySort, partyWhen) {
                                     parties.shownBy(query, partySide, partyType, partySort, partyWhen.window())
                                 }
+                                // A tick on a customer the search has hidden is let go: "Delete" must bin only what is on screen (M20).
+                                LaunchedEffect(shown) {
+                                    val visible = shown.mapTo(HashSet()) { it.id }
+                                    if (chosenIds.any { it !in visible }) chosenIds = chosenIds.filterTo(HashSet()) { it in visible }
+                                }
                                 if (selecting) {
                                     KhataSelectBar(
                                         chosenIds.size,
@@ -1766,12 +1771,14 @@ private fun Book(
                                 dao.sameDayTwin(e.partyId, e.amount, e.isGiven, dayStart, dayStart + 24L * 60 * 60 * 1000 - 1) to dao.getParty(e.partyId)
                             }
                             val limit = party?.creditLimit
-                            val projected = forParty.balance + (if (e.isGiven) e.amount else -e.amount)
+                            // A sale paid now (its cash "I got" is written with it) leaves the balance where it was (M21).
+                            val paidNowSale = d.paidNow && e.isGiven && e.rateType == com.innovation313.roshankhata.data.RateType.CASH
+                            val projected = forParty.balance + if (paidNowSale) 0.0 else if (e.isGiven) e.amount else -e.amount
                             val warnings = listOfNotNull(
                                 twin?.let {
                                     words.text(W.twin_entry_body, Format.money(it.amount), words.text(if (e.isGiven) W.i_gave else W.i_got), Format.dateTime(it.timestamp))
                                 },
-                                if (e.isGiven && limit != null && limit > 0 && projected > limit && forParty.balance <= limit)
+                                if (e.isGiven && !paidNowSale && limit != null && limit > 0 && projected > limit && forParty.balance <= limit)
                                     words.text(W.limit_warning_message, forParty.name, Format.money(forParty.balance), Format.money(e.amount), Format.money(projected), Format.money(limit))
                                 else null
                             )

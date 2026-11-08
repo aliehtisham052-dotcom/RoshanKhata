@@ -186,7 +186,7 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                 Column(Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(10.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(who(s.user), Modifier.weight(1f), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(words.text(W.shift_hours, Calc.trim(s.hours ?: 0.0)), color = c.inkSoft, fontSize = 13.sp)
+                        Text(words.text(W.shift_hours, Calc.trim(Math.round((s.hours ?: 0.0) * 100.0) / 100.0)), color = c.inkSoft, fontSize = 13.sp)
                     }
                     Text(Format.dateTime(s.openedAt) + " – " + Format.dateTime(s.closedAt ?: s.openedAt), color = c.textMuted, fontSize = 12.sp)
                     Figure(word(W.z_expected), Format.money(s.expected ?: 0.0))
