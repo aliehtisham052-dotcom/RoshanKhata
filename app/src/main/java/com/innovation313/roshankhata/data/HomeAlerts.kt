@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.data
 
 import android.content.Context
 import com.innovation313.roshankhata.R
+import kotlinx.coroutines.flow.first
 
 /**
  * What needs the owner's eye today (6 Oct) — worked out on the phone from the
@@ -16,7 +17,7 @@ import com.innovation313.roshankhata.R
  */
 object HomeAlerts {
 
-    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, DRAWER, BACKUP, BACKUP_FAILED, BACKUP_OTHER_PHONE, CASHFLOW, UPDATED, SYNC }
+    enum class Kind { CHEQUE, PLAN, BILL, EXPIRING, STOCK, DRAWER, BACKUP, BACKUP_FAILED, BACKUP_OTHER_PHONE, CASHFLOW, UPDATED, SYNC, LATE }
 
     /** One row of the bell: what kind, a title, a quieter line under it, and an optional short tag ("Today", "Late", "Failed"). */
     data class Alert(val kind: Kind, val title: String, val sub: String, val tag: String? = null)
@@ -48,6 +49,19 @@ object HomeAlerts {
         if (Snapshots.unhealthySince(context) > 0L) out += Alert(Kind.BACKUP_FAILED, context.getString(R.string.na_copy_unhealthy),
             context.getString(R.string.na_copy_unhealthy_sub), context.getString(R.string.na_tag_failed))
         val parties = dao.partiesWithBalanceOnce()
+        // Customers paying later than their habit, as a bell row like the computer's (8 Nov 2026, m44, the owner):
+        // Home's own line and Follow-up use the same rule (FollowUpRank.lateByHabit); a named day ahead is not late.
+        runCatching {
+            val points = LedgerLines.owingOf(dao, parties)
+            val habits = PaymentHabit.forAll(points)
+            val promises = dao.observePromises().first().associate { it.partyId to it.due }
+            val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
+            val now = System.currentTimeMillis()
+            val tz = java.util.TimeZone.getDefault()
+            habits.keys.count { id -> id in owing && FollowUpRank.lateByHabit(id, habits, promises, now, tz) }
+        }.getOrDefault(0).takeIf { it > 0 }?.let { late ->
+            out += Alert(Kind.LATE, Digits.quantity(context.resources, R.plurals.home_paying_late, late, late), "")
+        }
         // Backup, in order of urgency: another phone holds it, the automatic
         // one failed, or it is simply old. Each clears itself the moment a
         // newer backup exists, because the fact it reports is then past.

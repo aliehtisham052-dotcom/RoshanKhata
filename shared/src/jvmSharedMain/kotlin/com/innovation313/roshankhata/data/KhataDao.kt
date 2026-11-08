@@ -2269,7 +2269,7 @@ interface KhataDao {
         "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
         "JOIN parties p ON p.id = t.partyId " +
         "WHERE ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
-        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "AND t.isDeleted = 0 " +
         "GROUP BY ei.productId"
     )
     suspend fun soldPerProduct(): List<Stock.ProductQty>
@@ -4637,6 +4637,8 @@ interface KhataDao {
 
     // ---------- Stock per unit, batches and costs (schema 36) ----------
     //
+    // A binned party's goods still left (or came back to) the shelf: these sums do not ask whether the party is
+    // in the bin, as the batch moves never did (8 Nov 2026, M45, the owner's decision).
     // The same sums as soldPerProduct & co., one row per product AND unit as
     // written, so Stock.combine can turn a product's pack into its own unit and
     // see a unit it cannot convert, instead of SQL adding bags to kilos.
@@ -4659,7 +4661,7 @@ interface KhataDao {
         "FROM entry_items ei CROSS JOIN transactions t ON t.id = ei.entryId " +
         "JOIN parties p ON p.id = t.partyId " +
         "WHERE +ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 1 " +
-        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "AND t.isDeleted = 0 " +
         "GROUP BY +ei.productId, ei.unit"
     )
     suspend fun soldPerProductUnit(): List<Stock.ProductQty>
@@ -4669,7 +4671,7 @@ interface KhataDao {
         "FROM entry_items ei CROSS JOIN transactions t ON t.id = ei.entryId " +
         "JOIN parties p ON p.id = t.partyId " +
         "WHERE +ei.productId IS NOT NULL AND ei.quantity IS NOT NULL AND t.isGiven = 0 " +
-        "AND t.isDeleted = 0 AND p.isDeleted = 0 " +
+        "AND t.isDeleted = 0 " +
         "GROUP BY +ei.productId, ei.unit"
     )
     suspend fun returnedPerProductUnit(): List<Stock.ProductQty>

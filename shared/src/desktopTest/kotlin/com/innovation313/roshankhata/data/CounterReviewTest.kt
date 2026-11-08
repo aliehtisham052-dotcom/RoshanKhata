@@ -237,6 +237,18 @@ class CounterReviewTest {
     }
 
     @Test
+    fun `goods sold to a customer put in the bin still left the shelf`() = runBlocking {
+        // M45 (8 Nov 2026, the owner): binning a customer must not put his goods back on the shelf.
+        val aslam = dao.insertParty(Party(name = "Aslam"))
+        val dap = product("DAP")
+        sellTo(aslam, dap, 2.0)
+        fun soldOfDap() = runBlocking { dao.soldPerProductUnit().filter { it.productId == dap }.sumOf { it.qty } }
+        assertEquals(2.0, soldOfDap(), 0.001)
+        dao.softDeleteParty(aslam)
+        assertEquals(2.0, soldOfDap(), 0.001)
+    }
+
+    @Test
     fun `nothing is posted to a customer in the bin, nor returned against a voided ticket`() = runBlocking {
         val aslam = dao.insertParty(Party(name = "Aslam"))
         val dap = product("DAP")
