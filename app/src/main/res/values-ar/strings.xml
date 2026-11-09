@@ -1529,7 +1529,7 @@
     <string name="promo_window">الفترة</string>
     <string name="promo_last_bought">آخر شراء %1$s</string>
     <string name="promo_send">رسالة</string>
-    <string name="promo_message">السلام عليكم %1$s. %2$s متوفر لدينا من جديد. أخبرنا إن احتجت شيئاً.</string>
+    <string name="promo_message">مرحبًا %1$s. %2$s متوفر لدينا من جديد. أخبرنا إن احتجت شيئاً.</string>
     <string name="no_promo_customers">لم يشتره أحد في تلك الفترة.</string>
     <string name="window_same_season">الموسم نفسه العام الماضي</string>
     <string name="window_last_year">آخر 12 شهراً</string>
@@ -3282,8 +3282,10 @@
     <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
     <string name="biz_card_ex_web">مثلاً موقعك أو صفحة فيسبوك</string>
-    <string name="biz_card_ex_qr">مثلاً السلام عليكم، رأيت بطاقتك</string>
+    <string name="biz_card_ex_qr">مثلاً مرحبًا، رأيت بطاقتك</string>
     <string name="biz_card_send_picture">أرسل البطاقة كصورة</string>
+    <string name="biz_card_send_moving">أرسل كبطاقة متحركة</string>
+    <string name="biz_card_moving_failed">تعذّر إنشاء البطاقة المتحركة على هذا الهاتف. يمكنك إرسال الصورة.</string>
     <string name="biz_card_save_picture">احفظ البطاقة كصورة</string>
     <string name="drive_signed_in_ok">✓ تم تسجيل الدخول باسم %1$s. يمكن الآن نسخ دفاترك احتياطيًا إلى Google Drive الخاص بك.</string>
     <string name="entry_due_none">تاريخ السداد: أضف تاريخًا</string>

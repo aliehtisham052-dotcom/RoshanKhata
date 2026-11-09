@@ -15,6 +15,12 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.innovation313.roshankhata.ui.CardVideo
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import com.innovation313.roshankhata.data.Branding
 import com.innovation313.roshankhata.data.CardLanguage
 import com.innovation313.roshankhata.data.Businesses
@@ -58,6 +64,10 @@ class BusinessCardActivity : BaseActivity() {
     private lateinit var tplButtons: List<Button>
 
     private var template = TPL_DEFAULT
+
+    /** The moving-card clip being made, if any. */
+    private var videoJob: Job? = null
+    private lateinit var btnMoving: Button
 
     /** The card's own language, independent of the app's (12 Oct; nine languages 21 Oct). */
     private var cardLang = CardLanguage.ENGLISH
@@ -155,9 +165,13 @@ class BusinessCardActivity : BaseActivity() {
             setOnClickListener { shareCard() }
         }
 
+        btnMoving = findViewById(R.id.btnShareMoving)
+        btnMoving.setOnClickListener { shareMoving() }
+
         refreshTemplateButtons()
         loadLogo()
         render()
+        updateMovingButton()
     }
 
     override fun onResume() {
@@ -334,6 +348,7 @@ class BusinessCardActivity : BaseActivity() {
                     template = tpl.id
                     refreshTemplateButtons()
                     render()
+                    updateMovingButton()
                 }
                 row.addView(this)
             }
@@ -409,6 +424,98 @@ class BusinessCardActivity : BaseActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // ---------- Moving card ----------
+
+    /** Offered only for a design that really moves; a still card has nothing to record. */
+    private fun updateMovingButton() {
+        btnMoving.visibility = if (CardVideo.moves(CardTemplates.byId(template), cardData()))
+            android.view.View.VISIBLE else android.view.View.GONE
+    }
+
+    /** The card's own motion as a 4-second silent looping MP4, sent to WhatsApp (else the share sheet). */
+    private fun shareMoving() {
+        if (etBizName.text.toString().isBlank()) {
+            Toast.makeText(this, R.string.biz_card_enter_name, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (videoJob?.isActive == true) return
+        save()
+        val tpl = CardTemplates.byId(template)
+        val data = cardData()
+        val text = TextView(this).apply {
+            setTextColor(getColor(R.color.ink)); textSize = 15f
+            this.text = com.innovation313.roshankhata.data.Digits.string(resources, R.string.poster_making_video, 0)
+        }
+        val bar = com.google.android.material.progressindicator.LinearProgressIndicator(this).apply {
+            max = 100; isIndeterminate = false
+        }
+        val pad = dp(20)
+        val box = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(pad, pad, pad, pad / 2)
+            addView(text)
+            addView(bar, android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = pad / 2 })
+        }
+        com.innovation313.roshankhata.ui.TextFit.relax(box)
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(box)
+            .setCancelable(false)
+            .setNegativeButton(android.R.string.cancel) { _, _ -> videoJob?.cancel() }
+            .show()
+        val out = File(File(cacheDir, "cards").apply { mkdirs() }, "dukan-card.mp4")
+        videoJob = lifecycleScope.launch {
+            var made = false
+            try {
+                CardVideo.make(tpl, data, out) { p ->
+                    bar.setProgressCompat(p, true)
+                    text.text = com.innovation313.roshankhata.data.Digits.string(resources, R.string.poster_making_video, p)
+                }
+                made = true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                android.util.Log.w("CardVideo", "The moving card could not be made", e)
+            } finally {
+                dialog.dismiss()
+                videoJob = null
+            }
+            if (made && out.length() > 0) sendMoving(out)
+            else Toast.makeText(this@BusinessCardActivity, R.string.biz_card_moving_failed, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun sendMoving(file: File) {
+        try {
+            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "video/mp4"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            // WhatsApp or WhatsApp Business by trying (not resolveActivity: Android 11+ sees only <queries>).
+            for (pkg in listOf("com.whatsapp", "com.whatsapp.w4b")) {
+                try {
+                    startActivity(Intent(send).setPackage(pkg))
+                    return
+                } catch (_: android.content.ActivityNotFoundException) {
+                    // not this one
+                }
+            }
+            Toast.makeText(this, R.string.poster_whatsapp_missing, Toast.LENGTH_LONG).show()
+            startActivity(Intent.createChooser(send, getString(R.string.biz_card_share)))
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onDestroy() {
+        videoJob?.cancel()
+        super.onDestroy()
     }
 
     private fun save() {

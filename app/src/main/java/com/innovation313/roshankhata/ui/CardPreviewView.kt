@@ -108,18 +108,23 @@ class CardPreviewView @JvmOverloads constructor(
     }
 
     /** A soft diagonal band of light across the darker cards. */
-    private fun shine(c: Canvas) {
-        val x = -400f + (CardTemplates.W + 800f) * phase
-        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            shader = LinearGradient(
-                x - 160f, 0f, x + 160f, 0f,
-                intArrayOf(Color.TRANSPARENT, Color.argb(46, 255, 255, 255), Color.TRANSPARENT),
-                null, Shader.TileMode.CLAMP
-            )
+    private fun shine(c: Canvas) = drawShine(c, phase)
+
+    companion object {
+        /** The band at [phase] (0..1) on a card [CardTemplates.W] by [CardTemplates.H]; the clip video draws it too. */
+        fun drawShine(c: Canvas, phase: Float) {
+            val x = -400f + (CardTemplates.W + 800f) * phase
+            val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                shader = LinearGradient(
+                    x - 160f, 0f, x + 160f, 0f,
+                    intArrayOf(Color.TRANSPARENT, Color.argb(46, 255, 255, 255), Color.TRANSPARENT),
+                    null, Shader.TileMode.CLAMP
+                )
+            }
+            c.save()
+            c.skew(-0.35f, 0f)
+            c.drawRect(x - 160f, 0f, x + 160f + CardTemplates.H, CardTemplates.H.toFloat(), p)
+            c.restore()
         }
-        c.save()
-        c.skew(-0.35f, 0f)
-        c.drawRect(x - 160f, 0f, x + 160f + CardTemplates.H, CardTemplates.H.toFloat(), p)
-        c.restore()
     }
 }

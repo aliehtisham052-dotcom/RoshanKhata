@@ -1429,7 +1429,7 @@
     <string name="promo_window">بازهٔ زمانی</string>
     <string name="promo_last_bought">آخرین خرید %1$s</string>
     <string name="promo_send">پیام</string>
-    <string name="promo_message">السلام علیکم %1$s. %2$s دوباره در مغازه موجود است. اگر لازم داشتید خبر بدهید.</string>
+    <string name="promo_message">سلام %1$s. %2$s دوباره در مغازه موجود است. اگر لازم داشتید خبر بدهید.</string>
     <string name="no_promo_customers">در آن بازه کسی این را نخرید.</string>
     <string name="window_same_season">همین فصل سال گذشته</string>
     <string name="window_last_year">12 ماه گذشته</string>
@@ -3112,6 +3112,8 @@
     <string name="biz_card_ex_web">مثلاً وب‌سایت یا صفحه فیسبوک</string>
     <string name="biz_card_ex_qr">مثلاً سلام، کارت شما را دیدم</string>
     <string name="biz_card_send_picture">ارسال کارت به صورت تصویر</string>
+    <string name="biz_card_send_moving">ارسال به صورت کارت متحرک</string>
+    <string name="biz_card_moving_failed">ساخت کارت متحرک روی این گوشی ممکن نشد. همچنان می‌توانید تصویر را بفرستید.</string>
     <string name="biz_card_save_picture">ذخیرهٔ کارت به‌صورت تصویر</string>
     <string name="drive_signed_in_ok">✓ با %1$s وارد شدید. اکنون دفاتر شما می‌توانند در Google Drive شما پشتیبان‌گیری شوند.</string>
     <string name="entry_due_none">تاریخ پرداخت: افزودن تاریخ</string>

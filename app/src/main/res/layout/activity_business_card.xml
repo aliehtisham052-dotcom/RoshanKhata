@@ -369,6 +369,25 @@
             app:iconPadding="10dp"
             app:iconTint="@color/white" />
 
+        <!-- A short silent looping clip of the card's own motion, for WhatsApp. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShareMoving"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0"
+            android:minHeight="54dp"
+            android:text="@string/biz_card_send_moving"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_green_text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp"
+            app:strokeColor="@color/brand_green_text" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

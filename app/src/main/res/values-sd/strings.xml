@@ -1429,7 +1429,7 @@
     <string name="promo_window">ڪهڙي عرصي جو</string>
     <string name="promo_last_bought">آخري ڀيرو %1$s</string>
     <string name="promo_send">پيغام</string>
-    <string name="promo_message">السلام عليڪم %1$s. %2$s ٻيهر دڪان تي موجود آهي. ضرورت هجي ته ٻڌائجو.</string>
+    <string name="promo_message">هيلو %1$s. %2$s ٻيهر دڪان تي موجود آهي. ضرورت هجي ته ٻڌائجو.</string>
     <string name="no_promo_customers">ان عرصي ۾ ڪنهن هي نه خريد ڪيو.</string>
     <string name="window_same_season">پويون سال اهو ئي موسم</string>
     <string name="window_last_year">پويان 12 مهينا</string>
@@ -3110,8 +3110,10 @@
     <string name="biz_card_ex_phone">مثال \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثال shop@gmail.com</string>
     <string name="biz_card_ex_web">مثال ويب سائيٽ يا فيس بڪ پيج</string>
-    <string name="biz_card_ex_qr">مثال السلام عليڪم، توهان جو ڪارڊ ڏٺو</string>
+    <string name="biz_card_ex_qr">مثال هيلو، توهان جو ڪارڊ ڏٺو</string>
     <string name="biz_card_send_picture">ڪارڊ تصوير طور موڪليو</string>
+    <string name="biz_card_send_moving">هلندڙ ڪارڊ طور موڪليو</string>
+    <string name="biz_card_moving_failed">هن فون تي هلندڙ ڪارڊ ٺهي نه سگهيو. توهان تصوير اڃا به موڪلي سگهو ٿا.</string>
     <string name="biz_card_save_picture">ڪارڊ تصوير طور محفوظ ڪريو</string>
     <string name="drive_signed_in_ok">✓ %1$s سان سائن اِن ٿي ويو. هاڻي توهان جو کاتو توهان جي گوگل ڊرائيو ۾ بيڪ اپ ٿي سگهي ٿو.</string>
     <string name="entry_due_none">ادائيگي جي تاريخ: شامل ڪريو</string>

@@ -1401,7 +1401,7 @@
     <string name="promo_window">کس عرصے کا</string>
     <string name="promo_last_bought">آخری بار %1$s</string>
     <string name="promo_send">پیغام</string>
-    <string name="promo_message">السلام علیکم %1$s۔ %2$s دوبارہ دکان پر موجود ہے۔ ضرورت ہو تو بتا دیجیے گا۔</string>
+    <string name="promo_message">سلام %1$s۔ %2$s دوبارہ دکان پر موجود ہے۔ ضرورت ہو تو بتا دیجیے گا۔</string>
     <string name="no_promo_customers">اس عرصے میں کسی نے یہ نہیں خریدا۔</string>
     <string name="window_same_season">پچھلے سال اسی موسم</string>
     <string name="window_last_year">پچھلے 12 مہینے</string>
@@ -3082,8 +3082,10 @@
     <string name="biz_card_ex_phone">مثلاً \u20660300 1234567\u2069</string>
     <string name="biz_card_ex_email">مثلاً shop@gmail.com</string>
     <string name="biz_card_ex_web">مثلاً ویب سائٹ یا فیس بک پیج</string>
-    <string name="biz_card_ex_qr">مثلاً السلام علیکم، آپ کا کارڈ دیکھا</string>
+    <string name="biz_card_ex_qr">مثلاً سلام، آپ کا کارڈ دیکھا</string>
     <string name="biz_card_send_picture">کارڈ تصویر کی شکل میں بھیجیں</string>
+    <string name="biz_card_send_moving">چلتے کارڈ کے طور پر بھیجیں</string>
+    <string name="biz_card_moving_failed">اس فون پر چلتا کارڈ نہیں بن سکا۔ آپ تصویر پھر بھی بھیج سکتے ہیں۔</string>
     <string name="biz_card_save_picture">کارڈ تصویر کے طور پر محفوظ کریں</string>
     <string name="drive_signed_in_ok">✓ %1$s سے سائن اِن ہو گیا۔ اب آپ کا کھاتہ آپ کی گوگل ڈرائیو میں بیک اپ ہو سکتا ہے۔</string>
     <string name="entry_due_none">ادائیگی کی تاریخ: شامل کریں</string>

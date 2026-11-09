@@ -3294,8 +3294,10 @@
     <string name="biz_card_ex_phone">e.g. 0300 1234567</string>
     <string name="biz_card_ex_email">e.g. shop@gmail.com</string>
     <string name="biz_card_ex_web">e.g. yourshop.com or a Facebook page</string>
-    <string name="biz_card_ex_qr">e.g. Assalam o alaikum, I saw your card</string>
+    <string name="biz_card_ex_qr">e.g. Hello, I saw your card</string>
     <string name="biz_card_send_picture">Send the card as a picture</string>
+    <string name="biz_card_send_moving">Send as a moving card</string>
+    <string name="biz_card_moving_failed">The moving card could not be made on this phone. You can still send the picture.</string>
     <string name="biz_card_save_picture">Save the card as a picture</string>
     <string name="drive_signed_in_ok">✓ Signed in as %1$s. Your books can now back up to your Google Drive.</string>
     <string name="entry_due_none">Payment due: add a date</string>

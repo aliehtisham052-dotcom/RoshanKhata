@@ -1401,7 +1401,7 @@
     <string name="promo_window">Kis arse ka</string>
     <string name="promo_last_bought">aakhri baar %1$s</string>
     <string name="promo_send">Paigham</string>
-    <string name="promo_message">Assalam o Alaikum %1$s. %2$s dobara dukaan par maujood hai. Zaroorat ho to bata dijiyega.</string>
+    <string name="promo_message">Salaam %1$s. %2$s dobara dukaan par maujood hai. Zaroorat ho to bata dijiyega.</string>
     <string name="no_promo_customers">Us arse mein kisi ne ye nahi khareeda.</string>
     <string name="window_same_season">Pichle saal isi mausam</string>
     <string name="window_last_year">Pichle 12 mahine</string>
@@ -3082,8 +3082,10 @@
     <string name="biz_card_ex_phone">Maslan 0300 1234567</string>
     <string name="biz_card_ex_email">Maslan shop@gmail.com</string>
     <string name="biz_card_ex_web">Maslan website ya Facebook page</string>
-    <string name="biz_card_ex_qr">Maslan Assalam o alaikum, aap ka card dekha</string>
+    <string name="biz_card_ex_qr">Maslan Salaam, aap ka card dekha</string>
     <string name="biz_card_send_picture">Card tasveer ki shakal mein bhejein</string>
+    <string name="biz_card_send_moving">Chalte card ki shakal mein bhejein</string>
+    <string name="biz_card_moving_failed">Is phone par chalta card nahi ban saka. Aap tasveer phir bhi bhej sakte hain.</string>
     <string name="biz_card_save_picture">Card tasveer ke taur par mehfooz karein</string>
     <string name="drive_signed_in_ok">✓ %1$s se sign in ho gaya. Ab aap ka khata aap ki Google Drive mein backup ho sakta hai.</string>
     <string name="entry_due_none">Adaigi ki tareekh: shamil karein</string>
