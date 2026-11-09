@@ -1,7 +1,7 @@
 package com.innovation313.roshankhata.data
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.Test
+import org.junit.Assert.assertEquals
 
 class CardQrMessageTest {
     private val neutral = "Hello, I saw your card"
