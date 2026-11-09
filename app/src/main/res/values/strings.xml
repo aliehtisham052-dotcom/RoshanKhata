@@ -32,11 +32,16 @@
     <string name="coach_desc_bizcard">Make a shareable card for your shop in seconds, in three styles.</string>
     <string name="coach_title_invoice">Invoice</string>
     <string name="coach_desc_invoice">Make professional invoices for your customers — pick from ready designs with your name, stamp and QR.</string>
-    <!-- Waris ki Chaabi: heir access (4 Nov 2026) -->
-    <string name="waris_title">Waris ki Chaabi</string>
+    <!-- Waris (Heir Access, 4 Nov 2026; the English name since 9 Nov 2026) -->
+    <string name="waris_title">Heir Access</string>
     <string name="waris_intro">If you are ever too ill to run the shop, or after your time, your family should not lose who owes how much. Name a son, daughter or wife as your heir. They can only ask: you are told at once and can refuse. Only if you do not refuse within the wait you chose do they get a read-only copy of your book.</string>
+    <string name="waris_step1">Name an heir and give them their card.</string>
+    <string name="waris_step2">They can only ask. You are told at once and can refuse.</string>
+    <string name="waris_step3">Only if you do not refuse within the wait do they get a read-only copy.</string>
+    <string name="waris_caution">Whoever holds the card can ask. Give it only to someone you trust.</string>
+    <string name="waris_heir_to_note">If someone named you their heir, scan the card they gave you.</string>
     <string name="waris_my_heirs">My heirs</string>
-    <string name="waris_off_note">Waris ki Chaabi is off. Your book stays only on this phone and in your own backups.</string>
+    <string name="waris_off_note">Heir Access is off. Your book stays only on this phone and in your own backups.</string>
     <string name="waris_turn_on">Turn on</string>
     <string name="waris_turn_on_body">A locked copy of your book will be kept on Innovation 313\'s relays on the internet. Nobody there can open it: only the phone of an heir you name, and only after the wait. Your PINs are never in it.</string>
     <string name="waris_add_heir">Add an heir</string>
@@ -53,10 +58,10 @@
     <string name="waris_copy_line">Last copy: %1$s · %2$s</string>
     <string name="waris_copy_none">No copy sent yet.</string>
     <string name="waris_copy_sent">The copy is up to date.</string>
-    <string name="waris_too_big">Your book is too big for a Waris copy (over 8 MB even when packed). Please tell us through Help.</string>
+    <string name="waris_too_big">Your book is too big for an Heir Access copy (over 8 MB even when packed). Please tell us through Help.</string>
     <string name="waris_remove_heir">Remove heir</string>
     <string name="waris_remove_heir_body">%1$s will no longer be able to ask for your book. A new lock is made for your other heirs.</string>
-    <string name="waris_turn_off">Turn off Waris ki Chaabi</string>
+    <string name="waris_turn_off">Turn off Heir Access</string>
     <string name="waris_turn_off_body">The locked copy and every heir\'s key are removed from the relays. Your heirs will not be able to ask any more.</string>
     <string name="waris_state_waiting_scan">Waiting for their code to be scanned</string>
     <string name="waris_state_linked">Linked</string>
@@ -76,7 +81,7 @@
     <string name="waris_heir_to">Books I am heir to</string>
     <string name="waris_links_empty">You are not an heir to any book on this phone yet.</string>
     <string name="waris_scan_owner">Scan owner\'s code</string>
-    <string name="waris_not_code">This is not a Waris ki Chaabi code.</string>
+    <string name="waris_not_code">This is not an Heir Access code.</string>
     <string name="waris_my_code_title">Let the owner scan this</string>
     <string name="waris_my_code_steps">The owner taps the scan button under your name on his phone and scans this code. Then you are linked to %1$s.</string>
     <string name="waris_show_my_code">Show my code</string>
@@ -93,14 +98,14 @@
     <string name="waris_open_body">This phone will show the book of %1$s, read-only, until you stop it from %2$s. Your own book stays safe on this phone.</string>
     <string name="waris_open_failed">The book could not be opened now. Please try again later.</string>
     <string name="waris_not_open_yet">The book is not open yet.</string>
-    <string name="waris_save_card">Save Waris card</string>
-    <string name="waris_card_heading">Waris card · %1$s</string>
+    <string name="waris_save_card">Save heir card</string>
+    <string name="waris_card_heading">Heir card · %1$s</string>
     <string name="waris_card_steps">Keep this card like cash or a cheque book: whoever holds it, or a photo of it, can ask for the book in your name and, if the owner does not refuse in time, open it. If this phone is lost, scan it from a new phone: %1$s → %2$s → Scan owner\'s code.</string>
     <string name="waris_card_read">You are linked again to %1$s.</string>
     <string name="waris_forget">Forget this book</string>
-    <string name="waris_forget_body">You will not be able to ask for the book of %1$s from this phone. Keep your Waris card if you may need it.</string>
+    <string name="waris_forget_body">You will not be able to ask for the book of %1$s from this phone. Keep your heir card if you may need it.</string>
     <string name="waris_heir_copy_banner">Heir\'s copy of %1$s · read-only · tap to leave</string>
-    <string name="waris_viewer_note">This phone is showing a read-only copy. To use Waris ki Chaabi, first stop the read-only copy.</string>
+    <string name="waris_viewer_note">This phone is showing a read-only copy. To use Heir Access, first stop the read-only copy.</string>
     <string name="waris_offline">Could not reach the relays. Check the internet and try again; the app will also try again by itself.</string>
     <string name="waris_partly">Done, but one relay could not be reached. The app will try again by itself.</string>
     <string name="waris_halted">The relays are paused for now. Please try again later.</string>
@@ -123,7 +128,7 @@
     </plurals>
     <string name="waris_state_open_now">Asked, and the wait is over: they can open the book now. Refuse to close it.</string>
     <string name="waris_asked_open_body">%1$s asked to open your book and the wait is over: they can open it now. Refuse to close it again.</string>
-    <string name="waris_relay_refuses">A relay no longer accepts this phone\'s key for your locked copy: someone else may hold it there. If this does not go away, turn Waris ki Chaabi off and on again and add your heirs again.</string>
+    <string name="waris_relay_refuses">A relay no longer accepts this phone\'s key for your locked copy: someone else may hold it there. If this does not go away, turn Heir Access off and on again and add your heirs again.</string>
     <string name="waris_busy_today">A relay is taking nothing more today. Please try again tomorrow; the app will also try again by itself.</string>
     <string name="waris_refusal_partial">Your refusal has not reached every relay yet. The app keeps trying by itself; keep the internet on.</string>
     <string name="coach_title_products">Products &amp; Stock</string>

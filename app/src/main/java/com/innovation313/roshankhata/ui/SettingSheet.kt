@@ -37,7 +37,6 @@ object SettingSheet {
     ): BottomSheetDialog {
         val sheet = BottomSheetDialog(activity)
         val view = LayoutInflater.from(activity).inflate(R.layout.sheet_setting, null)
-        val dp = activity.resources.displayMetrics.density
 
         view.findViewById<ImageView>(R.id.ivSettingIcon).setImageResource(icon)
         view.findViewById<FrameLayout>(R.id.settingTile).backgroundTintList =
@@ -67,15 +66,14 @@ object SettingSheet {
             }
         }
 
-        val action = view.findViewById<MaterialButton>(R.id.btnSettingAction)
+        // Turning off (or removing protection) is its own outlined red button, turning on the filled green one: two
+        // real buttons, one shown, never one restyled at run time (its fill and shadow stayed behind the words).
+        val filled = view.findViewById<MaterialButton>(R.id.btnSettingAction)
+        val outlined = view.findViewById<MaterialButton>(R.id.btnSettingActionOff)
+        val action = if (danger) outlined else filled
+        filled.visibility = if (danger) View.GONE else View.VISIBLE
+        outlined.visibility = if (danger) View.VISIBLE else View.GONE
         action.text = actionLabel
-        if (danger) {
-            val red = ContextCompat.getColor(activity, R.color.red_gave_text)
-            action.backgroundTintList = ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
-            action.strokeColor = ColorStateList.valueOf(red)
-            action.strokeWidth = (2 * dp).toInt()
-            action.setTextColor(red)
-        }
         action.setOnClickListener {
             sheet.dismiss()
             onAction()

@@ -35,6 +35,11 @@
     <!-- Waris ki Chaabi: heir access (4 Nov 2026) -->
     <string name="waris_title">Kunci Ahli Waris</string>
     <string name="waris_intro">Jika suatu saat Anda terlalu sakit untuk menjalankan toko, atau setelah Anda tiada, keluarga Anda jangan sampai kehilangan catatan siapa berutang berapa. Tunjuk anak atau istri Anda sebagai ahli waris. Mereka hanya bisa meminta: Anda langsung diberi tahu dan bisa menolak. Hanya jika Anda tidak menolak dalam masa tunggu yang Anda pilih, mereka mendapat salinan buku Anda yang hanya bisa dibaca.</string>
+    <string name="waris_step1">Tunjuk seorang ahli waris dan berikan kartunya.</string>
+    <string name="waris_step2">Ia hanya bisa meminta. Anda langsung diberi tahu dan bisa menolak.</string>
+    <string name="waris_step3">Hanya jika Anda tidak menolak dalam masa tunggu, ia mendapat salinan yang hanya bisa dibaca.</string>
+    <string name="waris_caution">Siapa pun yang memegang kartu bisa meminta. Berikan hanya kepada orang yang Anda percaya.</string>
+    <string name="waris_heir_to_note">Jika seseorang menunjuk Anda sebagai ahli waris, pindai kartu yang ia berikan.</string>
     <string name="waris_my_heirs">Ahli waris saya</string>
     <string name="waris_off_note">Kunci Ahli Waris mati. Buku Anda hanya ada di ponsel ini dan di cadangan Anda sendiri.</string>
     <string name="waris_turn_on">Nyalakan</string>

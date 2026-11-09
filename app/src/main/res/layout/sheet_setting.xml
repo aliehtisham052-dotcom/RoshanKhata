@@ -104,18 +104,17 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
+        <!-- Two real buttons; the sheet shows one (SettingSheet): filled green to turn on, outlined red to turn off. -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSettingAction"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/BackupPrimaryButton"
+            android:layout_marginTop="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSettingActionOff"
+            style="@style/SettingDangerButton"
             android:layout_marginTop="10dp"
-            android:minHeight="52dp"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="@color/brand_green"
-            app:cornerRadius="14dp" />
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSettingClose"
@@ -125,6 +124,7 @@
             android:layout_marginTop="2dp"
             android:minHeight="48dp"
             android:text="@string/close"
+            android:letterSpacing="0"
             android:textAllCaps="false"
             android:textColor="@color/ink_soft"
             android:textSize="15sp" />

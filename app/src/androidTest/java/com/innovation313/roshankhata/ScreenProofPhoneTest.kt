@@ -230,6 +230,25 @@ class ScreenProofPhoneTest(
         } finally {
             setup.edit().putBoolean("done", true).commit()
         }
+        // The setting sheet in both states (9 Nov 2026): On with its red outlined turn-off button, Off with the filled
+        // green turn-on one - the owner's photo showed a grey fill and a bar behind "Turn off".
+        for (on in listOf(true, false)) {
+            shoot(if (on) "44-setting-sheet-on" else "45-setting-sheet-off", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
+                com.innovation313.roshankhata.ui.SettingSheet.show(
+                    a,
+                    icon = R.drawable.ic_menu_radar,
+                    tile = R.color.tile_followup_bg,
+                    title = a.getString(R.string.radar_title),
+                    on = on,
+                    summary = a.getString(R.string.radar_switch_help),
+                    more = a.getString(R.string.radar_private),
+                    actionLabel = a.getString(if (on) R.string.radar_turn_off else R.string.radar_turn_on),
+                    danger = on
+                ) {}
+            }
+        }
+        // Heir Access (9 Nov 2026): the three steps, the caution and "Books I am heir to".
+        shoot("46-heir-access", open(WarisActivity::class.java), settleMs = 2000)
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)
             roads.visibility = android.view.View.VISIBLE

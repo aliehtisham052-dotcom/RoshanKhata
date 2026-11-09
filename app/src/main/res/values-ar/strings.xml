@@ -31,6 +31,11 @@
     <!-- Waris ki Chaabi: heir access (4 Nov 2026) -->
     <string name="waris_title">مفتاح الوارث</string>
     <string name="waris_intro">إن مرضت يومًا مرضًا يمنعك من إدارة المحل، أو بعد عمرك، فلا ينبغي أن يضيع على أهلك حساب من عليه كم. اجعل ابنًا أو ابنة أو زوجة وارثًا لك. لا يستطيع الوارث إلا أن يطلب: تُبلَّغ فورًا ويمكنك الرفض. ولا يحصل على نسخة للقراءة فقط من دفترك إلا إذا لم ترفض خلال مدة الانتظار التي اخترتها.</string>
+    <string name="waris_step1">سمِّ وارثًا وسلّمه بطاقته.</string>
+    <string name="waris_step2">لا يستطيع إلا أن يطلب. تُبلَّغ فورًا ويمكنك الرفض.</string>
+    <string name="waris_step3">إذا لم ترفض خلال مدة الانتظار فقط، يحصل على نسخة للقراءة فقط.</string>
+    <string name="waris_caution">من يحمل البطاقة يستطيع الطلب. لا تعطها إلا لمن تثق به.</string>
+    <string name="waris_heir_to_note">إذا سمّاك أحدهم وارثًا له، فامسح البطاقة التي أعطاك إياها.</string>
     <string name="waris_my_heirs">ورثتي</string>
     <string name="waris_off_note">مفتاح الوارث متوقف. دفترك موجود على هذا الهاتف وفي نسخك الاحتياطية فقط.</string>
     <string name="waris_turn_on">تشغيل</string>

@@ -31,6 +31,11 @@
     <!-- Waris ki Chaabi: heir access (4 Nov 2026) -->
     <string name="waris_title">Waris ki Chaabi</string>
     <string name="waris_intro">Agar kabhi aap itne beemar hon ke dukaan na chala sakein, ya aap ke baad, to aap ke ghar walon se yeh hisaab gum na ho ke kis ne kitna dena hai. Kisi bete, beti ya biwi ko apna waris banayein. Woh sirf darkhwast kar sakte hain: aap ko foran bataya jata hai aur aap mana kar sakte hain. Sirf tab, jab aap apne chune hue waqt ke andar mana na karein, unhein aap ki khata ki sirf parhne wali copy milti hai.</string>
+    <string name="waris_step1">Kisi ko waris banayein aur use us ka card dein.</string>
+    <string name="waris_step2">Woh sirf darkhwast kar sakta hai. Aap ko foran bataya jata hai aur aap mana kar sakte hain.</string>
+    <string name="waris_step3">Agar aap intezar ke waqt mein mana na karein, tab hi use sirf parhne wali copy milti hai.</string>
+    <string name="waris_caution">Jis ke paas card ho woh darkhwast kar sakta hai. Use sirf us ko dein jis par aap ko bharosa ho.</string>
+    <string name="waris_heir_to_note">Agar kisi ne aap ko apna waris banaya hai to us ka diya hua card scan karein.</string>
     <string name="waris_my_heirs">Mere waris</string>
     <string name="waris_off_note">Waris ki Chaabi band hai. Aap ki khata sirf is phone aur aap ke apne backup mein hai.</string>
     <string name="waris_turn_on">Chalu karein</string>
