@@ -30,6 +30,7 @@ class CardDesignsTest {
         type = if (rtl) "کھاد اور بیج" else "Fertiliser and seeds",
         owner = if (rtl) "احمد علی" else "Ahmed Ali",
         phone = "0300 0000000",
+        whatsapp = "0300 0000000",
         address = if (rtl) "مین بازار" else "Main Bazaar, Sample Town",
         footer = "Roshan Khata",
         email = "shop@example.com",
@@ -55,7 +56,7 @@ class CardDesignsTest {
     private fun card(lang: CardLanguage): CardTemplates.CardData {
         val (name, type, owner, address, tagline) = shops.getValue(lang)
         return CardTemplates.CardData(
-            name = name, type = type, owner = owner, phone = "0300 0000000", address = address,
+            name = name, type = type, owner = owner, phone = "0300 0000000", whatsapp = "0300 0000000", address = address,
             footer = "Roshan Khata", email = "shop@example.com", tagline = tagline,
             qrMessage = "Assalam o Alaikum", rtl = lang.rtl, nastaliq = lang.nastaliq
         )

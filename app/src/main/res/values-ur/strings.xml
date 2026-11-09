@@ -2163,7 +2163,7 @@
     <string name="biz_tpl_furniture">فرنیچر</string>
     <string name="biz_tpl_salon">سیلون</string>
     <string name="biz_tpl_solar">سولر</string>
-    <string name="biz_card_qr_message_default">السلام علیکم</string>
+    <string name="biz_card_qr_message_default">سلام، میں نے آپ کا کارڈ دیکھا</string>
     <string name="vocab_suggested">آپ کی دکان کے لیے تجویز</string>
     <string name="vocab_item_hint">شے (%1$s…)</string>
     <string name="vocab_unit_hint">اکائی (%1$s…)</string>

@@ -2164,7 +2164,7 @@
     <string name="biz_tpl_furniture">Mebel</string>
     <string name="biz_tpl_salon">Salon</string>
     <string name="biz_tpl_solar">Surya</string>
-    <string name="biz_card_qr_message_default">Assalamualaikum, saya melihat kartu nama Anda</string>
+    <string name="biz_card_qr_message_default">Halo, saya melihat kartu Anda</string>
     <string name="vocab_suggested">Disarankan untuk toko Anda</string>
     <string name="vocab_item_hint">Barang (%1$s…)</string>
     <string name="vocab_unit_hint">Satuan (%1$s…)</string>

@@ -2211,7 +2211,7 @@
     <string name="biz_tpl_furniture">फ़र्नीचर</string>
     <string name="biz_tpl_salon">सैलून</string>
     <string name="biz_tpl_solar">सोलर</string>
-    <string name="biz_card_qr_message_default">नमस्ते, मैंने आपका कार्ड देखा</string>
+    <string name="biz_card_qr_message_default">हैलो, मैंने आपका कार्ड देखा</string>
     <string name="vocab_suggested">आपकी दुकान के लिए सुझाव</string>
     <string name="vocab_item_hint">आइटम (%1$s…)</string>
     <string name="vocab_unit_hint">इकाई (%1$s…)</string>

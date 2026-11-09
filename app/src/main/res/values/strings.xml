@@ -2216,7 +2216,7 @@
     <string name="biz_tpl_furniture">Furniture</string>
     <string name="biz_tpl_salon">Salon</string>
     <string name="biz_tpl_solar">Solar</string>
-    <string name="biz_card_qr_message_default">Assalam o Alaikum, I saw your card</string>
+    <string name="biz_card_qr_message_default">Hello, I saw your card</string>
 
     <!-- The trade vocabulary (9 Oct 2026): what each kind of shop calls its goods, in
          the app's own language. Hints, unit lists, product types and a new book's first

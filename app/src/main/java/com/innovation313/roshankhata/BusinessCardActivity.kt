@@ -249,7 +249,7 @@ class BusinessCardActivity : BaseActivity() {
         etAddress.setText(prefs.getString(k(KEY_ADDRESS), "")?.takeIf { it.isNotBlank() } ?: BusinessProfile.businessAddress(this).orEmpty())
         etTagline.setText(prefs.getString(k(KEY_TAGLINE), ""))
         // Pre-filled until the owner changes it; an emptied box stays empty.
-        etQrMessage.setText(prefs.getString(k(KEY_QR_MESSAGE), cardContext().getString(R.string.biz_card_qr_message_default)))
+        etQrMessage.setText(com.innovation313.roshankhata.data.CardQrMessage.shown(prefs.getString(k(KEY_QR_MESSAGE), null), cardContext().getString(R.string.biz_card_qr_message_default)))
         applyCardLanguage()
     }
 

@@ -151,7 +151,7 @@ fun BusinessCardPane(
     var owner by remember(lang) { mutableStateOf(prefs.get(k("owner"))) }
     var address by remember(lang) { mutableStateOf(prefs.get(k("address"), if (lang == CardLanguage.ENGLISH) settings.businessAddress().orEmpty() else "")) }
     var tagline by remember(lang) { mutableStateOf(prefs.get(k("tagline"))) }
-    var qrMessage by remember(lang) { mutableStateOf(prefs.get(k("qr"), cardWords.text(W.biz_card_qr_message_default))) }
+    var qrMessage by remember(lang) { mutableStateOf(com.innovation313.roshankhata.data.CardQrMessage.shown(prefs.get(k("qr"), "\u0000").takeIf { it != "\u0000" }, cardWords.text(W.biz_card_qr_message_default))) }
     var phone by remember { mutableStateOf(prefs.get("phone", settings.businessPhone().orEmpty())) }
     var whatsapp by remember { mutableStateOf(prefs.get("whatsapp")) }
     var waSame by remember { mutableStateOf(prefs.get("wa_same", "true") == "true") }

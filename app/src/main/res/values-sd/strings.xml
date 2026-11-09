@@ -2191,7 +2191,7 @@
     <string name="biz_tpl_furniture">فرنيچر</string>
     <string name="biz_tpl_salon">سيلون</string>
     <string name="biz_tpl_solar">سولر</string>
-    <string name="biz_card_qr_message_default">السلام عليڪم</string>
+    <string name="biz_card_qr_message_default">هيلو، مون توهان جو ڪارڊ ڏٺو</string>
     <string name="vocab_suggested">توهان جي دڪان لاءِ تجويز</string>
     <string name="vocab_item_hint">شيءِ (%1$s…)</string>
     <string name="vocab_unit_hint">يونٽ (%1$s…)</string>

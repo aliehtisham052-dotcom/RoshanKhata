@@ -2351,7 +2351,7 @@
     <string name="biz_tpl_furniture">أثاث</string>
     <string name="biz_tpl_salon">صالون</string>
     <string name="biz_tpl_solar">طاقة شمسية</string>
-    <string name="biz_card_qr_message_default">السلام عليكم</string>
+    <string name="biz_card_qr_message_default">مرحبًا، رأيت بطاقتك</string>
     <string name="vocab_suggested">مقترح لمتجرك</string>
     <string name="vocab_item_hint">الصنف (%1$s…)</string>
     <string name="vocab_unit_hint">الوحدة (%1$s…)</string>

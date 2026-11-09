@@ -467,7 +467,7 @@ object CardTemplates {
         when (ico) {
             Ico.PHONE -> handset(c, cx, cy, s, colour)
             Ico.WHATSAPP -> {
-                c.drawCircle(cx, cy - s * 0.04f, s * 0.44f, line)
+                c.drawCircle(cx, cy - s * 0.04f, s * 0.44f, stroke(colour, s * 0.13f))
                 c.drawPath(path {
                     moveTo(cx - s * 0.36f, cy + s * 0.24f)
                     lineTo(cx - s * 0.48f, cy + s * 0.5f)
@@ -568,9 +568,11 @@ object CardTemplates {
             // WhatsApp mark after it (8 Nov 2026 — the two marks used to sit glued together before the number).
             val both = ico == Ico.PHONE_WA
             val iconW = size * 1.15f
-            val waGap = size * 0.4f
-            val waSize = size * 0.8f
-            val waW = if (both) waGap + waSize * 1.1f else 0f
+            val waGap = size * 0.5f
+            // 9 Nov 2026: at 0.8 of the text size the mark was a 19 px ring that read as "©"; now the handset mark's
+            // size, a bubble about as tall as the digits, so the tail and the handset inside it can be seen.
+            val waSize = size * 1.1f
+            val waW = if (both) waGap + waSize else 0f
             val room = max - iconW - waW
             val p = paint(size, text, bold = bold, align = align)
             val ix = if (right) x - size * 0.5f else x + size * 0.5f

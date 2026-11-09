@@ -2211,7 +2211,7 @@
     <string name="biz_tpl_furniture">আসবাব</string>
     <string name="biz_tpl_salon">সেলুন</string>
     <string name="biz_tpl_solar">সোলার</string>
-    <string name="biz_card_qr_message_default">আসসালামু আলাইকুম, আপনার কার্ড দেখেছি</string>
+    <string name="biz_card_qr_message_default">হ্যালো, আমি আপনার কার্ড দেখেছি</string>
     <string name="vocab_suggested">আপনার দোকানের জন্য প্রস্তাবিত</string>
     <string name="vocab_item_hint">পণ্য (%1$s…)</string>
     <string name="vocab_unit_hint">একক (%1$s…)</string>

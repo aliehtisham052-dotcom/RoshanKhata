@@ -2191,7 +2191,7 @@
     <string name="biz_tpl_furniture">مبلمان</string>
     <string name="biz_tpl_salon">سالن</string>
     <string name="biz_tpl_solar">خورشیدی</string>
-    <string name="biz_card_qr_message_default">سلام</string>
+    <string name="biz_card_qr_message_default">سلام، کارت شما را دیدم</string>
     <string name="vocab_suggested">پیشنهاد برای فروشگاه شما</string>
     <string name="vocab_item_hint">کالا (%1$s…)</string>
     <string name="vocab_unit_hint">واحد (%1$s…)</string>

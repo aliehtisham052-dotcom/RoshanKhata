@@ -2163,7 +2163,7 @@
     <string name="biz_tpl_furniture">Furniture</string>
     <string name="biz_tpl_salon">Salon</string>
     <string name="biz_tpl_solar">Solar</string>
-    <string name="biz_card_qr_message_default">Salam, aap ka card dekh kar aaya hoon</string>
+    <string name="biz_card_qr_message_default">Salaam, maine aap ka card dekha</string>
     <string name="vocab_suggested">Aap ki dukaan ke liye tajweez</string>
     <string name="vocab_item_hint">Cheez (%1$s…)</string>
     <string name="vocab_unit_hint">Unit (%1$s…)</string>

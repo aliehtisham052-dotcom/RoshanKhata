@@ -66,3 +66,28 @@ enum class CardLanguage(val code: String, val native: String, val rtl: Boolean, 
         }
     }
 }
+
+/**
+ * The card's "message when the QR is scanned" (9 Nov 2026, the owner: the default must not be
+ * a religion's greeting). The old defaults were saved into the card's settings the first time a
+ * card was saved, so a stored message that is exactly one of them was never typed by the owner:
+ * it reads as unset and shows the new neutral default. Anything else stays as typed.
+ */
+object CardQrMessage {
+    private val oldDefaults = setOf(
+        "Assalam o Alaikum, I saw your card",
+        "السلام علیکم",
+        "Salam, aap ka card dekh kar aaya hoon",
+        "السلام عليڪم",
+        "السلام عليكم",
+        "سلام",
+        "नमस्ते, मैंने आपका कार्ड देखा",
+        "আসসালামু আলাইকুম, আপনার কার্ড দেখেছি",
+        "Assalamualaikum, saya melihat kartu nama Anda",
+        "Assalam o Alaikum"
+    )
+
+    /** What the box shows: the saved text, or [default] when nothing was saved or only an old default was. */
+    fun shown(saved: String?, default: String): String =
+        if (saved == null || saved.trim() in oldDefaults) default else saved
+}
