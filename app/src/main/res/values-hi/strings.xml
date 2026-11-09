@@ -3147,6 +3147,13 @@
     <string name="auto_folder_none">अभी कोई फ़ोल्डर नहीं चुना गया।</string>
     <string name="auto_folder_last">वहाँ आखिरी कॉपी: %1$s</string>
     <string name="auto_folder_missing">यह फ़ोल्डर अभी उपलब्ध नहीं है। USB लगाएँ, या कोई और फ़ोल्डर चुनें।</string>
+    <string name="cloud_offer_title">रोज़ की कॉपियाँ क्लाउड में</string>
+    <string name="cloud_offer_body_onedrive">अपनी रोज़ की कॉपियाँ OneDrive में भी रखें। यह मुफ़्त है, आपके अपने क्लाउड में। अगर यह कंप्यूटर ख़राब हो जाए तो आपका खाता सुरक्षित रहेगा।</string>
+    <string name="cloud_offer_body_gdrive">अपनी रोज़ की कॉपियाँ Google Drive में भी रखें। यह मुफ़्त है, आपके अपने क्लाउड में। अगर यह कंप्यूटर ख़राब हो जाए तो आपका खाता सुरक्षित रहेगा।</string>
+    <string name="cloud_offer_yes">कॉपियाँ वहाँ रखें</string>
+    <string name="cloud_offer_no">अभी नहीं</string>
+    <string name="cloud_offer_done">हो गया। आपकी रोज़ की कॉपियाँ इस फ़ोल्डर में भी रखी जाएँगी:\n%1$s</string>
+    <string name="cloud_offer_failed">कॉपी क्लाउड फ़ोल्डर में नहीं लिखी जा सकी। आप बाद में रोज़ की कॉपियाँ में फ़ोल्डर चुन सकते हैं।</string>
     <string name="import_csv">ग्राहक इंपोर्ट करें</string>
     <string name="import_csv_skipped">पहले से खाते में, जैसे थे वैसे छोड़े गए: %1$d</string>
     <string name="import_csv_unreadable">बकाया जो पढ़ा न जा सका, 0 के रूप में आएगा — फ़ाइल देखें: %1$d</string>

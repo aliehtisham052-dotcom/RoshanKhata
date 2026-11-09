@@ -3147,6 +3147,13 @@
     <string name="auto_folder_none">এখনও কোনো ফোল্ডার বেছে নেওয়া হয়নি।</string>
     <string name="auto_folder_last">সেখানে শেষ কপি: %1$s</string>
     <string name="auto_folder_missing">এই ফোল্ডারে এখন পৌঁছানো যাচ্ছে না। USB লাগান, অথবা অন্য ফোল্ডার বেছে নিন।</string>
+    <string name="cloud_offer_title">দৈনিক কপি ক্লাউডে</string>
+    <string name="cloud_offer_body_onedrive">আপনার দৈনিক কপি OneDrive-এও রাখুন। এটি বিনামূল্যে, আপনার নিজের ক্লাউডে। এই কম্পিউটার নষ্ট হলেও আপনার খাতা নিরাপদ থাকবে।</string>
+    <string name="cloud_offer_body_gdrive">আপনার দৈনিক কপি Google Drive-এও রাখুন। এটি বিনামূল্যে, আপনার নিজের ক্লাউডে। এই কম্পিউটার নষ্ট হলেও আপনার খাতা নিরাপদ থাকবে।</string>
+    <string name="cloud_offer_yes">সেখানে কপি রাখুন</string>
+    <string name="cloud_offer_no">এখন নয়</string>
+    <string name="cloud_offer_done">হয়ে গেছে। আপনার দৈনিক কপি এই ফোল্ডারেও রাখা হবে:\n%1$s</string>
+    <string name="cloud_offer_failed">ক্লাউড ফোল্ডারে কপি লেখা যায়নি। পরে দৈনিক কপি থেকে ফোল্ডার বেছে নিতে পারেন।</string>
     <string name="import_csv">গ্রাহক ইমপোর্ট করুন</string>
     <string name="import_csv_skipped">আগে থেকেই খাতায় আছে, যেমন ছিল তেমন রাখা হলো: %1$d</string>
     <string name="import_csv_unreadable">যে বাকি পড়া গেল না, 0 হিসেবে আসবে — ফাইলটি দেখুন: %1$d</string>

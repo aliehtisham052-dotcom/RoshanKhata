@@ -3127,6 +3127,13 @@
     <string name="auto_folder_none">اڃا ڪو فولڊر نه چونڊيو ويو آهي.</string>
     <string name="auto_folder_last">اتي آخري ڪاپي: %1$s</string>
     <string name="auto_folder_missing">هي فولڊر هن وقت پهچ ۾ ناهي. يو ايس بي لڳايو، يا ٻيو فولڊر چونڊيو.</string>
+    <string name="cloud_offer_title">روزاني ڪاپيون ڪلائوڊ ۾</string>
+    <string name="cloud_offer_body_onedrive">پنهنجيون روزانيون ڪاپيون OneDrive ۾ به رکو. اهو مفت آهي، توهانجي پنهنجي ڪلائوڊ ۾. جيڪڏهن هي ڪمپيوٽر خراب ٿئي ته توهانجو کاتو محفوظ رهندو.</string>
+    <string name="cloud_offer_body_gdrive">پنهنجيون روزانيون ڪاپيون Google Drive ۾ به رکو. اهو مفت آهي، توهانجي پنهنجي ڪلائوڊ ۾. جيڪڏهن هي ڪمپيوٽر خراب ٿئي ته توهانجو کاتو محفوظ رهندو.</string>
+    <string name="cloud_offer_yes">ڪاپيون اتي رکو</string>
+    <string name="cloud_offer_no">هينئر نه</string>
+    <string name="cloud_offer_done">ٿي ويو. توهانجيون روزانيون ڪاپيون هن فولڊر ۾ به رکيون وينديون:\n%1$s</string>
+    <string name="cloud_offer_failed">ڪاپي ڪلائوڊ فولڊر ۾ لکي نه سگهي. توهان بعد ۾ روزانيون ڪاپيون ۾ فولڊر چونڊي سگهو ٿا.</string>
     <string name="import_csv">گراهڪ امپورٽ ڪريو</string>
     <string name="import_csv_skipped">اڳ ۾ ئي کاتي ۾، جيئن جو تيئن ڇڏيا ويا: %1$d</string>
     <string name="import_csv_unreadable">بقايا جيڪا پڙهي نه سگهجي، 0 طور ايندي — فائل ڏسو: %1$d</string>

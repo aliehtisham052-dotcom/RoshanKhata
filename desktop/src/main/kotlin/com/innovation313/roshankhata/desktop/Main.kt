@@ -2395,6 +2395,53 @@ private fun Book(
             TourWindowContent { appPrefs.setTourSeen(); touring = false }
         }
     }
+    // One-time offer (9 Nov 2026, the owner's phone-test round, point 7): with no outside folder set and OneDrive
+    // (else Google Drive for Desktop) on this computer, ask once whether the daily copies may also go there. Shown on
+    // Home after the trade, name and tour questions; either answer is remembered per computer (app.properties).
+    var cloudOffer by remember { mutableStateOf<CloudFolder.Found?>(null) }
+    var cloudTold by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(outsideFolder, choosingTrade, namingShop, touring) {
+        if (cloudOffer != null || outsideFolder != null || choosingTrade || namingShop || touring || appPrefs.cloudOfferAnswered()) return@LaunchedEffect
+        cloudOffer = withContext(Dispatchers.IO) { runCatching { CloudFolder.findHere() }.getOrNull() }
+    }
+    val offer = cloudOffer
+    if (offer != null && outsideFolder == null && section == Section.HOME && !choosingTrade && !namingShop && !touring) {
+        val notNow = { appPrefs.setCloudOfferAnswered(); cloudOffer = null }
+        val keepThere = {
+            appPrefs.setCloudOfferAnswered()
+            cloudOffer = null
+            scope.launch {
+                val folder = offer.target()
+                val ok = withContext(Dispatchers.IO) { runCatching { folder.mkdirs(); folder.isDirectory }.getOrDefault(false) } &&
+                    runCatching { DailyCopies.makeToday(dao, settings, DailyCopies.outside(folder, activeBusiness), refresh = true) }.getOrNull() != null
+                if (ok) {
+                    onBackupFolder(folder)
+                    cloudTold = words.text(W.cloud_offer_done, folder.absolutePath)
+                } else {
+                    cloudTold = words.text(W.cloud_offer_failed)
+                }
+            }
+            Unit
+        }
+        val offerTitle = word(W.cloud_offer_title)
+        AppDialog(
+            onCloseRequest = { notNow() },
+            onPreviewKeyEvent = escCloses { notNow() },
+            title = offerTitle,
+            state = rememberDialogState(width = fitW(520.dp), height = fitH(300.dp))
+        ) {
+            DialogFrame(offerTitle, onClose = { notNow() }, footer = {
+                FluentButton(word(W.cloud_offer_no), { notNow() }, kind = ButtonKind.STANDARD)
+                FluentButton(word(W.cloud_offer_yes), { keepThere() }, kind = ButtonKind.ACCENT)
+            }) {
+                Text(
+                    word(if (offer.kind == CloudFolder.Kind.ONEDRIVE) W.cloud_offer_body_onedrive else W.cloud_offer_body_gdrive),
+                    color = c.ink, fontSize = 14.sp
+                )
+            }
+        }
+    }
+    cloudTold?.let { TellDialog(words.text(W.cloud_offer_title), it, { cloudTold = null }, height = 300) }
     // Every PDF / Statement / Print button opens its sheet here first (1.8.4).
     PreviewHost()
     if (lockSettings) {

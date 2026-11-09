@@ -3097,6 +3097,13 @@
     <string name="auto_folder_none">Belum ada folder yang dipilih.</string>
     <string name="auto_folder_last">Salinan terakhir di sana: %1$s</string>
     <string name="auto_folder_missing">Folder itu tidak dapat dijangkau sekarang. Pasang flashdisk USB, atau pilih folder lain.</string>
+    <string name="cloud_offer_title">Salinan harian di cloud</string>
+    <string name="cloud_offer_body_onedrive">Simpan juga salinan harian Anda di OneDrive. Gratis, di cloud milik Anda sendiri. Jika komputer ini rusak, buku Anda tetap aman.</string>
+    <string name="cloud_offer_body_gdrive">Simpan juga salinan harian Anda di Google Drive. Gratis, di cloud milik Anda sendiri. Jika komputer ini rusak, buku Anda tetap aman.</string>
+    <string name="cloud_offer_yes">Simpan salinan di sana</string>
+    <string name="cloud_offer_no">Nanti saja</string>
+    <string name="cloud_offer_done">Selesai. Salinan harian Anda juga akan disimpan di folder ini:\n%1$s</string>
+    <string name="cloud_offer_failed">Salinan tidak dapat ditulis ke folder cloud. Anda dapat memilih folder nanti di Salinan harian.</string>
     <string name="import_csv">Impor pelanggan</string>
     <string name="import_csv_skipped">Sudah ada di buku kas, dibiarkan apa adanya: %1$d</string>
     <string name="import_csv_unreadable">Saldo yang tidak terbaca, masuk sebagai 0 — periksa berkasnya: %1$d</string>

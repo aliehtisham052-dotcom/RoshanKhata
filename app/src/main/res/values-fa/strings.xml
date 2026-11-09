@@ -3127,6 +3127,13 @@
     <string name="auto_folder_none">هنوز پوشه‌ای انتخاب نشده است.</string>
     <string name="auto_folder_last">آخرین کپی آنجا: %1$s</string>
     <string name="auto_folder_missing">اکنون به این پوشه دسترسی نیست. فلش USB را وصل کنید یا پوشهٔ دیگری انتخاب کنید.</string>
+    <string name="cloud_offer_title">نسخه‌های روزانه در ابر</string>
+    <string name="cloud_offer_body_onedrive">نسخه‌های روزانه‌تان را در OneDrive هم نگه دارید. رایگان است و در فضای ابری خودتان. اگر این رایانه خراب شود، دفترتان سالم می‌ماند.</string>
+    <string name="cloud_offer_body_gdrive">نسخه‌های روزانه‌تان را در Google Drive هم نگه دارید. رایگان است و در فضای ابری خودتان. اگر این رایانه خراب شود، دفترتان سالم می‌ماند.</string>
+    <string name="cloud_offer_yes">نسخه‌ها آنجا نگه داشته شود</string>
+    <string name="cloud_offer_no">فعلاً نه</string>
+    <string name="cloud_offer_done">انجام شد. نسخه‌های روزانه‌تان در این پوشه هم نگه داشته می‌شود:\n%1$s</string>
+    <string name="cloud_offer_failed">نسخه در پوشهٔ ابری نوشته نشد. بعداً می‌توانید از بخش نسخه‌های روزانه پوشه‌ای انتخاب کنید.</string>
     <string name="import_csv">وارد کردن مشتریان</string>
     <string name="import_csv_skipped">از قبل در دفتر هستند، دست‌نخورده ماندند: %1$d</string>
     <string name="import_csv_unreadable">مانده‌هایی که خوانده نشد و صفر وارد می‌شود — فایل را بررسی کنید: %1$d</string>

@@ -66,6 +66,15 @@ class AppPrefs(private val file: File) {
 
     private fun flag(key: String): Boolean = props.getProperty(key)?.toBooleanStrictOrNull() ?: true
 
+    /** The one-time offer to keep the daily copies in OneDrive / Google Drive has been answered on this computer. */
+    fun cloudOfferAnswered(): Boolean = props.getProperty(KEY_CLOUD_OFFER) == "true"
+
+    @Synchronized
+    fun setCloudOfferAnswered() {
+        props.setProperty(KEY_CLOUD_OFFER, "true")
+        save()
+    }
+
     /** The first-run walkthrough has been seen (or skipped) on this computer. */
     fun tourSeen(): Boolean = props.getProperty(KEY_TOUR) == "true"
 
@@ -222,6 +231,7 @@ class AppPrefs(private val file: File) {
         const val KEY_TEXT_SIZE = "text_size"
         const val KEY_NATIVE_DIGITS = "print_native_digits"
         const val KEY_TOUR = "tour_seen"
+        const val KEY_CLOUD_OFFER = "cloud_offer_answered"
         const val KEY_PIN_HASH = "app_lock_hash"
         const val KEY_PIN_SALT = "app_lock_salt"
         const val KEY_INV_DISCOUNT = "invoice_discount"

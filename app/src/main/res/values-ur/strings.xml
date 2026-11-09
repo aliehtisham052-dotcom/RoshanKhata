@@ -3099,6 +3099,13 @@
     <string name="auto_folder_none">ابھی کوئی فولڈر نہیں چنا گیا۔</string>
     <string name="auto_folder_last">وہاں آخری کاپی: %1$s</string>
     <string name="auto_folder_missing">یہ فولڈر ابھی دستیاب نہیں۔ یو ایس بی لگائیں، یا کوئی اور فولڈر چنیں۔</string>
+    <string name="cloud_offer_title">روزانہ کاپیاں کلاؤڈ میں</string>
+    <string name="cloud_offer_body_onedrive">اپنی روزانہ کاپیاں OneDrive میں بھی رکھیں۔ یہ مفت ہے، آپ کے اپنے کلاؤڈ میں۔ اگر یہ کمپیوٹر خراب ہو جائے تو آپ کا کھاتہ محفوظ رہے گا۔</string>
+    <string name="cloud_offer_body_gdrive">اپنی روزانہ کاپیاں Google Drive میں بھی رکھیں۔ یہ مفت ہے، آپ کے اپنے کلاؤڈ میں۔ اگر یہ کمپیوٹر خراب ہو جائے تو آپ کا کھاتہ محفوظ رہے گا۔</string>
+    <string name="cloud_offer_yes">کاپیاں وہاں رکھیں</string>
+    <string name="cloud_offer_no">ابھی نہیں</string>
+    <string name="cloud_offer_done">ہو گیا۔ آپ کی روزانہ کاپیاں اس فولڈر میں بھی رکھی جائیں گی:\n%1$s</string>
+    <string name="cloud_offer_failed">کاپی کلاؤڈ فولڈر میں نہیں لکھی جا سکی۔ آپ بعد میں روزانہ کاپیاں میں فولڈر چن سکتے ہیں۔</string>
     <string name="import_csv">گاہک امپورٹ کریں</string>
     <string name="import_csv_skipped">پہلے سے کھاتے میں، جوں کے توں چھوڑ دیے: %1$d</string>
     <string name="import_csv_unreadable">بقایا جو پڑھا نہ جا سکا، 0 کے طور پر آئے گا — فائل دیکھیں: %1$d</string>

@@ -3311,6 +3311,13 @@
     <string name="auto_folder_none">No folder chosen yet.</string>
     <string name="auto_folder_last">Last copy there: %1$s</string>
     <string name="auto_folder_missing">That folder cannot be reached right now. Plug in the USB stick, or choose another folder.</string>
+    <string name="cloud_offer_title">Daily copies in the cloud</string>
+    <string name="cloud_offer_body_onedrive">Keep your daily copies in OneDrive too. It is free, in your own cloud. If this computer breaks, your book is safe.</string>
+    <string name="cloud_offer_body_gdrive">Keep your daily copies in Google Drive too. It is free, in your own cloud. If this computer breaks, your book is safe.</string>
+    <string name="cloud_offer_yes">Keep copies there</string>
+    <string name="cloud_offer_no">Not now</string>
+    <string name="cloud_offer_done">Done. Your daily copies will also be kept in this folder:\n%1$s</string>
+    <string name="cloud_offer_failed">The copy could not be written to the cloud folder. You can choose a folder later in Daily copies.</string>
     <string name="import_csv">Import customers</string>
     <string name="import_csv_skipped">Already in your khata, left as they are: %1$d</string>
     <string name="import_csv_unreadable">Balances that could not be read, coming in as 0 — check the file: %1$d</string>

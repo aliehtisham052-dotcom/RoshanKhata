@@ -3299,6 +3299,13 @@
     <string name="auto_folder_none">لم يُختر أي مجلد بعد.</string>
     <string name="auto_folder_last">آخر نسخة هناك: %1$s</string>
     <string name="auto_folder_missing">لا يمكن الوصول إلى هذا المجلد الآن. أدخل ذاكرة USB أو اختر مجلدًا آخر.</string>
+    <string name="cloud_offer_title">النسخ اليومية في السحابة</string>
+    <string name="cloud_offer_body_onedrive">احتفظ بنسخك اليومية في OneDrive أيضًا. إنه مجاني، في سحابتك الخاصة. إذا تعطل هذا الكمبيوتر فسيبقى دفترك آمنًا.</string>
+    <string name="cloud_offer_body_gdrive">احتفظ بنسخك اليومية في Google Drive أيضًا. إنه مجاني، في سحابتك الخاصة. إذا تعطل هذا الكمبيوتر فسيبقى دفترك آمنًا.</string>
+    <string name="cloud_offer_yes">احتفظ بالنسخ هناك</string>
+    <string name="cloud_offer_no">ليس الآن</string>
+    <string name="cloud_offer_done">تم. ستُحفظ نسخك اليومية في هذا المجلد أيضًا:\n%1$s</string>
+    <string name="cloud_offer_failed">تعذّرت كتابة النسخة في مجلد السحابة. يمكنك اختيار مجلد لاحقًا من النسخ اليومية.</string>
     <string name="import_csv">استيراد العملاء</string>
     <string name="import_csv_skipped">موجودون في الدفتر من قبل، تُركوا كما هم: %1$d</string>
     <string name="import_csv_unreadable">أرصدة تعذّرت قراءتها وستدخل صفرًا — راجع الملف: %1$d</string>
