@@ -40,6 +40,7 @@ object BusinessProfile {
     private const val KEY_SIGNATURE_SAVED = "signature_saved"
     private const val KEY_STAMP_SAVED = "stamp_saved"
     private const val KEY_LOGO_SAVED = "logo_saved"
+    private const val KEY_LOGO_DESIGN = "logo_design"
     private const val KEY_PHOTO_ON_STATEMENT = "photo_on_statement"
     private const val KEY_PAYMENT_ON_REMINDER = "payment_on_reminder"
     private const val QR_FILE = "payment_qr.png"
@@ -661,7 +662,8 @@ object BusinessProfile {
                 scaled.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
             if (scaled !== original) original.recycle()
-            prefs(context).edit().putBoolean(KEY_LOGO_SAVED, true).apply()
+            // A new picture is no longer the made design; the logo maker sets it again after this returns.
+            prefs(context).edit().putBoolean(KEY_LOGO_SAVED, true).remove(KEY_LOGO_DESIGN).apply()
             true
         } catch (e: Exception) {
             false
@@ -670,7 +672,20 @@ object BusinessProfile {
 
     fun removeLogo(context: Context) {
         logoFile(context).delete()
-        prefs(context).edit().putBoolean(KEY_LOGO_SAVED, false).apply()
+        prefs(context).edit().putBoolean(KEY_LOGO_SAVED, false).remove(KEY_LOGO_DESIGN).apply()
+    }
+
+    /**
+     * How the shop's logo was made in the app, so Change opens that logo to edit instead of a new one (10 Nov 2026,
+     * the owner). Null when the logo is a picture from the phone, or none. Kept per business, never in a backup: the
+     * picture itself is what travels.
+     */
+    fun logoDesign(context: Context): String? =
+        prefs(context).getString(KEY_LOGO_DESIGN, null)?.takeIf { hasLogo(context) }
+
+    /** Set by the logo maker after its picture was saved; a picture from the phone clears it ([saveLogo]). */
+    fun setLogoDesign(context: Context, design: String?) {
+        prefs(context).edit().apply { if (design == null) remove(KEY_LOGO_DESIGN) else putString(KEY_LOGO_DESIGN, design) }.apply()
     }
 
     // ---------- Customer photo on statements ----------

@@ -1862,6 +1862,8 @@
     <string name="bp_logo">لوگوی فروشگاه</string>
     <string name="logo_make">ساخت لوگو</string>
     <string name="logo_make_sub">طرح‌های آماده از نام و نوع فروشگاه شما</string>
+    <string name="logo_edit">ویرایش همین لوگو</string>
+    <string name="logo_edit_sub">کلمات، رنگ یا طرح آن را تغییر دهید</string>
     <string name="logo_name_label">نام روی لوگو</string>
     <string name="logo_show_name">نام</string>
     <string name="logo_show_letters">حروف</string>

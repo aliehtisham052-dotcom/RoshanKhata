@@ -1887,6 +1887,8 @@
     <string name="bp_logo">Shop logo</string>
     <string name="logo_make">Make a logo</string>
     <string name="logo_make_sub">Ready designs from your shop\'s name and type</string>
+    <string name="logo_edit">Edit this logo</string>
+    <string name="logo_edit_sub">Change its words, colour or design</string>
     <string name="logo_name_label">Name on the logo</string>
     <string name="logo_show_name">Name</string>
     <string name="logo_show_letters">Letters</string>

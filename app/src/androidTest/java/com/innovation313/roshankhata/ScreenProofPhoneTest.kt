@@ -249,6 +249,10 @@ class ScreenProofPhoneTest(
         }
         // Heir Access (9 Nov 2026): the three steps, the caution and "Books I am heir to".
         shoot("46-heir-access", open(WarisActivity::class.java), settleMs = 2000)
+        // The logo maker scrolled to the round seal, which carries words round both halves of its ring (10 Nov 2026).
+        shoot("47-logo-maker", open(LogoMakerActivity::class.java), settleMs = 2500) { a ->
+            a.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvLogos).scrollToPosition(3)
+        }
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)
             roads.visibility = android.view.View.VISIBLE

@@ -66,6 +66,21 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- The chosen design, large: what will be printed (10 Nov 2026, the owner: the grid alone showed it small). -->
+    <ImageView
+        android:id="@+id/ivLogoBig"
+        android:layout_width="0dp"
+        android:layout_height="148dp"
+        android:background="@color/surface"
+        android:elevation="2dp"
+        android:importantForAccessibility="no"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logoHeader" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLogos"
         android:layout_width="0dp"
@@ -78,7 +93,7 @@
         app:layout_constraintBottom_toTopOf="@id/logoPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logoHeader" />
+        app:layout_constraintTop_toBottomOf="@id/ivLogoBig" />
 
     <LinearLayout
         android:id="@+id/logoPanel"

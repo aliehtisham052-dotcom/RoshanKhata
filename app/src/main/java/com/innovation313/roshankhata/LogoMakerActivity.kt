@@ -60,12 +60,16 @@ class LogoMakerActivity : BaseActivity() {
         trade = Trade.current(this)
         tagline = getString(trade.exampleRes)
         urduName = BusinessProfile.businessNameUrdu(this)?.takeIf { it.isNotBlank() }
-        name = savedInstanceState?.getString(KEY_NAME) ?: BusinessProfile.businessName(this).orEmpty()
         palettes = LogoDesigns.palettes(this, trade)
-        palette = (savedInstanceState?.getInt(KEY_PALETTE) ?: 0).coerceIn(0, palettes.size - 1)
         styles = LogoDesigns.styles(urduName)
-        chosen = (savedInstanceState?.getInt(KEY_CHOSEN) ?: 0).coerceIn(0, styles.size - 1)
+        // The logo made here before opens to be edited, not a new one (10 Nov 2026, the owner: Change started over).
+        val made = if (savedInstanceState == null) Made.parse(BusinessProfile.logoDesign(this)) else null
+        name = savedInstanceState?.getString(KEY_NAME) ?: made?.name ?: BusinessProfile.businessName(this).orEmpty()
+        palette = (savedInstanceState?.getInt(KEY_PALETTE) ?: made?.palette ?: 0).coerceIn(0, palettes.size - 1)
+        chosen = (savedInstanceState?.getInt(KEY_CHOSEN) ?: made?.style?.let { styles.indexOf(it) }?.takeIf { it >= 0 } ?: 0)
+            .coerceIn(0, styles.size - 1)
         show = savedInstanceState?.getString(KEY_SHOW)?.let { runCatching { LogoDesigns.Show.valueOf(it) }.getOrNull() }
+            ?: made?.show?.takeIf { it != LogoDesigns.Show.URDU || urduName != null }
             ?: LogoDesigns.Show.NAME
 
         findViewById<TextView>(R.id.tvLogoTrade).text = getString(trade.labelRes)
@@ -90,6 +94,7 @@ class LogoMakerActivity : BaseActivity() {
         rv.layoutManager = GridLayoutManager(this, 2)
         adapter = Designs()
         rv.adapter = adapter
+        if (chosen > 0) rv.scrollToPosition(chosen)
 
         findViewById<View>(R.id.btnLogoUse).setOnClickListener { save() }
         com.innovation313.roshankhata.ui.TextFit.relax(findViewById(R.id.logoPanel))
@@ -174,7 +179,13 @@ class LogoMakerActivity : BaseActivity() {
             previews.clear()
             previews.putAll(drawn)
             adapter.notifyDataSetChanged()
+            showChosen()
         }
+    }
+
+    /** The chosen design, large, above the grid. */
+    private fun showChosen() {
+        findViewById<ImageView>(R.id.ivLogoBig).setImageBitmap(previews[styles[chosen]])
     }
 
     /** The chosen design at print size, kept as the shop's logo the way a picked picture is. */
@@ -189,7 +200,12 @@ class LogoMakerActivity : BaseActivity() {
                     val file = File(File(cacheDir, "logo_maker").apply { mkdirs() }, "logo.png")
                     file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
                     bmp.recycle()
-                    BusinessProfile.saveLogo(this@LogoMakerActivity, Uri.fromFile(file)).also { file.delete() }
+                    BusinessProfile.saveLogo(this@LogoMakerActivity, Uri.fromFile(file)).also { saved ->
+                        file.delete()
+                        if (saved) BusinessProfile.setLogoDesign(
+                            this@LogoMakerActivity, Made(style, palette, show, name.trim()).text()
+                        )
+                    }
                 }.getOrDefault(false)
             }
             saving = false
@@ -251,6 +267,22 @@ class LogoMakerActivity : BaseActivity() {
                 chosen = holder.bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return@setOnClickListener
                 notifyItemChanged(before)
                 notifyItemChanged(chosen)
+                showChosen()
+            }
+        }
+    }
+
+    /** How a made logo is remembered: "v1|STYLE|colour|SHOW|name" (the name last, so a "|" in it stays). */
+    private data class Made(val style: LogoDesigns.Style, val palette: Int, val show: LogoDesigns.Show, val name: String) {
+        fun text() = listOf("v1", style.name, palette.toString(), show.name, name).joinToString("|")
+
+        companion object {
+            fun parse(text: String?): Made? {
+                val parts = text?.split("|", limit = 5) ?: return null
+                if (parts.size != 5 || parts[0] != "v1") return null
+                return runCatching {
+                    Made(LogoDesigns.Style.valueOf(parts[1]), parts[2].toInt(), LogoDesigns.Show.valueOf(parts[3]), parts[4])
+                }.getOrNull()
             }
         }
     }

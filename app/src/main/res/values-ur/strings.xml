@@ -1834,6 +1834,8 @@
     <string name="bp_logo">دکان کا لوگو</string>
     <string name="logo_make">لوگو بنائیں</string>
     <string name="logo_make_sub">آپ کی دکان کے نام اور قسم سے تیار ڈیزائن</string>
+    <string name="logo_edit">یہی لوگو بدلیں</string>
+    <string name="logo_edit_sub">اس کے الفاظ، رنگ یا ڈیزائن بدلیں</string>
     <string name="logo_name_label">لوگو پر نام</string>
     <string name="logo_show_name">نام</string>
     <string name="logo_show_letters">حروف</string>

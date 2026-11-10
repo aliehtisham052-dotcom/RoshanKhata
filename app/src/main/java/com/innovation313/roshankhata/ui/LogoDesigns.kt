@@ -130,15 +130,27 @@ object LogoDesigns {
         c.drawCircle(500f, 500f, 480f, fill(s.palette.fill))
         c.drawCircle(500f, 500f, 455f, stroke(s.palette.accent, 6f))
         c.drawCircle(500f, 500f, 290f, stroke(s.palette.accent, 6f))
-        // The name around the ring, with the trade's line, once round.
-        val ring = Path().apply { addCircle(500f, 500f, 370f, Path.Direction.CW) }
-        val words = (s.name.uppercase() + "  •  " + s.tagline.uppercase() + "  •  ")
-        val p = text(s.palette.ink, 64f, f.sansBold).apply { letterSpacing = 0.1f; textAlign = Paint.Align.LEFT }
-        val round = (2 * Math.PI * 370).toFloat()
-        while (p.measureText(words) > round * 0.98f && p.textSize > 30f) p.textSize -= 2f
-        c.save(); c.rotate(-90f, 500f, 500f)
-        c.drawTextOnPath(words, ring, 0f, p.textSize * 0.35f, p)
-        c.restore()
+        // The name over the top and the trade's line under the bottom, each read left to right and upright, a dot
+        // between them on each side - a stamp's own order (10 Nov 2026, the owner: one line once round turned the
+        // bottom words upside down).
+        val r = 372f
+        val box = RectF(500f - r, 500f - r, 500f + r, 500f + r)
+        val top = Path().apply { addArc(box, 180f, 180f) }      // left -> over the top -> right
+        val bottom = Path().apply { addArc(box, 180f, -180f) }  // left -> under the bottom -> right
+        val half = (Math.PI * r).toFloat() * 0.84f
+        val name = s.name.uppercase()
+        val tag = s.tagline.uppercase()
+        val p = text(s.palette.ink, 66f, f.sansBold).apply { letterSpacing = 0.1f; textAlign = Paint.Align.LEFT }
+        while (p.measureText(name) > half && p.textSize > 30f) p.textSize -= 2f
+        val q = text(s.palette.accent, 46f, f.sansBold).apply { letterSpacing = 0.12f; textAlign = Paint.Align.LEFT }
+        while (q.measureText(tag) > half && q.textSize > 24f) q.textSize -= 2f
+        val arc = (Math.PI * r).toFloat()
+        // Each centred on its half of the ring; the letters' middle on the ring's middle line (on the top the
+        // letters' foot faces the centre, on the bottom their head does, so the same offset serves both).
+        c.drawTextOnPath(name, top, (arc - p.measureText(name)) / 2f, p.textSize * 0.36f, p)
+        c.drawTextOnPath(tag, bottom, (arc - q.measureText(tag)) / 2f, q.textSize * 0.36f, q)
+        c.drawCircle(500f - r, 500f, 13f, fill(s.palette.accent))
+        c.drawCircle(500f + r, 500f, 13f, fill(s.palette.accent))
         picture(context, c, s.trade, 500f, 500f, 300f, s.palette.accent)
     }
 

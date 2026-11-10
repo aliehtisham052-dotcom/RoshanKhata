@@ -1882,6 +1882,8 @@
     <string name="bp_logo">দোকানের লোগো</string>
     <string name="logo_make">লোগো বানান</string>
     <string name="logo_make_sub">আপনার দোকানের নাম ও ধরন থেকে তৈরি ডিজাইন</string>
+    <string name="logo_edit">এই লোগো সম্পাদনা করুন</string>
+    <string name="logo_edit_sub">এর লেখা, রং বা ডিজাইন বদলান</string>
     <string name="logo_name_label">লোগোতে নাম</string>
     <string name="logo_show_name">নাম</string>
     <string name="logo_show_letters">অক্ষর</string>

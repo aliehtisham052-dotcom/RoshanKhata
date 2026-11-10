@@ -296,14 +296,17 @@ class BusinessSettingsActivity : BaseActivity() {
             }
         }
 
-        // Make one or choose one (10 Nov 2026, the owner: most shops have no logo to choose).
+        // Make one or choose one (10 Nov 2026, the owner: most shops have no logo to choose). A logo made here
+        // before is offered to be edited: the maker opens on it, not on a new one.
         btnPickLogo.setOnClickListener {
             val sheet = com.innovation313.roshankhata.ui.ChoiceSheet
+            val made = BusinessProfile.logoDesign(this) != null
             sheet.show(
                 this, getString(R.string.bp_logo),
                 listOf(
                     com.innovation313.roshankhata.ui.ChoiceSheet.Option(
-                        getString(R.string.logo_make), getString(R.string.logo_make_sub),
+                        getString(if (made) R.string.logo_edit else R.string.logo_make),
+                        getString(if (made) R.string.logo_edit_sub else R.string.logo_make_sub),
                         icon = R.drawable.ic_trade_general, iconTint = R.color.gold_on_dark, tile = R.color.brand_green
                     ),
                     sheet.photo(getString(R.string.photo_from_gallery))

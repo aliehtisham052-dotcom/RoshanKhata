@@ -1834,6 +1834,8 @@
     <string name="bp_logo">Dukaan ka logo</string>
     <string name="logo_make">Logo banayein</string>
     <string name="logo_make_sub">Aap ki dukaan ke naam aur qisam se tayyar design</string>
+    <string name="logo_edit">Yehi logo badlein</string>
+    <string name="logo_edit_sub">Is ke alfaaz, rang ya design badlein</string>
     <string name="logo_name_label">Logo par naam</string>
     <string name="logo_show_name">Naam</string>
     <string name="logo_show_letters">Haroof</string>
