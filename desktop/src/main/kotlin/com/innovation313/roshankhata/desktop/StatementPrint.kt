@@ -47,7 +47,9 @@ class StatementPrint(
      */
     private val accountBalance: Double? = null,
     /** A supplier's statement says what the shop paid and what was supplied, not "You Owe" (M79, the phone's 2 Nov wording). */
-    private val isCustomer: Boolean = true
+    private val isCustomer: Boolean = true,
+    /** The shop's own logo, at the band's start on a white tile (10 Nov 2026, the phone's statement too); null: none. */
+    private val shopLogo: java.awt.image.BufferedImage? = null
 ) : Printable {
 
     private class Row(val e: EntryWithItems, val running: Double)
@@ -161,12 +163,24 @@ class StatementPrint(
         // The band: the shop's name, and whose statement this is.
         g.color = navy
         g.fillRect(0, 0, pageW.toInt(), 78)
+        val nameX = shopLogo?.let { logo ->
+            val tile = 56.0
+            val left = if (rtl) pageW - margin - tile else margin
+            g.color = Color.WHITE
+            g.fill(java.awt.geom.RoundRectangle2D.Double(left, 11.0, tile, tile, 16.0, 16.0))
+            val room = tile - 8.0
+            val k = minOf(room / logo.width, room / logo.height)
+            val w = logo.width * k; val h = logo.height * k
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+            g.drawImage(logo, (left + (tile - w) / 2).toInt(), (11.0 + (tile - h) / 2).toInt(), w.toInt(), h.toInt(), null)
+            margin + tile + 12.0
+        } ?: margin
         g.color = Color.WHITE
         g.font = Font(PrintFonts.family, Font.BOLD, 18)
-        g.text(shopName, margin, 32.0)
+        g.text(shopName, nameX, 32.0)
         g.font = Font(PrintFonts.family, Font.PLAIN, 11)
         val phone = partyPhone?.takeIf { it.isNotBlank() && it != partyName }
-        g.text(words.text(W.pdf_stmt_title, partyName) + (phone?.let { "  ·  " + Format.ltr(it) } ?: ""), margin, 54.0)
+        g.text(words.text(W.pdf_stmt_title, partyName) + (phone?.let { "  ·  " + Format.ltr(it) } ?: ""), nameX, 54.0)
 
         var y = 96.0
         if (first) {

@@ -821,7 +821,8 @@ private fun Book(
                 StatementPrint.show(
                     StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), party.name, party.phone, rows,
                         opening = opening, periodFrom = from, accountBalance = if (from == null) null else all.sumOf(sign),
-                        isCustomer = party.isCustomer),
+                        isCustomer = party.isCustomer,
+                        shopLogo = withContext(Dispatchers.IO) { images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { runCatching { javax.imageio.ImageIO.read(it) }.getOrNull() } }),
                     words.text(W.pdf_stmt_title, party.name)
                 )
             }
@@ -1272,9 +1273,10 @@ private fun Book(
                                     scope.launch {
                                         val owing = com.innovation313.roshankhata.data.NameOrder.sortedBy(parties.filter { kotlin.math.abs(it.balance) >= 0.005 }) { it.name }
                                         val sheets = withContext(Dispatchers.IO) {
+                                            val shopLogo = images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { runCatching { javax.imageio.ImageIO.read(it) }.getOrNull() }
                                             owing.map { p ->
                                                 StatementPrint(words, rtl, shopName() ?: words.text(W.app_name), p.name, p.phone,
-                                                    dao.latestEntriesWithItems(p.id, Int.MAX_VALUE), isCustomer = p.isCustomer)
+                                                    dao.latestEntriesWithItems(p.id, Int.MAX_VALUE), isCustomer = p.isCustomer, shopLogo = shopLogo)
                                             }
                                         }
                                         if (sheets.isNotEmpty()) {

@@ -123,7 +123,9 @@ object LogoDesigns {
         c.drawPath(inner, stroke(s.palette.accent, 12f))
         picture(context, c, s.trade, 500f, 330f, 220f, s.palette.accent)
         mainText(c, s, f, 500f, 610f, 560f, 104f, s.palette.ink)
-        line(c, s.tagline.uppercase(), 500f, 780f, 440f, 34f, s.palette.accent, f.sans, spacing = 0.1f)
+        // The shield narrows towards its point: at 752 its inner line is 248 either side of the middle, so the trade's
+        // line keeps to 360 and shrinks to fit (10 Nov 2026, the owner's photo: at 780 and 440 wide it ran into the edge).
+        line(c, s.tagline.uppercase(), 500f, 752f, 360f, 34f, s.palette.accent, f.sans, spacing = 0.1f)
     }
 
     private fun seal(context: Context, c: Canvas, s: Spec, f: Fonts) {

@@ -240,6 +240,9 @@ object PdfExport {
         var y: Float
 
         val brandLogo = PdfBranding.logo(context)
+        // The SHOP's own logo leads its band (10 Nov 2026, the owner: a statement showed none; the app's mark stays
+        // only in the foot).
+        val shopLogo = BusinessProfile.headerLogo(context)
 
         // Every page names the shop and says which page it is (2 Nov 2026, the owner's review
         // against the mockup): a page lost from a printed or forwarded statement still says whose
@@ -328,20 +331,34 @@ object PdfExport {
             val madePaint = Paint(subtitle).apply { textSize = 8f; color = GOLD_SOFT; textAlign = Paint.Align.RIGHT }
             PdfRtl.drawText(c, context.getString(R.string.pdf_stmt_made_on, madeOn), PAGE_W - MARGIN, 46f, madePaint)
 
-            // The shop's name, and under it how to reach the shop: its address and phone.
-            val nameRoom = PAGE_W - 2 * MARGIN - 150f
+            // The shop's logo on a white tile (a logo is drawn for paper, not for the green band), then its name, and
+            // under it how to reach the shop: its address and phone.
+            val shopNameX = shopLogo?.let {
+                val tile = RectF(MARGIN, 11f, MARGIN + 56f, 67f)
+                c.drawRoundRect(tile, 8f, 8f, Paint().apply { color = Color.WHITE; isAntiAlias = true })
+                val inner = RectF(tile.left + 4f, tile.top + 4f, tile.right - 4f, tile.bottom - 4f)
+                val scale = minOf(inner.width() / it.width, inner.height() / it.height)
+                val w = it.width * scale; val h = it.height * scale
+                PdfRtl.drawBitmap(
+                    c, it, null,
+                    RectF(inner.centerX() - w / 2f, inner.centerY() - h / 2f, inner.centerX() + w / 2f, inner.centerY() + h / 2f),
+                    Paint(Paint.FILTER_BITMAP_FLAG)
+                )
+                MARGIN + 68f
+            } ?: MARGIN
+            val nameRoom = PAGE_W - MARGIN - 150f - shopNameX
             val shopName = businessName?.takeIf { it.isNotBlank() } ?: ""
-            PdfRtl.drawText(c, fitted(shopName, title, nameRoom), MARGIN, 34f, title)
+            PdfRtl.drawText(c, fitted(shopName, title, nameRoom), shopNameX, 34f, title)
             val reach = listOfNotNull(shopAddress, shopPhone?.let { Format.ltr(it) }).joinToString("  \u00b7  ")
             if (reach.isNotEmpty()) {
                 val reachPaint = Paint(subtitle).apply { textSize = 9f; color = GOLD_SOFT }
-                PdfRtl.drawText(c, fitted(reach, reachPaint, nameRoom), MARGIN, 52f, reachPaint)
+                PdfRtl.drawText(c, fitted(reach, reachPaint, nameRoom), shopNameX, 52f, reachPaint)
             }
 
-            // No app logo in this band, deliberately: this sheet is the
+            // No APP logo in this band, deliberately: this sheet is the
             // SHOP's claim about money, and a customer receiving it should see
-            // the shop's identity, not the app's. The app's mark is one quiet
-            // line in the page footer instead.
+            // the shop's identity (its own logo, above), not the app's. The
+            // app's mark is one quiet line in the page footer instead.
 
             var yy = 98f
 

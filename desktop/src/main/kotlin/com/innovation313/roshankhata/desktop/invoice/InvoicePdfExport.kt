@@ -1288,7 +1288,8 @@ object InvoicePdfExport {
             InvoiceTemplateKit.drawRecordSeal(
                 c, PAGE_W_A4 - MARGIN - InvoiceTemplateKit.SEAL_SIZE / 2f, sealTop + InvoiceTemplateKit.SEAL_SIZE / 2f,
                 InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(inv.invoiceDate).uppercase(), inv.invoiceNumber,
-                ink = if (palette?.pageBackground != null) palette.ink else InvoiceTemplateKit.SEAL_INK
+                ink = if (palette?.pageBackground != null) palette.ink else InvoiceTemplateKit.SEAL_INK,
+                paper = palette?.pageBackground ?: 0xFFFFFFFF.toInt()
             )
         }
 

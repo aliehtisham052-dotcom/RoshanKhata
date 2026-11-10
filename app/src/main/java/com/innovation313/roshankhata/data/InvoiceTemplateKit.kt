@@ -39,7 +39,7 @@ object InvoiceTemplateKit {
     const val SEAL_SIZE = 92f
     const val SEAL_GAP = 12f
     /** The app's green as stamp ink, a little thinned so it reads as ink on paper. */
-    const val SEAL_INK = 0xE61B5E3A.toInt()
+    const val SEAL_INK = 0xFF1B5E3A.toInt()
 
     /**
      * The round green seal the owner chose (10 Nov 2026): "ROSHAN KHATA" round the top, "DIGITAL RECORD" round the
@@ -52,52 +52,64 @@ object InvoiceTemplateKit {
      * the rim with plain rotations, so the computer's drawing stand-in draws it the same, and the whole seal is one
      * left-to-right unit on a right-to-left page ([PdfRtl.asOne]).
      */
-    fun drawRecordSeal(c: Canvas, cx: Float, cy: Float, size: Float, middle: String, below: String, ink: Int = SEAL_INK) {
+    fun drawRecordSeal(
+        c: Canvas, cx: Float, cy: Float, size: Float, middle: String, below: String,
+        ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt()
+    ) {
+        // A stamp's own build (10 Nov 2026, the owner: the first one looked thin and plain): full-strength ink, a heavy
+        // rim with a fine line inside it, the name over the top and DIGITAL RECORD under the bottom, a lightly tinted
+        // centre with the book, and the paper's own date on a ribbon across the middle - the figure a reader looks for.
         val k = size / 320f
         val ring = Paint().apply { color = ink; style = Paint.Style.STROKE; isAntiAlias = true }
+        val fill = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }
         PdfRtl.asOne(c, cx - size / 2f, cx + size / 2f) {
-            ring.strokeWidth = 6.5f * k; c.drawCircle(cx, cy, 150f * k, ring)
-            ring.strokeWidth = 1.6f * k; c.drawCircle(cx, cy, 139f * k, ring)
-            c.drawCircle(cx, cy, 90f * k, ring)
+            ring.strokeWidth = 10f * k; c.drawCircle(cx, cy, 151f * k, ring)
+            ring.strokeWidth = 1.8f * k; c.drawCircle(cx, cy, 140f * k, ring)
+            c.drawCircle(cx, cy, 98f * k, ring)
+            fill.alpha = 0x1F; c.drawCircle(cx, cy, 92f * k, fill); fill.alpha = 0xFF
 
             val rim = Paint().apply {
-                color = ink; isAntiAlias = true; textSize = 23f * k; textAlign = Paint.Align.CENTER
+                color = ink; isAntiAlias = true; textSize = 25f * k; textAlign = Paint.Align.CENTER
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            arcWords(c, "ROSHAN KHATA", cx, cy, 112f * k, rim, 6f * k, top = true)
-            rim.textSize = 17f * k
-            arcWords(c, "DIGITAL RECORD", cx, cy, 120f * k, rim, 5f * k, top = false)
+            // Each line's letters centred on the band's middle (radius 119).
+            arcWords(c, "ROSHAN KHATA", cx, cy, (119f - 0.36f * 25f) * k, rim, 5.5f * k, top = true)
+            rim.textSize = 18f * k
+            arcWords(c, "DIGITAL RECORD", cx, cy, (119f - 0.36f * 18f) * k, rim, 4.5f * k, top = false)
 
-            val dot = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }
-            star(c, cx - 123f * k, cy, 8f * k, dot)
-            star(c, cx + 123f * k, cy, 8f * k, dot)
-
-            // The open book: two pages meeting at the spine.
-            ring.strokeWidth = 3.4f * k
-            // The words in the middle are what a reader looks for, so the book is small and sits high (10 Nov 2026:
-            // at 74 pt the date came out 4 pt and the word under it 3 pt, too small to read).
-            val bs = 1.1f * k; val bx = cx - 26f * bs; val by = cy - 66f * k
-            val left = Path().apply {
-                moveTo(bx + 2f * bs, by + 6f * bs); cubicTo(bx + 11f * bs, by + 1.5f * bs, bx + 19f * bs, by + 1.5f * bs, bx + 26f * bs, by + 7f * bs)
-                lineTo(bx + 26f * bs, by + 39f * bs); cubicTo(bx + 19f * bs, by + 33.5f * bs, bx + 11f * bs, by + 33.5f * bs, bx + 2f * bs, by + 38f * bs); close()
+            // The book, filled: two pages meeting at the spine, a gap of paper between them.
+            val bs = 1.05f * k; val bx = cx - 26f * bs; val by = cy - 76f * k
+            fun page(edge: Float) = Path().apply {
+                val spine = 26f + if (edge < 26f) -1.6f else 1.6f
+                moveTo(bx + edge * bs, by + 6f * bs)
+                cubicTo(bx + (edge + (spine - edge) * 0.35f) * bs, by + 1f * bs, bx + (edge + (spine - edge) * 0.7f) * bs, by + 1f * bs, bx + spine * bs, by + 7f * bs)
+                lineTo(bx + spine * bs, by + 39f * bs)
+                cubicTo(bx + (edge + (spine - edge) * 0.7f) * bs, by + 33f * bs, bx + (edge + (spine - edge) * 0.35f) * bs, by + 33f * bs, bx + edge * bs, by + 38f * bs)
+                close()
             }
-            val right = Path().apply {
-                moveTo(bx + 50f * bs, by + 6f * bs); cubicTo(bx + 41f * bs, by + 1.5f * bs, bx + 33f * bs, by + 1.5f * bs, bx + 26f * bs, by + 7f * bs)
-                lineTo(bx + 26f * bs, by + 39f * bs); cubicTo(bx + 33f * bs, by + 33.5f * bs, bx + 41f * bs, by + 33.5f * bs, bx + 50f * bs, by + 38f * bs); close()
-            }
-            c.drawPath(left, ring); c.drawPath(right, ring)
+            c.drawPath(page(2f), fill); c.drawPath(page(50f), fill)
 
-            ring.strokeWidth = 1.6f * k
-            c.drawLine(cx - 62f * k, cy - 10f * k, cx + 62f * k, cy - 10f * k, ring)
+            // The ribbon: across the middle and out over the rim's band, its ends cut in a swallowtail.
+            val top = cy - 15f * k; val bottom = cy + 27f * k; val half = 132f * k; val notch = 11f * k
+            val ribbon = Path().apply {
+                moveTo(cx - half, top); lineTo(cx + half, top); lineTo(cx + half - notch, (top + bottom) / 2f)
+                lineTo(cx + half, bottom); lineTo(cx - half, bottom); lineTo(cx - half + notch, (top + bottom) / 2f); close()
+            }
+            c.drawPath(ribbon, fill)
+            ring.color = paper; ring.strokeWidth = 1.4f * k
+            c.drawLine(cx - half + notch + 6f * k, top + 4f * k, cx + half - notch - 6f * k, top + 4f * k, ring)
+            c.drawLine(cx - half + notch + 6f * k, bottom - 4f * k, cx + half - notch - 6f * k, bottom - 4f * k, ring)
+            ring.color = ink
+
             val mid = Paint().apply {
-                color = ink; isAntiAlias = true; textAlign = Paint.Align.CENTER; textSize = 30f * k
+                color = paper; isAntiAlias = true; textAlign = Paint.Align.CENTER; textSize = 28f * k
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            while (mid.measureText(middle) > 164f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
-            PdfRtl.drawText(c, middle, cx, cy + 22f * k, mid)
-            mid.textSize = 22f * k
-            while (mid.measureText(below) > 130f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
-            PdfRtl.drawText(c, below, cx, cy + 54f * k, mid)
+            while (mid.measureText(middle) > 200f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
+            PdfRtl.drawText(c, middle, cx, (top + bottom) / 2f + mid.textSize * 0.36f, mid)
+            mid.color = ink; mid.textSize = 21f * k
+            while (mid.measureText(below) > 136f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
+            PdfRtl.drawText(c, below, cx, cy + 62f * k, mid)
         }
     }
 
@@ -119,18 +131,6 @@ object InvoiceTemplateKit {
         }
     }
 
-    /** A five-pointed star of outer radius [r]. */
-    private fun star(c: Canvas, x: Float, y: Float, r: Float, p: Paint) {
-        val path = Path()
-        for (n in 0 until 10) {
-            val rad = if (n % 2 == 0) r else r * 0.42f
-            val a = Math.toRadians((-90 + n * 36).toDouble())
-            val px = x + (rad * Math.cos(a)).toFloat(); val py = y + (rad * Math.sin(a)).toFloat()
-            if (n == 0) path.moveTo(px, py) else path.lineTo(px, py)
-        }
-        path.close()
-        c.drawPath(path, p)
-    }
 
 
     /**
