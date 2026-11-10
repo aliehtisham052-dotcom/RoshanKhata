@@ -119,6 +119,11 @@ object TypeToConfirm {
             })
         }
         dialog.show()
+        // Full screen (10 Nov 2026, the owner's photo): a floating dialog over a tall keyboard kept the explanation
+        // and cut the typing box away. Now the explanation scrolls in whatever is left; the instruction, the box
+        // and the buttons sit on the keyboard. The 30% cap stays only if the window could not be made full.
+        CalcPad.fullScreen(dialog, view)
+        if (dialog.window?.attributes?.height == android.view.ViewGroup.LayoutParams.MATCH_PARENT) scroll.maxPx = Int.MAX_VALUE
         KeyboardFollow.dialog(dialog)
         // Opened to be filled in: the cursor is in the box and the keyboard is up.
         FormFocus.focusFirstEmpty(listOf(et), true, dialog.window)

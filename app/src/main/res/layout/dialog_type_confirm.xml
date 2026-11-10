@@ -2,11 +2,14 @@
 <!--
   A "type the word to confirm" dialog (8 Nov 2026, the owner's phone test): the explanation scrolls in a box
   capped by TypeToConfirm, the instruction line and the typing box stay below it, always in sight.
+  Full screen since 10 Nov 2026 (the owner's photo: on a phone whose keyboard takes most of the screen the
+  floating dialog kept the explanation and cut the box away): the explanation takes what is left above the
+  instruction, the box and the buttons, which sit on the keyboard.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingHorizontal="20dp"
     android:paddingTop="8dp">
@@ -14,7 +17,8 @@
     <com.innovation313.roshankhata.ui.CappedScrollView
         android:id="@+id/scrollConfirmBody"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/tvConfirmBody"
@@ -32,7 +36,7 @@
         android:layout_marginTop="14dp"
         android:labelFor="@+id/etConfirmWord"
         android:textAlignment="viewStart"
-        android:textColor="@color/black"
+        android:textColor="@color/ink"
         android:textSize="15sp" />
 
     <EditText
@@ -45,5 +49,9 @@
         android:importantForAutofill="noExcludeDescendants"
         android:inputType="text|textNoSuggestions"
         android:maxLines="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
 
 </LinearLayout>
