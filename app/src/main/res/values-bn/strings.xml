@@ -1888,6 +1888,9 @@
     <string name="logo_show_urdu">উর্দু নাম</string>
     <string name="logo_colour">রং</string>
     <string name="logo_use">এই লোগো ব্যবহার করুন</string>
+    <string name="country_follow_title">%1$s-এর মুদ্রা ও ক্যালেন্ডার ব্যবহার করবেন?</string>
+    <string name="country_follow_body">শুধু চিহ্ন ও তারিখ দেখানোর ধরন বদলায়; লেখা টাকার অঙ্ক রূপান্তর হয় না।</string>
+    <string name="country_follow_keep">%1$s রাখুন</string>
     <string name="bp_logo_help">ঐচ্ছিক — ইনভয়েস ও স্টক রেজিস্টারের ওপরে ছাপা হয়।</string>
     <string name="bp_remove_logo">লোগো সরান</string>
     <string name="pic_delete_body_pc">এই ছবিটি শুধু এই কম্পিউটারেই আছে: ব্যাকআপ ফাইলে ছবি যায় না। মুছে ফেলার পর এটি আর ফিরিয়ে আনা যাবে না।</string>

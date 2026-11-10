@@ -1992,6 +1992,9 @@
     <string name="logo_show_urdu">الاسم بالأردية</string>
     <string name="logo_colour">اللون</string>
     <string name="logo_use">استخدم هذا الشعار</string>
+    <string name="country_follow_title">استخدام عملة وتقويم %1$s؟</string>
+    <string name="country_follow_body">يتغيّر الرمز وطريقة عرض التواريخ فقط؛ لا تُحوَّل المبالغ المكتوبة.</string>
+    <string name="country_follow_keep">إبقاء %1$s</string>
     <string name="bp_logo_help">اختياري — يُطبع أعلى الفواتير وسجل المخزون.</string>
     <string name="bp_remove_logo">إزالة الشعار</string>
     <string name="pic_delete_body_pc">هذه الصورة على هذا الحاسوب فقط: ملف النسخة الاحتياطية لا يحمل الصور. بعد حذفها لا يمكن استعادتها.</string>

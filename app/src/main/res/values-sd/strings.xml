@@ -1868,6 +1868,9 @@
     <string name="logo_show_urdu">اردو نالو</string>
     <string name="logo_colour">رنگ</string>
     <string name="logo_use">هي لوگو لڳايو</string>
+    <string name="country_follow_title">%1$s جي ڪرنسي ۽ ڪئلينڊر لڳايو؟</string>
+    <string name="country_follow_body">رڳو نشان ۽ تاريخ ڏيکارڻ جو طريقو بدلجي ٿو؛ لکيل رقمون نٿيون بدلجن.</string>
+    <string name="country_follow_keep">%1$s ئي رهڻ ڏيو</string>
     <string name="bp_logo_help">اختياري — انوائس ۽ اسٽاڪ رجسٽر جي مٿان ڇپجي ٿو.</string>
     <string name="bp_remove_logo">لوگو هٽايو</string>
     <string name="pic_delete_body_pc">هي تصوير رڳو هن ڪمپيوٽر تي آهي: بيڪ اپ فائل ۾ تصويرون نه ٿيون وڃن. هٽائڻ کان پوءِ اها واپس نه ٿي اچي سگهي.</string>

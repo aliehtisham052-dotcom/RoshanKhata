@@ -901,18 +901,40 @@ class BusinessSettingsActivity : BaseActivity() {
         // The setup's own country page (5 Nov 2026): flags, codes, search, the phone's country first.
         com.innovation313.roshankhata.ui.CountryPicker.show(this, current, title = getString(R.string.bp_country)) { chosen ->
             if (isFinishing || isDestroyed) return@show
-            val wasDefaultCurrency = BusinessProfile.currency(this) == Currency.DEFAULT
             BusinessProfile.setCountry(this, chosen)
-            if (wasDefaultCurrency && chosen != com.innovation313.roshankhata.data.ShopCountry.OTHER && chosen.currencySign != Currency.DEFAULT) {
-                Currency.set(this, chosen.currencySign)
-                renderCurrency()
-            }
-            if (BusinessProfile.calendar(this) == com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN && chosen.calendar != com.innovation313.roshankhata.data.ShopCalendar.Kind.GREGORIAN) {
-                com.innovation313.roshankhata.data.ShopCalendar.set(this, chosen.calendar)
-                renderCalendar()
-            }
             renderCountry()
             renderWalletHelp()
+            offerCountrySettings(chosen)
+        }
+    }
+
+    /**
+     * A new country's currency and calendar (10 Nov 2026, the owner: Saudi Arabia chosen, and the sheet still said
+     * BDT and Solar Hijri). They changed by themselves only from the app's defaults, so a second change of country
+     * left the first one's behind. Now, when either differs from the chosen country's, the owner is asked once,
+     * both named; keeping them is one tap, since a shop may truly take another currency. Figures are not
+     * converted either way.
+     */
+    private fun offerCountrySettings(chosen: com.innovation313.roshankhata.data.ShopCountry) {
+        if (chosen == com.innovation313.roshankhata.data.ShopCountry.OTHER) return
+        val cal = com.innovation313.roshankhata.data.ShopCalendar
+        val nowSign = BusinessProfile.currency(this)
+        val nowCal = BusinessProfile.calendar(this)
+        if (nowSign == chosen.currencySign && nowCal == chosen.calendar) return
+        val theirs = Currency.label(chosen.currencySign) + "  ·  " + calendarLabel(chosen.calendar)
+        val mine = Currency.label(nowSign) + "  ·  " + calendarLabel(nowCal)
+        val sheet = com.innovation313.roshankhata.ui.ChoiceSheet
+        sheet.show(
+            this,
+            title = getString(R.string.country_follow_title, com.innovation313.roshankhata.ui.CountryPicker.name(this, chosen)),
+            message = getString(R.string.country_follow_body),
+            options = listOf(sheet.done(theirs), sheet.stop(getString(R.string.country_follow_keep, mine)))
+        ) { which ->
+            if (which != 0 || isFinishing || isDestroyed) return@show
+            Currency.set(this, chosen.currencySign)
+            cal.set(this, chosen.calendar)
+            renderCurrency()
+            renderCalendar()
         }
     }
 

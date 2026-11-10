@@ -1840,6 +1840,9 @@
     <string name="logo_show_urdu">اردو نام</string>
     <string name="logo_colour">رنگ</string>
     <string name="logo_use">یہ لوگو لگائیں</string>
+    <string name="country_follow_title">%1$s کی کرنسی اور کیلنڈر لگائیں؟</string>
+    <string name="country_follow_body">صرف نشان اور تاریخ دکھانے کا طریقہ بدلتا ہے؛ لکھی ہوئی رقمیں تبدیل نہیں ہوتیں۔</string>
+    <string name="country_follow_keep">%1$s ہی رہنے دیں</string>
     <string name="bp_logo_help">اختیاری — انوائس اور اسٹاک رجسٹر کے اوپر چھپتا ہے۔</string>
     <string name="bp_remove_logo">لوگو ہٹائیں</string>
     <string name="pic_delete_body_pc">یہ تصویر صرف اسی کمپیوٹر پر ہے: بیک اپ فائل میں تصویریں نہیں جاتیں۔ حذف کرنے کے بعد یہ واپس نہیں آ سکتی۔</string>

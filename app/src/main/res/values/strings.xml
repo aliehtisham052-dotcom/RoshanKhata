@@ -1893,6 +1893,9 @@
     <string name="logo_show_urdu">Urdu name</string>
     <string name="logo_colour">Colour</string>
     <string name="logo_use">Use this logo</string>
+    <string name="country_follow_title">Use %1$s\'s currency and calendar?</string>
+    <string name="country_follow_body">Only the sign and the way dates are shown change; amounts already written are not converted.</string>
+    <string name="country_follow_keep">Keep %1$s</string>
     <string name="bp_logo_help">Optional — printed at the top of invoices and the stock register.</string>
     <string name="bp_remove_logo">Remove logo</string>
     <string name="pic_delete_body_pc">This picture is kept only on this computer: the backup file carries no pictures. Once deleted, it cannot be brought back.</string>

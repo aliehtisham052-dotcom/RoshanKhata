@@ -1868,6 +1868,9 @@
     <string name="logo_show_urdu">نام اردو</string>
     <string name="logo_colour">رنگ</string>
     <string name="logo_use">استفاده از این لوگو</string>
+    <string name="country_follow_title">ارز و تقویم %1$s استفاده شود؟</string>
+    <string name="country_follow_body">فقط نشانه و شیوهٔ نمایش تاریخ عوض می‌شود؛ مبلغ‌های نوشته‌شده تبدیل نمی‌شوند.</string>
+    <string name="country_follow_keep">همان %1$s بماند</string>
     <string name="bp_logo_help">اختیاری — بالای فاکتورها و دفتر موجودی چاپ می‌شود.</string>
     <string name="bp_remove_logo">حذف لوگو</string>
     <string name="pic_delete_body_pc">این تصویر فقط روی همین رایانه است: فایل پشتیبان تصویرها را نمی‌برد. پس از حذف، دیگر برنمی‌گردد.</string>

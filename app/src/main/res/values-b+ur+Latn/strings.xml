@@ -1840,6 +1840,9 @@
     <string name="logo_show_urdu">Urdu naam</string>
     <string name="logo_colour">Rang</string>
     <string name="logo_use">Ye logo lagayein</string>
+    <string name="country_follow_title">%1$s ki currency aur calendar lagayein?</string>
+    <string name="country_follow_body">Sirf nishan aur tareekh dikhane ka tareeqa badalta hai; likhi hui raqamein tabdeel nahi hotin.</string>
+    <string name="country_follow_keep">%1$s hi rehne dein</string>
     <string name="bp_logo_help">Ikhtiyari — invoice aur stock register ke upar chhapta hai.</string>
     <string name="bp_remove_logo">Logo hatayein</string>
     <string name="pic_delete_body_pc">Yeh tasveer sirf isi computer par hai: backup file mein tasveerein nahi jaatin. Delete karne ke baad yeh wapas nahi aa sakti.</string>

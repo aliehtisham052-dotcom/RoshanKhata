@@ -163,10 +163,15 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
                         val name = if (ctry == ShopCountry.OTHER) word(W.country_other) else ctry.displayName(locale)
                         FluentPill(name, ctry == draft.country) {
                             if (ctry != draft.country) {
+                                // The currency and calendar follow a change of country while they are still the last
+                                // country's own or the defaults (10 Nov 2026, the owner: Saudi Arabia chosen after
+                                // Bangladesh kept BDT). One the owner set apart stays; both show at once in the draft.
+                                val prev = draft.country
                                 var next = draft.copy(country = ctry)
-                                if (next.currency == com.innovation313.roshankhata.data.Currency.DEFAULT && ctry != ShopCountry.OTHER) next = next.copy(currency = ctry.currencySign)
-                                // The phone's rule: a shop still on the default calendar takes the country's own.
-                                if (next.calendar == ShopCalendar.Kind.GREGORIAN && ctry.calendar != ShopCalendar.Kind.GREGORIAN) next = next.copy(calendar = ctry.calendar)
+                                if (ctry != ShopCountry.OTHER && (next.currency == com.innovation313.roshankhata.data.Currency.DEFAULT || next.currency == prev.currencySign))
+                                    next = next.copy(currency = ctry.currencySign)
+                                if (ctry != ShopCountry.OTHER && (next.calendar == ShopCalendar.Kind.GREGORIAN || next.calendar == prev.calendar))
+                                    next = next.copy(calendar = ctry.calendar)
                                 edit(next)
                             }
                         }

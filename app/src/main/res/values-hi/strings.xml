@@ -1888,6 +1888,9 @@
     <string name="logo_show_urdu">उर्दू नाम</string>
     <string name="logo_colour">रंग</string>
     <string name="logo_use">यह लोगो लगाएँ</string>
+    <string name="country_follow_title">%1$s की मुद्रा और कैलेंडर लगाएँ?</string>
+    <string name="country_follow_body">सिर्फ़ निशान और तारीख़ दिखाने का तरीका बदलता है; लिखी हुई रकम नहीं बदलती।</string>
+    <string name="country_follow_keep">%1$s ही रहने दें</string>
     <string name="bp_logo_help">ज़रूरी नहीं — इनवॉइस और स्टॉक रजिस्टर के ऊपर छपता है।</string>
     <string name="bp_remove_logo">लोगो हटाएँ</string>
     <string name="pic_delete_body_pc">यह तस्वीर सिर्फ़ इसी कंप्यूटर पर है: बैकअप फ़ाइल में तस्वीरें नहीं जातीं। मिटाने के बाद यह वापस नहीं आ सकती।</string>
