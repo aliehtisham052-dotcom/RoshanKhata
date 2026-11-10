@@ -3698,8 +3698,8 @@
         <item quantity="other">%d روز مانده</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="one">%d انتخاب‌شده</item>
-        <item quantity="other">%d انتخاب‌شده</item>
+        <item quantity="one">%,d انتخاب‌شده</item>
+        <item quantity="other">%,d انتخاب‌شده</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="one">%d در حال انقضا</item>
@@ -4180,6 +4180,17 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">از قبل در دفتر هست</string>
     <string name="contacts_select_all">انتخاب همه</string>
+    <string name="contacts_point_shown_here">مخاطبین شما فقط همین‌جا، روی همین گوشی نمایش داده می‌شوند</string>
+    <string name="contacts_point_not_uploaded">چیزی بارگذاری یا به جایی فرستاده نمی‌شود</string>
+    <string name="contacts_point_only_chosen">فقط کسانی که انتخاب می‌کنید ذخیره می‌شوند — فقط نام و شماره</string>
+    <string name="contacts_allow_access">اجازهٔ دسترسی</string>
+    <string name="contacts_permission_settings">دسترسی به مخاطبین برای روشن خاتا خاموش است. آن را از تنظیمات گوشی روشن کنید، یا مشتری‌ها را دستی اضافه کنید.</string>
+    <string name="contacts_open_settings">باز کردن تنظیمات گوشی</string>
+    <string name="contacts_no_name">بدون نام</string>
+    <plurals name="contacts_add_n">
+        <item quantity="one">افزودن %,d به دفتر</item>
+        <item quantity="other">افزودن %,d به دفتر</item>
+    </plurals>
     <string name="contacts_clear">پاک کردن</string>
     <plurals name="contacts_import_n">
         <item quantity="one">افزودن %d مشتری</item>

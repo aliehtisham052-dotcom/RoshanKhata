@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Import from the phone's contacts (redrawn 10 Nov 2026, the owner: "local" - a bare dialog over an empty
+  grey page, a faded spaced-out button, the list running under it). Now: the app's header with a back arrow;
+  the question about the contacts as a card on the page itself (permissionCard), which also carries the way
+  to the phone's settings once it was refused for good; the list under letter headings; and the one action
+  alone across the foot (importBar), shown only once someone is chosen.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,56 +19,85 @@
         android:layout_height="wrap_content"
         android:background="@color/section_tools"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/import_contacts"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/import_contacts"
+                android:textAlignment="viewStart"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/selectRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                android:textAlignment="viewStart"
                 android:id="@+id/tvSelectedCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textAlignment="viewStart"
                 android:textColor="@color/section_tools_soft"
-                android:textSize="12sp" />
+                android:textSize="13sp" />
 
             <!--
-              One tap to select everyone the current search shows — the thing you
-              want when importing a whole contact list. It toggles to "Clear all"
-              once everything visible is selected, so the same button undoes it.
+              Selects everyone the search shows; once they all are, the same button clears them.
             -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSelectAll"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:letterSpacing="0"
+                android:maxLines="1"
+                android:maxWidth="160dp"
                 android:text="@string/contacts_select_all"
                 android:textAllCaps="false"
                 android:textColor="@color/gold_on_dark"
-                android:textSize="13sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <EditText
             android:id="@+id/etSearch"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/bg_search_field"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="8dp"
@@ -82,7 +118,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="110dp"
+        android:paddingBottom="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -103,19 +139,198 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/rvContacts" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnImport"
+    <!-- The question about the contacts, on the page (it was a bare dialog over an empty page). -->
+    <ScrollView
+        android:id="@+id/permissionCard"
         android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:layout_margin="16dp"
-        android:enabled="false"
-        android:text="@string/import_selected"
-        android:textAllCaps="false"
-        android:textColor="@color/import_button_fg"
-        app:backgroundTint="@color/import_button_bg"
-        app:cornerRadius="10dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/page_line"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/bg_tile_icon"
+                        android:backgroundTint="@color/tile_khata_bg">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_people"
+                            app:tint="@color/brand_green_text" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvPermTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:gravity="center"
+                        android:text="@string/contacts_permission_title"
+                        android:textColor="@color/ink"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/permPoints"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_check_plain"
+                            android:drawablePadding="10dp"
+                            android:drawableTint="@color/brand_green_text"
+                            android:gravity="center_vertical"
+                            android:text="@string/contacts_point_shown_here"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/ink"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:drawableStart="@drawable/ic_check_plain"
+                            android:drawablePadding="10dp"
+                            android:drawableTint="@color/brand_green_text"
+                            android:gravity="center_vertical"
+                            android:text="@string/contacts_point_not_uploaded"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/ink"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:drawableStart="@drawable/ic_check_plain"
+                            android:drawablePadding="10dp"
+                            android:drawableTint="@color/brand_green_text"
+                            android:gravity="center_vertical"
+                            android:text="@string/contacts_point_only_chosen"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/ink"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Shown instead of the points once the phone will not ask again (refused for good). -->
+                    <TextView
+                        android:id="@+id/tvPermDenied"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/contacts_permission_settings"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAllow"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="20dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/contacts_allow_access"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/brand_green"
+                        app:cornerRadius="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnByHand"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:letterSpacing="0"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@string/add_manually"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_green_text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- The one action alone across the foot, only once someone is chosen. -->
+    <LinearLayout
+        android:id="@+id/importBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnImport"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/import_selected"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/brand_green"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_add_plain"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconSize="20dp"
+            app:iconTint="@color/white" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3718,8 +3718,8 @@
         <item quantity="other">%d दिन बाकी</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="one">%d चुना गया</item>
-        <item quantity="other">%d चुने गए</item>
+        <item quantity="one">%,d चुना गया</item>
+        <item quantity="other">%,d चुने गए</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="one">%d एक्सपायर होने वाला</item>
@@ -4200,6 +4200,17 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">खाते में पहले से है</string>
     <string name="contacts_select_all">सब चुनें</string>
+    <string name="contacts_point_shown_here">आपके कॉन्टैक्ट सिर्फ़ यहीं, इसी फ़ोन पर दिखते हैं</string>
+    <string name="contacts_point_not_uploaded">कुछ भी अपलोड नहीं होता, न कहीं भेजा जाता है</string>
+    <string name="contacts_point_only_chosen">सिर्फ़ वही लोग सेव होते हैं जिन्हें आप चुनें — बस नाम और नंबर</string>
+    <string name="contacts_allow_access">अनुमति दें</string>
+    <string name="contacts_permission_settings">रोशन खाता के लिए कॉन्टैक्ट की अनुमति बंद है। फ़ोन की सेटिंग्स में इसे चालू करें, या ग्राहक हाथ से जोड़ें।</string>
+    <string name="contacts_open_settings">फ़ोन की सेटिंग्स खोलें</string>
+    <string name="contacts_no_name">बिना नाम</string>
+    <plurals name="contacts_add_n">
+        <item quantity="one">%,d को खाते में जोड़ें</item>
+        <item quantity="other">%,d को खाते में जोड़ें</item>
+    </plurals>
     <string name="contacts_clear">साफ़ करें</string>
     <plurals name="contacts_import_n">
         <item quantity="one">%d ग्राहक जोड़ें</item>

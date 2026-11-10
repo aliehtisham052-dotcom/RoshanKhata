@@ -16,7 +16,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
-import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +24,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Contacts
 import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.KhataDatabase
@@ -66,9 +64,44 @@ class ImportContactsActivity : BaseActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
+            showPermissionCard(false)
             loadContacts()
         } else {
-            showStatus(getString(R.string.contacts_permission_denied))
+            // Refused with "don't ask again" (or refused twice): Android will not ask any more, so the card's
+            // button opens the phone's settings for this app instead of doing nothing.
+            refusedForGood = !shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)
+            showPermissionCard(true)
+        }
+    }
+
+    /** Set once Android will no longer show its own question; the card then leads to the phone's settings. */
+    private var refusedForGood = false
+    private lateinit var permissionCard: View
+
+    /**
+     * The question about the contacts, as a card on the page (10 Nov 2026): it was a bare dialog over an
+     * empty grey page. Nothing to choose or search while it shows.
+     */
+    private fun showPermissionCard(show: Boolean) {
+        permissionCard.visibility = if (show) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.selectRow).visibility = if (show) View.GONE else View.VISIBLE
+        etSearch.visibility = if (show) View.GONE else View.VISIBLE
+        if (!show) return
+        hideStatus()
+        findViewById<View>(R.id.permPoints).visibility = if (refusedForGood) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.tvPermDenied).visibility = if (refusedForGood) View.VISIBLE else View.GONE
+        findViewById<MaterialButton>(R.id.btnAllow)
+            .setText(if (refusedForGood) R.string.contacts_open_settings else R.string.contacts_allow_access)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Back from the phone's settings with the contacts allowed: straight to the list.
+        if (::permissionCard.isInitialized && permissionCard.visibility == View.VISIBLE && Build.VERSION.SDK_INT < 37 &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+        ) {
+            showPermissionCard(false)
+            loadContacts()
         }
     }
 
@@ -84,6 +117,21 @@ class ImportContactsActivity : BaseActivity() {
         btnImport = findViewById(R.id.btnImport)
         btnSelectAll = findViewById(R.id.btnSelectAll)
         etSearch = findViewById(R.id.etSearch)
+        permissionCard = findViewById(R.id.permissionCard)
+        findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnByHand).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnAllow).setOnClickListener {
+            if (refusedForGood) {
+                runCatching {
+                    startActivity(
+                        Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .setData(android.net.Uri.fromParts("package", packageName, null))
+                    )
+                }
+            } else {
+                requestPermission.launch(Manifest.permission.READ_CONTACTS)
+            }
+        }
 
         adapter = ContactAdapter { contact -> toggle(contact) }
         val rv: RecyclerView = findViewById(R.id.rvContacts)
@@ -174,15 +222,7 @@ class ImportContactsActivity : BaseActivity() {
             return
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.contacts_permission_title)
-            .setMessage(R.string.contacts_permission_rationale)
-            .setNegativeButton(R.string.cancel) { _, _ -> finish() }
-            .setPositiveButton(R.string.continue_action) { _, _ ->
-                requestPermission.launch(Manifest.permission.READ_CONTACTS)
-            }
-            .setCancelable(false)
-            .show()
+        showPermissionCard(true)
     }
 
     private fun loadContacts() {
@@ -243,7 +283,8 @@ class ImportContactsActivity : BaseActivity() {
                     }
             }
             visible = filtered
-            adapter.submit(filtered, selected)
+            // Letter headings while the list is in name order; a search ranks by match, so none then.
+            adapter.submit(filtered, selected, withSections = q.isEmpty)
             refreshSelectAllLabel()
 
             if (filtered.isEmpty() && all.isNotEmpty()) {
@@ -290,10 +331,12 @@ class ImportContactsActivity : BaseActivity() {
 
     private fun updateSelectedCount() {
         tvSelectedCount.text = Digits.quantity(resources, R.plurals.n_selected, selected.size, selected.size)
+        // The one action alone across the foot, only once someone is chosen (10 Nov 2026): a grey, faded button
+        // stood there before anyone was. "Add 1,217 to khata" - not "customers": whether they are customers or
+        // suppliers is asked next.
+        findViewById<View>(R.id.importBar).visibility = if (selected.isEmpty()) View.GONE else View.VISIBLE
         btnImport.isEnabled = selected.isNotEmpty()
-        // "Import 3 customers": the count is on the button, so nothing is imported by surprise.
-        btnImport.text = if (selected.isEmpty()) getString(R.string.import_selected)
-        else Digits.quantity(resources, R.plurals.contacts_import_n, selected.size, selected.size)
+        btnImport.text = Digits.quantity(resources, R.plurals.contacts_add_n, selected.size, selected.size)
     }
 
     /**
@@ -312,61 +355,40 @@ class ImportContactsActivity : BaseActivity() {
     private fun importSelected() {
         val toImport = allContacts.filter { it.phone in selected }
         if (toImport.isEmpty()) return
-
-        // A big batch is asked about once more: one slip must not fill the khata.
-        if (toImport.size > BIG_BATCH) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.contacts_import_many_title)
-                .setMessage(
-                    Digits.quantity(resources, R.plurals.contacts_import_many_body, toImport.size, toImport.size)
-                )
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.continue_action) { _, _ -> askType(toImport) }
-                .show()
-            return
+        // One sheet (10 Nov 2026) in place of two plain dialogs: how many go in, a warning when that is a lot -
+        // one slip must not fill the khata - and customer or supplier as two cards.
+        val n = toImport.size
+        val message = buildString {
+            append(Digits.quantity(resources, R.plurals.import_as_message, n, n))
+            if (n > BIG_BATCH) append("\n\n").append(Digits.quantity(resources, R.plurals.contacts_import_many_body, n, n))
         }
-        askType(toImport)
+        com.innovation313.roshankhata.ui.ChoiceSheet.show(
+            this,
+            title = getString(R.string.import_as_title),
+            message = message,
+            options = listOf(
+                com.innovation313.roshankhata.ui.ChoiceSheet.Option(getString(R.string.customer), icon = R.drawable.ic_person),
+                com.innovation313.roshankhata.ui.ChoiceSheet.Option(getString(R.string.supplier), icon = R.drawable.ic_truck)
+            )
+        ) { which -> saveAll(toImport, isCustomer = which == 0) }
     }
 
-    private fun askType(toImport: List<PhoneContact>) {
-        val view = layoutInflater.inflate(R.layout.dialog_import_contact_type, null)
-        view.findViewById<TextView>(R.id.tvImportTypeMessage).text =
-            Digits.quantity(resources, 
-                R.plurals.import_as_message, toImport.size, toImport.size
-            )
-        val rbCustomer: RadioButton = view.findViewById(R.id.rbImportCustomer)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.import_as_title)
-            .setView(view)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.import_selected) { _, _ ->
-                val isCustomer = rbCustomer.isChecked
-                // AppScope, not lifecycleScope — a quick Back press right
-                // after Save must not be able to cancel this import partway
-                // through, the same fix as everywhere else creation writes
-                // happen in this app. See AppScope's own comment.
-                AppScope.launch {
-                    dao.insertParties(
-                        toImport.map { c ->
-                            Party(name = c.name, phone = c.phone, isCustomer = isCustomer)
-                        }
-                    )
-                    withContext(Dispatchers.Main) {
-                        if (!isFinishing && !isDestroyed) {
-                            Toast.makeText(
-                                this@ImportContactsActivity,
-                                Digits.quantity(resources, 
-                                    R.plurals.imported_count, toImport.size, toImport.size
-                                ),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            finish()
-                        }
-                    }
+    private fun saveAll(toImport: List<PhoneContact>, isCustomer: Boolean) {
+        // AppScope, not lifecycleScope - a quick Back press right after the choice must not be able to cancel this
+        // import partway through, the same as everywhere else creation writes happen in this app.
+        AppScope.launch {
+            dao.insertParties(toImport.map { c -> Party(name = c.name, phone = c.phone, isCustomer = isCustomer) })
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    Toast.makeText(
+                        this@ImportContactsActivity,
+                        Digits.quantity(resources, R.plurals.imported_count, toImport.size, toImport.size),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
                 }
             }
-            .show()
+        }
     }
 
     private companion object {

@@ -3881,9 +3881,9 @@
         <item quantity="zero">لا شيء محدد</item>
         <item quantity="one">واحد محدد</item>
         <item quantity="two">اثنان محددان</item>
-        <item quantity="few">%d محددة</item>
-        <item quantity="many">%d محددًا</item>
-        <item quantity="other">%d محدد</item>
+        <item quantity="few">%,d محددة</item>
+        <item quantity="many">%,d محددًا</item>
+        <item quantity="other">%,d محدد</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="zero">لا شيء يقارب الانتهاء</item>
@@ -4416,6 +4416,21 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">موجود بالفعل في الدفتر</string>
     <string name="contacts_select_all">تحديد الكل</string>
+    <string name="contacts_point_shown_here">تُعرض جهات اتصالك هنا فقط، على هذا الهاتف</string>
+    <string name="contacts_point_not_uploaded">لا يُرفع شيء ولا يُرسل إلى أي مكان</string>
+    <string name="contacts_point_only_chosen">لا يُحفظ إلا من تختارهم — الاسم والرقم فقط</string>
+    <string name="contacts_allow_access">السماح بالوصول</string>
+    <string name="contacts_permission_settings">الوصول إلى جهات الاتصال متوقف لروشن كهاتا. فعّله من إعدادات الهاتف، أو أضف العملاء يدويًا.</string>
+    <string name="contacts_open_settings">فتح إعدادات الهاتف</string>
+    <string name="contacts_no_name">بلا اسم</string>
+    <plurals name="contacts_add_n">
+        <item quantity="zero">إضافة %,d إلى الدفتر</item>
+        <item quantity="one">إضافة %,d إلى الدفتر</item>
+        <item quantity="two">إضافة %,d إلى الدفتر</item>
+        <item quantity="few">إضافة %,d إلى الدفتر</item>
+        <item quantity="many">إضافة %,d إلى الدفتر</item>
+        <item quantity="other">إضافة %,d إلى الدفتر</item>
+    </plurals>
     <string name="contacts_clear">مسح</string>
     <plurals name="contacts_import_n">
         <item quantity="zero">استيراد %d عميل</item>

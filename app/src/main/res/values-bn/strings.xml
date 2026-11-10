@@ -3718,8 +3718,8 @@
         <item quantity="other">%d দিন বাকি</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="one">%dটি নির্বাচিত</item>
-        <item quantity="other">%dটি নির্বাচিত</item>
+        <item quantity="one">%,dটি নির্বাচিত</item>
+        <item quantity="other">%,dটি নির্বাচিত</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="one">%dটি মেয়াদ শেষের পথে</item>
@@ -4200,6 +4200,17 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">খাতায় আগে থেকেই আছে</string>
     <string name="contacts_select_all">সব বেছে নিন</string>
+    <string name="contacts_point_shown_here">আপনার কন্টাক্ট শুধু এখানে, এই ফোনেই দেখানো হয়</string>
+    <string name="contacts_point_not_uploaded">কিছুই আপলোড হয় না, কোথাও পাঠানোও হয় না</string>
+    <string name="contacts_point_only_chosen">শুধু আপনার বেছে নেওয়া লোকেরাই সেভ হয় — শুধু নাম ও নম্বর</string>
+    <string name="contacts_allow_access">অনুমতি দিন</string>
+    <string name="contacts_permission_settings">রোশন খাতার জন্য কন্টাক্টের অনুমতি বন্ধ আছে। ফোনের সেটিংসে এটি চালু করুন, অথবা গ্রাহক হাতে লিখে যোগ করুন।</string>
+    <string name="contacts_open_settings">ফোনের সেটিংস খুলুন</string>
+    <string name="contacts_no_name">নাম নেই</string>
+    <plurals name="contacts_add_n">
+        <item quantity="one">%,d জনকে খাতায় যোগ করুন</item>
+        <item quantity="other">%,d জনকে খাতায় যোগ করুন</item>
+    </plurals>
     <string name="contacts_clear">মুছুন</string>
     <plurals name="contacts_import_n">
         <item quantity="one">%d জন গ্রাহক আনুন</item>

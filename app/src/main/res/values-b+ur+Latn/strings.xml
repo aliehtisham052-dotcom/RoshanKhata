@@ -3670,8 +3670,8 @@
         <item quantity="other">%d din baqi</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="one">%d chune gaye</item>
-        <item quantity="other">%d chune gaye</item>
+        <item quantity="one">%,d chune gaye</item>
+        <item quantity="other">%,d chune gaye</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="one">%d expire hone wala</item>
@@ -4152,6 +4152,17 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">Khata mein pehle se hai</string>
     <string name="contacts_select_all">Sab chunein</string>
+    <string name="contacts_point_shown_here">Aap ke contacts sirf yahan, isi phone par dikhte hain</string>
+    <string name="contacts_point_not_uploaded">Kuch bhi upload nahi hota, na kahin bheja jata hai</string>
+    <string name="contacts_point_only_chosen">Sirf wahi log mehfooz hote hain jinhein aap chunein — sirf naam aur number</string>
+    <string name="contacts_allow_access">Ijazat dein</string>
+    <string name="contacts_permission_settings">Roshan Khata ke liye contacts ki ijazat band hai. Phone ki settings mein ise on karein, ya gahak haath se shamil karein.</string>
+    <string name="contacts_open_settings">Phone ki settings kholein</string>
+    <string name="contacts_no_name">Bina naam</string>
+    <plurals name="contacts_add_n">
+        <item quantity="one">%,d ko khata mein daalein</item>
+        <item quantity="other">%,d ko khata mein daalein</item>
+    </plurals>
     <string name="contacts_clear">Saaf karein</string>
     <plurals name="contacts_import_n">
         <item quantity="one">%d customer shamil karein</item>

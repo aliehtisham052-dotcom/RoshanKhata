@@ -3666,7 +3666,7 @@
         <item quantity="other">%d hari lagi</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="other">%d dipilih</item>
+        <item quantity="other">%,d dipilih</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="other">%d hampir kedaluwarsa</item>
@@ -4134,6 +4134,16 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">Sudah ada di buku</string>
     <string name="contacts_select_all">Pilih semua</string>
+    <string name="contacts_point_shown_here">Kontak Anda hanya ditampilkan di sini, di ponsel ini</string>
+    <string name="contacts_point_not_uploaded">Tidak ada yang diunggah atau dikirim ke mana pun</string>
+    <string name="contacts_point_only_chosen">Hanya orang yang Anda pilih yang disimpan — cukup nama dan nomornya</string>
+    <string name="contacts_allow_access">Izinkan akses</string>
+    <string name="contacts_permission_settings">Akses kontak untuk Roshan Khata dimatikan. Aktifkan di pengaturan ponsel, atau tambahkan pelanggan secara manual.</string>
+    <string name="contacts_open_settings">Buka pengaturan ponsel</string>
+    <string name="contacts_no_name">Tanpa nama</string>
+    <plurals name="contacts_add_n">
+        <item quantity="other">Tambahkan %,d ke buku</item>
+    </plurals>
     <string name="contacts_clear">Hapus</string>
     <plurals name="contacts_import_n">
                 <item quantity="other">Impor %d pelanggan</item>

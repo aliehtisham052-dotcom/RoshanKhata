@@ -3670,8 +3670,8 @@
         <item quantity="other">%d دن باقی</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="one">%d منتخب</item>
-        <item quantity="other">%d منتخب</item>
+        <item quantity="one">%,d منتخب</item>
+        <item quantity="other">%,d منتخب</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="one">%d ایکسپائر ہونے والا</item>
@@ -4152,6 +4152,17 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">کھاتے میں پہلے سے موجود</string>
     <string name="contacts_select_all">سب چنیں</string>
+    <string name="contacts_point_shown_here">آپ کے رابطے صرف یہاں، اسی فون پر دکھائے جاتے ہیں</string>
+    <string name="contacts_point_not_uploaded">کچھ بھی اپ لوڈ نہیں ہوتا، نہ کہیں بھیجا جاتا ہے</string>
+    <string name="contacts_point_only_chosen">صرف وہی لوگ محفوظ ہوتے ہیں جنہیں آپ چنیں — صرف نام اور نمبر</string>
+    <string name="contacts_allow_access">اجازت دیں</string>
+    <string name="contacts_permission_settings">روشن کھاتہ کے لیے رابطوں کی اجازت بند ہے۔ فون کی سیٹنگز میں اسے آن کریں، یا گاہک ہاتھ سے شامل کریں۔</string>
+    <string name="contacts_open_settings">فون کی سیٹنگز کھولیں</string>
+    <string name="contacts_no_name">بغیر نام</string>
+    <plurals name="contacts_add_n">
+        <item quantity="one">%,d کو کھاتے میں ڈالیں</item>
+        <item quantity="other">%,d کو کھاتے میں ڈالیں</item>
+    </plurals>
     <string name="contacts_clear">صاف کریں</string>
     <plurals name="contacts_import_n">
         <item quantity="one">%d گاہک شامل کریں</item>

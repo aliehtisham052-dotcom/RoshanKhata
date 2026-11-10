@@ -3698,8 +3698,8 @@
         <item quantity="other">%d ڏينهن باقي</item>
     </plurals>
     <plurals name="n_selected">
-        <item quantity="one">%d چونڊيل</item>
-        <item quantity="other">%d چونڊيل</item>
+        <item quantity="one">%,d چونڊيل</item>
+        <item quantity="other">%,d چونڊيل</item>
     </plurals>
     <plurals name="n_expiring">
         <item quantity="one">%d ختم ٿيڻ وارو</item>
@@ -4180,6 +4180,17 @@
     <!-- Import from Contacts (8 Nov 2026) -->
     <string name="contact_in_khata">کاتي ۾ اڳ ۾ ئي آهي</string>
     <string name="contacts_select_all">سڀ چونڊيو</string>
+    <string name="contacts_point_shown_here">توهان جا رابطا رڳو هتي، هن فون تي ڏيکاريا وڃن ٿا</string>
+    <string name="contacts_point_not_uploaded">ڪجهه به اپلوڊ نٿو ٿئي، نه ئي ڪٿي موڪليو وڃي ٿو</string>
+    <string name="contacts_point_only_chosen">رڳو اهي ماڻهو محفوظ ٿين ٿا جن کي توهان چونڊيو — رڳو نالو ۽ نمبر</string>
+    <string name="contacts_allow_access">اجازت ڏيو</string>
+    <string name="contacts_permission_settings">روشن کاتي لاءِ رابطن جي اجازت بند آهي. فون جي سيٽنگز ۾ ان کي چالو ڪريو، يا گراهڪ هٿ سان شامل ڪريو.</string>
+    <string name="contacts_open_settings">فون جون سيٽنگز کوليو</string>
+    <string name="contacts_no_name">بنا نالي</string>
+    <plurals name="contacts_add_n">
+        <item quantity="one">%,d کي کاتي ۾ شامل ڪريو</item>
+        <item quantity="other">%,d کي کاتي ۾ شامل ڪريو</item>
+    </plurals>
     <string name="contacts_clear">صاف ڪريو</string>
     <plurals name="contacts_import_n">
         <item quantity="one">%d گراهڪ شامل ڪريو</item>
