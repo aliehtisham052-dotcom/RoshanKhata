@@ -144,7 +144,13 @@ class ImageCropActivity : BaseActivity() {
                 disp.bottom - disp.height() * margin
             )
         }
-        overlay.rect = initial
+        // The box lives on the picture, never the letterbox; the frame's padding keeps the picture's corners off the
+        // screen's sides, where the back gesture takes the touch (10 Nov 2026, the owner).
+        overlay.bounds = disp
+        overlay.rect = RectF(
+            initial.left.coerceAtLeast(disp.left), initial.top.coerceAtLeast(disp.top),
+            initial.right.coerceAtMost(disp.right), initial.bottom.coerceAtMost(disp.bottom)
+        )
     }
 
     private fun confirmCrop() {
