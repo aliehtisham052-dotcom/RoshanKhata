@@ -40,12 +40,17 @@ class PdfPreviewActivity : BaseActivity() {
     companion object {
         const val EXTRA_PATH = "path"
         const val EXTRA_TITLE = "title"
+        const val EXTRA_SEAL_MIDDLE = "seal_middle"
+        const val EXTRA_SEAL_BELOW = "seal_below"
 
-        fun open(context: Context, file: File, title: String? = null) {
+        /** [seal]: the words on the seal this paper was just printed with, to play it landing (none: no stamp). */
+        fun open(context: Context, file: File, title: String? = null, seal: com.innovation313.roshankhata.data.SealMark.Mark? = null) {
             context.startActivity(
                 Intent(context, PdfPreviewActivity::class.java)
                     .putExtra(EXTRA_PATH, file.absolutePath)
                     .putExtra(EXTRA_TITLE, title)
+                    .putExtra(EXTRA_SEAL_MIDDLE, seal?.middle)
+                    .putExtra(EXTRA_SEAL_BELOW, seal?.below)
                     .apply { if (context !is android.app.Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
             )
         }
@@ -115,6 +120,16 @@ class PdfPreviewActivity : BaseActivity() {
             pageCount = opened
             rv.adapter = PagesAdapter()
             showPage(lm)
+            // The seal pressed onto the paper just made, once (not again on a rotation).
+            val middle = intent.getStringExtra(EXTRA_SEAL_MIDDLE)
+            val below = intent.getStringExtra(EXTRA_SEAL_BELOW)
+            if (savedInstanceState == null && middle != null && below != null) {
+                rv.post {
+                    if (!isFinishing && !isDestroyed) com.innovation313.roshankhata.ui.StampMoment.play(
+                        this@PdfPreviewActivity, com.innovation313.roshankhata.data.SealMark.Mark(middle, below, 0L)
+                    )
+                }
+            }
         }
     }
 

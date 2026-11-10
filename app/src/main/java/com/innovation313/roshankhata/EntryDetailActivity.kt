@@ -971,6 +971,8 @@ class EntryDetailActivity : BaseActivity() {
             c, slip.width - pad - size / 2f, slip.height + pad + size / 2f, size,
             com.innovation313.roshankhata.ui.Format.dateOnly(e.timestamp).uppercase(), e.entryNumber
         )
+        // The slip is a picture, not a PDF: its seal is not one to play when some PDF opens next.
+        com.innovation313.roshankhata.data.SealMark.clear()
         return out
     }
 

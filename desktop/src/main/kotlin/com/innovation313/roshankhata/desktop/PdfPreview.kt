@@ -218,12 +218,19 @@ fun showInFolder(file: File) {
 
 /** What the preview window shows: the sheet and its name. Set by [StatementPrint.show]. */
 object Preview {
-    class Request(val printable: Printable, val title: String)
+    /** [seal]: the words on the Roshan Khata seal this sheet was just drawn with, to play it landing. */
+    class Request(val printable: Printable, val title: String, val seal: com.innovation313.roshankhata.data.SealMark.Mark? = null)
 
     var request by mutableStateOf<Request?>(null)
         private set
 
-    fun open(printable: Printable, title: String) { request = Request(printable, title) }
+    fun open(printable: Printable, title: String) {
+        // Only a document drawn with the seal (an invoice and its kin, made just now for this preview) plays it; any
+        // other sheet forgets what the invoice pages on screen last drew, so it never lands on the wrong paper.
+        val seal = if (printable is DocumentPrint) com.innovation313.roshankhata.data.SealMark.take(maxAgeMs = 5_000L)
+        else { com.innovation313.roshankhata.data.SealMark.clear(); null }
+        request = Request(printable, title, seal)
+    }
     fun close() { request = null }
 
     /** One drawing thread: a Printable is drawn by one caller at a time, as a printer would. */
@@ -257,13 +264,19 @@ private fun PreviewContent(req: Preview.Request) {
     var note by remember { mutableStateOf<String?>(null) }
     val failedWord = word(W.pc_pdf_failed, "%s")
     val savedWord = word(W.report_saved_to, "%s")
-    LaunchedEffect(req) { sheets = withContext(Preview.drawing) { Sheets.of(req.printable) } }
+    var stamp by remember { mutableStateOf<com.innovation313.roshankhata.data.SealMark.Mark?>(null) }
+    LaunchedEffect(req) {
+        sheets = withContext(Preview.drawing) { Sheets.of(req.printable) }
+        // The seal pressed on once the pages are there.
+        stamp = req.seal
+    }
 
     fun openFile(f: File) {
         // The PDF in Windows' own viewer (Edge, Acrobat...), to send on or read in full.
         Thread({ runCatching { java.awt.Desktop.getDesktop().open(f) } }, "pdf-open").start()
     }
 
+    Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize().background(c.pageBg)) {
         Row(
             Modifier.fillMaxWidth().background(c.surface).padding(horizontal = 16.dp, vertical = 10.dp),
@@ -355,5 +368,7 @@ private fun PreviewContent(req: Preview.Request) {
             }
             }
         }
+    }
+    stamp?.let { m -> StampMoment(m) { stamp = null } }
     }
 }

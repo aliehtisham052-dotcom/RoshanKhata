@@ -8,6 +8,7 @@ import com.innovation313.roshankhata.data.DocKind
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoiceTotals
+import com.innovation313.roshankhata.data.SealMark
 import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.data.totals
 import com.innovation313.roshankhata.desktop.gfx.Bitmap
@@ -71,6 +72,7 @@ object InvoiceTemplateKit {
         // A stamp's own build (10 Nov 2026, the owner: the first one looked thin and plain): full-strength ink, a heavy
         // rim with a fine line inside it, the name over the top and DIGITAL RECORD under the bottom, a lightly tinted
         // centre with the book, and the paper's own date on a ribbon across the middle - the figure a reader looks for.
+        SealMark.drawn(middle, below)
         val k = size / 320f
         val ring = Paint().apply { color = ink; style = Paint.Style.STROKE; isAntiAlias = true }
         val fill = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }

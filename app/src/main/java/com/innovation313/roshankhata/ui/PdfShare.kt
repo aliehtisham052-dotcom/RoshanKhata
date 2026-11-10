@@ -50,6 +50,8 @@ object PdfShare {
         )
 
         val body = context.getString(R.string.pdf_ready_body)
+        // The seal this paper was just printed with, kept for the moment the owner opens it.
+        val seal = com.innovation313.roshankhata.data.SealMark.take()
         val builder = MaterialAlertDialogBuilder(context)
             .setTitle(titleRes)
             .setMessage(if (note != null) body + "\n\n" + note else body)
@@ -57,7 +59,7 @@ object PdfShare {
             .setPositiveButton(R.string.pdf_open) { _, _ ->
                 // Inside the app since 10 Nov 2026 (the owner: another app's own share button made Open and Share
                 // look alike); the phone's PDF app is one tap away there.
-                com.innovation313.roshankhata.PdfPreviewActivity.open(context, file)
+                com.innovation313.roshankhata.PdfPreviewActivity.open(context, file, seal = seal)
             }
             // Secondary: send it on, once they have chosen to.
             .setNeutralButton(R.string.share) { _, _ -> share(context, uri, file.name) }
@@ -134,7 +136,7 @@ object PdfShare {
      * and Share look like one thing. That app is still one tap away there ([openElsewhere]).
      */
     fun open(context: Context, file: File, title: String? = null) {
-        com.innovation313.roshankhata.PdfPreviewActivity.open(context, file, title)
+        com.innovation313.roshankhata.PdfPreviewActivity.open(context, file, title, com.innovation313.roshankhata.data.SealMark.take())
     }
 
     /** The phone's own PDF app, for printing or zooming there. */
