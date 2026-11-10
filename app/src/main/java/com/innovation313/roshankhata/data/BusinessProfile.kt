@@ -129,6 +129,8 @@ object BusinessProfile {
         override fun setOtherTrade(name: String?, items: String?) { readOnly() }
         override fun photoOnStatement() = p.getBoolean(KEY_PHOTO_ON_STATEMENT, false)
         override fun setPhotoOnStatement(enabled: Boolean) { readOnly() }
+        override fun sealChoice() = SealChoice.parse(p.getString(ShopSettings.Keys.SEAL_CHOICE, null))
+        override fun setSealChoice(choice: SealChoice) { readOnly() }
         override fun paymentOnReminder() = p.getBoolean(KEY_PAYMENT_ON_REMINDER, true)
         override fun setPaymentOnReminder(enabled: Boolean) { readOnly() }
         override fun refreshDisplay() = Unit
@@ -702,6 +704,14 @@ object BusinessProfile {
      */
     fun photoOnStatement(context: Context): Boolean =
         prefs(context).getBoolean(KEY_PHOTO_ON_STATEMENT, false)
+
+    /** The one seal on this shop's papers; see [SealChoice]. Per business, on this phone. */
+    fun sealChoice(context: Context): SealChoice =
+        SealChoice.parse(prefs(context).getString(ShopSettings.Keys.SEAL_CHOICE, null))
+
+    fun setSealChoice(context: Context, choice: SealChoice) {
+        prefs(context).edit().putString(ShopSettings.Keys.SEAL_CHOICE, choice.name).apply()
+    }
 
     fun setPhotoOnStatement(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_PHOTO_ON_STATEMENT, enabled).apply()

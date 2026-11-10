@@ -92,11 +92,18 @@ fun ShopCard(shopName: String, logo: ImageBitmap?, live: String?, onProfile: () 
                 .press(RoundedCornerShape(16.dp)) { open = true }.padding(horizontal = 9.dp, vertical = 7.dp),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(9.dp)
         ) {
+            // The shop's own logo whole, on white as on paper, with a little room round it; the green and gold tile with
+            // the storefront until one is set (10 Nov 2026, the owner's photos of the phone: cropped into the tile, a
+            // round logo lost its edge and its colours).
             Box(
-                Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(Look.hero).border(2.dp, Look.goldEdge, RoundedCornerShape(12.dp)),
+                Modifier.size(38.dp).clip(RoundedCornerShape(12.dp))
+                    .then(
+                        if (logo != null) Modifier.background(androidx.compose.ui.graphics.Color.White).border(1.dp, Look.line, RoundedCornerShape(12.dp))
+                        else Modifier.background(Look.hero).border(2.dp, Look.goldEdge, RoundedCornerShape(12.dp))
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                if (logo != null) Image(logo, contentDescription = null, modifier = Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)), contentScale = ContentScale.Crop)
+                if (logo != null) Image(logo, contentDescription = null, modifier = Modifier.size(32.dp), contentScale = ContentScale.Fit)
                 else Glyph("ic_storefront", Look.goldEdge, 19)
             }
             Column(Modifier.weight(1f)) {

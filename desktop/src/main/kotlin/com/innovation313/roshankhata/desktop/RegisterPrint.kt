@@ -66,7 +66,8 @@ class RegisterPrint(
         return 112.0
     }
 
-    override fun footer(page: Int): String = words.text(W.pdf_reg_footer, words.text(W.app_name), madeAt, page)
+    // The page number only (10 Nov 2026, the owner, as on the phone).
+    override fun footer(page: Int): String = words.text(W.pdf_page_only, page)
 
     override fun Pen.write() {
         note(listOf(words.text(W.pdf_reg_note_1), words.text(W.pdf_reg_note_2)))

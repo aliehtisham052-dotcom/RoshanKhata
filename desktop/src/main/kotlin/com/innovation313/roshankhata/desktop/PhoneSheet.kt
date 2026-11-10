@@ -22,7 +22,8 @@ import java.util.Date
  * part 7 — the audit: the computer's printouts never said when they were made).
  */
 fun madeLine(words: Words, at: Long = System.currentTimeMillis()): String =
-    words.text(W.app_name) + " \u00b7 " + words.text(W.pdf_rep_generated, DateWords.formatter("dd MMM yyyy, HH:mm").format(Date(at)))
+    // When it was made, without the app's name (10 Nov 2026, the owner: the app is named once a page, not at every foot).
+    words.text(W.pdf_rep_generated, DateWords.formatter("dd MMM yyyy, HH:mm").format(Date(at)))
 
 /**
  * The phone's family of A4 reports, drawn on the computer (Marhala 4, part 7 — the audit: the computer's

@@ -43,12 +43,13 @@ import kotlin.random.Random
  * a moment and the cover lifts. A click skips it. Nothing bounces.
  */
 @Composable
-fun StampMoment(mark: SealMark.Mark, onDone: () -> Unit) {
-    val picture = remember(mark) { sealPicture(560, mark) }
+fun StampMoment(mark: SealMark.Mark, ownStamp: ImageBitmap? = null, onDone: () -> Unit) {
+    // The shop's own stamp when that is the paper's seal (as kept, no grain), else the Roshan Khata seal.
+    val picture = remember(mark, ownStamp) { ownStamp?.takeIf { mark.own } ?: sealPicture(560, mark) }
     val cover = remember { Animatable(0f) }
     val scaleX = remember { Animatable(2.3f) }
     val scaleY = remember { Animatable(2.3f) }
-    val turn = remember { Animatable(22f) }
+    val turn = remember { Animatable(-22f) }
     val drop = remember { Animatable(-36f) }
     val seen = remember { Animatable(0f) }
     val ring = remember { Animatable(0.96f) }

@@ -116,7 +116,6 @@ object RegisterReport {
         var y: Float
         var pageNo = 1
 
-        val brandLogo = PdfBranding.logo(context)
         // Read once: each is drawn on every page, and the column words are
         // also measured, so measureText must see the same string that is drawn.
         val appName = context.getString(R.string.app_name)
@@ -344,8 +343,8 @@ object RegisterReport {
         // the footer, and needs the room.
         // 200 since 10 Nov 2026: the Roshan Khata seal stands between the two signatures and keeps clear of the strip.
         if (y > PAGE_H - 210f) newPage() else y += 24f
-        InvoiceTemplateKit.drawRecordSeal(
-            canvas, PAGE_W / 2f, y + 32f, InvoiceTemplateKit.SEAL_SIZE,
+        InvoiceTemplateKit.drawDocumentSeal(
+            canvas, context, PAGE_W / 2f, y + 32f, InvoiceTemplateKit.SEAL_SIZE,
             Format.dateOnly(System.currentTimeMillis()).uppercase(), "REGISTER"
         )
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
@@ -365,22 +364,11 @@ object RegisterReport {
         // ---- Download banner, just above the footer ----
         PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
 
-        // ---- Footer ----
+        // ---- Footer: the page number only (10 Nov 2026, the owner: the app's mark is on the strip above) ----
         y = PAGE_H - 34f
-        var footerX = MARGIN
-        brandLogo?.let { mark ->
-            val size = 18f
-            PdfRtl.drawBitmap(canvas,
-                mark,
-                android.graphics.Rect(0, 0, mark.width, mark.height),
-                android.graphics.RectF(footerX, y - 13f, footerX + size, y + 5f),
-                Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-            )
-            footerX += size + 6f
-        }
         PdfRtl.drawText(canvas,
-            Digits.string(context.resources, R.string.pdf_reg_footer, appName, dateFmt.format(Date()), pageNo),
-            footerX, y, muted
+            Digits.string(context.resources, R.string.pdf_page_only, pageNo),
+            MARGIN, y, muted
         )
 
         doc.finishPage(page)

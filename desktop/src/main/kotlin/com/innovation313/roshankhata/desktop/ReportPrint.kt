@@ -35,7 +35,8 @@ class ReportPrint(
         return 100.0
     }
 
-    override fun footer(page: Int): String = words.text(W.pdf_rep_footer_page, words.text(W.app_name), page)
+    // The page number only (10 Nov 2026, the owner): the app is named on the strip, once a page.
+    override fun footer(page: Int): String = words.text(W.pdf_page_only, page)
 
     override fun Pen.write() {
         note(listOf(words.text(W.pdf_rep_not_backup), words.text(W.pdf_rep_not_backup_restore, words.text(W.app_name))), boldFirst = true)

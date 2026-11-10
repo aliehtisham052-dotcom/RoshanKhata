@@ -134,6 +134,8 @@ object BusinessProfile {
     fun loadQr(c: Context): Bitmap? = c.images.load(ProfileImages.Kind.QR)
     fun loadSignature(c: Context): Bitmap? = c.images.load(ProfileImages.Kind.SIGNATURE)
     fun loadStamp(c: Context): Bitmap? = c.images.load(ProfileImages.Kind.STAMP)
+    fun hasStamp(c: Context): Boolean = c.images.has(ProfileImages.Kind.STAMP)
+    fun sealChoice(c: Context): com.innovation313.roshankhata.data.SealChoice = c.settings.sealChoice()
     fun loadLogo(c: Context): Bitmap? = c.images.load(ProfileImages.Kind.LOGO)
 }
 

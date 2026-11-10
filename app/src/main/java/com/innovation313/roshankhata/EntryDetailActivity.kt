@@ -961,14 +961,16 @@ class EntryDetailActivity : BaseActivity() {
      */
     private fun withSeal(slip: Bitmap): Bitmap {
         val e = entry ?: return slip
+        if (com.innovation313.roshankhata.data.InvoiceTemplateKit.sealToPrint(this) ==
+            com.innovation313.roshankhata.data.SealChoice.NONE) return slip
         val size = slip.width * 0.24f
         val pad = size * 0.16f
         val out = Bitmap.createBitmap(slip.width, slip.height + (size + 2 * pad).toInt(), Bitmap.Config.ARGB_8888)
         val c = Canvas(out)
         c.drawColor(android.graphics.Color.WHITE)
         c.drawBitmap(slip, 0f, 0f, null)
-        com.innovation313.roshankhata.data.InvoiceTemplateKit.drawRecordSeal(
-            c, slip.width - pad - size / 2f, slip.height + pad + size / 2f, size,
+        com.innovation313.roshankhata.data.InvoiceTemplateKit.drawDocumentSeal(
+            c, this, slip.width - pad - size / 2f, slip.height + pad + size / 2f, size,
             com.innovation313.roshankhata.ui.Format.dateOnly(e.timestamp).uppercase(), e.entryNumber
         )
         // The slip is a picture, not a PDF: its seal is not one to play when some PDF opens next.

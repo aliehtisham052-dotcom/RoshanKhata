@@ -70,6 +70,8 @@ class FileShopSettings(private val file: File) : ShopSettings {
 
     override fun photoOnStatement() = props.getProperty(ShopSettings.Keys.PHOTO_ON_STATEMENT) == "true"
     override fun setPhotoOnStatement(enabled: Boolean) = put(ShopSettings.Keys.PHOTO_ON_STATEMENT to enabled.toString())
+    override fun sealChoice() = SealChoice.parse(props.getProperty(ShopSettings.Keys.SEAL_CHOICE))
+    override fun setSealChoice(choice: SealChoice) = put(ShopSettings.Keys.SEAL_CHOICE to choice.name)
     // On unless switched off, as the phone's default reads.
     override fun paymentOnReminder() = props.getProperty(ShopSettings.Keys.PAYMENT_ON_REMINDER) != "false"
     override fun setPaymentOnReminder(enabled: Boolean) = put(ShopSettings.Keys.PAYMENT_ON_REMINDER to enabled.toString())

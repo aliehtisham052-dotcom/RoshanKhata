@@ -1710,6 +1710,7 @@
     <string name="pdf_rep_col_gave">আমি দিয়েছি</string>
     <string name="pdf_rep_col_got">আমি পেয়েছি</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 পৃষ্ঠা %2$d</string>
+    <string name="pdf_page_only">পৃষ্ঠা %1$d</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">বিক্রয় ও ক্রয় রেজিস্টার</string>
@@ -1866,6 +1867,12 @@
     <string name="bp_add">যোগ করুন</string>
     <string name="bp_change">বদলান</string>
     <string name="bp_seals_help">সাদা কাগজে তোলা ছবি — অ্যাপ নিজেই কেটে নেয়।</string>
+    <string name="seal_choice_title">কাগজে সিল</string>
+    <string name="seal_choice_help">প্রতিটি ইনভয়েস, স্টেটমেন্ট ও রিপোর্টের শেষে একটি সিল বসে, কাগজের তারিখ ও নম্বরসহ।</string>
+    <string name="seal_choice_app">রোশন খাতার সিল</string>
+    <string name="seal_choice_own">আমার দোকানের নিজের সিল</string>
+    <string name="seal_choice_none">কোনো সিল নয়</string>
+    <string name="seal_choice_own_needs">নিজের সিল ব্যবহার করতে নিচে তার ছবি যোগ করুন।</string>
     <string name="bp_terms_help">প্রতিটি ইনভয়েসে ছাপা হয়। ফাঁকা = কিছু নয়।</string>
     <string name="bp_photo">স্টেটমেন্টে গ্রাহকের ছবি</string>
     <string name="bp_photo_help">শুরুতে বন্ধ — স্টেটমেন্ট অন্যের কাছে পাঠানো হতে পারে।</string>

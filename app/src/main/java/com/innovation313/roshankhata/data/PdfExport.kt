@@ -250,9 +250,8 @@ object PdfExport {
         // page breaks leave room for it. On the counting pass the total is not known yet; the line
         // is the same height either way, so nothing moves.
         fun endPage() {
-            val shop = businessName?.takeIf { it.isNotBlank() } ?: context.getString(R.string.app_name)
-            val words = shop + "  ·  " +
-                Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages ?: pageNo)
+            // The page and the count only (10 Nov 2026, the owner: the band names the shop, the strip the app).
+            val words = Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages ?: pageNo)
             val p = Paint().apply { color = GREY; textSize = 7f; isAntiAlias = true }
             PdfRtl.drawText(c, fitted(words, p, PAGE_W - 2 * MARGIN), MARGIN, PAGE_H - MARGIN - 26f, p)
             doc.finishPage(page)
@@ -702,10 +701,10 @@ object PdfExport {
             val sigW = 150
             val sigH = 60
             val sigLeft = PAGE_W - MARGIN - sigW
-            // The Roshan Khata seal beside the signature, as a shop stamps beside its signature (10 Nov 2026):
-            // the day the statement was made, and what it is.
-            InvoiceTemplateKit.drawRecordSeal(
-                c, sigLeft - 28f - InvoiceTemplateKit.SEAL_SIZE / 2f, y + InvoiceTemplateKit.SEAL_SIZE / 2f - 4f,
+            // The paper's one seal (the Roshan Khata seal, or the shop's own when chosen) beside the signature, as a
+            // shop stamps beside its signature (10 Nov 2026): the day the statement was made, and what it is.
+            InvoiceTemplateKit.drawDocumentSeal(
+                c, context, sigLeft - 28f - InvoiceTemplateKit.SEAL_SIZE / 2f, y + InvoiceTemplateKit.SEAL_SIZE / 2f - 4f,
                 InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(System.currentTimeMillis()).uppercase(), "STATEMENT"
             )
 
@@ -727,7 +726,7 @@ object PdfExport {
                 sigLeft, y, muted
             )
             y += 22f
-        } else {
+        } else if (InvoiceTemplateKit.sealToPrint(context) != SealChoice.NONE) {
             // No signature: the seal alone at the end side, in its own room above the foot line.
             if (y > PAGE_H - 200f) {
                 endPage()
@@ -739,8 +738,8 @@ object PdfExport {
                 y = drawHeader(first = false)
             }
             y += 16f
-            InvoiceTemplateKit.drawRecordSeal(
-                c, PAGE_W - MARGIN - InvoiceTemplateKit.SEAL_SIZE / 2f, y + InvoiceTemplateKit.SEAL_SIZE / 2f,
+            InvoiceTemplateKit.drawDocumentSeal(
+                c, context, PAGE_W - MARGIN - InvoiceTemplateKit.SEAL_SIZE / 2f, y + InvoiceTemplateKit.SEAL_SIZE / 2f,
                 InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(System.currentTimeMillis()).uppercase(), "STATEMENT"
             )
             y += InvoiceTemplateKit.SEAL_SIZE + 10f

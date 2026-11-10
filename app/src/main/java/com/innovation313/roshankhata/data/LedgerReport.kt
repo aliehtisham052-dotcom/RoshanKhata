@@ -94,7 +94,6 @@ object LedgerReport {
         val colGave = context.getString(R.string.pdf_rep_col_gave)
         val colGot = context.getString(R.string.pdf_rep_col_got)
 
-        val brandLogo = PdfBranding.logo(context)
         val businessName = BusinessProfile.businessName(context) ?: context.getString(R.string.app_name)
 
         fun header(): Float {
@@ -113,26 +112,13 @@ object LedgerReport {
             return 100f
         }
 
-        // The 'App · Page n' line closes every page, not only the last (8 Nov 2026 review, m80).
+        // Only the page number closes every page (10 Nov 2026, the owner: the app's mark once a page is enough, and
+        // it is on the download strip; a second logo and name here read as an advert).
         fun pageFoot() {
             val fy = PAGE_H - 34f
-            var footerX = MARGIN
-            brandLogo?.let { mark ->
-                val size = 18f
-                PdfRtl.drawBitmap(canvas,
-                    mark,
-                    android.graphics.Rect(0, 0, mark.width, mark.height),
-                    android.graphics.RectF(footerX, fy - 13f, footerX + size, fy + 5f),
-                    android.graphics.Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-                )
-                footerX += size + 6f
-            }
             PdfRtl.drawText(canvas,
-                Digits.string(context.resources, R.string.pdf_rep_footer_page,
-                    context.getString(R.string.app_name),
-                    pageNo
-                ),
-                footerX, fy, muted
+                Digits.string(context.resources, R.string.pdf_page_only, pageNo),
+                MARGIN, fy, muted
             )
         }
 
@@ -284,11 +270,13 @@ object LedgerReport {
         // The Roshan Khata seal where the report ends, at the end side, under its last row (10 Nov 2026, the owner: one
         // place on every paper, never floating at the foot); with no room above the strip it starts the next page.
         val sealSize = InvoiceTemplateKit.SEAL_SIZE
+        if (InvoiceTemplateKit.sealToPrint(context) != SealChoice.NONE) {
         if (y + InvoiceTemplateKit.SEAL_GAP + sealSize > PAGE_H - 104f - InvoiceTemplateKit.SEAL_GAP) newPage()
-        InvoiceTemplateKit.drawRecordSeal(
-            canvas, PAGE_W - MARGIN - sealSize / 2f, y + InvoiceTemplateKit.SEAL_GAP + sealSize / 2f,
+        InvoiceTemplateKit.drawDocumentSeal(
+            canvas, context, PAGE_W - MARGIN - sealSize / 2f, y + InvoiceTemplateKit.SEAL_GAP + sealSize / 2f,
             sealSize, Format.dateOnly(System.currentTimeMillis()).uppercase(), "REPORT"
         )
+        }
         PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
         pageFoot()
 

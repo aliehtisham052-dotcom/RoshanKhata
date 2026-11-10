@@ -443,7 +443,6 @@ object InspectorReport {
         var y: Float
         var pageNo = 1
 
-        val brandLogo = PdfBranding.logo(context)
         val shopLogo = BusinessProfile.loadLogo(context)
         val businessName = d.businessName ?: context.getString(R.string.app_name)
 
@@ -520,15 +519,9 @@ object InspectorReport {
                 )
             } else if (initials != null) {
                 PdfRtl.drawText(canvas, initials, square.centerX(), square.centerY() + 5.5f, monogram)
-            } else {
-                brandLogo?.let { mark ->
-                    PdfRtl.drawBitmap(canvas, mark,
-                        android.graphics.Rect(0, 0, mark.width, mark.height),
-                        RectF(square.left + 5f, square.top + 5f, square.right - 5f, square.bottom - 5f),
-                        Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-                    )
-                }
             }
+            // No shop logo and no name to take letters from: the square stays plain - the app's mark is on the strip
+            // at the foot already, once a page is enough (10 Nov 2026, the owner).
 
             // Right-hand block first, so the shop's lines know how much room is left.
             val title = context.getString(if (d.style.compliance) R.string.pdf_insp_title else R.string.pdf_insp_title_plain).uppercase(Locale.getDefault())
@@ -557,21 +550,12 @@ object InspectorReport {
         fun footer() {
             val fy = PAGE_H - 30f
             canvas.drawLine(MARGIN, fy - 16f, right, fy - 16f, hair)
-            var footerX = MARGIN
-            brandLogo?.let { mark ->
-                val size = 16f
-                PdfRtl.drawBitmap(canvas,
-                    mark,
-                    android.graphics.Rect(0, 0, mark.width, mark.height),
-                    RectF(footerX, fy - 12f, footerX + size, fy + 4f),
-                    Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-                )
-                footerX += size + 6f
-            }
+            // The page number only (10 Nov 2026, the owner): the shop is named in the band, the app on the strip.
+            val footerX = MARGIN
             val label = if (totalPages != null) {
-                Digits.string(context.resources, R.string.pdf_insp_footer_of, businessName, pageNo, totalPages)
+                Digits.string(context.resources, R.string.pdf_stmt_page, pageNo, totalPages)
             } else {
-                Digits.string(context.resources, R.string.pdf_insp_footer, businessName, pageNo)
+                Digits.string(context.resources, R.string.pdf_page_only, pageNo)
             }
             PdfRtl.drawText(canvas, label, footerX, fy, footerText)
         }

@@ -33,6 +33,7 @@ import com.innovation313.roshankhata.data.DocKind
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoiceTotals
+import com.innovation313.roshankhata.data.SealChoice
 import com.innovation313.roshankhata.data.SealMark
 import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.data.totals

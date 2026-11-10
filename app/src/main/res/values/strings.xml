@@ -1715,6 +1715,7 @@
     <string name="pdf_rep_col_gave">I GAVE</string>
     <string name="pdf_rep_col_got">I GOT</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 Page %2$d</string>
+    <string name="pdf_page_only">Page %1$d</string>
 
     <!-- Words printed on the SALES &amp; PURCHASE REGISTER pdf — the compliance sheet an inspector reads. -->
     <string name="pdf_reg_title">Sales &amp; Purchase Register</string>
@@ -1871,6 +1872,12 @@
     <string name="bp_add">Add</string>
     <string name="bp_change">Change</string>
     <string name="bp_seals_help">Photo on plain white paper — the app crops it for you.</string>
+    <string name="seal_choice_title">Seal on your papers</string>
+    <string name="seal_choice_help">One seal goes at the end of every invoice, statement and report, with the paper\'s date and number.</string>
+    <string name="seal_choice_app">Roshan Khata seal</string>
+    <string name="seal_choice_own">My shop\'s own stamp</string>
+    <string name="seal_choice_none">No seal</string>
+    <string name="seal_choice_own_needs">To use your own stamp, add its picture below.</string>
     <string name="bp_terms_help">Printed on every invoice. Blank = none.</string>
     <string name="bp_photo">Customer photo on statements</string>
     <string name="bp_photo_help">Off by default — a statement can be forwarded.</string>

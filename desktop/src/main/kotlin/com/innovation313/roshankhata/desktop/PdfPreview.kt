@@ -239,7 +239,7 @@ object Preview {
 
 /** The preview window, whenever a sheet was asked for. Placed once, in the book's window. */
 @Composable
-fun PreviewHost() {
+fun PreviewHost(images: com.innovation313.roshankhata.desktop.invoice.ProfileImages? = null) {
     val req = Preview.request ?: return
     androidx.compose.runtime.key(req) {
         AppDialog(
@@ -248,13 +248,13 @@ fun PreviewHost() {
             title = req.title,
             state = rememberDialogState(width = fitW(860.dp), height = fitH(900.dp))
         ) {
-            PreviewContent(req)
+            PreviewContent(req, images)
         }
     }
 }
 
 @Composable
-private fun PreviewContent(req: Preview.Request) {
+private fun PreviewContent(req: Preview.Request, images: com.innovation313.roshankhata.desktop.invoice.ProfileImages? = null) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var sheets by remember { mutableStateOf<Sheets?>(null) }
@@ -369,6 +369,13 @@ private fun PreviewContent(req: Preview.Request) {
             }
         }
     }
-    stamp?.let { m -> StampMoment(m) { stamp = null } }
+    stamp?.let { m ->
+        val own = remember(m) {
+            if (!m.own) null
+            else images?.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.STAMP)?.takeIf { it.isFile }
+                ?.let { f -> runCatching { javax.imageio.ImageIO.read(f)?.toComposeImageBitmap() }.getOrNull() }
+        }
+        StampMoment(m, own) { stamp = null }
+    }
     }
 }

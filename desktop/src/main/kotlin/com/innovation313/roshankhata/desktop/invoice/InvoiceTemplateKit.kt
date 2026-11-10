@@ -8,6 +8,7 @@ import com.innovation313.roshankhata.data.DocKind
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoiceTotals
+import com.innovation313.roshankhata.data.SealChoice
 import com.innovation313.roshankhata.data.SealMark
 import com.innovation313.roshankhata.data.lineTotal
 import com.innovation313.roshankhata.data.totals
@@ -51,8 +52,12 @@ object InvoiceTemplateKit {
     const val SEAL_GAP = 12f
     /** The app's green as stamp ink, a little thinned so it reads as ink on paper. */
     const val SEAL_INK = 0xFF1B5E3A.toInt()
-    /** How far the seal leans, clockwise, as a hand-pressed stamp does (the owner chose 8 degrees, 10 Nov 2026). */
-    const val SEAL_TILT = 8f
+    /**
+     * How far the seal leans, as a hand-pressed stamp does: 8 degrees (the owner, 10 Nov 2026), turned to the left
+     * (counter-clockwise), so its English words rise as they are read - the way an approval stamp is set, and the way a
+     * right hand turns one. The same on every language's paper: the seal's words are English everywhere.
+     */
+    const val SEAL_TILT = -8f
 
     /**
      * The round green seal the owner chose (10 Nov 2026): "ROSHAN KHATA" round the top, "DIGITAL RECORD" round the
@@ -65,6 +70,38 @@ object InvoiceTemplateKit {
      * the rim with plain rotations, so the computer's drawing stand-in draws it the same, and the whole seal is one
      * left-to-right unit on a right-to-left page ([PdfRtl.asOne]).
      */
+    /** What this shop's papers carry: [SealChoice], its own stamp only when a stamp picture is kept. */
+    fun sealToPrint(context: Context): SealChoice =
+        BusinessProfile.sealChoice(context).printed(BusinessProfile.hasStamp(context))
+
+    /**
+     * The paper's one seal, by the shop's choice (10 Nov 2026, the owner: the Roshan Khata seal by default, the shop's
+     * own stamp picture instead when it is chosen, or none - never both). Drawn in the same place at the same lean
+     * either way; false when nothing was drawn, so a caller can give the room back.
+     */
+    fun drawDocumentSeal(
+        c: Canvas, context: Context, cx: Float, cy: Float, size: Float, middle: String, below: String,
+        ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt()
+    ): Boolean = when (sealToPrint(context)) {
+        SealChoice.NONE -> { SealMark.clear(); false }
+        SealChoice.OWN -> {
+            val stamp = BusinessProfile.loadStamp(context)
+            if (stamp == null) {
+                drawRecordSeal(c, cx, cy, size, middle, below, ink, paper)
+            } else {
+                PdfRtl.asOne(c, cx - size / 2f, cx + size / 2f) {
+                    val turned = c.save()
+                    c.rotate(SEAL_TILT, cx, cy)
+                    drawBitmapFit(c, stamp, RectF(cx - size / 2f, cy - size / 2f, cx + size / 2f, cy + size / 2f))
+                    c.restoreToCount(turned)
+                }
+                SealMark.drawn(middle, below, own = true)
+            }
+            true
+        }
+        SealChoice.APP -> { drawRecordSeal(c, cx, cy, size, middle, below, ink, paper); true }
+    }
+
     fun drawRecordSeal(
         c: Canvas, cx: Float, cy: Float, size: Float, middle: String, below: String,
         ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt(), tilt: Float = SEAL_TILT
@@ -420,11 +457,11 @@ object InvoiceTemplateKit {
         } else {
             val tile = RectF(left, 26f, left + 40f, 66f)
             // The shop's own logo in the tile when the owner has added one
-            // (Business Profile, 30 Sep 2026); otherwise the Roshan Khata
-            // mark stands in, on white so its green and gold read on any
-            // band colour. The initials remain only as the fallback if no
-            // image can be loaded at all.
-            val mark = BusinessProfile.loadLogo(context) ?: PdfBranding.logo(context)
+            // (Business Profile, 30 Sep 2026), on white so its colours read on
+            // any band; otherwise the shop's initials. Never the app's mark: it
+            // is on the strip at the foot, and once a page is enough (10 Nov
+            // 2026, the owner).
+            val mark = BusinessProfile.loadLogo(context)
             if (palette.bandFilled) {
                 c.drawRoundRect(tile, 9f, 9f, solid(if (mark != null) Color.WHITE else 0x33FFFFFF))
             } else {
@@ -736,18 +773,9 @@ object InvoiceTemplateKit {
         })
 
         val imageBand = RectF(sigBox.left + 6f, y + 6f, sigBox.right - 6f, y + 48f)
-        val signature = BusinessProfile.loadSignature(context)
-        val stamp = BusinessProfile.loadStamp(context)
-        when {
-            signature != null && stamp != null -> {
-                val gap = 4f
-                val half = (imageBand.width() - gap) / 2f
-                drawBitmapFit(c, signature, RectF(imageBand.left, imageBand.top, imageBand.left + half, imageBand.bottom))
-                drawBitmapFit(c, stamp, RectF(imageBand.left + half + gap, imageBand.top, imageBand.right, imageBand.bottom))
-            }
-            signature != null -> drawBitmapFit(c, signature, imageBand)
-            stamp != null -> drawBitmapFit(c, stamp, imageBand)
-        }
+        // The signature only: the shop's stamp, when it is chosen, is the paper's one seal at its end (10 Nov 2026,
+        // the owner: one seal on a paper, never a second beside the signature).
+        BusinessProfile.loadSignature(context)?.let { drawBitmapFit(c, it, imageBand) }
 
         c.drawLine(sigBox.left + 20f, y + sigH - 24f, sigBox.right - 20f, y + sigH - 24f, Paint().apply { color = palette.ink; strokeWidth = 0.7f })
         PdfRtl.drawText(c, Labels(context).signatory, sigBox.centerX(), y + sigH - 10f, paint(fonts, 9f, palette.muted, align = Paint.Align.CENTER))

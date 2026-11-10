@@ -70,11 +70,11 @@ object StampMoment {
         }
         cover.addView(ring, FrameLayout.LayoutParams((side * 0.94f).toInt(), (side * 0.94f).toInt(), Gravity.CENTER))
         val stamp = ImageView(activity).apply {
-            setImageBitmap(sealPicture(side, mark))
+            setImageBitmap(sealPicture(activity, side, mark))
             elevation = 14 * d
             alpha = 0f
             scaleX = 2.3f; scaleY = 2.3f
-            rotation = 22f
+            rotation = -22f
             translationY = -36 * d
         }
         cover.addView(stamp, FrameLayout.LayoutParams(side, side, Gravity.CENTER))
@@ -88,7 +88,7 @@ object StampMoment {
             stamp,
             PropertyValuesHolder.ofFloat(View.SCALE_X, 2.3f, 0.93f),
             PropertyValuesHolder.ofFloat(View.SCALE_Y, 2.3f, 0.9f),
-            PropertyValuesHolder.ofFloat(View.ROTATION, 22f, InvoiceTemplateKit.SEAL_TILT),
+            PropertyValuesHolder.ofFloat(View.ROTATION, -22f, InvoiceTemplateKit.SEAL_TILT),
             PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, -36 * d, 0f),
             PropertyValuesHolder.ofFloat(View.ALPHA, 0f, 1f)
         ).apply { duration = 200; interpolator = AccelerateInterpolator(1.8f) }
@@ -144,9 +144,16 @@ object StampMoment {
      * The seal as printed, drawn for the screen, with a rubber stamp's grain: a few hundred tiny specks where the ink
      * did not take (the same pattern every time, so the stamp never shimmers).
      */
-    private fun sealPicture(side: Int, mark: SealMark.Mark): Bitmap {
+    private fun sealPicture(activity: Activity, side: Int, mark: SealMark.Mark): Bitmap {
         val bmp = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
+        // The shop's own stamp when that is the paper's seal (its picture as kept, no grain added), else ours.
+        if (mark.own) {
+            com.innovation313.roshankhata.data.BusinessProfile.loadStamp(activity)?.let { stamp ->
+                InvoiceTemplateKit.drawBitmapFit(c, stamp, android.graphics.RectF(0f, 0f, side.toFloat(), side.toFloat()))
+                return bmp
+            }
+        }
         InvoiceTemplateKit.drawRecordSeal(c, side / 2f, side / 2f, side * 0.96f, mark.middle, mark.below, tilt = 0f)
         // The drawing above remembered its words again; nothing else should play from them.
         SealMark.clear()

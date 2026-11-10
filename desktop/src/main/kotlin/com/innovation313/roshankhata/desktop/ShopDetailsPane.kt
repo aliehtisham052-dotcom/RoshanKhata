@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.ui.draw.alpha
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -215,6 +216,26 @@ fun ShopDetailsPane(settings: ShopSettings, images: ProfileImages, onSaved: () -
         // Stamp & signature, as the phone files them.
         Column(Modifier.fillMaxWidth().card().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CardTitle(word(W.bp_section_seals))
+            // The papers' one seal, as the phone asks it (10 Nov 2026, the owner): the Roshan Khata seal by default,
+            // the shop's own stamp when chosen and kept, or none. Saved the moment it is chosen.
+            val hasStamp = remember(pictures.version) { images.has(ProfileImages.Kind.STAMP) }
+            var seal by remember(settings) { mutableStateOf(settings.sealChoice()) }
+            val shown = seal.printed(hasStamp)
+            Text(word(W.seal_choice_title), color = c.ink, fontSize = 14.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
+            Text(word(W.seal_choice_help), color = c.textMuted, fontSize = 12.sp)
+            Row(Modifier.horizontalScroll(androidx.compose.foundation.rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(
+                    com.innovation313.roshankhata.data.SealChoice.APP to W.seal_choice_app,
+                    com.innovation313.roshankhata.data.SealChoice.OWN to W.seal_choice_own,
+                    com.innovation313.roshankhata.data.SealChoice.NONE to W.seal_choice_none
+                ).forEach { (choice, label) ->
+                    val usable = choice != com.innovation313.roshankhata.data.SealChoice.OWN || hasStamp
+                    FluentPill(word(label), shown == choice, Modifier.alpha(if (usable) 1f else 0.45f)) {
+                        if (usable) { settings.setSealChoice(choice); seal = choice }
+                    }
+                }
+            }
+            if (!hasStamp) Text(word(W.seal_choice_own_needs), color = c.textMuted, fontSize = 12.sp)
             Text(word(W.bp_seals_help), color = c.textMuted, fontSize = 12.sp)
             PictureRow(pictures, ProfileImages.Kind.SIGNATURE, W.signature, W.no_signature_yet)
             PictureRow(pictures, ProfileImages.Kind.STAMP, W.stamp, W.no_stamp_yet)

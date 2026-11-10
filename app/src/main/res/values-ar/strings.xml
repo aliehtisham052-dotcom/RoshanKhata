@@ -1812,6 +1812,7 @@
     <string name="pdf_rep_col_gave">أعطيت</string>
     <string name="pdf_rep_col_got">استلمت</string>
     <string name="pdf_rep_footer_page">%1$s \u00B7 صفحة %2$d</string>
+    <string name="pdf_page_only">صفحة %1$d</string>
 
 
     <string name="pdf_reg_title">سجل المبيعات والمشتريات</string>
@@ -1970,6 +1971,12 @@
     <string name="bp_add">إضافة</string>
     <string name="bp_change">تغيير</string>
     <string name="bp_seals_help">صوّرها على ورق أبيض عادي — يقصّها التطبيق تلقائيًا.</string>
+    <string name="seal_choice_title">الختم على أوراقك</string>
+    <string name="seal_choice_help">يوضع ختم واحد في نهاية كل فاتورة وكشف حساب وتقرير، مع تاريخ الورقة ورقمها.</string>
+    <string name="seal_choice_app">ختم روشن كهاتا</string>
+    <string name="seal_choice_own">ختم متجري الخاص</string>
+    <string name="seal_choice_none">بدون ختم</string>
+    <string name="seal_choice_own_needs">لاستخدام ختمك الخاص، أضف صورته أدناه.</string>
     <string name="bp_terms_help">تُطبع على كل فاتورة. فارغ = لا شيء.</string>
     <string name="bp_photo">صورة العميل على الكشوف</string>
     <string name="bp_photo_help">مُطفأ افتراضيًا — قد يُعاد توجيه الكشف.</string>

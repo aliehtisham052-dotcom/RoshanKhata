@@ -2445,7 +2445,7 @@ private fun Book(
     }
     cloudTold?.let { TellDialog(words.text(W.cloud_offer_title), it, { cloudTold = null }, height = 300) }
     // Every PDF / Statement / Print button opens its sheet here first (1.8.4).
-    PreviewHost()
+    PreviewHost(images)
     if (lockSettings) {
         AppDialog(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = fitW(520.dp), height = fitH(460.dp))) {
             AppLockSettings(appPrefs) { lockSettings = false }

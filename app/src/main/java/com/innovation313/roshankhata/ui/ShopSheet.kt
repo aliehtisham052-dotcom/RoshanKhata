@@ -65,7 +65,9 @@ object ShopSheet {
             Part(!bp.businessAddress(activity).isNullOrBlank(), R.string.shop_missing_address),
             Part(bp.hasLogo(activity), R.string.shop_missing_logo),
             Part(payment, R.string.shop_missing_payment),
-            Part(bp.hasStamp(activity), R.string.shop_missing_stamp),
+            // A stamp picture is missing only for a shop that chose its own stamp as its papers' seal (10 Nov 2026).
+            Part(bp.hasStamp(activity) || bp.sealChoice(activity) != com.innovation313.roshankhata.data.SealChoice.OWN,
+                R.string.shop_missing_stamp),
             Part(bp.hasSignature(activity), R.string.shop_missing_signature)
         )
         val done = parts.count { it.done }
@@ -73,20 +75,30 @@ object ShopSheet {
         return percent to parts.filterNot { it.done }.map { activity.getString(it.missingRes) }
     }
 
-    /** The shop's own logo in a tile, or the storefront glyph until one is set. */
+    /**
+     * The shop's own logo in its tile, or the storefront glyph until one is set. A logo sits whole on a white tile with
+     * a little room round it (10 Nov 2026, the owner's photos: cropped to the tile and pressed into its green and gold,
+     * a round logo lost its edge and its colours).
+     */
     fun paintLogo(activity: Activity, image: ImageView, glyphPaddingDp: Float) {
         val logo = try { BusinessProfile.headerLogo(activity) } catch (e: Exception) { null }
         val d = activity.resources.displayMetrics.density
+        val tile = image.parent as? View
         if (logo != null) {
             image.imageTintList = null
             image.setImageBitmap(logo)
-            image.setPadding(0, 0, 0, 0)
-            (image.parent as? View)?.clipToOutline = true
+            image.scaleType = ImageView.ScaleType.FIT_CENTER
+            val p = (3 * d).toInt()
+            image.setPadding(p, p, p, p)
+            tile?.setBackgroundResource(R.drawable.bg_logo_tile)
+            tile?.clipToOutline = true
         } else {
             image.setImageResource(R.drawable.ic_storefront)
             image.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.shop_card_gold))
+            image.scaleType = ImageView.ScaleType.CENTER_CROP
             val p = (glyphPaddingDp * d).toInt()
             image.setPadding(p, p, p, p)
+            tile?.setBackgroundResource(R.drawable.bg_shop_logo)
         }
     }
 

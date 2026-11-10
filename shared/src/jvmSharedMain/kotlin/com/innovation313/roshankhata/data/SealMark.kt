@@ -7,14 +7,15 @@ package com.innovation313.roshankhata.data
  * fresh, so an older seal never lands on a newer paper.
  */
 object SealMark {
-    class Mark(val middle: String, val below: String, val at: Long)
+    /** [own]: the shop's own stamp picture was printed in the seal's place ([SealChoice.OWN]), not the Roshan Khata seal. */
+    class Mark(val middle: String, val below: String, val at: Long, val own: Boolean = false)
 
     @Volatile
     private var last: Mark? = null
 
     /** Called by the seal's drawing. */
-    fun drawn(middle: String, below: String, now: Long = System.currentTimeMillis()) {
-        last = Mark(middle, below, now)
+    fun drawn(middle: String, below: String, now: Long = System.currentTimeMillis(), own: Boolean = false) {
+        last = Mark(middle, below, now, own)
     }
 
     /** The last seal's words, once; null when none was drawn in the last [maxAgeMs]. */

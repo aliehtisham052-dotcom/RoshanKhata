@@ -441,11 +441,13 @@ class BusinessSettingsActivity : BaseActivity() {
         }
         sections.add(R.id.secSeals, R.id.bodySeals, R.string.bp_section_seals,
             R.drawable.ic_seal_stamp, startOpen = false) {
-            val have = listOfNotNull(
-                if (hasStamp) getString(R.string.stamp) else null,
-                if (hasSignature) getString(R.string.signature) else null,
-            )
-            if (have.isEmpty()) getString(R.string.no_stamp_yet) else have.joinToString(" · ")
+            // The papers' seal first (10 Nov 2026: a stamp picture is no longer needed for one), then the signature.
+            val seal = when (BusinessProfile.sealChoice(this).printed(hasStamp)) {
+                com.innovation313.roshankhata.data.SealChoice.APP -> getString(R.string.seal_choice_app)
+                com.innovation313.roshankhata.data.SealChoice.OWN -> getString(R.string.seal_choice_own)
+                com.innovation313.roshankhata.data.SealChoice.NONE -> getString(R.string.seal_choice_none)
+            }
+            listOfNotNull(seal, if (hasSignature) getString(R.string.signature) else null).joinToString(" · ")
         }
         sections.add(R.id.secDocs, R.id.bodyDocs, R.string.bp_section_docs,
             R.drawable.ic_pdf_doc, startOpen = false) {
@@ -612,7 +614,12 @@ class BusinessSettingsActivity : BaseActivity() {
      */
     private fun refreshPreviewText() {
         val name = etBusinessName.text.toString().trim()
-        tvPreviewBusinessName.text = name.ifEmpty { getString(R.string.app_name) }
+        // A shop with no name yet is asked for one, muted - never shown as "Roshan Khata": the invoice prints no
+        // seller name then (M75), and the app's name read as the shop's (10 Nov 2026, the owner's photo).
+        tvPreviewBusinessName.text = name.ifEmpty { getString(R.string.shop_add_name) }
+        tvPreviewBusinessName.setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, if (name.isEmpty()) R.color.text_muted else R.color.brand_green_text)
+        )
         tvPreviewInitials.text = ProfileChecks.initials(name.ifEmpty { getString(R.string.app_name) })
         val details = listOfNotNull(
             etBusinessAddress.text.toString().trim().ifEmpty { null },
@@ -659,6 +666,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 btnPickLogo.setText(R.string.bp_add)
                 ivPreviewLogo.visibility = View.GONE
                 tvPreviewInitials.visibility = View.VISIBLE
+                (ivPreviewLogo.parent as? View)?.setBackgroundResource(R.drawable.bg_business_logo_solid)
             } else {
                 ivLogoPreview.setImageBitmap(logo)
                 ivLogoPreview.visibility = View.VISIBLE
@@ -668,6 +676,9 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivPreviewLogo.setImageBitmap(logo)
                 ivPreviewLogo.visibility = View.VISIBLE
                 tvPreviewInitials.visibility = View.GONE
+                // The logo whole on white, as the invoice prints it (10 Nov 2026, the owner's photo: on the green tile
+                // a coloured logo was pressed into the green).
+                (ivPreviewLogo.parent as? View)?.setBackgroundResource(R.drawable.bg_logo_tile)
             }
         }
     }
@@ -732,6 +743,35 @@ class BusinessSettingsActivity : BaseActivity() {
      * visible moment to open; the work moves off, and the views are set when
      * it lands.
      */
+    /**
+     * The papers' one seal (10 Nov 2026, the owner): Roshan Khata's by default, the shop's own stamp when chosen and
+     * kept, or none. Saved the moment it is chosen; "my own stamp" waits for a stamp picture.
+     */
+    private fun showSealChoice() {
+        val group = findViewById<android.widget.RadioGroup>(R.id.rgSealChoice) ?: return
+        val own = findViewById<android.widget.RadioButton>(R.id.rbSealOwn)
+        own.isEnabled = hasStamp
+        findViewById<View>(R.id.tvSealOwnNeeds).visibility = if (hasStamp) View.GONE else View.VISIBLE
+        val shown = when (BusinessProfile.sealChoice(this).printed(hasStamp)) {
+            com.innovation313.roshankhata.data.SealChoice.APP -> R.id.rbSealApp
+            com.innovation313.roshankhata.data.SealChoice.OWN -> R.id.rbSealOwn
+            com.innovation313.roshankhata.data.SealChoice.NONE -> R.id.rbSealNone
+        }
+        group.setOnCheckedChangeListener(null)
+        group.check(shown)
+        group.setOnCheckedChangeListener { _, id ->
+            val choice = when (id) {
+                R.id.rbSealOwn -> com.innovation313.roshankhata.data.SealChoice.OWN
+                R.id.rbSealNone -> com.innovation313.roshankhata.data.SealChoice.NONE
+                else -> com.innovation313.roshankhata.data.SealChoice.APP
+            }
+            if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) { showSealChoice(); return@setOnCheckedChangeListener }
+            BusinessProfile.setSealChoice(this, choice)
+            sections.refreshAll()
+        }
+        group.isEnabled = !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+    }
+
     private fun refreshStamp() {
         lifecycleScope.launch {
             val stamp = withContext(Dispatchers.IO) {
@@ -755,6 +795,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvPreviewStampPlaceholder.visibility = View.GONE
             }
             hasStamp = stamp != null
+            showSealChoice()
             sections.refreshAll()
         }
     }

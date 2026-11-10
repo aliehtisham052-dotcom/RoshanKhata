@@ -1031,7 +1031,7 @@ object InvoicePdfExport {
         estimatedH += items.sumOf { InvoiceTemplateKit.wrapLines(it.itemName, mBold, roll, 2).size.coerceAtLeast(1) * 11 + 15 }
         estimatedH += BusinessProfile.businessAddress(context)?.let { (InvoiceTemplateKit.wrapLines(it, mSub, roll, 3).size - 1).coerceAtLeast(0) * 10f } ?: 0f
         if (prices) estimatedH += InvoiceTemplateKit.wrapLines(NumberWords.amountInWords(context, totals.grandTotal), mWords, roll, 12).size * 12f - 45f + 45f
-        if (BusinessProfile.loadStamp(context) != null) estimatedH += 50f
+        if (rollStamp(context)) estimatedH += 50f
         if (kind != DocKind.INVOICE) estimatedH += 14f
         if (BusinessProfile.strn(context) != null) estimatedH += 11f
         if (invoice.dueDate != null) estimatedH += 13f
@@ -1253,7 +1253,8 @@ object InvoicePdfExport {
             drawBitmapFit(c, signature, RectF(pad, y, pageW - pad, y + h))
             y += h + 6f
         }
-        BusinessProfile.loadStamp(context)?.let { stamp ->
+        // The roll carries no Roshan Khata seal; the shop's own stamp only when the owner chose it as the papers' seal.
+        BusinessProfile.loadStamp(context)?.takeIf { rollStamp(context) }?.let { stamp ->
             val h = 40f
             drawBitmapFit(c, stamp, RectF(cx - availableW / 4f, y, cx + availableW / 4f, y + h))
             y += h + 10f
@@ -1298,6 +1299,9 @@ object InvoicePdfExport {
      * Returns the page/canvas actually left open, since a strip that does
      * not fit starts one more page than the caller had.
      */
+    /** The thermal roll's stamp: the shop's own, only when it is the papers' chosen seal (10 Nov 2026). */
+    private fun rollStamp(context: Context): Boolean = InvoiceTemplateKit.sealToPrint(context) == SealChoice.OWN
+
     private fun drawMakerStrip(
         context: Context,
         doc: PdfDocument,
@@ -1321,7 +1325,9 @@ object InvoicePdfExport {
         // the strip, it and the strip go to the next page, the seal at that page's top.
         val size = InvoiceTemplateKit.SEAL_SIZE
         var sealTop = yIn + InvoiceTemplateKit.SEAL_GAP
-        val room = if (invoice != null) sealTop + size + InvoiceTemplateKit.SEAL_GAP else yIn + 10f
+        // No seal chosen (Business Profile): no room is kept for one.
+        val sealed = invoice != null && InvoiceTemplateKit.sealToPrint(context) != SealChoice.NONE
+        val room = if (sealed) sealTop + size + InvoiceTemplateKit.SEAL_GAP else yIn + 10f
         if (room > bandTop) {
             doc.finishPage(page)
             page = PdfRtl.startPage(context, doc, 
@@ -1334,9 +1340,9 @@ object InvoicePdfExport {
         }
 
         // The Roshan Khata seal with this document's own date and number; on a dark design its ink is the page's text colour.
-        invoice?.let { inv ->
-            InvoiceTemplateKit.drawRecordSeal(
-                c, PAGE_W_A4 - MARGIN - size / 2f, sealTop + size / 2f,
+        invoice?.takeIf { sealed }?.let { inv ->
+            InvoiceTemplateKit.drawDocumentSeal(
+                c, context, PAGE_W_A4 - MARGIN - size / 2f, sealTop + size / 2f,
                 size, Format.dateOnly(inv.invoiceDate).uppercase(), inv.invoiceNumber,
                 ink = if (palette?.pageBackground != null) palette.ink else InvoiceTemplateKit.SEAL_INK,
                 paper = palette?.pageBackground ?: 0xFFFFFFFF.toInt()
