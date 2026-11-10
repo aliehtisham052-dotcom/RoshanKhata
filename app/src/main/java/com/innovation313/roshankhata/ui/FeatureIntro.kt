@@ -133,7 +133,7 @@ object FeatureIntro {
     }
 
     /** The sheet itself, seen before or not (Help → Feature guides). */
-    fun show(activity: Activity, topic: Topic, then: (() -> Unit)? = null): BottomSheetDialog? {
+    fun show(activity: Activity, topic: Topic, then: (() -> Unit)? = null, fromGuides: Boolean = false): BottomSheetDialog? {
         if (activity.isFinishing || activity.isDestroyed) return null
         val inflater = LayoutInflater.from(activity)
         val view = inflater.inflate(R.layout.sheet_feature_intro, null)
@@ -153,6 +153,8 @@ object FeatureIntro {
         }
         view.findViewById<TextView>(R.id.tvIntroTitle).setText(topic.title)
         view.findViewById<TextView>(R.id.tvIntroBody).setText(topic.body)
+        // Opened from Feature guides, the line pointing there says nothing new.
+        if (fromGuides) view.findViewById<View>(R.id.tvIntroAgain).visibility = View.GONE
 
         val sheet = BottomSheetDialog(activity)
         view.findViewById<MaterialButton>(R.id.btnIntroDone).setOnClickListener { sheet.dismiss() }
@@ -190,7 +192,7 @@ object FeatureIntro {
                     tile = it.tile
                 )
             }
-        ) { i -> show(activity, topics[i]) }
+        ) { i -> show(activity, topics[i], fromGuides = true) }
     }
 
     /** The Home tiles' two-tone drawings carry their own colours (lesson 56). */

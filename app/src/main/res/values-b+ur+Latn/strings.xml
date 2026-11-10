@@ -3911,6 +3911,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">Naya</string>
     <string name="help_feature_guides">Features ki wazahat</string>
+    <string name="intro_find_again">Ye dobara kabhi bhi dekhein: Madad aur Support, phir Features ki wazahat.</string>
     <string name="intro_counter_body">Gahak ki sale us ke khate mein jati hai, aam gahak ki cashbook mein. Stock dono soorton mein kam hota hai.</string>
     <string name="intro_counter_s1">Items chunein</string>
     <string name="intro_counter_s2">Gahak ya aam gahak</string>

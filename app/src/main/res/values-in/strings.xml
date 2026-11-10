@@ -3896,6 +3896,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">Baru</string>
     <string name="help_feature_guides">Panduan fitur</string>
+    <string name="intro_find_again">Lihat ini lagi kapan saja: Bantuan &amp; Dukungan, lalu Panduan fitur.</string>
     <string name="intro_counter_body">Penjualan ke pelanggan masuk ke bukunya, penjualan ke pelanggan umum masuk ke buku kas. Stok berkurang di keduanya.</string>
     <string name="intro_counter_s1">Pilih barang</string>
     <string name="intro_counter_s2">Pelanggan atau umum</string>

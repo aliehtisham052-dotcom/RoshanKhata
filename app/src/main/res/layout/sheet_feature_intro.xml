@@ -67,5 +67,17 @@
             android:textStyle="bold"
             app:backgroundTint="@color/brand_green"
             app:cornerRadius="14dp" />
+
+        <!-- Back, a swipe down or a tap above close the sheet as Got it does (Android's rule for a sheet: Back
+             closes the top layer); this line says where it can be read again (10 Nov 2026, the owner). -->
+        <TextView
+            android:id="@+id/tvIntroAgain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/intro_find_again"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

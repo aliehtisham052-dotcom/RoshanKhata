@@ -4163,6 +4163,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">جديد</string>
     <string name="help_feature_guides">شرح الميزات</string>
+    <string name="intro_find_again">يمكنك رؤية هذا مجددًا في أي وقت: المساعدة والدعم، ثم شرح الميزات.</string>
     <string name="intro_counter_body">بيع العميل يُسجَّل في دفتره، وبيع الزبون العابر في دفتر النقد. والمخزون ينقص في الحالتين.</string>
     <string name="intro_counter_s1">اختر الأصناف</string>
     <string name="intro_counter_s2">عميل أو زبون عابر</string>

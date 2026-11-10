@@ -3959,6 +3959,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">নতুন</string>
     <string name="help_feature_guides">ফিচার গাইড</string>
+    <string name="intro_find_again">এটি যেকোনো সময় আবার দেখুন: সাহায্য ও সহায়তা, তারপর ফিচার গাইড।</string>
     <string name="intro_counter_body">গ্রাহকের বিক্রি তার খাতায় যায়, সাধারণ ক্রেতার বিক্রি ক্যাশবুকে। স্টক দুই ক্ষেত্রেই কমে।</string>
     <string name="intro_counter_s1">পণ্য বাছুন</string>
     <string name="intro_counter_s2">গ্রাহক বা সাধারণ ক্রেতা</string>

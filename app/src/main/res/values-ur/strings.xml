@@ -3911,6 +3911,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">نیا</string>
     <string name="help_feature_guides">فیچرز کی وضاحت</string>
+    <string name="intro_find_again">یہ دوبارہ کبھی بھی دیکھیں: مدد اور سپورٹ، پھر فیچرز کی وضاحت۔</string>
     <string name="intro_counter_body">گاہک کی سیل اس کے کھاتے میں جاتی ہے، عام گاہک کی کیش بک میں۔ اسٹاک دونوں صورتوں میں کم ہوتا ہے۔</string>
     <string name="intro_counter_s1">آئٹم چنیں</string>
     <string name="intro_counter_s2">گاہک یا عام گاہک</string>

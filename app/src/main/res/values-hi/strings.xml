@@ -3959,6 +3959,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">नया</string>
     <string name="help_feature_guides">फ़ीचर गाइड</string>
+    <string name="intro_find_again">इसे कभी भी दोबारा देखें: मदद और सहायता, फिर फ़ीचर गाइड।</string>
     <string name="intro_counter_body">ग्राहक की बिक्री उसके खाते में जाती है, आम ग्राहक की कैशबुक में। स्टॉक दोनों में घटता है।</string>
     <string name="intro_counter_s1">आइटम चुनें</string>
     <string name="intro_counter_s2">ग्राहक या आम ग्राहक</string>

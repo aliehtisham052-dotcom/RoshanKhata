@@ -4123,6 +4123,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">New</string>
     <string name="help_feature_guides">Feature guides</string>
+    <string name="intro_find_again">You can see this again any time: Help &amp; Support, then Feature guides.</string>
     <string name="intro_counter_body">A customer\'s sale goes into their khata, a walk-in\'s into the cashbook. Stock comes off either way.</string>
     <string name="intro_counter_s1">Pick the items</string>
     <string name="intro_counter_s2">Customer or walk-in</string>

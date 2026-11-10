@@ -3939,6 +3939,7 @@
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
     <string name="entry_new_tag">جدید</string>
     <string name="help_feature_guides">راهنمای امکانات</string>
+    <string name="intro_find_again">هر زمان دوباره ببینید: راهنما و پشتیبانی، سپس راهنمای امکانات.</string>
     <string name="intro_counter_body">فروش به مشتری در دفتر او ثبت می‌شود و فروش به مشتری گذری در دفتر نقدی. موجودی در هر دو حالت کم می‌شود.</string>
     <string name="intro_counter_s1">کالاها را انتخاب کنید</string>
     <string name="intro_counter_s2">مشتری یا مشتری گذری</string>
