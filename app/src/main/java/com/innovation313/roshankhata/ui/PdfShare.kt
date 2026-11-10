@@ -55,28 +55,9 @@ object PdfShare {
             .setMessage(if (note != null) body + "\n\n" + note else body)
             // Primary: open the document so it can be read before anything else.
             .setPositiveButton(R.string.pdf_open) { _, _ ->
-                val view = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(uri, "application/pdf")
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                // Started directly, not wrapped in createChooser: a chooser
-                // over ACTION_VIEW renders as the same sheet the Share button
-                // opens, so the two buttons looked and behaved identically.
-                // Android still shows its own picker if several viewers are
-                // installed, and none if there is a default — which is the
-                // behaviour "Open" should have.
-                //
-                // The fallback is on the actual failure (no viewer on the
-                // phone), not on resolveActivity(): that returns null under
-                // Android 11 package-visibility unless the manifest declares
-                // the query, and a wrong null there is what made Open behave
-                // as Share.
-                try {
-                    context.startActivity(view)
-                } catch (e: android.content.ActivityNotFoundException) {
-                    share(context, uri, file.name)
-                }
+                // Inside the app since 10 Nov 2026 (the owner: another app's own share button made Open and Share
+                // look alike); the phone's PDF app is one tap away there.
+                com.innovation313.roshankhata.PdfPreviewActivity.open(context, file)
             }
             // Secondary: send it on, once they have chosen to.
             .setNeutralButton(R.string.share) { _, _ -> share(context, uri, file.name) }
@@ -148,7 +129,16 @@ object PdfShare {
      * back to the share sheet here would be wrong — they asked to read the
      * document, not to send it somewhere.
      */
-    fun open(context: Context, file: File) {
+    /**
+     * Shows the PDF inside the app (10 Nov 2026): it went to another app, whose own share button made Preview
+     * and Share look like one thing. That app is still one tap away there ([openElsewhere]).
+     */
+    fun open(context: Context, file: File, title: String? = null) {
+        com.innovation313.roshankhata.PdfPreviewActivity.open(context, file, title)
+    }
+
+    /** The phone's own PDF app, for printing or zooming there. */
+    fun openElsewhere(context: Context, file: File) {
         val uri = FileProvider.getUriForFile(
             context, "${context.packageName}.fileprovider", file
         )

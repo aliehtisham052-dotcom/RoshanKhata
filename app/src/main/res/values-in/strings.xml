@@ -1199,6 +1199,7 @@
     <string name="pdf_ready_body">Buka untuk dibaca dulu, lalu bagikan jika mau.</string>
     <string name="pdf_open">Buka</string>
     <string name="pdf_preview">Pratinjau</string>
+    <string name="pdf_open_other">Buka di aplikasi lain</string>
     <string name="pdf_no_viewer">Tidak ada aplikasi PDF di ponsel ini. Unduh saja, atau pasang pembaca PDF.</string>
     <string name="close">Tutup</string>
     <string name="back">Kembali</string>

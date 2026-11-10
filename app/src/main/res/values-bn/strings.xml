@@ -1224,6 +1224,7 @@
     <string name="pdf_ready_body">আগে খুলে পড়ুন, তারপর চাইলে শেয়ার করুন।</string>
     <string name="pdf_open">খুলুন</string>
     <string name="pdf_preview">নমুনা</string>
+    <string name="pdf_open_other">অন্য অ্যাপে খুলুন</string>
     <string name="pdf_no_viewer">এই ফোনে কোনো PDF অ্যাপ পাওয়া যায়নি। এটি ডাউনলোড করুন, বা একটি PDF রিডার ইনস্টল করুন।</string>
     <string name="close">বন্ধ করুন</string>
     <string name="back">পেছনে</string>

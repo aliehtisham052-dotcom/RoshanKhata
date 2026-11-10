@@ -1284,6 +1284,7 @@
     <string name="pdf_ready_body">افتحه للقراءة أولًا، ثم شاركه إن أردت.</string>
     <string name="pdf_open">فتح</string>
     <string name="pdf_preview">معاينة</string>
+    <string name="pdf_open_other">فتح في تطبيق آخر</string>
     <string name="pdf_no_viewer">لا يوجد تطبيق PDF على هذا الهاتف. نزّل الملف، أو ثبّت قارئ PDF.</string>
     <string name="close">إغلاق</string>
     <string name="back">رجوع</string>

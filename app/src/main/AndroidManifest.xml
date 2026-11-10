@@ -207,6 +207,11 @@
             android:exported="false"
             android:parentActivityName=".KhataActivity" />
 
+        <!-- The app's own PDF preview (10 Nov 2026): only files of this app's cache, never exported. -->
+        <activity
+            android:name=".PdfPreviewActivity"
+            android:exported="false" />
+
         <activity
             android:name=".InspectorReportActivity"
             android:exported="false"

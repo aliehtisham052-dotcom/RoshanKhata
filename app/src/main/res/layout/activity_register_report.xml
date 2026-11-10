@@ -115,7 +115,7 @@
             android:maxLines="1"
             android:text="@string/pdf_preview"
             app:backgroundTint="@color/section_cashbook"
-            app:icon="@drawable/ic_eye_open"
+            app:icon="@drawable/ic_pdf_doc"
             app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton

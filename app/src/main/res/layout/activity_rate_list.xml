@@ -115,7 +115,7 @@
                 android:text="@string/pdf_preview"
                 android:textAllCaps="false"
                 android:textColor="@color/ink"
-                app:icon="@drawable/ic_eye_open"
+                app:icon="@drawable/ic_image"
                 app:iconTint="@color/ink"
                 app:strokeColor="@color/page_line" />
 

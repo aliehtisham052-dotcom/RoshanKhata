@@ -512,8 +512,9 @@ class LedgerReportActivity : BaseActivity() {
                 if (first) 0 else resources.displayMetrics.density.toInt().coerceAtLeast(1)
 
             val shown = e.partyName.trim()
-            holder.initial.text = if (shown.isEmpty()) "?"
-                else String(Character.toChars(shown.codePointAt(0))).uppercase(Locale.getDefault())
+            // The Khata list's own initials (10 Nov 2026, the owner's photo): the first character was taken as it
+            // stood, so "(Shari) Touseef…" wore a "(".
+            holder.initial.text = if (shown.isEmpty()) "?" else Format.initials(shown)
             holder.name.text = e.partyName
             val note = e.note?.lineSequence()?.firstOrNull()?.trim().orEmpty()
             holder.date.text = timeFmt.format(Date(e.timestamp)) + " \u00B7 " +

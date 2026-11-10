@@ -1212,6 +1212,7 @@
     <string name="pdf_ready_body">اول باز کنید و بخوانید، سپس در صورت تمایل به اشتراک بگذارید.</string>
     <string name="pdf_open">باز کردن</string>
     <string name="pdf_preview">پیش‌نمایش</string>
+    <string name="pdf_open_other">باز کردن در برنامهٔ دیگر</string>
     <string name="pdf_no_viewer">هیچ برنامه PDF روی این گوشی پیدا نشد. فایل را دانلود کنید یا یک خواننده PDF نصب کنید.</string>
     <string name="close">بستن</string>
     <string name="back">بازگشت</string>

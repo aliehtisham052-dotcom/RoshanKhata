@@ -310,7 +310,7 @@
             android:insetBottom="0dp"
             android:padding="0dp"
             app:cornerRadius="16dp"
-            app:icon="@drawable/ic_eye_open"
+            app:icon="@drawable/ic_pdf_doc"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="22dp"

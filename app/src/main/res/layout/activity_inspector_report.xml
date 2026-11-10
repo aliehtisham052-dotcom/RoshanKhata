@@ -301,7 +301,7 @@
             android:maxLines="1"
             android:text="@string/pdf_preview"
             app:backgroundTint="@color/section_cashbook"
-            app:icon="@drawable/ic_eye_open"
+            app:icon="@drawable/ic_pdf_doc"
             android:layout_marginEnd="6dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
