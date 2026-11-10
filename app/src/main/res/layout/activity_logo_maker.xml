@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Make a logo (10 Nov 2026, the owner: most shops have no logo and cannot draw one). The designs for this shop's
-  name and trade in a grid; under them the name on the logo, what the big words say, the colour, and the one
-  action, Use this logo.
+  Make a logo (10 Nov 2026, the owner: most shops have no logo and cannot draw one), in two steps as design apps do
+  (the owner's photo: a preview, the grid and the controls on one screen cut each other off, and a colour changed
+  every design at once). Step one, the designs: the whole screen is the grid, each design with the shop's name in the
+  trade's own colour. Step two, the chosen design: it alone, large, with its name, its words and its colour under it,
+  "Other designs" back to the grid, and the one action, Use this logo.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -66,21 +68,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- The chosen design, large: what will be printed (10 Nov 2026, the owner: the grid alone showed it small). -->
-    <ImageView
-        android:id="@+id/ivLogoBig"
-        android:layout_width="0dp"
-        android:layout_height="148dp"
-        android:background="@color/surface"
-        android:elevation="2dp"
-        android:importantForAccessibility="no"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logoHeader" />
-
+    <!-- Step one: the designs. -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLogos"
         android:layout_width="0dp"
@@ -89,84 +77,143 @@
         android:paddingStart="10dp"
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@id/logoPanel"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivLogoBig" />
+        app:layout_constraintTop_toBottomOf="@id/logoHeader" />
+
+    <!-- Step two: the chosen design and what can change on it. -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/logoEdit"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/logoUseBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logoHeader">
+
+        <LinearLayout
+            android:id="@+id/logoPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <ImageView
+                android:id="@+id/ivLogoBig"
+                android:layout_width="match_parent"
+                android:layout_height="248dp"
+                android:background="@drawable/bg_logo_stage"
+                android:importantForAccessibility="no"
+                android:padding="16dp"
+                android:scaleType="fitCenter" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogoOthers"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:letterSpacing="0"
+                android:text="@string/logo_other_designs"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_green_text"
+                android:textSize="15sp"
+                app:icon="@drawable/ic_grid_view"
+                app:iconTint="@color/brand_green_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:labelFor="@+id/etLogoName"
+                android:text="@string/logo_name_label"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etLogoName"
+                style="@style/EditorField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords"
+                android:maxLength="40"
+                android:maxLines="1" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgLogoShow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:selectionRequired="true"
+                    app:singleLine="true"
+                    app:singleSelection="true" />
+            </HorizontalScrollView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/logo_colour"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/llLogoColours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+            </HorizontalScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
-        android:id="@+id/logoPanel"
+        android:id="@+id/logoUseBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/surface"
         android:elevation="8dp"
         android:orientation="vertical"
         android:paddingStart="16dp"
-        android:paddingTop="12dp"
+        android:paddingTop="10dp"
         android:paddingEnd="16dp"
         android:paddingBottom="12dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:labelFor="@+id/etLogoName"
-            android:text="@string/logo_name_label"
-            android:textAlignment="viewStart"
-            android:textColor="@color/text_muted"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/etLogoName"
-            style="@style/EditorField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:imeOptions="actionDone"
-            android:importantForAutofill="no"
-            android:inputType="textCapWords"
-            android:maxLength="40"
-            android:maxLines="1" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:scrollbars="none">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/cgLogoShow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:selectionRequired="true"
-                app:singleLine="true"
-                app:singleSelection="true" />
-        </HorizontalScrollView>
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/llLogoColours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp" />
-        </HorizontalScrollView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogoUse"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="8dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:letterSpacing="0"

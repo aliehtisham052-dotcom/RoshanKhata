@@ -1846,6 +1846,7 @@
     <string name="logo_make_sub">Desain siap dari nama dan jenis toko Anda</string>
     <string name="logo_edit">Ubah logo ini</string>
     <string name="logo_edit_sub">Ganti tulisan, warna, atau desainnya</string>
+    <string name="logo_other_designs">Desain lain</string>
     <string name="logo_name_label">Nama di logo</string>
     <string name="logo_show_name">Nama</string>
     <string name="logo_show_letters">Huruf</string>

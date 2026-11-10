@@ -1884,6 +1884,7 @@
     <string name="logo_make_sub">आपकी दुकान के नाम और प्रकार से तैयार डिज़ाइन</string>
     <string name="logo_edit">यही लोगो बदलें</string>
     <string name="logo_edit_sub">इसके शब्द, रंग या डिज़ाइन बदलें</string>
+    <string name="logo_other_designs">दूसरे डिज़ाइन</string>
     <string name="logo_name_label">लोगो पर नाम</string>
     <string name="logo_show_name">नाम</string>
     <string name="logo_show_letters">अक्षर</string>

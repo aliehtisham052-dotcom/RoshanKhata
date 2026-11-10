@@ -1988,6 +1988,7 @@
     <string name="logo_make_sub">تصاميم جاهزة من اسم متجرك ونوعه</string>
     <string name="logo_edit">تعديل هذا الشعار</string>
     <string name="logo_edit_sub">غيّر كلماته أو لونه أو تصميمه</string>
+    <string name="logo_other_designs">تصاميم أخرى</string>
     <string name="logo_name_label">الاسم على الشعار</string>
     <string name="logo_show_name">الاسم</string>
     <string name="logo_show_letters">الأحرف</string>

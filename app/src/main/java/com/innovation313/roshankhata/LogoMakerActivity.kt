@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,10 +32,15 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * Make a logo (10 Nov 2026, the owner: most shops have no logo, and a shopkeeper cannot draw one). The designs of
- * [LogoDesigns] for this shop's name, Urdu name and trade, in a grid; the name on the logo, what the big words
- * say (name, letters, Urdu name) and the colour change them all at once; Use this logo draws the chosen one at
- * print size and keeps it as the shop's logo, exactly as a picked picture is kept. Returns RESULT_OK when saved.
+ * Make a logo (10 Nov 2026, the owner: most shops have no logo, and a shopkeeper cannot draw one), in two steps as
+ * design apps do (the owner's photo the same day: a preview, the grid and the controls on one screen cut each other
+ * off, and a colour changed every design at once).
+ *
+ * Step one, the designs of [LogoDesigns]: the whole screen is the grid, each with the shop's name in the trade's own
+ * colour. A tap opens step two: that design alone, large, with the name on it, what its big words say and its colour
+ * under it - every change here is this logo's only - "Other designs" back to the grid, and Use this logo, which draws
+ * it at print size and keeps it as the shop's logo exactly as a picked picture is kept, and remembers how it was made
+ * so Change in the profile opens it again here. Returns RESULT_OK when saved.
  */
 class LogoMakerActivity : BaseActivity() {
 
@@ -47,22 +53,31 @@ class LogoMakerActivity : BaseActivity() {
     private var palette = 0
     private var styles: List<LogoDesigns.Style> = emptyList()
     private var chosen = 0
+    private var editing = false
     private val previews = mutableMapOf<LogoDesigns.Style, Bitmap>()
-    private var drawJob: Job? = null
+    private var gridJob: Job? = null
+    private var bigJob: Job? = null
     private var saving = false
     private lateinit var adapter: Designs
+    private lateinit var rv: RecyclerView
+
+    /** Back on step two goes to the designs, not out of the screen. */
+    private val backToDesigns = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = showStep(edit = false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logo_maker)
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
+        onBackPressedDispatcher.addCallback(this, backToDesigns)
 
         trade = Trade.current(this)
         tagline = getString(trade.exampleRes)
         urduName = BusinessProfile.businessNameUrdu(this)?.takeIf { it.isNotBlank() }
         palettes = LogoDesigns.palettes(this, trade)
         styles = LogoDesigns.styles(urduName)
-        // The logo made here before opens to be edited, not a new one (10 Nov 2026, the owner: Change started over).
+        // The logo made here before opens on step two to be edited, not as a new one (the owner: Change started over).
         val made = if (savedInstanceState == null) Made.parse(BusinessProfile.logoDesign(this)) else null
         name = savedInstanceState?.getString(KEY_NAME) ?: made?.name ?: BusinessProfile.businessName(this).orEmpty()
         palette = (savedInstanceState?.getInt(KEY_PALETTE) ?: made?.palette ?: 0).coerceIn(0, palettes.size - 1)
@@ -71,9 +86,11 @@ class LogoMakerActivity : BaseActivity() {
         show = savedInstanceState?.getString(KEY_SHOW)?.let { runCatching { LogoDesigns.Show.valueOf(it) }.getOrNull() }
             ?: made?.show?.takeIf { it != LogoDesigns.Show.URDU || urduName != null }
             ?: LogoDesigns.Show.NAME
+        val startEditing = savedInstanceState?.getBoolean(KEY_EDITING) ?: (made != null)
 
         findViewById<TextView>(R.id.tvLogoTrade).text = getString(trade.labelRes)
-        findViewById<View>(R.id.btnLogoBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.btnLogoBack).setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        findViewById<View>(R.id.btnLogoOthers).setOnClickListener { showStep(edit = false) }
 
         val etName: EditText = findViewById(R.id.etLogoName)
         etName.setText(name)
@@ -82,15 +99,18 @@ class LogoMakerActivity : BaseActivity() {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                name = s?.toString().orEmpty()
-                redraw(delayMs = 250)
+                val typed = s?.toString().orEmpty()
+                if (typed == name) return
+                name = typed
+                redrawBig(delayMs = 200)
+                redrawGrid(delayMs = 400)
             }
         })
 
         buildShowChips()
         buildColours()
 
-        val rv: RecyclerView = findViewById(R.id.rvLogos)
+        rv = findViewById(R.id.rvLogos)
         rv.layoutManager = GridLayoutManager(this, 2)
         adapter = Designs()
         rv.adapter = adapter
@@ -98,7 +118,9 @@ class LogoMakerActivity : BaseActivity() {
 
         findViewById<View>(R.id.btnLogoUse).setOnClickListener { save() }
         com.innovation313.roshankhata.ui.TextFit.relax(findViewById(R.id.logoPanel))
-        redraw(delayMs = 0)
+        com.innovation313.roshankhata.ui.TextFit.relax(findViewById(R.id.logoUseBar))
+        redrawGrid(delayMs = 0)
+        showStep(startEditing)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -107,6 +129,28 @@ class LogoMakerActivity : BaseActivity() {
         outState.putInt(KEY_PALETTE, palette)
         outState.putInt(KEY_CHOSEN, chosen)
         outState.putString(KEY_SHOW, show.name)
+        outState.putBoolean(KEY_EDITING, editing)
+    }
+
+    /** Step one (the designs) or step two (the chosen one, large, and what can change on it). */
+    private fun showStep(edit: Boolean) {
+        editing = edit
+        backToDesigns.isEnabled = edit
+        rv.visibility = if (edit) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.logoEdit).visibility = if (edit) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.logoUseBar).visibility = if (edit) View.VISIBLE else View.GONE
+        if (edit) {
+            findViewById<androidx.core.widget.NestedScrollView>(R.id.logoEdit).scrollTo(0, 0)
+            redrawBig(delayMs = 0)
+        } else {
+            currentFocus?.let { f ->
+                (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager)
+                    .hideSoftInputFromWindow(f.windowToken, 0)
+                f.clearFocus()
+            }
+            adapter.notifyDataSetChanged()
+            rv.scrollToPosition(chosen)
+        }
     }
 
     /** Name, Letters and - when an Urdu name is kept - Urdu name. */
@@ -128,11 +172,11 @@ class LogoMakerActivity : BaseActivity() {
         group.setOnCheckedStateChangeListener { g, ids ->
             val picked = ids.firstOrNull()?.let { g.findViewById<Chip>(it)?.tag as? LogoDesigns.Show } ?: return@setOnCheckedStateChangeListener
             show = picked
-            redraw(delayMs = 0)
+            redrawBig(delayMs = 0)
         }
     }
 
-    /** A round swatch per colour pair; the chosen one ringed. */
+    /** A round swatch per colour pair; the chosen one ringed. Changes the chosen logo only. */
     private fun buildColours() {
         val row: LinearLayout = findViewById(R.id.llLogoColours)
         row.removeAllViews()
@@ -150,42 +194,62 @@ class LogoMakerActivity : BaseActivity() {
                 setOnClickListener {
                     palette = i
                     buildColours()
-                    redraw(delayMs = 0)
+                    redrawBig(delayMs = 0)
                 }
             }
             row.addView(dot)
         }
     }
 
+    private fun shownName() = name.trim().ifEmpty { getString(R.string.app_name) }
+
+    /** The chosen logo as it will be kept: its own colour and words. */
     private fun spec(style: LogoDesigns.Style) = LogoDesigns.Spec(
         style = style,
         palette = palettes[palette],
         show = show,
-        name = name.trim().ifEmpty { getString(R.string.app_name) },
+        name = shownName(),
         urduName = urduName,
         tagline = tagline,
         trade = trade
     )
 
-    /** Every design drawn again off the main thread, after a short pause while the name is being typed. */
-    private fun redraw(delayMs: Long) {
-        drawJob?.cancel()
-        drawJob = lifecycleScope.launch {
+    /** A design on the grid: the shop's name in the trade's own colour, so the designs are compared as designs. */
+    private fun gridSpec(style: LogoDesigns.Style) = LogoDesigns.Spec(
+        style = style,
+        palette = palettes[0],
+        show = if (style == LogoDesigns.Style.URDU) LogoDesigns.Show.URDU else LogoDesigns.Show.NAME,
+        name = shownName(),
+        urduName = urduName,
+        tagline = tagline,
+        trade = trade
+    )
+
+    /** Every design on the grid drawn again off the main thread, after a short pause while the name is typed. */
+    private fun redrawGrid(delayMs: Long) {
+        gridJob?.cancel()
+        gridJob = lifecycleScope.launch {
             if (delayMs > 0) delay(delayMs)
             val size = (resources.displayMetrics.widthPixels / 2).coerceIn(240, 520)
             val drawn = withContext(Dispatchers.Default) {
-                styles.associateWith { LogoDesigns.draw(this@LogoMakerActivity, spec(it), size) }
+                styles.associateWith { LogoDesigns.draw(this@LogoMakerActivity, gridSpec(it), size) }
             }
             previews.clear()
             previews.putAll(drawn)
             adapter.notifyDataSetChanged()
-            showChosen()
         }
     }
 
-    /** The chosen design, large, above the grid. */
-    private fun showChosen() {
-        findViewById<ImageView>(R.id.ivLogoBig).setImageBitmap(previews[styles[chosen]])
+    /** The chosen logo, large, on step two. */
+    private fun redrawBig(delayMs: Long) {
+        bigJob?.cancel()
+        bigJob = lifecycleScope.launch {
+            if (delayMs > 0) delay(delayMs)
+            val style = styles[chosen]
+            val size = resources.displayMetrics.widthPixels.coerceIn(480, 900)
+            val bmp = withContext(Dispatchers.Default) { LogoDesigns.draw(this@LogoMakerActivity, spec(style), size) }
+            findViewById<ImageView>(R.id.ivLogoBig).setImageBitmap(bmp)
+        }
     }
 
     /** The chosen design at print size, kept as the shop's logo the way a picked picture is. */
@@ -193,18 +257,18 @@ class LogoMakerActivity : BaseActivity() {
         if (saving) return
         saving = true
         val style = styles[chosen]
+        val made = Made(style, palette, show, name.trim())
+        val drawSpec = spec(style)
         lifecycleScope.launch {
             val ok = withContext(Dispatchers.IO) {
                 runCatching {
-                    val bmp = LogoDesigns.draw(this@LogoMakerActivity, spec(style), 1024)
+                    val bmp = LogoDesigns.draw(this@LogoMakerActivity, drawSpec, 1024)
                     val file = File(File(cacheDir, "logo_maker").apply { mkdirs() }, "logo.png")
                     file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
                     bmp.recycle()
                     BusinessProfile.saveLogo(this@LogoMakerActivity, Uri.fromFile(file)).also { saved ->
                         file.delete()
-                        if (saved) BusinessProfile.setLogoDesign(
-                            this@LogoMakerActivity, Made(style, palette, show, name.trim()).text()
-                        )
+                        if (saved) BusinessProfile.setLogoDesign(this@LogoMakerActivity, made.text())
                     }
                 }.getOrDefault(false)
             }
@@ -224,8 +288,10 @@ class LogoMakerActivity : BaseActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
             val d = resources.displayMetrics.density
+            // Square cards: a design is never cut by its card.
+            val side = ((parent.width.takeIf { it > 0 } ?: resources.displayMetrics.widthPixels) - (20 * d).toInt()) / 2 - (12 * d).toInt()
             val frame = FrameLayout(parent.context).apply {
-                layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (170 * d).toInt())
+                layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, side.coerceAtLeast((140 * d).toInt()))
                     .apply { setMargins((6 * d).toInt(), (6 * d).toInt(), (6 * d).toInt(), (6 * d).toInt()) }
                 foreground = androidx.core.content.ContextCompat.getDrawable(context, android.R.drawable.list_selector_background)
             }
@@ -263,11 +329,8 @@ class LogoMakerActivity : BaseActivity() {
             holder.image.setImageBitmap(previews[styles[position]])
             holder.frame.contentDescription = getString(R.string.logo_make) + " " + (position + 1)
             holder.frame.setOnClickListener {
-                val before = chosen
                 chosen = holder.bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return@setOnClickListener
-                notifyItemChanged(before)
-                notifyItemChanged(chosen)
-                showChosen()
+                showStep(edit = true)
             }
         }
     }
@@ -292,5 +355,6 @@ class LogoMakerActivity : BaseActivity() {
         const val KEY_PALETTE = "logo_palette"
         const val KEY_CHOSEN = "logo_chosen"
         const val KEY_SHOW = "logo_show"
+        const val KEY_EDITING = "logo_editing"
     }
 }
