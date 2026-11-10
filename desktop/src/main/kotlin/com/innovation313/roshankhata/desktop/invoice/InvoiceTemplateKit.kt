@@ -50,6 +50,8 @@ object InvoiceTemplateKit {
     const val SEAL_GAP = 12f
     /** The app's green as stamp ink, a little thinned so it reads as ink on paper. */
     const val SEAL_INK = 0xFF1B5E3A.toInt()
+    /** How far the seal leans, clockwise, as a hand-pressed stamp does (the owner chose 8 degrees, 10 Nov 2026). */
+    const val SEAL_TILT = 8f
 
     /**
      * The round green seal the owner chose (10 Nov 2026): "ROSHAN KHATA" round the top, "DIGITAL RECORD" round the
@@ -64,7 +66,7 @@ object InvoiceTemplateKit {
      */
     fun drawRecordSeal(
         c: Canvas, cx: Float, cy: Float, size: Float, middle: String, below: String,
-        ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt()
+        ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt(), tilt: Float = SEAL_TILT
     ) {
         // A stamp's own build (10 Nov 2026, the owner: the first one looked thin and plain): full-strength ink, a heavy
         // rim with a fine line inside it, the name over the top and DIGITAL RECORD under the bottom, a lightly tinted
@@ -73,6 +75,8 @@ object InvoiceTemplateKit {
         val ring = Paint().apply { color = ink; style = Paint.Style.STROKE; isAntiAlias = true }
         val fill = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }
         PdfRtl.asOne(c, cx - size / 2f, cx + size / 2f) {
+            val turned = c.save()
+            c.rotate(tilt, cx, cy)
             ring.strokeWidth = 10f * k; c.drawCircle(cx, cy, 151f * k, ring)
             ring.strokeWidth = 1.8f * k; c.drawCircle(cx, cy, 140f * k, ring)
             c.drawCircle(cx, cy, 98f * k, ring)
@@ -120,6 +124,7 @@ object InvoiceTemplateKit {
             mid.color = ink; mid.textSize = 21f * k
             while (mid.measureText(below) > 136f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
             PdfRtl.drawText(c, below, cx, cy + 62f * k, mid)
+            c.restoreToCount(turned)
         }
     }
 

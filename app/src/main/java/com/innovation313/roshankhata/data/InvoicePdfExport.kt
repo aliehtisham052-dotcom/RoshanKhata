@@ -1316,10 +1316,13 @@ object InvoicePdfExport {
         // the signature, so on a short invoice it hung mid-page, stuck to the
         // bill itself (owner's note, 30 Sep 2026).
         val bandTop = PAGE_H_A4 - 96f
-        // The seal's own room above the strip, at the end side (10 Nov 2026, the owner: never on the strip, never
-        // over a figure). The bill must end above it; with no room left it all goes to the foot of the next page.
-        val sealTop = bandTop - InvoiceTemplateKit.SEAL_GAP - InvoiceTemplateKit.SEAL_SIZE
-        if (yIn + 10f > (if (invoice != null) sealTop else bandTop)) {
+        // The seal goes where the bill ends, at the end side - under its totals and signature, as a stamp is pressed
+        // (10 Nov 2026, the owner: one place on every paper, never floating at the foot). With no room for it above
+        // the strip, it and the strip go to the next page, the seal at that page's top.
+        val size = InvoiceTemplateKit.SEAL_SIZE
+        var sealTop = yIn + InvoiceTemplateKit.SEAL_GAP
+        val room = if (invoice != null) sealTop + size + InvoiceTemplateKit.SEAL_GAP else yIn + 10f
+        if (room > bandTop) {
             doc.finishPage(page)
             page = PdfRtl.startPage(context, doc, 
                 PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, doc.pages.size + 1).create()
@@ -1327,13 +1330,14 @@ object InvoicePdfExport {
             c = page.canvas
             // A dark design's strip page is filled like its others (8 Nov 2026 review, m76: it was left white).
             palette?.let { InvoiceTemplateKit.fillPage(c, it, PAGE_W_A4, PAGE_H_A4) }
+            sealTop = MARGIN
         }
 
         // The Roshan Khata seal with this document's own date and number; on a dark design its ink is the page's text colour.
         invoice?.let { inv ->
             InvoiceTemplateKit.drawRecordSeal(
-                c, PAGE_W_A4 - MARGIN - InvoiceTemplateKit.SEAL_SIZE / 2f, sealTop + InvoiceTemplateKit.SEAL_SIZE / 2f,
-                InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(inv.invoiceDate).uppercase(), inv.invoiceNumber,
+                c, PAGE_W_A4 - MARGIN - size / 2f, sealTop + size / 2f,
+                size, Format.dateOnly(inv.invoiceDate).uppercase(), inv.invoiceNumber,
                 ink = if (palette?.pageBackground != null) palette.ink else InvoiceTemplateKit.SEAL_INK,
                 paper = palette?.pageBackground ?: 0xFFFFFFFF.toInt()
             )
