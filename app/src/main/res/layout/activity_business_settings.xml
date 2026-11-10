@@ -677,7 +677,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/seal_choice_title"
                     android:textAlignment="viewStart"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/ink"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
