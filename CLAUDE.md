@@ -1080,7 +1080,7 @@ Businesses/Settings), each part with its proof pictures. CI only.
   it was made, the not-a-backup note, the summary, 20/30 pt rows in two money columns, the foot) and
   `RegisterPrint` the phone's RegisterReport (the shop's address and tax number on the band by the phone's rule,
   `identityLine`; the two notes wrapped; summary; two sections with continued heads; signature lines; "Generated
-  … · Page n" at every foot — the phone's only on the last). The download banner and watermark stay the phone's.
+  … · Page n" at every foot — the phone's only on the last). The download banner stays the phone's; no printed document has a watermark since 10 Nov 2026 (the owner: it covered the page; the foot's strip and page line name the app).
   Every other printed table (`TablePrint`: price list, orders, sales report, stock register, dues by age) and the
   customer statement and plain invoice are in the phone's green and gold now (they were navy), and the tables say
   when they were made at every foot (`madeLine`) and hold 29 rows a page, so a totals line never lands at the

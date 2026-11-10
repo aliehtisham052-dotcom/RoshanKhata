@@ -126,7 +126,7 @@ object RegisterReport {
         val period = "${dayFmt.format(Date(d.from))}  \u2014  ${dayFmt.format(Date(d.to))}"
 
         fun header(): Float {
-            PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
+            // No watermark (10 Nov 2026): the foot's download strip and page line name the app.
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 88f, navyFill)
             PdfRtl.drawText(canvas, businessName, MARGIN, 26f, title)
             PdfRtl.drawText(canvas, context.getString(R.string.pdf_reg_title), MARGIN, 44f, tagline)

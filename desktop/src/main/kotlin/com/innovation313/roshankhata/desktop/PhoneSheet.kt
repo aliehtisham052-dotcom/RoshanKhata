@@ -30,8 +30,8 @@ fun madeLine(words: Words, at: Long = System.currentTimeMillis()): String =
  * recognises): the deep green band with the shop's name and the gold lines under it, the note on what the
  * paper is and is not, the summary, tables with a grey head, striped rows and a quiet second line, and the
  * app, the time of making and the page at every foot. The sizes, colours and spacing are the phone's own
- * (data/LedgerReport.kt, data/RegisterReport.kt). The download banner and the watermark are the phone's
- * alone.
+ * (data/LedgerReport.kt, data/RegisterReport.kt). The download banner is the phone's alone (neither has a
+ * watermark since 10 Nov 2026).
  *
  * A document writes itself once with a [Pen] — measured on a scrap picture, turning pages as the phone does —
  * and each page is kept as its drawing, replayed whenever it is drawn (the preview, the PDF and the printer

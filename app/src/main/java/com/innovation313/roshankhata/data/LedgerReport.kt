@@ -98,10 +98,8 @@ object LedgerReport {
         val businessName = BusinessProfile.businessName(context) ?: context.getString(R.string.app_name)
 
         fun header(): Float {
-            // Before anything else on the page: the watermark is a
-            // background, so every rule, figure and band that follows sits
-            // on top of it rather than under it.
-            PdfBranding.drawWatermark(context, canvas, PAGE_W, PAGE_H, NAVY)
+            // No watermark (10 Nov 2026, the owner: it covered most of the page). The app is named once, in the
+            // download strip and the page line at the foot; the sheet itself is the shop's.
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 74f, navyFill)
             PdfRtl.drawText(canvas, businessName, MARGIN, 30f, title)
             PdfRtl.drawText(canvas,
