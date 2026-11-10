@@ -3098,33 +3098,24 @@ class PartyDetailActivity : BaseActivity() {
         onPick: () -> Unit,
         onRemove: (() -> Unit)?
     ) {
-        val view = layoutInflater.inflate(R.layout.dialog_photo_options, null)
-        val note = view.findViewById<TextView>(R.id.tvPhotoNote)
-        if (noteRes == null) note.visibility = View.GONE else note.setText(noteRes)
-
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(titleRes)
-            .setView(view)
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-
-        view.findViewById<View>(R.id.optCamera).setOnClickListener {
-            dialog.dismiss()
-            launchCamera(target)
+        // The app's own sheet of cards (10 Nov 2026, the owner: the plain dialog with spaced-out words looked
+        // unfinished), the same one a bill's scan already uses: camera, phone's pictures, and remove in red.
+        val sheet = com.innovation313.roshankhata.ui.ChoiceSheet
+        val options = buildList {
+            add(sheet.camera(getString(R.string.photo_from_camera)))
+            add(sheet.photo(getString(R.string.photo_from_gallery)))
+            if (onRemove != null) add(sheet.delete(getString(R.string.remove_photo)))
         }
-        view.findViewById<View>(R.id.optGallery).setOnClickListener {
-            dialog.dismiss()
-            onPick()
-        }
-        view.findViewById<View>(R.id.optRemove).apply {
-            if (onRemove == null) {
-                visibility = View.GONE
-            } else {
-                visibility = View.VISIBLE
-                setOnClickListener {
-                    dialog.dismiss()
-                    onRemove()
-                }
+        sheet.show(
+            this,
+            title = getString(titleRes),
+            options = options,
+            message = noteRes?.let { getString(it) }
+        ) { which ->
+            when (which) {
+                0 -> launchCamera(target)
+                1 -> onPick()
+                else -> onRemove?.invoke()
             }
         }
     }
