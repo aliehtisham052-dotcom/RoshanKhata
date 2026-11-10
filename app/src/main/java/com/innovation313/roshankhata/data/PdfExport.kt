@@ -685,6 +685,12 @@ object PdfExport {
             val sigW = 150
             val sigH = 60
             val sigLeft = PAGE_W - MARGIN - sigW
+            // The Roshan Khata seal beside the signature, as a shop stamps beside its signature (10 Nov 2026):
+            // the day the statement was made, and what it is.
+            InvoiceTemplateKit.drawRecordSeal(
+                c, sigLeft - 28f - InvoiceTemplateKit.SEAL_SIZE / 2f, y + InvoiceTemplateKit.SEAL_SIZE / 2f - 4f,
+                InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(System.currentTimeMillis()).uppercase(), "STATEMENT"
+            )
 
             val ratio = signature.height.toFloat() / signature.width.toFloat()
             val drawH = (sigW * ratio).toInt().coerceAtMost(sigH)
@@ -704,6 +710,23 @@ object PdfExport {
                 sigLeft, y, muted
             )
             y += 22f
+        } else {
+            // No signature: the seal alone at the end side, in its own room above the foot line.
+            if (y > PAGE_H - 180f) {
+                endPage()
+                pageNo++
+                page = PdfRtl.startPage(context, doc,
+                    PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
+                )
+                c = page.canvas
+                y = drawHeader(first = false)
+            }
+            y += 16f
+            InvoiceTemplateKit.drawRecordSeal(
+                c, PAGE_W - MARGIN - InvoiceTemplateKit.SEAL_SIZE / 2f, y + InvoiceTemplateKit.SEAL_SIZE / 2f,
+                InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(System.currentTimeMillis()).uppercase(), "STATEMENT"
+            )
+            y += InvoiceTemplateKit.SEAL_SIZE + 10f
         }
 
         // One quiet line at the very FOOT of the last page — the app's mark,

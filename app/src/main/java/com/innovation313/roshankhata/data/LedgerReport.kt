@@ -281,7 +281,13 @@ object LedgerReport {
         // the way a printer marks the bottom of a form, not the letterhead.
         // The banner goes just above the footer line; the last of the content
         // has to end above it, or the banner starts a page of its own.
-        if (y > PAGE_H - 104f) newPage()
+        // The Roshan Khata seal in its own room above the strip, at the end side (10 Nov 2026): the rows end above it.
+        val sealSize = InvoiceTemplateKit.SEAL_SIZE
+        if (y > PAGE_H - 104f - InvoiceTemplateKit.SEAL_GAP - sealSize) newPage()
+        InvoiceTemplateKit.drawRecordSeal(
+            canvas, PAGE_W - MARGIN - sealSize / 2f, PAGE_H - 96f - InvoiceTemplateKit.SEAL_GAP - sealSize / 2f,
+            sealSize, Format.dateOnly(System.currentTimeMillis()).uppercase(), "REPORT"
+        )
         PdfBranding.drawDownloadBanner(context, doc, canvas, MARGIN, PAGE_H - 96f, PAGE_W - 2 * MARGIN)
         pageFoot()
 

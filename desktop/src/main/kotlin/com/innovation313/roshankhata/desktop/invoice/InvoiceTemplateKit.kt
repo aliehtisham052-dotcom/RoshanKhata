@@ -15,6 +15,7 @@ import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.gfx.Color
 import com.innovation313.roshankhata.desktop.gfx.LinearGradient
 import com.innovation313.roshankhata.desktop.gfx.Paint
+import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.PdfDocument
 import com.innovation313.roshankhata.desktop.gfx.Rect
 import com.innovation313.roshankhata.desktop.gfx.RectF
@@ -41,6 +42,104 @@ import java.util.Date
  * copy-pasting T1's function eight more times would not.
  */
 object InvoiceTemplateKit {
+
+    // ---------- The Roshan Khata seal (10 Nov 2026) ----------
+
+    /** The seal's own room on a page: its diameter and the air kept above the maker's strip. */
+    const val SEAL_SIZE = 74f
+    const val SEAL_GAP = 12f
+    /** The app's green as stamp ink, a little thinned so it reads as ink on paper. */
+    const val SEAL_INK = 0xE61B5E3A.toInt()
+
+    /**
+     * The round green seal the owner chose (10 Nov 2026): "ROSHAN KHATA" round the top, "DIGITAL RECORD" round the
+     * bottom, a star each side, the open book, and in the middle what THIS paper is - its own date and number on an
+     * invoice or a receipt, the day it was made and "STATEMENT" / "REPORT" / "REGISTER" on the others. It says only
+     * what is true: the record was kept on Roshan Khata; nothing in it claims the figures were checked.
+     *
+     * Drawn as ink (no fill, the paper shows through) in its own square of [size], never over a figure and never on
+     * the maker's strip: callers give it room above the strip on the last page. Letters are placed one by one round
+     * the rim with plain rotations, so the computer's drawing stand-in draws it the same, and the whole seal is one
+     * left-to-right unit on a right-to-left page ([PdfRtl.asOne]).
+     */
+    fun drawRecordSeal(c: Canvas, cx: Float, cy: Float, size: Float, middle: String, below: String, ink: Int = SEAL_INK) {
+        val k = size / 320f
+        val ring = Paint().apply { color = ink; style = Paint.Style.STROKE; isAntiAlias = true }
+        PdfRtl.asOne(c, cx - size / 2f, cx + size / 2f) {
+            ring.strokeWidth = 6.5f * k; c.drawCircle(cx, cy, 150f * k, ring)
+            ring.strokeWidth = 1.6f * k; c.drawCircle(cx, cy, 139f * k, ring)
+            c.drawCircle(cx, cy, 90f * k, ring)
+
+            val rim = Paint().apply {
+                color = ink; isAntiAlias = true; textSize = 23f * k; textAlign = Paint.Align.CENTER
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            }
+            arcWords(c, "ROSHAN KHATA", cx, cy, 112f * k, rim, 6f * k, top = true)
+            rim.textSize = 17f * k
+            arcWords(c, "DIGITAL RECORD", cx, cy, 120f * k, rim, 5f * k, top = false)
+
+            val dot = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }
+            star(c, cx - 123f * k, cy, 8f * k, dot)
+            star(c, cx + 123f * k, cy, 8f * k, dot)
+
+            // The open book: two pages meeting at the spine.
+            ring.strokeWidth = 3.4f * k
+            val bx = cx - 36f * k; val by = cy - 70f * k; val bs = 1.4f * k
+            val left = Path().apply {
+                moveTo(bx + 2f * bs, by + 6f * bs); cubicTo(bx + 11f * bs, by + 1.5f * bs, bx + 19f * bs, by + 1.5f * bs, bx + 26f * bs, by + 7f * bs)
+                lineTo(bx + 26f * bs, by + 39f * bs); cubicTo(bx + 19f * bs, by + 33.5f * bs, bx + 11f * bs, by + 33.5f * bs, bx + 2f * bs, by + 38f * bs); close()
+            }
+            val right = Path().apply {
+                moveTo(bx + 50f * bs, by + 6f * bs); cubicTo(bx + 41f * bs, by + 1.5f * bs, bx + 33f * bs, by + 1.5f * bs, bx + 26f * bs, by + 7f * bs)
+                lineTo(bx + 26f * bs, by + 39f * bs); cubicTo(bx + 33f * bs, by + 33.5f * bs, bx + 41f * bs, by + 33.5f * bs, bx + 50f * bs, by + 38f * bs); close()
+            }
+            c.drawPath(left, ring); c.drawPath(right, ring)
+
+            ring.strokeWidth = 1.6f * k
+            c.drawLine(cx - 60f * k, cy + 4f * k, cx + 60f * k, cy + 4f * k, ring)
+            val mid = Paint().apply {
+                color = ink; isAntiAlias = true; textAlign = Paint.Align.CENTER; textSize = 19f * k
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            }
+            while (mid.measureText(middle) > 150f * k && mid.textSize > 8f * k) mid.textSize -= 0.5f * k
+            PdfRtl.drawText(c, middle, cx, cy + 32f * k, mid)
+            mid.textSize = 12.5f * k
+            while (mid.measureText(below) > 140f * k && mid.textSize > 6f * k) mid.textSize -= 0.5f * k
+            PdfRtl.drawText(c, below, cx, cy + 55f * k, mid)
+        }
+    }
+
+    /** [words] round a circle of [radius], centred at the top (upright, read left to right) or the bottom. */
+    private fun arcWords(c: Canvas, words: String, cx: Float, cy: Float, radius: Float, p: Paint, track: Float, top: Boolean) {
+        val widths = words.map { p.measureText(it.toString()) + track }
+        val sweep = widths.sum() - track
+        var along = -sweep / 2f
+        val baseline = if (top) cy - radius else cy + radius + p.textSize * 0.72f
+        words.forEachIndexed { i, ch ->
+            val w = widths[i] - track
+            val centre = along + w / 2f
+            val degrees = Math.toDegrees((centre / radius).toDouble()).toFloat()
+            val saved = c.save()
+            c.rotate(if (top) degrees else -degrees, cx, cy)
+            PdfRtl.drawText(c, ch.toString(), cx, baseline, p)
+            c.restoreToCount(saved)
+            along += widths[i]
+        }
+    }
+
+    /** A five-pointed star of outer radius [r]. */
+    private fun star(c: Canvas, x: Float, y: Float, r: Float, p: Paint) {
+        val path = Path()
+        for (n in 0 until 10) {
+            val rad = if (n % 2 == 0) r else r * 0.42f
+            val a = Math.toRadians((-90 + n * 36).toDouble())
+            val px = x + (rad * Math.cos(a)).toFloat(); val py = y + (rad * Math.sin(a)).toFloat()
+            if (n == 0) path.moveTo(px, py) else path.lineTo(px, py)
+        }
+        path.close()
+        c.drawPath(path, p)
+    }
+
 
     /**
      * A template's own colour scheme.

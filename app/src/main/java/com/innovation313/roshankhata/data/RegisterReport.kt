@@ -342,7 +342,12 @@ object RegisterReport {
         // ---- Signature strip ----
         // 160, not 120: the download banner sits between the signatures and
         // the footer, and needs the room.
-        if (y > PAGE_H - 160f) newPage() else y += 24f
+        // 200 since 10 Nov 2026: the Roshan Khata seal stands between the two signatures and keeps clear of the strip.
+        if (y > PAGE_H - 200f) newPage() else y += 24f
+        InvoiceTemplateKit.drawRecordSeal(
+            canvas, PAGE_W / 2f, y + 24f, InvoiceTemplateKit.SEAL_SIZE,
+            Format.dateOnly(System.currentTimeMillis()).uppercase(), "REGISTER"
+        )
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
         // The dealer and the inspector sign an agri or medical shop's register; any other shop's, its owner and

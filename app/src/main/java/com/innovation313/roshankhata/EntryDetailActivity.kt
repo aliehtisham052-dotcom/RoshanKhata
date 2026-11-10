@@ -955,6 +955,25 @@ class EntryDetailActivity : BaseActivity() {
         return Bitmap.createBitmap(copy.measuredWidth, copy.measuredHeight, Bitmap.Config.ARGB_8888).also { copy.draw(Canvas(it)) }
     }
 
+    /**
+     * The shared slip with the Roshan Khata seal under it, at the end side on a white band of its own (10 Nov 2026):
+     * the entry's own day and number in the middle, never over the slip's words.
+     */
+    private fun withSeal(slip: Bitmap): Bitmap {
+        val e = entry ?: return slip
+        val size = slip.width * 0.24f
+        val pad = size * 0.16f
+        val out = Bitmap.createBitmap(slip.width, slip.height + (size + 2 * pad).toInt(), Bitmap.Config.ARGB_8888)
+        val c = Canvas(out)
+        c.drawColor(android.graphics.Color.WHITE)
+        c.drawBitmap(slip, 0f, 0f, null)
+        com.innovation313.roshankhata.data.InvoiceTemplateKit.drawRecordSeal(
+            c, slip.width - pad - size / 2f, slip.height + pad + size / 2f, size,
+            com.innovation313.roshankhata.ui.Format.dateOnly(e.timestamp).uppercase(), e.entryNumber
+        )
+        return out
+    }
+
     /** What the screen's card shows, into the day copy: visibility, words and photos (never an icon's night tint). */
     private fun mirrorReceipt(from: View, to: View) {
         to.visibility = from.visibility
@@ -974,7 +993,7 @@ class EntryDetailActivity : BaseActivity() {
     /** Render the receipt card to an image and offer it to the share sheet. */
     private fun shareReceipt() {
         try {
-            val bitmap = receiptPicture()
+            val bitmap = withSeal(receiptPicture())
 
             val dir = File(cacheDir, "receipts").apply { mkdirs() }
             val file = File(dir, "receipt_${entryId}.png")

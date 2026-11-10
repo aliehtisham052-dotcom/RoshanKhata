@@ -15,6 +15,7 @@ import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.gfx.Color
 import com.innovation313.roshankhata.desktop.gfx.LinearGradient
 import com.innovation313.roshankhata.desktop.gfx.Paint
+import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.PdfDocument
 import com.innovation313.roshankhata.desktop.gfx.Rect
 import com.innovation313.roshankhata.desktop.gfx.RectF
@@ -189,7 +190,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -296,7 +297,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -389,7 +390,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -489,7 +490,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -584,7 +585,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -675,7 +676,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -764,7 +765,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -860,7 +861,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -947,7 +948,7 @@ object InvoicePdfExport {
         }
         y = InvoiceTemplateKit.drawTermsAndSignature(c, context, palette, fonts, left, right, y, invoice)
 
-        val finalState = drawMakerStrip(context, doc, page, c, y, palette)
+        val finalState = drawMakerStrip(context, doc, page, c, y, palette, invoice)
         page = finalState.first
         c = finalState.second
 
@@ -1257,7 +1258,9 @@ object InvoicePdfExport {
         pageIn: PdfDocument.Page,
         canvasIn: Canvas,
         yIn: Float,
-        palette: InvoiceTemplateKit.Palette? = null
+        palette: InvoiceTemplateKit.Palette? = null,
+        /** The document the seal names (its date and number); none, no seal. */
+        invoice: Invoice? = null
     ): Pair<PdfDocument.Page, Canvas> {
         var page = pageIn
         var c = canvasIn
@@ -1267,9 +1270,10 @@ object InvoicePdfExport {
         // the signature, so on a short invoice it hung mid-page, stuck to the
         // bill itself (owner's note, 30 Sep 2026).
         val bandTop = PAGE_H_A4 - 96f
-        // Needs a little air above it; with no room left on this page it goes
-        // to the foot of the next one, as before.
-        if (yIn + 10f > bandTop) {
+        // The seal's own room above the strip, at the end side (10 Nov 2026, the owner: never on the strip, never
+        // over a figure). The bill must end above it; with no room left it all goes to the foot of the next page.
+        val sealTop = bandTop - InvoiceTemplateKit.SEAL_GAP - InvoiceTemplateKit.SEAL_SIZE
+        if (yIn + 10f > (if (invoice != null) sealTop else bandTop)) {
             doc.finishPage(page)
             page = PdfRtl.startPage(context, doc, 
                 PdfDocument.PageInfo.Builder(PAGE_W_A4, PAGE_H_A4, doc.pages.size + 1).create()
@@ -1277,6 +1281,15 @@ object InvoicePdfExport {
             c = page.canvas
             // A dark design's strip page is filled like its others (8 Nov 2026 review, m76: it was left white).
             palette?.let { InvoiceTemplateKit.fillPage(c, it, PAGE_W_A4, PAGE_H_A4) }
+        }
+
+        // The Roshan Khata seal with this document's own date and number; on a dark design its ink is the page's text colour.
+        invoice?.let { inv ->
+            InvoiceTemplateKit.drawRecordSeal(
+                c, PAGE_W_A4 - MARGIN - InvoiceTemplateKit.SEAL_SIZE / 2f, sealTop + InvoiceTemplateKit.SEAL_SIZE / 2f,
+                InvoiceTemplateKit.SEAL_SIZE, Format.dateOnly(inv.invoiceDate).uppercase(), inv.invoiceNumber,
+                ink = if (palette?.pageBackground != null) palette.ink else InvoiceTemplateKit.SEAL_INK
+            )
         }
 
         // The app's invitation: logo, a line, and a DOWNLOAD button that

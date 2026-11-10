@@ -40,6 +40,7 @@ import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.gfx.Color
 import com.innovation313.roshankhata.desktop.gfx.LinearGradient
 import com.innovation313.roshankhata.desktop.gfx.Paint
+import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.PdfDocument
 import com.innovation313.roshankhata.desktop.gfx.Rect
 import com.innovation313.roshankhata.desktop.gfx.RectF
