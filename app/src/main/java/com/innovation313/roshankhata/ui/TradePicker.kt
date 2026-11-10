@@ -243,7 +243,15 @@ object TradePicker {
             .setPositiveButton(R.string.save) { _, _ ->
                 onDone(OtherTrade.Words(etName.text.toString().trim().ifEmpty { null }, OtherTrade.split(etItems.text.toString())))
             }
-            .show().also { KeyboardFollow.dialog(it) }
+            .show().also { dialog ->
+                KeyboardFollow.dialog(dialog)
+                // Done on the keyboard's last box saves, as Save does.
+                etItems.setOnEditorActionListener { _, action, _ ->
+                    if (action == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                        dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.performClick(); true
+                    } else false
+                }
+            }
         etName.requestFocus()
     }
 

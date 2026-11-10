@@ -152,6 +152,7 @@ object KeyboardFollow {
     private fun install(content: ViewGroup, floating: Boolean) {
         if (content.rootView.getTag(R.id.tag_keyboard_window) != null) return
         keepFocusedVisible(content)
+        content.post { scrollingForm(content) }
         val base = content.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(content) { v, insets ->
             var out = insets
@@ -191,6 +192,38 @@ object KeyboardFollow {
             if (oldBottom != oldTop && bottom - top < oldBottom - oldTop) v.post { revealFocused(v) }
         }
         ViewCompat.requestApplyInsets(content)
+    }
+
+    /**
+     * An alert dialog's own form that cannot scroll is put in a scroll of its own (10 Nov 2026, the owner's photo of
+     * "Your kind of shop": with the keyboard up the dialog's height shrank and the last box was pressed to a line).
+     * Each box then keeps its height, the dialog scrolls, and the box being typed in comes to the middle. A form
+     * that already scrolls (a ScrollView, a list) is left as it is. The box that had the focus keeps it.
+     */
+    private fun scrollingForm(content: ViewGroup) {
+        val frame = content.findViewById<ViewGroup>(androidx.appcompat.R.id.custom)
+            ?: content.findViewById(android.R.id.custom) ?: return
+        if (frame.childCount != 1) return
+        val form = frame.getChildAt(0)
+        if (scrolls(form)) return
+        val focused = form.findFocus()
+        frame.removeView(form)
+        val scroll = androidx.core.widget.NestedScrollView(form.context).apply {
+            isFillViewport = false
+            isVerticalScrollBarEnabled = true
+            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+            addView(form, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        }
+        frame.addView(scroll, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        focused?.requestFocus()
+    }
+
+    /** Whether [v] or anything in it scrolls on its own. */
+    private fun scrolls(v: View): Boolean = when (v) {
+        is android.widget.ScrollView, is androidx.core.widget.NestedScrollView, is android.widget.AbsListView,
+        is androidx.recyclerview.widget.RecyclerView, is android.webkit.WebView -> true
+        is ViewGroup -> (0 until v.childCount).any { scrolls(v.getChildAt(it)) }
+        else -> false
     }
 
     /** How many pixels of [v]'s bottom the keyboard ([ime] px tall) covers. Padding never moves [v]'s edges. */

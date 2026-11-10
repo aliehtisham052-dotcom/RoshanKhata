@@ -633,15 +633,21 @@ object BusinessProfile {
      * same (21 Oct 2026, the critical review: it was decoded from disk on the
      * main thread every time a screen came back). Never recycled by its user.
      */
-    @Volatile private var headerLogo: Triple<String, Long, Bitmap>? = null
+    @Volatile private var headerLogo: Triple<String, String, Bitmap>? = null
 
+    /**
+     * The logo for screen headers, kept in memory while the file stays the same. "The same" is its path, its time AND
+     * its size (10 Nov 2026, the owner's UBL story: many phones keep a file's time to the whole second, so a logo
+     * saved twice in one second showed the old picture). [saveLogo] and [removeLogo] also drop it outright.
+     */
     fun headerLogo(context: Context): Bitmap? {
         if (!hasLogo(context)) return null
         val f = logoFile(context)
+        val stamp = "${f.lastModified()}:${f.length()}"
         val cached = headerLogo
-        if (cached != null && cached.first == f.absolutePath && cached.second == f.lastModified()) return cached.third
+        if (cached != null && cached.first == f.absolutePath && cached.second == stamp) return cached.third
         val bmp = loadLogo(context) ?: return null
-        headerLogo = Triple(f.absolutePath, f.lastModified(), bmp)
+        headerLogo = Triple(f.absolutePath, stamp, bmp)
         return bmp
     }
 
@@ -666,6 +672,7 @@ object BusinessProfile {
             if (scaled !== original) original.recycle()
             // A new picture is no longer the made design; the logo maker sets it again after this returns.
             prefs(context).edit().putBoolean(KEY_LOGO_SAVED, true).remove(KEY_LOGO_DESIGN).apply()
+            headerLogo = null
             true
         } catch (e: Exception) {
             false
@@ -675,6 +682,7 @@ object BusinessProfile {
     fun removeLogo(context: Context) {
         logoFile(context).delete()
         prefs(context).edit().putBoolean(KEY_LOGO_SAVED, false).remove(KEY_LOGO_DESIGN).apply()
+        headerLogo = null
     }
 
     /**

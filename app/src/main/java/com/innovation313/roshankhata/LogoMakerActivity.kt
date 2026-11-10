@@ -72,13 +72,15 @@ class LogoMakerActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
         onBackPressedDispatcher.addCallback(this, backToDesigns)
 
-        trade = Trade.current(this)
+        // The logo made here before opens on step two to be edited, not as a new one (the owner: Change started over),
+        // and exactly as it was made: in its own trade's picture and words even if the shop type changed since (10 Nov
+        // 2026, the owner's photos: the profile showed the shirt logo kept, the editor drew a shoe).
+        val made = if (savedInstanceState == null) Made.parse(BusinessProfile.logoDesign(this)) else null
+        trade = savedInstanceState?.getString(KEY_TRADE)?.let { Trade.of(it) } ?: made?.trade ?: Trade.current(this)
         tagline = getString(trade.exampleRes)
         urduName = BusinessProfile.businessNameUrdu(this)?.takeIf { it.isNotBlank() }
         palettes = LogoDesigns.palettes(this, trade)
         styles = LogoDesigns.styles(urduName)
-        // The logo made here before opens on step two to be edited, not as a new one (the owner: Change started over).
-        val made = if (savedInstanceState == null) Made.parse(BusinessProfile.logoDesign(this)) else null
         name = savedInstanceState?.getString(KEY_NAME) ?: made?.name ?: BusinessProfile.businessName(this).orEmpty()
         palette = (savedInstanceState?.getInt(KEY_PALETTE) ?: made?.palette ?: 0).coerceIn(0, palettes.size - 1)
         chosen = (savedInstanceState?.getInt(KEY_CHOSEN) ?: made?.style?.let { styles.indexOf(it) }?.takeIf { it >= 0 } ?: 0)
@@ -130,6 +132,7 @@ class LogoMakerActivity : BaseActivity() {
         outState.putInt(KEY_CHOSEN, chosen)
         outState.putString(KEY_SHOW, show.name)
         outState.putBoolean(KEY_EDITING, editing)
+        outState.putString(KEY_TRADE, trade.name)
     }
 
     /** Step one (the designs) or step two (the chosen one, large, and what can change on it). */
@@ -257,7 +260,7 @@ class LogoMakerActivity : BaseActivity() {
         if (saving) return
         saving = true
         val style = styles[chosen]
-        val made = Made(style, palette, show, name.trim())
+        val made = Made(style, palette, show, name.trim(), trade)
         val drawSpec = spec(style)
         lifecycleScope.launch {
             val ok = withContext(Dispatchers.IO) {
@@ -335,16 +338,28 @@ class LogoMakerActivity : BaseActivity() {
         }
     }
 
-    /** How a made logo is remembered: "v1|STYLE|colour|SHOW|name" (the name last, so a "|" in it stays). */
-    private data class Made(val style: LogoDesigns.Style, val palette: Int, val show: LogoDesigns.Show, val name: String) {
-        fun text() = listOf("v1", style.name, palette.toString(), show.name, name).joinToString("|")
+    /**
+     * How a made logo is remembered: "v2|STYLE|colour|SHOW|TRADE|name" (the name last, so a "|" in it stays). The
+     * trade is kept since 10 Nov 2026 (v1 had none: it opens in the shop's trade of the day).
+     */
+    private data class Made(
+        val style: LogoDesigns.Style, val palette: Int, val show: LogoDesigns.Show, val name: String, val trade: Trade?
+    ) {
+        fun text() = listOf("v2", style.name, palette.toString(), show.name, trade?.name.orEmpty(), name).joinToString("|")
 
         companion object {
             fun parse(text: String?): Made? {
-                val parts = text?.split("|", limit = 5) ?: return null
-                if (parts.size != 5 || parts[0] != "v1") return null
+                val head = text?.substringBefore("|") ?: return null
+                val parts = when (head) {
+                    "v1" -> text.split("|", limit = 5).takeIf { it.size == 5 }?.let { it.subList(0, 4) + "" + it[4] }
+                    "v2" -> text.split("|", limit = 6).takeIf { it.size == 6 }
+                    else -> null
+                } ?: return null
                 return runCatching {
-                    Made(LogoDesigns.Style.valueOf(parts[1]), parts[2].toInt(), LogoDesigns.Show.valueOf(parts[3]), parts[4])
+                    Made(
+                        LogoDesigns.Style.valueOf(parts[1]), parts[2].toInt(), LogoDesigns.Show.valueOf(parts[3]), parts[5],
+                        parts[4].takeIf { it.isNotEmpty() }?.let { key -> Trade.entries.firstOrNull { it.name == key } }
+                    )
                 }.getOrNull()
             }
         }
@@ -356,5 +371,6 @@ class LogoMakerActivity : BaseActivity() {
         const val KEY_CHOSEN = "logo_chosen"
         const val KEY_SHOW = "logo_show"
         const val KEY_EDITING = "logo_editing"
+        const val KEY_TRADE = "logo_trade"
     }
 }
