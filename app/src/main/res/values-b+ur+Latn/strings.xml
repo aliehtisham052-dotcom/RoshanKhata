@@ -1832,6 +1832,14 @@
     <string name="bp_phone_help">Invoice par chhapta hai taake customer aap ko call kar sakein.</string>
     <string name="bp_phone_hint">Maslan 0300 1234567</string>
     <string name="bp_logo">Dukaan ka logo</string>
+    <string name="logo_make">Logo banayein</string>
+    <string name="logo_make_sub">Aap ki dukaan ke naam aur qisam se tayyar design</string>
+    <string name="logo_name_label">Logo par naam</string>
+    <string name="logo_show_name">Naam</string>
+    <string name="logo_show_letters">Haroof</string>
+    <string name="logo_show_urdu">Urdu naam</string>
+    <string name="logo_colour">Rang</string>
+    <string name="logo_use">Ye logo lagayein</string>
     <string name="bp_logo_help">Ikhtiyari — invoice aur stock register ke upar chhapta hai.</string>
     <string name="bp_remove_logo">Logo hatayein</string>
     <string name="pic_delete_body_pc">Yeh tasveer sirf isi computer par hai: backup file mein tasveerein nahi jaatin. Delete karne ke baad yeh wapas nahi aa sakti.</string>

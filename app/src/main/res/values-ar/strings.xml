@@ -1984,6 +1984,14 @@
     <string name="bp_phone_help">يُطبع على الفواتير ليتمكن العملاء من الاتصال بك.</string>
     <string name="bp_phone_hint">مثال: \u20660300 1234567\u2069</string>
     <string name="bp_logo">شعار المتجر</string>
+    <string name="logo_make">اصنع شعارًا</string>
+    <string name="logo_make_sub">تصاميم جاهزة من اسم متجرك ونوعه</string>
+    <string name="logo_name_label">الاسم على الشعار</string>
+    <string name="logo_show_name">الاسم</string>
+    <string name="logo_show_letters">الأحرف</string>
+    <string name="logo_show_urdu">الاسم بالأردية</string>
+    <string name="logo_colour">اللون</string>
+    <string name="logo_use">استخدم هذا الشعار</string>
     <string name="bp_logo_help">اختياري — يُطبع أعلى الفواتير وسجل المخزون.</string>
     <string name="bp_remove_logo">إزالة الشعار</string>
     <string name="pic_delete_body_pc">هذه الصورة على هذا الحاسوب فقط: ملف النسخة الاحتياطية لا يحمل الصور. بعد حذفها لا يمكن استعادتها.</string>

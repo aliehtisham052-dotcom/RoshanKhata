@@ -1885,6 +1885,14 @@
     <string name="bp_phone_help">Printed on invoices so customers can call you.</string>
     <string name="bp_phone_hint">e.g. 0300 1234567</string>
     <string name="bp_logo">Shop logo</string>
+    <string name="logo_make">Make a logo</string>
+    <string name="logo_make_sub">Ready designs from your shop\'s name and type</string>
+    <string name="logo_name_label">Name on the logo</string>
+    <string name="logo_show_name">Name</string>
+    <string name="logo_show_letters">Letters</string>
+    <string name="logo_show_urdu">Urdu name</string>
+    <string name="logo_colour">Colour</string>
+    <string name="logo_use">Use this logo</string>
     <string name="bp_logo_help">Optional — printed at the top of invoices and the stock register.</string>
     <string name="bp_remove_logo">Remove logo</string>
     <string name="pic_delete_body_pc">This picture is kept only on this computer: the backup file carries no pictures. Once deleted, it cannot be brought back.</string>

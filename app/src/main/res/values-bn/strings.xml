@@ -1880,6 +1880,14 @@
     <string name="bp_phone_help">ইনভয়েসে ছাপা হয়, যাতে গ্রাহক আপনাকে কল করতে পারেন।</string>
     <string name="bp_phone_hint">যেমন 0300 1234567</string>
     <string name="bp_logo">দোকানের লোগো</string>
+    <string name="logo_make">লোগো বানান</string>
+    <string name="logo_make_sub">আপনার দোকানের নাম ও ধরন থেকে তৈরি ডিজাইন</string>
+    <string name="logo_name_label">লোগোতে নাম</string>
+    <string name="logo_show_name">নাম</string>
+    <string name="logo_show_letters">অক্ষর</string>
+    <string name="logo_show_urdu">উর্দু নাম</string>
+    <string name="logo_colour">রং</string>
+    <string name="logo_use">এই লোগো ব্যবহার করুন</string>
     <string name="bp_logo_help">ঐচ্ছিক — ইনভয়েস ও স্টক রেজিস্টারের ওপরে ছাপা হয়।</string>
     <string name="bp_remove_logo">লোগো সরান</string>
     <string name="pic_delete_body_pc">এই ছবিটি শুধু এই কম্পিউটারেই আছে: ব্যাকআপ ফাইলে ছবি যায় না। মুছে ফেলার পর এটি আর ফিরিয়ে আনা যাবে না।</string>

@@ -1842,6 +1842,14 @@
     <string name="bp_phone_help">Dicetak di faktur agar pelanggan bisa menelepon Anda.</string>
     <string name="bp_phone_hint">mis. 0812 3456 7890</string>
     <string name="bp_logo">Logo toko</string>
+    <string name="logo_make">Buat logo</string>
+    <string name="logo_make_sub">Desain siap dari nama dan jenis toko Anda</string>
+    <string name="logo_name_label">Nama di logo</string>
+    <string name="logo_show_name">Nama</string>
+    <string name="logo_show_letters">Huruf</string>
+    <string name="logo_show_urdu">Nama Urdu</string>
+    <string name="logo_colour">Warna</string>
+    <string name="logo_use">Pakai logo ini</string>
     <string name="bp_logo_help">Opsional — dicetak di bagian atas faktur dan register stok.</string>
     <string name="bp_remove_logo">Hapus logo</string>
     <string name="pic_delete_body_pc">Gambar ini hanya ada di komputer ini: file cadangan tidak membawa gambar. Setelah dihapus, gambar ini tidak dapat dikembalikan.</string>

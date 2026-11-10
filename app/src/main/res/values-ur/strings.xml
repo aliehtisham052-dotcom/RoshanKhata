@@ -1832,6 +1832,14 @@
     <string name="bp_phone_help">انوائس پر چھپتا ہے تاکہ گاہک آپ کو فون کر سکیں۔</string>
     <string name="bp_phone_hint">مثلاً \u20660300 1234567\u2069</string>
     <string name="bp_logo">دکان کا لوگو</string>
+    <string name="logo_make">لوگو بنائیں</string>
+    <string name="logo_make_sub">آپ کی دکان کے نام اور قسم سے تیار ڈیزائن</string>
+    <string name="logo_name_label">لوگو پر نام</string>
+    <string name="logo_show_name">نام</string>
+    <string name="logo_show_letters">حروف</string>
+    <string name="logo_show_urdu">اردو نام</string>
+    <string name="logo_colour">رنگ</string>
+    <string name="logo_use">یہ لوگو لگائیں</string>
     <string name="bp_logo_help">اختیاری — انوائس اور اسٹاک رجسٹر کے اوپر چھپتا ہے۔</string>
     <string name="bp_remove_logo">لوگو ہٹائیں</string>
     <string name="pic_delete_body_pc">یہ تصویر صرف اسی کمپیوٹر پر ہے: بیک اپ فائل میں تصویریں نہیں جاتیں۔ حذف کرنے کے بعد یہ واپس نہیں آ سکتی۔</string>

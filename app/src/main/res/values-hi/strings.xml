@@ -1880,6 +1880,14 @@
     <string name="bp_phone_help">इनवॉइस पर छपता है ताकि ग्राहक आपको कॉल कर सकें।</string>
     <string name="bp_phone_hint">जैसे 0300 1234567</string>
     <string name="bp_logo">दुकान का लोगो</string>
+    <string name="logo_make">लोगो बनाएँ</string>
+    <string name="logo_make_sub">आपकी दुकान के नाम और प्रकार से तैयार डिज़ाइन</string>
+    <string name="logo_name_label">लोगो पर नाम</string>
+    <string name="logo_show_name">नाम</string>
+    <string name="logo_show_letters">अक्षर</string>
+    <string name="logo_show_urdu">उर्दू नाम</string>
+    <string name="logo_colour">रंग</string>
+    <string name="logo_use">यह लोगो लगाएँ</string>
     <string name="bp_logo_help">ज़रूरी नहीं — इनवॉइस और स्टॉक रजिस्टर के ऊपर छपता है।</string>
     <string name="bp_remove_logo">लोगो हटाएँ</string>
     <string name="pic_delete_body_pc">यह तस्वीर सिर्फ़ इसी कंप्यूटर पर है: बैकअप फ़ाइल में तस्वीरें नहीं जातीं। मिटाने के बाद यह वापस नहीं आ सकती।</string>

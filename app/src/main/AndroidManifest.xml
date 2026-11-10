@@ -212,6 +212,11 @@
             android:name=".PdfPreviewActivity"
             android:exported="false" />
 
+        <!-- Make a logo from the shop's name and trade (10 Nov 2026). -->
+        <activity
+            android:name=".LogoMakerActivity"
+            android:exported="false" />
+
         <activity
             android:name=".InspectorReportActivity"
             android:exported="false"

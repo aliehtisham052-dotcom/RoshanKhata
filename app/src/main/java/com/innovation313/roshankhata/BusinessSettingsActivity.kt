@@ -149,6 +149,11 @@ class BusinessSettingsActivity : BaseActivity() {
         if (uri != null) launchCrop(uri, "ink", cropLogoResult)
     }
 
+    /** Back from Make a logo with one saved: the logo row and the preview show it. */
+    private val makeLogo = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> if (result.resultCode == RESULT_OK) refreshLogo() }
+
     private val pickStamp = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -291,10 +296,22 @@ class BusinessSettingsActivity : BaseActivity() {
             }
         }
 
+        // Make one or choose one (10 Nov 2026, the owner: most shops have no logo to choose).
         btnPickLogo.setOnClickListener {
-            pickLogo.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
+            val sheet = com.innovation313.roshankhata.ui.ChoiceSheet
+            sheet.show(
+                this, getString(R.string.bp_logo),
+                listOf(
+                    com.innovation313.roshankhata.ui.ChoiceSheet.Option(
+                        getString(R.string.logo_make), getString(R.string.logo_make_sub),
+                        icon = R.drawable.ic_trade_general, iconTint = R.color.gold_on_dark, tile = R.color.brand_green
+                    ),
+                    sheet.photo(getString(R.string.photo_from_gallery))
+                )
+            ) { which ->
+                if (which == 0) makeLogo.launch(Intent(this, LogoMakerActivity::class.java))
+                else pickLogo.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
         }
         btnRemoveLogo.setOnClickListener {
             confirmRemove(R.string.bp_remove_logo, R.string.bp_logo) {
