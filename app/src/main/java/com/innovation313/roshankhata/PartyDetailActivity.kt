@@ -364,11 +364,10 @@ class PartyDetailActivity : BaseActivity() {
      */
     private var selectionMode = false
     private val selectedEntryIds = mutableSetOf<Long>()
-    private var updatingSelectionUi = false
     private lateinit var bottomBarContainer: View
     private lateinit var buttonBar: View
     private lateinit var selectionBar: View
-    private lateinit var cbSelectAll: CheckBox
+    private lateinit var btnSelectAllEntries: MaterialButton
     private lateinit var btnDeleteSelected: MaterialButton
     /** The top of the page while entries are being chosen (8 Nov 2026): a close button and "n selected". */
     private lateinit var selectionHeader: View
@@ -559,23 +558,19 @@ class PartyDetailActivity : BaseActivity() {
         bottomBarContainer = findViewById(R.id.bottomBarContainer)
         buttonBar = findViewById(R.id.buttonBar)
         selectionBar = findViewById(R.id.selectionBar)
-        cbSelectAll = findViewById(R.id.cbSelectAll)
+        btnSelectAllEntries = findViewById(R.id.btnSelectAllEntries)
         btnDeleteSelected = findViewById(R.id.btnDeleteSelected)
         selectionHeader = findViewById(R.id.selectionHeader)
         tvSelectionCount = findViewById(R.id.tvSelectionCount)
         reminderBar = findViewById(R.id.reminderBar)
         findViewById<View>(R.id.btnCloseSelection).setOnClickListener { exitSelectionMode() }
         btnDeleteSelected.setOnClickListener { confirmDeleteSelectedEntries() }
-        cbSelectAll.setOnCheckedChangeListener { _, checked ->
-            // Guarded rather than relying on the checkbox's own pressed
-            // state: refreshSelectionUi() sets isChecked programmatically
-            // to reflect "everything is already selected", and that must
-            // not be read back as a fresh tap that clears and re-adds
-            // every id right after.
-            if (updatingSelectionUi) return@setOnCheckedChangeListener
-            // Select all is "all that are shown"; unticking it clears the choice.
+        btnSelectAllEntries.setOnClickListener {
+            // Select all is "all that are shown"; once all are chosen the same button clears the choice.
+            val shown = currentRows.map { it.entry.id }
+            val all = shown.isNotEmpty() && selectedEntryIds.containsAll(shown)
             selectedEntryIds.clear()
-            if (checked) selectedEntryIds.addAll(currentRows.map { it.entry.id })
+            if (!all) selectedEntryIds.addAll(shown)
             refreshSelectionUi()
         }
 
@@ -2633,9 +2628,10 @@ class PartyDetailActivity : BaseActivity() {
         // Select all ticked the set and left every row's box as it was (the owner's photo, 8 Nov 2026).
         adapter.setSelectionState(true, selectedEntryIds)
 
-        updatingSelectionUi = true
-        cbSelectAll.isChecked = currentRows.isNotEmpty() && selectedEntryIds.size == currentRows.size
-        updatingSelectionUi = false
+        val shown = currentRows.map { it.entry.id }
+        btnSelectAllEntries.setText(
+            if (shown.isNotEmpty() && selectedEntryIds.containsAll(shown)) R.string.clear_all else R.string.select_all
+        )
 
         val n = selectedEntryIds.size
         tvSelectionCount.text = if (n == 0) getString(R.string.select_entries_to_delete)
@@ -2824,6 +2820,9 @@ class PartyDetailActivity : BaseActivity() {
                 }
             }
             .show().also {
+                // Full screen (10 Nov 2026, the owner's photo): a floating card left the message two lines tall
+                // once the keyboard came up; now the box takes all the room above the keyboard.
+                com.innovation313.roshankhata.ui.CalcPad.fullScreen(it, view)
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it)
                 // The box is the dialog's only focusable view, so Android gave it the focus at once and drew the
                 // cursor's round handle in the middle of the message with nobody having touched it (8 Nov 2026,

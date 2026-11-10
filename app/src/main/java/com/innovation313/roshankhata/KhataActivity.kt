@@ -323,6 +323,7 @@ class KhataActivity : BaseActivity() {
         findViewById<View>(R.id.btnDeleteSelected).setOnClickListener {
             confirmDeleteSelected()
         }
+        findViewById<View>(R.id.btnCloseSelection).setOnClickListener { clearSelection() }
 
         findViewById<View>(R.id.btnScanQr).setOnClickListener { scanCustomerCard() }
 
@@ -850,7 +851,16 @@ class KhataActivity : BaseActivity() {
         val picking = selectedIds.isNotEmpty()
         selectionBack.isEnabled = picking
         selectionBar.visibility = if (picking) View.VISIBLE else View.GONE
+        // The one action alone across the foot while choosing (10 Nov 2026); Add party steps aside meanwhile.
+        // A helper's read-only phone has no delete button (ViewerMode), so no empty strip either.
+        val delete = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDeleteSelected)
+        findViewById<View>(R.id.deleteStrip).visibility =
+            if (picking && delete.visibility != View.GONE) View.VISIBLE else View.GONE
+        findViewById<ExtendedFloatingActionButton>(R.id.fabAddParty).apply {
+            if (picking) hide() else if (allParties.isNotEmpty()) show()
+        }
         if (picking) {
+            delete.text = Digits.string(resources, R.string.move_selected_to_bin, selectedIds.size)
             tvSelectedCount.text = Digits.quantity(resources, R.plurals.n_selected, selectedIds.size, selectedIds.size)
             val visible = shownParties.map { it.id }
             btnSelectAll.setText(
