@@ -671,7 +671,7 @@ object PdfExport {
         // line, where a signature goes on paper.
         val signature = BusinessProfile.loadSignature(context)
         if (signature != null) {
-            if (y > PAGE_H - 180f) {
+            if (y > PAGE_H - 200f) {
                 endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
@@ -712,7 +712,7 @@ object PdfExport {
             y += 22f
         } else {
             // No signature: the seal alone at the end side, in its own room above the foot line.
-            if (y > PAGE_H - 180f) {
+            if (y > PAGE_H - 200f) {
                 endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc,

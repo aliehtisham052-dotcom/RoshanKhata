@@ -36,7 +36,7 @@ object InvoiceTemplateKit {
     // ---------- The Roshan Khata seal (10 Nov 2026) ----------
 
     /** The seal's own room on a page: its diameter and the air kept above the maker's strip. */
-    const val SEAL_SIZE = 74f
+    const val SEAL_SIZE = 92f
     const val SEAL_GAP = 12f
     /** The app's green as stamp ink, a little thinned so it reads as ink on paper. */
     const val SEAL_INK = 0xE61B5E3A.toInt()
@@ -74,7 +74,9 @@ object InvoiceTemplateKit {
 
             // The open book: two pages meeting at the spine.
             ring.strokeWidth = 3.4f * k
-            val bx = cx - 36f * k; val by = cy - 70f * k; val bs = 1.4f * k
+            // The words in the middle are what a reader looks for, so the book is small and sits high (10 Nov 2026:
+            // at 74 pt the date came out 4 pt and the word under it 3 pt, too small to read).
+            val bs = 1.1f * k; val bx = cx - 26f * bs; val by = cy - 66f * k
             val left = Path().apply {
                 moveTo(bx + 2f * bs, by + 6f * bs); cubicTo(bx + 11f * bs, by + 1.5f * bs, bx + 19f * bs, by + 1.5f * bs, bx + 26f * bs, by + 7f * bs)
                 lineTo(bx + 26f * bs, by + 39f * bs); cubicTo(bx + 19f * bs, by + 33.5f * bs, bx + 11f * bs, by + 33.5f * bs, bx + 2f * bs, by + 38f * bs); close()
@@ -86,16 +88,16 @@ object InvoiceTemplateKit {
             c.drawPath(left, ring); c.drawPath(right, ring)
 
             ring.strokeWidth = 1.6f * k
-            c.drawLine(cx - 60f * k, cy + 4f * k, cx + 60f * k, cy + 4f * k, ring)
+            c.drawLine(cx - 62f * k, cy - 10f * k, cx + 62f * k, cy - 10f * k, ring)
             val mid = Paint().apply {
-                color = ink; isAntiAlias = true; textAlign = Paint.Align.CENTER; textSize = 19f * k
+                color = ink; isAntiAlias = true; textAlign = Paint.Align.CENTER; textSize = 30f * k
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            while (mid.measureText(middle) > 150f * k && mid.textSize > 8f * k) mid.textSize -= 0.5f * k
-            PdfRtl.drawText(c, middle, cx, cy + 32f * k, mid)
-            mid.textSize = 12.5f * k
-            while (mid.measureText(below) > 140f * k && mid.textSize > 6f * k) mid.textSize -= 0.5f * k
-            PdfRtl.drawText(c, below, cx, cy + 55f * k, mid)
+            while (mid.measureText(middle) > 164f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
+            PdfRtl.drawText(c, middle, cx, cy + 22f * k, mid)
+            mid.textSize = 22f * k
+            while (mid.measureText(below) > 130f * k && mid.textSize > 10f * k) mid.textSize -= 0.5f * k
+            PdfRtl.drawText(c, below, cx, cy + 54f * k, mid)
         }
     }
 

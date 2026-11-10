@@ -343,9 +343,9 @@ object RegisterReport {
         // 160, not 120: the download banner sits between the signatures and
         // the footer, and needs the room.
         // 200 since 10 Nov 2026: the Roshan Khata seal stands between the two signatures and keeps clear of the strip.
-        if (y > PAGE_H - 200f) newPage() else y += 24f
+        if (y > PAGE_H - 210f) newPage() else y += 24f
         InvoiceTemplateKit.drawRecordSeal(
-            canvas, PAGE_W / 2f, y + 24f, InvoiceTemplateKit.SEAL_SIZE,
+            canvas, PAGE_W / 2f, y + 32f, InvoiceTemplateKit.SEAL_SIZE,
             Format.dateOnly(System.currentTimeMillis()).uppercase(), "REGISTER"
         )
         canvas.drawLine(MARGIN, y + 24f, MARGIN + 180f, y + 24f, rule)
