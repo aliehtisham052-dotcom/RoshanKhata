@@ -2,8 +2,6 @@ package com.innovation313.roshankhata.ui
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.R
 
 /**
@@ -69,16 +67,37 @@ object ReminderConfirm {
         onSent: () -> Unit,
         onNotSent: () -> Unit,
         onClosed: () -> Unit
-    ): AlertDialog {
+    ): android.app.Dialog {
+        // The app's sheet of cards (10 Nov 2026, the owner's photo: a plain dialog with "Not sent — send by SMS" as
+        // a long text button, and no way to say "not sent" without opening SMS). Sent in green; after WhatsApp,
+        // Send by SMS; and Not sent, which records nothing. Back or a swipe also records nothing.
+        val sheet = ChoiceSheet
+        val options = buildList {
+            add(sheet.done(activity.getString(R.string.reminder_sent_yes)))
+            if (!pending.viaSms) add(
+                ChoiceSheet.Option(
+                    activity.getString(R.string.reminder_sent_no_sms),
+                    icon = R.drawable.ic_action_sms, iconTint = R.color.tile_insights_fg, tile = R.color.tile_insights_bg
+                )
+            )
+            add(sheet.stop(activity.getString(R.string.reminder_sent_no)))
+        }
         var answered = false
-        return MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.reminder_sent_title)
-            .setMessage(activity.getString(R.string.reminder_sent_body, Format.isolate(pending.partyName)))
-            .setPositiveButton(R.string.reminder_sent_yes) { _, _ -> answered = true; onSent() }
-            .setNegativeButton(if (pending.viaSms) R.string.reminder_sent_no else R.string.reminder_sent_no_sms) { _, _ ->
-                answered = true; onNotSent()
+        return sheet.show(
+            activity,
+            title = activity.getString(R.string.reminder_sent_title),
+            message = activity.getString(R.string.reminder_sent_body, Format.isolate(pending.partyName)),
+            options = options,
+            onCancel = { if (!answered) { answered = true; onClosed() } }
+        ) { which ->
+            answered = true
+            when {
+                which == 0 -> onSent()
+                !pending.viaSms && which == 1 -> onNotSent()
+                // "Not sent" after WhatsApp is not a request for SMS: nothing is recorded, as for a closed question.
+                !pending.viaSms -> onClosed()
+                else -> onNotSent()
             }
-            .setOnCancelListener { if (!answered) { answered = true; onClosed() } }
-            .show()
+        }
     }
 }

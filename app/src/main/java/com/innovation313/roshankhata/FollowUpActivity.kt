@@ -74,7 +74,7 @@ class FollowUpActivity : BaseActivity() {
      * Android cannot say whether it was sent, so it counts only when the owner answers "Sent" on the way back.
      */
     private var pending: ReminderConfirm.Pending? = null
-    private var asking: androidx.appcompat.app.AlertDialog? = null
+    private var asking: android.app.Dialog? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -106,6 +106,9 @@ class FollowUpActivity : BaseActivity() {
     private fun askPending() {
         val p = pending ?: return
         if (asking?.isShowing == true || isFinishing || isDestroyed) return
+        // The pill wears its words again while the question is open (10 Nov 2026, the owner's photo: it stood empty,
+        // the plane gone and the words faded); the answer then draws its check or leaves it as it was.
+        pillOf(p.partyId)?.let { SendPill.back(it) }
         asking = ReminderConfirm.ask(
             this, p,
             onSent = { pending = null; asking = null; confirmSent(p); resumeQueue() },

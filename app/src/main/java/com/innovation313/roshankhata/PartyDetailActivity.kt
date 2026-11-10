@@ -2507,7 +2507,7 @@ class PartyDetailActivity : BaseActivity() {
 
     /** A reminder handed to WhatsApp or the SMS app and not yet confirmed: Android cannot say it was sent (8 Nov 2026). */
     private var reminderPending: com.innovation313.roshankhata.ui.ReminderConfirm.Pending? = null
-    private var reminderAsking: androidx.appcompat.app.AlertDialog? = null
+    private var reminderAsking: android.app.Dialog? = null
 
     /** On the way back the owner is asked once; only "Sent" counts the reminder (ladder step, day's mark). */
     private fun askReminderPending() {
