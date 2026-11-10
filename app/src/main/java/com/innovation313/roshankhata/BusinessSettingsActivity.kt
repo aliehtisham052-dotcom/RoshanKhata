@@ -759,6 +759,7 @@ class BusinessSettingsActivity : BaseActivity() {
         }
         group.setOnCheckedChangeListener(null)
         group.check(shown)
+        showSealInPreview()
         group.setOnCheckedChangeListener { _, id ->
             val choice = when (id) {
                 R.id.rbSealOwn -> com.innovation313.roshankhata.data.SealChoice.OWN
@@ -767,9 +768,45 @@ class BusinessSettingsActivity : BaseActivity() {
             }
             if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) { showSealChoice(); return@setOnCheckedChangeListener }
             BusinessProfile.setSealChoice(this, choice)
+            showSealInPreview()
             sections.refreshAll()
         }
         group.isEnabled = !com.innovation313.roshankhata.data.ViewerMode.isOn(this)
+    }
+
+    /**
+     * The header preview shows the seal the papers will carry (10 Nov 2026): the Roshan Khata seal with today's date,
+     * the shop's own stamp when that is chosen, or the empty slot when none.
+     */
+    private fun showSealInPreview() {
+        when (BusinessProfile.sealChoice(this).printed(hasStamp)) {
+            com.innovation313.roshankhata.data.SealChoice.NONE -> {
+                ivPreviewStampThumb.visibility = View.GONE
+                tvPreviewStampPlaceholder.visibility = View.VISIBLE
+            }
+            com.innovation313.roshankhata.data.SealChoice.OWN -> {
+                lifecycleScope.launch {
+                    val stamp = withContext(Dispatchers.IO) { BusinessProfile.loadStamp(this@BusinessSettingsActivity) }
+                    ivPreviewStampThumb.setImageBitmap(stamp)
+                    ivPreviewStampThumb.visibility = if (stamp != null) View.VISIBLE else View.GONE
+                    tvPreviewStampPlaceholder.visibility = if (stamp != null) View.GONE else View.VISIBLE
+                }
+            }
+            com.innovation313.roshankhata.data.SealChoice.APP -> {
+                val side = (96 * resources.displayMetrics.density).toInt()
+                val bmp = android.graphics.Bitmap.createBitmap(side, side, android.graphics.Bitmap.Config.ARGB_8888)
+                val c = android.graphics.Canvas(bmp)
+                com.innovation313.roshankhata.data.InvoiceTemplateKit.drawRecordSeal(
+                    c, side / 2f, side / 2f, side * 0.92f,
+                    com.innovation313.roshankhata.ui.Format.dateOnly(System.currentTimeMillis()).uppercase(), "INVOICE"
+                )
+                // A picture on this screen, not a paper: nothing to play when a PDF opens next.
+                com.innovation313.roshankhata.data.SealMark.clear()
+                ivPreviewStampThumb.setImageBitmap(bmp)
+                ivPreviewStampThumb.visibility = View.VISIBLE
+                tvPreviewStampPlaceholder.visibility = View.GONE
+            }
+        }
     }
 
     private fun refreshStamp() {
