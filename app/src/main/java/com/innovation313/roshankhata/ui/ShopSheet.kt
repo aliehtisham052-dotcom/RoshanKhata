@@ -185,7 +185,11 @@ object ShopSheet {
                     if (open) R.color.brand_green_text else R.color.backup_ink, label,
                     activity.getString(if (open) R.string.shop_open_now else R.string.shop_tap_open),
                     initials = initials(label), ticked = open) {
-                    if (!open) {
+                    // The open shop's row opens the shops screen, where it is renamed or removed (10 Nov 2026, the
+                    // owner: it wore a chevron and did nothing).
+                    if (open) {
+                        sheet.dismiss(); activity.startActivity(Intent(activity, BusinessSwitchActivity::class.java))
+                    } else {
                         sheet.dismiss()
                         // The same permission the Businesses screen asks (23 Oct 2026, the review): a cashier
                         // cannot move the counter to another shop; a manager's or the owner's PIN can, and is logged.
