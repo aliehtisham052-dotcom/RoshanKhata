@@ -22,6 +22,9 @@ on:
       - 'scripts/check_dark_pairs.py'
       - 'scripts/check_pdf_rtl.py'
       - 'scripts/check_icon_direction.py'
+      - 'scripts/check_icon_fit.py'
+      - 'app/src/main/res/mipmap-*/**'
+      - 'app/src/main/res/drawable-nodpi/splash_logo.webp'
       - 'app/src/main/java/**'
       # check_pdf_rtl.py scans shared/src too (R103, 23 Oct 2026).
       - 'shared/src/**'
@@ -66,6 +69,10 @@ jobs:
         run: python3 scripts/check_pdf_rtl.py
       - name: Icons face the right way in every language
         run: python3 scripts/check_icon_direction.py
+      - name: The launcher icon and the splash fit the shapes phones cut them to
+        run: |
+          pip install --quiet pillow
+          python3 scripts/check_icon_fit.py
       - name: The computer's invoice designs are the phone's (generated copies up to date)
         run: python3 scripts/gen_desktop_invoice.py --check
       - name: The computer's business cards are the phone's (generated copies up to date)

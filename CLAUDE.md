@@ -2585,6 +2585,12 @@ Each of these cost a build or a bug.
     keys (the customer pages'); a notice's tap carries a one-time ticket, never a fixed key — Android hands a task its
     first intent again from Recents.
 
+83. **A phone cuts an icon to its own shape.** Android 12+ shows the splash mark inside a circle a third of
+    the canvas wide (192 of 288 dp), and a launcher icon is cut to the phone's shape (a circle shows 72 of 108 dp,
+    only the middle 66 dp is promised). The splash's rounded square and the icon's gold ring reached past both,
+    so their corners went on some phones and not on older ones (10 Nov 2026, the owner's test phones).
+    `scripts/check_icon_fit.py` (Strings CI) measures both; artwork is shrunk to fit, never stretched.
+
 ---
 
 ## Working with the owner
