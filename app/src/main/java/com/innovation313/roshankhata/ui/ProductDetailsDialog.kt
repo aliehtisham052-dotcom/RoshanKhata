@@ -342,6 +342,16 @@ object ProductDetailsDialog {
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
         KeyboardFollow.dialog(dialog)
+        // Next follows the form as it reads (10 Nov 2026): cash price, then credit price beside it, then the
+        // barcode under them - Android's own search went straight down past the credit price.
+        FormFocus.chain(
+            listOf(
+                R.id.etProductName, R.id.etProductCompany, R.id.etProductUnit, R.id.etSalePrice, R.id.etCreditPrice,
+                R.id.etBarcode, R.id.etProductNote, R.id.etCostPrice, R.id.etLowStock, R.id.etPackUnit,
+                R.id.etPackSize, R.id.etPackPrice, R.id.etTaxRate, R.id.etVariantOf, R.id.etVariant,
+                R.id.etProductType, R.id.etTechnicalName, R.id.etFormulation, R.id.etRegistrationNumber
+            ).mapNotNull { view.findViewById<android.widget.EditText>(it) }
+        )
         // Cursor in the first empty box (a blank new product: the name, keyboard up); an edit with all four
         // filled keeps the keyboard down (8 Nov 2026, the owner's focus rule).
         FormFocus.focusFirstEmpty(listOf(etName, etCompany, etUnit, etType), true, dialog.window)

@@ -71,6 +71,27 @@ object FormFocus {
     }
 
     /** No autofill bubble over this view or anything inside it (a Compose host's boxes included). */
+    /**
+     * The keyboard's Next walks [boxes] in the order given, the reading order (10 Nov 2026, the owner's photo of
+     * Add product): left to their own search, Android went from the cash price straight down past the credit
+     * price beside it. A box hidden or disabled at that moment is passed over, so a form whose boxes come and
+     * go with a choice keeps the right order; after the last shown box Next does what it always did.
+     */
+    fun chain(boxes: List<EditText>) {
+        boxes.forEachIndexed { i, box ->
+            box.imeOptions = (box.imeOptions and android.view.inputmethod.EditorInfo.IME_MASK_ACTION.inv()) or
+                android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+            box.setOnEditorActionListener { _, action, _ ->
+                if (action != android.view.inputmethod.EditorInfo.IME_ACTION_NEXT) return@setOnEditorActionListener false
+                val next = boxes.drop(i + 1).firstOrNull { it.isShown && it.isEnabled && it.isFocusable }
+                    ?: return@setOnEditorActionListener false
+                next.requestFocus()
+                next.setSelection(next.text?.length ?: 0)
+                true
+            }
+        }
+    }
+
     fun noAutofill(view: View) {
         view.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
     }
