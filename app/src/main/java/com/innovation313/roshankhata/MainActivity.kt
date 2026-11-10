@@ -486,6 +486,8 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        // The eye may have been opened or closed on the Khata screen meanwhile (one setting, 10 Nov 2026).
+        renderBalance()
         tellIfBookWasRebuilt()
         // Play's own rating card, after real use and at most once in 120 days (M96); no question of ours before it.
         com.innovation313.roshankhata.ui.AppRating.maybeAsk(this)

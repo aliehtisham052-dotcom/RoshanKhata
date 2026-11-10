@@ -514,6 +514,28 @@
                 android:layout_height="1dp"
                 android:layout_weight="1" />
 
+            <!-- Show or hide the two totals (10 Nov 2026, the owner: the Khata screen showed dots with no way to
+                 open them here). One setting with Home's eye: open or closed on one, open or closed on both. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEyeTotals"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="50dp"
+                android:layout_height="44dp"
+                android:contentDescription="@string/hide_balance"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_eye_open"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:backgroundTint="@color/tile_khata_bg"
+                app:iconTint="@color/brand_green_text"
+                app:strokeWidth="0dp" />
+
             <!-- Sort is an icon now, the same size as PDF and QR beside it, so
                  the three sit exactly under the mic and filter above. Its name
                  is its tooltip (long-press) and TalkBack label. -->

@@ -415,8 +415,12 @@ class KhataActivity : BaseActivity() {
         // looks like customers have gone missing rather than been narrowed.
         renderFilterState()
 
-        // No eye on this screen: hiding the balance is toggled on Home only.
-        // The totals still follow that choice (same BalancePrivacy setting).
+        // The eye (10 Nov 2026): the totals showed dots here with no way to open them. One setting with Home's
+        // eye (BalancePrivacy), so the two screens always agree.
+        findViewById<View>(R.id.btnEyeTotals).setOnClickListener {
+            BalancePrivacy.toggle(this)
+            renderPrivacy()
+        }
         renderPrivacy()
 
 
@@ -1401,6 +1405,13 @@ class KhataActivity : BaseActivity() {
      */
     private fun renderPrivacy() {
         renderTotals()
+        val hidden = BalancePrivacy.isHidden(this)
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnEyeTotals).apply {
+            setIconResource(if (hidden) R.drawable.ic_eye_closed else R.drawable.ic_eye_open)
+            // What a tap will do, read aloud and on a long press.
+            contentDescription = getString(if (hidden) R.string.show_balance else R.string.hide_balance)
+            androidx.core.view.ViewCompat.setTooltipText(this, contentDescription)
+        }
     }
 
     /**
