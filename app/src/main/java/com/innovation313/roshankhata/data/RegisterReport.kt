@@ -347,7 +347,7 @@ object RegisterReport {
         canvas.drawLine(PAGE_W - MARGIN - 180f, y + 24f, PAGE_W - MARGIN, y + 24f, rule)
         // The dealer and the inspector sign an agri or medical shop's register; any other shop's, its owner and
         // whoever checked it (31 Oct 2026, RegisterStyle).
-        val compliance = RegisterStyle.of(Trade.current(context).name).compliance
+        val compliance = RegisterStyle.of(BusinessProfile.trade(context)).compliance
         PdfRtl.drawText(canvas, context.getString(if (compliance) R.string.pdf_reg_dealer_sign else R.string.pdf_sign_owner), MARGIN, y + 38f, muted)
         val inspectorSign = context.getString(if (compliance) R.string.pdf_reg_inspector_sign else R.string.pdf_sign_checked)
         PdfRtl.drawText(canvas,

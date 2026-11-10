@@ -70,7 +70,7 @@ class InspectorReportActivity : BaseActivity() {
     private var data: InspectorReport.ReportData? = null
 
     /** Every shop's register; an agri or medical shop's carries the inspector's label details (31 Oct 2026). */
-    private fun registerStyle() = com.innovation313.roshankhata.data.RegisterStyle.of(com.innovation313.roshankhata.data.Trade.current(this).name)
+    private fun registerStyle() = com.innovation313.roshankhata.data.RegisterStyle.of(com.innovation313.roshankhata.data.BusinessProfile.trade(this))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -19,14 +19,23 @@ import android.content.Context
 object TradeFeatures {
 
     /**
+     * The trade the owner actually chose, or null (10 Nov 2026, the owner: a friend's phone showed Rabi and Kharif
+     * on a shop that is not agri). [Trade.current] reads a blank or unknown trade as AGRI, the old books' default,
+     * so a shop whose type was never saved - a new business, a restore without one, a setup left early - wore
+     * the farm's seasons. The features that speak one trade now need that trade chosen.
+     */
+    private fun chosen(context: Context): Trade? = BusinessProfile.trade(context)?.trim()?.uppercase()
+        ?.let { name -> Trade.entries.firstOrNull { it.name == name } }
+
+    /**
      * Crop seasons, the season row on a sale, the harvest promise. An agri
      * shop's, where the country farms by Rabi and Kharif (Pakistan, India;
      * 21 Oct 2026): an Indonesian toko tani has no "Rabi 2026-27".
      */
-    fun seasons(context: Context): Boolean = Trade.current(context) == Trade.AGRI && ShopCountry.current.seasons
+    fun seasons(context: Context): Boolean = chosen(context) == Trade.AGRI && ShopCountry.current.seasons
 
     /** "Write spray advice" on a sold line. */
-    fun sprayAdvice(context: Context): Boolean = Trade.current(context) == Trade.AGRI
+    fun sprayAdvice(context: Context): Boolean = chosen(context) == Trade.AGRI
 
     /**
      * Whether Expiry belongs among Home's six daily tiles (31 Oct 2026, the review): the trades whose goods go
@@ -46,5 +55,5 @@ object TradeFeatures {
      * stock register and the sales & purchase register themselves are every shop's (31 Oct 2026; RegisterStyle).
      */
     fun inspectorReports(context: Context): Boolean =
-        when (Trade.current(context)) { Trade.AGRI, Trade.MEDICAL -> true; else -> false }
+        when (chosen(context)) { Trade.AGRI, Trade.MEDICAL -> true; else -> false }
 }
