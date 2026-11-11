@@ -231,6 +231,11 @@ class CalcPadDialogsTest {
         view.tap(R.id.calc5, R.id.calc0, R.id.calcPlus, R.id.calc2, R.id.calcEquals)
         assertEquals("52", total.text.toString())
         assertTrue("a sum is worked out first, the cursor stays", total.isFocused)
+        val equals = view.findViewById<android.widget.Button>(R.id.calcEquals)
+        assertEquals("= shows where it goes on a plain figure", "\u2192", equals.text.toString())
+        view.tap(R.id.calcPlus)
+        assertEquals("= on a sum", "=", equals.text.toString())
+        view.tap(R.id.calcBackKey)
         view.tap(R.id.calcEquals)
         assertTrue("= on a plain figure goes on to the note", note.isFocused)
 

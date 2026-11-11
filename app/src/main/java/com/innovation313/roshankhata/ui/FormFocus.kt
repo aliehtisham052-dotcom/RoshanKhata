@@ -70,7 +70,6 @@ object FormFocus {
         window.setSoftInputMode(state or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
-    /** No autofill bubble over this view or anything inside it (a Compose host's boxes included). */
     /**
      * The keyboard's Next walks [boxes] in the order given, the reading order (10 Nov 2026, the owner's photo of
      * Add product): left to their own search, Android went from the cash price straight down past the credit
@@ -81,28 +80,42 @@ object FormFocus {
         boxes.forEachIndexed { i, box ->
             box.imeOptions = (box.imeOptions and android.view.inputmethod.EditorInfo.IME_MASK_ACTION.inv()) or
                 android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
-            val goNext: () -> Boolean = {
-                val next = boxes.drop(i + 1).firstOrNull { it.isShown && it.isEnabled && it.isFocusable }
-                if (next != null) {
-                    next.requestFocus()
-                    next.setSelection(next.text?.length ?: 0)
-                }
-                next != null
-            }
+            val nextOf: () -> EditText? = { boxes.drop(i + 1).firstOrNull { it.isShown && it.isEnabled && it.isFocusable } }
             box.setOnEditorActionListener { _, action, _ ->
                 if (action != android.view.inputmethod.EditorInfo.IME_ACTION_NEXT) return@setOnEditorActionListener false
-                goNext()
+                nextOf()?.let { go(it) } != null
             }
             // A money box has the app's pad, not the keyboard, so no Next key: the pad's "=" on a plain figure
             // asks for this (11 Nov 2026, the owner's photo of Add bill: the cursor could not move on).
-            box.setTag(com.innovation313.roshankhata.R.id.tag_form_next, goNext)
+            box.setTag(com.innovation313.roshankhata.R.id.tag_form_next, nextOf)
         }
     }
 
-    /** Moves from [box] to its form's next box, when [chain] gave it one; false when there is none. */
-    @Suppress("UNCHECKED_CAST")
-    fun next(box: EditText): Boolean = (box.getTag(com.innovation313.roshankhata.R.id.tag_form_next) as? () -> Boolean)?.invoke() ?: false
+    private fun go(box: EditText) {
+        box.requestFocus()
+        box.setSelection(box.text?.length ?: 0)
+    }
 
+    /**
+     * The box after [box] in its form: the one [chain] named, else the next text box Android's own Next would
+     * reach that is shown, enabled and not above [box] on the screen (Android's search wraps to the form's first
+     * box after its last; going back up is never "next"). Null when there is none.
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun nextBox(box: EditText): EditText? {
+        (box.getTag(com.innovation313.roshankhata.R.id.tag_form_next) as? () -> EditText?)?.let { return it() }
+        if (!box.isAttachedToWindow) return null
+        val found = box.focusSearch(View.FOCUS_FORWARD) as? EditText ?: return null
+        if (found === box || !found.isShown || !found.isEnabled) return null
+        val here = IntArray(2).also { box.getLocationInWindow(it) }
+        val there = IntArray(2).also { found.getLocationInWindow(it) }
+        return found.takeIf { there[1] >= here[1] }
+    }
+
+    /** Moves from [box] to [nextBox]; false when there is none. */
+    fun next(box: EditText): Boolean = nextBox(box)?.let { go(it); true } ?: false
+
+    /** No autofill bubble over this view or anything inside it (a Compose host's boxes included). */
     fun noAutofill(view: View) {
         view.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
     }

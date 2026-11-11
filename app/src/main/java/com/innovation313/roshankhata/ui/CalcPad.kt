@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +35,14 @@ object CalcPad {
      * works the sum out in place. A backspace inside the amount box itself
      * (calcBack, on the add-entry form) is wired too when [root] has one.
      */
-    fun bind(root: View, field: EditText) = bindKeys(root, root) { field }
+    fun bind(root: View, field: EditText) {
+        val refresh = bindKeys(root, root) { field }
+        followTyping(field, refresh)
+        // Boxes shown or hidden after binding (the payment reference) change whether there is a box after it.
+        // Through the window's focus listener: the box may have its own focus listener, and a view keeps one.
+        root.viewTreeObserver.addOnGlobalFocusChangeListener { _, now -> if (now === field) field.post(refresh) }
+        field.post(refresh)
+    }
 
     /**
      * The one table of keys. Every key under [pad] types into whatever
@@ -42,13 +50,28 @@ object CalcPad {
      * nothing); a backspace inside the amount box (calcBack) is looked for
      * under [backRoot].
      */
-    private fun bindKeys(pad: View, backRoot: View, target: () -> EditText?) {
+    private fun bindKeys(pad: View, backRoot: View, target: () -> EditText?): () -> Unit {
+        val equals = pad.findViewById<Button>(R.id.calcEquals)
+        // The form's own direction (the pad itself is always laid out left to right).
+        val rtl = backRoot.layoutDirection == View.LAYOUT_DIRECTION_RTL
+        /**
+         * "=" says what it will do (11 Nov 2026): on a plain figure or an empty box with a box after it, it is the
+         * pad's Next and shows an arrow that points the way the form reads; on a sum it is "=".
+         */
+        fun refreshEquals() {
+            val field = target()
+            val moves = field != null && plainOrEmpty(field.text.toString()) && FormFocus.nextBox(field) != null
+            equals.text = if (moves) (if (rtl) "\u2190" else "\u2192") else pad.context.getString(R.string.calc_equals)
+            equals.contentDescription = if (moves) pad.context.getString(R.string.coach_next) else null
+        }
+        // One light tick per key, as the phone's own calculator gives (the phone's touch-feedback setting decides).
+        fun tick(v: View) = v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         fun append(ch: String) {
             val field = target() ?: return
             field.append(ch)
             field.setSelection(field.text.length)
         }
-        fun key(id: Int, ch: String) = pad.findViewById<Button>(id).setOnClickListener { append(ch) }
+        fun key(id: Int, ch: String) = pad.findViewById<Button>(id).setOnClickListener { tick(it); append(ch) }
 
         key(R.id.calc0, "0"); key(R.id.calc00, "00"); key(R.id.calc1, "1")
         key(R.id.calc2, "2"); key(R.id.calc3, "3"); key(R.id.calc4, "4")
@@ -58,16 +81,18 @@ object CalcPad {
         key(R.id.calcTimes, "\u00d7"); key(R.id.calcDivide, "\u00f7")
         key(R.id.calcPercent, "%")
 
-        pad.findViewById<Button>(R.id.calcClear).setOnClickListener { target()?.setText("") }
+        pad.findViewById<Button>(R.id.calcClear).setOnClickListener { tick(it); target()?.setText("") }
 
         val backspace = View.OnClickListener {
+            tick(it)
             val t = target()?.text ?: return@OnClickListener
             if (t.isNotEmpty()) t.delete(t.length - 1, t.length)
         }
         pad.findViewById<Button>(R.id.calcBackKey).setOnClickListener(backspace)
         backRoot.findViewById<Button>(R.id.calcBack)?.setOnClickListener(backspace)
 
-        pad.findViewById<Button>(R.id.calcEquals).setOnClickListener {
+        equals.setOnClickListener {
+            tick(it)
             val field = target() ?: return@setOnClickListener
             // evalPad, not eval: it translates the pad's × ÷ − and resolves a
             // percentage before the arithmetic runs, so "1200−15%" comes out
@@ -76,17 +101,36 @@ object CalcPad {
             // "7926−35554" lands back in the box as 27628, not −27628; a minus
             // sign has no meaning in an amount.
             val typed = field.text.toString()
+            // Nothing left to work out (a plain figure, or nothing yet): "=" is the pad's Next, as the keyboard's is.
+            if (plainOrEmpty(typed)) {
+                FormFocus.next(field)
+                refreshEquals()
+                return@setOnClickListener
+            }
             val result = Calc.evalPad(typed)
             if (result != null) {
-                val settled = Calc.trim(kotlin.math.abs(result))
-                // Nothing left to work out (a plain figure): "=" is the pad's Next, as the keyboard's is.
-                if (settled == typed.trim()) { FormFocus.next(field); return@setOnClickListener }
-                field.setText(settled)
+                field.setText(Calc.trim(kotlin.math.abs(result)))
                 field.setSelection(field.text.length)
-            } else if (typed.isBlank()) {
-                FormFocus.next(field)
             }
         }
+        refreshEquals()
+        return ::refreshEquals
+    }
+
+    /** A box with nothing to work out: empty, or a figure the pad would write back unchanged. */
+    private fun plainOrEmpty(typed: String): Boolean {
+        if (typed.isBlank()) return true
+        val result = Calc.evalPad(typed) ?: return false
+        return Calc.trim(kotlin.math.abs(result)) == typed.trim()
+    }
+
+    /** "=" follows [field]'s typing: an arrow while it holds a plain figure, "=" once it holds a sum. */
+    private fun followTyping(field: EditText, refresh: () -> Unit) {
+        field.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) = refresh()
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
     }
 
     /**
@@ -286,7 +330,8 @@ object CalcPad {
             fields.firstOrNull { it.isFocused && usesPad(it) } ?: last?.takeIf { usesPad(it) }
         }
 
-        bindKeys(pad, root, target)
+        val refreshEquals = bindKeys(pad, root, target)
+        fields.forEach { followTyping(it, refreshEquals) }
 
         val keyboard = root.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         val showPad: (EditText) -> Unit = { field ->
@@ -314,6 +359,7 @@ object CalcPad {
             if (now is EditText) {
                 val mine = fields.firstOrNull { it === now }
                 if (mine != null && usesPad(mine)) showPad(mine) else pad.visibility = View.GONE
+                if (mine != null) mine.post(refreshEquals)
             }
         }
 
