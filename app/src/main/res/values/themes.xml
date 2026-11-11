@@ -470,6 +470,11 @@
         <item name="strokeColor">@color/page_line</item>
         <item name="strokeWidth">1dp</item>
         <item name="cornerRadius">999dp</item>
+        <!-- The whole cell for the sign (11 Nov 2026, the proof at 150% text): with the button's own padding and
+             the font's extra line space a 24-26 sp sign in a 55 dp row ran out of room and sat low. -->
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="CalcPadKeyOp" parent="CalcPadKey">
