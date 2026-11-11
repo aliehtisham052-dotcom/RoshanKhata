@@ -93,6 +93,8 @@ class StatementPrintTest {
             }
             val closingBottom = s.firstRowY(pages.size == 1) + pages.last().count() * StatementPrint.ROW_H + StatementPrint.CLOSING_H
             assertTrue("n=$n the closing box runs off the paper ($closingBottom)", closingBottom <= bottom)
+            // 11 Nov 2026: the closing box takes rows with it, never a page of its own.
+            if (n > 1) assertTrue("n=$n the closing box stands alone on its page", !pages.last().isEmpty())
             assertEquals(pages.size, s.pageCount())
         }
     }

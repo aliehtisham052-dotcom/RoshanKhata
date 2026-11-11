@@ -432,7 +432,7 @@
     <string name="business_name_hint">e.g. Al-Noor Traders</string>
     <string name="business_name_urdu">Shop name in Urdu</string>
     <string name="business_name_urdu_hint">e.g. النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">Shown on posters in Urdu. Leave blank to use the name above.</string>
+    <string name="business_name_urdu_help">Printed on Urdu posters, the business card and the logo. Leave blank to use the name above.</string>
     <string name="business_address">Shop address</string>
     <string name="business_address_hint">e.g. Main Bazaar</string>
     <string name="invoice_bank_name_hint">Bank name</string>

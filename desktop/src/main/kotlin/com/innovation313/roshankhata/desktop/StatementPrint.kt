@@ -93,7 +93,7 @@ class StatementPrint(
      */
     val pages: List<IntRange> by lazy { layoutPages(rows.size) }
 
-    /** The rows each page holds for [count] rows (an empty last range is a page for the closing box alone). */
+    /** The rows each page holds for [count] rows; the last page carries rows beside the closing box. */
     fun layoutPages(count: Int): List<IntRange> {
         val out = ArrayList<IntRange>()
         var i = 0
@@ -103,7 +103,16 @@ class StatementPrint(
             out += i until end
             i = end
         } while (i < count)
-        if (out.last().count() > rowsThatFit(out.size == 1, withClosing = true)) out += count until count
+        val last = out.last()
+        if (last.count() > rowsThatFit(out.size == 1, withClosing = true)) {
+            // The closing box never opens a page alone (11 Nov 2026, the owner's photo of the phone's statement):
+            // the last rows go with it, up to three, never the whole page.
+            val carry = minOf(3, last.count() - 1, rowsThatFit(false, withClosing = true))
+            if (carry >= 1) {
+                out[out.size - 1] = last.first..(last.last - carry)
+                out += (last.last - carry + 1)..last.last
+            } else out += count until count
+        }
         return out
     }
 
@@ -227,11 +236,20 @@ class StatementPrint(
         val xGave = margin + 230
         val xGot = margin + 330
         val xBal = pageW - margin
+        // Figures flush to their column's end edge, as the phone's statement prints them (11 Nov 2026).
+        val gaveEnd = xGot - 14
+        val gotEnd = xBal - 100
+        // A balance in its side's colour: what the reader still owes red, what is owed to him green; the minus stays.
+        fun balanceInk(b: Double): Color = when {
+            Money.isPositive(b) -> red
+            Money.isNegative(b) -> green
+            else -> Color.BLACK
+        }
         g.color = Color.BLACK
         g.font = Font(PrintFonts.family, Font.BOLD, 10)
         g.text(words.text(W.pdf_label_date), xDate, y)
-        g.text(words.text(if (isCustomer) W.pdf_stmt_taken else W.pdf_stmt_paid_to_you), xGave, y)
-        g.text(words.text(if (isCustomer) W.pdf_stmt_paid else W.pdf_stmt_you_supplied), xGot, y)
+        g.text(words.text(if (isCustomer) W.pdf_stmt_taken else W.pdf_stmt_paid_to_you), gaveEnd, y, end = true)
+        g.text(words.text(if (isCustomer) W.pdf_stmt_paid else W.pdf_stmt_you_supplied), gotEnd, y, end = true)
         g.text(words.text(W.pdf_stmt_balance), xBal, y, end = true)
         y += 6
         g.color = line
@@ -243,7 +261,7 @@ class StatementPrint(
             g.font = Font(PrintFonts.family, Font.PLAIN, 10)
             g.color = muted
             g.text(words.text(W.pdf_stmt_opening_before, Format.dateOnly(periodFrom)), xDate, y)
-            g.color = Color.BLACK
+            g.color = balanceInk(opening)
             g.font = Font(PrintFonts.family, Font.BOLD, 10)
             g.text(Format.signedIfNegative(opening), xBal, y, end = true)
             y += 8
@@ -258,8 +276,8 @@ class StatementPrint(
             g.color = Color.BLACK
             g.text(Format.statementStamp(e.timestamp), xDate, y)
             g.color = if (e.isGiven) red else green
-            g.text(Format.money(e.amount), if (e.isGiven) xGave else xGot, y)
-            g.color = Color.BLACK
+            g.text(Format.money(e.amount), if (e.isGiven) gaveEnd else gotEnd, y, end = true)
+            g.color = balanceInk(row.running)
             g.font = Font(PrintFonts.family, Font.BOLD, 10)
             g.text(Format.signedIfNegative(row.running), xBal, y, end = true)
             y += 12

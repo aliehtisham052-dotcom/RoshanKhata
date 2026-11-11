@@ -415,7 +415,7 @@
     <string name="business_name_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu">دکان کا نام اردو میں</string>
     <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">اردو پوسٹر پر یہی نام چھپے گا۔ خالی چھوڑیں تو اوپر والا نام۔</string>
+    <string name="business_name_urdu_help">اردو پوسٹر، دکان کارڈ اور لوگو پر یہی نام چھپے گا۔ خالی چھوڑیں تو اوپر والا نام۔</string>
     <string name="business_address">دکان کا پتہ</string>
     <string name="business_address_hint">مثلاً مین بازار</string>
     <string name="invoice_bank_name_hint">بینک کا نام</string>

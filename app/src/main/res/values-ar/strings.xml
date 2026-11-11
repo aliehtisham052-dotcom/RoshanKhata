@@ -459,7 +459,7 @@
     <string name="business_name_hint">مثل بهاتي للتجارة</string>
     <string name="business_name_urdu">اسم المحل بالأردية</string>
     <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">يظهر على الملصقات الأردية. اتركه فارغاً لاستخدام الاسم أعلاه.</string>
+    <string name="business_name_urdu_help">يظهر على الملصقات وبطاقة المتجر والشعار باللغة الأردية. اتركه فارغاً لاستخدام الاسم أعلاه.</string>
     <string name="business_address">عنوان المحل</string>
     <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
     <string name="invoice_bank_name_hint">اسم البنك</string>

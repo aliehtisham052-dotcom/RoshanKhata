@@ -432,7 +432,7 @@
     <string name="business_name_hint">যেমন ভাট্টি ট্রেডার্স</string>
     <string name="business_name_urdu">উর্দুতে দোকানের নাম</string>
     <string name="business_name_urdu_hint">যেমন النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">উর্দু পোস্টারে এই নাম ছাপা হবে। খালি রাখলে উপরের নাম।</string>
+    <string name="business_name_urdu_help">উর্দু পোস্টার, বিজনেস কার্ড ও লোগোতে এই নাম ছাপা হবে। খালি রাখলে উপরের নাম।</string>
     <string name="business_address">দোকানের ঠিকানা</string>
     <string name="business_address_hint">যেমন মেইন বাজার, পসরুর</string>
     <string name="invoice_bank_name_hint">ব্যাংকের নাম</string>

@@ -425,7 +425,7 @@
     <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
     <string name="business_name_urdu">نام فروشگاه به اردو</string>
     <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">روی پوسترهای اردو نشان داده می‌شود. خالی بگذارید تا نام بالا استفاده شود.</string>
+    <string name="business_name_urdu_help">روی پوسترها، کارت فروشگاه و لوگوی اردو نشان داده می‌شود. خالی بگذارید تا نام بالا استفاده شود.</string>
     <string name="business_address">آدرس مغازه</string>
     <string name="business_address_hint">مثلاً بازار اصلی</string>
     <string name="invoice_bank_name_hint">نام بانک</string>

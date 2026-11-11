@@ -32,6 +32,7 @@ object PdfExport {
     private const val NAVY = 0xFF094C2E.toInt()
     private const val GOLD = 0xFFE1AF3F.toInt()
     private const val RED = 0xFFC0392B.toInt()
+    private const val RED_SOFT = 0xFFFBECEA.toInt()
     private const val GREEN = 0xFF1E8449.toInt()
     private const val GREY = 0xFF6F6F6F.toInt()
     /** The band's second lines: a paler gold that still reads on the green. */
@@ -222,6 +223,22 @@ object PdfExport {
         val xGave = 300f
         val xGot = 390f
         val xBal = 480f
+        // Figures stand flush to their column's end edge (11 Nov 2026): a column of money is read by its last digit,
+        // and figures that start where their column starts put 800 and 14,556 out of line.
+        val gaveEnd = xGot - 12f
+        val gotEnd = xBal - 12f
+        val balEnd = PAGE_W - MARGIN - 6f
+        val atEnd = { p: Paint -> Paint(p).apply { textAlign = Paint.Align.RIGHT } }
+        /**
+         * A balance in the colour of its side (11 Nov 2026, the owner: an advance read in the same green as a debt):
+         * what the reader still owes in the Taken column's red, what is owed to him in the Paid column's green. The
+         * minus stays, so a sheet printed in black and white still says which way it runs.
+         */
+        fun balanceInk(b: Double): Int = when {
+            Money.isPositive(b) -> RED
+            Money.isNegative(b) -> GREEN
+            else -> NAVY
+        }
 
         /**
          * Draws the whole statement once.
@@ -232,7 +249,15 @@ object PdfExport {
          * in hand, so page one can say "Page 1 of 3". Same device as
          * InspectorReport, for the same reason.
          */
-        fun render(totalPages: Int?): Pair<PdfDocument, Int> {
+        /**
+         * [carryFrom]: the row that must start a new page (the pass before found the closing block would stand alone
+         * on its last page, 11 Nov 2026 — the owner's photo: a page of nothing but the balance bar and the seal under an
+         * empty column head). Returns the document, its page count, and such a row when this pass left the block alone.
+         */
+        // The owner's signature, read once for every pass.
+        val signature = BusinessProfile.loadSignature(context)
+
+        fun render(totalPages: Int?, carryFrom: Int? = null): Triple<PdfDocument, Int, Int?> {
         val doc = PdfDocument()
         var pageNo = 1
         var page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
@@ -293,7 +318,7 @@ object PdfExport {
          * and the three summary boxes; later pages repeat only the band and
          * the column headings, so the table continues without ceremony.
          */
-        fun drawHeader(first: Boolean): Float {
+        fun drawHeader(first: Boolean, columns: Boolean = true): Float {
             // Later sections (closing box, QR, signature) retune these shared
             // paints for their own text. A page break after that point comes
             // back through here — so the header resets what it depends on,
@@ -408,11 +433,14 @@ object PdfExport {
                 fun summaryBox(index: Int, label: String, value: String, valueColor: Int, strong: Boolean = false) {
                     val left = MARGIN + index * (boxW + gap)
                     val r = RectF(left, yy, left + boxW, yy + boxH)
-                    if (strong) c.drawRoundRect(r, 5f, 5f, Paint().apply { color = GREEN_SOFT })
-                    boxStroke.color = if (strong) NAVY else BOX_EDGE
+                    // The closing box wears its side: a soft red when the reader still owes, green otherwise.
+                    val owes = valueColor == RED
+                    val edge = if (owes) RED else NAVY
+                    if (strong) c.drawRoundRect(r, 5f, 5f, Paint().apply { color = if (owes) RED_SOFT else GREEN_SOFT })
+                    boxStroke.color = if (strong) edge else BOX_EDGE
                     boxStroke.strokeWidth = if (strong) 1.2f else 0.8f
                     c.drawRoundRect(r, 5f, 5f, boxStroke)
-                    val lp = Paint(boxLabel).apply { if (strong) { color = NAVY; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) } }
+                    val lp = Paint(boxLabel).apply { if (strong) { color = edge; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) } }
                     PdfRtl.drawText(c, fitted(label, lp, boxW - 16f), left + 8f, yy + 14f, lp)
                     boxValue.color = valueColor
                     val vp = Paint(boxValue).apply { textSize = 12f }
@@ -423,19 +451,22 @@ object PdfExport {
                 summaryBox(0, context.getString(R.string.pdf_stmt_opening), Format.signedIfNegative(openingBalance), Color.BLACK)
                 summaryBox(1, totalOwedLabel, Format.money(totalGave), RED)
                 summaryBox(2, totalPaidLabel, Format.money(totalGot), GREEN)
-                summaryBox(3, closingWord(), Format.money(kotlin.math.abs(closingBalance)), NAVY, strong = true)
+                summaryBox(3, closingWord(), Format.money(kotlin.math.abs(closingBalance)), balanceInk(closingBalance), strong = true)
 
                 yy += boxH + 16f
             }
 
+            // A page that carries no rows has no column heads over nothing.
+            if (!columns) return yy + 8f
             // The column heads on the brand's green bar, white words, on every page.
             c.drawRoundRect(RectF(MARGIN, yy - 11f, PAGE_W - MARGIN, yy + 6f), 3f, 3f, navyFill)
             val headW = Paint(header).apply { color = Color.WHITE; textSize = 9f }
             // "Date & details": each row's second line carries its number, goods and note.
             PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_date_details), headW, xGave - xDate - 12f), xDate + 6f, yy, headW)
-            PdfRtl.drawText(c, fitted(owedLabel, headW, xGot - xGave - 6f), xGave, yy, headW)
-            PdfRtl.drawText(c, fitted(paidLabel, headW, xBal - xGot - 6f), xGot, yy, headW)
-            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_balance), headW, PAGE_W - MARGIN - xBal - 4f), xBal, yy, headW)
+            val headEnd = atEnd(headW)
+            PdfRtl.drawText(c, fitted(owedLabel, headEnd, gaveEnd - xGave + 8f), gaveEnd, yy, headEnd)
+            PdfRtl.drawText(c, fitted(paidLabel, headEnd, gotEnd - xGot + 8f), gotEnd, yy, headEnd)
+            PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_balance), headEnd, balEnd - xBal + 8f), balEnd, yy, headEnd)
             return yy + 22f
         }
 
@@ -456,16 +487,20 @@ object PdfExport {
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
             }
             PdfRtl.drawText(c, label, xDate, y, italic)
-            PdfRtl.drawText(c, Format.signedIfNegative(openingBalance), xBal, y, italic)
+            PdfRtl.drawText(c, Format.signedIfNegative(openingBalance), balEnd, y, atEnd(italic).apply { color = balanceInk(openingBalance) })
             y += 8f
             c.drawLine(MARGIN, y, PAGE_W - MARGIN, y, lineFill)
             y += 16f
         }
 
         var rowIndex = 0
-        for (row in rows) {
-            // Two lines per entry (details + reference), so break before we run off.
-            if (y > PAGE_H - 110f) {
+        // The first row on the page being drawn: the rows that may travel with the closing block.
+        var pageFirstRow = 0
+        for ((at, row) in rows.withIndex()) {
+            // Two lines per entry (details + reference), so break before we run off; and before the rows that go
+            // with the closing block, so it never stands alone (a bank statement's totals never open a page).
+            if (y > PAGE_H - 110f || (at == carryFrom && at > pageFirstRow)) {
+                pageFirstRow = at
                 endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
@@ -484,20 +519,22 @@ object PdfExport {
             // what a date with no time of day comes out as.
             PdfRtl.drawText(c, Format.statementStamp(e.timestamp), xDate, y, body)
 
+            val figure = atEnd(body)
+            val none = atEnd(dash)
             if (e.isGiven) {
-                body.color = RED
-                PdfRtl.drawText(c, Format.money(e.amount), xGave, y, body)
-                PdfRtl.drawText(c, "\u2014", xGot, y, dash)
+                figure.color = RED
+                PdfRtl.drawText(c, Format.money(e.amount), gaveEnd, y, figure)
+                PdfRtl.drawText(c, "\u2014", gotEnd, y, none)
             } else {
-                body.color = GREEN
-                PdfRtl.drawText(c, Format.money(e.amount), xGot, y, body)
-                PdfRtl.drawText(c, "\u2014", xGave, y, dash)
+                figure.color = GREEN
+                PdfRtl.drawText(c, Format.money(e.amount), gotEnd, y, figure)
+                PdfRtl.drawText(c, "\u2014", gaveEnd, y, none)
             }
             body.color = Color.BLACK
 
             // The running balance is the column a reader actually follows
             // down the page, so it gets the weight — bold, like the summary.
-            PdfRtl.drawText(c, Format.signedIfNegative(row.runningBalance), xBal, y, header)
+            PdfRtl.drawText(c, Format.signedIfNegative(row.runningBalance), balEnd, y, atEnd(header).apply { color = balanceInk(row.runningBalance) })
 
             // Second line: reference number, note, any goods that moved, and
             // the payment's own reference with its way (schema 39): the id the
@@ -523,15 +560,48 @@ object PdfExport {
             y += 16f
         }
 
-        // Closing balance — stated in the customer's terms, not accounting signs. Room for the
-        // bar, its pay-by line and the call-us line above the page line and the foot (130 let the
-        // call-us line run into the foot on a full page).
-        if (y > PAGE_H - 190f) {
+        // Closing balance — stated in the customer's terms, not accounting signs. The whole closing block (the
+        // period's end line, the bar and its pay-by line, How to pay, the call-us line, the QR, the signature or
+        // the seal) is measured first and kept together on one page (11 Nov 2026): it moved piece by piece
+        // before, and a full first page left the bar and the seal alone on a page of their own.
+        val bankWho = listOfNotNull(BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context))
+            .map { it.trim() }.filter { it.isNotEmpty() }.joinToString("  \u00b7  ").takeIf { it.isNotEmpty() }
+        val iban = BusinessProfile.bankIban(context)?.trim()?.takeIf { it.isNotEmpty() }
+        val wallet = BusinessProfile.bankJazzCash(context)?.trim()?.takeIf { it.isNotEmpty() }
+        val quote = rows.lastOrNull { it.entry.isGiven }?.entry?.entryNumber?.takeIf { it.isNotBlank() }
+        val howToPay = isCustomer && Money.isPositive(closingBalance) && (bankWho != null || iban != null || wallet != null)
+        val dueDay = payBy?.takeIf { isCustomer && Money.isPositive(closingBalance) && it >= DayMath.startOfDay(System.currentTimeMillis()) }
+        val barH = if (dueDay != null) 60f else 52f
+        // The box grows to hold every line it has: head, bank, IBAN, wallet, the number to quote.
+        val payLines = listOfNotNull(bankWho ?: iban, iban.takeIf { bankWho != null }, wallet, quote).size
+        val boxH = if (howToPay) maxOf(barH, 25f + 11f * (payLines - 1) + 8f) else barH
+        /** The closing block's height as it is drawn below, from the same figures. */
+        fun closingBlockHeight(): Float {
+            var h = 0f
+            rows.lastOrNull()?.runningBalance?.let { if (Money.isNotZero(it - closingBalance)) h += 18f }
+            h += 8f + boxH + 14f
+            h += if (shopPhone != null) 20f else 4f
+            if (paymentQr != null && Money.isPositive(closingBalance)) h += 8f + 120f + 24f
+            h += when {
+                signature != null ->
+                    20f + (150f * signature.height / signature.width).coerceAtMost(60f) + 6f + 14f + 22f
+                InvoiceTemplateKit.sealToPrint(context) != SealChoice.NONE -> 16f + InvoiceTemplateKit.SEAL_SIZE + 10f
+                else -> 0f
+            }
+            return h
+        }
+        var carryNext: Int? = null
+        val tail = closingBlockHeight()
+        if (y + tail > PAGE_H - MARGIN - 40f) {
+            // Rows on this page that may come along: the last three, never the whole page.
+            if (carryFrom == null && rows.isNotEmpty()) {
+                carryNext = maxOf(pageFirstRow + 1, rows.size - 3).takeIf { it < rows.size }
+            }
             endPage()
             pageNo++
             page = PdfRtl.startPage(context, doc, PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create())
             c = page.canvas
-            y = drawHeader(first = false)
+            y = drawHeader(first = false, columns = false)
         }
 
         // A period that ended before the account's last entry (3 Nov 2026 audit, M06): its own last balance said
@@ -554,17 +624,6 @@ object PdfExport {
         // number to quote — only on a customer's statement that has something to pay.
         // The IBAN has a line of its own and is never cut (the first proof, 2 Nov 2026: "Test Bank \u00b7
         // PK00TEST000\u2026" \u2014 a customer cannot pay into an account number that ends in dots).
-        val bankWho = listOfNotNull(BusinessProfile.bankName(context), BusinessProfile.bankAccountTitle(context))
-            .map { it.trim() }.filter { it.isNotEmpty() }.joinToString("  \u00b7  ").takeIf { it.isNotEmpty() }
-        val iban = BusinessProfile.bankIban(context)?.trim()?.takeIf { it.isNotEmpty() }
-        val wallet = BusinessProfile.bankJazzCash(context)?.trim()?.takeIf { it.isNotEmpty() }
-        val quote = rows.lastOrNull { it.entry.isGiven }?.entry?.entryNumber?.takeIf { it.isNotBlank() }
-        val howToPay = isCustomer && Money.isPositive(closingBalance) && (bankWho != null || iban != null || wallet != null)
-        val dueDay = payBy?.takeIf { isCustomer && Money.isPositive(closingBalance) && it >= DayMath.startOfDay(System.currentTimeMillis()) }
-        val barH = if (dueDay != null) 60f else 52f
-        // The box grows to hold every line it has: head, bank, IBAN, wallet, the number to quote.
-        val payLines = listOfNotNull(bankWho ?: iban, iban.takeIf { bankWho != null }, wallet, quote).size
-        val boxH = if (howToPay) maxOf(barH, 25f + 11f * (payLines - 1) + 8f) else barH
         val barRight = if (howToPay) PAGE_W - MARGIN - 212f else PAGE_W - MARGIN
         c.drawRect(MARGIN, y, barRight, y + barH, navyFill)
         c.drawRect(MARGIN, y, MARGIN + 4f, y + barH, goldFill)
@@ -634,14 +693,15 @@ object PdfExport {
         // the customer to pay. Printing "scan to pay me" on a statement where
         // we owe them would be tone-deaf.
         if (paymentQr != null && Money.isPositive(closingBalance)) {
-            if (y > PAGE_H - 210f) {
+            // Measured with the block above, so this only guards a wrong sum.
+            if (y + 152f > PAGE_H - MARGIN - 40f) {
                 endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
-                y = drawHeader(first = false)
+                y = drawHeader(first = false, columns = false)
             }
 
             header.textSize = 11f
@@ -685,16 +745,15 @@ object PdfExport {
         // A statement is a claim about money, and a shopkeeper has always put
         // their name at the bottom of one. Drawn on the right, above a ruled
         // line, where a signature goes on paper.
-        val signature = BusinessProfile.loadSignature(context)
         if (signature != null) {
-            if (y > PAGE_H - 200f) {
+            if (y + 122f > PAGE_H - MARGIN - 40f) {
                 endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc, 
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
-                y = drawHeader(first = false)
+                y = drawHeader(first = false, columns = false)
             }
 
             y += 20f
@@ -728,14 +787,14 @@ object PdfExport {
             y += 22f
         } else if (InvoiceTemplateKit.sealToPrint(context) != SealChoice.NONE) {
             // No signature: the seal alone at the end side, in its own room above the foot line.
-            if (y > PAGE_H - 200f) {
+            if (y + 118f > PAGE_H - MARGIN - 40f) {
                 endPage()
                 pageNo++
                 page = PdfRtl.startPage(context, doc,
                     PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, pageNo).create()
                 )
                 c = page.canvas
-                y = drawHeader(first = false)
+                y = drawHeader(first = false, columns = false)
             }
             y += 16f
             InvoiceTemplateKit.drawDocumentSeal(
@@ -754,12 +813,14 @@ object PdfExport {
         )
 
         endPage()
-        return doc to pageNo
+        return Triple(doc, pageNo, carryNext)
         }
 
-        val (counting, pageCount) = render(null)
+        // Counting pass; a second count when the closing block had to take some rows with it; then the drawing.
+        val (counting, firstCount, carry) = render(null)
         counting.close()
-        val (doc, _) = render(pageCount)
+        val pageCount = if (carry != null) render(null, carry).let { (d, n, _) -> d.close(); n } else firstCount
+        val (doc, _, _) = render(pageCount, carry)
 
         // Written to cache: a statement is a throwaway artefact, not something
         // to quietly accumulate in the user's storage.

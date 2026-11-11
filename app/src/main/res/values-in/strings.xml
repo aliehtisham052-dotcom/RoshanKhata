@@ -421,7 +421,7 @@
     <string name="business_name_hint">mis. Toko Tani Makmur</string>
     <string name="business_name_urdu">Nama toko dalam bahasa Urdu</string>
     <string name="business_name_urdu_hint">mis. النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">Tampil di poster berbahasa Urdu. Kosongkan untuk memakai nama di atas.</string>
+    <string name="business_name_urdu_help">Tampil di poster, kartu nama, dan logo berbahasa Urdu. Kosongkan untuk memakai nama di atas.</string>
     <string name="business_address">Alamat toko</string>
     <string name="business_address_hint">mis. Jl. Pasar Baru No. 12</string>
     <string name="invoice_bank_name_hint">Nama bank</string>

@@ -425,7 +425,7 @@
     <string name="business_name_hint">مثال: النور ٽريڊرز</string>
     <string name="business_name_urdu">دڪان جو نالو اردو ۾</string>
     <string name="business_name_urdu_hint">مثال: النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">اردو پوسٽرن تي ڏيکاريو ويندو. خالي ڇڏيو ته مٿيون نالو.</string>
+    <string name="business_name_urdu_help">اردو پوسٽرن، دڪان ڪارڊ ۽ لوگو تي ڏيکاريو ويندو. خالي ڇڏيو ته مٿيون نالو.</string>
     <string name="business_address">دڪان جو پتو</string>
     <string name="business_address_hint">مثال: مين بازار</string>
     <string name="invoice_bank_name_hint">بئنڪ جو نالو</string>

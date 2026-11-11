@@ -415,7 +415,7 @@
     <string name="business_name_hint">maslan Al-Noor Traders</string>
     <string name="business_name_urdu">Dukaan ka naam Urdu mein</string>
     <string name="business_name_urdu_hint">Maslan النور ٹریڈرز</string>
-    <string name="business_name_urdu_help">Urdu poster par yahi naam chhapega. Khali chhorein to upar wala naam.</string>
+    <string name="business_name_urdu_help">Urdu poster, dukaan card aur logo par yahi naam chhapega. Khali chhorein to upar wala naam.</string>
     <string name="business_address">Dukaan ka pata</string>
     <string name="business_address_hint">maslan Main Bazaar</string>
     <string name="invoice_bank_name_hint">Bank ka naam</string>
