@@ -353,9 +353,19 @@ class BusinessSettingsActivity : BaseActivity() {
             BusinessProfile.setBankJazzCash(this, etBankJazzCash.text.toString().trim().ifEmpty { null })
             BusinessProfile.setTermsAndConditions(this, etInvoiceTerms.text.toString().trim().ifEmpty { null })
             BusinessProfile.setStrn(this, etStrn.text.toString().trim().ifEmpty { null })
-            Toast.makeText(this, R.string.profile_saved, Toast.LENGTH_SHORT).show()
             leaveGuard.isEnabled = false
-            finish()
+            // A logo made while the shop had no name takes the name now, in its own design (11 Nov 2026).
+            val newName = etBusinessName.text.toString().trim()
+            if (newName.isNotEmpty() && LogoRename.needed(this)) {
+                lifecycleScope.launch {
+                    withContext(Dispatchers.Default) { LogoRename.apply(this@BusinessSettingsActivity, newName) }
+                    Toast.makeText(this@BusinessSettingsActivity, R.string.profile_saved, Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            } else {
+                Toast.makeText(this, R.string.profile_saved, Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
 
         val swPhoto = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(

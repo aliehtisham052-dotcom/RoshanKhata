@@ -204,7 +204,11 @@ class LogoMakerActivity : BaseActivity() {
         }
     }
 
-    private fun shownName() = name.trim().ifEmpty { getString(R.string.app_name) }
+    /**
+     * The words on the logo. With no name typed yet the designs show "Business name" as a placeholder - never the
+     * app's name, which ended up on shops' logos (11 Nov 2026, the owner's photos) - and Use this logo asks for one.
+     */
+    private fun shownName() = name.trim().ifEmpty { getString(R.string.business_name) }
 
     /** The chosen logo as it will be kept: its own colour and words. */
     private fun spec(style: LogoDesigns.Style) = LogoDesigns.Spec(
@@ -258,6 +262,13 @@ class LogoMakerActivity : BaseActivity() {
     /** The chosen design at print size, kept as the shop's logo the way a picked picture is. */
     private fun save() {
         if (saving) return
+        if (name.isBlank()) {
+            findViewById<EditText>(R.id.etLogoName).apply {
+                error = getString(R.string.shop_add_name)
+                requestFocus()
+            }
+            return
+        }
         saving = true
         val style = styles[chosen]
         val made = Made(style, palette, show, name.trim(), trade)
@@ -342,7 +353,7 @@ class LogoMakerActivity : BaseActivity() {
      * How a made logo is remembered: "v2|STYLE|colour|SHOW|TRADE|name" (the name last, so a "|" in it stays). The
      * trade is kept since 10 Nov 2026 (v1 had none: it opens in the shop's trade of the day).
      */
-    private data class Made(
+    internal data class Made(
         val style: LogoDesigns.Style, val palette: Int, val show: LogoDesigns.Show, val name: String, val trade: Trade?
     ) {
         fun text() = listOf("v2", style.name, palette.toString(), show.name, trade?.name.orEmpty(), name).joinToString("|")
@@ -372,5 +383,44 @@ class LogoMakerActivity : BaseActivity() {
         const val KEY_SHOW = "logo_show"
         const val KEY_EDITING = "logo_editing"
         const val KEY_TRADE = "logo_trade"
+    }
+}
+
+/**
+ * A logo made here while the shop had no name carries no name of its own (or the app's, before 11 Nov 2026). When
+ * the profile then saves a name, the same design, colour and trade are drawn again with it and kept in its place,
+ * so the shop's logo says its own name without the owner remaking it (the owner's photos: "Bhatti Traders" beside a
+ * logo reading ROSHAN KHATA). A logo made with a name, or a picture from the phone, is left as it is.
+ */
+object LogoRename {
+    fun needed(context: android.content.Context): Boolean =
+        LogoMakerActivity.Made.parse(BusinessProfile.logoDesign(context))?.name?.isBlank() == true
+
+    /** Draws and keeps the made logo with [shopName]; false when there was nothing to redraw or it failed. */
+    fun apply(context: android.content.Context, shopName: String): Boolean {
+        val made = LogoMakerActivity.Made.parse(BusinessProfile.logoDesign(context)) ?: return false
+        if (made.name.isNotBlank() || shopName.isBlank()) return false
+        return runCatching {
+            val trade = made.trade ?: Trade.current(context)
+            val palettes = LogoDesigns.palettes(context, trade)
+            val urdu = BusinessProfile.businessNameUrdu(context)?.takeIf { it.isNotBlank() }
+            val spec = LogoDesigns.Spec(
+                style = made.style,
+                palette = palettes[made.palette.coerceIn(0, palettes.size - 1)],
+                show = made.show.takeIf { it != LogoDesigns.Show.URDU || urdu != null } ?: LogoDesigns.Show.NAME,
+                name = shopName.trim(),
+                urduName = urdu,
+                tagline = context.getString(trade.exampleRes),
+                trade = trade
+            )
+            val bmp = LogoDesigns.draw(context, spec, 1024)
+            val file = File(File(context.cacheDir, "logo_maker").apply { mkdirs() }, "logo.png")
+            file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            bmp.recycle()
+            val ok = BusinessProfile.saveLogo(context, Uri.fromFile(file))
+            file.delete()
+            if (ok) BusinessProfile.setLogoDesign(context, made.copy(name = shopName.trim(), trade = trade).text())
+            ok
+        }.getOrDefault(false)
     }
 }
