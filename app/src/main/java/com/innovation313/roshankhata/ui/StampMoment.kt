@@ -115,7 +115,7 @@ object StampMoment {
             stamp,
             PropertyValuesHolder.ofFloat(View.SCALE_X, 0.95f, 1f),
             PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.92f, 1f),
-            PropertyValuesHolder.ofFloat(View.ELEVATION, 10 * d, 0f)
+            PropertyValuesHolder.ofFloat("elevation", 10 * d, 0f)
         ).apply { duration = 220; interpolator = decelerate }
         val ink = ObjectAnimator.ofPropertyValuesHolder(
             ring,

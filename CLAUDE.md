@@ -2591,6 +2591,10 @@ Each of these cost a build or a bug.
     so their corners went on some phones and not on older ones (10 Nov 2026, the owner's test phones).
     `scripts/check_icon_fit.py` (Strings CI) measures both; artwork is shrunk to fit, never stretched.
 
+84. **`View` has no ELEVATION property.** Its animator properties are ALPHA, TRANSLATION_X/Y/Z, ROTATION(_X/_Y),
+    SCALE_X/Y, X, Y, Z; `View.ELEVATION` failed both phone builds (11 Nov 2026). Elevation is animated by name
+    (`PropertyValuesHolder.ofFloat("elevation", …)`) or through TRANSLATION_Z.
+
 ---
 
 ## Working with the owner
