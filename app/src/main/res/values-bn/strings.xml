@@ -159,7 +159,7 @@
     <string name="coach_desc_backup">আপনার খাতা নিজের Google Drive-এ নিরাপদে রাখুন।</string>
     <string name="coach_desc_backup_pc">প্রতিদিন আপনার খাতার একটি কপি এই কম্পিউটারে রাখা হয়। দৈনিক কপি-তে এর জন্য দ্বিতীয় জায়গা বেছে নিন: USB বা আপনার Google Drive ফোল্ডার।</string>
         <string name="calculator">ক্যালকুলেটর</string>
-    <string name="calc_clear">C</string>
+    <string name="calc_clear">AC</string>
     <string name="calc_backspace">\u232B</string>
     <string name="calc_percent">%</string>
     <string name="calc_divide">\u00F7</string>

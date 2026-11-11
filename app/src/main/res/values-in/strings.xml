@@ -152,7 +152,7 @@
     <string name="coach_desc_backup">Simpan buku Anda dengan aman ke Google Drive Anda sendiri.</string>
     <string name="coach_desc_backup_pc">Setiap hari salinan buku Anda disimpan di komputer ini. Di Salinan harian, pilih tempat kedua untuknya: flashdisk USB atau folder Google Drive Anda.</string>
         <string name="calculator">Kalkulator</string>
-    <string name="calc_clear">C</string>
+    <string name="calc_clear">AC</string>
     <string name="calc_backspace">\u232B</string>
     <string name="calc_percent">%</string>
     <string name="calc_divide">\u00F7</string>

@@ -155,7 +155,7 @@
     <string name="coach_desc_backup">Apna khata mehfooz tareeqe se apni Google Drive par rakhein.</string>
     <string name="coach_desc_backup_pc">Rozana aap ke khate ki ek copy isi computer par rakhi jati hai. Rozana copies mein is ki doosri jagah chunein: USB ya aap ka Google Drive folder.</string>
         <string name="calculator">Calculator</string>
-    <string name="calc_clear">C</string>
+    <string name="calc_clear">AC</string>
     <string name="calc_backspace">\u232B</string>
     <string name="calc_percent">%</string>
     <string name="calc_divide">\u00F7</string>

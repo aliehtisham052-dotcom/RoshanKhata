@@ -378,7 +378,11 @@
         <item name="android:paddingEnd">0dp</item>
         <item name="android:minWidth">0dp</item>
         <item name="backgroundTint">@color/surface</item>
-        <item name="cornerRadius">14dp</item>
+        <!-- Round keys (11 Nov 2026, the owner): the screen makes each key as tall as it is wide, so this radius
+             draws a circle on every phone. A hairline edge keeps a white key on the page. -->
+        <item name="cornerRadius">999dp</item>
+        <item name="strokeColor">@color/page_line</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
     <!-- Operators (13 Oct): a soft green tile with green signs, so they stand

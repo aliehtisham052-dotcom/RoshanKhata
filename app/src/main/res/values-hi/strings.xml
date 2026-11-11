@@ -159,7 +159,7 @@
     <string name="coach_desc_backup">अपना खाता अपनी Google Drive में सुरक्षित रखें।</string>
     <string name="coach_desc_backup_pc">रोज़ आपके खाते की एक कॉपी इसी कंप्यूटर पर रखी जाती है। रोज़ की कॉपियाँ में इसकी दूसरी जगह चुनें: USB या आपका Google Drive फ़ोल्डर।</string>
         <string name="calculator">कैलकुलेटर</string>
-    <string name="calc_clear">C</string>
+    <string name="calc_clear">AC</string>
     <string name="calc_backspace">\u232B</string>
     <string name="calc_percent">%</string>
     <string name="calc_divide">\u00F7</string>

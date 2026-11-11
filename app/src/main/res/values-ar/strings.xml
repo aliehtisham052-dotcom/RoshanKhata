@@ -183,7 +183,7 @@
     <string name="coach_desc_backup">احفظ دفترك بأمان على درايف الخاص بك.</string>
     <string name="coach_desc_backup_pc">تُحفظ نسخة من دفترك على هذا الحاسوب كل يوم. اختر لها مكانًا ثانيًا في النسخ اليومية: ذاكرة USB أو مجلد درايف الخاص بك.</string>
         <string name="calculator">آلة حاسبة</string>
-    <string name="calc_clear">C</string>
+    <string name="calc_clear">AC</string>
     <string name="calc_backspace">\u232B</string>
     <string name="calc_percent">%</string>
     <string name="calc_divide">\u00F7</string>

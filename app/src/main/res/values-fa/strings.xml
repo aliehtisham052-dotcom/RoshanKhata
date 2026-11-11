@@ -155,7 +155,7 @@
     <string name="coach_desc_backup">دفتر خود را با خیال راحت در گوگل درایو خودتان ذخیره کنید.</string>
     <string name="coach_desc_backup_pc">هر روز یک نسخه از دفتر شما روی همین رایانه نگه داشته می‌شود. در نسخه‌های روزانه جای دومی برایش انتخاب کنید: فلش USB یا پوشه گوگل درایو خودتان.</string>
         <string name="calculator">ماشین‌حساب</string>
-    <string name="calc_clear">C</string>
+    <string name="calc_clear">AC</string>
     <string name="calc_backspace">\u232B</string>
     <string name="calc_percent">%</string>
     <string name="calc_divide">\u00F7</string>

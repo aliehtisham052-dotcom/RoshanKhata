@@ -37,6 +37,7 @@ class CalculatorActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
 
         findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
+        roundKeys()
 
         tvExpression = findViewById(R.id.tvExpression)
         tvResult = findViewById(R.id.tvResult)
@@ -215,6 +216,35 @@ class CalculatorActivity : BaseActivity() {
         val usable = value != null && !value.isNaN() && !value.isInfinite()
         listOf(R.id.btnCalcToKhata, R.id.btnCalcCopy, R.id.btnCalcShare).forEach {
             findViewById<android.view.View>(it).isEnabled = usable
+        }
+    }
+
+    /**
+     * Each key as tall as it is wide, so its full radius draws a circle (11 Nov 2026, the owner: round keys as on his
+     * phone's own calculator). A key's side is its share of the row, but never more than a tenth of the screen's
+     * height, so five rows leave the display its room on a short phone; the room a key does not take is shared
+     * equally either side of it, so the circles stay in even columns.
+     */
+    private fun roundKeys() {
+        val pad = findViewById<android.widget.LinearLayout>(R.id.keypad)
+        pad.post {
+            val d = resources.displayMetrics.density
+            val rows = (0 until pad.childCount).mapNotNull { pad.getChildAt(it) as? android.widget.LinearLayout }
+            val cell = rows.firstOrNull()?.let { (it.width - it.paddingStart - it.paddingEnd) / 4f } ?: return@post
+            val side = minOf(cell - 8 * d, resources.displayMetrics.heightPixels * 0.1f).toInt()
+            if (side <= 0) return@post
+            val sideGap = ((cell - side) / 2f).toInt()
+            rows.forEach { row ->
+                for (i in 0 until row.childCount) {
+                    val key = row.getChildAt(i)
+                    (key.layoutParams as android.widget.LinearLayout.LayoutParams).apply {
+                        height = side
+                        marginStart = sideGap; marginEnd = sideGap
+                        topMargin = (4 * d).toInt(); bottomMargin = (4 * d).toInt()
+                    }
+                }
+                row.requestLayout()
+            }
         }
     }
 

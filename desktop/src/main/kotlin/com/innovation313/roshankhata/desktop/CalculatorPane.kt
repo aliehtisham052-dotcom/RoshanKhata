@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,16 +82,17 @@ fun CalculatorPane(onKhata: ((Double) -> Unit)? = null) {
     val text = CalcMemory.text
     val result = Calc.evalPad(text)?.takeIf { !it.isNaN() && !it.isInfinite() }
     var refused by remember { mutableStateOf(false) }
+    // The phone's keys in the phone's order (11 Nov 2026, the owner: the order of the phones most shops carry).
     val keys = listOf(
-        listOf("7", "8", "9", "÷"),
-        listOf("4", "5", "6", "×"),
-        listOf("1", "2", "3", "−"),
-        listOf("00", "0", ".", "+"),
-        listOf("%", "C", "⌫", "=")
+        listOf("AC", "%", "⌫", "÷"),
+        listOf("7", "8", "9", "×"),
+        listOf("4", "5", "6", "−"),
+        listOf("1", "2", "3", "+"),
+        listOf("00", "0", ".", "=")
     )
     val press = { k: String ->
         when (k) {
-            "C" -> CalcMemory.text = ""
+            "AC" -> CalcMemory.text = ""
             "⌫" -> CalcMemory.text = CalcMemory.text.dropLast(1)
             "=" -> CalcMemory.settle()
             else -> CalcMemory.text = CalcMemory.text + k
@@ -149,7 +152,7 @@ fun CalculatorPane(onKhata: ((Double) -> Unit)? = null) {
     if (refused) TellDialog(word(W.calculator), word(W.calc_khata_positive), { refused = false })
 }
 
-/** The phone's pad: five rows of four keys, each [keyHeight] tall. */
+/** The phone's pad: five rows of four round keys, each [keyHeight] across, centred in its column. */
 @Composable
 private fun CalcPad(keys: List<List<String>>, keyHeight: androidx.compose.ui.unit.Dp, onKey: (String) -> Unit, modifier: Modifier) {
     val c = LocalRoshanColors.current
@@ -157,15 +160,26 @@ private fun CalcPad(keys: List<List<String>>, keyHeight: androidx.compose.ui.uni
         keys.forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 row.forEach { k ->
-                    val op = k in listOf("÷", "×", "−", "+", "=", "%")
-                    val shape = RoundedCornerShape(12.dp)
-                    Box(
-                        Modifier.weight(1f).height(keyHeight).clip(shape)
-                            .background(if (k == "=") Look.accent else if (op) Look.subtle else Look.layerAlt, shape)
-                            .press(shape) { onKey(k) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(k, color = if (k == "=") Look.onAccent else c.ink, fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                    val op = k in listOf("÷", "×", "−", "+")
+                    val muted = k in listOf("AC", "%", "⌫")
+                    val shape = androidx.compose.foundation.shape.CircleShape
+                    Box(Modifier.weight(1f).height(keyHeight), contentAlignment = Alignment.Center) {
+                        Box(
+                            Modifier.size(keyHeight).clip(shape)
+                                .background(
+                                    when {
+                                        k == "=" -> Look.accent
+                                        op -> Look.subtle
+                                        muted -> Look.line
+                                        else -> Look.layerAlt
+                                    }, shape
+                                )
+                                .border(1.dp, Look.line, shape)
+                                .press(shape) { onKey(k) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(k, color = if (k == "=") Look.onAccent else c.ink, fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                        }
                     }
                 }
             }

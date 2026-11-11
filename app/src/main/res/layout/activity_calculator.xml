@@ -158,9 +158,10 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout style="@style/CalcRow">
+            <!-- The order of the phones most shops carry (11 Nov 2026, the owner's photo of his own): AC, %, back. -->
             <Button android:id="@+id/btnClear" style="@style/CalcKeyMuted" android:text="@string/calc_clear" />
-            <Button android:id="@+id/btnBack" style="@style/CalcKeyMuted" android:text="@string/calc_backspace" />
             <Button android:id="@+id/btnPercent" style="@style/CalcKeyMuted" android:text="@string/calc_percent" />
+            <Button android:id="@+id/btnBack" style="@style/CalcKeyMuted" android:text="@string/calc_backspace" />
             <Button android:id="@+id/btnDivide" style="@style/CalcKeyOp" android:text="@string/calc_divide" />
         </LinearLayout>
 
@@ -186,8 +187,8 @@
         </LinearLayout>
 
         <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/btn0" style="@style/CalcKey" android:text="0" />
             <Button android:id="@+id/btn00" style="@style/CalcKey" android:text="@string/calc_double_zero" />
+            <Button android:id="@+id/btn0" style="@style/CalcKey" android:text="0" />
             <Button android:id="@+id/btnDot" style="@style/CalcKey" android:text="@string/calc_dot" />
             <Button android:id="@+id/btnEquals" style="@style/CalcKeyEquals" android:text="@string/calc_equals" />
         </LinearLayout>
