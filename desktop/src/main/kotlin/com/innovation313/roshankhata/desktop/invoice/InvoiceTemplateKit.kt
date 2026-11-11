@@ -77,10 +77,13 @@ object InvoiceTemplateKit {
      * named at all, keeps "ROSHAN KHATA".
      */
     fun sealName(context: Context): String {
-        val name = BusinessProfile.businessName(context)?.trim().orEmpty()
-        val latin = name.isNotEmpty() && name.all { it.code < 0x250 || it == '\u00b7' }
-        return if (latin) name.uppercase() else "ROSHAN KHATA"
+        // Any script (11 Nov 2026, the owner: an Urdu or Bengali shop's seal carries its own name too): the rim is
+        // shaped whole and then bent ([rimText]), so joined letters stay joined. Capitals where the script has them.
+        return sealNameOf(BusinessProfile.businessName(context))
     }
+
+    /** [sealName] for a name not saved yet: the profile's preview follows the box as it is typed (11 Nov 2026). */
+    fun sealNameOf(name: String?): String = name?.trim().orEmpty().let { if (it.isEmpty()) "ROSHAN KHATA" else it.uppercase() }
 
     /** What this shop's papers carry: [SealChoice], its own stamp only when a stamp picture is kept. */
     fun sealToPrint(context: Context): SealChoice =
@@ -135,19 +138,14 @@ object InvoiceTemplateKit {
             fill.alpha = 0x1F; c.drawCircle(cx, cy, 92f * k, fill); fill.alpha = 0xFF
 
             val rim = Paint().apply {
-                color = ink; isAntiAlias = true; textSize = 25f * k; textAlign = Paint.Align.CENTER
+                color = ink; isAntiAlias = true; textSize = 25f * k
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            // Each line's letters centred on the band's middle (radius 119). The shop's name keeps to the top
-            // arc - about 125 degrees - and gets smaller to fit; a long one loses some spacing first.
-            var track = 5.5f * k
-            fun length() = rim.measureText(top) + track * (top.length - 1)
-            val room = 236f * k
-            while (length() > room && track > 1.5f * k) track -= 0.5f * k
-            while (length() > room && rim.textSize > 14f * k) rim.textSize -= 0.5f * k
-            arcWords(c, top, cx, cy, (119f - 0.36f * rim.textSize / k) * k, rim, track, top = true)
+            // The band between the rings runs from radius 98 to 140: each line sits on its middle (119), no taller
+            // than 34 of it. The shop's name over the top within 140 degrees, DIGITAL RECORD under the bottom.
+            rimText(c, top, cx, cy, 119f * k, rim, top = true, maxDeg = 140f, height = 34f * k, minSize = 12f * k, spacing = 0.22f)
             rim.textSize = 18f * k
-            arcWords(c, "DIGITAL RECORD", cx, cy, (119f - 0.36f * 18f) * k, rim, 4.5f * k, top = false)
+            rimText(c, "DIGITAL RECORD", cx, cy, 119f * k, rim, top = false, maxDeg = 120f, height = 30f * k, minSize = 10f * k, spacing = 0.26f)
 
             // The book, filled: two pages meeting at the spine, a gap of paper between them.
             val bs = 1.05f * k; val bx = cx - 26f * bs; val by = cy - 76f * k
@@ -186,25 +184,40 @@ object InvoiceTemplateKit {
         }
     }
 
-    /** [words] round a circle of [radius], centred at the top (upright, read left to right) or the bottom. */
-    private fun arcWords(c: Canvas, words: String, cx: Float, cy: Float, radius: Float, p: Paint, track: Float, top: Boolean) {
-        val widths = words.map { p.measureText(it.toString()) + track }
-        val sweep = widths.sum() - track
-        var along = -sweep / 2f
-        val baseline = if (top) cy - radius else cy + radius + p.textSize * 0.72f
-        words.forEachIndexed { i, ch ->
-            val w = widths[i] - track
-            val centre = along + w / 2f
-            val degrees = Math.toDegrees((centre / radius).toDouble()).toFloat()
-            val saved = c.save()
-            c.rotate(if (top) degrees else -degrees, cx, cy)
-            PdfRtl.drawText(c, ch.toString(), cx, baseline, p)
-            c.restoreToCount(saved)
-            along += widths[i]
+    /**
+     * [words] along a seal's band, centred on its circle of radius [r]: over the top or under the bottom, read left
+     * to right in every script (an Urdu name runs by its own direction inside), shaped whole first and then bent, so
+     * joined letters stay joined (11 Nov 2026). It keeps to [maxDeg] of the ring and to [height] across the band:
+     * spacing goes first (only between letters that are not joined), then size, down to [minSize]; a name still too
+     * long then is cut short with an ellipsis rather than run out of the seal or into its other line.
+     */
+    private fun rimText(
+        c: Canvas, words: String, cx: Float, cy: Float, r: Float, p: Paint,
+        top: Boolean, maxDeg: Float, height: Float, minSize: Float, spacing: Float
+    ) {
+        if (words.isBlank()) return
+        p.textAlign = Paint.Align.LEFT
+        // Letter spacing would tear joined scripts apart: it is kept for the separate letters of Latin text only.
+        val separate = words.all { it.code < 0x250 || it == '\u00b7' }
+        p.letterSpacing = if (separate) spacing else 0f
+        val room = r * Math.toRadians(maxDeg.toDouble()).toFloat()
+        fun tall(): Float = p.fontMetrics.let { it.descent - it.ascent }
+        while (p.letterSpacing > 0.04f && p.measureText(words) > room) p.letterSpacing -= 0.02f
+        while ((p.measureText(words) > room || tall() > height) && p.textSize > minSize) p.textSize -= 0.25f
+        var text = words
+        if (p.measureText(text) > room) {
+            var keep = words.length - 1
+            while (keep > 1 && p.measureText(words.take(keep).trimEnd() + "\u2026") > room) keep--
+            text = words.take(keep).trimEnd() + "\u2026"
         }
+        val box = RectF(cx - r, cy - r, cx + r, cy + r)
+        // Left to right over the top (the letters' foot towards the centre), left to right under the bottom (their
+        // head towards it); the same offset puts the line's middle on the circle either way.
+        val path = Path().apply { addArc(box, 180f, if (top) 180f else -180f) }
+        val middle = p.fontMetrics.let { -(it.ascent + it.descent) / 2f }
+        val half = (Math.PI * r).toFloat()
+        PdfRtl.drawTextOnPath(c, text, path, (half - p.measureText(text)) / 2f, middle, p)
     }
-
-
 
     /**
      * A template's own colour scheme.

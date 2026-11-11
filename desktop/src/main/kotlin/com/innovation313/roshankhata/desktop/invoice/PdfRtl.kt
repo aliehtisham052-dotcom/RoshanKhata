@@ -4,6 +4,7 @@ import com.innovation313.roshankhata.desktop.gfx.Bitmap
 import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.gfx.Color
 import com.innovation313.roshankhata.desktop.gfx.Paint
+import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.PdfDocument
 import com.innovation313.roshankhata.desktop.gfx.Rect
 import com.innovation313.roshankhata.desktop.gfx.RectF
@@ -38,6 +39,14 @@ object PdfRtl {
     fun onPage(c: Canvas, r: RectF): RectF {
         val w = mirrored[c] ?: return r
         return RectF(w - r.right, r.top, w - r.left, r.bottom)
+    }
+
+    /**
+     * Text bent along [path] - the seal's rim (11 Nov 2026) - shaped whole first, so joined scripts stay joined.
+     * Drawn only inside [asOne], where the page is never mirrored, so the words read the right way on every page.
+     */
+    fun drawTextOnPath(c: Canvas, raw: String, path: Path, hOffset: Float, vOffset: Float, paint: Paint) {
+        c.drawTextOnPath(com.innovation313.roshankhata.data.Digits.forPrint(raw), path, hOffset, vOffset, paint)
     }
 
     fun drawText(c: Canvas, raw: String, x: Float, y: Float, paint: Paint) {

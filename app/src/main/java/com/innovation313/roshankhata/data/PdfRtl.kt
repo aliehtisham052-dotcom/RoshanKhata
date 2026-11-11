@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
@@ -92,6 +93,14 @@ object PdfRtl {
     fun isMirrored(c: Canvas): Boolean = mirrored.containsKey(c)
 
     /** [Canvas.drawText], readable on a mirrored page. Same arguments, same meaning of [x] and the paint's alignment. */
+    /**
+     * Text bent along [path] - the seal's rim (11 Nov 2026) - shaped whole first, so joined scripts stay joined.
+     * Drawn only inside [asOne], where the page is never mirrored, so the words read the right way on every page.
+     */
+    fun drawTextOnPath(c: Canvas, raw: String, path: Path, hOffset: Float, vOffset: Float, paint: Paint) {
+        c.drawTextOnPath(com.innovation313.roshankhata.data.Digits.forPrint(raw), path, hOffset, vOffset, paint)
+    }
+
     fun drawText(c: Canvas, raw: String, x: Float, y: Float, paint: Paint) {
         // The language's own digits when the owner chose them for printed sheets (21 Oct 2026).
         val text = com.innovation313.roshankhata.data.Digits.forPrint(raw)

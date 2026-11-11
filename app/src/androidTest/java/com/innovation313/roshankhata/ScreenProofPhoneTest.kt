@@ -255,6 +255,9 @@ class ScreenProofPhoneTest(
             val rv = a.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvLogos)
             rv.findViewHolderForAdapterPosition(3)?.itemView?.performClick()
         }
+        // The seal with shops named in every script and at every length (11 Nov 2026): joined letters stay joined,
+        // a long name stays inside its band. Made-up names (lesson 80).
+        save("49-seal-names.png", sealNames())
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)
             roads.visibility = android.view.View.VISIBLE
@@ -343,6 +346,24 @@ class ScreenProofPhoneTest(
             // One screen that cannot open must not cost the others' pictures; its name says it is missing.
             android.util.Log.e("ScreenProof", "$look/$name failed", e)
         }
+    }
+
+    private fun sealNames(): Bitmap {
+        val names = listOf(
+            "AL-NOOR TRADERS", "AL-NOOR GENERAL STORE AND WHOLESALE TRADERS",
+            "النور ٹریڈرز", "النور جنرل اسٹور اینڈ ہول سیل ٹریڈرز", "अल-नूर ट्रेडर्स", "আল-নূর ট্রেডার্স"
+        )
+        val side = 420
+        val bmp = Bitmap.createBitmap(side * 3, side * 2, Bitmap.Config.ARGB_8888)
+        val c = android.graphics.Canvas(bmp)
+        c.drawColor(android.graphics.Color.WHITE)
+        names.forEachIndexed { i, n ->
+            com.innovation313.roshankhata.data.InvoiceTemplateKit.drawRecordSeal(
+                c, side * (i % 3) + side / 2f, side * (i / 3) + side / 2f, side * 0.86f, "11 NOV 2026", "INV-000005", top = n
+            )
+        }
+        com.innovation313.roshankhata.data.SealMark.clear()
+        return bmp
     }
 
     private fun save(name: String, bmp: Bitmap) {

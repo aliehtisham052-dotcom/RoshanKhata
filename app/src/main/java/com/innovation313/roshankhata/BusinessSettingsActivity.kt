@@ -621,6 +621,12 @@ class BusinessSettingsActivity : BaseActivity() {
             androidx.core.content.ContextCompat.getColor(this, if (name.isEmpty()) R.color.text_muted else R.color.brand_green_text)
         )
         tvPreviewInitials.text = ProfileChecks.initials(name.ifEmpty { getString(R.string.app_name) })
+        // The seal in the preview carries the name as it is being typed, not only once saved (11 Nov 2026, the
+        // owner's photo: "Bhatti Traders" in the box, ROSHAN KHATA on the seal until Save).
+        if (::ivPreviewStampThumb.isInitialized && sealPreviewName != name) {
+            sealPreviewName = name
+            showSealInPreview()
+        }
         val details = listOfNotNull(
             etBusinessAddress.text.toString().trim().ifEmpty { null },
             etBusinessPhone.text.toString().trim().ifEmpty { null },
@@ -778,6 +784,8 @@ class BusinessSettingsActivity : BaseActivity() {
      * The header preview shows the seal the papers will carry (10 Nov 2026): the Roshan Khata seal with today's date,
      * the shop's own stamp when that is chosen, or the empty slot when none.
      */
+    private var sealPreviewName: String? = null
+
     private fun showSealInPreview() {
         when (BusinessProfile.sealChoice(this).printed(hasStamp)) {
             com.innovation313.roshankhata.data.SealChoice.NONE -> {
@@ -799,7 +807,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 com.innovation313.roshankhata.data.InvoiceTemplateKit.drawRecordSeal(
                     c, side / 2f, side / 2f, side * 0.92f,
                     com.innovation313.roshankhata.ui.Format.dateOnly(System.currentTimeMillis()).uppercase(), "INVOICE",
-                    top = com.innovation313.roshankhata.data.InvoiceTemplateKit.sealName(this)
+                    top = com.innovation313.roshankhata.data.InvoiceTemplateKit.sealNameOf(if (::etBusinessName.isInitialized) etBusinessName.text?.toString() else null)
                 )
                 // A picture on this screen, not a paper: nothing to play when a PDF opens next.
                 com.innovation313.roshankhata.data.SealMark.clear()

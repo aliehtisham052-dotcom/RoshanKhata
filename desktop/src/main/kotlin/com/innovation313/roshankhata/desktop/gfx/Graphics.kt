@@ -847,6 +847,96 @@ open class Canvas(val width: Int = 0, val height: Int = 0) {
         }
     }
 
+    /**
+     * Android's drawTextOnPath (11 Nov 2026, the seal's rim): the text is shaped whole first - Urdu and Arabic letters
+     * joined, Devanagari and Bengali clusters formed - and its outline is then bent along [path], each point carried
+     * to the place [hOffset] + x along the path and [vOffset] + y across it (towards the text's own foot, as Android
+     * does). Only filled text is drawn; the path's ends are carried on straight.
+     */
+    open fun drawTextOnPath(text: String, path: Path, hOffset: Float, vOffset: Float, paint: Paint) {
+        words += text
+        val p = Paint(paint)
+        val route = Path2D.Float(path.p)
+        ops += { r ->
+            Text.layout(text, p)?.let { layout ->
+                val w = layout.advance
+                val left = when (p.textAlign) {
+                    Paint.Align.LEFT -> 0f
+                    Paint.Align.CENTER -> -w / 2f
+                    Paint.Align.RIGHT -> -w
+                }
+                val outline = layout.getOutline(AffineTransform.getTranslateInstance(left.toDouble(), 0.0))
+                val bent = Bend(route).shape(outline, hOffset, vOffset)
+                setup(r.g, p)
+                if (p.style == Paint.Style.STROKE) { r.g.stroke = stroke(p); r.g.draw(bent) } else r.g.fill(bent)
+            }
+        }
+    }
+
+    /** A path measured once: the point and direction at any length along it, for [drawTextOnPath]. */
+    private class Bend(route: java.awt.Shape) {
+        private val xs = ArrayList<Double>(); private val ys = ArrayList<Double>(); private val at = ArrayList<Double>()
+
+        init {
+            val it = route.getPathIterator(null, 0.05)
+            val c = DoubleArray(6)
+            var len = 0.0
+            while (!it.isDone) {
+                when (it.currentSegment(c)) {
+                    java.awt.geom.PathIterator.SEG_MOVETO -> if (xs.isEmpty()) { xs += c[0]; ys += c[1]; at += 0.0 }
+                    java.awt.geom.PathIterator.SEG_LINETO -> {
+                        len += Math.hypot(c[0] - xs.last(), c[1] - ys.last())
+                        xs += c[0]; ys += c[1]; at += len
+                    }
+                }
+                it.next()
+            }
+        }
+
+        /** Where [s] along the path is, and which way the path runs there (a unit vector). */
+        private fun place(s: Double): DoubleArray {
+            if (xs.size < 2) return doubleArrayOf(s, 0.0, 1.0, 0.0)
+            var i = at.binarySearch(s).let { if (it >= 0) it else -it - 2 }.coerceIn(0, xs.size - 2)
+            while (i < xs.size - 2 && at[i + 1] - at[i] <= 0.0) i++
+            val seg = (at[i + 1] - at[i]).coerceAtLeast(1e-9)
+            val tx = (xs[i + 1] - xs[i]) / seg; val ty = (ys[i + 1] - ys[i]) / seg
+            val d = s - at[i]
+            return doubleArrayOf(xs[i] + tx * d, ys[i] + ty * d, tx, ty)
+        }
+
+        /** [outline] bent along the path: its x becomes a length along it, its y a distance across it. */
+        fun shape(outline: java.awt.Shape, hOffset: Float, vOffset: Float): java.awt.Shape {
+            val out = Path2D.Double(Path2D.WIND_NON_ZERO)
+            val it = outline.getPathIterator(null, 0.02)
+            val c = DoubleArray(6)
+            var lx = 0.0; var ly = 0.0
+            fun map(x: Double, y: Double): DoubleArray {
+                val q = place(hOffset + x)
+                val across = y + vOffset
+                // The text's foot (+y) is to the right of the way the path runs: (-ty, tx) in screen axes.
+                return doubleArrayOf(q[0] - q[3] * across, q[1] + q[2] * across)
+            }
+            while (!it.isDone) {
+                when (it.currentSegment(c)) {
+                    java.awt.geom.PathIterator.SEG_MOVETO -> { val m = map(c[0], c[1]); out.moveTo(m[0], m[1]); lx = c[0]; ly = c[1] }
+                    java.awt.geom.PathIterator.SEG_LINETO -> {
+                        // A long straight edge is cut into small steps so it bends with the path.
+                        val steps = (Math.hypot(c[0] - lx, c[1] - ly) / 0.5).toInt().coerceIn(1, 400)
+                        for (k in 1..steps) {
+                            val f = k.toDouble() / steps
+                            val m = map(lx + (c[0] - lx) * f, ly + (c[1] - ly) * f)
+                            out.lineTo(m[0], m[1])
+                        }
+                        lx = c[0]; ly = c[1]
+                    }
+                    java.awt.geom.PathIterator.SEG_CLOSE -> out.closePath()
+                }
+                it.next()
+            }
+            return out
+        }
+    }
+
     open fun drawText(text: String, start: Int, end: Int, x: Float, y: Float, paint: Paint) = drawText(text.substring(start, end), x, y, paint)
     open fun drawText(text: CharSequence, start: Int, end: Int, x: Float, y: Float, paint: Paint) = drawText(text.subSequence(start, end).toString(), x, y, paint)
     open fun drawText(text: CharArray, index: Int, count: Int, x: Float, y: Float, paint: Paint) = drawText(String(text, index, count), x, y, paint)
