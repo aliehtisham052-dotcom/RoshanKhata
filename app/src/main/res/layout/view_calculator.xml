@@ -28,8 +28,10 @@
     android:paddingTop="4dp"
     android:paddingEnd="4dp"
     android:paddingBottom="4dp">
-    <!-- 4 x 5 = 20 keys, one cell each: C, backspace, %, four operators, ten
-         digits, 00, the dot and =. Digits are white, operators grey.
+    <!-- 4 x 5 = 20 keys, one cell each, in the Calculator screen's order (11 Nov 2026, the owner: every
+         calculator one premium look): AC % backspace divide / 7 8 9 times / 4 5 6 minus / 1 2 3 plus /
+         00 0 . =. Pills: digits white with a hairline, operators soft green with green signs, "=" solid
+         green, AC % backspace grey. "=" on a box that holds a plain figure moves to the form's next box.
 
          Backspace is on the pad, where the thumb already is. It had been moved
          into the amount box (which still has its own, calcBack) and a wrong
@@ -39,8 +41,8 @@
          add-entry form and the Edit entry dialog alike. -->
     <LinearLayout style="@style/CalcPadRow">
         <Button android:id="@+id/calcClear" style="@style/CalcPadKeyMuted" android:text="@string/calc_clear" />
-        <Button android:id="@+id/calcBackKey" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />
         <Button android:id="@+id/calcPercent" style="@style/CalcPadKeyMuted" android:text="@string/calc_percent" />
+        <Button android:id="@+id/calcBackKey" style="@style/CalcPadKeyMuted" android:text="@string/calc_backspace" />
         <Button android:id="@+id/calcDivide" style="@style/CalcPadKeyOp" android:text="@string/calc_divide" />
     </LinearLayout>
     <LinearLayout style="@style/CalcPadRow">
@@ -62,9 +64,9 @@
         <Button android:id="@+id/calcPlus" style="@style/CalcPadKeyOp" android:text="@string/calc_plus" />
     </LinearLayout>
     <LinearLayout style="@style/CalcPadRow">
-        <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
         <Button android:id="@+id/calc00" style="@style/CalcPadKey" android:text="@string/calc_double_zero" />
+        <Button android:id="@+id/calc0" style="@style/CalcPadKey" android:text="0" />
         <Button android:id="@+id/calcDot" style="@style/CalcPadKey" android:text="@string/calc_dot" />
-        <Button android:id="@+id/calcEquals" style="@style/CalcPadKeyOp" android:text="@string/calc_equals" />
+        <Button android:id="@+id/calcEquals" style="@style/CalcPadKeyEquals" android:text="@string/calc_equals" />
     </LinearLayout>
 </LinearLayout>

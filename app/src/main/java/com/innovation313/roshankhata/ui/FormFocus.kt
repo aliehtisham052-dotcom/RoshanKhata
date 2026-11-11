@@ -81,16 +81,27 @@ object FormFocus {
         boxes.forEachIndexed { i, box ->
             box.imeOptions = (box.imeOptions and android.view.inputmethod.EditorInfo.IME_MASK_ACTION.inv()) or
                 android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+            val goNext: () -> Boolean = {
+                val next = boxes.drop(i + 1).firstOrNull { it.isShown && it.isEnabled && it.isFocusable }
+                if (next != null) {
+                    next.requestFocus()
+                    next.setSelection(next.text?.length ?: 0)
+                }
+                next != null
+            }
             box.setOnEditorActionListener { _, action, _ ->
                 if (action != android.view.inputmethod.EditorInfo.IME_ACTION_NEXT) return@setOnEditorActionListener false
-                val next = boxes.drop(i + 1).firstOrNull { it.isShown && it.isEnabled && it.isFocusable }
-                    ?: return@setOnEditorActionListener false
-                next.requestFocus()
-                next.setSelection(next.text?.length ?: 0)
-                true
+                goNext()
             }
+            // A money box has the app's pad, not the keyboard, so no Next key: the pad's "=" on a plain figure
+            // asks for this (11 Nov 2026, the owner's photo of Add bill: the cursor could not move on).
+            box.setTag(com.innovation313.roshankhata.R.id.tag_form_next, goNext)
         }
     }
+
+    /** Moves from [box] to its form's next box, when [chain] gave it one; false when there is none. */
+    @Suppress("UNCHECKED_CAST")
+    fun next(box: EditText): Boolean = (box.getTag(com.innovation313.roshankhata.R.id.tag_form_next) as? () -> Boolean)?.invoke() ?: false
 
     fun noAutofill(view: View) {
         view.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS

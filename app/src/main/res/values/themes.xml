@@ -453,27 +453,44 @@
       tall phone that means larger keys instead of a larger empty margin,
       which is the right way round for a pad used at a counter.
     -->
-    <!-- Entry pad (dialog_add_entry): digits on white tiles, operators on
-         grey, so a number and a sum-sign read apart at a glance. -->
+    <!-- The form pad (11 Nov 2026, the owner: "premium, the calculator screen's look"): pills that fill
+         their cell, the same colours as the Calculator screen's round keys — digits white with a hairline,
+         operators a soft green tile with green signs, "=" alone solid, AC % backspace grey. Pills, not
+         circles: the pad's rows are about 55 dp and its cells about 80 dp wide, and a circle would leave
+         a quarter of every cell empty where the thumb lands. -->
     <style name="CalcPadKey" parent="CalcKey">
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_margin">3dp</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/ink</item>
         <item name="backgroundTint">@color/surface</item>
         <item name="strokeColor">@color/page_line</item>
         <item name="strokeWidth">1dp</item>
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">999dp</item>
     </style>
 
     <style name="CalcPadKeyOp" parent="CalcPadKey">
-        <item name="android:textColor">@color/ink</item>
-        <item name="backgroundTint">@color/page_line</item>
+        <item name="android:textColor">@color/brand_green_text</item>
+        <item name="android:textSize">24sp</item>
+        <item name="backgroundTint">@color/brand_green_soft</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <style name="CalcPadKeyEquals" parent="CalcPadKey">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">26sp</item>
+        <item name="backgroundTint">@color/brand_green</item>
+        <item name="strokeWidth">0dp</item>
     </style>
 
     <style name="CalcPadKeyMuted" parent="CalcPadKey">
         <item name="android:textColor">@color/ink_soft</item>
+        <item name="android:textSize">19sp</item>
         <item name="backgroundTint">@color/page_line</item>
+        <item name="strokeWidth">0dp</item>
     </style>
 
     <!-- The three chips under the amount: note/goods, bill photo, date. -->

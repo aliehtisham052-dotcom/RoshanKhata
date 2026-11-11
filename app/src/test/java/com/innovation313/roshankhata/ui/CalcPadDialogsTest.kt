@@ -216,6 +216,31 @@ class CalcPadDialogsTest {
     }
 
     @Test
+    fun equalsOnAPlainFigureMovesToTheNextBox() {
+        // The bill form (11 Nov 2026): the total has the pad, not the keyboard, so "=" is its Next.
+        val activity = org.robolectric.Robolectric.buildActivity(android.app.Activity::class.java).setup().get()
+        val view = inflate(R.layout.dialog_add_bill)
+        activity.setContentView(view)
+        val number = view.findViewById<EditText>(R.id.etBillNumber)
+        val total = view.findViewById<EditText>(R.id.etBillTotal)
+        val note = view.findViewById<EditText>(R.id.etBillNote)
+        CalcPad.bindAll(view, view.findViewById(R.id.billKeypad), listOf(total))
+        FormFocus.chain(listOf(number, total, note))
+
+        assertTrue(total.requestFocus())
+        view.tap(R.id.calc5, R.id.calc0, R.id.calcPlus, R.id.calc2, R.id.calcEquals)
+        assertEquals("52", total.text.toString())
+        assertTrue("a sum is worked out first, the cursor stays", total.isFocused)
+        view.tap(R.id.calcEquals)
+        assertTrue("= on a plain figure goes on to the note", note.isFocused)
+
+        // The keyboard's Next on the bill number lands on the total.
+        assertTrue(number.requestFocus())
+        number.onEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_NEXT)
+        assertTrue(total.isFocused)
+    }
+
+    @Test
     fun aPlanPaymentCanCarryANote() {
         // PlansActivity shows step two with the note alone; the note must be
         // one of step two's own children for that to work.

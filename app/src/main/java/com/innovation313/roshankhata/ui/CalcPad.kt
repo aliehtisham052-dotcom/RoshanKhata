@@ -75,10 +75,16 @@ object CalcPad {
             // magnitude (abs), as everywhere else an amount box is read —
             // "7926−35554" lands back in the box as 27628, not −27628; a minus
             // sign has no meaning in an amount.
-            val result = Calc.evalPad(field.text.toString())
+            val typed = field.text.toString()
+            val result = Calc.evalPad(typed)
             if (result != null) {
-                field.setText(Calc.trim(kotlin.math.abs(result)))
+                val settled = Calc.trim(kotlin.math.abs(result))
+                // Nothing left to work out (a plain figure): "=" is the pad's Next, as the keyboard's is.
+                if (settled == typed.trim()) { FormFocus.next(field); return@setOnClickListener }
+                field.setText(settled)
                 field.setSelection(field.text.length)
+            } else if (typed.isBlank()) {
+                FormFocus.next(field)
             }
         }
     }
