@@ -16,6 +16,7 @@ import com.innovation313.roshankhata.desktop.gfx.Bitmap
 import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.gfx.Color
 import com.innovation313.roshankhata.desktop.gfx.LinearGradient
+import com.innovation313.roshankhata.desktop.gfx.Matrix
 import com.innovation313.roshankhata.desktop.gfx.Paint
 import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.PdfDocument
@@ -110,11 +111,27 @@ object InvoiceTemplateKit {
                     drawBitmapFit(c, stamp, RectF(cx - size / 2f, cy - size / 2f, cx + size / 2f, cy + size / 2f))
                     c.restoreToCount(turned)
                 }
-                SealMark.drawn(middle, below, own = true)
+                SealMark.drawn(middle, below, own = true, place = sealPlace(c, cx, cy, size))
             }
             true
         }
         SealChoice.APP -> { drawRecordSeal(c, cx, cy, size, middle, below, ink, paper, top = sealName(context)); true }
+    }
+
+    /**
+     * Where a seal at ([cx], [cy]) of [size] lands on [c]'s page, as [SealMark.Mark]'s shares (x, y, size, aspect), through
+     * whatever the canvas is turned or mirrored by at that moment. Null for a canvas with no page size.
+     */
+    @Suppress("DEPRECATION")
+    private fun sealPlace(c: Canvas, cx: Float, cy: Float, size: Float): FloatArray? {
+        val w = c.width.toFloat()
+        val h = c.height.toFloat()
+        if (w <= 0f || h <= 0f) return null
+        val m = Matrix()
+        c.getMatrix(m)
+        val box = RectF(cx - size / 2f, cy - size / 2f, cx + size / 2f, cy + size / 2f)
+        m.mapRect(box)
+        return floatArrayOf(box.centerX() / w, box.centerY() / h, box.width() / w, h / w)
     }
 
     fun drawRecordSeal(
@@ -125,7 +142,7 @@ object InvoiceTemplateKit {
         // A stamp's own build (10 Nov 2026, the owner: the first one looked thin and plain): full-strength ink, a heavy
         // rim with a fine line inside it, the name over the top and DIGITAL RECORD under the bottom, a lightly tinted
         // centre with the book, and the paper's own date on a ribbon across the middle - the figure a reader looks for.
-        SealMark.drawn(middle, below, top = top)
+        SealMark.drawn(middle, below, top = top, place = sealPlace(c, cx, cy, size))
         val k = size / 320f
         val ring = Paint().apply { color = ink; style = Paint.Style.STROKE; isAntiAlias = true }
         val fill = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }

@@ -4,6 +4,7 @@ import com.innovation313.roshankhata.data.SealMark
 import com.innovation313.roshankhata.desktop.gfx.Bitmap
 import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.invoice.InvoiceTemplateKit
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -35,5 +36,21 @@ class SealNamesProofTest {
         val out = File(dir, "seal-names.png")
         ImageIO.write(bmp.image, "png", out)
         assertTrue(out.length() > 0)
+    }
+
+    @Test
+    fun theSealSaysWhereOnThePageItLanded() {
+        // The stamp lands on the printed seal (11 Nov 2026): the mark carries the place as shares of the page,
+        // through whatever the page is moved by.
+        val c = Canvas(595, 842)
+        c.translate(10f, 20f)
+        InvoiceTemplateKit.drawRecordSeal(c, 390f, 680f, 92f, "11 NOV 2026", "INV-000005", top = "AL-NOOR TRADERS")
+        val m = SealMark.take()!!
+        assertTrue(m.placed)
+        assertEquals("AL-NOOR TRADERS", m.top)
+        assertEquals(400f / 595f, m.x, 0.001f)
+        assertEquals(700f / 842f, m.y, 0.001f)
+        assertEquals(92f / 595f, m.size, 0.001f)
+        assertEquals(842f / 595f, m.aspect, 0.001f)
     }
 }

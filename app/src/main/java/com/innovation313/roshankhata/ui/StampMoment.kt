@@ -9,11 +9,8 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
+import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
-import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
@@ -23,146 +20,156 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import com.innovation313.roshankhata.data.InvoiceTemplateKit
 import com.innovation313.roshankhata.data.SealMark
-import kotlin.random.Random
 
 /**
- * The Roshan Khata seal pressed onto a paper the moment it is shown (10 Nov 2026, the owner: "jaise payment apps ka
- * thappa"). Played once over [activity] when a PDF just made is opened, with the very date and word printed on it:
+ * The seal pressed onto the paper the moment it is shown (10 Nov 2026, the owner: "jaise payment apps ka thappa"),
+ * on the page itself, where it is printed (11 Nov 2026, the owner: no card of its own — the stamp lands on the PDF,
+ * with the shop's name it carries there). Played once over the page view when a PDF just made is opened:
  *
- *  - the stamp comes down from above, large and faint, turned a little further than it will rest;
- *  - it strikes in 200 ms, speeding up as a hand does, and is pressed a touch flat;
- *  - at the strike the phone gives one tick, an ink ring spreads from the rim and fades, and the paper behind dips;
- *  - the stamp eases back to its size at the seal's own 8 degrees, rests a moment, and the cover lifts.
+ *  - the printed seal's spot is covered with paper, so the page shows no seal yet;
+ *  - the stamp, exactly the printed one (the shop's name, the date, or the shop's own stamp picture), comes down from
+ *    above the spot, large and faint, turned a little further than it will rest;
+ *  - it strikes in 200 ms, speeding up as a hand does, and is pressed a touch flat; the cover goes, the phone gives
+ *    one tick and an ink ring spreads from the rim;
+ *  - it eases back to the seal's own size and angle, sits exactly on the printed seal, and fades into it.
  *
- * Feedback for something real: it plays only for a paper that carries this seal, made moments ago. A tap skips it.
- * Nothing bounces. With the phone's animations off it is not played at all.
+ * Feedback for something real: it plays only for a paper that carries this seal, made moments ago. A tap ends it at
+ * once. Nothing bounces. With the phone's animations off it is not played at all.
  */
 object StampMoment {
 
-    fun play(activity: Activity, mark: SealMark.Mark) {
-        if (!Motion.enabled(activity)) return
+    /**
+     * Plays [mark] onto [page] (a view showing the whole page, edge to edge). Does nothing when the seal's place on
+     * the page is not known, the page is not laid out, or animations are off.
+     */
+    fun play(activity: Activity, mark: SealMark.Mark, page: View) {
+        if (!Motion.enabled(activity) || !mark.placed) return
         val root = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
+        if (page.width <= 0 || page.height <= 0 || !page.isAttachedToWindow) return
         val d = activity.resources.displayMetrics.density
-        val side = (minOf(root.width.takeIf { it > 0 } ?: activity.resources.displayMetrics.widthPixels,
-            activity.resources.displayMetrics.widthPixels) * 0.56f).toInt().coerceIn((180 * d).toInt(), (300 * d).toInt())
 
-        val cover = FrameLayout(activity).apply {
-            setBackgroundColor(Color.argb(0x8C, 0x0B, 0x1A, 0x12))
-            alpha = 0f
+        // Where the seal sits on the screen, in the root's own coordinates.
+        val at = IntArray(2).also { page.getLocationInWindow(it) }
+        val origin = IntArray(2).also { root.getLocationInWindow(it) }
+        val cx = at[0] - origin[0] + mark.x * page.width
+        val cy = at[1] - origin[1] + mark.y * page.height
+        val side = (mark.size * page.width).toInt()
+        if (side < (24 * d).toInt()) return
+        val picture = sealPicture(activity, side, mark) ?: return
+
+        fun FrameLayout.place(v: View, size: Int) =
+            addView(v, FrameLayout.LayoutParams(size, size).apply {
+                leftMargin = (cx - size / 2f).toInt()
+                topMargin = (cy - size / 2f).toInt()
+            })
+
+        // Over the page, transparent: it takes the taps (a tap ends the moment) and holds the page still meanwhile.
+        val stage = FrameLayout(activity).apply {
             isClickable = true
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            clipChildren = false
         }
-        // The paper the stamp lands on: a white card that dips at the strike.
-        val paper = View(activity).apply {
-            background = GradientDrawable().apply { setColor(Color.WHITE); cornerRadius = 20 * d }
-            elevation = 12 * d
+        // Paper over the printed seal until the stamp strikes.
+        val cover = View(activity).apply {
+            background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(Color.WHITE) }
         }
-        val paperSide = (side * 1.32f).toInt()
-        cover.addView(paper, FrameLayout.LayoutParams(paperSide, paperSide, Gravity.CENTER))
-        // The ink that spreads from the rim.
+        stage.place(cover, (side * 1.04f).toInt())
         val ring = View(activity).apply {
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setStroke((5 * d).toInt(), InvoiceTemplateKit.SEAL_INK)
+                setStroke((3 * d).toInt().coerceAtLeast(2), InvoiceTemplateKit.SEAL_INK)
             }
             alpha = 0f
-            elevation = 13 * d
         }
-        cover.addView(ring, FrameLayout.LayoutParams((side * 0.94f).toInt(), (side * 0.94f).toInt(), Gravity.CENTER))
+        stage.place(ring, side)
         val stamp = ImageView(activity).apply {
-            setImageBitmap(sealPicture(activity, side, mark))
-            elevation = 14 * d
+            setImageBitmap(picture)
             alpha = 0f
-            scaleX = 2.3f; scaleY = 2.3f
-            rotation = -22f
-            translationY = -36 * d
+            scaleX = 1.9f; scaleY = 1.9f
+            rotation = InvoiceTemplateKit.SEAL_TILT - 14f
+            translationY = -48 * d
+            elevation = 10 * d
         }
-        cover.addView(stamp, FrameLayout.LayoutParams(side, side, Gravity.CENTER))
-        root.addView(cover, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        stage.place(stamp, side)
+        root.addView(stage, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
         val decelerate = PathInterpolator(0.05f, 0.7f, 0.1f, 1f)
         val standard = PathInterpolator(0.2f, 0f, 0f, 1f)
 
-        val show = ObjectAnimator.ofFloat(cover, View.ALPHA, 0f, 1f).setDuration(160)
+        // Raised over the spot, coming into sight.
+        val lift = ObjectAnimator.ofPropertyValuesHolder(
+            stamp,
+            PropertyValuesHolder.ofFloat(View.ALPHA, 0f, 0.85f),
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 1.9f, 1.7f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.9f, 1.7f)
+        ).apply { duration = 180; interpolator = decelerate }
         val strike = ObjectAnimator.ofPropertyValuesHolder(
             stamp,
-            PropertyValuesHolder.ofFloat(View.SCALE_X, 2.3f, 0.93f),
-            PropertyValuesHolder.ofFloat(View.SCALE_Y, 2.3f, 0.9f),
-            PropertyValuesHolder.ofFloat(View.ROTATION, -22f, InvoiceTemplateKit.SEAL_TILT),
-            PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, -36 * d, 0f),
-            PropertyValuesHolder.ofFloat(View.ALPHA, 0f, 1f)
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 1.7f, 0.95f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.7f, 0.92f),
+            PropertyValuesHolder.ofFloat(View.ROTATION, InvoiceTemplateKit.SEAL_TILT - 14f, InvoiceTemplateKit.SEAL_TILT),
+            PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, -48 * d, 0f),
+            PropertyValuesHolder.ofFloat(View.ALPHA, 0.85f, 1f)
         ).apply { duration = 200; interpolator = AccelerateInterpolator(1.8f) }
         val settle = ObjectAnimator.ofPropertyValuesHolder(
             stamp,
-            PropertyValuesHolder.ofFloat(View.SCALE_X, 0.93f, 1f),
-            PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.9f, 1f)
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 0.95f, 1f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.92f, 1f),
+            PropertyValuesHolder.ofFloat(View.ELEVATION, 10 * d, 0f)
         ).apply { duration = 220; interpolator = decelerate }
         val ink = ObjectAnimator.ofPropertyValuesHolder(
             ring,
-            PropertyValuesHolder.ofFloat(View.SCALE_X, 0.96f, 1.42f),
-            PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.96f, 1.42f),
-            PropertyValuesHolder.ofFloat(View.ALPHA, 0.55f, 0f)
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 0.98f, 1.45f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.98f, 1.45f),
+            PropertyValuesHolder.ofFloat(View.ALPHA, 0.5f, 0f)
         ).apply { duration = 460; interpolator = decelerate }
-        val dip = ObjectAnimator.ofPropertyValuesHolder(
-            paper,
-            PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0.975f, 1f),
-            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0.975f, 1f)
-        ).apply { duration = 240; interpolator = standard }
-        // The stamp rests a moment once it has settled, then the cover lifts.
-        val lift = ObjectAnimator.ofFloat(cover, View.ALPHA, 1f, 0f).apply { duration = 240; startDelay = 620; interpolator = standard }
+        // The stamp sits on the printed seal a moment, then gives way to it: the page alone remains.
+        val fade = ObjectAnimator.ofFloat(stamp, View.ALPHA, 1f, 0f).apply { duration = 220; startDelay = 520; interpolator = standard }
 
         strike.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
+                stage.removeView(cover)
                 stamp.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             }
         })
         val all = AnimatorSet().apply {
-            play(show)
-            play(strike).after(show)
+            play(lift)
+            play(strike).after(lift)
             play(settle).after(strike)
             play(ink).after(strike)
-            play(dip).after(strike)
-            play(lift).after(settle)
+            play(fade).after(settle)
         }
         var gone = false
         fun end() {
             if (gone) return
             gone = true
-            root.removeView(cover)
+            root.removeView(stage)
         }
-        lift.addListener(object : AnimatorListenerAdapter() {
+        fade.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) = end()
         })
-        cover.setOnClickListener {
+        stage.setOnClickListener {
             all.cancel()
-            cover.animate().alpha(0f).setDuration(120).withEndAction { end() }.start()
+            end()
         }
         all.start()
     }
 
     /**
-     * The seal as printed, drawn for the screen, with a rubber stamp's grain: a few hundred tiny specks where the ink
-     * did not take (the same pattern every time, so the stamp never shimmers).
+     * The seal exactly as printed, [side] pixels square, unturned (the view turns it to the printed angle): the shop's
+     * own stamp picture when that was printed, else the seal with the very words on the paper.
      */
-    private fun sealPicture(activity: Activity, side: Int, mark: SealMark.Mark): Bitmap {
+    private fun sealPicture(activity: Activity, side: Int, mark: SealMark.Mark): Bitmap? {
         val bmp = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
-        // The shop's own stamp when that is the paper's seal (its picture as kept, no grain added), else ours.
         if (mark.own) {
-            com.innovation313.roshankhata.data.BusinessProfile.loadStamp(activity)?.let { stamp ->
-                InvoiceTemplateKit.drawBitmapFit(c, stamp, android.graphics.RectF(0f, 0f, side.toFloat(), side.toFloat()))
-                return bmp
-            }
+            val own = com.innovation313.roshankhata.data.BusinessProfile.loadStamp(activity) ?: return null
+            InvoiceTemplateKit.drawBitmapFit(c, own, RectF(0f, 0f, side.toFloat(), side.toFloat()))
+            return bmp
         }
-        InvoiceTemplateKit.drawRecordSeal(c, side / 2f, side / 2f, side * 0.96f, mark.middle, mark.below, tilt = 0f, top = mark.top)
+        InvoiceTemplateKit.drawRecordSeal(c, side / 2f, side / 2f, side.toFloat(), mark.middle, mark.below, tilt = 0f, top = mark.top)
         // The drawing above remembered its words again; nothing else should play from them.
         SealMark.clear()
-        val clear = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT); isAntiAlias = true }
-        val rnd = Random(313)
-        repeat(420) {
-            clear.alpha = 90 + rnd.nextInt(140)
-            c.drawCircle(rnd.nextFloat() * side, rnd.nextFloat() * side, side * (0.002f + rnd.nextFloat() * 0.005f), clear)
-        }
         return bmp
     }
 }

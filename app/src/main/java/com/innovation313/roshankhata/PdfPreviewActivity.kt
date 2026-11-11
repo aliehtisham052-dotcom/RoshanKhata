@@ -42,17 +42,41 @@ class PdfPreviewActivity : BaseActivity() {
         const val EXTRA_TITLE = "title"
         const val EXTRA_SEAL_MIDDLE = "seal_middle"
         const val EXTRA_SEAL_BELOW = "seal_below"
+        const val EXTRA_SEAL_TOP = "seal_top"
+        const val EXTRA_SEAL_OWN = "seal_own"
+        const val EXTRA_SEAL_PLACE = "seal_place"
 
-        /** [seal]: the words on the seal this paper was just printed with, to play it landing (none: no stamp). */
+        /**
+         * [seal]: the seal this paper was just printed with — its words, whose stamp, and where on the last page — to
+         * play it landing there (none: no stamp). All of it travels: the words alone once lost the shop's name.
+         */
         fun open(context: Context, file: File, title: String? = null, seal: com.innovation313.roshankhata.data.SealMark.Mark? = null) {
             context.startActivity(
                 Intent(context, PdfPreviewActivity::class.java)
                     .putExtra(EXTRA_PATH, file.absolutePath)
                     .putExtra(EXTRA_TITLE, title)
-                    .putExtra(EXTRA_SEAL_MIDDLE, seal?.middle)
-                    .putExtra(EXTRA_SEAL_BELOW, seal?.below)
+                    .apply {
+                        if (seal != null && seal.placed) {
+                            putExtra(EXTRA_SEAL_MIDDLE, seal.middle)
+                            putExtra(EXTRA_SEAL_BELOW, seal.below)
+                            putExtra(EXTRA_SEAL_TOP, seal.top)
+                            putExtra(EXTRA_SEAL_OWN, seal.own)
+                            putExtra(EXTRA_SEAL_PLACE, floatArrayOf(seal.x, seal.y, seal.size, seal.aspect))
+                        }
+                    }
                     .apply { if (context !is android.app.Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
             )
+        }
+
+        /** The seal [open] put in [intent], or null. */
+        fun sealOf(intent: Intent): com.innovation313.roshankhata.data.SealMark.Mark? {
+            val middle = intent.getStringExtra(EXTRA_SEAL_MIDDLE) ?: return null
+            val below = intent.getStringExtra(EXTRA_SEAL_BELOW) ?: return null
+            val place = intent.getFloatArrayExtra(EXTRA_SEAL_PLACE)?.takeIf { it.size == 4 } ?: return null
+            return com.innovation313.roshankhata.data.SealMark.Mark(
+                middle, below, 0L, intent.getBooleanExtra(EXTRA_SEAL_OWN, false),
+                intent.getStringExtra(EXTRA_SEAL_TOP) ?: "ROSHAN KHATA", place[0], place[1], place[2], place[3]
+            ).takeIf { it.placed }
         }
     }
 
@@ -62,6 +86,10 @@ class PdfPreviewActivity : BaseActivity() {
     private lateinit var file: File
     private lateinit var tvPage: TextView
     private var pageCount = 0
+    private lateinit var rv: RecyclerView
+
+    /** The seal still to be pressed onto the last page once it is drawn on screen; null once played or never. */
+    private var pendingSeal: com.innovation313.roshankhata.data.SealMark.Mark? = null
 
     /** Rendered pages, as much as an eighth of the app's memory allows. */
     private val cache = object : LruCache<Int, Bitmap>((Runtime.getRuntime().maxMemory() / 8 / 1024).toInt()) {
@@ -94,7 +122,7 @@ class PdfPreviewActivity : BaseActivity() {
             }.show()
         }
 
-        val rv: RecyclerView = findViewById(R.id.rvPages)
+        rv = findViewById(R.id.rvPages)
         val lm = LinearLayoutManager(this)
         rv.layoutManager = lm
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -120,17 +148,30 @@ class PdfPreviewActivity : BaseActivity() {
             pageCount = opened
             rv.adapter = PagesAdapter()
             showPage(lm)
-            // The seal pressed onto the paper just made, once (not again on a rotation).
-            val middle = intent.getStringExtra(EXTRA_SEAL_MIDDLE)
-            val below = intent.getStringExtra(EXTRA_SEAL_BELOW)
-            if (savedInstanceState == null && middle != null && below != null) {
+            // The seal pressed onto the paper just made, once (not again on a rotation), on the last page where it is
+            // printed: that page is brought up with the seal in the middle of the screen, and the stamp lands once the
+            // page itself is drawn (onBindViewHolder calls [stampWhenShown]).
+            val seal = if (savedInstanceState == null) sealOf(intent) else null
+            if (seal != null) {
+                pendingSeal = seal
                 rv.post {
-                    if (!isFinishing && !isDestroyed) com.innovation313.roshankhata.ui.StampMoment.play(
-                        this@PdfPreviewActivity, com.innovation313.roshankhata.data.SealMark.Mark(middle, below, 0L)
-                    )
+                    val last = pageCount - 1
+                    val pageH = rv.width * seal.aspect
+                    lm.scrollToPositionWithOffset(last, (rv.height / 2f - seal.y * pageH).toInt())
+                    rv.post { stampWhenShown(last) }
                 }
             }
         }
+    }
+
+    /** Plays the waiting seal once [position], the last page, shows its drawing. */
+    private fun stampWhenShown(position: Int) {
+        val seal = pendingSeal ?: return
+        if (position != pageCount - 1 || isFinishing || isDestroyed) return
+        val holder = rv.findViewHolderForAdapterPosition(position) as? PagesAdapter.VH ?: return
+        if (holder.image.drawable == null) return
+        pendingSeal = null
+        com.innovation313.roshankhata.ui.StampMoment.play(this, seal, holder.image)
     }
 
     private fun showPage(lm: LinearLayoutManager) {
@@ -185,16 +226,19 @@ class PdfPreviewActivity : BaseActivity() {
             val ready = cache.get(position)?.takeIf { it.width == width }
             if (ready != null) {
                 holder.image.setImageBitmap(ready)
+                if (pendingSeal != null) holder.image.post { stampWhenShown(position) }
                 return
             }
             // A sheet of A4's shape while the page is drawn, so the list does not jump.
             holder.image.setImageDrawable(null)
-            holder.image.minimumHeight = (width * 1.414f).toInt()
+            // (the paper's own shape when the seal said it: the page the seal lands on stands where it will be drawn).
+            holder.image.minimumHeight = (width * (pendingSeal?.aspect ?: 1.414f)).toInt()
             lifecycleScope.launch {
                 val bmp = page(position, width)
                 if (holder.image.tag == position && bmp != null) {
                     holder.image.minimumHeight = 0
                     holder.image.setImageBitmap(bmp)
+                    if (pendingSeal != null) holder.image.post { stampWhenShown(position) }
                 }
             }
         }

@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.flow.first
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -265,10 +266,20 @@ private fun PreviewContent(req: Preview.Request, images: com.innovation313.rosha
     val failedWord = word(W.pc_pdf_failed, "%s")
     val savedWord = word(W.report_saved_to, "%s")
     var stamp by remember { mutableStateOf<com.innovation313.roshankhata.data.SealMark.Mark?>(null) }
+    val densityNow = LocalDensity.current.density
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     LaunchedEffect(req) {
-        sheets = withContext(Preview.drawing) { Sheets.of(req.printable) }
-        // The seal pressed on once the pages are there.
-        stamp = req.seal
+        val made = withContext(Preview.drawing) { Sheets.of(req.printable) }
+        sheets = made
+        // The seal is pressed onto the last page where it is printed (11 Nov 2026): that page is brought up with the
+        // seal in the middle of the window, and the stamp lands on it once the page's picture is there.
+        val seal = req.seal?.takeIf { it.placed && made.count > 0 } ?: return@LaunchedEffect
+        val last = made.count - 1
+        androidx.compose.runtime.snapshotFlow { listState.layoutInfo.viewportSize.height }.first { it > 0 }
+        val viewport = listState.layoutInfo.viewportSize.height
+        val sealAt = made.height(last) * seal.y * zoom * densityNow
+        listState.scrollToItem(last, (sealAt - viewport / 2f).toInt().coerceAtLeast(0))
+        stamp = seal
     }
 
     fun openFile(f: File) {
@@ -338,6 +349,7 @@ private fun PreviewContent(req: Preview.Request, images: com.innovation313.rosha
             Box(Modifier.fillMaxSize().horizontalScroll(androidx.compose.foundation.rememberScrollState())) {
             LazyColumn(
                 Modifier.width(across).fillMaxHeight(),
+                state = listState,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp)
@@ -359,6 +371,15 @@ private fun PreviewContent(req: Preview.Request, images: com.innovation313.rosha
                             val p = page
                             if (p == null) CircularProgressIndicator(Modifier.size(28.dp))
                             else Image(p, contentDescription = null, modifier = Modifier.size(w.dp, h.dp))
+                            val m = stamp
+                            if (p != null && m != null && i == s.count - 1) {
+                                val own = remember(m) {
+                                    if (!m.own) null
+                                    else images?.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.STAMP)?.takeIf { it.isFile }
+                                        ?.let { f -> runCatching { javax.imageio.ImageIO.read(f)?.toComposeImageBitmap() }.getOrNull() }
+                                }
+                                StampMoment(m, own, w.dp, h.dp) { stamp = null }
+                            }
                         }
                         Spacer(Modifier.height(4.dp))
                         Text(word(W.pdf_stmt_page, i + 1, s.count), color = c.textMuted, fontSize = 12.sp)
@@ -368,14 +389,6 @@ private fun PreviewContent(req: Preview.Request, images: com.innovation313.rosha
             }
             }
         }
-    }
-    stamp?.let { m ->
-        val own = remember(m) {
-            if (!m.own) null
-            else images?.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.STAMP)?.takeIf { it.isFile }
-                ?.let { f -> runCatching { javax.imageio.ImageIO.read(f)?.toComposeImageBitmap() }.getOrNull() }
-        }
-        StampMoment(m, own) { stamp = null }
     }
     }
 }
